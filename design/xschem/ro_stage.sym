@@ -1,0 +1,25 @@
+v {xschem version=3.4.4 file_version=1.2}
+G {}
+K {type=subcircuit
+format="@name @pinlist @symname wstv=@wstv lstv=@lstv cld=@cld"
+template="name=x1 wstv=0.42 lstv=2 cld=0.5f"
+description="Series-starved minimum-width 1.8 V inverter delay cell (sky130-trng entropy-source array). Sizing is provisional -- see ro_stage.sch."
+}
+V {}
+S {}
+E {}
+B 5 -52.5 -12.5 -47.5 -7.5 {name=a dir=in}
+B 5 47.5 -12.5 52.5 -7.5 {name=y dir=out}
+B 5 -2.5 -52.5 2.5 -47.5 {name=vddr dir=inout}
+B 5 -2.5 47.5 2.5 52.5 {name=vss dir=inout}
+L 4 -50 -10 -40 -10 {}
+L 4 40 -10 50 -10 {}
+L 4 0 -50 0 -40 {}
+L 4 0 40 0 50 {}
+L 4 -40 -40 40 -40 {}
+L 4 40 -40 40 40 {}
+L 4 40 40 -40 40 {}
+L 4 -40 40 -40 -40 {}
+T {@name} -35 -35 0 0 0.25 0.25 {}
+T {ro_stage} -35 10 0 0 0.25 0.25 {}
+T {@wstv/@lstv} -35 -5 0 0 0.2 0.2 {layer=13}

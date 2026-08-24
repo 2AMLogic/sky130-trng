@@ -1,0 +1,35 @@
+v {xschem version=3.4.4 file_version=1.2}
+G {}
+K {type=subcircuit
+format="@name @pinlist @symname"
+template="name=x1"
+description="The sky130-trng entropy source: two separately-supplied 11-stage starved rings, XOR-combined into xo. Array size and stage count are PROVISIONAL placeholders pending the sky130 jitter characterization named in spec/porting-plan.md section 2.2 -- see ro_array_core.sch. Pin order MUST track design/xschem/ro_array_core.sch's own .subckt signature exactly: en1 en2 vddr1 vddr2 vdd vss xo ro1 ro2 -- see design/ro_array_core.spice. ro1/ro2 are OBSERVATION-ONLY outputs so a per-ring liveness digitizer in sampler_core.sch can reach each ring node; they add no device and change no ring, and a parent that leaves them unconnected gets exactly the circuit this cell had before they existed. They are not a raw tap and never leave the die."
+}
+V {}
+S {}
+E {}
+B 5 -72.5 -42.5 -67.5 -37.5 {name=en1 dir=in}
+B 5 -72.5 -12.5 -67.5 -7.5 {name=en2 dir=in}
+B 5 -32.5 -72.5 -27.5 -67.5 {name=vddr1 dir=inout}
+B 5 -2.5 -72.5 2.5 -67.5 {name=vddr2 dir=inout}
+B 5 27.5 -72.5 32.5 -67.5 {name=vdd dir=inout}
+B 5 -2.5 67.5 2.5 72.5 {name=vss dir=inout}
+B 5 67.5 -2.5 72.5 2.5 {name=xo dir=out}
+B 5 67.5 -32.5 72.5 -27.5 {name=ro1 dir=out}
+B 5 67.5 27.5 72.5 32.5 {name=ro2 dir=out}
+L 4 -70 -40 -60 -40 {}
+L 4 -70 -10 -60 -10 {}
+L 4 -30 -70 -30 -60 {}
+L 4 0 -70 0 -60 {}
+L 4 30 -70 30 -60 {}
+L 4 0 60 0 70 {}
+L 4 60 0 70 0 {}
+L 4 60 -30 70 -30 {}
+L 4 60 30 70 30 {}
+L 4 -60 -60 60 -60 {}
+L 4 60 -60 60 60 {}
+L 4 60 60 -60 60 {}
+L 4 -60 60 -60 -60 {}
+T {@name} -55 -80 0 0 0.25 0.25 {}
+T {ro_array_core} -55 40 0 0 0.2 0.2 {}
+T {N=2 x 11 (provisional)} -55 -5 0 0 0.2 0.2 {layer=13}

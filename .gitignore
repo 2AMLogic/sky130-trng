@@ -9,6 +9,12 @@ __pycache__/
 # (append-only record trail), so they escape the *.log rule.
 !sim/*/corners/**/*.log
 sim/build/
+# machine-local PDK override for design/netlist.py (design/pdk.json is committed)
+design/pdk.local.json
+sim/pdk.local.json
+# xschem scratch left next to a schematic when it is opened interactively
+design/xschem/*.sch.bak
+design/xschem/*.sym.bak
 # synthesis / P&R scratch
 flow/build/
 # local klt install, created by the setup script
