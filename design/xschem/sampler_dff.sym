@@ -1,0 +1,32 @@
+v {xschem version=3.4.4 file_version=1.2}
+G {}
+K {type=subcircuit
+format="@name @pinlist @symname"
+template="name=x1"
+description="Transmission-gate master-slave D flip-flop, positive-edge, async active-low reset (sky130-trng sampler/digitizer). Sizing is provisional -- see sampler_dff.sch."
+}
+V {}
+S {}
+E {}
+B 5 -52.5 -32.5 -47.5 -27.5 {name=d dir=in}
+B 5 -52.5 -2.5 -47.5 2.5 {name=clk dir=in}
+B 5 -52.5 27.5 -47.5 32.5 {name=rst_n dir=in}
+B 5 47.5 -2.5 52.5 2.5 {name=q dir=out}
+B 5 -2.5 -52.5 2.5 -47.5 {name=vdd dir=inout}
+B 5 -2.5 47.5 2.5 52.5 {name=vss dir=inout}
+L 4 -40 -40 40 -40 {}
+L 4 40 -40 40 40 {}
+L 4 40 40 -40 40 {}
+L 4 -40 40 -40 -40 {}
+L 4 -50 -30 -40 -30 {}
+L 4 -50 0 -40 0 {}
+L 4 -50 30 -40 30 {}
+L 4 40 0 50 0 {}
+L 4 0 -50 0 -40 {}
+L 4 0 40 0 50 {}
+T {@name} -35 -35 0 0 0.25 0.25 {}
+T {sampler_dff} -5 10 0 0 0.2 0.2 {layer=13}
+T {D} -46 -25 0 0 0.2 0.2 {layer=13}
+T {clk} -46 5 0 0 0.2 0.2 {layer=13}
+T {rst_n} -46 35 0 0 0.2 0.2 {layer=13}
+T {Q} 42 5 0 0 0.2 0.2 {layer=13}

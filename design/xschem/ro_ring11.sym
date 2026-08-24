@@ -1,0 +1,27 @@
+v {xschem version=3.4.4 file_version=1.2}
+G {}
+K {type=subcircuit
+format="@name @pinlist @symname wstv=@wstv lstv=@lstv cld=@cld"
+template="name=x1 wstv=0.42 lstv=2 cld=0.5f"
+description="One 11-stage starved ring oscillator with its own enable and its own supply pin. Stage count and sizing are provisional -- see ro_ring11.sch."
+}
+V {}
+S {}
+E {}
+B 5 -72.5 -12.5 -67.5 -7.5 {name=en dir=in}
+B 5 67.5 -12.5 72.5 -7.5 {name=ro dir=out}
+B 5 -2.5 -72.5 2.5 -67.5 {name=vddr dir=inout}
+B 5 -2.5 67.5 2.5 72.5 {name=vss dir=inout}
+L 4 -70 -10 -60 -10 {}
+L 4 60 -10 70 -10 {}
+L 4 0 -70 0 -60 {}
+L 4 0 60 0 70 {}
+L 4 -60 -60 60 -60 {}
+L 4 60 -60 60 60 {}
+L 4 60 60 -60 60 {}
+L 4 -60 60 -60 -60 {}
+T {@name} -55 -55 0 0 0.25 0.25 {}
+T {ro_ring11} -55 20 0 0 0.25 0.25 {}
+T {@wstv} -55 -5 0 0 0.2 0.2 {layer=13}
+T {en} -55 -35 0 0 0.2 0.2 {layer=7}
+T {ro} 30 -35 0 0 0.2 0.2 {layer=7}

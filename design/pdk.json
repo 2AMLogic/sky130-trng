@@ -1,0 +1,21 @@
+{
+  "_comment": [
+    "Committed PDK defaults for design/netlist.py. Environment variables win",
+    "over this file, and design/pdk.local.json (git-ignored) wins over both.",
+    "  variant       sky130 flavor directory to use (sky130A / sky130B)",
+    "  search_roots  extra directories that CONTAIN variant dirs, searched",
+    "                before the built-in list (~/.volare, ~/.ciel, ...)",
+    "open_pdks_commit is a provenance pin, not a hard gate: netlist.py records",
+    "it in --check output so a netlist diff caused by a PDK bump is",
+    "distinguishable from one caused by a schematic edit. It matches the pin",
+    "spec/porting-plan.md cites and the one the sibling sky130-bandgap repo",
+    "uses in its own sim/pdk.json.",
+    "This file deliberately does NOT describe the simulation harness (corner",
+    "lists, ngspice library paths). sim/ is empty; when a harness lands it",
+    "brings its own sim/pdk.json and netlist.py should be repointed at it."
+  ],
+  "variant": "sky130A",
+  "open_pdks_commit": "c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+  "install_command": "volare enable --pdk sky130 c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+  "search_roots": []
+}
