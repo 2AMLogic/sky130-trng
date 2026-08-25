@@ -185,12 +185,82 @@ measurement table, PDK/tool/repo provenance, and the raw per-corner ngspice
 logs under its `corners/` subdirectory (the exact deck each corner ran, plus
 stdout/stderr, embedded for reproducibility).
 
-**Verdict**: mechanism check **PASS**. The jitter-accumulation
-characterization campaign this unblocks -- transient-noise runs over
-`ro_stage`/`ro_ring5` producing per-ring `sigma_1`/`T_0`, feeding the array
-sizing law at the entropy-binding corner (`design/README.md`'s "Provisional,
-not sized" table; `spec/porting-plan.md` §2.2/§2.4) -- is separate, later
-scope.
+**Verdict**: mechanism check **PASS**. The campaign it unblocked is below.
+
+## The characterization campaign (issue #10)
+
+Full statement, with alternatives and consequences:
+[`spec/decision-records/DR-0002-sky130-ro-jitter-and-array-sizing.md`](../spec/decision-records/DR-0002-sky130-ro-jitter-and-array-sizing.md)
+(status **Proposed**). The reduction that produces every derived number is
+`sim/ro-array-sizing/analysis/array-sizing.py` -- it runs **no simulator**,
+reads only the committed records, and reproduces the sizing arithmetic
+end to end:
+
+```bash
+python3 sim/ro-array-sizing/analysis/array-sizing.py       # print the reduction
+```
+
+Four results, each with its own slug:
+
+1. **Per-stage gain** (`ro-stage-small-signal-gain/`): `ro_stage`'s
+   open-loop gain at its own trip point is −14.3 nominal, −11.8 at the
+   weakest of the three headline points. That is ~12x the Barkhausen
+   minimum for any stage count in play, so **DR-0001's gain risk is
+   retired**.
+2. **Ring swing** (`ro-ring-jitter-accumulation/`): `ro_ring11` -- the ring
+   `ro_array_core.sch` actually instantiates -- swings **1.06 x Vdd**
+   peak-to-peak at every headline point, including the slow/hot/low-supply
+   corner DR-0001 names. **Swing confirmed; DR-0001's "Revisit if" is not
+   triggered.** The 5-stage vehicle is slew-limited to 0.81-1.00 x Vdd,
+   which is a caution against a naive move to fewer stages.
+3. **Entropy-binding corner** (`ro-array-sizing/`): **`ss` / −40 °C /
+   1.62 V**, `Q_ring` = 1.122e−4, over a 24.5x range across the full
+   27-point grid. **Cold** -- the direction gf180-trng's DR-0012 inferred
+   and its DR-0015 later reversed. Measured here on a full grid, inherited
+   from neither.
+4. **Sized `N`**: `N = 2` is **refuted**. At the binding corner it gives
+   `Q_array` 26x below the `M*Q_H0` the ported sizing law requires at this
+   repo's draft rate/entropy rows; the sized value is **53** five-stage
+   rings, or **>= 309** of the eleven-stage rings as drawn.
+
+### What the campaign does not establish
+
+Read these before citing any number above:
+
+- **The injected noise level is fixed, not per-corner.** Every ring run
+  injects a `trnoise()` source anchored once to the mechanism check's own
+  measured near-band output-noise density. Per gf180-trng's precedent for
+  the same method, every `sigma` is good to ~1.5-2x, hence every `Q` and
+  every `N` to ~2-4x. `N = 53` means "tens".
+- **One seed per PVT point** (gf180-trng used >= 4). Held *constant* across
+  the grid on purpose -- common random numbers make corner-to-corner
+  comparison cleaner, at the cost of saying nothing about seed spread.
+- **20 periods per point** (8 for `ro_ring11`), so `sigma_1` carries ~16%
+  (~25%) statistical error. This does not blur the corner search: `Q` goes
+  as `sigma_1^2/T_0^3`, and `T_0` -- which ranges 3.6x across the grid and
+  is measured to ~0.2% -- dominates the ordering.
+- **An unexplained stage-count anomaly.** The measured `ro_ring5`-vs-
+  `ro_ring11` `Q` ratio exceeds what the sizing law predicts by ~3.3x,
+  because `sigma_1` *fell* with stage count instead of rising as
+  `sqrt(n)`. Recorded as an open question, not smoothed over.
+- **No power, no leakage, no inter-ring correlation, no sampler.** The
+  starve length, the `wstv` skew fraction and every device width are
+  untouched by this campaign and remain placeholders.
+
+### How the estimator was validated before it was believed
+
+`ro-ring-timestep-convergence/` holds two controls, both on the same deck,
+corner and seed as the grid:
+
+- a **timestep sweep** (`@@TMAX@@` = 5p/10p/20p/40p): `T_0` moves 0.19%
+  across an 8x change in step; `sigma_1` scatters 31% with no monotone
+  trend, i.e. no timestep dependence is resolvable above the estimator's own
+  statistical error. That is what licenses running the 27-point grid at the
+  coarse step, rather than merely wanting to.
+- a **numerical floor** (`@@NA@@` = 0 -- injected noise off entirely): the
+  transient solver by itself manufactures 0.58 ps (5p) / 0.65 ps (20p) of
+  period scatter. Every grid `sigma_1` is corrected against it in
+  quadrature, which lowers `Q` and raises `N` -- the conservative direction.
 
 ## Writing a new record
 
@@ -219,10 +289,12 @@ DR-0006 gave in the sibling `gf180-trng` repo. `sim/pdk.json`'s
 `process_corners` lists every corner section the installed PDK's ngspice
 library actually defines (`tt`/`ss`/`sf`/`fs`/`ff` plus the resistor/
 capacitor-skew-only `ll`/`hh`); `default_corners` (`tt`/`ss`/`ff`) is what
-`corner-run.py` runs when `--corners` is omitted. This mechanism check only
-exercises the process axis at nominal temperature/supply -- the full
-temperature/supply grid is characterization-campaign scope, not bootstrap
-scope.
+`corner-run.py` runs when `--corners` is omitted. #9's mechanism check
+exercised the process axis at nominal temperature/supply only; #10's
+campaign ran the full grid, one runner invocation per (temp, vdd) point
+with the process axis bundled into it -- 9 invocations, 27 corner runs, one
+record per (temp, vdd) point for `ro_ring5`, plus 3 single-corner records
+for `ro_ring11` at the headline points.
 
 ### Record-granularity convention
 
@@ -241,3 +313,20 @@ inspectable. The later characterization campaign's *quantitative* claims
 per-(testbench, PVT point) granularity is for, and should follow it more
 literally: one record per corner once those runs produce corner-specific
 numbers worth citing independently.
+
+The #10 campaign settled on **one record per (temp, vdd) point, with the
+process axis bundled into it** -- 9 records for the 27-point `ro_ring5`
+grid, not 27 and not 1. The reasoning: a runner invocation is atomic over
+`--corners`, the three process corners at one (temp, vdd) share a single
+claim and a single set of run conditions, and each record's own per-corner
+table keeps every point individually inspectable and individually citable
+(`sim/ro-array-sizing/`'s reduction cites points, not records). Going finer
+would have meant 27 near-duplicate documents; going coarser would have
+merged PVT points whose numbers differ by 24x into one claim, which is
+exactly what DR-0005 forbids.
+
+`sim/ro-array-sizing/` is a different shape again: a **derived** record.
+It introduces no simulation, cites the records it reduces by id, and is
+regenerated by a committed script rather than by `corner-run.py`. Its
+`level` says so (`transistor (derived)`), so no reader can mistake it for a
+run.
