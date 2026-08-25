@@ -6,7 +6,7 @@ date: 2026-08-25
 deciders: unratified — Proposed by the Builder on #10; ratification is an operator/Champion action
 supersedes: n/a
 superseded_by: n/a
-related: "#10 (the campaign this record reports), #9/PR #12 (the harness it runs on), #6 (parent), DR-0001 (the operating-envelope record whose 'Follow-up required' names this campaign and whose 'Revisit if' condition it tests); spec/porting-plan.md §1.1 (the laws that port), §1.4/§2.4 (why the entropy-binding corner must be measured, not inherited), §2.2 (the characterization this closes), §3.1 (the corner grid); design/README.md § 'Provisional, not sized'; sim/ro-array-sizing/records/20260825-071619-54f5715.md (the reduction), sim/ro-ring-jitter-accumulation/, sim/ro-stage-small-signal-gain/, sim/ro-ring-timestep-convergence/"
+related: "#10 (the campaign this record reports), #13 (the array rebuild this record hands off), #9/PR #12 (the harness it runs on), #6 (parent), DR-0001 (the operating-envelope record whose 'Follow-up required' names this campaign and whose 'Revisit if' condition it tests); spec/porting-plan.md §1.1 (the laws that port), §1.4/§2.4 (why the entropy-binding corner must be measured, not inherited), §2.2 (the characterization this closes), §3.1 (the corner grid); design/README.md § 'Provisional, not sized'; sim/ro-array-sizing/records/20260825-071619-54f5715.md (the reduction), sim/ro-ring-jitter-accumulation/, sim/ro-stage-small-signal-gain/, sim/ro-ring-timestep-convergence/"
 ---
 
 # DR-0002: sky130 RO jitter characterization results, the entropy-binding corner, and the sized array size `N`
@@ -224,7 +224,7 @@ Two things are simultaneously true and both belong in the record:
   raw-rate row, is exactly the "relax the spec to make the result land"
   move `CLAUDE.md` forbids. The criterion is met by *superseding* the
   placeholder — recording it as refuted, with the sized value and its
-  derivation — and by filing the rebuild as its own increment.
+  derivation — and by filing the rebuild as its own increment, **#13**.
 
 ### Report `N` only at gf180-trng's own proposed 2 kbps raw rate
 
@@ -285,10 +285,11 @@ Two things are simultaneously true and both belong in the record:
     prediction by ~3.3× for reasons this campaign does not explain.
 
 - **Follow-up required**:
-  - **The array rebuild and the operating-point decision** — choose a point
-    on the `N`-vs-`T_s` trade (`sim/ro-array-sizing/records/`'s table),
-    then redraw `ro_array_core.sch` at the chosen `N` and stage count, with
-    the XOR-tree, per-ring-supply-routing, sampler-loading and area
+  - **The array rebuild and the operating-point decision** — filed as
+    **#13**. Choose a point on the `N`-vs-`T_s` trade
+    (`sim/ro-array-sizing/records/`'s table), then redraw
+    `ro_array_core.sch` at the chosen `N` and stage count, with the
+    XOR-tree, per-ring-supply-routing, sampler-loading and area
     consequences evaluated. This record deliberately does not do it.
   - **Per-corner device-noise re-anchoring** — a `.noise` sweep at each grid
     point feeding a per-corner `trnoise()` level, retiring the ~2–4×

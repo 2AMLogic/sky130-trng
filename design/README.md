@@ -149,7 +149,7 @@ routing) this campaign measured nothing about, driven by a number that
 carries ~2–4× uncertainty and is derived against a **draft** raw-rate row.
 DR-0002's "Alternatives considered" argues this at length. The placeholder
 is superseded *as a claim* — the schematic's own text block now says so —
-and the rebuild is filed as its own increment.
+and the rebuild is filed as its own increment, **#13**.
 
 `spec/porting-plan.md` §2.6 predicted the shape of what the campaign found:
 gf180-trng's own rate × entropy × power × area operating point has not
