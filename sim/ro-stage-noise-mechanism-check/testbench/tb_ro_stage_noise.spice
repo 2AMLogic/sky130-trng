@@ -1,0 +1,54 @@
+* ro_stage noise mechanism check -- self-biased inverting amplifier
+*
+* Purpose: confirm ngspice's .noise analysis produces a non-zero,
+* non-NaN, non-flat output noise spectrum for design/xschem/ro_stage.sch's
+* starved-inverter delay cell (sky130_fd_pr__nfet_01v8 / __pfet_01v8), i.e.
+* that the flicker-noise mechanism DR-0001 depends on
+* (noia/noib/noic -- kf/af are present in the model card but zeroed and
+* therefore inert, see DR-0001 Consequences and issue #9's own "Verified
+* corrections") is actually active in the corner decks as installed. This
+* is a go/no-go mechanism check, NOT the jitter-accumulation
+* characterization campaign (per-stage noise/gain, ring jitter
+* accumulation, array sizing) -- that is separate, later scope.
+*
+* ro_stage has no static operating point of its own once wired into a
+* free-running ring (an oscillator has no small-signal DC bias point in
+* the sense .noise requires), so this deck instead self-biases a single
+* ro_stage instance as an inverting small-signal amplifier around its own
+* trip voltage: a large feedback resistor (Rfb) from output back to input
+* holds the input near Vtrip with ~0 DC current, and a large series
+* resistor (Rin) couples the AC/noise reference source in without
+* disturbing that bias. This is the standard "self-biased inverter as a
+* noise amplifier" construction used to characterize CMOS inverter/ring
+* delay-cell noise ahead of a full transient jitter run.
+*
+* This file is a TEMPLATE: sim/bin/corner-run.py substitutes the
+* @@PDK_LIB@@ (absolute path to the pinned sky130 ngspice corner library),
+* @@CORNER@@ (process corner name) and @@RO_RING5@@ (absolute path to the
+* committed, netlist.py --check-guarded design/ro_ring5.spice, which
+* defines the ro_stage subcircuit this deck instantiates) placeholders
+* before invoking ngspice -- as committed here, it is not a runnable deck.
+* @@OUT_ONOISE@@ is substituted with the path corner-run.py wants the raw
+* onoise_spectrum written to (via wrdata), for its own non-flat check.
+
+.option scale=1u
+.lib "@@PDK_LIB@@" @@CORNER@@
+
+.include "@@RO_RING5@@"
+
+Vdd vdd 0 dc 1.8
+Vin n_in 0 dc 0 ac 1
+Rin n_in a 1e9
+Rfb y a 1e9
+
+xdut a y vdd 0 ro_stage
+
+.control
+op
+print v(a) v(y)
+noise v(y) vin dec 10 10 1g
+print onoise_total
+setplot noise1
+wrdata @@OUT_ONOISE@@ onoise_spectrum
+.endc
+.end
