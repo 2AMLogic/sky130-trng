@@ -1,0 +1,161 @@
+* xor2 combining-node bandwidth -- minimum pulse width the XOR tree passes
+*
+* Purpose: issue #13 asks that "the XOR combining tree's own contribution at
+* the chosen N is addressed rather than assumed negligible". This deck is
+* the measurement that makes that possible, and it is the measurement that
+* actually SIZES the array: it puts a ceiling on N that is independent of
+* the entropy sizing law.
+*
+* Why a pulse-width sweep is the right question. In an XOR-combined RO
+* array, every ring contributes 2 edges per period at the combining node, so
+* a balanced tree's ROOT sees a mean inter-edge spacing of
+*
+*     w_root = T_0 / (2 N)
+*
+* (T_0 = ring period, N = number of rings). The root gate is a static CMOS
+* xor2 built from minimum-width sky130 1.8 V core devices; it has a finite
+* propagation delay and therefore a minimum pulse width below which an input
+* transition pair never reaches the far rail at the output. Edges closer
+* together than that are SWALLOWED -- they never appear at xo, so they never
+* reach the sampler, so the entropy they carried is not in the raw bit no
+* matter what the sizing law says about N * Q_ring. This is the same
+* filtering Wold & Tan (2009) identified in the Sunar/Fischer XOR-combined
+* RO TRNG, and it is a property of the combining gate, not of the rings.
+*
+* Method. Nine independent, identical instances of design/xschem/xor2.sch,
+* each with input `b` tied to vss (so y = a, exercising the a -> an -> Mp3 /
+* Mn3 branch, the slower of the two input paths because it goes through the
+* input inverter) and each driven at `a` by its own symmetric square wave of
+* half-period w. Each output drives one further xor2 input, so every gate
+* under test sees the fanout-1 load it would see inside a tree. The measured
+* quantity is the steady-state peak-to-peak swing at y as a fraction of Vdd:
+*
+*     swing_frac(w) -> 1.0   for w well above the gate's own resolution
+*     swing_frac(w) -> 0     as w falls below it
+*
+* The reported design number is w_90, the smallest w in the swept set whose
+* output still reaches >= 0.90 x Vdd. The reduction in
+* sim/ro-array-operating-point/ interpolates between the swept points.
+*
+* Deliberately OPTIMISTIC input edges. The sources use 8 ps rise/fall
+* regardless of w -- sharper than any ro_buf-driven node in this design can
+* actually produce. That biases the measurement in the XOR's favour, so a w
+* that FAILS here fails robustly (a real, slower edge can only make it
+* worse), which is the direction that matters: this measurement is used to
+* rule array sizes OUT.
+*
+* Nominal half-period w = PW + (TR + TF)/2 = PW + 8p, measured at the 50%
+* crossing; each source's PER is set to 2*(PW + 8p) so mark and space are
+* equal. The swept set is w = 500, 300, 200, 140, 100, 70, 50, 35, 25 ps.
+*
+* PVT: run at three (temp, supply) points, each bundling the tt/ss/ff
+* process axis, chosen because they are the three points the array sizing
+* actually has to survive:
+*   -40 degC / 1.62 V  the entropy-binding corner (ss) -- slowest ring, so
+*                      the WIDEST root spacing, i.e. where the XOR has the
+*                      easiest job and the entropy requirement is hardest
+*   27 degC / 1.80 V   nominal
+*   -40 degC / 1.98 V  the fastest ring measured anywhere in #10's grid
+*                      (ff, T_0 = 1.32 ns) -- the NARROWEST root spacing,
+*                      i.e. where the XOR has the hardest job
+*
+* This file is a TEMPLATE: sim/bin/corner-run.py substitutes @@PDK_LIB@@,
+* @@CORNER@@, @@RO_RING5@@ (pointed at design/ro_array_core.spice via
+* --ro-ring5, because that is the committed netlist.py --check-guarded
+* library that defines xor2), @@TEMP@@, @@VDD@@ and @@TMAX@@. As committed
+* it is not a runnable deck.
+
+.option scale=1u
+.lib "@@PDK_LIB@@" @@CORNER@@
+
+.include "@@RO_RING5@@"
+
+.temp @@TEMP@@
+
+Vdd vdd 0 dc @@VDD@@
+
+* --- w = 500 ps -------------------------------------------------------
+Va1 a1 0 PULSE(0 @@VDD@@ 2n 8p 8p 492p 1000p)
+xu1 a1 0 y1 vdd 0 xor2
+xl1 y1 0 z1 vdd 0 xor2
+* --- w = 300 ps -------------------------------------------------------
+Va2 a2 0 PULSE(0 @@VDD@@ 2n 8p 8p 292p 600p)
+xu2 a2 0 y2 vdd 0 xor2
+xl2 y2 0 z2 vdd 0 xor2
+* --- w = 200 ps -------------------------------------------------------
+Va3 a3 0 PULSE(0 @@VDD@@ 2n 8p 8p 192p 400p)
+xu3 a3 0 y3 vdd 0 xor2
+xl3 y3 0 z3 vdd 0 xor2
+* --- w = 140 ps -------------------------------------------------------
+Va4 a4 0 PULSE(0 @@VDD@@ 2n 8p 8p 132p 280p)
+xu4 a4 0 y4 vdd 0 xor2
+xl4 y4 0 z4 vdd 0 xor2
+* --- w = 100 ps -------------------------------------------------------
+Va5 a5 0 PULSE(0 @@VDD@@ 2n 8p 8p 92p 200p)
+xu5 a5 0 y5 vdd 0 xor2
+xl5 y5 0 z5 vdd 0 xor2
+* --- w = 70 ps --------------------------------------------------------
+Va6 a6 0 PULSE(0 @@VDD@@ 2n 8p 8p 62p 140p)
+xu6 a6 0 y6 vdd 0 xor2
+xl6 y6 0 z6 vdd 0 xor2
+* --- w = 50 ps --------------------------------------------------------
+Va7 a7 0 PULSE(0 @@VDD@@ 2n 8p 8p 42p 100p)
+xu7 a7 0 y7 vdd 0 xor2
+xl7 y7 0 z7 vdd 0 xor2
+* --- w = 35 ps --------------------------------------------------------
+Va8 a8 0 PULSE(0 @@VDD@@ 2n 8p 8p 27p 70p)
+xu8 a8 0 y8 vdd 0 xor2
+xl8 y8 0 z8 vdd 0 xor2
+* --- w = 25 ps --------------------------------------------------------
+Va9 a9 0 PULSE(0 @@VDD@@ 2n 8p 8p 17p 50p)
+xu9 a9 0 y9 vdd 0 xor2
+xl9 y9 0 z9 vdd 0 xor2
+
+.tran @@TMAX@@ 12n
+
+.control
+run
+meas tran vx1 MAX v(y1) from=8n to=12n
+meas tran vn1 MIN v(y1) from=8n to=12n
+meas tran vx2 MAX v(y2) from=8n to=12n
+meas tran vn2 MIN v(y2) from=8n to=12n
+meas tran vx3 MAX v(y3) from=8n to=12n
+meas tran vn3 MIN v(y3) from=8n to=12n
+meas tran vx4 MAX v(y4) from=8n to=12n
+meas tran vn4 MIN v(y4) from=8n to=12n
+meas tran vx5 MAX v(y5) from=8n to=12n
+meas tran vn5 MIN v(y5) from=8n to=12n
+meas tran vx6 MAX v(y6) from=8n to=12n
+meas tran vn6 MIN v(y6) from=8n to=12n
+meas tran vx7 MAX v(y7) from=8n to=12n
+meas tran vn7 MIN v(y7) from=8n to=12n
+meas tran vx8 MAX v(y8) from=8n to=12n
+meas tran vn8 MIN v(y8) from=8n to=12n
+meas tran vx9 MAX v(y9) from=8n to=12n
+meas tran vn9 MIN v(y9) from=8n to=12n
+let swing_w500 = (vx1 - vn1) / @@VDD@@
+let swing_w300 = (vx2 - vn2) / @@VDD@@
+let swing_w200 = (vx3 - vn3) / @@VDD@@
+let swing_w140 = (vx4 - vn4) / @@VDD@@
+let swing_w100 = (vx5 - vn5) / @@VDD@@
+let swing_w070 = (vx6 - vn6) / @@VDD@@
+let swing_w050 = (vx7 - vn7) / @@VDD@@
+let swing_w035 = (vx8 - vn8) / @@VDD@@
+let swing_w025 = (vx9 - vn9) / @@VDD@@
+* propagation delay of the gate under test at a width it passes cleanly,
+* input 50% rising -> output 50% rising (y follows a when b = 0)
+meas tran ta1 when v(a1)=0.5*@@VDD@@ rise=5
+meas tran ty1 when v(y1)=0.5*@@VDD@@ rise=5
+let tpd_lh = ty1 - ta1
+print swing_w500
+print swing_w300
+print swing_w200
+print swing_w140
+print swing_w100
+print swing_w070
+print swing_w050
+print swing_w035
+print swing_w025
+print tpd_lh
+.endc
+.end
