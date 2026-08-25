@@ -39,30 +39,55 @@
 * good to roughly 1.5-2x, and Q -- which goes as sigma^2 -- to roughly
 * 2-4x). The per-stage series trnoise() sources are wired the same way
 * around the loop: ro -> gA -> ro_nand2 -> n1 -> gB -> stage1 -> n2 -> ...
-* -> n11 -> gL -> stage10 -> ro.
+* -> n10 -> gK -> stage10 -> ro.
+*
+* STAGE COUNT, stated explicitly because getting it wrong is silent: this
+* ring is ONE ro_nand2 plus TEN ro_stage cells = ELEVEN inverting stages,
+* matching design/ro_array_core.spice's `ro_ring11` subcircuit instance for
+* instance (`xg`, `x1`..`x10`). An even inversion count does not oscillate
+* at all -- it latches -- and ngspice reports that only as a `meas ... when
+* ... rise=N` failure buried in the log, not as an error. A twelve-stage
+* draft of this deck did exactly that during development (measured swing
+* 9.0e-04 x Vdd, i.e. a dead ring), which is why the count is spelled out
+* here and why the runner's own not-flat/finite-measurement checks are not
+* sufficient on their own: the swing_frac measurement below is the guard
+* that makes a latched ring visible in the record itself.
 *
 * Two settings differ from the ro_ring5 deck, both cost-driven and both
 * stated rather than silent:
 *
-*   - 10 periods (11 rising crossings, rise=2..12) instead of 20. The
-*     sigma_1 estimator therefore carries ~22% (1-sigma) statistical error
-*     here instead of ~16%, i.e. ~45% on Q. That is tolerable for the
+*   - 8 periods (9 rising crossings, rise=2..10) instead of 20. The
+*     sigma_1 estimator therefore carries ~25% (1-sigma) statistical error
+*     here instead of ~16%, i.e. ~50% on Q. That is tolerable for the
 *     comparison this deck is for (a predicted ~(11/5)^2 = 4.8x Q ratio
 *     against ro_ring5), and it is NOT good enough to read a corner-to-
 *     corner minimum off ro_ring11 alone -- which is why the
 *     entropy-binding-corner search runs on the ro_ring5 flagship grid.
-*   - sigma_8 is dropped (only 2 independent 8-period lags exist in 10
+*     Note a noisy sigma_1 does NOT blur the corner search on the flagship
+*     grid either: Q goes as sigma_1^2/T_0^3, T_0 is measured to ~0.2%,
+*     and T_0 ranges 2.4x across the grid (14x in T_0^3) while sigma_1^2
+*     ranges under ~2x -- so the grid's Q ordering is dominated by the
+*     precisely-measured term.
+*   - sigma_8 is dropped (only 1 independent 8-period lag exists in 8
 *     periods); sigma_1/sigma_2/sigma_4 are reported.
 *
-* tstop = 130 ns is sized from the same deterministic period probe that
-* sized the ro_ring5 deck: the slowest measured ro_ring5 corner is
-* 4.82 ns/period at 5 stages, i.e. ~0.482 ns per stage-transition pair, so
-* ro_ring11's slowest corner is expected near 10.6 ns/period; 11 rising
-* crossings then need <= 11 + 10 x 10.6 = 117 ns.
+* tstop = 130 ns is sized from this ring's own measured nominal period
+* (6.43 ns at tt / 27 degC / 1.8 V, measured directly during this deck's
+* bring-up) scaled by the ro_ring5 grid's measured worst-corner slowdown
+* (4.82 ns vs 2.42 ns at nominal, i.e. 2.0x, driven almost entirely by the
+* 1.62 V supply edge): ~12.9 ns/period worst case, so 9 rising crossings
+* need <= 13 + 8 x 12.9 = 116 ns, and 130 ns carries the margin.
+*
+* Transient max timestep: this deck takes it from @@TMAX@@ rather than
+* hard-coding it, and the campaign runs it at the coarsest step
+* sim/ro-ring-timestep-convergence/ shows to be converged. See that slug's
+* record: at this ring's own edge rates a 5 ps step is far finer than the
+* jitter estimator needs, and the transient step count is the single
+* dominant cost term for a 27-point grid.
 *
 * This file is a TEMPLATE: sim/bin/corner-run.py substitutes @@PDK_LIB@@,
 * @@CORNER@@ (process axis), @@RO_RING5@@, @@TEMP@@/@@VDD@@ (the other two
-* PVT axes) and @@SEED@@ (this run's `.option seed=`). NOTE: this deck
+* PVT axes), @@TMAX@@ and @@SEED@@ (this run's `.option seed=`). NOTE: this deck
 * needs ro_nand2/ro_stage from design/ro_array_core.spice (the netlist that
 * carries ro_ring11), NOT from design/ro_ring5.spice, so every invocation
 * must pass `--ro-ring5 design/ro_array_core.spice`. As committed here
@@ -80,54 +105,52 @@ Vddr vddr 0 dc @@VDD@@
 Ven en 0 dc @@VDD@@
 
 xg gA en n1 vddr 0 ro_nand2
-VnA gA ro dc 0 trnoise(2.0e-3 2e-10 0 0)
+VnA gA ro dc 0 trnoise(@@NA@@ 2e-10 0 0)
 x1 gB n2 vddr 0 ro_stage
-VnB gB n1 dc 0 trnoise(2.0e-3 2e-10 0 0)
+VnB gB n1 dc 0 trnoise(@@NA@@ 2e-10 0 0)
 x2 gC n3 vddr 0 ro_stage
-VnC gC n2 dc 0 trnoise(2.0e-3 2e-10 0 0)
+VnC gC n2 dc 0 trnoise(@@NA@@ 2e-10 0 0)
 x3 gD n4 vddr 0 ro_stage
-VnD gD n3 dc 0 trnoise(2.0e-3 2e-10 0 0)
+VnD gD n3 dc 0 trnoise(@@NA@@ 2e-10 0 0)
 x4 gE n5 vddr 0 ro_stage
-VnE gE n4 dc 0 trnoise(2.0e-3 2e-10 0 0)
+VnE gE n4 dc 0 trnoise(@@NA@@ 2e-10 0 0)
 x5 gF n6 vddr 0 ro_stage
-VnF gF n5 dc 0 trnoise(2.0e-3 2e-10 0 0)
+VnF gF n5 dc 0 trnoise(@@NA@@ 2e-10 0 0)
 x6 gG n7 vddr 0 ro_stage
-VnG gG n6 dc 0 trnoise(2.0e-3 2e-10 0 0)
+VnG gG n6 dc 0 trnoise(@@NA@@ 2e-10 0 0)
 x7 gH n8 vddr 0 ro_stage
-VnH gH n7 dc 0 trnoise(2.0e-3 2e-10 0 0)
+VnH gH n7 dc 0 trnoise(@@NA@@ 2e-10 0 0)
 x8 gI n9 vddr 0 ro_stage
-VnI gI n8 dc 0 trnoise(2.0e-3 2e-10 0 0)
+VnI gI n8 dc 0 trnoise(@@NA@@ 2e-10 0 0)
 x9 gJ n10 vddr 0 ro_stage
-VnJ gJ n9 dc 0 trnoise(2.0e-3 2e-10 0 0)
-x10 gK n11 vddr 0 ro_stage
-VnK gK n10 dc 0 trnoise(2.0e-3 2e-10 0 0)
-x11 gL ro vddr 0 ro_stage
-VnL gL n11 dc 0 trnoise(2.0e-3 2e-10 0 0)
+VnJ gJ n9 dc 0 trnoise(@@NA@@ 2e-10 0 0)
+x10 gK ro vddr 0 ro_stage
+VnK gK n10 dc 0 trnoise(@@NA@@ 2e-10 0 0)
 
 .ic v(ro)=0 v(n1)=@@VDD@@ v(n2)=0 v(n3)=@@VDD@@ v(n4)=0 v(n5)=@@VDD@@
-+ v(n6)=0 v(n7)=@@VDD@@ v(n8)=0 v(n9)=@@VDD@@ v(n10)=0 v(n11)=@@VDD@@
++ v(n6)=0 v(n7)=@@VDD@@ v(n8)=0 v(n9)=@@VDD@@ v(n10)=0
 
-.tran 5p 130n uic
+.tran @@TMAX@@ 130n uic
 
 .control
 run
 meas tran vmax_ss MAX v(ro) from=25n to=130n
-meas tran vmin_ss MIN v(ro) from=25n to=130n
+meas tran vmin_ss MIN v(ro) from=25n to=165n
 let swing_frac = (vmax_ss - vmin_ss) / @@VDD@@
 let k = 2
-let tc = vector(11)
-while k <= 12
+let tc = vector(9)
+while k <= 10
   meas tran tk when v(ro)=0.5*@@VDD@@ rise=$&k
   let tc[k-2] = tk
   let k = k + 1
 end
-let tbar = (tc[10] - tc[0])/10
-let r1 = (tc[1,10] - tc[0,9]) - 1*tbar
-let r2 = (tc[2,10] - tc[0,8]) - 2*tbar
-let r4 = (tc[4,10] - tc[0,6]) - 4*tbar
-let sigma_1 = sqrt(mean(r1*r1)/(1 - 1/10))
-let sigma_2 = sqrt(mean(r2*r2)/(1 - 2/10))
-let sigma_4 = sqrt(mean(r4*r4)/(1 - 4/10))
+let tbar = (tc[8] - tc[0])/8
+let r1 = (tc[1,8] - tc[0,7]) - 1*tbar
+let r2 = (tc[2,8] - tc[0,6]) - 2*tbar
+let r4 = (tc[4,8] - tc[0,4]) - 4*tbar
+let sigma_1 = sqrt(mean(r1*r1)/(1 - 1/8))
+let sigma_2 = sqrt(mean(r2*r2)/(1 - 2/8))
+let sigma_4 = sqrt(mean(r4*r4)/(1 - 4/8))
 print vmax_ss
 print vmin_ss
 print swing_frac

@@ -117,19 +117,19 @@ Vddr vddr 0 dc @@VDD@@
 Ven en 0 dc @@VDD@@
 
 xg gA en n1 vddr 0 ro_nand2
-VnA gA ro dc 0 trnoise(2.0e-3 2e-10 0 0)
+VnA gA ro dc 0 trnoise(@@NA@@ 2e-10 0 0)
 x1 gB n2 vddr 0 ro_stage
-VnB gB n1 dc 0 trnoise(2.0e-3 2e-10 0 0)
+VnB gB n1 dc 0 trnoise(@@NA@@ 2e-10 0 0)
 x2 gC n3 vddr 0 ro_stage
-VnC gC n2 dc 0 trnoise(2.0e-3 2e-10 0 0)
+VnC gC n2 dc 0 trnoise(@@NA@@ 2e-10 0 0)
 x3 gD n4 vddr 0 ro_stage
-VnD gD n3 dc 0 trnoise(2.0e-3 2e-10 0 0)
+VnD gD n3 dc 0 trnoise(@@NA@@ 2e-10 0 0)
 x4 gE ro vddr 0 ro_stage
-VnE gE n4 dc 0 trnoise(2.0e-3 2e-10 0 0)
+VnE gE n4 dc 0 trnoise(@@NA@@ 2e-10 0 0)
 
 .ic v(ro)=0 v(n1)=@@VDD@@ v(n2)=0 v(n3)=@@VDD@@ v(n4)=0
 
-.tran 5p 115n uic
+.tran @@TMAX@@ 115n uic
 
 .control
 run

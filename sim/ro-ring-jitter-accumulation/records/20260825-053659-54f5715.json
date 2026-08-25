@@ -1,0 +1,103 @@
+{
+  "record_id": "20260825-053659-54f5715",
+  "slug": "ro-ring-jitter-accumulation",
+  "claim": "ro_ring5 (5-stage starved ring) transient-noise jitter accumulation and ring swing at 27 degC / 1.8 V, process bundle tt/ss/ff -- issue #10 flagship 27-point grid",
+  "level": "transistor",
+  "seed": "1",
+  "pvt": {
+    "temp_c": 27.0,
+    "vdd_v": 1.8
+  },
+  "tran": {
+    "tmax": "20p",
+    "noise_amp": "2.0e-3"
+  },
+  "testbench": "sim/ro-ring-jitter-accumulation/testbench/tb_ro_ring5_jitter.spice",
+  "pdk": {
+    "variant": "sky130A",
+    "installed_commit": "c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+    "pin_commit": "c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+    "matches_pin": true,
+    "lib_file": "/home/ubuntu/.volare/volare/sky130/versions/c6d73a35f524070e85faff4a6a9eef49553ebc2b/sky130A/libs.tech/combined/sky130.lib.spice"
+  },
+  "tools": {
+    "ngspice": "** ngspice-46 : Circuit level simulation program",
+    "python": "3.12.3",
+    "os": "Linux-7.0.0-1010-aws-x86_64-with-glibc2.39"
+  },
+  "repo_state": {
+    "sha": "54f5715",
+    "branch": "feature/issue-10",
+    "dirty": true
+  },
+  "corners": [
+    {
+      "corner": "tt",
+      "ok": true,
+      "returncode": 0,
+      "measurements": {
+        "tk": 5.17831e-08,
+        "vmax_ss": 1.586552,
+        "vmin_ss": -0.017648,
+        "swing_frac": 0.8912222,
+        "tbar": 2.424755e-09,
+        "sigma_1": 2.927494e-12,
+        "sigma_2": 4.790751e-12,
+        "sigma_4": 8.211472e-12,
+        "sigma_8": 1.486221e-11
+      },
+      "onoise_min": null,
+      "onoise_max": null,
+      "onoise_spread_ratio": null,
+      "problems": [],
+      "log": "corners/tt.log"
+    },
+    {
+      "corner": "ss",
+      "ok": true,
+      "returncode": 0,
+      "measurements": {
+        "tk": 6.55308e-08,
+        "vmax_ss": 1.640191,
+        "vmin_ss": -0.0252798,
+        "swing_frac": 0.9252615,
+        "tbar": 3.076084e-09,
+        "sigma_1": 3.199859e-12,
+        "sigma_2": 4.625119e-12,
+        "sigma_4": 6.550116e-12,
+        "sigma_8": 9.628544e-12
+      },
+      "onoise_min": null,
+      "onoise_max": null,
+      "onoise_spread_ratio": null,
+      "problems": [],
+      "log": "corners/ss.log"
+    },
+    {
+      "corner": "ff",
+      "ok": true,
+      "returncode": 0,
+      "measurements": {
+        "tk": 4.27838e-08,
+        "vmax_ss": 1.541513,
+        "vmin_ss": -0.00565348,
+        "swing_frac": 0.8595369,
+        "tbar": 2.000063e-09,
+        "sigma_1": 2.649846e-12,
+        "sigma_2": 3.561699e-12,
+        "sigma_4": 4.008017e-12,
+        "sigma_8": 4.997956e-12
+      },
+      "onoise_min": null,
+      "onoise_max": null,
+      "onoise_spread_ratio": null,
+      "problems": [],
+      "log": "corners/ff.log"
+    }
+  ],
+  "overall": "PASS",
+  "subset_reason": null,
+  "supersedes": "(none)",
+  "author": "auditor@loom.local",
+  "timestamp_utc": "2026-08-25T06:19:12.971294+00:00"
+}

@@ -2,14 +2,22 @@
 
 The sky130 ngspice simulation harness and the evidence it produces.
 
-This is the **bootstrap** of that harness (issue #9): the PDK pin, the PVT
-corner runner, and one mechanism-check record confirming the sky130 device
-noise model this whole entropy source depends on is actually active in the
-corner decks as installed. It is deliberately **not** the jitter-accumulation
-characterization campaign (`design/README.md`'s "Provisional, not sized"
-table -- per-stage noise/gain, ring jitter accumulation, array sizing) that
-this bootstrap unblocks; that is separate, later scope tracked by the
-follow-up to #9 referenced from issue #6.
+Issue #9 bootstrapped it: the PDK pin, the PVT corner runner, and one
+mechanism-check record confirming the sky130 device noise model this whole
+entropy source depends on is actually active in the corner decks as
+installed. Issue #10 then ran the jitter-accumulation characterization
+campaign that bootstrap unblocked (`design/README.md`'s "Provisional, not
+sized" table -- per-stage gain, ring jitter accumulation, ring swing, and
+the array sizing law that turns them into an array size `N`). The slugs
+below are that campaign's evidence.
+
+| Slug | Claim under test | Landed by |
+|---|---|---|
+| `ro-stage-noise-mechanism-check/` | is the sky130 flicker/thermal noise mechanism actually active in the corner decks as installed? (go/no-go) | #9 |
+| `ro-stage-small-signal-gain/` | open-loop small-signal gain of `ro_stage` at its own trip point | #10 |
+| `ro-ring-timestep-convergence/` | does the ring jitter estimator depend on the transient max timestep, and what does it read with *zero* injected noise? | #10 |
+| `ro-ring-jitter-accumulation/` | per-ring `T_0`, `sigma_1..sigma_8` and ring swing over the PVT grid, for `ro_ring5` and `ro_ring11` | #10 |
+| `ro-array-sizing/` | reduction of the above to `Q`, the entropy-binding corner, and the sized `N` | #10 |
 
 Two rules from the root `CLAUDE.md` govern everything under this directory:
 
@@ -83,6 +91,30 @@ is a template, not a runnable deck. `corner-run.py` substitutes:
   `wrdata` an `onoise_spectrum` trace to. If a testbench writes one, the
   runner reads it back and records a spread check (max/min ratio over the
   swept frequencies) confirming the trace is neither degenerate nor flat.
+- `@@TEMP@@` / `@@VDD@@` (`--temp` / `--vdd`, default 27 degC / 1.8 V) --
+  the temperature and supply axes. `@@CORNER@@` covers the *process* axis
+  only, so one runner invocation is one (temp, vdd) point with the process
+  axis bundled across `--corners`. Both are written into every record's
+  `pvt` block whether or not the deck references them, so no record can be
+  silent about the temperature/supply it ran at.
+- `@@SEED@@` (`--seed`) -- for a stochastic (`tran-noise`) deck that writes
+  its own `.option seed=`. A deterministic `.noise`/`.tf` deck never
+  references it, and `--seed`'s default is a descriptive string, not a
+  number, precisely so it can never silently become one.
+- `@@TMAX@@` (`--tmax`, default `5p`) -- the max internal transient
+  timestep, i.e. a deck writes `.tran @@TMAX@@ <tstop> uic`. This is the
+  dominant cost term for a long transient-noise run, so it is a
+  substitution rather than a deck literal: that is what makes a deck's
+  numerical convergence in the timestep something the harness can
+  *measure and record* (see `ro-ring-timestep-convergence/`) instead of
+  something a deck asserts.
+- `@@NA@@` (`--noise-amp`, default `2.0e-3`) -- the rms amplitude argument
+  of a `trnoise()` source. `--noise-amp 0` re-runs the identical deck,
+  seed and timestep with the injected noise switched off, so the estimator's
+  own **numerical floor** is measurable rather than assumed. A sigma is only
+  worth citing to the extent it stands above that floor.
+
+`@@TMAX@@` and `@@NA@@` are recorded in each record's `tran` block.
 
 Any `NAME = VALUE` line an ngspice `print` command writes to stdout (e.g.
 `v(a) = 7.681062e-01`, `onoise_total = 3.712448e-03`) is captured generically

@@ -52,6 +52,26 @@ a worked example):
     already bundles the process axis into one record). Always recorded in
     the record's own PVT point even for a testbench that does not reference
     either token, so every record states what temperature/supply it ran at.
+``@@NA@@``
+    ``--noise-amp``'s value (default ``2.0e-3``), the rms amplitude
+    argument of a ``trnoise()`` source. Exposing it as a substitution is
+    what makes the **numerical floor** of a jitter estimator measurable:
+    the identical deck, identical seed and identical timestep, re-run at
+    ``--noise-amp 0``, reads back whatever period scatter the transient
+    solver itself manufactures. Any sigma the estimator reports under a
+    real injection is only trustworthy to the extent it stands above that
+    floor. Recorded in the record's ``tran`` block either way.
+``@@TMAX@@``
+    ``--tmax``'s value (default ``5p``), the maximum internal transient
+    timestep a ``.tran`` deck asks ngspice for -- i.e. the deck writes
+    ``.tran @@TMAX@@ <tstop> uic``. This is the single dominant cost knob
+    for a long transient-noise run (ngspice's default ``Tmax`` is the
+    ``Tstep`` argument itself), so making it a substitution rather than a
+    deck literal is what lets a testbench's numerical convergence in
+    ``Tmax`` be *measured and recorded* instead of asserted. Always
+    recorded in the record's own ``tran`` block, whether or not the deck
+    references the token, so no transient record is silent about the step
+    it ran at.
 ``@@SEED@@``
     ``--seed``'s value, for a stochastic (``tran-noise``) testbench that
     writes ``.option seed=@@SEED@@`` itself. A deterministic ``.noise``/
@@ -352,6 +372,8 @@ def run_corner(
     temp_c: float,
     vdd_v: float,
     seed: str,
+    tmax: str,
+    noise_amp: str,
 ) -> CornerResult:
     scratch_dir.mkdir(parents=True, exist_ok=True)
     onoise_path = scratch_dir / f"{corner}.onoise.txt"
@@ -377,6 +399,13 @@ def run_corner(
         # `.option seed=` line should ever be built from -- a testbench
         # that references @@SEED@@ must be invoked with a real --seed).
         "SEED": str(seed),
+        # Max internal transient timestep. See the module docstring: this is
+        # the cost knob a .tran deck's own numerical-convergence evidence is
+        # written against, so it is a substitution, not a deck literal.
+        "TMAX": str(tmax),
+        # trnoise() rms amplitude. `--noise-amp 0` turns a stochastic deck
+        # into its own numerical-floor control; see the module docstring.
+        "NA": str(noise_amp),
     }
     deck_text = render_deck(template_text, substitutions)
     deck_path = scratch_dir / f"{corner}.spice"
@@ -483,6 +512,8 @@ def write_record(
     supersedes: str | None,
     temp_c: float,
     vdd_v: float,
+    tmax: str,
+    noise_amp: str,
 ) -> tuple[Path, bool]:
     # Layout: sim/<slug>/{corners/<rid>/, records/<rid>.md, records/<rid>.json}
     # -- one directory per experiment slug, matching the sibling sky130-bandgap
@@ -516,6 +547,7 @@ def write_record(
         "level": level,
         "seed": seed,
         "pvt": {"temp_c": temp_c, "vdd_v": vdd_v},
+        "tran": {"tmax": tmax, "noise_amp": noise_amp},
         "testbench": str(testbench.relative_to(REPO_ROOT)),
         "pdk": {
             "variant": pdk.variant,
@@ -560,6 +592,10 @@ def write_record(
         f"**Level**: {level}",
         f"**Seed**: {seed}",
         f"**PVT point**: {temp_c:g} degC, {vdd_v:g} V supply (process axis per-corner below)",
+        f"**Transient max timestep** (`@@TMAX@@`): {tmax}",
+        f"**Injected trnoise amplitude** (`@@NA@@`): {noise_amp}"
+        + ("  <-- numerical-floor control run (no injected noise)"
+           if str(noise_amp).strip() in ("0", "0.0", "0e0") else ""),
         f"**Testbench**: `{testbench.relative_to(REPO_ROOT)}`",
         "",
         "## PDK",
@@ -684,6 +720,19 @@ def main(argv: list[str] | None = None) -> int:
         "1.8 V, sky130-trng's nominal 1.8 V core supply)",
     )
     parser.add_argument(
+        "--tmax",
+        default="5p",
+        help="max internal transient timestep substituted for @@TMAX@@, as an "
+        "ngspice time literal (default: 5p); also recorded in the record's "
+        "`tran` block even if the testbench does not reference @@TMAX@@",
+    )
+    parser.add_argument(
+        "--noise-amp",
+        default="2.0e-3",
+        help="trnoise() rms amplitude substituted for @@NA@@ (default: 2.0e-3); "
+        "pass 0 to run a deck's own numerical-floor control",
+    )
+    parser.add_argument(
         "--not-flat-ratio-min",
         type=float,
         default=5.0,
@@ -781,6 +830,8 @@ def main(argv: list[str] | None = None) -> int:
                 "TEMP": str(args.temp),
                 "VDD": str(args.vdd),
                 "SEED": str(args.seed),
+                "TMAX": str(args.tmax),
+                "NA": str(args.noise_amp),
             },
         )
         print(f"# corners: {', '.join(requested)}")
@@ -809,6 +860,8 @@ def main(argv: list[str] | None = None) -> int:
                 temp_c=args.temp,
                 vdd_v=args.vdd,
                 seed=args.seed,
+                tmax=args.tmax,
+                noise_amp=args.noise_amp,
             )
         )
 
@@ -828,6 +881,8 @@ def main(argv: list[str] | None = None) -> int:
             supersedes=args.supersedes,
             temp_c=args.temp,
             vdd_v=args.vdd,
+            tmax=args.tmax,
+            noise_amp=args.noise_amp,
         )
     finally:
         shutil.rmtree(scratch_dir, ignore_errors=True)
