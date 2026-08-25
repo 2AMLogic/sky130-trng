@@ -421,6 +421,18 @@ def _schematic_params(schematic: Path) -> str:
 def _normalize(text: str, top_params: str = "") -> str:
     """Make the netlist machine-independent and stable line-for-line."""
     out = []
+    #: True while walking the commented-out top ``.subckt`` header, so its
+    #: ``*+`` continuation lines get un-commented along with the head. xschem
+    #: wraps a long pin list, and it prefixes the wrapped lines with the same
+    #: ``*`` it used to comment the header out -- so a top cell with enough
+    #: pins to wrap emitted ``.subckt <name> <first pins>`` followed by a
+    #: still-commented ``*+ <remaining pins>``, silently dropping those pins
+    #: from the restored declaration while every instance line kept passing
+    #: them. Nothing downstream noticed: ``--check`` compares the regenerated
+    #: netlist against the committed one, so a consistently wrong netlist
+    #: passes it. Found when ro_array_core went from 9 pins to 28 (issue #13).
+    restoring_top_subckt = False
+    top_name = ""
     for line in text.splitlines():
         # xschem stamps absolute paths into header comments.
         line = re.sub(r"(?<=[ :])/[^\s]*/(?=[^/\s]+\.(?:sch|sym))", "", line)
@@ -435,20 +447,51 @@ def _normalize(text: str, top_params: str = "") -> str:
         # than a cell. Here the top cell is exactly what a testbench wants
         # to instantiate, so the wrapper is restored. Every lower-level cell
         # is already emitted uncommented and is untouched by this.
-        if line.startswith("**.subckt ") or line.strip() == "**.ends":
+        if line.startswith("**.subckt "):
             line = line[2:]
-            if top_params and line.startswith(".subckt "):
-                line = f"{line} {top_params}"
+            restoring_top_subckt = True
+            parts = line.split()
+            top_name = parts[1] if len(parts) > 1 else ""
+        elif restoring_top_subckt and line.startswith("*+"):
+            line = line[1:]
+        else:
+            restoring_top_subckt = False
+            if line.strip() == "**.ends":
+                line = line[2:]
         out.append(line.rstrip())
     while out and not out[-1]:
         out.pop()
+    # The parameter block is appended AFTER continuations are glued back
+    # together, so it lands at the end of the whole logical `.subckt` line
+    # rather than in the middle of the pin list. A cell cannot instantiate
+    # itself, so `.subckt <top_name>` occurs exactly once.
+    joined = _join_continuations(out)
+    if top_params and top_name:
+        head = f".subckt {top_name} "
+        joined = [
+            f"{line} {top_params}" if line.startswith(head) else line
+            for line in joined
+        ]
     reflowed: list[str] = []
-    for line in _join_continuations(out):
+    for line in joined:
         if line.startswith("*") or not line.strip():
             reflowed.append(line)
         else:
             reflowed.extend(_rewrap(line))
-    return "\n".join(reflowed) + "\n"
+    text_out = "\n".join(reflowed) + "\n"
+    # Structural guard, not a style check: a surviving `*+` is a continuation
+    # of some line this normalizer decided was a comment while xschem meant it
+    # as circuit text. That is exactly the failure above, and it is invisible
+    # to --check (which only compares regenerated against committed), so it is
+    # asserted here where it is cheap and certain.
+    stray = [ln for ln in reflowed if ln.startswith("*+")]
+    if stray:
+        raise ExportError(
+            "normalized netlist still contains a commented continuation line, "
+            "which means pins or devices were dropped from a restored "
+            f"declaration:\n  " + "\n  ".join(stray)
+        )
+    return text_out
 
 
 def export(top: str, outdir: Path) -> str:

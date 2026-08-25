@@ -1,0 +1,112 @@
+{
+  "record_id": "20260825-084649-53f1f7a",
+  "slug": "xor-combining-bandwidth",
+  "claim": "minimum pulse width the static-CMOS xor2 combining gate passes to full swing at fanout 1, i.e. the ceiling the XOR tree puts on the RO array's total edge rate at the combining node",
+  "level": "transistor",
+  "seed": "N/A (deterministic pulse-response transient, no injected noise)",
+  "pvt": {
+    "temp_c": 27.0,
+    "vdd_v": 1.8
+  },
+  "tran": {
+    "tmax": "0.5p",
+    "noise_amp": "2.0e-3"
+  },
+  "testbench": "sim/xor-combining-bandwidth/testbench/tb_xor2_pulse_width.spice",
+  "pdk": {
+    "variant": "sky130A",
+    "installed_commit": "c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+    "pin_commit": "c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+    "matches_pin": true,
+    "lib_file": "/home/ubuntu/.volare/volare/sky130/versions/c6d73a35f524070e85faff4a6a9eef49553ebc2b/sky130A/libs.tech/combined/sky130.lib.spice"
+  },
+  "tools": {
+    "ngspice": "** ngspice-46 : Circuit level simulation program",
+    "python": "3.12.3",
+    "os": "Linux-7.0.0-1010-aws-x86_64-with-glibc2.39"
+  },
+  "repo_state": {
+    "sha": "53f1f7a",
+    "branch": "feature/issue-13",
+    "dirty": true
+  },
+  "corners": [
+    {
+      "corner": "tt",
+      "ok": true,
+      "returncode": 0,
+      "measurements": {
+        "ta1": 6.004e-09,
+        "ty1": 6.10774e-09,
+        "swing_w500": 1.047123,
+        "swing_w300": 1.04569,
+        "swing_w200": 1.02359,
+        "swing_w140": 0.8212255,
+        "swing_w100": 0.6081625,
+        "swing_w070": 0.4272604,
+        "swing_w050": 0.3080488,
+        "swing_w035": 0.129415,
+        "swing_w025": 0.1163078,
+        "tpd_lh": 1.03744e-10
+      },
+      "onoise_min": null,
+      "onoise_max": null,
+      "onoise_spread_ratio": null,
+      "problems": [],
+      "log": "corners/tt.log"
+    },
+    {
+      "corner": "ss",
+      "ok": true,
+      "returncode": 0,
+      "measurements": {
+        "ta1": 6.004e-09,
+        "ty1": 6.1295e-09,
+        "swing_w500": 1.049137,
+        "swing_w300": 1.046979,
+        "swing_w200": 0.955869,
+        "swing_w140": 0.7105064,
+        "swing_w100": 0.5006197,
+        "swing_w070": 0.3478771,
+        "swing_w050": 0.2137056,
+        "swing_w035": 0.1198028,
+        "swing_w025": 0.1036222,
+        "tpd_lh": 1.25502e-10
+      },
+      "onoise_min": null,
+      "onoise_max": null,
+      "onoise_spread_ratio": null,
+      "problems": [],
+      "log": "corners/ss.log"
+    },
+    {
+      "corner": "ff",
+      "ok": true,
+      "returncode": 0,
+      "measurements": {
+        "ta1": 6.004e-09,
+        "ty1": 6.0926e-09,
+        "swing_w500": 1.044431,
+        "swing_w300": 1.043696,
+        "swing_w200": 1.031035,
+        "swing_w140": 0.9406866,
+        "swing_w100": 0.6998843,
+        "swing_w070": 0.5039418,
+        "swing_w050": 0.3708481,
+        "swing_w035": 0.1416644,
+        "swing_w025": 0.1253133,
+        "tpd_lh": 8.8597e-11
+      },
+      "onoise_min": null,
+      "onoise_max": null,
+      "onoise_spread_ratio": null,
+      "problems": [],
+      "log": "corners/ff.log"
+    }
+  ],
+  "overall": "PASS",
+  "subset_reason": null,
+  "supersedes": "(none)",
+  "author": "auditor@loom.local",
+  "timestamp_utc": "2026-08-25T08:48:25.687901+00:00"
+}

@@ -1,0 +1,135 @@
+* ro_ring5 -- ring swing, buffered-output swing, and per-ring supply current
+*
+* Purpose: issue #13 requires that the chosen stage count carry "its own
+* ring-swing measurement at that count, not ro_ring11's", and that the
+* array's supply current be measured or estimated against the README's
+* power rows. This deck is both, at the five-stage count.
+*
+* Why this is not a re-run of #10's campaign (an explicit non-goal). #10
+* measured swing as a BY-PRODUCT of a transient-NOISE jitter run: every
+* stage input carried a trnoise() source, the run was 115 ns at a coarse
+* step, and vmax/vmin were read off a node that was being deliberately
+* perturbed. That is the right way to get sigma_1 and the wrong way to get
+* a swing number, because the injected noise is part of the measured
+* excursion. This deck is deterministic -- no injected sources at all --
+* so the swing it reports is the ring's own steady-state excursion. It
+* also measures three things #10's decks could not report at all:
+*
+*   1. the BUFFERED output swing (v(rob)), which is what the XOR tree and
+*      the liveness taps actually see. The internal ring node is
+*      slew-limited by the starve device; ro_buf is an unstarved
+*      minimum-width inverter whose job is to square that up. Whether it
+*      succeeds is the question that decides whether a 0.81 x Vdd ring
+*      node is a problem or a non-problem.
+*   2. the running ring's own average supply current at its own vddr pin.
+*      design/README.md's `lstv` row says in as many words that "no sky130
+*      power measurement exists -- the campaign measured jitter and swing,
+*      not supply current". This closes that for the ring.
+*   3. the STOPPED ring's static supply current, from a second, identical
+*      ring instance held at en = 0. That is the per-ring idle figure the
+*      README's idle-current row needs, and it is also the quantitative
+*      basis for the per-ring-supply liveness monitor the array's own
+*      schematic text block describes ("a stopped ring's supply current
+*      collapses"): the ratio of the two currents measured here is the
+*      contrast that monitor would have to resolve.
+*
+* Topology. Two five-stage rings of identical geometry, each on its own
+* supply source so each supply current is separately measurable, built in
+* place from ro_nand2 + 4 x ro_stage exactly as design/xschem/ro_ring5.sch
+* wires them (the same in-place construction #10's jitter decks use, for
+* the same reason: it keeps the injected/observed nodes addressable at the
+* top level). Ring A is enabled and free-running; ring B is held stopped at
+* en = 0. Ring A's output drives one ro_buf on the separate block supply
+* vdd, mirroring design/xschem/ro_array_core.sch's per-ring output buffer,
+* so the buffer's own current never contaminates either ring's vddr.
+*
+* Included netlist: design/ro_array_core.spice via --ro-ring5 (that is the
+* committed, netlist.py --check-guarded library defining ro_nand2,
+* ro_stage and ro_buf; design/ro_ring5.spice does not define ro_buf).
+*
+* PVT: four (temp, supply) points, each bundling the tt/ss/ff process axis:
+*   -40 degC / 1.62 V   the measured entropy-binding corner (ss)
+*    27 degC / 1.80 V   nominal
+*   125 degC / 1.98 V   where #10 measured the five-stage ring's WORST
+*                       swing anywhere in its 27-point grid (0.809 x Vdd,
+*                       at ff) -- the point issue #13's test plan names
+*                       explicitly
+*   -40 degC / 1.98 V   the fastest ring measured anywhere in that grid
+*                       (ff, T_0 = 1.32 ns), which is the point the XOR
+*                       combining node has the hardest time following
+*
+* This file is a TEMPLATE: sim/bin/corner-run.py substitutes @@PDK_LIB@@,
+* @@CORNER@@, @@RO_RING5@@, @@TEMP@@, @@VDD@@ and @@TMAX@@. As committed it
+* is not a runnable deck.
+
+.option scale=1u
+.lib "@@PDK_LIB@@" @@CORNER@@
+
+.include "@@RO_RING5@@"
+
+.temp @@TEMP@@
+
+* --- ring A: enabled, free-running ------------------------------------
+VddrA vddrA 0 dc @@VDD@@
+VenA enA 0 dc @@VDD@@
+xgA roA enA a1 vddrA 0 ro_nand2 wstv=0.42 lstv=2 cld=0.5f
+x1A a1 a2 vddrA 0 ro_stage wstv=0.42 lstv=2 cld=0.5f
+x2A a2 a3 vddrA 0 ro_stage wstv=0.42 lstv=2 cld=0.5f
+x3A a3 a4 vddrA 0 ro_stage wstv=0.42 lstv=2 cld=0.5f
+x4A a4 roA vddrA 0 ro_stage wstv=0.42 lstv=2 cld=0.5f
+
+* --- ring A's output buffer, on the BLOCK supply, not on vddrA ---------
+Vdd vdd 0 dc @@VDD@@
+xbA roA robA vdd 0 ro_buf
+
+* --- ring B: identical geometry, held stopped (en = 0) ------------------
+VddrB vddrB 0 dc @@VDD@@
+VenB enB 0 dc 0
+xgB roB enB b1 vddrB 0 ro_nand2 wstv=0.42 lstv=2 cld=0.5f
+x1B b1 b2 vddrB 0 ro_stage wstv=0.42 lstv=2 cld=0.5f
+x2B b2 b3 vddrB 0 ro_stage wstv=0.42 lstv=2 cld=0.5f
+x3B b3 b4 vddrB 0 ro_stage wstv=0.42 lstv=2 cld=0.5f
+x4B b4 roB vddrB 0 ro_stage wstv=0.42 lstv=2 cld=0.5f
+
+.ic v(roA)=0 v(a1)=@@VDD@@ v(a2)=0 v(a3)=@@VDD@@ v(a4)=0
+
+.tran @@TMAX@@ 80n uic
+
+.control
+run
+* steady-state window: 20 ns of start-up discarded
+meas tran vmax_ring MAX v(roA) from=20n to=80n
+meas tran vmin_ring MIN v(roA) from=20n to=80n
+meas tran vmax_buf MAX v(robA) from=20n to=80n
+meas tran vmin_buf MIN v(robA) from=20n to=80n
+let swing_frac_ring = (vmax_ring - vmin_ring) / @@VDD@@
+let swing_frac_buf = (vmax_buf - vmin_buf) / @@VDD@@
+* period from 8 whole periods, first two rising edges discarded as start-up
+meas tran tc3 when v(roA)=0.5*@@VDD@@ rise=3
+meas tran tc11 when v(roA)=0.5*@@VDD@@ rise=11
+let tbar = (tc11 - tc3)/8
+* duty cycle of the ring node, at the 50% crossing
+meas tran tfall3 when v(roA)=0.5*@@VDD@@ fall=3
+meas tran tc4 when v(roA)=0.5*@@VDD@@ rise=4
+let duty_ring = (tfall3 - tc3) / (tc4 - tc3)
+* supply currents. i(Vsrc) is negative for current delivered by the source,
+* so the reported figures are sign-flipped to read as consumed current.
+meas tran iddr_run_raw AVG i(VddrA) from=20n to=80n
+meas tran iddr_stop_raw AVG i(VddrB) from=20n to=80n
+meas tran ibuf_raw AVG i(Vdd) from=20n to=80n
+let i_ring_run = -iddr_run_raw
+let i_ring_stop = -iddr_stop_raw
+let i_buf = -ibuf_raw
+let stop_ratio = i_ring_run / i_ring_stop
+print swing_frac_ring
+print swing_frac_buf
+print vmax_ring
+print vmin_ring
+print tbar
+print duty_ring
+print i_ring_run
+print i_ring_stop
+print i_buf
+print stop_ratio
+.endc
+.end

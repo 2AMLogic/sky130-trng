@@ -2,11 +2,16 @@
 * Do not edit by hand: `python3 design/netlist.py --check` fails if this
 * file and the schematic disagree. Regenerate with `python3 design/netlist.py`.
 ** sch_path: sampler_core.sch
-.subckt sampler_core en1 en2 vddr1 vddr2 vdd vss clk rst_n raw_bit raw_valid ring_bit1 ring_bit2
+.subckt sampler_core en1 en2 en3 en4 vddr1 vddr2 vddr3 vddr4 vdd vss clk rst_n raw_bit raw_valid ring_bit1 ring_bit2
++ ring_bit3 ring_bit4
 *.ipin en1
 *.ipin en2
+*.ipin en3
+*.ipin en4
 *.iopin vddr1
 *.iopin vddr2
+*.iopin vddr3
+*.iopin vddr4
 *.iopin vdd
 *.iopin vss
 *.ipin clk
@@ -15,31 +20,47 @@
 *.opin raw_valid
 *.opin ring_bit1
 *.opin ring_bit2
-xdut en1 en2 vddr1 vddr2 vdd vss xo ro1 ro2 ro_array_core
+*.opin ring_bit3
+*.opin ring_bit4
+xdut en1 en2 en3 en4 vddr1 vddr2 vddr3 vddr4 vdd vss xo ro1 ro2 ro3 ro4 ro_array_core
 xsb xo clk rst_n raw_bit vdd vss sampler_dff
 xsv vdd clk rst_n raw_valid vdd vss sampler_dff
 xsr1 ro1 clk rst_n ring_bit1 vdd vss sampler_dff
 xsr2 ro2 clk rst_n ring_bit2 vdd vss sampler_dff
+xsr3 ro3 clk rst_n ring_bit3 vdd vss sampler_dff
+xsr4 ro4 clk rst_n ring_bit4 vdd vss sampler_dff
 .ends
 
-* expanding   symbol:  ro_array_core.sym # of pins=9
+* expanding   symbol:  ro_array_core.sym # of pins=15
 ** sym_path: ro_array_core.sym
 ** sch_path: ro_array_core.sch
-.subckt ro_array_core en1 en2 vddr1 vddr2 vdd vss xo ro1 ro2
+.subckt ro_array_core en1 en2 en3 en4 vddr1 vddr2 vddr3 vddr4 vdd vss xo ro1 ro2 ro3 ro4
 *.ipin en1
 *.ipin en2
+*.ipin en3
+*.ipin en4
 *.iopin vddr1
 *.iopin vddr2
+*.iopin vddr3
+*.iopin vddr4
 *.iopin vdd
 *.iopin vss
 *.opin xo
 *.opin ro1
 *.opin ro2
-xr1 en1 rn1 vddr1 vss ro_ring11 wstv=0.42 lstv=2 cld=0.5f
-xr2 en2 rn2 vddr2 vss ro_ring11 wstv=0.46 lstv=2 cld=0.5f
+*.opin ro3
+*.opin ro4
+xr1 en1 rn1 vddr1 vss ro_ring5 wstv=0.42 lstv=2 cld=0.5f
+xr2 en2 rn2 vddr2 vss ro_ring5 wstv=0.44 lstv=2 cld=0.5f
+xr3 en3 rn3 vddr3 vss ro_ring5 wstv=0.46 lstv=2 cld=0.5f
+xr4 en4 rn4 vddr4 vss ro_ring5 wstv=0.48 lstv=2 cld=0.5f
 xb1 rn1 ro1 vdd vss ro_buf
 xb2 rn2 ro2 vdd vss ro_buf
-xa1 ro1 ro2 xo vdd vss xor2
+xb3 rn3 ro3 vdd vss ro_buf
+xb4 rn4 ro4 vdd vss ro_buf
+xa1 ro1 ro2 t1 vdd vss xor2
+xa2 ro3 ro4 t2 vdd vss xor2
+xa3 t1 t2 xo vdd vss xor2
 .ends
 
 
@@ -100,10 +121,10 @@ XMfsn qb clkb s vss sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 nf=1 ad=0.1218 as=0.12
 .ends
 
 
-* expanding   symbol:  ro_ring11.sym # of pins=4
-** sym_path: ro_ring11.sym
-** sch_path: ro_ring11.sch
-.subckt ro_ring11 en ro vddr vss wstv=0.42 lstv=2 cld=0.5f
+* expanding   symbol:  ro_ring5.sym # of pins=4
+** sym_path: ro_ring5.sym
+** sch_path: ro_ring5.sch
+.subckt ro_ring5 en ro vddr vss wstv=0.42 lstv=2 cld=0.5f
 *.ipin en
 *.opin ro
 *.iopin vddr
@@ -112,13 +133,7 @@ xg ro en n1 vddr vss ro_nand2 wstv=wstv lstv=lstv cld=cld
 x1 n1 n2 vddr vss ro_stage wstv=wstv lstv=lstv cld=cld
 x2 n2 n3 vddr vss ro_stage wstv=wstv lstv=lstv cld=cld
 x3 n3 n4 vddr vss ro_stage wstv=wstv lstv=lstv cld=cld
-x4 n4 n5 vddr vss ro_stage wstv=wstv lstv=lstv cld=cld
-x5 n5 n6 vddr vss ro_stage wstv=wstv lstv=lstv cld=cld
-x6 n6 n7 vddr vss ro_stage wstv=wstv lstv=lstv cld=cld
-x7 n7 n8 vddr vss ro_stage wstv=wstv lstv=lstv cld=cld
-x8 n8 n9 vddr vss ro_stage wstv=wstv lstv=lstv cld=cld
-x9 n9 n10 vddr vss ro_stage wstv=wstv lstv=lstv cld=cld
-x10 n10 ro vddr vss ro_stage wstv=wstv lstv=lstv cld=cld
+x4 n4 ro vddr vss ro_stage wstv=wstv lstv=lstv cld=cld
 .ends
 
 

@@ -1,0 +1,180 @@
+* ro_array_core as rebuilt -- combining fidelity, frequency ladder, array current
+*
+* Purpose: this is the assembled-block measurement for issue #13's rebuild.
+* It drives the COMMITTED design/ro_array_core.spice -- the netlist
+* design/netlist.py exports from design/xschem/ro_array_core.sch and guards
+* with --check -- so what it measures is the schematic as drawn, N = 4
+* five-stage rings and all, not a hand-built approximation of it.
+*
+* Three things it establishes, none of which #10's campaign could:
+*
+*   1. COMBINING FIDELITY, in two separate senses that must not be
+*      conflated.
+*
+*      (a) EDGE RETENTION -- a bandwidth measure. The XOR tree's ceiling on
+*      N (sim/xor-combining-bandwidth/) is derived from a single gate driven
+*      by a periodic square wave. The real combining node is driven by the
+*      superposition of 4 skewed rings, whose inter-edge gaps are spread,
+*      not uniform: even when the MEAN gap is comfortably above the gate's
+*      minimum pulse width, the rings beat against each other and edge pairs
+*      pass through near-coincidence, where they are swallowed. This deck
+*      measures the realized rising-edge rate at a node and divides it by
+*      the ideal rate sum(1/T_i) over the rings feeding it, taken from the
+*      SAME run's per-ring periods.
+*
+*      Because the tree is BALANCED, one run gives that ratio at two array
+*      sizes for free: xdut.t1 combines 2 rings and xo combines all 4. No
+*      separate N-sweep deck is needed, and both numbers come from identical
+*      rings under identical conditions.
+*
+*      (b) VALUE FIDELITY -- a bias measure, and the one that actually
+*      reaches the sampler. A swallowed pulse is a swallowed PAIR of edges,
+*      and two missed toggles leave the node's parity unchanged, so the
+*      sampled value still tracks the ideal XOR of all four rings except
+*      inside the short swallowed window itself. Systematic bias at the
+*      combining node is what would destroy raw min-entropy, so this deck
+*      measures the time-average level of each combining node directly. A
+*      node whose mean sits at 0.5 x Vdd is combining without a DC error,
+*      however many edges it dropped.
+*
+*      Reporting only (a) would overstate the damage; reporting only (b)
+*      would hide that the tree is filtering at all. Both are recorded.
+*
+*   2. THE FREQUENCY LADDER, realized. ro_array_core.sch skews the rings by
+*      starve-device width, wstv = 0.42 um to 0.48 um in 0.02 um steps. What
+*      that ladder does to the actual oscillation frequencies is a device
+*      fact, not a design intent, and integer frequency ratios are the ones
+*      that mutually injection lock. This deck reports all four periods
+*      from one run so the realized ratios can be read off directly.
+*
+*   3. ARRAY SUPPLY CURRENT. Four separate vddr sources plus the block vdd,
+*      each measured separately, summed into a total. design/README.md's
+*      power rows had no sky130 measurement at all behind them.
+*
+* Start-up is by ENABLE RELEASE, not by .ic. A deterministic transient of a
+* ring started at its own DC operating point sits at the metastable point
+* and never oscillates, and the rings' internal nodes are inside a subckt
+* here (unlike #10's in-place ring decks, which could .ic them from the top
+* level). So all four enables are held at 0 through the DC operating point
+* and released together at t = 5 ns: with en = 0 the ro_nand2 pins its own
+* output high, which is a defined state, and releasing it starts the ring.
+* That is also how the block is actually meant to be brought up.
+*
+* Measurement window is 60 ns to 200 ns, i.e. 55 ns after release -- more
+* than ten periods of the slowest ring measured anywhere in the grid.
+*
+* Edge retention uses rising crossings 2 through 50 at xo rather than a
+* whole-vector transition count: it is a rate over 48 intervals, it needs no
+* vector-length arithmetic, and crossing 50 stays reachable inside the
+* window even if the tree were swallowing half the edges. Crossing 1 is
+* discarded as start-up.
+*
+* PVT: three (temp, supply) points, each bundling the tt/ss/ff process axis:
+*   -40 degC / 1.62 V   the entropy-binding corner (ss). Slowest rings, so
+*                       the widest edge spacing -- where retention should be
+*                       highest and where the entropy requirement binds.
+*    27 degC / 1.80 V   nominal
+*   -40 degC / 1.98 V   the fastest rings measured anywhere in #10's grid
+*                       (ff) -- the narrowest edge spacing, and also the
+*                       corner sim/ro-array-operating-point/ found BINDS the
+*                       combining bound. This is the hardest test of the
+*                       combining tree, and where retention is expected to
+*                       be WORST.
+*
+* This file is a TEMPLATE: sim/bin/corner-run.py substitutes @@PDK_LIB@@,
+* @@CORNER@@, @@RO_RING5@@ (pointed at design/ro_array_core.spice via
+* --ro-ring5), @@TEMP@@, @@VDD@@ and @@TMAX@@. As committed it is not a
+* runnable deck.
+
+.option scale=1u
+.lib "@@PDK_LIB@@" @@CORNER@@
+
+.include "@@RO_RING5@@"
+
+.temp @@TEMP@@
+
+* per-ring supplies, one source per ring so each current is separable
+Vddr1 vddr1 0 dc @@VDD@@
+Vddr2 vddr2 0 dc @@VDD@@
+Vddr3 vddr3 0 dc @@VDD@@
+Vddr4 vddr4 0 dc @@VDD@@
+* block supply: combining tree + the four ring output buffers
+Vdd vdd 0 dc @@VDD@@
+
+* enables: held low through the DC solution, released together at 5 ns
+Ven1 en1 0 PULSE(0 @@VDD@@ 5n 100p 100p 1u 2u)
+Ven2 en2 0 PULSE(0 @@VDD@@ 5n 100p 100p 1u 2u)
+Ven3 en3 0 PULSE(0 @@VDD@@ 5n 100p 100p 1u 2u)
+Ven4 en4 0 PULSE(0 @@VDD@@ 5n 100p 100p 1u 2u)
+
+xdut en1 en2 en3 en4 vddr1 vddr2 vddr3 vddr4 vdd 0 xo ro1 ro2 ro3 ro4 ro_array_core
+
+.tran @@TMAX@@ 200n
+
+.control
+run
+* --- per-ring periods, 10 whole periods each, first two edges discarded ---
+meas tran t1a when v(ro1)=0.5*@@VDD@@ rise=3
+meas tran t1b when v(ro1)=0.5*@@VDD@@ rise=13
+meas tran t2a when v(ro2)=0.5*@@VDD@@ rise=3
+meas tran t2b when v(ro2)=0.5*@@VDD@@ rise=13
+meas tran t3a when v(ro3)=0.5*@@VDD@@ rise=3
+meas tran t3b when v(ro3)=0.5*@@VDD@@ rise=13
+meas tran t4a when v(ro4)=0.5*@@VDD@@ rise=3
+meas tran t4b when v(ro4)=0.5*@@VDD@@ rise=13
+let tr1 = (t1b - t1a)/10
+let tr2 = (t2b - t2a)/10
+let tr3 = (t3b - t3a)/10
+let tr4 = (t4b - t4a)/10
+let f_ideal2 = 1/tr1 + 1/tr2
+let f_ideal = 1/tr1 + 1/tr2 + 1/tr3 + 1/tr4
+let skew_span = tr1/tr4
+* --- combining node: swing and realized rising-edge rate ---
+meas tran vxo_max MAX v(xo) from=60n to=200n
+meas tran vxo_min MIN v(xo) from=60n to=200n
+let swing_frac_xo = (vxo_max - vxo_min) / @@VDD@@
+meas tran txo_a when v(xo)=0.5*@@VDD@@ rise=2
+meas tran txo_b when v(xo)=0.5*@@VDD@@ rise=50
+let f_xo = 48/(txo_b - txo_a)
+let edge_retention = f_xo / f_ideal
+* the same ratio one tree level down, i.e. at N = 2, from the same rings in
+* the same run (balanced tree, so t1 combines rings 1-2)
+meas tran tt1a when v(xdut.t1)=0.5*@@VDD@@ rise=2
+meas tran tt1b when v(xdut.t1)=0.5*@@VDD@@ rise=50
+let f_t1 = 48/(tt1b - tt1a)
+let retention_n2 = f_t1 / f_ideal2
+let retention_n4 = edge_retention
+* --- value fidelity: time-average level of each combining node ---
+meas tran vxo_avg AVG v(xo) from=60n to=200n
+meas tran vt1_avg AVG v(xdut.t1) from=60n to=200n
+let bias_xo = vxo_avg / @@VDD@@
+let bias_t1 = vt1_avg / @@VDD@@
+* --- supply currents (sign-flipped to read as consumed current) ---
+meas tran i1 AVG i(Vddr1) from=60n to=200n
+meas tran i2 AVG i(Vddr2) from=60n to=200n
+meas tran i3 AVG i(Vddr3) from=60n to=200n
+meas tran i4 AVG i(Vddr4) from=60n to=200n
+meas tran ib AVG i(Vdd) from=60n to=200n
+let i_rings = -(i1 + i2 + i3 + i4)
+let i_block = -ib
+let i_array_total = i_rings + i_block
+let p_array_total = i_array_total * @@VDD@@
+print tr1
+print tr2
+print tr3
+print tr4
+print skew_span
+print f_ideal
+print f_xo
+print edge_retention
+print retention_n2
+print retention_n4
+print bias_t1
+print bias_xo
+print swing_frac_xo
+print i_rings
+print i_block
+print i_array_total
+print p_array_total
+.endc
+.end

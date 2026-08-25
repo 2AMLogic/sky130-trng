@@ -19,6 +19,16 @@ below are that campaign's evidence.
 | `ro-ring-jitter-accumulation/` | per-ring `T_0`, `sigma_1..sigma_8` and ring swing over the PVT grid, for `ro_ring5` and `ro_ring11` | #10 |
 | `ro-array-sizing/` | reduction of the above to `Q`, the entropy-binding corner, and the sized `N` | #10 |
 
+Issue #13 then rebuilt `ro_array_core.sch` at a measured operating point
+(`spec/decision-records/DR-0003-sky130-trng-operating-point.md`), adding:
+
+| Slug | Claim under test | Landed by |
+|---|---|---|
+| `xor-combining-bandwidth/` | the static-CMOS `xor2` combining gate's own minimum resolvable pulse width `w_90`, the figure that sets a hardware ceiling on array size `N` | #13 |
+| `ro-ring5-swing-and-current/` | five-stage ring swing and per-ring supply current, deterministically (no injected noise), under the array's own output-buffer load | #13 |
+| `ro-array-core-combining/` | the assembled, committed `ro_array_core.spice` end to end: realized per-ring frequency ladder, combining-node edge retention and DC bias, total array supply current | #13 |
+| `ro-array-operating-point/` | reduction crossing the combining-bandwidth ceiling against the entropy sizing law (re-evaluated at the buffer-loaded ring period), producing the chosen `N` and raw-rate operating point | #13 |
+
 Two rules from the root `CLAUDE.md` govern everything under this directory:
 
 - **Verification is the product.** No claim without a testbench, and PVT

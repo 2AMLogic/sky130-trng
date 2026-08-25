@@ -3,39 +3,52 @@ G {}
 K {type=subcircuit
 format="@name @pinlist @symname"
 template="name=x1"
-description="The sampler, wired to the source: design/xschem/sampler_core.sch's ro_array_core plus four sampler_dff instances (raw_bit/raw_valid, ring_bit1/ring_bit2), on a fixed external sample clock. Pin order MUST track design/xschem/sampler_core.sch's own .subckt signature exactly: en1 en2 vddr1 vddr2 vdd vss clk rst_n raw_bit raw_valid ring_bit1 ring_bit2 -- see design/sampler_core.spice. ring_bit1/ring_bit2 are the two per-ring digitized samples a liveness monitor consumes, produced by two more instances of the same sampler_dff cell on ro_array_core's ro1/ro2 observation outputs; like raw_bit they are digital block-internal signals, and unlike raw_bit they are not a tap anyone reads off-die. Instantiated by trng_top.sch as the analog half of the top-level assembly; raw_bit/raw_valid is the raw tap and the analog/digital verification-level boundary."
+description="The sampler, wired to the source: design/xschem/sampler_core.sch's ro_array_core (N = 4 five-stage rings, DR-0003) plus six sampler_dff instances -- raw_bit, raw_valid, and ring_bit1..ring_bit4. Pin order MUST track design/xschem/sampler_core.sch's own .subckt signature exactly: en1..en4 vddr1..vddr4 vdd vss clk rst_n raw_bit raw_valid ring_bit1..ring_bit4 -- see design/sampler_core.spice. ring_bit1..4 are the per-ring digitized samples a liveness monitor consumes, one per ring so no ring is unmonitored, produced by four more instances of the same sampler_dff cell on ro_array_core's ro1..ro4 observation outputs; like raw_bit they are digital block-internal signals, and unlike raw_bit they are not a tap anyone reads off-die. Instantiated by trng_top.sch as the analog half of the top-level assembly; raw_bit/raw_valid is the raw tap and the analog/digital verification-level boundary."
 }
 V {}
 S {}
 E {}
-B 5 -72.5 -62.5 -67.5 -57.5 {name=en1 dir=in}
-B 5 -72.5 -22.5 -67.5 -17.5 {name=en2 dir=in}
-B 5 -32.5 97.5 -27.5 102.5 {name=vddr1 dir=inout}
-B 5 -2.5 97.5 2.5 102.5 {name=vddr2 dir=inout}
-B 5 27.5 97.5 32.5 102.5 {name=vdd dir=inout}
-B 5 -2.5 -102.5 2.5 -97.5 {name=vss dir=inout}
-B 5 -72.5 17.5 -67.5 22.5 {name=clk dir=in}
-B 5 -72.5 57.5 -67.5 62.5 {name=rst_n dir=in}
-B 5 67.5 -22.5 72.5 -17.5 {name=raw_bit dir=out}
-B 5 67.5 17.5 72.5 22.5 {name=raw_valid dir=out}
-B 5 67.5 -62.5 72.5 -57.5 {name=ring_bit1 dir=out}
-B 5 67.5 57.5 72.5 62.5 {name=ring_bit2 dir=out}
-L 4 -70 -60 -60 -60 {}
-L 4 -70 -20 -60 -20 {}
-L 4 -30 100 -30 90 {}
-L 4 0 100 0 90 {}
-L 4 30 100 30 90 {}
-L 4 0 -100 0 -90 {}
-L 4 -70 20 -60 20 {}
-L 4 -70 60 -60 60 {}
-L 4 70 -20 60 -20 {}
-L 4 70 20 60 20 {}
-L 4 70 -60 60 -60 {}
-L 4 70 60 60 60 {}
-L 4 -60 -90 60 -90 {}
-L 4 60 -90 60 90 {}
-L 4 60 90 -60 90 {}
-L 4 -60 90 -60 -90 {}
-T {@name} -55 -125 0 0 0.25 0.25 {}
-T {sampler_core} -55 0 0 0 0.2 0.2 {}
-T {raw tap ->} 20 -35 0 0 0.2 0.2 {layer=13}
+B 5 -152.5 -77.5 -147.5 -72.5 {name=en1 dir=in}
+B 5 -152.5 -27.5 -147.5 -22.5 {name=en2 dir=in}
+B 5 -152.5 22.5 -147.5 27.5 {name=en3 dir=in}
+B 5 -152.5 72.5 -147.5 77.5 {name=en4 dir=in}
+B 5 -77.5 152.5 -72.5 157.5 {name=vddr1 dir=inout}
+B 5 -27.5 152.5 -22.5 157.5 {name=vddr2 dir=inout}
+B 5 22.5 152.5 27.5 157.5 {name=vddr3 dir=inout}
+B 5 72.5 152.5 77.5 157.5 {name=vddr4 dir=inout}
+B 5 -52.5 -157.5 -47.5 -152.5 {name=vdd dir=inout}
+B 5 47.5 -157.5 52.5 -152.5 {name=vss dir=inout}
+B 5 -152.5 -177.5 -147.5 -172.5 {name=clk dir=in}
+B 5 -152.5 167.5 -147.5 172.5 {name=rst_n dir=in}
+B 5 147.5 -177.5 152.5 -172.5 {name=raw_bit dir=out}
+B 5 147.5 167.5 152.5 172.5 {name=raw_valid dir=out}
+B 5 147.5 -77.5 152.5 -72.5 {name=ring_bit1 dir=out}
+B 5 147.5 -27.5 152.5 -22.5 {name=ring_bit2 dir=out}
+B 5 147.5 22.5 152.5 27.5 {name=ring_bit3 dir=out}
+B 5 147.5 72.5 152.5 77.5 {name=ring_bit4 dir=out}
+L 4 -150 -75 -130 -75 {}
+L 4 -150 -25 -130 -25 {}
+L 4 -150 25 -130 25 {}
+L 4 -150 75 -130 75 {}
+L 4 -150 -175 -130 -175 {}
+L 4 -150 170 -130 170 {}
+L 4 -75 155 -75 130 {}
+L 4 -25 155 -25 130 {}
+L 4 25 155 25 130 {}
+L 4 75 155 75 130 {}
+L 4 -50 -155 -50 -130 {}
+L 4 50 -155 50 -130 {}
+L 4 150 -175 130 -175 {}
+L 4 150 170 130 170 {}
+L 4 150 -75 130 -75 {}
+L 4 150 -25 130 -25 {}
+L 4 150 25 130 25 {}
+L 4 150 75 130 75 {}
+L 4 -130 -190 130 -190 {}
+L 4 130 -190 130 190 {}
+L 4 130 190 -130 190 {}
+L 4 -130 190 -130 -190 {}
+T {@name} -125 -225 0 0 0.3 0.3 {}
+T {sampler_core} -125 -20 0 0 0.3 0.3 {}
+T {N=4 rings + 6 DFF} -125 20 0 0 0.25 0.25 {layer=13}
+T {raw tap ->} 90 -195 0 0 0.2 0.2 {layer=13}
