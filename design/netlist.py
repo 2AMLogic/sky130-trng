@@ -6,11 +6,30 @@
     python3 design/netlist.py --lint     # brace-in-T{} guard only; no xschem/PDK
     python3 design/netlist.py --pdk      # print the resolved PDK and exit
 
-``--check`` is the staleness guard: it fails if the committed ``.spice``
-netlist does not match what the current schematics produce. That is what
-makes a committed netlist evidence rather than a snapshot someone forgot to
-refresh -- an evidence record that names a ``netlist.sha`` is only meaningful
-if the netlist provably comes from the schematic it claims to.
+``--check`` verifies two independent things, both of which have to pass for
+exit ``0``:
+
+1. **Staleness** -- the committed ``.spice`` netlist matches what the
+   current schematics produce. That is what makes a committed netlist
+   evidence rather than a snapshot someone forgot to refresh -- an evidence
+   record that names a ``netlist.sha`` is only meaningful if the netlist
+   provably comes from the schematic it claims to.
+2. **Connectivity** -- xschem's own ERC (electrical rule check,
+   ``xschem netlist -erc``) finds no undriven node, open net, or shorted pin
+   anywhere in each :data:`TOP_CELLS` entry's instantiated hierarchy. A
+   schematic-level wiring defect (e.g. a label placed at the wrong
+   coordinate relative to the net it is meant to tag) can produce a netlist
+   that is *internally self-consistent* -- the "before" and "after" of a
+   regeneration agree on the same wrong result -- so the staleness diff
+   alone cannot catch it; a genuine connectivity check can (issue #16).
+
+A connectivity failure is reported with an ``ERC`` print prefix and
+:data:`EXIT_ERC`, distinct from a staleness failure's ``STALE`` prefix and
+:data:`EXIT_STALE` -- see :class:`ErcViolation`. ERC only runs under
+``--check`` (and under any direct ``export(..., erc=True)`` caller); the
+default write path (``python3 design/netlist.py``, no flags) does not run
+it, so a schematic that is intentionally mid-edit and not yet fully wired
+can still be exported while iterating.
 
 Ported from ``design/netlist.py`` in the sibling repo `2AMLogic/gf180-trng`,
 whose structure (brace guard, deterministic path rewriting, continuation
@@ -109,6 +128,7 @@ WRAP_COLUMN = 120
 
 EXIT_OK = 0
 EXIT_STALE = 1
+EXIT_ERC = 2
 EXIT_ENVIRONMENT = 3
 
 DEFAULT_VARIANT = "sky130A"
@@ -154,6 +174,19 @@ class ExportError(RuntimeError):
 
 class PdkNotFound(ExportError):
     """Raised when no usable sky130 install can be located."""
+
+
+class ErcViolation(ExportError):
+    """xschem's own ERC (electrical rule check) found a connectivity defect.
+
+    A subclass of :class:`ExportError` so a caller that only wants "did the
+    export fail" can still catch broadly, but distinct enough that
+    ``main()`` can report it separately -- with its own exit code
+    (:data:`EXIT_ERC`) and print prefix (``ERC``) -- from both a staleness
+    diff (the committed netlist not matching a *correctly wired* schematic)
+    and a plain environment failure (xschem/PDK missing, no schematic file).
+    See the module docstring's "Connectivity, not just staleness" section.
+    """
 
 
 @dataclass(frozen=True)
@@ -494,7 +527,23 @@ def _normalize(text: str, top_params: str = "") -> str:
     return text_out
 
 
-def export(top: str, outdir: Path) -> str:
+def export(top: str, outdir: Path, *, erc: bool = False) -> str:
+    """Export *top* to *outdir*/*top*.spice and return the normalized text.
+
+    If *erc* is set, xschem's own ERC (electrical rule check) runs in the
+    same batch-mode invocation (``--command "xschem netlist -erc"`` --
+    the same Tcl call the GUI's Netlist toolbar button uses) and a nonzero
+    xschem exit status raises :class:`ErcViolation` instead of returning a
+    netlist. ERC walks *top*'s full instantiated hierarchy, so running it
+    only on a handful of top cells (as ``--check`` does, over
+    :data:`TOP_CELLS`) still covers every schematic those cells pull in.
+
+    *erc* defaults to off because the default write path
+    (``python3 design/netlist.py``, no flags) is also used mid-edit, on a
+    schematic that is intentionally incomplete -- ERC failing there would
+    make the plain export command unusable while iterating. ``--check``
+    passes ``erc=True`` explicitly; see ``main()``.
+    """
     schematic = SCHEMATIC_DIR / f"{top}.sch"
     if not schematic.is_file():
         raise ExportError(f"no schematic {schematic}")
@@ -535,14 +584,21 @@ def export(top: str, outdir: Path) -> str:
         _write_rcfile(rcfile, symbols, tmpdir)
         env = dict(os.environ)
         env.pop("XSCHEM_LIBRARY_PATH", None)
+        cmd = [
+            XSCHEM, "-n", "-q", "-x", "-s", "-r",
+            "--rcfile", str(rcfile),
+            "-o", str(tmpdir),
+            "-N", f"{top}.spice",
+        ]
+        if erc:
+            # The same Tcl call xschem's own GUI "Netlist" toolbar button
+            # runs. Appending it to the same batch-mode invocation walks
+            # ERC over *top*'s full instantiated hierarchy -- no second
+            # xschem invocation, no new flags.
+            cmd += ["--command", "xschem netlist -erc"]
+        cmd.append(str(schematic))
         proc = subprocess.run(
-            [
-                XSCHEM, "-n", "-q", "-x", "-s", "-r",
-                "--rcfile", str(rcfile),
-                "-o", str(tmpdir),
-                "-N", f"{top}.spice",
-                str(schematic),
-            ],
+            cmd,
             capture_output=True,
             text=True,
             cwd=tmpdir,
@@ -554,6 +610,20 @@ def export(top: str, outdir: Path) -> str:
             raise ExportError(
                 f"xschem produced no netlist for {top}\n"
                 f"--- stdout ---\n{proc.stdout}\n--- stderr ---\n{proc.stderr}"
+            )
+        if erc and proc.returncode != 0:
+            # xschem still writes the (electrically broken) netlist file
+            # even when ERC fails, so the `produced.is_file()` check above
+            # does not catch this -- the signal is the exit code, not
+            # whether a file landed. Every violation class observed so far
+            # (undriven node, at minimum) reports on stderr, so surface
+            # whichever stream has content.
+            detail = (proc.stderr or proc.stdout or "").strip()
+            raise ErcViolation(
+                f"xschem ERC failed for {top} (exit {proc.returncode}) -- "
+                "the schematic has a connectivity defect (e.g. an undriven "
+                "node, open net, or shorted pin), not merely a stale "
+                f"netlist:\n{detail}"
             )
         text = _normalize(produced.read_text(), _schematic_params(schematic))
     header = (
@@ -573,7 +643,10 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument(
         "--check", action="store_true",
-        help="do not write: re-export and fail if the committed netlist is stale",
+        help=(
+            "do not write: re-export and fail if the committed netlist is "
+            "stale, or if xschem's own ERC finds a connectivity defect"
+        ),
     )
     parser.add_argument(
         "--lint", action="store_true",
@@ -610,12 +683,15 @@ def main(argv: list[str] | None = None) -> int:
 
     tops = tuple(args.top) if args.top else TOP_CELLS
     status = EXIT_OK
+    erc_failed = False
     for top in tops:
         committed = DESIGN_DIR / f"{top}.spice"
         try:
             if args.check:
+                # erc=True: --check verifies connectivity as well as
+                # staleness -- see the module docstring and ErcViolation.
                 with tempfile.TemporaryDirectory() as tmp:
-                    fresh = export(top, Path(tmp))
+                    fresh = export(top, Path(tmp), erc=True)
                 if not committed.is_file():
                     print(f"STALE  {top}: {committed.relative_to(REPO_ROOT)} does not exist")
                     status = EXIT_STALE
@@ -630,13 +706,23 @@ def main(argv: list[str] | None = None) -> int:
                     sys.stdout.writelines(diff)
                     status = EXIT_STALE
                 else:
-                    print(f"ok     {top}: committed netlist matches design/xschem/{top}.sch")
+                    print(f"ok     {top}: committed netlist matches design/xschem/{top}.sch (ERC clean)")
             else:
                 export(top, DESIGN_DIR)
                 print(f"wrote  design/{top}.spice")
+        except ErcViolation as exc:
+            # Distinct from STALE: this is a wiring defect in the
+            # schematic, not a committed netlist that fell out of sync with
+            # an otherwise-correct one. Keep checking the remaining tops
+            # rather than aborting, same as a STALE finding does, so one CI
+            # run reports every offending cell.
+            print(f"ERC    {top}: {exc}", file=sys.stderr)
+            erc_failed = True
         except ExportError as exc:
             print(f"ERROR  {top}: {exc}", file=sys.stderr)
             return EXIT_ENVIRONMENT
+    if erc_failed:
+        return EXIT_ERC
     return status
 
 

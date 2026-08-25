@@ -34,10 +34,11 @@ here is `T_s` = 20 µs / 50 kHz sample clock / 50 kbps raw rate.
 
 ```
 design/
-  xschem/          schematic + symbol sources (xschem's own text format)
-  netlist.py       deterministic SPICE export driver, with a staleness guard
-  pdk.json         which sky130 install to resolve, and the open_pdks pin
-  *.spice          GENERATED netlists -- committed output of netlist.py
+  xschem/              schematic + symbol sources (xschem's own text format)
+  netlist.py           deterministic SPICE export driver, with a staleness + ERC guard
+  test_netlist_erc.py  regression fixture for netlist.py's ERC wiring (issue #16)
+  pdk.json             which sky130 install to resolve, and the open_pdks pin
+  *.spice              GENERATED netlists -- committed output of netlist.py
 ```
 
 ### Cell hierarchy
@@ -105,15 +106,36 @@ array's internal combining node `xo`, which never becomes a pin.
 
 ```bash
 python3 design/netlist.py            # (re-)export every top cell
-python3 design/netlist.py --check    # fail if a committed netlist is stale
+python3 design/netlist.py --check    # fail if a committed netlist is stale, or fails ERC
 python3 design/netlist.py --lint     # brace guard only; no xschem, no PDK
 python3 design/netlist.py --pdk      # show the resolved PDK + open_pdks pin
+python3 design/test_netlist_erc.py   # regression fixture for the --check ERC wiring itself
 ```
 
-`--check` is what makes a committed netlist evidence rather than a snapshot
-someone forgot to refresh: it re-exports into a temp directory and exits
-non-zero if the result differs from what is committed. Run it after any
-schematic edit; commit the regenerated `.spice` files in the same change.
+`--check` verifies two independent things, both required for exit `0`:
+
+- **Staleness** — what makes a committed netlist evidence rather than a
+  snapshot someone forgot to refresh: it re-exports into a temp directory
+  and exits non-zero if the result differs from what is committed.
+- **Connectivity** — xschem's own ERC (electrical rule check, `xschem
+  netlist -erc`) finds no undriven node, open net, or shorted pin anywhere
+  in each top cell's instantiated hierarchy. A schematic-level wiring
+  defect (e.g. a `lab_pin` placed at the wrong coordinate relative to the
+  net it is meant to tag) can produce a netlist that is internally
+  self-consistent — a "before" and "after" regeneration of the same broken
+  schematic agree on the same wrong result — so the staleness diff alone
+  cannot catch it; ERC does (issue #16). A connectivity failure prints with
+  an `ERC` prefix and a distinct exit code from a staleness failure's
+  `STALE` prefix, so CI output tells the two apart. ERC only runs under
+  `--check`; the plain write path (`python3 design/netlist.py`) does not
+  run it, so an intentionally mid-edit schematic can still be exported
+  while iterating. `design/test_netlist_erc.py` is the regression fixture:
+  it confirms a deliberately-broken schematic (a `lab_pin` moved off its
+  net) is actually caught, and that the current `TOP_CELLS` still pass
+  cleanly.
+
+Run `--check` after any schematic edit; commit the regenerated `.spice`
+files in the same change.
 
 `--lint` is the guard that can run without a PDK. Every schematic carries a
 `T {...}` free-text header; a literal `{` or `}` inside that block — even a

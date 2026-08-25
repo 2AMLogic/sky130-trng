@@ -4,13 +4,19 @@ name: PDK nightly
 # off the pull-request path (see ci.yml's comment for why).
 #
 # design/netlist.py --check re-exports every top cell in design/xschem/ into
-# a temp directory and fails if the result disagrees with the committed
-# design/*.spice -- which is what makes a netlist.sha recorded anywhere else
-# in this repo mean "derived from the schematic it claims to come from"
-# rather than "a snapshot someone forgot to refresh". It shells out to
-# xschem and resolves the sky130 xschem symbol library through a real PDK
-# install, so it cannot run on the PR path (a pull request must never block
-# on a ~1 GB PDK download).
+# a temp directory and checks two independent things: (1) staleness -- the
+# result matches the committed design/*.spice, which is what makes a
+# netlist.sha recorded anywhere else in this repo mean "derived from the
+# schematic it claims to come from" rather than "a snapshot someone forgot
+# to refresh"; and (2) connectivity -- xschem's own ERC (electrical rule
+# check) finds no undriven node / open net / shorted pin anywhere in that
+# top cell's instantiated hierarchy (issue #16). A schematic-level wiring
+# defect can produce a netlist that is internally self-consistent -- the
+# "before" and "after" of a regeneration agree on the same wrong result --
+# so staleness alone cannot catch it; ERC can. It shells out to xschem and
+# resolves the sky130 xschem symbol library through a real PDK install, so
+# it cannot run on the PR path (a pull request must never block on a ~1 GB
+# PDK download).
 #
 # PDK provisioning: volare, pinned to the open_pdks commit design/pdk.json
 # names (currently c6d73a35f524070e85faff4a6a9eef49553ebc2b -- read from
@@ -59,7 +65,7 @@ concurrency:
 
 jobs:
   netlist-check:
-    name: Schematic-vs-netlist staleness guard (design/netlist.py --check)
+    name: Schematic-vs-netlist staleness + connectivity guard (design/netlist.py --check)
     runs-on: ubuntu-latest
     timeout-minutes: 30
     if: >-
@@ -109,6 +115,17 @@ jobs:
         run: python3 design/netlist.py --pdk
 
       # Writes nothing: --check exports every TOP_CELLS entry into a temp
-      # directory and diffs against the committed design/*.spice.
+      # directory, diffs it against the committed design/*.spice (staleness),
+      # and runs xschem's own ERC over it (connectivity). A connectivity
+      # failure prints with an `ERC` prefix and exits EXIT_ERC (2), distinct
+      # from a staleness failure's `STALE` prefix and EXIT_STALE (1).
       - name: design/netlist.py --check
         run: python3 design/netlist.py --check
+
+      # Regression fixture for the ERC wiring itself (issue #16): confirms a
+      # schematic with a deliberately broken net (a lab_pin moved off its
+      # net) is actually caught, not just that the current committed
+      # schematics happen to pass. See design/test_netlist_erc.py's module
+      # docstring for what it checks.
+      - name: design/test_netlist_erc.py (ERC regression fixture)
+        run: python3 design/test_netlist_erc.py
