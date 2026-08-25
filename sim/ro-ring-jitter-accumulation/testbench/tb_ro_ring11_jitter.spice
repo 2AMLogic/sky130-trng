@@ -1,0 +1,139 @@
+* ro_ring11 transient-noise jitter accumulation -- issue #10 headline points
+*
+* Purpose: issue #10 acceptance criterion 2, second configuration. Same
+* measurement as tb_ro_ring5_jitter.spice (period T0 = `tbar`, jitter
+* accumulation sigma_1/sigma_2/sigma_4, ring swing vmax_ss/vmin_ss/
+* swing_frac), run on design/xschem/ro_ring11.sch -- the 11-stage ring
+* design/xschem/ro_array_core.sch actually instantiates, and whose stage
+* count design/README.md's "Provisional, not sized" table flags as carried
+* over from gf180-trng rather than measured on sky130.
+*
+* Why this ring is NOT the 27-point flagship: it is ~2.2x the devices AND
+* ~2.2x the period of ro_ring5, so ~5x the wall clock per measured period
+* (~9 min per corner point at this deck's settings, vs ~3.5 min for
+* ro_ring5). Per spec/porting-plan.md Sec 2.2 / DR-0006's reduced-grid
+* methodology, the non-flagship configuration runs the 3 headline points
+* only: nominal (tt / 27 degC / 1.8 V), fast-cold-high-supply
+* (ff / -40 degC / 1.98 V), slow-hot-low-supply (ss / 125 degC / 1.62 V --
+* DR-0001's named risk corner).
+*
+* The comparison this configuration exists to make: the array sizing law
+* (spec/porting-plan.md Sec 1.1) is Q = sigma_1^2 * T_s / T0^3 per ring, so
+* stage count enters twice and in opposite directions. For a ring of n
+* nominally identical stages each contributing an independent per-transition
+* timing perturbation, sigma_1^2 grows ~n while T0 grows ~n, giving
+* Q ~ 1/n^2: FEWER stages should be strictly better for entropy per sample
+* at a fixed sample period T_s. That is an analytic expectation, not a
+* measurement, and issue #10's acceptance criteria explicitly forbid
+* carrying a stage-count claim on "left as-is". This deck is the
+* measurement that tests it on sky130 devices: ro_ring5 and ro_ring11 are
+* run at the same three headline points, with the same injected noise
+* level, the same seed, and the same estimator, so their Q ratio is
+* directly readable.
+*
+* Method, injection topology, trnoise() calibration, and every caveat are
+* identical to tb_ro_ring5_jitter.spice -- see that file's header for the
+* full statement (in particular: the injected level is anchored once to
+* sim/ro-stage-noise-mechanism-check's measured near-band output-noise
+* density and is NOT re-measured per corner, so every sigma figure here is
+* good to roughly 1.5-2x, and Q -- which goes as sigma^2 -- to roughly
+* 2-4x). The per-stage series trnoise() sources are wired the same way
+* around the loop: ro -> gA -> ro_nand2 -> n1 -> gB -> stage1 -> n2 -> ...
+* -> n11 -> gL -> stage10 -> ro.
+*
+* Two settings differ from the ro_ring5 deck, both cost-driven and both
+* stated rather than silent:
+*
+*   - 10 periods (11 rising crossings, rise=2..12) instead of 20. The
+*     sigma_1 estimator therefore carries ~22% (1-sigma) statistical error
+*     here instead of ~16%, i.e. ~45% on Q. That is tolerable for the
+*     comparison this deck is for (a predicted ~(11/5)^2 = 4.8x Q ratio
+*     against ro_ring5), and it is NOT good enough to read a corner-to-
+*     corner minimum off ro_ring11 alone -- which is why the
+*     entropy-binding-corner search runs on the ro_ring5 flagship grid.
+*   - sigma_8 is dropped (only 2 independent 8-period lags exist in 10
+*     periods); sigma_1/sigma_2/sigma_4 are reported.
+*
+* tstop = 130 ns is sized from the same deterministic period probe that
+* sized the ro_ring5 deck: the slowest measured ro_ring5 corner is
+* 4.82 ns/period at 5 stages, i.e. ~0.482 ns per stage-transition pair, so
+* ro_ring11's slowest corner is expected near 10.6 ns/period; 11 rising
+* crossings then need <= 11 + 10 x 10.6 = 117 ns.
+*
+* This file is a TEMPLATE: sim/bin/corner-run.py substitutes @@PDK_LIB@@,
+* @@CORNER@@ (process axis), @@RO_RING5@@, @@TEMP@@/@@VDD@@ (the other two
+* PVT axes) and @@SEED@@ (this run's `.option seed=`). NOTE: this deck
+* needs ro_nand2/ro_stage from design/ro_array_core.spice (the netlist that
+* carries ro_ring11), NOT from design/ro_ring5.spice, so every invocation
+* must pass `--ro-ring5 design/ro_array_core.spice`. As committed here
+* this is not a runnable deck.
+
+.option scale=1u
+.lib "@@PDK_LIB@@" @@CORNER@@
+
+.include "@@RO_RING5@@"
+
+.temp @@TEMP@@
+.option seed=@@SEED@@
+
+Vddr vddr 0 dc @@VDD@@
+Ven en 0 dc @@VDD@@
+
+xg gA en n1 vddr 0 ro_nand2
+VnA gA ro dc 0 trnoise(2.0e-3 2e-10 0 0)
+x1 gB n2 vddr 0 ro_stage
+VnB gB n1 dc 0 trnoise(2.0e-3 2e-10 0 0)
+x2 gC n3 vddr 0 ro_stage
+VnC gC n2 dc 0 trnoise(2.0e-3 2e-10 0 0)
+x3 gD n4 vddr 0 ro_stage
+VnD gD n3 dc 0 trnoise(2.0e-3 2e-10 0 0)
+x4 gE n5 vddr 0 ro_stage
+VnE gE n4 dc 0 trnoise(2.0e-3 2e-10 0 0)
+x5 gF n6 vddr 0 ro_stage
+VnF gF n5 dc 0 trnoise(2.0e-3 2e-10 0 0)
+x6 gG n7 vddr 0 ro_stage
+VnG gG n6 dc 0 trnoise(2.0e-3 2e-10 0 0)
+x7 gH n8 vddr 0 ro_stage
+VnH gH n7 dc 0 trnoise(2.0e-3 2e-10 0 0)
+x8 gI n9 vddr 0 ro_stage
+VnI gI n8 dc 0 trnoise(2.0e-3 2e-10 0 0)
+x9 gJ n10 vddr 0 ro_stage
+VnJ gJ n9 dc 0 trnoise(2.0e-3 2e-10 0 0)
+x10 gK n11 vddr 0 ro_stage
+VnK gK n10 dc 0 trnoise(2.0e-3 2e-10 0 0)
+x11 gL ro vddr 0 ro_stage
+VnL gL n11 dc 0 trnoise(2.0e-3 2e-10 0 0)
+
+.ic v(ro)=0 v(n1)=@@VDD@@ v(n2)=0 v(n3)=@@VDD@@ v(n4)=0 v(n5)=@@VDD@@
++ v(n6)=0 v(n7)=@@VDD@@ v(n8)=0 v(n9)=@@VDD@@ v(n10)=0 v(n11)=@@VDD@@
+
+.tran 5p 130n uic
+
+.control
+run
+meas tran vmax_ss MAX v(ro) from=25n to=130n
+meas tran vmin_ss MIN v(ro) from=25n to=130n
+let swing_frac = (vmax_ss - vmin_ss) / @@VDD@@
+let k = 2
+let tc = vector(11)
+while k <= 12
+  meas tran tk when v(ro)=0.5*@@VDD@@ rise=$&k
+  let tc[k-2] = tk
+  let k = k + 1
+end
+let tbar = (tc[10] - tc[0])/10
+let r1 = (tc[1,10] - tc[0,9]) - 1*tbar
+let r2 = (tc[2,10] - tc[0,8]) - 2*tbar
+let r4 = (tc[4,10] - tc[0,6]) - 4*tbar
+let sigma_1 = sqrt(mean(r1*r1)/(1 - 1/10))
+let sigma_2 = sqrt(mean(r2*r2)/(1 - 2/10))
+let sigma_4 = sqrt(mean(r4*r4)/(1 - 4/10))
+print vmax_ss
+print vmin_ss
+print swing_frac
+print tbar
+print sigma_1
+print sigma_2
+print sigma_4
+.endc
+.end

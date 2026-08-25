@@ -1,0 +1,63 @@
+* ro_stage small-signal gain at its own trip point
+*
+* Purpose: issue #10 acceptance criterion 1 -- the open-loop small-signal
+* gain dV(y)/dV(a) of design/xschem/ro_stage.sch's starved-inverter delay
+* cell, evaluated exactly at its own trip voltage (the point on the DC
+* transfer curve where V(a) = V(y)), at nominal and at the slow/hot/
+* low-supply corner. This is the number DR-0001's "Revisit if" condition
+* turns on: a ring stage with too little gain per stage cannot sustain
+* rail-to-rail oscillation, which is exactly what acceptance criterion 3
+* (ring swing) checks directly.
+*
+* Two replicas of ro_stage are instantiated:
+*
+*   xbias: self-biased via Rfb alone (y1 -> a1, no other DC-connected
+*   element at a1). Node a1 draws no DC current (it is a MOSFET gate), so
+*   by KCL the current through Rfb must be exactly zero in steady state,
+*   which forces V(a1) = V(y1) exactly -- the trip voltage -- *independent
+*   of Rfb's value*. This is a cleaner construction than a resistor-divider
+*   self-bias network (Rfb+Rin to a fixed reference splits the bias point
+*   away from the true trip voltage; verified empirically against this
+*   exact circuit during this campaign's own testbench development).
+*
+*   xdut: driven directly by an ideal voltage source Va2 with no feedback
+*   element at all. Its DC value is set, via the control script's `alter`,
+*   to whatever `op` found V(a1) to be on the bias replica -- so xdut sits
+*   at the *same* trip voltage, but with no feedback loop closing around
+*   it, so `.tf v(y2) Va2` measures the amplifier's true open-loop gain,
+*   not a closed-loop attenuated value (verified during development: wiring
+*   Va2 directly across y-a like a feedback element instead measures a
+*   closed-loop gain near unity, not the open-loop stage gain requested by
+*   the acceptance criterion).
+*
+* This file is a TEMPLATE: sim/bin/corner-run.py substitutes @@PDK_LIB@@,
+* @@CORNER@@, @@RO_RING5@@ (as usual) plus @@TEMP@@/@@VDD@@ for the
+* temperature/supply half of the PVT point -- @@CORNER@@ alone only
+* selects the process corner. As committed here this is not a runnable
+* deck.
+
+.option scale=1u
+.lib "@@PDK_LIB@@" @@CORNER@@
+
+.include "@@RO_RING5@@"
+
+.temp @@TEMP@@
+
+Vdd vdd 0 dc @@VDD@@
+
+Rfb y1 a1 1e6
+xbias a1 y1 vdd 0 ro_stage
+
+Va2 a2 0 dc 0.9 ac 1
+xdut a2 y2 vdd 0 ro_stage
+
+.control
+op
+let vtrip = v(a1)
+print vtrip
+alter Va2 dc = vtrip
+op
+tf v(y2) Va2
+print all
+.endc
+.end

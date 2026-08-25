@@ -42,6 +42,22 @@ a worked example):
     confirming the trace is neither flat nor degenerate -- the "not zero,
     not NaN, not flat" acceptance bar issue #9 sets for the mechanism
     check.
+``@@TEMP@@`` / ``@@VDD@@``
+    The temperature (degC, ``--temp``, default 27.0) / supply (V, ``--vdd``,
+    default 1.8) axes of the {process x temp x supply} PVT grid -- issue #9's
+    ``@@CORNER@@`` covers the process axis only. A testbench references
+    these to build ``.temp @@TEMP@@`` / a supply source at ``@@VDD@@`` and
+    sweep the other two PVT axes across separate runner invocations (one
+    process-corner *bundle* per (temp, vdd) point, matching how ``--corners``
+    already bundles the process axis into one record). Always recorded in
+    the record's own PVT point even for a testbench that does not reference
+    either token, so every record states what temperature/supply it ran at.
+``@@SEED@@``
+    ``--seed``'s value, for a stochastic (``tran-noise``) testbench that
+    writes ``.option seed=@@SEED@@`` itself. A deterministic ``.noise``/
+    ``.tf`` deck never references this token, in which case ``--seed``'s
+    default (a descriptive "N/A..." string, not a number) only ever reaches
+    the record's own ``Seed`` field, never a netlist.
 
 Any ``NAME = VALUE`` line ngspice's own ``print`` command writes to stdout
 (e.g. ``v(a) = 7.681062e-01``, ``onoise_total = 3.712448e-03``) is captured
@@ -333,6 +349,9 @@ def run_corner(
     ngspice_exe: str,
     timeout: int,
     not_flat_ratio_min: float,
+    temp_c: float,
+    vdd_v: float,
+    seed: str,
 ) -> CornerResult:
     scratch_dir.mkdir(parents=True, exist_ok=True)
     onoise_path = scratch_dir / f"{corner}.onoise.txt"
@@ -341,6 +360,23 @@ def run_corner(
         "CORNER": corner,
         "RO_RING5": str(ro_ring5),
         "OUT_ONOISE": str(onoise_path),
+        # Temperature/supply axis, added for issue #10's PVT-grid jitter
+        # characterization campaign: sim/bin/corner-run.py's process-only
+        # @@CORNER@@ substitution (issue #9 scope) covers one axis of the
+        # {process x temp x supply} grid sim/README.md's "PVT grid" section
+        # documents; a testbench that also sweeps temperature/supply
+        # references these two tokens and gets them from --temp/--vdd
+        # (defaults: 27 C / 1.8 V, sky130-trng's nominal 1.8 V core point).
+        "TEMP": str(temp_c),
+        "VDD": str(vdd_v),
+        # Only meaningful for a stochastic (tran-noise) testbench that
+        # itself writes `.option seed=@@SEED@@` -- a deterministic .noise/
+        # .tf deck simply never references this token. Falls back to
+        # whatever --seed was passed (default: the descriptive "N/A..."
+        # text used for the record's own Seed field, which no numeric
+        # `.option seed=` line should ever be built from -- a testbench
+        # that references @@SEED@@ must be invoked with a real --seed).
+        "SEED": str(seed),
     }
     deck_text = render_deck(template_text, substitutions)
     deck_path = scratch_dir / f"{corner}.spice"
@@ -445,6 +481,8 @@ def write_record(
     author: str,
     subset_reason: str | None,
     supersedes: str | None,
+    temp_c: float,
+    vdd_v: float,
 ) -> tuple[Path, bool]:
     # Layout: sim/<slug>/{corners/<rid>/, records/<rid>.md, records/<rid>.json}
     # -- one directory per experiment slug, matching the sibling sky130-bandgap
@@ -477,6 +515,7 @@ def write_record(
         "claim": claim,
         "level": level,
         "seed": seed,
+        "pvt": {"temp_c": temp_c, "vdd_v": vdd_v},
         "testbench": str(testbench.relative_to(REPO_ROOT)),
         "pdk": {
             "variant": pdk.variant,
@@ -520,6 +559,7 @@ def write_record(
         "",
         f"**Level**: {level}",
         f"**Seed**: {seed}",
+        f"**PVT point**: {temp_c:g} degC, {vdd_v:g} V supply (process axis per-corner below)",
         f"**Testbench**: `{testbench.relative_to(REPO_ROOT)}`",
         "",
         "## PDK",
@@ -629,6 +669,21 @@ def main(argv: list[str] | None = None) -> int:
         help="path substituted for @@RO_RING5@@",
     )
     parser.add_argument(
+        "--temp",
+        type=float,
+        default=27.0,
+        help="temperature (degC) substituted for @@TEMP@@; also recorded as the "
+        "record's PVT point even if the testbench does not reference @@TEMP@@",
+    )
+    parser.add_argument(
+        "--vdd",
+        type=float,
+        default=1.8,
+        help="supply (V) substituted for @@VDD@@; also recorded as the record's "
+        "PVT point even if the testbench does not reference @@VDD@@ (default: "
+        "1.8 V, sky130-trng's nominal 1.8 V core supply)",
+    )
+    parser.add_argument(
         "--not-flat-ratio-min",
         type=float,
         default=5.0,
@@ -723,6 +778,9 @@ def main(argv: list[str] | None = None) -> int:
                 "CORNER": requested[0],
                 "RO_RING5": str(args.ro_ring5),
                 "OUT_ONOISE": "/tmp/dry-run-onoise.txt",
+                "TEMP": str(args.temp),
+                "VDD": str(args.vdd),
+                "SEED": str(args.seed),
             },
         )
         print(f"# corners: {', '.join(requested)}")
@@ -748,6 +806,9 @@ def main(argv: list[str] | None = None) -> int:
                 ngspice_exe=ngspice_exe,
                 timeout=args.timeout,
                 not_flat_ratio_min=args.not_flat_ratio_min,
+                temp_c=args.temp,
+                vdd_v=args.vdd,
+                seed=args.seed,
             )
         )
 
@@ -765,6 +826,8 @@ def main(argv: list[str] | None = None) -> int:
             author=author,
             subset_reason=args.subset_reason,
             supersedes=args.supersedes,
+            temp_c=args.temp,
+            vdd_v=args.vdd,
         )
     finally:
         shutil.rmtree(scratch_dir, ignore_errors=True)
