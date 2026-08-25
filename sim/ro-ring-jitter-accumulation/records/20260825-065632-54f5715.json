@@ -1,0 +1,60 @@
+{
+  "record_id": "20260825-065632-54f5715",
+  "slug": "ro-ring-jitter-accumulation",
+  "claim": "ro_ring11 (11-stage starved ring, the array's own ring) transient-noise jitter accumulation and ring swing at ff/-40 degC/1.98 V -- issue #10 fast-cold-high-supply headline point",
+  "level": "transistor",
+  "seed": "1",
+  "pvt": {
+    "temp_c": -40.0,
+    "vdd_v": 1.98
+  },
+  "tran": {
+    "tmax": "20p",
+    "noise_amp": "2.0e-3"
+  },
+  "testbench": "sim/ro-ring-jitter-accumulation/testbench/tb_ro_ring11_jitter.spice",
+  "pdk": {
+    "variant": "sky130A",
+    "installed_commit": "c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+    "pin_commit": "c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+    "matches_pin": true,
+    "lib_file": "/home/ubuntu/.volare/volare/sky130/versions/c6d73a35f524070e85faff4a6a9eef49553ebc2b/sky130A/libs.tech/combined/sky130.lib.spice"
+  },
+  "tools": {
+    "ngspice": "** ngspice-46 : Circuit level simulation program",
+    "python": "3.12.3",
+    "os": "Linux-7.0.0-1010-aws-x86_64-with-glibc2.39"
+  },
+  "repo_state": {
+    "sha": "54f5715",
+    "branch": "feature/issue-10",
+    "dirty": true
+  },
+  "corners": [
+    {
+      "corner": "ff",
+      "ok": true,
+      "returncode": 0,
+      "measurements": {
+        "tk": 3.33939e-08,
+        "vmax_ss": 2.05262,
+        "vmin_ss": -0.0482383,
+        "swing_frac": 1.06104,
+        "tbar": 3.668428e-09,
+        "sigma_1": 1.272497e-12,
+        "sigma_2": 1.850993e-12,
+        "sigma_4": 2.020772e-12
+      },
+      "onoise_min": null,
+      "onoise_max": null,
+      "onoise_spread_ratio": null,
+      "problems": [],
+      "log": "corners/ff.log"
+    }
+  ],
+  "overall": "PASS",
+  "subset_reason": "fast-cold-high-supply headline point: one specific (process,temp,vdd) triple, not a process sweep",
+  "supersedes": "(none)",
+  "author": "auditor@loom.local",
+  "timestamp_utc": "2026-08-25T07:07:22.198958+00:00"
+}

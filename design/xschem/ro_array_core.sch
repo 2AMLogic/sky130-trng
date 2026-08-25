@@ -13,28 +13,53 @@ a single sampler observes. The TOPOLOGY is what ports: an array of
 independent rings, non-integer frequency ratios, per-ring supply routing,
 one combining node ahead of one sampler.
 
-N = 2 AND 11 STAGES ARE PROVISIONAL PLACEHOLDERS, NOT A SIZED RESULT FOR
-sky130. gf180-trng arrived at N = 2 at eleven stages from gf180mcu
-MEASUREMENTS -- a measured jitter figure feeding an array sizing law, and a
-measured array power rollup against a ratified power row that the combining
-tree, not the rings, turned out to bind. spec/porting-plan.md section 2.2
-is explicit that none of those numbers port: they are the output of a
-device measurement, not of the sizing law (which does port). This file
-instantiates two eleven-stage rings because that is a known-good shape to
-start a port from, and for no other reason.
+N = 2 AS DRAWN HERE IS REFUTED, NOT MERELY UNCONFIRMED. It is retained
+only because replacing it is a block redesign, not an edit. Read this
+paragraph before reading anything else in this file.
 
-What the sizing law needs before N stops being a placeholder, per
-spec/porting-plan.md sections 2.2 and 3.1: sky130 transient-noise
-jitter-accumulation runs over this design's own ro_stage, across the corner
-grid, producing per-ring sigma_1 and T_0. Those feed the array law
-Q_array = sum over rings of sigma_acc squared over T_0 squared, sized to
-the min-entropy target with the declared design margin at the
-entropy-binding corner -- and the entropy-binding corner is itself
-something this port owes a full-grid measurement for (section 2.4), rather
-than inheriting gf180-trng's, which inverted once inside that repository
-when more grid coverage arrived. Until that work exists, treat N = 2 as
-"the smallest array the concept allows, drawn so the hierarchy is
-complete", not as a sky130 answer.
+The measurement that refutes it is this repo's own, landed by issue #10 and
+recorded in spec/decision-records/DR-0002-sky130-ro-jitter-and-array-sizing
+(status Proposed) over the evidence under sim/ro-ring-jitter-accumulation/,
+sim/ro-stage-small-signal-gain/ and sim/ro-array-sizing/. Transient-noise
+jitter accumulation on this design's own cells, across the full 27-point
+grid -- tt/ss/ff process, -40/27/125 C, 1.62/1.80/1.98 V -- reduced through
+the same array sizing law gf180-trng used, gives:
+
+  entropy-binding corner  ss / -40 C / 1.62 V (COLD -- measured here, NOT
+                          inherited; gf180-trng's own answer for its own
+                          process inverted between DR-0012 and DR-0015,
+                          which is exactly why this had to be measured)
+  Q_ring at that corner   1.122e-4 for the five-stage vehicle,
+                          1.927e-5 for the eleven-stage ring drawn here
+  sized N                 53 five-stage rings, or at least 309 of the
+                          eleven-stage rings this file instantiates, to
+                          reach the repo's draft H0 = 0.5 target at its
+                          draft 1 Mbps raw rate with the declared 1.5x
+                          margin
+  N = 2 delivers          Q_array = 2.2e-4, i.e. 26x short of the law's
+                          requirement (the min-entropy shortfall is 0.08
+                          bit, not 0.5 -- the bound saturates; both
+                          framings are in DR-0002 section 5)
+
+Every figure above carries ~2-4x uncertainty, because the injected noise
+level is anchored once to a measured device noise density rather than
+re-measured per corner. "53" means "tens".
+
+ELEVEN STAGES likewise survives as a working choice and fails as a good
+one: it oscillates rail-to-rail at every corner measured (swing 1.06 x Vdd,
+so DR-0001's "revisit if" condition is NOT triggered), and the delay cell
+has ~12x the gain it needs -- but it measures 12-48x WORSE in Q than five
+stages at the same points. It is not moved here because the five-stage
+ring's own swing is only 0.81-1.00 x Vdd at the fast/hot/high-supply end,
+and because the sampler-loading and frequency-skew consequences of a 2.7x
+faster ring are unevaluated.
+
+WHAT IS STILL A PLACEHOLDER, unchanged by that campaign: every device
+width, the starve length lstv (no sky130 power rollup exists -- the
+campaign measured jitter and swing, not supply current), the ~9.5% wstv
+skew fraction (a single wstv was run; no inter-ring correlation was
+measured), and cld. See design/README.md's "Provisional, not sized" table,
+which now marks each row measured / refuted / placeholder.
 
   en1, en2    per-ring enable. en = 0 stops that ring in a static state.
   vddr1/2     per-ring supply. Separate routing is an independence

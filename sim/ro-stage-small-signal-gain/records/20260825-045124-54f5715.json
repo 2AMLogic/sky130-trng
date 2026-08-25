@@ -1,0 +1,51 @@
+{
+  "record_id": "20260825-045124-54f5715",
+  "slug": "ro-stage-small-signal-gain",
+  "claim": "issue #10 acceptance criterion 1: open-loop small-signal gain of ro_stage at its own trip point, fast/cold/high-supply headline point (ff/-40C/1.98V)",
+  "level": "transistor",
+  "seed": "N/A (deterministic small-signal .noise analysis, not Monte Carlo)",
+  "pvt": {
+    "temp_c": -40.0,
+    "vdd_v": 1.98
+  },
+  "testbench": "sim/ro-stage-small-signal-gain/testbench/tb_ro_stage_gain.spice",
+  "pdk": {
+    "variant": "sky130A",
+    "installed_commit": "c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+    "pin_commit": "c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+    "matches_pin": true,
+    "lib_file": "/home/ubuntu/.volare/volare/sky130/versions/c6d73a35f524070e85faff4a6a9eef49553ebc2b/sky130A/libs.tech/combined/sky130.lib.spice"
+  },
+  "tools": {
+    "ngspice": "** ngspice-46 : Circuit level simulation program",
+    "python": "3.12.3",
+    "os": "Linux-7.0.0-1010-aws-x86_64-with-glibc2.39"
+  },
+  "repo_state": {
+    "sha": "54f5715",
+    "branch": "feature/issue-10",
+    "dirty": false
+  },
+  "corners": [
+    {
+      "corner": "ff",
+      "ok": true,
+      "returncode": 0,
+      "measurements": {
+        "vtrip": 0.8439417,
+        "transfer_function": -11.8287,
+        "output_impedance_at_v(y2)": 277692.8
+      },
+      "onoise_min": null,
+      "onoise_max": null,
+      "onoise_spread_ratio": null,
+      "problems": [],
+      "log": "corners/ff.log"
+    }
+  ],
+  "overall": "PASS",
+  "subset_reason": "fast/cold/high-supply headline point per DR-0006-style reduced-grid convention: one specific (process,temp,vdd) triple, not a process sweep",
+  "supersedes": "(none)",
+  "author": "auditor@loom.local",
+  "timestamp_utc": "2026-08-25T04:52:18.319981+00:00"
+}

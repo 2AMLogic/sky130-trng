@@ -1,0 +1,131 @@
+|* ro_stage small-signal gain at its own trip point
+|*
+|* Purpose: issue #10 acceptance criterion 1 -- the open-loop small-signal
+|* gain dV(y)/dV(a) of design/xschem/ro_stage.sch's starved-inverter delay
+|* cell, evaluated exactly at its own trip voltage (the point on the DC
+|* transfer curve where V(a) = V(y)), at nominal and at the slow/hot/
+|* low-supply corner. This is the number DR-0001's "Revisit if" condition
+|* turns on: a ring stage with too little gain per stage cannot sustain
+|* rail-to-rail oscillation, which is exactly what acceptance criterion 3
+|* (ring swing) checks directly.
+|*
+|* Two replicas of ro_stage are instantiated:
+|*
+|*   xbias: self-biased via Rfb alone (y1 -> a1, no other DC-connected
+|*   element at a1). Node a1 draws no DC current (it is a MOSFET gate), so
+|*   by KCL the current through Rfb must be exactly zero in steady state,
+|*   which forces V(a1) = V(y1) exactly -- the trip voltage -- *independent
+|*   of Rfb's value*. This is a cleaner construction than a resistor-divider
+|*   self-bias network (Rfb+Rin to a fixed reference splits the bias point
+|*   away from the true trip voltage; verified empirically against this
+|*   exact circuit during this campaign's own testbench development).
+|*
+|*   xdut: driven directly by an ideal voltage source Va2 with no feedback
+|*   element at all. Its DC value is set, via the control script's `alter`,
+|*   to whatever `op` found V(a1) to be on the bias replica -- so xdut sits
+|*   at the *same* trip voltage, but with no feedback loop closing around
+|*   it, so `.tf v(y2) Va2` measures the amplifier's true open-loop gain,
+|*   not a closed-loop attenuated value (verified during development: wiring
+|*   Va2 directly across y-a like a feedback element instead measures a
+|*   closed-loop gain near unity, not the open-loop stage gain requested by
+|*   the acceptance criterion).
+|*
+|* This file is a TEMPLATE: sim/bin/corner-run.py substitutes /home/ubuntu/.volare/volare/sky130/versions/c6d73a35f524070e85faff4a6a9eef49553ebc2b/sky130A/libs.tech/combined/sky130.lib.spice,
+|* ss, /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-10/design/ro_ring5.spice (as usual) plus 125.0/1.62 for the
+|* temperature/supply half of the PVT point -- ss alone only
+|* selects the process corner. As committed here this is not a runnable
+|* deck.
+|
+|.option scale=1u
+|.lib "/home/ubuntu/.volare/volare/sky130/versions/c6d73a35f524070e85faff4a6a9eef49553ebc2b/sky130A/libs.tech/combined/sky130.lib.spice" ss
+|
+|.include "/home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-10/design/ro_ring5.spice"
+|
+|.temp 125.0
+|
+|Vdd vdd 0 dc 1.62
+|
+|Rfb y1 a1 1e6
+|xbias a1 y1 vdd 0 ro_stage
+|
+|Va2 a2 0 dc 0.9 ac 1
+|xdut a2 y2 vdd 0 ro_stage
+|
+|.control
+|op
+|let vtrip = v(a1)
+|print vtrip
+|alter Va2 dc = vtrip
+|op
+|tf v(y2) Va2
+|print all
+|.endc
+|.end
+|
+
+----- stdout -----
+
+Note: No compatibility mode selected!
+
+
+Circuit: * ro_stage small-signal gain at its own trip point
+
+Doing analysis at TEMP = 125.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+ Reference value :  0.00000e+00
+No. of Data Rows : 1
+vtrip = 8.049105e-01
+Doing analysis at TEMP = 125.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+Doing analysis at TEMP = 125.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+No. of Data Rows : 1
+transfer_function = -1.55708e+01
+output_impedance_at_v(y2) = 1.177400e+06
+va2#input_impedance = 1.000000e+20
+Note: Simulation executed from .control section 
+
+----- stderr -----
+
+Checking parameters for BSIM 4.5 model xdut.xmn:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model xdut.xmph:pshort_model.44
+Warning: Eta0 = -0.00221468 is negative.
+
+Checking parameters for BSIM 4.5 model xbias.xmn:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model xbias.xmph:pshort_model.44
+Warning: Eta0 = -0.00221468 is negative.
+
+Checking parameters for BSIM 4.5 model xdut.xmn:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model xdut.xmph:pshort_model.44
+Warning: Eta0 = -0.00221468 is negative.
+
+Checking parameters for BSIM 4.5 model xbias.xmn:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model xbias.xmph:pshort_model.44
+Warning: Eta0 = -0.00221468 is negative.
+
+Checking parameters for BSIM 4.5 model xdut.xmn:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model xdut.xmph:pshort_model.44
+Warning: Eta0 = -0.00221468 is negative.
+
+Checking parameters for BSIM 4.5 model xbias.xmn:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model xbias.xmph:pshort_model.44
+Warning: Eta0 = -0.00221468 is negative.
+

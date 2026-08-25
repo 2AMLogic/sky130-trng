@@ -1,0 +1,164 @@
+* ro_ring5 transient-noise jitter accumulation -- issue #10 flagship config
+*
+* Purpose: issue #10 acceptance criterion 2. Measures period T0 (`tbar`)
+* and jitter accumulation sigma_1/sigma_2/sigma_4/sigma_8 (`sigma_N`) for
+* design/ro_ring5.spice's 5-stage starved ring (1 ro_nand2 enable/stop
+* stage + 4 ro_stage delay cells -- design/README.md's "the cheap
+* transient-noise vehicle for the jitter characterization", explicitly
+* named in design/xschem/ for exactly this purpose), across the sky130
+* PVT grid.
+*
+* This is the campaign's FULL 27-point-grid flagship configuration (the
+* full {tt,ss,ff} x {-40,27,125 degC} x {nominal +/-10% supply} grid, per
+* spec/porting-plan.md Sec 3.1/DR-0006-style reduced-grid convention).
+* design/ro_ring11.sch (the actual 11-stage array ring) is the more
+* expensive config and is only run at the 3 PVT headline points -- see
+* tb_ro_ring11_jitter.spice's own header for why, and this ring's own
+* wall-clock-cost re-measurement below.
+*
+* Method (adapted from gf180-trng's sim/tb/ro-inv-05stage-jitter/, cited by
+* spec/porting-plan.md Sec 3.2 as "device-physics testbenches (re-run on
+* sky130 devices, not ported as evidence)"): ngspice's own .tran analysis
+* does not include intrinsic BSIM4 device noise (this is a general ngspice
+* architecture fact, not a PDK-specific one -- confirmed against this
+* checkout's own ngspice build during this campaign's development: a
+* purely deterministic .tran of this same ring, no injected sources at
+* all, converges to a bit-exact repeating period with zero run-to-run
+* seed sensitivity). So every stage's input carries an explicit trnoise()
+* voltage source, in series, exactly mirroring gf180-trng's per-stage
+* injection topology (ro -> gA -> nand2 -> n1 -> gB -> stage1 -> n2 -> ...
+* -> n4 -> gE -> stage4 -> ro).
+*
+* trnoise() calibration: NA=2.0e-3 (V rms), NT=2e-10 (s) -> one-sided
+* injected PSD S_inj = 2*NA^2*NT = 1.6e-15 V^2/Hz (4.0e-08 V/sqrt(Hz)),
+* anchored to sim/ro-stage-noise-mechanism-check/records/
+* 20260825-022446-d58d709.md's own measured onoise_spectrum density near
+* 1 GHz (~4.0e-08 V/sqrt(Hz) at tt, the closest sampled frequency to this
+* ring's own oscillation band) -- the same "anchor the fixed injection
+* level to the device's own measured near-oscillation-band noise density"
+* method gf180-trng's characterization-ro-delay-cell-jitter.md documents
+* (see its "Device .noise cross-check" section), simplified here to a
+* single anchor point rather than a full new per-corner device-.noise
+* sweep (out of this issue's budget -- see this record's caveats).
+* NT=2e-10 gives an implied noise bandwidth (~1/(2*NT) = 2.5 GHz) safely
+* above every oscillation frequency measured in this campaign's own grid.
+* CAVEAT: this is a single fixed injection level, not re-measured per
+* corner -- treat every sigma_N figure below as good to a factor of
+* roughly 1.5-2x, per gf180-trng's own precedent for the same method
+* (its characterization-ro-delay-cell-jitter.md's "Safe to size against"
+* item 5).
+*
+* Wall-clock cost, re-measured for sky130 (spec/porting-plan.md Sec 2.2
+* explicitly asks for this re-measurement rather than assuming gf180-trng's
+* own ~130-150s/run figure ports). Measured on this campaign's development
+* machine (8-core x86-64, ngspice-46, sky130A c6d73a35):
+*
+*   - ~1.9 s of wall clock per simulated ns for this 5-stage ring at
+*     `.tran 5p`, i.e. ~215 s per corner point at this deck's 115 ns tstop.
+*   - That cost is set by the transient step count, NOT by trnoise(): the
+*     same ring, same tstop, same max step, with the trnoise() sources
+*     replaced by plain `dc 0` sources, measured within a few percent of
+*     the same wall clock. (An earlier draft of this header asserted a
+*     ~475x trnoise penalty at NT=1e-11; that figure did not survive
+*     re-measurement at NT=2e-10 and has been struck.)
+*   - ro_ring11 is ~2.2x the devices AND ~2.2x the period, so it costs
+*     ~5x per measured period. That is why THIS ring, not ro_ring11, is
+*     the full-27-point-grid flagship and ro_ring11 runs only the 3
+*     headline points -- exactly the DR-0006 cost/coverage trade-off,
+*     re-measured on sky130 rather than inherited.
+*
+* tstop = 115 ns is sized from a deterministic (noise-free) period probe
+* run over the grid's extremes before this deck was fixed: the slowest
+* corner measured is 4.82 ns/period (ss / -40 degC / 1.62 V; the low-supply
+* edge dominates -- ss/1.98 V runs 2.02 ns/period, a 2.4x supply swing,
+* while -40 -> +125 degC at fixed supply moves it under 2%). 21 rising
+* crossings therefore need <= 5 + 20 x 4.82 = 101 ns, and 115 ns carries
+* the margin. A single uniform tstop across all 27 points (rather than a
+* per-corner one) keeps every record's measurement window identical.
+*
+* 20 periods measured (21 rising crossings, rise=2..22; the first rising
+* edge is discarded as `.ic` startup transient, per gf180-trng's own
+* convention), NOT gf180-trng's 128 -- a budget-driven reduction, made
+* deliberately per spec/porting-plan.md Sec 2.2's prompt to re-measure
+* DR-0006's cost/coverage trade-off rather than copy it: 128 periods at
+* this ring's worst-corner 4.82 ns period would need a ~620 ns tstop, ~20
+* min per corner point, ~9 h for the 27-point grid alone. CAVEAT: with 20
+* period samples the sigma_1 estimator itself carries ~16% (1-sigma)
+* statistical error, hence ~32% on sigma_1^2 and therefore on Q -- that is
+* the resolution floor for any corner-to-corner Q comparison read off this
+* grid, and the reduction in sim/ro-array-sizing/ states it as such.
+* sigma_1/sigma_2/sigma_4/sigma_8 only (no sigma_16/sigma_32 --
+* gf180-trng's own accumulated-jitter figures at N>=16 were themselves
+* flagged as "not yet resolvable trends" even at their much larger
+* period/seed count). CAVEAT: single seed per PVT point (gf180-trng used
+* >=4) -- seed-to-seed spread is NOT characterized by this campaign; a
+* documented gap, not a silent omission. The seed is deliberately held
+* CONSTANT across every point of the grid (common random numbers), so
+* corner-to-corner Q differences are not additionally confounded by
+* seed-to-seed variation.
+*
+* This file is a TEMPLATE: sim/bin/corner-run.py substitutes @@PDK_LIB@@,
+* @@CORNER@@ (process axis), @@RO_RING5@@ (unused by this file -- the ring
+* is built in place from ro_nand2/ro_stage, both defined by
+* design/ro_ring5.spice, which @@RO_RING5@@ still names, so --ro-ring5's
+* default is exactly the file this deck needs .include'd), @@TEMP@@/@@VDD@@
+* (the other two PVT axes) and @@SEED@@ (this run's `.option seed=`). As
+* committed here this is not a runnable deck.
+
+.option scale=1u
+.lib "@@PDK_LIB@@" @@CORNER@@
+
+.include "@@RO_RING5@@"
+
+.temp @@TEMP@@
+.option seed=@@SEED@@
+
+Vddr vddr 0 dc @@VDD@@
+Ven en 0 dc @@VDD@@
+
+xg gA en n1 vddr 0 ro_nand2
+VnA gA ro dc 0 trnoise(@@NA@@ 2e-10 0 0)
+x1 gB n2 vddr 0 ro_stage
+VnB gB n1 dc 0 trnoise(@@NA@@ 2e-10 0 0)
+x2 gC n3 vddr 0 ro_stage
+VnC gC n2 dc 0 trnoise(@@NA@@ 2e-10 0 0)
+x3 gD n4 vddr 0 ro_stage
+VnD gD n3 dc 0 trnoise(@@NA@@ 2e-10 0 0)
+x4 gE ro vddr 0 ro_stage
+VnE gE n4 dc 0 trnoise(@@NA@@ 2e-10 0 0)
+
+.ic v(ro)=0 v(n1)=@@VDD@@ v(n2)=0 v(n3)=@@VDD@@ v(n4)=0
+
+.tran @@TMAX@@ 115n uic
+
+.control
+run
+meas tran vmax_ss MAX v(ro) from=20n to=115n
+meas tran vmin_ss MIN v(ro) from=20n to=115n
+let swing_frac = (vmax_ss - vmin_ss) / @@VDD@@
+let k = 2
+let tc = vector(21)
+while k <= 22
+  meas tran tk when v(ro)=0.5*@@VDD@@ rise=$&k
+  let tc[k-2] = tk
+  let k = k + 1
+end
+let tbar = (tc[20] - tc[0])/20
+let r1 = (tc[1,20] - tc[0,19]) - 1*tbar
+let r2 = (tc[2,20] - tc[0,18]) - 2*tbar
+let r4 = (tc[4,20] - tc[0,16]) - 4*tbar
+let r8 = (tc[8,20] - tc[0,12]) - 8*tbar
+let sigma_1 = sqrt(mean(r1*r1)/(1 - 1/20))
+let sigma_2 = sqrt(mean(r2*r2)/(1 - 2/20))
+let sigma_4 = sqrt(mean(r4*r4)/(1 - 4/20))
+let sigma_8 = sqrt(mean(r8*r8)/(1 - 8/20))
+print vmax_ss
+print vmin_ss
+print swing_frac
+print tbar
+print sigma_1
+print sigma_2
+print sigma_4
+print sigma_8
+.endc
+.end
