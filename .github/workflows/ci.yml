@@ -1,0 +1,54 @@
+name: CI
+
+# PR-blocking checks for this repository. There is exactly one right now:
+# design/netlist.py --lint.
+#
+# design/netlist.py --lint (schematic T {...} text-block brace guard)
+#     Pure Python over design/xschem/*.sch's own text -- no xschem, no PDK.
+#     Every schematic carries a `T {...}` free-text header; a literal `{` or
+#     `}` inside that block (even a balanced pair) makes xschem's own parser
+#     miscount and silently drop part of the exported netlist, with no error
+#     from xschem and no error from netlist.py's non-lint export path either.
+#     That failure mode is invisible at review time and cheap to catch at
+#     authorship, so it runs on every PR touching design/ and blocks on
+#     failure.
+#
+# design/netlist.py --check (schematic-vs-netlist staleness guard) is
+# DELIBERATELY NOT here. It shells out to xschem and resolves the sky130
+# xschem symbol library through a real PDK install (design/pdk.json pins
+# open_pdks commit c6d73a35f524070e85faff4a6a9eef49553ebc2b), neither of
+# which a stock GitHub-hosted runner has -- provisioning ~1 GB of PDK on
+# every pull request is not something this repo's PR path should pay for.
+# See .github/workflows/pdk-nightly.yml, which provisions xschem + the
+# pinned sky130 PDK (via volare) and runs --check on a schedule, on manual
+# dispatch, and opt-in on a PR via the `run-pdk-check` label.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    paths:
+      - "design/**"
+      - ".github/workflows/ci.yml"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Schematic brace-guard lint (design/netlist.py --lint)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: design/netlist.py --lint
+        run: python3 design/netlist.py --lint

@@ -1,0 +1,114 @@
+name: PDK nightly
+
+# The PDK-dependent half of this repository's self-checks, deliberately kept
+# off the pull-request path (see ci.yml's comment for why).
+#
+# design/netlist.py --check re-exports every top cell in design/xschem/ into
+# a temp directory and fails if the result disagrees with the committed
+# design/*.spice -- which is what makes a netlist.sha recorded anywhere else
+# in this repo mean "derived from the schematic it claims to come from"
+# rather than "a snapshot someone forgot to refresh". It shells out to
+# xschem and resolves the sky130 xschem symbol library through a real PDK
+# install, so it cannot run on the PR path (a pull request must never block
+# on a ~1 GB PDK download).
+#
+# PDK provisioning: volare, pinned to the open_pdks commit design/pdk.json
+# names (currently c6d73a35f524070e85faff4a6a9eef49553ebc2b -- read from
+# that file at run time below, not hardcoded here, so the two can never
+# silently disagree). volare is what design/netlist.py's own
+# PdkNotFound/INSTALL_HINT message tells a human to install, and it puts the
+# PDK at ~/.volare/<variant>, one of netlist.py's built-in search roots, so
+# no SKY130_PDK_PATH / PDK_ROOT wiring is needed here. The "Resolved PDK"
+# step below runs `design/netlist.py --pdk` before `--check`, so a failure
+# is attributable: it prints the resolved open_pdks commit and whether it
+# matches design/pdk.json's pin, distinguishing "the schematic changed" from
+# "the PDK moved out from under the pin".
+#
+# xschem itself comes from the runner's distro package rather than a pin,
+# because it is a netlister, not a numerical tool, and its output formatting
+# is an input to the staleness comparison: a distro version bump is meant to
+# turn this job red (loud) rather than drift unnoticed. The fix in that case
+# is `python3 design/netlist.py` (regenerate) and commit the diff, noting
+# the xschem version bump -- the step below prints the version it used.
+#
+# Runs on a schedule, on manual dispatch, and opt-in on a pull request via
+# the `run-pdk-check` label (e.g. to validate a schematic edit before merge
+# without paying the PDK cost on every PR by default) -- the same pattern
+# the sibling repo 2AMLogic/sky130-bandgap uses for its own PDK-gated job.
+#
+# Note: GitHub disables scheduled workflows in a repository with no activity
+# for 60 days. If this stops running, re-enable it from the Actions tab.
+
+on:
+  schedule:
+    # 06:41 UTC daily. Off the hour on purpose -- the shared scheduler is
+    # congested on the hour and delays runs queued there.
+    - cron: "41 6 * * *"
+  workflow_dispatch: {}
+  pull_request:
+    types: [opened, synchronize, reopened, labeled]
+
+permissions:
+  contents: read
+
+concurrency:
+  # One provisioning run at a time; never cancel one in flight, since a
+  # cancelled cold run wastes the whole PDK download for nothing.
+  group: pdk-nightly
+  cancel-in-progress: false
+
+jobs:
+  netlist-check:
+    name: Schematic-vs-netlist staleness guard (design/netlist.py --check)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    if: >-
+      github.event_name == 'schedule' ||
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'pull_request' &&
+       contains(github.event.pull_request.labels.*.name, 'run-pdk-check'))
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install xschem (the schematic netlister)
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends xschem
+          xschem --version 2>&1 | head -n 2
+
+      - name: Install volare (the sky130 PDK version manager)
+        run: pip install --user volare
+
+      - name: Put ~/.local/bin on PATH
+        run: echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Resolve the pinned open_pdks commit from design/pdk.json
+        id: pin
+        run: |
+          set -euo pipefail
+          commit="$(python3 -c "import json; print(json.load(open('design/pdk.json'))['open_pdks_commit'])")"
+          echo "commit=${commit}" >> "$GITHUB_OUTPUT"
+          echo "Pinned open_pdks commit (design/pdk.json): ${commit}"
+
+      - name: Fetch + enable the pinned sky130 PDK
+        run: |
+          set -euo pipefail
+          volare fetch --pdk sky130 "${{ steps.pin.outputs.commit }}"
+          volare enable --pdk sky130 "${{ steps.pin.outputs.commit }}"
+
+      # Prints the resolved install path, source, and open_pdks commit, and
+      # whether that commit matches design/pdk.json's pin -- so a --check
+      # failure below is attributable to a schematic edit rather than to a
+      # PDK bump before anyone has to read a diff to find out.
+      - name: Resolved PDK
+        run: python3 design/netlist.py --pdk
+
+      # Writes nothing: --check exports every TOP_CELLS entry into a temp
+      # directory and diffs against the committed design/*.spice.
+      - name: design/netlist.py --check
+        run: python3 design/netlist.py --check
