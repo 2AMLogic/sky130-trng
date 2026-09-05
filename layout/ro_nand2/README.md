@@ -191,9 +191,11 @@ not have to re-derive it.
   `poly`/vias, plus `capm`/`cap2m`/`m3`-`m5` present in the deck but not
   exercised by this geometry); implant layers (`nsdm`/`psdm`) are still not
   drawn by any generator in use.
-- **Built at one `wstv` value only (`0.42 µm`, matching `xr1`)** — same open
-  item `ro_stage` already carries. The other three rings' starve-device
-  variants (`0.44`/`0.46`/`0.48 µm`) are unstarted.
+- **This cell is `xr1`'s instance only (`wstv = 0.42 µm`).** The other three
+  rings' starve-device variants are now built too — see
+  `layout/ro_nand2_wstv0p44/`, `layout/ro_nand2_wstv0p46/`,
+  `layout/ro_nand2_wstv0p48/`, and `layout/README.md`'s "Starve-width
+  variants" section for the placement-origin re-derivation each one needed.
 - **No parasitics, no post-layout simulation.** `klt extract` was run without
   `--parasitics`; nothing under `sim/` has been re-run against this cell, and
   DR-0003 §8's `wstv` inter-ring decorrelation gap remains unevaluated for the

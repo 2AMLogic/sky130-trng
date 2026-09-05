@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "engine": "klayout",
+  "layout": "ro_stage_wstv0p48.spice",
+  "reference": "ro_stage_wstv0p48.ref.spice",
+  "top": "RO_STAGE_WSTV0P48",
+  "reference_top": "RO_STAGE",
+  "parameter_tolerance": null,
+  "options": {
+    "combine_devices": false,
+    "flatten_layout": false,
+    "flatten_reference": false,
+    "netgen_setup": null,
+    "parameter_tolerance": null
+  },
+  "status": "match",
+  "mismatch_count": 0,
+  "error_count": 0,
+  "category_counts": {},
+  "category_error_counts": {},
+  "counts": {
+    "nets": {
+      "layout": 6,
+      "reference": 6,
+      "matched": 6
+    },
+    "devices": {
+      "layout": 4,
+      "reference": 4,
+      "matched": 4
+    },
+    "pins": {
+      "layout": 6,
+      "reference": 4,
+      "matched": 6
+    }
+  },
+  "device_classes": null,
+  "environment": {
+    "engine": "klayout",
+    "engine_version": "0.30.12",
+    "layout_sha256": "06978d67fc4cb8e05c7be2a4ea487ec413ced818f68094a1758884bea1e92494",
+    "reference_sha256": "ca961bdbb037ff0bce3ea195bc11268662f9d7d4ef24231e9559b1903bda028d",
+    "extracted_netlist": null
+  },
+  "provenance": {
+    "klt_version": "0.4.0",
+    "klayout_version": "0.30.12",
+    "pdk": null,
+    "deck": null,
+    "input": null
+  },
+  "mismatches": [],
+  "net_correspondence": [
+    {
+      "layout": "A",
+      "reference": "A",
+      "pin": true
+    },
+    {
+      "layout": "NY",
+      "reference": "NY",
+      "pin": true
+    },
+    {
+      "layout": "PY",
+      "reference": "PY",
+      "pin": true
+    },
+    {
+      "layout": "MNT_G|VDDR",
+      "reference": "VDDR",
+      "pin": true
+    },
+    {
+      "layout": "MPH_G|VSS",
+      "reference": "VSS",
+      "pin": true
+    },
+    {
+      "layout": "Y",
+      "reference": "Y",
+      "pin": true
+    }
+  ]
+}

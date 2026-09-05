@@ -1,0 +1,505 @@
+{
+  "cell": "ro_nand2_wstv0p44",
+  "_comment": [
+    "Cell descriptor for layout/bin/compose-cell.py -- see layout/README.md",
+    "section 'Composing a gate' for the floorplan reasoning shared with every",
+    "other cell, and layout/ro_nand2/README.md for this cell's own result.",
+    "",
+    "ro_nand2 is design/ro_array_core.spice's per-ring NAND2 stage (the",
+    "enable-gated first stage of each ro_ring5): a parallel PMOS pull-up pair",
+    "(Mpa/Mpb, gates a/en) and a series NMOS pull-down pair (Mna/Mnb, gates",
+    "a/en) between the same starve-device pair ro_stage uses (Mph/Mnt,",
+    "cross-coupled to the OPPOSITE rail exactly as in ro_stage). Six devices",
+    "total -- the same cross-coupled-starve-gate shape as ro_stage, reusing",
+    "its two-pass 'stages' technique directly, plus two new floorplan moves:",
+    "",
+    "1. Mna/Mnb (series: XMna y a nm / XMnb nm en ny) are drawn as ONE",
+    "   mos_array call with fingers=2, finger_topology='series' -- the",
+    "   generator chains two fingers source-to-drain on one shared internal",
+    "   diffusion segment (reported as U0_S0/U0_D0/U0_S1, D0 being the",
+    "   internal shared node), so the 'nm' net needs no external wire at all:",
+    "   it is already one physical node by construction. U0_S0=ny, U0_G0=en,",
+    "   U0_D0=nm (left unconnected -- internal), U0_G1=a, U0_S1=y.",
+    "2. Mpa/Mpb (parallel: both XMpa/XMpb have D=y, S=py) are drawn as TWO",
+    "   separate mos_array calls (both pfet_w0p84_l0p15), Mpa 'mirror_y' and",
+    "   Mpb 'rotate_180' -- the rotate_180 flip makes Mpb's own D face LEFT",
+    "   (toward Mpa's D) so the two drains land at the SAME y with a 0.62 um",
+    "   direct gap (identical technique to Mph/Mp's 'py' short in ro_stage),",
+    "   while Mpb's S ends up on the cell's far east edge, facing away.",
+    "   Merging Mpa's nwell into Mpb's (0.10 um bbox overlap, same technique",
+    "   as Mph/Mp) keeps the whole PMOS row -- Mph+Mpa+Mpb -- on one",
+    "   physical nwell needing only Mph's own tap.",
+    "",
+    "Both of the above create THREE-way nets (py: Mph.D+Mpa.S+Mpb.S; y:",
+    "Mpa.D+Mpb.D+Mna.D) whose 'far' leg cannot be wired in the base stage: a",
+    "straight run from either far pin re-crosses another of the row's own",
+    "S/D pads (a same-block self-net pad-crossing once stage 'core' becomes",
+    "one composed block). So stage 'core' promotes EVERY py/y endpoint",
+    "(mph_py/mpa_py/mpb_py, mpa_y/mpb_y/mnab_y) as bare pins -- wiring",
+    "neither net inside stage 'core' at all -- alongside ro_stage's usual",
+    "mph_g/mnt_g cross-coupled-gate promotion, and the final stage resolves",
+    "all six same-block self-net legs on metal2 in one gen-compose call (so",
+    "the router's own route-vs-route check sees all six lanes at once):",
+    "py's two legs, y's two legs, and ro_stage's usual vss/vddr pair.",
+    "Every waypoint lane was chosen empirically (see README) to give each",
+    "leg clearance from the OTHER five legs' own known pad positions -- the",
+    "route-vs-route collision check treats 'core's own promoted ports as the",
+    "only known obstacles once ro_stage's per-sub-block visibility is gone,",
+    "so a lane merely needs to skip the pads it is not addressing, not every",
+    "sub-block's individual bbox.",
+    "",
+    "VARIANT NOTE (issue #22/#27): this is the wstv=0.44 starve-width",
+    "instance -- design/ro_array_core.spice's ring xr2 --",
+    "identical topology/floorplan to the wstv=0.42 (ring xr1) cell this",
+    "was cloned from, with exactly two changes: Mph/Mnt's own w_um param,",
+    "and their placement.origins_um.y, re-derived from the closed-form",
+    "layout/README.md documents ('Starve-width variants' section):",
+    "  mph_oy(w) = 3.74 + w/2",
+    "  mnt_oy(w) = 0.21 - w/2",
+    "(w/2 is mos_array's own reported S/D-pad local y for an l_um=2",
+    "starve device at width w -- empirically linear across 0.42-0.48um,",
+    "identical for both flavors -- so this keeps Mph/Mp's 'py' merge and",
+    "Mnt/Mn's 'ny' route at the exact same absolute y the wstv=0.42 cell",
+    "used, which is what py/ny's straight (no-jog) routes depend on.",
+    "Every other block/origin/waypoint is untouched from the wstv=0.42",
+    "cell.json this was cloned from."
+  ],
+  "pdk": {
+    "variant": "sky130A",
+    "deck": "sky130"
+  },
+  "stages": [
+    {
+      "name": "core",
+      "blocks": [
+        {
+          "id": "mph",
+          "generator": "mos_array",
+          "cell_name": "mph",
+          "orientation": "mirror_y",
+          "params": {
+            "w_um": 0.44,
+            "l_um": 2,
+            "rows": 1,
+            "cols": 1,
+            "dummy": 0,
+            "flavor": "pfet",
+            "gate_contact": true
+          }
+        },
+        {
+          "id": "mpa",
+          "generator": "mos_array",
+          "cell_name": "mpa",
+          "orientation": "mirror_y",
+          "params": {
+            "w_um": 0.84,
+            "l_um": 0.15,
+            "rows": 1,
+            "cols": 1,
+            "dummy": 0,
+            "flavor": "pfet",
+            "gate_contact": true
+          }
+        },
+        {
+          "id": "mpb",
+          "generator": "mos_array",
+          "cell_name": "mpb",
+          "orientation": "rotate_180",
+          "params": {
+            "w_um": 0.84,
+            "l_um": 0.15,
+            "rows": 1,
+            "cols": 1,
+            "dummy": 0,
+            "flavor": "pfet",
+            "gate_contact": true
+          }
+        },
+        {
+          "id": "mnt",
+          "generator": "mos_array",
+          "cell_name": "mnt",
+          "orientation": "none",
+          "params": {
+            "w_um": 0.44,
+            "l_um": 2,
+            "rows": 1,
+            "cols": 1,
+            "dummy": 0,
+            "flavor": "nfet",
+            "gate_contact": true
+          }
+        },
+        {
+          "id": "mnab",
+          "generator": "mos_array",
+          "cell_name": "mnab",
+          "orientation": "none",
+          "params": {
+            "w_um": 0.84,
+            "l_um": 0.15,
+            "rows": 1,
+            "cols": 1,
+            "fingers": 2,
+            "finger_topology": "series",
+            "dummy": 0,
+            "flavor": "nfet",
+            "gate_contact": true
+          }
+        },
+        {
+          "id": "nwell_tap",
+          "generator": "guard_ring",
+          "cell_name": "nwell_tap",
+          "orientation": "none",
+          "params": {
+            "inner_width_um": 1.0,
+            "inner_height_um": 1.0,
+            "ring_width_um": 0.42,
+            "contacts_per_side": 2,
+            "add_well": true
+          }
+        },
+        {
+          "id": "psub_tap",
+          "generator": "guard_ring",
+          "cell_name": "psub_tap",
+          "orientation": "none",
+          "params": {
+            "inner_width_um": 1.0,
+            "inner_height_um": 1.0,
+            "ring_width_um": 0.42,
+            "contacts_per_side": 2,
+            "add_well": false
+          }
+        }
+      ],
+      "placement": {
+        "strategy": "explicit",
+        "order": [
+          "mph",
+          "mpa",
+          "mpb",
+          "mnt",
+          "mnab",
+          "nwell_tap",
+          "psub_tap"
+        ],
+        "origins_um": {
+          "mph": {
+            "x": 0.0,
+            "y": 3.96
+          },
+          "mpa": {
+            "x": 3.04,
+            "y": 4.16
+          },
+          "mpb": {
+            "x": 5.42,
+            "y": 4.16
+          },
+          "mnt": {
+            "x": 0.0,
+            "y": -0.01
+          },
+          "mnab": {
+            "x": 3.24,
+            "y": -0.21
+          },
+          "nwell_tap": {
+            "x": -2.04,
+            "y": 2.82
+          },
+          "psub_tap": {
+            "x": -2.14,
+            "y": -0.71
+          }
+        }
+      },
+      "routing": {
+        "layer_role": "metal",
+        "width_um": 0.17
+      },
+      "connectivity": [
+        {
+          "net": "vddr",
+          "pins": [
+            {
+              "block": "mph",
+              "port": "U0_S"
+            },
+            {
+              "block": "nwell_tap",
+              "port": "TAP_E"
+            }
+          ]
+        },
+        {
+          "net": "vss",
+          "pins": [
+            {
+              "block": "mnt",
+              "port": "U0_S"
+            },
+            {
+              "block": "psub_tap",
+              "port": "TAP_E"
+            }
+          ]
+        },
+        {
+          "net": "ny",
+          "pins": [
+            {
+              "block": "mnt",
+              "port": "U0_D"
+            },
+            {
+              "block": "mnab",
+              "port": "U0_S0"
+            }
+          ]
+        },
+        {
+          "net": "en",
+          "pins": [
+            {
+              "block": "mpa",
+              "port": "U0_G"
+            },
+            {
+              "block": "mnab",
+              "port": "U0_G0"
+            }
+          ]
+        },
+        {
+          "net": "a",
+          "pins": [
+            {
+              "block": "mpb",
+              "port": "U0_G"
+            },
+            {
+              "block": "mnab",
+              "port": "U0_G1"
+            }
+          ]
+        }
+      ],
+      "pins": [
+        {
+          "block": "nwell_tap",
+          "port": "TAP_W",
+          "net": "vddr"
+        },
+        {
+          "block": "psub_tap",
+          "port": "TAP_N",
+          "net": "vss"
+        },
+        {
+          "block": "mph",
+          "port": "U0_D",
+          "net": "mph_py"
+        },
+        {
+          "block": "mpa",
+          "port": "U0_S",
+          "net": "mpa_py"
+        },
+        {
+          "block": "mpb",
+          "port": "U0_S",
+          "net": "mpb_py"
+        },
+        {
+          "block": "mpa",
+          "port": "U0_D",
+          "net": "mpa_y"
+        },
+        {
+          "block": "mpb",
+          "port": "U0_D",
+          "net": "mpb_y"
+        },
+        {
+          "block": "mnab",
+          "port": "U0_S1",
+          "net": "mnab_y"
+        },
+        {
+          "block": "mph",
+          "port": "U0_G",
+          "net": "mph_g"
+        },
+        {
+          "block": "mnt",
+          "port": "U0_G",
+          "net": "mnt_g"
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "id": "core",
+          "from_stage": "core"
+        }
+      ],
+      "placement": {
+        "strategy": "explicit",
+        "order": [
+          "core"
+        ],
+        "origins_um": {
+          "core": {
+            "x": 0.0,
+            "y": 0.0
+          }
+        }
+      },
+      "routing": {
+        "layer_role": "metal2",
+        "width_um": 0.17
+      },
+      "connectivity": [
+        {
+          "net": "py",
+          "pins": [
+            {
+              "block": "core",
+              "port": "mph_py"
+            },
+            {
+              "block": "core",
+              "port": "mpa_py"
+            }
+          ]
+        },
+        {
+          "net": "py",
+          "pins": [
+            {
+              "block": "core",
+              "port": "mpa_py"
+            },
+            {
+              "block": "core",
+              "port": "mpb_py"
+            }
+          ],
+          "waypoints_um": [
+            [
+              3.25,
+              4.5
+            ],
+            [
+              5.21,
+              4.5
+            ]
+          ]
+        },
+        {
+          "net": "y",
+          "pins": [
+            {
+              "block": "core",
+              "port": "mpa_y"
+            },
+            {
+              "block": "core",
+              "port": "mpb_y"
+            }
+          ]
+        },
+        {
+          "net": "y",
+          "pins": [
+            {
+              "block": "core",
+              "port": "mpb_y"
+            },
+            {
+              "block": "core",
+              "port": "mnab_y"
+            }
+          ],
+          "waypoints_um": [
+            [
+              4.54,
+              1.0
+            ],
+            [
+              4.79,
+              1.0
+            ]
+          ]
+        },
+        {
+          "net": "vss",
+          "pins": [
+            {
+              "block": "core",
+              "port": "mph_g"
+            },
+            {
+              "block": "core",
+              "port": "vss"
+            }
+          ],
+          "waypoints_um": [
+            [
+              0.5,
+              2.92
+            ],
+            [
+              0.5,
+              0.92
+            ]
+          ]
+        },
+        {
+          "net": "vddr",
+          "pins": [
+            {
+              "block": "core",
+              "port": "mnt_g"
+            },
+            {
+              "block": "core",
+              "port": "vddr"
+            }
+          ],
+          "waypoints_um": [
+            [
+              2.0,
+              1.03
+            ],
+            [
+              2.0,
+              4.4
+            ],
+            [
+              -1.83,
+              4.4
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "lvs": {
+    "reference": "design/ro_array_core.spice",
+    "subckt": "ro_nand2",
+    "params": {
+      "wstv": 0.44,
+      "lstv": 2
+    },
+    "drop_prefixes": [
+      "Cld"
+    ]
+  }
+}

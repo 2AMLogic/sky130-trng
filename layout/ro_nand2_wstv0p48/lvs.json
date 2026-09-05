@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "engine": "klayout",
+  "layout": "ro_nand2_wstv0p48.spice",
+  "reference": "ro_nand2_wstv0p48.ref.spice",
+  "top": "RO_NAND2_WSTV0P48",
+  "reference_top": "RO_NAND2",
+  "parameter_tolerance": null,
+  "options": {
+    "combine_devices": false,
+    "flatten_layout": false,
+    "flatten_reference": false,
+    "netgen_setup": null,
+    "parameter_tolerance": null
+  },
+  "status": "match",
+  "mismatch_count": 0,
+  "error_count": 0,
+  "category_counts": {},
+  "category_error_counts": {},
+  "counts": {
+    "nets": {
+      "layout": 8,
+      "reference": 8,
+      "matched": 8
+    },
+    "devices": {
+      "layout": 6,
+      "reference": 6,
+      "matched": 6
+    },
+    "pins": {
+      "layout": 7,
+      "reference": 5,
+      "matched": 7
+    }
+  },
+  "device_classes": null,
+  "environment": {
+    "engine": "klayout",
+    "engine_version": "0.30.12",
+    "layout_sha256": "8730528bae2b99b427afcfdd684126cd48e173677a561b147e8a75b4541b2578",
+    "reference_sha256": "931cfabec6b5d726c1e56b26cc63348014debbf5c8c410e901feb400a347acab",
+    "extracted_netlist": null
+  },
+  "provenance": {
+    "klt_version": "0.4.0",
+    "klayout_version": "0.30.12",
+    "pdk": null,
+    "deck": null,
+    "input": null
+  },
+  "mismatches": [],
+  "net_correspondence": [
+    {
+      "layout": "A",
+      "reference": "A",
+      "pin": true
+    },
+    {
+      "layout": "EN",
+      "reference": "EN",
+      "pin": true
+    },
+    {
+      "layout": "\\$3",
+      "reference": "NM",
+      "pin": false
+    },
+    {
+      "layout": "NY",
+      "reference": "NY",
+      "pin": true
+    },
+    {
+      "layout": "MPA_PY|MPB_PY|MPH_PY|PY",
+      "reference": "PY",
+      "pin": true
+    },
+    {
+      "layout": "MNT_G|VDDR",
+      "reference": "VDDR",
+      "pin": true
+    },
+    {
+      "layout": "MPH_G|VSS",
+      "reference": "VSS",
+      "pin": true
+    },
+    {
+      "layout": "MNAB_Y|MPA_Y|MPB_Y|Y",
+      "reference": "Y",
+      "pin": true
+    }
+  ]
+}
