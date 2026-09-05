@@ -77,6 +77,14 @@ layout/        GDS + DRC/LVS reports (klayout-tools driven)
 measurements/  silicon characterization (empty until tape-out)
 ```
 
+## Chipalooza
+
+[`docs/chipalooza/challenge-4-proposal.md`](docs/chipalooza/challenge-4-proposal.md)
+tracks this block's status against Open Circuit Design's Chipalooza
+Challenge #4 (Sky130) brief — I/O mapped to the slot budget, every spec row
+re-derived from `sim/` and marked met/unmet, and the design gaps (digital
+section, layout, DRC/LVS) still open before it is submission-ready.
+
 ## License
 
 Apache License 2.0 — see [LICENSE](LICENSE).
