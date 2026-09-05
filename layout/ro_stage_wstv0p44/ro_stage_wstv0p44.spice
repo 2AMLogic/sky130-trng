@@ -1,0 +1,23 @@
+* extracted by klt extract --deck sky130
+
+* cell ro_stage_wstv0p44
+* pin a
+* pin mnt_g,vddr
+* pin mph_g,vss
+* pin ny
+* pin py
+* pin y
+.SUBCKT ro_stage_wstv0p44 a mnt_g|vddr mph_g|vss ny py y
+* device instance $1 r0 *1 3.785,0.21 nfet
+M$1 y a ny mph_g|vss nfet L=0.15U W=0.42U AS=0.1974P AD=0.1974P PS=1.78U
++ PD=1.78U
+* device instance $2 r0 *1 1.42,0.21 nfet
+M$2 ny mnt_g|vddr mph_g|vss mph_g|vss nfet L=2U W=0.44U AS=0.1848P AD=0.1848P
++ PS=1.72U PD=1.72U
+* device instance $3 r0 *1 1.42,3.74 pfet
+M$3 py mph_g|vss mnt_g|vddr mnt_g|vddr pfet L=2U W=0.44U AS=0.1848P AD=0.1848P
++ PS=1.72U PD=1.72U
+* device instance $4 r0 *1 3.585,3.74 pfet
+M$4 y a py mnt_g|vddr pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U
++ PD=2.62U
+.ENDS ro_stage_wstv0p44

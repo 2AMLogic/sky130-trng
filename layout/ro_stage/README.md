@@ -156,11 +156,11 @@ carrying its own separate tap:
   `deck_scope` includes `m1`/`via` now, beyond `ro_buf`'s li1-only set),
   but implant layers (`nsdm`/`psdm`) are still not drawn by any generator
   in use.
-- **Built at one `wstv` value only (`0.42 µm`, matching `xr1`).** The other
-  three rings' starve-device variants (`0.44`/`0.46`/`0.48 µm`) are
-  unstarted — `layout/primitives/` only has generator evidence for
-  `0.42 µm`; issue #27 step 4's "four distinct physical cells" is still
-  open.
+- **This cell is `xr1`'s instance only (`wstv = 0.42 µm`).** The other three
+  rings' starve-device variants are now built too — see
+  `layout/ro_stage_wstv0p44/`, `layout/ro_stage_wstv0p46/`,
+  `layout/ro_stage_wstv0p48/`, and `layout/README.md`'s "Starve-width
+  variants" section for the placement-origin re-derivation each one needed.
 - **No parasitics, no post-layout simulation.** `klt extract` was run
   without `--parasitics`; nothing under `sim/` has been re-run against this
   cell, and DR-0003 §8's `wstv` inter-ring decorrelation gap is **not**

@@ -4,8 +4,11 @@ Physical layout evidence for the sky130-trng entropy source, verified with
 `klayout-tools` (`klt`) against the sky130 open PDK. See `layout/pdk.json`
 for the PDK/tool pin.
 
-**Status (issue #22/#27, this increment): three real gates are now composed,
-DRC-clean and LVS-clean — but not a DRC/LVS-clean block.**
+**Status (issue #22/#27, this increment): both starved leaf-gate ladders are
+now composed at all four ring widths — nine composed cells in total (three
+distinct gate types: `ro_buf`, plus `ro_stage` and `ro_nand2` at each of the
+four `wstv` values), every one DRC-clean and LVS-clean — but still not a
+DRC/LVS-clean block.**
 [`layout/ro_buf/`](ro_buf/README.md) is `design/ro_array_core.spice`'s own
 `.subckt ro_buf` inverter, built from `klt gen` primitives, placed and routed
 by `klt gen-compose`, **`klt drc` clean (0 violations)** and **`klt lvs`
@@ -27,10 +30,23 @@ technique but extended from 2 to 6 same-block self-nets resolved in one final
 `gen-compose` call (see `layout/ro_nand2/README.md` for the parallel/series
 floorplan problems this needed and the six empirically-derived routing lanes).
 
-Everything else is still open: no `xor2`, no `ro_stage`'s/`ro_nand2`'s three
-other `wstv` variants, no `ro_ring5`, no `ro_array_core`, no `sampler_core`,
-and no post-layout PVT re-verification. See "What's deferred" below and the
-tracking issue (#27).
+**This increment**: `ro_stage`/`ro_nand2` are each cloned three more times —
+[`ro_stage_wstv0p44`](ro_stage_wstv0p44/README.md),
+[`ro_stage_wstv0p46`](ro_stage_wstv0p46/README.md),
+[`ro_stage_wstv0p48`](ro_stage_wstv0p48/README.md) and
+[`ro_nand2_wstv0p44`](ro_nand2_wstv0p44/README.md),
+[`ro_nand2_wstv0p46`](ro_nand2_wstv0p46/README.md),
+[`ro_nand2_wstv0p48`](ro_nand2_wstv0p48/README.md) — one physical cell per
+ring (`design/ro_array_core.spice`'s `xr1`-`xr4`, `wstv` 0.42/0.44/0.46/0.48
+µm), matching the schematic's own non-identical-ring intent. All six new
+cells are **`klt drc` clean (0 violations)** and **`klt lvs` match**, closing
+issue #27 step 2's "repeat for... the 4-way `wstv` variants" in full. See
+"Starve-width variants" below for what does (and does not) change per width,
+and why the naive clone-and-reparametrize approach fails without it.
+
+Everything else is still open: no `xor2`, no `ro_ring5`, no `ro_array_core`,
+no `sampler_core`, and no post-layout PVT re-verification. See "What's
+deferred" below and the tracking issue (#27).
 
 The earlier increments remain the foundation: `layout/primitives/` is
 per-device evidence (every distinct transistor geometry `design/xschem/`
@@ -104,9 +120,9 @@ From `design/README.md`'s "Cell hierarchy":
 trng_top                   (not in scope for #22 — stops at the raw tap)
   sampler_core              PLANNED — 6x sampler_dff + wiring
     ro_array_core           PLANNED — this issue's minimum scope
-      ro_ring5   (x4)        PLANNED — non-identical (wstv 0.42/0.44/0.46/0.48)
-        ro_nand2              BUILT (wstv=0.42 only) — DRC-clean + LVS-clean (layout/ro_nand2/); 0.44/0.46/0.48 variants not started
-        ro_stage   (x4)       BUILT (wstv=0.42 only) — DRC-clean + LVS-clean (layout/ro_stage/); 0.44/0.46/0.48 variants not started
+      ro_ring5   (x4)        PLANNED — non-identical (wstv 0.42/0.44/0.46/0.48); no inter-gate routing/assembly yet
+        ro_nand2   (x1/ring)  BUILT, all 4 wstv values — DRC-clean + LVS-clean (layout/ro_nand2/, ro_nand2_wstv0p{44,46,48}/) — 4 distinct physical cells, one per ring
+        ro_stage   (x4/ring)  BUILT, all 4 wstv values — DRC-clean + LVS-clean (layout/ro_stage/, ro_stage_wstv0p{44,46,48}/) — 4 distinct physical cells (one per ring's wstv), each reused 4x within its own ring
       ro_buf     (x4)        BUILT — DRC-clean + LVS-clean (layout/ro_buf/)
       xor2       (x3)        PROVEN AT DEVICE LEVEL — 2x guard_ring (abutted) + 12x mos_array
     sampler_dff  (x6)        NOT STARTED — transmission-gate master-slave DFF, no generator surveyed yet
@@ -140,12 +156,13 @@ not exist yet.
   not yet resolved, tracked in the follow-up issue.
 - **`wstv` per-ring variation**: the four rings are NOT identical layout
   cells — `design/ro_array_core.spice`'s `xr1`-`xr4` instantiate `ro_ring5`
-  at four different `wstv` values (0.42/0.44/0.46/0.48 µm). The layout plan
-  is four distinct physical `ro_stage`/`ro_nand2` starve-device variants
-  (same generator call, `w_um` substituted), not one physical cell reused
-  four times — matching the schematic's own non-identical-instance intent
-  (DR-0003 §8's decorrelation strategy depends on the rings actually
-  differing).
+  at four different `wstv` values (0.42/0.44/0.46/0.48 µm). The layout is
+  four distinct physical `ro_stage`/`ro_nand2` starve-device variants (same
+  generator call, `w_um` substituted, plus the origin re-derivation below),
+  not one physical cell reused four times — matching the schematic's own
+  non-identical-instance intent (DR-0003 §8's decorrelation strategy depends
+  on the rings actually differing). **Done, both cell types, all four
+  widths** — see "Starve-width variants" below.
 
 ## Composing a gate: the working recipe
 
@@ -302,6 +319,106 @@ one `vsubs`-to-`vss` tap somewhere.
   `drc_hints.notes` again cites the issue #1187 S/D-pad padding fix. Every
   device in `layout/ro_buf/` is drawn at this design's real `l_um=0.15`.
 
+## Starve-width variants: why a naive clone-and-reparametrize fails
+
+`ro_stage`/`ro_nand2` each need four physical cells (one per ring, `wstv`
+0.42/0.44/0.46/0.48 µm) — see "Floorplan decisions made so far" above. The
+tempting shortcut is: copy the `wstv=0.42` `cell.json`, change `Mph`/`Mnt`'s
+`params.w_um`, done. **That shortcut does not compose at all at the other
+three widths** — `klt gen-compose` reports the affected nets unrouted, so
+`compose-cell.py` aborts before DRC/LVS ever runs.
+
+The reason: `Mph`/`Mp` (and `Mnt`/`Mn`) are connected by a *straight,
+no-jog* route (`py`/`ny`) that only works because both devices' S/D pads
+land at the exact same absolute `y` — `ro_stage/README.md`'s own floorplan
+section calls this out as deliberate, not incidental (`Mph.D` and `Mp.S`
+both at `y = 3.74`). `Mp`/`Mn`'s own geometry is fixed (`w_um` doesn't
+depend on `wstv`), but `Mph`/`Mnt`'s local port position *does* move with
+their own `w_um`: `klt gen mos_array`'s reported local `y_um` for a starve
+device's S/D pads is exactly `w_um / 2` (verified empirically across all
+four widths, both flavors — `0.42→0.21`, `0.44→0.22`, `0.46→0.23`,
+`0.48→0.24`, i.e. linear, and identical between `pfet`/`nfet` despite their
+different bbox heights from the nwell margin). Re-generating `Mph`/`Mnt` at
+a new `w_um` with `Mph`/`Mnt`'s **existing, `wstv=0.42`-tuned**
+`placement.origins_um` shifts that port by exactly the width delta (as
+little as `0.01 µm`), which is enough to turn the straight `py`/`ny` route
+into a route `klt gen-compose` reports **unrouted**.
+
+This is a reproduced negative control, not an assumption. Taking
+`layout/ro_stage/cell.json` verbatim, substituting only `Mph`/`Mnt`'s
+`params.w_um` to `0.44` and leaving every `placement.origins_um` entry at
+its `wstv=0.42` value, `compose-cell.py` aborts on the first stage with:
+
+```
+error: core: nets left unrouted by gen-compose: ['py', 'vddr']
+```
+
+The failure is loud, not silent — the router refuses rather than routing at
+zero margin — so the practical hazard is a future increment concluding the
+`wstv` variants are simply infeasible, not one shipping a bad cell.
+
+**The fix** — re-derive, don't copy, `Mph`/`Mnt`'s own `placement.origins_um.y`
+per width, from the same closed form every `ro_stage_wstv0p*`/
+`ro_nand2_wstv0p*` cell.json's own `_comment` block documents:
+
+```
+mph.y(w) = 3.74 + w/2   # keeps Mph.D aligned with Mp.S's fixed y=3.74
+mnt.y(w) = 0.21 - w/2   # keeps Mnt.D aligned with Mn.S's fixed y=0.21
+```
+
+(`3.74`/`0.21` are `Mp`/`Mn`'s own fixed S-port `y`, unaffected by `wstv`
+since neither device's geometry depends on it.) Every other block, origin,
+waypoint, and routing-layer choice in `ro_stage`/`ro_nand2`'s `cell.json` is
+**unaffected by width** and stays byte-for-byte identical across all four
+variants — confirmed by all four `wstv` values landing DRC-clean (0
+violations) and LVS-matching for both cell types, with no other geometry
+change (`layout/ro_stage_wstv0p44/README.md` et al. document the resulting
+concrete origin values). This is the same "same-`y` alignment" discipline
+`ro_stage/README.md`'s floorplan section already flags for the `wstv=0.42`
+case — this section's contribution is confirming it generalizes to a closed
+form across the whole `wstv` range, rather than needing to be independently
+re-tuned per width by trial and error.
+
+### The LVS match is width-sensitive (negative control)
+
+Four cells that differ by `0.02 µm` on two devices, all reporting `klt lvs`
+**match**, invite an obvious objection: is `klt lvs` comparing device widths
+at all, or would any of these layouts match any of these references? It is
+comparing them. Feeding `ro_stage_wstv0p48`'s extracted netlist against
+`ro_stage`'s (`wstv=0.42`) reference netlist — the only change — flips the
+verdict:
+
+```
+status: mismatch   mismatch_count: 12   error_count: 12
+counts: nets 6/6 matched 2, devices 4/4 matched 2
+  device.property  error  matched device parameter 'w_um' differs
+                          NFET  layout 0.48  reference 0.42
+  device.property  error  matched device parameter 'w_um' differs
+                          PFET  layout 0.48  reference 0.42
+```
+
+So each variant's `match` verdict is evidence that *that* layout implements
+*that* ring's `wstv`, not merely that some starved inverter was drawn. The
+`Mph`/`Mnt` `w_um` value is decisive in the compare, and it is the one thing
+that differs between the four references (`compose-cell.py`'s
+`lvs.params.wstv` substitution — see each cell's own `*.ref.spice`, where
+`XMph`/`XMnt` carry `W=0.42u`/`0.44u`/`0.46u`/`0.48u` respectively while
+`XMp`/`XMn` stay fixed).
+
+One caveat worth recording for whoever assembles the ring: in that
+deliberately-mismatched run, the reference side's `as`/`ad`/`ps`/`pd` read
+back as `0.0`, because `design/ro_array_core.spice` states them as
+*expressions* in `wstv` (`ad='int((1 + 1)/2) * wstv / 1 * 0.29'`) and `klt
+lvs`'s `subckt-call` converter does not evaluate them. Those four parameters
+are therefore **not** effectively compared for the starve devices in any of
+these runs (they do not appear as mismatches in the passing runs either).
+`W`/`L`, device class, and connectivity are compared and are what these
+verdicts rest on. Not filed upstream as a tool gap: the parameters that
+decide this design's device identity are compared, and a converter declining
+to evaluate arbitrary SPICE parameter expressions is a defensible boundary
+rather than a defect — but a future increment that starts depending on
+S/D-area matching should re-check this rather than assume coverage.
+
 ## What's deferred (tracking issue)
 
 Everything below issue #22's original scope needed and this PR does not
@@ -321,29 +438,34 @@ deliver, tracked in follow-up issue
    nets), at this design's real device sizes, reproducible from a committed
    descriptor via `layout/bin/compose-cell.py`.
 2. Repeat for `ro_stage`, `ro_nand2` (including the 4-way `wstv` variants),
-   and `xor2`. **`ro_stage` and `ro_nand2` are both DONE** (at `wstv=0.42`
-   only — see `layout/ro_stage/README.md` and `layout/ro_nand2/README.md`):
-   `klt drc` clean (0 violations) for both; `klt lvs` **match** against
-   `design/ro_array_core.spice`'s own `.subckt ro_stage` (4/4 devices, 6/6
-   nets) and `.subckt ro_nand2` (6/6 devices, 8/8 nets) respectively, both
-   using the two-pass `"stages"` composition (point 4 in "Composing a gate"
-   above) to route their cross-coupled starve-device gates without a short.
-   `ro_nand2` additionally needed point 5's generalization (promote every pin
-   of a many-device same-net bundle, resolve the whole bundle — six same-block
-   self-nets in one final `gen-compose` call, not `ro_stage`'s two) to floor-
-   plan its parallel PMOS pull-up pair and series NMOS pull-down pair, neither
-   of which `ro_stage`'s single-switching-device shape has an analogue for.
-   Still open: both cells' other three `wstv` variants (`0.44`/`0.46`/
-   `0.48 µm` — `layout/primitives/` has no generator evidence for these
-   widths yet), and `xor2` (no starve devices, but twelve `mos_array`
-   instances instead of four/six — a bigger single-pass floorplan, not a new
-   composition technique). `layout/bin/compose-cell.py`'s
-   `lvs.params`/`lvs.drop_prefixes` fields already exist for these cells:
-   `params` substitutes the `wstv`/`lstv` values into the reference subckt's
-   `L=lstv W=wstv` device cards (one descriptor per ring variant), and
-   `drop_prefixes: ["Cld"]` drops the lumped load capacitor, which is a
-   simulation load model with no physical counterpart, not a device the
-   layout omits.
+   and `xor2`. **`ro_stage` and `ro_nand2` are both DONE, all four `wstv`
+   values** (see `layout/ro_stage/README.md`, `layout/ro_nand2/README.md`,
+   and the `_wstv0p44`/`_wstv0p46`/`_wstv0p48` sibling directories of each):
+   `klt drc` clean (0 violations) for all eight cells; `klt lvs` **match**
+   against `design/ro_array_core.spice`'s own `.subckt ro_stage` (4/4
+   devices, 6/6 nets) and `.subckt ro_nand2` (6/6 devices, 8/8 nets)
+   respectively at every width, both using the two-pass `"stages"`
+   composition (point 4 in "Composing a gate" above) to route their
+   cross-coupled starve-device gates without a short. `ro_nand2`
+   additionally needed point 5's generalization (promote every pin of a
+   many-device same-net bundle, resolve the whole bundle — six same-block
+   self-nets in one final `gen-compose` call, not `ro_stage`'s two) to
+   floor-plan its parallel PMOS pull-up pair and series NMOS pull-down pair,
+   neither of which `ro_stage`'s single-switching-device shape has an
+   analogue for. The three additional `wstv` widths per cell type
+   (`0.44`/`0.46`/`0.48 µm`) needed one further finding beyond the
+   `wstv=0.42` recipe — re-deriving `Mph`/`Mnt`'s own `y` origin per width
+   rather than cloning the `0.42`-tuned one unchanged — see "Starve-width
+   variants" above for the closed form and why the naive clone fails.
+   `layout/bin/compose-cell.py`'s `lvs.params`/`lvs.drop_prefixes` fields
+   (`params` substitutes `wstv`/`lstv` into the reference subckt's `L=lstv
+   W=wstv` device cards; `drop_prefixes: ["Cld"]` drops the lumped load
+   capacitor, a simulation load model with no physical counterpart) were
+   already in place from `ro_stage`/`ro_nand2`'s own initial build and
+   needed no changes for the variants.
+   Still open: `xor2` (no starve devices, but twelve `mos_array` instances
+   instead of four/six — a bigger single-pass floorplan, not a new
+   composition technique).
 3. Hierarchical assembly: `ro_ring5` (5 gates + inter-gate routing),
    `ro_array_core` (4 non-identical rings + combining XOR tree),
    `sampler_dff`/`sampler_core` (no generator surveyed yet for a
@@ -452,3 +574,21 @@ legs, plus `ro_stage`'s usual `vss`/`vddr` cross-coupled pair) in one
 `layout/ro_nand2/README.md`'s own table for why each leg's `waypoints_um`
 lane sits where it does, empirically derived against the real router's
 route-vs-route collision check.
+
+## Reproducing the `wstv` ring variants
+
+```bash
+volare enable --pdk sky130 c6d73a35f524070e85faff4a6a9eef49553ebc2b
+python3 layout/bin/compose-cell.py layout/ro_stage_wstv0p44/cell.json --check
+python3 layout/bin/compose-cell.py layout/ro_stage_wstv0p46/cell.json --check
+python3 layout/bin/compose-cell.py layout/ro_stage_wstv0p48/cell.json --check
+python3 layout/bin/compose-cell.py layout/ro_nand2_wstv0p44/cell.json --check
+python3 layout/bin/compose-cell.py layout/ro_nand2_wstv0p46/cell.json --check
+python3 layout/bin/compose-cell.py layout/ro_nand2_wstv0p48/cell.json --check
+```
+
+Same `--check` contract as `ro_stage`/`ro_nand2` above (each of these six is
+also a two-stage `"stages"` cell). See "Starve-width variants" above for the
+one thing that differs per width (`Mph`/`Mnt`'s own `w_um` and re-derived
+`placement.origins_um.y`), and each variant's own README for that cell's
+concrete numbers.

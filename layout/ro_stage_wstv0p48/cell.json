@@ -1,0 +1,340 @@
+{
+  "cell": "ro_stage_wstv0p48",
+  "pdk": {
+    "variant": "sky130A",
+    "deck": "sky130"
+  },
+  "stages": [
+    {
+      "name": "core",
+      "blocks": [
+        {
+          "id": "mnt",
+          "generator": "mos_array",
+          "cell_name": "mnt",
+          "orientation": "none",
+          "params": {
+            "w_um": 0.48,
+            "l_um": 2,
+            "rows": 1,
+            "cols": 1,
+            "dummy": 0,
+            "flavor": "nfet",
+            "gate_contact": true
+          }
+        },
+        {
+          "id": "mn",
+          "generator": "mos_array",
+          "cell_name": "mn",
+          "orientation": "none",
+          "params": {
+            "w_um": 0.42,
+            "l_um": 0.15,
+            "rows": 1,
+            "cols": 1,
+            "dummy": 0,
+            "flavor": "nfet",
+            "gate_contact": true
+          }
+        },
+        {
+          "id": "mph",
+          "generator": "mos_array",
+          "cell_name": "mph",
+          "orientation": "mirror_y",
+          "params": {
+            "w_um": 0.48,
+            "l_um": 2,
+            "rows": 1,
+            "cols": 1,
+            "dummy": 0,
+            "flavor": "pfet",
+            "gate_contact": true
+          }
+        },
+        {
+          "id": "mp",
+          "generator": "mos_array",
+          "cell_name": "mp",
+          "orientation": "mirror_y",
+          "params": {
+            "w_um": 0.84,
+            "l_um": 0.15,
+            "rows": 1,
+            "cols": 1,
+            "dummy": 0,
+            "flavor": "pfet",
+            "gate_contact": true
+          }
+        },
+        {
+          "id": "nwell_tap",
+          "generator": "guard_ring",
+          "cell_name": "nwell_tap",
+          "orientation": "none",
+          "params": {
+            "inner_width_um": 1.0,
+            "inner_height_um": 1.0,
+            "ring_width_um": 0.42,
+            "contacts_per_side": 2,
+            "add_well": true
+          }
+        },
+        {
+          "id": "psub_tap",
+          "generator": "guard_ring",
+          "cell_name": "psub_tap",
+          "orientation": "none",
+          "params": {
+            "inner_width_um": 1.0,
+            "inner_height_um": 1.0,
+            "ring_width_um": 0.42,
+            "contacts_per_side": 2,
+            "add_well": false
+          }
+        }
+      ],
+      "placement": {
+        "strategy": "explicit",
+        "order": [
+          "mnt",
+          "psub_tap",
+          "mn",
+          "mph",
+          "nwell_tap",
+          "mp"
+        ],
+        "origins_um": {
+          "mnt": {
+            "x": 0.0,
+            "y": -0.03
+          },
+          "mn": {
+            "x": 3.24,
+            "y": 0.0
+          },
+          "mph": {
+            "x": 0.0,
+            "y": 3.98
+          },
+          "mp": {
+            "x": 3.04,
+            "y": 4.16
+          },
+          "nwell_tap": {
+            "x": -2.04,
+            "y": 2.82
+          },
+          "psub_tap": {
+            "x": -2.14,
+            "y": -0.71
+          }
+        }
+      },
+      "routing": {
+        "layer_role": "metal",
+        "width_um": 0.17
+      },
+      "connectivity": [
+        {
+          "net": "a",
+          "pins": [
+            {
+              "block": "mp",
+              "port": "U0_G"
+            },
+            {
+              "block": "mn",
+              "port": "U0_G"
+            }
+          ]
+        },
+        {
+          "net": "y",
+          "pins": [
+            {
+              "block": "mp",
+              "port": "U0_D"
+            },
+            {
+              "block": "mn",
+              "port": "U0_D"
+            }
+          ],
+          "waypoints_um": [
+            [
+              4.9,
+              3.74
+            ],
+            [
+              4.9,
+              0.21
+            ]
+          ]
+        },
+        {
+          "net": "py",
+          "pins": [
+            {
+              "block": "mph",
+              "port": "U0_D"
+            },
+            {
+              "block": "mp",
+              "port": "U0_S"
+            }
+          ]
+        },
+        {
+          "net": "ny",
+          "pins": [
+            {
+              "block": "mnt",
+              "port": "U0_D"
+            },
+            {
+              "block": "mn",
+              "port": "U0_S"
+            }
+          ]
+        },
+        {
+          "net": "vddr",
+          "pins": [
+            {
+              "block": "mph",
+              "port": "U0_S"
+            },
+            {
+              "block": "nwell_tap",
+              "port": "TAP_E"
+            }
+          ]
+        },
+        {
+          "net": "vss",
+          "pins": [
+            {
+              "block": "mnt",
+              "port": "U0_S"
+            },
+            {
+              "block": "psub_tap",
+              "port": "TAP_E"
+            }
+          ]
+        }
+      ],
+      "pins": [
+        {
+          "block": "nwell_tap",
+          "port": "TAP_W",
+          "net": "vddr"
+        },
+        {
+          "block": "psub_tap",
+          "port": "TAP_N",
+          "net": "vss"
+        },
+        {
+          "block": "mph",
+          "port": "U0_G",
+          "net": "mph_g"
+        },
+        {
+          "block": "mnt",
+          "port": "U0_G",
+          "net": "mnt_g"
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "id": "core",
+          "from_stage": "core"
+        }
+      ],
+      "placement": {
+        "strategy": "explicit",
+        "order": [
+          "core"
+        ],
+        "origins_um": {
+          "core": {
+            "x": 0.0,
+            "y": 0.0
+          }
+        }
+      },
+      "routing": {
+        "layer_role": "metal2",
+        "width_um": 0.17
+      },
+      "connectivity": [
+        {
+          "net": "vss",
+          "pins": [
+            {
+              "block": "core",
+              "port": "mph_g"
+            },
+            {
+              "block": "core",
+              "port": "vss"
+            }
+          ],
+          "waypoints_um": [
+            [
+              0.5,
+              2.92
+            ],
+            [
+              0.5,
+              0.92
+            ]
+          ]
+        },
+        {
+          "net": "vddr",
+          "pins": [
+            {
+              "block": "core",
+              "port": "mnt_g"
+            },
+            {
+              "block": "core",
+              "port": "vddr"
+            }
+          ],
+          "waypoints_um": [
+            [
+              2.4,
+              1.03
+            ],
+            [
+              2.4,
+              4.4
+            ],
+            [
+              -1.83,
+              4.4
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "lvs": {
+    "reference": "design/ro_array_core.spice",
+    "subckt": "ro_stage",
+    "params": {
+      "wstv": 0.48,
+      "lstv": 2
+    },
+    "drop_prefixes": [
+      "Cld"
+    ]
+  }
+}
