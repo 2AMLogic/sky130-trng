@@ -382,15 +382,20 @@ that lands this document):
 - **Ratify DR-0001, DR-0002, and DR-0003.** Every quantitative row in §4
   ultimately traces to at least one of these three Proposed records; none
   is yet an operator-accepted decision.
-- **Layout and DRC/LVS.** `layout/` holds device-level proof-of-methodology
-  evidence (issue #22's first increment) plus a solved well-strap
-  composition methodology (`layout/well-strap-poc/`, a follow-up increment)
-  — see `layout/README.md`. A real `klayout-tools` regression
+- **Layout and DRC/LVS.** `layout/` now holds one composed **DRC-clean and
+  LVS-clean cell** — `layout/ro_buf/`, the per-ring output inverter, `klt drc`
+  clean and `klt lvs`-matching against `design/ro_array_core.spice`'s own
+  `.subckt ro_buf` — on top of the earlier device-level evidence
+  (`layout/primitives/`) and well-strap finding (`layout/well-strap-poc/`);
+  see `layout/README.md`. The `klayout-tools` regression previously recorded
+  here as a blocker
   ([2AMLogic/klayout-tools#1491](https://github.com/2AMLogic/klayout-tools/issues/1491))
-  currently blocks composing this design's actual gates. Nothing is
-  post-layout, nothing is a composed DRC/LVS-clean gate/ring/array/sampler,
-  and the brief's full sign-off bar (post-layout PVT simulation, DRC/LVS-clean
-  GDS) is not attempted in this document.
+  is fixed. Still outstanding for the brief's full sign-off bar: every other
+  gate (`ro_stage`, `ro_nand2`, `xor2`), the ring, the array, the sampler,
+  parasitic extraction, and post-layout PVT simulation — none of which is
+  attempted in this document. Note also that "DRC-clean" here means clean
+  against `klt`'s **curated** sky130 deck (a documented subset — see each
+  `drc.json`'s own `coverage` block), not a full sky130 sign-off deck.
 - **Reconcile against `rules-4.html`** once it publishes — this document was
   written against the assumed `rules-2.html`/`rules-3.html` structure
   because the real Challenge #4 brief was not yet published as of this

@@ -1,0 +1,139 @@
+{
+  "cell": "ro_buf",
+  "_comment": [
+    "Cell descriptor for layout/bin/compose-cell.py -- see layout/README.md",
+    "section 'Composing a gate' for the floorplan reasoning behind every",
+    "number here, and layout/ro_buf/README.md for this cell's own result.",
+    "",
+    "ro_buf is design/ro_array_core.spice's unstarved CMOS inverter (the",
+    "per-ring output buffer): XMp 0.84/0.15 pfet + XMn 0.42/0.15 nfet, with",
+    "PMOS bulk on vdd and NMOS bulk on vss.",
+    "",
+    "Placement is a two-row stack: NMOS at the origin, PMOS mirrored in y",
+    "directly above it so the two gates face each other, with a tap island to",
+    "the west of each row supplying that row's body tie. Origins are chosen so",
+    "that (a) the nwell tap island's own nwell OVERLAPS the PMOS block's nwell",
+    "by 0.10 um -- merging them into one electrical node -- while their li1",
+    "stays 0.20 um apart (sky130 li1 spacing floor is 0.17 um), and (b) every",
+    "routed net is a straight or single-jog run that clears both endpoint",
+    "blocks' interiors."
+  ],
+  "pdk": {
+    "variant": "sky130A",
+    "deck": "sky130"
+  },
+  "blocks": [
+    {
+      "id": "mn",
+      "generator": "mos_array",
+      "cell_name": "nfet_w0p42_l0p15",
+      "orientation": "none",
+      "params": {
+        "w_um": 0.42,
+        "l_um": 0.15,
+        "rows": 1,
+        "cols": 1,
+        "dummy": 0,
+        "flavor": "nfet",
+        "gate_contact": true
+      }
+    },
+    {
+      "id": "mp",
+      "generator": "mos_array",
+      "cell_name": "pfet_w0p84_l0p15",
+      "orientation": "mirror_y",
+      "params": {
+        "w_um": 0.84,
+        "l_um": 0.15,
+        "rows": 1,
+        "cols": 1,
+        "dummy": 0,
+        "flavor": "pfet",
+        "gate_contact": true
+      }
+    },
+    {
+      "id": "nwell_tap",
+      "generator": "guard_ring",
+      "cell_name": "nwell_tap",
+      "orientation": "none",
+      "params": {
+        "inner_width_um": 1.0,
+        "inner_height_um": 1.0,
+        "ring_width_um": 0.42,
+        "contacts_per_side": 2,
+        "add_well": true
+      }
+    },
+    {
+      "id": "psub_tap",
+      "generator": "guard_ring",
+      "cell_name": "psub_tap",
+      "orientation": "none",
+      "params": {
+        "inner_width_um": 1.0,
+        "inner_height_um": 1.0,
+        "ring_width_um": 0.42,
+        "contacts_per_side": 2,
+        "add_well": false
+      }
+    }
+  ],
+  "placement": {
+    "strategy": "explicit",
+    "order": ["psub_tap", "mn", "nwell_tap", "mp"],
+    "origins_um": {
+      "mn": { "x": 0.0, "y": 0.0 },
+      "mp": { "x": 0.0, "y": 3.95 },
+      "nwell_tap": { "x": -2.04, "y": 2.61 },
+      "psub_tap": { "x": -2.14, "y": -0.71 }
+    }
+  },
+  "routing": {
+    "layer_role": "metal",
+    "width_um": 0.17
+  },
+  "connectivity": [
+    {
+      "net": "a",
+      "pins": [
+        { "block": "mp", "port": "U0_G" },
+        { "block": "mn", "port": "U0_G" }
+      ]
+    },
+    {
+      "net": "y",
+      "pins": [
+        { "block": "mp", "port": "U0_D" },
+        { "block": "mn", "port": "U0_D" }
+      ],
+      "waypoints_um": [
+        [1.9, 3.53],
+        [1.9, 0.21]
+      ]
+    },
+    {
+      "net": "vdd",
+      "pins": [
+        { "block": "mp", "port": "U0_S" },
+        { "block": "nwell_tap", "port": "TAP_E" }
+      ]
+    },
+    {
+      "net": "vss",
+      "pins": [
+        { "block": "mn", "port": "U0_S" },
+        { "block": "psub_tap", "port": "TAP_E" }
+      ]
+    }
+  ],
+  "pins": [
+    { "block": "nwell_tap", "port": "TAP_N", "net": "vdd" },
+    { "block": "psub_tap", "port": "TAP_N", "net": "vss" }
+  ],
+  "lvs": {
+    "reference": "design/ro_array_core.spice",
+    "subckt": "ro_buf"
+  }
+}
