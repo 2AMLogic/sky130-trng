@@ -36,7 +36,9 @@ here is `T_s` = 20 µs / 50 kHz sample clock / 50 kbps raw rate.
 design/
   xschem/              schematic + symbol sources (xschem's own text format)
   netlist.py           deterministic SPICE export driver, with a staleness + ERC guard
+  _pdk_search.py       shared PDK-search walk, used by netlist.py and sim/bin/corner-run.py (issue #25)
   test_netlist_erc.py  regression fixture for netlist.py's ERC wiring (issue #16)
+  test_pdk_search.py   unit test for _pdk_search.py's fallback order (issue #25)
   pdk.json             which sky130 install to resolve, and the open_pdks pin
   *.spice              GENERATED netlists -- committed output of netlist.py
 ```
@@ -110,6 +112,7 @@ python3 design/netlist.py --check    # fail if a committed netlist is stale, or 
 python3 design/netlist.py --lint     # brace guard only; no xschem, no PDK
 python3 design/netlist.py --pdk      # show the resolved PDK + open_pdks pin
 python3 design/test_netlist_erc.py   # regression fixture for the --check ERC wiring itself
+python3 design/test_pdk_search.py    # unit test for the shared PDK-search fallback order
 ```
 
 `--check` verifies two independent things, both required for exit `0`:
@@ -151,8 +154,12 @@ xschem comments out.
 
 `netlist.py` resolves the PDK through `SKY130_PDK_PATH` → `PDK_ROOT`+`PDK` →
 `design/pdk.local.json` → `design/pdk.json` → built-in search roots, so no
-path is hardcoded. It also rewrites absolute paths out of the netlist header
-and re-wraps SPICE continuation lines at a width it owns, so the output is
+path is hardcoded. That walk-a-list-of-roots search is shared with
+`sim/bin/corner-run.py` via `design/_pdk_search.py` (issue #25); each caller
+supplies only its own validator predicate (`libs.tech/xschem` here,
+`libs.tech/combined` for the ngspice harness) and its own config source.
+`netlist.py` also rewrites absolute paths out of the netlist header and
+re-wraps SPICE continuation lines at a width it owns, so the output is
 byte-identical across machines and across xschem releases that differ only in
 line wrapping.
 

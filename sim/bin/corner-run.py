@@ -110,6 +110,9 @@ REPO_ROOT = SIM_DIR.parent
 PDK_PIN_FILE = SIM_DIR / "pdk.json"
 DEFAULT_RO_RING5 = REPO_ROOT / "design" / "ro_ring5.spice"
 
+sys.path.insert(0, str(REPO_ROOT / "design"))
+from _pdk_search import BUILTIN_SEARCH_ROOTS, PdkSearchError, search_pdk  # noqa: E402
+
 MEASUREMENT_RE = re.compile(
     r"^\s*([A-Za-z_][\w().]*)\s*=\s*([+-]?[0-9][0-9.eE+\-]*)\s*$"
 )
@@ -120,21 +123,20 @@ class HarnessError(RuntimeError):
 
 
 # --------------------------------------------------------------------------
-# PDK resolution -- mirrors design/netlist.py's find_pdk(), reading
-# sim/pdk.json (and the git-ignored sim/pdk.local.json override) instead of
-# design/pdk.json, per issue #9's own test-plan requirement that this
-# harness resolve the PDK the same way: env var -> PDK_ROOT/PDK ->
-# sim/pdk.json -> built-in search roots.
+# PDK resolution -- shares its search-loop implementation with
+# design/netlist.py's find_pdk() via design/_pdk_search.py (issue #25);
+# this harness supplies its own validator predicate (libs.tech/combined)
+# and config source (sim/pdk.json + the git-ignored sim/pdk.local.json)
+# instead of design/netlist.py's (libs.tech/xschem, design/pdk.json), per
+# issue #9's own test-plan requirement that this harness resolve the PDK
+# the same way: env var -> PDK_ROOT/PDK -> sim/pdk.json -> built-in search
+# roots.
 # --------------------------------------------------------------------------
 
-BUILTIN_SEARCH_ROOTS = (
-    "~/.volare",
-    "~/.ciel",
-    "/usr/share/pdk",
-    "/usr/local/share/pdk",
-    "~/share/pdk",
-    "/opt/pdk",
-)
+#: sky130's combined ngspice corner-library layout; the validator predicate
+#: this module's resolve_pdk() hands to the shared search (see
+#: design/_pdk_search.py).
+_VARIANT_DIR_LABEL = "libs.tech/combined directory"
 
 
 @dataclass(frozen=True)
@@ -194,6 +196,14 @@ def resolve_pdk(pin: dict) -> Pdk:
     3. ``sim/pdk.local.json`` -- machine-local override, git-ignored.
     4. ``sim/pdk.json`` (already loaded as *pin*) -- committed defaults.
     5. ``volare path`` / built-in search roots.
+
+    Steps 1, 2 and the built-in-roots half of step 5 (plus the ``~``
+    expansion and validator-predicate check applied at every step) are
+    ``design/_pdk_search.py``'s ``search_pdk()``, shared with
+    ``design/netlist.py``'s ``find_pdk()`` -- this function supplies only
+    the ngspice-corner-library validator (:func:`_is_variant_dir`), this
+    harness's own config source (steps 3-4), and the ``volare path``
+    fallback root that has no equivalent in ``find_pdk()``.
     """
     local_file = SIM_DIR / "pdk.local.json"
     local: dict = {}
@@ -205,21 +215,6 @@ def resolve_pdk(pin: dict) -> Pdk:
 
     variant = os.environ.get("PDK") or local.get("variant") or pin["variant"]
 
-    explicit = os.environ.get("SKY130_PDK_PATH")
-    if explicit:
-        path = Path(explicit).expanduser().resolve()
-        if not _is_variant_dir(path):
-            raise HarnessError(
-                f"SKY130_PDK_PATH={explicit} has no libs.tech/combined directory"
-            )
-        return _make_pdk(pin, path, path.name, "SKY130_PDK_PATH")
-
-    pdk_root = os.environ.get("PDK_ROOT")
-    if pdk_root:
-        path = (Path(pdk_root).expanduser() / variant).resolve()
-        if _is_variant_dir(path):
-            return _make_pdk(pin, path, variant, "PDK_ROOT")
-
     roots = list(local.get("search_roots") or ())
     roots += list(pin.get("search_roots") or ())
     vp = volare_path()
@@ -227,16 +222,23 @@ def resolve_pdk(pin: dict) -> Pdk:
         roots.append(str(vp))
     roots += [pin.get("default_pdk_root", "~/.volare")]
     roots += list(BUILTIN_SEARCH_ROOTS)
-    for root in roots:
-        path = (Path(root).expanduser() / variant).resolve()
-        if _is_variant_dir(path):
-            return _make_pdk(pin, path, variant, str(root))
 
-    raise HarnessError(
-        "sky130 PDK not found.\n"
-        f"  install the pinned version with: {pin['install_command']}\n"
-        "  (or set SKY130_PDK_PATH / PDK_ROOT+PDK to an existing install)"
-    )
+    try:
+        found = search_pdk(
+            variant=variant,
+            is_variant_dir=_is_variant_dir,
+            variant_dir_label=_VARIANT_DIR_LABEL,
+            search_roots=roots,
+        )
+    except PdkSearchError as exc:
+        raise HarnessError(str(exc)) from exc
+    if found is None:
+        raise HarnessError(
+            "sky130 PDK not found.\n"
+            f"  install the pinned version with: {pin['install_command']}\n"
+            "  (or set SKY130_PDK_PATH / PDK_ROOT+PDK to an existing install)"
+        )
+    return _make_pdk(pin, found.path, found.variant, found.source)
 
 
 def _make_pdk(pin: dict, path: Path, variant: str, source: str) -> Pdk:
