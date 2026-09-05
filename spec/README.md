@@ -30,6 +30,18 @@
   ~78 kbps at any array size. `design/xschem/ro_array_core.sch` is
   redrawn under it.
 
+- [`decision-records/DR-0004-sky130-digital-section-architecture.md`](decision-records/DR-0004-sky130-digital-section-architecture.md)
+  — **Proposed**. Issue #20's digital section, everything downstream of the
+  raw tap: SP 800-90B RCT/APT health tests with a start-up test and a
+  latch-and-gate failure policy, a non-vetted CRC-32 LFSR conditioner
+  (`K` = 8), and a two-path register/streaming interface in which the raw
+  path is never gated. Re-derives the health-test cutoffs from the formulas
+  at this repository's own `H` target and 50 kbps raw rate (`C_RCT` = 81,
+  `C_APT` = 824, **provisional** pending a measured `H`), computes the APT
+  degeneracy floor exactly (`H` = 0.0390625), and fixes the
+  behavioural-model-is-normative / RTL-implements-it split that `digital/`
+  is built on.
+
 A record's status is meaningful: **Proposed** means drafted and not accepted
 by anyone. Ratification is an operator decision, so no record here declares
 itself Accepted. See the repo README for scope.

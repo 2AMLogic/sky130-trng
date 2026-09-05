@@ -32,27 +32,29 @@ public, Apache-2.0.
 
 ## Status of this repository — read this before anything below
 
-**Pre-layout, pre-digital-section.** The entropy source (an `N = 4`, five-stage,
+**Pre-layout, pre-synthesis.** The entropy source (an `N = 4`, five-stage,
 free-running ring-oscillator array, XOR-combined) and its sampler are drawn
 as SPICE schematics and characterized across PVT at the transistor level
-(`sim/`). Nothing downstream of the raw tap exists: **no conditioner, no
-health-test module, and no register/streaming interface** —
-[`design/README.md`](../../design/README.md)'s own "Deliberately not here"
-section names all three as out of scope for this repository today, not
-merely unfinished. No synthesis has been run, and no DRC/LVS-clean gate,
-ring, array, or sampler layout exists: `layout/` now holds device-level
-proof-of-methodology evidence only (every distinct transistor geometry this
-design's schematics use, individually DRC-clean and correctly extracted
-against sky130 — see `layout/README.md`), not a composed, DRC/LVS-clean
-block. Every decision record cited below
-(DR-0001, DR-0002, DR-0003) carries status **Proposed** — drafted, not yet
+(`sim/`). Everything downstream of the raw tap — health tests, conditioner,
+register/streaming interface — now exists as a normative behavioural model
+plus RTL under `digital/`, per
+[DR-0004](../../spec/decision-records/DR-0004-sky130-digital-section-architecture.md)
+(status Proposed, issue #20), verified behaviourally under `sim/digital-*/`.
+**No synthesis against `sky130_fd_sc_hd` has been run**, so that section
+contributes no `Fmax`, area, power or leakage figure to §4, and no
+DRC/LVS-clean gate, ring, array, or sampler layout exists: `layout/` now
+holds device-level proof-of-methodology evidence only (every distinct
+transistor geometry this design's schematics use, individually DRC-clean and
+correctly extracted against sky130 — see `layout/README.md`), not a
+composed, DRC/LVS-clean block. Every decision record cited below (DR-0001,
+DR-0002, DR-0003, DR-0004) carries status **Proposed** — drafted, not yet
 accepted by an operator.
 
-This is a materially earlier maturity point than the sibling
+This is still an earlier maturity point than the sibling
 [`gf180-trng`](https://github.com/2AMLogic/gf180-trng) repository's own
-Challenge #3 proposal, which already had a full register interface, health
-tests, and a conditioner (even though its own layout was not yet composed
-into one whole-block GDS either). **This document is not a submission-ready
+Challenge #3 proposal: the register interface, health tests and conditioner
+now exist here too, but that sibling's were synthesized and power/area-
+characterized, and neither repository has composed a whole-block GDS. **This document is not a submission-ready
 package the way that sibling document was written to be.** It is this
 issue's own deliverable: an honest, `sim/`-cited snapshot of where this
 design stands against the Challenge #4 brief's assumed structure, naming
@@ -69,8 +71,9 @@ they are named as explicit follow-up work at the end of this document.
 
 A digital true-random-number-generator **entropy source** (not a DRBG): a
 four-ring, XOR-combined, free-running ring-oscillator array feeding a
-fixed-external-clock sampler. No conditioner, no health tests, and no
-register interface exist yet — see §3.
+fixed-external-clock sampler, followed by SP 800-90B health tests, a
+non-vetted CRC-32 conditioner, and a two-path register/streaming interface
+(DR-0004, unsynthesized) — see §3.
 
 ---
 
@@ -128,9 +131,12 @@ interface section (§3, §5.3) are unknown until that section is designed.
 | `ring_bit3` | 1 | `trng_top.ring_bit3` | Ring 3. |
 | `ring_bit4` | 1 | `trng_top.ring_bit4` | Ring 4. |
 
-**No conditioned output, no health-test alarm, no status/ready bits exist**
-to offer as test outputs, because none of that circuitry has been designed
-(§3). 6 of 12 used, 6 spare — reserved, not declined, for whatever the
+**The pin mapping above predates DR-0004 and is not updated here.** A
+health-test `alarm` output, a `gated`/`startup_done` status pair and a
+conditioned-stream tap now exist in RTL and are the obvious claimants for
+the spare slots; committing them to specific slots is work for the
+reconciliation against the real `rules-4.html` (§5.3), not for this
+increment. 6 of 12 used, 6 spare — reserved, not declined, for whatever the
 digital section eventually needs (a conditioned-stream tap and a health-test
 alarm output are the two most likely claimants, by direct analogy with
 gf180-trng's own pinout, once that section exists).
@@ -214,21 +220,28 @@ combined `xo` node — plus, separately, each of the four per-ring nodes
 DR-0003), deliberately decoupled from the rings' own free-running
 frequency.
 
-**Health tests, conditioner, interface: none exist.** Unlike gf180-trng
-(continuous RCT/APT, a start-up test, a per-ring liveness monitor, a
-non-vetted CRC-32 conditioner, and a word-addressed register file with a
-streaming port), this repository has designed none of that downstream
-circuitry yet. `design/README.md`'s "Deliberately not here" section states
-this explicitly: "The analog/digital verification boundary is drawn at the
-raw tap: everything up to and including `raw_bit` is transistor-level,
-everything downstream is a behavioural model plus RTL. None of it exists in
-this repo yet, and drawing it as SPICE subcircuits would fabricate netlists
-for circuits nobody has designed." `spec/porting-plan.md` §1.1 identifies
-which of gf180-trng's health-test *formulas* (RCT/APT parameterized by `H`,
-the SP 800-90B three-tier claim discipline, the raw/conditioned two-path
-convention) carry over as process-independent methodology once this section
-is eventually designed — but naming a formula as portable is not the same
-as having built the circuit, and none of it is built.
+**Health tests, conditioner, interface: designed as RTL and a behavioural
+model, not yet synthesized.** As of
+[DR-0004](../../spec/decision-records/DR-0004-sky130-digital-section-architecture.md)
+(status Proposed, issue #20) this repository has continuous SP 800-90B
+RCT/APT health tests with a 1024-sample start-up test and a latch-and-gate
+failure policy, a non-vetted CRC-32 LFSR conditioner (`K` = 8: 256 raw bits
+in, one 32-bit word out), and a word-addressed register file with a
+mode-selectable streaming port — raw always readable and never gated,
+conditioned path gated behind the start-up test and the alarm. The
+normative description is a bit-exact, cycle-accurate Python model
+(`digital/model/`); `digital/rtl/trng_digital.v` implements it and is
+checked against it cycle-for-cycle (`sim/digital-rtl-equivalence/`).
+
+Two things are still genuinely absent, and rows D/G below depend on them:
+**no synthesis against `sky130_fd_sc_hd` has been run** (so no `Fmax`,
+gate count, area or leakage figure exists for this section), and **no
+per-ring liveness monitor** consumes the `ring_bit1..4` taps —
+`spec/porting-plan.md` §5 leaves open whether this port adopts one at all,
+so DR-0004 declines to half-design it. The health-test cutoffs are a
+formula evaluation at the README's `H` = 0.5 *design target*, not at a
+measured `H`; row C below is exactly the measurement they are conditional
+on.
 
 ---
 
@@ -246,9 +259,9 @@ without a sky130-specific citation.
 | C | Raw min-entropy per bit | — | — | — | Design target: `H0 = 0.5` bit/sample (a sizing input, per DR-0002/DR-0003, not a claim) | n/a — no bitstream has been simulated | none — **no `sim/` record digitizes an actual noise-driven raw bit anywhere in this repository** | **Unmet/TBD, more fundamentally than a "not yet measured" caveat**: every `sim/` record under `ro-ring-jitter-accumulation/`, `ro-array-sizing/`, `ro-array-core-combining/`, etc. measures oscillator period/swing/jitter statistics ($\sigma_1$, $T_0$) or deterministic (noise-off) currents — none of them runs `sampler_dff` against a noise-injected ring and records the resulting 0/1 sequence. Not even a preliminary point estimate exists yet, unlike the sibling gf180-trng repository's own (explicitly-caveated) MCV estimate. |
 | D | Active power, array only (rings + buffers + XOR; excludes sampler and any digital section) | 81.0 µW | — | 431.6 µW | < 500 µW | min: `ss`/−40 °C/1.62 V; max: `ff`/−40 °C/1.98 V | [DR-0003](../../spec/decision-records/DR-0003-sky130-trng-operating-point.md) §7; `sim/ro-array-core-combining/` | **Unmet/TBD as a whole-block claim.** The array term alone (431.6 µW worst-measured) already consumes 86.3% of the 500 µW budget, with the 6× `sampler_dff` instances (unsimulated — DR-0003's own "Follow-up required" lists this gap) and the entire not-yet-designed digital section still to add. gf180-trng's own experience is a direct warning here: its synthesized digital section alone cost 712.4 µW, more than this entire budget row by itself. This row should not be read as "passing" — it is an array-only partial measurement against a whole-block target. |
 | E | Idle current, per ring (stopped) | 0.6 nA | — | 255 nA | not yet set — `spec/porting-plan.md` §2.5's leakage survey has not run | min: cold; max: `ff`/125 °C | `sim/ro-ring5-swing-and-current/` | No target exists to grade against. Reported because it exists now and did not before; excludes sampler/digital-section idle current, all unmeasured. |
-| F | Time-to-first-valid | — | — | — | not stated | n/a | none — no start-up test exists | **N/A — architecture not yet designed.** There is no start-up health test (§3), so there is nothing for this row to measure yet. |
-| G | Digital section max clean sample-clock frequency (`Fmax`) | — | — | — | supplementary, informative only | n/a | none — no synthesis has been run against `sky130_fd_sc_hd` | **N/A — no digital section exists to synthesize.** |
-| H | Health-test cutoffs (RCT / APT) | — | — | — | formula-derived once `H` is measured | n/a | none — the *formulas* are identified as portable methodology in `spec/porting-plan.md` §1.1, but no health-test circuit or parameter computation exists in this repo | **N/A — not yet designed.** |
+| F | Time-to-first-valid | 0.64 ms (first **raw** word) | — | 25.60 ms (first **conditioned** word) | not stated | n/a (sample-count derived; the 50 kHz clock is fixed and external) | [DR-0004](../../spec/decision-records/DR-0004-sky130-digital-section-architecture.md) §6 (status Proposed); `sim/digital-health-test-parameters/`, `sim/digital-section-behavioral/` experiment A | **Derived, no target to grade against.** The raw path is never gated, so its first 32-bit word lands 32 samples after `raw_valid` (0.64 ms at 50 kHz). The conditioned path waits for the mandatory 1024-sample start-up health test (20.48 ms) plus one 256-bit conditioner block (5.12 ms). Both figures are sample counts at DR-0003's clock, verified in the behavioural campaign — not silicon, and not PVT-dependent (nothing here is a timing-closure claim). |
+| G | Digital section max clean sample-clock frequency (`Fmax`) | — | — | — | supplementary, informative only | n/a | none — RTL now exists (`digital/rtl/trng_digital.v`, DR-0004) but **no synthesis has been run against `sky130_fd_sc_hd`** | **Still N/A — the design exists, the number does not.** DR-0004 § "Consequences" names synthesis as the largest gap it leaves: without a mapped netlist and STA there is no `Fmax`, gate count, area or leakage figure for this section, and none should be inferred from the RTL simulating correctly. The block is designed to run entirely in the 50 kHz sample-clock domain, so `Fmax` is expected to be enormously in excess of what is needed — but expected is not measured. |
+| H | Health-test cutoffs (RCT / APT) | — | `C_RCT` = 81, `C_APT` = 824 at `H` = 0.5, `α` = 2⁻⁴⁰, `W` = 1024 | — | formula-derived once `H` is measured | n/a (a formula evaluation, not a corner-dependent measurement) | [DR-0004](../../spec/decision-records/DR-0004-sky130-digital-section-architecture.md) §2 (status Proposed); `sim/digital-health-test-parameters/` (cutoff table over an `H` grid, exact APT degeneracy floor, false-alarm intervals at 50 kbps) | **Derived and implemented, but PROVISIONAL — conditional on row C.** The cutoffs are the SP 800-90B formulas evaluated at the README's `H` = 0.5 *design target*, because sky130 has no measured `H` (row C). They are deliberately evaluated at the design floor rather than at DR-0003's model-derived `H` = 0.5415, so the false-alarm guarantee stays valid across the whole claimed range. The evidence record tabulates the cutoff at every `H` from the exact APT degeneracy floor (`H` = 0.0390625) upward, so closing row C moves this row by lookup. The values coincide with gf180-trng's own because the formulas, `α`, `W` and the `H` target all coincide — recomputed here, not copied. |
 | I | Area, array only (rings + buffers + XOR; device-count estimate, no layout) | 0.0026 mm² | — | 0.0088 mm² | < 0.05 mm² | n/a (not PVT-dependent) | [DR-0003](../../spec/decision-records/DR-0003-sky130-trng-operating-point.md) §7 | Array-only estimate sits at 5–18% of budget — but excludes the sampler, any digital section, and actual layout (`layout/` is empty). **Not a whole-block claim; not a layout measurement.** |
 | J | Architectural raw-rate ceiling (XOR combining-gate bandwidth), any array size | — | — | ~78 kbps | informative only — the hard constraint row B's operating point is chosen against | `ff`/−40 °C/1.98 V | [DR-0003](../../spec/decision-records/DR-0003-sky130-trng-operating-point.md) §1–2; `sim/xor-combining-bandwidth/` | Measured. This is the figure that forces row B's verdict — no amount of array resizing raises it; only redesigning the combining gate (wider devices, a different tree) would (DR-0003's own "Follow-up required"). |
 
@@ -350,11 +363,15 @@ These are not closeable by further pre-tapeout simulation of what exists
 today; each needs new design work, tracked as separate issues (see the PR
 that lands this document):
 
-- **Design the digital section** (health tests, conditioner, register/
-  streaming interface) that `design/README.md` explicitly scopes out today.
-  Without it, rows C, F, G, and H stay N/A regardless of how much more
-  analog characterization runs, and the pin mapping in §2 has no register
-  bus or health-test alarm to offer.
+- **Synthesize the digital section** against `sky130_fd_sc_hd`. The
+  section itself is designed (DR-0004: model, RTL, four evidence records),
+  which moves rows F and H off "N/A" — but row G, and the digital half of
+  rows D and I, need a mapped netlist plus STA and power analysis that no
+  record in this repository provides.
+- **Re-map the §2 pin budget onto DR-0004's interface** — a health-test
+  alarm, status bits and a conditioned-stream tap now exist to claim the
+  spare test-output slots, and the §2 tables still describe the pre-DR-0004
+  block.
 - **Simulate an actual noise-driven raw bitstream** (row C) — even a
   preliminary, heavily-caveated point estimate, the way gf180-trng's own
   proposal had one, does not exist here yet.

@@ -29,6 +29,26 @@ Issue #13 then rebuilt `ro_array_core.sch` at a measured operating point
 | `ro-array-core-combining/` | the assembled, committed `ro_array_core.spice` end to end: realized per-ring frequency ladder, combining-node edge retention and DC bias, total array supply current | #13 |
 | `ro-array-operating-point/` | reduction crossing the combining-bandwidth ceiling against the entropy sizing law (re-evaluated at the buffer-loaded ring period), producing the chosen `N` and raw-rate operating point | #13 |
 
+Issue #20 then added the digital section (`digital/`, everything downstream
+of the raw tap, `spec/decision-records/DR-0004-sky130-digital-section-architecture.md`,
+status **Proposed**). Those runs are **behavioural**, not ngspice: they have
+no PVT axis and never will, because the verification-level split
+(`spec/porting-plan.md` §1.1) puts everything past `raw_bit` in a bit-exact
+model rather than a transistor-level deck. They follow the same
+append-only record rules through `sim/bin/behavioral_record.py` instead of
+`sim/bin/corner-run.py`:
+
+| Slug | Claim under test | Landed by |
+|---|---|---|
+| `digital-health-test-parameters/` | the SP 800-90B RCT/APT cutoffs derived from the formulas at this repo's own `H` target and 50 kbps raw rate; the exact APT degeneracy floor; the false-alarm and latency consequences | #20 |
+| `digital-conditioner-equivalence/` | is the committed CRC-32/LFSR conditioner bit-exact against independently-constructed references, and does each word depend on exactly its own 256 raw bits? | #20 |
+| `digital-section-behavioral/` | do the assembled section's health tests, start-up gate, latch-and-gate policy, raw-path invariant and mode-switch flush behave as DR-0004 specifies, over declared synthetic sources? | #20 |
+| `digital-rtl-equivalence/` | does `digital/rtl/trng_digital.v` match the normative behavioural model cycle for cycle? | #20 |
+
+`sim/tests/test_digital_section.py` is the fast, always-runnable unit-test
+suite behind those records (standard library only, no simulator, no PDK):
+`python3 sim/tests/test_digital_section.py`.
+
 Two rules from the root `CLAUDE.md` govern everything under this directory:
 
 - **Verification is the product.** No claim without a testbench, and PVT
@@ -65,9 +85,12 @@ from sky130-bandgap's" below.
 |---|---|---|
 | PDK pin | `sim/pdk.json` | open_pdks commit, variant, ngspice library path, the process-corner names the PDK actually ships |
 | corner runner | `sim/bin/corner-run.py` | resolves the PDK, renders a deck template per corner, runs ngspice, parses results, mints a record |
+| behavioural record minter | `sim/bin/behavioral_record.py` | the same append-only record discipline for runs that have no simulator and no PDK (`level: behavioral`); a library each `sim/digital-*/` harness calls, not a runner |
 | testbench | `sim/<slug>/testbench/*.spice` | deck **templates** (see placeholders below) -- not runnable decks as committed |
 | records | `sim/<slug>/records/<record-id>.{md,json}` | one append-only evidence record per run: `.md` (human), `.json` (machine) |
 | raw logs | `sim/<slug>/corners/<record-id>/<corner>.log` | the exact deck each corner ran, embedded, plus its raw ngspice stdout/stderr -- committed evidence, exempted from the root `.gitignore`'s `*.log` rule by `!sim/*/corners/**/*.log` |
+| behavioural harness | `sim/<slug>/harness/*.py` (or `analysis/*.py` for a pure reduction) | the runnable testbench for a `level: behavioral` slug -- drives `digital/model/` (and, for the RTL slug, `iverilog`), then mints its own record |
+| behavioural artifacts | `sim/<slug>/runs/<record-id>/*.txt` | the raw stimulus and traces a behavioural run produced -- the analogue of `corners/`, `.txt` rather than `.log` because the `.gitignore` exemption above is scoped to `corners/` |
 
 `<slug>` is a kebab-case directory per distinct claim under test (e.g.
 `ro-stage-noise-mechanism-check`) -- one directory per claim, not per run,
