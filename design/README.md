@@ -229,5 +229,12 @@ DR-0003 surfaces and does not resolve on its own authority.
   downstream is a behavioural model plus RTL. None of it exists in this repo
   yet, and drawing it as SPICE subcircuits would fabricate netlists for
   circuits nobody has designed.
-- **Layout and DRC/LVS.** `layout/` is still empty; that is a follow-on
-  increment. (`sim/` is no longer empty — see `sim/README.md`.)
+- **Layout and DRC/LVS.** `layout/` is no longer empty, but is not yet a
+  DRC/LVS-clean block: issue #22's first increment proved every distinct
+  transistor geometry this design's schematics instantiate is individually
+  DRC-clean and extracts correctly against the sky130 open PDK
+  (`layout/primitives/`), and worked out a concrete floorplan/composition
+  plan (`layout/README.md`) — but no multi-device gate, ring, array, or
+  sampler layout exists yet, and no post-layout PVT re-verification has run.
+  See `layout/README.md` for the full status and the follow-up issue it
+  tracks. (`sim/` is no longer empty either — see `sim/README.md`.)

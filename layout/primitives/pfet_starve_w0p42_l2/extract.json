@@ -1,0 +1,131 @@
+{
+  "schema_version": 3,
+  "file": "primitives/pfet_starve_w0p42_l2/pfet_starve_w0p42_l2.gds",
+  "deck": "sky130",
+  "top": "pfet_starve_w0p42_l2",
+  "dbu_um": 0.001,
+  "netlist_path": "primitives/pfet_starve_w0p42_l2/pfet_starve_w0p42_l2.spice",
+  "netlist_sha256": "93b39e261cef2bc479b953a2b7c140557c6c3374b9d1db810e95d15f949e3428",
+  "status": "extracted",
+  "device_count": 1,
+  "net_count": 4,
+  "pin_count": 0,
+  "device_counts": {
+    "pfet": 1
+  },
+  "dummy_devices_dropped": 0,
+  "ignored_layers": [],
+  "device_recognition_only_layers": [],
+  "device_classes": [
+    "nfet",
+    "pfet",
+    "pnp",
+    "sky130_fd_pr__model__cap_mim",
+    "sky130_fd_pr__model__cap_mim_m4",
+    "resistor"
+  ],
+  "devices": [
+    {
+      "name": "$1",
+      "class": "pfet",
+      "nets": {
+        "s": "\\$1",
+        "g": "\\$3",
+        "d": "\\$2",
+        "b": "\\$4"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.42,
+        "as_um2": 0.1764,
+        "ad_um2": 0.1764,
+        "ps_um": 1.68,
+        "pd_um": 1.68
+      }
+    }
+  ],
+  "nets": [
+    {
+      "name": "\\$1",
+      "pin": false,
+      "device_count": 1
+    },
+    {
+      "name": "\\$2",
+      "pin": false,
+      "device_count": 1
+    },
+    {
+      "name": "\\$3",
+      "pin": false,
+      "device_count": 1
+    },
+    {
+      "name": "\\$4",
+      "pin": false,
+      "device_count": 1
+    }
+  ],
+  "warnings": [
+    "found 0 pin-name label(s) on any of this deck's label layers (64/5, 66/5, 67/5, 68/5, 69/5, 70/5, 71/5, 72/5) anywhere in 'pfet_starve_w0p42_l2' -- no net can be named, so 0 top-level pins will be promoted below and `klt lvs` will have no net/device anchor to seed a match against a reference netlist. Compare the layers `klt layers` reports for this GDS against the list above; for a `klt place-and-route` layout in particular, check that request.io.layer_h/layer_v chose a layer this --deck actually scans for pin labels (issue #1385)",
+    "0 top-level pins are promoted on 'pfet_starve_w0p42_l2' after extraction -- `klt lvs` has no net/device anchor to seed correspondence against a reference netlist and will report a full mismatch regardless of device-count agreement. If this design genuinely has zero top-level pins by intent, this warning can be ignored; otherwise see the pin-name-label warning above (if present) or check that --top-cell-pins/--pins/--def-pins did not demote every promoted pin (issue #1385)",
+    "1 PMOS device tie their body to an anonymous net with no DC bias path -- no drawn (or derivable) well tie connects this PMOS body to a real supply rail on this layout, so it is left floating rather than tied to a real supply rail; resimulating this netlist directly will not reproduce the schematic-level PMOS body bias -- see unbiased_pmos_body_nets[] for the full list. See docs/cli/extract.md's 'Parasitic (RC) extraction' section.",
+    "1 net connect to exactly one device terminal -- a MOS gate -- and are not a declared pin: these gates have no DC path from anywhere else in the netlist, so they are almost certainly unconnected inputs rather than legitimate floating nodes; resimulating this netlist directly will hit a singular matrix on these nets -- see single_terminal_nets[] for the full list.",
+    "3 nets connect to exactly one device terminal -- source/drain/body/resistor-equivalent, not a gate -- and are not a declared pin; this can be a legitimate single-terminal tie (e.g. an intentionally unterminated dummy's diffusion tie), but confirm these nets have no other intended connectivity -- see single_terminal_nets[] for the full list."
+  ],
+  "black_box_regions": [],
+  "abstracted_cells": [],
+  "unmodelled_poly": [],
+  "merged_net_labels": [],
+  "voltage_domain_warnings": [],
+  "unbiased_pmos_body_nets": [
+    {
+      "device": "$1",
+      "net": "\\$4"
+    }
+  ],
+  "single_terminal_nets": [
+    {
+      "net": "\\$1",
+      "device": "$1",
+      "terminal": "s",
+      "terminal_kind": "source"
+    },
+    {
+      "net": "\\$2",
+      "device": "$1",
+      "terminal": "d",
+      "terminal_kind": "drain"
+    },
+    {
+      "net": "\\$3",
+      "device": "$1",
+      "terminal": "g",
+      "terminal_kind": "gate"
+    },
+    {
+      "net": "\\$4",
+      "device": "$1",
+      "terminal": "b",
+      "terminal_kind": "body"
+    }
+  ],
+  "dead_metal": [],
+  "matched_device_groups": [],
+  "pdk": null,
+  "provenance": {
+    "klt_version": "0.4.0",
+    "klayout_version": "0.30.12",
+    "pdk": null,
+    "deck": {
+      "name": "sky130",
+      "content_hash": "sha256:5afac7ab8561545859f5e2e74f4621c6ffc052756dc8fe344ea263398e96b240",
+      "released": false
+    },
+    "input": {
+      "content_hash": "sha256:8f56f25bf7e79c86961981a18eb1e895704beb9dd1ba3454515a7a09f079757e"
+    }
+  },
+  "parasitics": null,
+  "spef_path": null
+}

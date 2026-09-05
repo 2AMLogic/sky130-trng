@@ -39,8 +39,12 @@ as SPICE schematics and characterized across PVT at the transistor level
 health-test module, and no register/streaming interface** —
 [`design/README.md`](../../design/README.md)'s own "Deliberately not here"
 section names all three as out of scope for this repository today, not
-merely unfinished. No synthesis has been run, `layout/` is empty, and no
-DRC/LVS has ever been attempted. Every decision record cited below
+merely unfinished. No synthesis has been run, and no DRC/LVS-clean gate,
+ring, array, or sampler layout exists: `layout/` now holds device-level
+proof-of-methodology evidence only (every distinct transistor geometry this
+design's schematics use, individually DRC-clean and correctly extracted
+against sky130 — see `layout/README.md`), not a composed, DRC/LVS-clean
+block. Every decision record cited below
 (DR-0001, DR-0002, DR-0003) carries status **Proposed** — drafted, not yet
 accepted by an operator.
 
@@ -361,9 +365,11 @@ that lands this document):
 - **Ratify DR-0001, DR-0002, and DR-0003.** Every quantitative row in §4
   ultimately traces to at least one of these three Proposed records; none
   is yet an operator-accepted decision.
-- **Layout and DRC/LVS.** `layout/` is empty. Nothing here is post-layout,
-  nothing is DRC/LVS-clean, and the brief's full sign-off bar (post-layout
-  PVT simulation, DRC/LVS-clean GDS) is not attempted in this document.
+- **Layout and DRC/LVS.** `layout/` holds device-level proof-of-methodology
+  evidence only (issue #22's first increment — see `layout/README.md`).
+  Nothing is post-layout, nothing is a composed DRC/LVS-clean gate/ring/
+  array/sampler, and the brief's full sign-off bar (post-layout PVT
+  simulation, DRC/LVS-clean GDS) is not attempted in this document.
 - **Reconcile against `rules-4.html`** once it publishes — this document was
   written against the assumed `rules-2.html`/`rules-3.html` structure
   because the real Challenge #4 brief was not yet published as of this
