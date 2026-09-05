@@ -38,7 +38,7 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO_ROOT / "digital"))
 sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
 
-from behavioral_record import mint_record  # noqa: E402
+from evidence_record import mint_behavioral_record  # noqa: E402
 from model import regmap as rm  # noqa: E402
 from model.digital_top import TrngDigital  # noqa: E402
 from model.params import C_RCT, COND_BLOCK_BITS, STARTUP_SAMPLES  # noqa: E402
@@ -285,7 +285,8 @@ def main(argv: list[str] | None = None) -> int:
         else:
             model_file = workdir / "model-observations.txt"
             model_file.write_text("\n".join(expected) + "\n")
-            mint_record(
+            mint_behavioral_record(
+                repo_root=REPO_ROOT,
                 slug="digital-rtl-equivalence",
                 claim=("digital/rtl/trng_digital.v is cycle-for-cycle "
                        "equivalent to the normative behavioural model "

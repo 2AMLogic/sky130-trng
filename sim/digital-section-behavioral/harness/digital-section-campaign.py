@@ -45,7 +45,7 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO_ROOT / "digital"))
 sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
 
-from behavioral_record import mint_record  # noqa: E402
+from evidence_record import mint_behavioral_record  # noqa: E402
 from model import regmap as rm  # noqa: E402
 from model.digital_top import TrngDigital  # noqa: E402
 from model.params import (C_APT, C_RCT, COND_BLOCK_BITS, H_DESIGN,  # noqa: E402
@@ -368,7 +368,8 @@ def main(argv: list[str] | None = None) -> int:
     if args.emit_record:
         artifact = Path(tempfile.gettempdir()) / "digital-section-campaign-events.txt"
         artifact.write_text("\n".join(log) + "\n")
-        mint_record(
+        mint_behavioral_record(
+            repo_root=REPO_ROOT,
             slug="digital-section-behavioral",
             claim=("the assembled digital section's health tests, start-up "
                    "gate, latch-and-gate failure policy, raw-path invariant "
