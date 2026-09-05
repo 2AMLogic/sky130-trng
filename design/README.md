@@ -238,7 +238,14 @@ DR-0003 surfaces and does not resolve on its own authority.
   transistor geometry this design's schematics instantiate is individually
   DRC-clean and extracts correctly against the sky130 open PDK
   (`layout/primitives/`), and worked out a concrete floorplan/composition
-  plan (`layout/README.md`) — but no multi-device gate, ring, array, or
-  sampler layout exists yet, and no post-layout PVT re-verification has run.
-  See `layout/README.md` for the full status and the follow-up issue it
-  tracks. (`sim/` is no longer empty either — see `sim/README.md`.)
+  plan (`layout/README.md`). A follow-up increment
+  (`layout/well-strap-poc/`) then solved that plan's single named blocking
+  unknown — how to physically strap a PMOS device's own nwell to a named
+  supply net — and, while reproducing the earlier evidence, found a real
+  regression in the pinned `klayout-tools` release that currently blocks
+  composing this design's actual (`l_um=0.15`) gates
+  ([2AMLogic/klayout-tools#1491](https://github.com/2AMLogic/klayout-tools/issues/1491)).
+  No multi-device gate, ring, array, or sampler layout exists yet, and no
+  post-layout PVT re-verification has run. See `layout/README.md` for the
+  full status and the follow-up issue (#27) it tracks. (`sim/` is no longer
+  empty either — see `sim/README.md`.)
