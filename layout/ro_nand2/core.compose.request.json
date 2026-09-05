@@ -1,0 +1,207 @@
+{
+  "pdk": {
+    "variant": "sky130A"
+  },
+  "blocks": [
+    {
+      "id": "mph",
+      "generator_report": "gen/mph.gen.json",
+      "orientation": "mirror_y"
+    },
+    {
+      "id": "mpa",
+      "generator_report": "gen/mpa.gen.json",
+      "orientation": "mirror_y"
+    },
+    {
+      "id": "mpb",
+      "generator_report": "gen/mpb.gen.json",
+      "orientation": "rotate_180"
+    },
+    {
+      "id": "mnt",
+      "generator_report": "gen/mnt.gen.json"
+    },
+    {
+      "id": "mnab",
+      "generator_report": "gen/mnab.gen.json"
+    },
+    {
+      "id": "nwell_tap",
+      "generator_report": "gen/nwell_tap.gen.json"
+    },
+    {
+      "id": "psub_tap",
+      "generator_report": "gen/psub_tap.gen.json"
+    }
+  ],
+  "placement": {
+    "strategy": "explicit",
+    "order": [
+      "mph",
+      "mpa",
+      "mpb",
+      "mnt",
+      "mnab",
+      "nwell_tap",
+      "psub_tap"
+    ],
+    "origins_um": {
+      "mph": {
+        "x": 0.0,
+        "y": 3.95
+      },
+      "mpa": {
+        "x": 3.04,
+        "y": 4.16
+      },
+      "mpb": {
+        "x": 5.42,
+        "y": 4.16
+      },
+      "mnt": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "mnab": {
+        "x": 3.24,
+        "y": -0.21
+      },
+      "nwell_tap": {
+        "x": -2.04,
+        "y": 2.82
+      },
+      "psub_tap": {
+        "x": -2.14,
+        "y": -0.71
+      }
+    }
+  },
+  "routing": {
+    "layer_role": "metal",
+    "width_um": 0.17
+  },
+  "connectivity": [
+    {
+      "net": "vddr",
+      "pins": [
+        {
+          "block": "mph",
+          "port": "U0_S"
+        },
+        {
+          "block": "nwell_tap",
+          "port": "TAP_E"
+        }
+      ]
+    },
+    {
+      "net": "vss",
+      "pins": [
+        {
+          "block": "mnt",
+          "port": "U0_S"
+        },
+        {
+          "block": "psub_tap",
+          "port": "TAP_E"
+        }
+      ]
+    },
+    {
+      "net": "ny",
+      "pins": [
+        {
+          "block": "mnt",
+          "port": "U0_D"
+        },
+        {
+          "block": "mnab",
+          "port": "U0_S0"
+        }
+      ]
+    },
+    {
+      "net": "en",
+      "pins": [
+        {
+          "block": "mpa",
+          "port": "U0_G"
+        },
+        {
+          "block": "mnab",
+          "port": "U0_G0"
+        }
+      ]
+    },
+    {
+      "net": "a",
+      "pins": [
+        {
+          "block": "mpb",
+          "port": "U0_G"
+        },
+        {
+          "block": "mnab",
+          "port": "U0_G1"
+        }
+      ]
+    }
+  ],
+  "pins": [
+    {
+      "block": "nwell_tap",
+      "port": "TAP_W",
+      "net": "vddr"
+    },
+    {
+      "block": "psub_tap",
+      "port": "TAP_N",
+      "net": "vss"
+    },
+    {
+      "block": "mph",
+      "port": "U0_D",
+      "net": "mph_py"
+    },
+    {
+      "block": "mpa",
+      "port": "U0_S",
+      "net": "mpa_py"
+    },
+    {
+      "block": "mpb",
+      "port": "U0_S",
+      "net": "mpb_py"
+    },
+    {
+      "block": "mpa",
+      "port": "U0_D",
+      "net": "mpa_y"
+    },
+    {
+      "block": "mpb",
+      "port": "U0_D",
+      "net": "mpb_y"
+    },
+    {
+      "block": "mnab",
+      "port": "U0_S1",
+      "net": "mnab_y"
+    },
+    {
+      "block": "mph",
+      "port": "U0_G",
+      "net": "mph_g"
+    },
+    {
+      "block": "mnt",
+      "port": "U0_G",
+      "net": "mnt_g"
+    }
+  ],
+  "options": {
+    "cell_name": "core",
+    "output": "core.gds"
+  }
+}
