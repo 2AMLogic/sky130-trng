@@ -419,6 +419,66 @@ to evaluate arbitrary SPICE parameter expressions is a defensible boundary
 rather than a defect — but a future increment that starts depending on
 S/D-area matching should re-check this rather than assume coverage.
 
+## Scouting `--parasitics`: what step 5 will and will not have to fight
+
+Step 5 below (post-layout PVT re-verification) is not attempted here, and
+**no `sim/` record is minted by this increment** — a PVT campaign is its own
+deliverable with its own corner discipline, and a half-run one is worth less
+than none. But three things about the extraction-to-ngspice handoff were
+cheap to settle now and expensive to discover mid-campaign, so they are
+settled and recorded here as layout/tool evidence rather than as a
+simulation claim.
+
+Probe used throughout: `ro_stage_wstv0p48`'s committed GDS, re-extracted with
+`klt extract <gds> --deck sky130 --parasitics`, on `klt 0.4.0` / ngspice-47.
+This produced no committed artifact — the probe is reproducible from the
+committed GDS in one command, so there is nothing to keep in the tree.
+
+1. **`--parasitics` works on these composed cells.** It is not blocked, not
+   deck-limited, and not defeated by the two-pass `"stages"` composition.
+   `ro_stage_wstv0p48` yields 16 series R, 6 net-to-substrate C, and 1
+   net-to-net coupling C (`total_resistance_ohm` 1717.8,
+   `total_capacitance_ff` 4.74, `total_coupling_capacitance_ff` 0.0036),
+   with a per-net breakdown and a star of per-terminal leg resistances. So
+   step 5's input exists today for every cell in this directory.
+
+2. **The `|` in the extracted net names is harmless — a false alarm,
+   pre-empted.** Cells built by the two-pass technique carry a pin label and
+   a net label on the same physical net (`ro_stage`'s `mph_g` and `vss`), and
+   the extractor joins those into one name, spelling it `mph_g|vss` in the
+   `.SUBCKT` line and R/C cards but `mph_g\x7cvss__t0` in device cards. That
+   looks exactly like a netlist that will silently split into two nodes —
+   and ngspice does treat `a|b` and `a\x7cb` as distinct nodes, so the worry
+   is well-founded in general. It does not happen here: the escaped spelling
+   is only ever used on the `__tN` *leg* nets, which are distinct nodes by
+   construction, and the hub node is spelled consistently. Verified by
+   instantiating the extracted subcircuit in ngspice and running `.op` —
+   pins bind correctly and the parasitic R star is live (the `y` net's two
+   legs settle at slightly different voltages, as a star of real resistors
+   should). A future increment does not need to re-litigate this.
+
+3. **The substrate return node is a real trap, and is filed upstream.**
+   Every net-to-substrate capacitor returns to a node named `vsubs` which is
+   *neither* a `.SUBCKT` pin *nor* `.GLOBAL`-declared, tied to ground only
+   via `Rvsubs_dctie vsubs 0 1e+12`. Simulated flat (extracted cell as the
+   top cell) that is fine. **Instantiated** — which is how any PVT sweep or
+   hierarchical assembly will use it — `vsubs` becomes a per-instance local
+   node the testbench cannot reach: a top-level `Vs vsubs 0 0` does *not*
+   tie it (ngspice lists `vsubs` and `x1.vsubs` as separate nodes), so the
+   whole ground-capacitance model hangs off a node isolated from ground by
+   1 TΩ. Nothing errors and the sim converges. Measured on this cell's own
+   output net, as-extracted versus the same netlist with `.GLOBAL vsubs`
+   prepended: ~1% impedance difference at 1 GHz, ~17% at 10 GHz — small
+   enough to pass a spot check, large enough to corrupt a campaign.
+
+   Filed generically per this repo's friction protocol as
+   [klayout-tools#1503](https://github.com/2AMLogic/klayout-tools/issues/1503)
+   (described as a parasitic-writer substrate-node scoping problem, with no
+   reference to this design). **Until it is fixed, step 5's harness must
+   either simulate the extracted cell flat, or prepend `.GLOBAL vsubs` to
+   the extracted netlist** — and whichever it does must be recorded in the
+   `sim/` record, because the two give measurably different answers.
+
 ## What's deferred (tracking issue)
 
 Everything below issue #22's original scope needed and this PR does not
@@ -490,7 +550,9 @@ deliver, tracked in follow-up issue
 5. Post-layout PVT re-verification: re-run `sim/`'s existing corner-sweep
    harness (`sim/bin/corner-run.py`) against the `klt extract --parasitics`
    output, recording results under `sim/` per the existing append-only
-   convention.
+   convention. **Not started — but its three tool-level unknowns are now
+   resolved, see "Scouting `--parasitics`" below.** Nothing under `sim/` is
+   added or changed by this increment.
 6. Re-evaluate DR-0003 §8's `wstv` inter-ring decorrelation gap using the
    extracted parasitics from step 5 — the measurement DR-0003 explicitly
    flagged as needing a real layout and unmeasurable at the netlist level.
