@@ -1,0 +1,18 @@
+{
+  "blocks": [
+    {"id": "well_tap", "generator_report": "pmos_well_tap.gen.json"},
+    {"id": "mp", "generator_report": "pfet_demo.gen.json"}
+  ],
+  "placement": {
+    "strategy": "explicit",
+    "order": ["well_tap", "mp"],
+    "origins_um": {
+      "well_tap": {"x": 0.0, "y": 0.0},
+      "mp": {"x": 1.07, "y": 1.07}
+    }
+  },
+  "connectivity": [],
+  "pins": [
+    {"block": "well_tap", "port": "TAP_S", "net": "vdd"}
+  ]
+}

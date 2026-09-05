@@ -383,10 +383,14 @@ that lands this document):
   ultimately traces to at least one of these three Proposed records; none
   is yet an operator-accepted decision.
 - **Layout and DRC/LVS.** `layout/` holds device-level proof-of-methodology
-  evidence only (issue #22's first increment — see `layout/README.md`).
-  Nothing is post-layout, nothing is a composed DRC/LVS-clean gate/ring/
-  array/sampler, and the brief's full sign-off bar (post-layout PVT
-  simulation, DRC/LVS-clean GDS) is not attempted in this document.
+  evidence (issue #22's first increment) plus a solved well-strap
+  composition methodology (`layout/well-strap-poc/`, a follow-up increment)
+  — see `layout/README.md`. A real `klayout-tools` regression
+  ([2AMLogic/klayout-tools#1491](https://github.com/2AMLogic/klayout-tools/issues/1491))
+  currently blocks composing this design's actual gates. Nothing is
+  post-layout, nothing is a composed DRC/LVS-clean gate/ring/array/sampler,
+  and the brief's full sign-off bar (post-layout PVT simulation, DRC/LVS-clean
+  GDS) is not attempted in this document.
 - **Reconcile against `rules-4.html`** once it publishes — this document was
   written against the assumed `rules-2.html`/`rules-3.html` structure
   because the real Challenge #4 brief was not yet published as of this
