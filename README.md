@@ -71,8 +71,9 @@ silicon. **Current position: pre-spec.**
 
 ```
 spec/          ratified spec + decision records
-design/        schematics / netlists (xschem)
-sim/           testbenches + PVT corner results (ngspice)
+design/        schematics / netlists (xschem) -- up to and including the raw tap
+digital/       everything downstream of the raw tap: behavioural model + RTL
+sim/           testbenches + PVT corner results (ngspice), plus behavioural records
 layout/        GDS + DRC/LVS reports (klayout-tools driven)
 measurements/  silicon characterization (empty until tape-out)
 ```

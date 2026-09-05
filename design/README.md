@@ -226,9 +226,13 @@ DR-0003 surfaces and does not resolve on its own authority.
 - **The digital section** — conditioner, health tests, register interface.
   The analog/digital verification boundary is drawn at the raw tap:
   everything up to and including `raw_bit` is transistor-level, everything
-  downstream is a behavioural model plus RTL. None of it exists in this repo
-  yet, and drawing it as SPICE subcircuits would fabricate netlists for
-  circuits nobody has designed.
+  downstream is a behavioural model plus RTL, and drawing it as SPICE
+  subcircuits would fabricate netlists for circuits nobody has designed.
+  That section now exists — as of
+  [`spec/decision-records/DR-0004-sky130-digital-section-architecture.md`](../spec/decision-records/DR-0004-sky130-digital-section-architecture.md)
+  (status **Proposed**) it lives in [`digital/`](../digital/README.md), not
+  here, and none of it is or will be a `design/*.spice` netlist. `raw_bit`
+  and `raw_valid` are the interface between the two directories.
 - **Layout and DRC/LVS.** `layout/` is no longer empty, but is not yet a
   DRC/LVS-clean block: issue #22's first increment proved every distinct
   transistor geometry this design's schematics instantiate is individually
