@@ -44,6 +44,36 @@ See ``layout/README.md`` and ``layout/ro_buf/cell.json``. In brief::
       "lvs": {"reference": "design/ro_array_core.spice", "subckt": "ro_buf"}
     }
 
+Two-pass composition (``"stages"``, #27 step 2)
+------------------------------------------------
+
+Some gates have two nets that would short if both were routed on the same
+metal layer in one ``klt gen-compose`` call -- ``ro_stage``/``ro_nand2``'s
+always-on starve devices cross-couple their gates to the *opposite* rail
+(``Mph.g = vss``, ``Mnt.g = vddr``), so wiring both crossing nets on the
+base ``"metal"`` role in a single pass is not routable without one net
+running through the other's block or backbone (see ``layout/README.md``'s
+"Composing a gate" section). A cell.json may replace its top-level
+``blocks``/``placement``/``routing``/``connectivity``/``pins`` fields with a
+``"stages"`` list instead, each entry shaped like those same fields plus a
+``"name"`` (required on every stage but the last, which is always named
+after the cell itself and always ends up as ``compose.request.json``/
+``compose.response.json`` with no prefix -- so ``--check`` and the DRC/
+extract/LVS steps below are completely unaware whether a cell used one
+stage or several). A later stage's ``blocks[]`` entry may reference an
+earlier stage's own composed cell instead of a fresh ``klt gen`` call via
+``{"id": ..., "from_stage": "<earlier stage's name>"}``, which resolves to
+that stage's own ``<name>.compose.response.json`` -- a valid
+``generator_report`` in its own right, since ``klt gen-compose``'s response
+already carries ``generator: "gen-compose"`` plus a composed-frame
+``ports[]`` promoted from that stage's own ``pins[]`` (this is what the CLI
+itself calls composition "nesting"). The usual second stage routes the two
+gate-crossing nets on ``"metal2"`` (sky130 met1) with an automatic via-drop
+back to each pin's own base-``"metal"``-role pad, over the first stage's
+already-composed cell -- see ``layout/ro_stage/cell.json`` for a worked
+example and ``layout/ro_stage/README.md`` for why each net landed on the
+layer it did.
+
 The reference-netlist unit rewrite
 ----------------------------------
 
@@ -202,18 +232,61 @@ def build_reference(
 # --------------------------------------------------------------------------
 
 
-def compose_cell(spec: dict, spec_dir: Path, out_dir: Path) -> dict:
-    """Run the full gen -> compose -> drc -> extract -> lvs chain."""
-    cell = spec["cell"]
-    variant = spec["pdk"]["variant"]
-    deck = spec["pdk"]["deck"]
-    env = {**os.environ, "PDK": variant}
+def compose_stage(
+    stage: dict,
+    *,
+    is_final: bool,
+    cell: str,
+    variant: str,
+    env: dict[str, str],
+    out_dir: Path,
+    stage_responses: dict[str, str],
+) -> dict:
+    """Run one stage's ``gen`` (per new block) + ``gen-compose`` (place/route).
 
+    A stage's ``blocks[]`` entries are either freshly generated (the
+    ``generator``/``params``/``cell_name`` shape ``compose_cell`` always
+    supported) or a reference to an *earlier* stage's own composed output
+    (``block["from_stage"]``, naming that earlier stage's ``name``) -- which
+    ``klt gen-compose`` accepts unmodified as a further ``generator_report``,
+    since its own response already carries ``generator: "gen-compose"`` plus
+    a ``ports[]`` promoted from that stage's own ``pins[]`` (see this
+    module's docstring and ``layout/README.md``'s "Two-pass composition"
+    section for why a cell ever needs more than one stage: routing two nets
+    that would otherwise cross on the same metal layer, resolved by moving
+    one of them to a second routing-metal level in a second pass over the
+    first pass's own composed output).
+
+    The **final** stage (``is_final=True``) writes ``compose.request.json``/
+    ``compose.response.json`` with no prefix, and its ``options.cell_name``
+    is the cell's own name -- unprefixed, exactly as every single-stage cell
+    already committed under ``layout/`` expects, so a cell.json with no
+    ``"stages"`` key (wrapped by ``compose_cell`` into one implicit final
+    stage) is byte-for-byte unaffected by this function's existence. A
+    non-final stage's files are prefixed with its own ``name`` instead
+    (``<name>.compose.request.json`` etc.), and its composed cell is named
+    ``<name>``, so every stage's evidence lives in the cell's own directory
+    without filename collisions.
+    """
     gen_dir = out_dir / "gen"
     gen_dir.mkdir(parents=True, exist_ok=True)
 
-    # 1. Per-block generation.
-    for block in spec["blocks"]:
+    blocks_request = []
+    for block in stage["blocks"]:
+        if "from_stage" in block:
+            ref_name = block["from_stage"]
+            blocks_request.append(
+                {
+                    "id": block["id"],
+                    "generator_report": stage_responses[ref_name],
+                    **(
+                        {"orientation": block["orientation"]}
+                        if block.get("orientation", "none") != "none"
+                        else {}
+                    ),
+                }
+            )
+            continue
         response = run_klt(
             [
                 "gen",
@@ -231,11 +304,7 @@ def compose_cell(spec: dict, spec_dir: Path, out_dir: Path) -> dict:
             cwd=out_dir,
         )
         write_json(gen_dir / f"{block['id']}.gen.json", response)
-
-    # 2. Composition (place + route).
-    request = {
-        "pdk": {"variant": variant},
-        "blocks": [
+        blocks_request.append(
             {
                 "id": block["id"],
                 "generator_report": f"gen/{block['id']}.gen.json",
@@ -245,20 +314,72 @@ def compose_cell(spec: dict, spec_dir: Path, out_dir: Path) -> dict:
                     else {}
                 ),
             }
-            for block in spec["blocks"]
-        ],
-        "placement": spec["placement"],
-        "routing": spec["routing"],
-        "connectivity": spec["connectivity"],
-        "pins": spec.get("pins", []),
-        "options": {"cell_name": cell, "output": f"{cell}.gds"},
+        )
+
+    name = cell if is_final else stage["name"]
+    prefix = "" if is_final else f"{stage['name']}."
+    request = {
+        "pdk": {"variant": variant},
+        "blocks": blocks_request,
+        "placement": stage["placement"],
+        "routing": stage["routing"],
+        "connectivity": stage["connectivity"],
+        "pins": stage.get("pins", []),
+        "options": {"cell_name": name, "output": f"{name}.gds"},
     }
-    write_json(out_dir / "compose.request.json", request)
-    compose = run_klt(["gen-compose", "compose.request.json"], env=env, cwd=out_dir)
-    write_json(out_dir / "compose.response.json", compose)
+    write_json(out_dir / f"{prefix}compose.request.json", request)
+    compose = run_klt(
+        ["gen-compose", f"{prefix}compose.request.json"], env=env, cwd=out_dir
+    )
+    write_json(out_dir / f"{prefix}compose.response.json", compose)
     unrouted = [net["net"] for net in compose.get("nets", []) if not net.get("routed")]
     if unrouted:
-        raise BuildError(f"{cell}: nets left unrouted by gen-compose: {unrouted}")
+        raise BuildError(f"{name}: nets left unrouted by gen-compose: {unrouted}")
+    return compose
+
+
+def compose_cell(spec: dict, spec_dir: Path, out_dir: Path) -> dict:
+    """Run the full gen -> compose -> drc -> extract -> lvs chain.
+
+    ``spec["stages"]`` is optional (#27 step 2): a list of stage dicts, each
+    shaped like this function's single-stage fields
+    (``blocks``/``placement``/``routing``/``connectivity``/``pins``) plus a
+    ``name`` (required on every stage but the last, which is always named
+    after the cell itself). When absent, ``spec`` itself is wrapped as the
+    one implicit final stage -- every cell.json committed before #27 step 2
+    has no ``"stages"`` key and is therefore unaffected by this branch.
+    """
+    cell = spec["cell"]
+    variant = spec["pdk"]["variant"]
+    deck = spec["pdk"]["deck"]
+    env = {**os.environ, "PDK": variant}
+
+    stages = spec.get("stages") or [
+        {
+            "blocks": spec["blocks"],
+            "placement": spec["placement"],
+            "routing": spec["routing"],
+            "connectivity": spec["connectivity"],
+            "pins": spec.get("pins", []),
+        }
+    ]
+
+    stage_responses: dict[str, str] = {}
+    compose = None
+    for index, stage in enumerate(stages):
+        is_final = index == len(stages) - 1
+        compose = compose_stage(
+            stage,
+            is_final=is_final,
+            cell=cell,
+            variant=variant,
+            env=env,
+            out_dir=out_dir,
+            stage_responses=stage_responses,
+        )
+        if not is_final:
+            stage_responses[stage["name"]] = f"{stage['name']}.compose.response.json"
+    assert compose is not None  # stages is always non-empty
 
     # 3. DRC.
     drc = run_klt(["drc", f"{cell}.gds", "--deck", deck], env=env, cwd=out_dir)
@@ -340,6 +461,28 @@ def check_cell(spec: dict, spec_dir: Path) -> int:
                 if committed.get(field) != rebuilt.get(field):
                     drift.append(
                         f"{name}.{field}: committed={committed.get(field)!r} "
+                        f"rebuilt={rebuilt.get(field)!r}"
+                    )
+        # A multi-stage cell.json (#27 step 2) also commits each non-final
+        # stage's own "<name>.compose.response.json" (see compose_stage's
+        # docstring) -- diff those too, on the same verdict-bearing fields
+        # as the final compose.response.json above, so drift in an earlier
+        # stage's own placement/routing is caught even when it happens not
+        # to move the final cell's own bbox/DRC/LVS verdict.
+        for committed_path in sorted(spec_dir.glob("*.compose.response.json")):
+            if committed_path.name == "compose.response.json":
+                continue  # the final stage, already diffed above
+            rebuilt_path = tmp_dir / committed_path.name
+            if not rebuilt_path.exists():
+                drift.append(f"{committed_path.name}: missing from rebuild")
+                continue
+            committed = json.loads(committed_path.read_text())
+            rebuilt = json.loads(rebuilt_path.read_text())
+            for field in CHECK_FIELDS["compose.response.json"]:
+                if committed.get(field) != rebuilt.get(field):
+                    drift.append(
+                        f"{committed_path.name}.{field}: "
+                        f"committed={committed.get(field)!r} "
                         f"rebuilt={rebuilt.get(field)!r}"
                     )
     if drift:
