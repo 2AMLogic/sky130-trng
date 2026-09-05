@@ -10,6 +10,23 @@ own tracking table and per this repository's issue #18. When `rules-4.html`
 publishes, a follow-up issue reconciles the slot-budget assumptions below
 against the real brief — nothing here should be read as final until then.
 
+**Re-verified 2026-09-05 (issue #18, second increment).**
+`https://opencircuitdesign.com/chipalooza/rules-4.html` still 404s — the
+rules page itself remains unpublished, so criterion 4 stays N/A and none of
+the slot-budget assumptions above have anything new to reconcile against.
+While checking, though, the site's own Challenge #4 landing page
+(`https://opencircuitdesign.com/chipalooza/challenge-4.html`, live,
+`Last-Modified: 2026-08-23`) now states **"Expected launch: November 9,
+2027 (estimate)"** — one year later than the `2026-11-09` date this
+document, issue #18, and the epic's own tracking table have been assuming.
+The site is self-inconsistent about this: `chipalooza/index.html`'s
+schedule table still lists Challenge #4 as launching `Nov 9, 2026`. Both
+pages agree the challenge "has not launched yet" and no rules exist yet, so
+nothing here changes as a result — but the 2026-vs-2027 launch-date
+discrepancy is itself a delta worth flagging upstream (in the epic, not in
+this document) before anyone schedules follow-up work against the
+assumption that Challenge #4 opens in November 2026.
+
 **Repository:** [`2AMLogic/sky130-trng`](https://github.com/2AMLogic/sky130-trng) —
 public, Apache-2.0.
 
@@ -347,10 +364,16 @@ that lands this document):
 - **Layout and DRC/LVS.** `layout/` is empty. Nothing here is post-layout,
   nothing is DRC/LVS-clean, and the brief's full sign-off bar (post-layout
   PVT simulation, DRC/LVS-clean GDS) is not attempted in this document.
-- **Reconcile against `rules-4.html`** once it publishes (2026-11-09 per
-  the tracking epic) — this document was written against the assumed
-  `rules-2.html`/`rules-3.html` structure because the real Challenge #4
-  brief was not yet published as of this document's date.
+- **Reconcile against `rules-4.html`** once it publishes — this document was
+  written against the assumed `rules-2.html`/`rules-3.html` structure
+  because the real Challenge #4 brief was not yet published as of this
+  document's date, and remained unpublished at the 2026-09-05 re-check
+  above. Note that the assumed launch date itself is now unsettled: the
+  epic's tracking table and this document have both been assuming
+  `2026-11-09`, but the site's own Challenge #4 page states an estimated
+  `2027-11-09` while its schedule index still says `2026-11-09` — resolve
+  this discrepancy against whichever the site settles on before treating
+  either date as load-bearing for scheduling.
 
 ---
 
