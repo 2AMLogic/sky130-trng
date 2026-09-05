@@ -26,11 +26,28 @@
     "                    'what actually produced the committed evidence', not",
     "                    as a monotonic version floor. Each artifact carries",
     "                    its own provenance.klt_version, which is the",
-    "                    authoritative per-file record."
+    "                    authoritative per-file record.",
+    "  ci_klt_install    what .github/workflows/pdk-nightly.yml's layout-check",
+    "                    job actually installs, per issue #36. klt_version_pin",
+    "                    above (a dev snapshot, 'g<hash>' suffix) has no PyPI",
+    "                    artifact -- klayout-tools is only published at tagged",
+    "                    releases (0.1.0-0.4.0 as of 2026-09-05) -- so CI pins",
+    "                    to the latest *tagged* PyPI release instead of trying",
+    "                    to reproduce the exact dev-snapshot commit. Verified",
+    "                    2026-09-05: klt 0.4.0 from PyPI reproduces",
+    "                    layout/ro_buf/'s committed evidence byte-for-byte.",
+    "                    Same 'provenance pin, not a hard gate' status as",
+    "                    open_pdks_commit/klt_version_pin above -- if a future",
+    "                    PyPI release makes layout-check fail against otherwise",
+    "                    unchanged committed evidence, that is real signal",
+    "                    (klt regressed against this repo's evidence, exactly",
+    "                    the klayout-tools#1491 failure mode), not a config",
+    "                    bug to silence."
   ],
   "variant": "sky130A",
   "open_pdks_commit": "c6d73a35f524070e85faff4a6a9eef49553ebc2b",
   "install_command": "volare enable --pdk sky130 c6d73a35f524070e85faff4a6a9eef49553ebc2b",
   "klt_deck": "sky130",
-  "klt_version_pin": "0.3.0+gc6dbf66c53c6"
+  "klt_version_pin": "0.3.0+gc6dbf66c53c6",
+  "ci_klt_install": "pip install klayout-tools==0.4.0"
 }

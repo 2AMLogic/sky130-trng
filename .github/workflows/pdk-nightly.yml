@@ -42,6 +42,16 @@ name: PDK nightly
 # without paying the PDK cost on every PR by default) -- the same pattern
 # the sibling repo 2AMLogic/sky130-bandgap uses for its own PDK-gated job.
 #
+# layout-check (below) is this workflow's layout-side sibling of
+# netlist-check: `layout/bin/compose-cell.py --check` re-derives a layout
+# cell's whole `klt gen` -> `gen-compose` -> `drc` -> `extract` -> `lvs`
+# chain into a temp directory and diffs the verdict-bearing fields against
+# the committed evidence under `layout/<cell>/`, so a `klt` or PDK change
+# that silently invalidates already-committed evidence (as
+# klayout-tools#1491 once did, see `layout/README.md`) turns a scheduled run
+# red instead of being found by hand. It runs on the exact same trigger
+# surface as netlist-check, for the same reason -- see issue #36.
+#
 # Note: GitHub disables scheduled workflows in a repository with no activity
 # for 60 days. If this stops running, re-enable it from the Actions tab.
 
@@ -129,3 +139,97 @@ jobs:
       # docstring for what it checks.
       - name: design/test_netlist_erc.py (ERC regression fixture)
         run: python3 design/test_netlist_erc.py
+
+  layout-check:
+    name: Layout composition drift guard (compose-cell.py --check)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    if: >-
+      github.event_name == 'schedule' ||
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'pull_request' &&
+       contains(github.event.pull_request.labels.*.name, 'run-pdk-check'))
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # `klt` (2AMLogic/klayout-tools) is public on PyPI as tagged releases
+      # (0.1.0-0.4.0 as of 2026-09-05), so a plain pip install works the same
+      # way netlist-check's volare install below does -- no special runner
+      # access needed. It is pinned to the latest *tagged* PyPI release
+      # rather than to layout/pdk.json's committed `klt_version_pin`
+      # (currently "0.3.0+gc6dbf66c53c6") because that pin is a dev snapshot
+      # 162 commits ahead of the `v0.3.0` tag: PyPI has no artifact for that
+      # exact commit, so `pip install klayout-tools==0.3.0` would silently
+      # install an *older* build than the one that produced the committed
+      # evidence (from before the klayout-tools#1491 DRC fix). Treating the
+      # PyPI pin below as a provenance pin rather than a hard gate -- and
+      # re-verifying/re-pinning layout/pdk.json's `klt_version_pin` whenever
+      # this drifts -- mirrors how layout/pdk.json's own comment already
+      # treats `klt_version_pin` for local/dev runs. See layout/pdk.json and
+      # layout/README.md for the full rationale (issue #36).
+      - name: Install klt (klayout-tools, the layout composition/verification CLI)
+        run: |
+          set -euo pipefail
+          pip install --user "klayout-tools==0.4.0"
+
+      - name: Install volare (the sky130 PDK version manager)
+        run: pip install --user volare
+
+      - name: Put ~/.local/bin on PATH
+        run: echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Resolve the pinned open_pdks commit from layout/pdk.json
+        id: pin
+        run: |
+          set -euo pipefail
+          commit="$(python3 -c "import json; print(json.load(open('layout/pdk.json'))['open_pdks_commit'])")"
+          echo "commit=${commit}" >> "$GITHUB_OUTPUT"
+          echo "Pinned open_pdks commit (layout/pdk.json): ${commit}"
+
+      - name: Fetch + enable the pinned sky130 PDK
+        run: |
+          set -euo pipefail
+          volare fetch --pdk sky130 "${{ steps.pin.outputs.commit }}"
+          volare enable --pdk sky130 "${{ steps.pin.outputs.commit }}"
+
+      # Prints the klt build actually resolved on this runner (distinct from
+      # layout/pdk.json's committed provenance pin) and the PDK install
+      # `klt` itself resolves, so a --check failure below is attributable
+      # rather than requiring a human to first ask "which klt ran?".
+      - name: Resolved klt + PDK
+        run: |
+          set -euo pipefail
+          klt --version
+          klt pdk find --pdk sky130A --format json
+
+      # Every committed layout/<cell>/cell.json descriptor, re-counted here
+      # rather than hardcoded -- more are expected as issue #27 lands (see
+      # layout/README.md's "What's deferred"). Fails loudly rather than
+      # skipping if the glob is unexpectedly empty, and reports every
+      # drifting cell (not just the first) before exiting non-zero.
+      - name: compose-cell.py --check (every layout/*/cell.json)
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          specs=(layout/*/cell.json)
+          if [ "${#specs[@]}" -eq 0 ]; then
+            echo "error: no layout/*/cell.json descriptors found -- the glob should never be empty" >&2
+            exit 1
+          fi
+          echo "Checking ${#specs[@]} cell descriptor(s): ${specs[*]}"
+          failures=()
+          for spec in "${specs[@]}"; do
+            echo "::group::compose-cell.py --check ${spec}"
+            if ! python3 layout/bin/compose-cell.py "${spec}" --check; then
+              failures+=("${spec}")
+            fi
+            echo "::endgroup::"
+          done
+          if [ "${#failures[@]}" -gt 0 ]; then
+            echo "DRIFT detected in: ${failures[*]}" >&2
+            exit 1
+          fi

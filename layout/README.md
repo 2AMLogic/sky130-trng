@@ -153,6 +153,26 @@ the verdict-bearing fields against what is committed). All `klt` invocations
 run from the cell directory with relative paths, so no absolute home path
 leaks into the committed provenance.
 
+**`--check` is now an automated regression guard, not just a manual
+command** (issue #36): `.github/workflows/pdk-nightly.yml`'s `layout-check`
+job runs `compose-cell.py --check` over every committed `layout/*/cell.json`
+(currently just `layout/ro_buf/cell.json` — re-globbed at run time, not
+hardcoded, so it keeps up as `ro_stage`/`ro_nand2`/`xor2` land per issue #27),
+on the same trigger surface as the `netlist-check` job it sits beside in that
+file: `schedule`, `workflow_dispatch`, and opt-in on a PR via the
+`run-pdk-check` label, so it never adds the PDK/`klt` download cost to every
+PR by default. This is the automated version of what
+[klayout-tools#1491](https://github.com/2AMLogic/klayout-tools/issues/1491)
+proved could otherwise silently invalidate already-committed evidence between
+sessions.
+
+That job installs `klt` from PyPI, pinned to the latest *tagged* release
+(`klayout-tools==0.4.0` as of 2026-09-05) rather than to `layout/pdk.json`'s
+committed `klt_version_pin` (a dev snapshot with no PyPI artifact of its own)
+— see `layout/pdk.json`'s `ci_klt_install` comment for the full rationale.
+Verified 2026-09-05: `klt 0.4.0` from PyPI reproduces `layout/ro_buf/`'s
+committed evidence exactly.
+
 The three constraints that decide a cell's floorplan, all learned building
 `ro_buf` (see [`layout/ro_buf/README.md`](ro_buf/README.md) for each one's
 evidence):
