@@ -319,7 +319,7 @@ DR-0003's 50 kHz sample clock:
 | Latch-and-gate failure behaviour | adopted, with the ungate condition tightened to a conjunction (§2.5) |
 | Two output paths, `RAW_DATA`/`DATA`, `OUT_MODE`, mode-switch flush | adopted unchanged (§4.1–4.2) |
 | Behavioural/transistor verification split at the raw tap | adopted unchanged (§1) |
-| Evidence-record discipline (append-only, `level:`, seeds stated) | adopted; extended to behavioural runs via `sim/bin/behavioral_record.py` |
+| Evidence-record discipline (append-only, `level:`, seeds stated) | adopted; extended to behavioural runs via `sim/bin/evidence_record.py`'s `mint_behavioral_record()` |
 | SP 800-90B three-tier claim discipline | adopted: this record is Tier-1 work only, and says so (§3.3) |
 | **Numeric cutoffs** (`C_RCT` = 81, `C_APT` = 824 at `H₀` = 0.5) | **re-derived, not copied** — evaluated here from the formulas at this repo's own stated `H`, with the full `H`-grid table as the durable artifact (§2.3) |
 | Conditioner class (non-vetted CRC-32, `K` = 8) | adopted as a starting assumption, with the block-boundary re-seed decided here (§3.2) |

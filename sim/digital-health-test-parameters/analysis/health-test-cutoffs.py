@@ -38,7 +38,7 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO_ROOT / "digital"))
 sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
 
-from behavioral_record import mint_record  # noqa: E402
+from evidence_record import mint_behavioral_record  # noqa: E402
 from model import params  # noqa: E402
 
 #: DR-0003 §2: the measured operating point of the analog block this digital
@@ -237,7 +237,8 @@ def main(argv: list[str] | None = None) -> int:
     print(body)
 
     if args.emit_record:
-        mint_record(
+        mint_behavioral_record(
+            repo_root=REPO_ROOT,
             slug="digital-health-test-parameters",
             claim=("the SP 800-90B RCT/APT cutoffs for sky130-trng, evaluated "
                    "from the formulas at this repository's own H target and "

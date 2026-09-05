@@ -35,8 +35,8 @@ status **Proposed**). Those runs are **behavioural**, not ngspice: they have
 no PVT axis and never will, because the verification-level split
 (`spec/porting-plan.md` §1.1) puts everything past `raw_bit` in a bit-exact
 model rather than a transistor-level deck. They follow the same
-append-only record rules through `sim/bin/behavioral_record.py` instead of
-`sim/bin/corner-run.py`:
+append-only record rules through `sim/bin/evidence_record.py`'s
+`mint_behavioral_record()` instead of `sim/bin/corner-run.py`:
 
 | Slug | Claim under test | Landed by |
 |---|---|---|
@@ -85,7 +85,7 @@ from sky130-bandgap's" below.
 |---|---|---|
 | PDK pin | `sim/pdk.json` | open_pdks commit, variant, ngspice library path, the process-corner names the PDK actually ships |
 | corner runner | `sim/bin/corner-run.py` | resolves the PDK, renders a deck template per corner, runs ngspice, parses results, mints a record |
-| behavioural record minter | `sim/bin/behavioral_record.py` | the same append-only record discipline for runs that have no simulator and no PDK (`level: behavioral`); a library each `sim/digital-*/` harness calls, not a runner |
+| evidence-record minter | `sim/bin/evidence_record.py` | shared append-only record-minting scaffolding; `mint_record()` for pure-reduction `analysis/*.py` scripts, `mint_behavioral_record()` for runs that have no simulator and no PDK (`level: behavioral`); a library each caller calls, not a runner |
 | testbench | `sim/<slug>/testbench/*.spice` | deck **templates** (see placeholders below) -- not runnable decks as committed |
 | records | `sim/<slug>/records/<record-id>.{md,json}` | one append-only evidence record per run: `.md` (human), `.json` (machine) |
 | raw logs | `sim/<slug>/corners/<record-id>/<corner>.log` | the exact deck each corner ran, embedded, plus its raw ngspice stdout/stderr -- committed evidence, exempted from the root `.gitignore`'s `*.log` rule by `!sim/*/corners/**/*.log` |
