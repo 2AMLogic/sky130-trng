@@ -64,10 +64,8 @@ id scheme ``sim/bin/corner-run.py`` uses, and refuses to overwrite one.
 from __future__ import annotations
 
 import argparse
-import datetime as _dt
 import json
 import math
-import subprocess
 import sys
 from pathlib import Path
 
@@ -76,6 +74,9 @@ JITTER_RECORDS = REPO_ROOT / "sim" / "ro-ring-jitter-accumulation" / "records"
 GAIN_RECORDS = REPO_ROOT / "sim" / "ro-stage-small-signal-gain" / "records"
 CONV_RECORDS = REPO_ROOT / "sim" / "ro-ring-timestep-convergence" / "records"
 OUT_RECORDS = REPO_ROOT / "sim" / "ro-array-sizing" / "records"
+
+sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
+from evidence_record import mint_record, new_record_id
 
 # --- Spec rows this reduction is evaluated against ---------------------------
 # README.md "Target specification" table, Raw rate row: "> 1 Mbps sustained at
@@ -254,18 +255,6 @@ def sized_n(q_min: float, t_s: float, h0: float, margin: float) -> int:
     # Q is linear in T_s, so rescale the measured Q (computed at T_S_TARGET).
     q_at_ts = q_min * (t_s / T_S_TARGET)
     return max(1, math.ceil(q_req / q_at_ts))
-
-
-def git_short_sha() -> str:
-    try:
-        return subprocess.run(
-            ["git", "-C", str(REPO_ROOT), "rev-parse", "--short", "HEAD"],
-            capture_output=True,
-            text=True,
-            check=True,
-        ).stdout.strip()
-    except Exception:
-        return "unknown"
 
 
 def build_report(points: list[dict], gains: list[dict],
@@ -646,16 +635,7 @@ def main(argv: list[str] | None = None) -> int:
     if not args.emit_record:
         return 0
 
-    now = _dt.datetime.now(_dt.timezone.utc)
-    sha = git_short_sha()
-    rid = f"{now:%Y%m%d-%H%M%S}-{sha}"
-    OUT_RECORDS.mkdir(parents=True, exist_ok=True)
-    md_path = OUT_RECORDS / f"{rid}.md"
-    json_path = OUT_RECORDS / f"{rid}.json"
-    if md_path.exists() or json_path.exists():
-        print(f"error: record id {rid} already exists; wait a second and re-run",
-              file=sys.stderr)
-        return 1
+    now, sha, rid = new_record_id(REPO_ROOT)
 
     src_records = sorted({p["record_id"] for p in points})
     header = [
@@ -680,17 +660,6 @@ def main(argv: list[str] | None = None) -> int:
     header += [f"- `{r}`" for r in sorted({g['record_id'] for g in gains})] or ["- (none)"]
     header += ["", "---", ""]
 
-    footer = [
-        "",
-        "---",
-        "",
-        f"- Author: {args.author}",
-        f"- Timestamp (UTC): {now.isoformat()}",
-        f"- Repo commit: `{sha}`",
-        "- Supersedes: (none)",
-    ]
-
-    md_path.write_text("\n".join(header) + body + "\n".join(footer) + "\n")
     summary_out = {
         "record_id": rid,
         "slug": "ro-array-sizing",
@@ -703,8 +672,10 @@ def main(argv: list[str] | None = None) -> int:
         "repo_sha": sha,
         **summary,
     }
-    json_path.write_text(json.dumps(summary_out, indent=2) + "\n")
-    print(f"\nrecord written: {md_path.relative_to(REPO_ROOT)}", file=sys.stderr)
+    result = mint_record(OUT_RECORDS, REPO_ROOT, rid, header, body, summary_out,
+                         author=args.author, now=now, sha=sha)
+    if result is None:
+        return 1
     return 0
 
 

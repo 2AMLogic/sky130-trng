@@ -66,10 +66,8 @@ and refuses to overwrite one.
 from __future__ import annotations
 
 import argparse
-import datetime as _dt
 import json
 import math
-import subprocess
 import sys
 from pathlib import Path
 
@@ -78,6 +76,9 @@ XOR_RECORDS = REPO_ROOT / "sim" / "xor-combining-bandwidth" / "records"
 RING5_RECORDS = REPO_ROOT / "sim" / "ro-ring5-swing-and-current" / "records"
 SIZING_RECORDS = REPO_ROOT / "sim" / "ro-array-sizing" / "records"
 OUT_RECORDS = REPO_ROOT / "sim" / "ro-array-operating-point" / "records"
+
+sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
+from evidence_record import mint_record, new_record_id
 
 WIDTHS_DESC = [500, 300, 200, 140, 100, 70, 50, 35, 25]
 SWING_KEY = {w: f"swing_w{w:03d}" if w >= 100 else f"swing_w0{w}" for w in WIDTHS_DESC}
@@ -88,16 +89,6 @@ RATE_LABELS = {
     1.0e7: "10 Mbps", 1.0e6: "1 Mbps", 1.0e5: "100 kbps",
     7.766998e4: "combining ceiling", 5.0e4: "50 kbps (chosen)", 1.0e4: "10 kbps",
 }
-
-
-def git_short_sha() -> str:
-    try:
-        return subprocess.run(
-            ["git", "-C", str(REPO_ROOT), "rev-parse", "--short", "HEAD"],
-            capture_output=True, text=True, check=True,
-        ).stdout.strip()
-    except Exception:
-        return "unknown"
 
 
 def _pvt_key(rec: dict) -> tuple[float, float]:
@@ -343,16 +334,7 @@ def main(argv: list[str] | None = None) -> int:
     if not args.emit_record:
         return 0
 
-    now = _dt.datetime.now(_dt.timezone.utc)
-    sha = git_short_sha()
-    rid = f"{now:%Y%m%d-%H%M%S}-{sha}"
-    OUT_RECORDS.mkdir(parents=True, exist_ok=True)
-    md_path = OUT_RECORDS / f"{rid}.md"
-    json_path = OUT_RECORDS / f"{rid}.json"
-    if md_path.exists() or json_path.exists():
-        print(f"error: record id {rid} already exists; wait a second and re-run",
-              file=sys.stderr)
-        return 1
+    now, sha, rid = new_record_id(REPO_ROOT)
 
     header = [
         f"# {rid} -- ro-array-operating-point",
@@ -381,17 +363,6 @@ def main(argv: list[str] | None = None) -> int:
     header += [f"- `{sizing['record_id']}`"] if sizing else ["- (none)"]
     header += ["", "---", ""]
 
-    footer = [
-        "",
-        "---",
-        "",
-        f"- Author: {args.author}",
-        f"- Timestamp (UTC): {now.isoformat()}",
-        f"- Repo commit: `{sha}`",
-        "- Supersedes: (none)",
-    ]
-
-    md_path.write_text("\n".join(header) + body + "\n".join(footer) + "\n")
     summary_out = {
         "record_id": rid,
         "slug": "ro-array-operating-point",
@@ -407,8 +378,10 @@ def main(argv: list[str] | None = None) -> int:
         "repo_sha": sha,
         **summary,
     }
-    json_path.write_text(json.dumps(summary_out, indent=2, default=str) + "\n")
-    print(f"\nrecord written: {md_path.relative_to(REPO_ROOT)}", file=sys.stderr)
+    result = mint_record(OUT_RECORDS, REPO_ROOT, rid, header, body, summary_out,
+                         author=args.author, now=now, sha=sha)
+    if result is None:
+        return 1
     return 0
 
 
