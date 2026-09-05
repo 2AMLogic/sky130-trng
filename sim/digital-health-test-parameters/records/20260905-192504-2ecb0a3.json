@@ -1,0 +1,106 @@
+{
+  "record_id": "20260905-192504-2ecb0a3",
+  "slug": "digital-health-test-parameters",
+  "level": "behavioral (derived -- exact arithmetic, no simulator)",
+  "claim": "the SP 800-90B RCT/APT cutoffs for sky130-trng, evaluated from the formulas at this repository's own H target and 50 kbps raw rate; the APT degeneracy floor; and the false-alarm/latency consequences at that rate",
+  "seeds": {},
+  "supersedes": null,
+  "author": "loom-builder@sky130-trng",
+  "timestamp_utc": "2026-09-05T19:25:04.084116+00:00",
+  "repo_sha": "2ecb0a3",
+  "tools": {
+    "python": "3.14.7",
+    "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O"
+  },
+  "artifacts": [],
+  "alpha_log2": 40,
+  "w_apt": 1024,
+  "h_design": 0.5,
+  "h_model_dr0003": 0.5415,
+  "raw_rate_bps": 50000.0,
+  "c_rct_adopted": 81,
+  "c_apt_adopted": 824,
+  "c_rct_at_h_model": 75,
+  "c_apt_at_h_model": 806,
+  "apt_degeneracy_floor_h": 0.0390625,
+  "c_apt_just_above_floor": 1024,
+  "c_apt_just_below_floor": null,
+  "rct_false_alarm_interval_s": 21990232.55552,
+  "apt_false_alarm_interval_s": 22517998136.85248,
+  "rct_detection_latency_s": 0.00162,
+  "startup_time_s": 0.02048,
+  "time_to_first_raw_word_s": 0.00064,
+  "time_to_first_conditioned_word_s": 0.0256,
+  "cutoff_table": [
+    {
+      "h": 0.0390625,
+      "c_rct": 1025,
+      "c_apt": null
+    },
+    {
+      "h": 0.04,
+      "c_rct": 1001,
+      "c_apt": 1024
+    },
+    {
+      "h": 0.05,
+      "c_rct": 801,
+      "c_apt": 1022
+    },
+    {
+      "h": 0.1,
+      "c_rct": 401,
+      "c_apt": 1005
+    },
+    {
+      "h": 0.2,
+      "c_rct": 201,
+      "c_apt": 961
+    },
+    {
+      "h": 0.3,
+      "c_rct": 135,
+      "c_apt": 915
+    },
+    {
+      "h": 0.4,
+      "c_rct": 101,
+      "c_apt": 869
+    },
+    {
+      "h": 0.5,
+      "c_rct": 81,
+      "c_apt": 824
+    },
+    {
+      "h": 0.5415,
+      "c_rct": 75,
+      "c_apt": 806
+    },
+    {
+      "h": 0.6,
+      "c_rct": 68,
+      "c_apt": 780
+    },
+    {
+      "h": 0.7,
+      "c_rct": 59,
+      "c_apt": 739
+    },
+    {
+      "h": 0.8,
+      "c_rct": 51,
+      "c_apt": 699
+    },
+    {
+      "h": 0.9,
+      "c_rct": 46,
+      "c_apt": 661
+    },
+    {
+      "h": 1.0,
+      "c_rct": 41,
+      "c_apt": 625
+    }
+  ]
+}

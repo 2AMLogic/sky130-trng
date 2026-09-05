@@ -1,0 +1,8 @@
+A healthy: startup_done_at=1024 cond_words=8/8 raw_words=96
+B stuck-at-1: trip_at=81 (expected 81) alarm=0x5
+C biased p=0.95: trip_at=1024 alarm=0x6
+D moderate bias p=0.75: tripped=False
+E long healthy run: 1000000 samples, alarms=0
+F raw-never-gated: gated=True raw_words=4 DATA=0x0
+G latch/ack: alarm_before=0x5 gated_after_early_ack=True gated_after_startup=False gated_with_latched_alarm=True gated_after_ack2=False
+H mode-switch flush: before=(4, 3, 0) after=(0, 0, 0)

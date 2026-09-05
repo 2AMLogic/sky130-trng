@@ -35,6 +35,7 @@ Usage::
 from __future__ import annotations
 
 import argparse
+import math
 import random
 import sys
 import tempfile
@@ -333,7 +334,7 @@ def build_report(res: dict, seed: int, long_run: int) -> str:
     a("  constructed to fail; they say nothing about whether sky130's real")
     a("  entropy source would pass.")
     a("- **E is a floor under the false-alarm argument, not a verification of")
-    a(f"  it.** {res['E']['samples']:,} samples is ~2^{res['E']['samples'].bit_length() - 1} -- vanishingly")
+    a(f"  it.** {res['E']['samples']:,} samples is ~2^{math.log2(res['E']['samples']):.1f} -- vanishingly")
     a("  small against a per-sample false-alarm probability of 2^-40, so this")
     a("  run could not have observed a legitimate false alarm. It would have")
     a("  caught a gross implementation error (an off-by-one cutoff, a")

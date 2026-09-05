@@ -1,0 +1,33 @@
+{
+  "record_id": "20260905-192506-2ecb0a3",
+  "slug": "digital-conditioner-equivalence",
+  "level": "behavioral",
+  "claim": "the committed CRC-32/LFSR conditioner model is bit-exact against two independently-constructed references, and each conditioned word depends on exactly its own 256 raw bits",
+  "seeds": {
+    "python_random": 20260905
+  },
+  "supersedes": null,
+  "author": "loom-builder@sky130-trng",
+  "timestamp_utc": "2026-09-05T19:25:06.270756+00:00",
+  "repo_sha": "2ecb0a3",
+  "tools": {
+    "python": "3.14.7",
+    "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O"
+  },
+  "artifacts": [],
+  "ok": true,
+  "seed": 20260905,
+  "blocks": 256,
+  "raw_bits": 65536,
+  "poly": "0x04C11DB7",
+  "init": "0xFFFFFFFF",
+  "gf2_mismatches": 0,
+  "zlib_mismatches": 0,
+  "block_independence_ok": true,
+  "mean_hamming_single_bit_flip": 15.21875,
+  "all_zero_word": "0x4A55AF67",
+  "all_one_word": "0x2F2AC900",
+  "flush_ok": true,
+  "first_word": "0xBD7771DB",
+  "last_word": "0x21472A4F"
+}

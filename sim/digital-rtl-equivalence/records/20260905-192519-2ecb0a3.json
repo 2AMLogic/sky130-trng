@@ -1,0 +1,85 @@
+{
+  "record_id": "20260905-192519-2ecb0a3",
+  "slug": "digital-rtl-equivalence",
+  "level": "behavioral (RTL co-simulation)",
+  "claim": "digital/rtl/trng_digital.v is cycle-for-cycle equivalent to the normative behavioural model digital/model/digital_top.py over a directed 4239-cycle program",
+  "seeds": {
+    "python_random": 20260905
+  },
+  "supersedes": null,
+  "author": "loom-builder@sky130-trng",
+  "timestamp_utc": "2026-09-05T19:25:19.143641+00:00",
+  "repo_sha": "2ecb0a3",
+  "tools": {
+    "python": "3.14.7",
+    "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+    "iverilog": "Icarus Verilog version 13.0 (stable) (v13_0)"
+  },
+  "artifacts": [
+    "sim/digital-rtl-equivalence/runs/20260905-192519-2ecb0a3/stimulus.txt",
+    "sim/digital-rtl-equivalence/runs/20260905-192519-2ecb0a3/rtl-observations.txt",
+    "sim/digital-rtl-equivalence/runs/20260905-192519-2ecb0a3/model-observations.txt"
+  ],
+  "ok": true,
+  "cycles": 4239,
+  "mismatches": 0,
+  "phases": [
+    {
+      "name": "post-reset idle + ID/parameter reads",
+      "start": 0,
+      "end": 20
+    },
+    {
+      "name": "sampling disabled: raw_valid high but CTRL.EN low",
+      "start": 20,
+      "end": 86
+    },
+    {
+      "name": "enable, run the start-up window with interleaved STATUS reads",
+      "start": 86,
+      "end": 1175
+    },
+    {
+      "name": "drain the raw FIFO through RAW_DATA (pop-on-read)",
+      "start": 1175,
+      "end": 1187
+    },
+    {
+      "name": "raw streaming port: out_ready pops while sampling",
+      "start": 1187,
+      "end": 1443
+    },
+    {
+      "name": "simultaneous register pop and stream pop (register wins)",
+      "start": 1443,
+      "end": 1579
+    },
+    {
+      "name": "OUT_MODE switch to conditioned (flushes both paths)",
+      "start": 1579,
+      "end": 2614
+    },
+    {
+      "name": "induce an RCT trip with a stuck source",
+      "start": 2614,
+      "end": 2702
+    },
+    {
+      "name": "gated: DATA blocked, RAW_DATA still readable",
+      "start": 2702,
+      "end": 2810
+    },
+    {
+      "name": "write-1-to-clear, then re-run the start-up test",
+      "start": 2810,
+      "end": 4105
+    },
+    {
+      "name": "SOFT_RST, then resume sampling",
+      "start": 4105,
+      "end": 4239
+    }
+  ],
+  "simulator": "Icarus Verilog version 13.0 (stable) (v13_0)",
+  "sim_stdout": "tb_trng_digital: 4239 cycles transcribed\n/Users/rwalters/GitHub/sky130-trng/.loom/worktrees/issue-20/digital/tb/tb_trng_digital.v:87: $finish called at 42400000 (1ps)"
+}
