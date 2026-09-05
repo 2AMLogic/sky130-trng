@@ -382,20 +382,24 @@ that lands this document):
 - **Ratify DR-0001, DR-0002, and DR-0003.** Every quantitative row in §4
   ultimately traces to at least one of these three Proposed records; none
   is yet an operator-accepted decision.
-- **Layout and DRC/LVS.** `layout/` now holds one composed **DRC-clean and
-  LVS-clean cell** — `layout/ro_buf/`, the per-ring output inverter, `klt drc`
-  clean and `klt lvs`-matching against `design/ro_array_core.spice`'s own
-  `.subckt ro_buf` — on top of the earlier device-level evidence
-  (`layout/primitives/`) and well-strap finding (`layout/well-strap-poc/`);
-  see `layout/README.md`. The `klayout-tools` regression previously recorded
-  here as a blocker
+- **Layout and DRC/LVS.** `layout/` now holds two composed **DRC-clean and
+  LVS-clean cells** — `layout/ro_buf/` (the per-ring output inverter) and
+  `layout/ro_stage/` (the array's per-stage starved delay cell, at
+  `wstv=0.42` only), both `klt drc` clean and `klt lvs`-matching against
+  `design/ro_array_core.spice`'s own `.subckt`s — on top of the earlier
+  device-level evidence (`layout/primitives/`) and well-strap finding
+  (`layout/well-strap-poc/`); see `layout/README.md`. `ro_stage`'s starve
+  devices cross-couple their gates to the opposite rail, which needed a new
+  two-pass composition technique (routing the two crossing nets on a second
+  metal level in a second `klt gen-compose` call) to avoid a short. The
+  `klayout-tools` regression previously recorded here as a blocker
   ([2AMLogic/klayout-tools#1491](https://github.com/2AMLogic/klayout-tools/issues/1491))
-  is fixed. Still outstanding for the brief's full sign-off bar: every other
-  gate (`ro_stage`, `ro_nand2`, `xor2`), the ring, the array, the sampler,
-  parasitic extraction, and post-layout PVT simulation — none of which is
-  attempted in this document. Note also that "DRC-clean" here means clean
-  against `klt`'s **curated** sky130 deck (a documented subset — see each
-  `drc.json`'s own `coverage` block), not a full sky130 sign-off deck.
+  is fixed. Still outstanding for the brief's full sign-off bar: `ro_stage`'s
+  other three `wstv` variants, `ro_nand2`, `xor2`, the ring, the array, the
+  sampler, parasitic extraction, and post-layout PVT simulation — none of
+  which is attempted in this document. Note also that "DRC-clean" here means
+  clean against `klt`'s **curated** sky130 deck (a documented subset — see
+  each `drc.json`'s own `coverage` block), not a full sky130 sign-off deck.
 - **Reconcile against `rules-4.html`** once it publishes — this document was
   written against the assumed `rules-2.html`/`rules-3.html` structure
   because the real Challenge #4 brief was not yet published as of this

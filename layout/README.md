@@ -4,18 +4,27 @@ Physical layout evidence for the sky130-trng entropy source, verified with
 `klayout-tools` (`klt`) against the sky130 open PDK. See `layout/pdk.json`
 for the PDK/tool pin.
 
-**Status (issue #22/#27, this increment): one real gate is now composed,
+**Status (issue #22/#27, this increment): two real gates are now composed,
 DRC-clean and LVS-clean — but not a DRC/LVS-clean block.**
 [`layout/ro_buf/`](ro_buf/README.md) is `design/ro_array_core.spice`'s own
 `.subckt ro_buf` inverter, built from `klt gen` primitives, placed and routed
 by `klt gen-compose`, **`klt drc` clean (0 violations)** and **`klt lvs`
 matching the design netlist (2/2 devices, 4/4 nets, 0 mismatches)**. That
-closes step 1 of the deferred list below and, with it, the last open question
+closed step 1 of the deferred list below and, with it, the last open question
 about whether this methodology reaches a working cell at all.
+[`layout/ro_stage/`](ro_stage/README.md) is the array's own per-stage starved
+delay cell — four devices whose starve pair cross-couples to the *opposite*
+rail, which needed a genuinely new capability (`compose-cell.py`'s two-pass
+`"stages"` composition, routing the two crossing nets on a second metal level)
+to compose at all — also **`klt drc` clean (0 violations)** and **`klt lvs`
+match (4/4 devices, 6/6 nets)**. That closes the harder half of step 2 below;
+`ro_nand2` shares the same cross-coupled-starve-gate shape and should reuse
+the same two-pass technique directly.
 
-Everything under it is still open: no `ro_stage`/`ro_nand2`/`xor2`, no
-`ro_ring5`, no `ro_array_core`, no `sampler_core`, and no post-layout PVT
-re-verification. See "What's deferred" below and the tracking issue (#27).
+Everything else is still open: no `ro_nand2`/`xor2`, no `ro_stage`'s three
+other `wstv` variants, no `ro_ring5`, no `ro_array_core`, no `sampler_core`,
+and no post-layout PVT re-verification. See "What's deferred" below and the
+tracking issue (#27).
 
 The earlier increments remain the foundation: `layout/primitives/` is
 per-device evidence (every distinct transistor geometry `design/xschem/`
@@ -90,8 +99,8 @@ trng_top                   (not in scope for #22 — stops at the raw tap)
   sampler_core              PLANNED — 6x sampler_dff + wiring
     ro_array_core           PLANNED — this issue's minimum scope
       ro_ring5   (x4)        PLANNED — non-identical (wstv 0.42/0.44/0.46/0.48)
-        ro_nand2              PLANNED — 2x guard_ring (abutted body ties) + 5x mos_array
-        ro_stage   (x4)       PROVEN AT DEVICE LEVEL — 2x guard_ring (abutted) + 4x mos_array (layout/primitives/)
+        ro_nand2              PLANNED — same cross-coupled-starve-gate shape as ro_stage; 2-stage compose should carry over directly
+        ro_stage   (x4)       BUILT (wstv=0.42 only) — DRC-clean + LVS-clean (layout/ro_stage/); 0.44/0.46/0.48 variants not started
       ro_buf     (x4)        BUILT — DRC-clean + LVS-clean (layout/ro_buf/)
       xor2       (x3)        PROVEN AT DEVICE LEVEL — 2x guard_ring (abutted) + 12x mos_array
     sampler_dff  (x6)        NOT STARTED — transmission-gate master-slave DFF, no generator surveyed yet
@@ -165,6 +174,15 @@ evidence):
    body-tied but **unroutable**: `gen-compose` treats the enclosing ring as an
    unrelated block and rejects every route reaching the device inside it
    (upstream: [klayout-tools#1493](https://github.com/2AMLogic/klayout-tools/issues/1493)).
+   The same 0.10 µm overlap technique also merges two *devices'* nwells
+   directly with each other (`layout/ro_stage/`'s `Mph`/`Mp`), not just a
+   device with a dedicated tap — one fewer tap island, provided the two
+   devices' S/D ports at the merge boundary are placed at the **same `y`**
+   (see `layout/ro_stage/README.md`'s floorplan section for why an
+   unaligned jog through the overlap zone fails the edge-margin check, and
+   why an *unmerged* pair of same-net wells fails `nwell.space.1` instead —
+   there is no cheaper middle ground between merging and clearing the full
+   isolation spacing).
 2. **Mirror the PMOS row in `y`** (`blocks[].orientation: "mirror_y"`) so its
    gate faces the NMOS row's up-facing gate. Two same-facing gate ports make
    the router lift the connecting jog above both blocks, straight through the
@@ -172,25 +190,46 @@ evidence):
 3. **Give a same-facing S/D pair an explicit `waypoints_um` lane** clear of
    both blocks' bboxes. The default one-stub-width jog runs back through the
    devices.
+4. **A gate whose two nets would cross on one layer composes in two
+   `gen-compose` passes, not one.** `layout/ro_stage/`'s starve devices'
+   gates each tie to the *opposite* rail, a topology no single-layer
+   placement makes planar. `compose-cell.py`'s `"stages"` cell.json field
+   (see its own module docstring, and `layout/ro_stage/README.md`) composes
+   the gate once on the base `"metal"` role leaving the two crossing nets
+   unwired, then again — treating the first pass's own composed cell as one
+   block — routing just those two nets on `"metal2"` with automatic
+   via-drop. The two metal2 nets still have to avoid crossing *each other*
+   (the same `waypoints_um`-into-separate-lanes technique as point 3 above,
+   since both nets' sources happen to land at the same `x` before
+   placement).
 
-Two more, discovered while planning `ro_stage` and not yet resolved (issue
-#27's step 2 starts here):
+Two more, discovered while planning `ro_stage`:
 
 - **A port may be named by `pins[]` *or* wired by `connectivity[]`, never
   both.** An internal net that is also a cell pin therefore takes its name
   from its `connectivity[]` entry — which works, and is how `ro_buf`'s `a`/`y`
   come out named.
-- **`ro_stage`/`ro_nand2` are not single-layer planar.** Their starve devices
-  are cross-coupled to the rails (`Mph.g = vss`, `Mnt.g = vddr`), so with one
-  tap island per rail on one side the two gate routes must cross. `klt
-  gen-compose` performs no net-to-net short check (only block-obstacle,
-  ring-opening and same-block pad checks), so a crossing composes "routed"
-  and is caught only downstream by `klt extract`/`klt lvs` — treat an LVS
-  match, not a routed verdict, as the gate's acceptance test. The fix is
-  either a second tap island per rail placed near the gate that needs it (the
-  substrate/well is itself the conductor joining two taps of the same net), or
-  per-net routing-layer selection, which `routing.layer_role` does not offer
-  today.
+- **`ro_stage`/`ro_nand2` are not single-layer planar — SOLVED, see
+  `layout/ro_stage/README.md`.** Their starve devices are cross-coupled to
+  the *opposite* rail (`Mph.g = vss`, `Mnt.g = vddr`), so the two gate routes
+  cross no matter where a single tap island per rail is placed — this is a
+  real topological property of the two nets' spans, not a placement mistake
+  a smarter floorplan can dodge. `klt gen-compose` performs no net-to-net
+  short check *between separate calls*, but two nets crossing *within one
+  call* on the same `routing.layer_role` is caught (`#1057`/`#1386`, "Known
+  limitations" below) — so the naive one-pass floorplan correctly reports
+  the crossing net as unroutable rather than silently shorting it (an
+  earlier draft of this section suggested the opposite; that was wrong).
+  The fix `layout/ro_stage/` uses: `layout/bin/compose-cell.py`'s new
+  `"stages"` cell.json shape composes the gate in two `klt gen-compose`
+  passes — the first leaves the two crossing gate nets deliberately
+  unwired (promoted via `pins[]` as bare ports instead), the second takes
+  that composed cell as a single further block and routes just those two
+  nets on `"metal2"` (sky130 met1) with automatic via-drop, so they cannot
+  short against anything on the base `"metal"` (li1) layer by construction.
+  A per-net `routing.layer_role` override within one call still does not
+  exist and was not needed once nesting was used instead — not filed as a
+  tool gap.
 
 ## The well-strap gap: SOLVED — see `layout/well-strap-poc/`
 
@@ -257,17 +296,24 @@ deliver, tracked in follow-up issue
    nets), at this design's real device sizes, reproducible from a committed
    descriptor via `layout/bin/compose-cell.py`.
 2. Repeat for `ro_stage`, `ro_nand2` (including the 4-way `wstv` variants),
-   and `xor2`. **Start here.** `ro_buf`'s recipe (abutted tap islands,
-   `mirror_y` PMOS row, `waypoints_um` for same-facing S/D pairs) carries
-   over, but `ro_stage`/`ro_nand2` add a series PMOS/NMOS stack and a
-   rail-crossing pair of starve-device gate nets that is **not planar on one
-   routing layer** — see "Composing a gate" above for the two candidate
-   resolutions. `layout/bin/compose-cell.py`'s `lvs.params`/`lvs.drop_prefixes`
-   fields already exist for these cells: `params` substitutes the `wstv`/
-   `lstv` values into the reference subckt's `L=lstv W=wstv` device cards
-   (one descriptor per ring variant), and `drop_prefixes: ["Cld"]` drops the
-   lumped load capacitor, which is a simulation load model with no physical
-   counterpart, not a device the layout omits.
+   and `xor2`. **`ro_stage` is DONE** (at `wstv=0.42` only — see
+   `layout/ro_stage/README.md`): `klt drc` clean (0 violations), `klt lvs`
+   **match** against `design/ro_array_core.spice`'s own `.subckt ro_stage`
+   (4/4 devices, 6/6 nets), using the new two-pass `"stages"` composition
+   (point 4 in "Composing a gate" above) to route its cross-coupled
+   starve-device gates without a short. Still open: `ro_stage`'s other three
+   `wstv` variants (`0.44`/`0.46`/`0.48 µm` — `layout/primitives/` has no
+   generator evidence for these widths yet), `ro_nand2` (same cross-coupled
+   shape, same two-pass technique should carry over directly, plus its own
+   two switching-device gates `a`/`en`), and `xor2` (no starve devices, but
+   twelve `mos_array` instances instead of four — a bigger single-pass
+   floorplan, not a new composition technique). `layout/bin/compose-cell.py`'s
+   `lvs.params`/`lvs.drop_prefixes` fields already exist for these cells:
+   `params` substitutes the `wstv`/`lstv` values into the reference subckt's
+   `L=lstv W=wstv` device cards (one descriptor per ring variant), and
+   `drop_prefixes: ["Cld"]` drops the lumped load capacitor, which is a
+   simulation load model with no physical counterpart, not a device the
+   layout omits.
 3. Hierarchical assembly: `ro_ring5` (5 gates + inter-gate routing),
    `ro_array_core` (4 non-identical rings + combining XOR tree),
    `sampler_dff`/`sampler_core` (no generator surveyed yet for a
@@ -348,3 +394,16 @@ verdict-bearing fields (`drc.json`'s `status`/`violation_count`,
 `lvs.json`'s `status`/`mismatch_count`/`error_count`/`counts`, and
 `compose.response.json`'s `cell_name`/`bbox_um`) against what is committed,
 without touching it. Drop `--check` to regenerate in place.
+
+## Reproducing `layout/ro_stage/`
+
+```bash
+volare enable --pdk sky130 c6d73a35f524070e85faff4a6a9eef49553ebc2b
+python3 layout/bin/compose-cell.py layout/ro_stage/cell.json --check
+```
+
+Same `--check` contract as `ro_buf` above, extended (see `check_cell` in
+`layout/bin/compose-cell.py`) to also diff every non-final stage's own
+`<name>.compose.response.json` (here, `core.compose.response.json`) on the
+same fields, since a two-stage cell's drift could otherwise hide in the
+first pass without moving the final cell's own verdict.
