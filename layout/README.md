@@ -4,7 +4,7 @@ Physical layout evidence for the sky130-trng entropy source, verified with
 `klayout-tools` (`klt`) against the sky130 open PDK. See `layout/pdk.json`
 for the PDK/tool pin.
 
-**Status (issue #22/#27, this increment): two real gates are now composed,
+**Status (issue #22/#27, this increment): three real gates are now composed,
 DRC-clean and LVS-clean — but not a DRC/LVS-clean block.**
 [`layout/ro_buf/`](ro_buf/README.md) is `design/ro_array_core.spice`'s own
 `.subckt ro_buf` inverter, built from `klt gen` primitives, placed and routed
@@ -17,11 +17,17 @@ delay cell — four devices whose starve pair cross-couples to the *opposite*
 rail, which needed a genuinely new capability (`compose-cell.py`'s two-pass
 `"stages"` composition, routing the two crossing nets on a second metal level)
 to compose at all — also **`klt drc` clean (0 violations)** and **`klt lvs`
-match (4/4 devices, 6/6 nets)**. That closes the harder half of step 2 below;
-`ro_nand2` shares the same cross-coupled-starve-gate shape and should reuse
-the same two-pass technique directly.
+match (4/4 devices, 6/6 nets)**. That closes the harder half of step 2 below.
+[`layout/ro_nand2/`](ro_nand2/README.md) is each `ro_ring5`'s enable-gated
+first stage — six devices (the same cross-coupled starve pair as `ro_stage`,
+plus a parallel PMOS pull-up pair and a series NMOS pull-down pair, both new
+floorplan shapes) — also **`klt drc` clean (0 violations)** and **`klt lvs`
+match (6/6 devices, 8/8 nets)**, reusing `ro_stage`'s two-pass `"stages"`
+technique but extended from 2 to 6 same-block self-nets resolved in one final
+`gen-compose` call (see `layout/ro_nand2/README.md` for the parallel/series
+floorplan problems this needed and the six empirically-derived routing lanes).
 
-Everything else is still open: no `ro_nand2`/`xor2`, no `ro_stage`'s three
+Everything else is still open: no `xor2`, no `ro_stage`'s/`ro_nand2`'s three
 other `wstv` variants, no `ro_ring5`, no `ro_array_core`, no `sampler_core`,
 and no post-layout PVT re-verification. See "What's deferred" below and the
 tracking issue (#27).
@@ -99,7 +105,7 @@ trng_top                   (not in scope for #22 — stops at the raw tap)
   sampler_core              PLANNED — 6x sampler_dff + wiring
     ro_array_core           PLANNED — this issue's minimum scope
       ro_ring5   (x4)        PLANNED — non-identical (wstv 0.42/0.44/0.46/0.48)
-        ro_nand2              PLANNED — same cross-coupled-starve-gate shape as ro_stage; 2-stage compose should carry over directly
+        ro_nand2              BUILT (wstv=0.42 only) — DRC-clean + LVS-clean (layout/ro_nand2/); 0.44/0.46/0.48 variants not started
         ro_stage   (x4)       BUILT (wstv=0.42 only) — DRC-clean + LVS-clean (layout/ro_stage/); 0.44/0.46/0.48 variants not started
       ro_buf     (x4)        BUILT — DRC-clean + LVS-clean (layout/ro_buf/)
       xor2       (x3)        PROVEN AT DEVICE LEVEL — 2x guard_ring (abutted) + 12x mos_array
@@ -202,6 +208,23 @@ evidence):
    (the same `waypoints_um`-into-separate-lanes technique as point 3 above,
    since both nets' sources happen to land at the same `x` before
    placement).
+5. **A many-pin same-net bundle in a row of matched devices is a
+   two-pass problem too, once more than one device shares a net.**
+   `layout/ro_nand2/`'s parallel PMOS pair (both `Mpa`/`Mpb` have `D=y,
+   S=py`) and series NMOS pair make `py`/`y` **three-pin** nets whose third
+   pin re-crosses another device's own pad no matter which two pins wire
+   first — the same class of problem as point 4, just from more than two
+   devices sharing a net rather than one device's gate crossing a rail. The
+   same fix generalizes: promote *every* pin of the affected net as a bare
+   `pins[]` port in the base stage (wiring none of it there), then resolve
+   all of it in a final stage against the whole first stage's own composed
+   cell — see `layout/ro_nand2/README.md` for the six-same-block-self-net
+   worked example (`py`/`y`'s bundle, plus `ro_stage`'s usual `vss`/`vddr`
+   cross-coupled pair, all six resolved in one final `gen-compose` call, each
+   given its own `waypoints_um` lane clear of the *other five* legs' known
+   pad positions — chosen empirically against the real router, not derived
+   closed-form, once the sub-block-level edge-margin restriction disappears
+   along with the sub-blocks themselves).
 
 Two more, discovered while planning `ro_stage`:
 
@@ -210,7 +233,9 @@ Two more, discovered while planning `ro_stage`:
   from its `connectivity[]` entry — which works, and is how `ro_buf`'s `a`/`y`
   come out named.
 - **`ro_stage`/`ro_nand2` are not single-layer planar — SOLVED, see
-  `layout/ro_stage/README.md`.** Their starve devices are cross-coupled to
+  `layout/ro_stage/README.md` (and `layout/ro_nand2/README.md` for the same
+  fix extended to more than two same-block self-nets).** Their starve
+  devices are cross-coupled to
   the *opposite* rail (`Mph.g = vss`, `Mnt.g = vddr`), so the two gate routes
   cross no matter where a single tap island per rail is placed — this is a
   real topological property of the two nets' spans, not a placement mistake
@@ -296,18 +321,23 @@ deliver, tracked in follow-up issue
    nets), at this design's real device sizes, reproducible from a committed
    descriptor via `layout/bin/compose-cell.py`.
 2. Repeat for `ro_stage`, `ro_nand2` (including the 4-way `wstv` variants),
-   and `xor2`. **`ro_stage` is DONE** (at `wstv=0.42` only — see
-   `layout/ro_stage/README.md`): `klt drc` clean (0 violations), `klt lvs`
-   **match** against `design/ro_array_core.spice`'s own `.subckt ro_stage`
-   (4/4 devices, 6/6 nets), using the new two-pass `"stages"` composition
-   (point 4 in "Composing a gate" above) to route its cross-coupled
-   starve-device gates without a short. Still open: `ro_stage`'s other three
-   `wstv` variants (`0.44`/`0.46`/`0.48 µm` — `layout/primitives/` has no
-   generator evidence for these widths yet), `ro_nand2` (same cross-coupled
-   shape, same two-pass technique should carry over directly, plus its own
-   two switching-device gates `a`/`en`), and `xor2` (no starve devices, but
-   twelve `mos_array` instances instead of four — a bigger single-pass
-   floorplan, not a new composition technique). `layout/bin/compose-cell.py`'s
+   and `xor2`. **`ro_stage` and `ro_nand2` are both DONE** (at `wstv=0.42`
+   only — see `layout/ro_stage/README.md` and `layout/ro_nand2/README.md`):
+   `klt drc` clean (0 violations) for both; `klt lvs` **match** against
+   `design/ro_array_core.spice`'s own `.subckt ro_stage` (4/4 devices, 6/6
+   nets) and `.subckt ro_nand2` (6/6 devices, 8/8 nets) respectively, both
+   using the two-pass `"stages"` composition (point 4 in "Composing a gate"
+   above) to route their cross-coupled starve-device gates without a short.
+   `ro_nand2` additionally needed point 5's generalization (promote every pin
+   of a many-device same-net bundle, resolve the whole bundle — six same-block
+   self-nets in one final `gen-compose` call, not `ro_stage`'s two) to floor-
+   plan its parallel PMOS pull-up pair and series NMOS pull-down pair, neither
+   of which `ro_stage`'s single-switching-device shape has an analogue for.
+   Still open: both cells' other three `wstv` variants (`0.44`/`0.46`/
+   `0.48 µm` — `layout/primitives/` has no generator evidence for these
+   widths yet), and `xor2` (no starve devices, but twelve `mos_array`
+   instances instead of four/six — a bigger single-pass floorplan, not a new
+   composition technique). `layout/bin/compose-cell.py`'s
    `lvs.params`/`lvs.drop_prefixes` fields already exist for these cells:
    `params` substitutes the `wstv`/`lstv` values into the reference subckt's
    `L=lstv W=wstv` device cards (one descriptor per ring variant), and
@@ -407,3 +437,18 @@ Same `--check` contract as `ro_buf` above, extended (see `check_cell` in
 `<name>.compose.response.json` (here, `core.compose.response.json`) on the
 same fields, since a two-stage cell's drift could otherwise hide in the
 first pass without moving the final cell's own verdict.
+
+## Reproducing `layout/ro_nand2/`
+
+```bash
+volare enable --pdk sky130 c6d73a35f524070e85faff4a6a9eef49553ebc2b
+python3 layout/bin/compose-cell.py layout/ro_nand2/cell.json --check
+```
+
+Same two-stage `--check` contract as `ro_stage` above. `layout/ro_nand2/`'s
+own final stage resolves six same-block self-nets (`py`'s two legs, `y`'s two
+legs, plus `ro_stage`'s usual `vss`/`vddr` cross-coupled pair) in one
+`gen-compose` call rather than `ro_stage`'s two — see
+`layout/ro_nand2/README.md`'s own table for why each leg's `waypoints_um`
+lane sits where it does, empirically derived against the real router's
+route-vs-route collision check.
