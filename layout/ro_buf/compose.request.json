@@ -1,0 +1,135 @@
+{
+  "pdk": {
+    "variant": "sky130A"
+  },
+  "blocks": [
+    {
+      "id": "mn",
+      "generator_report": "gen/mn.gen.json"
+    },
+    {
+      "id": "mp",
+      "generator_report": "gen/mp.gen.json",
+      "orientation": "mirror_y"
+    },
+    {
+      "id": "nwell_tap",
+      "generator_report": "gen/nwell_tap.gen.json"
+    },
+    {
+      "id": "psub_tap",
+      "generator_report": "gen/psub_tap.gen.json"
+    }
+  ],
+  "placement": {
+    "strategy": "explicit",
+    "order": [
+      "psub_tap",
+      "mn",
+      "nwell_tap",
+      "mp"
+    ],
+    "origins_um": {
+      "mn": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "mp": {
+        "x": 0.0,
+        "y": 3.95
+      },
+      "nwell_tap": {
+        "x": -2.04,
+        "y": 2.61
+      },
+      "psub_tap": {
+        "x": -2.14,
+        "y": -0.71
+      }
+    }
+  },
+  "routing": {
+    "layer_role": "metal",
+    "width_um": 0.17
+  },
+  "connectivity": [
+    {
+      "net": "a",
+      "pins": [
+        {
+          "block": "mp",
+          "port": "U0_G"
+        },
+        {
+          "block": "mn",
+          "port": "U0_G"
+        }
+      ]
+    },
+    {
+      "net": "y",
+      "pins": [
+        {
+          "block": "mp",
+          "port": "U0_D"
+        },
+        {
+          "block": "mn",
+          "port": "U0_D"
+        }
+      ],
+      "waypoints_um": [
+        [
+          1.9,
+          3.53
+        ],
+        [
+          1.9,
+          0.21
+        ]
+      ]
+    },
+    {
+      "net": "vdd",
+      "pins": [
+        {
+          "block": "mp",
+          "port": "U0_S"
+        },
+        {
+          "block": "nwell_tap",
+          "port": "TAP_E"
+        }
+      ]
+    },
+    {
+      "net": "vss",
+      "pins": [
+        {
+          "block": "mn",
+          "port": "U0_S"
+        },
+        {
+          "block": "psub_tap",
+          "port": "TAP_E"
+        }
+      ]
+    }
+  ],
+  "pins": [
+    {
+      "block": "nwell_tap",
+      "port": "TAP_N",
+      "net": "vdd"
+    },
+    {
+      "block": "psub_tap",
+      "port": "TAP_N",
+      "net": "vss"
+    }
+  ],
+  "options": {
+    "cell_name": "ro_buf",
+    "output": "ro_buf.gds"
+  }
+}

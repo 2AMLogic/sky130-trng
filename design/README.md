@@ -233,19 +233,20 @@ DR-0003 surfaces and does not resolve on its own authority.
   (status **Proposed**) it lives in [`digital/`](../digital/README.md), not
   here, and none of it is or will be a `design/*.spice` netlist. `raw_bit`
   and `raw_valid` are the interface between the two directories.
-- **Layout and DRC/LVS.** `layout/` is no longer empty, but is not yet a
-  DRC/LVS-clean block: issue #22's first increment proved every distinct
-  transistor geometry this design's schematics instantiate is individually
-  DRC-clean and extracts correctly against the sky130 open PDK
-  (`layout/primitives/`), and worked out a concrete floorplan/composition
-  plan (`layout/README.md`). A follow-up increment
-  (`layout/well-strap-poc/`) then solved that plan's single named blocking
-  unknown — how to physically strap a PMOS device's own nwell to a named
-  supply net — and, while reproducing the earlier evidence, found a real
-  regression in the pinned `klayout-tools` release that currently blocks
-  composing this design's actual (`l_um=0.15`) gates
-  ([2AMLogic/klayout-tools#1491](https://github.com/2AMLogic/klayout-tools/issues/1491)).
-  No multi-device gate, ring, array, or sampler layout exists yet, and no
-  post-layout PVT re-verification has run. See `layout/README.md` for the
-  full status and the follow-up issue (#27) it tracks. (`sim/` is no longer
-  empty either — see `sim/README.md`.)
+- **Layout and DRC/LVS.** `layout/` now holds **one composed, DRC-clean and
+  LVS-clean cell** — [`layout/ro_buf/`](../layout/ro_buf/README.md), this
+  file's own `ro_buf` inverter, built from `klt gen` primitives, placed and
+  routed by `klt gen-compose`, `klt drc` clean (0 violations against `klt`'s
+  curated sky130 deck) and `klt lvs` **matching** the `.subckt ro_buf` in
+  `design/ro_array_core.spice` (2/2 devices, 4/4 nets, 0 mismatches), at this
+  design's real `l_um=0.15` sizing. It is reproducible from a committed
+  descriptor: `python3 layout/bin/compose-cell.py layout/ro_buf/cell.json`
+  (add `--check` to verify without overwriting). Earlier increments established
+  the per-device geometries (`layout/primitives/`) and the PMOS well-strap
+  finding (`layout/well-strap-poc/`); the `klayout-tools` regression they
+  recorded as a blocker
+  ([#1491](https://github.com/2AMLogic/klayout-tools/issues/1491)) is fixed.
+  Still open: **no** `ro_stage`/`ro_nand2`/`xor2`, no ring, no array, no
+  sampler, no parasitic extraction, and no post-layout PVT re-verification.
+  See `layout/README.md` for the full status and the follow-up issue (#27) it
+  tracks. (`sim/` is no longer empty either — see `sim/README.md`.)

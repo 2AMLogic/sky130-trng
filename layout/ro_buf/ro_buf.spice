@@ -1,0 +1,13 @@
+* extracted by klt extract --deck sky130
+
+* cell ro_buf
+* pin a
+* pin vdd
+* pin vss
+* pin y
+.SUBCKT ro_buf a vdd vss y
+* device instance $1 r0 *1 0.545,0.21 nfet
+M$1 y a vss vss nfet L=0.15U W=0.42U AS=0.1974P AD=0.1974P PS=1.78U PD=1.78U
+* device instance $2 r0 *1 0.545,3.53 pfet
+M$2 y a vdd vdd pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
+.ENDS ro_buf

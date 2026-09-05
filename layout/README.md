@@ -4,19 +4,33 @@ Physical layout evidence for the sky130-trng entropy source, verified with
 `klayout-tools` (`klt`) against the sky130 open PDK. See `layout/pdk.json`
 for the PDK/tool pin.
 
-**Status (issue #22/#27, this increment): the well-strap composition
-methodology is now solved and verified, but not a DRC/LVS-clean block.**
-`layout/primitives/` is real, checkable evidence (every distinct transistor
-geometry `design/xschem/` instantiates, drawn and independently
-DRC-clean/extracted) that klt's generator + composition surface *can* build
-this design's layout; `layout/well-strap-poc/` closes the concrete blocking
-unknown that work left open (how to physically strap a `mos_array` PMOS's own
-nwell to a named supply net). But no multi-device gate, no `ro_ring5`, no
-`ro_array_core`, no `sampler_core`, and no post-layout PVT re-verification
-exist yet — and a newly-discovered tool regression
-([2AMLogic/klayout-tools#1491](https://github.com/2AMLogic/klayout-tools/issues/1491))
-blocks composing this design's real (`l_um=0.15`) gates until resolved. See
-"What's deferred" below and the tracking issue (#27) it names.
+**Status (issue #22/#27, this increment): one real gate is now composed,
+DRC-clean and LVS-clean — but not a DRC/LVS-clean block.**
+[`layout/ro_buf/`](ro_buf/README.md) is `design/ro_array_core.spice`'s own
+`.subckt ro_buf` inverter, built from `klt gen` primitives, placed and routed
+by `klt gen-compose`, **`klt drc` clean (0 violations)** and **`klt lvs`
+matching the design netlist (2/2 devices, 4/4 nets, 0 mismatches)**. That
+closes step 1 of the deferred list below and, with it, the last open question
+about whether this methodology reaches a working cell at all.
+
+Everything under it is still open: no `ro_stage`/`ro_nand2`/`xor2`, no
+`ro_ring5`, no `ro_array_core`, no `sampler_core`, and no post-layout PVT
+re-verification. See "What's deferred" below and the tracking issue (#27).
+
+The earlier increments remain the foundation: `layout/primitives/` is
+per-device evidence (every distinct transistor geometry `design/xschem/`
+instantiates, drawn and independently DRC-clean/extracted), and
+`layout/well-strap-poc/` established that a `guard_ring`'s nwell merges with a
+`mos_array` PMOS's own. `ro_buf` changes *how* that merge is arranged —
+abutted rather than nested, see below — because a nested device turns out to
+be unroutable.
+
+The `klt` regression the previous increment filed
+([2AMLogic/klayout-tools#1491](https://github.com/2AMLogic/klayout-tools/issues/1491),
+sub-0.28 µm gate length + `gate_contact` DRC-violating) is **fixed** as of
+`klt 0.3.0+gc6dbf66c53c6`: regenerating `pfet_w0p84_l0p15`'s exact params from
+scratch is DRC-clean again, and `ro_buf` is built entirely at this design's
+real `l_um=0.15`.
 
 ## Correcting the curation note
 
@@ -24,16 +38,16 @@ Issue #22's curator enhancement (2026-09-05) flagged an open question: `klt`'s
 installed command surface, as that curation pass observed it (`layers`,
 `stats`, `drc`, `lvs`, `extract`, `synthesize`, `techmap`, `render`, etc.),
 looked "verification/synthesis-oriented," with "no obvious path to compose
-full-custom analog polygon layout by hand." That reading no longer matches
-`klt`'s actual command surface — though, per the "New blocker" note below,
-**exactly which build is installed has proven unstable within a single
-session** (`klt --version` was observed to report a transient
-`0.3.0+g<hash>.dirty` build early in one session and settle to the
-officially `uv tool list`-pinned `0.2.0` release later in the same session,
-with no action taken by this repo's own tooling to explain the change) — the
+full-custom analog polygon layout by hand." That reading does not match
+`klt`'s actual command surface — though **which build is installed has proven
+unstable across sessions**, which is itself worth recording: the previous
+increment saw `uv tool list` report `klayout-tools v0.2.0` (and a transient
+`0.3.0+g<hash>.dirty` earlier in the same session), while this one sees
+`v0.3.0` / `klt 0.3.0+gc6dbf66c53c6`, with a regression fixed in between and
+a `well_island` generator that had come and gone now present again. The
 version string in a given moment is not reliable evidence of what a fresh
-clone of this repo will actually get; `uv tool list`'s own report is the
-authoritative pin:
+clone of this repo will get; `uv tool list` plus each artifact's own
+`provenance.klt_version` are the record. The composition-side verbs:
 
 - **`klt gen`** — runs a named parametrized layout generator (a headless
   KLayout PCell) against a JSON params object, producing a GDS/OASIS +
@@ -41,11 +55,11 @@ authoritative pin:
   primitive generators: `mos_array` (matched MOS transistor arrays —
   `layout/primitives/` below is built entirely from this one), `guard_ring`,
   `diff_pair`, `esd_device`, `res_array`, `cap_array`, `bond_pad`,
-  `bjt_array`. (A `well_island` generator was observed in the transient build
-  mentioned above and used successfully in early exploration, but is **not
-  present** in the officially pinned `v0.2.0` release — `layout/
-  well-strap-poc/` uses `guard_ring` instead, which the pinned release does
-  have, and which turns out to be sufficient.)
+  `bjt_array`. (A `well_island` generator — absent from the `v0.2.0` release
+  the previous increment saw — is present again in `v0.3.0`. Neither
+  `layout/well-strap-poc/` nor `layout/ro_buf/` uses it: `guard_ring` is
+  present in every observed build and is sufficient for both, so the cells
+  stay buildable across this churn.)
 - **`klt gen-compose`** — places a set of already-generated `klt gen` blocks
   (and/or existing library cells) into one composed GDS per a
   blocks[]/placement/connectivity[]/routing request document, with real
@@ -76,10 +90,10 @@ trng_top                   (not in scope for #22 — stops at the raw tap)
   sampler_core              PLANNED — 6x sampler_dff + wiring
     ro_array_core           PLANNED — this issue's minimum scope
       ro_ring5   (x4)        PLANNED — non-identical (wstv 0.42/0.44/0.46/0.48)
-        ro_nand2              PLANNED — 1x guard_ring (nested well-strap, see well-strap-poc/) + 5x mos_array
-        ro_stage   (x4)       PROVEN AT DEVICE LEVEL — 1x guard_ring (nested) + 4x mos_array (layout/primitives/)
-      ro_buf     (x4)        PROVEN AT DEVICE LEVEL — 1x guard_ring (nested) + 2x mos_array
-      xor2       (x3)        PROVEN AT DEVICE LEVEL — 1x guard_ring (nested) + 12x mos_array
+        ro_nand2              PLANNED — 2x guard_ring (abutted body ties) + 5x mos_array
+        ro_stage   (x4)       PROVEN AT DEVICE LEVEL — 2x guard_ring (abutted) + 4x mos_array (layout/primitives/)
+      ro_buf     (x4)        BUILT — DRC-clean + LVS-clean (layout/ro_buf/)
+      xor2       (x3)        PROVEN AT DEVICE LEVEL — 2x guard_ring (abutted) + 12x mos_array
     sampler_dff  (x6)        NOT STARTED — transmission-gate master-slave DFF, no generator surveyed yet
 ```
 
@@ -91,12 +105,13 @@ not exist yet.
 ## Floorplan decisions made so far
 
 - **Guard/tap-ring strategy**: per-gate, not per-block. Each leaf gate
-  (`ro_stage`, `ro_nand2`, `ro_buf`, `xor2`) gets its own PMOS well strap
-  (a `guard_ring --params '{"add_well":true}'`, nested around each PMOS
-  `mos_array` block per `layout/well-strap-poc/`, named-net tie to that
-  ring's `vddr`/the block's `vdd`) rather than one ring around a whole
-  assembled `ro_ring5`/`ro_array_core` — matching how
-  the schematic already treats each ring's supply as independent
+  (`ro_stage`, `ro_nand2`, `ro_buf`, `xor2`) gets its own pair of tap islands
+  (a `guard_ring --params '{"add_well":true}'` tied to `vdd`/`vddr` for the
+  PMOS row, and a `guard_ring --params '{"add_well":false}'` tied to `vss` for
+  the NMOS row), **abutted** to the device blocks rather than nested around
+  them — see `layout/ro_buf/README.md` § "Why abutted, not nested". One ring
+  around a whole assembled `ro_ring5`/`ro_array_core` was rejected, matching
+  how the schematic already treats each ring's supply as independent
   (`design/README.md`'s pin table: `vddr1`..`vddr4` are separate,
   specifically so per-ring liveness/independence is observable). A
   per-array-wide ring would blur that independence at the layout level.
@@ -116,6 +131,66 @@ not exist yet.
   four times — matching the schematic's own non-identical-instance intent
   (DR-0003 §8's decorrelation strategy depends on the rings actually
   differing).
+
+## Composing a gate: the working recipe
+
+`layout/bin/compose-cell.py` drives the whole chain for one cell from a
+committed descriptor (`layout/<cell>/cell.json`):
+
+```
+klt gen (per device/tap block) -> klt gen-compose -> klt drc -> klt extract -> klt lvs
+```
+
+```bash
+python3 layout/bin/compose-cell.py layout/ro_buf/cell.json           # rebuild in place
+python3 layout/bin/compose-cell.py layout/ro_buf/cell.json --check   # verify without overwriting
+```
+
+Every step's JSON response is written next to the descriptor, so
+`layout/<cell>/` is the full re-checkable evidence trail, and `--check` is the
+layout sibling of `design/netlist.py --check` (rebuild into a temp dir, diff
+the verdict-bearing fields against what is committed). All `klt` invocations
+run from the cell directory with relative paths, so no absolute home path
+leaks into the committed provenance.
+
+The three constraints that decide a cell's floorplan, all learned building
+`ro_buf` (see [`layout/ro_buf/README.md`](ro_buf/README.md) for each one's
+evidence):
+
+1. **Body ties abut, they do not enclose.** Overlap the device block's and
+   the tap ring's `bbox_um` by 0.10 µm: their nwells merge (one electrical
+   node, so the PMOS bulk extracts to the ring's labelled net) while their
+   `li1` stays 0.20 µm apart, clear of sky130's 0.17 µm spacing floor. A
+   *nested* device — `layout/well-strap-poc/`'s original geometry — is
+   body-tied but **unroutable**: `gen-compose` treats the enclosing ring as an
+   unrelated block and rejects every route reaching the device inside it
+   (upstream: [klayout-tools#1493](https://github.com/2AMLogic/klayout-tools/issues/1493)).
+2. **Mirror the PMOS row in `y`** (`blocks[].orientation: "mirror_y"`) so its
+   gate faces the NMOS row's up-facing gate. Two same-facing gate ports make
+   the router lift the connecting jog above both blocks, straight through the
+   PMOS.
+3. **Give a same-facing S/D pair an explicit `waypoints_um` lane** clear of
+   both blocks' bboxes. The default one-stub-width jog runs back through the
+   devices.
+
+Two more, discovered while planning `ro_stage` and not yet resolved (issue
+#27's step 2 starts here):
+
+- **A port may be named by `pins[]` *or* wired by `connectivity[]`, never
+  both.** An internal net that is also a cell pin therefore takes its name
+  from its `connectivity[]` entry — which works, and is how `ro_buf`'s `a`/`y`
+  come out named.
+- **`ro_stage`/`ro_nand2` are not single-layer planar.** Their starve devices
+  are cross-coupled to the rails (`Mph.g = vss`, `Mnt.g = vddr`), so with one
+  tap island per rail on one side the two gate routes must cross. `klt
+  gen-compose` performs no net-to-net short check (only block-obstacle,
+  ring-opening and same-block pad checks), so a crossing composes "routed"
+  and is caught only downstream by `klt extract`/`klt lvs` — treat an LVS
+  match, not a routed verdict, as the gate's acceptance test. The fix is
+  either a second tap island per rail placed near the gate that needs it (the
+  substrate/well is itself the conductor joining two taps of the same net), or
+  per-net routing-layer selection, which `routing.layer_role` does not offer
+  today.
 
 ## The well-strap gap: SOLVED — see `layout/well-strap-poc/`
 
@@ -144,17 +219,24 @@ as a non-blocking warning, never a match/mismatch verdict change — see the
 PoC's README for the citation), but the composed design still needs at least
 one `vsubs`-to-`vss` tap somewhere.
 
-**New blocker found while building this fix**: the `klt` version actually
-pinned in this environment (`klayout-tools v0.2.0`) does not draw a
-DRC-clean `mos_array` unit device for this design's *actual* gate lengths
-(`l_um=0.15`, all of this design's non-starve devices) with
-`gate_contact: true` — a regression/missing-fix relative to whatever build
-produced the already-committed `layout/primitives/` evidence. Filed as
-[2AMLogic/klayout-tools#1491](https://github.com/2AMLogic/klayout-tools/issues/1491);
-see `layout/well-strap-poc/README.md`'s "Regression discovered" section for
-the full diagnosis. This blocks composing this design's real gates (not the
-well-strap methodology itself, which the PoC demonstrates at `l_um=0.28` to
-route around it) until resolved.
+**Two corrections to the above, from building `layout/ro_buf/`:**
+
+- **The nesting geometry is superseded.** Nesting does merge the wells, as
+  described — but `gen-compose` then refuses to route *any* of the enclosed
+  device's terminals, because its obstacle check counts the enclosing ring as
+  an unrelated placed block (reproduced directly against this PoC's own
+  committed blocks; see `layout/ro_buf/README.md` § "Why abutted, not
+  nested", and upstream
+  [klayout-tools#1493](https://github.com/2AMLogic/klayout-tools/issues/1493)).
+  Abutting the two blocks with a 0.10 µm bbox overlap achieves the same well
+  merge *and* leaves every terminal routable. New cells should abut.
+- **The `l_um=0.15` regression is fixed.** The blocker recorded here
+  ([klayout-tools#1491](https://github.com/2AMLogic/klayout-tools/issues/1491),
+  now closed) does not reproduce on `klt 0.3.0+gc6dbf66c53c6`: regenerating
+  `pfet_w0p84_l0p15`'s exact params from scratch is DRC-clean, with the same
+  `bbox_um.x1 = 1.24` the committed evidence reports, and the generator's
+  `drc_hints.notes` again cites the issue #1187 S/D-pad padding fix. Every
+  device in `layout/ro_buf/` is drawn at this design's real `l_um=0.15`.
 
 ## What's deferred (tracking issue)
 
@@ -162,21 +244,30 @@ Everything below issue #22's original scope needed and this PR does not
 deliver, tracked in follow-up issue
 [2AMLogic/sky130-trng#27](https://github.com/2AMLogic/sky130-trng/issues/27):
 
-0. ~~Solve the well-strap nesting math~~ **DONE** — see
-   `layout/well-strap-poc/`. Newly blocking this step's continuation:
-   [2AMLogic/klayout-tools#1491](https://github.com/2AMLogic/klayout-tools/issues/1491)
-   (this design's real `l_um=0.15` gates DRC-violate against the pinned `klt`
-   release independent of the well-strap fix itself) needs resolving before
-   step 1 below can use this design's actual device sizes rather than the
-   PoC's `l_um=0.28` workaround.
-1. Compose one fully DRC-clean **and** LVS-clean gate (`ro_buf` is the
-   simplest: 2 devices) end to end as the methodology's real proof point,
-   using this design's actual device sizes (blocked on the item above) —
-   wiring the S/D/G routing between the two nested-well-strapped devices is
-   still open even once unblocked (this PR's PoC only proves the body/well
-   connection, not a fully-wired inverter).
+0. ~~Solve the well-strap geometry~~ **DONE** — see
+   `layout/well-strap-poc/` for the well-merge finding and
+   `layout/ro_buf/README.md` § "Why abutted, not nested" for the routable
+   form of it. The `l_um=0.15` regression that blocked this
+   ([klayout-tools#1491](https://github.com/2AMLogic/klayout-tools/issues/1491))
+   is fixed and closed.
+1. ~~Compose one fully DRC-clean **and** LVS-clean gate end to end as the
+   methodology's real proof point~~ **DONE** — `layout/ro_buf/`: `klt drc`
+   clean (0 violations), `klt lvs` **match** against
+   `design/ro_array_core.spice`'s own `.subckt ro_buf` (2/2 devices, 4/4
+   nets), at this design's real device sizes, reproducible from a committed
+   descriptor via `layout/bin/compose-cell.py`.
 2. Repeat for `ro_stage`, `ro_nand2` (including the 4-way `wstv` variants),
-   and `xor2`.
+   and `xor2`. **Start here.** `ro_buf`'s recipe (abutted tap islands,
+   `mirror_y` PMOS row, `waypoints_um` for same-facing S/D pairs) carries
+   over, but `ro_stage`/`ro_nand2` add a series PMOS/NMOS stack and a
+   rail-crossing pair of starve-device gate nets that is **not planar on one
+   routing layer** — see "Composing a gate" above for the two candidate
+   resolutions. `layout/bin/compose-cell.py`'s `lvs.params`/`lvs.drop_prefixes`
+   fields already exist for these cells: `params` substitutes the `wstv`/
+   `lstv` values into the reference subckt's `L=lstv W=wstv` device cards
+   (one descriptor per ring variant), and `drop_prefixes: ["Cld"]` drops the
+   lumped load capacitor, which is a simulation load model with no physical
+   counterpart, not a device the layout omits.
 3. Hierarchical assembly: `ro_ring5` (5 gates + inter-gate routing),
    `ro_array_core` (4 non-identical rings + combining XOR tree),
    `sampler_dff`/`sampler_core` (no generator surveyed yet for a
@@ -184,16 +275,20 @@ deliver, tracked in follow-up issue
    if the latter is a genuine gap, *that* is the point to file a
    `2AMLogic/klayout-tools` issue, described generically).
 4. Full-block `klt drc` + `klt lvs` (assembled netlist vs. `design/*.spice`)
-   sign-off — also revisit the reference-netlist LVS request shape then: this
-   PR's own attempt at running `klt lvs` against a hand-written reference
-   subckt hit an additional (unresolved, not filed — plausibly this repo's
-   own request-construction error rather than a tool gap) device-class-name
-   mismatch (`"pfet"` vs. `"PFET"`) when using `reference.form:
-   "subckt-call"` with `reference.deck` to convert this design's own
-   `XMp ... sky130_fd_pr__pfet_01v8 ...`-style device cards; needs either a
-   `reference.device_map` entry or a closer read of
-   `klayout_tools.netlist_normalize`'s conversion table before step 1's
-   "LVS-clean" claim can be made.
+   sign-off. The **reference-netlist request shape is now settled** (it was
+   listed here as an open unknown, mis-diagnosed as a `"pfet"`/`"PFET"`
+   device-class-name mismatch): `reference.form: "subckt-call"` with
+   `reference.deck: "sky130"` is correct, and the real cause of the total
+   mismatch was that its converter reads an **unsuffixed** `L=`/`W=` value as
+   SI metres, while this design's netlists are unitless under
+   `.option scale=1u` — so `L=0.15` became a 0.15 m gate and nothing matched.
+   `layout/bin/compose-cell.py` appends the explicit `u` suffix; filed
+   upstream as
+   [klayout-tools#1492](https://github.com/2AMLogic/klayout-tools/issues/1492).
+   Note also that `klt`'s sky130 deck is a **curated subset**, not sky130
+   sign-off — read each `drc.json`'s own `coverage` block (`deck_scope`,
+   `layers_checked`, `layers_in_stream_without_rules`) before calling any
+   result "DRC-clean" without qualification.
 5. Post-layout PVT re-verification: re-run `sim/`'s existing corner-sweep
    harness (`sim/bin/corner-run.py`) against the `klt extract --parasitics`
    output, recording results under `sim/` per the existing append-only
@@ -202,17 +297,29 @@ deliver, tracked in follow-up issue
    extracted parasitics from step 5 — the measurement DR-0003 explicitly
    flagged as needing a real layout and unmeasurable at the netlist level.
 
+   **Status after this increment: still open, and deliberately not
+   re-evaluated.** DR-0003 §8's condition is not "some layout exists" but
+   "extracted parasitics of the *assembled array* exist" — the quantity it
+   names is the coupling between *rings* through shared supply impedance and
+   the substrate, which by construction cannot be measured on a single leaf
+   cell. `layout/ro_buf/` is one gate, of which the array contains four
+   instances out of ~100 devices total, and its `klt extract` was run
+   **without** `--parasitics`. Nothing in this increment changes what §8
+   records, so nothing supersedes it; per this repo's decision-record
+   convention a correction supersedes rather than edits in place, and there is
+   no correction to make yet. The re-evaluation becomes possible at step 5,
+   not before.
+
 ## Reproducing the evidence in `layout/primitives/`
 
-**Caveat added by this PR**: re-running the exact command below (`l_um=0.15`)
-against the `klt` version actually pinned in this environment
-(`klayout-tools v0.2.0`) reproduces the *layout* but does **not** currently
-reproduce the *clean DRC verdict* — see
-[2AMLogic/klayout-tools#1491](https://github.com/2AMLogic/klayout-tools/issues/1491)
-and `layout/well-strap-poc/regression-evidence/`. The already-committed
-`.gds`/`drc.json` files under `layout/primitives/` are unaffected (they are
-static bytes; `klt drc` re-checks *those* files clean today) — only a
-from-scratch regeneration is affected.
+**The caveat a previous increment added here is withdrawn.** It recorded that
+regenerating these `l_um=0.15` geometries against the then-pinned
+`klayout-tools v0.2.0` reproduced the layout but not the clean DRC verdict
+([klayout-tools#1491](https://github.com/2AMLogic/klayout-tools/issues/1491),
+evidence preserved under `layout/well-strap-poc/regression-evidence/`). That
+issue is closed, and on `klt 0.3.0+gc6dbf66c53c6` a from-scratch regeneration
+is DRC-clean again with byte-identical reported geometry — re-verified for
+`pfet_w0p84_l0p15` while building `layout/ro_buf/`.
 
 ```bash
 # PDK pin: see layout/pdk.json (same open_pdks_commit as design/pdk.json, sim/pdk.json)
@@ -227,3 +334,17 @@ klt extract /tmp/pfet_w0p84_l0p15.gds --deck sky130 --format json
 
 Repeat with `layout/primitives/README.md`'s table for the other five
 geometries.
+
+## Reproducing `layout/ro_buf/`
+
+```bash
+volare enable --pdk sky130 c6d73a35f524070e85faff4a6a9eef49553ebc2b
+python3 layout/bin/compose-cell.py layout/ro_buf/cell.json --check
+```
+
+`--check` rebuilds the whole chain into a temporary directory and diffs the
+verdict-bearing fields (`drc.json`'s `status`/`violation_count`,
+`extract.json`'s `status`/`device_count`/`net_count`/`device_counts`,
+`lvs.json`'s `status`/`mismatch_count`/`error_count`/`counts`, and
+`compose.response.json`'s `cell_name`/`bbox_um`) against what is committed,
+without touching it. Drop `--check` to regenerate in place.
