@@ -1,7 +1,6 @@
 name: CI
 
-# PR-blocking checks for this repository. There is exactly one right now:
-# design/netlist.py --lint.
+# PR-blocking checks for this repository:
 #
 # design/netlist.py --lint (schematic T {...} text-block brace guard)
 #     Pure Python over design/xschem/*.sch's own text -- no xschem, no PDK.
@@ -12,6 +11,11 @@ name: CI
 #     That failure mode is invisible at review time and cheap to catch at
 #     authorship, so it runs on every PR touching design/ and blocks on
 #     failure.
+#
+# design/test_pdk_search.py (shared PDK-search fallback-order unit test,
+#     issue #25) -- also pure Python over design/_pdk_search.py, no xschem,
+#     no PDK install, so it belongs on the same PR-blocking path as the lint
+#     check above rather than the PDK-gated nightly job below.
 #
 # design/netlist.py --check (schematic-vs-netlist staleness guard) is
 # DELIBERATELY NOT here. It shells out to xschem and resolves the sky130
@@ -52,3 +56,6 @@ jobs:
 
       - name: design/netlist.py --lint
         run: python3 design/netlist.py --lint
+
+      - name: design/test_pdk_search.py (shared PDK-search unit test)
+        run: python3 design/test_pdk_search.py

@@ -36,10 +36,11 @@ whose structure (brace guard, deterministic path rewriting, continuation
 re-wrapping) is reused unchanged in substance. What is adapted for sky130:
 
 * PDK resolution targets a sky130 variant directory (``sky130A``) instead of
-  a gf180mcu one, and is inlined here rather than imported from a simulation
-  harness, because ``sim/`` in this repo is still empty. When a harness
-  lands, this module should be repointed at its resolver rather than growing
-  a second one.
+  a gf180mcu one. The walk-a-list-of-roots search itself is shared with
+  ``sim/bin/corner-run.py`` via ``design/_pdk_search.py`` (issue #25);
+  ``find_pdk()`` below supplies only this tool's validator predicate
+  (``libs.tech/xschem``) and config source (``design/pdk.json`` /
+  ``design/pdk.local.json``).
 * sky130's xschem symbol library lives at ``libs.tech/xschem`` and is
   addressed by sub-library path (``sky130_fd_pr/nfet_01v8.sym``), where
   gf180mcu's lives at ``libs.tech/xschem/symbols`` and is addressed by bare
@@ -98,6 +99,9 @@ import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _pdk_search import BUILTIN_SEARCH_ROOTS, PdkSearchError, search_pdk  # noqa: E402
+
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DESIGN_DIR = REPO_ROOT / "design"
 SCHEMATIC_DIR = DESIGN_DIR / "xschem"
@@ -133,15 +137,10 @@ EXIT_ENVIRONMENT = 3
 
 DEFAULT_VARIANT = "sky130A"
 
-#: Directories expected to *contain* sky130 variant directories.
-BUILTIN_SEARCH_ROOTS = (
-    "~/.volare",
-    "~/.ciel",
-    "/usr/share/pdk",
-    "/usr/local/share/pdk",
-    "~/share/pdk",
-    "/opt/pdk",
-)
+#: sky130's xschem symbol library layout; the validator predicate this
+#: module's ``find_pdk()`` hands to the shared search (see
+#: ``design/_pdk_search.py``).
+_VARIANT_DIR_LABEL = "libs.tech/xschem directory"
 
 INSTALL_HINT = """\
 sky130 PDK not found.
@@ -250,32 +249,29 @@ def find_pdk() -> Pdk:
     3. ``design/pdk.local.json`` -- machine-local override, git-ignored.
     4. ``design/pdk.json`` -- committed defaults: variant + search roots.
     5. Built-in search roots -- volare/ciel stores, open_pdks prefixes.
+
+    The walk itself (steps 1, 2 and 5, plus the ``~`` expansion and
+    validator-predicate check applied at every step) is
+    ``design/_pdk_search.py``'s ``search_pdk()``, shared with
+    ``sim/bin/corner-run.py``'s ``resolve_pdk()`` -- this function supplies
+    only the xschem-specific validator (:func:`_is_variant_dir`) and this
+    tool's own config source (steps 3-4, loaded by :func:`_load_config`).
     """
     config = _load_config()
     variant = os.environ.get("PDK") or config.get("variant") or DEFAULT_VARIANT
 
-    explicit = os.environ.get("SKY130_PDK_PATH")
-    if explicit:
-        path = Path(explicit).expanduser().resolve()
-        if not _is_variant_dir(path):
-            raise PdkNotFound(
-                f"SKY130_PDK_PATH={explicit} has no libs.tech/xschem directory"
-            )
-        return Pdk(path=path, variant=path.name, source="SKY130_PDK_PATH")
-
-    pdk_root = os.environ.get("PDK_ROOT")
-    if pdk_root:
-        path = (Path(pdk_root).expanduser() / variant).resolve()
-        if _is_variant_dir(path):
-            return Pdk(path=path, variant=variant, source="PDK_ROOT")
-
-    roots = list(config.get("search_roots") or ()) + list(BUILTIN_SEARCH_ROOTS)
-    for root in roots:
-        path = (Path(root).expanduser() / variant).resolve()
-        if _is_variant_dir(path):
-            return Pdk(path=path, variant=variant, source=str(root))
-
-    raise PdkNotFound(INSTALL_HINT)
+    try:
+        found = search_pdk(
+            variant=variant,
+            is_variant_dir=_is_variant_dir,
+            variant_dir_label=_VARIANT_DIR_LABEL,
+            search_roots=list(config.get("search_roots") or ()) + list(BUILTIN_SEARCH_ROOTS),
+        )
+    except PdkSearchError as exc:
+        raise PdkNotFound(str(exc)) from exc
+    if found is None:
+        raise PdkNotFound(INSTALL_HINT)
+    return Pdk(path=found.path, variant=found.variant, source=found.source)
 
 
 def _display_path(path: Path) -> str:
