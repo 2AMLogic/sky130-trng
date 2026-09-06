@@ -76,9 +76,14 @@ now composed DRC/LVS-clean on top of them and parasitic-extracted as whole
 rings, and the combining tree's `xor2` is composed DRC/LVS-clean as well,
 which completes every leaf cell `ro_array_core` instantiates. A floorplan
 for the array now exists, its forward ring→buffer signal chain is really
-routed, and its buffer→XOR `a` and `b` legs are now routed for both
-first-stage XORs (`layout/ro_array_core-placement-poc/`, DRC-clean), but
-`vdd`/`vss` distribution and the XOR combining tree are still unwired,
+routed, its buffer→XOR `a` and `b` legs are now routed for both
+first-stage XORs, and its four buffers now share a really-routed `vss` bus
+(`layout/ro_array_core-placement-poc/`, DRC-clean) — extraction shows that
+bus did not change the array's own `vss` net topology at all, since sky130's
+substrate model already ties every un-isolated NMOS body to one global node
+regardless of drawn routing (`layout/README.md`'s "Increment 5"), so `vdd`
+distribution is the array's actual remaining connectivity unknown, not
+`vss`. `vdd` distribution and the XOR combining tree are still unwired,
 `xor2` has no post-layout record of its own, and there is still no
 LVS-clean array, sampler, or top-level layout, so the whole-block bar is
 still unmet.)
@@ -480,9 +485,18 @@ that lands this document):
   `b`'s recipe needed distinct source-side channel heights rather than
   reusing `a`'s rows, since a naive shared-row approach either collided
   with `a`'s own backbone or crossed a third block's bbox (both ruled out
-  empirically, see the PoC's own README). `vdd`/`vss` distribution, the XOR
-  combining tree, and any LVS attempt remain open, so this is still a
-  partial assembly, not a DRC/LVS-clean block. Still outstanding for
+  empirically, see the PoC's own README). Its "Increment 5" then routed the
+  four buffers' own `vss` taps into one bus (`klt drc` clean, 132 devices,
+  104 nets unchanged) — and found that `klt extract`'s sky130 deck already
+  merges every un-isolated NMOS body onto one global substrate node
+  regardless of drawn routing, so `vss`'s device count on the merged net
+  (122) was identical before and after this bus existed: `vss` was not
+  actually blocking an eventual `klt lvs` match, only `vdd` is (confirmed
+  still seven separate nets; a first buffer-only `vdd` bus attempt failed
+  outright, every candidate leg crossing a neighbouring ring's own bounding
+  box). `vdd` distribution, the XOR combining tree, and any LVS attempt
+  remain open, so this is still a partial assembly, not a DRC/LVS-clean
+  block. Still outstanding for
   the brief's full sign-off bar: the array's own routing/LVS
   and the sampler as assembled layout — and therefore the *whole-block*
   post-layout PVT simulation the bar actually asks for, since the assembled
