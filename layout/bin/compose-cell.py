@@ -192,18 +192,34 @@ def build_reference(
 ) -> list[str]:
     """Rewrite an xschem-exported subckt into a klt-lvs-ready reference.
 
-    Three transformations, each deliberately minimal and each visible in the
+    Four transformations, each deliberately minimal and each visible in the
     written-out result:
 
     1. ``params`` values are substituted for the subckt's own parameter names
-       wherever they appear as an ``L=``/``W=`` value (this design's starve
-       devices are sized ``L=lstv W=wstv``), and the parameter defaults are
-       dropped from the ``.subckt`` line.
-    2. Element cards whose name starts with one of ``drop_prefixes`` are
+       wherever they appear as an ``=<name>`` value token (this design's
+       starve devices are sized ``L=lstv W=wstv``, so this covers ``L=``/
+       ``W=`` in particular, but is not limited to them), and the parameter
+       defaults are dropped from the ``.subckt`` line. A bare occurrence of
+       the parameter name *inside* a quoted expression (e.g. the ``wstv`` in
+       ``ad='int((1 + 1)/2) * wstv / 1 * 0.29'``, not immediately preceded by
+       ``=``) is deliberately left unevaluated, unchanged from this script's
+       original single-subckt behaviour -- see "The LVS match is
+       width-sensitive" in ``layout/README.md`` for why that is fine (``klt
+       lvs`` does not compare ``ad``/``as``/``pd``/``ps`` for these devices).
+    2. A pass-through keyword argument on an instance-call line (``name=name``
+       -- e.g. ``xg ro en n1 vddr vss ro_nand2 wstv=wstv lstv=lstv cld=cld``,
+       ``ro_ring5``'s own forwarding of its parameters to each sub-gate
+       instance) is dropped entirely rather than substituted, once a
+       multi-subckt reference (``lvs.dependencies``, below) needs to
+       instantiate one already-parameterized subckt from another: the callee
+       subckt's own header no longer declares that parameter (transformation
+       1 already stripped it, replacing every internal use with a literal),
+       so passing it by keyword would name an undeclared parameter.
+    3. Element cards whose name starts with one of ``drop_prefixes`` are
        removed -- for this design that is ``ro_stage``/``ro_nand2``'s ``Cld``
        lumped load capacitor, a *simulation* load model with no physical
        counterpart in the layout, not a device the layout omits.
-    3. Unitless ``L=``/``W=`` values gain an explicit ``u`` suffix -- see this
+    4. Unitless ``L=``/``W=`` values gain an explicit ``u`` suffix -- see this
        module's docstring for why (klayout-tools#1492).
     """
     out: list[str] = []
@@ -220,9 +236,8 @@ def build_reference(
             continue
         if params:
             for name, value in params.items():
-                line = re.sub(
-                    rf"\b([LW])={re.escape(name)}\b", rf"\1={value}", line
-                )
+                line = re.sub(rf"\s+{re.escape(name)}={re.escape(str(name))}\b", "", line)
+                line = re.sub(rf"=({re.escape(name)})\b", f"={value}", line)
         out.append(_GEOMETRY_RE.sub(r"\1=\2u", line))
     return out
 
@@ -279,6 +294,29 @@ def compose_stage(
                 {
                     "id": block["id"],
                     "generator_report": stage_responses[ref_name],
+                    **(
+                        {"orientation": block["orientation"]}
+                        if block.get("orientation", "none") != "none"
+                        else {}
+                    ),
+                }
+            )
+            continue
+        if "cell" in block:
+            # An *existing* library cell -- a previously-composed,
+            # already-committed layout/<other-cell>/<other-cell>.gds this
+            # cell.json did not (re)generate -- placed via klt gen-compose's
+            # own `blocks[].cell` request shape (`{gds_path, cell_name,
+            # ports[], bbox_um}`, #1189 in klayout-tools). No `klt gen` call:
+            # there is nothing to generate, only an existing stream to
+            # place. See layout/ro_ring5/README.md for why this needs
+            # hand-declared `ports[]` (a pre-existing cell never reported a
+            # ports[] list to any `klt gen` response the way a fresh
+            # primitive does).
+            blocks_request.append(
+                {
+                    "id": block["id"],
+                    "cell": block["cell"],
                     **(
                         {"orientation": block["orientation"]}
                         if block.get("orientation", "none") != "none"
@@ -391,18 +429,40 @@ def compose_cell(spec: dict, spec_dir: Path, out_dir: Path) -> dict:
 
     # 5. LVS against the design's own schematic-exported subckt.
     lvs_spec = spec["lvs"]
-    reference_lines = build_reference(
-        extract_subckt(REPO_ROOT / lvs_spec["reference"], lvs_spec["subckt"]),
-        params=lvs_spec.get("params"),
-        drop_prefixes=tuple(lvs_spec.get("drop_prefixes", ())),
+    reference_source = REPO_ROOT / lvs_spec["reference"]
+    lvs_params = lvs_spec.get("params")
+    lvs_drop_prefixes = tuple(lvs_spec.get("drop_prefixes", ()))
+    dependency_subckts = lvs_spec.get("dependencies", ())
+    reference_lines: list[str] = []
+    for dependency in dependency_subckts:
+        reference_lines.extend(
+            build_reference(
+                extract_subckt(reference_source, dependency),
+                params=lvs_params,
+                drop_prefixes=lvs_drop_prefixes,
+            )
+        )
+        reference_lines.append("")
+    reference_lines.extend(
+        build_reference(
+            extract_subckt(reference_source, lvs_spec["subckt"]),
+            params=lvs_params,
+            drop_prefixes=lvs_drop_prefixes,
+        )
     )
     reference_path = out_dir / f"{cell}.ref.spice"
+    dependency_note = (
+        f" plus dependency subckt(s) {', '.join(dependency_subckts)}"
+        if dependency_subckts
+        else ""
+    )
     reference_path.write_text(
         "\n".join(
             [
                 f"* Reference netlist for {cell} LVS -- GENERATED by "
                 "layout/bin/compose-cell.py",
-                f"* Source: {lvs_spec['reference']} .subckt {lvs_spec['subckt']}",
+                f"* Source: {lvs_spec['reference']} .subckt "
+                f"{lvs_spec['subckt']}{dependency_note}",
                 "* Only unit spellings (and any substituted subckt parameter)",
                 "* differ from the source -- see compose-cell.py's docstring.",
                 *reference_lines,
@@ -410,6 +470,11 @@ def compose_cell(spec: dict, spec_dir: Path, out_dir: Path) -> dict:
             ]
         )
     )
+    lvs_options = {}
+    if lvs_spec.get("flatten_reference"):
+        lvs_options["flatten_reference"] = True
+    if lvs_spec.get("flatten_layout"):
+        lvs_options["flatten_layout"] = True
     lvs_request = {
         "layout": {"netlist": str(Path(extract["netlist_path"]).name)},
         "reference": {
@@ -417,6 +482,7 @@ def compose_cell(spec: dict, spec_dir: Path, out_dir: Path) -> dict:
             "form": "subckt-call",
             "deck": deck,
         },
+        **({"options": lvs_options} if lvs_options else {}),
     }
     write_json(out_dir / "lvs.request.json", lvs_request)
     lvs = run_klt(["lvs", "lvs.request.json"], env=env, cwd=out_dir)

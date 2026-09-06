@@ -1,0 +1,637 @@
+{
+  "schema_version": 3,
+  "file": "core.gds",
+  "deck": "sky130",
+  "top": "core",
+  "dbu_um": 0.001,
+  "netlist_path": "core.spice",
+  "netlist_sha256": "a525e5fa994890104862a7f293e99daac01f247971933be6c93fb683367fa4b1",
+  "status": "extracted",
+  "device_count": 22,
+  "net_count": 19,
+  "pin_count": 18,
+  "device_counts": {
+    "nfet": 11,
+    "pfet": 11
+  },
+  "dummy_devices_dropped": 0,
+  "ignored_layers": [],
+  "device_recognition_only_layers": [],
+  "device_classes": [
+    "nfet",
+    "pfet",
+    "pnp",
+    "sky130_fd_pr__model__cap_mim",
+    "sky130_fd_pr__model__cap_mim_m4",
+    "resistor"
+  ],
+  "devices": [
+    {
+      "name": "$1",
+      "class": "nfet",
+      "nets": {
+        "s": "g_vss|mph_g|s1_vss|s2_vss|s3_vss|s4_vss|vss",
+        "g": "g_vddr|mnt_g|vddr",
+        "d": "ny",
+        "b": "g_vss|mph_g|s1_vss|s2_vss|s3_vss|s4_vss|vss"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.42,
+        "as_um2": 0.1764,
+        "ad_um2": 0.1764,
+        "ps_um": 1.68,
+        "pd_um": 1.68
+      }
+    },
+    {
+      "name": "$10",
+      "class": "nfet",
+      "nets": {
+        "s": "ny",
+        "g": "en",
+        "d": "\\$4",
+        "b": "g_vss|mph_g|s1_vss|s2_vss|s3_vss|s4_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.2184,
+        "ps_um": 2.62,
+        "pd_um": 1.36
+      }
+    },
+    {
+      "name": "$11",
+      "class": "nfet",
+      "nets": {
+        "s": "\\$4",
+        "g": "a|g_a|mnab_y|mpa_y|mpb_y|n1|n2|n3|n4|s4_y|y",
+        "d": "a|g_a|mnab_y|mpa_y|mpb_y|n1|n2|n3|n4|s4_y|y",
+        "b": "g_vss|mph_g|s1_vss|s2_vss|s3_vss|s4_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.2184,
+        "ad_um2": 0.3948,
+        "ps_um": 1.36,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$12",
+      "class": "pfet",
+      "nets": {
+        "s": "g_vddr|mnt_g|vddr",
+        "g": "g_vss|mph_g|s1_vss|s2_vss|s3_vss|s4_vss|vss",
+        "d": "mpa_py|mpb_py|mph_py|py",
+        "b": "g_vddr|mnt_g|vddr"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.42,
+        "as_um2": 0.1764,
+        "ad_um2": 0.1764,
+        "ps_um": 1.68,
+        "pd_um": 1.68
+      }
+    },
+    {
+      "name": "$13",
+      "class": "pfet",
+      "nets": {
+        "s": "mnt_g|s1_vddr|vddr",
+        "g": "g_vss|mph_g|s1_vss|s2_vss|s3_vss|s4_vss|vss",
+        "d": "py",
+        "b": "mnt_g|s1_vddr|vddr"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.42,
+        "as_um2": 0.1764,
+        "ad_um2": 0.1764,
+        "ps_um": 1.68,
+        "pd_um": 1.68
+      }
+    },
+    {
+      "name": "$14",
+      "class": "pfet",
+      "nets": {
+        "s": "mnt_g|s2_vddr|vddr",
+        "g": "g_vss|mph_g|s1_vss|s2_vss|s3_vss|s4_vss|vss",
+        "d": "py",
+        "b": "mnt_g|s2_vddr|vddr"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.42,
+        "as_um2": 0.1764,
+        "ad_um2": 0.1764,
+        "ps_um": 1.68,
+        "pd_um": 1.68
+      }
+    },
+    {
+      "name": "$15",
+      "class": "pfet",
+      "nets": {
+        "s": "mnt_g|s3_vddr|vddr",
+        "g": "g_vss|mph_g|s1_vss|s2_vss|s3_vss|s4_vss|vss",
+        "d": "py",
+        "b": "mnt_g|s3_vddr|vddr"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.42,
+        "as_um2": 0.1764,
+        "ad_um2": 0.1764,
+        "ps_um": 1.68,
+        "pd_um": 1.68
+      }
+    },
+    {
+      "name": "$16",
+      "class": "pfet",
+      "nets": {
+        "s": "mnt_g|s4_vddr|vddr",
+        "g": "g_vss|mph_g|s1_vss|s2_vss|s3_vss|s4_vss|vss",
+        "d": "py",
+        "b": "mnt_g|s4_vddr|vddr"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.42,
+        "as_um2": 0.1764,
+        "ad_um2": 0.1764,
+        "ps_um": 1.68,
+        "pd_um": 1.68
+      }
+    },
+    {
+      "name": "$17",
+      "class": "pfet",
+      "nets": {
+        "s": "mpa_py|mpb_py|mph_py|py",
+        "g": "en",
+        "d": "a|g_a|mnab_y|mpa_y|mpb_y|n1|n2|n3|n4|s4_y|y",
+        "b": "g_vddr|mnt_g|vddr"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$18",
+      "class": "pfet",
+      "nets": {
+        "s": "a|g_a|mnab_y|mpa_y|mpb_y|n1|n2|n3|n4|s4_y|y",
+        "g": "a|g_a|mnab_y|mpa_y|mpb_y|n1|n2|n3|n4|s4_y|y",
+        "d": "mpa_py|mpb_py|mph_py|py",
+        "b": "g_vddr|mnt_g|vddr"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$19",
+      "class": "pfet",
+      "nets": {
+        "s": "py",
+        "g": "a|g_a|mnab_y|mpa_y|mpb_y|n1|n2|n3|n4|s4_y|y",
+        "d": "a|g_a|mnab_y|mpa_y|mpb_y|n1|n2|n3|n4|s4_y|y",
+        "b": "mnt_g|s1_vddr|vddr"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$2",
+      "class": "nfet",
+      "nets": {
+        "s": "g_vss|mph_g|s1_vss|s2_vss|s3_vss|s4_vss|vss",
+        "g": "mnt_g|s1_vddr|vddr",
+        "d": "ny",
+        "b": "g_vss|mph_g|s1_vss|s2_vss|s3_vss|s4_vss|vss"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.42,
+        "as_um2": 0.1764,
+        "ad_um2": 0.1764,
+        "ps_um": 1.68,
+        "pd_um": 1.68
+      }
+    },
+    {
+      "name": "$20",
+      "class": "pfet",
+      "nets": {
+        "s": "py",
+        "g": "a|g_a|mnab_y|mpa_y|mpb_y|n1|n2|n3|n4|s4_y|y",
+        "d": "a|g_a|mnab_y|mpa_y|mpb_y|n1|n2|n3|n4|s4_y|y",
+        "b": "mnt_g|s2_vddr|vddr"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$21",
+      "class": "pfet",
+      "nets": {
+        "s": "py",
+        "g": "a|g_a|mnab_y|mpa_y|mpb_y|n1|n2|n3|n4|s4_y|y",
+        "d": "a|g_a|mnab_y|mpa_y|mpb_y|n1|n2|n3|n4|s4_y|y",
+        "b": "mnt_g|s3_vddr|vddr"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$22",
+      "class": "pfet",
+      "nets": {
+        "s": "py",
+        "g": "a|g_a|mnab_y|mpa_y|mpb_y|n1|n2|n3|n4|s4_y|y",
+        "d": "a|g_a|mnab_y|mpa_y|mpb_y|n1|n2|n3|n4|s4_y|y",
+        "b": "mnt_g|s4_vddr|vddr"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$3",
+      "class": "nfet",
+      "nets": {
+        "s": "ny",
+        "g": "a|g_a|mnab_y|mpa_y|mpb_y|n1|n2|n3|n4|s4_y|y",
+        "d": "a|g_a|mnab_y|mpa_y|mpb_y|n1|n2|n3|n4|s4_y|y",
+        "b": "g_vss|mph_g|s1_vss|s2_vss|s3_vss|s4_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$4",
+      "class": "nfet",
+      "nets": {
+        "s": "g_vss|mph_g|s1_vss|s2_vss|s3_vss|s4_vss|vss",
+        "g": "mnt_g|s2_vddr|vddr",
+        "d": "ny",
+        "b": "g_vss|mph_g|s1_vss|s2_vss|s3_vss|s4_vss|vss"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.42,
+        "as_um2": 0.1764,
+        "ad_um2": 0.1764,
+        "ps_um": 1.68,
+        "pd_um": 1.68
+      }
+    },
+    {
+      "name": "$5",
+      "class": "nfet",
+      "nets": {
+        "s": "ny",
+        "g": "a|g_a|mnab_y|mpa_y|mpb_y|n1|n2|n3|n4|s4_y|y",
+        "d": "a|g_a|mnab_y|mpa_y|mpb_y|n1|n2|n3|n4|s4_y|y",
+        "b": "g_vss|mph_g|s1_vss|s2_vss|s3_vss|s4_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$6",
+      "class": "nfet",
+      "nets": {
+        "s": "g_vss|mph_g|s1_vss|s2_vss|s3_vss|s4_vss|vss",
+        "g": "mnt_g|s3_vddr|vddr",
+        "d": "ny",
+        "b": "g_vss|mph_g|s1_vss|s2_vss|s3_vss|s4_vss|vss"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.42,
+        "as_um2": 0.1764,
+        "ad_um2": 0.1764,
+        "ps_um": 1.68,
+        "pd_um": 1.68
+      }
+    },
+    {
+      "name": "$7",
+      "class": "nfet",
+      "nets": {
+        "s": "ny",
+        "g": "a|g_a|mnab_y|mpa_y|mpb_y|n1|n2|n3|n4|s4_y|y",
+        "d": "a|g_a|mnab_y|mpa_y|mpb_y|n1|n2|n3|n4|s4_y|y",
+        "b": "g_vss|mph_g|s1_vss|s2_vss|s3_vss|s4_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$8",
+      "class": "nfet",
+      "nets": {
+        "s": "g_vss|mph_g|s1_vss|s2_vss|s3_vss|s4_vss|vss",
+        "g": "mnt_g|s4_vddr|vddr",
+        "d": "ny",
+        "b": "g_vss|mph_g|s1_vss|s2_vss|s3_vss|s4_vss|vss"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.42,
+        "as_um2": 0.1764,
+        "ad_um2": 0.1764,
+        "ps_um": 1.68,
+        "pd_um": 1.68
+      }
+    },
+    {
+      "name": "$9",
+      "class": "nfet",
+      "nets": {
+        "s": "ny",
+        "g": "a|g_a|mnab_y|mpa_y|mpb_y|n1|n2|n3|n4|s4_y|y",
+        "d": "a|g_a|mnab_y|mpa_y|mpb_y|n1|n2|n3|n4|s4_y|y",
+        "b": "g_vss|mph_g|s1_vss|s2_vss|s3_vss|s4_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    }
+  ],
+  "nets": [
+    {
+      "name": "\\$4",
+      "pin": false,
+      "device_count": 2
+    },
+    {
+      "name": "a|g_a|mnab_y|mpa_y|mpb_y|n1|n2|n3|n4|s4_y|y",
+      "pin": true,
+      "device_count": 21
+    },
+    {
+      "name": "en",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "g_vddr|mnt_g|vddr",
+      "pin": true,
+      "device_count": 5
+    },
+    {
+      "name": "g_vss|mph_g|s1_vss|s2_vss|s3_vss|s4_vss|vss",
+      "pin": true,
+      "device_count": 21
+    },
+    {
+      "name": "mnt_g|s1_vddr|vddr",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "mnt_g|s2_vddr|vddr",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "mnt_g|s3_vddr|vddr",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "mnt_g|s4_vddr|vddr",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "mpa_py|mpb_py|mph_py|py",
+      "pin": true,
+      "device_count": 3
+    },
+    {
+      "name": "ny",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "ny",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "ny",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "ny",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "ny",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "py",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "py",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "py",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "py",
+      "pin": true,
+      "device_count": 2
+    }
+  ],
+  "warnings": [
+    "promoted 2 net(s) to top-level pins from label(s) found only below the top cell (inside instanced sub-cells): ny, py -- these are internal nodes once instanced; pass top_cell_pins_only (--top-cell-pins) to keep them internal (issue #291)",
+    "net 'a|g_a|mnab_y|mpa_y|mpb_y|n1|n2|n3|n4|s4_y|y' merges 11 distinct labels (a, g_a, mnab_y, mpa_y, mpb_y, n1, n2, n3, n4, s4_y, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'g_vddr|mnt_g|vddr' merges 3 distinct labels (g_vddr, mnt_g, vddr) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'g_vss|mph_g|s1_vss|s2_vss|s3_vss|s4_vss|vss' merges 7 distinct labels (g_vss, mph_g, s1_vss, s2_vss, s3_vss, s4_vss, vss) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'mnt_g|s1_vddr|vddr' merges 3 distinct labels (mnt_g, s1_vddr, vddr) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'mnt_g|s2_vddr|vddr' merges 3 distinct labels (mnt_g, s2_vddr, vddr) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'mnt_g|s3_vddr|vddr' merges 3 distinct labels (mnt_g, s3_vddr, vddr) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'mnt_g|s4_vddr|vddr' merges 3 distinct labels (mnt_g, s4_vddr, vddr) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'mpa_py|mpb_py|mph_py|py' merges 4 distinct labels (mpa_py, mpb_py, mph_py, py) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section."
+  ],
+  "black_box_regions": [],
+  "abstracted_cells": [],
+  "unmodelled_poly": [],
+  "merged_net_labels": [
+    {
+      "net": "a|g_a|mnab_y|mpa_y|mpb_y|n1|n2|n3|n4|s4_y|y",
+      "labels": [
+        "a",
+        "g_a",
+        "mnab_y",
+        "mpa_y",
+        "mpb_y",
+        "n1",
+        "n2",
+        "n3",
+        "n4",
+        "s4_y",
+        "y"
+      ]
+    },
+    {
+      "net": "g_vddr|mnt_g|vddr",
+      "labels": [
+        "g_vddr",
+        "mnt_g",
+        "vddr"
+      ]
+    },
+    {
+      "net": "g_vss|mph_g|s1_vss|s2_vss|s3_vss|s4_vss|vss",
+      "labels": [
+        "g_vss",
+        "mph_g",
+        "s1_vss",
+        "s2_vss",
+        "s3_vss",
+        "s4_vss",
+        "vss"
+      ]
+    },
+    {
+      "net": "mnt_g|s1_vddr|vddr",
+      "labels": [
+        "mnt_g",
+        "s1_vddr",
+        "vddr"
+      ]
+    },
+    {
+      "net": "mnt_g|s2_vddr|vddr",
+      "labels": [
+        "mnt_g",
+        "s2_vddr",
+        "vddr"
+      ]
+    },
+    {
+      "net": "mnt_g|s3_vddr|vddr",
+      "labels": [
+        "mnt_g",
+        "s3_vddr",
+        "vddr"
+      ]
+    },
+    {
+      "net": "mnt_g|s4_vddr|vddr",
+      "labels": [
+        "mnt_g",
+        "s4_vddr",
+        "vddr"
+      ]
+    },
+    {
+      "net": "mpa_py|mpb_py|mph_py|py",
+      "labels": [
+        "mpa_py",
+        "mpb_py",
+        "mph_py",
+        "py"
+      ]
+    }
+  ],
+  "voltage_domain_warnings": [],
+  "unbiased_pmos_body_nets": [],
+  "single_terminal_nets": [],
+  "dead_metal": [],
+  "matched_device_groups": [],
+  "pdk": null,
+  "provenance": {
+    "klt_version": "0.3.0",
+    "klayout_version": "0.30.12",
+    "pdk": null,
+    "deck": {
+      "name": "sky130",
+      "content_hash": "sha256:5afac7ab8561545859f5e2e74f4621c6ffc052756dc8fe344ea263398e96b240",
+      "released": false
+    },
+    "input": {
+      "content_hash": "sha256:e4561556f4b9ff00c4428c0e8d62227098c35a51fbd437879552d7a889e14b01"
+    }
+  },
+  "parasitics": null,
+  "spef_path": null
+}

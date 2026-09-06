@@ -422,8 +422,11 @@ that lands this document):
   them (`spec/decision-records/DR-0005-*.md`). Still outstanding for the
   brief's full sign-off bar: `xor2` routing (its 12-device placement is now
   DRC-clean, see `layout/xor2-placement-poc/README.md`, but its routing is a
-  genuine multi-net channel-routing problem not yet solved), the ring, the
-  array and the sampler as assembled layout — and therefore the *whole-block*
+  genuine multi-net channel-routing problem not yet solved); ring assembly
+  is started but not finished (`layout/ro_ring5-connectivity-poc/README.md`:
+  the five-gate placement and forward signal-chain routing compose cleanly,
+  but the placement pitch is not yet DRC-clean and rail busing is unsolved);
+  the array and the sampler as assembled layout — and therefore the *whole-block*
   post-layout PVT simulation the bar actually asks for, since with no
   assembled layout there is no inter-cell interconnect to extract. None of
   that is attempted in this document. Note also that
