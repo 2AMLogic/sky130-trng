@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Unit test for ``design/_pdk_search.py``'s shared PDK-resolution walk.
+"""Unit test for ``design/_pdk_search.py``'s shared PDK-resolution walk and
+open_pdks-commit parsing.
 
 Not part of any pytest suite -- there is none in this repository -- but a
 standalone script following ``design/test_netlist_erc.py``'s own "run it
@@ -15,6 +16,10 @@ guard/ERC path, not PDK resolution). Both now delegate the walk to
 ``search_pdk()``, so this test exercises the shared fallback chain once,
 pure Python, no xschem, no PDK install, no ngspice -- everything here runs
 in any environment.
+
+Also covers :func:`_pdk_search.read_open_pdks_commit` (added by issue #62),
+which both callers' ``Pdk.version`` / ``Pdk.installed_commit`` properties
+now delegate to instead of each parsing ``SOURCES`` independently.
 """
 
 from __future__ import annotations
@@ -26,7 +31,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import _pdk_search  # path insert above must run before this import resolves
-from _pdk_search import PdkSearchError, search_pdk
+from _pdk_search import PdkSearchError, read_open_pdks_commit, search_pdk
 from _test_check import Checker
 
 _checker = Checker()
@@ -273,6 +278,61 @@ def check_builtin_search_roots_is_the_shared_tuple() -> None:
     )
 
 
+def check_read_open_pdks_commit_finds_open_pdks_line() -> None:
+    """An ``open_pdks`` line's second field wins, even with other lines present."""
+    with tempfile.TemporaryDirectory() as tmp:
+        pdk_dir = Path(tmp) / "sky130A"
+        pdk_dir.mkdir()
+        (pdk_dir / "SOURCES").write_text(
+            "some_other_tool deadbeef https://example.com/other\n"
+            "open_pdks abc1234 https://example.com/open_pdks\n"
+        )
+        _check(
+            "read_open_pdks_commit: open_pdks line's second field wins",
+            read_open_pdks_commit(pdk_dir) == "abc1234",
+            f"got {read_open_pdks_commit(pdk_dir)!r}",
+        )
+
+
+def check_read_open_pdks_commit_falls_back_to_first_line() -> None:
+    """No ``open_pdks`` line, but SOURCES has content -> first line, not 'unknown'.
+
+    This is the fallback issue #62 unified: ``design/netlist.py``'s
+    ``version`` property already had it, ``sim/bin/corner-run.py``'s
+    ``installed_commit`` did not (silently returned ``"unknown"`` instead).
+    """
+    with tempfile.TemporaryDirectory() as tmp:
+        pdk_dir = Path(tmp) / "sky130A"
+        pdk_dir.mkdir()
+        (pdk_dir / "SOURCES").write_text("plain-commit-sha\nsecond line\n")
+        _check(
+            "read_open_pdks_commit: falls back to first line when no open_pdks line",
+            read_open_pdks_commit(pdk_dir) == "plain-commit-sha",
+            f"got {read_open_pdks_commit(pdk_dir)!r}",
+        )
+
+
+def check_read_open_pdks_commit_unknown_when_missing_or_empty() -> None:
+    """Missing or empty SOURCES -> 'unknown', not an exception."""
+    with tempfile.TemporaryDirectory() as tmp:
+        missing_dir = Path(tmp) / "no-sources"
+        missing_dir.mkdir()
+        _check(
+            "read_open_pdks_commit: missing SOURCES -> 'unknown'",
+            read_open_pdks_commit(missing_dir) == "unknown",
+            f"got {read_open_pdks_commit(missing_dir)!r}",
+        )
+
+        empty_dir = Path(tmp) / "empty-sources"
+        empty_dir.mkdir()
+        (empty_dir / "SOURCES").write_text("")
+        _check(
+            "read_open_pdks_commit: empty SOURCES -> 'unknown'",
+            read_open_pdks_commit(empty_dir) == "unknown",
+            f"got {read_open_pdks_commit(empty_dir)!r}",
+        )
+
+
 def main() -> int:
     check_search_roots_order()
     check_search_roots_skips_non_matching()
@@ -283,6 +343,9 @@ def main() -> int:
     check_pdk_root_falls_through_to_search_roots()
     check_full_fallback_order()
     check_builtin_search_roots_is_the_shared_tuple()
+    check_read_open_pdks_commit_finds_open_pdks_line()
+    check_read_open_pdks_commit_falls_back_to_first_line()
+    check_read_open_pdks_commit_unknown_when_missing_or_empty()
 
     return _checker.summary("design/test_pdk_search.py")
 

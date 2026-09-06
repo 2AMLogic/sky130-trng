@@ -100,7 +100,12 @@ from dataclasses import dataclass
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _pdk_search import BUILTIN_SEARCH_ROOTS, PdkSearchError, search_pdk  # noqa: E402
+from _pdk_search import (  # noqa: E402
+    BUILTIN_SEARCH_ROOTS,
+    PdkSearchError,
+    read_open_pdks_commit,
+    search_pdk,
+)
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DESIGN_DIR = REPO_ROOT / "design"
@@ -211,17 +216,13 @@ class Pdk:
 
     @property
     def version(self) -> str:
-        """open_pdks commit recorded by volare/ciel, or ``unknown``."""
-        sources = self.path / "SOURCES"
-        if sources.is_file():
-            for line in sources.read_text().splitlines():
-                parts = line.split()
-                if len(parts) >= 2 and parts[0] == "open_pdks":
-                    return parts[1]
-            text = sources.read_text().strip()
-            if text:
-                return text.splitlines()[0]
-        return "unknown"
+        """open_pdks commit recorded by volare/ciel, or ``unknown``.
+
+        Delegates to ``design/_pdk_search.py``'s
+        :func:`read_open_pdks_commit`, shared with
+        ``sim/bin/corner-run.py``'s ``Pdk.installed_commit`` (issue #62).
+        """
+        return read_open_pdks_commit(self.path)
 
 
 def _load_config() -> dict:
