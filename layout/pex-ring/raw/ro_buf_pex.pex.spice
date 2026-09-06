@@ -1,0 +1,46 @@
+* extracted by klt extract --deck sky130
+* parasitic model (--parasitics):
+* - capacitance: net-to-ground for every net's own (non-coupled) area/perimeter, plus net-to-net for the vertical-overlap coupling `coupling` describes below -- a coupled net pair gets a direct capacitor between their two hub nodes, not just capacitors to the deck's ground/substrate net
+* - coupling: vertical overlap (crossover) unconditionally -- where one net's conductor on an adjacent metal level sits directly over another *distinct* net's conductor, that overlap area is charged between the two nets instead of to ground (issue #760) -- plus lateral (same-layer, sidewall) coupling, but only for a net pair naming one of the caller's declared `--critical-net` nets (issue #976): facing-edge length within that layer's own minimum-spacing lookback is charged between the two nets, *additively* (not deducted from either net's substrate fringe term, unlike the vertical case -- a known simplification). Any same-layer pair with neither side named `--critical-net`, and fringe shielding in general, are still not modelled
+* - resistance: single lumped series resistance per net, distributed as a star across that net's device terminals (issue #592) -- not a per-segment, distributed RC ladder, *unless* `--distributed-rc` names this net via `--critical-net` (issue #977, Epic #709 Phase 2b): then the net's terminals are ordered along their approximate physical spread and its total R/C is broken into a chain of per-segment resistors (segment length proportional to inter-terminal distance) with a ground capacitor at each terminal node (proportional to its adjacent segment length/2), instead of one star hub -- still an approximation (terminal position is a device-placement proxy, not true per-segment routing geometry), but a strictly finer-grained one than the single-hub star
+* - frequency: quasi-static -- one frequency-independent R and C per net; no skin effect, no distributed transmission-line behavior
+
+* cell ro_buf
+* pin a
+* pin vdd
+* pin vss
+* pin y
+.SUBCKT ro_buf a vdd vss y
+* device instance $1 r0 *1 0.545,0.21 nfet
+X$1 y__t0 a__t0 vss__t0 vss__t1 sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974
++ AD=0.1974 PS=1.78 PD=1.78
+* device instance $2 r0 *1 0.545,3.53 pfet
+X$2 y__t1 a__t1 vdd__t0 vdd__t1 sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948
++ AD=0.3948 PS=2.62 PD=2.62
+* device instance a_t0 r0 *1 0,0 
+Ra_t0 a__t0 a 228.9579
+* device instance a_t1 r0 *1 0,0 
+Ra_t1 a__t1 a 228.9579
+* device instance a r0 *1 0,0 
+Ca a vsubs 5.75883e-16
+* device instance vdd_t0 r0 *1 0,0 
+Rvdd_t0 vdd__t0 vdd 98.9335
+* device instance vdd_t1 r0 *1 0,0 
+Rvdd_t1 vdd__t1 vdd 98.9335
+* device instance vdd r0 *1 0,0 
+Cvdd vdd vsubs 6.69937e-16
+* device instance vss_t0 r0 *1 0,0 
+Rvss_t0 vss__t0 vss 95.08305
+* device instance vss_t1 r0 *1 0,0 
+Rvss_t1 vss__t1 vss 95.08305
+* device instance vss r0 *1 0,0 
+Cvss vss vsubs 6.37991e-16
+* device instance y_t0 r0 *1 0,0 
+Ry_t0 y__t0 y 207.64565
+* device instance y_t1 r0 *1 0,0 
+Ry_t1 y__t1 y 207.64565
+* device instance y r0 *1 0,0 
+Cy y vsubs 6.09871e-16
+* device instance vsubs_dctie r0 *1 0,0 
+Rvsubs_dctie vsubs 0 1e+12
+.ENDS ro_buf

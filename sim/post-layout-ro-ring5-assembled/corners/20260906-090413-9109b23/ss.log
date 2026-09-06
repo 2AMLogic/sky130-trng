@@ -1,0 +1,675 @@
+|* Post-layout ro_ring5, ASSEMBLED: the four-ring wstv frequency ladder from
+|* ONE flat `klt extract --parasitics` of each ring's own composed, DRC-clean
+|* and LVS-clean GDS (layout/ro_ring5*/ro_ring5*.gds) -- real inter-gate metal
+|* routing included, not the ideal wires sim/post-layout-ro-ring5/'s own
+|* leaf-cell composition (layout/pex/ro_ring5_pex.spice: separate ro_nand2/
+|* ro_stage extractions, wired together by the testbench itself) assumes
+|* between gates.
+|*
+|* Purpose (issue #22, layout/README.md's "Newly possible, not yet done" note
+|* under step 5). Every ring-level number recorded so far is either
+|* pre-layout (design/*.spice, no physical interconnect at all) or a
+|* leaf-cell post-layout composition (layout/pex/ro_ring5_pex.spice, five
+|* separately-extracted cells wired by IDEAL testbench nets). Now that
+|* layout/ro_ring5*/ exist as single composed, DRC/LVS-clean GDS files with
+|* the inter-gate n1-n4/ro routing and vddr/vss rail busing actually drawn
+|* (issue #22, PR #51), extracting THAT GDS directly for the first time
+|* includes real inter-gate wiring in the ring's own period/swing/current
+|* numbers -- a strictly better answer than the leaf-cell composition, per
+|* layout/pex/README.md's own stated limitation.
+|*
+|* This deck is a two-way, same-corner comparison (assembled post-layout vs.
+|* pre-layout control), NOT a three-way rerun against the leaf-cell
+|* composition -- sim/bin/corner-run.py substitutes exactly one /Users/rwalters/GitHub/sky130-trng/.loom/worktrees/issue-22/layout/pex-ring/ro_ring5_assembled_pex.spice
+|* token, and adding a second templated library path is a runner change out
+|* of this record's own scope. A reader wanting "how much did drawing the
+|* real inter-gate wires cost, beyond the leaf composition's ideal-wire
+|* assumption" compares THIS record's t_asm_* figures against
+|* sim/post-layout-ro-ring5/'s own t_pex_* figures directly (both are
+|* -40.0/1.98/ss-matched PVT points, just not the same ngspice
+|* process) -- see sim/post-layout-ro-ring5-assembled/README.md.
+|*
+|* Topology. Four rings, each now a SINGLE subcircuit call (the composed GDS
+|* IS design/xschem/ro_ring5.sch's own hierarchy, already wired) on its own
+|* independent supply so each ring's own supply current stays separately
+|* measurable:
+|*
+|*   r1..r4  POST-LAYOUT ASSEMBLED, wstv = 0.42 / 0.44 / 0.46 / 0.48 um --
+|*           one physical, flat-extracted cell per ring, from
+|*           layout/ro_ring5[_wstv0p4x]/ro_ring5*.gds via
+|*           layout/pex-ring/pex.json + layout/bin/pex-netlist.py (shared,
+|*           unmodified, with sim/post-layout-ro-ring5's own leaf-cell
+|*           descriptor).
+|*   q1..q4  PRE-LAYOUT control, the identical ladder from
+|*           design/ro_array_core.spice's parameterized .subckt ro_ring5.
+|*
+|* Every ring drives its own output buffer -- ro_buf_pex (this library's own
+|* copy, see layout/pex-ring/pex.json's _comment) for r1..r4, pre-layout
+|* ro_buf for q1..q4 -- on one block supply per side, matching
+|* sim/post-layout-ro-ring5's own buffering discipline (buffering ALL four
+|* rings, not just one, is what makes the four periods a comparable ladder
+|* rather than a mix of loaded/unloaded numbers -- see that slug's entry in
+|* sim/README.md for the regression this avoids).
+|*
+|* The substrate tie. layout/pex-ring/ro_ring5_assembled_pex.spice declares
+|* the extractor's substrate return node `vsubs` .global, same as
+|* layout/pex/ro_ring5_pex.spice (klayout-tools#1503). This deck ties it HARD
+|* to 0, the same physically-motivated choice sim/post-layout-ro-ring5's own
+|* primary deck uses (every composed cell's own psub guard ring is tied to
+|* vss, and vss is 0 here) -- inter-ring coupling through a floating
+|* substrate is that slug's own separate question, not re-litigated here.
+|*
+|* PVT: the same four (temp, supply) points sim/post-layout-ro-ring5/ uses:
+|*   -40 degC / 1.62 V   the measured entropy-binding corner (ss)
+|*    27 degC / 1.80 V   nominal
+|*   125 degC / 1.98 V   the worst five-stage ring swing in #10's grid
+|*   -40 degC / 1.98 V   the fastest ring measured anywhere in that grid
+|*
+|* tstop/timestep match sim/post-layout-ro-ring5's own primary deck (160 ns,
+|* 5p default 5p) -- the assembled ring's total R/C
+|* (layout/pex-ring/pex.json's own build log: ~10.3-10.4 kOhm total series R,
+|* ~42.2-42.3 fF total ground C per ring) is the same order of magnitude as
+|* the leaf-cell composition's own per-cell totals summed, so no separate
+|* re-derivation of the window was needed; confirmed by inspection of the
+|* first run below rather than assumed.
+|*
+|* This file is a TEMPLATE: sim/bin/corner-run.py substitutes /Users/rwalters/.volare/volare/sky130/versions/c6d73a35f524070e85faff4a6a9eef49553ebc2b/sky130A/libs.tech/combined/sky130.lib.spice,
+|* ss, /Users/rwalters/GitHub/sky130-trng/.loom/worktrees/issue-22/design/ro_array_core.spice, /Users/rwalters/GitHub/sky130-trng/.loom/worktrees/issue-22/layout/pex-ring/ro_ring5_assembled_pex.spice, -40.0, 1.98 and 5p. As
+|* committed it is not a runnable deck. Invoke with
+|* `--ro-ring5 design/ro_array_core.spice` (for its ro_buf subckt, alongside
+|* the ro_ring5 subckt design/ro_ring5.spice would also provide) and
+|* `--pex-lib layout/pex-ring/ro_ring5_assembled_pex.spice`.
+|
+|.option scale=1u
+|.lib "/Users/rwalters/.volare/volare/sky130/versions/c6d73a35f524070e85faff4a6a9eef49553ebc2b/sky130A/libs.tech/combined/sky130.lib.spice" ss
+|
+|* pre-layout subcircuit library (ro_ring5 / ro_nand2 / ro_stage / ro_buf)
+|.include "/Users/rwalters/GitHub/sky130-trng/.loom/worktrees/issue-22/design/ro_array_core.spice"
+|* post-layout ASSEMBLED subcircuit library (ro_ring5_assembled_pex_* +
+|* its own ro_buf_pex), generated from layout/ro_ring5*/'s composed GDS
+|.include "/Users/rwalters/GitHub/sky130-trng/.loom/worktrees/issue-22/layout/pex-ring/ro_ring5_assembled_pex.spice"
+|
+|.temp -40.0
+|
+|* --- substrate return node: hard tie (see header) ----------------------
+|Vsub vsubs 0 dc 0
+|
+|* --- post-layout ASSEMBLED rings, one flat-extracted cell per wstv -----
+|Vddrr1 vddrr1 0 dc 1.98
+|Venr1 enr1 0 dc 1.98
+|xr1 enr1 r1o vddrr1 0 ro_ring5_assembled_pex_wstv0p42
+|
+|Vddrr2 vddrr2 0 dc 1.98
+|Venr2 enr2 0 dc 1.98
+|xr2 enr2 r2o vddrr2 0 ro_ring5_assembled_pex_wstv0p44
+|
+|Vddrr3 vddrr3 0 dc 1.98
+|Venr3 enr3 0 dc 1.98
+|xr3 enr3 r3o vddrr3 0 ro_ring5_assembled_pex_wstv0p46
+|
+|Vddrr4 vddrr4 0 dc 1.98
+|Venr4 enr4 0 dc 1.98
+|xr4 enr4 r4o vddrr4 0 ro_ring5_assembled_pex_wstv0p48
+|
+|* --- pre-layout control rings, identical topology, single-call subckt --
+|Vddrq1 vddrq1 0 dc 1.98
+|Venq1 enq1 0 dc 1.98
+|xq1 enq1 q1o vddrq1 0 ro_ring5 wstv=0.42 lstv=2 cld=0.5f
+|
+|Vddrq2 vddrq2 0 dc 1.98
+|Venq2 enq2 0 dc 1.98
+|xq2 enq2 q2o vddrq2 0 ro_ring5 wstv=0.44 lstv=2 cld=0.5f
+|
+|Vddrq3 vddrq3 0 dc 1.98
+|Venq3 enq3 0 dc 1.98
+|xq3 enq3 q3o vddrq3 0 ro_ring5 wstv=0.46 lstv=2 cld=0.5f
+|
+|Vddrq4 vddrq4 0 dc 1.98
+|Venq4 enq4 0 dc 1.98
+|xq4 enq4 q4o vddrq4 0 ro_ring5 wstv=0.48 lstv=2 cld=0.5f
+|
+|* --- output buffers: one per ring, on a block supply per side ----------
+|Vddr vddr 0 dc 1.98
+|xbr1 r1o r1ob vddr 0 ro_buf_pex
+|xbr2 r2o r2ob vddr 0 ro_buf_pex
+|xbr3 r3o r3ob vddr 0 ro_buf_pex
+|xbr4 r4o r4ob vddr 0 ro_buf_pex
+|Vddq vddq 0 dc 1.98
+|xbq1 q1o q1ob vddq 0 ro_buf
+|xbq2 q2o q2ob vddq 0 ro_buf
+|xbq3 q3o q3ob vddq 0 ro_buf
+|xbq4 q4o q4ob vddq 0 ro_buf
+|
+|.ic v(r1o)=0
+|.ic v(r2o)=0
+|.ic v(r3o)=0
+|.ic v(r4o)=0
+|.ic v(q1o)=0
+|.ic v(q2o)=0
+|.ic v(q3o)=0
+|.ic v(q4o)=0
+|
+|* Limit the saved transient trace set to exactly what the .meas statements
+|* below need. Without this, ngspice keeps a full-resolution voltage history
+|* for every node in the deck -- including every per-terminal parasitic-star
+|* leg node the flat ring extraction introduces beyond the leaf-cell
+|* composition's own intra-cell-only nodes (see this file's header) -- and at
+|* the ff corner's shorter, stiffer timesteps that history exhausted process
+|* memory outright (`Error: memory required ... is more than memory
+|* available`) rather than merely running slowly. None of those internal
+|* leg voltages are read by any .meas below.
+|.save v(r1o) v(r2o) v(r3o) v(r4o) v(r1ob)
+|.save v(q1o) v(q2o) v(q3o) v(q4o) v(q1ob)
+|.save i(Vddrr1) i(Vddrr4) i(Vddrq1) i(Vddrq4)
+|
+|.tran 5p 160n uic
+|
+|.control
+|run
+|
+|* Period of every ring, from 8 whole periods with the first two rising
+|* edges discarded as start-up -- the same estimator
+|* sim/post-layout-ro-ring5/'s own primary deck uses, so the two campaigns'
+|* periods are directly comparable across their shared PVT grid.
+|meas tran tr1a when v(r1o)=0.5*1.98 rise=3
+|meas tran tr1b when v(r1o)=0.5*1.98 rise=11
+|let t_asm_wstv0p42 = (tr1b - tr1a)/8
+|meas tran tr2a when v(r2o)=0.5*1.98 rise=3
+|meas tran tr2b when v(r2o)=0.5*1.98 rise=11
+|let t_asm_wstv0p44 = (tr2b - tr2a)/8
+|meas tran tr3a when v(r3o)=0.5*1.98 rise=3
+|meas tran tr3b when v(r3o)=0.5*1.98 rise=11
+|let t_asm_wstv0p46 = (tr3b - tr3a)/8
+|meas tran tr4a when v(r4o)=0.5*1.98 rise=3
+|meas tran tr4b when v(r4o)=0.5*1.98 rise=11
+|let t_asm_wstv0p48 = (tr4b - tr4a)/8
+|
+|meas tran tq1a when v(q1o)=0.5*1.98 rise=3
+|meas tran tq1b when v(q1o)=0.5*1.98 rise=11
+|let t_pre_wstv0p42 = (tq1b - tq1a)/8
+|meas tran tq2a when v(q2o)=0.5*1.98 rise=3
+|meas tran tq2b when v(q2o)=0.5*1.98 rise=11
+|let t_pre_wstv0p44 = (tq2b - tq2a)/8
+|meas tran tq3a when v(q3o)=0.5*1.98 rise=3
+|meas tran tq3b when v(q3o)=0.5*1.98 rise=11
+|let t_pre_wstv0p46 = (tq3b - tq3a)/8
+|meas tran tq4a when v(q4o)=0.5*1.98 rise=3
+|meas tran tq4b when v(q4o)=0.5*1.98 rise=11
+|let t_pre_wstv0p48 = (tq4b - tq4a)/8
+|
+|* The headline ratio: same ring, same corner, real inter-gate wiring vs.
+|* pre-layout (no interconnect at all).
+|let slowdown_wstv0p42 = t_asm_wstv0p42 / t_pre_wstv0p42
+|let slowdown_wstv0p44 = t_asm_wstv0p44 / t_pre_wstv0p44
+|let slowdown_wstv0p46 = t_asm_wstv0p46 / t_pre_wstv0p46
+|let slowdown_wstv0p48 = t_asm_wstv0p48 / t_pre_wstv0p48
+|
+|* Ladder span (DR-0003 section 8's skew_span, re-measured with real
+|* inter-gate wiring). Stated as slowest/fastest ring under the ladder's
+|* expected monotone ordering; the four periods above are printed
+|* individually so a reader can confirm that ordering rather than take it on
+|* trust.
+|let skew_span_asm = t_asm_wstv0p42 / t_asm_wstv0p48
+|let skew_span_pre = t_pre_wstv0p42 / t_pre_wstv0p48
+|
+|* Swing, ring node and buffered output, post-layout (assembled) vs.
+|* pre-layout. Steady-state window: 20 ns of start-up discarded.
+|meas tran vmaxr MAX v(r1o) from=20n to=160n
+|meas tran vminr MIN v(r1o) from=20n to=160n
+|meas tran vmaxrb MAX v(r1ob) from=20n to=160n
+|meas tran vminrb MIN v(r1ob) from=20n to=160n
+|meas tran vmaxq MAX v(q1o) from=20n to=160n
+|meas tran vminq MIN v(q1o) from=20n to=160n
+|meas tran vmaxqb MAX v(q1ob) from=20n to=160n
+|meas tran vminqb MIN v(q1ob) from=20n to=160n
+|let swing_frac_asm_ring = (vmaxr - vminr) / 1.98
+|let swing_frac_asm_buf = (vmaxrb - vminrb) / 1.98
+|let swing_frac_pre_ring = (vmaxq - vminq) / 1.98
+|let swing_frac_pre_buf = (vmaxqb - vminqb) / 1.98
+|
+|* Per-ring supply current, running. i(Vsrc) is negative for current
+|* delivered by the source, so the printed figures are sign-flipped to read
+|* as consumed current.
+|meas tran ir1raw AVG i(Vddrr1) from=20n to=160n
+|meas tran ir4raw AVG i(Vddrr4) from=20n to=160n
+|meas tran iq1raw AVG i(Vddrq1) from=20n to=160n
+|meas tran iq4raw AVG i(Vddrq4) from=20n to=160n
+|let i_asm_wstv0p42 = -ir1raw
+|let i_asm_wstv0p48 = -ir4raw
+|let i_pre_wstv0p42 = -iq1raw
+|let i_pre_wstv0p48 = -iq4raw
+|
+|print t_asm_wstv0p42
+|print t_asm_wstv0p44
+|print t_asm_wstv0p46
+|print t_asm_wstv0p48
+|print t_pre_wstv0p42
+|print t_pre_wstv0p44
+|print t_pre_wstv0p46
+|print t_pre_wstv0p48
+|print slowdown_wstv0p42
+|print slowdown_wstv0p44
+|print slowdown_wstv0p46
+|print slowdown_wstv0p48
+|print skew_span_asm
+|print skew_span_pre
+|print swing_frac_asm_ring
+|print swing_frac_asm_buf
+|print swing_frac_pre_ring
+|print swing_frac_pre_buf
+|print i_asm_wstv0p42
+|print i_asm_wstv0p48
+|print i_pre_wstv0p42
+|print i_pre_wstv0p48
+|.endc
+|.end
+|
+
+----- stdout -----
+
+Note: Compatibility modes selected: hs a
+
+
+Circuit: * post-layout ro_ring5, assembled: the four-ring wstv frequency ladder from
+
+option SCALE: Scale is set to 1e-06 for instance and model parameters
+option SCALE: Scale is set to 1e-06 for instance and model parameters
+option SCALE: Scale is set to 1e-06 for instance and model parameters
+option SCALE: Scale is set to 1e-06 for instance and model parameters
+option SCALE: Scale is set to 1e-06 for instance and model parameters
+Doing analysis at TEMP = -40.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+Operating point simulation skipped by 'uic',
+  now using transient initial conditions.
+ Reference value :  5.00000e-14
+ Reference value :  8.76525e-10
+ Reference value :  1.94653e-09
+ Reference value :  2.89653e-09
+ Reference value :  3.87653e-09
+ Reference value :  4.91153e-09
+ Reference value :  5.87653e-09
+ Reference value :  6.86153e-09
+ Reference value :  7.78653e-09
+ Reference value :  8.74153e-09
+ Reference value :  9.65153e-09
+ Reference value :  1.05815e-08
+ Reference value :  1.16215e-08
+ Reference value :  1.25815e-08
+ Reference value :  1.36865e-08
+ Reference value :  1.48115e-08
+ Reference value :  1.58315e-08
+ Reference value :  1.68465e-08
+ Reference value :  1.80215e-08
+ Reference value :  1.91265e-08
+ Reference value :  2.02215e-08
+ Reference value :  2.12915e-08
+ Reference value :  2.23615e-08
+ Reference value :  2.34415e-08
+ Reference value :  2.44615e-08
+ Reference value :  2.54615e-08
+ Reference value :  2.64865e-08
+ Reference value :  2.75065e-08
+ Reference value :  2.85265e-08
+ Reference value :  2.95815e-08
+ Reference value :  3.06065e-08
+ Reference value :  3.16465e-08
+ Reference value :  3.26465e-08
+ Reference value :  3.37015e-08
+ Reference value :  3.47515e-08
+ Reference value :  3.58365e-08
+ Reference value :  3.69315e-08
+ Reference value :  3.79715e-08
+ Reference value :  3.89965e-08
+ Reference value :  3.99765e-08
+ Reference value :  4.10015e-08
+ Reference value :  4.20315e-08
+ Reference value :  4.30165e-08
+ Reference value :  4.39665e-08
+ Reference value :  4.50115e-08
+ Reference value :  4.59915e-08
+ Reference value :  4.70015e-08
+ Reference value :  4.79915e-08
+ Reference value :  4.89365e-08
+ Reference value :  4.99715e-08
+ Reference value :  5.08715e-08
+ Reference value :  5.18715e-08
+ Reference value :  5.29565e-08
+ Reference value :  5.39565e-08
+ Reference value :  5.49715e-08
+ Reference value :  5.59265e-08
+ Reference value :  5.71015e-08
+ Reference value :  5.81515e-08
+ Reference value :  5.92165e-08
+ Reference value :  6.01315e-08
+ Reference value :  6.11565e-08
+ Reference value :  6.22115e-08
+ Reference value :  6.32515e-08
+ Reference value :  6.42915e-08
+ Reference value :  6.53415e-08
+ Reference value :  6.63615e-08
+ Reference value :  6.74315e-08
+ Reference value :  6.84865e-08
+ Reference value :  6.95615e-08
+ Reference value :  7.05615e-08
+ Reference value :  7.16165e-08
+ Reference value :  7.25815e-08
+ Reference value :  7.35615e-08
+ Reference value :  7.46965e-08
+ Reference value :  7.56815e-08
+ Reference value :  7.66765e-08
+ Reference value :  7.77265e-08
+ Reference value :  7.87565e-08
+ Reference value :  7.98065e-08
+ Reference value :  8.09365e-08
+ Reference value :  8.19915e-08
+ Reference value :  8.31015e-08
+ Reference value :  8.41965e-08
+ Reference value :  8.54515e-08
+ Reference value :  8.65115e-08
+ Reference value :  8.75715e-08
+ Reference value :  8.86115e-08
+ Reference value :  8.96765e-08
+ Reference value :  9.07015e-08
+ Reference value :  9.17765e-08
+ Reference value :  9.28715e-08
+ Reference value :  9.39265e-08
+ Reference value :  9.49215e-08
+ Reference value :  9.59915e-08
+ Reference value :  9.70365e-08
+ Reference value :  9.80715e-08
+ Reference value :  9.91465e-08
+ Reference value :  1.00272e-07
+ Reference value :  1.01212e-07
+ Reference value :  1.02217e-07
+ Reference value :  1.03137e-07
+ Reference value :  1.04092e-07
+ Reference value :  1.05017e-07
+ Reference value :  1.05952e-07
+ Reference value :  1.06937e-07
+ Reference value :  1.07817e-07
+ Reference value :  1.08827e-07
+ Reference value :  1.09787e-07
+ Reference value :  1.10757e-07
+ Reference value :  1.11757e-07
+ Reference value :  1.12647e-07
+ Reference value :  1.13577e-07
+ Reference value :  1.14457e-07
+ Reference value :  1.15512e-07
+ Reference value :  1.17137e-07
+ Reference value :  1.18822e-07
+ Reference value :  1.20477e-07
+ Reference value :  1.21757e-07
+ Reference value :  1.22862e-07
+ Reference value :  1.23777e-07
+ Reference value :  1.24787e-07
+ Reference value :  1.25722e-07
+ Reference value :  1.26637e-07
+ Reference value :  1.27587e-07
+ Reference value :  1.28537e-07
+ Reference value :  1.29567e-07
+ Reference value :  1.30597e-07
+ Reference value :  1.31632e-07
+ Reference value :  1.32617e-07
+ Reference value :  1.33562e-07
+ Reference value :  1.34497e-07
+ Reference value :  1.35447e-07
+ Reference value :  1.36422e-07
+ Reference value :  1.37422e-07
+ Reference value :  1.38482e-07
+ Reference value :  1.39482e-07
+ Reference value :  1.40502e-07
+ Reference value :  1.41542e-07
+ Reference value :  1.42507e-07
+ Reference value :  1.43482e-07
+ Reference value :  1.44482e-07
+ Reference value :  1.45472e-07
+ Reference value :  1.46592e-07
+ Reference value :  1.47582e-07
+ Reference value :  1.48592e-07
+ Reference value :  1.49627e-07
+ Reference value :  1.50632e-07
+ Reference value :  1.51627e-07
+ Reference value :  1.52602e-07
+ Reference value :  1.53637e-07
+ Reference value :  1.54707e-07
+ Reference value :  1.55702e-07
+ Reference value :  1.56737e-07
+ Reference value :  1.57652e-07
+ Reference value :  1.58647e-07
+ Reference value :  1.59657e-07
+No. of Data Rows : 32018
+tr1a                =  1.04052e-08
+tr1b                =  5.13119e-08
+tr2a                =  1.01537e-08
+tr2b                =  4.99549e-08
+tr3a                =  9.87869e-09
+tr3b                =  4.84885e-08
+tr4a                =  9.59760e-09
+tr4b                =  4.69987e-08
+tq1a                =  2.12223e-09
+tq1b                =  2.10312e-08
+tq2a                =  2.05492e-09
+tq2b                =  2.02342e-08
+tq3a                =  1.98695e-09
+tq3b                =  1.94308e-08
+tq4a                =  1.92101e-09
+tq4b                =  1.86495e-08
+vmaxr               =  1.80135e+00 at=  1.29637e-07
+vminr               =  -1.72364e-02 at=  2.46465e-08
+vmaxrb              =  1.98548e+00 at=  1.42447e-07
+vminrb              =  -3.64637e-03 at=  2.26765e-08
+vmaxq               =  1.73700e+00 at=  4.54315e-08
+vminq               =  -2.93043e-02 at=  1.34057e-07
+vmaxqb              =  1.99751e+00 at=  5.14265e-08
+vminqb              =  -8.17258e-03 at=  3.37865e-08
+ir1raw              =  -1.24540e-05 from=  2.00000e-08 to=  1.60000e-07
+ir4raw              =  -1.34346e-05 from=  2.00000e-08 to=  1.60000e-07
+iq1raw              =  -1.40329e-05 from=  2.00000e-08 to=  1.60000e-07
+iq4raw              =  -1.54077e-05 from=  2.00000e-08 to=  1.60000e-07
+t_asm_wstv0p42 = 5.113343e-09
+t_asm_wstv0p44 = 4.975160e-09
+t_asm_wstv0p46 = 4.826222e-09
+t_asm_wstv0p48 = 4.675137e-09
+t_pre_wstv0p42 = 2.363616e-09
+t_pre_wstv0p44 = 2.272415e-09
+t_pre_wstv0p46 = 2.180483e-09
+t_pre_wstv0p48 = 2.091063e-09
+slowdown_wstv0p42 = 2.163356e+00
+slowdown_wstv0p44 = 2.189372e+00
+slowdown_wstv0p46 = 2.213373e+00
+slowdown_wstv0p48 = 2.235771e+00
+skew_span_asm = 1.093731e+00
+skew_span_pre = 1.130342e+00
+swing_frac_asm_ring = 9.184785e-01
+swing_frac_asm_buf = 1.004611e+00
+swing_frac_pre_ring = 8.920744e-01
+swing_frac_pre_buf = 1.012969e+00
+i_asm_wstv0p42 = 1.245402e-05
+i_asm_wstv0p48 = 1.343462e-05
+i_pre_wstv0p42 = 1.403291e-05
+i_pre_wstv0p48 = 1.540771e-05
+Note: Simulation executed from .control section 
+
+----- stderr -----
+
+Checking parameters for BSIM 4.5 model xbq4.xmn:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model xbq3.xmn:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model xbq2.xmn:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model xbq1.xmn:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model xbr4.xpex.xn1:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model xbr3.xpex.xn1:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model xbr2.xpex.xn1:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model xbr1.xpex.xn1:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model xq4.x4.xmn:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model xq4.x4.xmph:pshort_model.44
+Warning: Eta0 = -0.00221468 is negative.
+
+Checking parameters for BSIM 4.5 model xq4.x3.xmn:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model xq4.x3.xmph:pshort_model.44
+Warning: Eta0 = -0.00221468 is negative.
+
+Checking parameters for BSIM 4.5 model xq4.x2.xmn:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model xq4.x2.xmph:pshort_model.44
+Warning: Eta0 = -0.00221468 is negative.
+
+Checking parameters for BSIM 4.5 model xq4.x1.xmn:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model xq4.x1.xmph:pshort_model.44
+Warning: Eta0 = -0.00221468 is negative.
+
+Checking parameters for BSIM 4.5 model xq4.xg.xmph:pshort_model.44
+Warning: Eta0 = -0.00221468 is negative.
+
+Checking parameters for BSIM 4.5 model xq3.x4.xmn:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model xq3.x4.xmph:pshort_model.44
+Warning: Eta0 = -0.00221468 is negative.
+
+Checking parameters for BSIM 4.5 model xq3.x3.xmn:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model xq3.x3.xmph:pshort_model.44
+Warning: Eta0 = -0.00221468 is negative.
+
+Checking parameters for BSIM 4.5 model xq3.x2.xmn:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model xq3.x2.xmph:pshort_model.44
+Warning: Eta0 = -0.00221468 is negative.
+
+Checking parameters for BSIM 4.5 model xq3.x1.xmn:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model xq3.x1.xmph:pshort_model.44
+Warning: Eta0 = -0.00221468 is negative.
+
+Checking parameters for BSIM 4.5 model xq3.xg.xmph:pshort_model.44
+Warning: Eta0 = -0.00221468 is negative.
+
+Checking parameters for BSIM 4.5 model xq2.x4.xmn:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model xq2.x4.xmph:pshort_model.44
+Warning: Eta0 = -0.00221468 is negative.
+
+Checking parameters for BSIM 4.5 model xq2.x3.xmn:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model xq2.x3.xmph:pshort_model.44
+Warning: Eta0 = -0.00221468 is negative.
+
+Checking parameters for BSIM 4.5 model xq2.x2.xmn:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model xq2.x2.xmph:pshort_model.44
+Warning: Eta0 = -0.00221468 is negative.
+
+Checking parameters for BSIM 4.5 model xq2.x1.xmn:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model xq2.x1.xmph:pshort_model.44
+Warning: Eta0 = -0.00221468 is negative.
+
+Checking parameters for BSIM 4.5 model xq2.xg.xmph:pshort_model.44
+Warning: Eta0 = -0.00221468 is negative.
+
+Checking parameters for BSIM 4.5 model xq1.x4.xmn:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model xq1.x4.xmph:pshort_model.44
+Warning: Eta0 = -0.00221468 is negative.
+
+Checking parameters for BSIM 4.5 model xq1.x3.xmn:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model xq1.x3.xmph:pshort_model.44
+Warning: Eta0 = -0.00221468 is negative.
+
+Checking parameters for BSIM 4.5 model xq1.x2.xmn:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model xq1.x2.xmph:pshort_model.44
+Warning: Eta0 = -0.00221468 is negative.
+
+Checking parameters for BSIM 4.5 model xq1.x1.xmn:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model xq1.x1.xmph:pshort_model.44
+Warning: Eta0 = -0.00221468 is negative.
+
+Checking parameters for BSIM 4.5 model xq1.xg.xmph:pshort_model.44
+Warning: Eta0 = -0.00221468 is negative.
+
+Checking parameters for BSIM 4.5 model xr4.xpex.xn4:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model xr4.xpex.xn3:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model xr4.xpex.xn2:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model xr4.xpex.xn1:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model xr3.xpex.xn4:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model xr3.xpex.xn3:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model xr3.xpex.xn2:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model xr3.xpex.xn1:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model xr2.xpex.xn4:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model xr2.xpex.xn3:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model xr2.xpex.xn2:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model xr2.xpex.xn1:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model xr1.xpex.xn9:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model xr1.xpex.xn7:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model xr1.xpex.xn5:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model xr1.xpex.xn3:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+

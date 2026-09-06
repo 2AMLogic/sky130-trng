@@ -289,14 +289,22 @@ DR-0003 surfaces and does not resolve on its own authority.
   parasitics cost **1.378×–1.479× in ring period**, raise ring-node swing
   1–4%, and lower per-ring supply current 2–6%
   (`spec/decision-records/DR-0005-*.md`).
-  Still open: `xor2` routing (its 12-device placement is now DRC-clean —
-  see `layout/xor2-placement-poc/README.md` — but its four-signal fan-out
-  is a genuine multi-net channel-routing problem, not yet solved); no
-  `ro_array_core` and no sampler as *assembled* layout, so there is still no
-  inter-ring or inter-cell interconnect to extract, and no whole-block
-  post-layout PVT re-verification. The four ring cells themselves are also
-  not yet parasitic-extracted — `layout/pex/` still covers the nine leaf
-  cells only, so the post-layout numbers above are still intra-cell
-  parasitics with ideal wires between gates. See `layout/README.md` for the full status and the
-  follow-up issue (#27) it tracks. (`sim/` is no longer empty either — see
-  `sim/README.md`.)
+  The four `ro_ring5` cells themselves are now **also** parasitic-extracted
+  and simulated, this time as whole composed rings rather than leaf-cell
+  compositions: [`layout/pex-ring/`](../layout/pex-ring/README.md) extracts
+  each ring's own GDS directly (real inter-gate `n1`-`n4`/`ro` routing and
+  `vddr`/`vss` rail busing included), and
+  `sim/post-layout-ro-ring5-assembled/` re-runs the same period/swing/current
+  measurement from it. Real inter-gate wiring costs the ring **1.5045×–1.6546×**
+  more slowdown on top of intra-cell parasitics alone (period vs. pre-layout
+  overall: **2.0819×–2.3666×**), and the `wstv` frequency ladder still
+  survives. Still open: `xor2` routing (its 12-device placement is now
+  DRC-clean — see `layout/xor2-placement-poc/README.md` — but its
+  four-signal fan-out is a genuine multi-net channel-routing problem, not
+  yet solved); no `ro_array_core` and no sampler as *assembled* layout, so
+  there is still no *inter-ring* interconnect (supply distribution, XOR
+  tree routing, buffer fan-in) to extract, and no whole-block post-layout
+  PVT re-verification — every number above is one ring's own real
+  interconnect with ideal wires to its neighbours. See `layout/README.md`
+  for the full status and the follow-up issue (#27) it tracks. (`sim/` is no
+  longer empty either — see `sim/README.md`.)

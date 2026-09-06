@@ -4,12 +4,23 @@ Physical layout evidence for the sky130-trng entropy source, verified with
 `klayout-tools` (`klt`) against the sky130 open PDK. See `layout/pdk.json`
 for the PDK/tool pin.
 
-**Status (issue #22/#27, this increment): all four `ro_ring5` rings are now
-composed, DRC-clean and LVS-clean — the first multi-gate cells in this
-repository to reach that bar — bringing the total to thirteen verified
-composed cells. `ro_array_core` (the four rings + `ro_buf` fan-out + the
-`xor2` combining tree) and `sampler_core` are still open, so this is still
-not a DRC/LVS-clean *block*.**
+**Status (issue #22/#27, this increment): the four composed `ro_ring5` rings
+now have their own ring-level post-layout PVT evidence** —
+[`layout/pex-ring/`](pex-ring/README.md) extracts each ring's *whole*
+composed GDS directly (real inter-gate `n1`-`n4`/`ro` routing and `vddr`/`vss`
+rail busing included, not the ideal inter-cell wires the earlier leaf-cell
+`layout/pex/` composition assumes), and
+[`sim/post-layout-ro-ring5-assembled/`](../sim/post-layout-ro-ring5-assembled/)
+runs the same period/swing/current measurement from it across the full PVT
+grid. Headline: real inter-gate wiring costs the ring roughly another
+50-65% multiplicatively beyond intra-cell parasitics alone, and the `wstv`
+ladder still survives (see `sim/README.md`'s "Assembled-ring post-layout"
+section for the full reduction). `ro_array_core` (the four rings + `ro_buf`
+fan-out + the `xor2` combining tree) and `sampler_core` are still open, so
+this is still not a DRC/LVS-clean *block*, and the array-level (inter-ring)
+parasitics — supply distribution, the XOR tree's own routing, buffer fan-in
+— remain undrawn; DR-0003 §8's decorrelation gap is bounded but not closed
+for the reasons `spec/decision-records/DR-0005-*.md` already states.
 
 [`layout/ro_ring5/`](ro_ring5/README.md) and its three `wstv` siblings
 ([`_wstv0p44`](ro_ring5_wstv0p44/README.md),
@@ -779,15 +790,26 @@ deliver, tracked in follow-up issue
    `layout/pex/README.md` states that limitation in full, in both directions
    (the extractor's lumped-star resistance over-states the intra-cell
    penalty; the missing inter-cell wiring under-states the whole-block one).
-   **Newly possible, not yet done**: the four `ro_ring5` cells now exist as
-   DRC/LVS-clean GDS with real inter-gate interconnect drawn, so
-   `klt extract --parasitics` over `layout/ro_ring5*/ro_ring5*.gds` would
-   for the first time include inter-*gate* wiring — a strictly better
-   answer than `sim/post-layout-ro-ring5/`'s ideal-wire composition of nine
-   leaf cells. It is deliberately left for its own increment: a PVT campaign
-   is its own deliverable with its own corner discipline, and swapping the
-   netlist under the existing records without re-running the grid would
-   make them incomparable.
+   **DONE for the assembled-ring scope, this increment**: the four
+   `ro_ring5` cells' own composed GDS (real inter-gate `n1`-`n4`/`ro` routing
+   and `vddr`/`vss` rail busing included) is now extracted directly —
+   [`layout/pex-ring/`](pex-ring/README.md) — and
+   `sim/post-layout-ro-ring5-assembled/` runs the same period/swing/current
+   measurement across the identical four-point PVT grid, twelve corner runs,
+   as a new (not a superseding) sibling of `sim/post-layout-ro-ring5/` — see
+   `sim/README.md`'s "Assembled-ring post-layout" section for the full
+   reduction. Headline: real inter-gate wiring costs the ring **1.5045x -
+   1.6546x** more slowdown *on top of* intra-cell parasitics alone (48
+   paired PVT-grid points, mean 1.573x) — period vs. pre-layout control is
+   **2.0819x - 2.3666x** overall, against the intra-cell-only figure's
+   1.378x - 1.479x above — and the `wstv` ladder still survives (assembled
+   post-layout span 1.0937x - 1.1822x, tighter than either the intra-cell-only
+   or pre-layout figures). **Still open**: the *array*-level assembly
+   (`ro_array_core`'s inter-ring wiring — buffer fan-in, the XOR combining
+   tree, per-ring supply distribution — none of it drawn yet), which needs
+   steps 2 and 3 above; every number in this bullet is still one ring's own
+   real interconnect with ideal wires to its neighbours, not a whole-array
+   measurement.
 6. Re-evaluate DR-0003 §8's `wstv` inter-ring decorrelation gap using the
    extracted parasitics from step 5 — the measurement DR-0003 explicitly
    flagged as needing a real layout and unmeasurable at the netlist level.
@@ -826,6 +848,18 @@ deliver, tracked in follow-up issue
      ladder survives the parasitics (post-layout span 1.1122x - 1.2096x
      against 1.1225x - 1.2464x pre-layout, closest approach to a
      mutual-injection-lock rational 9.3% anywhere on the grid).
+   - **This increment's assembled-ring extraction (step 5 above) does not
+     change any of the above.** `sim/post-layout-ro-ring5-assembled/`
+     extracts one ring's own GDS at a time, same as `layout/pex/` did —
+     `vddr1`..`vddr4` are still four independent ideal sources across
+     separate ngspice runs, never sharing a node the way the substrate-float
+     decks' four *simultaneous* rings do. So it adds no new information
+     about inter-ring coupling and neither confirms nor supersedes DR-0005;
+     it re-confirms the ladder-survival half on a real-inter-gate-wiring
+     model (assembled post-layout span 1.0937x - 1.1822x, if anything
+     *tighter* than either the intra-cell-only or pre-layout figures above),
+     which is consistent with, not a correction to, what DR-0005 already
+     states.
 
 ## Reproducing the evidence in `layout/primitives/`
 
