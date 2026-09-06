@@ -48,7 +48,12 @@ assert _spec and _spec.loader
 pex = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(pex)
 
-_FAILURES: list[str] = []
+_REPO_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_REPO_ROOT / "design"))
+from _test_check import Checker  # noqa: E402
+
+_checker = Checker()
+_check = _checker.check
 
 MODELS = ["sky130_fd_pr__nfet_01v8", "sky130_fd_pr__pfet_01v8"]
 
@@ -80,15 +85,6 @@ Rvsubs_dctie vsubs 0 1e+12
 """
 
 ALIASES = {"mnt_g|vddr": "vddr"}
-
-
-def _check(label: str, condition: bool, detail: str = "") -> None:
-    if condition:
-        print(f"ok     {label}")
-    else:
-        msg = f"{label}" + (f": {detail}" if detail else "")
-        print(f"FAIL   {msg}")
-        _FAILURES.append(msg)
 
 
 def _raises(fn, label: str, fragment: str) -> None:
@@ -309,11 +305,7 @@ def main() -> int:
     check_unknown_element_card_is_an_error()
     check_wrapper_port_order()
 
-    if _FAILURES:
-        print(f"FAIL   {len(_FAILURES)} check(s) failed")
-        return 1
-    print("PASS   layout/test_pex_netlist.py")
-    return 0
+    return _checker.summary("layout/test_pex_netlist.py")
 
 
 if __name__ == "__main__":
