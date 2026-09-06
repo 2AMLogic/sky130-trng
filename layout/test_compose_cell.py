@@ -34,6 +34,7 @@ to break a test rather than a verdict.
 from __future__ import annotations
 
 import importlib.util
+import sys
 import tempfile
 from pathlib import Path
 
@@ -43,7 +44,12 @@ assert _spec and _spec.loader
 cc = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(cc)
 
-_FAILURES: list[str] = []
+_REPO_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_REPO_ROOT / "design"))
+from _test_check import Checker  # noqa: E402
+
+_checker = Checker()
+_check = _checker.check
 
 #: Shaped exactly like design/ro_array_core.spice's own .subckt ro_stage --
 #: a starve pair sized by the subckt's own parameters, a fixed-size pair, and
@@ -72,38 +78,30 @@ RO_RING5 = [
 PARAMS = {"wstv": 0.42, "lstv": 2}
 
 
-def _check(condition: bool, name: str, detail: str = "") -> None:
-    if condition:
-        print(f"ok     {name}")
-    else:
-        _FAILURES.append(name)
-        print(f"FAIL   {name}" + (f"\n       {detail}" if detail else ""))
-
-
 def check_param_substitution_and_units() -> None:
     """Transformation 1 + 4, on a real starve-device card."""
     out = cc.build_reference(RO_STAGE, params=PARAMS, drop_prefixes=("Cld",))
     mph = next(line for line in out if line.startswith("XMph"))
-    _check("L=2u" in mph, "starve device's L=lstv becomes a suffixed literal", mph)
-    _check("W=0.42u" in mph, "starve device's W=wstv becomes a suffixed literal", mph)
+    _check("starve device's L=lstv becomes a suffixed literal", "L=2u" in mph, mph)
+    _check("starve device's W=wstv becomes a suffixed literal", "W=0.42u" in mph, mph)
     mp = next(line for line in out if line.startswith("XMp "))
     _check(
-        "L=0.15u" in mp and "W=0.84u" in mp,
         "an already-literal L/W gains the u suffix and nothing else",
+        "L=0.15u" in mp and "W=0.84u" in mp,
         mp,
     )
     _check(
-        "ad='int((1 + 1)/2) * wstv / 1 * 0.29'" in mph,
         "a bare param inside a quoted expression is left unevaluated",
+        "ad='int((1 + 1)/2) * wstv / 1 * 0.29'" in mph,
         mph,
     )
     _check(
-        all("nf=1u" not in line and "m=1u" not in line for line in out),
         "the u suffix is applied to L/W only, never to nf/m",
+        all("nf=1u" not in line and "m=1u" not in line for line in out),
     )
     _check(
-        out[0] == ".subckt ro_stage a y vddr vss",
         "the .subckt line keeps every port and drops every default",
+        out[0] == ".subckt ro_stage a y vddr vss",
         out[0],
     )
 
@@ -112,17 +110,17 @@ def check_drop_prefixes() -> None:
     """Transformation 3: the Cld load capacitor is a sim model, not a device."""
     out = cc.build_reference(RO_STAGE, params=PARAMS, drop_prefixes=("Cld",))
     _check(
-        not any(line.startswith("Cld") for line in out),
         "drop_prefixes removes the Cld load capacitor",
+        not any(line.startswith("Cld") for line in out),
     )
     _check(
-        len([line for line in out if line.startswith("X")]) == 4,
         "drop_prefixes removes nothing else -- all four devices survive",
+        len([line for line in out if line.startswith("X")]) == 4,
     )
     kept = cc.build_reference(RO_STAGE, params=PARAMS, drop_prefixes=())
     _check(
-        any(line.startswith("Cld") for line in kept),
         "with no drop_prefixes the capacitor is kept (the drop is opt-in)",
+        any(line.startswith("Cld") for line in kept),
     )
 
 
@@ -132,29 +130,29 @@ def check_pass_through_kwargs() -> None:
         RO_RING5, params=PARAMS, drop_prefixes=("Cld",), drop_kwargs=("cld",)
     )
     body = [line for line in out if line.startswith(("xg", "x1", "x4"))]
-    _check(len(body) == 3, "every instance-call line survives", str(body))
+    _check("every instance-call line survives", len(body) == 3, str(body))
     _check(
-        all("=" not in line for line in body),
         "no keyword argument survives on an instance call (callee no longer "
         "declares any of these parameters)",
+        all("=" not in line for line in body),
         str(body),
     )
     _check(
-        body[0] == "xg ro en n1 vddr vss ro_nand2",
         "an instance call keeps its full node list and its subckt name",
+        body[0] == "xg ro en n1 vddr vss ro_nand2",
         body[0],
     )
     _check(
-        body[2] == "x4 n4 ro vddr vss ro_stage",
         "the feedback instance's own nodes are untouched",
+        body[2] == "x4 n4 ro vddr vss ro_stage",
         body[2],
     )
     still = cc.build_reference(RO_RING5, params=PARAMS, drop_prefixes=("Cld",))
     _check(
-        any("cld=cld" in line for line in still),
         "without drop_kwargs, cld=cld survives -- the drop is opt-in, and "
         "this is the state that produced klt lvs's 'Not a known parameter "
         "for circuit' warnings",
+        any("cld=cld" in line for line in still),
     )
 
 
@@ -168,11 +166,11 @@ def check_drop_kwargs_is_not_greedy() -> None:
         ".ends",
     ]
     out = cc.build_reference(lines, params=None, drop_prefixes=(), drop_kwargs=("cld",))
-    _check("cld=0.5f" in out[1], "a real value assignment is not dropped", out[1])
-    _check("other=cld" in out[2], "a param used as someone else's value stays", out[2])
+    _check("a real value assignment is not dropped", "cld=0.5f" in out[1], out[1])
+    _check("a param used as someone else's value stays", "other=cld" in out[2], out[2])
     _check(
-        "cldx=cldx" in out[3],
         "a longer name that starts with it is not a match",
+        "cldx=cldx" in out[3],
         out[3],
     )
 
@@ -195,8 +193,8 @@ def check_extract_subckt_is_exact() -> None:
     try:
         got = cc.extract_subckt(path, "ro_stage")
         _check(
-            got[0] == ".subckt ro_stage a y" and "pfet" in got[1],
             "extract_subckt picks the exact subckt, not a longer-named sibling",
+            got[0] == ".subckt ro_stage a y" and "pfet" in got[1],
             str(got),
         )
     finally:
@@ -210,11 +208,7 @@ def main() -> int:
     check_drop_kwargs_is_not_greedy()
     check_extract_subckt_is_exact()
 
-    if _FAILURES:
-        print(f"FAIL   {len(_FAILURES)} check(s) failed")
-        return 1
-    print("PASS   layout/test_compose_cell.py")
-    return 0
+    return _checker.summary("layout/test_compose_cell.py")
 
 
 if __name__ == "__main__":
