@@ -15,6 +15,65 @@ hierarchy: a named, honestly-scoped proof of concept that establishes the
 block. **This is not a DRC/LVS-clean `ro_array_core`** — see "What this does
 NOT establish" below.
 
+## Increment 2: forward ring→buffer signal chain routed (this update)
+
+The candidate coordinate table below (from the placement-only increment) is
+now **exercised for real**: `en1..en4` and the four `vddrN` domains are
+exposed as top-level pins straight off each ring's own already-formed
+internal node (no new routing needed — each ring's `en`/`vddr` is already a
+single electrical node inside its own composed GDS), `ro1..ro4` are exposed
+as top-level pins straight off each buffer's own `y` output the same way, and
+the four `rn1..rn4` legs (`ro_ring5.ro` → `ro_buf.a`) are **newly, really
+routed** on `"metal2"` (met1) — the first inter-cell wiring this directory
+has drawn.
+
+```
+$ klt gen-compose signal.compose.request.json --format json   # -> signal.compose.response.json, ro_array_core_signal_poc.gds
+unrouted_nets: []
+$ klt drc ro_array_core_signal_poc.gds --deck sky130 --format json
+status: clean, violation_count: 0
+$ klt extract ro_array_core_signal_poc.gds --deck sky130 --format json
+device_count: 132 (66 nfet + 66 pfet), net_count: 108, pin_count: 98
+```
+
+`132` devices is unchanged from the placement-only increment (still the
+right cells, right multiplicities). `net_count` drops from `112` to `108` —
+exactly the four `rn1`-`rn4` merges, confirmed directly against
+`signal.extract.json`'s own net list: `en1`-`en4`, `vddr1`-`vddr4` and
+`ro1`-`ro4` each land on their own distinct net (the four `vddrN` domains
+stay electrically isolated from each other, matching DR-0003's per-ring
+starve-supply isolation intent), and `rn1`-`rn4` each merge exactly the
+intended pair (e.g. `rn1`'s net carries labels `a`, `g_a`, `rn1`, `ro`,
+`s4_y`, `y` — the extra labels are `ro_ring5`'s and `ro_stage`'s own
+internal aliases for the same physical node, persisting through the
+hierarchy exactly as `layout/README.md`'s "Correcting the curation note"
+and `ro_ring5-connectivity-poc`'s own precedent already document, not a
+short to anything else). No LVS attempted — see "What this does NOT
+establish" below for what still needs to land first.
+
+**The one new floorplan finding**: `gen-compose` rejects a route whose final
+leg drops straight down (or up) into a block's interior toward a pin that
+sits well inside that block's own bounding box — its own diagnostic calls
+this out by measured distance (`"backbone's 0.17um-wide drawn path crosses
+3.155um through its own pin's block 'buf1' -- more than that pin's own
+2.82um edge margin"`), rather than failing silently or drawing a violation.
+`ro_buf`'s own `a` pin sits mid-block (not at an edge), so the fix mirrors
+`layout/ro_ring5/README.md`'s point 6: approach on `"metal2"` from just
+outside the block at the pin's own `y`, then run the *whole* final leg
+horizontally at that `y` into the pin, rather than dropping vertically from
+a channel above it. Not filed as a `klt` tool gap: the diagnostic is
+correct, specific, and actionable exactly as given.
+
+### Reproduce this increment
+
+```bash
+volare enable --pdk sky130 c6d73a35f524070e85faff4a6a9eef49553ebc2b
+cd layout/ro_array_core-placement-poc
+klt gen-compose signal.compose.request.json --format json   # -> signal.compose.response.json, ro_array_core_signal_poc.gds
+klt drc ro_array_core_signal_poc.gds --deck sky130 --format json      # -> clean, 0 violations
+klt extract ro_array_core_signal_poc.gds --deck sky130 --format json  # -> 132 devices, 108 nets
+```
+
 ## What this establishes
 
 All eleven already-composed sibling cells (`ro_ring5` + 3 `wstv` variants,
@@ -55,13 +114,29 @@ is in `compose.response.json`.
 
 ## What this does NOT establish
 
+**Below describes the original placement-only request
+(`compose.request.json`/`compose.response.json`/`ro_array_core_poc.gds`),
+kept unchanged as that milestone's own evidence.** "Increment 2" above
+resolves the `en1..en4`/`vddrN`/`ro1..ro4` pin-exposure and `rn1..rn4`
+routing items in a *separate* set of files
+(`signal.compose.request.json`/`ro_array_core_signal_poc.gds`); everything
+else below is still open.
+
 - **No routing.** `en1..en4`, `vddr1..vddr4`, `vdd`/`vss`, the ring-to-buffer
   nets (`rn1..rn4`), the buffer-to-XOR nets (`ro1..ro4`), the two
   intermediate XOR outputs (`t1`, `t2`), and the final output (`xo`) are all
   unconnected. `112` disjoint nets, not `design/ro_array_core.spice`'s
   expected single connected `ro_array_core` — no LVS attempt was made
   against it (would fail outright: 112 nets vs. the reference's connected
-  graph, by design of a placement-only request).
+  graph, by design of a placement-only request). **Resolved for
+  `en1..en4`/`vddrN`/`ro1..ro4` (pin exposure, no routing needed — each is
+  already a single node inside its own block) and `rn1..rn4` (really
+  routed) by Increment 2 above.** Still fully open: `vdd`/`vss` (the
+  buffer/XOR-tree supply, and the vss bus shared by rings, buffers *and*
+  XORs — eleven taps total), the buffer-to-XOR nets `ro1..ro4`'s *second*
+  leg (buffer `y` already exposed as a top-level pin, but not yet also
+  wired into the XOR tree's `a`/`b` inputs), `t1`, `t2`, `xo`, and therefore
+  any LVS attempt.
 - **The floorplan is a first-pass grid, not a routing-aware plan.** 5 µm
   gaps were chosen for guaranteed DRC clearance (nwell/tap spacing rules in
   sky130 are sub-micron), not for routability. A next increment may need to
@@ -150,6 +225,18 @@ shared `vdd`, matching DR-0003's per-ring starve-supply isolation intent.
 need a distribution plan across all eight `buf`/`xor2` instances — not
 attempted here.
 
+**Increment 2 update: the `xa1`/`xa2`'s `a`/`b` second-coordinate option is
+now confirmed, not just candidate.** The `(x, 19.395)`-family alternative for
+each `a`/`b` row above (e.g. `xa1`'s `a` at `(3.445, 19.395)`, `b` at
+`(21.620, 19.395)`) is `layout/xor2/cell.json`'s own `inv_a`/`inv_b`
+block-declared `a` ports (local `(-3.44, 6.81)` / `(14.735, 6.81)`,
+`direction_deg: 180`) — the *exact* declarations `xor2` itself used to reach
+its own committed `klt lvs` match, not a `klt components` guess. They are
+the recommended taps for the next increment's buffer→XOR routing (the
+`(x, 16.615)`-family alternative, `mn12_g0`/`mp24_g0`-style, remains valid
+but unexercised). The `y`/`vdd`/`vss` rows are still `approx` and still
+unconfirmed — nothing in Increment 2 touched them.
+
 ## Reproduce
 
 ```bash
@@ -167,20 +254,38 @@ klt extract ro_array_core_poc.gds --deck sky130 --format json  # -> 132 devices 
 
 ## Suggested next steps (not attempted here)
 
-1. Route `en1..en4` and the four `vddrN` domains first — they are the
-   simplest legs (one net each, no fan-in) and establish whether the 5 µm
-   ring-to-buffer gap is wide enough for a via-drop without widening it.
-2. Route `rn1..rn4` (ring `ro` -> buf `a`) and `ro1..ro4` (buf `y` -> xor2
-   `a`/`b`) next — same-row, short hops, using the coordinates above.
+1. ~~Route `en1..en4` and the four `vddrN` domains first~~ **DONE, Increment
+   2 above** — these turned out to need no routing at all, only pin
+   exposure, since each is already a single node inside its own ring.
+   `ro1..ro4` (buf `y`) turned out to be the same shape and are also now
+   exposed, ahead of schedule relative to this list. ~~Route `rn1..rn4`
+   (ring `ro` -> buf `a`)~~ **DONE, Increment 2 above**, on `"metal2"`, with
+   one floorplan finding (the block-interior edge-margin rule — see
+   Increment 2's own section).
+2. Route `ro1..ro4` (buf `y`, already a top-level pin) into `xor2` `a`/`b`
+   next — cross-row, long hops (buf1's `y` at abs `x≈50` to `xa1`'s `a` at
+   abs `x≈3.4`, e.g., since `xa1` floorplans *above the ring pair*, not above
+   its own feeding buffer) — using the now-confirmed `inva_a`/`invb_a`-style
+   coordinates above. Expect this to need its own channel height distinct
+   from `rn1..rn4`'s (`y=5.6` in `signal.compose.request.json`), since both
+   sets of nets would otherwise contend for the same corridor across the
+   same x-span.
 3. Confirm `xor2`'s `y`/`vdd`/`vss` taps by attempting a real routed
    connection and checking `klt drc`/`klt extract` agree, before trusting
    the `approx` rows above for the combining tree (`t1`, `t2`, `xo`) and the
-   `vdd`/`vss` distribution across all eight `buf`/`xor2` instances.
+   `vdd`/`vss` distribution across all eight `buf`/`xor2` instances. This is
+   the largest remaining unknown: `vss` alone is a genuinely global net
+   (rings, buffers *and* XORs all share it — eleven taps across the full
+   216 µm span and both rows), unlike anything routed so far in this
+   directory.
 4. Given `ro_ring5`'s and `xor2`'s own composition each needed a staged
    (`"stages"`) approach to keep crossing nets off one layer, expect
    `ro_array_core`'s own final assembly to need the same — this floorplan
    only proves blocks fit with clearance, not that every net above routes in
-   one `gen-compose` pass.
+   one `gen-compose` pass. Confirmed for real by Increment 2's own finding
+   above, one level down (the block-interior edge-margin rule), a different
+   failure mode than the crossing-nets rule but with the same practical
+   consequence: some nets need their own dedicated pass or channel.
 5. Once routed, run `klt lvs` against `design/ro_array_core.spice`'s own
    `.subckt ro_array_core`. Note a real open question this increment did
    *not* resolve: the reference netlist defines a **single**
