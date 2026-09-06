@@ -251,14 +251,18 @@ DR-0003 surfaces and does not resolve on its own authority.
   controls (`lvs-negative-controls.py`) show that verdict is
   discriminating rather than vacuous: resizing ring 4's starve devices to
   ring 1's `wstv`, and crossing `xa1`/`xa2`'s inputs, each turn the same
-  comparison into `mismatch`. The generated reference needed one thing
-  `layout/bin/compose-cell.py` cannot express — four differently
-  parameterised copies of the *same* `ro_ring5` subckt — so it is built by
-  a small committed script (`array-reference.py`) that reuses
-  `compose-cell.py`'s own rewrite four times over renamed copies; folding
-  that back into `compose-cell.py` as a per-dependency `params` override
-  (and promoting this PoC directory into a `layout/ro_array_core/`
-  `cell.json` recipe with `--check` reproducibility) is follow-up work.
+  comparison into `mismatch`. The generated reference originally needed
+  one thing `layout/bin/compose-cell.py`'s *plain* `lvs.dependencies`
+  mechanism could not express — four differently parameterised copies of
+  the *same* `ro_ring5` subckt — built at the time by a small one-off
+  script (`array-reference.py`) that hand-rolled the rename/parametrize
+  loop. **A follow-up increment folds that back into `compose-cell.py`**
+  as a generic, unit-tested `lvs.dependency_variants` mechanism (see
+  `layout/README.md`), and `array-reference.py` now calls it instead,
+  verified to reproduce the identical reference body and LVS/negative-control
+  verdicts. Promoting this PoC directory into a `layout/ro_array_core/`
+  `cell.json` recipe with `--check` reproducibility (the placement/routing
+  side) remains follow-up work (#27).
   A prior increment wired the XOR combining tree's inputs:
   that directory's
   "Increment 7" section routes `t2` (`xa2.y` → `xa3.b`) via a `"metal3"`

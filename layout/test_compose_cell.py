@@ -34,6 +34,7 @@ to break a test rather than a verdict.
 from __future__ import annotations
 
 import importlib.util
+import re
 import sys
 import tempfile
 from pathlib import Path
@@ -75,7 +76,51 @@ RO_RING5 = [
     ".ends",
 ]
 
+#: Minimal .subckt ro_nand2 -- ro_ring5's other same-parameter dependency,
+#: needed so RO_RING5's own "nested" rewrite has something real to rename.
+RO_NAND2 = [
+    ".subckt ro_nand2 a b y vddr vss wstv=0.42 lstv=2 cld=0.5f",
+    "XMph py vss vddr vddr sky130_fd_pr__pfet_01v8 L=lstv W=wstv nf=1 m=1",
+    "XMnt ny vddr vss vss sky130_fd_pr__nfet_01v8 L=lstv W=wstv nf=1 m=1",
+    ".ends",
+]
+
+#: Shaped exactly like .subckt ro_array_core -- two ring instances, each
+#: overriding ro_ring5's own wstv/lstv/cld with a *literal* value (not the
+#: name=name pass-through form ro_ring5's own body uses to forward them).
+RO_ARRAY_CORE = [
+    ".subckt ro_array_core en1 en2 vddr1 vddr2 vss",
+    "xr1 en1 ro1 vddr1 vss ro_ring5 wstv=0.42 lstv=2 cld=0.5f",
+    "xr2 en2 ro2 vddr2 vss ro_ring5 wstv=0.44 lstv=2 cld=0.5f",
+    ".ends",
+]
+
 PARAMS = {"wstv": 0.42, "lstv": 2}
+
+#: One lvs.dependency_variants[] entry matching RO_ARRAY_CORE's two rings.
+RING_VARIANT = {
+    "subckt": "ro_ring5",
+    "nested": ["ro_nand2", "ro_stage"],
+    "drop_kwargs": ["cld"],
+    "instances": [
+        {
+            "rename": "_r1",
+            "top_instance_pattern": r"^xr1\b",
+            "params": {"wstv": 0.42, "lstv": 2},
+        },
+        {
+            "rename": "_r2",
+            "top_instance_pattern": r"^xr2\b",
+            "params": {"wstv": 0.44, "lstv": 2},
+        },
+    ],
+}
+
+
+def _write_netlist(lines: list[str]) -> Path:
+    with tempfile.NamedTemporaryFile("w", suffix=".spice", delete=False) as handle:
+        handle.write("\n".join(lines) + "\n")
+        return Path(handle.name)
 
 
 def check_param_substitution_and_units() -> None:
@@ -201,12 +246,157 @@ def check_extract_subckt_is_exact() -> None:
         path.unlink()
 
 
+def check_variant_reference_renames_subckt_and_nested() -> None:
+    """``build_variant_reference`` renames the subckt AND its nested deps."""
+    path = _write_netlist(RO_NAND2 + RO_STAGE + RO_RING5)
+    try:
+        instance = RING_VARIANT["instances"][0]  # _r1, wstv=0.42
+        out = cc.build_variant_reference(
+            path,
+            RING_VARIANT,
+            instance,
+            default_drop_prefixes=("Cld",),
+            default_drop_kwargs=("cld",),
+        )
+        headers = [line for line in out if line.startswith(".subckt")]
+        _check(
+            "every one of nested + subckt gets its own renamed definition, "
+            "innermost (nested) first",
+            headers
+            == [
+                ".subckt ro_nand2_r1 a b y vddr vss",
+                ".subckt ro_stage_r1 a y vddr vss",
+                ".subckt ro_ring5_r1 en ro vddr vss",
+            ],
+            str(headers),
+        )
+        body = [line for line in out if line.startswith(("xg", "x1", "x4"))]
+        _check(
+            "ro_ring5's own instance-call lines call the renamed siblings, "
+            "not the shared unrenamed originals",
+            body
+            == [
+                "xg ro en n1 vddr vss ro_nand2_r1",
+                "x1 n1 n2 vddr vss ro_stage_r1",
+                "x4 n4 ro vddr vss ro_stage_r1",
+            ],
+            str(body),
+        )
+        mph = next(line for line in out if line.startswith("XMph"))
+        _check(
+            "the instance's own params substitute into the renamed copy",
+            "L=2u" in mph and "W=0.42u" in mph,
+            mph,
+        )
+    finally:
+        path.unlink()
+
+
+def check_variant_reference_two_instances_differ() -> None:
+    """Two instances of the same variant produce two distinctly-sized copies."""
+    path = _write_netlist(RO_NAND2 + RO_STAGE + RO_RING5)
+    try:
+        out_r1 = cc.build_variant_reference(
+            path,
+            RING_VARIANT,
+            RING_VARIANT["instances"][0],
+            default_drop_prefixes=("Cld",),
+            default_drop_kwargs=("cld",),
+        )
+        out_r2 = cc.build_variant_reference(
+            path,
+            RING_VARIANT,
+            RING_VARIANT["instances"][1],
+            default_drop_prefixes=("Cld",),
+            default_drop_kwargs=("cld",),
+        )
+        mph_r1 = next(line for line in out_r1 if line.startswith("XMph"))
+        mph_r2 = next(line for line in out_r2 if line.startswith("XMph"))
+        _check("_r1 keeps ring 1's own wstv (0.42)", "W=0.42u" in mph_r1, mph_r1)
+        _check(
+            "_r2 gets ring 2's own wstv (0.44), not ring 1's",
+            "W=0.44u" in mph_r2 and "W=0.42u" not in mph_r2,
+            mph_r2,
+        )
+        _check(
+            "the two instances' subckt names never collide",
+            "ro_ring5_r1" in "\n".join(out_r1) and "ro_ring5_r2" in "\n".join(out_r2),
+        )
+    finally:
+        path.unlink()
+
+
+def check_repoint_variant_instances_matches_only_its_own_instance() -> None:
+    """The top subckt's instance lines are repointed one-for-one, not by name."""
+    top = cc.build_reference(
+        RO_ARRAY_CORE, params=None, drop_prefixes=(), drop_kwargs=()
+    )
+    out = cc.repoint_variant_instances(top, [RING_VARIANT])
+    xr1 = next(line for line in out if line.startswith("xr1"))
+    xr2 = next(line for line in out if line.startswith("xr2"))
+    _check("xr1 is repointed at ro_ring5_r1", "ro_ring5_r1" in xr1, xr1)
+    _check(
+        "xr2 is repointed at ro_ring5_r2, not ro_ring5_r1", "ro_ring5_r2" in xr2, xr2
+    )
+    _check(
+        "the now-meaningless wstv/lstv/cld literal overrides are dropped",
+        all(kw not in xr1 and kw not in xr2 for kw in ("wstv=", "lstv=", "cld=")),
+        f"{xr1!r} {xr2!r}",
+    )
+    _check(
+        "the instance's own node list survives untouched",
+        xr1.startswith("xr1 en1 ro1 vddr1 vss ro_ring5_r1")
+        and xr2.startswith("xr2 en2 ro2 vddr2 vss ro_ring5_r2"),
+        f"{xr1!r} {xr2!r}",
+    )
+
+
+def check_variant_reference_is_end_to_end_self_consistent() -> None:
+    """The full array reference: two renamed rings plus a repointed top."""
+    path = _write_netlist(RO_NAND2 + RO_STAGE + RO_RING5 + RO_ARRAY_CORE)
+    try:
+        lines: list[str] = []
+        for instance in RING_VARIANT["instances"]:
+            lines.extend(
+                cc.build_variant_reference(
+                    path,
+                    RING_VARIANT,
+                    instance,
+                    default_drop_prefixes=("Cld",),
+                    default_drop_kwargs=("cld",),
+                )
+            )
+        top = cc.build_reference(
+            cc.extract_subckt(path, "ro_array_core"),
+            params=None,
+            drop_prefixes=(),
+            drop_kwargs=(),
+        )
+        lines.extend(cc.repoint_variant_instances(top, [RING_VARIANT]))
+        text = "\n".join(lines)
+        _check(
+            "both renamed ring definitions are present",
+            "ro_ring5_r1" in text and "ro_ring5_r2" in text,
+        )
+        _check(
+            "the top subckt calls only the renamed rings, never the bare name",
+            not re.search(r"\bro_ring5\b(?!_r)", text),
+            text,
+        )
+    finally:
+        path.unlink()
+
+
 def main() -> int:
     check_param_substitution_and_units()
     check_drop_prefixes()
     check_pass_through_kwargs()
     check_drop_kwargs_is_not_greedy()
     check_extract_subckt_is_exact()
+    check_variant_reference_renames_subckt_and_nested()
+    check_variant_reference_two_instances_differ()
+    check_repoint_variant_instances_matches_only_its_own_instance()
+    check_variant_reference_is_end_to_end_self_consistent()
 
     return _checker.summary("layout/test_compose_cell.py")
 

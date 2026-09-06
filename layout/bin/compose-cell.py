@@ -140,6 +140,64 @@ first exercised by ``layout/ro_ring5/``:
 ``lvs.drop_kwargs``
     Pass-through keyword arguments to strip from instance-call lines that
     are not in ``lvs.params`` -- see ``build_reference``'s transformation 2.
+
+A same-subckt, differently-parametrized reference (``lvs.dependency_variants``,
+#22/#27)
+------------------------------------------------------------------------------
+
+``lvs.dependencies`` (above) rewrites each dependency subckt **once**, with
+one shared ``lvs.params`` dict -- exactly right when the top subckt
+instantiates each dependency a single time (``ro_ring5`` calling
+``ro_nand2``/``ro_stage`` once each). It cannot express ``ro_array_core``:
+the design netlist defines a **single** ``.subckt ro_ring5 ... wstv=0.42
+lstv=2 cld=0.5f`` and calls it four times (``xr1``-``xr4``) with four
+different ``wstv=`` overrides, and ``layout/`` holds four physically
+distinct ring cells for those four sizings -- one shared ``params`` dict
+cannot produce four distinct comparison subckts from one definition.
+
+``lvs.dependency_variants`` is a list of::
+
+    {
+      "subckt": "ro_ring5",
+      "nested": ["ro_nand2", "ro_stage"],
+      "drop_prefixes": ["Cld"],
+      "drop_kwargs": ["cld"],
+      "instances": [
+        {"rename": "_r1", "top_instance_pattern": "^xr1\\b",
+         "params": {"wstv": 0.42, "lstv": 2}},
+        {"rename": "_r2", "top_instance_pattern": "^xr2\\b",
+         "params": {"wstv": 0.44, "lstv": 2}},
+        ...
+      ]
+    }
+
+For each ``instances[]`` entry, ``build_variant_reference`` rewrites
+``subckt`` **and every name in ``nested``** (a dependency's own dependencies,
+since ``ro_ring5``'s body itself calls ``ro_nand2``/``ro_stage`` -- both need
+the *same* per-ring rename so the renamed copies keep calling each other,
+not the shared unrenamed originals) using that instance's own ``params``/
+``drop_prefixes``/``drop_kwargs`` (falling back to the variant's own, then to
+``lvs.drop_prefixes``/``lvs.drop_kwargs``), then suffixes every whole-word
+occurrence of ``subckt`` or a ``nested`` name in the rewritten lines with
+that instance's own ``rename`` -- so the four sizings coexist as four
+distinct subckt definitions in one reference file (``ro_ring5_r1``,
+``ro_nand2_r1``, ``ro_stage_r1``, ``ro_ring5_r2``, ...). The rename is
+**only** a reference-file bookkeeping device (``lvs.flatten_reference: true``
+needs four distinct definitions to inline) -- nothing in ``design/`` or the
+composed layout is renamed.
+
+``repoint_variant_instances`` then rewrites the **top** subckt's own
+instance-call lines: for each ``dependency_variants[]`` entry's each
+``instances[]`` entry, any line matching that instance's own
+``top_instance_pattern`` regex has its bare ``subckt`` name suffixed with
+``rename`` and every one of that instance's ``params`` keys stripped as a
+``key=<value>`` keyword argument (whatever the value -- the top subckt's own
+instance-call lines pass **literal** overrides, e.g. ``xr1 ... ro_ring5
+wstv=0.42 lstv=2 cld=0.5f``, not the ``name=name`` pass-through form
+``build_reference``'s ``drop_kwargs`` handles, so this is a distinct
+transformation from that one) since the renamed callee's own header no
+longer declares any of those parameters (transformation 1 already
+substituted them into literals).
 """
 
 from __future__ import annotations
@@ -171,7 +229,9 @@ CHECK_FIELDS: dict[str, tuple[str, ...]] = {
 # --------------------------------------------------------------------------
 
 _SUBCKT_RE = r"^\.subckt\s+{name}\b"
-_GEOMETRY_RE = re.compile(r"\b([LW])=([0-9]*\.?[0-9]+(?:[eE][-+]?[0-9]+)?)(?![0-9a-zA-Z.])")
+_GEOMETRY_RE = re.compile(
+    r"\b([LW])=([0-9]*\.?[0-9]+(?:[eE][-+]?[0-9]+)?)(?![0-9a-zA-Z.])"
+)
 
 
 def extract_subckt(netlist: Path, subckt: str) -> list[str]:
@@ -250,9 +310,102 @@ def build_reference(
             line = re.sub(rf"\s+{re.escape(name)}={re.escape(name)}\b", "", line)
         if params:
             for name, value in params.items():
-                line = re.sub(rf"\s+{re.escape(name)}={re.escape(str(name))}\b", "", line)
+                line = re.sub(
+                    rf"\s+{re.escape(name)}={re.escape(str(name))}\b", "", line
+                )
                 line = re.sub(rf"=({re.escape(name)})\b", f"={value}", line)
         out.append(_GEOMETRY_RE.sub(r"\1=\2u", line))
+    return out
+
+
+def build_variant_reference(
+    netlist: Path,
+    variant: dict,
+    instance: dict,
+    *,
+    default_drop_prefixes: tuple[str, ...],
+    default_drop_kwargs: tuple[str, ...],
+) -> list[str]:
+    """One renamed, parametrized copy of a same-subckt LVS dependency.
+
+    ``variant`` is one ``lvs.dependency_variants[]`` entry (``subckt`` plus
+    that subckt's own ``nested`` dependencies, e.g. ``ro_ring5`` naming
+    ``["ro_nand2", "ro_stage"]``); ``instance`` is one of its ``instances[]``
+    entries (``rename``, ``params``, and the ``drop_prefixes``/``drop_kwargs``
+    this instance's own rewrite uses, each falling back to the variant's own,
+    then to the caller's default). See this module's docstring,
+    "A same-subckt, differently-parametrized reference", for why a shared
+    ``lvs.dependencies`` entry cannot express this.
+
+    Every whole-word occurrence of ``subckt`` or a ``nested`` name in the
+    rewritten output is suffixed with ``instance["rename"]`` -- including
+    inside ``nested``'s own instance-call lines, so a renamed dependency
+    keeps calling its own renamed siblings rather than the shared unrenamed
+    originals.
+    """
+    # Nested (innermost) dependencies first, the variant's own subckt last --
+    # mirrors the dependency order a hand-written reference would use, and
+    # matches this design's own ring hierarchy (ro_nand2/ro_stage inside
+    # ro_ring5).
+    names = [*variant.get("nested", ()), variant["subckt"]]
+    rename = instance["rename"]
+    params = instance.get("params", variant.get("params"))
+    drop_prefixes = tuple(
+        instance.get(
+            "drop_prefixes", variant.get("drop_prefixes", default_drop_prefixes)
+        )
+    )
+    drop_kwargs = tuple(
+        instance.get("drop_kwargs", variant.get("drop_kwargs", default_drop_kwargs))
+    )
+    out: list[str] = []
+    for name in names:
+        rewritten = build_reference(
+            extract_subckt(netlist, name),
+            params=params,
+            drop_prefixes=drop_prefixes,
+            drop_kwargs=drop_kwargs,
+        )
+        for line in rewritten:
+            for sibling in names:
+                line = re.sub(rf"\b{re.escape(sibling)}\b", sibling + rename, line)
+            out.append(line)
+        out.append("")
+    return out
+
+
+def repoint_variant_instances(
+    lines: list[str], dependency_variants: list[dict]
+) -> list[str]:
+    """Repoint the *top* subckt's own instance-call lines at renamed variants.
+
+    Unlike ``build_reference``'s ``drop_kwargs`` (which strips only the
+    ``name=name`` pass-through form), a top subckt's own instance-call lines
+    pass **literal** overrides (``xr1 ... ro_ring5 wstv=0.42 lstv=2
+    cld=0.5f``), so this strips ``key=<any value>`` for each of the matched
+    instance's own ``params`` keys **plus** the variant/instance's own
+    ``drop_kwargs`` (e.g. ``cld``, which is never in ``params`` -- nothing
+    surviving the rewrite reads it -- but is still a literal override on the
+    top subckt's own instance-call line).
+    """
+    out: list[str] = []
+    for line in lines:
+        for variant in dependency_variants:
+            subckt = variant["subckt"]
+            for instance in variant.get("instances", ()):
+                if not re.search(instance["top_instance_pattern"], line):
+                    continue
+                if not re.search(rf"\b{re.escape(subckt)}\b", line):
+                    continue
+                line = re.sub(
+                    rf"\b{re.escape(subckt)}\b", subckt + instance["rename"], line
+                )
+                drop_names = set(instance.get("params", {})) | set(
+                    instance.get("drop_kwargs", variant.get("drop_kwargs", ()))
+                )
+                for name in drop_names:
+                    line = re.sub(rf"\s+{re.escape(name)}=\S+", "", line)
+        out.append(line)
     return out
 
 
@@ -464,6 +617,7 @@ def compose_cell(spec: dict, spec_dir: Path, out_dir: Path) -> dict:
     lvs_drop_prefixes = tuple(lvs_spec.get("drop_prefixes", ()))
     lvs_drop_kwargs = tuple(lvs_spec.get("drop_kwargs", ()))
     dependency_subckts = lvs_spec.get("dependencies", ())
+    dependency_variants = lvs_spec.get("dependency_variants", ())
     reference_lines: list[str] = []
     for dependency in dependency_subckts:
         reference_lines.extend(
@@ -475,20 +629,36 @@ def compose_cell(spec: dict, spec_dir: Path, out_dir: Path) -> dict:
             )
         )
         reference_lines.append("")
-    reference_lines.extend(
-        build_reference(
-            extract_subckt(reference_source, lvs_spec["subckt"]),
-            params=lvs_params,
-            drop_prefixes=lvs_drop_prefixes,
-            drop_kwargs=lvs_drop_kwargs,
-        )
+    variant_names: list[str] = []
+    for variant in dependency_variants:
+        for instance in variant.get("instances", ()):
+            reference_lines.extend(
+                build_variant_reference(
+                    reference_source,
+                    variant,
+                    instance,
+                    default_drop_prefixes=lvs_drop_prefixes,
+                    default_drop_kwargs=lvs_drop_kwargs,
+                )
+            )
+            variant_names.append(variant["subckt"] + instance["rename"])
+    top_lines = build_reference(
+        extract_subckt(reference_source, lvs_spec["subckt"]),
+        params=lvs_params,
+        drop_prefixes=lvs_drop_prefixes,
+        drop_kwargs=lvs_drop_kwargs,
     )
+    if dependency_variants:
+        top_lines = repoint_variant_instances(top_lines, dependency_variants)
+    reference_lines.extend(top_lines)
     reference_path = out_dir / f"{cell}.ref.spice"
     dependency_note = (
         f" plus dependency subckt(s) {', '.join(dependency_subckts)}"
         if dependency_subckts
         else ""
     )
+    if variant_names:
+        dependency_note += f" plus dependency variant(s) {', '.join(variant_names)}"
     reference_path.write_text(
         "\n".join(
             [
