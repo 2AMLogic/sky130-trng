@@ -364,6 +364,172 @@ klt drc ro_array_core_signal4_poc.gds --deck sky130 --format json      # -> clea
 klt extract ro_array_core_signal4_poc.gds --deck sky130 --format json  # -> 132 devices, 104 nets (vss net's device_count unchanged at 122)
 ```
 
+## Increment 6: the combining tree's `t1` routed, `xo`/`t2` taps confirmed — and a silent short that changes how every increment here has to be verified
+
+Starts the XOR combining tree (`t1`, `t2`, `xo`), the last signal group
+Increment 4 left open. `t1` (`xa1.y` → `xa3.a`) is now really routed, and
+`xo` (`xa3.y`, a genuine top-level port of
+`design/ro_array_core.spice`'s own `.subckt ro_array_core`) plus `t2`
+(`xa2.y`) are exposed as pins on taps this increment *measured* rather than
+approximated:
+
+```
+$ klt gen-compose signal5.compose.request.json --format json   # -> signal5.compose.response.json, ro_array_core_signal5_poc.gds
+unrouted_nets: [], t1 route_length_um: 66.97
+$ klt drc ro_array_core_signal5_poc.gds --deck sky130 --format json
+status: clean, violation_count: 0
+$ klt extract ro_array_core_signal5_poc.gds --deck sky130 --format json
+device_count: 132 (unchanged), net_count: 103 (down from 104), pin_count: 93
+```
+
+Net-by-net diff against `signal4.extract.json`, which is the *only* check
+that actually proves what was connected (see finding 1): exactly one merge,
+`a|inva_a|mn12_g0|mp13_g0` (4 devices, `xa3`'s `a` input) plus one of the
+three 4-device `y` nets (`xa1`'s output) → one 8-device
+`a|inva_a|mn12_g0|mp13_g0|t1|y`. Nothing else moved: the other two `y` nets
+gained exactly their new pin labels (`t2|y`, `xo|y`, still 4 devices each),
+so both pin taps land on the real XOR output net and merge nothing.
+
+### Finding 1: `klt drc` clean is not connectivity evidence — a first `t1` probe shorted silently
+
+The first `t1` attempt tapped `xa1.y` at block-local `(4.5, 8.0)` and
+escaped **north** to a corridor above the XOR row. `klt gen-compose`
+reported `unrouted_nets: []` and `klt drc` reported `status: clean,
+violation_count: 0` — and the result was electrically wrong. `klt extract`
+reported `net_count: 102`, not `103`: **three** 4-device nets had merged
+into one 12-device net,
+`a|bn|inva_a|invb_y|mn12_g0|mn34_g1|mp13_g0|mp24_g1|t1|y`. The escape stub
+ran north on met1 at `xa1`-local `x = 4.5` straight across `xor2`'s own
+internal `bn` met1 lane (measured extent: local `y ∈ [8.915, 9.085]`,
+`x ∈ [1.480, 7.780]`), shorting `xa1`'s internal `b`-inverter output to its
+own `y` output. Two merged shapes on one layer are a *short*, not a spacing
+error, so no rule deck can see it.
+
+The mechanism is structural, not a bug in this request: **`klt gen-compose`
+models a placed block as an opaque bbox.** It rejects a leg that crosses an
+*unrelated* block's bbox (Increment 4's finding 1) and — newly confirmed
+here, finding 3 — a leg that crosses an *already-routed net* in the same
+call, but it has no obstacle model of a placed block's own interior
+conductors, so a leg that starts at an interior port escapes through that
+block's own metal unchecked. Everything this directory taps by coordinate
+(`ro`, `a`, `b`, `y`, `vdd`, `vss` — none of the composed leaf cells expose
+declared pins) starts at an interior port, so this applies to every net
+here. Filed generically against `2AMLogic/klayout-tools` per this repo's
+`CLAUDE.md` friction protocol (`2AMLogic/klayout-tools#1527`). The
+probe's own artifacts are **not committed** — a DRC-clean GDS with a wrong
+netlist is a trap, not evidence, and the same precedent Increment 5
+applied to a zero-routed response
+applies here.
+
+**Verification rule this establishes for every later increment**: a routed
+net is only proven by a net-by-net `klt extract` diff against the previous
+increment showing exactly the intended merges, by device count and by name.
+`unrouted_nets: []` proves the router drew something; `klt drc` proves the
+drawing is legal; neither proves it is the intended circuit.
+
+### Finding 2: `xor2`'s `y` has exactly four escape windows, and they are measured
+
+`xor2` exposes no `y` pin of its own, and its `y` net is **li1-only**
+inside the cell (`klt components` over li1+met1+mcon reports `y` as the one
+li-only component: 12 shapes, bbox `(-0.085, 2.580)`-`(7.770, 13.840)`), so
+*every* met1 shape in `xor2` belongs to another net and any contact with
+one is a short. `xor2-y-escape-scan.py` (committed here, with its
+`xor2-y-escape-scan.json` output) walks every point of that li1 component
+and, for each of the four cardinal directions, tests whether a met1 stub of
+this request's own `0.17 µm` width plus sky130's `0.14 µm` met1 spacing
+reaches the cell boundary touching nothing:
+
+| Direction | Legal window (block-local µm) | Width |
+|---|---|---|
+| north | `x ∈ [1.340, 2.690]` | 1.350 |
+| south | `x ∈ [6.310, 7.770]` | 1.460 |
+| east | `y ∈ [2.580, 3.595]` | 1.015 |
+| west | `y ∈ [12.160, 13.840]` | 1.680 |
+
+One window per direction, and the first probe's `(4.5, 8.0)` tap is in none
+of them for the direction it escaped: **the tap coordinate was never the
+bug, the escape direction was** — `(4.5, 8.0)` is genuinely on `y`, as is
+the `(3.84, 4.6)` approximation the coordinate table below has carried
+since Increment 2. This increment taps `(1.55, 13.0)` instead — the centre
+of `mp13`'s own `U0_S1` source pad (`x ∈ [1.340, 1.760]`,
+`y ∈ [12.160, 13.840]`), the west half of the pad pair the cell's own
+`"core"` stage links across the top gap — which sits in the north window
+and clears `bn`'s met1 attic lane (local `y ∈ [15.915, 16.085]`,
+`x ∈ [3.085, 16.915]`) by `1.535 µm` in `x`. Above that the route joins a
+corridor at `y = 29.5` (absolute), `0.83 µm` above every row-2 block's own
+bbox top (`28.67`), and drops at `x = 55.0` — the gap between `xa2`'s right
+edge (`52.94`) and `xa3`'s left (`57.94`) — onto `y = 19.395`, `xa3.a`'s
+own already-declared approach lane.
+
+### Finding 3: `t2` is blocked by the *routing plane*, not by the floorplan
+
+`t2` (`xa2.y` → `xa3.b`) does not route in this pass, and both probes were
+rejected by the router itself rather than discovered afterwards:
+
+- **East escape** (`xa2.y` at local `(7.6, 3.0)`, inside the east window
+  above): `unrouted_nets: ["t2"]`, reason `crosses already-routed net
+  'ro4'`. `ro4`'s own committed backbone rises at `x = 49.5` from `y = 10.0`
+  to `19.395`, which is *inside* `xa2`'s own bbox `x` range
+  (`28.97`-`52.94`), so every eastward exit from `xa2` above `y = 10` meets
+  it.
+- **North escape** (`xa2.y` at local `(1.55, 13.0)`, corridor lane
+  `y = 30.5`): `unrouted_nets: ["t2"]`, reason `crosses already-routed net
+  't1'`.
+
+The second rejection is not a waypoint choice, it is arithmetic: `t1` has
+to run from `xa1`'s own escape column (absolute `x = 8.435`) east to `xa3`
+(`x ≥ 57.94`), so its corridor lane necessarily spans `xa2`'s north escape
+column (absolute `x ∈ [37.195, 38.545]`, the north window mapped through
+`xa2`'s origin) — and that column is `t2`'s only unblocked escape, because
+the other two windows lead into **closed pockets** bounded by the
+already-committed `ro1`-`ro4` backbones. `xa1`'s south window, for example,
+opens into `x ∈ (-0.5, 20.5)`, `y ∈ (8.0, 11.085)`: floor `ro1`'s
+`y = 8.0` lane (`x` `-0.5`→`50.5`), west wall `ro1`'s `x = -0.5` vertical
+(`y` `8.0`→`19.395`), east wall `ro2`'s `x = 20.5` vertical
+(`y` `8.5`→`19.395`), ceiling `xa1`'s own bbox bottom. Swapping which of
+`t1`/`t2` takes the higher corridor lane only moves the crossing from one
+net's rise to the other's drop.
+
+**So the next increment needs a second drawing plane, not a better
+waypoint** — the same conclusion `ro_stage`/`xor2` reached one level down,
+for the same reason (two nets that must cross cannot share a layer). The
+catch is `"metal3"`'s documented single-hop via rule (`layout/README.md`,
+"Floorplan decisions made so far"): met2 cannot reach a bare li1 pin, and
+neither `xor2`'s `y` nor **any** `ro_buf` port carries met1 (`klt
+components` reports all four `ro_buf` nets — `a`, `y`, `vdd`, `vss` — as
+li1-only), so a met2 stage has to be preceded by a met1 promotion. The
+cheapest place for that promotion is inside the leaf cell's own final
+(`"metal2"`) stage rather than at this level, where there is no legal
+two-pin met1 leg to draw one with; whoever attempts it should measure the
+cell's interior free space the way `xor2-y-escape-scan.py` measures its
+escape windows, not assume it.
+
+### The same fence blocks `vdd`, for a sharper reason than Increment 5 recorded
+
+Increment 5 left `vdd` open with a bbox-detour failure. The measurement
+above says something stronger: `ro1`-`ro4`'s own backbones fence the
+row-1/row-2 corridor **both ways**. Below `y = 8.0` the four escape
+verticals (`x = 50.5`/`105.8`/`161.1`/`216.4`, each rising from `y = 1.2`)
+cut the corridor into five cells, one per buffer; above `y = 8.0` the four
+horizontal lanes (`y = 8.0`/`8.5`/`9.0`/`10.0`, spanning
+`x` `-0.5`→`50.5`, `20.5`→`105.8`, `28.47`→`161.1`, `49.5`→`216.4`) cut it
+the other way, and each buffer's `vdd` tap (`x = 47.195`/`102.495`/
+`157.795`/`212.995`) sits under exactly one of them. A four-tap `vdd` bus
+therefore crosses at least one already-routed backbone on met1 wherever it
+runs — the corridor-height search Increment 5 recommended cannot succeed on
+this plane, and `vdd` joins `t2` as work for the met2 increment.
+
+### Reproduce this increment
+
+```bash
+volare enable --pdk sky130 c6d73a35f524070e85faff4a6a9eef49553ebc2b
+cd layout/ro_array_core-placement-poc
+python3 xor2-y-escape-scan.py                                # -> xor2-y-escape-scan.json (finding 2's table)
+klt gen-compose signal5.compose.request.json --format json   # -> signal5.compose.response.json, ro_array_core_signal5_poc.gds
+klt drc ro_array_core_signal5_poc.gds --deck sky130 --format json      # -> clean, 0 violations
+klt extract ro_array_core_signal5_poc.gds --deck sky130 --format json  # -> 132 devices, 103 nets, 93 pins
+```
+
 ## What this establishes
 
 All eleven already-composed sibling cells (`ro_ring5` + 3 `wstv` variants,
@@ -425,10 +591,15 @@ else below is still open.
   `ro3`'s second leg** (into `xa1.a`/`xa2.a`, really routed — see "Increment
   3" above), **and Increment 4 resolves `ro2`'s and `ro4`'s second leg**
   (into `xa1.b`/`xa2.b`, really routed — see "Increment 4" above), so all
-  four of `ro1..ro4` now reach their intended XOR inputs. Still open:
-  `vdd`/`vss` (the buffer/XOR-tree supply, and the vss bus shared by rings,
-  buffers *and* XORs — eleven taps total), `t1`, `t2`, `xo`, and therefore
-  any LVS attempt.
+  four of `ro1..ro4` now reach their intended XOR inputs. **Increment 6
+  resolves `t1`** (`xa1.y` → `xa3.a`, really routed) **and exposes `xo`
+  (`xa3.y`, a real top-level port) and `t2` (`xa2.y`) as pins on measured
+  taps.** Still open: `vdd` (the buffer/XOR-tree supply), `ring1..4`'s and
+  `xa1..3`'s own `vss` taps (not LVS-blocking, per Increment 5's substrate
+  finding), `t2`'s own routing, and therefore any LVS attempt. `t2` and
+  `vdd` are both blocked on the *same* cause — met1 is fenced by the
+  already-routed `ro1..ro4` backbones — and both need a second drawing
+  plane, not a better waypoint (Increment 6, finding 3).
 - **The floorplan is a first-pass grid, not a routing-aware plan.** 5 µm
   gaps were chosen for guaranteed DRC clearance (nwell/tap spacing rules in
   sky130 are sub-micron), not for routability. A next increment may need to
@@ -437,7 +608,15 @@ else below is still open.
   composition (`layout/xor2/README.md`'s "Why the PoC's prediction did not
   hold").
 - **`xor2`'s `y`/`vdd`/`vss` tap coordinates below are approximate, not
-  tool-declared.** Unlike `ro_ring5`'s and `ro_buf`'s ports (read from an
+  tool-declared.** **`y` is resolved as of Increment 6**: the table's own
+  `y (-> t1) approx (10.725, 17.185)` (block-local `(3.84, 4.6)`) is
+  confirmed *on-net* — it and the tap Increment 6 actually routed from,
+  local `(1.55, 13.0)`, are points on the same single li1 component `klt
+  components` reports as `xor2`'s `y`. Being on-net is not the same as
+  being escapable, though: only four windows on that component have a legal
+  met1 escape at all, and the approximation above is in none of them (see
+  Increment 6, finding 2, and `xor2-y-escape-scan.json`). `vdd`/`vss`
+  remain approximate and unconfirmed. Unlike `ro_ring5`'s and `ro_buf`'s ports (read from an
   authoritative intermediate-stage `compose.response.json`, see below),
   `xor2`'s own final-stage response reports `"ports": []` (all of its pins
   are inherited, unlabeled, from its `core` stage), and a `klt components`
@@ -580,9 +759,24 @@ klt extract ro_array_core_poc.gds --deck sky130 --format json  # -> 132 devices 
    bus attempt failed outright (`unrouted_nets: ["vdd"]`, every candidate
    leg rejected for crossing `ring2`/`ring3`'s own bbox) — see Increment 5's
    own section for the specific corridor-height reasoning whoever attempts
-   `vdd` next should start from. `xor2`'s own `y`/`vdd`/`vss` taps (the
-   `t1`/`t2`/`xo` combining-tree wiring) remain unconfirmed and unattempted.
-4. Given `ro_ring5`'s and `xor2`'s own composition each needed a staged
+   `vdd` next should start from — **superseded again by Increment 6**: that
+   corridor-height search cannot succeed on met1 at all, because
+   `ro1`-`ro4`'s own backbones fence the row-1/row-2 corridor in both axes
+   (Increment 6's `vdd` section), so `vdd` is now a met2 problem, not a
+   waypoint problem. `xor2`'s own `y` tap is **confirmed by Increment 6**
+   (`t1` really routed from it, one measured escape window of four); its
+   `vdd`/`vss` taps remain unconfirmed and unattempted.
+4. **Next: a second drawing plane for `t2` and `vdd`** (Increment 6,
+   finding 3). Both are blocked by the same fence of already-routed met1
+   backbones, both rejections came from the router itself (`crosses
+   already-routed net 'ro4'` / `'t1'`), and the crossing is arithmetic
+   rather than a bad waypoint. `"metal3"` (met2) is empty everywhere in
+   this floorplan, but its single-hop via rule cannot reach a bare li1
+   pin — and `xor2`'s `y` and every `ro_buf` port are li1-only (`klt
+   components`) — so the promotion to met1 has to happen inside the leaf
+   cell's own final stage first. Measure that cell's interior free space
+   the way `xor2-y-escape-scan.py` measures its escape windows.
+5. Given `ro_ring5`'s and `xor2`'s own composition each needed a staged
    (`"stages"`) approach to keep crossing nets off one layer, expect
    `ro_array_core`'s own final assembly to need the same — this floorplan
    only proves blocks fit with clearance, not that every net above routes in
@@ -590,7 +784,7 @@ klt extract ro_array_core_poc.gds --deck sky130 --format json  # -> 132 devices 
    above, one level down (the block-interior edge-margin rule), a different
    failure mode than the crossing-nets rule but with the same practical
    consequence: some nets need their own dedicated pass or channel.
-5. Once routed, run `klt lvs` against `design/ro_array_core.spice`'s own
+6. Once routed, run `klt lvs` against `design/ro_array_core.spice`'s own
    `.subckt ro_array_core`. Note a real open question this increment did
    *not* resolve: the reference netlist defines a **single**
    `.subckt ro_ring5 en ro vddr vss wstv=0.42 lstv=2 cld=0.5f` and calls it

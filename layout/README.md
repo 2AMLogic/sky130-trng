@@ -4,10 +4,43 @@ Physical layout evidence for the sky130-trng entropy source, verified with
 `klayout-tools` (`klt`) against the sky130 open PDK. See `layout/pdk.json`
 for the PDK/tool pin.
 
-**Status (issue #22, this increment): `ro_array_core`'s four buffers now
-share a really-routed `vss` bus, and extraction shows `vss` was already one
-electrically merged net across the whole composed array before that bus
-existed —**
+**Status (issue #22, this increment): `ro_array_core`'s XOR combining tree
+starts — `t1` is really routed, `xo`/`t2` are exposed on measured taps, and
+a first probe that `klt drc` called clean turned out to be an electrical
+short —**
+[`layout/ro_array_core-placement-poc/`](ro_array_core-placement-poc/README.md)'s
+"Increment 6" section. `t1` (`xa1.y` → `xa3.a`) is routed on `"metal2"`
+(`66.97 µm`), and `xo` (`xa3.y`, a genuine top-level port of
+`design/ro_array_core.spice`) and `t2` (`xa2.y`) are exposed as pins.
+**`klt drc` clean (0 violations)**; `klt extract` reports `132` devices
+(unchanged) and `103` nets (down from `104`), a net-by-net diff confirming
+exactly one merge — `xa3`'s 4-device `a` net plus `xa1`'s 4-device `y` net
+into one 8-device `t1` — with the two remaining `y` nets gaining only their
+new pin labels. Three findings. **(1) `klt drc` clean is not connectivity
+evidence**: a first `t1` probe reported `unrouted_nets: []` and `0`
+violations while shorting `xa1`'s internal `bn` node to its own output,
+because `klt gen-compose` models a placed block as an opaque *bbox* and has
+no obstacle model of its interior, so an escape stub from an interior port
+crosses that block's own metal unchecked (filed generically against
+`2AMLogic/klayout-tools` per `CLAUDE.md`'s friction protocol, filed as
+`klayout-tools#1527`; the probe's artifacts are not committed). Every
+routed net here is now proven by a net-by-net `klt extract` diff, not by
+DRC. **(2) `xor2`'s `y` has exactly
+four legal met1 escape windows**, measured by a committed scan script
+(`xor2-y-escape-scan.py`/`.json`) rather than guessed — the failed probe's
+tap was on the right net, in the wrong window. **(3) `t2` and `vdd` are
+both blocked by the same fence**: `ro1`-`ro4`'s already-routed backbones
+cut the row-1/row-2 corridor in both axes, and the router rejected two `t2`
+probes itself (`crosses already-routed net 'ro4'`, then `'t1'`), so both
+nets now need a second drawing plane (`"metal3"`/met2) rather than a better
+waypoint — which in turn needs a met1 promotion inside the leaf cell first,
+since `xor2`'s `y` and every `ro_buf` port are li1-only. **Still not a
+DRC/LVS-clean `ro_array_core`**: `vdd`, `t2`, `ring1..4`'s and `xa1..3`'s
+own `vss` taps, and therefore any LVS attempt, are all still open.
+
+**A previous increment: `ro_array_core`'s four buffers got a really-routed
+`vss` bus, and extraction showed `vss` was already one electrically merged
+net across the whole composed array before that bus existed —**
 [`layout/ro_array_core-placement-poc/`](ro_array_core-placement-poc/README.md)'s
 "Increment 5" section. `buf1`-`buf4`'s own `vss` taps are now routed
 together as one 4-pin bundle net (no hand-tuned waypoints needed — `klt
@@ -22,21 +55,22 @@ deep-nwell isolation) to one global substrate identity via
 this directory's own inter-block routing to reach a `klt lvs` match — the
 same mechanism `spec/decision-records/DR-0005-*.md` finding 3 already
 documented on a single ring's own parasitics, now confirmed at the
-array-composition level. The bus drawn this increment is still real,
+array-composition level. The bus drawn in that increment is still real,
 DRC-clean, load-bearing metal (an actual die needs the explicit strap; the
 substrate's own resistance is unmodelled per DR-0005), just not what was
 blocking LVS. **`vdd` is not the same shape and stays genuinely open**: it
 still reports as seven separate nets (one per `buf`/`xor2` instance,
-unchanged by this increment), and a first buffer-only `vdd` bus attempt
+unchanged by that increment), and a first buffer-only `vdd` bus attempt
 failed outright (`unrouted_nets: ["vdd"]` — every candidate leg crosses
 `ring2`'s or `ring3`'s own bbox; `vdd`'s tap sits close enough to each
 buffer's own bbox top that the router's automatic detour lanes cannot clear
-the neighbouring rings). **Still not a DRC/LVS-clean `ro_array_core`**:
-`vdd` (now the largest concretely-scoped remaining unknown, with a
-documented failure mode to start from), `ring1..4`'s and `xa1..3`'s own
+the neighbouring rings) — the corridor-height retry that increment
+recommended is **superseded by Increment 6**, which measures that no met1
+corridor can work at all. Its own still-open list, as of that increment:
+`vdd`, `ring1..4`'s and `xa1..3`'s own
 `vss` taps (not yet drawn, though no longer LVS-blocking per the finding
 above), the XOR combining tree (`t1`, `t2`, `xo`), and therefore any LVS
-attempt, are all still open. The PoC's README also carries an open question
+attempt. The PoC's README also carries an open question
 on `compose-cell.py`'s `lvs.dependencies` mechanism, unchanged by this
 increment: the reference netlist defines one `ro_ring5` subckt called four
 times with four different `wstv=` overrides, not four separate subckts, and
