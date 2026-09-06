@@ -277,9 +277,14 @@ DR-0003 surfaces and does not resolve on its own authority.
   (`spec/decision-records/DR-0005-*.md`).
   Still open: `xor2` routing (its 12-device placement is now DRC-clean —
   see `layout/xor2-placement-poc/README.md` — but its four-signal fan-out
-  is a genuine multi-net channel-routing problem, not yet solved), no ring,
-  no array and no sampler as *assembled* layout — so there is no inter-cell
-  interconnect to extract, and no whole-block post-layout PVT
+  is a genuine multi-net channel-routing problem, not yet solved); `ro_ring5`
+  assembly is started but not finished —
+  [`layout/ro_ring5-connectivity-poc/README.md`](../layout/ro_ring5-connectivity-poc/README.md)
+  places all five leaf gates and routes the forward `n1`-`n4` signal chain
+  cleanly, but the placement pitch is not yet DRC-clean and `vddr`/`vss`/`ro`
+  rail busing hit a real `klt` via-drop limitation not yet worked around; no
+  array and no sampler as *assembled* layout either — so there is still no
+  inter-cell interconnect to extract, and no whole-block post-layout PVT
   re-verification. See `layout/README.md` for the full status and the
   follow-up issue (#27) it tracks. (`sim/` is no longer empty either — see
   `sim/README.md`.)
