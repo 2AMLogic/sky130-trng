@@ -272,6 +272,98 @@ klt drc ro_array_core_signal3_poc.gds --deck sky130 --format json      # -> clea
 klt extract ro_array_core_signal3_poc.gds --deck sky130 --format json  # -> 132 devices, 104 nets
 ```
 
+## Increment 5: buffer `vss` bus routed, and a substrate-connectivity finding that changes what "the largest remaining unknown" actually needs
+
+Starts on the `vdd`/`vss` item Increment 4 flagged as the largest remaining
+unknown: `buf1`-`buf4`'s own `vss` taps (`ro_buf`'s own authoritative
+`TAP_N` port, `local (-1.22, 0.92)`, li1, `width_um 0.42`, `direction_deg
+90` — `layout/ro_buf/compose.response.json`'s own reported `ports[]`, not an
+approximation) are now really routed together as one 4-pin bundle net
+(`#1073`'s spanning-tree router, no `waypoints_um` needed — the three
+row-adjacent legs `buf1`-`buf2`, `buf2`-`buf3`, `buf3`-`buf4` each composed
+on the first attempt).
+
+```
+$ klt gen-compose signal4.compose.request.json --format json   # -> signal4.compose.response.json, ro_array_core_signal4_poc.gds
+unrouted_nets: []
+$ klt drc ro_array_core_signal4_poc.gds --deck sky130 --format json
+status: clean, violation_count: 0
+$ klt extract ro_array_core_signal4_poc.gds --deck sky130 --format json
+device_count: 132 (unchanged), net_count: 104 (unchanged), pin_count: 94 (unchanged)
+```
+
+**The finding that matters more than the routing itself: `net_count` did not
+move, because `vss` was already one electrically merged net before this
+increment drew a single wire.** Diffing `signal3.extract.json` against
+`signal4.extract.json` net-by-net: both report exactly one net named
+`g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss` with
+`device_count: 122`, byte-identical in both files — the four buffers' own
+NMOS bodies were already members of that net in `signal3`, before any
+`buf`-to-`buf` `vss` routing existed anywhere in this directory. This is
+`klt extract`'s sky130 deck's own documented `connect_global` behaviour
+(`docs/cli/extract.md`'s "NMOS body" section: an un-isolated p-substrate is
+modelled as one node chip-wide, "matching real silicon" for a design that
+draws no deep-nwell isolation — which this one does not) — not a bug, and
+not new: it is the same mechanism `spec/decision-records/DR-0005-*.md`
+finding 3 already documented on a *single ring's* own extracted parasitics
+("the shared node genuinely carries all four rings' activity"). This
+increment confirms the same thing holds at the *array* composition level,
+across four independently-placed rings plus four independently-placed
+buffers, with no inter-block metal drawn between them at all — i.e. `vss`
+connectivity across `ro_array_core`'s instances does not wait on this
+directory's own routing to reach a `klt lvs` match; it is already there via
+the substrate model. **The `vss` bus this increment draws is still real,
+DRC-clean, physically load-bearing metal** — an actual fabricated die needs
+an explicit low-impedance strap, not just the substrate's own (unmodelled,
+per DR-0005 finding 3) resistance as its only return path — but it is not
+what closes the "still open" item DR-0003 §8/DR-0005 are actually asking
+about.
+
+**`vdd` is not the same shape, and stays a genuinely open problem.**
+`signal4.extract.json` still reports **seven separate `vdd` nets** — one
+per `ro_buf`/`xor2` instance (`device_count` 2/2/2/2/10/10/10), unchanged
+from `signal3` — because `vdd` ties to each device's own `nwell`, and
+`nwell` has no chip-wide global identity the way substrate does: two
+separately-placed cells' nwells are only the same electrical node if a real
+strap physically joins them. A first attempt at routing the same four-buffer
+`vdd` bundle (declared the same way, `ro_buf`'s own authoritative `vdd`
+`TAP_N` port, local `(-1.12, 4.24)`) failed outright — `unrouted_nets:
+["vdd"]`, every row-adjacent candidate leg rejected with `"backbone's
+0.17um-wide drawn path crosses 41.29um through unrelated block 'ring2''s
+bbox ... a bounded detour ... was tried first, and each one still crossed a
+placed block"` — because `vdd`'s tap sits close enough to the top of each
+`ro_buf`'s own bbox (local `y=4.24` against a bbox top of `4.6`) that the
+router's automatic over-the-row detour lane cannot clear the intervening
+`ring2`/`ring3` blocks (whose own composed bbox top, `4.81` µm, sits close
+enough above `vdd`'s height that the two remaining candidate lanes — over
+and under — both still cross a placed block per `#1167`'s bounded, two-lane
+search) the way `vss`'s lower tap (`y=0.92`, well clear of the row's bottom)
+apparently could. That probe's output was not committed (a failed,
+zero-routed-nets `gen-compose` response is not layout evidence); whoever
+attempts `vdd` next should budget explicit `waypoints_um` per leg — most
+likely a corridor above `rn1`-`rn4`'s own `y=5.6` escape channel and above
+every row-1 block's own bbox top (`> 4.81` µm), clear of `ro1`-`ro4`'s own
+escape verticals (which run from `y=1.2` up through `y=8.0`-`10.0` at each
+buffer's own `x`, so a `vdd` corridor below `8.0` still has to dodge those
+four columns specifically) rather than the row-2/XOR-tree corridor
+Increment 3/4 already used for signal routing.
+
+**Not filed as a `klayout-tools` tool gap.** Both outcomes this increment
+produced — the free `vss` merge and the blocked `vdd` route — came with
+specific, actionable diagnostics (a documented `connect_global` mechanism in
+one case, a named crossed-block reason in the other); neither is a case of
+the tool being silently wrong or missing a capability.
+
+### Reproduce this increment
+
+```bash
+volare enable --pdk sky130 c6d73a35f524070e85faff4a6a9eef49553ebc2b
+cd layout/ro_array_core-placement-poc
+klt gen-compose signal4.compose.request.json --format json   # -> signal4.compose.response.json, ro_array_core_signal4_poc.gds
+klt drc ro_array_core_signal4_poc.gds --deck sky130 --format json      # -> clean, 0 violations
+klt extract ro_array_core_signal4_poc.gds --deck sky130 --format json  # -> 132 devices, 104 nets (vss net's device_count unchanged at 122)
+```
+
 ## What this establishes
 
 All eleven already-composed sibling cells (`ro_ring5` + 3 `wstv` variants,
@@ -473,14 +565,23 @@ klt extract ro_array_core_poc.gds --deck sky130 --format json  # -> 132 devices 
    approach either collided with `a`'s own backbone or crossed a third
    block's bbox (Increment 3's finding 2 and Increment 4's finding 1,
    respectively).
-3. Confirm `xor2`'s `y`/`vdd`/`vss` taps by attempting a real routed
-   connection and checking `klt drc`/`klt extract` agree, before trusting
-   the `approx` rows above for the combining tree (`t1`, `t2`, `xo`) and the
-   `vdd`/`vss` distribution across all eight `buf`/`xor2` instances. This is
-   the largest remaining unknown: `vss` alone is a genuinely global net
-   (rings, buffers *and* XORs all share it — eleven taps across the full
-   216 µm span and both rows), unlike anything routed so far in this
-   directory.
+3. ~~Confirm `xor2`'s `y`/`vdd`/`vss` taps by attempting a real routed
+   connection~~ **Partially superseded by Increment 5's own finding**: `vss`
+   turns out not to need this directory's routing at all to reach a `klt
+   lvs` match — `klt extract`'s sky130 `connect_global` substrate model
+   already merges every instance's `vss`-tied NMOS body (and any drawn psub
+   tap) into one net, confirmed at the array-composition level in Increment
+   5 (buffer `vss` bus routed, `net_count` unchanged before/after). Routing
+   `ring1..4`'s own `vss` and `xa1..3`'s `vss` explicitly is still worth
+   doing eventually (a real die needs the low-impedance strap the substrate
+   alone does not model, per DR-0005 finding 3), but it is no longer the
+   blocker for LVS. `vdd` is the opposite: confirmed genuinely open (seven
+   separate nets, unchanged by Increment 5), and a first buffer-only `vdd`
+   bus attempt failed outright (`unrouted_nets: ["vdd"]`, every candidate
+   leg rejected for crossing `ring2`/`ring3`'s own bbox) — see Increment 5's
+   own section for the specific corridor-height reasoning whoever attempts
+   `vdd` next should start from. `xor2`'s own `y`/`vdd`/`vss` taps (the
+   `t1`/`t2`/`xo` combining-tree wiring) remain unconfirmed and unattempted.
 4. Given `ro_ring5`'s and `xor2`'s own composition each needed a staged
    (`"stages"`) approach to keep crossing nets off one layer, expect
    `ro_array_core`'s own final assembly to need the same — this floorplan

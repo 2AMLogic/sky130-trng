@@ -4,33 +4,61 @@ Physical layout evidence for the sky130-trng entropy source, verified with
 `klayout-tools` (`klt`) against the sky130 open PDK. See `layout/pdk.json`
 for the PDK/tool pin.
 
-**Status (issue #22, this increment): `ro_array_core`'s buffer→XOR `b` leg
-is now really routed for both first-stage XORs, completing the forward
-ring→buffer→XOR signal path for `xa1`/`xa2` —
+**Status (issue #22, this increment): `ro_array_core`'s four buffers now
+share a really-routed `vss` bus, and extraction shows `vss` was already one
+electrically merged net across the whole composed array before that bus
+existed —**
 [`layout/ro_array_core-placement-poc/`](ro_array_core-placement-poc/README.md)'s
-"Increment 4" section.** `ro2` (`buf2.y`) is now really routed into `xa1`'s
-`b` input, and `ro4` (`buf4.y`) into `xa2`'s `b` input, on `"metal2"`,
-resolving the previous increment's own open finding. Still **`klt drc`
-clean (0 violations)**, and `klt extract` now reports `132` devices
-(unchanged) and `104` nets (down from `106`, exactly the two new merges,
-each confirmed by a net-by-net diff to join only its intended `b`-labelled
-net). Two findings: `gen-compose` rejects a backbone that crosses through a
-*third*, unrelated block's own bounding box even well above the row being
-routed through (discovered when a first attempt tried routing above
-`xa1`/`xa2`'s own row height to dodge congestion, and was rejected for
-crossing `xa2`'s/`xa3`'s own bbox); and the corridor between row 1 and row 2
-had room for exactly one more pair of dedicated channels once reasoned about
-via the two existing backbones' own vertical-segment extents (`y=8.5`/
-`10.0`, distinct from `a`'s `y=8.0`/`9.0`) — see the PoC's own README
-"Increment 4" section for both findings in full. **Still not a
-DRC/LVS-clean `ro_array_core`**: `vdd`/`vss` (a genuinely global net —
-rings, buffers *and* XORs all share `vss`, eleven taps total), the XOR
-combining tree (`t1`, `t2`, `xo`), and therefore any LVS attempt, are all
-still open. The PoC's README also carries an open question on
-`compose-cell.py`'s `lvs.dependencies` mechanism, unchanged by this
+"Increment 5" section. `buf1`-`buf4`'s own `vss` taps are now routed
+together as one 4-pin bundle net (no hand-tuned waypoints needed — `klt
+gen-compose`'s spanning-tree router found all three row-adjacent legs on the
+first attempt). Still **`klt drc` clean (0 violations)**, and `klt extract`
+reports the same `132` devices and `104` nets as before this increment —
+**`net_count` did not move**, because the merged `vss` net
+(`device_count: 122`) is byte-identical before and after: `klt extract`'s
+sky130 deck already ties every un-isolated NMOS body (this design draws no
+deep-nwell isolation) to one global substrate identity via
+`connect_global`, so `ro_array_core`'s `vss` connectivity does not wait on
+this directory's own inter-block routing to reach a `klt lvs` match — the
+same mechanism `spec/decision-records/DR-0005-*.md` finding 3 already
+documented on a single ring's own parasitics, now confirmed at the
+array-composition level. The bus drawn this increment is still real,
+DRC-clean, load-bearing metal (an actual die needs the explicit strap; the
+substrate's own resistance is unmodelled per DR-0005), just not what was
+blocking LVS. **`vdd` is not the same shape and stays genuinely open**: it
+still reports as seven separate nets (one per `buf`/`xor2` instance,
+unchanged by this increment), and a first buffer-only `vdd` bus attempt
+failed outright (`unrouted_nets: ["vdd"]` — every candidate leg crosses
+`ring2`'s or `ring3`'s own bbox; `vdd`'s tap sits close enough to each
+buffer's own bbox top that the router's automatic detour lanes cannot clear
+the neighbouring rings). **Still not a DRC/LVS-clean `ro_array_core`**:
+`vdd` (now the largest concretely-scoped remaining unknown, with a
+documented failure mode to start from), `ring1..4`'s and `xa1..3`'s own
+`vss` taps (not yet drawn, though no longer LVS-blocking per the finding
+above), the XOR combining tree (`t1`, `t2`, `xo`), and therefore any LVS
+attempt, are all still open. The PoC's README also carries an open question
+on `compose-cell.py`'s `lvs.dependencies` mechanism, unchanged by this
 increment: the reference netlist defines one `ro_ring5` subckt called four
 times with four different `wstv=` overrides, not four separate subckts, and
 the current dependency mechanism has not been exercised against that shape.
+
+**A previous increment: `ro_array_core`'s buffer→XOR `b` leg was routed for
+both first-stage XORs** —
+[`layout/ro_array_core-placement-poc/`](ro_array_core-placement-poc/README.md)'s
+"Increment 4" section. `ro2` (`buf2.y`) was routed into `xa1`'s `b` input,
+and `ro4` (`buf4.y`) into `xa2`'s `b` input, on `"metal2"`, resolving the
+previous increment's own open finding. `klt drc` clean (0 violations), and
+`klt extract` reported `132` devices (unchanged) and `104` nets (down from
+`106`, exactly the two new merges, each confirmed by a net-by-net diff to
+join only its intended `b`-labelled net). Two findings: `gen-compose`
+rejects a backbone that crosses through a *third*, unrelated block's own
+bounding box even well above the row being routed through (discovered when
+a first attempt tried routing above `xa1`/`xa2`'s own row height to dodge
+congestion, and was rejected for crossing `xa2`'s/`xa3`'s own bbox); and the
+corridor between row 1 and row 2 had room for exactly one more pair of
+dedicated channels once reasoned about via the two existing backbones' own
+vertical-segment extents (`y=8.5`/`10.0`, distinct from `a`'s `y=8.0`/`9.0`)
+— see the PoC's own README "Increment 4" section for both findings in full.
 
 **A previous increment: `ro_array_core`'s buffer→XOR `a` leg was routed for
 both first-stage XORs** —
