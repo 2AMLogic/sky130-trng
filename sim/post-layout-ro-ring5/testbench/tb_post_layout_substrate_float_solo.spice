@@ -1,0 +1,136 @@
+* Post-layout ro_ring5 with the shared substrate floating and only ONE ring
+* running -- the control that separates capacitive LOADING from inter-ring
+* COUPLING.
+*
+* Purpose (issue #22, acceptance criterion 4). The sibling deck
+* tb_post_layout_substrate_float.spice runs all four post-layout rings with
+* the extracted substrate node `vsubs` left floating, and its slowest ring
+* (wstv = 0.42 um) comes out measurably FASTER than in the hard-tied deck.
+* Two different mechanisms could produce that, and they mean opposite
+* things:
+*
+*   LOADING  -- a floating `vsubs` is not a ground. Every net-to-substrate
+*               capacitance stops being a capacitance to ground and becomes
+*               part of a series network between nets, so each net's own
+*               effective load falls and EVERY ring speeds up a little.
+*               This is an artifact of the unmodelled substrate tie, not a
+*               statement about ring independence.
+*   COUPLING -- the four rings share one node, so each ring's switching
+*               current is injected into every other ring, pulling their
+*               frequencies toward each other. THIS is the quantity
+*               DR-0003 section 8 flags as unmeasured and entropy-relevant.
+*
+* This deck holds rings 2/3/4 at en = 0 while leaving them physically
+* present -- same instances, same extracted capacitance on the shared node,
+* simply not switching. Ring 1's period here is therefore its
+* floating-substrate period with the LOADING mechanism fully present and
+* the COUPLING mechanism removed. Differencing the three decks at the same
+* corner separates them:
+*
+*   loading  = t(this deck)                 - t(hard-tied, 4 running)
+*   coupling = t(float deck, 4 running)     - t(this deck)
+*
+* Without this control the float deck's numbers cannot be attributed, and
+* an attribution is exactly what DR-0003 section 8 asks for.
+*
+* Topology: identical to tb_post_layout_substrate_float.spice -- four
+* post-layout rings, wstv = 0.42/0.44/0.46/0.48 um, one physical layout
+* cell per ring, each on its own supply, `vsubs` untied -- except that
+* Venp2/Venp3/Venp4 sit at 0 V instead of @@VDD@@. Ring 1's measurements
+* are named identically to the float deck's so the two records difference
+* line for line.
+*
+* This file is a TEMPLATE: sim/bin/corner-run.py substitutes @@PDK_LIB@@,
+* @@CORNER@@, @@PEX_LIB@@, @@TEMP@@, @@VDD@@ and @@TMAX@@. As committed it
+* is not a runnable deck.
+
+.option scale=1u
+.lib "@@PDK_LIB@@" @@CORNER@@
+
+* post-layout subcircuit library only (see header)
+.include "@@PEX_LIB@@"
+
+.temp @@TEMP@@
+
+* NOTE: no `Vsub vsubs 0` tie here -- that is the entire difference from
+* tb_post_layout_ro_ring5.spice. See the header.
+
+Vddrp1 vddrp1 0 dc @@VDD@@
+Venp1 enp1 0 dc @@VDD@@
+xgp1 p1o enp1 p1a vddrp1 0 ro_nand2_pex_wstv0p42
+x1p1 p1a p1b vddrp1 0 ro_stage_pex_wstv0p42
+x2p1 p1b p1c vddrp1 0 ro_stage_pex_wstv0p42
+x3p1 p1c p1d vddrp1 0 ro_stage_pex_wstv0p42
+x4p1 p1d p1o vddrp1 0 ro_stage_pex_wstv0p42
+
+* rings 2/3/4: physically present (their extracted capacitance still loads
+* the shared substrate node) but held stopped -- see the header.
+Vddrp2 vddrp2 0 dc @@VDD@@
+Venp2 enp2 0 dc 0
+xgp2 p2o enp2 p2a vddrp2 0 ro_nand2_pex_wstv0p44
+x1p2 p2a p2b vddrp2 0 ro_stage_pex_wstv0p44
+x2p2 p2b p2c vddrp2 0 ro_stage_pex_wstv0p44
+x3p2 p2c p2d vddrp2 0 ro_stage_pex_wstv0p44
+x4p2 p2d p2o vddrp2 0 ro_stage_pex_wstv0p44
+
+Vddrp3 vddrp3 0 dc @@VDD@@
+Venp3 enp3 0 dc 0
+xgp3 p3o enp3 p3a vddrp3 0 ro_nand2_pex_wstv0p46
+x1p3 p3a p3b vddrp3 0 ro_stage_pex_wstv0p46
+x2p3 p3b p3c vddrp3 0 ro_stage_pex_wstv0p46
+x3p3 p3c p3d vddrp3 0 ro_stage_pex_wstv0p46
+x4p3 p3d p3o vddrp3 0 ro_stage_pex_wstv0p46
+
+Vddrp4 vddrp4 0 dc @@VDD@@
+Venp4 enp4 0 dc 0
+xgp4 p4o enp4 p4a vddrp4 0 ro_nand2_pex_wstv0p48
+x1p4 p4a p4b vddrp4 0 ro_stage_pex_wstv0p48
+x2p4 p4b p4c vddrp4 0 ro_stage_pex_wstv0p48
+x3p4 p4c p4d vddrp4 0 ro_stage_pex_wstv0p48
+x4p4 p4d p4o vddrp4 0 ro_stage_pex_wstv0p48
+
+* --- output buffers, one per ring, on a shared block supply ------------
+* Present so this deck's loading matches tb_post_layout_ro_ring5.spice's
+* exactly -- the whole point of this deck is to difference against that
+* one, which is only meaningful if the two rings are equally loaded.
+Vddp vddp 0 dc @@VDD@@
+xbp1 p1o p1ob vddp 0 ro_buf_pex
+xbp2 p2o p2ob vddp 0 ro_buf_pex
+xbp3 p3o p3ob vddp 0 ro_buf_pex
+xbp4 p4o p4ob vddp 0 ro_buf_pex
+
+.ic v(p1o)=0 v(p1a)=@@VDD@@ v(p1b)=0 v(p1c)=@@VDD@@ v(p1d)=0
+.ic v(p2o)=0 v(p2a)=@@VDD@@ v(p2b)=0 v(p2c)=@@VDD@@ v(p2d)=0
+.ic v(p3o)=0 v(p3a)=@@VDD@@ v(p3b)=0 v(p3c)=@@VDD@@ v(p3d)=0
+.ic v(p4o)=0 v(p4a)=@@VDD@@ v(p4b)=0 v(p4c)=@@VDD@@ v(p4d)=0
+.ic v(vsubs)=0
+
+.tran @@TMAX@@ 160n uic
+
+.control
+run
+
+meas tran tp1a when v(p1o)=0.5*@@VDD@@ rise=3
+meas tran tp1b when v(p1o)=0.5*@@VDD@@ rise=11
+let t_solo_wstv0p42 = (tp1b - tp1a)/8
+* No ladder span here: rings 2/3/4 are stopped, so there is no ladder.
+
+* How hard is ONE ring driving the shared node? Compare against the float
+* deck's own vsubs_pp, where four rings drive it.
+meas tran vsubmax MAX v(vsubs) from=20n to=160n
+meas tran vsubmin MIN v(vsubs) from=20n to=160n
+let vsubs_pp_solo = vsubmax - vsubmin
+let vsubs_pp_solo_frac = (vsubmax - vsubmin) / @@VDD@@
+
+* Ring-node swing on the one running ring, to confirm it is still running
+* normally with its three stopped neighbours' capacitance on the node.
+meas tran vmaxp1 MAX v(p1o) from=20n to=160n
+meas tran vminp1 MIN v(p1o) from=20n to=160n
+let swing_frac_solo_wstv0p42 = (vmaxp1 - vminp1) / @@VDD@@
+
+print t_solo_wstv0p42
+print vsubs_pp_solo
+print vsubs_pp_solo_frac
+print swing_frac_solo_wstv0p42
+.endc
+.end

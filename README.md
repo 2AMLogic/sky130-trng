@@ -74,7 +74,8 @@ spec/          ratified spec + decision records
 design/        schematics / netlists (xschem) -- up to and including the raw tap
 digital/       everything downstream of the raw tap: behavioural model + RTL
 sim/           testbenches + PVT corner results (ngspice), plus behavioural records
-layout/        GDS + DRC/LVS reports (klayout-tools driven)
+layout/        GDS + DRC/LVS reports (klayout-tools driven), plus layout/pex/,
+               the extracted post-layout netlist sim/ simulates
 measurements/  silicon characterization (empty until tape-out)
 ```
 

@@ -1,0 +1,347 @@
+|* Post-layout ro_ring5 ladder with the shared substrate node left FLOATING
+|* -- the inter-ring coupling bound DR-0003 section 8 could not measure at
+|* the netlist level.
+|*
+|* Purpose (issue #22, acceptance criterion 4). DR-0003 section 8 records
+|* that the skew fraction which actually DECORRELATES two sky130 rings is
+|* unmeasured, and states why: "the array as drawn has no shared supply
+|* impedance and no substrate model, so a netlist-level correlation
+|* measurement over it can only confirm the absence of a coupling path the
+|* netlist does not contain". Extracted parasitics change that. Every
+|* post-layout cell's net-to-substrate capacitance returns to one shared
+|* node (`vsubs`, .global -- see layout/bin/pex-netlist.py's docstring and
+|* klayout-tools#1503), so four post-layout rings on four independent
+|* supplies still share exactly one physical node: the substrate.
+|*
+|* This deck is the sibling of tb_post_layout_ro_ring5.spice and differs
+|* from it in ONE line: that deck ties `vsubs` hard to 0 (`Vsub vsubs 0 dc
+|* 0`), this one does not tie it at all, leaving it on the extractor's own
+|* `Rvsubs_dctie vsubs 0 1e+12` inside each cell. The two runs therefore
+|* bracket the real answer:
+|*
+|*   TIED   (sibling deck) -- an ideal, zero-impedance substrate. No
+|*          inter-ring coupling through the substrate is possible, by
+|*          construction. This is the optimistic bound, and the one the
+|*          composed cells' own psub guard rings are drawn to approach.
+|*   FLOAT  (this deck)    -- an ideal, INFINITE-impedance shared substrate:
+|*          every ring's switching current is forced through the shared
+|*          node's capacitance and straight into every other ring. This is
+|*          the pessimistic bound.
+|*
+|* Neither is the physical answer, and this deck does not claim to produce
+|* one: the extractor models no substrate resistance and no tap-to-substrate
+|* contact resistance at all, so the real impedance between a cell's psub
+|* tap and the substrate node it strapping is not in this netlist to be
+|* used. What the pair of runs DOES establish is how much the answer can
+|* move across the whole range of that unmodelled impedance -- which is the
+|* thing a bare netlist-level run could not bound at all, because it had no
+|* shared node whatsoever.
+|*
+|* Measured here: each ring's own period (comparable line for line against
+|* the sibling deck's `t_pex_*` at the same corner, temperature and supply),
+|* the ladder span, and the substrate node's own peak-to-peak excursion,
+|* which is zero by construction in the tied deck and is the direct measure
+|* of how hard the rings are driving each other here.
+|*
+|* Topology: the same four post-layout rings as the sibling deck, wstv =
+|* 0.42 / 0.44 / 0.46 / 0.48 um, one physical layout cell per ring, each on
+|* its own independent supply source. No pre-layout control rings: a
+|* pre-layout netlist has no substrate node, so it has nothing to say about
+|* this question.
+|*
+|* This file is a TEMPLATE: sim/bin/corner-run.py substitutes /Users/rwalters/.volare/volare/sky130/versions/c6d73a35f524070e85faff4a6a9eef49553ebc2b/sky130A/libs.tech/combined/sky130.lib.spice,
+|* ss, /Users/rwalters/GitHub/sky130-trng/.loom/worktrees/issue-22/layout/pex/ro_ring5_pex.spice, 27.0, 1.8 and 5p. As committed it
+|* is not a runnable deck.
+|
+|.option scale=1u
+|.lib "/Users/rwalters/.volare/volare/sky130/versions/c6d73a35f524070e85faff4a6a9eef49553ebc2b/sky130A/libs.tech/combined/sky130.lib.spice" ss
+|
+|* post-layout subcircuit library only (see header)
+|.include "/Users/rwalters/GitHub/sky130-trng/.loom/worktrees/issue-22/layout/pex/ro_ring5_pex.spice"
+|
+|.temp 27.0
+|
+|* NOTE: no `Vsub vsubs 0` tie here -- that is the entire difference from
+|* tb_post_layout_ro_ring5.spice. See the header.
+|
+|Vddrp1 vddrp1 0 dc 1.8
+|Venp1 enp1 0 dc 1.8
+|xgp1 p1o enp1 p1a vddrp1 0 ro_nand2_pex_wstv0p42
+|x1p1 p1a p1b vddrp1 0 ro_stage_pex_wstv0p42
+|x2p1 p1b p1c vddrp1 0 ro_stage_pex_wstv0p42
+|x3p1 p1c p1d vddrp1 0 ro_stage_pex_wstv0p42
+|x4p1 p1d p1o vddrp1 0 ro_stage_pex_wstv0p42
+|
+|Vddrp2 vddrp2 0 dc 1.8
+|Venp2 enp2 0 dc 1.8
+|xgp2 p2o enp2 p2a vddrp2 0 ro_nand2_pex_wstv0p44
+|x1p2 p2a p2b vddrp2 0 ro_stage_pex_wstv0p44
+|x2p2 p2b p2c vddrp2 0 ro_stage_pex_wstv0p44
+|x3p2 p2c p2d vddrp2 0 ro_stage_pex_wstv0p44
+|x4p2 p2d p2o vddrp2 0 ro_stage_pex_wstv0p44
+|
+|Vddrp3 vddrp3 0 dc 1.8
+|Venp3 enp3 0 dc 1.8
+|xgp3 p3o enp3 p3a vddrp3 0 ro_nand2_pex_wstv0p46
+|x1p3 p3a p3b vddrp3 0 ro_stage_pex_wstv0p46
+|x2p3 p3b p3c vddrp3 0 ro_stage_pex_wstv0p46
+|x3p3 p3c p3d vddrp3 0 ro_stage_pex_wstv0p46
+|x4p3 p3d p3o vddrp3 0 ro_stage_pex_wstv0p46
+|
+|Vddrp4 vddrp4 0 dc 1.8
+|Venp4 enp4 0 dc 1.8
+|xgp4 p4o enp4 p4a vddrp4 0 ro_nand2_pex_wstv0p48
+|x1p4 p4a p4b vddrp4 0 ro_stage_pex_wstv0p48
+|x2p4 p4b p4c vddrp4 0 ro_stage_pex_wstv0p48
+|x3p4 p4c p4d vddrp4 0 ro_stage_pex_wstv0p48
+|x4p4 p4d p4o vddrp4 0 ro_stage_pex_wstv0p48
+|
+|* --- output buffers, one per ring, on a shared block supply ------------
+|* Present so this deck's loading matches tb_post_layout_ro_ring5.spice's
+|* exactly -- the whole point of this deck is to difference against that
+|* one, which is only meaningful if the two rings are equally loaded.
+|Vddp vddp 0 dc 1.8
+|xbp1 p1o p1ob vddp 0 ro_buf_pex
+|xbp2 p2o p2ob vddp 0 ro_buf_pex
+|xbp3 p3o p3ob vddp 0 ro_buf_pex
+|xbp4 p4o p4ob vddp 0 ro_buf_pex
+|
+|.ic v(p1o)=0 v(p1a)=1.8 v(p1b)=0 v(p1c)=1.8 v(p1d)=0
+|.ic v(p2o)=0 v(p2a)=1.8 v(p2b)=0 v(p2c)=1.8 v(p2d)=0
+|.ic v(p3o)=0 v(p3a)=1.8 v(p3b)=0 v(p3c)=1.8 v(p3d)=0
+|.ic v(p4o)=0 v(p4a)=1.8 v(p4b)=0 v(p4c)=1.8 v(p4d)=0
+|.ic v(vsubs)=0
+|
+|.tran 5p 160n uic
+|
+|.control
+|run
+|
+|meas tran tp1a when v(p1o)=0.5*1.8 rise=3
+|meas tran tp1b when v(p1o)=0.5*1.8 rise=11
+|let t_float_wstv0p42 = (tp1b - tp1a)/8
+|meas tran tp2a when v(p2o)=0.5*1.8 rise=3
+|meas tran tp2b when v(p2o)=0.5*1.8 rise=11
+|let t_float_wstv0p44 = (tp2b - tp2a)/8
+|meas tran tp3a when v(p3o)=0.5*1.8 rise=3
+|meas tran tp3b when v(p3o)=0.5*1.8 rise=11
+|let t_float_wstv0p46 = (tp3b - tp3a)/8
+|meas tran tp4a when v(p4o)=0.5*1.8 rise=3
+|meas tran tp4b when v(p4o)=0.5*1.8 rise=11
+|let t_float_wstv0p48 = (tp4b - tp4a)/8
+|
+|let skew_span_float = t_float_wstv0p42 / t_float_wstv0p48
+|
+|* How hard are the rings driving the shared node? Zero by construction in
+|* the tied deck; here it is the coupling itself, in volts.
+|meas tran vsubmax MAX v(vsubs) from=20n to=160n
+|meas tran vsubmin MIN v(vsubs) from=20n to=160n
+|let vsubs_pp = vsubmax - vsubmin
+|let vsubs_pp_frac = (vsubmax - vsubmin) / 1.8
+|
+|* Ring-node swing on the slowest and fastest ring, to confirm the rings are
+|* still running normally rather than being dragged into a degenerate state.
+|meas tran vmaxp1 MAX v(p1o) from=20n to=160n
+|meas tran vminp1 MIN v(p1o) from=20n to=160n
+|meas tran vmaxp4 MAX v(p4o) from=20n to=160n
+|meas tran vminp4 MIN v(p4o) from=20n to=160n
+|let swing_frac_float_wstv0p42 = (vmaxp1 - vminp1) / 1.8
+|let swing_frac_float_wstv0p48 = (vmaxp4 - vminp4) / 1.8
+|
+|print t_float_wstv0p42
+|print t_float_wstv0p44
+|print t_float_wstv0p46
+|print t_float_wstv0p48
+|print skew_span_float
+|print vsubs_pp
+|print vsubs_pp_frac
+|print swing_frac_float_wstv0p42
+|print swing_frac_float_wstv0p48
+|.endc
+|.end
+|
+
+----- stdout -----
+
+Note: Compatibility modes selected: hs a
+
+
+Circuit: * post-layout ro_ring5 ladder with the shared substrate node left floating
+
+option SCALE: Scale is set to 1e-06 for instance and model parameters
+option SCALE: Scale is set to 1e-06 for instance and model parameters
+option SCALE: Scale is set to 1e-06 for instance and model parameters
+option SCALE: Scale is set to 1e-06 for instance and model parameters
+option SCALE: Scale is set to 1e-06 for instance and model parameters
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+Operating point simulation skipped by 'uic',
+  now using transient initial conditions.
+ Reference value :  5.00000e-14
+ Reference value :  1.88604e-09
+ Reference value :  3.90104e-09
+ Reference value :  5.98604e-09
+ Reference value :  7.96604e-09
+ Reference value :  1.00510e-08
+ Reference value :  1.20960e-08
+ Reference value :  1.41410e-08
+ Reference value :  1.60760e-08
+ Reference value :  1.80460e-08
+ Reference value :  2.00760e-08
+ Reference value :  2.21010e-08
+ Reference value :  2.41110e-08
+ Reference value :  2.61060e-08
+ Reference value :  2.81410e-08
+ Reference value :  3.02710e-08
+ Reference value :  3.22560e-08
+ Reference value :  3.42760e-08
+ Reference value :  3.65360e-08
+ Reference value :  3.87610e-08
+ Reference value :  4.07610e-08
+ Reference value :  4.27710e-08
+ Reference value :  4.47810e-08
+ Reference value :  4.69210e-08
+ Reference value :  4.89160e-08
+ Reference value :  5.09160e-08
+ Reference value :  5.29610e-08
+ Reference value :  5.49810e-08
+ Reference value :  5.69910e-08
+ Reference value :  5.89960e-08
+ Reference value :  6.09760e-08
+ Reference value :  6.29660e-08
+ Reference value :  6.50810e-08
+ Reference value :  6.70710e-08
+ Reference value :  6.89960e-08
+ Reference value :  7.10010e-08
+ Reference value :  7.28660e-08
+ Reference value :  7.49460e-08
+ Reference value :  7.70260e-08
+ Reference value :  7.91860e-08
+ Reference value :  8.12060e-08
+ Reference value :  8.32160e-08
+ Reference value :  8.52360e-08
+ Reference value :  8.72860e-08
+ Reference value :  8.93210e-08
+ Reference value :  9.13310e-08
+ Reference value :  9.33760e-08
+ Reference value :  9.54660e-08
+ Reference value :  9.75160e-08
+ Reference value :  9.94810e-08
+ Reference value :  1.01496e-07
+ Reference value :  1.03546e-07
+ Reference value :  1.05556e-07
+ Reference value :  1.07586e-07
+ Reference value :  1.09581e-07
+ Reference value :  1.11736e-07
+ Reference value :  1.13846e-07
+ Reference value :  1.15771e-07
+ Reference value :  1.17761e-07
+ Reference value :  1.19761e-07
+ Reference value :  1.21796e-07
+ Reference value :  1.23821e-07
+ Reference value :  1.25816e-07
+ Reference value :  1.27921e-07
+ Reference value :  1.29906e-07
+ Reference value :  1.32191e-07
+ Reference value :  1.34631e-07
+ Reference value :  1.36626e-07
+ Reference value :  1.38681e-07
+ Reference value :  1.40896e-07
+ Reference value :  1.42991e-07
+ Reference value :  1.45036e-07
+ Reference value :  1.47226e-07
+ Reference value :  1.49256e-07
+ Reference value :  1.51301e-07
+ Reference value :  1.53301e-07
+ Reference value :  1.55681e-07
+ Reference value :  1.57671e-07
+ Reference value :  1.59691e-07
+No. of Data Rows : 32015
+tp1a                =  1.55969e-08
+tp1b                =  5.64138e-08
+tp2a                =  1.48430e-08
+tp2b                =  5.35999e-08
+tp3a                =  1.41547e-08
+tp3b                =  5.10444e-08
+tp4a                =  1.35267e-08
+tp4b                =  4.87320e-08
+vsubmax             =  8.24593e-01 at=  9.70910e-08
+vsubmin             =  7.71895e-01 at=  9.76210e-08
+vmaxp1              =  1.61749e+00 at=  2.23660e-08
+vminp1              =  -1.89022e-02 at=  6.05510e-08
+vmaxp4              =  1.59730e+00 at=  7.65810e-08
+vminp4              =  -1.79294e-02 at=  5.67060e-08
+t_float_wstv0p42 = 5.102119e-09
+t_float_wstv0p44 = 4.844614e-09
+t_float_wstv0p46 = 4.611202e-09
+t_float_wstv0p48 = 4.400655e-09
+skew_span_float = 1.159400e+00
+vsubs_pp = 5.269860e-02
+vsubs_pp_frac = 2.927700e-02
+swing_frac_float_wstv0p42 = 9.091084e-01
+swing_frac_float_wstv0p48 = 8.973513e-01
+Note: Simulation executed from .control section 
+
+----- stderr -----
+
+Checking parameters for BSIM 4.5 model xbp4.xpex.xn1:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model xbp3.xpex.xn1:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model xbp2.xpex.xn1:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model xbp1.xpex.xn1:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model x4p4.xpex.xn1:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model x3p4.xpex.xn1:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model x2p4.xpex.xn1:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model x1p4.xpex.xn1:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model x4p3.xpex.xn1:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model x3p3.xpex.xn1:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model x2p3.xpex.xn1:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model x1p3.xpex.xn1:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model x4p2.xpex.xn1:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model x3p2.xpex.xn1:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model x2p2.xpex.xn1:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model x1p2.xpex.xn1:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model x4p1.xpex.xn2:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model x3p1.xpex.xn2:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model x2p1.xpex.xn2:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+
+Checking parameters for BSIM 4.5 model x1p1.xpex.xn2:nshort_model.48
+Warning: Eta0 = -0.0286127 is negative.
+

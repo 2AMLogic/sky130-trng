@@ -1,0 +1,560 @@
+{
+  "schema_version": 3,
+  "file": "../ro_nand2_wstv0p44/ro_nand2_wstv0p44.gds",
+  "deck": "sky130",
+  "top": "ro_nand2_wstv0p44",
+  "dbu_um": 0.001,
+  "netlist_path": "raw/ro_nand2_pex_wstv0p44.pex.spice",
+  "netlist_sha256": "3d04ecee70974a0c4425e9f430722ef3088cb32d245c8b91efb4c5bfc2884c9b",
+  "status": "extracted",
+  "device_count": 6,
+  "net_count": 8,
+  "pin_count": 7,
+  "device_counts": {
+    "nfet": 3,
+    "pfet": 3
+  },
+  "dummy_devices_dropped": 0,
+  "ignored_layers": [],
+  "device_recognition_only_layers": [],
+  "device_classes": [
+    "nfet",
+    "pfet",
+    "pnp",
+    "sky130_fd_pr__model__cap_mim",
+    "sky130_fd_pr__model__cap_mim_m4",
+    "resistor"
+  ],
+  "devices": [
+    {
+      "name": "$1",
+      "class": "nfet",
+      "nets": {
+        "s": "mph_g|vss",
+        "g": "mnt_g|vddr",
+        "d": "ny",
+        "b": "mph_g|vss"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.44,
+        "as_um2": 0.1848,
+        "ad_um2": 0.1848,
+        "ps_um": 1.72,
+        "pd_um": 1.72
+      }
+    },
+    {
+      "name": "$2",
+      "class": "nfet",
+      "nets": {
+        "s": "ny",
+        "g": "en",
+        "d": "\\$3",
+        "b": "mph_g|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.2184,
+        "ps_um": 2.62,
+        "pd_um": 1.36
+      }
+    },
+    {
+      "name": "$3",
+      "class": "nfet",
+      "nets": {
+        "s": "\\$3",
+        "g": "a",
+        "d": "mnab_y|mpa_y|mpb_y|y",
+        "b": "mph_g|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.2184,
+        "ad_um2": 0.3948,
+        "ps_um": 1.36,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$4",
+      "class": "pfet",
+      "nets": {
+        "s": "mnt_g|vddr",
+        "g": "mph_g|vss",
+        "d": "mpa_py|mpb_py|mph_py|py",
+        "b": "mnt_g|vddr"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.44,
+        "as_um2": 0.1848,
+        "ad_um2": 0.1848,
+        "ps_um": 1.72,
+        "pd_um": 1.72
+      }
+    },
+    {
+      "name": "$5",
+      "class": "pfet",
+      "nets": {
+        "s": "mpa_py|mpb_py|mph_py|py",
+        "g": "en",
+        "d": "mnab_y|mpa_y|mpb_y|y",
+        "b": "mnt_g|vddr"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$6",
+      "class": "pfet",
+      "nets": {
+        "s": "mnab_y|mpa_y|mpb_y|y",
+        "g": "a",
+        "d": "mpa_py|mpb_py|mph_py|py",
+        "b": "mnt_g|vddr"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    }
+  ],
+  "nets": [
+    {
+      "name": "\\$3",
+      "pin": false,
+      "device_count": 2
+    },
+    {
+      "name": "a",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "en",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "mnab_y|mpa_y|mpb_y|y",
+      "pin": true,
+      "device_count": 3
+    },
+    {
+      "name": "mnt_g|vddr",
+      "pin": true,
+      "device_count": 5
+    },
+    {
+      "name": "mpa_py|mpb_py|mph_py|py",
+      "pin": true,
+      "device_count": 3
+    },
+    {
+      "name": "mph_g|vss",
+      "pin": true,
+      "device_count": 5
+    },
+    {
+      "name": "ny",
+      "pin": true,
+      "device_count": 2
+    }
+  ],
+  "warnings": [
+    "promoted 3 net(s) to top-level pins from label(s) found only below the top cell (inside instanced sub-cells): a, en, ny -- these are internal nodes once instanced; pass top_cell_pins_only (--top-cell-pins) to keep them internal (issue #291)",
+    "net 'mnab_y|mpa_y|mpb_y|y' merges 4 distinct labels (mnab_y, mpa_y, mpb_y, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'mnt_g|vddr' merges 2 distinct labels (mnt_g, vddr) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'mpa_py|mpb_py|mph_py|py' merges 4 distinct labels (mpa_py, mpb_py, mph_py, py) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'mph_g|vss' merges 2 distinct labels (mph_g, vss) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section."
+  ],
+  "black_box_regions": [],
+  "abstracted_cells": [],
+  "unmodelled_poly": [],
+  "merged_net_labels": [
+    {
+      "net": "mnab_y|mpa_y|mpb_y|y",
+      "labels": [
+        "mnab_y",
+        "mpa_y",
+        "mpb_y",
+        "y"
+      ]
+    },
+    {
+      "net": "mnt_g|vddr",
+      "labels": [
+        "mnt_g",
+        "vddr"
+      ]
+    },
+    {
+      "net": "mpa_py|mpb_py|mph_py|py",
+      "labels": [
+        "mpa_py",
+        "mpb_py",
+        "mph_py",
+        "py"
+      ]
+    },
+    {
+      "net": "mph_g|vss",
+      "labels": [
+        "mph_g",
+        "vss"
+      ]
+    }
+  ],
+  "voltage_domain_warnings": [],
+  "unbiased_pmos_body_nets": [],
+  "single_terminal_nets": [],
+  "dead_metal": [],
+  "matched_device_groups": [],
+  "pdk": {
+    "variant": "sky130A",
+    "root": {
+      "path": null,
+      "scope": "external"
+    },
+    "version": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b"
+  },
+  "provenance": {
+    "klt_version": "0.4.0",
+    "klayout_version": "0.30.12",
+    "pdk": {
+      "name": "sky130A",
+      "source": "search root: ~/.volare",
+      "version": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b"
+    },
+    "deck": {
+      "name": "sky130",
+      "content_hash": "sha256:5afac7ab8561545859f5e2e74f4621c6ffc052756dc8fe344ea263398e96b240",
+      "released": false
+    },
+    "input": {
+      "content_hash": "sha256:9a355c0e65d8b624f7a4eb02fa3a0a4049cec029bcb40ae62d09785ee3af257d"
+    }
+  },
+  "parasitics": {
+    "r_count": 24,
+    "c_count": 8,
+    "cc_count": 1,
+    "l_count": 0,
+    "total_resistance_ohm": 2022.9136,
+    "total_capacitance_ff": 6.257478,
+    "total_coupling_capacitance_ff": 0.015977,
+    "total_inductance_nh": 0.0,
+    "nets": [
+      {
+        "net": "\\$3",
+        "net_id": 3,
+        "resistance_ohm": 25.6,
+        "capacitance_ff": 0.115618,
+        "inductance_nh": 0.0,
+        "hub_net": "\\$3",
+        "rc_model": "lumped",
+        "terminals": [
+          {
+            "device": "$2",
+            "terminal": "D",
+            "leg_net": "\\$3__t0",
+            "resistance_ohm": 12.8
+          },
+          {
+            "device": "$3",
+            "terminal": "S",
+            "leg_net": "\\$3__t1",
+            "resistance_ohm": 12.8
+          }
+        ],
+        "segments": [],
+        "coupled": []
+      },
+      {
+        "net": "a",
+        "net_id": 6,
+        "resistance_ohm": 488.8662,
+        "capacitance_ff": 0.607536,
+        "inductance_nh": 0.0,
+        "hub_net": "a",
+        "rc_model": "lumped",
+        "terminals": [
+          {
+            "device": "$3",
+            "terminal": "G",
+            "leg_net": "a__t0",
+            "resistance_ohm": 244.4331
+          },
+          {
+            "device": "$6",
+            "terminal": "G",
+            "leg_net": "a__t1",
+            "resistance_ohm": 244.4331
+          }
+        ],
+        "segments": [],
+        "coupled": [
+          {
+            "net": "mnab_y|mpa_y|mpb_y|y",
+            "capacitance_ff": 0.015977,
+            "levels": [
+              [
+                0,
+                1
+              ]
+            ],
+            "lateral_levels": []
+          }
+        ]
+      },
+      {
+        "net": "en",
+        "net_id": 5,
+        "resistance_ohm": 472.6379,
+        "capacitance_ff": 0.593421,
+        "inductance_nh": 0.0,
+        "hub_net": "en",
+        "rc_model": "lumped",
+        "terminals": [
+          {
+            "device": "$2",
+            "terminal": "G",
+            "leg_net": "en__t0",
+            "resistance_ohm": 236.319
+          },
+          {
+            "device": "$5",
+            "terminal": "G",
+            "leg_net": "en__t1",
+            "resistance_ohm": 236.319
+          }
+        ],
+        "segments": [],
+        "coupled": []
+      },
+      {
+        "net": "mnab_y|mpa_y|mpb_y|y",
+        "net_id": 4,
+        "resistance_ohm": 149.5915,
+        "capacitance_ff": 0.856767,
+        "inductance_nh": 0.0,
+        "hub_net": "mnab_y|mpa_y|mpb_y|y",
+        "rc_model": "lumped",
+        "terminals": [
+          {
+            "device": "$3",
+            "terminal": "D",
+            "leg_net": "mnab_y|mpa_y|mpb_y|y__t0",
+            "resistance_ohm": 69.9208
+          },
+          {
+            "device": "$5",
+            "terminal": "D",
+            "leg_net": "mnab_y|mpa_y|mpb_y|y__t1",
+            "resistance_ohm": 40.903
+          },
+          {
+            "device": "$6",
+            "terminal": "S",
+            "leg_net": "mnab_y|mpa_y|mpb_y|y__t2",
+            "resistance_ohm": 38.7677
+          }
+        ],
+        "segments": [],
+        "coupled": [
+          {
+            "net": "a",
+            "capacitance_ff": 0.015977,
+            "levels": [
+              [
+                0,
+                1
+              ]
+            ],
+            "lateral_levels": []
+          }
+        ]
+      },
+      {
+        "net": "mnt_g|vddr",
+        "net_id": 7,
+        "resistance_ohm": 326.9007,
+        "capacitance_ff": 1.704624,
+        "inductance_nh": 0.0,
+        "hub_net": "mnt_g|vddr",
+        "rc_model": "lumped",
+        "terminals": [
+          {
+            "device": "$1",
+            "terminal": "G",
+            "leg_net": "mnt_g|vddr__t0",
+            "resistance_ohm": 105.843
+          },
+          {
+            "device": "$4",
+            "terminal": "S",
+            "leg_net": "mnt_g|vddr__t1",
+            "resistance_ohm": 46.2216
+          },
+          {
+            "device": "$4",
+            "terminal": "B",
+            "leg_net": "mnt_g|vddr__t2",
+            "resistance_ohm": 46.2216
+          },
+          {
+            "device": "$5",
+            "terminal": "B",
+            "leg_net": "mnt_g|vddr__t3",
+            "resistance_ohm": 43.801
+          },
+          {
+            "device": "$6",
+            "terminal": "B",
+            "leg_net": "mnt_g|vddr__t4",
+            "resistance_ohm": 84.8136
+          }
+        ],
+        "segments": [],
+        "coupled": []
+      },
+      {
+        "net": "mpa_py|mpb_py|mph_py|py",
+        "net_id": 8,
+        "resistance_ohm": 140.7368,
+        "capacitance_ff": 0.795941,
+        "inductance_nh": 0.0,
+        "hub_net": "mpa_py|mpb_py|mph_py|py",
+        "rc_model": "lumped",
+        "terminals": [
+          {
+            "device": "$4",
+            "terminal": "D",
+            "leg_net": "mpa_py|mpb_py|mph_py|py__t0",
+            "resistance_ohm": 70.3684
+          },
+          {
+            "device": "$5",
+            "terminal": "S",
+            "leg_net": "mpa_py|mpb_py|mph_py|py__t1",
+            "resistance_ohm": 10.9559
+          },
+          {
+            "device": "$6",
+            "terminal": "D",
+            "leg_net": "mpa_py|mpb_py|mph_py|py__t2",
+            "resistance_ohm": 59.4125
+          }
+        ],
+        "segments": [],
+        "coupled": []
+      },
+      {
+        "net": "mph_g|vss",
+        "net_id": 9,
+        "resistance_ohm": 329.2915,
+        "capacitance_ff": 1.369874,
+        "inductance_nh": 0.0,
+        "hub_net": "mph_g|vss",
+        "rc_model": "lumped",
+        "terminals": [
+          {
+            "device": "$1",
+            "terminal": "S",
+            "leg_net": "mph_g|vss__t0",
+            "resistance_ohm": 46.4411
+          },
+          {
+            "device": "$4",
+            "terminal": "G",
+            "leg_net": "mph_g|vss__t1",
+            "resistance_ohm": 108.8235
+          },
+          {
+            "device": "$1",
+            "terminal": "B",
+            "leg_net": "mph_g|vss__t2",
+            "resistance_ohm": 46.4411
+          },
+          {
+            "device": "$2",
+            "terminal": "B",
+            "leg_net": "mph_g|vss__t3",
+            "resistance_ohm": 52.7718
+          },
+          {
+            "device": "$3",
+            "terminal": "B",
+            "leg_net": "mph_g|vss__t4",
+            "resistance_ohm": 74.8139
+          }
+        ],
+        "segments": [],
+        "coupled": []
+      },
+      {
+        "net": "ny",
+        "net_id": 2,
+        "resistance_ohm": 89.289,
+        "capacitance_ff": 0.213697,
+        "inductance_nh": 0.0,
+        "hub_net": "ny",
+        "rc_model": "lumped",
+        "terminals": [
+          {
+            "device": "$1",
+            "terminal": "D",
+            "leg_net": "ny__t0",
+            "resistance_ohm": 44.6445
+          },
+          {
+            "device": "$2",
+            "terminal": "S",
+            "leg_net": "ny__t1",
+            "resistance_ohm": 44.6445
+          }
+        ],
+        "segments": [],
+        "coupled": []
+      }
+    ],
+    "substrate_dc_tie": {
+      "resistance_ohm": 1000000000000.0,
+      "nets": [
+        {
+          "net": "vsubs",
+          "device": "Rvsubs_dctie"
+        }
+      ]
+    },
+    "metals_without_coefficient": [],
+    "overlap_pairs_without_coefficient": [],
+    "critical_nets": [],
+    "distributed_rc": false,
+    "model": {
+      "capacitance": "net-to-ground for every net's own (non-coupled) area/perimeter, plus net-to-net for the vertical-overlap coupling `coupling` describes below -- a coupled net pair gets a direct capacitor between their two hub nodes, not just capacitors to the deck's ground/substrate net",
+      "coupling": "vertical overlap (crossover) unconditionally -- where one net's conductor on an adjacent metal level sits directly over another *distinct* net's conductor, that overlap area is charged between the two nets instead of to ground (issue #760) -- plus lateral (same-layer, sidewall) coupling, but only for a net pair naming one of the caller's declared `--critical-net` nets (issue #976): facing-edge length within that layer's own minimum-spacing lookback is charged between the two nets, *additively* (not deducted from either net's substrate fringe term, unlike the vertical case -- a known simplification). Any same-layer pair with neither side named `--critical-net`, and fringe shielding in general, are still not modelled",
+      "resistance": "single lumped series resistance per net, distributed as a star across that net's device terminals (issue #592) -- not a per-segment, distributed RC ladder, *unless* `--distributed-rc` names this net via `--critical-net` (issue #977, Epic #709 Phase 2b): then the net's terminals are ordered along their approximate physical spread and its total R/C is broken into a chain of per-segment resistors (segment length proportional to inter-terminal distance) with a ground capacitor at each terminal node (proportional to its adjacent segment length/2), instead of one star hub -- still an approximation (terminal position is a device-placement proxy, not true per-segment routing geometry), but a strictly finer-grained one than the single-hub star",
+      "frequency": "quasi-static -- one frequency-independent R and C per net; no skin effect, no distributed transmission-line behavior"
+    },
+    "mom_crosscheck": null,
+    "mom_rlc_override": null
+  },
+  "spef_path": null
+}

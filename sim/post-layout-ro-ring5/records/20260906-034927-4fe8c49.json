@@ -1,0 +1,104 @@
+{
+  "record_id": "20260906-034927-4fe8c49",
+  "slug": "post-layout-ro-ring5",
+  "claim": "control separating capacitive loading from inter-ring coupling: the same floating-substrate post-layout deck with rings 2/3/4 present but held stopped, so ring 1's period carries the loading mechanism alone",
+  "level": "transistor",
+  "seed": "N/A (deterministic transient, no injected noise sources)",
+  "pvt": {
+    "temp_c": 125.0,
+    "vdd_v": 1.98
+  },
+  "tran": {
+    "tmax": "5p",
+    "noise_amp": "2.0e-3"
+  },
+  "testbench": "sim/post-layout-ro-ring5/testbench/tb_post_layout_substrate_float_solo.spice",
+  "netlists": {
+    "RO_RING5": {
+      "path": "design/ro_ring5.spice",
+      "sha256": "19dccb82a3e9a1239d509a03e645954f79a857ab3b11e41a2a53faa105b58ea4"
+    },
+    "PEX_LIB": {
+      "path": "layout/pex/ro_ring5_pex.spice",
+      "sha256": "c975689411ebcffb25463089a884a9e345be289dea28ae45c947e44ad5e506d9"
+    }
+  },
+  "pdk": {
+    "variant": "sky130A",
+    "installed_commit": "c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+    "pin_commit": "c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+    "matches_pin": true,
+    "lib_file": "/Users/rwalters/.volare/volare/sky130/versions/c6d73a35f524070e85faff4a6a9eef49553ebc2b/sky130A/libs.tech/combined/sky130.lib.spice"
+  },
+  "tools": {
+    "ngspice": "** ngspice-47 : Circuit level simulation program",
+    "python": "3.14.7",
+    "os": "macOS-26.6.2-arm64-arm-64bit-Mach-O"
+  },
+  "repo_state": {
+    "sha": "4fe8c49",
+    "branch": "feature/issue-22",
+    "dirty": true
+  },
+  "corners": [
+    {
+      "corner": "tt",
+      "ok": true,
+      "returncode": 0,
+      "measurements": {
+        "tp1a": 1.17411e-08,
+        "tp1b": 4.28866e-08,
+        "t_solo_wstv0p42": 3.893194e-09,
+        "vsubs_pp_solo": 0.0115471,
+        "vsubs_pp_solo_frac": 0.005831869,
+        "swing_frac_solo_wstv0p42": 0.8385006
+      },
+      "onoise_min": null,
+      "onoise_max": null,
+      "onoise_spread_ratio": null,
+      "problems": [],
+      "log": "corners/tt.log"
+    },
+    {
+      "corner": "ss",
+      "ok": true,
+      "returncode": 0,
+      "measurements": {
+        "tp1a": 1.41485e-08,
+        "tp1b": 5.16383e-08,
+        "t_solo_wstv0p42": 4.686225e-09,
+        "vsubs_pp_solo": 0.0121616,
+        "vsubs_pp_solo_frac": 0.006142222,
+        "swing_frac_solo_wstv0p42": 0.8605551
+      },
+      "onoise_min": null,
+      "onoise_max": null,
+      "onoise_spread_ratio": null,
+      "problems": [],
+      "log": "corners/ss.log"
+    },
+    {
+      "corner": "ff",
+      "ok": true,
+      "returncode": 0,
+      "measurements": {
+        "tp1a": 1.00478e-08,
+        "tp1b": 3.67396e-08,
+        "t_solo_wstv0p42": 3.336472e-09,
+        "vsubs_pp_solo": 0.0108602,
+        "vsubs_pp_solo_frac": 0.005484949,
+        "swing_frac_solo_wstv0p42": 0.8149536
+      },
+      "onoise_min": null,
+      "onoise_max": null,
+      "onoise_spread_ratio": null,
+      "problems": [],
+      "log": "corners/ff.log"
+    }
+  ],
+  "overall": "PASS",
+  "subset_reason": null,
+  "supersedes": "(none)",
+  "author": "ci@loom.test",
+  "timestamp_utc": "2026-09-06T03:51:01.094197+00:00"
+}
