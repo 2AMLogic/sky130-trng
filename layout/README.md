@@ -4,7 +4,26 @@ Physical layout evidence for the sky130-trng entropy source, verified with
 `klayout-tools` (`klt`) against the sky130 open PDK. See `layout/pdk.json`
 for the PDK/tool pin.
 
-**Status (issue #22/#27, this increment): `xor2` is composed, DRC-clean and
+**Status (issue #22, this increment): `ro_array_core`'s first floorplan
+attempt — [`layout/ro_array_core-placement-poc/`](ro_array_core-placement-poc/README.md).**
+All eleven already-composed sibling cells `ro_array_core` needs (four
+`ro_ring5` `wstv` variants, `ro_buf` x4, `xor2` x3) place together on one
+216.2 x 31.755 µm floorplan, **`klt drc` clean (0 violations)**, with
+`klt extract` reporting exactly the expected `132` devices (`66` nfet + `66`
+pfet, matching `design/ro_array_core.spice`'s own instance sum). This is a
+placement-only proof of concept, mirroring `xor2-placement-poc`'s own
+convention one level up the hierarchy: **no routing exists yet** (`en1..en4`,
+the four `vddrN` domains, `vdd`/`vss`, and every inter-cell net are all still
+disjoint), so `ro_array_core` is not yet a DRC/LVS-clean block. The PoC's
+README documents a full candidate net-tap coordinate table (absolute
+positions for every port each cell exposes) for the next increment's
+routing attempt, plus an open question on `compose-cell.py`'s
+`lvs.dependencies` mechanism: the reference netlist defines one `ro_ring5`
+subckt called four times with four different `wstv=` overrides, not four
+separate subckts, and the current dependency mechanism has not been
+exercised against that shape.
+
+**A previous increment: `xor2` is composed, DRC-clean and
 LVS-clean, so every leaf cell `ro_array_core` instantiates now exists as a
 verified physical cell.** [`layout/xor2/`](xor2/README.md) is
 `design/ro_array_core.spice`'s own `.subckt xor2` — twelve devices, ten nets
