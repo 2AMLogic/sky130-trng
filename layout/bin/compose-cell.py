@@ -99,6 +99,32 @@ the leaf gate's own second stage already drew it, is what lets a later stage
 route that rail on ``"metal3"`` within ``gen-compose``'s single-hop via-drop
 rule.
 
+Re-placing an earlier stage with hand-declared ports (``cell.from_stage``)
+--------------------------------------------------------------------------
+
+``blocks[].from_stage`` (above) hands a later stage the earlier stage's own
+``gen-compose`` *response*, whose ``ports[]`` are exactly that stage's own
+``pins[]`` -- everything a leaf/ring cell's own promotion stages need. An
+**array**-level stage needs the other half: to tap an already-composed
+stage's own interior conductor at a measured coordinate that was never a
+``pins[]`` entry (``ro_array_core``'s ``vdd``/``vss`` promotion stubs start
+on each buffer's/XOR's own tap pad *inside* the composed block, and end on a
+met1 tip that only exists once that stage has drawn it). That is
+``blocks[].cell``'s hand-declared ``ports[]`` shape, pointed at a stage
+rather than at a committed sibling cell::
+
+    {"id": "core", "cell": {"from_stage": "vddstub", "ports": [...]}}
+
+``cell_name`` defaults to the stage's own name (which is what
+``compose_stage`` names its composed cell) and ``gds_path`` is filled in as
+``<stage>.gds``, resolved against the **output** directory. That distinction
+is the whole point: a committed sibling cell's ``gds_path`` is relative to
+the cell.json and gets rewritten to an absolute path under ``--check``,
+whereas a stage's stream is produced by the run in progress and must be read
+back from wherever that run is writing -- otherwise a ``--check`` rebuild
+would compose its later stages over the *committed* earlier stages and
+report "matches" no matter what drifted.
+
 The reference-netlist unit rewrite
 ----------------------------------
 
@@ -414,6 +440,68 @@ def repoint_variant_instances(
 # --------------------------------------------------------------------------
 
 
+def resolve_cell_block(
+    cell_ref: dict,
+    *,
+    block_id: str,
+    spec_dir: Path,
+    out_dir: Path,
+    stage_responses: dict[str, str],
+) -> dict:
+    """Resolve one ``blocks[].cell`` entry into a ``klt gen-compose`` block.
+
+    Two sources, which differ *only* in what their ``gds_path`` is relative
+    to -- and getting that wrong is silent, which is why this is its own
+    function with its own unit coverage:
+
+    A committed sibling cell (``gds_path``)
+        A previously-composed, already-committed
+        ``layout/<other-cell>/<other-cell>.gds`` this cell.json did not
+        (re)generate, placed via ``klt gen-compose``'s own ``blocks[].cell``
+        request shape (``{gds_path, cell_name, ports[], bbox_um}``, #1189 in
+        klayout-tools). No ``klt gen`` call: there is nothing to generate,
+        only an existing stream to place. See
+        ``layout/ro_ring5-connectivity-poc/README.md`` for why this needs
+        hand-declared ``ports[]`` (a pre-existing cell never reported a
+        ``ports[]`` list to any ``klt gen`` response the way a fresh
+        primitive does). Its ``gds_path`` is written relative to the
+        **cell.json** (e.g. ``"../ro_nand2/ro_nand2.gds"``), which keeps the
+        repo-relative spelling that keeps absolute home paths out of the
+        committed provenance. Rebuilding in place (``out_dir`` is the cell's
+        own directory) that resolves correctly as written; ``--check``
+        rebuilds into a temporary directory instead, where it resolves to
+        nothing -- so there, and only there, the resolved absolute path of
+        the sibling cell's committed stream is substituted.
+
+    An earlier stage of this same cell.json (``from_stage``)
+        See this module's docstring, "Re-placing an earlier stage with
+        hand-declared ports". That stream is written into ``out_dir`` by
+        **this** run, so its path is relative to the *output* directory and
+        must NOT be absolutized against ``spec_dir``: doing so would point a
+        ``--check`` rebuild at the *committed* stage stream instead of the
+        one it just rebuilt, quietly turning the reproducibility check into a
+        no-op for every stage after the first.
+
+    ``from_stage`` must name an **earlier** stage (one already present in
+    ``stage_responses``); naming a later stage, or a typo, raises rather than
+    composing against whatever stale stream happens to be on disk.
+    """
+    resolved = dict(cell_ref)
+    from_stage = resolved.pop("from_stage", None)
+    if from_stage is None:
+        gds_path = resolved["gds_path"]
+        if out_dir.resolve() != spec_dir.resolve():
+            gds_path = str((spec_dir / gds_path).resolve())
+        return {**resolved, "gds_path": gds_path}
+    if from_stage not in stage_responses:
+        raise BuildError(
+            f"{block_id}: cell.from_stage {from_stage!r} does not name an "
+            f"earlier stage (have: {sorted(stage_responses) or 'none'})"
+        )
+    resolved.setdefault("cell_name", from_stage)
+    return {**resolved, "gds_path": f"{from_stage}.gds"}
+
+
 def compose_stage(
     stage: dict,
     *,
@@ -471,30 +559,13 @@ def compose_stage(
             )
             continue
         if "cell" in block:
-            # An *existing* library cell -- a previously-composed,
-            # already-committed layout/<other-cell>/<other-cell>.gds this
-            # cell.json did not (re)generate -- placed via klt gen-compose's
-            # own `blocks[].cell` request shape (`{gds_path, cell_name,
-            # ports[], bbox_um}`, #1189 in klayout-tools). No `klt gen` call:
-            # there is nothing to generate, only an existing stream to
-            # place. See layout/ro_ring5-connectivity-poc/README.md for why
-            # this needs hand-declared `ports[]` (a pre-existing cell never
-            # reported a ports[] list to any `klt gen` response the way a
-            # fresh primitive does).
-            #
-            # `gds_path` is written relative to the *cell.json* (e.g.
-            # "../ro_nand2/ro_nand2.gds"), not relative to wherever this run
-            # happens to write its output. Rebuilding in place (out_dir is
-            # the cell's own directory) those are the same thing, and the
-            # request keeps the repo-relative spelling that keeps absolute
-            # home paths out of the committed provenance. `--check` rebuilds
-            # into a temporary directory instead, where that relative path
-            # resolves to nothing -- so there, and only there, substitute the
-            # resolved absolute path of the sibling cell's committed stream.
-            gds_path = block["cell"]["gds_path"]
-            if out_dir.resolve() != spec_dir.resolve():
-                gds_path = str((spec_dir / gds_path).resolve())
-            cell_block = {**block["cell"], "gds_path": gds_path}
+            cell_block = resolve_cell_block(
+                block["cell"],
+                block_id=block["id"],
+                spec_dir=spec_dir,
+                out_dir=out_dir,
+                stage_responses=stage_responses,
+            )
             blocks_request.append(
                 {
                     "id": block["id"],

@@ -233,11 +233,17 @@ DR-0003 surfaces and does not resolve on its own authority.
   (status **Proposed**) it lives in [`digital/`](../digital/README.md), not
   here, and none of it is or will be a `design/*.spice` netlist. `raw_bit`
   and `raw_valid` are the interface between the two directories.
-- **Layout and DRC/LVS.** `layout/` holds **fourteen composed, DRC-clean
+- **Layout and DRC/LVS.** `layout/` holds **fifteen composed, DRC-clean
   and LVS-clean cells** — every leaf cell `ro_array_core` instantiates
   (rings, buffers, the combining-tree XOR; see
-  [`layout/xor2/`](../layout/xor2/README.md)) — and, **this increment,
-  `ro_array_core` itself is DRC-clean *and* LVS-clean**:
+  [`layout/xor2/`](../layout/xor2/README.md)) **plus `ro_array_core`
+  itself**, which is now a `--check`-reproducible six-stage `cell.json`
+  recipe in
+  [`layout/ro_array_core/`](../layout/ro_array_core/README.md) (132/132
+  devices, 96/96 nets, 0 DRC violations, with `ring1..4`'s and `xa1..3`'s
+  own `vss` taps drawn). That supersedes — without correcting — the PoC
+  directory the increments below narrate.
+  A prior increment first reached that verdict:
   [`layout/ro_array_core-placement-poc/`](../layout/ro_array_core-placement-poc/README.md)'s
   "Increment 8" section routes the last open net, the `vdd` supply, as
   seven `"metal2"`-role (met1) promotion stubs plus a six-leg `"metal3"`
@@ -260,9 +266,10 @@ DR-0003 surfaces and does not resolve on its own authority.
   as a generic, unit-tested `lvs.dependency_variants` mechanism (see
   `layout/README.md`), and `array-reference.py` now calls it instead,
   verified to reproduce the identical reference body and LVS/negative-control
-  verdicts. Promoting this PoC directory into a `layout/ro_array_core/`
-  `cell.json` recipe with `--check` reproducibility (the placement/routing
-  side) remains follow-up work (#27).
+  verdicts. **The promotion that follow-up left open is done**:
+  `layout/ro_array_core/cell.json` is the `--check`-reproducible recipe, and
+  its `lvs` block is `lvs.dependency_variants`'s first real use. Array-level
+  parasitic extraction and post-layout PVT remain follow-up work (#27).
   A prior increment wired the XOR combining tree's inputs:
   that directory's
   "Increment 7" section routes `t2` (`xa2.y` → `xa3.b`) via a `"metal3"`

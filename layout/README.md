@@ -4,7 +4,64 @@ Physical layout evidence for the sky130-trng entropy source, verified with
 `klayout-tools` (`klt`) against the sky130 open PDK. See `layout/pdk.json`
 for the PDK/tool pin.
 
-**Status (issue #22, this increment): `compose-cell.py`'s `lvs.dependencies`
+**Status (issue #69, this increment): `ro_array_core` is a real
+`layout/ro_array_core/` cell recipe — six `gen-compose` stages in one
+`cell.json`, `compose-cell.py --check` clean, with `ring1..4`'s and
+`xa1..3`'s own `vss` taps drawn.** The whole entropy source (four
+differently-sized rings + four buffers + the three-XOR combining tree) keeps
+the previous increment's verdict — **`klt drc` clean, 0 violations; `klt
+lvs` match, 132/132 devices, 96/96 nets** — but is now rebuilt and
+re-verified by the same one command every other cell under `layout/` is,
+instead of by nine hand-maintained `gen-compose` request files plus a
+directory-local `array-reference.py`. See
+[`layout/ro_array_core/`](ro_array_core/README.md). Four things this
+increment establishes:
+
+1. **The PoC's nine requests are six stages, not nine.** `signal`…`signal6`
+   were never a chain — each re-composed the *same* eleven-block floorplan
+   with one more net routed than the increment before it, so only `signal6`
+   is load-bearing (it becomes stage `core`). `signal7`/`signal8`/`signal9`
+   *are* a chain and become `t2bridge`/`vddstub`/`vddbus`.
+2. **`compose-cell.py` gains `blocks[].cell.from_stage`**, the one thing the
+   promotion actually needed. `blocks[].from_stage` (which already existed)
+   hands a later stage the earlier stage's `gen-compose` *response*, whose
+   `ports[]` are that stage's own `pins[]` — right for a leaf/ring cell,
+   useless for an array whose every supply stub starts on a tap measured *by
+   coordinate inside* an already-composed block and ends on a met1 tip that
+   only exists once that stage has drawn it. The subtlety, and why it has its
+   own unit coverage: a committed sibling cell's `gds_path` is relative to
+   the cell.json (so `--check` must absolutize it), while a *stage's* stream
+   is produced by the run in progress (so `--check` must **not**). Swapping
+   those is silent — `--check` would compose every later stage over the
+   *committed* earlier stages and report "matches" no matter what drifted.
+3. **`ring1..4`/`xa1..3`'s `vss` taps are drawn** (stages
+   `vssstub`/`vssbus`), closing the last item from the PoC's own
+   still-open list that was not a separate deliverable. The four rings need
+   no promotion stub at all — each already carries a full-width met2 `vss`
+   rail, and on one row those four rails are *collinear*, so three met2 legs
+   in the inter-ring gaps merge them into one 166.7 µm² polygon, plus a
+   0.425 µm drop onto the four-buffer `vss` met1 bus. The three `xor2`
+   instances do need stubs, and their tips are deliberately **not** at one
+   `y`: `ro4`'s own met1 backbone at `y = 10.0` runs directly under `xa3` but
+   not under `xa1`/`xa2`. Reaching row 2 at all has exactly two doors, since
+   the `vdd` bus occupies met2 at `y = 7.5` across `x ∈ [5.765, 212.995]` and
+   met2 cannot cross met2. Not LVS-blocking (`net_count` is 96 with and
+   without it, for the substrate reason below) and drawn anyway, because a
+   fabricated die needs the strap.
+4. **All fifteen cells `--check` clean** against `layout/pdk.json`'s
+   `klt_version_pin` in the same session — the fourteen previously-composed
+   ones plus `ro_array_core` itself.
+
+`layout/ro_array_core-placement-poc/` is **superseded, not corrected**:
+every increment in it reproduces, its `signal6` request *is* the promoted
+recipe's `core` stage, and it stays as the append-only record of how the
+routing was found (the `layout/xor2/` vs. `layout/xor2-placement-poc/`
+convention). **Still open** (#27): array-level parasitic extraction and
+post-layout PVT — and therefore DR-0003 §8's `wstv` inter-ring
+decorrelation question — plus `sampler_core`/`sampler_dff`, which have no
+layout at all yet.
+
+**A previous increment (issue #22): `compose-cell.py`'s `lvs.dependencies`
 gap — "genuinely cannot express" a same-subckt, differently-parametrized
 reference — is closed generically, with unit-test coverage.** The previous
 increment's own LVS match for `ro_array_core` (132/132 devices, 96/96 nets)
@@ -30,13 +87,12 @@ and re-running `klt lvs` plus both committed negative controls against it
 reproduces the identical `match`/`mismatch` verdicts and counts. All
 fourteen previously-composed cells still `--check` clean against
 `layout/pdk.json`'s `klt_version_pin`, confirming this change is additive.
-**Still open, and now the only thing standing between the still-open items
-below and a real `layout/ro_array_core/` recipe**: `layout/README.md`'s own
-`lvs.dependency_variants` schema is proven correct against real design data,
-but no `cell.json` uses it yet — the promotion below still needs the
-placement/routing side (all nine `gen-compose` stages the PoC ran) folded
-into one `--check`-reproducible multi-stage recipe, which this increment
-deliberately did not attempt (see #27).
+That increment's own closing note — "`lvs.dependency_variants` is proven
+correct against real design data, but no `cell.json` uses it yet; the
+promotion still needs the placement/routing side folded into one
+`--check`-reproducible multi-stage recipe" — is **resolved by the increment
+above**: `layout/ro_array_core/cell.json` is that recipe, and its `lvs`
+block is `lvs.dependency_variants`'s first (and so far only) real use.
 
 **A previous increment (issue #22): `ro_array_core` — the whole
 entropy source, four differently-sized rings + four buffers + the three-XOR
@@ -58,13 +114,15 @@ committed negative controls** (resize ring 4's starve devices to ring 1's
 `wstv`; cross `xa1`/`xa2`'s inputs) both turn the same comparison into
 `mismatch`, so the match is discriminating rather than vacuous. See
 [`layout/ro_array_core-placement-poc/`](ro_array_core-placement-poc/README.md)'s
-"Increment 8" section. **Still open**: `ring1..4`/`xa1..3`'s own `vss` taps
-(not LVS-blocking, per an earlier increment's substrate finding, but a real
-die wants the strap), promoting that PoC directory into a
-`--check`-reproducible `layout/ro_array_core/` cell recipe, array-level
-parasitic extraction and post-layout PVT (and therefore DR-0003 §8's `wstv`
-inter-ring decorrelation question), and `sampler_core`/`sampler_dff`, which
-have no layout at all yet.
+"Increment 8" section. **Its own still-open list, as of that increment**:
+`ring1..4`/`xa1..3`'s own `vss` taps (not LVS-blocking, per an earlier
+increment's substrate finding, but a real die wants the strap) and promoting
+that PoC directory into a `--check`-reproducible `layout/ro_array_core/`
+cell recipe — **both closed by the current increment above** — plus
+array-level parasitic extraction and post-layout PVT (and therefore
+DR-0003 §8's `wstv` inter-ring decorrelation question), and
+`sampler_core`/`sampler_dff`, which have no layout at all yet — all three
+still open.
 
 **A previous increment: `ro_array_core`'s XOR combining tree's
 inputs were fully wired — `t2` really routed over a met2 bridge, and a
@@ -337,9 +395,10 @@ turned out to be **unnecessary**: both rails are already drawn on met1
 inside every leaf gate, so declaring the block's rail port on met1 satisfies
 the single-hop rule directly (see `layout/ro_ring5/README.md`).
 
-Everything else is still open: `ro_array_core`, `sampler_core`, and
-therefore any *whole-block* post-layout claim. See "What's deferred" below
-and the tracking issue (#27).
+Still open after all of the above: `sampler_core`/`sampler_dff`, and
+therefore any *whole-block* post-layout claim — `ro_array_core` itself is
+now built (see the current increment at the top of this file). See "What's
+deferred" below and the tracking issue (#27).
 
 The earlier increments remain the foundation: `layout/primitives/` is
 per-device evidence (every distinct transistor geometry `design/xschem/`
@@ -440,7 +499,7 @@ From `design/README.md`'s "Cell hierarchy":
 ```
 trng_top                   (not in scope for #22 — stops at the raw tap)
   sampler_core              PLANNED — 6x sampler_dff + wiring
-    ro_array_core           IN PROGRESS — floorplanned (ro_array_core-placement-poc/), forward signal chain routed (en/vddr/ro exposed, rn1-4 wired) and buffer->XOR "a" leg routed (ro1/ro3 into xa1.a/xa2.a), DRC-clean; ro2/ro4 into xa1.b/xa2.b, vdd/vss distribution, XOR combining tree and LVS still open
+    ro_array_core           BUILT — DRC-clean + LVS-clean (layout/ro_array_core/) — six-stage cell.json recipe, --check reproducible: 11 blocks placed, every inter-cell signal net routed, vdd bus + array-wide vss strap drawn, 132/132 devices and 96/96 nets vs. design/ro_array_core.spice; array-level parasitics/post-layout PVT still open (#27)
       ro_ring5   (x4)        BUILT, all 4 wstv values — DRC-clean + LVS-clean (layout/ro_ring5/, ro_ring5_wstv0p{44,46,48}/) — 4 distinct physical cells, one per ring; signal chain, ro feedback and vddr/vss rails all routed
         ro_nand2   (x1/ring)  BUILT, all 4 wstv values — DRC-clean + LVS-clean (layout/ro_nand2/, ro_nand2_wstv0p{44,46,48}/) — 4 distinct physical cells, one per ring
         ro_stage   (x4/ring)  BUILT, all 4 wstv values — DRC-clean + LVS-clean (layout/ro_stage/, ro_stage_wstv0p{44,46,48}/) — 4 distinct physical cells (one per ring's wstv), each reused 4x within its own ring
@@ -646,6 +705,35 @@ Two more, discovered while composing `xor2` (see
    be made to live entirely above and below the rows (supplies, and any
    output whose pads face outward), leaving the channel to the gate nets
    alone?
+
+Two more, discovered while promoting `ro_array_core` from a PoC directory
+into a `cell.json` recipe (see
+[`layout/ro_array_core/README.md`](ro_array_core/README.md)):
+
+11. **A stage may be re-placed with hand-declared ports, not only with its
+    own promoted pins.** `blocks[].from_stage` hands the next stage the
+    earlier stage's `gen-compose` *response*, whose `ports[]` are exactly
+    that stage's own `pins[]` — everything a leaf or ring cell needs.
+    An **array**-level stage needs the other half: to tap an already-composed
+    stage's own interior conductor at a *measured coordinate* that was never
+    a `pins[]` entry, and to route to a met1 tip that only exists once that
+    stage has drawn it. `compose-cell.py`'s `blocks[].cell.from_stage` is
+    `blocks[].cell`'s hand-declared `ports[]` shape pointed at a stage
+    (`{"id": "core", "cell": {"from_stage": "vddstub", "ports": [...]}}`).
+    The one trap: a committed sibling cell's `gds_path` is relative to the
+    cell.json (so `--check` absolutizes it), a stage's stream is relative to
+    the *output* directory (so `--check` must not) — swap them and `--check`
+    silently stops checking anything past stage 1.
+12. **A promotion stub's tip row is set by what runs under it, not by
+    symmetry.** `ro_array_core`'s three `xor2` `vss` stubs escape south from
+    the same block-local port, but `xa3`'s stops 1.2 µm higher than
+    `xa1`/`xa2`'s because one earlier increment's own met1 backbone (`ro4`,
+    at `y = 10.0`) happens to run under `xa3` and not the other two. The
+    same asymmetry applies one layer up: once a supply bus owns a met2 lane
+    spanning most of the die's width, every later met2 net has to reach the
+    other side of it *around* the lane's ends, because met2 cannot cross
+    met2. Budget the vertical corridors before committing a bus lane's `x`
+    extent.
 
 Two more, discovered while planning `ro_stage`:
 
