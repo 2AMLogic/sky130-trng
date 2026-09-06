@@ -1,0 +1,333 @@
+{
+  "schema_version": 1,
+  "generator": "gen-compose",
+  "cell_name": "ro_ring5",
+  "gds_path": "ro_ring5.gds",
+  "pdk": {
+    "name": "sky130A",
+    "variant": "sky130A",
+    "version": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b"
+  },
+  "bbox_um": {
+    "x0": -2.19,
+    "y0": -0.71,
+    "x1": 38.81,
+    "y1": 4.8100000000000005
+  },
+  "ports": [
+    {
+      "name": "en",
+      "net": "en",
+      "layer": {
+        "layer": 67,
+        "datatype": 20
+      },
+      "x_um": 3.685,
+      "y_um": 1.975,
+      "width_um": 0.42,
+      "direction_deg": 90,
+      "block": "core",
+      "port": "g_en"
+    }
+  ],
+  "blocks": [
+    {
+      "id": "core",
+      "source": "generator_report",
+      "generator": "gen-compose",
+      "cell_name": "fb",
+      "offset_um": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "bbox_um": {
+        "x0": -2.19,
+        "y0": -0.71,
+        "x1": 38.81,
+        "y1": 4.8100000000000005
+      },
+      "orientation": "none"
+    }
+  ],
+  "nets": [
+    {
+      "net": "vddr",
+      "pins": [
+        {
+          "block": "core",
+          "port": "g_vddr_m1"
+        },
+        {
+          "block": "core",
+          "port": "s1_vddr_m1"
+        }
+      ],
+      "routed": true,
+      "route_length_um": 12.5,
+      "status": "routed",
+      "legs": [
+        {
+          "pins": [
+            {
+              "block": "core",
+              "port": "g_vddr_m1"
+            },
+            {
+              "block": "core",
+              "port": "s1_vddr_m1"
+            }
+          ],
+          "routed": true,
+          "route_length_um": 12.5,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "net": "vddr",
+      "pins": [
+        {
+          "block": "core",
+          "port": "s1_vddr_m1"
+        },
+        {
+          "block": "core",
+          "port": "s2_vddr_m1"
+        }
+      ],
+      "routed": true,
+      "route_length_um": 11.375,
+      "status": "routed",
+      "legs": [
+        {
+          "pins": [
+            {
+              "block": "core",
+              "port": "s1_vddr_m1"
+            },
+            {
+              "block": "core",
+              "port": "s2_vddr_m1"
+            }
+          ],
+          "routed": true,
+          "route_length_um": 11.375,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "net": "vddr",
+      "pins": [
+        {
+          "block": "core",
+          "port": "s2_vddr_m1"
+        },
+        {
+          "block": "core",
+          "port": "s3_vddr_m1"
+        }
+      ],
+      "routed": true,
+      "route_length_um": 11.374999999999996,
+      "status": "routed",
+      "legs": [
+        {
+          "pins": [
+            {
+              "block": "core",
+              "port": "s2_vddr_m1"
+            },
+            {
+              "block": "core",
+              "port": "s3_vddr_m1"
+            }
+          ],
+          "routed": true,
+          "route_length_um": 11.374999999999996,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "net": "vddr",
+      "pins": [
+        {
+          "block": "core",
+          "port": "s3_vddr_m1"
+        },
+        {
+          "block": "core",
+          "port": "s4_vddr_m1"
+        }
+      ],
+      "routed": true,
+      "route_length_um": 11.375000000000004,
+      "status": "routed",
+      "legs": [
+        {
+          "pins": [
+            {
+              "block": "core",
+              "port": "s3_vddr_m1"
+            },
+            {
+              "block": "core",
+              "port": "s4_vddr_m1"
+            }
+          ],
+          "routed": true,
+          "route_length_um": 11.375000000000004,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "net": "vss",
+      "pins": [
+        {
+          "block": "core",
+          "port": "g_vss_m1"
+        },
+        {
+          "block": "core",
+          "port": "s1_vss_m1"
+        }
+      ],
+      "routed": true,
+      "route_length_um": 19.3,
+      "status": "routed",
+      "legs": [
+        {
+          "pins": [
+            {
+              "block": "core",
+              "port": "g_vss_m1"
+            },
+            {
+              "block": "core",
+              "port": "s1_vss_m1"
+            }
+          ],
+          "routed": true,
+          "route_length_um": 19.3,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "net": "vss",
+      "pins": [
+        {
+          "block": "core",
+          "port": "s1_vss_m1"
+        },
+        {
+          "block": "core",
+          "port": "s2_vss_m1"
+        }
+      ],
+      "routed": true,
+      "route_length_um": 18.175,
+      "status": "routed",
+      "legs": [
+        {
+          "pins": [
+            {
+              "block": "core",
+              "port": "s1_vss_m1"
+            },
+            {
+              "block": "core",
+              "port": "s2_vss_m1"
+            }
+          ],
+          "routed": true,
+          "route_length_um": 18.175,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "net": "vss",
+      "pins": [
+        {
+          "block": "core",
+          "port": "s2_vss_m1"
+        },
+        {
+          "block": "core",
+          "port": "s3_vss_m1"
+        }
+      ],
+      "routed": true,
+      "route_length_um": 18.174999999999997,
+      "status": "routed",
+      "legs": [
+        {
+          "pins": [
+            {
+              "block": "core",
+              "port": "s2_vss_m1"
+            },
+            {
+              "block": "core",
+              "port": "s3_vss_m1"
+            }
+          ],
+          "routed": true,
+          "route_length_um": 18.174999999999997,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "net": "vss",
+      "pins": [
+        {
+          "block": "core",
+          "port": "s3_vss_m1"
+        },
+        {
+          "block": "core",
+          "port": "s4_vss_m1"
+        }
+      ],
+      "routed": true,
+      "route_length_um": 18.175000000000004,
+      "status": "routed",
+      "legs": [
+        {
+          "pins": [
+            {
+              "block": "core",
+              "port": "s3_vss_m1"
+            },
+            {
+              "block": "core",
+              "port": "s4_vss_m1"
+            }
+          ],
+          "routed": true,
+          "route_length_um": 18.175000000000004,
+          "reason": null
+        }
+      ]
+    }
+  ],
+  "pins": [
+    {
+      "net": "en",
+      "block": "core",
+      "port": "g_en",
+      "labelled": true
+    }
+  ],
+  "unrouted_nets": [],
+  "drc_hints": {
+    "min_spacing_um": null,
+    "matched_groups": [],
+    "notes": []
+  },
+  "warnings": []
+}

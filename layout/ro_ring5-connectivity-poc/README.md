@@ -1,5 +1,46 @@
 # `ro_ring5-connectivity-poc`
 
+> ## SUPERSEDED — and two of its central claims were wrong
+>
+> [`layout/ro_ring5/`](../ro_ring5/README.md) now composes this same cell
+> **DRC-clean (0 violations) and LVS-matching (22/22 devices, 19/19 nets)**,
+> so this directory is kept only as the failure record. Before using anything
+> in it, read the corrections — the errors here are instructive, not
+> cosmetic:
+>
+> 1. **"The inter-stage signal chain (`n1`-`n4`) places and routes cleanly"
+>    is false.** All four nets, both ring outputs and every gate output are
+>    **one shorted electrical node** in `core.gds`. This directory's own
+>    committed `extract.json` says so — `merged_net_labels` lists a single
+>    net `a|g_a|mnab_y|mpa_y|mpb_y|n1|n2|n3|n4|s4_y|y` with
+>    `device_count: 21`, and its `warnings[0]` reads *"merges 11 distinct
+>    labels … this usually means two differently-named nets were shorted
+>    together in the layout"*. The report was read for its device/net
+>    **counts** (22 devices, 19 nets, "matching expectation") and its net
+>    **names** were not. A ring wired this way cannot oscillate.
+> 2. **The "5 unexplained device-internal `li1.space.1` violations" are not
+>    device-internal and not unexplained.** They are the same `n1`-`n4`
+>    risers, spaced too close to (and, one pad further along, overlapping)
+>    each leaf gate's own S/D pads. KLayout attributes a space violation to
+>    the deepest cell on one of the two facing edges, which is what made
+>    them look like they lay inside a `mos_array`. The candidate explanation
+>    floated below — "a hierarchy-dependent DRC evaluation difference
+>    (flattened vs. cell-based rule application)" — is **ruled out**: the
+>    same five gates, placed with the pitch corrected and with no routing at
+>    all, are `klt drc` **clean, 0 violations**
+>    (`layout/ro_ring5/place.gds`).
+> 3. Still correct: the `nwell.space.1` placement-pitch diagnosis (`0.27 µm`
+>    short at the `g`/`s1` boundary), the `blocks[].cell` placement result,
+>    and the observation that `cross_block_layer_role` cannot rescue a bare
+>    li1 pin. The proposed "three-stage li1→metal2→metal3 rail promotion"
+>    recipe turned out to be **unnecessary**: both rails are already on met1
+>    inside each leaf gate, so declaring the block port on met1 satisfies
+>    the single-hop rule directly. See `layout/ro_ring5/README.md` §"final
+>    stage".
+>
+> Everything below this box is the original text, left unedited as the
+> record of what was believed at the time.
+
 **Status: connectivity proven, DRC/LVS/rails not clean.** Not a
 `compose-cell.py` cell (no `cell.json`, no `--check`) — same convention as
 [`layout/xor2-placement-poc/`](../xor2-placement-poc/README.md): a

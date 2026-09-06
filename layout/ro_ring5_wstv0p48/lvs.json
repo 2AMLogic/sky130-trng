@@ -1,0 +1,167 @@
+{
+  "schema_version": 1,
+  "engine": "klayout",
+  "layout": "ro_ring5_wstv0p48.spice",
+  "reference": "ro_ring5_wstv0p48.ref.spice",
+  "top": "RO_RING5_WSTV0P48",
+  "reference_top": "RO_RING5",
+  "parameter_tolerance": null,
+  "options": {
+    "combine_devices": false,
+    "flatten_layout": false,
+    "flatten_reference": true,
+    "netgen_setup": null,
+    "parameter_tolerance": null
+  },
+  "status": "match",
+  "mismatch_count": 1,
+  "error_count": 0,
+  "category_counts": {
+    "topology.flattened": 1
+  },
+  "category_error_counts": {},
+  "counts": {
+    "nets": {
+      "layout": 19,
+      "reference": 19,
+      "matched": 19
+    },
+    "devices": {
+      "layout": 22,
+      "reference": 22,
+      "matched": 22
+    },
+    "pins": {
+      "layout": 18,
+      "reference": 4,
+      "matched": 18
+    }
+  },
+  "device_classes": null,
+  "environment": {
+    "engine": "klayout",
+    "engine_version": "0.30.12",
+    "layout_sha256": "b27241520925922862120fe0d53c4221776d6b6baf5ffceff3bdaba6b834cbb9",
+    "reference_sha256": "a3da90070c4186489e50d44e240f7b74c31767f117815e55a15c2ce7a6b9f1ef",
+    "extracted_netlist": null
+  },
+  "provenance": {
+    "klt_version": "0.3.0",
+    "klayout_version": "0.30.12",
+    "pdk": null,
+    "deck": null,
+    "input": null
+  },
+  "mismatches": [
+    {
+      "category": "topology.flattened",
+      "severity": "warning",
+      "description": "options.flatten_reference flattened the reference netlist before comparing: 3 circuit(s) were collapsed into 1 top-level circuit(s), substituting every subcircuit-call instance in place -- this compare verified topology only after removing the original hierarchy boundaries on this side (see docs/cli/lvs.md, \"topology.flattened\")",
+      "side": "reference",
+      "net": null,
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    }
+  ],
+  "net_correspondence": [
+    {
+      "layout": "NY$1",
+      "reference": "1.NY",
+      "pin": true
+    },
+    {
+      "layout": "PY",
+      "reference": "1.PY",
+      "pin": true
+    },
+    {
+      "layout": "NY$2",
+      "reference": "2.NY",
+      "pin": true
+    },
+    {
+      "layout": "PY$1",
+      "reference": "2.PY",
+      "pin": true
+    },
+    {
+      "layout": "NY$3",
+      "reference": "3.NY",
+      "pin": true
+    },
+    {
+      "layout": "PY$2",
+      "reference": "3.PY",
+      "pin": true
+    },
+    {
+      "layout": "NY$4",
+      "reference": "4.NY",
+      "pin": true
+    },
+    {
+      "layout": "PY$3",
+      "reference": "4.PY",
+      "pin": true
+    },
+    {
+      "layout": "EN|G_EN",
+      "reference": "EN",
+      "pin": true
+    },
+    {
+      "layout": "\\$3",
+      "reference": "G.NM",
+      "pin": false
+    },
+    {
+      "layout": "NY",
+      "reference": "G.NY",
+      "pin": true
+    },
+    {
+      "layout": "MPA_PY|MPB_PY|MPH_PY|PY",
+      "reference": "G.PY",
+      "pin": true
+    },
+    {
+      "layout": "A|G_Y|MNAB_Y|MPA_Y|MPB_Y|N1|S1_A|Y",
+      "reference": "N1",
+      "pin": true
+    },
+    {
+      "layout": "A|N2|S1_Y|S2_A|Y",
+      "reference": "N2",
+      "pin": true
+    },
+    {
+      "layout": "A|N3|S2_Y|S3_A|Y",
+      "reference": "N3",
+      "pin": true
+    },
+    {
+      "layout": "A|N4|S3_Y|S4_A|Y",
+      "reference": "N4",
+      "pin": true
+    },
+    {
+      "layout": "A|G_A|RO|S4_Y|Y",
+      "reference": "RO",
+      "pin": true
+    },
+    {
+      "layout": "G_VDDR_M1|MNT_G|S1_VDDR_M1|S2_VDDR_M1|S3_VDDR_M1|S4_VDDR_M1|VDDR",
+      "reference": "VDDR",
+      "pin": true
+    },
+    {
+      "layout": "G_VSS_M1|MPH_G|S1_VSS_M1|S2_VSS_M1|S3_VSS_M1|S4_VSS_M1|VSS",
+      "reference": "VSS",
+      "pin": true
+    }
+  ]
+}

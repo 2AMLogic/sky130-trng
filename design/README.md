@@ -188,7 +188,7 @@ otherwise unmeasured on sky130).
 | Entropy-binding corner | `ss` / −40 °C / 1.62 V | **measured** | Full 27-point grid, `sim/ro-array-sizing/`. Cold — the direction gf180-trng's DR-0012 guessed and its DR-0015 later reversed. Measured here, inherited from neither |
 | XOR combining tree contribution | `w_90` = 122–241 ps (gate bandwidth); 0.56–0.68 edge retention at `N = 4` | **measured** | `sim/xor-combining-bandwidth/` (single-gate pulse-width sweep, the figure that sizes `N`) and `sim/ro-array-core-combining/` (assembled-array edge retention and combining-node DC bias, 0.31–0.53 × Vdd, no gross systematic offset). DR-0003 §5–6 |
 | Array active power | 81.0–431.6 µW measured across the PVT grid run | **measured** | `sim/ro-array-core-combining/`. Worst-measured 431.6 µW clears the top-level README's `< 500 µW active` row with 13.7% margin |
-| Array area | ~0.0026–0.0088 mm² (ROM estimate, no layout) | **estimated** | Device-count-based estimate (DR-0003 §7): comfortably inside the `< 0.05 mm²` budget (~5–18%), but not a layout measurement — `layout/` remains empty |
+| Array area | ~0.0026–0.0088 mm² (ROM estimate); rings alone now drawn at 4 × 377 µm² = 0.00151 mm² | **estimated (array), measured (rings only)** | Device-count-based estimate (DR-0003 §7): comfortably inside the `< 0.05 mm²` budget (~5–18%). Not yet an array measurement — but no longer with an empty `layout/` behind it: each `ro_ring5` cell's composed GDS is 41.125 × 9.17 µm including its rail lanes (`layout/ro_ring5/README.md`), so the four rings account for ~0.0015 mm² before any `ro_buf`, XOR tree, sampler, inter-ring channel or top-level PDN is drawn |
 | Idle current (per ring) | 0.6 nA (cold) – 255 nA (`ff`/125 °C) | **measured (per-ring), no target yet** | `sim/ro-ring5-swing-and-current/`. The top-level README's own idle-current target is still unset pending `spec/porting-plan.md` §2.5's leakage survey, so this is a reported number, not a pass/fail against a row that does not exist yet |
 | Load cap `cld` | 0.5 fF | placeholder | an estimate of local interconnect load, not an extracted parasitic, and sky130's metal stack differs from gf180mcu's |
 
@@ -233,8 +233,22 @@ DR-0003 surfaces and does not resolve on its own authority.
   (status **Proposed**) it lives in [`digital/`](../digital/README.md), not
   here, and none of it is or will be a `design/*.spice` netlist. `raw_bit`
   and `raw_valid` are the interface between the two directories.
-- **Layout and DRC/LVS.** `layout/` now holds **nine composed, DRC-clean and
-  LVS-clean cells** — [`layout/ro_buf/`](../layout/ro_buf/README.md), this
+- **Layout and DRC/LVS.** `layout/` now holds **thirteen composed, DRC-clean
+  and LVS-clean cells** — nine leaf gates plus, as of this increment, all
+  four `ro_ring5` rings ([`layout/ro_ring5/`](../layout/ro_ring5/README.md)
+  and `ro_ring5_wstv0p{44,46,48}/`), each `klt drc` clean (0 violations) and
+  `klt lvs` **matching** `.subckt ro_ring5` at that ring's own `wstv`
+  (22/22 devices, 19/19 nets, 0 errors). Those are the first *multi-gate*
+  cells in the repository to reach that bar: five leaf gates placed via
+  `klt gen-compose`'s `blocks[].cell` shape, the four forward inter-stage
+  nets plus the `ro` feedback routed on met1, and `vddr`/`vss` bussed on
+  met2 — four `gen-compose` stages across three physical routing planes.
+  See [`layout/ro_ring5/README.md`](../layout/ro_ring5/README.md), which also
+  records the two claims it corrects in the previous increment's
+  `ro_ring5-connectivity-poc` (its `n1`-`n4` were a single shorted node, and
+  its "unexplained device-internal DRC violations" were its own routes).
+  The nine leaf cells are
+  [`layout/ro_buf/`](../layout/ro_buf/README.md), this
   file's own `ro_buf` inverter,
   [`layout/ro_stage/`](../layout/ro_stage/README.md) and its three sibling
   `wstv` variants (`ro_stage_wstv0p{44,46,48}/`), the array's per-stage
@@ -277,14 +291,12 @@ DR-0003 surfaces and does not resolve on its own authority.
   (`spec/decision-records/DR-0005-*.md`).
   Still open: `xor2` routing (its 12-device placement is now DRC-clean —
   see `layout/xor2-placement-poc/README.md` — but its four-signal fan-out
-  is a genuine multi-net channel-routing problem, not yet solved); `ro_ring5`
-  assembly is started but not finished —
-  [`layout/ro_ring5-connectivity-poc/README.md`](../layout/ro_ring5-connectivity-poc/README.md)
-  places all five leaf gates and routes the forward `n1`-`n4` signal chain
-  cleanly, but the placement pitch is not yet DRC-clean and `vddr`/`vss`/`ro`
-  rail busing hit a real `klt` via-drop limitation not yet worked around; no
-  array and no sampler as *assembled* layout either — so there is still no
-  inter-cell interconnect to extract, and no whole-block post-layout PVT
-  re-verification. See `layout/README.md` for the full status and the
+  is a genuine multi-net channel-routing problem, not yet solved); no
+  `ro_array_core` and no sampler as *assembled* layout, so there is still no
+  inter-ring or inter-cell interconnect to extract, and no whole-block
+  post-layout PVT re-verification. The four ring cells themselves are also
+  not yet parasitic-extracted — `layout/pex/` still covers the nine leaf
+  cells only, so the post-layout numbers above are still intra-cell
+  parasitics with ideal wires between gates. See `layout/README.md` for the full status and the
   follow-up issue (#27) it tracks. (`sim/` is no longer empty either — see
   `sim/README.md`.)

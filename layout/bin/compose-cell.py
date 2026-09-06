@@ -74,6 +74,31 @@ already-composed cell -- see ``layout/ro_stage/cell.json`` for a worked
 example and ``layout/ro_stage/README.md`` for why each net landed on the
 layer it did.
 
+Placing an already-composed sibling cell (``blocks[].cell``, #27 step 3)
+-----------------------------------------------------------------------
+
+A stage's ``blocks[]`` entry may name an *existing* committed stream instead
+of a generator or an earlier stage::
+
+    {"id": "g", "cell": {"gds_path": "../ro_nand2/ro_nand2.gds",
+                         "cell_name": "ro_nand2", "ports": [...]}}
+
+``gds_path`` is relative to **the cell.json**, not to the output directory,
+so it keeps the repo-relative spelling that keeps absolute home paths out of
+the committed provenance. ``--check`` rebuilds into a temporary directory
+where that relative path resolves to nothing, so there -- and only there --
+this script substitutes the resolved absolute path.
+
+Because a pre-existing stream never reported a ``ports[]`` list to any ``klt
+gen`` response, its ports are hand-declared. Two things that costs, both
+learned building ``layout/ro_ring5/``: the *only* authoritative source for a
+two-stage cell's port geometry is its own **intermediate** stage response
+(the final one reports ``"ports": []``), and a port may legitimately be
+declared on a layer other than li1 -- declaring a rail port on met1, where
+the leaf gate's own second stage already drew it, is what lets a later stage
+route that rail on ``"metal3"`` within ``gen-compose``'s single-hop via-drop
+rule.
+
 The reference-netlist unit rewrite
 ----------------------------------
 
@@ -95,6 +120,26 @@ any parameter substituted into them), which the converter then reads
 correctly. Only the unit spelling changes -- no topology, no net names, no
 device count, and the rewritten reference is written to disk
 (``<cell>.ref.spice``) so a reviewer can diff it against the source subckt.
+
+A multi-subckt reference (``lvs.dependencies``) needs two more knobs, both
+first exercised by ``layout/ro_ring5/``:
+
+``lvs.reference_top``
+    Names the reference's top circuit. A file holding three ``.subckt``
+    definitions has three *top* circuits as far as the SPICE reader is
+    concerned, and ``klt lvs`` errors out rather than guessing which one to
+    compare (``reference netlist has 3 top circuits (...); pass 'top' to
+    select one``).
+``lvs.flatten_reference``
+    ``klt extract`` hands LVS a **flat** layout netlist, so a hierarchical
+    reference has to be flattened to compare against it. LVS reports this
+    back as a ``topology.flattened`` warning on an otherwise-matching run:
+    the resulting ``match`` verifies device-for-device and net-for-net
+    correspondence, but NOT that the layout's cell hierarchy mirrors the
+    schematic's.
+``lvs.drop_kwargs``
+    Pass-through keyword arguments to strip from instance-call lines that
+    are not in ``lvs.params`` -- see ``build_reference``'s transformation 2.
 """
 
 from __future__ import annotations
@@ -189,6 +234,7 @@ def build_reference(
     *,
     params: dict[str, float] | None,
     drop_prefixes: tuple[str, ...],
+    drop_kwargs: tuple[str, ...] = (),
 ) -> list[str]:
     """Rewrite an xschem-exported subckt into a klt-lvs-ready reference.
 
@@ -215,6 +261,14 @@ def build_reference(
        subckt's own header no longer declares that parameter (transformation
        1 already stripped it, replacing every internal use with a literal),
        so passing it by keyword would name an undeclared parameter.
+       ``drop_kwargs`` extends this to a pass-through parameter that is *not*
+       in ``params`` because nothing surviving the rewrite reads it -- e.g.
+       ``cld``, whose only use is the ``Cld`` load capacitor transformation 3
+       removes. Left in place, ``klt lvs``'s SPICE reader warns
+       ``Not a known parameter for circuit 'RO_STAGE': 'CLD'`` once per
+       instance line and silently ignores it, so dropping it is cosmetic
+       for the verdict but keeps the generated reference free of warnings a
+       reviewer would otherwise have to triage.
     3. Element cards whose name starts with one of ``drop_prefixes`` are
        removed -- for this design that is ``ro_stage``/``ro_nand2``'s ``Cld``
        lumped load capacitor, a *simulation* load model with no physical
@@ -234,6 +288,8 @@ def build_reference(
             tuple(p.upper() for p in drop_prefixes)
         ):
             continue
+        for name in drop_kwargs:
+            line = re.sub(rf"\s+{re.escape(name)}={re.escape(name)}\b", "", line)
         if params:
             for name, value in params.items():
                 line = re.sub(rf"\s+{re.escape(name)}={re.escape(str(name))}\b", "", line)
@@ -254,6 +310,7 @@ def compose_stage(
     cell: str,
     variant: str,
     env: dict[str, str],
+    spec_dir: Path,
     out_dir: Path,
     stage_responses: dict[str, str],
 ) -> dict:
@@ -313,10 +370,24 @@ def compose_stage(
             # this needs hand-declared `ports[]` (a pre-existing cell never
             # reported a ports[] list to any `klt gen` response the way a
             # fresh primitive does).
+            #
+            # `gds_path` is written relative to the *cell.json* (e.g.
+            # "../ro_nand2/ro_nand2.gds"), not relative to wherever this run
+            # happens to write its output. Rebuilding in place (out_dir is
+            # the cell's own directory) those are the same thing, and the
+            # request keeps the repo-relative spelling that keeps absolute
+            # home paths out of the committed provenance. `--check` rebuilds
+            # into a temporary directory instead, where that relative path
+            # resolves to nothing -- so there, and only there, substitute the
+            # resolved absolute path of the sibling cell's committed stream.
+            gds_path = block["cell"]["gds_path"]
+            if out_dir.resolve() != spec_dir.resolve():
+                gds_path = str((spec_dir / gds_path).resolve())
+            cell_block = {**block["cell"], "gds_path": gds_path}
             blocks_request.append(
                 {
                     "id": block["id"],
-                    "cell": block["cell"],
+                    "cell": cell_block,
                     **(
                         {"orientation": block["orientation"]}
                         if block.get("orientation", "none") != "none"
@@ -412,6 +483,7 @@ def compose_cell(spec: dict, spec_dir: Path, out_dir: Path) -> dict:
             cell=cell,
             variant=variant,
             env=env,
+            spec_dir=spec_dir,
             out_dir=out_dir,
             stage_responses=stage_responses,
         )
@@ -432,6 +504,7 @@ def compose_cell(spec: dict, spec_dir: Path, out_dir: Path) -> dict:
     reference_source = REPO_ROOT / lvs_spec["reference"]
     lvs_params = lvs_spec.get("params")
     lvs_drop_prefixes = tuple(lvs_spec.get("drop_prefixes", ()))
+    lvs_drop_kwargs = tuple(lvs_spec.get("drop_kwargs", ()))
     dependency_subckts = lvs_spec.get("dependencies", ())
     reference_lines: list[str] = []
     for dependency in dependency_subckts:
@@ -440,6 +513,7 @@ def compose_cell(spec: dict, spec_dir: Path, out_dir: Path) -> dict:
                 extract_subckt(reference_source, dependency),
                 params=lvs_params,
                 drop_prefixes=lvs_drop_prefixes,
+                drop_kwargs=lvs_drop_kwargs,
             )
         )
         reference_lines.append("")
@@ -448,6 +522,7 @@ def compose_cell(spec: dict, spec_dir: Path, out_dir: Path) -> dict:
             extract_subckt(reference_source, lvs_spec["subckt"]),
             params=lvs_params,
             drop_prefixes=lvs_drop_prefixes,
+            drop_kwargs=lvs_drop_kwargs,
         )
     )
     reference_path = out_dir / f"{cell}.ref.spice"
@@ -481,6 +556,17 @@ def compose_cell(spec: dict, spec_dir: Path, out_dir: Path) -> dict:
             "netlist": reference_path.name,
             "form": "subckt-call",
             "deck": deck,
+            # A multi-subckt reference (lvs.dependencies) leaves klt lvs more
+            # than one candidate top circuit -- for ro_ring5, RO_NAND2 and
+            # RO_STAGE are top circuits of the *file* even though the design
+            # instantiates them from RO_RING5, because the reader sees three
+            # definitions and no single root. `reference.top` names the one
+            # to compare against; klt errors out rather than guessing.
+            **(
+                {"top": lvs_spec["reference_top"]}
+                if lvs_spec.get("reference_top")
+                else {}
+            ),
         },
         **({"options": lvs_options} if lvs_options else {}),
     }
