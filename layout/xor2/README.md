@@ -40,10 +40,12 @@ Cell extent `23.97 x 17.585 µm` (`klt stats`: `x` -6.885..17.085, `y`
 KLayout 0.30.12 against open_pdks `c6d73a35f524070e85faff4a6a9eef49553ebc2b`
 — `layout/pdk.json`'s own pin.
 
-`klt lvs` reports 12 layout pins against the reference's 5 and matches all
-12: the eight gate pads and the four inverter signal ports are promoted as
-bare `pins[]` in stage `core` so the final stage can wire them, so they
-carry extra labels that join onto the nets they end up on. The extracted
+`klt lvs` reports 8 layout pins against the reference's 5 and matches all
+8 (`lvs.json`'s `counts.pins`, confirmed by `extract.json`'s own
+`pin_count: 8`): stage `core` promotes 12 bare pins (the eight gate pads
+and the four inverter signal ports) so the final stage can wire them, but
+four of those labels merge onto nets that already carry another promoted
+pin's label by final LVS, leaving 8 distinct net-level pins. The extracted
 netlist's net names show this directly —
 `a|inva_a|mn12_g0|mp13_g0` is `a`, `an|inva_y|mn34_g0|mp13_g1|y` is `an`
 (the trailing `y` is `inv_a`'s *own internal* output label, which does **not**
