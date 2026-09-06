@@ -124,7 +124,12 @@ DEFAULT_RO_RING5 = REPO_ROOT / "design" / "ro_ring5.spice"
 DEFAULT_PEX_LIB = REPO_ROOT / "layout" / "pex" / "ro_ring5_pex.spice"
 
 sys.path.insert(0, str(REPO_ROOT / "design"))
-from _pdk_search import BUILTIN_SEARCH_ROOTS, PdkSearchError, search_pdk  # noqa: E402
+from _pdk_search import (  # noqa: E402
+    BUILTIN_SEARCH_ROOTS,
+    PdkSearchError,
+    read_open_pdks_commit,
+    search_pdk,
+)
 
 MEASUREMENT_RE = re.compile(
     r"^\s*([A-Za-z_][\w().]*)\s*=\s*([+-]?[0-9][0-9.eE+\-]*)\s*$"
@@ -162,13 +167,17 @@ class Pdk:
 
     @property
     def installed_commit(self) -> str:
-        sources = self.path / "SOURCES"
-        if sources.is_file():
-            for line in sources.read_text().splitlines():
-                parts = line.split()
-                if len(parts) >= 2 and parts[0] == "open_pdks":
-                    return parts[1]
-        return "unknown"
+        """open_pdks commit recorded by volare/ciel, or ``unknown``.
+
+        Delegates to ``design/_pdk_search.py``'s
+        :func:`read_open_pdks_commit`, shared with ``design/netlist.py``'s
+        ``Pdk.version`` (issue #62). Behavior note: before this change, a
+        ``SOURCES`` file with no ``open_pdks`` line but *some* other content
+        made this property return ``"unknown"``; it now falls back to the
+        first line of ``SOURCES``, matching ``netlist.py``'s prior (and
+        more complete) behavior.
+        """
+        return read_open_pdks_commit(self.path)
 
     @property
     def matches_pin(self) -> bool:

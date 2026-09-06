@@ -64,7 +64,10 @@ class PdkLocation(NamedTuple):
 
     Each caller wraps this in its own richer ``Pdk`` dataclass (which also
     carries things this module knows nothing about, like corner-run.py's
-    resolved ngspice library file or netlist.py's ``version`` property).
+    resolved ngspice library file). Both callers' open_pdks-commit
+    properties (netlist.py's ``version``, corner-run.py's
+    ``installed_commit``) delegate to this module's
+    :func:`read_open_pdks_commit` instead (issue #62).
     """
 
     path: Path
@@ -129,3 +132,36 @@ def search_pdk(
             return PdkLocation(path=path, variant=variant, source=str(root))
 
     return None
+
+
+def read_open_pdks_commit(path: Path) -> str:
+    """Parse ``<path>/SOURCES`` for the open_pdks commit volare/ciel pinned.
+
+    Shared by both callers' ``Pdk.version`` / ``Pdk.installed_commit``
+    properties (``design/netlist.py`` and ``sim/bin/corner-run.py``), which
+    were a near-line-for-line copy of this logic before issue #62 -- the
+    other half of the duplication issue #25 left behind when it extracted
+    only :func:`search_pdk` above.
+
+    ``SOURCES`` is a volare/ciel-managed manifest, one tool per line, e.g.
+    ``open_pdks <commit-sha> <url>``. Order of preference:
+
+    1. The second whitespace-separated field of the first line starting
+       with ``open_pdks``.
+    2. If no such line exists but the file has any content, the first line
+       (some installs' ``SOURCES`` layout varies) -- this is the fallback
+       ``design/netlist.py``'s ``version`` had and
+       ``sim/bin/corner-run.py``'s ``installed_commit`` was missing before
+       this extraction; adopted here for both, per issue #62.
+    3. ``"unknown"`` if ``SOURCES`` is missing or empty.
+    """
+    sources = path / "SOURCES"
+    if sources.is_file():
+        for line in sources.read_text().splitlines():
+            parts = line.split()
+            if len(parts) >= 2 and parts[0] == "open_pdks":
+                return parts[1]
+        text = sources.read_text().strip()
+        if text:
+            return text.splitlines()[0]
+    return "unknown"
