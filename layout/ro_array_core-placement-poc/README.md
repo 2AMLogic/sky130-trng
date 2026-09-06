@@ -272,6 +272,125 @@ klt drc ro_array_core_signal3_poc.gds --deck sky130 --format json      # -> clea
 klt extract ro_array_core_signal3_poc.gds --deck sky130 --format json  # -> 132 devices, 104 nets
 ```
 
+## Increment 7: `t2` routed via a met2 bridge, without touching `xor2`'s own leaf cell
+
+Resolves the `t2` half of Increment 6's own finding 3 (`vdd` is still open,
+see below). Increment 6 predicted that reaching `"metal3"` (met2) would need
+a met1 promotion **inside `xor2`'s own leaf cell** first, since met3's
+via-drop is single-hop-only and cannot reach a bare li1 pin. **That
+prediction does not hold**: the promotion can be done entirely at *this*
+directory's own array-composition level, with two short met1 stub routes
+added on top of the already-committed `signal5` GDS — no change to
+`layout/xor2/cell.json`, no re-verification of the standalone `xor2` cell
+needed.
+
+Three new gen-compose calls, each first-try clean (no discarded probes this
+time):
+
+```
+$ klt gen-compose signal6.compose.request.json --format json   # -> signal6.compose.response.json, ro_array_core_signal6_poc.gds
+unrouted_nets: []
+$ klt drc ro_array_core_signal6_poc.gds --deck sky130 --format json
+status: clean, violation_count: 0
+$ klt extract ro_array_core_signal6_poc.gds --deck sky130 --format json
+device_count: 132 (unchanged), net_count: 103 (unchanged), pin_count: 93
+
+$ klt gen-compose signal7.compose.request.json --format json   # -> signal7.compose.response.json, ro_array_core_signal7_poc.gds
+unrouted_nets: [], t2 route_length_um: 56.875
+$ klt drc ro_array_core_signal7_poc.gds --deck sky130 --format json
+status: clean, violation_count: 0
+$ klt extract ro_array_core_signal7_poc.gds --deck sky130 --format json
+device_count: 132 (unchanged), net_count: 102 (down from 103), pin_count: 92
+```
+
+**`signal6` — two met1 promotion stubs, all `"metal2"` role (same layer role
+every prior increment in this directory already uses), on top of the full
+11-block floorplan plus every net routed through Increment 6:**
+
+- `xa2.y` (the `t2` net's true source, li1-only, local `(1.55, 13.0)`) gets a
+  second, hand-declared port `y_m1` on met1 at local `(1.55, 14.4)` — `1.4 µm`
+  further along the *same* north escape column `xor2-y-escape-scan.py`
+  already measured clear (window `x ∈ [1.340, 2.690]`), just stopping short
+  of the cell's own top edge instead of continuing all the way to the
+  external corridor the way `t1`'s route does. A `"metal2"`-role route
+  between the two (`xa2.y` → `xa2.y_m1`) draws the via and the short stub:
+  `route_length_um: 1.4`.
+- `xa3.b` (`t2`'s eventual destination, li1-only, local `(14.735, 6.81)`,
+  the same `inva_a`/`invb_a`-family port Increments 3/4 already proved
+  approachable from the west at `y = 19.395`) gets a second port `b_m1` on
+  met1 at local `(13.835, 6.81)` — `0.9 µm` further *west*, inside the exact
+  lane Increment 4's own `ro4` route already proved clear at this position
+  on `xa2`'s copy of the same cell (`ro4`'s backbone runs `x ∈ [49.5,
+  50.59]` at `y = 19.395` on `xa2`; by translation the equivalent span on
+  `xa3` is `x ∈ [78.47, 79.56]`, and `13.835`'s absolute position `78.66`
+  sits inside it). A `"metal2"`-role route (`xa3.b` → `xa3.b_m1`) draws this
+  stub: `route_length_um: 0.9`.
+
+Net-by-net diff against `signal5.extract.json` (unaffected `$N` renumbering
+aside): the only real change is `xa3`'s own `b` net (`a|b|invb_a|mn12_g1|
+mp24_g0`, 4 devices) gaining exactly the new label `b3` — same
+`device_count`, same net, nothing merged. `t2`'s own net (`t2|y`, 4 devices,
+still a bare-pin promotion) is unchanged too. `net_count` stays `103`, as
+expected: these are two *extensions* of already-existing nets, not new
+connections between different nets.
+
+**`signal7` — the met2 (`"metal3"`) bridge, over the top of everything.**
+Treats the whole `signal6`-composed GDS as **one** placed block (a
+`blocks[].cell` reference to `ro_array_core_signal6_poc.gds`, the same
+technique every leaf/ring cell in this repository already uses one level
+down), with two hand-declared ports at the two new met1 stub tips' absolute
+coordinates (`xa2` origin `(35.855, 12.585)` + local `y_m1` = `(37.405,
+26.985)`; `xa3` origin `(64.825, 12.585)` + local `b_m1` = `(78.66,
+19.395)`), and a single `"metal3"`-role route between them at
+`y = 31.0` — `2.33 µm` above every row-2 block's own bbox top (`28.67`,
+per Increment 6) and a full different physical layer from `t1`'s own met1
+backbone, which happens to run underneath part of this same span at
+`y = 29.5`. Met3's single-hop via-drop rule is satisfied on both ends,
+because both ends are now genuinely met1 (courtesy of `signal6`), not bare
+li1 — exactly the fix Increment 6 called for, just executed one level
+higher than predicted.
+
+Net-by-net diff against `signal6.extract.json`: exactly the intended merge,
+`t2|y` (4 devices, `xa2`'s `y`) plus `a|b|b3|invb_a|mn12_g1|mp24_g0`
+(4 devices, `xa3`'s `b`) into one 8-device
+`a|b|b3|invb_a|mn12_g1|mp24_g0|t2|y` — nothing else moved. `net_count` drops
+`103` → `102`, `device_count` stays `132`.
+
+**`t2` is now really routed** (`xa2.y` → `xa3.b`), completing the whole XOR
+combining tree's *inputs* (`t1` from Increment 6, `t2` here); `xa3.y` (`xo`)
+remains exposed as a bare top-level pin, unchanged. **Still not a DRC/LVS-clean
+`ro_array_core`**: `vdd` (the buffer/XOR-tree supply, still seven separate
+nets) is the one remaining open net, `ring1..4`'s and `xa1..3`'s own `vss`
+taps are still un-routed (not LVS-blocking, per Increment 5's substrate
+finding), and therefore any `klt lvs` attempt is still open.
+
+**Finding: the met1-promotion-inside-the-leaf-cell prediction was
+unnecessarily conservative.** Increment 6 reasoned from `xor2`'s own leaf
+cell inward (`xor2`'s `y` and `ro_buf`'s ports are li1-only *inside that
+cell*, so a met3 hop looked like it needed a leaf-cell change to fix). But
+`klt gen-compose`'s `blocks[].cell` mechanism lets any already-placed
+block gain *additional* hand-declared ports at any layer, at any point
+already proven clear by an earlier increment's own routed geometry — so
+the promotion only needs to happen at whichever composition level is doing
+the connecting, not inside the cell that happens to own the physical pin.
+The same technique should generalize to `vdd`: promote each buffer's/XOR's
+own `vdd` tap to met1 with a short local stub (mirroring this increment's
+`y_m1`/`b_m1` recipe), then bus them together on `"metal3"`, entirely at
+this directory's own level.
+
+### Reproduce this increment
+
+```bash
+volare enable --pdk sky130 c6d73a35f524070e85faff4a6a9eef49553ebc2b
+cd layout/ro_array_core-placement-poc
+klt gen-compose signal6.compose.request.json --format json   # -> signal6.compose.response.json, ro_array_core_signal6_poc.gds
+klt drc ro_array_core_signal6_poc.gds --deck sky130 --format json      # -> clean, 0 violations
+klt extract ro_array_core_signal6_poc.gds --deck sky130 --format json  # -> 132 devices, 103 nets
+klt gen-compose signal7.compose.request.json --format json   # -> signal7.compose.response.json, ro_array_core_signal7_poc.gds
+klt drc ro_array_core_signal7_poc.gds --deck sky130 --format json      # -> clean, 0 violations
+klt extract ro_array_core_signal7_poc.gds --deck sky130 --format json  # -> 132 devices, 102 nets
+```
+
 ## Increment 5: buffer `vss` bus routed, and a substrate-connectivity finding that changes what "the largest remaining unknown" actually needs
 
 Starts on the `vdd`/`vss` item Increment 4 flagged as the largest remaining
@@ -594,12 +713,15 @@ else below is still open.
   four of `ro1..ro4` now reach their intended XOR inputs. **Increment 6
   resolves `t1`** (`xa1.y` → `xa3.a`, really routed) **and exposes `xo`
   (`xa3.y`, a real top-level port) and `t2` (`xa2.y`) as pins on measured
-  taps.** Still open: `vdd` (the buffer/XOR-tree supply), `ring1..4`'s and
-  `xa1..3`'s own `vss` taps (not LVS-blocking, per Increment 5's substrate
-  finding), `t2`'s own routing, and therefore any LVS attempt. `t2` and
-  `vdd` are both blocked on the *same* cause — met1 is fenced by the
-  already-routed `ro1..ro4` backbones — and both need a second drawing
-  plane, not a better waypoint (Increment 6, finding 3).
+  taps.** **Increment 7 resolves `t2`** (`xa2.y` → `xa3.b`, really routed via
+  a met2/`"metal3"` bridge over two met1 promotion stubs added at the
+  array-composition level — see "Increment 7" above) — the XOR combining
+  tree's inputs are now fully wired. Still open: `vdd` (the buffer/XOR-tree
+  supply, still seven separate nets), `ring1..4`'s and `xa1..3`'s own `vss`
+  taps (not LVS-blocking, per Increment 5's substrate finding), and
+  therefore any LVS attempt. `vdd` needs the same met1-stub-then-met2-bridge
+  recipe Increment 7 proved out for `t2` (Increment 6 predicted a leaf-cell
+  change would be needed; Increment 7 found it is not).
 - **The floorplan is a first-pass grid, not a routing-aware plan.** 5 µm
   gaps were chosen for guaranteed DRC clearance (nwell/tap spacing rules in
   sky130 are sub-micron), not for routability. A next increment may need to
@@ -766,16 +888,17 @@ klt extract ro_array_core_poc.gds --deck sky130 --format json  # -> 132 devices 
    waypoint problem. `xor2`'s own `y` tap is **confirmed by Increment 6**
    (`t1` really routed from it, one measured escape window of four); its
    `vdd`/`vss` taps remain unconfirmed and unattempted.
-4. **Next: a second drawing plane for `t2` and `vdd`** (Increment 6,
-   finding 3). Both are blocked by the same fence of already-routed met1
-   backbones, both rejections came from the router itself (`crosses
-   already-routed net 'ro4'` / `'t1'`), and the crossing is arithmetic
-   rather than a bad waypoint. `"metal3"` (met2) is empty everywhere in
-   this floorplan, but its single-hop via rule cannot reach a bare li1
-   pin — and `xor2`'s `y` and every `ro_buf` port are li1-only (`klt
-   components`) — so the promotion to met1 has to happen inside the leaf
-   cell's own final stage first. Measure that cell's interior free space
-   the way `xor2-y-escape-scan.py` measures its escape windows.
+4. ~~A second drawing plane for `t2` and `vdd`~~ **`t2` DONE, Increment 7
+   above** — routed via a `"metal3"` (met2) bridge at `y = 31.0`, fed by two
+   short `"metal2"`-role met1 promotion stubs (`xa2.y` → `y_m1`, `1.4 µm`;
+   `xa3.b` → `b_m1`, `0.9 µm`) added at *this* directory's own
+   array-composition level (`signal6`), with the met3 bridge itself a
+   separate call (`signal7`) that treats the whole `signal6` GDS as one
+   placed block. **Correction to this bullet's own prior text**: the
+   promotion did *not* need to happen inside `xor2`'s leaf cell — Increment
+   7's own "Finding" explains why. `vdd` is the same shape (seven separate
+   nets, needs its own set of met1 stubs per buffer/XOR tap plus a met3 bus)
+   and has not been attempted yet.
 5. Given `ro_ring5`'s and `xor2`'s own composition each needed a staged
    (`"stages"`) approach to keep crossing nets off one layer, expect
    `ro_array_core`'s own final assembly to need the same — this floorplan

@@ -78,20 +78,20 @@ which completes every leaf cell `ro_array_core` instantiates. A floorplan
 for the array now exists, its forward ring→buffer signal chain is really
 routed, its buffer→XOR `a` and `b` legs are now routed for both
 first-stage XORs, its four buffers share a really-routed `vss` bus, and the
-XOR combining tree has started — `t1` (`xa1.y`→`xa3.a`) is really routed
-and `xo`/`t2` are exposed on measured taps
-(`layout/ro_array_core-placement-poc/`, DRC-clean). Extraction shows the
-`vss` bus did not change the array's own `vss` net topology at all, since
-sky130's substrate model already ties every un-isolated NMOS body to one
-global node regardless of drawn routing (`layout/README.md`'s
-"Increment 5"), so `vdd` distribution is the array's actual remaining
-supply unknown, not `vss`. `vdd` distribution and the tree's `t2` leg are
-still unwired — both blocked, per "Increment 6"'s measurement, by the same
-fence of already-routed met1 backbones, so both now need a second drawing
-plane rather than a better waypoint —
-`xor2` has no post-layout record of its own, and there is still no
-LVS-clean array, sampler, or top-level layout, so the whole-block bar is
-still unmet.)
+XOR combining tree's inputs are now fully wired — `t1` (`xa1.y`→`xa3.a`)
+and `t2` (`xa2.y`→`xa3.b`) are both really routed, `t2` via a `"metal3"`
+(met2) bridge over two met1 promotion stubs added at the array-composition
+level, resolving the fence of already-routed met1 backbones "Increment 6"
+found blocking it (`layout/ro_array_core-placement-poc/`, DRC-clean at
+every step); `xo` (`xa3.y`) remains exposed as a bare top-level pin.
+Extraction shows the `vss` bus did not change the array's own `vss` net
+topology at all, since sky130's substrate model already ties every
+un-isolated NMOS body to one global node regardless of drawn routing
+(`layout/README.md`'s "Increment 5"), so `vdd` distribution is the array's
+one remaining unwired net, expected to need the same met1-stub-then-met2-bridge
+recipe "Increment 7" proved out for `t2` — `xor2` has no post-layout record
+of its own, and there is still no LVS-clean array, sampler, or top-level
+layout, so the whole-block bar is still unmet.)
 
 ---
 
@@ -502,7 +502,7 @@ that lands this document):
   box). Its "Increment 6" starts the XOR combining tree: `t1`
   (`xa1.y`→`xa3.a`) really routed on met1 and `xo`/`t2` exposed as pins on
   measured taps (`klt drc` clean, 132 devices, 103 nets — exactly one merge,
-  confirmed by net diff). That increment's three findings are worth
+  confirmed by net diff). That increment's findings are worth
   carrying: `klt drc` clean is **not** connectivity evidence (a first `t1`
   probe was DRC-clean and electrically shorted, because `klt gen-compose`
   models a placed block as an opaque bbox and cannot see its interior
@@ -511,7 +511,19 @@ that lands this document):
   committed scan script rather than approximated; and `t2` plus `vdd` are
   blocked by the *same* fence of already-routed backbones, with the router
   rejecting both `t2` probes itself, so the next move is a second drawing
-  plane. `vdd`, `t2`, and any LVS attempt
+  plane — which that increment predicted would need a met1 promotion inside
+  `xor2`'s own leaf cell first. Its "Increment 7" resolves `t2`
+  (`xa2.y`→`xa3.b`) via a `"metal3"` (met2) bridge fed by two short met1
+  promotion stubs, and **shows the leaf-cell prediction was wrong**: the
+  promotion can happen entirely at the array-composition level, one level
+  up from `xor2`'s own cell, since `klt gen-compose`'s `blocks[].cell`
+  mechanism lets an already-placed block gain extra hand-declared ports at
+  any layer, at any point an earlier increment's own routing already proved
+  clear (`klt drc` clean at every step, 132 devices throughout, 103 → 102
+  nets, each merge confirmed by net diff). The XOR tree's inputs (`t1`,
+  `t2`) are now both really routed; `xo` remains a bare top-level pin.
+  `vdd`, `ring1..4`'s/`xa1..3`'s own `vss` taps (not LVS-blocking), and any
+  LVS attempt
   remain open, so this is still a partial assembly, not a DRC/LVS-clean
   block. Still outstanding for
   the brief's full sign-off bar: the array's own routing/LVS
