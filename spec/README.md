@@ -55,6 +55,20 @@
   intra-cell only, and §8's first-named mechanism (shared supply impedance)
   has no layout to be measured on.
 
+- [`decision-records/DR-0006-array-level-post-layout-and-wstv-decorrelation.md`](decision-records/DR-0006-array-level-post-layout-and-wstv-decorrelation.md)
+  — **Proposed**. Issue #22's whole-array post-layout campaign, re-running
+  DR-0005's own named follow-up items against the real, DRC-clean and
+  LVS-matching assembled `ro_array_core` GDS: array-level parasitics cost
+  2.158x−2.490x in ring period (against 1.38x−1.48x intra-cell-only), the
+  `wstv` ladder still discriminates (span 1.089x−1.180x), and a tied/float/
+  solo substrate bracket — now on a real physically-placed layout rather
+  than leaf cells hand-tied to a shared node — finds a *wider* (not
+  narrower) coupling bound than DR-0005's own ring-scale study
+  (loading −0.379% to −0.247%, coupling −0.081% to +0.230%, sign still not
+  consistent across the grid). Explicitly does **not** close §8 or supersede
+  DR-0005: §8's first-named mechanism (shared supply impedance) still has no
+  layout to be measured on at any scale.
+
 A record's status is meaningful: **Proposed** means drafted and not accepted
 by anyone. Ratification is an operator decision, so no record here declares
 itself Accepted. See the repo README for scope.

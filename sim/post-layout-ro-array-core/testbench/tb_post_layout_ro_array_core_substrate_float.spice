@@ -1,0 +1,103 @@
+* Post-layout ro_array_core (whole array, real inter-ring wiring) with the
+* shared substrate node left FLOATING -- the array-scale sibling of
+* sim/post-layout-ro-ring5/testbench/tb_post_layout_substrate_float.spice,
+* now over the REAL composed array GDS (real physical ring-to-ring
+* proximity, well spacing and shared psub geometry, not four separately
+* extracted leaf cells hand-tied to a shared node as if placed at infinite
+* separation -- see DR-0005's own "Proximity" limitation, which this deck
+* closes for the substrate mechanism specifically).
+*
+* Purpose (DR-0003 section 8's inter-ring decorrelation gap; DR-0005's own
+* "Follow-up required" section: "Findings 1 and 3 should be re-run against
+* the assembled block when it exists"). This deck differs from
+* tb_post_layout_ro_array_core.spice's post-layout half in exactly one
+* respect: that deck ties `vsubs` hard to 0 (`Vsub vsubs 0 dc 0`), this one
+* does not tie it at all, leaving it on
+* layout/pex-array/ro_array_core_pex.spice's own
+* `Rvsubs_dctie vsubs 0 1e+12` (klayout-tools#1503). The pair brackets the
+* real answer the same way DR-0005's ring-level pair did:
+*
+*   TIED   (sibling deck, already run) -- ideal zero-impedance substrate,
+*          no inter-ring coupling possible by construction.
+*   FLOAT  (this deck) -- ideal infinite-impedance shared substrate: every
+*          ring's switching current is forced through the shared node's
+*          capacitance and into every other ring.
+*
+* No pre-layout control: a pre-layout netlist has no substrate node, so it
+* has nothing to say about this question (same choice
+* tb_post_layout_substrate_float.spice made at ring scope).
+*
+* Measured: each ring's own period (line for line comparable against the
+* sibling tied deck's p_tr1-p_tr4 at the same corner/temp/vdd), the array
+* skew span, and the substrate node's own peak-to-peak excursion -- the
+* direct measure of how hard the four rings (now WITH the buffer + XOR tree
+* load, both riding the same block vdd, also present) are driving each
+* other through it.
+*
+* This file is a TEMPLATE: sim/bin/corner-run.py substitutes @@PDK_LIB@@,
+* @@CORNER@@, @@PEX_LIB@@, @@TEMP@@ and @@VDD@@. As committed it is not a
+* runnable deck. Invoke with
+* `--pex-lib layout/pex-array/ro_array_core_pex.spice` (no --ro-ring5
+* needed: this deck includes only the post-layout library).
+
+.option scale=1u
+.lib "@@PDK_LIB@@" @@CORNER@@
+
+* post-layout ARRAY subcircuit library only -- no pre-layout control, see
+* header for why.
+.include "@@PEX_LIB@@"
+
+.temp @@TEMP@@
+
+* --- substrate return node: FLOATING (see header) -- no Vsub source ----
+
+Vddrp1 pvddr1 0 dc @@VDD@@
+Vddrp2 pvddr2 0 dc @@VDD@@
+Vddrp3 pvddr3 0 dc @@VDD@@
+Vddrp4 pvddr4 0 dc @@VDD@@
+Vddp pvdd 0 dc @@VDD@@
+Venp1 pen1 0 PULSE(0 @@VDD@@ 5n 100p 100p 1u 2u)
+Venp2 pen2 0 PULSE(0 @@VDD@@ 5n 100p 100p 1u 2u)
+Venp3 pen3 0 PULSE(0 @@VDD@@ 5n 100p 100p 1u 2u)
+Venp4 pen4 0 PULSE(0 @@VDD@@ 5n 100p 100p 1u 2u)
+xarr pen1 pen2 pen3 pen4 pvddr1 pvddr2 pvddr3 pvddr4 pvdd 0 pxo pro1 pro2 pro3 pro4 ro_array_core_pex
+
+.ic v(pro1)=0
+.ic v(pro2)=0
+.ic v(pro3)=0
+.ic v(pro4)=0
+
+.save v(pro1) v(pro2) v(pro3) v(pro4) v(xarr.vsubs)
+.save i(Vddrp1) i(Vddrp2) i(Vddrp3) i(Vddrp4) i(Vddp)
+
+.tran @@TMAX@@ 800n uic
+
+.control
+run
+
+meas tran pt1a when v(pro1)=0.5*@@VDD@@ rise=3
+meas tran pt1b when v(pro1)=0.5*@@VDD@@ rise=13
+let p_tr1 = (pt1b - pt1a)/10
+meas tran pt2a when v(pro2)=0.5*@@VDD@@ rise=3
+meas tran pt2b when v(pro2)=0.5*@@VDD@@ rise=13
+let p_tr2 = (pt2b - pt2a)/10
+meas tran pt3a when v(pro3)=0.5*@@VDD@@ rise=3
+meas tran pt3b when v(pro3)=0.5*@@VDD@@ rise=13
+let p_tr3 = (pt3b - pt3a)/10
+meas tran pt4a when v(pro4)=0.5*@@VDD@@ rise=3
+meas tran pt4b when v(pro4)=0.5*@@VDD@@ rise=13
+let p_tr4 = (pt4b - pt4a)/10
+let p_skew_span = p_tr1/p_tr4
+
+meas tran vsub_max MAX v(xarr.vsubs) from=100n to=800n
+meas tran vsub_min MIN v(xarr.vsubs) from=100n to=800n
+let vsub_swing_frac = (vsub_max - vsub_min) / @@VDD@@
+
+print p_tr1
+print p_tr2
+print p_tr3
+print p_tr4
+print p_skew_span
+print vsub_swing_frac
+.endc
+.end

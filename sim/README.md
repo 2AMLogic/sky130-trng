@@ -468,6 +468,78 @@ Four records, twelve corner runs:
   `.save` line scoped the saved trace set to only the nodes measurements
   actually use.
 
+### Array-level post-layout: the whole entropy source, real inter-ring wiring (issue #22)
+
+`sim/post-layout-ro-array-core/` answers the question the section above
+still leaves open: `layout/pex-ring/`'s numbers are one ring's own real
+interconnect with **ideal wires to its neighbours** — the ring-to-buffer
+signal chain, buffer-to-XOR fan-in, XOR combining tree and array-wide `vdd`
+bus are all still undrawn there. Now that
+`layout/ro_array_core-placement-poc/`'s "Increment 8" gives a `klt drc`
+clean (0 violations), `klt lvs` **matching** (132/132 devices, 96/96 nets)
+whole-array GDS, `layout/pex-array/ro_array_core_pex.spice` extracts it flat
+— see that directory's own README for the parasitic model and the net-alias
+technique extended to four rings' worth of duplicate internal labels.
+
+Three testbenches, the same four (temp, Vdd) points every post-layout
+campaign in this file uses, each bundling `tt`/`ss`/`ff` — thirty-six corner
+runs across the three decks:
+
+| Testbench | What it holds fixed | What it answers |
+|---|---|---|
+| `tb_post_layout_ro_array_core.spice` | `vsubs` tied hard to 0; post-layout array AND an identical-topology pre-layout array in one deck | array-level parasitic cost (period, `wstv` ladder, XOR-tree combining fidelity, supply current), same-corner ratio |
+| `tb_post_layout_ro_array_core_substrate_float.spice` | `vsubs` untied; all four rings running | the pessimistic inter-ring coupling bound, now on the array's own real physical placement rather than four leaf cells hand-tied to a shared node |
+| `tb_post_layout_ro_array_core_substrate_float_solo.spice` | `vsubs` untied; rings 2-4 present but **stopped** | separates the floating node's capacitive *loading* from actual *coupling*, same decomposition as `layout/pex-ring/`'s own solo control |
+
+`spec/decision-records/DR-0006-*.md` states what this does and does not
+settle for DR-0003 §8 in full; headline numbers:
+
+- **Real array-level parasitics cost 2.158x - 2.490x in ring period** — far
+  more than intra-cell-only parasitics alone (1.378x - 1.479x), because the
+  array now carries real ring-to-buffer, buffer-to-XOR and array-wide-`vdd`
+  routing that no smaller-scope extraction in this repo could include.
+- **The `wstv` ladder still discriminates.** Post-layout array span
+  (slowest/fastest ring) is 1.089x - 1.180x, against 1.1234x - 1.2514x
+  pre-layout in the same deck.
+- **XOR-tree combining fidelity, measured post-layout for the first time.**
+  Edge retention (N=4) is 0.609 - 0.798 post-layout against 0.547 - 0.724
+  pre-layout in the same deck (retention is, if anything, slightly *higher*
+  with real routing at most grid points — reported as measured, not
+  explained); combining-node bias stays close to 0.5x Vdd in both cases
+  (0.381 - 0.521 post-layout, 0.355 - 0.537 pre-layout), i.e. no new
+  systematic bias from the real routing.
+- **Array supply current stays the same order of magnitude**: 0.911x -
+  1.033x of the pre-layout figure across the grid — real parasitic loading
+  slows switching enough in most corners to slightly *reduce* net current,
+  not raise it.
+- **The tied/float/solo substrate bracket, now on a real physically-placed
+  layout**: loading -0.379% to -0.247% of ring period, coupling -0.081% to
+  +0.230% — both wider in magnitude than DR-0005's own ring-scale bracket
+  (-0.151% to -0.057% loading, -0.033% to +0.018% coupling), and the
+  coupling figure's sign is still not consistent across the twelve grid
+  points, so this is a wider bound, not a resolved directional pull.
+
+### A testbench defect and an environment note, both documented rather than fixed silently
+
+The first run of the substrate-float/-solo decks addressed the shared
+substrate node as `v(xarr.vsubs)` (hierarchical). Because `vsubs` is
+`.global`-declared (klayout-tools#1503's own workaround), it is the *same*
+node everywhere in the deck and is addressed as `v(vsubs)` directly, with no
+instance prefix — the hierarchical form silently resolved to "no such
+vector", so the node's own peak-to-peak swing was not captured this round.
+The period-based bracket above is unaffected (it reads the array's own
+exposed ports, not the internal global node). Not filed against
+`klayout-tools`: `.global` addressing is standard ngspice behaviour.
+
+Separately, the `solo` deck's first attempt at its coldest/highest-current
+corner point had two of three process corners killed outright
+(`exited -15`, then `exited -9`) within a few minutes — well under the 1800 s
+per-corner timeout — consistent with transient memory contention from other
+concurrent jobs on the shared host, not a deck fault. An immediate,
+unmodified retry passed all three corners. Per this repo's append-only
+convention, the partial-failure record was not deleted; it stands alongside
+the successful retry.
+
 ## Writing a new record
 
 1. Author a deck template under `sim/<slug>/testbench/`, using the `@@...@@`

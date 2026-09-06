@@ -1,0 +1,285 @@
+* Post-layout ro_array_core: the whole entropy source (four non-identical
+* rings + four output buffers + the three-xor2 combining tree), extracted
+* FLAT from ONE `klt extract --parasitics` run over
+* layout/ro_array_core-placement-poc/ro_array_core_signal9_poc.gds -- the
+* same DRC-clean (0 violations), klt-lvs-MATCHING (132/132 devices, 96/96
+* nets against design/ro_array_core.spice's own .subckt ro_array_core) GDS
+* that PoC directory's own README documents ("Increment 8"). Real inter-ring
+* wiring is included for the first time: the ring->buffer signal chain, the
+* buffer->XOR fan-in, the XOR combining tree's own t1/t2 routing, and the
+* array-wide vdd bus for the four buffers + three xor2 instances -- none of
+* which sim/post-layout-ro-ring5-assembled/ (one ring at a time, ideal
+* wires between rings) could include, and none of which
+* sim/ro-array-core-combining/ (pre-layout, no physical interconnect at
+* all) could include either.
+*
+* Purpose (issue #22's acceptance bar: "Post-layout PVT simulation results
+* land under sim/, extracted parasitics included" plus the DR-0003 section
+* 8 wstv inter-ring decorrelation re-evaluation). This is a two-way,
+* same-corner comparison (post-layout array vs. pre-layout control, the
+* SAME topology sim/ro-array-core-combining/'s own testbench drives),
+* matching sim/post-layout-ro-ring5-assembled/'s own comparison discipline
+* one hierarchy level up. It reuses that record's own measurement set
+* (per-ring periods, combining fidelity in both the edge-retention and
+* value-fidelity senses, and array supply current) rather than inventing a
+* new one, so every number here is directly comparable to
+* sim/ro-array-core-combining/'s own pre-layout record by name.
+*
+* Topology, post-layout side (prefix p): xarr is ONE flat-extracted cell --
+* design/xschem/ro_array_core.sch's own hierarchy, already wired, sourced
+* from layout/pex-array/ro_array_core_pex.spice via
+* layout/bin/pex-netlist.py (shared, unmodified, with
+* layout/pex/pex.json's and layout/pex-ring/pex.json's own leaf/ring
+* descriptors). t1/t2 (the XOR tree's own inter-stage nets) are internal to
+* the wrapper subckt at the SAME literal names design/ro_array_core.spice's
+* own .subckt ro_array_core uses internally, so they are reachable exactly
+* the way sim/ro-array-core-combining/'s own testbench reaches them
+* (`v(xarr.t1)`, one level of hierarchy) -- confirmed by this deck's own
+* first successful run, not assumed.
+*
+* Topology, pre-layout side (no prefix, matching
+* sim/ro-array-core-combining/'s own testbench net names exactly): xctl is
+* the identical topology from design/ro_array_core.spice's parameterized
+* .subckt ro_array_core, same-deck same-corner control.
+*
+* The substrate tie. layout/pex-array/ro_array_core_pex.spice declares the
+* extractor's substrate return node `vsubs` .global (klayout-tools#1503,
+* same as every other post-layout deck in this repo). This deck ties it
+* HARD to 0, the same physically-motivated choice
+* sim/post-layout-ro-ring5-assembled/ and sim/post-layout-ro-ring5/ both
+* use -- every composed cell's own psub guard ring is tied to vss, and vss
+* is 0 here. Inter-ring coupling through a floating substrate is a
+* different, separately-bracketed question (spec/decision-records/DR-0005)
+* and is not re-litigated by this deck's own hard tie.
+*
+* PVT: the same four (temp, supply) points
+* sim/post-layout-ro-ring5-assembled/ uses, each bundling the tt/ss/ff
+* process axis:
+*   -40 degC / 1.62 V   the measured entropy-binding corner (ss)
+*    27 degC / 1.80 V   nominal
+*   125 degC / 1.98 V   the worst five-stage ring swing in #10's grid
+*   -40 degC / 1.98 V   the fastest ring measured anywhere in that grid
+*
+* Window. Post-layout parasitics measurably slow the array (every prior
+* post-layout ring record in this repo reports 1.4x-2.4x slowdown over
+* pre-layout, and the array adds inter-ring wiring + XOR-tree loading on
+* top), so this deck's tstop is 4x sim/ro-array-core-combining/'s own 200n
+* -- 800n -- with the same 5 ns enable-release point and the same
+* 10-period ring / 48-edge combining-node estimators (rise=3..13 for
+* periods, rise=2..50 at the combining nodes), now measured from a 700 ns
+* window (100 ns to 800 ns) rather than that deck's 60-200 ns, to keep the
+* same edge counts reachable at the slowest corner. Confirmed sufficient by
+* this deck's own first run at every corner (every meas below resolved,
+* not "no value found"), not assumed from the pre-layout deck's own margin.
+*
+* This file is a TEMPLATE: sim/bin/corner-run.py substitutes @@PDK_LIB@@,
+* @@CORNER@@, @@RO_RING5@@, @@PEX_LIB@@, @@TEMP@@, @@VDD@@ and @@TMAX@@. As
+* committed it is not a runnable deck. Invoke with
+* `--ro-ring5 design/ro_array_core.spice` and
+* `--pex-lib layout/pex-array/ro_array_core_pex.spice`.
+
+.option scale=1u
+.lib "@@PDK_LIB@@" @@CORNER@@
+
+* pre-layout subcircuit library (ro_array_core / ro_ring5 / ro_buf / xor2)
+.include "@@RO_RING5@@"
+* post-layout ARRAY subcircuit library (ro_array_core_pex, flat-extracted
+* from the whole composed, DRC-clean and LVS-clean array GDS)
+.include "@@PEX_LIB@@"
+
+.temp @@TEMP@@
+
+* --- substrate return node: hard tie (see header) ----------------------
+Vsub vsubs 0 dc 0
+
+* --- post-layout ARRAY, one flat-extracted cell for the whole block ----
+Vddrp1 pvddr1 0 dc @@VDD@@
+Vddrp2 pvddr2 0 dc @@VDD@@
+Vddrp3 pvddr3 0 dc @@VDD@@
+Vddrp4 pvddr4 0 dc @@VDD@@
+Vddp pvdd 0 dc @@VDD@@
+Venp1 pen1 0 PULSE(0 @@VDD@@ 5n 100p 100p 1u 2u)
+Venp2 pen2 0 PULSE(0 @@VDD@@ 5n 100p 100p 1u 2u)
+Venp3 pen3 0 PULSE(0 @@VDD@@ 5n 100p 100p 1u 2u)
+Venp4 pen4 0 PULSE(0 @@VDD@@ 5n 100p 100p 1u 2u)
+xarr pen1 pen2 pen3 pen4 pvddr1 pvddr2 pvddr3 pvddr4 pvdd 0 pxo pro1 pro2 pro3 pro4 ro_array_core_pex
+
+* --- pre-layout control, identical topology, single-call subckt --------
+Vddr1 vddr1 0 dc @@VDD@@
+Vddr2 vddr2 0 dc @@VDD@@
+Vddr3 vddr3 0 dc @@VDD@@
+Vddr4 vddr4 0 dc @@VDD@@
+Vdd vdd 0 dc @@VDD@@
+Ven1 en1 0 PULSE(0 @@VDD@@ 5n 100p 100p 1u 2u)
+Ven2 en2 0 PULSE(0 @@VDD@@ 5n 100p 100p 1u 2u)
+Ven3 en3 0 PULSE(0 @@VDD@@ 5n 100p 100p 1u 2u)
+Ven4 en4 0 PULSE(0 @@VDD@@ 5n 100p 100p 1u 2u)
+xctl en1 en2 en3 en4 vddr1 vddr2 vddr3 vddr4 vdd 0 xo ro1 ro2 ro3 ro4 ro_array_core
+
+.ic v(pro1)=0
+.ic v(pro2)=0
+.ic v(pro3)=0
+.ic v(pro4)=0
+.ic v(ro1)=0
+.ic v(ro2)=0
+.ic v(ro3)=0
+.ic v(ro4)=0
+
+* Limit the saved transient trace set to exactly what the .meas statements
+* below need. Without this, ngspice keeps a full-resolution voltage history
+* for every node in the deck -- including every per-terminal parasitic-star
+* leg node the flat ARRAY extraction introduces (132 devices' worth, an
+* order of magnitude more than one ring alone) -- and
+* sim/post-layout-ro-ring5-assembled/'s own header records this exhausting
+* process memory outright at the ff corner's shorter timesteps. None of
+* those internal leg voltages are read by any .meas below.
+.save v(pro1) v(pro2) v(pro3) v(pro4) v(pxo) v(xarr.t1)
+.save v(ro1) v(ro2) v(ro3) v(ro4) v(xo) v(xctl.t1)
+.save i(Vddrp1) i(Vddrp2) i(Vddrp3) i(Vddrp4) i(Vddp)
+.save i(Vddr1) i(Vddr2) i(Vddr3) i(Vddr4) i(Vdd)
+
+.tran @@TMAX@@ 800n uic
+
+.control
+run
+
+* --- post-layout ARRAY: per-ring periods, 10 whole periods each, first
+* two rising edges discarded as start-up ------------------------------
+meas tran pt1a when v(pro1)=0.5*@@VDD@@ rise=3
+meas tran pt1b when v(pro1)=0.5*@@VDD@@ rise=13
+let p_tr1 = (pt1b - pt1a)/10
+meas tran pt2a when v(pro2)=0.5*@@VDD@@ rise=3
+meas tran pt2b when v(pro2)=0.5*@@VDD@@ rise=13
+let p_tr2 = (pt2b - pt2a)/10
+meas tran pt3a when v(pro3)=0.5*@@VDD@@ rise=3
+meas tran pt3b when v(pro3)=0.5*@@VDD@@ rise=13
+let p_tr3 = (pt3b - pt3a)/10
+meas tran pt4a when v(pro4)=0.5*@@VDD@@ rise=3
+meas tran pt4b when v(pro4)=0.5*@@VDD@@ rise=13
+let p_tr4 = (pt4b - pt4a)/10
+let p_f_ideal2 = 1/p_tr1 + 1/p_tr2
+let p_f_ideal = 1/p_tr1 + 1/p_tr2 + 1/p_tr3 + 1/p_tr4
+let p_skew_span = p_tr1/p_tr4
+
+* --- post-layout ARRAY combining node: swing and realized edge rate ---
+meas tran pvxo_max MAX v(pxo) from=100n to=800n
+meas tran pvxo_min MIN v(pxo) from=100n to=800n
+let p_swing_frac_xo = (pvxo_max - pvxo_min) / @@VDD@@
+meas tran ptxo_a when v(pxo)=0.5*@@VDD@@ rise=2
+meas tran ptxo_b when v(pxo)=0.5*@@VDD@@ rise=50
+let p_f_xo = 48/(ptxo_b - ptxo_a)
+let p_edge_retention = p_f_xo / p_f_ideal
+meas tran ptt1a when v(xarr.t1)=0.5*@@VDD@@ rise=2
+meas tran ptt1b when v(xarr.t1)=0.5*@@VDD@@ rise=50
+let p_f_t1 = 48/(ptt1b - ptt1a)
+let p_retention_n2 = p_f_t1 / p_f_ideal2
+let p_retention_n4 = p_edge_retention
+
+* --- post-layout ARRAY value fidelity + supply current -----------------
+meas tran pvxo_avg AVG v(pxo) from=100n to=800n
+meas tran pvt1_avg AVG v(xarr.t1) from=100n to=800n
+let p_bias_xo = pvxo_avg / @@VDD@@
+let p_bias_t1 = pvt1_avg / @@VDD@@
+meas tran pi1 AVG i(Vddrp1) from=100n to=800n
+meas tran pi2 AVG i(Vddrp2) from=100n to=800n
+meas tran pi3 AVG i(Vddrp3) from=100n to=800n
+meas tran pi4 AVG i(Vddrp4) from=100n to=800n
+meas tran pib AVG i(Vddp) from=100n to=800n
+let p_i_rings = -(pi1 + pi2 + pi3 + pi4)
+let p_i_block = -pib
+let p_i_array_total = p_i_rings + p_i_block
+let p_p_array_total = p_i_array_total * @@VDD@@
+
+* --- pre-layout CONTROL: identical estimators, identical node names as
+* sim/ro-array-core-combining/'s own testbench ---------------------------
+meas tran t1a when v(ro1)=0.5*@@VDD@@ rise=3
+meas tran t1b when v(ro1)=0.5*@@VDD@@ rise=13
+let tr1 = (t1b - t1a)/10
+meas tran t2a when v(ro2)=0.5*@@VDD@@ rise=3
+meas tran t2b when v(ro2)=0.5*@@VDD@@ rise=13
+let tr2 = (t2b - t2a)/10
+meas tran t3a when v(ro3)=0.5*@@VDD@@ rise=3
+meas tran t3b when v(ro3)=0.5*@@VDD@@ rise=13
+let tr3 = (t3b - t3a)/10
+meas tran t4a when v(ro4)=0.5*@@VDD@@ rise=3
+meas tran t4b when v(ro4)=0.5*@@VDD@@ rise=13
+let tr4 = (t4b - t4a)/10
+let f_ideal2 = 1/tr1 + 1/tr2
+let f_ideal = 1/tr1 + 1/tr2 + 1/tr3 + 1/tr4
+let skew_span = tr1/tr4
+
+meas tran vxo_max MAX v(xo) from=100n to=800n
+meas tran vxo_min MIN v(xo) from=100n to=800n
+let swing_frac_xo = (vxo_max - vxo_min) / @@VDD@@
+meas tran txo_a when v(xo)=0.5*@@VDD@@ rise=2
+meas tran txo_b when v(xo)=0.5*@@VDD@@ rise=50
+let f_xo = 48/(txo_b - txo_a)
+let edge_retention = f_xo / f_ideal
+meas tran tt1a when v(xctl.t1)=0.5*@@VDD@@ rise=2
+meas tran tt1b when v(xctl.t1)=0.5*@@VDD@@ rise=50
+let f_t1 = 48/(tt1b - tt1a)
+let retention_n2 = f_t1 / f_ideal2
+let retention_n4 = edge_retention
+
+meas tran vxo_avg AVG v(xo) from=100n to=800n
+meas tran vt1_avg AVG v(xctl.t1) from=100n to=800n
+let bias_xo = vxo_avg / @@VDD@@
+let bias_t1 = vt1_avg / @@VDD@@
+meas tran i1 AVG i(Vddr1) from=100n to=800n
+meas tran i2 AVG i(Vddr2) from=100n to=800n
+meas tran i3 AVG i(Vddr3) from=100n to=800n
+meas tran i4 AVG i(Vddr4) from=100n to=800n
+meas tran ib AVG i(Vdd) from=100n to=800n
+let i_rings = -(i1 + i2 + i3 + i4)
+let i_block = -ib
+let i_array_total = i_rings + i_block
+let p_array_total_pre = i_array_total * @@VDD@@
+
+* --- headline ratios: same block, same corner, real inter-ring wiring
+* (plus real intra-cell parasitics) vs. pre-layout (no interconnect,
+* ideal devices only) ----------------------------------------------------
+let slowdown_r1 = p_tr1 / tr1
+let slowdown_r2 = p_tr2 / tr2
+let slowdown_r3 = p_tr3 / tr3
+let slowdown_r4 = p_tr4 / tr4
+
+print p_tr1
+print p_tr2
+print p_tr3
+print p_tr4
+print p_skew_span
+print p_f_ideal
+print p_f_xo
+print p_edge_retention
+print p_retention_n2
+print p_retention_n4
+print p_bias_t1
+print p_bias_xo
+print p_swing_frac_xo
+print p_i_rings
+print p_i_block
+print p_i_array_total
+print p_p_array_total
+print tr1
+print tr2
+print tr3
+print tr4
+print skew_span
+print f_ideal
+print f_xo
+print edge_retention
+print retention_n2
+print retention_n4
+print bias_t1
+print bias_xo
+print swing_frac_xo
+print i_rings
+print i_block
+print i_array_total
+print p_array_total_pre
+print slowdown_r1
+print slowdown_r2
+print slowdown_r3
+print slowdown_r4
+.endc
+.end

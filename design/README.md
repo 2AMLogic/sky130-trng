@@ -268,8 +268,31 @@ DR-0003 surfaces and does not resolve on its own authority.
   verified to reproduce the identical reference body and LVS/negative-control
   verdicts. **The promotion that follow-up left open is done**:
   `layout/ro_array_core/cell.json` is the `--check`-reproducible recipe, and
-  its `lvs` block is `lvs.dependency_variants`'s first real use. Array-level
-  parasitic extraction and post-layout PVT remain follow-up work (#27).
+  its `lvs` block is `lvs.dependency_variants`'s first real use.
+
+  **This increment adds the whole-array post-layout PVT campaign issue #22's
+  acceptance bar asks for**, layered on top of that already-landed recipe.
+  [`layout/pex-array/`](../layout/pex-array/README.md)
+  extracts the canonical, `vss`-strapped, DRC-clean, LVS-matching
+  `layout/ro_array_core/ro_array_core.gds` flat with
+  `klt extract --parasitics`, and
+  [`sim/post-layout-ro-array-core/`](../sim/README.md) runs it across the
+  same four-(temp, Vdd)-point, `tt`/`ss`/`ff` grid every prior post-layout
+  campaign in this repo uses (36 corner runs): array-level parasitics cost
+  **2.158x - 2.490x** in ring period against pre-layout, the `wstv` ladder
+  still discriminates (span 1.089x - 1.180x), and a tied/float/solo
+  inter-ring substrate bracket — the first one in this repo run on a real,
+  physically-placed layout rather than leaf cells hand-tied to a shared
+  node — finds coupling still bounded, still not resolved in direction, and
+  wider than the prior ring-scale study (loading -0.379% to -0.247% of ring
+  period, coupling -0.081% to +0.230%). See
+  [`spec/decision-records/DR-0006-*.md`](../spec/decision-records/DR-0006-array-level-post-layout-and-wstv-decorrelation.md)
+  for the full re-evaluation: it does **not** close DR-0003 §8 — the gap's
+  first-named mechanism, shared `vddr1`-`vddr4` supply impedance, still has
+  no layout to be measured on at any scale. `sampler_dff`/`sampler_core`
+  still have no layout at all, so this is not a whole-chain (raw tap to
+  sampled bit) post-layout measurement.
+
   A prior increment wired the XOR combining tree's inputs:
   that directory's
   "Increment 7" section routes `t2` (`xa2.y` → `xa3.b`) via a `"metal3"`

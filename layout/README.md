@@ -4,7 +4,42 @@ Physical layout evidence for the sky130-trng entropy source, verified with
 `klayout-tools` (`klt`) against the sky130 open PDK. See `layout/pdk.json`
 for the PDK/tool pin.
 
-**Status (issue #69, this increment): `ro_array_core` is a real
+**Status (issue #22, this increment): the whole array is extracted with
+parasitics and run through a full PVT post-layout campaign — array-level
+period, `wstv` ladder, XOR-tree combining fidelity and supply current, plus
+a tied/float/solo inter-ring substrate bracket on a REAL physically-placed
+layout for the first time.** [`layout/pex-array/`](pex-array/README.md)
+extracts the canonical, `vss`-strapped
+[`layout/ro_array_core/ro_array_core.gds`](ro_array_core/README.md) — the
+`--check`-reproducible cell recipe the previous increment landed, DRC-clean
+and `klt lvs` matching at 132/132 devices, 96/96 nets against
+`design/ro_array_core.spice`'s own `.subckt ro_array_core` — flat with `klt
+extract --parasitics`, and `sim/post-layout-ro-array-core/` runs three
+decks from it across the same four-(temp, Vdd)-point, `tt`/`ss`/`ff` grid
+every prior post-layout campaign in this repo uses (36 corner runs).
+Headline: array-level parasitics cost **2.158x - 2.490x** in ring period
+(against intra-cell-only's 1.378x - 1.479x and one ring's own real
+interconnect's 2.08x - 2.45x, since the array additionally carries buffer
+and XOR-tree loading neither smaller-scope campaign could include); the
+`wstv` ladder still discriminates (span 1.089x - 1.180x); combining-node
+bias stays close to 0.5x Vdd post-layout (no new systematic bias); and a
+tied/float/solo bracket — now on the array's own real physical placement,
+not leaf cells hand-tied to a shared substrate node at assumed infinite
+separation — finds a *wider*, still-unresolved-direction coupling bound
+than the prior ring-scale study (loading -0.379% to -0.247% of ring period,
+coupling -0.081% to +0.230%). See
+[`spec/decision-records/DR-0006-*.md`](../spec/decision-records/DR-0006-array-level-post-layout-and-wstv-decorrelation.md)
+for the full re-evaluation of DR-0003 §8 and what this does and does not
+close, and `sim/README.md`'s "Array-level post-layout" section for every
+number plus two documented incidents (a `.global` net addressed
+hierarchically by mistake in the first substrate-float run, and a transient
+resource-contention failure on a retry that passed unmodified). **Explicitly
+does not attempt**: `sampler_dff`/`sampler_core` (no layout at all yet), or
+a supply-distribution layout for `vddr1`-`vddr4` (without which DR-0003 §8's
+first-named coupling mechanism has no layout to be measured on at any
+scale) — both tracked in #27.
+
+**A previous increment (issue #69): `ro_array_core` is a real
 `layout/ro_array_core/` cell recipe — six `gen-compose` stages in one
 `cell.json`, `compose-cell.py --check` clean, with `ring1..4`'s and
 `xa1..3`'s own `vss` taps drawn.** The whole entropy source (four
@@ -56,10 +91,10 @@ increment establishes:
 every increment in it reproduces, its `signal6` request *is* the promoted
 recipe's `core` stage, and it stays as the append-only record of how the
 routing was found (the `layout/xor2/` vs. `layout/xor2-placement-poc/`
-convention). **Still open** (#27): array-level parasitic extraction and
-post-layout PVT — and therefore DR-0003 §8's `wstv` inter-ring
-decorrelation question — plus `sampler_core`/`sampler_dff`, which have no
-layout at all yet.
+convention). Array-level parasitic extraction and post-layout PVT — and
+therefore DR-0003 §8's `wstv` inter-ring decorrelation question — are what
+*this* increment adds on top of that recipe, above. **Still open** (#27):
+`sampler_core`/`sampler_dff`, which have no layout at all yet.
 
 **A previous increment (issue #22): `compose-cell.py`'s `lvs.dependencies`
 gap — "genuinely cannot express" a same-subckt, differently-parametrized
@@ -499,7 +534,7 @@ From `design/README.md`'s "Cell hierarchy":
 ```
 trng_top                   (not in scope for #22 — stops at the raw tap)
   sampler_core              PLANNED — 6x sampler_dff + wiring
-    ro_array_core           BUILT — DRC-clean + LVS-clean (layout/ro_array_core/) — six-stage cell.json recipe, --check reproducible: 11 blocks placed, every inter-cell signal net routed, vdd bus + array-wide vss strap drawn, 132/132 devices and 96/96 nets vs. design/ro_array_core.spice; array-level parasitics/post-layout PVT still open (#27)
+    ro_array_core           BUILT — DRC-clean + LVS-clean (layout/ro_array_core/) — six-stage cell.json recipe, --check reproducible: 11 blocks placed, every inter-cell signal net routed, vdd bus + array-wide vss strap drawn, 132/132 devices and 96/96 nets vs. design/ro_array_core.spice; array-level parasitics extracted from that same GDS and post-layout PVT run over it (layout/pex-array/, sim/post-layout-ro-array-core/) including a tied/float/solo inter-ring substrate bracket; still open: a vddr1-4 supply-distribution layout (#27)
       ro_ring5   (x4)        BUILT, all 4 wstv values — DRC-clean + LVS-clean (layout/ro_ring5/, ro_ring5_wstv0p{44,46,48}/) — 4 distinct physical cells, one per ring; signal chain, ro feedback and vddr/vss rails all routed
         ro_nand2   (x1/ring)  BUILT, all 4 wstv values — DRC-clean + LVS-clean (layout/ro_nand2/, ro_nand2_wstv0p{44,46,48}/) — 4 distinct physical cells, one per ring
         ro_stage   (x4/ring)  BUILT, all 4 wstv values — DRC-clean + LVS-clean (layout/ro_stage/, ro_stage_wstv0p{44,46,48}/) — 4 distinct physical cells (one per ring's wstv), each reused 4x within its own ring
@@ -1137,6 +1172,29 @@ deliver, tracked in follow-up issue
    steps 2 and 3 above; every number in this bullet is still one ring's own
    real interconnect with ideal wires to its neighbours, not a whole-array
    measurement.
+   **DONE for the whole-array scope, this increment**: the composed,
+   DRC-clean, LVS-matching whole array (`layout/ro_array_core-placement-poc/`'s
+   "Increment 8" GDS — four non-identical rings, four buffers, the three-`xor2`
+   combining tree, and the array-wide `vdd` bus, all really wired) is now
+   extracted directly — [`layout/pex-array/`](pex-array/README.md) — and
+   `sim/post-layout-ro-array-core/` runs the same period/ladder measurement
+   plus, for the first time, XOR-tree combining fidelity and array supply
+   current, across the identical four-point PVT grid, 36 corner runs (12
+   tied + 12 float + 12 solo) — see `sim/README.md`'s "Array-level
+   post-layout" section for the full reduction. Headline: array-level
+   parasitics cost **2.158x - 2.490x** in ring period against pre-layout
+   (against the assembled-ring-only figure's 2.0819x - 2.3666x above, since
+   the array additionally carries buffer and XOR-tree loading neither
+   smaller-scope campaign could include), the `wstv` ladder still
+   discriminates (span 1.089x - 1.180x), and combining-node bias stays close
+   to 0.5x Vdd post-layout (0.381 - 0.521, against 0.355 - 0.537 pre-layout
+   in the same deck) — no new systematic bias from the real routing. **Still
+   open**: `sampler_dff`/`sampler_core` (no layout at all yet, so this is
+   still not a whole-chain raw-tap-to-sampled-bit measurement), and the
+   `--check`-reproducible `layout/ro_array_core/` recipe promotion (this
+   extraction sources the PoC's own GDS directly — see
+   `layout/pex-array/README.md` for why that is deliberate, not a shortcut
+   taken in place of the recipe).
 6. Re-evaluate DR-0003 §8's `wstv` inter-ring decorrelation gap using the
    extracted parasitics from step 5 — the measurement DR-0003 explicitly
    flagged as needing a real layout and unmeasurable at the netlist level.
@@ -1187,6 +1245,24 @@ deliver, tracked in follow-up issue
      *tighter* than either the intra-cell-only or pre-layout figures above),
      which is consistent with, not a correction to, what DR-0005 already
      states.
+   - **This increment's array-level extraction re-runs the tied/float/solo
+     bracket on a REAL physically-placed layout for the first time, and
+     `spec/decision-records/DR-0006-*.md` is the re-evaluation.** Unlike
+     every prior bracket in this repo (leaf cells, or one ring's own GDS,
+     hand-tied to a shared `vsubs` node as if placed at infinite
+     separation), `layout/pex-array/`'s single flat extraction of the
+     composed array carries the four rings' *real* physical placement, well
+     spacing and shared psub geometry exactly as drawn — closing DR-0005's
+     own named "Proximity" limitation for the substrate mechanism
+     specifically. The result: a **wider**, not narrower, bound
+     (loading -0.379% to -0.247% of ring period, coupling -0.081% to
+     +0.230%, against DR-0005's -0.151% to -0.057% / -0.033% to +0.018%),
+     with the coupling figure's sign still inconsistent across the grid —
+     still not a resolved directional pull, only a wider bracket than the
+     prior ring-scale study. §8's own statement of the gap is therefore
+     *still* accurate — nothing here supersedes DR-0003 §8 or DR-0005 — and
+     the first-named mechanism (shared supply impedance) still has no
+     layout to be measured on at any scale.
 
 ## Reproducing the evidence in `layout/primitives/`
 
@@ -1337,3 +1413,19 @@ proves the script's rewrite (net renames, unit-suffix stripping, device-card
 swap) is correct — a wrong rewrite would simulate cleanly and report wrong
 numbers. See [`layout/pex/README.md`](pex/README.md) for the parasitic
 model's own contents and limits.
+
+## Reproducing `layout/pex-array/` (the array-level post-layout netlist library)
+
+```bash
+volare enable --pdk sky130 c6d73a35f524070e85faff4a6a9eef49553ebc2b
+python3 layout/bin/pex-netlist.py layout/pex-array/pex.json --check   # verify
+```
+
+Same `--check` contract as `layout/pex/` above, run against
+`layout/ro_array_core-placement-poc/`'s own committed `signal9` GDS instead
+of nine leaf cells. `layout/test_pex_netlist.py` is shared, unmodified —
+its coverage of the rewrite logic (net renames, unit-suffix stripping,
+device-card swap) applies here too, since `layout/bin/pex-netlist.py` itself
+did not change. See [`layout/pex-array/README.md`](pex-array/README.md) for
+the array-scale net-aliasing technique and what the parasitic model does and
+does not contain.
