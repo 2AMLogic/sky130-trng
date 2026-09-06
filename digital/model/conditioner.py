@@ -86,19 +86,6 @@ def crc32_polynomial_remainder(bits: list[int]) -> int:
     return value & 0xFFFFFFFF
 
 
-def crc32_reflected_via_zlib(data: bytes) -> int:
-    """Reference C: the stdlib's own CRC-32, used to pin the *polynomial*.
-
-    :func:`zlib.crc32` is the reflected (LSB-first) CRC-32 with the same
-    generator, ``init = 0xFFFFFFFF`` and a final complement. Feeding this
-    module's LFSR the bit-reversed message and reversing/complementing its
-    output must reproduce it exactly -- which is what makes "we implemented
-    CRC-32" a checked claim rather than an asserted one.
-    """
-    import zlib
-    return zlib.crc32(data) & 0xFFFFFFFF
-
-
 def bit_reverse32(value: int) -> int:
     out = 0
     for i in range(32):
