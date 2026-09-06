@@ -1,0 +1,78 @@
+{
+  "pdk": {"variant": "sky130A"},
+  "options": {"cell_name": "ro_array_core_poc", "output": "ro_array_core_poc.gds"},
+  "blocks": [
+    {
+      "id": "ring1",
+      "orientation": "none",
+      "cell": {"gds_path": "../ro_ring5/ro_ring5.gds", "cell_name": "ro_ring5"}
+    },
+    {
+      "id": "buf1",
+      "orientation": "none",
+      "cell": {"gds_path": "../ro_buf/ro_buf.gds", "cell_name": "ro_buf"}
+    },
+    {
+      "id": "ring2",
+      "orientation": "none",
+      "cell": {"gds_path": "../ro_ring5_wstv0p44/ro_ring5_wstv0p44.gds", "cell_name": "ro_ring5_wstv0p44"}
+    },
+    {
+      "id": "buf2",
+      "orientation": "none",
+      "cell": {"gds_path": "../ro_buf/ro_buf.gds", "cell_name": "ro_buf"}
+    },
+    {
+      "id": "ring3",
+      "orientation": "none",
+      "cell": {"gds_path": "../ro_ring5_wstv0p46/ro_ring5_wstv0p46.gds", "cell_name": "ro_ring5_wstv0p46"}
+    },
+    {
+      "id": "buf3",
+      "orientation": "none",
+      "cell": {"gds_path": "../ro_buf/ro_buf.gds", "cell_name": "ro_buf"}
+    },
+    {
+      "id": "ring4",
+      "orientation": "none",
+      "cell": {"gds_path": "../ro_ring5_wstv0p48/ro_ring5_wstv0p48.gds", "cell_name": "ro_ring5_wstv0p48"}
+    },
+    {
+      "id": "buf4",
+      "orientation": "none",
+      "cell": {"gds_path": "../ro_buf/ro_buf.gds", "cell_name": "ro_buf"}
+    },
+    {
+      "id": "xa1",
+      "orientation": "none",
+      "cell": {"gds_path": "../xor2/xor2.gds", "cell_name": "xor2"}
+    },
+    {
+      "id": "xa2",
+      "orientation": "none",
+      "cell": {"gds_path": "../xor2/xor2.gds", "cell_name": "xor2"}
+    },
+    {
+      "id": "xa3",
+      "orientation": "none",
+      "cell": {"gds_path": "../xor2/xor2.gds", "cell_name": "xor2"}
+    }
+  ],
+  "placement": {
+    "strategy": "explicit",
+    "order": ["ring1", "buf1", "ring2", "buf2", "ring3", "buf3", "ring4", "buf4", "xa1", "xa2", "xa3"],
+    "origins_um": {
+      "ring1": {"x": 2.19, "y": 0.0},
+      "buf1": {"x": 48.315, "y": 0.0},
+      "ring2": {"x": 57.49, "y": 0.0},
+      "buf2": {"x": 103.615, "y": 0.0},
+      "ring3": {"x": 112.79, "y": 0.0},
+      "buf3": {"x": 158.915, "y": 0.0},
+      "ring4": {"x": 168.09, "y": 0.0},
+      "buf4": {"x": 214.215, "y": 0.0},
+      "xa1": {"x": 6.885, "y": 12.585},
+      "xa2": {"x": 35.855, "y": 12.585},
+      "xa3": {"x": 64.825, "y": 12.585}
+    }
+  }
+}

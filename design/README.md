@@ -233,21 +233,19 @@ DR-0003 surfaces and does not resolve on its own authority.
   (status **Proposed**) it lives in [`digital/`](../digital/README.md), not
   here, and none of it is or will be a `design/*.spice` netlist. `raw_bit`
   and `raw_valid` are the interface between the two directories.
-- **Layout and DRC/LVS.** `layout/` now holds **fourteen composed, DRC-clean
-  and LVS-clean cells**, which as of this increment is **every leaf cell
-  `ro_array_core` instantiates**: the newest is
-  [`layout/xor2/`](../layout/xor2/README.md), the combining-tree XOR
-  (`xa1`-`xa3`) — twelve devices, ten nets, `klt drc` clean (0 violations)
-  and `klt lvs` **match** (12/12 devices, 10/10 nets, 0 errors) against
-  `.subckt xor2`, in two `gen-compose` stages across two routing planes. It
-  supersedes `layout/xor2-placement-poc/`, whose prediction that this gate
-  needed channel routing and a third routing plane was wrong: reading its
-  pull-up and pull-down trees as four two-transistor `finger_topology:
-  "series"` chains (with `mid` wired through a chain's *contactable*
-  interior `U0_D0`), placing its two inverters as already-composed `ro_buf`
-  `blocks[].cell` blocks, and splitting its nets across *layers*
-  (`vdd`/`mid`/`y`/`vss` on li1, `a`/`an`/`b`/`bn` on met1) reduces it from
-  17 blocks and 31 nets to 9 blocks and 12 net legs.
+- **Layout and DRC/LVS.** `layout/` holds **fourteen composed, DRC-clean
+  and LVS-clean cells** — every leaf cell `ro_array_core` instantiates
+  (rings, buffers, the combining-tree XOR; see
+  [`layout/xor2/`](../layout/xor2/README.md) for the newest) — plus, this
+  increment, a first **floorplan** attempt at `ro_array_core` itself:
+  [`layout/ro_array_core-placement-poc/`](../layout/ro_array_core-placement-poc/README.md)
+  places all eleven sibling instances the block needs on one 216.2 x
+  31.755 µm grid, `klt drc` clean (0 violations), `klt extract` reporting
+  the expected 132 devices. No routing exists yet (`en1..en4`, the four
+  `vddrN` domains, `vdd`/`vss`, and every inter-cell net are still
+  disjoint), so `ro_array_core` is not yet a DRC/LVS-clean block; the PoC's
+  README records a candidate net-tap coordinate table for the next
+  increment's routing pass. `sampler_core`/`sampler_dff` remain untouched.
   The thirteen before it are nine leaf gates plus all
   four `ro_ring5` rings ([`layout/ro_ring5/`](../layout/ro_ring5/README.md)
   and `ro_ring5_wstv0p{44,46,48}/`), each `klt drc` clean (0 violations) and

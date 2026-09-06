@@ -460,8 +460,13 @@ that lands this document):
   top of intra-cell parasitics alone (period vs. pre-layout overall
   2.0819×–2.3666×), and the ladder still survives. `xor2` itself has no
   post-layout record: it is composed and verified, not extracted or
-  simulated. Still outstanding for
-  the brief's full sign-off bar: the array
+  simulated. A first floorplan attempt at the array itself now exists —
+  `layout/ro_array_core-placement-poc/` places all eleven sibling instances
+  `ro_array_core` needs (the four rings, four buffers, three combining-tree
+  XORs) on one 216.2 × 31.755 µm grid, `klt drc` clean, `klt extract`
+  reporting the expected 132 devices — but with no routing yet, so it is a
+  placement proof of concept, not an assembled block. Still outstanding for
+  the brief's full sign-off bar: the array's own routing/LVS
   and the sampler as assembled layout — and therefore the *whole-block*
   post-layout PVT simulation the bar actually asks for, since the assembled
   *inter-ring* interconnect (supply distribution, XOR tree routing, buffer
