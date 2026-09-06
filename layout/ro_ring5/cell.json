@@ -1,0 +1,1002 @@
+{
+  "cell": "ro_ring5",
+  "_comment": [
+    "ro_ring5 -- design/ro_array_core.spice's `.subckt ro_ring5 en ro vddr vss`,",
+    "composed from the already-committed, individually DRC/LVS-clean leaf cells",
+    "layout/ro_nand2/ (xg) and layout/ro_stage/ (x1-x4) at wstv=0.42 (ring 1).",
+    "See layout/ro_ring5/README.md for the derivation of every number below.",
+    "Four stages, because the ring needs three physical routing planes:",
+    "  place  -- placement only, no routing. Origins are pitched so that the",
+    "            widest inter-cell nwell gap clears nwell.space.1 (1.27 um):",
+    "            g's own nwell ends at local x=5.57 and ro_stage's starts at",
+    "            local x=-2.19, so g->s1 needs a >=9.03 um origin delta; 9.30",
+    "            is used (1.54 um gap). s1->s4 keep the 8.175 um stage pitch",
+    "            (1.705 um gap). The bare placement is DRC-clean on its own.",
+    "  sig    -- n1..n4 on metal2 (met1) in one shared lane below the cells",
+    "            (y=-1.5). The four nets do not overlap in x, so one lane holds",
+    "            all four. li1 was tried first and does not work: every leaf",
+    "            gate's `a` port sits inside its own device cluster, so an li1",
+    "            approach from any side crosses that gate's own S/D pads.",
+    "  fb     -- ro (x4.y back into xg.a) on metal2, in its own gen-compose",
+    "            call so it does not contend with n1..n4 for the same lane.",
+    "            It leaves g at the one spot on net `a` that is not covered by",
+    "            ro_nand2's own met1 (local x=4.98 on the a-side PMOS gate pad;",
+    "            4.95 and below fail met1.space.1 against ro_nand2's internal",
+    "            y-net met1 arm at local x=4.455-4.625), rises outside g's",
+    "            bbox at x=6.3 and crosses the ring at y=5.4, above every",
+    "            leaf cell's own met1 (highest is ro_nand2's at y=4.585).",
+    "  ro_ring5 (final) -- vddr and vss on metal3 (met2), a plane the leaf",
+    "            cells leave completely empty. Both rails' ports are declared",
+    "            directly on met1 (on each leaf's own internal rail routing:",
+    "            vddr's top arm at local y=4.315-4.485, vss's vertical arm at",
+    "            local x=0.415-0.585), so metal3's single-hop via-drop rule is",
+    "            satisfied without an intermediate promotion stage.",
+    "            vddr buses above the cells (y=6.0), vss below (y=-3.0), so",
+    "            neither bus crosses the other's per-gate risers."
+  ],
+  "pdk": {
+    "variant": "sky130A",
+    "deck": "sky130"
+  },
+  "stages": [
+    {
+      "name": "place",
+      "blocks": [
+        {
+          "id": "g",
+          "cell": {
+            "gds_path": "../ro_nand2/ro_nand2.gds",
+            "cell_name": "ro_nand2",
+            "ports": [
+              {
+                "name": "a",
+                "x_um": 4.98,
+                "y_um": 2.75,
+                "layer": {
+                  "layer": 67,
+                  "datatype": 20
+                },
+                "width_um": 0.17,
+                "direction_deg": 0
+              },
+              {
+                "name": "en",
+                "x_um": 3.685,
+                "y_um": 1.975,
+                "layer": {
+                  "layer": 67,
+                  "datatype": 20
+                },
+                "width_um": 0.42,
+                "direction_deg": 90
+              },
+              {
+                "name": "y",
+                "x_um": 4.79,
+                "y_um": 0.21,
+                "layer": {
+                  "layer": 67,
+                  "datatype": 20
+                },
+                "width_um": 0.42,
+                "direction_deg": 90
+              },
+              {
+                "name": "vddr_m1",
+                "x_um": 0.0,
+                "y_um": 4.4,
+                "layer": {
+                  "layer": 68,
+                  "datatype": 20
+                },
+                "width_um": 0.17,
+                "direction_deg": 90
+              },
+              {
+                "name": "vss_m1",
+                "x_um": 0.5,
+                "y_um": 2.0,
+                "layer": {
+                  "layer": 68,
+                  "datatype": 20
+                },
+                "width_um": 0.17,
+                "direction_deg": 90
+              }
+            ]
+          }
+        },
+        {
+          "id": "s1",
+          "cell": {
+            "gds_path": "../ro_stage/ro_stage.gds",
+            "cell_name": "ro_stage",
+            "ports": [
+              {
+                "name": "a",
+                "x_um": 3.685,
+                "y_um": 1.87,
+                "layer": {
+                  "layer": 67,
+                  "datatype": 20
+                },
+                "width_um": 0.42,
+                "direction_deg": 90
+              },
+              {
+                "name": "y",
+                "x_um": 4.9,
+                "y_um": 2.075,
+                "layer": {
+                  "layer": 67,
+                  "datatype": 20
+                },
+                "width_um": 0.42,
+                "direction_deg": 90
+              },
+              {
+                "name": "vddr_m1",
+                "x_um": 0.0,
+                "y_um": 4.4,
+                "layer": {
+                  "layer": 68,
+                  "datatype": 20
+                },
+                "width_um": 0.17,
+                "direction_deg": 90
+              },
+              {
+                "name": "vss_m1",
+                "x_um": 0.5,
+                "y_um": 2.0,
+                "layer": {
+                  "layer": 68,
+                  "datatype": 20
+                },
+                "width_um": 0.17,
+                "direction_deg": 90
+              }
+            ]
+          }
+        },
+        {
+          "id": "s2",
+          "cell": {
+            "gds_path": "../ro_stage/ro_stage.gds",
+            "cell_name": "ro_stage",
+            "ports": [
+              {
+                "name": "a",
+                "x_um": 3.685,
+                "y_um": 1.87,
+                "layer": {
+                  "layer": 67,
+                  "datatype": 20
+                },
+                "width_um": 0.42,
+                "direction_deg": 90
+              },
+              {
+                "name": "y",
+                "x_um": 4.9,
+                "y_um": 2.075,
+                "layer": {
+                  "layer": 67,
+                  "datatype": 20
+                },
+                "width_um": 0.42,
+                "direction_deg": 90
+              },
+              {
+                "name": "vddr_m1",
+                "x_um": 0.0,
+                "y_um": 4.4,
+                "layer": {
+                  "layer": 68,
+                  "datatype": 20
+                },
+                "width_um": 0.17,
+                "direction_deg": 90
+              },
+              {
+                "name": "vss_m1",
+                "x_um": 0.5,
+                "y_um": 2.0,
+                "layer": {
+                  "layer": 68,
+                  "datatype": 20
+                },
+                "width_um": 0.17,
+                "direction_deg": 90
+              }
+            ]
+          }
+        },
+        {
+          "id": "s3",
+          "cell": {
+            "gds_path": "../ro_stage/ro_stage.gds",
+            "cell_name": "ro_stage",
+            "ports": [
+              {
+                "name": "a",
+                "x_um": 3.685,
+                "y_um": 1.87,
+                "layer": {
+                  "layer": 67,
+                  "datatype": 20
+                },
+                "width_um": 0.42,
+                "direction_deg": 90
+              },
+              {
+                "name": "y",
+                "x_um": 4.9,
+                "y_um": 2.075,
+                "layer": {
+                  "layer": 67,
+                  "datatype": 20
+                },
+                "width_um": 0.42,
+                "direction_deg": 90
+              },
+              {
+                "name": "vddr_m1",
+                "x_um": 0.0,
+                "y_um": 4.4,
+                "layer": {
+                  "layer": 68,
+                  "datatype": 20
+                },
+                "width_um": 0.17,
+                "direction_deg": 90
+              },
+              {
+                "name": "vss_m1",
+                "x_um": 0.5,
+                "y_um": 2.0,
+                "layer": {
+                  "layer": 68,
+                  "datatype": 20
+                },
+                "width_um": 0.17,
+                "direction_deg": 90
+              }
+            ]
+          }
+        },
+        {
+          "id": "s4",
+          "cell": {
+            "gds_path": "../ro_stage/ro_stage.gds",
+            "cell_name": "ro_stage",
+            "ports": [
+              {
+                "name": "a",
+                "x_um": 3.685,
+                "y_um": 1.87,
+                "layer": {
+                  "layer": 67,
+                  "datatype": 20
+                },
+                "width_um": 0.42,
+                "direction_deg": 90
+              },
+              {
+                "name": "y",
+                "x_um": 4.9,
+                "y_um": 2.075,
+                "layer": {
+                  "layer": 67,
+                  "datatype": 20
+                },
+                "width_um": 0.42,
+                "direction_deg": 90
+              },
+              {
+                "name": "vddr_m1",
+                "x_um": 0.0,
+                "y_um": 4.4,
+                "layer": {
+                  "layer": 68,
+                  "datatype": 20
+                },
+                "width_um": 0.17,
+                "direction_deg": 90
+              },
+              {
+                "name": "vss_m1",
+                "x_um": 0.5,
+                "y_um": 2.0,
+                "layer": {
+                  "layer": 68,
+                  "datatype": 20
+                },
+                "width_um": 0.17,
+                "direction_deg": 90
+              }
+            ]
+          }
+        }
+      ],
+      "placement": {
+        "strategy": "explicit",
+        "order": [
+          "g",
+          "s1",
+          "s2",
+          "s3",
+          "s4"
+        ],
+        "origins_um": {
+          "g": {
+            "x": 0.0,
+            "y": 0.0
+          },
+          "s1": {
+            "x": 9.3,
+            "y": 0.0
+          },
+          "s2": {
+            "x": 17.475,
+            "y": 0.0
+          },
+          "s3": {
+            "x": 25.65,
+            "y": 0.0
+          },
+          "s4": {
+            "x": 33.825,
+            "y": 0.0
+          }
+        }
+      },
+      "routing": {
+        "layer_role": "metal",
+        "width_um": 0.17
+      },
+      "connectivity": [],
+      "pins": [
+        {
+          "block": "g",
+          "port": "a",
+          "net": "g_a"
+        },
+        {
+          "block": "g",
+          "port": "en",
+          "net": "g_en"
+        },
+        {
+          "block": "g",
+          "port": "y",
+          "net": "g_y"
+        },
+        {
+          "block": "g",
+          "port": "vddr_m1",
+          "net": "g_vddr_m1"
+        },
+        {
+          "block": "g",
+          "port": "vss_m1",
+          "net": "g_vss_m1"
+        },
+        {
+          "block": "s1",
+          "port": "a",
+          "net": "s1_a"
+        },
+        {
+          "block": "s1",
+          "port": "y",
+          "net": "s1_y"
+        },
+        {
+          "block": "s1",
+          "port": "vddr_m1",
+          "net": "s1_vddr_m1"
+        },
+        {
+          "block": "s1",
+          "port": "vss_m1",
+          "net": "s1_vss_m1"
+        },
+        {
+          "block": "s2",
+          "port": "a",
+          "net": "s2_a"
+        },
+        {
+          "block": "s2",
+          "port": "y",
+          "net": "s2_y"
+        },
+        {
+          "block": "s2",
+          "port": "vddr_m1",
+          "net": "s2_vddr_m1"
+        },
+        {
+          "block": "s2",
+          "port": "vss_m1",
+          "net": "s2_vss_m1"
+        },
+        {
+          "block": "s3",
+          "port": "a",
+          "net": "s3_a"
+        },
+        {
+          "block": "s3",
+          "port": "y",
+          "net": "s3_y"
+        },
+        {
+          "block": "s3",
+          "port": "vddr_m1",
+          "net": "s3_vddr_m1"
+        },
+        {
+          "block": "s3",
+          "port": "vss_m1",
+          "net": "s3_vss_m1"
+        },
+        {
+          "block": "s4",
+          "port": "a",
+          "net": "s4_a"
+        },
+        {
+          "block": "s4",
+          "port": "y",
+          "net": "s4_y"
+        },
+        {
+          "block": "s4",
+          "port": "vddr_m1",
+          "net": "s4_vddr_m1"
+        },
+        {
+          "block": "s4",
+          "port": "vss_m1",
+          "net": "s4_vss_m1"
+        }
+      ]
+    },
+    {
+      "name": "sig",
+      "blocks": [
+        {
+          "id": "core",
+          "from_stage": "place"
+        }
+      ],
+      "placement": {
+        "strategy": "explicit",
+        "order": [
+          "core"
+        ],
+        "origins_um": {
+          "core": {
+            "x": 0.0,
+            "y": 0.0
+          }
+        }
+      },
+      "routing": {
+        "layer_role": "metal2",
+        "width_um": 0.17
+      },
+      "connectivity": [
+        {
+          "net": "n1",
+          "pins": [
+            {
+              "block": "core",
+              "port": "g_y"
+            },
+            {
+              "block": "core",
+              "port": "s1_a"
+            }
+          ],
+          "waypoints_um": [
+            [
+              4.79,
+              -1.5
+            ],
+            [
+              12.985,
+              -1.5
+            ]
+          ]
+        },
+        {
+          "net": "n2",
+          "pins": [
+            {
+              "block": "core",
+              "port": "s1_y"
+            },
+            {
+              "block": "core",
+              "port": "s2_a"
+            }
+          ],
+          "waypoints_um": [
+            [
+              14.2,
+              -1.5
+            ],
+            [
+              21.16,
+              -1.5
+            ]
+          ]
+        },
+        {
+          "net": "n3",
+          "pins": [
+            {
+              "block": "core",
+              "port": "s2_y"
+            },
+            {
+              "block": "core",
+              "port": "s3_a"
+            }
+          ],
+          "waypoints_um": [
+            [
+              22.375,
+              -1.5
+            ],
+            [
+              29.335,
+              -1.5
+            ]
+          ]
+        },
+        {
+          "net": "n4",
+          "pins": [
+            {
+              "block": "core",
+              "port": "s3_y"
+            },
+            {
+              "block": "core",
+              "port": "s4_a"
+            }
+          ],
+          "waypoints_um": [
+            [
+              30.55,
+              -1.5
+            ],
+            [
+              37.51,
+              -1.5
+            ]
+          ]
+        }
+      ],
+      "pins": [
+        {
+          "block": "core",
+          "port": "g_a",
+          "net": "g_a"
+        },
+        {
+          "block": "core",
+          "port": "g_en",
+          "net": "g_en"
+        },
+        {
+          "block": "core",
+          "port": "s4_y",
+          "net": "s4_y"
+        },
+        {
+          "block": "core",
+          "port": "g_vddr_m1",
+          "net": "g_vddr_m1"
+        },
+        {
+          "block": "core",
+          "port": "g_vss_m1",
+          "net": "g_vss_m1"
+        },
+        {
+          "block": "core",
+          "port": "s1_vddr_m1",
+          "net": "s1_vddr_m1"
+        },
+        {
+          "block": "core",
+          "port": "s1_vss_m1",
+          "net": "s1_vss_m1"
+        },
+        {
+          "block": "core",
+          "port": "s2_vddr_m1",
+          "net": "s2_vddr_m1"
+        },
+        {
+          "block": "core",
+          "port": "s2_vss_m1",
+          "net": "s2_vss_m1"
+        },
+        {
+          "block": "core",
+          "port": "s3_vddr_m1",
+          "net": "s3_vddr_m1"
+        },
+        {
+          "block": "core",
+          "port": "s3_vss_m1",
+          "net": "s3_vss_m1"
+        },
+        {
+          "block": "core",
+          "port": "s4_vddr_m1",
+          "net": "s4_vddr_m1"
+        },
+        {
+          "block": "core",
+          "port": "s4_vss_m1",
+          "net": "s4_vss_m1"
+        }
+      ]
+    },
+    {
+      "name": "fb",
+      "blocks": [
+        {
+          "id": "core",
+          "from_stage": "sig"
+        }
+      ],
+      "placement": {
+        "strategy": "explicit",
+        "order": [
+          "core"
+        ],
+        "origins_um": {
+          "core": {
+            "x": 0.0,
+            "y": 0.0
+          }
+        }
+      },
+      "routing": {
+        "layer_role": "metal2",
+        "width_um": 0.17
+      },
+      "connectivity": [
+        {
+          "net": "ro",
+          "pins": [
+            {
+              "block": "core",
+              "port": "g_a"
+            },
+            {
+              "block": "core",
+              "port": "s4_y"
+            }
+          ],
+          "waypoints_um": [
+            [
+              6.3,
+              2.75
+            ],
+            [
+              6.3,
+              5.4
+            ],
+            [
+              38.725,
+              5.4
+            ]
+          ]
+        }
+      ],
+      "pins": [
+        {
+          "block": "core",
+          "port": "g_en",
+          "net": "g_en"
+        },
+        {
+          "block": "core",
+          "port": "g_vddr_m1",
+          "net": "g_vddr_m1"
+        },
+        {
+          "block": "core",
+          "port": "g_vss_m1",
+          "net": "g_vss_m1"
+        },
+        {
+          "block": "core",
+          "port": "s1_vddr_m1",
+          "net": "s1_vddr_m1"
+        },
+        {
+          "block": "core",
+          "port": "s1_vss_m1",
+          "net": "s1_vss_m1"
+        },
+        {
+          "block": "core",
+          "port": "s2_vddr_m1",
+          "net": "s2_vddr_m1"
+        },
+        {
+          "block": "core",
+          "port": "s2_vss_m1",
+          "net": "s2_vss_m1"
+        },
+        {
+          "block": "core",
+          "port": "s3_vddr_m1",
+          "net": "s3_vddr_m1"
+        },
+        {
+          "block": "core",
+          "port": "s3_vss_m1",
+          "net": "s3_vss_m1"
+        },
+        {
+          "block": "core",
+          "port": "s4_vddr_m1",
+          "net": "s4_vddr_m1"
+        },
+        {
+          "block": "core",
+          "port": "s4_vss_m1",
+          "net": "s4_vss_m1"
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "id": "core",
+          "from_stage": "fb"
+        }
+      ],
+      "placement": {
+        "strategy": "explicit",
+        "order": [
+          "core"
+        ],
+        "origins_um": {
+          "core": {
+            "x": 0.0,
+            "y": 0.0
+          }
+        }
+      },
+      "routing": {
+        "layer_role": "metal3",
+        "width_um": 0.17
+      },
+      "connectivity": [
+        {
+          "net": "vddr",
+          "pins": [
+            {
+              "block": "core",
+              "port": "g_vddr_m1"
+            },
+            {
+              "block": "core",
+              "port": "s1_vddr_m1"
+            }
+          ],
+          "waypoints_um": [
+            [
+              0.0,
+              6.0
+            ],
+            [
+              9.3,
+              6.0
+            ]
+          ]
+        },
+        {
+          "net": "vddr",
+          "pins": [
+            {
+              "block": "core",
+              "port": "s1_vddr_m1"
+            },
+            {
+              "block": "core",
+              "port": "s2_vddr_m1"
+            }
+          ],
+          "waypoints_um": [
+            [
+              9.3,
+              6.0
+            ],
+            [
+              17.475,
+              6.0
+            ]
+          ]
+        },
+        {
+          "net": "vddr",
+          "pins": [
+            {
+              "block": "core",
+              "port": "s2_vddr_m1"
+            },
+            {
+              "block": "core",
+              "port": "s3_vddr_m1"
+            }
+          ],
+          "waypoints_um": [
+            [
+              17.475,
+              6.0
+            ],
+            [
+              25.65,
+              6.0
+            ]
+          ]
+        },
+        {
+          "net": "vddr",
+          "pins": [
+            {
+              "block": "core",
+              "port": "s3_vddr_m1"
+            },
+            {
+              "block": "core",
+              "port": "s4_vddr_m1"
+            }
+          ],
+          "waypoints_um": [
+            [
+              25.65,
+              6.0
+            ],
+            [
+              33.825,
+              6.0
+            ]
+          ]
+        },
+        {
+          "net": "vss",
+          "pins": [
+            {
+              "block": "core",
+              "port": "g_vss_m1"
+            },
+            {
+              "block": "core",
+              "port": "s1_vss_m1"
+            }
+          ],
+          "waypoints_um": [
+            [
+              0.5,
+              -3.0
+            ],
+            [
+              9.8,
+              -3.0
+            ]
+          ]
+        },
+        {
+          "net": "vss",
+          "pins": [
+            {
+              "block": "core",
+              "port": "s1_vss_m1"
+            },
+            {
+              "block": "core",
+              "port": "s2_vss_m1"
+            }
+          ],
+          "waypoints_um": [
+            [
+              9.8,
+              -3.0
+            ],
+            [
+              17.975,
+              -3.0
+            ]
+          ]
+        },
+        {
+          "net": "vss",
+          "pins": [
+            {
+              "block": "core",
+              "port": "s2_vss_m1"
+            },
+            {
+              "block": "core",
+              "port": "s3_vss_m1"
+            }
+          ],
+          "waypoints_um": [
+            [
+              17.975,
+              -3.0
+            ],
+            [
+              26.15,
+              -3.0
+            ]
+          ]
+        },
+        {
+          "net": "vss",
+          "pins": [
+            {
+              "block": "core",
+              "port": "s3_vss_m1"
+            },
+            {
+              "block": "core",
+              "port": "s4_vss_m1"
+            }
+          ],
+          "waypoints_um": [
+            [
+              26.15,
+              -3.0
+            ],
+            [
+              34.325,
+              -3.0
+            ]
+          ]
+        }
+      ],
+      "pins": [
+        {
+          "block": "core",
+          "port": "g_en",
+          "net": "en"
+        }
+      ]
+    }
+  ],
+  "lvs": {
+    "reference": "design/ro_array_core.spice",
+    "subckt": "ro_ring5",
+    "dependencies": [
+      "ro_nand2",
+      "ro_stage"
+    ],
+    "params": {
+      "wstv": 0.42,
+      "lstv": 2
+    },
+    "drop_prefixes": [
+      "Cld"
+    ],
+    "drop_kwargs": [
+      "cld"
+    ],
+    "reference_top": "RO_RING5",
+    "flatten_reference": true
+  }
+}

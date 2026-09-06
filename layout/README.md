@@ -4,11 +4,39 @@ Physical layout evidence for the sky130-trng entropy source, verified with
 `klayout-tools` (`klt`) against the sky130 open PDK. See `layout/pdk.json`
 for the PDK/tool pin.
 
-**Status (issue #22/#27, this increment): both starved leaf-gate ladders are
-now composed at all four ring widths — nine composed cells in total (three
-distinct gate types: `ro_buf`, plus `ro_stage` and `ro_nand2` at each of the
-four `wstv` values), every one DRC-clean and LVS-clean — but still not a
-DRC/LVS-clean block.**
+**Status (issue #22/#27, this increment): all four `ro_ring5` rings are now
+composed, DRC-clean and LVS-clean — the first multi-gate cells in this
+repository to reach that bar — bringing the total to thirteen verified
+composed cells. `ro_array_core` (the four rings + `ro_buf` fan-out + the
+`xor2` combining tree) and `sampler_core` are still open, so this is still
+not a DRC/LVS-clean *block*.**
+
+[`layout/ro_ring5/`](ro_ring5/README.md) and its three `wstv` siblings
+([`_wstv0p44`](ro_ring5_wstv0p44/README.md),
+[`_wstv0p46`](ro_ring5_wstv0p46/README.md),
+[`_wstv0p48`](ro_ring5_wstv0p48/README.md)) are
+`design/ro_array_core.spice`'s own `.subckt ro_ring5` — five leaf gates
+placed via `blocks[].cell`, the four forward nets, the `ro` feedback and
+both `vddr`/`vss` rails all routed — each **`klt drc` clean (0 violations)**
+and **`klt lvs` match (22/22 devices, 19/19 nets, 0 errors)** against the
+schematic's own subckt at that ring's `wstv`. Four `gen-compose` stages
+across three physical routing planes (li1-pinned placement, `n1`-`n4` and
+`ro` on met1, rails on met2); see `layout/ro_ring5/README.md` for why each
+plane is needed and the measured evidence behind each coordinate.
+
+This increment also **corrects two wrong claims** in the previous one's
+`ro_ring5-connectivity-poc`: its `n1`-`n4` were not merely marginal, they
+were a single shorted node (its own committed `extract.json`'s
+`merged_net_labels`/`warnings` said so and were read for counts only), and
+its "5 unexplained device-internal `li1.space.1` violations" were the same
+routes, not a hierarchy-dependent DRC effect — the corrected placement with
+no routing at all is DRC-clean. See that directory's own README, which now
+opens with the correction.
+
+**Earlier increments (leaf cells, still the foundation):** both starved
+leaf-gate ladders are composed at all four ring widths — nine composed cells
+(three distinct gate types: `ro_buf`, plus `ro_stage` and `ro_nand2` at each
+of the four `wstv` values), every one DRC-clean and LVS-clean.
 [`layout/ro_buf/`](ro_buf/README.md) is `design/ro_array_core.spice`'s own
 `.subckt ro_buf` inverter, built from `klt gen` primitives, placed and routed
 by `klt gen-compose`, **`klt drc` clean (0 violations)** and **`klt lvs`
@@ -30,7 +58,7 @@ technique but extended from 2 to 6 same-block self-nets resolved in one final
 `gen-compose` call (see `layout/ro_nand2/README.md` for the parallel/series
 floorplan problems this needed and the six empirically-derived routing lanes).
 
-**This increment**: `ro_stage`/`ro_nand2` are each cloned three more times —
+**A previous increment**: `ro_stage`/`ro_nand2` are each cloned three more times —
 [`ro_stage_wstv0p44`](ro_stage_wstv0p44/README.md),
 [`ro_stage_wstv0p46`](ro_stage_wstv0p46/README.md),
 [`ro_stage_wstv0p48`](ro_stage_wstv0p48/README.md) and
@@ -44,7 +72,7 @@ issue #27 step 2's "repeat for... the 4-way `wstv` variants" in full. See
 "Starve-width variants" below for what does (and does not) change per width,
 and why the naive clone-and-reparametrize approach fails without it.
 
-**This increment (issue #22, follow-up)**:
+**A previous increment (issue #22, follow-up)**:
 [`layout/xor2-placement-poc/`](xor2-placement-poc/README.md) places all
 twelve of `xor2`'s real devices (double `ro_nand2`'s six — two inverters
 feeding a PMOS pull-up tree and an NMOS pull-down tree) with **zero
@@ -62,7 +90,7 @@ routing planes are resolvable, not two, see "Two-pass composition" below —
 and a reproducible net-naming bug this session found and fixed) so the next
 attempt does not have to re-derive the same ground.
 
-**This increment (issue #22, post-layout)**: the nine composed cells are now
+**A previous increment (issue #22, post-layout)**: the nine composed cells are now
 **simulated**. [`layout/pex/`](pex/README.md) is a generated, `--check`-guarded
 post-layout netlist library — `klt extract --parasitics` over each cell's
 committed GDS, rewritten for ngspice by `layout/bin/pex-netlist.py` — and
@@ -76,34 +104,38 @@ re-verified DRC-clean and LVS-clean (`compose-cell.py --check`, `klt 0.4.0`)
 in the same session, so the GDS carrying these parasitics is the GDS
 carrying those verdicts.
 
-**This increment (issue #22, hierarchical assembly, first attempt)**:
+**Previous increment (issue #22, hierarchical assembly, first attempt —
+superseded, see the correction above)**:
 [`layout/ro_ring5-connectivity-poc/`](ro_ring5-connectivity-poc/README.md)
 places all five of `ro_ring5`'s leaf gates (`ro_nand2` + 4x `ro_stage`) via
 `klt gen-compose`'s `blocks[].cell` request shape — the first proof that an
 *already-composed* cell (not a fresh `klt gen` primitive) can be placed and
-inter-wired this way — and routes the four forward inter-gate signal nets
-(`n1`-`n4`) cleanly (`klt extract` confirms 22 devices, 19 nets, no drift).
-**Not DRC-clean and not LVS-attempted**: the placement pitch borrowed
+inter-wired this way — the one finding of that attempt that survives. It
+also *reported* the four forward inter-gate signal nets (`n1`-`n4`) as
+routed, which **they were not**: they are one shorted node in its committed
+`core.gds`, as its own `extract.json` says (see the correction at the top of
+this file and that directory's own README). **Not DRC-clean and not
+LVS-attempted**: the placement pitch borrowed
 unchanged from the original (uncommitted, recovered-and-superseded) attempt
 is `0.27 µm` short of `nwell.space.1`'s clearance at the `ro_nand2`/`ro_stage`
-boundary (fully diagnosed, mechanical fix identified), seven further
-`li1.space.1` violations are recorded but not yet root-caused (2 attributed
-to the new `n1` route + 5 unexplained device-internal ones — 8 violations
-total with the `nwell.space.1` one), and the
+boundary (correctly diagnosed), plus seven
+`li1.space.1` violations it recorded as "2 attributed + 5 unexplained
+device-internal" and which are in fact all seven the same routes, and the
 ring's `vddr`/`vss`/`ro` rail busing hit a genuine `klt` via-drop limitation
 (`routing.cross_block_layer_role` cannot rescue a bare base-layer pin —
 single-hop-only, same limitation `"metal3"`'s own note below already
 describes from a different angle) that stopped this attempt before DRC/LVS
 were reachable. `layout/bin/compose-cell.py` gained `blocks[].cell` support
 and multi-subckt LVS references (`lvs.dependencies`) to get this far, both
-regression-tested against all nine previously-committed cells. See that
-PoC's README for the full failure evidence, the exact DRC violation table,
-and the recommended next recipe (a three-stage li1-to-metal2-to-metal3 rail
-promotion, reasoned through but not yet attempted).
+regression-tested against all nine previously-committed cells. Its
+recommended next recipe — a three-stage li1→metal2→metal3 rail promotion —
+turned out to be **unnecessary**: both rails are already drawn on met1
+inside every leaf gate, so declaring the block's rail port on met1 satisfies
+the single-hop rule directly (see `layout/ro_ring5/README.md`).
 
-Everything else is still open: `xor2` routing, the rest of `ro_ring5`,
-`ro_array_core`, `sampler_core`, and therefore any *whole-block* post-layout
-claim. See "What's deferred" below and the tracking issue (#27).
+Everything else is still open: `xor2` routing, `ro_array_core`,
+`sampler_core`, and therefore any *whole-block* post-layout claim. See
+"What's deferred" below and the tracking issue (#27).
 
 The earlier increments remain the foundation: `layout/primitives/` is
 per-device evidence (every distinct transistor geometry `design/xschem/`
@@ -135,7 +167,35 @@ increment saw `uv tool list` report `klayout-tools v0.2.0` (and a transient
 a `well_island` generator that had come and gone now present again. The
 version string in a given moment is not reliable evidence of what a fresh
 clone of this repo will get; `uv tool list` plus each artifact's own
-`provenance.klt_version` are the record. The composition-side verbs:
+`provenance.klt_version` are the record.
+
+**The churn is not only between sessions — it happens mid-session, and it
+can be a downgrade past the features this directory depends on.** While
+building `layout/ro_ring5/`, the ambient `uv`-managed `klt` changed from
+`0.3.0+gc6dbf66c53c6` to **`0.2.0`** *between two commands*, with the
+replacement installed from a pinned upstream commit ~324 commits behind the
+one it replaced. `0.2.0` has no `blocks[].cell` request shape at all, so
+every cell here that places an already-composed sibling fails outright with
+a misleading `blocks[].generator_report must be a JSON object or a path to
+one`. If you hit that error, check `klt --version` before debugging the
+request. The fix is to build the pinned version into a venv of your own
+rather than fighting over the shared tool install:
+
+```bash
+python3 -m venv /tmp/klt-venv
+/tmp/klt-venv/bin/pip install \
+  "git+https://github.com/2AMLogic/klayout-tools@c6dbf66c53c6e9a73c4f5ae5e41a98e8fe414252"
+/tmp/klt-venv/bin/klt --version          # klt 0.3.0+gc6dbf66c53c6
+PATH=/tmp/klt-venv/bin:$PATH python3 layout/bin/compose-cell.py layout/ro_ring5/cell.json --check
+```
+
+That commit is `layout/pdk.json`'s own `klt_version_pin`, and all thirteen
+composed cells `--check` clean against it. Not filed upstream as a tool
+gap: klayout-tools is behaving correctly at every version; this is an
+environment-management problem on the consuming side, and the pin plus the
+per-artifact `provenance.klt_version` already record it.
+
+The composition-side verbs:
 
 - **`klt gen`** — runs a named parametrized layout generator (a headless
   KLayout PCell) against a JSON params object, producing a GDS/OASIS +
@@ -177,7 +237,7 @@ From `design/README.md`'s "Cell hierarchy":
 trng_top                   (not in scope for #22 — stops at the raw tap)
   sampler_core              PLANNED — 6x sampler_dff + wiring
     ro_array_core           PLANNED — this issue's minimum scope
-      ro_ring5   (x4)        SIGNAL CHAIN PROVEN, RAILS+DRC OPEN — non-identical (wstv 0.42/0.44/0.46/0.48); wstv=0.42 instance's n1-n4 forward chain composes cleanly (layout/ro_ring5-connectivity-poc/), but placement pitch is not DRC-clean and vddr/vss/ro busing is unsolved
+      ro_ring5   (x4)        BUILT, all 4 wstv values — DRC-clean + LVS-clean (layout/ro_ring5/, ro_ring5_wstv0p{44,46,48}/) — 4 distinct physical cells, one per ring; signal chain, ro feedback and vddr/vss rails all routed
         ro_nand2   (x1/ring)  BUILT, all 4 wstv values — DRC-clean + LVS-clean (layout/ro_nand2/, ro_nand2_wstv0p{44,46,48}/) — 4 distinct physical cells, one per ring
         ro_stage   (x4/ring)  BUILT, all 4 wstv values — DRC-clean + LVS-clean (layout/ro_stage/, ro_stage_wstv0p{44,46,48}/) — 4 distinct physical cells (one per ring's wstv), each reused 4x within its own ring
       ro_buf     (x4)        BUILT — DRC-clean + LVS-clean (layout/ro_buf/)
@@ -221,7 +281,12 @@ not exist yet.
   directly the way `"metal2"` can. `ro_stage`/`ro_nand2` only ever needed
   `"metal2"`; `xor2-placement-poc`'s own routing attempt is the first case
   in this repo where a `"metal3"` stage looks necessary (see that
-  directory's README, "Suggested next steps").
+  directory's README, "Suggested next steps"). **`layout/ro_ring5/` is the
+  first cell that actually uses all three planes**, and it shows the
+  single-hop rule is cheaper to satisfy than it looks: rather than adding a
+  promotion stage, declare the block port on the layer the pin is *already*
+  drawn on. Both rails are on met1 inside every leaf gate, so `"metal3"` is
+  one hop away from them; only the li1-pinned signal nets need `"metal2"`.
 - **`wstv` per-ring variation**: the four rings are NOT identical layout
   cells — `design/ro_array_core.spice`'s `xr1`-`xr4` instantiate `ro_ring5`
   at four different `wstv` values (0.42/0.44/0.46/0.48 µm). The layout is
@@ -310,6 +375,29 @@ evidence):
    pad positions — chosen empirically against the real router, not derived
    closed-form, once the sub-block-level edge-margin restriction disappears
    along with the sub-blocks themselves).
+
+Three more, discovered while composing `ro_ring5` from already-composed leaf
+cells (`blocks[].cell`) rather than from fresh `klt gen` primitives:
+
+6. **A composed leaf gate's signal pins are only reachable from met1
+   upward.** Every gate this design builds puts its `a` input in the middle
+   of its own device cluster, so an li1 route arriving from outside crosses
+   that gate's own S/D pads on the way in — a *short*, not a spacing
+   violation, and `gen-compose` does not catch it because the block is the
+   route's own destination. Start inter-gate signal routing at `"metal2"`.
+7. **A composed leaf gate's rails are already on met1 — declare the block
+   port there.** `ro_stage`/`ro_nand2`'s own second stage draws `vddr` and
+   `vss` on met1 internally. Declaring the `blocks[].cell.ports[]` entry for
+   a rail on layer `68/20` (a point inside that internal route) rather than
+   on li1 collapses `"metal3"`'s two-hop problem into a legal single hop,
+   and no intermediate promotion stage is needed. met2 is completely empty
+   in these leaf cells, so it is a free plane for rail busing.
+8. **`gen-compose` draws a fixed-size via landing pad, not one sized by the
+   declared port width.** A `0.17 µm`-wide port still gets a `0.42 µm` pad,
+   so a port's position — not its width — is what decides whether its pad
+   clears neighbouring metal. `ro_ring5`'s `ro` feedback needed the `g`-end
+   port moved by `0.08 µm` for exactly this reason
+   (`layout/ro_ring5/README.md` has the measured sweep).
 
 Two more, discovered while planning `ro_stage`:
 
@@ -618,27 +706,50 @@ deliver, tracked in follow-up issue
    transmission-gate DFF — may need `klt draw` or a new `klt gen` generator;
    if the latter is a genuine gap, *that* is the point to file a
    `2AMLogic/klayout-tools` issue, described generically).
-   **`ro_ring5`: signal-chain connectivity proven, not yet composed** — see
-   `layout/ro_ring5-connectivity-poc/README.md`: placing all five leaf gates
-   (`ro_nand2` + 4x `ro_stage`) via `klt gen-compose`'s `blocks[].cell`
-   request shape and routing the four forward inter-gate nets (`n1`-`n4`) on
-   the base `"metal"` role composes cleanly (22 devices, 19 nets extracted,
-   matching expectation) — the first proof `blocks[].cell` placement works
-   for this design's own leaf cells. **Not DRC-clean**: the placement pitch
-   is `0.27 µm` short of `nwell.space.1` at the one `ro_nand2`/`ro_stage`
-   boundary (mechanical fix identified, not yet applied) plus seven
-   `li1.space.1` violations (2 attributed to the new `n1` route + 5
-   unexplained device-internal ones) — 8 violations total.
-   **Rails/feedback not routed**:
-   `vddr`/`vss`/`ro` busing across the five placed gates hits a real `klt`
-   via-drop limitation (`routing.cross_block_layer_role` needs a pin already
-   on metal2; every leaf gate here exposes a bare li1 pin) — a three-stage
-   li1-to-metal2-to-metal3 rail-promotion recipe is proposed but not
-   attempted. `layout/bin/compose-cell.py` gained `blocks[].cell` support and
-   multi-subckt LVS references (`lvs.dependencies`) to reach this point, both
-   regression-tested against all nine previously-committed cells.
+   **`ro_ring5` is DONE, all four `wstv` values** — see
+   [`layout/ro_ring5/README.md`](ro_ring5/README.md) and its three `wstv`
+   siblings: `klt drc` clean (0 violations) and `klt lvs` **match**
+   (22/22 devices, 19/19 nets, 0 errors) against
+   `design/ro_array_core.spice`'s own `.subckt ro_ring5` at each ring's own
+   `wstv`, with the five leaf gates placed via `blocks[].cell`, `n1`-`n4`
+   and the `ro` feedback routed on met1 and both rails bussed on met2.
+   Four things that increment settled, each of which the first attempt
+   (`ro_ring5-connectivity-poc`, now superseded) had wrong or open:
+   - **The leaf gates' `a` ports are not reachable on li1 from outside.**
+     Each sits inside its own device cluster, so any li1 approach crosses
+     that gate's own S/D pads. Inter-gate signal routing starts at met1.
+   - **The proposed three-stage li1→met1→met2 rail promotion is
+     unnecessary.** Both rails are *already* drawn on met1 inside every leaf
+     gate (by that gate's own two-pass `"stages"` composition), so declaring
+     the block's rail port directly on layer `68/20` satisfies
+     `"metal3"`'s single-hop via-drop rule with no promotion stage.
+   - **The placement pitch is a closed form**, not a tuning exercise:
+     `ro_nand2`'s nwell ends at local `x=5.57`, `ro_stage`'s starts at
+     local `x=-2.19`, so `g`→`s1` needs `≥ 9.03 µm`; `9.30` is used.
+   - **The five "unexplained device-internal `li1.space.1` violations" were
+     the routes**, and the corrected placement with no routing at all is
+     DRC-clean — there is no hierarchy-dependent DRC effect to work around.
+   `layout/bin/compose-cell.py` gained `blocks[].cell` support and
+   multi-subckt LVS references (`lvs.dependencies`) in the previous
+   increment, and in this one: `blocks[].cell.gds_path` resolution relative
+   to the cell.json (so `--check`'s temp-dir rebuild can find a sibling
+   cell's committed stream at all), `lvs.reference_top` (a multi-subckt
+   reference leaves `klt lvs` more than one candidate top circuit) and
+   `lvs.drop_kwargs`. All three regression-tested against all nine
+   previously-committed leaf cells, every one still `--check` clean.
 4. Full-block `klt drc` + `klt lvs` (assembled netlist vs. `design/*.spice`)
-   sign-off. The **reference-netlist request shape is now settled** (it was
+   sign-off. **Reached for `ro_ring5` (all four rings), still open for
+   `ro_array_core`/`sampler_core`.** Two further findings from the first
+   multi-subckt LVS run, both now handled by `compose-cell.py`:
+   a reference built from more than one `.subckt` leaves `klt lvs` with
+   several candidate top circuits and it refuses to guess
+   (`reference.top`, `lvs.reference_top` in cell.json), and comparing a
+   *hierarchical* reference against `klt extract`'s *flat* layout netlist
+   needs `options.flatten_reference` — which LVS reports back as a
+   `topology.flattened` warning, so the resulting `match` verifies
+   device/net correspondence but **not** that the layout's cell hierarchy
+   mirrors the schematic's. The
+   **reference-netlist request shape is settled** (it was
    listed here as an open unknown, mis-diagnosed as a `"pfet"`/`"PFET"`
    device-class-name mismatch): `reference.form: "subckt-call"` with
    `reference.deck: "sky130"` is correct, and the real cause of the total
@@ -668,6 +779,15 @@ deliver, tracked in follow-up issue
    `layout/pex/README.md` states that limitation in full, in both directions
    (the extractor's lumped-star resistance over-states the intra-cell
    penalty; the missing inter-cell wiring under-states the whole-block one).
+   **Newly possible, not yet done**: the four `ro_ring5` cells now exist as
+   DRC/LVS-clean GDS with real inter-gate interconnect drawn, so
+   `klt extract --parasitics` over `layout/ro_ring5*/ro_ring5*.gds` would
+   for the first time include inter-*gate* wiring — a strictly better
+   answer than `sim/post-layout-ro-ring5/`'s ideal-wire composition of nine
+   leaf cells. It is deliberately left for its own increment: a PVT campaign
+   is its own deliverable with its own corner discipline, and swapping the
+   netlist under the existing records without re-running the grid would
+   make them incomparable.
 6. Re-evaluate DR-0003 §8's `wstv` inter-ring decorrelation gap using the
    extracted parasitics from step 5 — the measurement DR-0003 explicitly
    flagged as needing a real layout and unmeasurable at the netlist level.
@@ -791,6 +911,34 @@ also a two-stage `"stages"` cell). See "Starve-width variants" above for the
 one thing that differs per width (`Mph`/`Mnt`'s own `w_um` and re-derived
 `placement.origins_um.y`), and each variant's own README for that cell's
 concrete numbers.
+
+## Reproducing `layout/ro_ring5/` and the four rings
+
+```bash
+volare enable --pdk sky130 c6d73a35f524070e85faff4a6a9eef49553ebc2b
+python3 layout/bin/compose-cell.py layout/ro_ring5/cell.json --check
+python3 layout/bin/compose-cell.py layout/ro_ring5_wstv0p44/cell.json --check
+python3 layout/bin/compose-cell.py layout/ro_ring5_wstv0p46/cell.json --check
+python3 layout/bin/compose-cell.py layout/ro_ring5_wstv0p48/cell.json --check
+```
+
+Same `--check` contract as the leaf cells, now over four stages rather than
+two (`place`, `sig`, `fb`, final) — every non-final stage's own
+`<name>.compose.response.json` is diffed as well as the final cell's.
+
+Two per-stage checks worth running by hand when something moves, because
+`compose-cell.py` only DRCs the *final* cell:
+
+```bash
+cd layout/ro_ring5
+klt drc place.gds --deck sky130 --format json   # placement alone: clean, 0 violations
+klt drc sig.gds   --deck sky130 --format json   # + n1-n4:         clean, 0 violations
+klt drc fb.gds    --deck sky130 --format json   # + ro feedback:   clean, 0 violations
+```
+
+A violation that first appears at stage *n* was introduced by stage *n*.
+This is the check that turned the previous attempt's "5 unexplained
+device-internal violations" into "the routes did it".
 
 ## Reproducing `layout/xor2-placement-poc/`
 

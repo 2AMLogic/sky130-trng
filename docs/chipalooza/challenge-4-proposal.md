@@ -42,10 +42,13 @@ plus RTL under `digital/`, per
 (status Proposed, issue #20), verified behaviourally under `sim/digital-*/`.
 **No synthesis against `sky130_fd_sc_hd` has been run**, so that section
 contributes no `Fmax`, area, power or leakage figure to §4, and no
-DRC/LVS-clean ring, array, or sampler layout exists: `layout/` now holds
-nine composed, individually DRC-clean and LVS-clean leaf gates (`ro_buf`,
-plus `ro_stage`/`ro_nand2` at all four ring `wstv` widths — see
-`layout/README.md`), not yet a composed ring, array, or whole-block GDS.
+DRC/LVS-clean array or sampler layout exists: `layout/` now holds
+thirteen composed, individually DRC-clean and LVS-clean cells — nine leaf
+gates (`ro_buf`, plus `ro_stage`/`ro_nand2` at all four ring `wstv` widths)
+and all four `ro_ring5` rings (`layout/ro_ring5/` + three `wstv` siblings,
+22/22 devices and 19/19 nets LVS-matching each) — see `layout/README.md`.
+That is a composed *ring*, not yet a composed array, sampler, or
+whole-block GDS.
 Every decision record cited below (DR-0001,
 DR-0002, DR-0003, DR-0004) carries status **Proposed** — drafted, not yet
 accepted by an operator.
@@ -65,9 +68,11 @@ DRC/LVS-clean GDS, and post-layout PVT simulation — the brief's full
 sign-off bar — do not exist in this repository *for the whole block* and are
 **not** claimed here; they are named as explicit follow-up work at the end
 of this document. (Updated since this document's first revision: nine leaf
-cells now are DRC/LVS-clean and have been extracted with parasitics and
-simulated over the PVT grid — see §5.3 — but with no assembled layout there
-is no inter-cell interconnect, so the whole-block bar is still unmet.)
+cells are DRC/LVS-clean and have been extracted with parasitics and
+simulated over the PVT grid — see §5.3 — and all four `ro_ring5` rings are
+now composed DRC/LVS-clean on top of them. The rings themselves have not
+been parasitic-extracted, and there is still no array-, sampler- or
+top-level layout, so the whole-block bar is still unmet.)
 
 ---
 
@@ -391,8 +396,18 @@ that lands this document):
 - **Ratify DR-0001, DR-0002, and DR-0003.** Every quantitative row in §4
   ultimately traces to at least one of these three Proposed records; none
   is yet an operator-accepted decision.
-- **Layout and DRC/LVS.** `layout/` now holds nine composed **DRC-clean and
-  LVS-clean cells** — `layout/ro_buf/` (the per-ring output inverter),
+- **Layout and DRC/LVS.** `layout/` now holds thirteen composed **DRC-clean
+  and LVS-clean cells**. Four of them are the whole `ro_ring5` ring, one
+  physical cell per ring (`layout/ro_ring5/` at `wstv=0.42` plus
+  `ro_ring5_wstv0p{44,46,48}/`), each composed from five leaf gates and each
+  `klt drc` clean (0 violations) and `klt lvs` **matching**
+  `design/ro_array_core.spice`'s own `.subckt ro_ring5` at that ring's
+  `wstv` (22/22 devices, 19/19 nets, 0 errors), with the forward signal
+  chain, the `ro` feedback and both `vddr`/`vss` rails routed across three
+  physical metal planes — the first multi-gate cells in this repository to
+  reach that bar. Each ring cell occupies 41.125 × 9.17 µm including its
+  rail lanes. Underneath them are the nine leaf cells:
+  `layout/ro_buf/` (the per-ring output inverter),
   `layout/ro_stage/` plus its three `wstv` siblings
   (`ro_stage_wstv0p{44,46,48}/`, the array's per-stage starved delay cell at
   all four ring widths), and `layout/ro_nand2/` plus its three `wstv`
@@ -422,13 +437,12 @@ that lands this document):
   them (`spec/decision-records/DR-0005-*.md`). Still outstanding for the
   brief's full sign-off bar: `xor2` routing (its 12-device placement is now
   DRC-clean, see `layout/xor2-placement-poc/README.md`, but its routing is a
-  genuine multi-net channel-routing problem not yet solved); ring assembly
-  is started but not finished (`layout/ro_ring5-connectivity-poc/README.md`:
-  the five-gate placement and forward signal-chain routing compose cleanly,
-  but the placement pitch is not yet DRC-clean and rail busing is unsolved);
-  the array and the sampler as assembled layout — and therefore the *whole-block*
-  post-layout PVT simulation the bar actually asks for, since with no
-  assembled layout there is no inter-cell interconnect to extract. None of
+  genuine multi-net channel-routing problem not yet solved); the array and
+  the sampler as assembled layout; parasitic extraction of the ring cells
+  themselves (`layout/pex/` still covers the nine leaf cells only) — and
+  therefore the *whole-block* post-layout PVT simulation the bar actually
+  asks for, since the assembled inter-ring and inter-cell interconnect that
+  would dominate it does not exist yet. None of
   that is attempted in this document. Note also that
   "DRC-clean" here means clean against `klt`'s **curated** sky130 deck (a
   documented subset — see each `drc.json`'s own `coverage` block), not a
