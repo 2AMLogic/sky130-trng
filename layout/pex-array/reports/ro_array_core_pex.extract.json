@@ -1,11 +1,11 @@
 {
   "schema_version": 3,
-  "file": "../ro_array_core-placement-poc/ro_array_core_signal9_poc.gds",
+  "file": "../ro_array_core/ro_array_core.gds",
   "deck": "sky130",
-  "top": "ro_array_core_signal9_poc",
+  "top": "ro_array_core",
   "dbu_um": 0.001,
   "netlist_path": "raw/ro_array_core_pex.pex.spice",
-  "netlist_sha256": "00e50619d5f517ad7a29354cfa2c83f4b0cb700eb23fc3d2c52a9785e1e50d75",
+  "netlist_sha256": "13fe3c82e27c71ab04bd062be45ceb2af35dc64332ecd8b916684f22c8a3c033",
   "status": "extracted",
   "device_count": 132,
   "net_count": 96,
@@ -32,8 +32,8 @@
       "nets": {
         "s": "ny",
         "g": "en|en1|g_en",
-        "d": "\\$10",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "d": "\\$12",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 0.15,
@@ -48,10 +48,10 @@
       "name": "$10",
       "class": "nfet",
       "nets": {
-        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
         "g": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr3",
         "d": "ny",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 2.0,
@@ -103,7 +103,7 @@
       "class": "pfet",
       "nets": {
         "s": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr1",
-        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
         "d": "py",
         "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr1"
       },
@@ -139,7 +139,7 @@
       "class": "pfet",
       "nets": {
         "s": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr1",
-        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
         "d": "py",
         "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr1"
       },
@@ -211,7 +211,7 @@
       "class": "pfet",
       "nets": {
         "s": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr1",
-        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
         "d": "py",
         "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr1"
       },
@@ -246,10 +246,10 @@
       "name": "$11",
       "class": "nfet",
       "nets": {
-        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
         "g": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr3",
         "d": "ny",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 2.0,
@@ -301,7 +301,7 @@
       "class": "pfet",
       "nets": {
         "s": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr2",
-        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
         "d": "mpa_py|mpb_py|mph_py|py",
         "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr2"
       },
@@ -373,7 +373,7 @@
       "class": "pfet",
       "nets": {
         "s": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr2",
-        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
         "d": "py",
         "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr2"
       },
@@ -427,7 +427,7 @@
       "class": "pfet",
       "nets": {
         "s": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr2",
-        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
         "d": "py",
         "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr2"
       },
@@ -444,10 +444,10 @@
       "name": "$12",
       "class": "nfet",
       "nets": {
-        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
         "g": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr3",
         "d": "ny",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 2.0,
@@ -481,7 +481,7 @@
       "class": "pfet",
       "nets": {
         "s": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr2",
-        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
         "d": "py",
         "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr2"
       },
@@ -499,7 +499,7 @@
       "class": "pfet",
       "nets": {
         "s": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr2",
-        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
         "d": "py",
         "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr2"
       },
@@ -517,7 +517,7 @@
       "class": "pfet",
       "nets": {
         "s": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr3",
-        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
         "d": "mpa_py|mpb_py|mph_py|py",
         "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr3"
       },
@@ -535,7 +535,7 @@
       "class": "pfet",
       "nets": {
         "s": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr3",
-        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
         "d": "py",
         "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr3"
       },
@@ -553,7 +553,7 @@
       "class": "pfet",
       "nets": {
         "s": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr3",
-        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
         "d": "py",
         "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr3"
       },
@@ -571,7 +571,7 @@
       "class": "pfet",
       "nets": {
         "s": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr3",
-        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
         "d": "py",
         "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr3"
       },
@@ -589,7 +589,7 @@
       "class": "pfet",
       "nets": {
         "s": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr3",
-        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
         "d": "py",
         "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr3"
       },
@@ -607,7 +607,7 @@
       "class": "pfet",
       "nets": {
         "s": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr4",
-        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
         "d": "mpa_py|mpb_py|mph_py|py",
         "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr4"
       },
@@ -625,7 +625,7 @@
       "class": "pfet",
       "nets": {
         "s": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr4",
-        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
         "d": "py",
         "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr4"
       },
@@ -642,10 +642,10 @@
       "name": "$13",
       "class": "nfet",
       "nets": {
-        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
         "g": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr3",
         "d": "ny",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 2.0,
@@ -661,7 +661,7 @@
       "class": "pfet",
       "nets": {
         "s": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr4",
-        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
         "d": "py",
         "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr4"
       },
@@ -679,7 +679,7 @@
       "class": "pfet",
       "nets": {
         "s": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr4",
-        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
         "d": "py",
         "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr4"
       },
@@ -697,7 +697,7 @@
       "class": "pfet",
       "nets": {
         "s": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr4",
-        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
         "d": "py",
         "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr4"
       },
@@ -714,10 +714,10 @@
       "name": "$14",
       "class": "nfet",
       "nets": {
-        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
         "g": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr4",
         "d": "ny",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 2.0,
@@ -732,10 +732,10 @@
       "name": "$15",
       "class": "nfet",
       "nets": {
-        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
         "g": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr4",
         "d": "ny",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 2.0,
@@ -750,10 +750,10 @@
       "name": "$16",
       "class": "nfet",
       "nets": {
-        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
         "g": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr4",
         "d": "ny",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 2.0,
@@ -768,10 +768,10 @@
       "name": "$17",
       "class": "nfet",
       "nets": {
-        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
         "g": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr4",
         "d": "ny",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 2.0,
@@ -786,10 +786,10 @@
       "name": "$18",
       "class": "nfet",
       "nets": {
-        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
         "g": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr4",
         "d": "ny",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 2.0,
@@ -804,10 +804,10 @@
       "name": "$19",
       "class": "nfet",
       "nets": {
-        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
         "g": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr1",
         "d": "ny",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 2.0,
@@ -822,10 +822,10 @@
       "name": "$2",
       "class": "nfet",
       "nets": {
-        "s": "\\$10",
+        "s": "\\$12",
         "g": "a|g_a|rn1|ro|s4_y|y",
         "d": "a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 0.15,
@@ -840,10 +840,10 @@
       "name": "$20",
       "class": "nfet",
       "nets": {
-        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
         "g": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr1",
         "d": "ny",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 2.0,
@@ -861,7 +861,7 @@
         "s": "ny",
         "g": "a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y",
         "d": "a|n2|s1_y|s2_a|y",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 0.15,
@@ -876,10 +876,10 @@
       "name": "$22",
       "class": "nfet",
       "nets": {
-        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
         "g": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr1",
         "d": "ny",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 2.0,
@@ -897,7 +897,7 @@
         "s": "ny",
         "g": "a|n2|s1_y|s2_a|y",
         "d": "a|n3|s2_y|s3_a|y",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 0.15,
@@ -912,10 +912,10 @@
       "name": "$24",
       "class": "nfet",
       "nets": {
-        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
         "g": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr1",
         "d": "ny",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 2.0,
@@ -933,7 +933,7 @@
         "s": "ny",
         "g": "a|n3|s2_y|s3_a|y",
         "d": "a|n4|s3_y|s4_a|y",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 0.15,
@@ -948,10 +948,10 @@
       "name": "$26",
       "class": "nfet",
       "nets": {
-        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
         "g": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr1",
         "d": "ny",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 2.0,
@@ -969,7 +969,7 @@
         "s": "ny",
         "g": "a|n4|s3_y|s4_a|y",
         "d": "a|g_a|rn1|ro|s4_y|y",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 0.15,
@@ -984,10 +984,10 @@
       "name": "$28",
       "class": "nfet",
       "nets": {
-        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
         "g": "a|g_a|rn1|ro|s4_y|y",
         "d": "a|inva_a|mn12_g0|mp13_g0|ro1|y",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 0.15,
@@ -1002,10 +1002,10 @@
       "name": "$29",
       "class": "nfet",
       "nets": {
-        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
         "g": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr2",
         "d": "ny",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 2.0,
@@ -1022,8 +1022,8 @@
       "nets": {
         "s": "ny",
         "g": "en|en2|g_en",
-        "d": "\\$20",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "d": "\\$22",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 0.15,
@@ -1038,10 +1038,10 @@
       "name": "$30",
       "class": "nfet",
       "nets": {
-        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
         "g": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr2",
         "d": "ny",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 2.0,
@@ -1059,7 +1059,7 @@
         "s": "ny",
         "g": "a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y",
         "d": "a|n2|s1_y|s2_a|y",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 0.15,
@@ -1074,10 +1074,10 @@
       "name": "$32",
       "class": "nfet",
       "nets": {
-        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
         "g": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr2",
         "d": "ny",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 2.0,
@@ -1095,7 +1095,7 @@
         "s": "ny",
         "g": "a|n2|s1_y|s2_a|y",
         "d": "a|n3|s2_y|s3_a|y",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 0.15,
@@ -1110,10 +1110,10 @@
       "name": "$34",
       "class": "nfet",
       "nets": {
-        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
         "g": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr2",
         "d": "ny",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 2.0,
@@ -1131,7 +1131,7 @@
         "s": "ny",
         "g": "a|n3|s2_y|s3_a|y",
         "d": "a|n4|s3_y|s4_a|y",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 0.15,
@@ -1146,10 +1146,10 @@
       "name": "$36",
       "class": "nfet",
       "nets": {
-        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
         "g": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr2",
         "d": "ny",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 2.0,
@@ -1167,7 +1167,7 @@
         "s": "ny",
         "g": "a|n4|s3_y|s4_a|y",
         "d": "a|g_a|rn2|ro|s4_y|y",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 0.15,
@@ -1182,10 +1182,10 @@
       "name": "$38",
       "class": "nfet",
       "nets": {
-        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
         "g": "a|g_a|rn2|ro|s4_y|y",
         "d": "a|b|invb_a|mn12_g1|mp24_g0|ro2|y",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 0.15,
@@ -1203,7 +1203,7 @@
         "s": "ny",
         "g": "a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y",
         "d": "a|n2|s1_y|s2_a|y",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 0.15,
@@ -1218,10 +1218,10 @@
       "name": "$4",
       "class": "nfet",
       "nets": {
-        "s": "\\$20",
+        "s": "\\$22",
         "g": "a|g_a|rn2|ro|s4_y|y",
         "d": "a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 0.15,
@@ -1239,7 +1239,7 @@
         "s": "ny",
         "g": "a|n2|s1_y|s2_a|y",
         "d": "a|n3|s2_y|s3_a|y",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 0.15,
@@ -1257,7 +1257,7 @@
         "s": "ny",
         "g": "a|n3|s2_y|s3_a|y",
         "d": "a|n4|s3_y|s4_a|y",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 0.15,
@@ -1275,7 +1275,7 @@
         "s": "ny",
         "g": "a|n4|s3_y|s4_a|y",
         "d": "a|g_a|rn3|ro|s4_y|y",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 0.15,
@@ -1290,10 +1290,10 @@
       "name": "$43",
       "class": "nfet",
       "nets": {
-        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
         "g": "a|g_a|rn3|ro|s4_y|y",
         "d": "a|inva_a|mn12_g0|mp13_g0|ro3|y",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 0.15,
@@ -1311,7 +1311,7 @@
         "s": "ny",
         "g": "a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y",
         "d": "a|n2|s1_y|s2_a|y",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 0.15,
@@ -1329,7 +1329,7 @@
         "s": "ny",
         "g": "a|n2|s1_y|s2_a|y",
         "d": "a|n3|s2_y|s3_a|y",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 0.15,
@@ -1347,7 +1347,7 @@
         "s": "ny",
         "g": "a|n3|s2_y|s3_a|y",
         "d": "a|n4|s3_y|s4_a|y",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 0.15,
@@ -1365,7 +1365,7 @@
         "s": "ny",
         "g": "a|n4|s3_y|s4_a|y",
         "d": "a|g_a|rn4|ro|s4_y|y",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 0.15,
@@ -1380,10 +1380,10 @@
       "name": "$48",
       "class": "nfet",
       "nets": {
-        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
         "g": "a|g_a|rn4|ro|s4_y|y",
         "d": "a|b|invb_a|mn12_g1|mp24_g0|ro4|y",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 0.15,
@@ -1398,10 +1398,10 @@
       "name": "$49",
       "class": "nfet",
       "nets": {
-        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
         "g": "a|inva_a|mn12_g0|mp13_g0|ro1|y",
         "d": "an|inva_y|mn34_g0|mp13_g1|y",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 0.15,
@@ -1418,8 +1418,8 @@
       "nets": {
         "s": "ny",
         "g": "en|en3|g_en",
-        "d": "\\$29",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "d": "\\$30",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 0.15,
@@ -1437,7 +1437,7 @@
         "s": "a|inva_a|mn12_g0|mp13_g0|t1|y",
         "g": "an|inva_y|mn34_g0|mp13_g1|y",
         "d": "\\$79",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 0.15,
@@ -1454,8 +1454,8 @@
       "nets": {
         "s": "\\$79",
         "g": "bn|invb_y|mn34_g1|mp24_g1|y",
-        "d": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "d": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 0.15,
@@ -1473,7 +1473,7 @@
         "s": "a|inva_a|mn12_g0|mp13_g0|t1|y",
         "g": "a|inva_a|mn12_g0|mp13_g0|ro1|y",
         "d": "\\$81",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 0.15,
@@ -1490,8 +1490,8 @@
       "nets": {
         "s": "\\$81",
         "g": "a|b|invb_a|mn12_g1|mp24_g0|ro2|y",
-        "d": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "d": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 0.15,
@@ -1506,10 +1506,10 @@
       "name": "$54",
       "class": "nfet",
       "nets": {
-        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
         "g": "a|b|invb_a|mn12_g1|mp24_g0|ro2|y",
         "d": "bn|invb_y|mn34_g1|mp24_g1|y",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 0.15,
@@ -1524,10 +1524,10 @@
       "name": "$55",
       "class": "nfet",
       "nets": {
-        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
         "g": "a|inva_a|mn12_g0|mp13_g0|ro3|y",
         "d": "an|inva_y|mn34_g0|mp13_g1|y",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 0.15,
@@ -1545,7 +1545,7 @@
         "s": "a|b|b3|invb_a|mn12_g1|mp24_g0|t2|y",
         "g": "an|inva_y|mn34_g0|mp13_g1|y",
         "d": "\\$82",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 0.15,
@@ -1562,8 +1562,8 @@
       "nets": {
         "s": "\\$82",
         "g": "bn|invb_y|mn34_g1|mp24_g1|y",
-        "d": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "d": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 0.15,
@@ -1581,7 +1581,7 @@
         "s": "a|b|b3|invb_a|mn12_g1|mp24_g0|t2|y",
         "g": "a|inva_a|mn12_g0|mp13_g0|ro3|y",
         "d": "\\$84",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 0.15,
@@ -1598,8 +1598,8 @@
       "nets": {
         "s": "\\$84",
         "g": "a|b|invb_a|mn12_g1|mp24_g0|ro4|y",
-        "d": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "d": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 0.15,
@@ -1614,10 +1614,10 @@
       "name": "$6",
       "class": "nfet",
       "nets": {
-        "s": "\\$29",
+        "s": "\\$30",
         "g": "a|g_a|rn3|ro|s4_y|y",
         "d": "a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 0.15,
@@ -1632,10 +1632,10 @@
       "name": "$60",
       "class": "nfet",
       "nets": {
-        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
         "g": "a|b|invb_a|mn12_g1|mp24_g0|ro4|y",
         "d": "bn|invb_y|mn34_g1|mp24_g1|y",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 0.15,
@@ -1650,10 +1650,10 @@
       "name": "$61",
       "class": "nfet",
       "nets": {
-        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
         "g": "a|inva_a|mn12_g0|mp13_g0|t1|y",
         "d": "an|inva_y|mn34_g0|mp13_g1|y",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 0.15,
@@ -1671,7 +1671,7 @@
         "s": "xo|y",
         "g": "an|inva_y|mn34_g0|mp13_g1|y",
         "d": "\\$87",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 0.15,
@@ -1688,8 +1688,8 @@
       "nets": {
         "s": "\\$87",
         "g": "bn|invb_y|mn34_g1|mp24_g1|y",
-        "d": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "d": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 0.15,
@@ -1707,7 +1707,7 @@
         "s": "xo|y",
         "g": "a|inva_a|mn12_g0|mp13_g0|t1|y",
         "d": "\\$89",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 0.15,
@@ -1724,8 +1724,8 @@
       "nets": {
         "s": "\\$89",
         "g": "a|b|b3|invb_a|mn12_g1|mp24_g0|t2|y",
-        "d": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "d": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 0.15,
@@ -1740,10 +1740,10 @@
       "name": "$66",
       "class": "nfet",
       "nets": {
-        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
         "g": "a|b|b3|invb_a|mn12_g1|mp24_g0|t2|y",
         "d": "bn|invb_y|mn34_g1|mp24_g1|y",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 0.15,
@@ -1814,8 +1814,8 @@
       "nets": {
         "s": "ny",
         "g": "en|en4|g_en",
-        "d": "\\$40",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "d": "\\$39",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 0.15,
@@ -2010,10 +2010,10 @@
       "name": "$8",
       "class": "nfet",
       "nets": {
-        "s": "\\$40",
+        "s": "\\$39",
         "g": "a|g_a|rn4|ro|s4_y|y",
         "d": "a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 0.15,
@@ -2208,10 +2208,10 @@
       "name": "$9",
       "class": "nfet",
       "nets": {
-        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
         "g": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr3",
         "d": "ny",
-        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3"
       },
       "params": {
         "l_um": 2.0,
@@ -2317,7 +2317,7 @@
       "class": "pfet",
       "nets": {
         "s": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr1",
-        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
         "d": "mpa_py|mpb_py|mph_py|py",
         "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr1"
       },
@@ -2389,7 +2389,7 @@
       "class": "pfet",
       "nets": {
         "s": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr1",
-        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
         "d": "py",
         "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr1"
       },
@@ -2405,22 +2405,22 @@
   ],
   "nets": [
     {
-      "name": "\\$10",
+      "name": "\\$12",
       "pin": false,
       "device_count": 2
     },
     {
-      "name": "\\$20",
+      "name": "\\$22",
       "pin": false,
       "device_count": 2
     },
     {
-      "name": "\\$29",
+      "name": "\\$30",
       "pin": false,
       "device_count": 2
     },
     {
-      "name": "\\$40",
+      "name": "\\$39",
       "pin": false,
       "device_count": 2
     },
@@ -2655,7 +2655,7 @@
       "device_count": 21
     },
     {
-      "name": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+      "name": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
       "pin": true,
       "device_count": 122
     },
@@ -2927,7 +2927,7 @@
     "net 'g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr2' merges 8 distinct labels (g_vddr_m1, mnt_g, s1_vddr_m1, s2_vddr_m1, s3_vddr_m1, s4_vddr_m1, vddr, vddr2) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
     "net 'g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr3' merges 8 distinct labels (g_vddr_m1, mnt_g, s1_vddr_m1, s2_vddr_m1, s3_vddr_m1, s4_vddr_m1, vddr, vddr3) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
     "net 'g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr4' merges 8 distinct labels (g_vddr_m1, mnt_g, s1_vddr_m1, s2_vddr_m1, s3_vddr_m1, s4_vddr_m1, vddr, vddr4) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
-    "net 'g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss' merges 7 distinct labels (g_vss_m1, mph_g, s1_vss_m1, s2_vss_m1, s3_vss_m1, s4_vss_m1, vss) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3' merges 10 distinct labels (g_vss_m1, mph_g, s1_vss_m1, s2_vss_m1, s3_vss_m1, s4_vss_m1, vss, vss_x1, vss_x2, vss_x3) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
     "net 'mpa_py|mpb_py|mph_py|py' merges 4 distinct labels (mpa_py, mpb_py, mph_py, py) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
     "net 'mpa_py|mpb_py|mph_py|py' merges 4 distinct labels (mpa_py, mpb_py, mph_py, py) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
     "net 'mpa_py|mpb_py|mph_py|py' merges 4 distinct labels (mpa_py, mpb_py, mph_py, py) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
@@ -3370,7 +3370,7 @@
       ]
     },
     {
-      "net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+      "net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
       "labels": [
         "g_vss_m1",
         "mph_g",
@@ -3378,7 +3378,10 @@
         "s2_vss_m1",
         "s3_vss_m1",
         "s4_vss_m1",
-        "vss"
+        "vss",
+        "vss_x1",
+        "vss_x2",
+        "vss_x3"
       ]
     },
     {
@@ -3465,38 +3468,38 @@
       "released": false
     },
     "input": {
-      "content_hash": "sha256:a792b0466bf1170bd7dc4ba93915b38a1062f8d5bc53990d1aec05535dda3eba"
+      "content_hash": "sha256:97c472adc85dafa7445f4dc2d96a60bb154f6699224d8e43e3e07a17e07a0cda"
     }
   },
   "parasitics": {
     "r_count": 528,
     "c_count": 96,
-    "cc_count": 45,
+    "cc_count": 47,
     "l_count": 0,
-    "total_resistance_ohm": 81891.7689,
-    "total_capacitance_ff": 367.427259,
-    "total_coupling_capacitance_ff": 0.6235,
+    "total_resistance_ohm": 81935.4677,
+    "total_capacitance_ff": 392.440485,
+    "total_coupling_capacitance_ff": 0.700254,
     "total_inductance_nh": 0.0,
     "nets": [
       {
-        "net": "\\$10",
-        "net_id": 10,
+        "net": "\\$12",
+        "net_id": 12,
         "resistance_ohm": 25.6,
         "capacitance_ff": 0.115618,
         "inductance_nh": 0.0,
-        "hub_net": "\\$10",
+        "hub_net": "\\$12",
         "rc_model": "lumped",
         "terminals": [
           {
             "device": "$2",
             "terminal": "S",
-            "leg_net": "\\$10__t0",
+            "leg_net": "\\$12__t0",
             "resistance_ohm": 12.8
           },
           {
             "device": "$1",
             "terminal": "D",
-            "leg_net": "\\$10__t1",
+            "leg_net": "\\$12__t1",
             "resistance_ohm": 12.8
           }
         ],
@@ -3504,24 +3507,24 @@
         "coupled": []
       },
       {
-        "net": "\\$20",
-        "net_id": 20,
+        "net": "\\$22",
+        "net_id": 22,
         "resistance_ohm": 25.6,
         "capacitance_ff": 0.115618,
         "inductance_nh": 0.0,
-        "hub_net": "\\$20",
+        "hub_net": "\\$22",
         "rc_model": "lumped",
         "terminals": [
           {
             "device": "$3",
             "terminal": "D",
-            "leg_net": "\\$20__t0",
+            "leg_net": "\\$22__t0",
             "resistance_ohm": 12.8
           },
           {
             "device": "$4",
             "terminal": "S",
-            "leg_net": "\\$20__t1",
+            "leg_net": "\\$22__t1",
             "resistance_ohm": 12.8
           }
         ],
@@ -3529,24 +3532,24 @@
         "coupled": []
       },
       {
-        "net": "\\$29",
-        "net_id": 29,
+        "net": "\\$30",
+        "net_id": 30,
         "resistance_ohm": 25.6,
         "capacitance_ff": 0.115618,
         "inductance_nh": 0.0,
-        "hub_net": "\\$29",
+        "hub_net": "\\$30",
         "rc_model": "lumped",
         "terminals": [
           {
             "device": "$5",
             "terminal": "D",
-            "leg_net": "\\$29__t0",
+            "leg_net": "\\$30__t0",
             "resistance_ohm": 12.8
           },
           {
             "device": "$6",
             "terminal": "S",
-            "leg_net": "\\$29__t1",
+            "leg_net": "\\$30__t1",
             "resistance_ohm": 12.8
           }
         ],
@@ -3554,24 +3557,24 @@
         "coupled": []
       },
       {
-        "net": "\\$40",
-        "net_id": 40,
+        "net": "\\$39",
+        "net_id": 39,
         "resistance_ohm": 25.6,
         "capacitance_ff": 0.115618,
         "inductance_nh": 0.0,
-        "hub_net": "\\$40",
+        "hub_net": "\\$39",
         "rc_model": "lumped",
         "terminals": [
           {
             "device": "$7",
             "terminal": "D",
-            "leg_net": "\\$40__t0",
+            "leg_net": "\\$39__t0",
             "resistance_ohm": 12.8
           },
           {
             "device": "$8",
             "terminal": "S",
-            "leg_net": "\\$40__t1",
+            "leg_net": "\\$39__t1",
             "resistance_ohm": 12.8
           }
         ],
@@ -4097,9 +4100,9 @@
       },
       {
         "net": "a|b|invb_a|mn12_g1|mp24_g0|ro2|y",
-        "net_id": 27,
+        "net_id": 28,
         "resistance_ohm": 1522.4527,
-        "capacitance_ff": 11.938297,
+        "capacitance_ff": 11.936456,
         "inductance_nh": 0.0,
         "hub_net": "a|b|invb_a|mn12_g1|mp24_g0|ro2|y",
         "rc_model": "lumped",
@@ -4144,12 +4147,16 @@
         "segments": [],
         "coupled": [
           {
-            "net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
-            "capacitance_ff": 0.035722,
+            "net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
+            "capacitance_ff": 0.045279,
             "levels": [
               [
                 0,
                 1
+              ],
+              [
+                1,
+                2
               ]
             ],
             "lateral_levels": []
@@ -4169,9 +4176,9 @@
       },
       {
         "net": "a|b|invb_a|mn12_g1|mp24_g0|ro4|y",
-        "net_id": 46,
+        "net_id": 47,
         "resistance_ohm": 1582.4478,
-        "capacitance_ff": 18.916941,
+        "capacitance_ff": 18.91326,
         "inductance_nh": 0.0,
         "hub_net": "a|b|invb_a|mn12_g1|mp24_g0|ro4|y",
         "rc_model": "lumped",
@@ -4216,12 +4223,16 @@
         "segments": [],
         "coupled": [
           {
-            "net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
-            "capacitance_ff": 0.035722,
+            "net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
+            "capacitance_ff": 0.054837,
             "levels": [
               [
                 0,
                 1
+              ],
+              [
+                1,
+                2
               ]
             ],
             "lateral_levels": []
@@ -4241,7 +4252,7 @@
       },
       {
         "net": "a|g_a|rn1|ro|s4_y|y",
-        "net_id": 49,
+        "net_id": 9,
         "resistance_ohm": 1556.3016,
         "capacitance_ff": 6.402999,
         "inductance_nh": 0.0,
@@ -4457,9 +4468,9 @@
       },
       {
         "net": "a|g_a|rn4|ro|s4_y|y",
-        "net_id": 8,
+        "net_id": 10,
         "resistance_ohm": 1556.3016,
-        "capacitance_ff": 6.402999,
+        "capacitance_ff": 6.400128,
         "inductance_nh": 0.0,
         "hub_net": "a|g_a|rn4|ro|s4_y|y",
         "rc_model": "lumped",
@@ -4524,12 +4535,23 @@
               ]
             ],
             "lateral_levels": []
+          },
+          {
+            "net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
+            "capacitance_ff": 0.014912,
+            "levels": [
+              [
+                1,
+                2
+              ]
+            ],
+            "lateral_levels": []
           }
         ]
       },
       {
         "net": "a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y",
-        "net_id": 11,
+        "net_id": 13,
         "resistance_ohm": 655.9572,
         "capacitance_ff": 2.632209,
         "inductance_nh": 0.0,
@@ -4614,7 +4636,7 @@
             "lateral_levels": []
           },
           {
-            "net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+            "net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
             "capacitance_ff": 0.015474,
             "levels": [
               [
@@ -4639,7 +4661,7 @@
       },
       {
         "net": "a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y",
-        "net_id": 21,
+        "net_id": 23,
         "resistance_ohm": 655.9572,
         "capacitance_ff": 2.632209,
         "inductance_nh": 0.0,
@@ -4724,7 +4746,7 @@
             "lateral_levels": []
           },
           {
-            "net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+            "net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
             "capacitance_ff": 0.015474,
             "levels": [
               [
@@ -4749,7 +4771,7 @@
       },
       {
         "net": "a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y",
-        "net_id": 30,
+        "net_id": 31,
         "resistance_ohm": 655.9572,
         "capacitance_ff": 2.632209,
         "inductance_nh": 0.0,
@@ -4834,7 +4856,7 @@
             "lateral_levels": []
           },
           {
-            "net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+            "net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
             "capacitance_ff": 0.015474,
             "levels": [
               [
@@ -4859,7 +4881,7 @@
       },
       {
         "net": "a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y",
-        "net_id": 41,
+        "net_id": 40,
         "resistance_ohm": 655.9572,
         "capacitance_ff": 2.632209,
         "inductance_nh": 0.0,
@@ -4944,7 +4966,7 @@
             "lateral_levels": []
           },
           {
-            "net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+            "net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
             "capacitance_ff": 0.015474,
             "levels": [
               [
@@ -4969,7 +4991,7 @@
       },
       {
         "net": "a|inva_a|mn12_g0|mp13_g0|ro1|y",
-        "net_id": 18,
+        "net_id": 20,
         "resistance_ohm": 1517.538,
         "capacitance_ff": 11.36614,
         "inductance_nh": 0.0,
@@ -5027,7 +5049,7 @@
             "lateral_levels": []
           },
           {
-            "net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+            "net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
             "capacitance_ff": 0.006601,
             "levels": [
               [
@@ -5056,9 +5078,9 @@
       },
       {
         "net": "a|inva_a|mn12_g0|mp13_g0|ro3|y",
-        "net_id": 38,
+        "net_id": 37,
         "resistance_ohm": 1577.5547,
-        "capacitance_ff": 18.34919,
+        "capacitance_ff": 18.34735,
         "inductance_nh": 0.0,
         "hub_net": "a|inva_a|mn12_g0|mp13_g0|ro3|y",
         "rc_model": "lumped",
@@ -5114,12 +5136,16 @@
             "lateral_levels": []
           },
           {
-            "net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
-            "capacitance_ff": 0.006601,
+            "net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
+            "capacitance_ff": 0.016158,
             "levels": [
               [
                 0,
                 1
+              ],
+              [
+                1,
+                2
               ]
             ],
             "lateral_levels": []
@@ -5246,7 +5272,7 @@
             "lateral_levels": []
           },
           {
-            "net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+            "net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
             "capacitance_ff": 0.006601,
             "levels": [
               [
@@ -5305,25 +5331,25 @@
         "rc_model": "lumped",
         "terminals": [
           {
-            "device": "$79",
+            "device": "$21",
             "terminal": "D",
             "leg_net": "a|n2|s1_y|s2_a|y__t0",
-            "resistance_ohm": 234.6353
-          },
-          {
-            "device": "$80",
-            "terminal": "G",
-            "leg_net": "a|n2|s1_y|s2_a|y__t1",
             "resistance_ohm": 225.1551
           },
           {
-            "device": "$31",
+            "device": "$73",
             "terminal": "D",
+            "leg_net": "a|n2|s1_y|s2_a|y__t1",
+            "resistance_ohm": 234.6353
+          },
+          {
+            "device": "$74",
+            "terminal": "G",
             "leg_net": "a|n2|s1_y|s2_a|y__t2",
             "resistance_ohm": 225.1551
           },
           {
-            "device": "$33",
+            "device": "$23",
             "terminal": "G",
             "leg_net": "a|n2|s1_y|s2_a|y__t3",
             "resistance_ohm": 234.6353
@@ -5332,7 +5358,7 @@
         "segments": [],
         "coupled": [
           {
-            "net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+            "net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
             "capacitance_ff": 0.015474,
             "levels": [
               [
@@ -5357,7 +5383,7 @@
       },
       {
         "net": "a|n2|s1_y|s2_a|y",
-        "net_id": 4,
+        "net_id": 3,
         "resistance_ohm": 919.5809,
         "capacitance_ff": 2.529995,
         "inductance_nh": 0.0,
@@ -5365,25 +5391,25 @@
         "rc_model": "lumped",
         "terminals": [
           {
-            "device": "$91",
+            "device": "$79",
             "terminal": "D",
             "leg_net": "a|n2|s1_y|s2_a|y__t02",
             "resistance_ohm": 234.6353
           },
           {
-            "device": "$92",
+            "device": "$80",
             "terminal": "G",
             "leg_net": "a|n2|s1_y|s2_a|y__t12",
             "resistance_ohm": 225.1551
           },
           {
-            "device": "$44",
+            "device": "$31",
             "terminal": "D",
             "leg_net": "a|n2|s1_y|s2_a|y__t22",
             "resistance_ohm": 225.1551
           },
           {
-            "device": "$45",
+            "device": "$33",
             "terminal": "G",
             "leg_net": "a|n2|s1_y|s2_a|y__t32",
             "resistance_ohm": 234.6353
@@ -5392,7 +5418,7 @@
         "segments": [],
         "coupled": [
           {
-            "net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+            "net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
             "capacitance_ff": 0.015474,
             "levels": [
               [
@@ -5417,67 +5443,7 @@
       },
       {
         "net": "a|n2|s1_y|s2_a|y",
-        "net_id": 13,
-        "resistance_ohm": 919.5809,
-        "capacitance_ff": 2.529995,
-        "inductance_nh": 0.0,
-        "hub_net": "a|n2|s1_y|s2_a|y",
-        "rc_model": "lumped",
-        "terminals": [
-          {
-            "device": "$21",
-            "terminal": "D",
-            "leg_net": "a|n2|s1_y|s2_a|y__t03",
-            "resistance_ohm": 225.1551
-          },
-          {
-            "device": "$73",
-            "terminal": "D",
-            "leg_net": "a|n2|s1_y|s2_a|y__t13",
-            "resistance_ohm": 234.6353
-          },
-          {
-            "device": "$74",
-            "terminal": "G",
-            "leg_net": "a|n2|s1_y|s2_a|y__t23",
-            "resistance_ohm": 225.1551
-          },
-          {
-            "device": "$23",
-            "terminal": "G",
-            "leg_net": "a|n2|s1_y|s2_a|y__t33",
-            "resistance_ohm": 234.6353
-          }
-        ],
-        "segments": [],
-        "coupled": [
-          {
-            "net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
-            "capacitance_ff": 0.015474,
-            "levels": [
-              [
-                1,
-                2
-              ]
-            ],
-            "lateral_levels": []
-          },
-          {
-            "net": "ny",
-            "capacitance_ff": 0.011511,
-            "levels": [
-              [
-                0,
-                1
-              ]
-            ],
-            "lateral_levels": []
-          }
-        ]
-      },
-      {
-        "net": "a|n2|s1_y|s2_a|y",
-        "net_id": 32,
+        "net_id": 6,
         "resistance_ohm": 919.5809,
         "capacitance_ff": 2.529995,
         "inductance_nh": 0.0,
@@ -5487,23 +5453,83 @@
           {
             "device": "$85",
             "terminal": "D",
-            "leg_net": "a|n2|s1_y|s2_a|y__t04",
+            "leg_net": "a|n2|s1_y|s2_a|y__t03",
             "resistance_ohm": 234.6353
           },
           {
             "device": "$86",
             "terminal": "G",
-            "leg_net": "a|n2|s1_y|s2_a|y__t14",
+            "leg_net": "a|n2|s1_y|s2_a|y__t13",
             "resistance_ohm": 225.1551
           },
           {
             "device": "$39",
             "terminal": "D",
-            "leg_net": "a|n2|s1_y|s2_a|y__t24",
+            "leg_net": "a|n2|s1_y|s2_a|y__t23",
             "resistance_ohm": 225.1551
           },
           {
             "device": "$40",
+            "terminal": "G",
+            "leg_net": "a|n2|s1_y|s2_a|y__t33",
+            "resistance_ohm": 234.6353
+          }
+        ],
+        "segments": [],
+        "coupled": [
+          {
+            "net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
+            "capacitance_ff": 0.015474,
+            "levels": [
+              [
+                1,
+                2
+              ]
+            ],
+            "lateral_levels": []
+          },
+          {
+            "net": "ny",
+            "capacitance_ff": 0.011511,
+            "levels": [
+              [
+                0,
+                1
+              ]
+            ],
+            "lateral_levels": []
+          }
+        ]
+      },
+      {
+        "net": "a|n2|s1_y|s2_a|y",
+        "net_id": 8,
+        "resistance_ohm": 919.5809,
+        "capacitance_ff": 2.529995,
+        "inductance_nh": 0.0,
+        "hub_net": "a|n2|s1_y|s2_a|y",
+        "rc_model": "lumped",
+        "terminals": [
+          {
+            "device": "$91",
+            "terminal": "D",
+            "leg_net": "a|n2|s1_y|s2_a|y__t04",
+            "resistance_ohm": 234.6353
+          },
+          {
+            "device": "$92",
+            "terminal": "G",
+            "leg_net": "a|n2|s1_y|s2_a|y__t14",
+            "resistance_ohm": 225.1551
+          },
+          {
+            "device": "$44",
+            "terminal": "D",
+            "leg_net": "a|n2|s1_y|s2_a|y__t24",
+            "resistance_ohm": 225.1551
+          },
+          {
+            "device": "$45",
             "terminal": "G",
             "leg_net": "a|n2|s1_y|s2_a|y__t34",
             "resistance_ohm": 234.6353
@@ -5512,7 +5538,7 @@
         "segments": [],
         "coupled": [
           {
-            "net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+            "net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
             "capacitance_ff": 0.015474,
             "levels": [
               [
@@ -5537,67 +5563,7 @@
       },
       {
         "net": "a|n3|s2_y|s3_a|y",
-        "net_id": 1,
-        "resistance_ohm": 919.5809,
-        "capacitance_ff": 2.529995,
-        "inductance_nh": 0.0,
-        "hub_net": "a|n3|s2_y|s3_a|y",
-        "rc_model": "lumped",
-        "terminals": [
-          {
-            "device": "$74",
-            "terminal": "D",
-            "leg_net": "a|n3|s2_y|s3_a|y__t0",
-            "resistance_ohm": 234.6353
-          },
-          {
-            "device": "$75",
-            "terminal": "G",
-            "leg_net": "a|n3|s2_y|s3_a|y__t1",
-            "resistance_ohm": 225.1551
-          },
-          {
-            "device": "$23",
-            "terminal": "D",
-            "leg_net": "a|n3|s2_y|s3_a|y__t2",
-            "resistance_ohm": 225.1551
-          },
-          {
-            "device": "$25",
-            "terminal": "G",
-            "leg_net": "a|n3|s2_y|s3_a|y__t3",
-            "resistance_ohm": 234.6353
-          }
-        ],
-        "segments": [],
-        "coupled": [
-          {
-            "net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
-            "capacitance_ff": 0.015474,
-            "levels": [
-              [
-                1,
-                2
-              ]
-            ],
-            "lateral_levels": []
-          },
-          {
-            "net": "ny",
-            "capacitance_ff": 0.011511,
-            "levels": [
-              [
-                0,
-                1
-              ]
-            ],
-            "lateral_levels": []
-          }
-        ]
-      },
-      {
-        "net": "a|n3|s2_y|s3_a|y",
-        "net_id": 3,
+        "net_id": 4,
         "resistance_ohm": 919.5809,
         "capacitance_ff": 2.529995,
         "inductance_nh": 0.0,
@@ -5607,32 +5573,32 @@
           {
             "device": "$80",
             "terminal": "D",
-            "leg_net": "a|n3|s2_y|s3_a|y__t02",
+            "leg_net": "a|n3|s2_y|s3_a|y__t0",
             "resistance_ohm": 234.6353
           },
           {
             "device": "$81",
             "terminal": "G",
-            "leg_net": "a|n3|s2_y|s3_a|y__t12",
+            "leg_net": "a|n3|s2_y|s3_a|y__t1",
             "resistance_ohm": 225.1551
           },
           {
             "device": "$33",
             "terminal": "D",
-            "leg_net": "a|n3|s2_y|s3_a|y__t22",
+            "leg_net": "a|n3|s2_y|s3_a|y__t2",
             "resistance_ohm": 225.1551
           },
           {
             "device": "$35",
             "terminal": "G",
-            "leg_net": "a|n3|s2_y|s3_a|y__t32",
+            "leg_net": "a|n3|s2_y|s3_a|y__t3",
             "resistance_ohm": 234.6353
           }
         ],
         "segments": [],
         "coupled": [
           {
-            "net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+            "net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
             "capacitance_ff": 0.015474,
             "levels": [
               [
@@ -5657,7 +5623,7 @@
       },
       {
         "net": "a|n3|s2_y|s3_a|y",
-        "net_id": 5,
+        "net_id": 16,
         "resistance_ohm": 919.5809,
         "capacitance_ff": 2.529995,
         "inductance_nh": 0.0,
@@ -5665,34 +5631,34 @@
         "rc_model": "lumped",
         "terminals": [
           {
-            "device": "$92",
+            "device": "$74",
             "terminal": "D",
-            "leg_net": "a|n3|s2_y|s3_a|y__t03",
+            "leg_net": "a|n3|s2_y|s3_a|y__t02",
             "resistance_ohm": 234.6353
           },
           {
-            "device": "$93",
+            "device": "$75",
             "terminal": "G",
-            "leg_net": "a|n3|s2_y|s3_a|y__t13",
+            "leg_net": "a|n3|s2_y|s3_a|y__t12",
             "resistance_ohm": 225.1551
           },
           {
-            "device": "$45",
+            "device": "$23",
             "terminal": "D",
-            "leg_net": "a|n3|s2_y|s3_a|y__t23",
+            "leg_net": "a|n3|s2_y|s3_a|y__t22",
             "resistance_ohm": 225.1551
           },
           {
-            "device": "$46",
+            "device": "$25",
             "terminal": "G",
-            "leg_net": "a|n3|s2_y|s3_a|y__t33",
+            "leg_net": "a|n3|s2_y|s3_a|y__t32",
             "resistance_ohm": 234.6353
           }
         ],
         "segments": [],
         "coupled": [
           {
-            "net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+            "net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
             "capacitance_ff": 0.015474,
             "levels": [
               [
@@ -5727,23 +5693,83 @@
           {
             "device": "$86",
             "terminal": "D",
-            "leg_net": "a|n3|s2_y|s3_a|y__t04",
+            "leg_net": "a|n3|s2_y|s3_a|y__t03",
             "resistance_ohm": 234.6353
           },
           {
             "device": "$87",
             "terminal": "G",
-            "leg_net": "a|n3|s2_y|s3_a|y__t14",
+            "leg_net": "a|n3|s2_y|s3_a|y__t13",
             "resistance_ohm": 225.1551
           },
           {
             "device": "$40",
             "terminal": "D",
-            "leg_net": "a|n3|s2_y|s3_a|y__t24",
+            "leg_net": "a|n3|s2_y|s3_a|y__t23",
             "resistance_ohm": 225.1551
           },
           {
             "device": "$41",
+            "terminal": "G",
+            "leg_net": "a|n3|s2_y|s3_a|y__t33",
+            "resistance_ohm": 234.6353
+          }
+        ],
+        "segments": [],
+        "coupled": [
+          {
+            "net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
+            "capacitance_ff": 0.015474,
+            "levels": [
+              [
+                1,
+                2
+              ]
+            ],
+            "lateral_levels": []
+          },
+          {
+            "net": "ny",
+            "capacitance_ff": 0.011511,
+            "levels": [
+              [
+                0,
+                1
+              ]
+            ],
+            "lateral_levels": []
+          }
+        ]
+      },
+      {
+        "net": "a|n3|s2_y|s3_a|y",
+        "net_id": 43,
+        "resistance_ohm": 919.5809,
+        "capacitance_ff": 2.529995,
+        "inductance_nh": 0.0,
+        "hub_net": "a|n3|s2_y|s3_a|y",
+        "rc_model": "lumped",
+        "terminals": [
+          {
+            "device": "$92",
+            "terminal": "D",
+            "leg_net": "a|n3|s2_y|s3_a|y__t04",
+            "resistance_ohm": 234.6353
+          },
+          {
+            "device": "$93",
+            "terminal": "G",
+            "leg_net": "a|n3|s2_y|s3_a|y__t14",
+            "resistance_ohm": 225.1551
+          },
+          {
+            "device": "$45",
+            "terminal": "D",
+            "leg_net": "a|n3|s2_y|s3_a|y__t24",
+            "resistance_ohm": 225.1551
+          },
+          {
+            "device": "$46",
             "terminal": "G",
             "leg_net": "a|n3|s2_y|s3_a|y__t34",
             "resistance_ohm": 234.6353
@@ -5752,7 +5778,7 @@
         "segments": [],
         "coupled": [
           {
-            "net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+            "net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
             "capacitance_ff": 0.015474,
             "levels": [
               [
@@ -5777,127 +5803,7 @@
       },
       {
         "net": "a|n4|s3_y|s4_a|y",
-        "net_id": 6,
-        "resistance_ohm": 919.5809,
-        "capacitance_ff": 2.529995,
-        "inductance_nh": 0.0,
-        "hub_net": "a|n4|s3_y|s4_a|y",
-        "rc_model": "lumped",
-        "terminals": [
-          {
-            "device": "$93",
-            "terminal": "D",
-            "leg_net": "a|n4|s3_y|s4_a|y__t0",
-            "resistance_ohm": 234.6353
-          },
-          {
-            "device": "$94",
-            "terminal": "G",
-            "leg_net": "a|n4|s3_y|s4_a|y__t1",
-            "resistance_ohm": 225.1551
-          },
-          {
-            "device": "$46",
-            "terminal": "D",
-            "leg_net": "a|n4|s3_y|s4_a|y__t2",
-            "resistance_ohm": 225.1551
-          },
-          {
-            "device": "$47",
-            "terminal": "G",
-            "leg_net": "a|n4|s3_y|s4_a|y__t3",
-            "resistance_ohm": 234.6353
-          }
-        ],
-        "segments": [],
-        "coupled": [
-          {
-            "net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
-            "capacitance_ff": 0.015474,
-            "levels": [
-              [
-                1,
-                2
-              ]
-            ],
-            "lateral_levels": []
-          },
-          {
-            "net": "ny",
-            "capacitance_ff": 0.011511,
-            "levels": [
-              [
-                0,
-                1
-              ]
-            ],
-            "lateral_levels": []
-          }
-        ]
-      },
-      {
-        "net": "a|n4|s3_y|s4_a|y",
-        "net_id": 16,
-        "resistance_ohm": 919.5809,
-        "capacitance_ff": 2.529995,
-        "inductance_nh": 0.0,
-        "hub_net": "a|n4|s3_y|s4_a|y",
-        "rc_model": "lumped",
-        "terminals": [
-          {
-            "device": "$75",
-            "terminal": "D",
-            "leg_net": "a|n4|s3_y|s4_a|y__t02",
-            "resistance_ohm": 234.6353
-          },
-          {
-            "device": "$76",
-            "terminal": "G",
-            "leg_net": "a|n4|s3_y|s4_a|y__t12",
-            "resistance_ohm": 225.1551
-          },
-          {
-            "device": "$25",
-            "terminal": "D",
-            "leg_net": "a|n4|s3_y|s4_a|y__t22",
-            "resistance_ohm": 225.1551
-          },
-          {
-            "device": "$27",
-            "terminal": "G",
-            "leg_net": "a|n4|s3_y|s4_a|y__t32",
-            "resistance_ohm": 234.6353
-          }
-        ],
-        "segments": [],
-        "coupled": [
-          {
-            "net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
-            "capacitance_ff": 0.015474,
-            "levels": [
-              [
-                1,
-                2
-              ]
-            ],
-            "lateral_levels": []
-          },
-          {
-            "net": "ny",
-            "capacitance_ff": 0.011511,
-            "levels": [
-              [
-                0,
-                1
-              ]
-            ],
-            "lateral_levels": []
-          }
-        ]
-      },
-      {
-        "net": "a|n4|s3_y|s4_a|y",
-        "net_id": 25,
+        "net_id": 5,
         "resistance_ohm": 919.5809,
         "capacitance_ff": 2.529995,
         "inductance_nh": 0.0,
@@ -5907,32 +5813,32 @@
           {
             "device": "$81",
             "terminal": "D",
-            "leg_net": "a|n4|s3_y|s4_a|y__t03",
+            "leg_net": "a|n4|s3_y|s4_a|y__t0",
             "resistance_ohm": 234.6353
           },
           {
             "device": "$82",
             "terminal": "G",
-            "leg_net": "a|n4|s3_y|s4_a|y__t13",
+            "leg_net": "a|n4|s3_y|s4_a|y__t1",
             "resistance_ohm": 225.1551
           },
           {
             "device": "$35",
             "terminal": "D",
-            "leg_net": "a|n4|s3_y|s4_a|y__t23",
+            "leg_net": "a|n4|s3_y|s4_a|y__t2",
             "resistance_ohm": 225.1551
           },
           {
             "device": "$37",
             "terminal": "G",
-            "leg_net": "a|n4|s3_y|s4_a|y__t33",
+            "leg_net": "a|n4|s3_y|s4_a|y__t3",
             "resistance_ohm": 234.6353
           }
         ],
         "segments": [],
         "coupled": [
           {
-            "net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+            "net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
             "capacitance_ff": 0.015474,
             "levels": [
               [
@@ -5957,7 +5863,7 @@
       },
       {
         "net": "a|n4|s3_y|s4_a|y",
-        "net_id": 36,
+        "net_id": 7,
         "resistance_ohm": 919.5809,
         "capacitance_ff": 2.529995,
         "inductance_nh": 0.0,
@@ -5967,23 +5873,143 @@
           {
             "device": "$87",
             "terminal": "D",
-            "leg_net": "a|n4|s3_y|s4_a|y__t04",
+            "leg_net": "a|n4|s3_y|s4_a|y__t02",
             "resistance_ohm": 234.6353
           },
           {
             "device": "$88",
             "terminal": "G",
-            "leg_net": "a|n4|s3_y|s4_a|y__t14",
+            "leg_net": "a|n4|s3_y|s4_a|y__t12",
             "resistance_ohm": 225.1551
           },
           {
             "device": "$41",
             "terminal": "D",
-            "leg_net": "a|n4|s3_y|s4_a|y__t24",
+            "leg_net": "a|n4|s3_y|s4_a|y__t22",
             "resistance_ohm": 225.1551
           },
           {
             "device": "$42",
+            "terminal": "G",
+            "leg_net": "a|n4|s3_y|s4_a|y__t32",
+            "resistance_ohm": 234.6353
+          }
+        ],
+        "segments": [],
+        "coupled": [
+          {
+            "net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
+            "capacitance_ff": 0.015474,
+            "levels": [
+              [
+                1,
+                2
+              ]
+            ],
+            "lateral_levels": []
+          },
+          {
+            "net": "ny",
+            "capacitance_ff": 0.011511,
+            "levels": [
+              [
+                0,
+                1
+              ]
+            ],
+            "lateral_levels": []
+          }
+        ]
+      },
+      {
+        "net": "a|n4|s3_y|s4_a|y",
+        "net_id": 18,
+        "resistance_ohm": 919.5809,
+        "capacitance_ff": 2.529995,
+        "inductance_nh": 0.0,
+        "hub_net": "a|n4|s3_y|s4_a|y",
+        "rc_model": "lumped",
+        "terminals": [
+          {
+            "device": "$75",
+            "terminal": "D",
+            "leg_net": "a|n4|s3_y|s4_a|y__t03",
+            "resistance_ohm": 234.6353
+          },
+          {
+            "device": "$76",
+            "terminal": "G",
+            "leg_net": "a|n4|s3_y|s4_a|y__t13",
+            "resistance_ohm": 225.1551
+          },
+          {
+            "device": "$25",
+            "terminal": "D",
+            "leg_net": "a|n4|s3_y|s4_a|y__t23",
+            "resistance_ohm": 225.1551
+          },
+          {
+            "device": "$27",
+            "terminal": "G",
+            "leg_net": "a|n4|s3_y|s4_a|y__t33",
+            "resistance_ohm": 234.6353
+          }
+        ],
+        "segments": [],
+        "coupled": [
+          {
+            "net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
+            "capacitance_ff": 0.015474,
+            "levels": [
+              [
+                1,
+                2
+              ]
+            ],
+            "lateral_levels": []
+          },
+          {
+            "net": "ny",
+            "capacitance_ff": 0.011511,
+            "levels": [
+              [
+                0,
+                1
+              ]
+            ],
+            "lateral_levels": []
+          }
+        ]
+      },
+      {
+        "net": "a|n4|s3_y|s4_a|y",
+        "net_id": 45,
+        "resistance_ohm": 919.5809,
+        "capacitance_ff": 2.529995,
+        "inductance_nh": 0.0,
+        "hub_net": "a|n4|s3_y|s4_a|y",
+        "rc_model": "lumped",
+        "terminals": [
+          {
+            "device": "$93",
+            "terminal": "D",
+            "leg_net": "a|n4|s3_y|s4_a|y__t04",
+            "resistance_ohm": 234.6353
+          },
+          {
+            "device": "$94",
+            "terminal": "G",
+            "leg_net": "a|n4|s3_y|s4_a|y__t14",
+            "resistance_ohm": 225.1551
+          },
+          {
+            "device": "$46",
+            "terminal": "D",
+            "leg_net": "a|n4|s3_y|s4_a|y__t24",
+            "resistance_ohm": 225.1551
+          },
+          {
+            "device": "$47",
             "terminal": "G",
             "leg_net": "a|n4|s3_y|s4_a|y__t34",
             "resistance_ohm": 234.6353
@@ -5992,7 +6018,7 @@
         "segments": [],
         "coupled": [
           {
-            "net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+            "net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
             "capacitance_ff": 0.015474,
             "levels": [
               [
@@ -6308,7 +6334,7 @@
       },
       {
         "net": "en|en1|g_en",
-        "net_id": 47,
+        "net_id": 48,
         "resistance_ohm": 472.6379,
         "capacitance_ff": 0.593421,
         "inductance_nh": 0.0,
@@ -6408,7 +6434,7 @@
       },
       {
         "net": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr1",
-        "net_id": 48,
+        "net_id": 49,
         "resistance_ohm": 2278.1411,
         "capacitance_ff": 12.363377,
         "inductance_nh": 0.0,
@@ -7055,767 +7081,786 @@
         ]
       },
       {
-        "net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
         "net_id": 97,
-        "resistance_ohm": 17049.9587,
-        "capacitance_ff": 78.505126,
+        "resistance_ohm": 17093.6575,
+        "capacitance_ff": 103.531672,
         "inductance_nh": 0.0,
-        "hub_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "hub_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
         "rc_model": "lumped",
         "terminals": [
           {
-            "device": "$1",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t0",
-            "resistance_ohm": 213.5081
-          },
-          {
-            "device": "$3",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t1",
-            "resistance_ohm": 74.0127
-          },
-          {
-            "device": "$5",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t2",
-            "resistance_ohm": 68.0032
-          },
-          {
-            "device": "$7",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t3",
-            "resistance_ohm": 207.4256
-          },
-          {
-            "device": "$50",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t4",
-            "resistance_ohm": 210.4012
-          },
-          {
-            "device": "$52",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t5",
-            "resistance_ohm": 192.8314
-          },
-          {
-            "device": "$56",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t6",
-            "resistance_ohm": 137.96
-          },
-          {
-            "device": "$58",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t7",
-            "resistance_ohm": 120.6288
-          },
-          {
-            "device": "$62",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t8",
-            "resistance_ohm": 67.6036
-          },
-          {
-            "device": "$64",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t9",
-            "resistance_ohm": 51.881
-          },
-          {
-            "device": "$2",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t10",
-            "resistance_ohm": 211.8133
-          },
-          {
-            "device": "$4",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t11",
-            "resistance_ohm": 72.3369
-          },
-          {
-            "device": "$6",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t12",
-            "resistance_ohm": 69.6762
-          },
-          {
-            "device": "$8",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t13",
-            "resistance_ohm": 209.1204
-          },
-          {
-            "device": "$51",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t14",
-            "resistance_ohm": 208.7183
-          },
-          {
-            "device": "$53",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t15",
-            "resistance_ohm": 191.1513
-          },
-          {
-            "device": "$57",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t16",
-            "resistance_ohm": 136.2967
-          },
-          {
-            "device": "$59",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t17",
-            "resistance_ohm": 118.9762
-          },
-          {
-            "device": "$63",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t18",
-            "resistance_ohm": 66.0546
-          },
-          {
-            "device": "$65",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t19",
-            "resistance_ohm": 50.4462
-          },
-          {
-            "device": "$9",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t20",
-            "resistance_ohm": 62.1083
-          },
-          {
-            "device": "$10",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t21",
-            "resistance_ohm": 85.3667
-          },
-          {
-            "device": "$11",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t22",
-            "resistance_ohm": 105.9219
-          },
-          {
-            "device": "$12",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t23",
-            "resistance_ohm": 126.5278
-          },
-          {
-            "device": "$13",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t24",
-            "resistance_ohm": 147.1631
-          },
-          {
-            "device": "$14",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t25",
-            "resistance_ohm": 201.4438
-          },
-          {
-            "device": "$15",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t26",
-            "resistance_ohm": 224.9693
-          },
-          {
-            "device": "$16",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t27",
-            "resistance_ohm": 245.6546
-          },
-          {
-            "device": "$17",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t28",
-            "resistance_ohm": 266.3437
-          },
-          {
-            "device": "$18",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t29",
-            "resistance_ohm": 287.036
-          },
-          {
-            "device": "$19",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t30",
-            "resistance_ohm": 219.491
-          },
-          {
-            "device": "$20",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t31",
-            "resistance_ohm": 195.9674
-          },
-          {
-            "device": "$22",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t32",
-            "resistance_ohm": 175.2976
-          },
-          {
-            "device": "$24",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t33",
-            "resistance_ohm": 154.6387
-          },
-          {
-            "device": "$26",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t34",
-            "resistance_ohm": 133.9957
-          },
-          {
-            "device": "$21",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t35",
-            "resistance_ohm": 189.9868
-          },
-          {
-            "device": "$23",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t36",
-            "resistance_ohm": 169.3197
-          },
-          {
-            "device": "$25",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t37",
-            "resistance_ohm": 148.6648
-          },
-          {
-            "device": "$27",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t38",
-            "resistance_ohm": 128.0279
-          },
-          {
-            "device": "$28",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t39",
-            "resistance_ohm": 105.1907
-          },
-          {
-            "device": "$31",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t40",
-            "resistance_ohm": 50.879
-          },
-          {
-            "device": "$33",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t41",
-            "resistance_ohm": 31.0783
-          },
-          {
-            "device": "$35",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t42",
-            "resistance_ohm": 14.1737
-          },
-          {
-            "device": "$37",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t43",
-            "resistance_ohm": 17.1401
-          },
-          {
-            "device": "$38",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t44",
-            "resistance_ohm": 37.4021
-          },
-          {
-            "device": "$39",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t45",
-            "resistance_ohm": 91.306
-          },
-          {
-            "device": "$40",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t46",
-            "resistance_ohm": 111.8792
-          },
-          {
-            "device": "$41",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t47",
-            "resistance_ohm": 132.4952
-          },
-          {
-            "device": "$42",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t48",
-            "resistance_ohm": 153.1367
-          },
-          {
-            "device": "$43",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t49",
-            "resistance_ohm": 176.0317
-          },
-          {
-            "device": "$44",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t50",
-            "resistance_ohm": 230.953
-          },
-          {
-            "device": "$45",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t51",
-            "resistance_ohm": 251.6395
-          },
-          {
-            "device": "$46",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t52",
-            "resistance_ohm": 272.3297
-          },
-          {
-            "device": "$47",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t53",
-            "resistance_ohm": 293.0227
-          },
-          {
-            "device": "$48",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t54",
-            "resistance_ohm": 315.9586
-          },
-          {
-            "device": "$49",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t55",
-            "resistance_ohm": 222.0975
-          },
-          {
-            "device": "$54",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t56",
-            "resistance_ohm": 176.7046
-          },
-          {
-            "device": "$55",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t57",
-            "resistance_ohm": 149.9319
-          },
-          {
-            "device": "$60",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t58",
-            "resistance_ohm": 105.5247
-          },
-          {
-            "device": "$61",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t59",
-            "resistance_ohm": 80.03
-          },
-          {
-            "device": "$66",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t60",
-            "resistance_ohm": 42.6539
-          },
-          {
-            "device": "$29",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t61",
-            "resistance_ohm": 79.9354
-          },
-          {
-            "device": "$30",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t62",
-            "resistance_ohm": 56.7286
-          },
-          {
-            "device": "$32",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t63",
-            "resistance_ohm": 36.7035
-          },
-          {
-            "device": "$34",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t64",
-            "resistance_ohm": 18.2758
-          },
-          {
-            "device": "$36",
-            "terminal": "B",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t65",
-            "resistance_ohm": 13.3687
-          },
-          {
             "device": "$19",
             "terminal": "S",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t66",
-            "resistance_ohm": 219.491
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t0",
+            "resistance_ohm": 220.0535
           },
           {
             "device": "$29",
             "terminal": "S",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t67",
-            "resistance_ohm": 79.9354
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t1",
+            "resistance_ohm": 80.1403
           },
           {
             "device": "$9",
             "terminal": "S",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t68",
-            "resistance_ohm": 62.1083
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t2",
+            "resistance_ohm": 62.2675
           },
           {
             "device": "$14",
             "terminal": "S",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t69",
-            "resistance_ohm": 201.4438
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t3",
+            "resistance_ohm": 201.9601
           },
           {
             "device": "$95",
             "terminal": "G",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t70",
-            "resistance_ohm": 219.1995
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t4",
+            "resistance_ohm": 219.7613
           },
           {
             "device": "$112",
             "terminal": "G",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t71",
-            "resistance_ohm": 79.1313
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t5",
+            "resistance_ohm": 79.3341
           },
           {
             "device": "$123",
             "terminal": "G",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t72",
-            "resistance_ohm": 61.07
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t6",
+            "resistance_ohm": 61.2265
           },
           {
             "device": "$128",
             "terminal": "G",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t73",
-            "resistance_ohm": 201.1261
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t7",
+            "resistance_ohm": 201.6416
           },
           {
             "device": "$132",
             "terminal": "G",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t74",
-            "resistance_ohm": 286.8131
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t8",
+            "resistance_ohm": 287.5482
           },
           {
             "device": "$131",
             "terminal": "G",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t75",
-            "resistance_ohm": 266.1035
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t9",
+            "resistance_ohm": 266.7856
           },
           {
             "device": "$130",
             "terminal": "G",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t76",
-            "resistance_ohm": 245.3941
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t10",
+            "resistance_ohm": 246.0231
           },
           {
             "device": "$129",
             "terminal": "G",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t77",
-            "resistance_ohm": 224.6849
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t11",
+            "resistance_ohm": 225.2608
           },
           {
             "device": "$125",
             "terminal": "G",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t78",
-            "resistance_ohm": 105.3165
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t12",
+            "resistance_ohm": 105.5864
           },
           {
             "device": "$127",
             "terminal": "G",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t79",
-            "resistance_ohm": 146.728
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t13",
+            "resistance_ohm": 147.104
           },
           {
             "device": "$126",
             "terminal": "G",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t80",
-            "resistance_ohm": 126.0214
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t14",
+            "resistance_ohm": 126.3444
           },
           {
             "device": "$124",
             "terminal": "G",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t81",
-            "resistance_ohm": 84.6142
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t15",
+            "resistance_ohm": 84.8311
           },
           {
             "device": "$122",
             "terminal": "G",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t82",
-            "resistance_ohm": 7.129
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t16",
+            "resistance_ohm": 7.1473
           },
           {
             "device": "$121",
             "terminal": "G",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t83",
-            "resistance_ohm": 14.3564
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t17",
+            "resistance_ohm": 14.3932
           },
           {
             "device": "$119",
             "terminal": "G",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t84",
-            "resistance_ohm": 34.9177
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t18",
+            "resistance_ohm": 35.0072
           },
           {
             "device": "$116",
             "terminal": "G",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t85",
-            "resistance_ohm": 55.5899
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t19",
+            "resistance_ohm": 55.7324
           },
           {
             "device": "$104",
             "terminal": "G",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t86",
-            "resistance_ohm": 154.2246
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t20",
+            "resistance_ohm": 154.6199
           },
           {
             "device": "$99",
             "terminal": "G",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t87",
-            "resistance_ohm": 195.6408
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t21",
+            "resistance_ohm": 196.1422
           },
           {
             "device": "$102",
             "terminal": "G",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t88",
-            "resistance_ohm": 174.9324
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t22",
+            "resistance_ohm": 175.3807
           },
           {
             "device": "$108",
             "terminal": "G",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t89",
-            "resistance_ohm": 133.5176
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t23",
+            "resistance_ohm": 133.8598
           },
           {
             "device": "$18",
             "terminal": "S",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t90",
-            "resistance_ohm": 287.036
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t24",
+            "resistance_ohm": 287.7717
           },
           {
             "device": "$17",
             "terminal": "S",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t91",
-            "resistance_ohm": 266.3437
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t25",
+            "resistance_ohm": 267.0264
           },
           {
             "device": "$16",
             "terminal": "S",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t92",
-            "resistance_ohm": 245.6546
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t26",
+            "resistance_ohm": 246.2842
           },
           {
             "device": "$15",
             "terminal": "S",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t93",
-            "resistance_ohm": 224.9693
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t27",
+            "resistance_ohm": 225.5459
           },
           {
             "device": "$12",
             "terminal": "S",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t94",
-            "resistance_ohm": 126.5278
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t28",
+            "resistance_ohm": 126.8521
           },
           {
             "device": "$13",
             "terminal": "S",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t95",
-            "resistance_ohm": 147.1631
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t29",
+            "resistance_ohm": 147.5403
           },
           {
             "device": "$11",
             "terminal": "S",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t96",
-            "resistance_ohm": 105.9219
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t30",
+            "resistance_ohm": 106.1934
           },
           {
             "device": "$10",
             "terminal": "S",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t97",
-            "resistance_ohm": 85.3667
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t31",
+            "resistance_ohm": 85.5855
           },
           {
             "device": "$36",
             "terminal": "S",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t98",
-            "resistance_ohm": 13.3687
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t32",
+            "resistance_ohm": 13.4029
           },
           {
             "device": "$34",
             "terminal": "S",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t99",
-            "resistance_ohm": 18.2758
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t33",
+            "resistance_ohm": 18.3227
           },
           {
             "device": "$32",
             "terminal": "S",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t100",
-            "resistance_ohm": 36.7035
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t34",
+            "resistance_ohm": 36.7975
           },
           {
             "device": "$30",
             "terminal": "S",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t101",
-            "resistance_ohm": 56.7286
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t35",
+            "resistance_ohm": 56.874
           },
           {
             "device": "$60",
             "terminal": "S",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t102",
-            "resistance_ohm": 105.5247
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t36",
+            "resistance_ohm": 105.7951
           },
           {
             "device": "$48",
             "terminal": "S",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t103",
-            "resistance_ohm": 315.9586
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t37",
+            "resistance_ohm": 316.7684
           },
           {
             "device": "$66",
             "terminal": "S",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t104",
-            "resistance_ohm": 42.6539
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t38",
+            "resistance_ohm": 42.7632
           },
           {
             "device": "$55",
             "terminal": "S",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t105",
-            "resistance_ohm": 149.9319
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t39",
+            "resistance_ohm": 150.3161
           },
           {
             "device": "$54",
             "terminal": "S",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t106",
-            "resistance_ohm": 176.7046
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t40",
+            "resistance_ohm": 177.1575
           },
           {
             "device": "$28",
             "terminal": "S",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t107",
-            "resistance_ohm": 105.1907
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t41",
+            "resistance_ohm": 105.4603
           },
           {
             "device": "$43",
             "terminal": "S",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t108",
-            "resistance_ohm": 176.0317
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t42",
+            "resistance_ohm": 176.4829
           },
           {
             "device": "$38",
             "terminal": "S",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t109",
-            "resistance_ohm": 37.4021
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t43",
+            "resistance_ohm": 37.4979
           },
           {
             "device": "$61",
             "terminal": "S",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t110",
-            "resistance_ohm": 80.03
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t44",
+            "resistance_ohm": 80.2351
           },
           {
             "device": "$49",
             "terminal": "S",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t111",
-            "resistance_ohm": 222.0975
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t45",
+            "resistance_ohm": 222.6667
           },
           {
             "device": "$20",
             "terminal": "S",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t112",
-            "resistance_ohm": 195.9674
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t46",
+            "resistance_ohm": 196.4696
           },
           {
             "device": "$24",
             "terminal": "S",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t113",
-            "resistance_ohm": 154.6387
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t47",
+            "resistance_ohm": 155.035
           },
           {
             "device": "$26",
             "terminal": "S",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t114",
-            "resistance_ohm": 133.9957
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t48",
+            "resistance_ohm": 134.3392
           },
           {
             "device": "$22",
             "terminal": "S",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t115",
-            "resistance_ohm": 175.2976
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t49",
+            "resistance_ohm": 175.7469
           },
           {
             "device": "$53",
             "terminal": "D",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t116",
-            "resistance_ohm": 191.1513
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t50",
+            "resistance_ohm": 191.6412
           },
           {
             "device": "$57",
             "terminal": "D",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t117",
-            "resistance_ohm": 136.2967
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t51",
+            "resistance_ohm": 136.646
           },
           {
             "device": "$59",
             "terminal": "D",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t118",
-            "resistance_ohm": 118.9762
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t52",
+            "resistance_ohm": 119.2811
           },
           {
             "device": "$65",
             "terminal": "D",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t119",
-            "resistance_ohm": 50.4462
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t53",
+            "resistance_ohm": 50.5755
           },
           {
             "device": "$63",
             "terminal": "D",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t120",
-            "resistance_ohm": 66.0546
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t54",
+            "resistance_ohm": 66.2239
           },
           {
             "device": "$51",
             "terminal": "D",
-            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t121",
-            "resistance_ohm": 208.7183
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t55",
+            "resistance_ohm": 209.2532
+          },
+          {
+            "device": "$1",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t56",
+            "resistance_ohm": 214.0554
+          },
+          {
+            "device": "$3",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t57",
+            "resistance_ohm": 74.2024
+          },
+          {
+            "device": "$5",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t58",
+            "resistance_ohm": 68.1775
+          },
+          {
+            "device": "$7",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t59",
+            "resistance_ohm": 207.9573
+          },
+          {
+            "device": "$50",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t60",
+            "resistance_ohm": 210.9404
+          },
+          {
+            "device": "$52",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t61",
+            "resistance_ohm": 193.3256
+          },
+          {
+            "device": "$56",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t62",
+            "resistance_ohm": 138.3136
+          },
+          {
+            "device": "$58",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t63",
+            "resistance_ohm": 120.938
+          },
+          {
+            "device": "$62",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t64",
+            "resistance_ohm": 67.7768
+          },
+          {
+            "device": "$64",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t65",
+            "resistance_ohm": 52.014
+          },
+          {
+            "device": "$2",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t66",
+            "resistance_ohm": 212.3562
+          },
+          {
+            "device": "$4",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t67",
+            "resistance_ohm": 72.5223
+          },
+          {
+            "device": "$6",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t68",
+            "resistance_ohm": 69.8548
+          },
+          {
+            "device": "$8",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t69",
+            "resistance_ohm": 209.6564
+          },
+          {
+            "device": "$51",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t70",
+            "resistance_ohm": 209.2532
+          },
+          {
+            "device": "$53",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t71",
+            "resistance_ohm": 191.6412
+          },
+          {
+            "device": "$57",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t72",
+            "resistance_ohm": 136.646
+          },
+          {
+            "device": "$59",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t73",
+            "resistance_ohm": 119.2811
+          },
+          {
+            "device": "$63",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t74",
+            "resistance_ohm": 66.2239
+          },
+          {
+            "device": "$65",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t75",
+            "resistance_ohm": 50.5755
+          },
+          {
+            "device": "$9",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t76",
+            "resistance_ohm": 62.2675
+          },
+          {
+            "device": "$10",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t77",
+            "resistance_ohm": 85.5855
+          },
+          {
+            "device": "$11",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t78",
+            "resistance_ohm": 106.1934
+          },
+          {
+            "device": "$12",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t79",
+            "resistance_ohm": 126.8521
+          },
+          {
+            "device": "$13",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t80",
+            "resistance_ohm": 147.5403
+          },
+          {
+            "device": "$14",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t81",
+            "resistance_ohm": 201.9601
+          },
+          {
+            "device": "$15",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t82",
+            "resistance_ohm": 225.5459
+          },
+          {
+            "device": "$16",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t83",
+            "resistance_ohm": 246.2842
+          },
+          {
+            "device": "$17",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t84",
+            "resistance_ohm": 267.0264
+          },
+          {
+            "device": "$18",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t85",
+            "resistance_ohm": 287.7717
+          },
+          {
+            "device": "$19",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t86",
+            "resistance_ohm": 220.0535
+          },
+          {
+            "device": "$20",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t87",
+            "resistance_ohm": 196.4696
+          },
+          {
+            "device": "$22",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t88",
+            "resistance_ohm": 175.7469
+          },
+          {
+            "device": "$24",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t89",
+            "resistance_ohm": 155.035
+          },
+          {
+            "device": "$26",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t90",
+            "resistance_ohm": 134.3392
+          },
+          {
+            "device": "$21",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t91",
+            "resistance_ohm": 190.4737
+          },
+          {
+            "device": "$23",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t92",
+            "resistance_ohm": 169.7537
+          },
+          {
+            "device": "$25",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t93",
+            "resistance_ohm": 149.0458
+          },
+          {
+            "device": "$27",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t94",
+            "resistance_ohm": 128.356
+          },
+          {
+            "device": "$28",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t95",
+            "resistance_ohm": 105.4603
+          },
+          {
+            "device": "$31",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t96",
+            "resistance_ohm": 51.0094
+          },
+          {
+            "device": "$33",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t97",
+            "resistance_ohm": 31.1579
+          },
+          {
+            "device": "$35",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t98",
+            "resistance_ohm": 14.21
+          },
+          {
+            "device": "$37",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t99",
+            "resistance_ohm": 17.1841
+          },
+          {
+            "device": "$38",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t100",
+            "resistance_ohm": 37.4979
+          },
+          {
+            "device": "$39",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t101",
+            "resistance_ohm": 91.54
+          },
+          {
+            "device": "$40",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t102",
+            "resistance_ohm": 112.1659
+          },
+          {
+            "device": "$41",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t103",
+            "resistance_ohm": 132.8347
+          },
+          {
+            "device": "$42",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t104",
+            "resistance_ohm": 153.5291
+          },
+          {
+            "device": "$43",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t105",
+            "resistance_ohm": 176.4829
+          },
+          {
+            "device": "$44",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t106",
+            "resistance_ohm": 231.545
+          },
+          {
+            "device": "$45",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t107",
+            "resistance_ohm": 252.2845
+          },
+          {
+            "device": "$46",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t108",
+            "resistance_ohm": 273.0276
+          },
+          {
+            "device": "$47",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t109",
+            "resistance_ohm": 293.7737
+          },
+          {
+            "device": "$48",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t110",
+            "resistance_ohm": 316.7684
+          },
+          {
+            "device": "$49",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t111",
+            "resistance_ohm": 222.6667
+          },
+          {
+            "device": "$54",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t112",
+            "resistance_ohm": 177.1575
+          },
+          {
+            "device": "$55",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t113",
+            "resistance_ohm": 150.3161
+          },
+          {
+            "device": "$60",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t114",
+            "resistance_ohm": 105.7951
+          },
+          {
+            "device": "$61",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t115",
+            "resistance_ohm": 80.2351
+          },
+          {
+            "device": "$66",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t116",
+            "resistance_ohm": 42.7632
+          },
+          {
+            "device": "$29",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t117",
+            "resistance_ohm": 80.1403
+          },
+          {
+            "device": "$30",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t118",
+            "resistance_ohm": 56.874
+          },
+          {
+            "device": "$32",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t119",
+            "resistance_ohm": 36.7975
+          },
+          {
+            "device": "$34",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t120",
+            "resistance_ohm": 18.3227
+          },
+          {
+            "device": "$36",
+            "terminal": "B",
+            "leg_net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3__t121",
+            "resistance_ohm": 13.4029
           }
         ],
         "segments": [],
         "coupled": [
           {
             "net": "a|b|invb_a|mn12_g1|mp24_g0|ro2|y",
-            "capacitance_ff": 0.035722,
+            "capacitance_ff": 0.045279,
             "levels": [
               [
                 0,
                 1
+              ],
+              [
+                1,
+                2
               ]
             ],
             "lateral_levels": []
           },
           {
             "net": "a|b|invb_a|mn12_g1|mp24_g0|ro4|y",
-            "capacitance_ff": 0.035722,
+            "capacitance_ff": 0.054837,
             "levels": [
               [
                 0,
                 1
+              ],
+              [
+                1,
+                2
+              ]
+            ],
+            "lateral_levels": []
+          },
+          {
+            "net": "a|g_a|rn4|ro|s4_y|y",
+            "capacitance_ff": 0.014912,
+            "levels": [
+              [
+                1,
+                2
               ]
             ],
             "lateral_levels": []
@@ -7844,11 +7889,15 @@
           },
           {
             "net": "a|inva_a|mn12_g0|mp13_g0|ro3|y",
-            "capacitance_ff": 0.006601,
+            "capacitance_ff": 0.016158,
             "levels": [
               [
                 0,
                 1
+              ],
+              [
+                1,
+                2
               ]
             ],
             "lateral_levels": []
@@ -7889,6 +7938,17 @@
           {
             "net": "a|n4|s3_y|s4_a|y",
             "capacitance_ff": 0.015474,
+            "levels": [
+              [
+                1,
+                2
+              ]
+            ],
+            "lateral_levels": []
+          },
+          {
+            "net": "vdd|vdd_b1|vdd_b2|vdd_b3|vdd_b4|vdd_x1|vdd_x2|vdd_x3",
+            "capacitance_ff": 0.023613,
             "levels": [
               [
                 1,
@@ -8238,7 +8298,7 @@
       },
       {
         "net": "ny",
-        "net_id": 9,
+        "net_id": 11,
         "resistance_ohm": 88.9169,
         "capacitance_ff": 0.211758,
         "inductance_nh": 0.0,
@@ -8308,7 +8368,7 @@
       },
       {
         "net": "ny",
-        "net_id": 12,
+        "net_id": 14,
         "resistance_ohm": 83.4044,
         "capacitance_ff": 0.170111,
         "inductance_nh": 0.0,
@@ -8378,7 +8438,7 @@
       },
       {
         "net": "ny",
-        "net_id": 14,
+        "net_id": 15,
         "resistance_ohm": 83.4044,
         "capacitance_ff": 0.170111,
         "inductance_nh": 0.0,
@@ -8448,7 +8508,7 @@
       },
       {
         "net": "ny",
-        "net_id": 15,
+        "net_id": 17,
         "resistance_ohm": 83.4044,
         "capacitance_ff": 0.170111,
         "inductance_nh": 0.0,
@@ -8518,7 +8578,7 @@
       },
       {
         "net": "ny",
-        "net_id": 17,
+        "net_id": 19,
         "resistance_ohm": 83.4044,
         "capacitance_ff": 0.170111,
         "inductance_nh": 0.0,
@@ -8588,7 +8648,7 @@
       },
       {
         "net": "ny",
-        "net_id": 19,
+        "net_id": 21,
         "resistance_ohm": 89.289,
         "capacitance_ff": 0.213697,
         "inductance_nh": 0.0,
@@ -8658,7 +8718,7 @@
       },
       {
         "net": "ny",
-        "net_id": 22,
+        "net_id": 24,
         "resistance_ohm": 83.5259,
         "capacitance_ff": 0.17205,
         "inductance_nh": 0.0,
@@ -8728,7 +8788,7 @@
       },
       {
         "net": "ny",
-        "net_id": 23,
+        "net_id": 25,
         "resistance_ohm": 83.5259,
         "capacitance_ff": 0.17205,
         "inductance_nh": 0.0,
@@ -8798,7 +8858,7 @@
       },
       {
         "net": "ny",
-        "net_id": 24,
+        "net_id": 26,
         "resistance_ohm": 83.5259,
         "capacitance_ff": 0.17205,
         "inductance_nh": 0.0,
@@ -8868,7 +8928,7 @@
       },
       {
         "net": "ny",
-        "net_id": 26,
+        "net_id": 27,
         "resistance_ohm": 83.5259,
         "capacitance_ff": 0.17205,
         "inductance_nh": 0.0,
@@ -8938,7 +8998,7 @@
       },
       {
         "net": "ny",
-        "net_id": 28,
+        "net_id": 29,
         "resistance_ohm": 89.6678,
         "capacitance_ff": 0.215636,
         "inductance_nh": 0.0,
@@ -9008,7 +9068,7 @@
       },
       {
         "net": "ny",
-        "net_id": 31,
+        "net_id": 32,
         "resistance_ohm": 83.6666,
         "capacitance_ff": 0.173989,
         "inductance_nh": 0.0,
@@ -9218,7 +9278,7 @@
       },
       {
         "net": "ny",
-        "net_id": 37,
+        "net_id": 36,
         "resistance_ohm": 83.6666,
         "capacitance_ff": 0.173989,
         "inductance_nh": 0.0,
@@ -9288,7 +9348,7 @@
       },
       {
         "net": "ny",
-        "net_id": 39,
+        "net_id": 38,
         "resistance_ohm": 90.0531,
         "capacitance_ff": 0.217575,
         "inductance_nh": 0.0,
@@ -9358,7 +9418,7 @@
       },
       {
         "net": "ny",
-        "net_id": 42,
+        "net_id": 41,
         "resistance_ohm": 83.8256,
         "capacitance_ff": 0.175928,
         "inductance_nh": 0.0,
@@ -9428,7 +9488,7 @@
       },
       {
         "net": "ny",
-        "net_id": 43,
+        "net_id": 42,
         "resistance_ohm": 83.8256,
         "capacitance_ff": 0.175928,
         "inductance_nh": 0.0,
@@ -9568,7 +9628,7 @@
       },
       {
         "net": "ny",
-        "net_id": 45,
+        "net_id": 46,
         "resistance_ohm": 83.8256,
         "capacitance_ff": 0.175928,
         "inductance_nh": 0.0,
@@ -10760,7 +10820,7 @@
         "net": "vdd|vdd_b1|vdd_b2|vdd_b3|vdd_b4|vdd_x1|vdd_x2|vdd_x3",
         "net_id": 50,
         "resistance_ohm": 8970.438,
-        "capacitance_ff": 48.073848,
+        "capacitance_ff": 48.070761,
         "inductance_nh": 0.0,
         "hub_net": "vdd|vdd_b1|vdd_b2|vdd_b3|vdd_b4|vdd_x1|vdd_x2|vdd_x3",
         "rc_model": "lumped",
@@ -11081,6 +11141,17 @@
               [
                 0,
                 1
+              ]
+            ],
+            "lateral_levels": []
+          },
+          {
+            "net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss|vss_x1|vss_x2|vss_x3",
+            "capacitance_ff": 0.023613,
+            "levels": [
+              [
+                1,
+                2
               ]
             ],
             "lateral_levels": []
