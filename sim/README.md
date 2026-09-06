@@ -45,6 +45,22 @@ append-only record rules through `sim/bin/behavioral_record.py` instead of
 | `digital-section-behavioral/` | do the assembled section's health tests, start-up gate, latch-and-gate policy, raw-path invariant and mode-switch flush behave as DR-0004 specifies, over declared synthetic sources? | #20 |
 | `digital-rtl-equivalence/` | does `digital/rtl/trng_digital.v` match the normative behavioural model cycle for cycle? | #20 |
 
+Issue #21 then closed the one gap every campaign above left open: none of
+them ever digitizes an actual noise-driven raw bit. It drives the same
+assembled `ro_array_core` + `sampler_dff` path from injected per-stage
+`trnoise()` sources (all four rings, in place, following
+`ro-ring-jitter-accumulation/`'s own injection topology) through a real
+`.tran` run and reduces the resulting sequence to a Most-Common-Value
+(SP 800-90B section 6.3.1 style) min-entropy point estimate:
+
+| Slug | Claim under test | Landed by |
+|---|---|---|
+| `raw-bit-min-entropy/` | a real, noise-driven raw bit sequence from the assembled array + sampler, and its MCV-style min-entropy point estimate, per PVT corner | #21 |
+
+`sim/tests/test_raw_bit_entropy.py` is the fast, always-runnable unit-test
+suite behind that record's reduction step (standard library only, no
+simulator, no PDK).
+
 `sim/tests/test_digital_section.py` is the fast, always-runnable unit-test
 suite behind those records (standard library only, no simulator, no PDK):
 `python3 sim/tests/test_digital_section.py`.
