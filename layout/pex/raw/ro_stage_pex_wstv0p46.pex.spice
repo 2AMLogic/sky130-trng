@@ -1,0 +1,76 @@
+* extracted by klt extract --deck sky130
+* parasitic model (--parasitics):
+* - capacitance: net-to-ground for every net's own (non-coupled) area/perimeter, plus net-to-net for the vertical-overlap coupling `coupling` describes below -- a coupled net pair gets a direct capacitor between their two hub nodes, not just capacitors to the deck's ground/substrate net
+* - coupling: vertical overlap (crossover) unconditionally -- where one net's conductor on an adjacent metal level sits directly over another *distinct* net's conductor, that overlap area is charged between the two nets instead of to ground (issue #760) -- plus lateral (same-layer, sidewall) coupling, but only for a net pair naming one of the caller's declared `--critical-net` nets (issue #976): facing-edge length within that layer's own minimum-spacing lookback is charged between the two nets, *additively* (not deducted from either net's substrate fringe term, unlike the vertical case -- a known simplification). Any same-layer pair with neither side named `--critical-net`, and fringe shielding in general, are still not modelled
+* - resistance: single lumped series resistance per net, distributed as a star across that net's device terminals (issue #592) -- not a per-segment, distributed RC ladder, *unless* `--distributed-rc` names this net via `--critical-net` (issue #977, Epic #709 Phase 2b): then the net's terminals are ordered along their approximate physical spread and its total R/C is broken into a chain of per-segment resistors (segment length proportional to inter-terminal distance) with a ground capacitor at each terminal node (proportional to its adjacent segment length/2), instead of one star hub -- still an approximation (terminal position is a device-placement proxy, not true per-segment routing geometry), but a strictly finer-grained one than the single-hub star
+* - frequency: quasi-static -- one frequency-independent R and C per net; no skin effect, no distributed transmission-line behavior
+
+* cell ro_stage_wstv0p46
+* pin a
+* pin mnt_g,vddr
+* pin mph_g,vss
+* pin ny
+* pin py
+* pin y
+.SUBCKT ro_stage_wstv0p46 a mnt_g|vddr mph_g|vss ny py y
+* device instance $1 r0 *1 3.785,0.21 nfet
+X$1 y__t0 a__t0 ny__t0 mph_g\x7cvss__t2 sky130_fd_pr__nfet_01v8 L=0.15 W=0.42
++ AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $2 r0 *1 1.42,0.21 nfet
+X$2 ny__t1 mnt_g\x7cvddr__t0 mph_g\x7cvss__t0 mph_g\x7cvss__t3
++ sky130_fd_pr__nfet_01v8 L=2 W=0.46 AS=0.1932 AD=0.1932 PS=1.76 PD=1.76
+* device instance $3 r0 *1 1.42,3.74 pfet
+X$3 py__t0 mph_g\x7cvss__t1 mnt_g\x7cvddr__t1 mnt_g\x7cvddr__t2
++ sky130_fd_pr__pfet_01v8 L=2 W=0.46 AS=0.1932 AD=0.1932 PS=1.76 PD=1.76
+* device instance $4 r0 *1 3.585,3.74 pfet
+X$4 y__t1 a__t1 py__t1 mnt_g\x7cvddr__t3 sky130_fd_pr__pfet_01v8 L=0.15 W=0.84
++ AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance a_t0 r0 *1 0,0 
+Ra_t0 a__t0 a 244.0639
+* device instance a_t1 r0 *1 0,0 
+Ra_t1 a__t1 a 244.0639
+* device instance a r0 *1 0,0 
+Ca a vsubs 6.11836e-16
+* device instance mnt_g_vddr_t0 r0 *1 0,0 
+Rmnt_g_vddr_t0 mnt_g\x7cvddr__t0 mnt_g|vddr 133.904992689
+* device instance mnt_g_vddr_t1 r0 *1 0,0 
+Rmnt_g_vddr_t1 mnt_g\x7cvddr__t1 mnt_g|vddr 51.3000755778
+* device instance mnt_g_vddr_t2 r0 *1 0,0 
+Rmnt_g_vddr_t2 mnt_g\x7cvddr__t2 mnt_g|vddr 51.3000755778
+* device instance mnt_g_vddr_t3 r0 *1 0,0 
+Rmnt_g_vddr_t3 mnt_g\x7cvddr__t3 mnt_g|vddr 91.5774561552
+* device instance mnt_g_vddr r0 *1 0,0 
+Cmnt_g_vddr mnt_g|vddr vsubs 1.773355e-15
+* device instance mph_g_vss_t0 r0 *1 0,0 
+Rmph_g_vss_t0 mph_g\x7cvss__t0 mph_g|vss 51.393743001
+* device instance mph_g_vss_t1 r0 *1 0,0 
+Rmph_g_vss_t1 mph_g\x7cvss__t1 mph_g|vss 131.24612364
+* device instance mph_g_vss_t2 r0 *1 0,0 
+Rmph_g_vss_t2 mph_g\x7cvss__t2 mph_g|vss 95.8520903581
+* device instance mph_g_vss_t3 r0 *1 0,0 
+Rmph_g_vss_t3 mph_g\x7cvss__t3 mph_g|vss 51.393743001
+* device instance mph_g_vss r0 *1 0,0 
+Cmph_g_vss mph_g|vss vsubs 1.370958e-15
+* device instance ny_t0 r0 *1 0,0 
+Rny_t0 ny__t0 ny 41.8333
+* device instance ny_t1 r0 *1 0,0 
+Rny_t1 ny__t1 ny 41.8333
+* device instance ny r0 *1 0,0 
+Cny ny vsubs 1.74921e-16
+* device instance py_t0 r0 *1 0,0 
+Rpy_t0 py__t0 py 38.0848
+* device instance py_t1 r0 *1 0,0 
+Rpy_t1 py__t1 py 38.0848
+* device instance py r0 *1 0,0 
+Cpy py vsubs 1.96992e-16
+* device instance y_t0 r0 *1 0,0 
+Ry_t0 y__t0 y 205.06525
+* device instance y_t1 r0 *1 0,0 
+Ry_t1 y__t1 y 205.06525
+* device instance y r0 *1 0,0 
+Cy y vsubs 6.03733e-16
+* device instance cc_mnt_g_vddr_py r0 *1 0,0 
+Ccc_mnt_g_vddr_py mnt_g|vddr py 3.415e-18
+* device instance vsubs_dctie r0 *1 0,0 
+Rvsubs_dctie vsubs 0 1e+12
+.ENDS ro_stage_wstv0p46

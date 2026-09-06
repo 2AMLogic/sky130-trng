@@ -17,6 +17,15 @@ name: CI
 #     no PDK install, so it belongs on the same PR-blocking path as the lint
 #     check above rather than the PDK-gated nightly job below.
 #
+# layout/test_pex_netlist.py (post-layout netlist rewrite unit test, issue #22)
+#     Pure Python over layout/bin/pex-netlist.py's rewrite functions -- no klt,
+#     no KLayout, no PDK, no GDS. That script turns `klt extract --parasitics`
+#     output into the ngspice library sim/post-layout-ro-ring5/ simulates, and
+#     each of its transformations (net rename, unit-suffix strip, device-card
+#     swap) could silently produce a plausible-but-wrong netlist that
+#     simulates cleanly and reports wrong numbers. Same PR-blocking path as
+#     the two checks above, for the same reason: it needs nothing installed.
+#
 # design/netlist.py --check (schematic-vs-netlist staleness guard) is
 # DELIBERATELY NOT here. It shells out to xschem and resolves the sky130
 # xschem symbol library through a real PDK install (design/pdk.json pins
@@ -33,6 +42,8 @@ on:
   pull_request:
     paths:
       - "design/**"
+      - "layout/bin/**"
+      - "layout/test_pex_netlist.py"
       - ".github/workflows/ci.yml"
   workflow_dispatch: {}
 
@@ -59,3 +70,6 @@ jobs:
 
       - name: design/test_pdk_search.py (shared PDK-search unit test)
         run: python3 design/test_pdk_search.py
+
+      - name: layout/test_pex_netlist.py (post-layout netlist rewrite unit test)
+        run: python3 layout/test_pex_netlist.py

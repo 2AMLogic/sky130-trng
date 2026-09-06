@@ -35,6 +35,17 @@ a worked example):
     ``.include``-style library this repo's testbenches draw device
     subcircuits from. Substituted unconditionally; a testbench that does
     not reference it simply never uses the token.
+``@@PEX_LIB@@``
+    Absolute path to the committed **post-layout** subcircuit library
+    (``--pex-lib``, default ``layout/pex/ro_ring5_pex.spice``) --
+    ``layout/bin/pex-netlist.py``'s ``klt extract --parasitics`` output for
+    the composed, DRC/LVS-clean cells under ``layout/``, rewritten for
+    ngspice. A post-layout deck ``.include``s this *in addition to*
+    ``@@RO_RING5@@`` when it wants the pre-layout netlist alongside as a
+    same-deck control. Substituted unconditionally, like ``@@RO_RING5@@``;
+    both paths (and their sha256) are recorded in every record's
+    ``netlists`` block, so a record always states which netlist revision
+    produced its numbers.
 ``@@OUT_ONOISE@@``
     Per-(record, corner) scratch path a deck can ``wrdata`` an
     ``onoise_spectrum`` trace to. If present in the template, the runner
@@ -93,6 +104,7 @@ Exit status: ``0`` all requested corners passed and a record was written,
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import platform
@@ -109,6 +121,7 @@ SIM_DIR = Path(__file__).resolve().parent.parent
 REPO_ROOT = SIM_DIR.parent
 PDK_PIN_FILE = SIM_DIR / "pdk.json"
 DEFAULT_RO_RING5 = REPO_ROOT / "design" / "ro_ring5.spice"
+DEFAULT_PEX_LIB = REPO_ROOT / "layout" / "pex" / "ro_ring5_pex.spice"
 
 sys.path.insert(0, str(REPO_ROOT / "design"))
 from _pdk_search import BUILTIN_SEARCH_ROOTS, PdkSearchError, search_pdk  # noqa: E402
@@ -367,6 +380,7 @@ def run_corner(
     template_text: str,
     pdk: Pdk,
     ro_ring5: Path,
+    pex_lib: Path,
     scratch_dir: Path,
     ngspice_exe: str,
     timeout: int,
@@ -383,6 +397,11 @@ def run_corner(
         "PDK_LIB": str(pdk.lib_file),
         "CORNER": corner,
         "RO_RING5": str(ro_ring5),
+        # Post-layout (klt extract --parasitics) subcircuit library. See the
+        # module docstring: a post-layout deck includes this alongside
+        # @@RO_RING5@@ so the pre-layout netlist can act as a same-deck,
+        # same-corner control for the parasitics under test.
+        "PEX_LIB": str(pex_lib),
         "OUT_ONOISE": str(onoise_path),
         # Temperature/supply axis, added for issue #10's PVT-grid jitter
         # characterization campaign: sim/bin/corner-run.py's process-only
@@ -493,6 +512,29 @@ def run_corner(
 # --------------------------------------------------------------------------
 
 
+def netlist_provenance(paths: dict[str, Path]) -> dict[str, dict[str, str]]:
+    """Repo-relative path + sha256 for each substituted netlist library.
+
+    Recorded on every record so a result can always be traced back to the
+    exact netlist revision that produced it -- which matters most for the
+    post-layout library (``@@PEX_LIB@@``), a *generated* artifact whose
+    contents depend on the committed GDS and on the klt build that
+    extracted it.
+    """
+    out: dict[str, dict[str, str]] = {}
+    for token, path in paths.items():
+        try:
+            rel = str(path.relative_to(REPO_ROOT))
+        except ValueError:
+            rel = str(path)
+        if path.is_file():
+            digest = hashlib.sha256(path.read_bytes()).hexdigest()
+        else:
+            digest = "(missing)"
+        out[token] = {"path": rel, "sha256": digest}
+    return out
+
+
 def record_id() -> str:
     now = datetime.now(timezone.utc)
     sha = git("rev-parse", "--short", "HEAD") or "nogit"
@@ -508,6 +550,7 @@ def write_record(
     seed: str,
     testbench: Path,
     pdk: Pdk,
+    netlists: dict[str, dict[str, str]],
     results: list[CornerResult],
     author: str,
     subset_reason: str | None,
@@ -551,6 +594,7 @@ def write_record(
         "pvt": {"temp_c": temp_c, "vdd_v": vdd_v},
         "tran": {"tmax": tmax, "noise_amp": noise_amp},
         "testbench": str(testbench.relative_to(REPO_ROOT)),
+        "netlists": netlists,
         "pdk": {
             "variant": pdk.variant,
             "installed_commit": pdk.installed_commit,
@@ -607,6 +651,14 @@ def write_record(
         f"- pinned open_pdks commit (`sim/pdk.json`): `{pdk.pin['open_pdks_commit']}`",
         f"- matches pin: {'yes' if pdk.matches_pin else '**NO -- record run against a mismatched PDK**'}",
         f"- ngspice model library: `{pdk.lib_file}`",
+        "",
+        "## Netlists",
+        "",
+        *[
+            f"- `@@{token}@@` -> `{entry['path']}` (sha256 "
+            f"`{entry['sha256'][:16]}...`)"
+            for token, entry in netlists.items()
+        ],
         "",
         "## Tools",
         "",
@@ -707,6 +759,14 @@ def main(argv: list[str] | None = None) -> int:
         help="path substituted for @@RO_RING5@@",
     )
     parser.add_argument(
+        "--pex-lib",
+        type=Path,
+        default=DEFAULT_PEX_LIB,
+        help="path substituted for @@PEX_LIB@@ (the post-layout, "
+        "parasitic-annotated subcircuit library built by "
+        "layout/bin/pex-netlist.py)",
+    )
+    parser.add_argument(
         "--temp",
         type=float,
         default=27.0,
@@ -791,6 +851,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"error: no such testbench: {args.testbench}", file=sys.stderr)
         return 1
     args.ro_ring5 = args.ro_ring5.resolve()
+    args.pex_lib = args.pex_lib.resolve()
 
     default_corners = pin.get("default_corners") or ["tt", "ss", "ff"]
     requested = (
@@ -828,6 +889,7 @@ def main(argv: list[str] | None = None) -> int:
                 "PDK_LIB": str(pdk.lib_file),
                 "CORNER": requested[0],
                 "RO_RING5": str(args.ro_ring5),
+                "PEX_LIB": str(args.pex_lib),
                 "OUT_ONOISE": "/tmp/dry-run-onoise.txt",
                 "TEMP": str(args.temp),
                 "VDD": str(args.vdd),
@@ -855,6 +917,7 @@ def main(argv: list[str] | None = None) -> int:
                 template_text=template_text,
                 pdk=pdk,
                 ro_ring5=args.ro_ring5,
+                pex_lib=args.pex_lib,
                 scratch_dir=scratch_dir,
                 ngspice_exe=ngspice_exe,
                 timeout=args.timeout,
@@ -877,6 +940,9 @@ def main(argv: list[str] | None = None) -> int:
             seed=args.seed,
             testbench=args.testbench,
             pdk=pdk,
+            netlists=netlist_provenance(
+                {"RO_RING5": args.ro_ring5, "PEX_LIB": args.pex_lib}
+            ),
             results=results,
             author=author,
             subset_reason=args.subset_reason,
