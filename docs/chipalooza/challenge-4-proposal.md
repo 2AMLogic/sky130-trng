@@ -409,9 +409,12 @@ that lands this document):
   variants" section). The `klayout-tools` regression previously recorded
   here as a blocker
   ([2AMLogic/klayout-tools#1491](https://github.com/2AMLogic/klayout-tools/issues/1491))
-  is fixed. Still outstanding for the brief's full sign-off bar: `xor2`, the
-  ring, the array, the sampler, parasitic extraction, and post-layout PVT
-  simulation — none of which is attempted in this document. Note also that
+  is fixed. Still outstanding for the brief's full sign-off bar: `xor2`
+  routing (its 12-device placement is now DRC-clean, see
+  `layout/xor2-placement-poc/README.md`, but its routing is a genuine
+  multi-net channel-routing problem not yet solved), the ring, the array,
+  the sampler, parasitic extraction, and post-layout PVT simulation — none
+  of which is attempted in this document. Note also that
   "DRC-clean" here means clean against `klt`'s **curated** sky130 deck (a
   documented subset — see each `drc.json`'s own `coverage` block), not a
   full sky130 sign-off deck.

@@ -44,8 +44,26 @@ issue #27 step 2's "repeat for... the 4-way `wstv` variants" in full. See
 "Starve-width variants" below for what does (and does not) change per width,
 and why the naive clone-and-reparametrize approach fails without it.
 
-Everything else is still open: no `xor2`, no `ro_ring5`, no `ro_array_core`,
-no `sampler_core`, and no post-layout PVT re-verification. See "What's
+**This increment (issue #22, follow-up)**:
+[`layout/xor2-placement-poc/`](xor2-placement-poc/README.md) places all
+twelve of `xor2`'s real devices (double `ro_nand2`'s six — two inverters
+feeding a PMOS pull-up tree and an NMOS pull-down tree) with **zero
+merged multi-device wells** (every PMOS gets its own individual well tap,
+deliberately avoiding the 3+-device-merged-row shape that needed
+`ro_nand2`'s two-pass promotion) — **`klt drc` clean (0 violations)**,
+**`klt extract` confirms exactly 12 devices, 6 nfet + 6 pfet**, matching
+`.subckt xor2` precisely. **Routing is not composed** — `xor2`'s four
+fan-out signals (`a`/`b`/`an`/`bn`, each reaching two physically separate
+gate destinations across the same `mid`/`y`-carrying cluster) is a genuine
+multi-net channel-routing problem, materially harder than any gate composed
+so far; see that PoC's README for the concrete failure evidence (specific
+`gen-compose` conflict reasons, a real `klt` capability correction — three
+routing planes are resolvable, not two, see "Two-pass composition" below —
+and a reproducible net-naming bug this session found and fixed) so the next
+attempt does not have to re-derive the same ground.
+
+Everything else is still open: `xor2` routing, `ro_ring5`, `ro_array_core`,
+`sampler_core`, and post-layout PVT re-verification. See "What's
 deferred" below and the tracking issue (#27).
 
 The earlier increments remain the foundation: `layout/primitives/` is
@@ -124,7 +142,7 @@ trng_top                   (not in scope for #22 — stops at the raw tap)
         ro_nand2   (x1/ring)  BUILT, all 4 wstv values — DRC-clean + LVS-clean (layout/ro_nand2/, ro_nand2_wstv0p{44,46,48}/) — 4 distinct physical cells, one per ring
         ro_stage   (x4/ring)  BUILT, all 4 wstv values — DRC-clean + LVS-clean (layout/ro_stage/, ro_stage_wstv0p{44,46,48}/) — 4 distinct physical cells (one per ring's wstv), each reused 4x within its own ring
       ro_buf     (x4)        BUILT — DRC-clean + LVS-clean (layout/ro_buf/)
-      xor2       (x3)        PROVEN AT DEVICE LEVEL — 2x guard_ring (abutted) + 12x mos_array
+      xor2       (x3)        PLACEMENT PROVEN, ROUTING OPEN — 12x mos_array + 7x guard_ring, DRC-clean (layout/xor2-placement-poc/); routing is a genuine multi-net channel-routing problem, not yet solved
     sampler_dff  (x6)        NOT STARTED — transmission-gate master-slave DFF, no generator surveyed yet
 ```
 
@@ -151,9 +169,20 @@ not exist yet.
   `mos_array`/`guard_ring` port already lands on with `gate_contact: true`,
   so no via-drop is needed inside one gate. Inter-gate/inter-ring routing
   (once `ro_ring5`/`ro_array_core` assembly starts) will likely need a
-  second metal (`met1` role name TBD against `klt`'s `_PDK_ROLE_LAYERS`
-  table) to cross the per-gate guard rings without shorting into them —
-  not yet resolved, tracked in the follow-up issue.
+  second metal to cross the per-gate guard rings without shorting into
+  them. **Resolved, correcting the "TBD" note this bullet previously
+  carried**: `klt` 0.4.0 resolves `routing.layer_role: "metal2"` (met1, via
+  `via1`) *and* `"metal3"` (met2, via `via2`) against
+  `klayout_tools.gen._PDK_ROLE_LAYERS["sky130"]` — confirmed by reading the
+  installed package directly (`layout/xor2-placement-poc/README.md` has the
+  full citation), since neither role appears in this checkout's own
+  `docs/cli/gen-compose.md`. The catch: `"metal3"`'s via-drop is
+  single-hop-only, so it can only bridge two pins *already* wired onto
+  `"metal2"` by an earlier stage — it cannot reach a bare `li1` pin
+  directly the way `"metal2"` can. `ro_stage`/`ro_nand2` only ever needed
+  `"metal2"`; `xor2-placement-poc`'s own routing attempt is the first case
+  in this repo where a `"metal3"` stage looks necessary (see that
+  directory's README, "Suggested next steps").
 - **`wstv` per-ring variation**: the four rings are NOT identical layout
   cells — `design/ro_array_core.spice`'s `xr1`-`xr4` instantiate `ro_ring5`
   at four different `wstv` values (0.42/0.44/0.46/0.48 µm). The layout is
@@ -523,9 +552,17 @@ deliver, tracked in follow-up issue
    capacitor, a simulation load model with no physical counterpart) were
    already in place from `ro_stage`/`ro_nand2`'s own initial build and
    needed no changes for the variants.
-   Still open: `xor2` (no starve devices, but twelve `mos_array` instances
-   instead of four/six — a bigger single-pass floorplan, not a new
-   composition technique).
+   Still open: `xor2`. **Placement half done** — see
+   `layout/xor2-placement-poc/README.md`: all twelve real devices (6 nfet +
+   6 pfet, no starve devices), individually well-strapped (no merged
+   multi-device rows), `klt drc` clean (0 violations), `klt extract`
+   confirms the exact device count/class breakdown. **Routing not done** —
+   this is not "a bigger single-pass floorplan" as this bullet previously
+   assumed; the four fan-out signals (`a`/`b`/`an`/`bn`, each reaching two
+   separate gate destinations across the shared `mid`/`y` cluster) is a
+   genuine multi-net channel-routing problem, the first in this repo to
+   plausibly need `klt`'s third routing plane (`"metal3"`, see "Floorplan
+   decisions made so far" above) rather than `"metal2"` alone.
 3. Hierarchical assembly: `ro_ring5` (5 gates + inter-gate routing),
    `ro_array_core` (4 non-identical rings + combining XOR tree),
    `sampler_dff`/`sampler_core` (no generator surveyed yet for a
@@ -654,3 +691,20 @@ also a two-stage `"stages"` cell). See "Starve-width variants" above for the
 one thing that differs per width (`Mph`/`Mnt`'s own `w_um` and re-derived
 `placement.origins_um.y`), and each variant's own README for that cell's
 concrete numbers.
+
+## Reproducing `layout/xor2-placement-poc/`
+
+```bash
+volare enable --pdk sky130 c6d73a35f524070e85faff4a6a9eef49553ebc2b
+cd layout/xor2-placement-poc
+klt gen-compose compose.request.json --format json
+klt drc xor2core.gds --deck sky130 --format json
+klt extract xor2core.gds --deck sky130 --format json
+```
+
+Not a `compose-cell.py` cell (no `cell.json`, no `--check`) — this is a
+placement-only proof of concept, not a composed-and-verified gate; there is
+no `connectivity[]`/`lvs.json` to check against. See
+`layout/xor2-placement-poc/README.md` for what is (placement, DRC, device
+count) and is not (routing, LVS) established, and for the concrete routing
+obstacle a future increment needs to solve.

@@ -266,7 +266,10 @@ DR-0003 surfaces and does not resolve on its own authority.
   finding (`layout/well-strap-poc/`); the `klayout-tools` regression they
   recorded as a blocker
   ([#1491](https://github.com/2AMLogic/klayout-tools/issues/1491)) is fixed.
-  Still open: **no** `xor2`, no ring, no array, no sampler, no parasitic
-  extraction, and no post-layout PVT re-verification. See
-  `layout/README.md` for the full status and the follow-up issue (#27) it
-  tracks. (`sim/` is no longer empty either — see `sim/README.md`.)
+  Still open: `xor2` routing (its 12-device placement is now DRC-clean —
+  see `layout/xor2-placement-poc/README.md` — but its four-signal fan-out
+  is a genuine multi-net channel-routing problem, not yet solved), no ring,
+  no array, no sampler, no parasitic extraction, and no post-layout PVT
+  re-verification. See `layout/README.md` for the full status and the
+  follow-up issue (#27) it tracks. (`sim/` is no longer empty either — see
+  `sim/README.md`.)
