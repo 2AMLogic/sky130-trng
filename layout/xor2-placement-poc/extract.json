@@ -1,0 +1,497 @@
+{
+  "schema_version": 3,
+  "file": "xor2core.gds",
+  "deck": "sky130",
+  "top": "xor2core",
+  "dbu_um": 0.001,
+  "netlist_path": "xor2core.spice",
+  "netlist_sha256": "5687d5fe8b1fe2e76572abe36dccd56ab984ff25e6abedc8e050f41965d526a2",
+  "status": "extracted",
+  "device_count": 12,
+  "net_count": 41,
+  "pin_count": 39,
+  "device_counts": {
+    "nfet": 6,
+    "pfet": 6
+  },
+  "dummy_devices_dropped": 0,
+  "ignored_layers": [],
+  "device_recognition_only_layers": [],
+  "device_classes": [
+    "nfet",
+    "pfet",
+    "pnp",
+    "sky130_fd_pr__model__cap_mim",
+    "sky130_fd_pr__model__cap_mim_m4",
+    "resistor"
+  ],
+  "devices": [
+    {
+      "name": "$1",
+      "class": "nfet",
+      "nets": {
+        "s": "mnia_s",
+        "g": "mnia_g",
+        "d": "mnia_d",
+        "b": "psub_tap_n"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$10",
+      "class": "pfet",
+      "nets": {
+        "s": "mp2_s",
+        "g": "mp2_g",
+        "d": "mp2_d",
+        "b": "tap2_s"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 1.68,
+        "as_um2": 0.7896,
+        "ad_um2": 0.7896,
+        "ps_um": 4.3,
+        "pd_um": 4.3
+      }
+    },
+    {
+      "name": "$11",
+      "class": "pfet",
+      "nets": {
+        "s": "mp3_s",
+        "g": "mp3_g",
+        "d": "mp3_d",
+        "b": "tap3_s"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 1.68,
+        "as_um2": 0.7896,
+        "ad_um2": 0.7896,
+        "ps_um": 4.3,
+        "pd_um": 4.3
+      }
+    },
+    {
+      "name": "$12",
+      "class": "pfet",
+      "nets": {
+        "s": "mp4_s",
+        "g": "mp4_g",
+        "d": "mp4_d",
+        "b": "tap4_s"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 1.68,
+        "as_um2": 0.7896,
+        "ad_um2": 0.7896,
+        "ps_um": 4.3,
+        "pd_um": 4.3
+      }
+    },
+    {
+      "name": "$2",
+      "class": "nfet",
+      "nets": {
+        "s": "mnib_s",
+        "g": "mnib_g",
+        "d": "mnib_d",
+        "b": "psub_tap_n"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$3",
+      "class": "nfet",
+      "nets": {
+        "s": "mn12_s0",
+        "g": "mn12_g0",
+        "d": "\\$13",
+        "b": "psub_tap_n"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.2184,
+        "ps_um": 2.62,
+        "pd_um": 1.36
+      }
+    },
+    {
+      "name": "$4",
+      "class": "nfet",
+      "nets": {
+        "s": "\\$13",
+        "g": "mn12_g1",
+        "d": "mn12_s1",
+        "b": "psub_tap_n"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.2184,
+        "ad_um2": 0.3948,
+        "ps_um": 1.36,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$5",
+      "class": "nfet",
+      "nets": {
+        "s": "mn34_s0",
+        "g": "mn34_g0",
+        "d": "\\$16",
+        "b": "psub_tap_n"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.2184,
+        "ps_um": 2.62,
+        "pd_um": 1.36
+      }
+    },
+    {
+      "name": "$6",
+      "class": "nfet",
+      "nets": {
+        "s": "\\$16",
+        "g": "mn34_g1",
+        "d": "mn34_s1",
+        "b": "psub_tap_n"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.2184,
+        "ad_um2": 0.3948,
+        "ps_um": 1.36,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$7",
+      "class": "pfet",
+      "nets": {
+        "s": "mpia_s",
+        "g": "mpia_g",
+        "d": "mpia_d",
+        "b": "tapia_e|tapia_n"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$8",
+      "class": "pfet",
+      "nets": {
+        "s": "mpib_s",
+        "g": "mpib_g",
+        "d": "mpib_d",
+        "b": "tapib_e|tapib_n"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$9",
+      "class": "pfet",
+      "nets": {
+        "s": "mp1_s",
+        "g": "mp1_g",
+        "d": "mp1_d",
+        "b": "tap1_s"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 1.68,
+        "as_um2": 0.7896,
+        "ad_um2": 0.7896,
+        "ps_um": 4.3,
+        "pd_um": 4.3
+      }
+    }
+  ],
+  "nets": [
+    {
+      "name": "\\$13",
+      "pin": false,
+      "device_count": 2
+    },
+    {
+      "name": "\\$16",
+      "pin": false,
+      "device_count": 2
+    },
+    {
+      "name": "mn12_g0",
+      "pin": true,
+      "device_count": 1
+    },
+    {
+      "name": "mn12_g1",
+      "pin": true,
+      "device_count": 1
+    },
+    {
+      "name": "mn12_s0",
+      "pin": true,
+      "device_count": 1
+    },
+    {
+      "name": "mn12_s1",
+      "pin": true,
+      "device_count": 1
+    },
+    {
+      "name": "mn34_g0",
+      "pin": true,
+      "device_count": 1
+    },
+    {
+      "name": "mn34_g1",
+      "pin": true,
+      "device_count": 1
+    },
+    {
+      "name": "mn34_s0",
+      "pin": true,
+      "device_count": 1
+    },
+    {
+      "name": "mn34_s1",
+      "pin": true,
+      "device_count": 1
+    },
+    {
+      "name": "mnia_d",
+      "pin": true,
+      "device_count": 1
+    },
+    {
+      "name": "mnia_g",
+      "pin": true,
+      "device_count": 1
+    },
+    {
+      "name": "mnia_s",
+      "pin": true,
+      "device_count": 1
+    },
+    {
+      "name": "mnib_d",
+      "pin": true,
+      "device_count": 1
+    },
+    {
+      "name": "mnib_g",
+      "pin": true,
+      "device_count": 1
+    },
+    {
+      "name": "mnib_s",
+      "pin": true,
+      "device_count": 1
+    },
+    {
+      "name": "mp1_d",
+      "pin": true,
+      "device_count": 1
+    },
+    {
+      "name": "mp1_g",
+      "pin": true,
+      "device_count": 1
+    },
+    {
+      "name": "mp1_s",
+      "pin": true,
+      "device_count": 1
+    },
+    {
+      "name": "mp2_d",
+      "pin": true,
+      "device_count": 1
+    },
+    {
+      "name": "mp2_g",
+      "pin": true,
+      "device_count": 1
+    },
+    {
+      "name": "mp2_s",
+      "pin": true,
+      "device_count": 1
+    },
+    {
+      "name": "mp3_d",
+      "pin": true,
+      "device_count": 1
+    },
+    {
+      "name": "mp3_g",
+      "pin": true,
+      "device_count": 1
+    },
+    {
+      "name": "mp3_s",
+      "pin": true,
+      "device_count": 1
+    },
+    {
+      "name": "mp4_d",
+      "pin": true,
+      "device_count": 1
+    },
+    {
+      "name": "mp4_g",
+      "pin": true,
+      "device_count": 1
+    },
+    {
+      "name": "mp4_s",
+      "pin": true,
+      "device_count": 1
+    },
+    {
+      "name": "mpia_d",
+      "pin": true,
+      "device_count": 1
+    },
+    {
+      "name": "mpia_g",
+      "pin": true,
+      "device_count": 1
+    },
+    {
+      "name": "mpia_s",
+      "pin": true,
+      "device_count": 1
+    },
+    {
+      "name": "mpib_d",
+      "pin": true,
+      "device_count": 1
+    },
+    {
+      "name": "mpib_g",
+      "pin": true,
+      "device_count": 1
+    },
+    {
+      "name": "mpib_s",
+      "pin": true,
+      "device_count": 1
+    },
+    {
+      "name": "psub_tap_n",
+      "pin": true,
+      "device_count": 6
+    },
+    {
+      "name": "tap1_s",
+      "pin": true,
+      "device_count": 1
+    },
+    {
+      "name": "tap2_s",
+      "pin": true,
+      "device_count": 1
+    },
+    {
+      "name": "tap3_s",
+      "pin": true,
+      "device_count": 1
+    },
+    {
+      "name": "tap4_s",
+      "pin": true,
+      "device_count": 1
+    },
+    {
+      "name": "tapia_e|tapia_n",
+      "pin": true,
+      "device_count": 1
+    },
+    {
+      "name": "tapib_e|tapib_n",
+      "pin": true,
+      "device_count": 1
+    }
+  ],
+  "warnings": [
+    "net 'tapia_e|tapia_n' merges 2 distinct labels (tapia_e, tapia_n) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'tapib_e|tapib_n' merges 2 distinct labels (tapib_e, tapib_n) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section."
+  ],
+  "black_box_regions": [],
+  "abstracted_cells": [],
+  "unmodelled_poly": [],
+  "merged_net_labels": [
+    {
+      "net": "tapia_e|tapia_n",
+      "labels": [
+        "tapia_e",
+        "tapia_n"
+      ]
+    },
+    {
+      "net": "tapib_e|tapib_n",
+      "labels": [
+        "tapib_e",
+        "tapib_n"
+      ]
+    }
+  ],
+  "voltage_domain_warnings": [],
+  "unbiased_pmos_body_nets": [],
+  "single_terminal_nets": [],
+  "dead_metal": [],
+  "matched_device_groups": [],
+  "pdk": null,
+  "provenance": {
+    "klt_version": "0.4.0",
+    "klayout_version": "0.30.12",
+    "pdk": null,
+    "deck": {
+      "name": "sky130",
+      "content_hash": "sha256:5afac7ab8561545859f5e2e74f4621c6ffc052756dc8fe344ea263398e96b240",
+      "released": false
+    },
+    "input": {
+      "content_hash": "sha256:5dc5584404e5a84a9b96bc32d016dbe13ac4130b4c74284e55e99e59e039e478"
+    }
+  },
+  "parasitics": null,
+  "spef_path": null
+}
