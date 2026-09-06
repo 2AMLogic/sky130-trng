@@ -86,8 +86,10 @@ inter-wired this way — and routes the four forward inter-gate signal nets
 **Not DRC-clean and not LVS-attempted**: the placement pitch borrowed
 unchanged from the original (uncommitted, recovered-and-superseded) attempt
 is `0.27 µm` short of `nwell.space.1`'s clearance at the `ro_nand2`/`ro_stage`
-boundary (fully diagnosed, mechanical fix identified), five further
-`li1.space.1` violations are recorded but not yet root-caused, and the
+boundary (fully diagnosed, mechanical fix identified), seven further
+`li1.space.1` violations are recorded but not yet root-caused (2 attributed
+to the new `n1` route + 5 unexplained device-internal ones — 8 violations
+total with the `nwell.space.1` one), and the
 ring's `vddr`/`vss`/`ro` rail busing hit a genuine `klt` via-drop limitation
 (`routing.cross_block_layer_role` cannot rescue a bare base-layer pin —
 single-hop-only, same limitation `"metal3"`'s own note below already
@@ -624,8 +626,10 @@ deliver, tracked in follow-up issue
    matching expectation) — the first proof `blocks[].cell` placement works
    for this design's own leaf cells. **Not DRC-clean**: the placement pitch
    is `0.27 µm` short of `nwell.space.1` at the one `ro_nand2`/`ro_stage`
-   boundary (mechanical fix identified, not yet applied) plus five
-   unexplained `li1.space.1` violations. **Rails/feedback not routed**:
+   boundary (mechanical fix identified, not yet applied) plus seven
+   `li1.space.1` violations (2 attributed to the new `n1` route + 5
+   unexplained device-internal ones) — 8 violations total.
+   **Rails/feedback not routed**:
    `vddr`/`vss`/`ro` busing across the five placed gates hits a real `klt`
    via-drop limitation (`routing.cross_block_layer_role` needs a pin already
    on metal2; every leaf gate here exposes a bare li1 pin) — a three-stage

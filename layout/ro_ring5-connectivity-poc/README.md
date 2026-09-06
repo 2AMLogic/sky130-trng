@@ -107,28 +107,37 @@ Two distinct root causes, not one:
    ± reused for other gate-pair boundaries) and re-derive the `n1`-`n4`
    waypoints' x-coordinates from the new placements — the y-coordinates
    (the per-net staggered heights) are unaffected.
-2. **The five `li1.space.1` violations are not yet root-caused with the
-   same confidence.** The two against `g`'s own geometry are plausibly
-   the newly-drawn `n1` route (introduced by *this* composition, landing at
-   `x=4.79 µm` per its own waypoint) sitting too close to a pre-existing
-   `li1` pad inside `g` — the composed `n1` route did not exist when
-   `ro_nand2` was independently verified DRC-clean, so this is a
-   genuinely new interaction the leaf-cell verification could not have
-   caught. The four repeated violations (identical shape and relative
-   position, once per `ro_stage` instance, all at the same local
-   coordinates) are the more surprising finding: `ro_stage` itself is
-   independently DRC-clean (0 violations, `layout/ro_stage/drc.json`), so
-   the same geometry reporting a marginal (30 nm short) `li1.space.1`
-   violation only once nested one level deeper inside `core`'s own
-   composition suggests either a hierarchy-dependent DRC evaluation
-   difference (flattened vs. cell-based rule application — see
-   `layout/README.md`'s standing caveat that `klt`'s sky130 deck is a
-   *curated subset*, not full sign-off) or a real marginal geometry this
-   PoC's placement newly exposes. **Left open for the next attempt to
-   root-cause with `klt render`** (see "What was tried and did not work"
-   below for the rendering technique that did work for the rail-routing
-   investigation) — recorded here as a fact, not a diagnosis, since neither
-   explanation is confirmed.
+2. **The seven `li1.space.1` violations are not yet root-caused with the
+   same confidence — 2 are attributed, 5 are unexplained.** The **two**
+   attributed ones (rows 1-2 of the table, `source_path`
+   `g__ro_nand2/core__core`, i.e. against `g`'s own top-level li1 rather
+   than any device inside it) are plausibly the newly-drawn `n1` route
+   (introduced by *this* composition, landing at `x=4.79 µm` per its own
+   waypoint) sitting too close to a pre-existing `li1` pad inside `g` — the
+   composed `n1` route did not exist when `ro_nand2` was independently
+   verified DRC-clean, so this is a genuinely new interaction the leaf-cell
+   verification could not have caught. The remaining **five** (rows 3-7)
+   are the more surprising finding, and none of them is explained: all five
+   land inside a leaf gate's *own device* geometry (`source_path` ending in
+   a `mos_array`) — one in `g`'s own `mpb` (45 nm short) and four repeated
+   once per `ro_stage` instance in each `s1`-`s4`'s own `mp` (30 nm short,
+   identical shape and relative position, all at the same local
+   coordinates). Both leaf cells are independently DRC-clean (0 violations
+   in `layout/ro_nand2/drc.json` and `layout/ro_stage/drc.json`), so the
+   same device geometry reporting a marginal `li1.space.1` violation only
+   once nested one level deeper inside `core`'s own composition suggests
+   either a hierarchy-dependent DRC evaluation difference (flattened vs.
+   cell-based rule application — see `layout/README.md`'s standing caveat
+   that `klt`'s sky130 deck is a *curated subset*, not full sign-off) or a
+   real marginal geometry this PoC's placement newly exposes. **Left open
+   for the next attempt to root-cause with `klt render`** (see "What was
+   tried and did not work" below for the rendering technique that did work
+   for the rail-routing investigation) — recorded here as a fact, not a
+   diagnosis, since neither explanation is confirmed.
+
+   2 attributed + 5 unexplained = the 7 `li1.space.1` rows above, which
+   with the single `nwell.space.1` row is the 8 violations `drc.json`
+   reports (`rule_counts`: `li1.space.1: 7`, `nwell.space.1: 1`).
 
 Given both categories, **`core.gds` cannot be called DRC-clean**, so this
 PoC does not run `klt extract`/`klt lvs` toward any sign-off claim — the
@@ -250,8 +259,8 @@ klt extract core.gds --deck sky130 --format json      # reproduces the 22-device
 Tracked as part of issue [#27](https://github.com/2AMLogic/sky130-trng/issues/27)
 step 3 (hierarchical assembly). A future increment should, in order: (1) fix
 the placement pitch (mechanical, fully diagnosed above), (2) root-cause the
-five repeated `li1.space.1` violations with `klt render` before assuming
-either candidate explanation, (3) attempt the three-stage
+seven `li1.space.1` violations with `klt render` — the five unexplained
+device-internal ones first — before assuming either candidate explanation, (3) attempt the three-stage
 li1-to-metal2-to-metal3 rail-promotion recipe above for `vddr`/`vss`/`ro`,
 and only then re-run `compose-cell.py`'s full chain (which will also
 exercise the `lvs.dependencies` multi-subckt reference support added by

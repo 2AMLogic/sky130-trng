@@ -309,10 +309,10 @@ def compose_stage(
             # own `blocks[].cell` request shape (`{gds_path, cell_name,
             # ports[], bbox_um}`, #1189 in klayout-tools). No `klt gen` call:
             # there is nothing to generate, only an existing stream to
-            # place. See layout/ro_ring5/README.md for why this needs
-            # hand-declared `ports[]` (a pre-existing cell never reported a
-            # ports[] list to any `klt gen` response the way a fresh
-            # primitive does).
+            # place. See layout/ro_ring5-connectivity-poc/README.md for why
+            # this needs hand-declared `ports[]` (a pre-existing cell never
+            # reported a ports[] list to any `klt gen` response the way a
+            # fresh primitive does).
             blocks_request.append(
                 {
                     "id": block["id"],
