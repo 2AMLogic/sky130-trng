@@ -1,0 +1,265 @@
+* Post-layout ro_ring5, ASSEMBLED: the four-ring wstv frequency ladder from
+* ONE flat `klt extract --parasitics` of each ring's own composed, DRC-clean
+* and LVS-clean GDS (layout/ro_ring5*/ro_ring5*.gds) -- real inter-gate metal
+* routing included, not the ideal wires sim/post-layout-ro-ring5/'s own
+* leaf-cell composition (layout/pex/ro_ring5_pex.spice: separate ro_nand2/
+* ro_stage extractions, wired together by the testbench itself) assumes
+* between gates.
+*
+* Purpose (issue #22, layout/README.md's "Newly possible, not yet done" note
+* under step 5). Every ring-level number recorded so far is either
+* pre-layout (design/*.spice, no physical interconnect at all) or a
+* leaf-cell post-layout composition (layout/pex/ro_ring5_pex.spice, five
+* separately-extracted cells wired by IDEAL testbench nets). Now that
+* layout/ro_ring5*/ exist as single composed, DRC/LVS-clean GDS files with
+* the inter-gate n1-n4/ro routing and vddr/vss rail busing actually drawn
+* (issue #22, PR #51), extracting THAT GDS directly for the first time
+* includes real inter-gate wiring in the ring's own period/swing/current
+* numbers -- a strictly better answer than the leaf-cell composition, per
+* layout/pex/README.md's own stated limitation.
+*
+* This deck is a two-way, same-corner comparison (assembled post-layout vs.
+* pre-layout control), NOT a three-way rerun against the leaf-cell
+* composition -- sim/bin/corner-run.py substitutes exactly one @@PEX_LIB@@
+* token, and adding a second templated library path is a runner change out
+* of this record's own scope. A reader wanting "how much did drawing the
+* real inter-gate wires cost, beyond the leaf composition's ideal-wire
+* assumption" compares THIS record's t_asm_* figures against
+* sim/post-layout-ro-ring5/'s own t_pex_* figures directly (both are
+* @@TEMP@@/@@VDD@@/@@CORNER@@-matched PVT points, just not the same ngspice
+* process) -- see sim/post-layout-ro-ring5-assembled/README.md.
+*
+* Topology. Four rings, each now a SINGLE subcircuit call (the composed GDS
+* IS design/xschem/ro_ring5.sch's own hierarchy, already wired) on its own
+* independent supply so each ring's own supply current stays separately
+* measurable:
+*
+*   r1..r4  POST-LAYOUT ASSEMBLED, wstv = 0.42 / 0.44 / 0.46 / 0.48 um --
+*           one physical, flat-extracted cell per ring, from
+*           layout/ro_ring5[_wstv0p4x]/ro_ring5*.gds via
+*           layout/pex-ring/pex.json + layout/bin/pex-netlist.py (shared,
+*           unmodified, with sim/post-layout-ro-ring5's own leaf-cell
+*           descriptor).
+*   q1..q4  PRE-LAYOUT control, the identical ladder from
+*           design/ro_array_core.spice's parameterized .subckt ro_ring5.
+*
+* Every ring drives its own output buffer -- ro_buf_pex (this library's own
+* copy, see layout/pex-ring/pex.json's _comment) for r1..r4, pre-layout
+* ro_buf for q1..q4 -- on one block supply per side, matching
+* sim/post-layout-ro-ring5's own buffering discipline (buffering ALL four
+* rings, not just one, is what makes the four periods a comparable ladder
+* rather than a mix of loaded/unloaded numbers -- see that slug's entry in
+* sim/README.md for the regression this avoids).
+*
+* The substrate tie. layout/pex-ring/ro_ring5_assembled_pex.spice declares
+* the extractor's substrate return node `vsubs` .global, same as
+* layout/pex/ro_ring5_pex.spice (klayout-tools#1503). This deck ties it HARD
+* to 0, the same physically-motivated choice sim/post-layout-ro-ring5's own
+* primary deck uses (every composed cell's own psub guard ring is tied to
+* vss, and vss is 0 here) -- inter-ring coupling through a floating
+* substrate is that slug's own separate question, not re-litigated here.
+*
+* PVT: the same four (temp, supply) points sim/post-layout-ro-ring5/ uses:
+*   -40 degC / 1.62 V   the measured entropy-binding corner (ss)
+*    27 degC / 1.80 V   nominal
+*   125 degC / 1.98 V   the worst five-stage ring swing in #10's grid
+*   -40 degC / 1.98 V   the fastest ring measured anywhere in that grid
+*
+* tstop/timestep match sim/post-layout-ro-ring5's own primary deck (160 ns,
+* @@TMAX@@ default 5p) -- the assembled ring's total R/C
+* (layout/pex-ring/pex.json's own build log: ~10.3-10.4 kOhm total series R,
+* ~42.2-42.3 fF total ground C per ring) is the same order of magnitude as
+* the leaf-cell composition's own per-cell totals summed, so no separate
+* re-derivation of the window was needed; confirmed by inspection of the
+* first run below rather than assumed.
+*
+* This file is a TEMPLATE: sim/bin/corner-run.py substitutes @@PDK_LIB@@,
+* @@CORNER@@, @@RO_RING5@@, @@PEX_LIB@@, @@TEMP@@, @@VDD@@ and @@TMAX@@. As
+* committed it is not a runnable deck. Invoke with
+* `--ro-ring5 design/ro_array_core.spice` (for its ro_buf subckt, alongside
+* the ro_ring5 subckt design/ro_ring5.spice would also provide) and
+* `--pex-lib layout/pex-ring/ro_ring5_assembled_pex.spice`.
+
+.option scale=1u
+.lib "@@PDK_LIB@@" @@CORNER@@
+
+* pre-layout subcircuit library (ro_ring5 / ro_nand2 / ro_stage / ro_buf)
+.include "@@RO_RING5@@"
+* post-layout ASSEMBLED subcircuit library (ro_ring5_assembled_pex_* +
+* its own ro_buf_pex), generated from layout/ro_ring5*/'s composed GDS
+.include "@@PEX_LIB@@"
+
+.temp @@TEMP@@
+
+* --- substrate return node: hard tie (see header) ----------------------
+Vsub vsubs 0 dc 0
+
+* --- post-layout ASSEMBLED rings, one flat-extracted cell per wstv -----
+Vddrr1 vddrr1 0 dc @@VDD@@
+Venr1 enr1 0 dc @@VDD@@
+xr1 enr1 r1o vddrr1 0 ro_ring5_assembled_pex_wstv0p42
+
+Vddrr2 vddrr2 0 dc @@VDD@@
+Venr2 enr2 0 dc @@VDD@@
+xr2 enr2 r2o vddrr2 0 ro_ring5_assembled_pex_wstv0p44
+
+Vddrr3 vddrr3 0 dc @@VDD@@
+Venr3 enr3 0 dc @@VDD@@
+xr3 enr3 r3o vddrr3 0 ro_ring5_assembled_pex_wstv0p46
+
+Vddrr4 vddrr4 0 dc @@VDD@@
+Venr4 enr4 0 dc @@VDD@@
+xr4 enr4 r4o vddrr4 0 ro_ring5_assembled_pex_wstv0p48
+
+* --- pre-layout control rings, identical topology, single-call subckt --
+Vddrq1 vddrq1 0 dc @@VDD@@
+Venq1 enq1 0 dc @@VDD@@
+xq1 enq1 q1o vddrq1 0 ro_ring5 wstv=0.42 lstv=2 cld=0.5f
+
+Vddrq2 vddrq2 0 dc @@VDD@@
+Venq2 enq2 0 dc @@VDD@@
+xq2 enq2 q2o vddrq2 0 ro_ring5 wstv=0.44 lstv=2 cld=0.5f
+
+Vddrq3 vddrq3 0 dc @@VDD@@
+Venq3 enq3 0 dc @@VDD@@
+xq3 enq3 q3o vddrq3 0 ro_ring5 wstv=0.46 lstv=2 cld=0.5f
+
+Vddrq4 vddrq4 0 dc @@VDD@@
+Venq4 enq4 0 dc @@VDD@@
+xq4 enq4 q4o vddrq4 0 ro_ring5 wstv=0.48 lstv=2 cld=0.5f
+
+* --- output buffers: one per ring, on a block supply per side ----------
+Vddr vddr 0 dc @@VDD@@
+xbr1 r1o r1ob vddr 0 ro_buf_pex
+xbr2 r2o r2ob vddr 0 ro_buf_pex
+xbr3 r3o r3ob vddr 0 ro_buf_pex
+xbr4 r4o r4ob vddr 0 ro_buf_pex
+Vddq vddq 0 dc @@VDD@@
+xbq1 q1o q1ob vddq 0 ro_buf
+xbq2 q2o q2ob vddq 0 ro_buf
+xbq3 q3o q3ob vddq 0 ro_buf
+xbq4 q4o q4ob vddq 0 ro_buf
+
+.ic v(r1o)=0
+.ic v(r2o)=0
+.ic v(r3o)=0
+.ic v(r4o)=0
+.ic v(q1o)=0
+.ic v(q2o)=0
+.ic v(q3o)=0
+.ic v(q4o)=0
+
+* Limit the saved transient trace set to exactly what the .meas statements
+* below need. Without this, ngspice keeps a full-resolution voltage history
+* for every node in the deck -- including every per-terminal parasitic-star
+* leg node the flat ring extraction introduces beyond the leaf-cell
+* composition's own intra-cell-only nodes (see this file's header) -- and at
+* the ff corner's shorter, stiffer timesteps that history exhausted process
+* memory outright (`Error: memory required ... is more than memory
+* available`) rather than merely running slowly. None of those internal
+* leg voltages are read by any .meas below.
+.save v(r1o) v(r2o) v(r3o) v(r4o) v(r1ob)
+.save v(q1o) v(q2o) v(q3o) v(q4o) v(q1ob)
+.save i(Vddrr1) i(Vddrr4) i(Vddrq1) i(Vddrq4)
+
+.tran @@TMAX@@ 160n uic
+
+.control
+run
+
+* Period of every ring, from 8 whole periods with the first two rising
+* edges discarded as start-up -- the same estimator
+* sim/post-layout-ro-ring5/'s own primary deck uses, so the two campaigns'
+* periods are directly comparable across their shared PVT grid.
+meas tran tr1a when v(r1o)=0.5*@@VDD@@ rise=3
+meas tran tr1b when v(r1o)=0.5*@@VDD@@ rise=11
+let t_asm_wstv0p42 = (tr1b - tr1a)/8
+meas tran tr2a when v(r2o)=0.5*@@VDD@@ rise=3
+meas tran tr2b when v(r2o)=0.5*@@VDD@@ rise=11
+let t_asm_wstv0p44 = (tr2b - tr2a)/8
+meas tran tr3a when v(r3o)=0.5*@@VDD@@ rise=3
+meas tran tr3b when v(r3o)=0.5*@@VDD@@ rise=11
+let t_asm_wstv0p46 = (tr3b - tr3a)/8
+meas tran tr4a when v(r4o)=0.5*@@VDD@@ rise=3
+meas tran tr4b when v(r4o)=0.5*@@VDD@@ rise=11
+let t_asm_wstv0p48 = (tr4b - tr4a)/8
+
+meas tran tq1a when v(q1o)=0.5*@@VDD@@ rise=3
+meas tran tq1b when v(q1o)=0.5*@@VDD@@ rise=11
+let t_pre_wstv0p42 = (tq1b - tq1a)/8
+meas tran tq2a when v(q2o)=0.5*@@VDD@@ rise=3
+meas tran tq2b when v(q2o)=0.5*@@VDD@@ rise=11
+let t_pre_wstv0p44 = (tq2b - tq2a)/8
+meas tran tq3a when v(q3o)=0.5*@@VDD@@ rise=3
+meas tran tq3b when v(q3o)=0.5*@@VDD@@ rise=11
+let t_pre_wstv0p46 = (tq3b - tq3a)/8
+meas tran tq4a when v(q4o)=0.5*@@VDD@@ rise=3
+meas tran tq4b when v(q4o)=0.5*@@VDD@@ rise=11
+let t_pre_wstv0p48 = (tq4b - tq4a)/8
+
+* The headline ratio: same ring, same corner, real inter-gate wiring vs.
+* pre-layout (no interconnect at all).
+let slowdown_wstv0p42 = t_asm_wstv0p42 / t_pre_wstv0p42
+let slowdown_wstv0p44 = t_asm_wstv0p44 / t_pre_wstv0p44
+let slowdown_wstv0p46 = t_asm_wstv0p46 / t_pre_wstv0p46
+let slowdown_wstv0p48 = t_asm_wstv0p48 / t_pre_wstv0p48
+
+* Ladder span (DR-0003 section 8's skew_span, re-measured with real
+* inter-gate wiring). Stated as slowest/fastest ring under the ladder's
+* expected monotone ordering; the four periods above are printed
+* individually so a reader can confirm that ordering rather than take it on
+* trust.
+let skew_span_asm = t_asm_wstv0p42 / t_asm_wstv0p48
+let skew_span_pre = t_pre_wstv0p42 / t_pre_wstv0p48
+
+* Swing, ring node and buffered output, post-layout (assembled) vs.
+* pre-layout. Steady-state window: 20 ns of start-up discarded.
+meas tran vmaxr MAX v(r1o) from=20n to=160n
+meas tran vminr MIN v(r1o) from=20n to=160n
+meas tran vmaxrb MAX v(r1ob) from=20n to=160n
+meas tran vminrb MIN v(r1ob) from=20n to=160n
+meas tran vmaxq MAX v(q1o) from=20n to=160n
+meas tran vminq MIN v(q1o) from=20n to=160n
+meas tran vmaxqb MAX v(q1ob) from=20n to=160n
+meas tran vminqb MIN v(q1ob) from=20n to=160n
+let swing_frac_asm_ring = (vmaxr - vminr) / @@VDD@@
+let swing_frac_asm_buf = (vmaxrb - vminrb) / @@VDD@@
+let swing_frac_pre_ring = (vmaxq - vminq) / @@VDD@@
+let swing_frac_pre_buf = (vmaxqb - vminqb) / @@VDD@@
+
+* Per-ring supply current, running. i(Vsrc) is negative for current
+* delivered by the source, so the printed figures are sign-flipped to read
+* as consumed current.
+meas tran ir1raw AVG i(Vddrr1) from=20n to=160n
+meas tran ir4raw AVG i(Vddrr4) from=20n to=160n
+meas tran iq1raw AVG i(Vddrq1) from=20n to=160n
+meas tran iq4raw AVG i(Vddrq4) from=20n to=160n
+let i_asm_wstv0p42 = -ir1raw
+let i_asm_wstv0p48 = -ir4raw
+let i_pre_wstv0p42 = -iq1raw
+let i_pre_wstv0p48 = -iq4raw
+
+print t_asm_wstv0p42
+print t_asm_wstv0p44
+print t_asm_wstv0p46
+print t_asm_wstv0p48
+print t_pre_wstv0p42
+print t_pre_wstv0p44
+print t_pre_wstv0p46
+print t_pre_wstv0p48
+print slowdown_wstv0p42
+print slowdown_wstv0p44
+print slowdown_wstv0p46
+print slowdown_wstv0p48
+print skew_span_asm
+print skew_span_pre
+print swing_frac_asm_ring
+print swing_frac_asm_buf
+print swing_frac_pre_ring
+print swing_frac_pre_buf
+print i_asm_wstv0p42
+print i_asm_wstv0p48
+print i_pre_wstv0p42
+print i_pre_wstv0p48
+.endc
+.end

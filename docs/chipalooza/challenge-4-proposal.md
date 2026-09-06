@@ -434,16 +434,23 @@ that lands this document):
   from it over the PVT grid (twelve records, thirty-six corner runs) with
   the pre-layout netlist as a same-deck control — intra-cell parasitics cost
   1.378×–1.479× in ring period, and the `wstv` frequency ladder survives
-  them (`spec/decision-records/DR-0005-*.md`). Still outstanding for the
-  brief's full sign-off bar: `xor2` routing (its 12-device placement is now
-  DRC-clean, see `layout/xor2-placement-poc/README.md`, but its routing is a
-  genuine multi-net channel-routing problem not yet solved); the array and
-  the sampler as assembled layout; parasitic extraction of the ring cells
-  themselves (`layout/pex/` still covers the nine leaf cells only) — and
-  therefore the *whole-block* post-layout PVT simulation the bar actually
-  asks for, since the assembled inter-ring and inter-cell interconnect that
-  would dominate it does not exist yet. None of
-  that is attempted in this document. Note also that
+  them (`spec/decision-records/DR-0005-*.md`). The four ring cells
+  themselves are now also parasitic-extracted, as whole composed rings with
+  real inter-gate wiring rather than leaf-cell compositions:
+  `layout/pex-ring/` extracts each ring's own GDS directly, and
+  `sim/post-layout-ro-ring5-assembled/` re-runs the same measurement from it
+  — real inter-gate wiring costs the ring 1.5045×–1.6546× more slowdown on
+  top of intra-cell parasitics alone (period vs. pre-layout overall
+  2.0819×–2.3666×), and the ladder still survives. Still outstanding for
+  the brief's full sign-off bar: `xor2` routing (its 12-device placement is
+  now DRC-clean, see `layout/xor2-placement-poc/README.md`, but its routing
+  is a genuine multi-net channel-routing problem not yet solved); the array
+  and the sampler as assembled layout — and therefore the *whole-block*
+  post-layout PVT simulation the bar actually asks for, since the assembled
+  *inter-ring* interconnect (supply distribution, XOR tree routing, buffer
+  fan-in) that would dominate it does not exist yet; every ring-level number
+  above is still one ring's own real interconnect with ideal wires to its
+  neighbours. None of that is attempted in this document. Note also that
   "DRC-clean" here means clean against `klt`'s **curated** sky130 deck (a
   documented subset — see each `drc.json`'s own `coverage` block), not a
   full sky130 sign-off deck.
