@@ -4,33 +4,51 @@ Physical layout evidence for the sky130-trng entropy source, verified with
 `klayout-tools` (`klt`) against the sky130 open PDK. See `layout/pdk.json`
 for the PDK/tool pin.
 
-**Status (issue #22, this increment): `ro_array_core`'s forward
-ring→buffer signal chain is now really routed —
+**Status (issue #22, this increment): `ro_array_core`'s buffer→XOR `a` leg
+is now really routed for both first-stage XORs —
 [`layout/ro_array_core-placement-poc/`](ro_array_core-placement-poc/README.md)'s
-"Increment 2" section.** On top of the same eleven-block floorplan the
-previous increment placed, `en1..en4` and the four `vddrN` domains are now
-exposed as top-level pins directly off each ring's own already-formed
-internal node (no routing needed — each is already one electrical node
-inside its own ring), `ro1..ro4` are exposed the same way off each buffer's
-`y` output, and the four `rn1..rn4` legs (`ro_ring5.ro` → `ro_buf.a`) are
-newly, really routed on `"metal2"` — the first inter-cell wiring this
-hierarchy level has drawn. Still **`klt drc` clean (0 violations)**, and
-`klt extract` now reports `132` devices (unchanged) and `108` nets (down
-from `112`, exactly the four new `rn1..rn4` merges, each confirmed to join
-only its intended pair). One new floorplan finding: `gen-compose` rejects a
-route whose final leg drops straight into a block's interior toward a pin
-that sits well inside that block's own bbox, with a precise measured
-diagnostic — see the PoC's own README for the fix (approach horizontally at
-the pin's own `y` instead). **Still not a DRC/LVS-clean `ro_array_core`**:
-`vdd`/`vss` (a genuinely global net — rings, buffers *and* XORs all share
-`vss`, eleven taps total), the buffer→XOR nets' second leg (`ro1..ro4` into
-`xor2`'s `a`/`b`), the XOR combining tree (`t1`, `t2`, `xo`), and therefore
-any LVS attempt, are all still open. The PoC's README also carries an open
+"Increment 3" section.** `ro1` (`buf1.y`) is now really routed into `xa1`'s
+`a` input, and `ro3` (`buf3.y`) into `xa2`'s `a` input, on `"metal2"` — the
+first routing this directory has drawn between row 1 (rings/buffers) and row
+2 (the XOR combining tree). Still **`klt drc` clean (0 violations)**, and
+`klt extract` now reports `132` devices (unchanged) and `106` nets (down
+from `108`, exactly the two new merges, each confirmed by a net-by-net diff
+against the previous increment's own committed extract to join only its
+intended `a`-labelled net). Two findings: the escape from `buf1.y`/`buf3.y`
+needed its own fix (an eastward escape past the block's own edge before
+turning into the inter-row channel — a different failure mode than the
+"approach the destination horizontally" rule the previous increment found,
+this time about the *source* pin's own tiny edge margin); and `b` (`ro2`/
+`ro4` into `xa1.b`/`xa2.b`) is deliberately **not** wired this increment —
+`a` and `b` sit at the identical `y`, so a naive copy of `a`'s recipe risks
+routing straight through `a`'s own backbone, and a closer-approach probe hit
+a genuine `klt drc` violation instead — see the PoC's own README "Increment
+3" section for both ruled-out attempts. **Still not a DRC/LVS-clean
+`ro_array_core`**: `ro2`/`ro4`'s leg into `xa1.b`/`xa2.b`, `vdd`/`vss` (a
+genuinely global net — rings, buffers *and* XORs all share `vss`, eleven
+taps total), the XOR combining tree (`t1`, `t2`, `xo`), and therefore any
+LVS attempt, are all still open. The PoC's README also carries an open
 question on `compose-cell.py`'s `lvs.dependencies` mechanism, unchanged by
 this increment: the reference netlist defines one `ro_ring5` subckt called
 four times with four different `wstv=` overrides, not four separate
 subckts, and the current dependency mechanism has not been exercised
 against that shape.
+
+**A previous increment: `ro_array_core`'s forward
+ring→buffer signal chain was routed** —
+[`layout/ro_array_core-placement-poc/`](ro_array_core-placement-poc/README.md)'s
+"Increment 2" section. On top of the same eleven-block floorplan the
+previous increment placed, `en1..en4` and the four `vddrN` domains were
+exposed as top-level pins directly off each ring's own already-formed
+internal node (no routing needed — each is already one electrical node
+inside its own ring), `ro1..ro4` were exposed the same way off each buffer's
+`y` output, and the four `rn1..rn4` legs (`ro_ring5.ro` → `ro_buf.a`) were
+newly, really routed on `"metal2"` — the first inter-cell wiring this
+hierarchy level drew. One floorplan finding: `gen-compose` rejects a route
+whose final leg drops straight into a block's interior toward a pin that
+sits well inside that block's own bbox, with a precise measured diagnostic —
+see the PoC's own README for the fix (approach horizontally at the pin's own
+`y` instead).
 
 **A previous increment: `xor2` is composed, DRC-clean and
 LVS-clean, so every leaf cell `ro_array_core` instantiates now exists as a
@@ -297,7 +315,7 @@ From `design/README.md`'s "Cell hierarchy":
 ```
 trng_top                   (not in scope for #22 — stops at the raw tap)
   sampler_core              PLANNED — 6x sampler_dff + wiring
-    ro_array_core           IN PROGRESS — floorplanned (ro_array_core-placement-poc/) and forward signal chain routed (en/vddr/ro exposed, rn1-4 wired), DRC-clean; vdd/vss distribution, XOR combining tree and LVS still open
+    ro_array_core           IN PROGRESS — floorplanned (ro_array_core-placement-poc/), forward signal chain routed (en/vddr/ro exposed, rn1-4 wired) and buffer->XOR "a" leg routed (ro1/ro3 into xa1.a/xa2.a), DRC-clean; ro2/ro4 into xa1.b/xa2.b, vdd/vss distribution, XOR combining tree and LVS still open
       ro_ring5   (x4)        BUILT, all 4 wstv values — DRC-clean + LVS-clean (layout/ro_ring5/, ro_ring5_wstv0p{44,46,48}/) — 4 distinct physical cells, one per ring; signal chain, ro feedback and vddr/vss rails all routed
         ro_nand2   (x1/ring)  BUILT, all 4 wstv values — DRC-clean + LVS-clean (layout/ro_nand2/, ro_nand2_wstv0p{44,46,48}/) — 4 distinct physical cells, one per ring
         ro_stage   (x4/ring)  BUILT, all 4 wstv values — DRC-clean + LVS-clean (layout/ro_stage/, ro_stage_wstv0p{44,46,48}/) — 4 distinct physical cells (one per ring's wstv), each reused 4x within its own ring

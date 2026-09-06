@@ -1,0 +1,3497 @@
+{
+  "schema_version": 3,
+  "file": "ro_array_core_signal2_poc.gds",
+  "deck": "sky130",
+  "top": "ro_array_core_signal2_poc",
+  "dbu_um": 0.001,
+  "netlist_path": "ro_array_core_signal2_poc.spice",
+  "netlist_sha256": "e2eb4fd895d4915aa6f8cca756042e8173c7e589c0ef77087d39f0b82bb31f21",
+  "status": "extracted",
+  "device_count": 132,
+  "net_count": 106,
+  "pin_count": 96,
+  "device_counts": {
+    "nfet": 66,
+    "pfet": 66
+  },
+  "dummy_devices_dropped": 0,
+  "ignored_layers": [],
+  "device_recognition_only_layers": [],
+  "device_classes": [
+    "nfet",
+    "pfet",
+    "pnp",
+    "sky130_fd_pr__model__cap_mim",
+    "sky130_fd_pr__model__cap_mim_m4",
+    "resistor"
+  ],
+  "devices": [
+    {
+      "name": "$1",
+      "class": "nfet",
+      "nets": {
+        "s": "ny",
+        "g": "en|en1|g_en",
+        "d": "\\$16",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.2184,
+        "ps_um": 2.62,
+        "pd_um": 1.36
+      }
+    },
+    {
+      "name": "$10",
+      "class": "nfet",
+      "nets": {
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "g": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr3",
+        "d": "ny",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.46,
+        "as_um2": 0.1932,
+        "ad_um2": 0.1932,
+        "ps_um": 1.76,
+        "pd_um": 1.76
+      }
+    },
+    {
+      "name": "$100",
+      "class": "pfet",
+      "nets": {
+        "s": "y",
+        "g": "bn|invb_y|mn34_g1|mp24_g1|y",
+        "d": "mid",
+        "b": "vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 1.68,
+        "as_um2": 0.7896,
+        "ad_um2": 0.4368,
+        "ps_um": 4.3,
+        "pd_um": 2.2
+      }
+    },
+    {
+      "name": "$101",
+      "class": "pfet",
+      "nets": {
+        "s": "mid",
+        "g": "a|b|invb_a|mn12_g1|mp24_g0",
+        "d": "vdd",
+        "b": "vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 1.68,
+        "as_um2": 0.4368,
+        "ad_um2": 0.7896,
+        "ps_um": 2.2,
+        "pd_um": 4.3
+      }
+    },
+    {
+      "name": "$102",
+      "class": "pfet",
+      "nets": {
+        "s": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr1",
+        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "d": "py",
+        "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr1"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.42,
+        "as_um2": 0.1764,
+        "ad_um2": 0.1764,
+        "ps_um": 1.68,
+        "pd_um": 1.68
+      }
+    },
+    {
+      "name": "$103",
+      "class": "pfet",
+      "nets": {
+        "s": "vdd",
+        "g": "a|b|invb_a|mn12_g1|mp24_g0",
+        "d": "bn|invb_y|mn34_g1|mp24_g1|y",
+        "b": "vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$104",
+      "class": "pfet",
+      "nets": {
+        "s": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr1",
+        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "d": "py",
+        "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr1"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.42,
+        "as_um2": 0.1764,
+        "ad_um2": 0.1764,
+        "ps_um": 1.68,
+        "pd_um": 1.68
+      }
+    },
+    {
+      "name": "$105",
+      "class": "pfet",
+      "nets": {
+        "s": "vdd",
+        "g": "a|inva_a|mn12_g0|mp13_g0|ro3|y",
+        "d": "an|inva_y|mn34_g0|mp13_g1|y",
+        "b": "vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$106",
+      "class": "pfet",
+      "nets": {
+        "s": "vdd",
+        "g": "a|inva_a|mn12_g0|mp13_g0|ro3|y",
+        "d": "mid",
+        "b": "vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 1.68,
+        "as_um2": 0.7896,
+        "ad_um2": 0.4368,
+        "ps_um": 4.3,
+        "pd_um": 2.2
+      }
+    },
+    {
+      "name": "$107",
+      "class": "pfet",
+      "nets": {
+        "s": "mid",
+        "g": "an|inva_y|mn34_g0|mp13_g1|y",
+        "d": "y",
+        "b": "vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 1.68,
+        "as_um2": 0.4368,
+        "ad_um2": 0.7896,
+        "ps_um": 2.2,
+        "pd_um": 4.3
+      }
+    },
+    {
+      "name": "$108",
+      "class": "pfet",
+      "nets": {
+        "s": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr1",
+        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "d": "py",
+        "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr1"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.42,
+        "as_um2": 0.1764,
+        "ad_um2": 0.1764,
+        "ps_um": 1.68,
+        "pd_um": 1.68
+      }
+    },
+    {
+      "name": "$109",
+      "class": "pfet",
+      "nets": {
+        "s": "y",
+        "g": "bn|invb_y|mn34_g1|mp24_g1|y",
+        "d": "mid",
+        "b": "vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 1.68,
+        "as_um2": 0.7896,
+        "ad_um2": 0.4368,
+        "ps_um": 4.3,
+        "pd_um": 2.2
+      }
+    },
+    {
+      "name": "$11",
+      "class": "nfet",
+      "nets": {
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "g": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr3",
+        "d": "ny",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.46,
+        "as_um2": 0.1932,
+        "ad_um2": 0.1932,
+        "ps_um": 1.76,
+        "pd_um": 1.76
+      }
+    },
+    {
+      "name": "$110",
+      "class": "pfet",
+      "nets": {
+        "s": "mid",
+        "g": "a|b|invb_a|mn12_g1|mp24_g0",
+        "d": "vdd",
+        "b": "vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 1.68,
+        "as_um2": 0.4368,
+        "ad_um2": 0.7896,
+        "ps_um": 2.2,
+        "pd_um": 4.3
+      }
+    },
+    {
+      "name": "$111",
+      "class": "pfet",
+      "nets": {
+        "s": "vdd",
+        "g": "a|b|invb_a|mn12_g1|mp24_g0",
+        "d": "bn|invb_y|mn34_g1|mp24_g1|y",
+        "b": "vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$112",
+      "class": "pfet",
+      "nets": {
+        "s": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr2",
+        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "d": "mpa_py|mpb_py|mph_py|py",
+        "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr2"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.44,
+        "as_um2": 0.1848,
+        "ad_um2": 0.1848,
+        "ps_um": 1.72,
+        "pd_um": 1.72
+      }
+    },
+    {
+      "name": "$113",
+      "class": "pfet",
+      "nets": {
+        "s": "vdd",
+        "g": "a|inva_a|mn12_g0|mp13_g0",
+        "d": "an|inva_y|mn34_g0|mp13_g1|y",
+        "b": "vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$114",
+      "class": "pfet",
+      "nets": {
+        "s": "vdd",
+        "g": "a|inva_a|mn12_g0|mp13_g0",
+        "d": "mid",
+        "b": "vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 1.68,
+        "as_um2": 0.7896,
+        "ad_um2": 0.4368,
+        "ps_um": 4.3,
+        "pd_um": 2.2
+      }
+    },
+    {
+      "name": "$115",
+      "class": "pfet",
+      "nets": {
+        "s": "mid",
+        "g": "an|inva_y|mn34_g0|mp13_g1|y",
+        "d": "y",
+        "b": "vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 1.68,
+        "as_um2": 0.4368,
+        "ad_um2": 0.7896,
+        "ps_um": 2.2,
+        "pd_um": 4.3
+      }
+    },
+    {
+      "name": "$116",
+      "class": "pfet",
+      "nets": {
+        "s": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr2",
+        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "d": "py",
+        "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr2"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.44,
+        "as_um2": 0.1848,
+        "ad_um2": 0.1848,
+        "ps_um": 1.72,
+        "pd_um": 1.72
+      }
+    },
+    {
+      "name": "$117",
+      "class": "pfet",
+      "nets": {
+        "s": "y",
+        "g": "bn|invb_y|mn34_g1|mp24_g1|y",
+        "d": "mid",
+        "b": "vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 1.68,
+        "as_um2": 0.7896,
+        "ad_um2": 0.4368,
+        "ps_um": 4.3,
+        "pd_um": 2.2
+      }
+    },
+    {
+      "name": "$118",
+      "class": "pfet",
+      "nets": {
+        "s": "mid",
+        "g": "a|b|invb_a|mn12_g1|mp24_g0",
+        "d": "vdd",
+        "b": "vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 1.68,
+        "as_um2": 0.4368,
+        "ad_um2": 0.7896,
+        "ps_um": 2.2,
+        "pd_um": 4.3
+      }
+    },
+    {
+      "name": "$119",
+      "class": "pfet",
+      "nets": {
+        "s": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr2",
+        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "d": "py",
+        "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr2"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.44,
+        "as_um2": 0.1848,
+        "ad_um2": 0.1848,
+        "ps_um": 1.72,
+        "pd_um": 1.72
+      }
+    },
+    {
+      "name": "$12",
+      "class": "nfet",
+      "nets": {
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "g": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr3",
+        "d": "ny",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.46,
+        "as_um2": 0.1932,
+        "ad_um2": 0.1932,
+        "ps_um": 1.76,
+        "pd_um": 1.76
+      }
+    },
+    {
+      "name": "$120",
+      "class": "pfet",
+      "nets": {
+        "s": "vdd",
+        "g": "a|b|invb_a|mn12_g1|mp24_g0",
+        "d": "bn|invb_y|mn34_g1|mp24_g1|y",
+        "b": "vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$121",
+      "class": "pfet",
+      "nets": {
+        "s": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr2",
+        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "d": "py",
+        "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr2"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.44,
+        "as_um2": 0.1848,
+        "ad_um2": 0.1848,
+        "ps_um": 1.72,
+        "pd_um": 1.72
+      }
+    },
+    {
+      "name": "$122",
+      "class": "pfet",
+      "nets": {
+        "s": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr2",
+        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "d": "py",
+        "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr2"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.44,
+        "as_um2": 0.1848,
+        "ad_um2": 0.1848,
+        "ps_um": 1.72,
+        "pd_um": 1.72
+      }
+    },
+    {
+      "name": "$123",
+      "class": "pfet",
+      "nets": {
+        "s": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr3",
+        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "d": "mpa_py|mpb_py|mph_py|py",
+        "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr3"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.46,
+        "as_um2": 0.1932,
+        "ad_um2": 0.1932,
+        "ps_um": 1.76,
+        "pd_um": 1.76
+      }
+    },
+    {
+      "name": "$124",
+      "class": "pfet",
+      "nets": {
+        "s": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr3",
+        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "d": "py",
+        "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr3"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.46,
+        "as_um2": 0.1932,
+        "ad_um2": 0.1932,
+        "ps_um": 1.76,
+        "pd_um": 1.76
+      }
+    },
+    {
+      "name": "$125",
+      "class": "pfet",
+      "nets": {
+        "s": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr3",
+        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "d": "py",
+        "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr3"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.46,
+        "as_um2": 0.1932,
+        "ad_um2": 0.1932,
+        "ps_um": 1.76,
+        "pd_um": 1.76
+      }
+    },
+    {
+      "name": "$126",
+      "class": "pfet",
+      "nets": {
+        "s": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr3",
+        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "d": "py",
+        "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr3"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.46,
+        "as_um2": 0.1932,
+        "ad_um2": 0.1932,
+        "ps_um": 1.76,
+        "pd_um": 1.76
+      }
+    },
+    {
+      "name": "$127",
+      "class": "pfet",
+      "nets": {
+        "s": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr3",
+        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "d": "py",
+        "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr3"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.46,
+        "as_um2": 0.1932,
+        "ad_um2": 0.1932,
+        "ps_um": 1.76,
+        "pd_um": 1.76
+      }
+    },
+    {
+      "name": "$128",
+      "class": "pfet",
+      "nets": {
+        "s": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr4",
+        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "d": "mpa_py|mpb_py|mph_py|py",
+        "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr4"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.48,
+        "as_um2": 0.2016,
+        "ad_um2": 0.2016,
+        "ps_um": 1.8,
+        "pd_um": 1.8
+      }
+    },
+    {
+      "name": "$129",
+      "class": "pfet",
+      "nets": {
+        "s": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr4",
+        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "d": "py",
+        "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr4"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.48,
+        "as_um2": 0.2016,
+        "ad_um2": 0.2016,
+        "ps_um": 1.8,
+        "pd_um": 1.8
+      }
+    },
+    {
+      "name": "$13",
+      "class": "nfet",
+      "nets": {
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "g": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr3",
+        "d": "ny",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.46,
+        "as_um2": 0.1932,
+        "ad_um2": 0.1932,
+        "ps_um": 1.76,
+        "pd_um": 1.76
+      }
+    },
+    {
+      "name": "$130",
+      "class": "pfet",
+      "nets": {
+        "s": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr4",
+        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "d": "py",
+        "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr4"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.48,
+        "as_um2": 0.2016,
+        "ad_um2": 0.2016,
+        "ps_um": 1.8,
+        "pd_um": 1.8
+      }
+    },
+    {
+      "name": "$131",
+      "class": "pfet",
+      "nets": {
+        "s": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr4",
+        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "d": "py",
+        "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr4"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.48,
+        "as_um2": 0.2016,
+        "ad_um2": 0.2016,
+        "ps_um": 1.8,
+        "pd_um": 1.8
+      }
+    },
+    {
+      "name": "$132",
+      "class": "pfet",
+      "nets": {
+        "s": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr4",
+        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "d": "py",
+        "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr4"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.48,
+        "as_um2": 0.2016,
+        "ad_um2": 0.2016,
+        "ps_um": 1.8,
+        "pd_um": 1.8
+      }
+    },
+    {
+      "name": "$14",
+      "class": "nfet",
+      "nets": {
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "g": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr4",
+        "d": "ny",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.48,
+        "as_um2": 0.2016,
+        "ad_um2": 0.2016,
+        "ps_um": 1.8,
+        "pd_um": 1.8
+      }
+    },
+    {
+      "name": "$15",
+      "class": "nfet",
+      "nets": {
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "g": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr4",
+        "d": "ny",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.48,
+        "as_um2": 0.2016,
+        "ad_um2": 0.2016,
+        "ps_um": 1.8,
+        "pd_um": 1.8
+      }
+    },
+    {
+      "name": "$16",
+      "class": "nfet",
+      "nets": {
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "g": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr4",
+        "d": "ny",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.48,
+        "as_um2": 0.2016,
+        "ad_um2": 0.2016,
+        "ps_um": 1.8,
+        "pd_um": 1.8
+      }
+    },
+    {
+      "name": "$17",
+      "class": "nfet",
+      "nets": {
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "g": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr4",
+        "d": "ny",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.48,
+        "as_um2": 0.2016,
+        "ad_um2": 0.2016,
+        "ps_um": 1.8,
+        "pd_um": 1.8
+      }
+    },
+    {
+      "name": "$18",
+      "class": "nfet",
+      "nets": {
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "g": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr4",
+        "d": "ny",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.48,
+        "as_um2": 0.2016,
+        "ad_um2": 0.2016,
+        "ps_um": 1.8,
+        "pd_um": 1.8
+      }
+    },
+    {
+      "name": "$19",
+      "class": "nfet",
+      "nets": {
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "g": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr1",
+        "d": "ny",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.42,
+        "as_um2": 0.1764,
+        "ad_um2": 0.1764,
+        "ps_um": 1.68,
+        "pd_um": 1.68
+      }
+    },
+    {
+      "name": "$2",
+      "class": "nfet",
+      "nets": {
+        "s": "\\$16",
+        "g": "a|g_a|rn1|ro|s4_y|y",
+        "d": "a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.2184,
+        "ad_um2": 0.3948,
+        "ps_um": 1.36,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$20",
+      "class": "nfet",
+      "nets": {
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "g": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr1",
+        "d": "ny",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.42,
+        "as_um2": 0.1764,
+        "ad_um2": 0.1764,
+        "ps_um": 1.68,
+        "pd_um": 1.68
+      }
+    },
+    {
+      "name": "$21",
+      "class": "nfet",
+      "nets": {
+        "s": "ny",
+        "g": "a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y",
+        "d": "a|n2|s1_y|s2_a|y",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$22",
+      "class": "nfet",
+      "nets": {
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "g": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr1",
+        "d": "ny",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.42,
+        "as_um2": 0.1764,
+        "ad_um2": 0.1764,
+        "ps_um": 1.68,
+        "pd_um": 1.68
+      }
+    },
+    {
+      "name": "$23",
+      "class": "nfet",
+      "nets": {
+        "s": "ny",
+        "g": "a|n2|s1_y|s2_a|y",
+        "d": "a|n3|s2_y|s3_a|y",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$24",
+      "class": "nfet",
+      "nets": {
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "g": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr1",
+        "d": "ny",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.42,
+        "as_um2": 0.1764,
+        "ad_um2": 0.1764,
+        "ps_um": 1.68,
+        "pd_um": 1.68
+      }
+    },
+    {
+      "name": "$25",
+      "class": "nfet",
+      "nets": {
+        "s": "ny",
+        "g": "a|n3|s2_y|s3_a|y",
+        "d": "a|n4|s3_y|s4_a|y",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$26",
+      "class": "nfet",
+      "nets": {
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "g": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr1",
+        "d": "ny",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.42,
+        "as_um2": 0.1764,
+        "ad_um2": 0.1764,
+        "ps_um": 1.68,
+        "pd_um": 1.68
+      }
+    },
+    {
+      "name": "$27",
+      "class": "nfet",
+      "nets": {
+        "s": "ny",
+        "g": "a|n4|s3_y|s4_a|y",
+        "d": "a|g_a|rn1|ro|s4_y|y",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$28",
+      "class": "nfet",
+      "nets": {
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "g": "a|g_a|rn1|ro|s4_y|y",
+        "d": "a|inva_a|mn12_g0|mp13_g0|ro1|y",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$29",
+      "class": "nfet",
+      "nets": {
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "g": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr2",
+        "d": "ny",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.44,
+        "as_um2": 0.1848,
+        "ad_um2": 0.1848,
+        "ps_um": 1.72,
+        "pd_um": 1.72
+      }
+    },
+    {
+      "name": "$3",
+      "class": "nfet",
+      "nets": {
+        "s": "ny",
+        "g": "en|en2|g_en",
+        "d": "\\$25",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.2184,
+        "ps_um": 2.62,
+        "pd_um": 1.36
+      }
+    },
+    {
+      "name": "$30",
+      "class": "nfet",
+      "nets": {
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "g": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr2",
+        "d": "ny",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.44,
+        "as_um2": 0.1848,
+        "ad_um2": 0.1848,
+        "ps_um": 1.72,
+        "pd_um": 1.72
+      }
+    },
+    {
+      "name": "$31",
+      "class": "nfet",
+      "nets": {
+        "s": "ny",
+        "g": "a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y",
+        "d": "a|n2|s1_y|s2_a|y",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$32",
+      "class": "nfet",
+      "nets": {
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "g": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr2",
+        "d": "ny",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.44,
+        "as_um2": 0.1848,
+        "ad_um2": 0.1848,
+        "ps_um": 1.72,
+        "pd_um": 1.72
+      }
+    },
+    {
+      "name": "$33",
+      "class": "nfet",
+      "nets": {
+        "s": "ny",
+        "g": "a|n2|s1_y|s2_a|y",
+        "d": "a|n3|s2_y|s3_a|y",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$34",
+      "class": "nfet",
+      "nets": {
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "g": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr2",
+        "d": "ny",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.44,
+        "as_um2": 0.1848,
+        "ad_um2": 0.1848,
+        "ps_um": 1.72,
+        "pd_um": 1.72
+      }
+    },
+    {
+      "name": "$35",
+      "class": "nfet",
+      "nets": {
+        "s": "ny",
+        "g": "a|n3|s2_y|s3_a|y",
+        "d": "a|n4|s3_y|s4_a|y",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$36",
+      "class": "nfet",
+      "nets": {
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "g": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr2",
+        "d": "ny",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.44,
+        "as_um2": 0.1848,
+        "ad_um2": 0.1848,
+        "ps_um": 1.72,
+        "pd_um": 1.72
+      }
+    },
+    {
+      "name": "$37",
+      "class": "nfet",
+      "nets": {
+        "s": "ny",
+        "g": "a|n4|s3_y|s4_a|y",
+        "d": "a|g_a|rn2|ro|s4_y|y",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$38",
+      "class": "nfet",
+      "nets": {
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "g": "a|g_a|rn2|ro|s4_y|y",
+        "d": "ro2|y",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$39",
+      "class": "nfet",
+      "nets": {
+        "s": "ny",
+        "g": "a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y",
+        "d": "a|n2|s1_y|s2_a|y",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$4",
+      "class": "nfet",
+      "nets": {
+        "s": "\\$25",
+        "g": "a|g_a|rn2|ro|s4_y|y",
+        "d": "a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.2184,
+        "ad_um2": 0.3948,
+        "ps_um": 1.36,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$40",
+      "class": "nfet",
+      "nets": {
+        "s": "ny",
+        "g": "a|n2|s1_y|s2_a|y",
+        "d": "a|n3|s2_y|s3_a|y",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$41",
+      "class": "nfet",
+      "nets": {
+        "s": "ny",
+        "g": "a|n3|s2_y|s3_a|y",
+        "d": "a|n4|s3_y|s4_a|y",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$42",
+      "class": "nfet",
+      "nets": {
+        "s": "ny",
+        "g": "a|n4|s3_y|s4_a|y",
+        "d": "a|g_a|rn3|ro|s4_y|y",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$43",
+      "class": "nfet",
+      "nets": {
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "g": "a|g_a|rn3|ro|s4_y|y",
+        "d": "a|inva_a|mn12_g0|mp13_g0|ro3|y",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$44",
+      "class": "nfet",
+      "nets": {
+        "s": "ny",
+        "g": "a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y",
+        "d": "a|n2|s1_y|s2_a|y",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$45",
+      "class": "nfet",
+      "nets": {
+        "s": "ny",
+        "g": "a|n2|s1_y|s2_a|y",
+        "d": "a|n3|s2_y|s3_a|y",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$46",
+      "class": "nfet",
+      "nets": {
+        "s": "ny",
+        "g": "a|n3|s2_y|s3_a|y",
+        "d": "a|n4|s3_y|s4_a|y",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$47",
+      "class": "nfet",
+      "nets": {
+        "s": "ny",
+        "g": "a|n4|s3_y|s4_a|y",
+        "d": "a|g_a|rn4|ro|s4_y|y",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$48",
+      "class": "nfet",
+      "nets": {
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "g": "a|g_a|rn4|ro|s4_y|y",
+        "d": "ro4|y",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$49",
+      "class": "nfet",
+      "nets": {
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "g": "a|inva_a|mn12_g0|mp13_g0|ro1|y",
+        "d": "an|inva_y|mn34_g0|mp13_g1|y",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$5",
+      "class": "nfet",
+      "nets": {
+        "s": "ny",
+        "g": "en|en3|g_en",
+        "d": "\\$33",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.2184,
+        "ps_um": 2.62,
+        "pd_um": 1.36
+      }
+    },
+    {
+      "name": "$50",
+      "class": "nfet",
+      "nets": {
+        "s": "y",
+        "g": "an|inva_y|mn34_g0|mp13_g1|y",
+        "d": "\\$83",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.2184,
+        "ps_um": 2.62,
+        "pd_um": 1.36
+      }
+    },
+    {
+      "name": "$51",
+      "class": "nfet",
+      "nets": {
+        "s": "\\$83",
+        "g": "bn|invb_y|mn34_g1|mp24_g1|y",
+        "d": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.2184,
+        "ad_um2": 0.3948,
+        "ps_um": 1.36,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$52",
+      "class": "nfet",
+      "nets": {
+        "s": "y",
+        "g": "a|inva_a|mn12_g0|mp13_g0|ro1|y",
+        "d": "\\$84",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.2184,
+        "ps_um": 2.62,
+        "pd_um": 1.36
+      }
+    },
+    {
+      "name": "$53",
+      "class": "nfet",
+      "nets": {
+        "s": "\\$84",
+        "g": "a|b|invb_a|mn12_g1|mp24_g0",
+        "d": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.2184,
+        "ad_um2": 0.3948,
+        "ps_um": 1.36,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$54",
+      "class": "nfet",
+      "nets": {
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "g": "a|b|invb_a|mn12_g1|mp24_g0",
+        "d": "bn|invb_y|mn34_g1|mp24_g1|y",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$55",
+      "class": "nfet",
+      "nets": {
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "g": "a|inva_a|mn12_g0|mp13_g0|ro3|y",
+        "d": "an|inva_y|mn34_g0|mp13_g1|y",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$56",
+      "class": "nfet",
+      "nets": {
+        "s": "y",
+        "g": "an|inva_y|mn34_g0|mp13_g1|y",
+        "d": "\\$86",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.2184,
+        "ps_um": 2.62,
+        "pd_um": 1.36
+      }
+    },
+    {
+      "name": "$57",
+      "class": "nfet",
+      "nets": {
+        "s": "\\$86",
+        "g": "bn|invb_y|mn34_g1|mp24_g1|y",
+        "d": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.2184,
+        "ad_um2": 0.3948,
+        "ps_um": 1.36,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$58",
+      "class": "nfet",
+      "nets": {
+        "s": "y",
+        "g": "a|inva_a|mn12_g0|mp13_g0|ro3|y",
+        "d": "\\$87",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.2184,
+        "ps_um": 2.62,
+        "pd_um": 1.36
+      }
+    },
+    {
+      "name": "$59",
+      "class": "nfet",
+      "nets": {
+        "s": "\\$87",
+        "g": "a|b|invb_a|mn12_g1|mp24_g0",
+        "d": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.2184,
+        "ad_um2": 0.3948,
+        "ps_um": 1.36,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$6",
+      "class": "nfet",
+      "nets": {
+        "s": "\\$33",
+        "g": "a|g_a|rn3|ro|s4_y|y",
+        "d": "a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.2184,
+        "ad_um2": 0.3948,
+        "ps_um": 1.36,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$60",
+      "class": "nfet",
+      "nets": {
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "g": "a|b|invb_a|mn12_g1|mp24_g0",
+        "d": "bn|invb_y|mn34_g1|mp24_g1|y",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$61",
+      "class": "nfet",
+      "nets": {
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "g": "a|inva_a|mn12_g0|mp13_g0",
+        "d": "an|inva_y|mn34_g0|mp13_g1|y",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$62",
+      "class": "nfet",
+      "nets": {
+        "s": "y",
+        "g": "an|inva_y|mn34_g0|mp13_g1|y",
+        "d": "\\$89",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.2184,
+        "ps_um": 2.62,
+        "pd_um": 1.36
+      }
+    },
+    {
+      "name": "$63",
+      "class": "nfet",
+      "nets": {
+        "s": "\\$89",
+        "g": "bn|invb_y|mn34_g1|mp24_g1|y",
+        "d": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.2184,
+        "ad_um2": 0.3948,
+        "ps_um": 1.36,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$64",
+      "class": "nfet",
+      "nets": {
+        "s": "y",
+        "g": "a|inva_a|mn12_g0|mp13_g0",
+        "d": "\\$90",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.2184,
+        "ps_um": 2.62,
+        "pd_um": 1.36
+      }
+    },
+    {
+      "name": "$65",
+      "class": "nfet",
+      "nets": {
+        "s": "\\$90",
+        "g": "a|b|invb_a|mn12_g1|mp24_g0",
+        "d": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.2184,
+        "ad_um2": 0.3948,
+        "ps_um": 1.36,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$66",
+      "class": "nfet",
+      "nets": {
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "g": "a|b|invb_a|mn12_g1|mp24_g0",
+        "d": "bn|invb_y|mn34_g1|mp24_g1|y",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$67",
+      "class": "pfet",
+      "nets": {
+        "s": "vdd",
+        "g": "a|g_a|rn1|ro|s4_y|y",
+        "d": "a|inva_a|mn12_g0|mp13_g0|ro1|y",
+        "b": "vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$68",
+      "class": "pfet",
+      "nets": {
+        "s": "vdd",
+        "g": "a|g_a|rn2|ro|s4_y|y",
+        "d": "ro2|y",
+        "b": "vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$69",
+      "class": "pfet",
+      "nets": {
+        "s": "vdd",
+        "g": "a|g_a|rn3|ro|s4_y|y",
+        "d": "a|inva_a|mn12_g0|mp13_g0|ro3|y",
+        "b": "vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$7",
+      "class": "nfet",
+      "nets": {
+        "s": "ny",
+        "g": "en|en4|g_en",
+        "d": "\\$42",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.2184,
+        "ps_um": 2.62,
+        "pd_um": 1.36
+      }
+    },
+    {
+      "name": "$70",
+      "class": "pfet",
+      "nets": {
+        "s": "vdd",
+        "g": "a|g_a|rn4|ro|s4_y|y",
+        "d": "ro4|y",
+        "b": "vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$71",
+      "class": "pfet",
+      "nets": {
+        "s": "mpa_py|mpb_py|mph_py|py",
+        "g": "en|en1|g_en",
+        "d": "a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y",
+        "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr1"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$72",
+      "class": "pfet",
+      "nets": {
+        "s": "a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y",
+        "g": "a|g_a|rn1|ro|s4_y|y",
+        "d": "mpa_py|mpb_py|mph_py|py",
+        "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr1"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$73",
+      "class": "pfet",
+      "nets": {
+        "s": "py",
+        "g": "a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y",
+        "d": "a|n2|s1_y|s2_a|y",
+        "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr1"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$74",
+      "class": "pfet",
+      "nets": {
+        "s": "py",
+        "g": "a|n2|s1_y|s2_a|y",
+        "d": "a|n3|s2_y|s3_a|y",
+        "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr1"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$75",
+      "class": "pfet",
+      "nets": {
+        "s": "py",
+        "g": "a|n3|s2_y|s3_a|y",
+        "d": "a|n4|s3_y|s4_a|y",
+        "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr1"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$76",
+      "class": "pfet",
+      "nets": {
+        "s": "py",
+        "g": "a|n4|s3_y|s4_a|y",
+        "d": "a|g_a|rn1|ro|s4_y|y",
+        "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr1"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$77",
+      "class": "pfet",
+      "nets": {
+        "s": "mpa_py|mpb_py|mph_py|py",
+        "g": "en|en2|g_en",
+        "d": "a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y",
+        "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr2"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$78",
+      "class": "pfet",
+      "nets": {
+        "s": "a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y",
+        "g": "a|g_a|rn2|ro|s4_y|y",
+        "d": "mpa_py|mpb_py|mph_py|py",
+        "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr2"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$79",
+      "class": "pfet",
+      "nets": {
+        "s": "py",
+        "g": "a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y",
+        "d": "a|n2|s1_y|s2_a|y",
+        "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr2"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$8",
+      "class": "nfet",
+      "nets": {
+        "s": "\\$42",
+        "g": "a|g_a|rn4|ro|s4_y|y",
+        "d": "a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.2184,
+        "ad_um2": 0.3948,
+        "ps_um": 1.36,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$80",
+      "class": "pfet",
+      "nets": {
+        "s": "py",
+        "g": "a|n2|s1_y|s2_a|y",
+        "d": "a|n3|s2_y|s3_a|y",
+        "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr2"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$81",
+      "class": "pfet",
+      "nets": {
+        "s": "py",
+        "g": "a|n3|s2_y|s3_a|y",
+        "d": "a|n4|s3_y|s4_a|y",
+        "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr2"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$82",
+      "class": "pfet",
+      "nets": {
+        "s": "py",
+        "g": "a|n4|s3_y|s4_a|y",
+        "d": "a|g_a|rn2|ro|s4_y|y",
+        "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr2"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$83",
+      "class": "pfet",
+      "nets": {
+        "s": "mpa_py|mpb_py|mph_py|py",
+        "g": "en|en3|g_en",
+        "d": "a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y",
+        "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr3"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$84",
+      "class": "pfet",
+      "nets": {
+        "s": "a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y",
+        "g": "a|g_a|rn3|ro|s4_y|y",
+        "d": "mpa_py|mpb_py|mph_py|py",
+        "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr3"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$85",
+      "class": "pfet",
+      "nets": {
+        "s": "py",
+        "g": "a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y",
+        "d": "a|n2|s1_y|s2_a|y",
+        "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr3"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$86",
+      "class": "pfet",
+      "nets": {
+        "s": "py",
+        "g": "a|n2|s1_y|s2_a|y",
+        "d": "a|n3|s2_y|s3_a|y",
+        "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr3"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$87",
+      "class": "pfet",
+      "nets": {
+        "s": "py",
+        "g": "a|n3|s2_y|s3_a|y",
+        "d": "a|n4|s3_y|s4_a|y",
+        "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr3"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$88",
+      "class": "pfet",
+      "nets": {
+        "s": "py",
+        "g": "a|n4|s3_y|s4_a|y",
+        "d": "a|g_a|rn3|ro|s4_y|y",
+        "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr3"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$89",
+      "class": "pfet",
+      "nets": {
+        "s": "mpa_py|mpb_py|mph_py|py",
+        "g": "en|en4|g_en",
+        "d": "a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y",
+        "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr4"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$9",
+      "class": "nfet",
+      "nets": {
+        "s": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "g": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr3",
+        "d": "ny",
+        "b": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.46,
+        "as_um2": 0.1932,
+        "ad_um2": 0.1932,
+        "ps_um": 1.76,
+        "pd_um": 1.76
+      }
+    },
+    {
+      "name": "$90",
+      "class": "pfet",
+      "nets": {
+        "s": "a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y",
+        "g": "a|g_a|rn4|ro|s4_y|y",
+        "d": "mpa_py|mpb_py|mph_py|py",
+        "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr4"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$91",
+      "class": "pfet",
+      "nets": {
+        "s": "py",
+        "g": "a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y",
+        "d": "a|n2|s1_y|s2_a|y",
+        "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr4"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$92",
+      "class": "pfet",
+      "nets": {
+        "s": "py",
+        "g": "a|n2|s1_y|s2_a|y",
+        "d": "a|n3|s2_y|s3_a|y",
+        "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr4"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$93",
+      "class": "pfet",
+      "nets": {
+        "s": "py",
+        "g": "a|n3|s2_y|s3_a|y",
+        "d": "a|n4|s3_y|s4_a|y",
+        "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr4"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$94",
+      "class": "pfet",
+      "nets": {
+        "s": "py",
+        "g": "a|n4|s3_y|s4_a|y",
+        "d": "a|g_a|rn4|ro|s4_y|y",
+        "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr4"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$95",
+      "class": "pfet",
+      "nets": {
+        "s": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr1",
+        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "d": "mpa_py|mpb_py|mph_py|py",
+        "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr1"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.42,
+        "as_um2": 0.1764,
+        "ad_um2": 0.1764,
+        "ps_um": 1.68,
+        "pd_um": 1.68
+      }
+    },
+    {
+      "name": "$96",
+      "class": "pfet",
+      "nets": {
+        "s": "vdd",
+        "g": "a|inva_a|mn12_g0|mp13_g0|ro1|y",
+        "d": "an|inva_y|mn34_g0|mp13_g1|y",
+        "b": "vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$97",
+      "class": "pfet",
+      "nets": {
+        "s": "vdd",
+        "g": "a|inva_a|mn12_g0|mp13_g0|ro1|y",
+        "d": "mid",
+        "b": "vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 1.68,
+        "as_um2": 0.7896,
+        "ad_um2": 0.4368,
+        "ps_um": 4.3,
+        "pd_um": 2.2
+      }
+    },
+    {
+      "name": "$98",
+      "class": "pfet",
+      "nets": {
+        "s": "mid",
+        "g": "an|inva_y|mn34_g0|mp13_g1|y",
+        "d": "y",
+        "b": "vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 1.68,
+        "as_um2": 0.4368,
+        "ad_um2": 0.7896,
+        "ps_um": 2.2,
+        "pd_um": 4.3
+      }
+    },
+    {
+      "name": "$99",
+      "class": "pfet",
+      "nets": {
+        "s": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr1",
+        "g": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+        "d": "py",
+        "b": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr1"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.42,
+        "as_um2": 0.1764,
+        "ad_um2": 0.1764,
+        "ps_um": 1.68,
+        "pd_um": 1.68
+      }
+    }
+  ],
+  "nets": [
+    {
+      "name": "\\$16",
+      "pin": false,
+      "device_count": 2
+    },
+    {
+      "name": "\\$25",
+      "pin": false,
+      "device_count": 2
+    },
+    {
+      "name": "\\$33",
+      "pin": false,
+      "device_count": 2
+    },
+    {
+      "name": "\\$42",
+      "pin": false,
+      "device_count": 2
+    },
+    {
+      "name": "\\$83",
+      "pin": false,
+      "device_count": 2
+    },
+    {
+      "name": "\\$84",
+      "pin": false,
+      "device_count": 2
+    },
+    {
+      "name": "\\$86",
+      "pin": false,
+      "device_count": 2
+    },
+    {
+      "name": "\\$87",
+      "pin": false,
+      "device_count": 2
+    },
+    {
+      "name": "\\$89",
+      "pin": false,
+      "device_count": 2
+    },
+    {
+      "name": "\\$90",
+      "pin": false,
+      "device_count": 2
+    },
+    {
+      "name": "an|inva_y|mn34_g0|mp13_g1|y",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "an|inva_y|mn34_g0|mp13_g1|y",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "an|inva_y|mn34_g0|mp13_g1|y",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "a|b|invb_a|mn12_g1|mp24_g0",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "a|b|invb_a|mn12_g1|mp24_g0",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "a|b|invb_a|mn12_g1|mp24_g0",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "a|g_a|rn1|ro|s4_y|y",
+      "pin": true,
+      "device_count": 6
+    },
+    {
+      "name": "a|g_a|rn2|ro|s4_y|y",
+      "pin": true,
+      "device_count": 6
+    },
+    {
+      "name": "a|g_a|rn3|ro|s4_y|y",
+      "pin": true,
+      "device_count": 6
+    },
+    {
+      "name": "a|g_a|rn4|ro|s4_y|y",
+      "pin": true,
+      "device_count": 6
+    },
+    {
+      "name": "a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y",
+      "pin": true,
+      "device_count": 5
+    },
+    {
+      "name": "a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y",
+      "pin": true,
+      "device_count": 5
+    },
+    {
+      "name": "a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y",
+      "pin": true,
+      "device_count": 5
+    },
+    {
+      "name": "a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y",
+      "pin": true,
+      "device_count": 5
+    },
+    {
+      "name": "a|inva_a|mn12_g0|mp13_g0",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "a|inva_a|mn12_g0|mp13_g0|ro1|y",
+      "pin": true,
+      "device_count": 6
+    },
+    {
+      "name": "a|inva_a|mn12_g0|mp13_g0|ro3|y",
+      "pin": true,
+      "device_count": 6
+    },
+    {
+      "name": "a|n2|s1_y|s2_a|y",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "a|n2|s1_y|s2_a|y",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "a|n2|s1_y|s2_a|y",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "a|n2|s1_y|s2_a|y",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "a|n3|s2_y|s3_a|y",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "a|n3|s2_y|s3_a|y",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "a|n3|s2_y|s3_a|y",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "a|n3|s2_y|s3_a|y",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "a|n4|s3_y|s4_a|y",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "a|n4|s3_y|s4_a|y",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "a|n4|s3_y|s4_a|y",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "a|n4|s3_y|s4_a|y",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "bn|invb_y|mn34_g1|mp24_g1|y",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "bn|invb_y|mn34_g1|mp24_g1|y",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "bn|invb_y|mn34_g1|mp24_g1|y",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "en|en1|g_en",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "en|en2|g_en",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "en|en3|g_en",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "en|en4|g_en",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr1",
+      "pin": true,
+      "device_count": 21
+    },
+    {
+      "name": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr2",
+      "pin": true,
+      "device_count": 21
+    },
+    {
+      "name": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr3",
+      "pin": true,
+      "device_count": 21
+    },
+    {
+      "name": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr4",
+      "pin": true,
+      "device_count": 21
+    },
+    {
+      "name": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+      "pin": true,
+      "device_count": 122
+    },
+    {
+      "name": "mid",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "mid",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "mid",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "mpa_py|mpb_py|mph_py|py",
+      "pin": true,
+      "device_count": 3
+    },
+    {
+      "name": "mpa_py|mpb_py|mph_py|py",
+      "pin": true,
+      "device_count": 3
+    },
+    {
+      "name": "mpa_py|mpb_py|mph_py|py",
+      "pin": true,
+      "device_count": 3
+    },
+    {
+      "name": "mpa_py|mpb_py|mph_py|py",
+      "pin": true,
+      "device_count": 3
+    },
+    {
+      "name": "ny",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "ny",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "ny",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "ny",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "ny",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "ny",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "ny",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "ny",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "ny",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "ny",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "ny",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "ny",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "ny",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "ny",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "ny",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "ny",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "ny",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "ny",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "ny",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "ny",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "py",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "py",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "py",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "py",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "py",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "py",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "py",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "py",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "py",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "py",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "py",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "py",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "py",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "py",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "py",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "py",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "ro2|y",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "ro4|y",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "vdd",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "vdd",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "vdd",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "vdd",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "vdd",
+      "pin": true,
+      "device_count": 10
+    },
+    {
+      "name": "vdd",
+      "pin": true,
+      "device_count": 10
+    },
+    {
+      "name": "vdd",
+      "pin": true,
+      "device_count": 10
+    },
+    {
+      "name": "y",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "y",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "y",
+      "pin": true,
+      "device_count": 4
+    }
+  ],
+  "warnings": [
+    "promoted 5 net(s) to top-level pins from label(s) found only below the top cell (inside instanced sub-cells): mid, ny, py, vdd, y -- these are internal nodes once instanced; pass top_cell_pins_only (--top-cell-pins) to keep them internal (issue #291)",
+    "net 'an|inva_y|mn34_g0|mp13_g1|y' merges 5 distinct labels (an, inva_y, mn34_g0, mp13_g1, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'an|inva_y|mn34_g0|mp13_g1|y' merges 5 distinct labels (an, inva_y, mn34_g0, mp13_g1, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'an|inva_y|mn34_g0|mp13_g1|y' merges 5 distinct labels (an, inva_y, mn34_g0, mp13_g1, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|b|invb_a|mn12_g1|mp24_g0' merges 5 distinct labels (a, b, invb_a, mn12_g1, mp24_g0) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|b|invb_a|mn12_g1|mp24_g0' merges 5 distinct labels (a, b, invb_a, mn12_g1, mp24_g0) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|b|invb_a|mn12_g1|mp24_g0' merges 5 distinct labels (a, b, invb_a, mn12_g1, mp24_g0) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|g_a|rn1|ro|s4_y|y' merges 6 distinct labels (a, g_a, rn1, ro, s4_y, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|g_a|rn2|ro|s4_y|y' merges 6 distinct labels (a, g_a, rn2, ro, s4_y, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|g_a|rn3|ro|s4_y|y' merges 6 distinct labels (a, g_a, rn3, ro, s4_y, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|g_a|rn4|ro|s4_y|y' merges 6 distinct labels (a, g_a, rn4, ro, s4_y, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y' merges 8 distinct labels (a, g_y, mnab_y, mpa_y, mpb_y, n1, s1_a, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y' merges 8 distinct labels (a, g_y, mnab_y, mpa_y, mpb_y, n1, s1_a, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y' merges 8 distinct labels (a, g_y, mnab_y, mpa_y, mpb_y, n1, s1_a, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y' merges 8 distinct labels (a, g_y, mnab_y, mpa_y, mpb_y, n1, s1_a, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|inva_a|mn12_g0|mp13_g0' merges 4 distinct labels (a, inva_a, mn12_g0, mp13_g0) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|inva_a|mn12_g0|mp13_g0|ro1|y' merges 6 distinct labels (a, inva_a, mn12_g0, mp13_g0, ro1, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|inva_a|mn12_g0|mp13_g0|ro3|y' merges 6 distinct labels (a, inva_a, mn12_g0, mp13_g0, ro3, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|n2|s1_y|s2_a|y' merges 5 distinct labels (a, n2, s1_y, s2_a, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|n2|s1_y|s2_a|y' merges 5 distinct labels (a, n2, s1_y, s2_a, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|n2|s1_y|s2_a|y' merges 5 distinct labels (a, n2, s1_y, s2_a, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|n2|s1_y|s2_a|y' merges 5 distinct labels (a, n2, s1_y, s2_a, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|n3|s2_y|s3_a|y' merges 5 distinct labels (a, n3, s2_y, s3_a, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|n3|s2_y|s3_a|y' merges 5 distinct labels (a, n3, s2_y, s3_a, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|n3|s2_y|s3_a|y' merges 5 distinct labels (a, n3, s2_y, s3_a, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|n3|s2_y|s3_a|y' merges 5 distinct labels (a, n3, s2_y, s3_a, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|n4|s3_y|s4_a|y' merges 5 distinct labels (a, n4, s3_y, s4_a, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|n4|s3_y|s4_a|y' merges 5 distinct labels (a, n4, s3_y, s4_a, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|n4|s3_y|s4_a|y' merges 5 distinct labels (a, n4, s3_y, s4_a, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|n4|s3_y|s4_a|y' merges 5 distinct labels (a, n4, s3_y, s4_a, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'bn|invb_y|mn34_g1|mp24_g1|y' merges 5 distinct labels (bn, invb_y, mn34_g1, mp24_g1, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'bn|invb_y|mn34_g1|mp24_g1|y' merges 5 distinct labels (bn, invb_y, mn34_g1, mp24_g1, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'bn|invb_y|mn34_g1|mp24_g1|y' merges 5 distinct labels (bn, invb_y, mn34_g1, mp24_g1, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'en|en1|g_en' merges 3 distinct labels (en, en1, g_en) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'en|en2|g_en' merges 3 distinct labels (en, en2, g_en) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'en|en3|g_en' merges 3 distinct labels (en, en3, g_en) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'en|en4|g_en' merges 3 distinct labels (en, en4, g_en) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr1' merges 8 distinct labels (g_vddr_m1, mnt_g, s1_vddr_m1, s2_vddr_m1, s3_vddr_m1, s4_vddr_m1, vddr, vddr1) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr2' merges 8 distinct labels (g_vddr_m1, mnt_g, s1_vddr_m1, s2_vddr_m1, s3_vddr_m1, s4_vddr_m1, vddr, vddr2) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr3' merges 8 distinct labels (g_vddr_m1, mnt_g, s1_vddr_m1, s2_vddr_m1, s3_vddr_m1, s4_vddr_m1, vddr, vddr3) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr4' merges 8 distinct labels (g_vddr_m1, mnt_g, s1_vddr_m1, s2_vddr_m1, s3_vddr_m1, s4_vddr_m1, vddr, vddr4) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss' merges 7 distinct labels (g_vss_m1, mph_g, s1_vss_m1, s2_vss_m1, s3_vss_m1, s4_vss_m1, vss) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'mpa_py|mpb_py|mph_py|py' merges 4 distinct labels (mpa_py, mpb_py, mph_py, py) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'mpa_py|mpb_py|mph_py|py' merges 4 distinct labels (mpa_py, mpb_py, mph_py, py) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'mpa_py|mpb_py|mph_py|py' merges 4 distinct labels (mpa_py, mpb_py, mph_py, py) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'mpa_py|mpb_py|mph_py|py' merges 4 distinct labels (mpa_py, mpb_py, mph_py, py) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'ro2|y' merges 2 distinct labels (ro2, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'ro4|y' merges 2 distinct labels (ro4, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section."
+  ],
+  "black_box_regions": [],
+  "abstracted_cells": [],
+  "unmodelled_poly": [],
+  "merged_net_labels": [
+    {
+      "net": "an|inva_y|mn34_g0|mp13_g1|y",
+      "labels": [
+        "an",
+        "inva_y",
+        "mn34_g0",
+        "mp13_g1",
+        "y"
+      ]
+    },
+    {
+      "net": "an|inva_y|mn34_g0|mp13_g1|y",
+      "labels": [
+        "an",
+        "inva_y",
+        "mn34_g0",
+        "mp13_g1",
+        "y"
+      ]
+    },
+    {
+      "net": "an|inva_y|mn34_g0|mp13_g1|y",
+      "labels": [
+        "an",
+        "inva_y",
+        "mn34_g0",
+        "mp13_g1",
+        "y"
+      ]
+    },
+    {
+      "net": "a|b|invb_a|mn12_g1|mp24_g0",
+      "labels": [
+        "a",
+        "b",
+        "invb_a",
+        "mn12_g1",
+        "mp24_g0"
+      ]
+    },
+    {
+      "net": "a|b|invb_a|mn12_g1|mp24_g0",
+      "labels": [
+        "a",
+        "b",
+        "invb_a",
+        "mn12_g1",
+        "mp24_g0"
+      ]
+    },
+    {
+      "net": "a|b|invb_a|mn12_g1|mp24_g0",
+      "labels": [
+        "a",
+        "b",
+        "invb_a",
+        "mn12_g1",
+        "mp24_g0"
+      ]
+    },
+    {
+      "net": "a|g_a|rn1|ro|s4_y|y",
+      "labels": [
+        "a",
+        "g_a",
+        "rn1",
+        "ro",
+        "s4_y",
+        "y"
+      ]
+    },
+    {
+      "net": "a|g_a|rn2|ro|s4_y|y",
+      "labels": [
+        "a",
+        "g_a",
+        "rn2",
+        "ro",
+        "s4_y",
+        "y"
+      ]
+    },
+    {
+      "net": "a|g_a|rn3|ro|s4_y|y",
+      "labels": [
+        "a",
+        "g_a",
+        "rn3",
+        "ro",
+        "s4_y",
+        "y"
+      ]
+    },
+    {
+      "net": "a|g_a|rn4|ro|s4_y|y",
+      "labels": [
+        "a",
+        "g_a",
+        "rn4",
+        "ro",
+        "s4_y",
+        "y"
+      ]
+    },
+    {
+      "net": "a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y",
+      "labels": [
+        "a",
+        "g_y",
+        "mnab_y",
+        "mpa_y",
+        "mpb_y",
+        "n1",
+        "s1_a",
+        "y"
+      ]
+    },
+    {
+      "net": "a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y",
+      "labels": [
+        "a",
+        "g_y",
+        "mnab_y",
+        "mpa_y",
+        "mpb_y",
+        "n1",
+        "s1_a",
+        "y"
+      ]
+    },
+    {
+      "net": "a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y",
+      "labels": [
+        "a",
+        "g_y",
+        "mnab_y",
+        "mpa_y",
+        "mpb_y",
+        "n1",
+        "s1_a",
+        "y"
+      ]
+    },
+    {
+      "net": "a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y",
+      "labels": [
+        "a",
+        "g_y",
+        "mnab_y",
+        "mpa_y",
+        "mpb_y",
+        "n1",
+        "s1_a",
+        "y"
+      ]
+    },
+    {
+      "net": "a|inva_a|mn12_g0|mp13_g0",
+      "labels": [
+        "a",
+        "inva_a",
+        "mn12_g0",
+        "mp13_g0"
+      ]
+    },
+    {
+      "net": "a|inva_a|mn12_g0|mp13_g0|ro1|y",
+      "labels": [
+        "a",
+        "inva_a",
+        "mn12_g0",
+        "mp13_g0",
+        "ro1",
+        "y"
+      ]
+    },
+    {
+      "net": "a|inva_a|mn12_g0|mp13_g0|ro3|y",
+      "labels": [
+        "a",
+        "inva_a",
+        "mn12_g0",
+        "mp13_g0",
+        "ro3",
+        "y"
+      ]
+    },
+    {
+      "net": "a|n2|s1_y|s2_a|y",
+      "labels": [
+        "a",
+        "n2",
+        "s1_y",
+        "s2_a",
+        "y"
+      ]
+    },
+    {
+      "net": "a|n2|s1_y|s2_a|y",
+      "labels": [
+        "a",
+        "n2",
+        "s1_y",
+        "s2_a",
+        "y"
+      ]
+    },
+    {
+      "net": "a|n2|s1_y|s2_a|y",
+      "labels": [
+        "a",
+        "n2",
+        "s1_y",
+        "s2_a",
+        "y"
+      ]
+    },
+    {
+      "net": "a|n2|s1_y|s2_a|y",
+      "labels": [
+        "a",
+        "n2",
+        "s1_y",
+        "s2_a",
+        "y"
+      ]
+    },
+    {
+      "net": "a|n3|s2_y|s3_a|y",
+      "labels": [
+        "a",
+        "n3",
+        "s2_y",
+        "s3_a",
+        "y"
+      ]
+    },
+    {
+      "net": "a|n3|s2_y|s3_a|y",
+      "labels": [
+        "a",
+        "n3",
+        "s2_y",
+        "s3_a",
+        "y"
+      ]
+    },
+    {
+      "net": "a|n3|s2_y|s3_a|y",
+      "labels": [
+        "a",
+        "n3",
+        "s2_y",
+        "s3_a",
+        "y"
+      ]
+    },
+    {
+      "net": "a|n3|s2_y|s3_a|y",
+      "labels": [
+        "a",
+        "n3",
+        "s2_y",
+        "s3_a",
+        "y"
+      ]
+    },
+    {
+      "net": "a|n4|s3_y|s4_a|y",
+      "labels": [
+        "a",
+        "n4",
+        "s3_y",
+        "s4_a",
+        "y"
+      ]
+    },
+    {
+      "net": "a|n4|s3_y|s4_a|y",
+      "labels": [
+        "a",
+        "n4",
+        "s3_y",
+        "s4_a",
+        "y"
+      ]
+    },
+    {
+      "net": "a|n4|s3_y|s4_a|y",
+      "labels": [
+        "a",
+        "n4",
+        "s3_y",
+        "s4_a",
+        "y"
+      ]
+    },
+    {
+      "net": "a|n4|s3_y|s4_a|y",
+      "labels": [
+        "a",
+        "n4",
+        "s3_y",
+        "s4_a",
+        "y"
+      ]
+    },
+    {
+      "net": "bn|invb_y|mn34_g1|mp24_g1|y",
+      "labels": [
+        "bn",
+        "invb_y",
+        "mn34_g1",
+        "mp24_g1",
+        "y"
+      ]
+    },
+    {
+      "net": "bn|invb_y|mn34_g1|mp24_g1|y",
+      "labels": [
+        "bn",
+        "invb_y",
+        "mn34_g1",
+        "mp24_g1",
+        "y"
+      ]
+    },
+    {
+      "net": "bn|invb_y|mn34_g1|mp24_g1|y",
+      "labels": [
+        "bn",
+        "invb_y",
+        "mn34_g1",
+        "mp24_g1",
+        "y"
+      ]
+    },
+    {
+      "net": "en|en1|g_en",
+      "labels": [
+        "en",
+        "en1",
+        "g_en"
+      ]
+    },
+    {
+      "net": "en|en2|g_en",
+      "labels": [
+        "en",
+        "en2",
+        "g_en"
+      ]
+    },
+    {
+      "net": "en|en3|g_en",
+      "labels": [
+        "en",
+        "en3",
+        "g_en"
+      ]
+    },
+    {
+      "net": "en|en4|g_en",
+      "labels": [
+        "en",
+        "en4",
+        "g_en"
+      ]
+    },
+    {
+      "net": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr1",
+      "labels": [
+        "g_vddr_m1",
+        "mnt_g",
+        "s1_vddr_m1",
+        "s2_vddr_m1",
+        "s3_vddr_m1",
+        "s4_vddr_m1",
+        "vddr",
+        "vddr1"
+      ]
+    },
+    {
+      "net": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr2",
+      "labels": [
+        "g_vddr_m1",
+        "mnt_g",
+        "s1_vddr_m1",
+        "s2_vddr_m1",
+        "s3_vddr_m1",
+        "s4_vddr_m1",
+        "vddr",
+        "vddr2"
+      ]
+    },
+    {
+      "net": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr3",
+      "labels": [
+        "g_vddr_m1",
+        "mnt_g",
+        "s1_vddr_m1",
+        "s2_vddr_m1",
+        "s3_vddr_m1",
+        "s4_vddr_m1",
+        "vddr",
+        "vddr3"
+      ]
+    },
+    {
+      "net": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr4",
+      "labels": [
+        "g_vddr_m1",
+        "mnt_g",
+        "s1_vddr_m1",
+        "s2_vddr_m1",
+        "s3_vddr_m1",
+        "s4_vddr_m1",
+        "vddr",
+        "vddr4"
+      ]
+    },
+    {
+      "net": "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss",
+      "labels": [
+        "g_vss_m1",
+        "mph_g",
+        "s1_vss_m1",
+        "s2_vss_m1",
+        "s3_vss_m1",
+        "s4_vss_m1",
+        "vss"
+      ]
+    },
+    {
+      "net": "mpa_py|mpb_py|mph_py|py",
+      "labels": [
+        "mpa_py",
+        "mpb_py",
+        "mph_py",
+        "py"
+      ]
+    },
+    {
+      "net": "mpa_py|mpb_py|mph_py|py",
+      "labels": [
+        "mpa_py",
+        "mpb_py",
+        "mph_py",
+        "py"
+      ]
+    },
+    {
+      "net": "mpa_py|mpb_py|mph_py|py",
+      "labels": [
+        "mpa_py",
+        "mpb_py",
+        "mph_py",
+        "py"
+      ]
+    },
+    {
+      "net": "mpa_py|mpb_py|mph_py|py",
+      "labels": [
+        "mpa_py",
+        "mpb_py",
+        "mph_py",
+        "py"
+      ]
+    },
+    {
+      "net": "ro2|y",
+      "labels": [
+        "ro2",
+        "y"
+      ]
+    },
+    {
+      "net": "ro4|y",
+      "labels": [
+        "ro4",
+        "y"
+      ]
+    }
+  ],
+  "voltage_domain_warnings": [],
+  "unbiased_pmos_body_nets": [],
+  "single_terminal_nets": [],
+  "dead_metal": [],
+  "matched_device_groups": [],
+  "pdk": null,
+  "provenance": {
+    "klt_version": "0.4.0",
+    "klayout_version": "0.30.12",
+    "pdk": null,
+    "deck": {
+      "name": "sky130",
+      "content_hash": "sha256:5afac7ab8561545859f5e2e74f4621c6ffc052756dc8fe344ea263398e96b240",
+      "released": false
+    },
+    "input": {
+      "content_hash": "sha256:872010345de4f900f4b0e281f48bc1616e960e78ec931ed80264b12900c40bd2"
+    }
+  },
+  "parasitics": null,
+  "spef_path": null
+}

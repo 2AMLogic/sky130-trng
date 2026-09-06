@@ -75,11 +75,13 @@ simulated over the PVT grid — see §5.3 — all four `ro_ring5` rings are
 now composed DRC/LVS-clean on top of them and parasitic-extracted as whole
 rings, and the combining tree's `xor2` is composed DRC/LVS-clean as well,
 which completes every leaf cell `ro_array_core` instantiates. A floorplan
-for the array now exists and its forward ring→buffer signal chain is really
-routed (`layout/ro_array_core-placement-poc/`, DRC-clean), but `vdd`/`vss`
-distribution and the XOR combining tree are still unwired, `xor2` has no
-post-layout record of its own, and there is still no LVS-clean array,
-sampler, or top-level layout, so the whole-block bar is still unmet.)
+for the array now exists, its forward ring→buffer signal chain is really
+routed, and its buffer→XOR `a` leg is now routed for both first-stage XORs
+(`layout/ro_array_core-placement-poc/`, DRC-clean), but the `b` leg,
+`vdd`/`vss` distribution and the XOR combining tree are still unwired,
+`xor2` has no post-layout record of its own, and there is still no
+LVS-clean array, sampler, or top-level layout, so the whole-block bar is
+still unmet.)
 
 ---
 
@@ -466,11 +468,17 @@ that lands this document):
   `layout/ro_array_core-placement-poc/` places all eleven sibling instances
   `ro_array_core` needs (the four rings, four buffers, three combining-tree
   XORs) on one 216.2 × 31.755 µm grid, `klt drc` clean, `klt extract`
-  reporting the expected 132 devices — and its "Increment 2" now routes the
-  forward ring→buffer signal chain on top of that floorplan: `en1..en4`, the
-  four `vddrN` domains and `ro1..ro4` are exposed as top-level pins, and
-  `rn1..rn4` (ring `ro` → buffer `a`) are really routed on met1, still `klt
-  drc` clean (132 devices, 108 nets). `vdd`/`vss` distribution, the XOR
+  reporting the expected 132 devices — its "Increment 2" routed the
+  forward ring→buffer signal chain on top of that floorplan (`en1..en4`, the
+  four `vddrN` domains and `ro1..ro4` exposed as top-level pins, `rn1..rn4`
+  really routed on met1), and its "Increment 3" now routes the buffer→XOR
+  `a` leg for both first-stage XORs (`ro1`→`xa1.a`, `ro3`→`xa2.a`), still
+  `klt drc` clean (132 devices, 106 nets, each of the two new merges
+  confirmed by net diff to join only its intended net). `b`'s own leg
+  (`ro2`→`xa1.b`, `ro4`→`xa2.b`) is deliberately not wired yet — `a`/`b`
+  share the identical `y`, so a naive copy of `a`'s recipe risks a real
+  short, and a closer-approach probe hit a genuine `klt drc` violation
+  instead, so it needs its own derivation. `vdd`/`vss` distribution, the XOR
   combining tree, and any LVS attempt remain open, so this is still a
   partial assembly, not a DRC/LVS-clean block. Still outstanding for
   the brief's full sign-off bar: the array's own routing/LVS

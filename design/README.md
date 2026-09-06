@@ -237,21 +237,28 @@ DR-0003 surfaces and does not resolve on its own authority.
   and LVS-clean cells** — every leaf cell `ro_array_core` instantiates
   (rings, buffers, the combining-tree XOR; see
   [`layout/xor2/`](../layout/xor2/README.md) for the newest) — plus, this
-  increment, `ro_array_core`'s own **forward ring→buffer signal chain
-  routed**:
+  increment, `ro_array_core`'s own **buffer→XOR `a` leg routed** for both
+  first-stage XORs:
   [`layout/ro_array_core-placement-poc/`](../layout/ro_array_core-placement-poc/README.md)'s
-  "Increment 2" section takes the same eleven-sibling, 216.2 x 31.755 µm
-  floorplan from the prior increment and exposes `en1..en4`/the four
-  `vddrN` domains/`ro1..ro4` as top-level pins (no routing needed — each is
-  already a single node inside its own block) plus **really routes**
-  `rn1..rn4` (`ro_ring5.ro` → `ro_buf.a`) on met1 — the first inter-cell
-  wiring at this hierarchy level. Still `klt drc` clean (0 violations);
-  `klt extract` now reports the same 132 devices and 108 nets (down from
-  112, exactly the four new merges, each confirmed to join only its
-  intended pair). Still open: `vdd`/`vss` (a genuinely global net shared by
-  rings, buffers *and* XORs), the buffer→XOR nets' second leg and the XOR
-  combining tree (`t1`, `t2`, `xo`), and therefore any LVS attempt — so
-  `ro_array_core` is not yet a DRC/LVS-clean block. `sampler_core`/
+  "Increment 3" section really routes `ro1` (`buf1.y`) into `xa1.a` and
+  `ro3` (`buf3.y`) into `xa2.a` on met1 — the first routing this hierarchy
+  level has drawn between the ring/buffer row and the XOR combining-tree
+  row. Still `klt drc` clean (0 violations); `klt extract` now reports the
+  same 132 devices and 106 nets (down from 108, exactly the two new merges,
+  each confirmed by a net-by-net diff to join only its intended `a`-labelled
+  net). `b` (`ro2`/`ro4` into `xa1.b`/`xa2.b`) is deliberately not wired
+  yet — `a` and `b` share the identical `y`, so a naive copy of `a`'s recipe
+  risks routing straight through `a`'s own backbone; a closer-approach probe
+  composed but hit a genuine `klt drc` violation instead, so `b` needs its
+  own derivation (see the PoC's own README). The prior increment routed
+  `ro_array_core`'s forward ring→buffer signal chain: the same eleven-sibling,
+  216.2 x 31.755 µm floorplan exposes `en1..en4`/the four `vddrN` domains/
+  `ro1..ro4` as top-level pins (no routing needed — each is already a single
+  node inside its own block) plus really routes `rn1..rn4` (`ro_ring5.ro` →
+  `ro_buf.a`) on met1. Still open: `ro2`/`ro4`'s leg into `xa1.b`/`xa2.b`,
+  `vdd`/`vss` (a genuinely global net shared by rings, buffers *and* XORs),
+  and the XOR combining tree (`t1`, `t2`, `xo`), and therefore any LVS
+  attempt — so `ro_array_core` is not yet a DRC/LVS-clean block. `sampler_core`/
   `sampler_dff` remain untouched. The thirteen before it are nine leaf gates plus all
   four `ro_ring5` rings ([`layout/ro_ring5/`](../layout/ro_ring5/README.md)
   and `ro_ring5_wstv0p{44,46,48}/`), each `klt drc` clean (0 violations) and

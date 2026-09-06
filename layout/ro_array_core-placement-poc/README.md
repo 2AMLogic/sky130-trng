@@ -15,7 +15,7 @@ hierarchy: a named, honestly-scoped proof of concept that establishes the
 block. **This is not a DRC/LVS-clean `ro_array_core`** — see "What this does
 NOT establish" below.
 
-## Increment 2: forward ring→buffer signal chain routed (this update)
+## Increment 2: forward ring→buffer signal chain routed
 
 The candidate coordinate table below (from the placement-only increment) is
 now **exercised for real**: `en1..en4` and the four `vddrN` domains are
@@ -72,6 +72,104 @@ cd layout/ro_array_core-placement-poc
 klt gen-compose signal.compose.request.json --format json   # -> signal.compose.response.json, ro_array_core_signal_poc.gds
 klt drc ro_array_core_signal_poc.gds --deck sky130 --format json      # -> clean, 0 violations
 klt extract ro_array_core_signal_poc.gds --deck sky130 --format json  # -> 132 devices, 108 nets
+```
+
+## Increment 3: buffer→XOR "a" leg routed for both first-stage XORs (this update)
+
+Continues directly from Increment 2's own "Suggested next steps" item 2:
+`ro1` (`buf1.y`, already a top-level pin) is now **really routed** into
+`xa1`'s `a` input, and `ro3` (`buf3.y`) into `xa2`'s `a` input — the first
+routing this directory has drawn between **row 1** (rings/buffers) and
+**row 2** (the XOR combining tree), an 18.2 µm vertical span most of which
+is empty floorplan gap.
+
+```
+$ klt gen-compose signal2.compose.request.json --format json   # -> signal2.compose.response.json, ro_array_core_signal2_poc.gds
+unrouted_nets: []
+$ klt drc ro_array_core_signal2_poc.gds --deck sky130 --format json
+status: clean, violation_count: 0
+$ klt extract ro_array_core_signal2_poc.gds --deck sky130 --format json
+device_count: 132 (unchanged), net_count: 106 (down from 108), pin_count: 96
+```
+
+`xa1`/`xa2` first needed their own `a`/`b` ports declared on the `blocks[].cell`
+references (neither was declared in Increment 2, since nothing routed to them
+yet) — `layout/xor2/core.compose.response.json`'s own authoritative `inva_a`/
+`invb_a` ports (`x_um: -3.44`/`14.735`, `y_um: 6.81`, li1, `width_um: 0.17`,
+`direction_deg: 180`), the same confirmed-not-approximate coordinates
+Increment 2's own table already flagged as the recommended tap. Net count
+drops by exactly 2 (108→106): `signal2.extract.json`'s own `merged_net_labels`
+confirms each drop is `ro1`/`ro3` joining **only** its intended `a`-labelled
+net (`a|inva_a|mn12_g0|mp13_g0|ro1|y` and the `xa2` equivalent for `ro3`) —
+diffed net-by-net against Increment 2's own committed `signal.extract.json`,
+nothing else in the design changed labels (the numbered `$N` anonymous nets
+are KLayout's own harmless renumbering, not a real change).
+
+**Two floorplan/tool findings, both empirically confirmed rather than
+theorized:**
+
+1. **The escape from `buf1.y`/`buf3.y` needed its own fix, independent of
+   the "approach the destination horizontally" rule Increment 2 found.**
+   The first attempt (`waypoints_um` starting with a vertical move straight
+   off `buf1.y`) failed with `gen-compose`'s own diagnostic naming the
+   *source* block: `"backbone's 0.17um-wide drawn path crosses 3.485um
+   through its own pin's block 'buf1' -- more than that pin's own 0.17um
+   edge margin"`. `buf1.y`/`buf3.y` sit only `0.085 um` from `ro_buf`'s own
+   east bbox edge (`direction_deg: 0`, i.e. the pin's stub opens eastward),
+   so a waypoint that moves *north* while still inside that 0.085 µm-wide
+   column reads as "crossing" the whole vertical extent of `buf1`'s bbox
+   above the pin, not just the tiny horizontal sliver the margin allows.
+   The fix: escape **east** past the block's own edge first (`(50.215,1.2)
+   -> (50.5,1.2)`, `50.5 > buf1`'s own `x1=50.3`), *then* turn north into the
+   clear inter-row channel. Once outside the block, the rest of the route
+   (a shared-style corridor at `y=8.0`/`9.0`, distinct per net so their
+   backbones cannot intersect, then a vertical approach fully outside `xa1`/
+   `xa2`'s own bbox, only turning onto the target's exact `y=19.395` after
+   crossing into it) composed on the first attempt with **zero** `notes[]`
+   entries — i.e. once the source-side margin fix was applied, `xa1.a`'s own
+   3.445 µm in-block crossing (exactly matching the distance
+   `layout/xor2/core.compose.response.json` itself reports from `xor2`'s own
+   west-most bbox edge to `inva_a`) needed no special-casing at all.
+2. **`b` (`xa1`/`xa2`'s second XOR input, `ro2`/`ro4`) is deliberately NOT
+   wired this increment — routing it naively would risk a real short with
+   `a`, not just a `gen-compose`-detected conflict.** `xor2`'s own `a` and
+   `b` ports sit at the **identical** `y=19.395` (both `inva_a`/`invb_a`
+   direction `180`, i.e. both openable only from the block's west edge), so
+   a straight-line approach to `b` from the west would have to physically
+   run *through* `a`'s own already-accepted backbone (`x` 0..3.445) before
+   reaching `b` at `x=21.62` — `gen-compose`'s #1057 same-request
+   backbone-overlap check would catch this (a loud `unrouted_nets[]` entry,
+   not a silent extraction-time short), so it was not attempted blind. A
+   probe attempt using a *closer*, block-interior vertical approach (turning
+   onto `y=19.395` only ~1.1 µm before `b`, well clear of `a`'s own segment)
+   did compose (`unrouted_nets: []`) but left a **real, `klt drc`-caught**
+   `met1.space.1` violation near `buf2`'s own escape jog (not near `xa1` at
+   all) — so `b`'s routing is a genuinely separate, still-open problem, not
+   a copy-paste of `a`'s recipe with different numbers. That probe's GDS was
+   not committed (its output path collided with, and was regenerated back
+   over, this increment's own `signal2` evidence — the correct `signal2.*`
+   files above were re-verified clean immediately after). Whoever attempts
+   `b` next should budget a fresh escape-margin derivation for `buf2.y`/
+   `buf4.y` rather than reusing `buf1`/`buf3`'s numbers unchanged.
+
+**Still not a DRC/LVS-clean `ro_array_core`**: `ro2`/`ro4` into `xa1.b`/
+`xa2.b` (open per finding 2 above), `vdd`/`vss` (rings, buffers *and* XORs
+all share `vss`; `vdd` is separate and only feeds buffers/XORs), the
+`t1`/`t2`/`xo` combining-tree wiring (`xa1`/`xa2`'s outputs into `xa3`, and
+`xa3`'s own output), and therefore any `klt lvs` attempt. Not re-attempted:
+`compose-cell.py`-style `--check` reproducibility for this multi-file,
+multi-stage POC (unlike the single-cell `layout/<cell>/cell.json` recipe,
+this directory's `signal*.compose.request.json` files are hand-maintained,
+same as Increment 2 left them).
+
+### Reproduce this increment
+
+```bash
+volare enable --pdk sky130 c6d73a35f524070e85faff4a6a9eef49553ebc2b
+cd layout/ro_array_core-placement-poc
+klt gen-compose signal2.compose.request.json --format json   # -> signal2.compose.response.json, ro_array_core_signal2_poc.gds
+klt drc ro_array_core_signal2_poc.gds --deck sky130 --format json      # -> clean, 0 violations
+klt extract ro_array_core_signal2_poc.gds --deck sky130 --format json  # -> 132 devices, 106 nets
 ```
 
 ## What this establishes
@@ -131,12 +229,15 @@ else below is still open.
   graph, by design of a placement-only request). **Resolved for
   `en1..en4`/`vddrN`/`ro1..ro4` (pin exposure, no routing needed — each is
   already a single node inside its own block) and `rn1..rn4` (really
-  routed) by Increment 2 above.** Still fully open: `vdd`/`vss` (the
+  routed) by Increment 2 above.** **Increment 3 further resolves `ro1`'s and
+  `ro3`'s second leg** (into `xa1.a`/`xa2.a`, really routed — see "Increment
+  3" above). Still open: `ro2`/`ro4`'s second leg (into `xa1.b`/`xa2.b` —
+  Increment 3 found a naive copy of `ro1`/`ro3`'s recipe risks a real short
+  with `a`, and a closer approach hit a genuine `klt drc` violation instead,
+  so this needs its own derivation, not a parameter swap), `vdd`/`vss` (the
   buffer/XOR-tree supply, and the vss bus shared by rings, buffers *and*
-  XORs — eleven taps total), the buffer-to-XOR nets `ro1..ro4`'s *second*
-  leg (buffer `y` already exposed as a top-level pin, but not yet also
-  wired into the XOR tree's `a`/`b` inputs), `t1`, `t2`, `xo`, and therefore
-  any LVS attempt.
+  XORs — eleven taps total), `t1`, `t2`, `xo`, and therefore any LVS
+  attempt.
 - **The floorplan is a first-pass grid, not a routing-aware plan.** 5 µm
   gaps were chosen for guaranteed DRC clearance (nwell/tap spacing rules in
   sky130 are sub-micron), not for routability. A next increment may need to
@@ -262,14 +363,16 @@ klt extract ro_array_core_poc.gds --deck sky130 --format json  # -> 132 devices 
    (ring `ro` -> buf `a`)~~ **DONE, Increment 2 above**, on `"metal2"`, with
    one floorplan finding (the block-interior edge-margin rule — see
    Increment 2's own section).
-2. Route `ro1..ro4` (buf `y`, already a top-level pin) into `xor2` `a`/`b`
-   next — cross-row, long hops (buf1's `y` at abs `x≈50` to `xa1`'s `a` at
-   abs `x≈3.4`, e.g., since `xa1` floorplans *above the ring pair*, not above
-   its own feeding buffer) — using the now-confirmed `inva_a`/`invb_a`-style
-   coordinates above. Expect this to need its own channel height distinct
-   from `rn1..rn4`'s (`y=5.6` in `signal.compose.request.json`), since both
-   sets of nets would otherwise contend for the same corridor across the
-   same x-span.
+2. ~~Route `ro1..ro4` (buf `y`, already a top-level pin) into `xor2` `a`/`b`
+   next~~ **`a` DONE, Increment 3 above** (`ro1`->`xa1.a`, `ro3`->`xa2.a`,
+   on `"metal2"`, own dedicated channel per net so their backbones cannot
+   intersect — confirmed needed, matching this bullet's own prediction).
+   **`b` still open** (`ro2`->`xa1.b`, `ro4`->`xa2.b`): Increment 3 found
+   `a`/`b` share the identical `y=19.395` (both only openable from the
+   block's west edge), so `b`'s own recipe cannot be `a`'s with different
+   numbers — see Increment 3's finding 2 for the two approaches already
+   ruled out (a same-request backbone collision with `a`, and a real
+   `met1.space.1` violation near `buf2`'s own escape).
 3. Confirm `xor2`'s `y`/`vdd`/`vss` taps by attempting a real routed
    connection and checking `klt drc`/`klt extract` agree, before trusting
    the `approx` rows above for the combining tree (`t1`, `t2`, `xo`) and the
