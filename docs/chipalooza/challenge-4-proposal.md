@@ -62,8 +62,12 @@ every gap between here and a submittable design rather than glossing over
 it — per this repository's `CLAUDE.md`: "no claim without a testbench" and
 "agents do not relax the ratified spec to make results pass." Layout,
 DRC/LVS-clean GDS, and post-layout PVT simulation — the brief's full
-sign-off bar — do not exist in this repository and are **not** claimed here;
-they are named as explicit follow-up work at the end of this document.
+sign-off bar — do not exist in this repository *for the whole block* and are
+**not** claimed here; they are named as explicit follow-up work at the end
+of this document. (Updated since this document's first revision: nine leaf
+cells now are DRC/LVS-clean and have been extracted with parasitics and
+simulated over the PVT grid — see §5.3 — but with no assembled layout there
+is no inter-cell interconnect, so the whole-block bar is still unmet.)
 
 ---
 
@@ -409,12 +413,20 @@ that lands this document):
   variants" section). The `klayout-tools` regression previously recorded
   here as a blocker
   ([2AMLogic/klayout-tools#1491](https://github.com/2AMLogic/klayout-tools/issues/1491))
-  is fixed. Still outstanding for the brief's full sign-off bar: `xor2`
-  routing (its 12-device placement is now DRC-clean, see
-  `layout/xor2-placement-poc/README.md`, but its routing is a genuine
-  multi-net channel-routing problem not yet solved), the ring, the array,
-  the sampler, parasitic extraction, and post-layout PVT simulation — none
-  of which is attempted in this document. Note also that
+  is fixed. Those nine cells are now also extracted with parasitics and
+  simulated: `layout/pex/` is a generated, `--check`-guarded post-layout
+  netlist library and `sim/post-layout-ro-ring5/` runs the five-stage ring
+  from it over the PVT grid (twelve records, thirty-six corner runs) with
+  the pre-layout netlist as a same-deck control — intra-cell parasitics cost
+  1.378×–1.479× in ring period, and the `wstv` frequency ladder survives
+  them (`spec/decision-records/DR-0005-*.md`). Still outstanding for the
+  brief's full sign-off bar: `xor2` routing (its 12-device placement is now
+  DRC-clean, see `layout/xor2-placement-poc/README.md`, but its routing is a
+  genuine multi-net channel-routing problem not yet solved), the ring, the
+  array and the sampler as assembled layout — and therefore the *whole-block*
+  post-layout PVT simulation the bar actually asks for, since with no
+  assembled layout there is no inter-cell interconnect to extract. None of
+  that is attempted in this document. Note also that
   "DRC-clean" here means clean against `klt`'s **curated** sky130 deck (a
   documented subset — see each `drc.json`'s own `coverage` block), not a
   full sky130 sign-off deck.

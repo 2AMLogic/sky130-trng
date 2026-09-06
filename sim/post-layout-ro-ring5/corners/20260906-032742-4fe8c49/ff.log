@@ -1,0 +1,950 @@
+|* Post-layout ro_ring5: the four-ring wstv frequency ladder, extracted
+|* parasitics vs. the pre-layout netlist, in ONE deck.
+|*
+|* Purpose (issue #22, acceptance criterion 2). Every ro_ring5 number this
+|* repo has recorded so far comes from design/*.spice -- xschem's own
+|* schematic export, with no physical interconnect in it at all. This deck
+|* re-runs the same measurement against layout/pex/ro_ring5_pex.spice, the
+|* `klt extract --parasitics` netlist of the composed, DRC-clean and
+|* LVS-clean cells under layout/ (layout/bin/pex-netlist.py builds it from
+|* the committed GDS; layout/pex/README.md states exactly what its parasitic
+|* model contains).
+|*
+|* Why both rings are in ONE deck rather than compared across two records.
+|* The quantity of interest is a RATIO -- how much slower is the same ring
+|* once its own intra-cell parasitics are present -- and a ratio taken
+|* across two runs silently inherits every difference between them (corner
+|* section, temperature, solver settings, ngspice build, the estimator's own
+|* start-up transient). Running the pre-layout ring as a same-deck control
+|* at the same corner, same temperature, same supply, same timestep and the
+|* same measurement code makes the parasitic contribution the ONLY thing
+|* that differs between the two numbers this deck prints.
+|*
+|* Topology. Eight five-stage rings, built in place exactly as
+|* design/xschem/ro_ring5.sch wires one (ro_nand2 + 4 x ro_stage), on eight
+|* independent supply sources so each ring's own supply current is
+|* separately measurable:
+|*
+|*   p1..p4  POST-LAYOUT, wstv = 0.42 / 0.44 / 0.46 / 0.48 um -- one
+|*           physical cell per ring, the four distinct DRC/LVS-clean
+|*           layout cells under layout/ro_{stage,nand2}[_wstv0p4x]/.
+|*   q1..q4  PRE-LAYOUT control, the identical ladder from
+|*           design/ro_array_core.spice's parameterized .subckt.
+|*
+|* Every ring drives its own output buffer -- a post-layout ro_buf_pex for
+|* p1..p4, a pre-layout ro_buf for q1..q4 -- on one block supply per side,
+|* so no buffer's current contaminates a ring's own vddr.
+|* design/xschem/ro_array_core.sch wires a per-ring output buffer this way,
+|* and buffering ALL four rings rather than one is what makes the four
+|* periods a comparable ladder (see the buffer block below).
+|*
+|* The substrate tie. layout/pex/ro_ring5_pex.spice declares the
+|* extractor's substrate return node `vsubs` .global, and every
+|* net-to-substrate capacitance in every post-layout cell returns to it
+|* (see layout/bin/pex-netlist.py's docstring, and klayout-tools#1503 for
+|* why the extractor's own per-instance scoping cannot be used as-is). This
+|* deck ties it HARD to 0 -- the physically-motivated choice, since every
+|* composed cell carries its own psub guard ring tied to vss and vss is 0
+|* here. The complementary bound (vsubs left floating on the extractor's own
+|* 1 TOhm dc tie, which makes the shared substrate node an inter-ring
+|* coupling path) is measured by this slug's sibling testbench,
+|* tb_post_layout_substrate_float.spice.
+|*
+|* PVT: this deck is run at the same four (temp, supply) points
+|* sim/ro-ring5-swing-and-current/ used, each bundling the tt/ss/ff process
+|* axis into one record:
+|*   -40 degC / 1.62 V   the measured entropy-binding corner (ss)
+|*    27 degC / 1.80 V   nominal
+|*   125 degC / 1.98 V   the worst five-stage ring swing in #10's grid
+|*   -40 degC / 1.98 V   the fastest ring measured anywhere in that grid
+|*
+|* tstop is 160 ns, twice that deck's 80 ns, because the post-layout rings
+|* are slower and the period estimator needs 11 rising edges of the SLOWEST
+|* ring (wstv = 0.42, post-layout, ss / -40 degC / 1.62 V) to fit inside the
+|* window with start-up discarded.
+|*
+|* This file is a TEMPLATE: sim/bin/corner-run.py substitutes /Users/rwalters/.volare/volare/sky130/versions/c6d73a35f524070e85faff4a6a9eef49553ebc2b/sky130A/libs.tech/combined/sky130.lib.spice,
+|* ff, /Users/rwalters/GitHub/sky130-trng/.loom/worktrees/issue-22/design/ro_array_core.spice, /Users/rwalters/GitHub/sky130-trng/.loom/worktrees/issue-22/layout/pex/ro_ring5_pex.spice, -40.0, 1.62 and 5p. As
+|* committed it is not a runnable deck.
+|
+|.option scale=1u
+|.lib "/Users/rwalters/.volare/volare/sky130/versions/c6d73a35f524070e85faff4a6a9eef49553ebc2b/sky130A/libs.tech/combined/sky130.lib.spice" ff
+|
+|* pre-layout subcircuit library (ro_nand2 / ro_stage / ro_buf)
+|.include "/Users/rwalters/GitHub/sky130-trng/.loom/worktrees/issue-22/design/ro_array_core.spice"
+|* post-layout subcircuit library (ro_*_pex_*), generated from layout/
+|.include "/Users/rwalters/GitHub/sky130-trng/.loom/worktrees/issue-22/layout/pex/ro_ring5_pex.spice"
+|
+|.temp -40.0
+|
+|* --- substrate return node: hard tie (see header) ----------------------
+|Vsub vsubs 0 dc 0
+|
+|* --- post-layout rings, one physical cell per wstv ---------------------
+|Vddrp1 vddrp1 0 dc 1.62
+|Venp1 enp1 0 dc 1.62
+|xgp1 p1o enp1 p1a vddrp1 0 ro_nand2_pex_wstv0p42
+|x1p1 p1a p1b vddrp1 0 ro_stage_pex_wstv0p42
+|x2p1 p1b p1c vddrp1 0 ro_stage_pex_wstv0p42
+|x3p1 p1c p1d vddrp1 0 ro_stage_pex_wstv0p42
+|x4p1 p1d p1o vddrp1 0 ro_stage_pex_wstv0p42
+|
+|Vddrp2 vddrp2 0 dc 1.62
+|Venp2 enp2 0 dc 1.62
+|xgp2 p2o enp2 p2a vddrp2 0 ro_nand2_pex_wstv0p44
+|x1p2 p2a p2b vddrp2 0 ro_stage_pex_wstv0p44
+|x2p2 p2b p2c vddrp2 0 ro_stage_pex_wstv0p44
+|x3p2 p2c p2d vddrp2 0 ro_stage_pex_wstv0p44
+|x4p2 p2d p2o vddrp2 0 ro_stage_pex_wstv0p44
+|
+|Vddrp3 vddrp3 0 dc 1.62
+|Venp3 enp3 0 dc 1.62
+|xgp3 p3o enp3 p3a vddrp3 0 ro_nand2_pex_wstv0p46
+|x1p3 p3a p3b vddrp3 0 ro_stage_pex_wstv0p46
+|x2p3 p3b p3c vddrp3 0 ro_stage_pex_wstv0p46
+|x3p3 p3c p3d vddrp3 0 ro_stage_pex_wstv0p46
+|x4p3 p3d p3o vddrp3 0 ro_stage_pex_wstv0p46
+|
+|Vddrp4 vddrp4 0 dc 1.62
+|Venp4 enp4 0 dc 1.62
+|xgp4 p4o enp4 p4a vddrp4 0 ro_nand2_pex_wstv0p48
+|x1p4 p4a p4b vddrp4 0 ro_stage_pex_wstv0p48
+|x2p4 p4b p4c vddrp4 0 ro_stage_pex_wstv0p48
+|x3p4 p4c p4d vddrp4 0 ro_stage_pex_wstv0p48
+|x4p4 p4d p4o vddrp4 0 ro_stage_pex_wstv0p48
+|
+|* --- pre-layout control rings, identical ladder ------------------------
+|Vddrq1 vddrq1 0 dc 1.62
+|Venq1 enq1 0 dc 1.62
+|xgq1 q1o enq1 q1a vddrq1 0 ro_nand2 wstv=0.42 lstv=2 cld=0.5f
+|x1q1 q1a q1b vddrq1 0 ro_stage wstv=0.42 lstv=2 cld=0.5f
+|x2q1 q1b q1c vddrq1 0 ro_stage wstv=0.42 lstv=2 cld=0.5f
+|x3q1 q1c q1d vddrq1 0 ro_stage wstv=0.42 lstv=2 cld=0.5f
+|x4q1 q1d q1o vddrq1 0 ro_stage wstv=0.42 lstv=2 cld=0.5f
+|
+|Vddrq2 vddrq2 0 dc 1.62
+|Venq2 enq2 0 dc 1.62
+|xgq2 q2o enq2 q2a vddrq2 0 ro_nand2 wstv=0.44 lstv=2 cld=0.5f
+|x1q2 q2a q2b vddrq2 0 ro_stage wstv=0.44 lstv=2 cld=0.5f
+|x2q2 q2b q2c vddrq2 0 ro_stage wstv=0.44 lstv=2 cld=0.5f
+|x3q2 q2c q2d vddrq2 0 ro_stage wstv=0.44 lstv=2 cld=0.5f
+|x4q2 q2d q2o vddrq2 0 ro_stage wstv=0.44 lstv=2 cld=0.5f
+|
+|Vddrq3 vddrq3 0 dc 1.62
+|Venq3 enq3 0 dc 1.62
+|xgq3 q3o enq3 q3a vddrq3 0 ro_nand2 wstv=0.46 lstv=2 cld=0.5f
+|x1q3 q3a q3b vddrq3 0 ro_stage wstv=0.46 lstv=2 cld=0.5f
+|x2q3 q3b q3c vddrq3 0 ro_stage wstv=0.46 lstv=2 cld=0.5f
+|x3q3 q3c q3d vddrq3 0 ro_stage wstv=0.46 lstv=2 cld=0.5f
+|x4q3 q3d q3o vddrq3 0 ro_stage wstv=0.46 lstv=2 cld=0.5f
+|
+|Vddrq4 vddrq4 0 dc 1.62
+|Venq4 enq4 0 dc 1.62
+|xgq4 q4o enq4 q4a vddrq4 0 ro_nand2 wstv=0.48 lstv=2 cld=0.5f
+|x1q4 q4a q4b vddrq4 0 ro_stage wstv=0.48 lstv=2 cld=0.5f
+|x2q4 q4b q4c vddrq4 0 ro_stage wstv=0.48 lstv=2 cld=0.5f
+|x3q4 q4c q4d vddrq4 0 ro_stage wstv=0.48 lstv=2 cld=0.5f
+|x4q4 q4d q4o vddrq4 0 ro_stage wstv=0.48 lstv=2 cld=0.5f
+|
+|* --- output buffers: one per ring, on a block supply per side ----------
+|* EVERY ring is buffered, post-layout and pre-layout alike. This is not
+|* decoration: design/xschem/ro_array_core.sch buffers all four rings, and
+|* an earlier revision of this deck that buffered only ring 1 made its own
+|* ladder metric meaningless -- the buffered ring ran ~18% slower than its
+|* unbuffered neighbours purely from the extra load, which reads as ladder
+|* span rather than as the loading it is. See sim/post-layout-ro-ring5's
+|* entry in sim/README.md.
+|Vddp vddp 0 dc 1.62
+|xbp1 p1o p1ob vddp 0 ro_buf_pex
+|xbp2 p2o p2ob vddp 0 ro_buf_pex
+|xbp3 p3o p3ob vddp 0 ro_buf_pex
+|xbp4 p4o p4ob vddp 0 ro_buf_pex
+|Vddq vddq 0 dc 1.62
+|xbq1 q1o q1ob vddq 0 ro_buf
+|xbq2 q2o q2ob vddq 0 ro_buf
+|xbq3 q3o q3ob vddq 0 ro_buf
+|xbq4 q4o q4ob vddq 0 ro_buf
+|
+|.ic v(p1o)=0 v(p1a)=1.62 v(p1b)=0 v(p1c)=1.62 v(p1d)=0
+|.ic v(p2o)=0 v(p2a)=1.62 v(p2b)=0 v(p2c)=1.62 v(p2d)=0
+|.ic v(p3o)=0 v(p3a)=1.62 v(p3b)=0 v(p3c)=1.62 v(p3d)=0
+|.ic v(p4o)=0 v(p4a)=1.62 v(p4b)=0 v(p4c)=1.62 v(p4d)=0
+|.ic v(q1o)=0 v(q1a)=1.62 v(q1b)=0 v(q1c)=1.62 v(q1d)=0
+|.ic v(q2o)=0 v(q2a)=1.62 v(q2b)=0 v(q2c)=1.62 v(q2d)=0
+|.ic v(q3o)=0 v(q3a)=1.62 v(q3b)=0 v(q3c)=1.62 v(q3d)=0
+|.ic v(q4o)=0 v(q4a)=1.62 v(q4b)=0 v(q4c)=1.62 v(q4d)=0
+|
+|.tran 5p 160n uic
+|
+|.control
+|run
+|
+|* Period of every ring, from 8 whole periods with the first two rising
+|* edges discarded as start-up -- the same estimator
+|* sim/ro-ring5-swing-and-current/ uses, so the two campaigns' periods are
+|* directly comparable.
+|meas tran tp1a when v(p1o)=0.5*1.62 rise=3
+|meas tran tp1b when v(p1o)=0.5*1.62 rise=11
+|let t_pex_wstv0p42 = (tp1b - tp1a)/8
+|meas tran tp2a when v(p2o)=0.5*1.62 rise=3
+|meas tran tp2b when v(p2o)=0.5*1.62 rise=11
+|let t_pex_wstv0p44 = (tp2b - tp2a)/8
+|meas tran tp3a when v(p3o)=0.5*1.62 rise=3
+|meas tran tp3b when v(p3o)=0.5*1.62 rise=11
+|let t_pex_wstv0p46 = (tp3b - tp3a)/8
+|meas tran tp4a when v(p4o)=0.5*1.62 rise=3
+|meas tran tp4b when v(p4o)=0.5*1.62 rise=11
+|let t_pex_wstv0p48 = (tp4b - tp4a)/8
+|
+|meas tran tq1a when v(q1o)=0.5*1.62 rise=3
+|meas tran tq1b when v(q1o)=0.5*1.62 rise=11
+|let t_pre_wstv0p42 = (tq1b - tq1a)/8
+|meas tran tq2a when v(q2o)=0.5*1.62 rise=3
+|meas tran tq2b when v(q2o)=0.5*1.62 rise=11
+|let t_pre_wstv0p44 = (tq2b - tq2a)/8
+|meas tran tq3a when v(q3o)=0.5*1.62 rise=3
+|meas tran tq3b when v(q3o)=0.5*1.62 rise=11
+|let t_pre_wstv0p46 = (tq3b - tq3a)/8
+|meas tran tq4a when v(q4o)=0.5*1.62 rise=3
+|meas tran tq4b when v(q4o)=0.5*1.62 rise=11
+|let t_pre_wstv0p48 = (tq4b - tq4a)/8
+|
+|* The headline ratio: same ring, same corner, parasitics on vs. off.
+|let slowdown_wstv0p42 = t_pex_wstv0p42 / t_pre_wstv0p42
+|let slowdown_wstv0p44 = t_pex_wstv0p44 / t_pre_wstv0p44
+|let slowdown_wstv0p46 = t_pex_wstv0p46 / t_pre_wstv0p46
+|let slowdown_wstv0p48 = t_pex_wstv0p48 / t_pre_wstv0p48
+|
+|* Ladder span (DR-0003 section 8's skew_span, re-measured post-layout).
+|* Stated as slowest/fastest ring under the ladder's expected monotone
+|* ordering; the four periods above are printed individually so a reader
+|* can confirm that ordering rather than take it on trust.
+|let skew_span_pex = t_pex_wstv0p42 / t_pex_wstv0p48
+|let skew_span_pre = t_pre_wstv0p42 / t_pre_wstv0p48
+|
+|* Swing, ring node and buffered output, post-layout and pre-layout.
+|* Steady-state window: 20 ns of start-up discarded.
+|meas tran vmaxp MAX v(p1o) from=20n to=160n
+|meas tran vminp MIN v(p1o) from=20n to=160n
+|meas tran vmaxpb MAX v(p1ob) from=20n to=160n
+|meas tran vminpb MIN v(p1ob) from=20n to=160n
+|meas tran vmaxq MAX v(q1o) from=20n to=160n
+|meas tran vminq MIN v(q1o) from=20n to=160n
+|meas tran vmaxqb MAX v(q1ob) from=20n to=160n
+|meas tran vminqb MIN v(q1ob) from=20n to=160n
+|let swing_frac_pex_ring = (vmaxp - vminp) / 1.62
+|let swing_frac_pex_buf = (vmaxpb - vminpb) / 1.62
+|let swing_frac_pre_ring = (vmaxq - vminq) / 1.62
+|let swing_frac_pre_buf = (vmaxqb - vminqb) / 1.62
+|
+|* Per-ring supply current, running. i(Vsrc) is negative for current
+|* delivered by the source, so the printed figures are sign-flipped to read
+|* as consumed current.
+|meas tran ip1raw AVG i(Vddrp1) from=20n to=160n
+|meas tran ip4raw AVG i(Vddrp4) from=20n to=160n
+|meas tran iq1raw AVG i(Vddrq1) from=20n to=160n
+|meas tran iq4raw AVG i(Vddrq4) from=20n to=160n
+|let i_pex_wstv0p42 = -ip1raw
+|let i_pex_wstv0p48 = -ip4raw
+|let i_pre_wstv0p42 = -iq1raw
+|let i_pre_wstv0p48 = -iq4raw
+|
+|print t_pex_wstv0p42
+|print t_pex_wstv0p44
+|print t_pex_wstv0p46
+|print t_pex_wstv0p48
+|print t_pre_wstv0p42
+|print t_pre_wstv0p44
+|print t_pre_wstv0p46
+|print t_pre_wstv0p48
+|print slowdown_wstv0p42
+|print slowdown_wstv0p44
+|print slowdown_wstv0p46
+|print slowdown_wstv0p48
+|print skew_span_pex
+|print skew_span_pre
+|print swing_frac_pex_ring
+|print swing_frac_pex_buf
+|print swing_frac_pre_ring
+|print swing_frac_pre_buf
+|print i_pex_wstv0p42
+|print i_pex_wstv0p48
+|print i_pre_wstv0p42
+|print i_pre_wstv0p48
+|.endc
+|.end
+|
+
+----- stdout -----
+
+Note: Compatibility modes selected: hs a
+
+
+Circuit: * post-layout ro_ring5: the four-ring wstv frequency ladder, extracted
+
+option SCALE: Scale is set to 1e-06 for instance and model parameters
+option SCALE: Scale is set to 1e-06 for instance and model parameters
+option SCALE: Scale is set to 1e-06 for instance and model parameters
+option SCALE: Scale is set to 1e-06 for instance and model parameters
+option SCALE: Scale is set to 1e-06 for instance and model parameters
+Doing analysis at TEMP = -40.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+Operating point simulation skipped by 'uic',
+  now using transient initial conditions.
+ Reference value :  5.00000e-14
+ Reference value :  7.12740e-10
+ Reference value :  1.64274e-09
+ Reference value :  2.53274e-09
+ Reference value :  3.59274e-09
+ Reference value :  4.58274e-09
+ Reference value :  5.56274e-09
+ Reference value :  6.54774e-09
+ Reference value :  7.53774e-09
+ Reference value :  8.57774e-09
+ Reference value :  9.73274e-09
+ Reference value :  1.07527e-08
+ Reference value :  1.18377e-08
+ Reference value :  1.28577e-08
+ Reference value :  1.40577e-08
+ Reference value :  1.51127e-08
+ Reference value :  1.61727e-08
+ Reference value :  1.72277e-08
+ Reference value :  1.83877e-08
+ Reference value :  1.94527e-08
+ Reference value :  2.05377e-08
+ Reference value :  2.16227e-08
+ Reference value :  2.27427e-08
+ Reference value :  2.38477e-08
+ Reference value :  2.50577e-08
+ Reference value :  2.61377e-08
+ Reference value :  2.71727e-08
+ Reference value :  2.82527e-08
+ Reference value :  2.92677e-08
+ Reference value :  3.03827e-08
+ Reference value :  3.14027e-08
+ Reference value :  3.24527e-08
+ Reference value :  3.35277e-08
+ Reference value :  3.46577e-08
+ Reference value :  3.57427e-08
+ Reference value :  3.67827e-08
+ Reference value :  3.79127e-08
+ Reference value :  3.89677e-08
+ Reference value :  4.00527e-08
+ Reference value :  4.11227e-08
+ Reference value :  4.21727e-08
+ Reference value :  4.32677e-08
+ Reference value :  4.42927e-08
+ Reference value :  4.53027e-08
+ Reference value :  4.63377e-08
+ Reference value :  4.74077e-08
+ Reference value :  4.85127e-08
+ Reference value :  4.95977e-08
+ Reference value :  5.05977e-08
+ Reference value :  5.19077e-08
+ Reference value :  5.29827e-08
+ Reference value :  5.42027e-08
+ Reference value :  5.53027e-08
+ Reference value :  5.65877e-08
+ Reference value :  5.77977e-08
+ Reference value :  5.88977e-08
+ Reference value :  6.00277e-08
+ Reference value :  6.12027e-08
+ Reference value :  6.22577e-08
+ Reference value :  6.33327e-08
+ Reference value :  6.43727e-08
+ Reference value :  6.53677e-08
+ Reference value :  6.64727e-08
+ Reference value :  6.75877e-08
+ Reference value :  6.86727e-08
+ Reference value :  6.98327e-08
+ Reference value :  7.09377e-08
+ Reference value :  7.19877e-08
+ Reference value :  7.31477e-08
+ Reference value :  7.42377e-08
+ Reference value :  7.52977e-08
+ Reference value :  7.64277e-08
+ Reference value :  7.75977e-08
+ Reference value :  7.86977e-08
+ Reference value :  7.98377e-08
+ Reference value :  8.08577e-08
+ Reference value :  8.18927e-08
+ Reference value :  8.29577e-08
+ Reference value :  8.40427e-08
+ Reference value :  8.50877e-08
+ Reference value :  8.62427e-08
+ Reference value :  8.73177e-08
+ Reference value :  8.83677e-08
+ Reference value :  8.94427e-08
+ Reference value :  9.05527e-08
+ Reference value :  9.16427e-08
+ Reference value :  9.27327e-08
+ Reference value :  9.38227e-08
+ Reference value :  9.49927e-08
+ Reference value :  9.60677e-08
+ Reference value :  9.71977e-08
+ Reference value :  9.82777e-08
+ Reference value :  9.93777e-08
+ Reference value :  1.00503e-07
+ Reference value :  1.01588e-07
+ Reference value :  1.02668e-07
+ Reference value :  1.03818e-07
+ Reference value :  1.04923e-07
+ Reference value :  1.05993e-07
+ Reference value :  1.07003e-07
+ Reference value :  1.08008e-07
+ Reference value :  1.09123e-07
+ Reference value :  1.10218e-07
+ Reference value :  1.11248e-07
+ Reference value :  1.12283e-07
+ Reference value :  1.13393e-07
+ Reference value :  1.14463e-07
+ Reference value :  1.15563e-07
+ Reference value :  1.16598e-07
+ Reference value :  1.17698e-07
+ Reference value :  1.18803e-07
+ Reference value :  1.19943e-07
+ Reference value :  1.21038e-07
+ Reference value :  1.22178e-07
+ Reference value :  1.23298e-07
+ Reference value :  1.24448e-07
+ Reference value :  1.25503e-07
+ Reference value :  1.26598e-07
+ Reference value :  1.27683e-07
+ Reference value :  1.28743e-07
+ Reference value :  1.29778e-07
+ Reference value :  1.30823e-07
+ Reference value :  1.31903e-07
+ Reference value :  1.32978e-07
+ Reference value :  1.33983e-07
+ Reference value :  1.35013e-07
+ Reference value :  1.36078e-07
+ Reference value :  1.37173e-07
+ Reference value :  1.38218e-07
+ Reference value :  1.39313e-07
+ Reference value :  1.40373e-07
+ Reference value :  1.41483e-07
+ Reference value :  1.42563e-07
+ Reference value :  1.43623e-07
+ Reference value :  1.44678e-07
+ Reference value :  1.45773e-07
+ Reference value :  1.46793e-07
+ Reference value :  1.47933e-07
+ Reference value :  1.49063e-07
+ Reference value :  1.50123e-07
+ Reference value :  1.51243e-07
+ Reference value :  1.52378e-07
+ Reference value :  1.53443e-07
+ Reference value :  1.54503e-07
+ Reference value :  1.55618e-07
+ Reference value :  1.56683e-07
+ Reference value :  1.57808e-07
+ Reference value :  1.58883e-07
+ Reference value :  1.59948e-07
+No. of Data Rows : 32016
+tp1a                =  9.84583e-09
+tp1b                =  4.75961e-08
+tp2a                =  9.50344e-09
+tp2b                =  4.58358e-08
+tp3a                =  9.18357e-09
+tp3b                =  4.41877e-08
+tp4a                =  8.88423e-09
+tp4b                =  4.26419e-08
+tq1a                =  7.67260e-09
+tq1b                =  3.50681e-08
+tq2a                =  7.37608e-09
+tq2b                =  3.36018e-08
+tq3a                =  7.09947e-09
+tq3b                =  3.22315e-08
+tq4a                =  6.84102e-09
+tq4b                =  3.09493e-08
+vmaxp               =  1.41739e+00 at=  1.01008e-07
+vminp               =  -1.81923e-02 at=  3.23877e-08
+vmaxpb              =  1.62660e+00 at=  7.03377e-08
+vminpb              =  -2.83625e-03 at=  1.34368e-07
+vmaxq               =  1.38052e+00 at=  1.14898e-07
+vminq               =  -2.38499e-02 at=  4.11377e-08
+vmaxqb              =  1.63081e+00 at=  1.44023e-07
+vminqb              =  -4.07079e-03 at=  2.26677e-08
+ip1raw              =  -7.52608e-06 from=  2.00000e-08 to=  1.60000e-07
+ip4raw              =  -8.28010e-06 from=  2.00000e-08 to=  1.60000e-07
+iq1raw              =  -7.68430e-06 from=  2.00000e-08 to=  1.60000e-07
+iq4raw              =  -8.53545e-06 from=  2.00000e-08 to=  1.60000e-07
+t_pex_wstv0p42 = 4.718788e-09
+t_pex_wstv0p44 = 4.541549e-09
+t_pex_wstv0p46 = 4.375513e-09
+t_pex_wstv0p48 = 4.219704e-09
+t_pre_wstv0p42 = 3.424436e-09
+t_pre_wstv0p44 = 3.278209e-09
+t_pre_wstv0p46 = 3.141502e-09
+t_pre_wstv0p48 = 3.013529e-09
+slowdown_wstv0p42 = 1.377975e+00
+slowdown_wstv0p44 = 1.385375e+00
+slowdown_wstv0p46 = 1.392809e+00
+slowdown_wstv0p48 = 1.400253e+00
+skew_span_pex = 1.118275e+00
+skew_span_pre = 1.136354e+00
+swing_frac_pex_ring = 8.861613e-01
+swing_frac_pex_buf = 1.005824e+00
+swing_frac_pre_ring = 8.668969e-01
+swing_frac_pre_buf = 1.009186e+00
+i_pex_wstv0p42 = 7.526077e-06
+i_pex_wstv0p48 = 8.280096e-06
+i_pre_wstv0p42 = 7.684295e-06
+i_pre_wstv0p48 = 8.535449e-06
+Note: Simulation executed from .control section 
+
+----- stderr -----
+
+Checking parameters for BSIM 4.5 model xbq4.xmn:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model xbq4.xmp:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xbq3.xmn:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model xbq3.xmp:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xbq2.xmn:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model xbq2.xmp:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xbq1.xmn:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model xbq1.xmp:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xbp4.xpex.xn2:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xbp4.xpex.xn1:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model xbp3.xpex.xn2:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xbp3.xpex.xn1:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model xbp2.xpex.xn2:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xbp2.xpex.xn1:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model xbp1.xpex.xn2:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xbp1.xpex.xn1:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model x4q4.xmn:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model x4q4.xmp:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model x3q4.xmn:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model x3q4.xmp:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model x2q4.xmn:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model x2q4.xmp:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model x1q4.xmn:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model x1q4.xmp:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xgq4.xmnb:nshort_model.40
+Warning: Eta0 = -0.00908636 is negative.
+
+Checking parameters for BSIM 4.5 model xgq4.xmna:nshort_model.40
+Warning: Eta0 = -0.00908636 is negative.
+
+Checking parameters for BSIM 4.5 model xgq4.xmpb:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xgq4.xmpa:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model x4q3.xmn:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model x4q3.xmp:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model x3q3.xmn:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model x3q3.xmp:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model x2q3.xmn:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model x2q3.xmp:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model x1q3.xmn:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model x1q3.xmp:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xgq3.xmnb:nshort_model.40
+Warning: Eta0 = -0.00908636 is negative.
+
+Checking parameters for BSIM 4.5 model xgq3.xmna:nshort_model.40
+Warning: Eta0 = -0.00908636 is negative.
+
+Checking parameters for BSIM 4.5 model xgq3.xmpb:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xgq3.xmpa:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model x4q2.xmn:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model x4q2.xmp:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model x3q2.xmn:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model x3q2.xmp:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model x2q2.xmn:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model x2q2.xmp:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model x1q2.xmn:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model x1q2.xmp:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xgq2.xmnb:nshort_model.40
+Warning: Eta0 = -0.00908636 is negative.
+
+Checking parameters for BSIM 4.5 model xgq2.xmna:nshort_model.40
+Warning: Eta0 = -0.00908636 is negative.
+
+Checking parameters for BSIM 4.5 model xgq2.xmpb:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xgq2.xmpa:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model x4q1.xmn:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model x4q1.xmp:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model x3q1.xmn:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model x3q1.xmp:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model x2q1.xmn:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model x2q1.xmp:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model x1q1.xmn:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model x1q1.xmp:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xgq1.xmnb:nshort_model.40
+Warning: Eta0 = -0.00908636 is negative.
+
+Checking parameters for BSIM 4.5 model xgq1.xmna:nshort_model.40
+Warning: Eta0 = -0.00908636 is negative.
+
+Checking parameters for BSIM 4.5 model xgq1.xmpb:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xgq1.xmpa:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model x4p4.xpex.xn4:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model x4p4.xpex.xn3:pshort_model.43
+Warning: Eta0 = -0.000373202 is negative.
+
+Checking parameters for BSIM 4.5 model x4p4.xpex.xn1:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model x3p4.xpex.xn4:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model x3p4.xpex.xn3:pshort_model.43
+Warning: Eta0 = -0.000373202 is negative.
+
+Checking parameters for BSIM 4.5 model x3p4.xpex.xn1:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model x2p4.xpex.xn4:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model x2p4.xpex.xn3:pshort_model.43
+Warning: Eta0 = -0.000373202 is negative.
+
+Checking parameters for BSIM 4.5 model x2p4.xpex.xn1:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model x1p4.xpex.xn4:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model x1p4.xpex.xn3:pshort_model.43
+Warning: Eta0 = -0.000373202 is negative.
+
+Checking parameters for BSIM 4.5 model x1p4.xpex.xn1:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model xgp4.xpex.xn6:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xgp4.xpex.xn5:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xgp4.xpex.xn4:pshort_model.43
+Warning: Eta0 = -0.000373202 is negative.
+
+Checking parameters for BSIM 4.5 model xgp4.xpex.xn3:nshort_model.40
+Warning: Eta0 = -0.00908636 is negative.
+
+Checking parameters for BSIM 4.5 model xgp4.xpex.xn2:nshort_model.40
+Warning: Eta0 = -0.00908636 is negative.
+
+Checking parameters for BSIM 4.5 model x4p3.xpex.xn4:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model x4p3.xpex.xn3:pshort_model.43
+Warning: Eta0 = -0.000373202 is negative.
+
+Checking parameters for BSIM 4.5 model x4p3.xpex.xn1:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model x3p3.xpex.xn4:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model x3p3.xpex.xn3:pshort_model.43
+Warning: Eta0 = -0.000373202 is negative.
+
+Checking parameters for BSIM 4.5 model x3p3.xpex.xn1:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model x2p3.xpex.xn4:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model x2p3.xpex.xn3:pshort_model.43
+Warning: Eta0 = -0.000373202 is negative.
+
+Checking parameters for BSIM 4.5 model x2p3.xpex.xn1:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model x1p3.xpex.xn4:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model x1p3.xpex.xn3:pshort_model.43
+Warning: Eta0 = -0.000373202 is negative.
+
+Checking parameters for BSIM 4.5 model x1p3.xpex.xn1:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model xgp3.xpex.xn6:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xgp3.xpex.xn5:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xgp3.xpex.xn4:pshort_model.43
+Warning: Eta0 = -0.000373202 is negative.
+
+Checking parameters for BSIM 4.5 model xgp3.xpex.xn3:nshort_model.40
+Warning: Eta0 = -0.00908636 is negative.
+
+Checking parameters for BSIM 4.5 model xgp3.xpex.xn2:nshort_model.40
+Warning: Eta0 = -0.00908636 is negative.
+
+Checking parameters for BSIM 4.5 model x4p2.xpex.xn4:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model x4p2.xpex.xn3:pshort_model.43
+Warning: Eta0 = -0.000373202 is negative.
+
+Checking parameters for BSIM 4.5 model x4p2.xpex.xn1:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model x3p2.xpex.xn4:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model x3p2.xpex.xn3:pshort_model.43
+Warning: Eta0 = -0.000373202 is negative.
+
+Checking parameters for BSIM 4.5 model x3p2.xpex.xn1:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model x2p2.xpex.xn4:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model x2p2.xpex.xn3:pshort_model.43
+Warning: Eta0 = -0.000373202 is negative.
+
+Checking parameters for BSIM 4.5 model x2p2.xpex.xn1:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model x1p2.xpex.xn4:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model x1p2.xpex.xn3:pshort_model.43
+Warning: Eta0 = -0.000373202 is negative.
+
+Checking parameters for BSIM 4.5 model x1p2.xpex.xn1:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model xgp2.xpex.xn6:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xgp2.xpex.xn5:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xgp2.xpex.xn4:pshort_model.43
+Warning: Eta0 = -0.000373202 is negative.
+
+Checking parameters for BSIM 4.5 model xgp2.xpex.xn3:nshort_model.40
+Warning: Eta0 = -0.00908636 is negative.
+
+Checking parameters for BSIM 4.5 model xgp2.xpex.xn2:nshort_model.40
+Warning: Eta0 = -0.00908636 is negative.
+
+Checking parameters for BSIM 4.5 model x4p1.xpex.xn4:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model x4p1.xpex.xn3:pshort_model.43
+Warning: Eta0 = -0.000373202 is negative.
+
+Checking parameters for BSIM 4.5 model x4p1.xpex.xn2:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model x3p1.xpex.xn4:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model x3p1.xpex.xn3:pshort_model.43
+Warning: Eta0 = -0.000373202 is negative.
+
+Checking parameters for BSIM 4.5 model x3p1.xpex.xn2:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model x2p1.xpex.xn4:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model x2p1.xpex.xn3:pshort_model.43
+Warning: Eta0 = -0.000373202 is negative.
+
+Checking parameters for BSIM 4.5 model x2p1.xpex.xn2:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model x1p1.xpex.xn4:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model x1p1.xpex.xn3:pshort_model.43
+Warning: Eta0 = -0.000373202 is negative.
+
+Checking parameters for BSIM 4.5 model x1p1.xpex.xn2:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model xgp1.xpex.xn6:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xgp1.xpex.xn5:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xgp1.xpex.xn4:pshort_model.43
+Warning: Eta0 = -0.000373202 is negative.
+
+Checking parameters for BSIM 4.5 model xgp1.xpex.xn3:nshort_model.40
+Warning: Eta0 = -0.00908636 is negative.
+
+Checking parameters for BSIM 4.5 model xgp1.xpex.xn2:nshort_model.40
+Warning: Eta0 = -0.00908636 is negative.
+

@@ -1,0 +1,137 @@
+{
+  "record_id": "20260906-034301-4fe8c49",
+  "slug": "post-layout-ro-ring5",
+  "claim": "inter-ring coupling through the extracted shared substrate node: the four-ring post-layout wstv ladder with vsubs left FLOATING on the extractor's own 1 TOhm dc tie, the pessimistic bound against the hard-tied sibling deck",
+  "level": "transistor",
+  "seed": "N/A (deterministic transient, no injected noise sources)",
+  "pvt": {
+    "temp_c": 125.0,
+    "vdd_v": 1.98
+  },
+  "tran": {
+    "tmax": "5p",
+    "noise_amp": "2.0e-3"
+  },
+  "testbench": "sim/post-layout-ro-ring5/testbench/tb_post_layout_substrate_float.spice",
+  "netlists": {
+    "RO_RING5": {
+      "path": "design/ro_ring5.spice",
+      "sha256": "19dccb82a3e9a1239d509a03e645954f79a857ab3b11e41a2a53faa105b58ea4"
+    },
+    "PEX_LIB": {
+      "path": "layout/pex/ro_ring5_pex.spice",
+      "sha256": "c975689411ebcffb25463089a884a9e345be289dea28ae45c947e44ad5e506d9"
+    }
+  },
+  "pdk": {
+    "variant": "sky130A",
+    "installed_commit": "c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+    "pin_commit": "c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+    "matches_pin": true,
+    "lib_file": "/Users/rwalters/.volare/volare/sky130/versions/c6d73a35f524070e85faff4a6a9eef49553ebc2b/sky130A/libs.tech/combined/sky130.lib.spice"
+  },
+  "tools": {
+    "ngspice": "** ngspice-47 : Circuit level simulation program",
+    "python": "3.14.7",
+    "os": "macOS-26.6.2-arm64-arm-64bit-Mach-O"
+  },
+  "repo_state": {
+    "sha": "4fe8c49",
+    "branch": "feature/issue-22",
+    "dirty": true
+  },
+  "corners": [
+    {
+      "corner": "tt",
+      "ok": true,
+      "returncode": 0,
+      "measurements": {
+        "tp1a": 1.17512e-08,
+        "tp1b": 4.28977e-08,
+        "tp2a": 1.10769e-08,
+        "tp2b": 4.03552e-08,
+        "tp3a": 1.04733e-08,
+        "tp3b": 3.80679e-08,
+        "tp4a": 9.92265e-09,
+        "tp4b": 3.59932e-08,
+        "t_float_wstv0p42": 3.893306e-09,
+        "t_float_wstv0p44": 3.65979e-09,
+        "t_float_wstv0p46": 3.449329e-09,
+        "t_float_wstv0p48": 3.258823e-09,
+        "skew_span_float": 1.194697,
+        "vsubs_pp": 0.0423141,
+        "vsubs_pp_frac": 0.02137076,
+        "swing_frac_float_wstv0p42": 0.8402073,
+        "swing_frac_float_wstv0p48": 0.8219336
+      },
+      "onoise_min": null,
+      "onoise_max": null,
+      "onoise_spread_ratio": null,
+      "problems": [],
+      "log": "corners/tt.log"
+    },
+    {
+      "corner": "ss",
+      "ok": true,
+      "returncode": 0,
+      "measurements": {
+        "tp1a": 1.4161e-08,
+        "tp1b": 5.16529e-08,
+        "tp2a": 1.32742e-08,
+        "tp2b": 4.83238e-08,
+        "tp3a": 1.25012e-08,
+        "tp3b": 4.54046e-08,
+        "tp4a": 1.181e-08,
+        "tp4b": 4.28048e-08,
+        "t_float_wstv0p42": 4.686491e-09,
+        "t_float_wstv0p44": 4.3812e-09,
+        "t_float_wstv0p46": 4.112921e-09,
+        "t_float_wstv0p48": 3.874341e-09,
+        "skew_span_float": 1.209623,
+        "vsubs_pp": 0.0464843,
+        "vsubs_pp_frac": 0.02347692,
+        "swing_frac_float_wstv0p42": 0.8623164,
+        "swing_frac_float_wstv0p48": 0.8467008
+      },
+      "onoise_min": null,
+      "onoise_max": null,
+      "onoise_spread_ratio": null,
+      "problems": [],
+      "log": "corners/ss.log"
+    },
+    {
+      "corner": "ff",
+      "ok": true,
+      "returncode": 0,
+      "measurements": {
+        "tp1a": 1.00544e-08,
+        "tp1b": 3.67475e-08,
+        "tp2a": 9.52957e-09,
+        "tp2b": 3.47632e-08,
+        "tp3a": 9.0496e-09,
+        "tp3b": 3.29502e-08,
+        "tp4a": 8.60799e-09,
+        "tp4b": 3.12831e-08,
+        "t_float_wstv0p42": 3.336627e-09,
+        "t_float_wstv0p44": 3.154198e-09,
+        "t_float_wstv0p46": 2.987576e-09,
+        "t_float_wstv0p48": 2.834387e-09,
+        "skew_span_float": 1.177195,
+        "vsubs_pp": 0.038466,
+        "vsubs_pp_frac": 0.01942727,
+        "swing_frac_float_wstv0p42": 0.8165928,
+        "swing_frac_float_wstv0p48": 0.7980362
+      },
+      "onoise_min": null,
+      "onoise_max": null,
+      "onoise_spread_ratio": null,
+      "problems": [],
+      "log": "corners/ff.log"
+    }
+  ],
+  "overall": "PASS",
+  "subset_reason": null,
+  "supersedes": "(none)",
+  "author": "ci@loom.test",
+  "timestamp_utc": "2026-09-06T03:44:36.353312+00:00"
+}

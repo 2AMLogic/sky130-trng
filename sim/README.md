@@ -65,6 +65,23 @@ simulator, no PDK).
 suite behind those records (standard library only, no simulator, no PDK):
 `python3 sim/tests/test_digital_section.py`.
 
+Issue #22 then added the first **post-layout** campaign — every record above
+this line is driven from `design/*.spice`, xschem's schematic export, which
+contains no physical interconnect at all. These two slugs are driven from
+`layout/pex/ro_ring5_pex.spice` instead: `klt extract --parasitics` over the
+composed, DRC-clean and LVS-clean cells under `layout/`
+(`layout/pex/README.md` states exactly what that parasitic model does and
+does not contain, and why its numbers are *intra-cell* parasitics only —
+there is no inter-cell interconnect in `layout/` to extract yet):
+
+| Slug | Claim under test | Landed by |
+|---|---|---|
+| `post-layout-ro-ring5/` | the five-stage ring's period, swing and supply current with extracted parasitics, at all four `wstv` widths, with the pre-layout netlist as a same-deck control — plus the shared-substrate-node coupling bound and its loading control | #22 |
+| `post-layout-parasitic-impact/` | reduction of the above: what the parasitics cost, whether the `wstv` frequency ladder survives them, and how large the inter-ring coupling actually is | #22 |
+
+See "The post-layout campaign (issue #22)" below for what those three decks
+are, why the third one exists, and the one deck defect the third one caught.
+
 Two rules from the root `CLAUDE.md` govern everything under this directory:
 
 - **Verification is the product.** No claim without a testbench, and PVT
@@ -136,6 +153,15 @@ is a template, not a runnable deck. `corner-run.py` substitutes:
   library that defines `ro_stage`/`ro_nand2`/`ro_ring5` (see
   `design/README.md` § "Regenerating the netlists"). Overridable via
   `--ro-ring5` for a testbench that wants a different netlist.
+- `@@PEX_LIB@@` -- absolute path to the committed **post-layout** subcircuit
+  library (`--pex-lib`, default `layout/pex/ro_ring5_pex.spice`), the
+  `pex-netlist.py --check`-guarded `klt extract --parasitics` netlist of the
+  composed cells under `layout/`. A post-layout deck includes this *in
+  addition to* `@@RO_RING5@@` when it wants the pre-layout netlist alongside
+  as a same-deck control (see "The post-layout campaign" below). Both
+  substituted paths, with their sha256, are recorded in every record's
+  `netlists` block, so a record always names the netlist revision behind its
+  numbers.
 - `@@OUT_ONOISE@@` -- a per-(record, corner) scratch path a deck can
   `wrdata` an `onoise_spectrum` trace to. If a testbench writes one, the
   runner reads it back and records a spread check (max/min ratio over the
@@ -310,6 +336,64 @@ corner and seed as the grid:
   transient solver by itself manufactures 0.58 ps (5p) / 0.65 ps (20p) of
   period scatter. Every grid `sigma_1` is corrected against it in
   quadrature, which lowers `Q` and raises `N` -- the conservative direction.
+
+## The post-layout campaign (issue #22)
+
+`sim/post-layout-ro-ring5/` is this repo's first campaign driven from a
+*layout*-derived netlist rather than from a schematic export. Its input is
+`layout/pex/ro_ring5_pex.spice` -- `klt extract --parasitics` over the nine
+composed, DRC-clean and LVS-clean cells under `layout/`, rewritten for
+ngspice by `layout/bin/pex-netlist.py`. Read `layout/pex/README.md` before
+citing any number from it: the parasitic model is a lumped star resistance
+per net (conservative) with **no inter-cell interconnect at all** (there is
+none in `layout/` yet to extract), so these are intra-cell parasitics
+specifically, not a full post-layout ring.
+
+Three decks, run at the same four (temp, Vdd) points
+`ro-ring5-swing-and-current/` used, each bundling `tt`/`ss`/`ff` -- twelve
+records, thirty-six corner runs:
+
+| Testbench | What it holds fixed | What it answers |
+|---|---|---|
+| `tb_post_layout_ro_ring5.spice` | `vsubs` tied hard to 0; four post-layout rings AND four pre-layout rings in one deck | what the parasitics cost (period, swing, supply current), as a same-corner ratio rather than a cross-record comparison |
+| `tb_post_layout_substrate_float.spice` | `vsubs` untied (the extractor's own 1 TOhm dc tie); four rings running | the pessimistic inter-ring coupling bound -- the shared substrate node is the only node four independently-supplied rings share |
+| `tb_post_layout_substrate_float_solo.spice` | `vsubs` untied; rings 2/3/4 present but **stopped** | the control that separates the floating node's capacitive *loading* from actual *coupling* |
+
+`sim/post-layout-parasitic-impact/analysis/parasitic-impact.py` reduces all
+twelve records (no simulator; run it to reproduce every number below):
+
+- **Parasitics cost 1.378x - 1.479x in ring period** across the grid and all
+  four widths, and *raise* the ring-node swing 1-4% (a slower ring reaches
+  its rails more completely). Per-ring supply current falls 2-6%.
+- **The `wstv` frequency ladder survives.** Post-layout ladder span
+  (slowest/fastest ring) is 1.1122x - 1.2096x, against 1.1225x - 1.2464x
+  pre-layout. The closest any ring pair comes to a mutual-injection-lock
+  rational (4/3, 3/2, 2/1 -- DR-0003 §8's own criterion) anywhere on the
+  grid is 9.3%.
+- **Inter-ring coupling through the shared substrate node is at most 0.033%
+  of the ring period** at the pessimistic bound -- an upper bound, not a
+  resolved measurement, since only 1 of 12 grid points exceeds the transient
+  solver's own 0.024% numerical period scatter and the shift's sign is not
+  consistent across the grid. What *is* resolved is that the node genuinely
+  carries all four rings' activity (3.8% of Vdd peak to peak with four rings
+  running, 1.1% with one).
+
+`spec/decision-records/DR-0005-*.md` states what this does and does not
+settle for DR-0003 §8.
+
+### The control that caught a deck defect
+
+The solo control exists because the float-vs-tied difference alone is
+uninterpretable -- but writing it caught something else first. An earlier,
+uncommitted pass over these decks buffered only *one* of the four rings
+(`ro_array_core.sch` buffers all four). The buffered ring ran ~18% slower
+than its unbuffered neighbours purely from the extra load, and that showed
+up in `skew_span` as if it were ladder span. The decks now buffer every
+ring, on both the post-layout and pre-layout side, and all twelve committed
+records are from the corrected decks -- **no record from the defective deck
+was ever committed**, so there is nothing under `records/` to supersede.
+The defect is recorded here, and in `tb_post_layout_ro_ring5.spice`'s own
+buffer block, rather than left as a silent fix.
 
 ## Writing a new record
 

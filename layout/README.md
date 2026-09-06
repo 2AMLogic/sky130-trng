@@ -62,9 +62,23 @@ routing planes are resolvable, not two, see "Two-pass composition" below —
 and a reproducible net-naming bug this session found and fixed) so the next
 attempt does not have to re-derive the same ground.
 
+**This increment (issue #22, post-layout)**: the nine composed cells are now
+**simulated**. [`layout/pex/`](pex/README.md) is a generated, `--check`-guarded
+post-layout netlist library — `klt extract --parasitics` over each cell's
+committed GDS, rewritten for ngspice by `layout/bin/pex-netlist.py` — and
+`sim/post-layout-ro-ring5/` runs the five-stage ring from it over the PVT
+grid (twelve records, thirty-six corner runs), with the pre-layout netlist
+as a same-deck control. That closes step 5 below for the leaf-cell scope
+that exists, and turns step 6 (DR-0003 §8's `wstv` decorrelation gap) from
+"unmeasurable" into "bounded, and still open for the mechanism that
+matters" — see `spec/decision-records/DR-0005-*.md`. All nine cells were
+re-verified DRC-clean and LVS-clean (`compose-cell.py --check`, `klt 0.4.0`)
+in the same session, so the GDS carrying these parasitics is the GDS
+carrying those verdicts.
+
 Everything else is still open: `xor2` routing, `ro_ring5`, `ro_array_core`,
-`sampler_core`, and post-layout PVT re-verification. See "What's
-deferred" below and the tracking issue (#27).
+`sampler_core`, and therefore any *whole-block* post-layout claim. See
+"What's deferred" below and the tracking issue (#27).
 
 The earlier increments remain the foundation: `layout/primitives/` is
 per-device evidence (every distinct transistor geometry `design/xschem/`
@@ -508,6 +522,16 @@ committed GDS in one command, so there is nothing to keep in the tree.
    the extracted netlist** — and whichever it does must be recorded in the
    `sim/` record, because the two give measurably different answers.
 
+   **Resolved as implemented**: step 5 took the `.GLOBAL vsubs` path
+   (`layout/bin/pex-netlist.py` emits the declaration, every deck ties the
+   node itself, and every record states which tie it used). Flattening was
+   rejected — a ring is five instances by construction, and flattening would
+   make the substrate node per-ring rather than shared, destroying the one
+   coupling path step 6's re-evaluation depends on. The choice turned out to
+   be worth 0.06-0.15% on the ring period between a hard tie and no tie,
+   which is small but is measured rather than assumed; see
+   `sim/post-layout-parasitic-impact/`.
+
 ## What's deferred (tracking issue)
 
 Everything below issue #22's original scope needed and this PR does not
@@ -587,25 +611,57 @@ deliver, tracked in follow-up issue
 5. Post-layout PVT re-verification: re-run `sim/`'s existing corner-sweep
    harness (`sim/bin/corner-run.py`) against the `klt extract --parasitics`
    output, recording results under `sim/` per the existing append-only
-   convention. **Not started — but its three tool-level unknowns are now
-   resolved, see "Scouting `--parasitics`" below.** Nothing under `sim/` is
-   added or changed by this increment.
+   convention. **DONE for the leaf-cell scope that exists** — see
+   [`layout/pex/`](pex/README.md) for the generated library and
+   `sim/post-layout-ro-ring5/` + `sim/post-layout-parasitic-impact/` for the
+   twelve records and their reduction. Headline: intra-cell parasitics cost
+   **1.378x - 1.479x in ring period** over the grid, raise ring-node swing
+   1-4%, and lower per-ring supply current 2-6%; the `wstv` frequency ladder
+   survives (post-layout span 1.1122x - 1.2096x). **Still open**: the same
+   measurement over an *assembled* block, which needs steps 2 and 3 —
+   `layout/` has no inter-cell interconnect to extract, so every number
+   above is intra-cell parasitics with ideal wires between gates.
+   `layout/pex/README.md` states that limitation in full, in both directions
+   (the extractor's lumped-star resistance over-states the intra-cell
+   penalty; the missing inter-cell wiring under-states the whole-block one).
 6. Re-evaluate DR-0003 §8's `wstv` inter-ring decorrelation gap using the
    extracted parasitics from step 5 — the measurement DR-0003 explicitly
    flagged as needing a real layout and unmeasurable at the netlist level.
 
-   **Status after this increment: still open, and deliberately not
-   re-evaluated.** DR-0003 §8's condition is not "some layout exists" but
-   "extracted parasitics of the *assembled array* exist" — the quantity it
-   names is the coupling between *rings* through shared supply impedance and
-   the substrate, which by construction cannot be measured on a single leaf
-   cell. `layout/ro_buf/` is one gate, of which the array contains four
-   instances out of ~100 devices total, and its `klt extract` was run
-   **without** `--parasitics`. Nothing in this increment changes what §8
-   records, so nothing supersedes it; per this repo's decision-record
-   convention a correction supersedes rather than edits in place, and there is
-   no correction to make yet. The re-evaluation becomes possible at step 5,
-   not before.
+   **Status after this increment: partially bounded, still open, and still
+   not superseded.** A previous increment recorded this as "deliberately not
+   re-evaluated" because the extraction had been run without
+   `--parasitics` and only one leaf gate existed. Step 5 above changes that,
+   and `spec/decision-records/DR-0005-*.md` is the re-evaluation:
+
+   - **Measured.** Extracted parasitics give four independently-supplied
+     rings exactly one node in common — the substrate return node every
+     net-to-substrate capacitance lands on. Bracketing it between an ideal
+     tie (`vsubs` to 0, zero coupling by construction) and no tie at all
+     (the extractor's own 1 TOhm dc tie, infinite-impedance shared
+     substrate), **the coupling-attributable period shift is at most 0.033%
+     of the ring period** — and it is an upper bound rather than a resolved
+     measurement, since only 1 of 12 grid points clears the transient
+     solver's own 0.024% numerical period scatter and the shift's sign is
+     not consistent across the grid. A third deck (rings 2/3/4 present but
+     *stopped*) separates that from the floating node's own capacitive
+     loading, which is a different mechanism and is what a two-deck
+     comparison would have misattributed.
+   - **Still open, and this is the part that matters.** §8's first-named
+     mechanism is *shared supply impedance*, and there is still no
+     supply-distribution layout — `vddr1`..`vddr4` remain four ideal
+     isolated sources. The extractor also emits no substrate or tap
+     resistance, so the bracket's interior is unmodelled
+     ([klayout-tools#1503](https://github.com/2AMLogic/klayout-tools/issues/1503)),
+     and nine leaf cells simulated as if infinitely separated say nothing
+     about proximity. §8's own statement of the gap is therefore still
+     accurate, so nothing supersedes it — per this repo's decision-record
+     convention a correction supersedes rather than edits in place, and
+     there is still no correction to make.
+   - **What did get answered** is the ladder half: the `wstv` frequency
+     ladder survives the parasitics (post-layout span 1.1122x - 1.2096x
+     against 1.1225x - 1.2464x pre-layout, closest approach to a
+     mutual-injection-lock rational 9.3% anywhere on the grid).
 
 ## Reproducing the evidence in `layout/primitives/`
 
@@ -708,3 +764,21 @@ no `connectivity[]`/`lvs.json` to check against. See
 `layout/xor2-placement-poc/README.md` for what is (placement, DRC, device
 count) and is not (routing, LVS) established, and for the concrete routing
 obstacle a future increment needs to solve.
+
+## Reproducing `layout/pex/` (the post-layout netlist library)
+
+```bash
+volare enable --pdk sky130 c6d73a35f524070e85faff4a6a9eef49553ebc2b
+python3 layout/bin/pex-netlist.py layout/pex/pex.json --check   # verify
+python3 layout/test_pex_netlist.py                              # rewrite unit test (no PDK)
+```
+
+`--check` re-extracts all nine cells from their committed GDS into a
+temporary directory and fails if the rebuilt library differs from the
+committed one by a byte, or if any extraction report's verdict fields moved.
+`layout/test_pex_netlist.py` is the other half of that guard: `--check`
+proves the library matches what the script produces *today*, the unit test
+proves the script's rewrite (net renames, unit-suffix stripping, device-card
+swap) is correct — a wrong rewrite would simulate cleanly and report wrong
+numbers. See [`layout/pex/README.md`](pex/README.md) for the parasitic
+model's own contents and limits.

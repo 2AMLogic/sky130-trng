@@ -42,6 +42,19 @@
   behavioural-model-is-normative / RTL-implements-it split that `digital/`
   is built on.
 
+- [`decision-records/DR-0005-post-layout-parasitics-and-wstv-decorrelation.md`](decision-records/DR-0005-post-layout-parasitics-and-wstv-decorrelation.md)
+  — **Proposed**. Issue #22's first post-layout campaign: what `klt extract
+  --parasitics` over the composed `layout/` cells costs the five-stage ring
+  (1.38x−1.48x in period, with swing and supply current), that the `wstv`
+  frequency ladder survives it (span 1.11x−1.21x, closest approach to a
+  mutual-injection-lock rational 9.3%), and a first **bounded** answer to
+  DR-0003 §8's inter-ring decorrelation question — coupling through the one
+  node extracted parasitics give the rings in common is ≤ 0.033% of the ring
+  period, at the pessimistic bound, and is not resolved above the solver's
+  own numerical floor. Explicitly does **not** close §8: the parasitics are
+  intra-cell only, and §8's first-named mechanism (shared supply impedance)
+  has no layout to be measured on.
+
 A record's status is meaningful: **Proposed** means drafted and not accepted
 by anyone. Ratification is an operator decision, so no record here declares
 itself Accepted. See the repo README for scope.

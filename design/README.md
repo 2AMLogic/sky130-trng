@@ -179,7 +179,7 @@ otherwise unmeasured on sky130).
 | PMOS width | 0.84 µm | placeholder | 2:1 P:N ratio **carried over from gf180-trng**. Issue #10 measured the cell's trip point at 0.805–0.844 V against a 0.81–0.99 V mid-supply across the grid, i.e. the ratio is not grossly mismatched — but that is a by-product, not a P:N sizing sweep, and no sweep was run |
 | Series-stack widths | 2× the device they replace | placeholder | rule of thumb from the source cell, not a sky130 stage-delay match measurement |
 | Starve length `lstv` | 2 µm | placeholder | gf180-trng reached 2 µm by measuring an array power rollup against its own ratified power row. **No sky130 lstv sweep exists** — both campaigns measured jitter, swing and current at this fixed value, so this row is untouched |
-| Starve width `wstv` | 0.42–0.48 µm, four 0.02 µm steps | **measured (realized ratio), placeholder (decorrelation)** | The REALIZED frequency ratio across the ladder is measured on the assembled array (`sim/ro-array-core-combining/`, `skew_span` 1.12–1.19×, well clear of small rationals). What decorrelates two *sky130* rings — the coupling a real layout would have — is **still not measured**: the array as drawn has no shared supply impedance or substrate model, so a netlist-level check can only confirm the absence of a path the netlist does not contain. Needs extracted parasitics (DR-0003 §8) |
+| Starve width `wstv` | 0.42–0.48 µm, four 0.02 µm steps | **measured (realized ratio), placeholder (decorrelation)** | The REALIZED frequency ratio across the ladder is measured on the assembled array (`sim/ro-array-core-combining/`, `skew_span` 1.12–1.19×, well clear of small rationals). What decorrelates two *sky130* rings — the coupling a real layout would have — is **still not measured**: the array as drawn has no shared supply impedance or substrate model, so a netlist-level check can only confirm the absence of a path the netlist does not contain. Extracted parasitics now exist for the leaf cells, and DR-0005 bounds ONE coupling path (the shared substrate return node) at ≤ 0.033% of the ring period — an upper bound, unresolved above the solver's own numerical floor. The ladder itself survives the parasitics (span 1.11–1.21×). §8's first-named mechanism, shared supply impedance, still has no layout to be measured on, so this row stays **placeholder** for decorrelation (DR-0003 §8, DR-0005 §3–4) |
 | Per-stage gain | −14.3 nominal, −11.8 worst | **measured** | `sim/ro-stage-small-signal-gain/`, three headline points. ~12× the Barkhausen minimum at any stage count in play; retires DR-0001's gain risk |
 | Ring swing (`ro_ring5`, buffered output) | 0.999–1.033 × Vdd p-p | **measured** | `sim/ro-ring5-swing-and-current/`, 12 PVT points, under this cell's own output-buffer load. The internal ring node itself swings less (0.78–0.96 × Vdd), but the BUFFERED node — what the XOR tree and liveness taps see — reaches the rails at every point measured |
 | Ring stage count | 5 | **measured, chosen** | 12–48× better `Q_ring` than 11 stages at the same points (DR-0002 §4); own-count swing re-measured and confirmed above (this table's previous row cited it as an open objection — it is now retired). `ro_ring11` remains in `design/xschem/` as a standalone characterization cell, no longer part of this hierarchy |
@@ -266,10 +266,20 @@ DR-0003 surfaces and does not resolve on its own authority.
   finding (`layout/well-strap-poc/`); the `klayout-tools` regression they
   recorded as a blocker
   ([#1491](https://github.com/2AMLogic/klayout-tools/issues/1491)) is fixed.
+  Those nine cells are now also **extracted with parasitics and simulated**:
+  [`layout/pex/`](../layout/pex/README.md) is a generated, `--check`-guarded
+  post-layout netlist library (`klt extract --parasitics` over each
+  committed GDS, rewritten for ngspice by `layout/bin/pex-netlist.py`), and
+  `sim/post-layout-ro-ring5/` runs the five-stage ring from it across the
+  PVT grid with the pre-layout netlist as a same-deck control — intra-cell
+  parasitics cost **1.378×–1.479× in ring period**, raise ring-node swing
+  1–4%, and lower per-ring supply current 2–6%
+  (`spec/decision-records/DR-0005-*.md`).
   Still open: `xor2` routing (its 12-device placement is now DRC-clean —
   see `layout/xor2-placement-poc/README.md` — but its four-signal fan-out
   is a genuine multi-net channel-routing problem, not yet solved), no ring,
-  no array, no sampler, no parasitic extraction, and no post-layout PVT
+  no array and no sampler as *assembled* layout — so there is no inter-cell
+  interconnect to extract, and no whole-block post-layout PVT
   re-verification. See `layout/README.md` for the full status and the
   follow-up issue (#27) it tracks. (`sim/` is no longer empty either — see
   `sim/README.md`.)

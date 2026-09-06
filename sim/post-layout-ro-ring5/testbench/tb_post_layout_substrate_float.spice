@@ -1,0 +1,161 @@
+* Post-layout ro_ring5 ladder with the shared substrate node left FLOATING
+* -- the inter-ring coupling bound DR-0003 section 8 could not measure at
+* the netlist level.
+*
+* Purpose (issue #22, acceptance criterion 4). DR-0003 section 8 records
+* that the skew fraction which actually DECORRELATES two sky130 rings is
+* unmeasured, and states why: "the array as drawn has no shared supply
+* impedance and no substrate model, so a netlist-level correlation
+* measurement over it can only confirm the absence of a coupling path the
+* netlist does not contain". Extracted parasitics change that. Every
+* post-layout cell's net-to-substrate capacitance returns to one shared
+* node (`vsubs`, .global -- see layout/bin/pex-netlist.py's docstring and
+* klayout-tools#1503), so four post-layout rings on four independent
+* supplies still share exactly one physical node: the substrate.
+*
+* This deck is the sibling of tb_post_layout_ro_ring5.spice and differs
+* from it in ONE line: that deck ties `vsubs` hard to 0 (`Vsub vsubs 0 dc
+* 0`), this one does not tie it at all, leaving it on the extractor's own
+* `Rvsubs_dctie vsubs 0 1e+12` inside each cell. The two runs therefore
+* bracket the real answer:
+*
+*   TIED   (sibling deck) -- an ideal, zero-impedance substrate. No
+*          inter-ring coupling through the substrate is possible, by
+*          construction. This is the optimistic bound, and the one the
+*          composed cells' own psub guard rings are drawn to approach.
+*   FLOAT  (this deck)    -- an ideal, INFINITE-impedance shared substrate:
+*          every ring's switching current is forced through the shared
+*          node's capacitance and straight into every other ring. This is
+*          the pessimistic bound.
+*
+* Neither is the physical answer, and this deck does not claim to produce
+* one: the extractor models no substrate resistance and no tap-to-substrate
+* contact resistance at all, so the real impedance between a cell's psub
+* tap and the substrate node it strapping is not in this netlist to be
+* used. What the pair of runs DOES establish is how much the answer can
+* move across the whole range of that unmodelled impedance -- which is the
+* thing a bare netlist-level run could not bound at all, because it had no
+* shared node whatsoever.
+*
+* Measured here: each ring's own period (comparable line for line against
+* the sibling deck's `t_pex_*` at the same corner, temperature and supply),
+* the ladder span, and the substrate node's own peak-to-peak excursion,
+* which is zero by construction in the tied deck and is the direct measure
+* of how hard the rings are driving each other here.
+*
+* Topology: the same four post-layout rings as the sibling deck, wstv =
+* 0.42 / 0.44 / 0.46 / 0.48 um, one physical layout cell per ring, each on
+* its own independent supply source. No pre-layout control rings: a
+* pre-layout netlist has no substrate node, so it has nothing to say about
+* this question.
+*
+* This file is a TEMPLATE: sim/bin/corner-run.py substitutes @@PDK_LIB@@,
+* @@CORNER@@, @@PEX_LIB@@, @@TEMP@@, @@VDD@@ and @@TMAX@@. As committed it
+* is not a runnable deck.
+
+.option scale=1u
+.lib "@@PDK_LIB@@" @@CORNER@@
+
+* post-layout subcircuit library only (see header)
+.include "@@PEX_LIB@@"
+
+.temp @@TEMP@@
+
+* NOTE: no `Vsub vsubs 0` tie here -- that is the entire difference from
+* tb_post_layout_ro_ring5.spice. See the header.
+
+Vddrp1 vddrp1 0 dc @@VDD@@
+Venp1 enp1 0 dc @@VDD@@
+xgp1 p1o enp1 p1a vddrp1 0 ro_nand2_pex_wstv0p42
+x1p1 p1a p1b vddrp1 0 ro_stage_pex_wstv0p42
+x2p1 p1b p1c vddrp1 0 ro_stage_pex_wstv0p42
+x3p1 p1c p1d vddrp1 0 ro_stage_pex_wstv0p42
+x4p1 p1d p1o vddrp1 0 ro_stage_pex_wstv0p42
+
+Vddrp2 vddrp2 0 dc @@VDD@@
+Venp2 enp2 0 dc @@VDD@@
+xgp2 p2o enp2 p2a vddrp2 0 ro_nand2_pex_wstv0p44
+x1p2 p2a p2b vddrp2 0 ro_stage_pex_wstv0p44
+x2p2 p2b p2c vddrp2 0 ro_stage_pex_wstv0p44
+x3p2 p2c p2d vddrp2 0 ro_stage_pex_wstv0p44
+x4p2 p2d p2o vddrp2 0 ro_stage_pex_wstv0p44
+
+Vddrp3 vddrp3 0 dc @@VDD@@
+Venp3 enp3 0 dc @@VDD@@
+xgp3 p3o enp3 p3a vddrp3 0 ro_nand2_pex_wstv0p46
+x1p3 p3a p3b vddrp3 0 ro_stage_pex_wstv0p46
+x2p3 p3b p3c vddrp3 0 ro_stage_pex_wstv0p46
+x3p3 p3c p3d vddrp3 0 ro_stage_pex_wstv0p46
+x4p3 p3d p3o vddrp3 0 ro_stage_pex_wstv0p46
+
+Vddrp4 vddrp4 0 dc @@VDD@@
+Venp4 enp4 0 dc @@VDD@@
+xgp4 p4o enp4 p4a vddrp4 0 ro_nand2_pex_wstv0p48
+x1p4 p4a p4b vddrp4 0 ro_stage_pex_wstv0p48
+x2p4 p4b p4c vddrp4 0 ro_stage_pex_wstv0p48
+x3p4 p4c p4d vddrp4 0 ro_stage_pex_wstv0p48
+x4p4 p4d p4o vddrp4 0 ro_stage_pex_wstv0p48
+
+* --- output buffers, one per ring, on a shared block supply ------------
+* Present so this deck's loading matches tb_post_layout_ro_ring5.spice's
+* exactly -- the whole point of this deck is to difference against that
+* one, which is only meaningful if the two rings are equally loaded.
+Vddp vddp 0 dc @@VDD@@
+xbp1 p1o p1ob vddp 0 ro_buf_pex
+xbp2 p2o p2ob vddp 0 ro_buf_pex
+xbp3 p3o p3ob vddp 0 ro_buf_pex
+xbp4 p4o p4ob vddp 0 ro_buf_pex
+
+.ic v(p1o)=0 v(p1a)=@@VDD@@ v(p1b)=0 v(p1c)=@@VDD@@ v(p1d)=0
+.ic v(p2o)=0 v(p2a)=@@VDD@@ v(p2b)=0 v(p2c)=@@VDD@@ v(p2d)=0
+.ic v(p3o)=0 v(p3a)=@@VDD@@ v(p3b)=0 v(p3c)=@@VDD@@ v(p3d)=0
+.ic v(p4o)=0 v(p4a)=@@VDD@@ v(p4b)=0 v(p4c)=@@VDD@@ v(p4d)=0
+.ic v(vsubs)=0
+
+.tran @@TMAX@@ 160n uic
+
+.control
+run
+
+meas tran tp1a when v(p1o)=0.5*@@VDD@@ rise=3
+meas tran tp1b when v(p1o)=0.5*@@VDD@@ rise=11
+let t_float_wstv0p42 = (tp1b - tp1a)/8
+meas tran tp2a when v(p2o)=0.5*@@VDD@@ rise=3
+meas tran tp2b when v(p2o)=0.5*@@VDD@@ rise=11
+let t_float_wstv0p44 = (tp2b - tp2a)/8
+meas tran tp3a when v(p3o)=0.5*@@VDD@@ rise=3
+meas tran tp3b when v(p3o)=0.5*@@VDD@@ rise=11
+let t_float_wstv0p46 = (tp3b - tp3a)/8
+meas tran tp4a when v(p4o)=0.5*@@VDD@@ rise=3
+meas tran tp4b when v(p4o)=0.5*@@VDD@@ rise=11
+let t_float_wstv0p48 = (tp4b - tp4a)/8
+
+let skew_span_float = t_float_wstv0p42 / t_float_wstv0p48
+
+* How hard are the rings driving the shared node? Zero by construction in
+* the tied deck; here it is the coupling itself, in volts.
+meas tran vsubmax MAX v(vsubs) from=20n to=160n
+meas tran vsubmin MIN v(vsubs) from=20n to=160n
+let vsubs_pp = vsubmax - vsubmin
+let vsubs_pp_frac = (vsubmax - vsubmin) / @@VDD@@
+
+* Ring-node swing on the slowest and fastest ring, to confirm the rings are
+* still running normally rather than being dragged into a degenerate state.
+meas tran vmaxp1 MAX v(p1o) from=20n to=160n
+meas tran vminp1 MIN v(p1o) from=20n to=160n
+meas tran vmaxp4 MAX v(p4o) from=20n to=160n
+meas tran vminp4 MIN v(p4o) from=20n to=160n
+let swing_frac_float_wstv0p42 = (vmaxp1 - vminp1) / @@VDD@@
+let swing_frac_float_wstv0p48 = (vmaxp4 - vminp4) / @@VDD@@
+
+print t_float_wstv0p42
+print t_float_wstv0p44
+print t_float_wstv0p46
+print t_float_wstv0p48
+print skew_span_float
+print vsubs_pp
+print vsubs_pp_frac
+print swing_frac_float_wstv0p42
+print swing_frac_float_wstv0p48
+.endc
+.end
