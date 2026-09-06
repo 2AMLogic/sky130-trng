@@ -9,11 +9,229 @@ of these instances are now DRC-clean *and* LVS-clean as standalone cells (see
 `layout/README.md`) — this is the first attempt at placing them together as
 one block.
 
-Mirrors `layout/xor2-placement-poc/`'s own convention, one level up the
-hierarchy: a named, honestly-scoped proof of concept that establishes the
-**floorplan** half of the problem and stops, rather than a claimed-complete
-block. **This is not a DRC/LVS-clean `ro_array_core`** — see "What this does
-NOT establish" below.
+Started (Increment 1) as a placement-only proof of concept mirroring
+`layout/xor2-placement-poc/`'s own convention one level up the hierarchy: a
+named, honestly-scoped PoC that establishes the **floorplan** half of the
+problem and stops. Seven routing increments later, **Increment 8 below closes
+it**: `ro_array_core_signal9_poc.gds` is `klt drc` clean and `klt lvs`
+**matches** `design/ro_array_core.spice`'s own `.subckt ro_array_core`
+(132/132 devices, 96/96 nets). The directory name is now historical — the
+per-increment `signal*` file sets are kept as the append-only record of how
+it got there, and the "What this does NOT establish" section below is
+preserved as Increment 1's own milestone text with each item's resolution
+marked inline.
+
+## Increment 8: the `vdd` supply bus routed — `ro_array_core` is DRC-clean and LVS-clean (this update)
+
+Closes the last open net. Increment 7 left `vdd` — the buffer/XOR-tree
+supply, distinct from the four per-ring `vddrN` starve domains — as **seven
+separate nets** (one per `ro_buf`/`xor2` instance, `device_count` 2/2/2/2/
+10/10/10), because `vdd` ties to each instance's own `nwell` and `nwell` has
+no chip-wide global identity the way the p-substrate does (Increment 5's
+finding): two separately-placed cells' nwells are one electrical node only if
+a real strap physically joins them. Increment 7's own closing prediction —
+that `vdd` "is the same shape" as `t2` and needs "its own set of met1 stubs
+per buffer/XOR tap plus a met3 bus" — **holds exactly**, and that is what
+this increment draws.
+
+```
+$ python3 vdd-tap-scan.py                                      # -> vdd-tap-scan.json
+all_taps_clear: true  (7/7 taps on vdd li1, via landing clear, stub met1-clear)
+$ klt gen-compose signal8.compose.request.json --format json   # -> signal8.compose.response.json, ro_array_core_signal8_poc.gds
+unrouted_nets: []   (4 x 1.76um buffer stubs, 3 x 1.5um XOR stubs)
+$ klt drc ro_array_core_signal8_poc.gds --deck sky130 --format json
+status: clean, violation_count: 0
+$ klt extract ro_array_core_signal8_poc.gds --deck sky130 --format json
+device_count: 132 (unchanged), net_count: 102 (unchanged), pin_count: 92 (unchanged)
+
+$ klt gen-compose signal9.compose.request.json --format json   # -> signal9.compose.response.json, ro_array_core_signal9_poc.gds
+unrouted_nets: []   (6 legs, 58.2 / 58.3 / 58.3 / 63.315 / 31.0 / 63.74 um)
+$ klt drc ro_array_core_signal9_poc.gds --deck sky130 --format json
+status: clean, violation_count: 0
+$ klt extract ro_array_core_signal9_poc.gds --deck sky130 --format json
+device_count: 132 (unchanged), net_count: 96 (down from 102), pin_count: 86
+
+$ python3 array-reference.py                                   # -> ro_array_core.ref.spice
+$ klt lvs lvs.request.json --format json                       # -> lvs.json
+status: match, devices 132/132, nets 96/96
+$ python3 lvs-negative-controls.py                             # -> lvs-negative-controls.json
+all_controls_detected: true   (both deliberately-wrong references -> mismatch)
+```
+
+### `signal8` — seven met1 promotion stubs, measured before they were drawn
+
+Every tap this directory has ever used is tapped **by coordinate** on a leaf
+cell's own interior conductor (none of the composed leaf cells expose declared
+pins), and Increment 6's finding 1 established what that costs: `klt
+gen-compose` models a placed block as an opaque bbox with no obstacle model of
+its interior metal, so a stub that starts inside a block can run straight
+through another net's metal and short to it **silently** — `unrouted_nets: []`
+and `klt drc` clean, wrong only in `klt extract`'s net list. `vdd` needed seven
+such stubs at once, so `vdd-tap-scan.py` (committed, with its
+`vdd-tap-scan.json` output) measures all seven first, **against the composed
+array** (`ro_array_core_signal7_poc.gds`) rather than against the standalone
+leaf cells — strictly stronger than a per-cell scan, because the composite's
+met1 also contains every inter-cell backbone Increments 2-7 committed
+(`rn1`-`rn4`, `ro1`-`ro4`, the buffer `vss` bus, `t1`, and Increment 7's own
+`y_m1`/`b_m1` stubs), which a per-cell scan cannot see at all. For each tap it
+checks three things: the tap point is inside one merged li1 polygon whose area
+matches the leaf cell's own `vdd` component (so the tap is on `vdd`, not a
+neighbour); an `mcon`-sized square centred on it lies wholly inside that
+polygon (so the via lands); and the drawn stub, grown by half its width plus
+sky130's 0.14 µm `met1.space`, touches **no** met1 anywhere in the composite.
+`vdd` carries no met1 of its own before this increment, so *any* met1 contact
+would be a foreign net — i.e. exactly Increment 6's silent short. All seven
+report clear, and all seven then composed first-try with no discarded probes.
+
+- **The four `ro_buf` taps** are the cell's own authoritative `TAP_N` port,
+  block-local `(-1.12, 4.24)` — the coordinate this README's table has carried
+  since Increment 2, now exercised for real. Each gets a met1 port `1.76 µm`
+  north at absolute `y = 6.0`, just clear of `ro_buf`'s own bbox top (`4.6`).
+  `ro_buf` contains **zero** met1 shapes of its own, so the only met1 the scan
+  has to clear is the array's own committed backbones; the nearest is
+  `rnN`'s lane at `y = 5.6`, which stops `1.37 µm` west of each buffer's `vdd`
+  column.
+- **The three `xor2` taps resolve a coordinate this README has flagged
+  `*approx*` since Increment 2.** The candidate table below lists `xa1`'s
+  `vdd` at `(10.885, 23.585)` "approx" — that point is **not on li1 at all**
+  (checked directly; it lands in a gap between two rails). `xor2`'s `vdd` is
+  one 27-shape li1-only component of area `17.07285 µm²`, and the tap this
+  increment uses, block-local `(-1.12, 13.8)`, is the widest pad on it with a
+  clear north escape. Each gets a met1 port `1.5 µm` north at absolute
+  `y = 27.885`, still inside the block (`bbox` top `28.67`) — the promotion
+  tip does **not** need to leave the cell, because met2 crosses over the
+  cell's own metal without touching it and only drops a via at the tip.
+
+`klt extract` confirms the stubs merged nothing: `net_count` stays `102`,
+`device_count` stays `132`, and the net-by-net diff against
+`signal7.extract.json` shows exactly seven *extensions* — the four 2-device
+buffer `vdd` nets become `vdd|vdd_b1`..`vdd|vdd_b4`, the three 10-device XOR
+`vdd` nets become `vdd|vdd_x1`..`vdd|vdd_x3`, every device count unchanged.
+
+### `signal9` — a six-leg met2 bus, and why it had to be a chain
+
+The bus treats the whole `signal8` GDS as one placed block and routes on
+`"metal3"` (met2), the same technique Increment 7 used for `t2`. Two things
+shaped its geometry:
+
+1. **The met2 plane is not empty.** `klt gen-compose`'s own routability checks
+   look at the block's *drawn* geometry on the route layer (its "self-net
+   drawn-metal check"), and this composite has nine met2 shapes already: each
+   `ro_ring5` carries **two** full-width met2 rails of its own (`vddr` and
+   `vss`, `y ∈ [-3.085, 2.21]` and `[4.19, 6.085]`, spanning most of each
+   ring's width — see `layout/ro_ring5/README.md`'s fourth stage), plus
+   Increment 7's `t2` bridge (`x ∈ [37.195, 78.87]`, `y ∈ [19.185, 31.085]`).
+   So the row-1 bus lane sits at `y = 7.5`, `1.2 µm` above every ring's upper
+   met2 rail, and the two XOR-to-XOR legs deliberately avoid the `t2` bridge:
+   `xa1→xa2` hops **over** the top at `y = 28.9` (stopping `2.45 µm` short of
+   `t2`'s riser at `x = 37.405`), while `xa2→xa3` drops **under** it to
+   `y = 10.5`, because a straight top-lane hop from `xa2` to `xa3` would cross
+   `t2`'s own `y = 31.0` span at `x = 63.705` — a met2-on-met2 short, i.e. two
+   merged shapes on one layer, which no rule deck can see.
+2. **`waypoints_um` is only accepted for a two-pin net**, so a single seven-pin
+   `vdd` entry could not be hand-routed at all — it would fall to the
+   spanning-tree router with no obstacle model of the ring rails above. The
+   bus is therefore declared as **six separate two-pin `vdd` entries**, each
+   with its own waypoints. `gen-compose` rejects a leg that crosses an
+   already-accepted leg of the same request *unless the two share a pin*
+   ("shared pin -- an intended merge, not a short"), so the six legs form a
+   **chain** — `buf4-buf3-buf2-buf1-xa1-xa2-xa3` — rather than a star or a
+   trunk with taps: consecutive legs share a pin and are exempt, and every
+   non-consecutive pair was laid out on disjoint lanes so nothing else
+   touches. A star from one trunk would have been rejected leg-by-leg.
+
+Net-by-net diff against `signal8.extract.json`: exactly the intended merge and
+nothing else. The seven `vdd` nets (`4 x 2 + 3 x 10 = 38` devices) become one
+38-device net `vdd|vdd_b1|vdd_b2|vdd_b3|vdd_b4|vdd_x1|vdd_x2|vdd_x3`;
+`net_count` drops `102 → 96` (exactly the six merges), `device_count` stays
+`132`.
+
+### The LVS match, and the reference it needed
+
+`lvs.json` reports **`status: match`, 132/132 devices, 96/96 nets** against
+`design/ro_array_core.spice`'s own `.subckt ro_array_core`. That answers this
+README's own "Suggested next steps" item 6 — including the open question it
+raised, which turned out to be real:
+
+**`layout/bin/compose-cell.py`'s `lvs.dependencies` mechanism genuinely cannot
+express this reference.** It rewrites a flat list of dependency subckt *names*
+with **one** shared `lvs.params` dict, and `ro_array_core` needs the *same*
+`ro_ring5` subckt four times with four different `wstv=` overrides
+(0.42/0.44/0.46/0.48). `array-reference.py` (committed) is the narrowest
+answer: it reuses `compose-cell.py`'s own `extract_subckt`/`build_reference`
+rewrite verbatim — same substitutions, same `Cld` drop, same unit-suffix fix
+(klayout-tools#1492) — but calls it four times over the ring hierarchy
+(`ro_nand2`/`ro_stage`/`ro_ring5`), renaming each pass's copies to `*_r1`..
+`*_r4` so the four sizings coexist in one file, then repoints
+`ro_array_core`'s `xr1`-`xr4` at them. The renames exist only inside the
+generated reference (so `flatten_reference: true` has four distinct
+definitions to inline); nothing in `design/` or in the layout is renamed.
+Folding this back into `compose-cell.py` as a per-dependency `params`
+override — and with it promoting this directory into a `layout/ro_array_core/`
+`cell.json` recipe with `--check` reproducibility and the unit-test coverage
+this repo's CI requires of netlist-rewriting code — is deliberately left as
+follow-up, not smuggled into this increment.
+
+**The match is verified to be discriminating, not vacuous.**
+`lvs-negative-controls.py` (committed, with its `lvs-negative-controls.json`
+output, and non-zero exit if either control passes) re-runs the identical
+comparison against two deliberately-wrong references, with the layout side
+byte-identical in all three runs:
+
+| Control | Perturbation (reference side only) | Result |
+|---|---|---|
+| `width` | ring 4's starve devices resized `0.48 µm` → `0.42 µm` (ring 1's `wstv`), topology untouched | `mismatch`, 122/132 devices |
+| `topology` | `xa1`/`xa2`'s second XOR inputs crossed (`ro2` ↔ `ro3`), every device parameter untouched | `mismatch`, 112/132 devices |
+
+The first matters specifically for this block: `ro_array_core`'s entire
+premise is four rings deliberately sized apart (DR-0003), and the four
+physically distinct ring GDS cells under `layout/` differ *only* in that
+width — if `klt lvs` did not compare `W`, four identical rings would have
+matched this reference just as happily and the four separate cells would be
+unverified. They are not: the sizing is compared, and it matches.
+
+### What is still open after this increment
+
+- **`ring1..4`'s and `xa1..3`'s own `vss` taps are still not drawn.** Not
+  LVS-blocking — `klt extract`'s sky130 deck merges every un-isolated NMOS
+  body into one substrate node (Increment 5's finding), which is why the
+  match above is real without them — but a fabricated die needs the explicit
+  low-impedance strap the substrate's own (unmodelled, per DR-0005 finding 3)
+  resistance does not provide.
+- **This is a PoC directory, not a `layout/ro_array_core/` cell.** Its
+  `signal*.compose.request.json` files are hand-maintained, with no
+  `compose-cell.py --check` reproducibility, and `array-reference.py` lives
+  here rather than in `layout/bin/` (deliberately: `layout/bin/**` is on this
+  repo's PR-blocking CI path and that code is unit-tested there — promoting
+  the script belongs with promoting the recipe).
+- **No array-level parasitic extraction or post-layout PVT run exists yet.**
+  `sim/post-layout-ro-ring5-assembled/` covers a single ring; the whole
+  array's extracted parasitics — and therefore DR-0003 §8's explicitly
+  unmeasured `wstv` inter-ring decorrelation question, which needs real
+  inter-ring coupling to answer — are untouched by this increment.
+- **`sampler_core`/`sampler_dff` remain untouched**, so the block-level
+  layout the Chipalooza brief asks for is still only its entropy-source half.
+
+### Reproduce this increment
+
+```bash
+volare enable --pdk sky130 c6d73a35f524070e85faff4a6a9eef49553ebc2b
+# klt's shared install churns between (and within) sessions -- pin it, per
+# layout/README.md's "Correcting the curation note":
+#   python3 -m venv /tmp/klt-venv && /tmp/klt-venv/bin/pip install \
+#     "git+https://github.com/2AMLogic/klayout-tools@c6dbf66c53c6e9a73c4f5ae5e41a98e8fe414252"
+cd layout/ro_array_core-placement-poc
+python3 vdd-tap-scan.py                                      # -> vdd-tap-scan.json (all_taps_clear: true)
+klt gen-compose signal8.compose.request.json --format json   # -> signal8.compose.response.json, ro_array_core_signal8_poc.gds
+klt drc ro_array_core_signal8_poc.gds --deck sky130 --format json      # -> clean, 0 violations
+klt extract ro_array_core_signal8_poc.gds --deck sky130 --format json  # -> 132 devices, 102 nets
+klt gen-compose signal9.compose.request.json --format json   # -> signal9.compose.response.json, ro_array_core_signal9_poc.gds
+klt drc ro_array_core_signal9_poc.gds --deck sky130 --format json      # -> clean, 0 violations
+klt extract ro_array_core_signal9_poc.gds --deck sky130 --format json  # -> 132 devices, 96 nets
+python3 array-reference.py                                   # -> ro_array_core.ref.spice
+klt lvs lvs.request.json --format json                       # -> lvs.json (match, 132/132, 96/96)
+python3 lvs-negative-controls.py                             # -> lvs-negative-controls.json (both mismatch)
+```
 
 ## Increment 2: forward ring→buffer signal chain routed
 
@@ -716,12 +934,13 @@ else below is still open.
   taps.** **Increment 7 resolves `t2`** (`xa2.y` → `xa3.b`, really routed via
   a met2/`"metal3"` bridge over two met1 promotion stubs added at the
   array-composition level — see "Increment 7" above) — the XOR combining
-  tree's inputs are now fully wired. Still open: `vdd` (the buffer/XOR-tree
-  supply, still seven separate nets), `ring1..4`'s and `xa1..3`'s own `vss`
-  taps (not LVS-blocking, per Increment 5's substrate finding), and
-  therefore any LVS attempt. `vdd` needs the same met1-stub-then-met2-bridge
-  recipe Increment 7 proved out for `t2` (Increment 6 predicted a leaf-cell
-  change would be needed; Increment 7 found it is not).
+  tree's inputs are now fully wired. **Increment 8 resolves `vdd`** (seven
+  met1 promotion stubs plus a six-leg met2 chain bus, merging the seven
+  per-instance nets into one 38-device net) **and, with it, the whole
+  connectivity item: `klt lvs` matches 132/132 devices and 96/96 nets.**
+  Still not drawn, and no longer blocking anything: `ring1..4`'s and
+  `xa1..3`'s own `vss` taps (not LVS-blocking, per Increment 5's substrate
+  finding).
 - **The floorplan is a first-pass grid, not a routing-aware plan.** 5 µm
   gaps were chosen for guaranteed DRC clearance (nwell/tap spacing rules in
   sky130 are sub-micron), not for routability. A next increment may need to
@@ -818,6 +1037,18 @@ shared `vdd`, matching DR-0003's per-ring starve-supply isolation intent.
 need a distribution plan across all eight `buf`/`xor2` instances — not
 attempted here.
 
+**Increment 8 correction: this table's three `xa* | vdd *approx*` rows are
+wrong, not merely imprecise.** `(10.885, 23.585)` and its `xa2`/`xa3`
+translations are **not on li1 at all** — checked directly against the
+composed array, they land in a gap between two `vdd` rails. `xor2`'s `vdd`
+is one 27-shape li1-only component of area `17.07285 µm²`; Increment 8 taps
+it at block-local `(-1.12, 13.8)` (absolute `(5.765, 26.385)` /
+`(34.735, 26.385)` / `(63.705, 26.385)`), measured by `vdd-tap-scan.py`
+rather than approximated. The `ro_buf` `vdd` rows, by contrast, were right
+all along (they come from the cell's own authoritative `TAP_N` port) and are
+the taps Increment 8 actually used. The `vss *approx*` rows remain
+unconfirmed and unexercised.
+
 **Increment 2 update: the `xa1`/`xa2`'s `a`/`b` second-coordinate option is
 now confirmed, not just candidate.** The `(x, 19.395)`-family alternative for
 each `a`/`b` row above (e.g. `xa1`'s `a` at `(3.445, 19.395)`, `b` at
@@ -896,9 +1127,13 @@ klt extract ro_array_core_poc.gds --deck sky130 --format json  # -> 132 devices 
    separate call (`signal7`) that treats the whole `signal6` GDS as one
    placed block. **Correction to this bullet's own prior text**: the
    promotion did *not* need to happen inside `xor2`'s leaf cell — Increment
-   7's own "Finding" explains why. `vdd` is the same shape (seven separate
-   nets, needs its own set of met1 stubs per buffer/XOR tap plus a met3 bus)
-   and has not been attempted yet.
+   7's own "Finding" explains why. **`vdd` DONE, Increment 8 above** — this
+   bullet's own prediction ("the same shape ... its own set of met1 stubs
+   per buffer/XOR tap plus a met3 bus") held exactly, with two things it did
+   not anticipate: the met2 plane is *not* empty (each `ro_ring5` carries
+   two full-width met2 rails of its own), and `waypoints_um` is accepted
+   only for two-pin nets, so the bus had to be declared as a six-leg chain
+   of two-pin `vdd` entries rather than one seven-pin net.
 5. Given `ro_ring5`'s and `xor2`'s own composition each needed a staged
    (`"stages"`) approach to keep crossing nets off one layer, expect
    `ro_array_core`'s own final assembly to need the same — this floorplan
@@ -907,9 +1142,12 @@ klt extract ro_array_core_poc.gds --deck sky130 --format json  # -> 132 devices 
    above, one level down (the block-interior edge-margin rule), a different
    failure mode than the crossing-nets rule but with the same practical
    consequence: some nets need their own dedicated pass or channel.
-6. Once routed, run `klt lvs` against `design/ro_array_core.spice`'s own
-   `.subckt ro_array_core`. Note a real open question this increment did
-   *not* resolve: the reference netlist defines a **single**
+6. ~~Once routed, run `klt lvs` against `design/ro_array_core.spice`'s own
+   `.subckt ro_array_core`~~ **DONE, Increment 8 above — `match`, 132/132
+   devices, 96/96 nets, with two committed negative controls showing the
+   verdict discriminates.** This bullet's open question was **real**, and
+   `array-reference.py` is the answer: the reference netlist defines a
+   **single**
    `.subckt ro_ring5 en ro vddr vss wstv=0.42 lstv=2 cld=0.5f` and calls it
    four times with four different `wstv=` overrides (`0.42`/`0.44`/`0.46`/
    `0.48`) — it does *not* define four separate subckts. `layout/`'s four
@@ -921,10 +1159,25 @@ klt extract ro_array_core_poc.gds --deck sky130 --format json  # -> 132 devices 
    mechanism yet to extract the *same* subckt name four times with four
    *different* parameter substitutions for one composed reference — that is
    new ground `layout/ro_ring5/cell.json`'s own single-instance
-   `dependencies: ["ro_nand2", "ro_stage"]` never exercised. Whoever attempts
-   the real `ro_array_core` LVS should check whether `compose-cell.py` needs
-   extending for this (e.g. a per-dependency `params` override) before
-   assuming the existing mechanism covers it as-is.
+   `dependencies: ["ro_nand2", "ro_stage"]` never exercised. Increment 8
+   confirms `compose-cell.py` does *not* cover it as-is and works around it
+   in this directory (`array-reference.py`, four renamed passes over the
+   ring hierarchy) rather than changing `compose-cell.py` mid-increment;
+   the per-dependency `params` override belongs with promoting this
+   directory into a `layout/ro_array_core/` `cell.json` recipe, which is
+   follow-up work.
+7. **Next, in rough dependency order**: draw the remaining `vss` taps
+   (`ring1..4`, `xa1..3`) so the composed block carries a real supply strap
+   rather than relying on the substrate model; promote this directory into a
+   `layout/ro_array_core/` cell recipe (per-dependency `params` in
+   `compose-cell.py` + unit tests, `--check` reproducibility); extract the
+   whole array's parasitics (`klt extract --parasitics`, the same path
+   `layout/pex/` already uses for one ring) and run a post-layout PVT
+   campaign against them under `sim/`; and use *that* data to answer
+   DR-0003 §8's `wstv` inter-ring decorrelation question, which needs real
+   inter-ring coupling and cannot be answered at the netlist level. Then
+   `sampler_core`/`sampler_dff`, which have no layout at all yet.
 
-Tracked under issue #22 (`ro_array_core`/`sampler_core` assembly, still
-open).
+Tracked under issue #22 (`ro_array_core`/`sampler_core` assembly);
+`ro_array_core` is closed out by Increment 8, `sampler_core` and the
+post-layout PVT/decorrelation work are not.

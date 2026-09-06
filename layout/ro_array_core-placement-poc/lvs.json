@@ -1,0 +1,552 @@
+{
+  "schema_version": 1,
+  "engine": "klayout",
+  "layout": "ro_array_core_signal9_poc.spice",
+  "reference": "ro_array_core.ref.spice",
+  "top": "RO_ARRAY_CORE_SIGNAL9_POC",
+  "reference_top": "RO_ARRAY_CORE",
+  "parameter_tolerance": null,
+  "options": {
+    "combine_devices": false,
+    "flatten_layout": true,
+    "flatten_reference": true,
+    "netgen_setup": null,
+    "parameter_tolerance": null
+  },
+  "status": "match",
+  "mismatch_count": 1,
+  "error_count": 0,
+  "category_counts": {
+    "topology.flattened": 1
+  },
+  "category_error_counts": {},
+  "counts": {
+    "nets": {
+      "layout": 96,
+      "reference": 96,
+      "matched": 96
+    },
+    "devices": {
+      "layout": 132,
+      "reference": 132,
+      "matched": 132
+    },
+    "pins": {
+      "layout": 86,
+      "reference": 15,
+      "matched": 86
+    }
+  },
+  "device_classes": null,
+  "environment": {
+    "engine": "klayout",
+    "engine_version": "0.30.12",
+    "layout_sha256": "cf09efa412aef57f3c3cc510be6318d8eabea738850362fdfce99f1106f82e3e",
+    "reference_sha256": "0bebdb501c902e3dc463130de78566107db9503231d7eff431cd1c0b5d69ef00",
+    "extracted_netlist": null
+  },
+  "provenance": {
+    "klt_version": "0.3.0",
+    "klayout_version": "0.30.12",
+    "pdk": null,
+    "deck": null,
+    "input": null
+  },
+  "mismatches": [
+    {
+      "category": "topology.flattened",
+      "severity": "warning",
+      "description": "options.flatten_reference flattened the reference netlist before comparing: 15 circuit(s) were collapsed into 1 top-level circuit(s), substituting every subcircuit-call instance in place -- this compare verified topology only after removing the original hierarchy boundaries on this side (see docs/cli/lvs.md, \"topology.flattened\")",
+      "side": "reference",
+      "net": null,
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    }
+  ],
+  "net_correspondence": [
+    {
+      "layout": "AN|INVA_Y|MN34_G0|MP13_G1|Y",
+      "reference": "A1.AN",
+      "pin": true
+    },
+    {
+      "layout": "BN|INVB_Y|MN34_G1|MP24_G1|Y",
+      "reference": "A1.BN",
+      "pin": true
+    },
+    {
+      "layout": "MID",
+      "reference": "A1.MID",
+      "pin": true
+    },
+    {
+      "layout": "\\$81",
+      "reference": "A1.S1",
+      "pin": false
+    },
+    {
+      "layout": "\\$79",
+      "reference": "A1.S2",
+      "pin": false
+    },
+    {
+      "layout": "AN|INVA_Y|MN34_G0|MP13_G1|Y$1",
+      "reference": "A2.AN",
+      "pin": true
+    },
+    {
+      "layout": "BN|INVB_Y|MN34_G1|MP24_G1|Y$1",
+      "reference": "A2.BN",
+      "pin": true
+    },
+    {
+      "layout": "MID$1",
+      "reference": "A2.MID",
+      "pin": true
+    },
+    {
+      "layout": "\\$84",
+      "reference": "A2.S1",
+      "pin": false
+    },
+    {
+      "layout": "\\$82",
+      "reference": "A2.S2",
+      "pin": false
+    },
+    {
+      "layout": "AN|INVA_Y|MN34_G0|MP13_G1|Y$2",
+      "reference": "A3.AN",
+      "pin": true
+    },
+    {
+      "layout": "BN|INVB_Y|MN34_G1|MP24_G1|Y$2",
+      "reference": "A3.BN",
+      "pin": true
+    },
+    {
+      "layout": "MID$2",
+      "reference": "A3.MID",
+      "pin": true
+    },
+    {
+      "layout": "\\$89",
+      "reference": "A3.S1",
+      "pin": false
+    },
+    {
+      "layout": "\\$87",
+      "reference": "A3.S2",
+      "pin": false
+    },
+    {
+      "layout": "EN|EN1|G_EN",
+      "reference": "EN1",
+      "pin": true
+    },
+    {
+      "layout": "EN|EN2|G_EN",
+      "reference": "EN2",
+      "pin": true
+    },
+    {
+      "layout": "EN|EN3|G_EN",
+      "reference": "EN3",
+      "pin": true
+    },
+    {
+      "layout": "EN|EN4|G_EN",
+      "reference": "EN4",
+      "pin": true
+    },
+    {
+      "layout": "NY$1",
+      "reference": "R1.1.NY",
+      "pin": true
+    },
+    {
+      "layout": "PY",
+      "reference": "R1.1.PY",
+      "pin": true
+    },
+    {
+      "layout": "NY$2",
+      "reference": "R1.2.NY",
+      "pin": true
+    },
+    {
+      "layout": "PY$1",
+      "reference": "R1.2.PY",
+      "pin": true
+    },
+    {
+      "layout": "NY$3",
+      "reference": "R1.3.NY",
+      "pin": true
+    },
+    {
+      "layout": "PY$2",
+      "reference": "R1.3.PY",
+      "pin": true
+    },
+    {
+      "layout": "NY$4",
+      "reference": "R1.4.NY",
+      "pin": true
+    },
+    {
+      "layout": "PY$3",
+      "reference": "R1.4.PY",
+      "pin": true
+    },
+    {
+      "layout": "\\$14",
+      "reference": "R1.G.NM",
+      "pin": false
+    },
+    {
+      "layout": "NY",
+      "reference": "R1.G.NY",
+      "pin": true
+    },
+    {
+      "layout": "MPA_PY|MPB_PY|MPH_PY|PY",
+      "reference": "R1.G.PY",
+      "pin": true
+    },
+    {
+      "layout": "A|G_Y|MNAB_Y|MPA_Y|MPB_Y|N1|S1_A|Y",
+      "reference": "R1.N1",
+      "pin": true
+    },
+    {
+      "layout": "A|N2|S1_Y|S2_A|Y",
+      "reference": "R1.N2",
+      "pin": true
+    },
+    {
+      "layout": "A|N3|S2_Y|S3_A|Y$3",
+      "reference": "R1.N3",
+      "pin": true
+    },
+    {
+      "layout": "A|N4|S3_Y|S4_A|Y$2",
+      "reference": "R1.N4",
+      "pin": true
+    },
+    {
+      "layout": "NY$6",
+      "reference": "R2.1.NY",
+      "pin": true
+    },
+    {
+      "layout": "PY$4",
+      "reference": "R2.1.PY",
+      "pin": true
+    },
+    {
+      "layout": "NY$7",
+      "reference": "R2.2.NY",
+      "pin": true
+    },
+    {
+      "layout": "PY$5",
+      "reference": "R2.2.PY",
+      "pin": true
+    },
+    {
+      "layout": "NY$8",
+      "reference": "R2.3.NY",
+      "pin": true
+    },
+    {
+      "layout": "PY$6",
+      "reference": "R2.3.PY",
+      "pin": true
+    },
+    {
+      "layout": "NY$9",
+      "reference": "R2.4.NY",
+      "pin": true
+    },
+    {
+      "layout": "PY$7",
+      "reference": "R2.4.PY",
+      "pin": true
+    },
+    {
+      "layout": "\\$24",
+      "reference": "R2.G.NM",
+      "pin": false
+    },
+    {
+      "layout": "NY$5",
+      "reference": "R2.G.NY",
+      "pin": true
+    },
+    {
+      "layout": "MPA_PY|MPB_PY|MPH_PY|PY$1",
+      "reference": "R2.G.PY",
+      "pin": true
+    },
+    {
+      "layout": "A|G_Y|MNAB_Y|MPA_Y|MPB_Y|N1|S1_A|Y$1",
+      "reference": "R2.N1",
+      "pin": true
+    },
+    {
+      "layout": "A|N2|S1_Y|S2_A|Y$1",
+      "reference": "R2.N2",
+      "pin": true
+    },
+    {
+      "layout": "A|N3|S2_Y|S3_A|Y",
+      "reference": "R2.N3",
+      "pin": true
+    },
+    {
+      "layout": "A|N4|S3_Y|S4_A|Y",
+      "reference": "R2.N4",
+      "pin": true
+    },
+    {
+      "layout": "NY$11",
+      "reference": "R3.1.NY",
+      "pin": true
+    },
+    {
+      "layout": "PY$8",
+      "reference": "R3.1.PY",
+      "pin": true
+    },
+    {
+      "layout": "NY$12",
+      "reference": "R3.2.NY",
+      "pin": true
+    },
+    {
+      "layout": "PY$9",
+      "reference": "R3.2.PY",
+      "pin": true
+    },
+    {
+      "layout": "NY$13",
+      "reference": "R3.3.NY",
+      "pin": true
+    },
+    {
+      "layout": "PY$10",
+      "reference": "R3.3.PY",
+      "pin": true
+    },
+    {
+      "layout": "NY$14",
+      "reference": "R3.4.NY",
+      "pin": true
+    },
+    {
+      "layout": "PY$11",
+      "reference": "R3.4.PY",
+      "pin": true
+    },
+    {
+      "layout": "\\$32",
+      "reference": "R3.G.NM",
+      "pin": false
+    },
+    {
+      "layout": "NY$10",
+      "reference": "R3.G.NY",
+      "pin": true
+    },
+    {
+      "layout": "MPA_PY|MPB_PY|MPH_PY|PY$2",
+      "reference": "R3.G.PY",
+      "pin": true
+    },
+    {
+      "layout": "A|G_Y|MNAB_Y|MPA_Y|MPB_Y|N1|S1_A|Y$2",
+      "reference": "R3.N1",
+      "pin": true
+    },
+    {
+      "layout": "A|N2|S1_Y|S2_A|Y$2",
+      "reference": "R3.N2",
+      "pin": true
+    },
+    {
+      "layout": "A|N3|S2_Y|S3_A|Y$1",
+      "reference": "R3.N3",
+      "pin": true
+    },
+    {
+      "layout": "A|N4|S3_Y|S4_A|Y$3",
+      "reference": "R3.N4",
+      "pin": true
+    },
+    {
+      "layout": "NY$16",
+      "reference": "R4.1.NY",
+      "pin": true
+    },
+    {
+      "layout": "PY$12",
+      "reference": "R4.1.PY",
+      "pin": true
+    },
+    {
+      "layout": "NY$17",
+      "reference": "R4.2.NY",
+      "pin": true
+    },
+    {
+      "layout": "PY$13",
+      "reference": "R4.2.PY",
+      "pin": true
+    },
+    {
+      "layout": "NY$18",
+      "reference": "R4.3.NY",
+      "pin": true
+    },
+    {
+      "layout": "PY$14",
+      "reference": "R4.3.PY",
+      "pin": true
+    },
+    {
+      "layout": "NY$19",
+      "reference": "R4.4.NY",
+      "pin": true
+    },
+    {
+      "layout": "PY$15",
+      "reference": "R4.4.PY",
+      "pin": true
+    },
+    {
+      "layout": "\\$42",
+      "reference": "R4.G.NM",
+      "pin": false
+    },
+    {
+      "layout": "NY$15",
+      "reference": "R4.G.NY",
+      "pin": true
+    },
+    {
+      "layout": "MPA_PY|MPB_PY|MPH_PY|PY$3",
+      "reference": "R4.G.PY",
+      "pin": true
+    },
+    {
+      "layout": "A|G_Y|MNAB_Y|MPA_Y|MPB_Y|N1|S1_A|Y$3",
+      "reference": "R4.N1",
+      "pin": true
+    },
+    {
+      "layout": "A|N2|S1_Y|S2_A|Y$3",
+      "reference": "R4.N2",
+      "pin": true
+    },
+    {
+      "layout": "A|N3|S2_Y|S3_A|Y$2",
+      "reference": "R4.N3",
+      "pin": true
+    },
+    {
+      "layout": "A|N4|S3_Y|S4_A|Y$1",
+      "reference": "R4.N4",
+      "pin": true
+    },
+    {
+      "layout": "A|G_A|RN1|RO|S4_Y|Y",
+      "reference": "RN1",
+      "pin": true
+    },
+    {
+      "layout": "A|G_A|RN2|RO|S4_Y|Y",
+      "reference": "RN2",
+      "pin": true
+    },
+    {
+      "layout": "A|G_A|RN3|RO|S4_Y|Y",
+      "reference": "RN3",
+      "pin": true
+    },
+    {
+      "layout": "A|G_A|RN4|RO|S4_Y|Y",
+      "reference": "RN4",
+      "pin": true
+    },
+    {
+      "layout": "A|INVA_A|MN12_G0|MP13_G0|RO1|Y",
+      "reference": "RO1",
+      "pin": true
+    },
+    {
+      "layout": "A|B|INVB_A|MN12_G1|MP24_G0|RO2|Y",
+      "reference": "RO2",
+      "pin": true
+    },
+    {
+      "layout": "A|INVA_A|MN12_G0|MP13_G0|RO3|Y",
+      "reference": "RO3",
+      "pin": true
+    },
+    {
+      "layout": "A|B|INVB_A|MN12_G1|MP24_G0|RO4|Y",
+      "reference": "RO4",
+      "pin": true
+    },
+    {
+      "layout": "A|INVA_A|MN12_G0|MP13_G0|T1|Y",
+      "reference": "T1",
+      "pin": true
+    },
+    {
+      "layout": "A|B|B3|INVB_A|MN12_G1|MP24_G0|T2|Y",
+      "reference": "T2",
+      "pin": true
+    },
+    {
+      "layout": "VDD|VDD_B1|VDD_B2|VDD_B3|VDD_B4|VDD_X1|VDD_X2|VDD_X3",
+      "reference": "VDD",
+      "pin": true
+    },
+    {
+      "layout": "G_VDDR_M1|MNT_G|S1_VDDR_M1|S2_VDDR_M1|S3_VDDR_M1|S4_VDDR_M1|VDDR|VDDR1",
+      "reference": "VDDR1",
+      "pin": true
+    },
+    {
+      "layout": "G_VDDR_M1|MNT_G|S1_VDDR_M1|S2_VDDR_M1|S3_VDDR_M1|S4_VDDR_M1|VDDR|VDDR2",
+      "reference": "VDDR2",
+      "pin": true
+    },
+    {
+      "layout": "G_VDDR_M1|MNT_G|S1_VDDR_M1|S2_VDDR_M1|S3_VDDR_M1|S4_VDDR_M1|VDDR|VDDR3",
+      "reference": "VDDR3",
+      "pin": true
+    },
+    {
+      "layout": "G_VDDR_M1|MNT_G|S1_VDDR_M1|S2_VDDR_M1|S3_VDDR_M1|S4_VDDR_M1|VDDR|VDDR4",
+      "reference": "VDDR4",
+      "pin": true
+    },
+    {
+      "layout": "G_VSS_M1|MPH_G|S1_VSS_M1|S2_VSS_M1|S3_VSS_M1|S4_VSS_M1|VSS",
+      "reference": "VSS",
+      "pin": true
+    },
+    {
+      "layout": "XO|Y",
+      "reference": "XO",
+      "pin": true
+    }
+  ]
+}
