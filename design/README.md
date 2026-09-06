@@ -237,16 +237,22 @@ DR-0003 surfaces and does not resolve on its own authority.
   and LVS-clean cells** — every leaf cell `ro_array_core` instantiates
   (rings, buffers, the combining-tree XOR; see
   [`layout/xor2/`](../layout/xor2/README.md) for the newest) — plus, this
-  increment, a first **floorplan** attempt at `ro_array_core` itself:
-  [`layout/ro_array_core-placement-poc/`](../layout/ro_array_core-placement-poc/README.md)
-  places all eleven sibling instances the block needs on one 216.2 x
-  31.755 µm grid, `klt drc` clean (0 violations), `klt extract` reporting
-  the expected 132 devices. No routing exists yet (`en1..en4`, the four
-  `vddrN` domains, `vdd`/`vss`, and every inter-cell net are still
-  disjoint), so `ro_array_core` is not yet a DRC/LVS-clean block; the PoC's
-  README records a candidate net-tap coordinate table for the next
-  increment's routing pass. `sampler_core`/`sampler_dff` remain untouched.
-  The thirteen before it are nine leaf gates plus all
+  increment, `ro_array_core`'s own **forward ring→buffer signal chain
+  routed**:
+  [`layout/ro_array_core-placement-poc/`](../layout/ro_array_core-placement-poc/README.md)'s
+  "Increment 2" section takes the same eleven-sibling, 216.2 x 31.755 µm
+  floorplan from the prior increment and exposes `en1..en4`/the four
+  `vddrN` domains/`ro1..ro4` as top-level pins (no routing needed — each is
+  already a single node inside its own block) plus **really routes**
+  `rn1..rn4` (`ro_ring5.ro` → `ro_buf.a`) on met1 — the first inter-cell
+  wiring at this hierarchy level. Still `klt drc` clean (0 violations);
+  `klt extract` now reports the same 132 devices and 108 nets (down from
+  112, exactly the four new merges, each confirmed to join only its
+  intended pair). Still open: `vdd`/`vss` (a genuinely global net shared by
+  rings, buffers *and* XORs), the buffer→XOR nets' second leg and the XOR
+  combining tree (`t1`, `t2`, `xo`), and therefore any LVS attempt — so
+  `ro_array_core` is not yet a DRC/LVS-clean block. `sampler_core`/
+  `sampler_dff` remain untouched. The thirteen before it are nine leaf gates plus all
   four `ro_ring5` rings ([`layout/ro_ring5/`](../layout/ro_ring5/README.md)
   and `ro_ring5_wstv0p{44,46,48}/`), each `klt drc` clean (0 violations) and
   `klt lvs` **matching** `.subckt ro_ring5` at that ring's own `wstv`

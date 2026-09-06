@@ -74,10 +74,12 @@ cells are DRC/LVS-clean and have been extracted with parasitics and
 simulated over the PVT grid — see §5.3 — all four `ro_ring5` rings are
 now composed DRC/LVS-clean on top of them and parasitic-extracted as whole
 rings, and the combining tree's `xor2` is composed DRC/LVS-clean as well,
-which completes every leaf cell `ro_array_core` instantiates. Nothing wires
-those cells into an array yet, `xor2` has no post-layout record of its own,
-and there is still no array-, sampler- or top-level layout, so the
-whole-block bar is still unmet.)
+which completes every leaf cell `ro_array_core` instantiates. A floorplan
+for the array now exists and its forward ring→buffer signal chain is really
+routed (`layout/ro_array_core-placement-poc/`, DRC-clean), but `vdd`/`vss`
+distribution and the XOR combining tree are still unwired, `xor2` has no
+post-layout record of its own, and there is still no LVS-clean array,
+sampler, or top-level layout, so the whole-block bar is still unmet.)
 
 ---
 
@@ -460,12 +462,17 @@ that lands this document):
   top of intra-cell parasitics alone (period vs. pre-layout overall
   2.0819×–2.3666×), and the ladder still survives. `xor2` itself has no
   post-layout record: it is composed and verified, not extracted or
-  simulated. A first floorplan attempt at the array itself now exists —
+  simulated. A floorplan attempt at the array itself now exists —
   `layout/ro_array_core-placement-poc/` places all eleven sibling instances
   `ro_array_core` needs (the four rings, four buffers, three combining-tree
   XORs) on one 216.2 × 31.755 µm grid, `klt drc` clean, `klt extract`
-  reporting the expected 132 devices — but with no routing yet, so it is a
-  placement proof of concept, not an assembled block. Still outstanding for
+  reporting the expected 132 devices — and its "Increment 2" now routes the
+  forward ring→buffer signal chain on top of that floorplan: `en1..en4`, the
+  four `vddrN` domains and `ro1..ro4` are exposed as top-level pins, and
+  `rn1..rn4` (ring `ro` → buffer `a`) are really routed on met1, still `klt
+  drc` clean (132 devices, 108 nets). `vdd`/`vss` distribution, the XOR
+  combining tree, and any LVS attempt remain open, so this is still a
+  partial assembly, not a DRC/LVS-clean block. Still outstanding for
   the brief's full sign-off bar: the array's own routing/LVS
   and the sampler as assembled layout — and therefore the *whole-block*
   post-layout PVT simulation the bar actually asks for, since the assembled
