@@ -122,10 +122,12 @@ import argparse
 import json
 import os
 import re
-import subprocess
 import sys
 import tempfile
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _klt_common import BuildError, run_klt, write_json  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
@@ -142,44 +144,6 @@ CHECK_FIELDS = (
 #: Geometry parameters a device card may carry, all of which must be
 #: unitless for this library's `.option scale=1u` contract to hold.
 _GEOM_PARAMS = ("L", "W", "AS", "AD", "PS", "PD", "NRD", "NRS")
-
-
-class BuildError(RuntimeError):
-    """A step of the chain failed."""
-
-
-def run_klt(args: list[str], *, env: dict[str, str], cwd: Path) -> dict:
-    """Run ``klt`` with ``--format json``, from *cwd*, and parse its response.
-
-    Same contract as ``layout/bin/compose-cell.py``'s helper of the same
-    name: always invoked from the output directory with relative paths so no
-    absolute home path leaks into committed provenance.
-    """
-    proc = subprocess.run(
-        ["klt", *args, "--format", "json"],
-        capture_output=True,
-        text=True,
-        env=env,
-        cwd=cwd,
-        check=False,
-    )
-    try:
-        response = json.loads(proc.stdout)
-    except json.JSONDecodeError as exc:
-        raise BuildError(
-            f"klt {' '.join(args)} produced no JSON response "
-            f"(exit {proc.returncode}):\n{proc.stdout}\n{proc.stderr}"
-        ) from exc
-    if "error" in response:
-        raise BuildError(
-            f"klt {' '.join(args)} failed: {response['error'].get('message')}"
-        )
-    return response
-
-
-def write_json(path: Path, payload: dict) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(payload, indent=2, sort_keys=False) + "\n")
 
 
 # --------------------------------------------------------------------------
