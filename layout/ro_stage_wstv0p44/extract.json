@@ -1,0 +1,179 @@
+{
+  "schema_version": 3,
+  "file": "ro_stage_wstv0p44.gds",
+  "deck": "sky130",
+  "top": "ro_stage_wstv0p44",
+  "dbu_um": 0.001,
+  "netlist_path": "ro_stage_wstv0p44.spice",
+  "netlist_sha256": "ee6205826c97bbf4579b3b67534838b56c7ecafd294a6290564d70729a70f275",
+  "status": "extracted",
+  "device_count": 4,
+  "net_count": 6,
+  "pin_count": 6,
+  "device_counts": {
+    "nfet": 2,
+    "pfet": 2
+  },
+  "dummy_devices_dropped": 0,
+  "ignored_layers": [],
+  "device_recognition_only_layers": [],
+  "device_classes": [
+    "nfet",
+    "pfet",
+    "pnp",
+    "sky130_fd_pr__model__cap_mim",
+    "sky130_fd_pr__model__cap_mim_m4",
+    "resistor"
+  ],
+  "devices": [
+    {
+      "name": "$1",
+      "class": "nfet",
+      "nets": {
+        "s": "ny",
+        "g": "a",
+        "d": "y",
+        "b": "mph_g|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$2",
+      "class": "nfet",
+      "nets": {
+        "s": "mph_g|vss",
+        "g": "mnt_g|vddr",
+        "d": "ny",
+        "b": "mph_g|vss"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.44,
+        "as_um2": 0.1848,
+        "ad_um2": 0.1848,
+        "ps_um": 1.72,
+        "pd_um": 1.72
+      }
+    },
+    {
+      "name": "$3",
+      "class": "pfet",
+      "nets": {
+        "s": "mnt_g|vddr",
+        "g": "mph_g|vss",
+        "d": "py",
+        "b": "mnt_g|vddr"
+      },
+      "params": {
+        "l_um": 2.0,
+        "w_um": 0.44,
+        "as_um2": 0.1848,
+        "ad_um2": 0.1848,
+        "ps_um": 1.72,
+        "pd_um": 1.72
+      }
+    },
+    {
+      "name": "$4",
+      "class": "pfet",
+      "nets": {
+        "s": "py",
+        "g": "a",
+        "d": "y",
+        "b": "mnt_g|vddr"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    }
+  ],
+  "nets": [
+    {
+      "name": "a",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "mnt_g|vddr",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "mph_g|vss",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "ny",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "py",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "y",
+      "pin": true,
+      "device_count": 2
+    }
+  ],
+  "warnings": [
+    "promoted 4 net(s) to top-level pins from label(s) found only below the top cell (inside instanced sub-cells): a, ny, py, y -- these are internal nodes once instanced; pass top_cell_pins_only (--top-cell-pins) to keep them internal (issue #291)",
+    "net 'mnt_g|vddr' merges 2 distinct labels (mnt_g, vddr) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'mph_g|vss' merges 2 distinct labels (mph_g, vss) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section."
+  ],
+  "black_box_regions": [],
+  "abstracted_cells": [],
+  "unmodelled_poly": [],
+  "merged_net_labels": [
+    {
+      "net": "mnt_g|vddr",
+      "labels": [
+        "mnt_g",
+        "vddr"
+      ]
+    },
+    {
+      "net": "mph_g|vss",
+      "labels": [
+        "mph_g",
+        "vss"
+      ]
+    }
+  ],
+  "voltage_domain_warnings": [],
+  "unbiased_pmos_body_nets": [],
+  "single_terminal_nets": [],
+  "dead_metal": [],
+  "matched_device_groups": [],
+  "pdk": null,
+  "provenance": {
+    "klt_version": "0.4.0",
+    "klayout_version": "0.30.12",
+    "pdk": null,
+    "deck": {
+      "name": "sky130",
+      "content_hash": "sha256:5afac7ab8561545859f5e2e74f4621c6ffc052756dc8fe344ea263398e96b240",
+      "released": false
+    },
+    "input": {
+      "content_hash": "sha256:46a8c1e72f664223d0667e62918c6558a0fed1a16235b60f7f32d0ef46fcbd10"
+    }
+  },
+  "parasitics": null,
+  "spef_path": null
+}

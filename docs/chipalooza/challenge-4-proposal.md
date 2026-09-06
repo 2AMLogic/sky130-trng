@@ -42,11 +42,16 @@ plus RTL under `digital/`, per
 (status Proposed, issue #20), verified behaviourally under `sim/digital-*/`.
 **No synthesis against `sky130_fd_sc_hd` has been run**, so that section
 contributes no `Fmax`, area, power or leakage figure to §4, and no
-DRC/LVS-clean gate, ring, array, or sampler layout exists: `layout/` now
-holds device-level proof-of-methodology evidence only (every distinct
-transistor geometry this design's schematics use, individually DRC-clean and
-correctly extracted against sky130 — see `layout/README.md`), not a
-composed, DRC/LVS-clean block. Every decision record cited below (DR-0001,
+DRC/LVS-clean array or sampler layout exists: `layout/` now holds
+fourteen composed, individually DRC-clean and LVS-clean cells — nine leaf
+gates (`ro_buf`, plus `ro_stage`/`ro_nand2` at all four ring `wstv` widths),
+all four `ro_ring5` rings (`layout/ro_ring5/` + three `wstv` siblings,
+22/22 devices and 19/19 nets LVS-matching each), and the combining tree's
+`xor2` (`layout/xor2/`, 12/12 devices and 10/10 nets) — see
+`layout/README.md`. That is every cell `ro_array_core` instantiates, but
+still not a composed array, sampler, or whole-block GDS: nothing wires the
+fourteen together yet.
+Every decision record cited below (DR-0001,
 DR-0002, DR-0003, DR-0004) carries status **Proposed** — drafted, not yet
 accepted by an operator.
 
@@ -62,8 +67,21 @@ every gap between here and a submittable design rather than glossing over
 it — per this repository's `CLAUDE.md`: "no claim without a testbench" and
 "agents do not relax the ratified spec to make results pass." Layout,
 DRC/LVS-clean GDS, and post-layout PVT simulation — the brief's full
-sign-off bar — do not exist in this repository and are **not** claimed here;
-they are named as explicit follow-up work at the end of this document.
+sign-off bar — do not exist in this repository *for the whole block* and are
+**not** claimed here; they are named as explicit follow-up work at the end
+of this document. (Updated since this document's first revision: nine leaf
+cells are DRC/LVS-clean and have been extracted with parasitics and
+simulated over the PVT grid — see §5.3 — all four `ro_ring5` rings are
+now composed DRC/LVS-clean on top of them and parasitic-extracted as whole
+rings, and the combining tree's `xor2` is composed DRC/LVS-clean as well,
+which completes every leaf cell `ro_array_core` instantiates. A floorplan
+for the array now exists, its forward ring→buffer signal chain is really
+routed, and its buffer→XOR `a` and `b` legs are now routed for both
+first-stage XORs (`layout/ro_array_core-placement-poc/`, DRC-clean), but
+`vdd`/`vss` distribution and the XOR combining tree are still unwired,
+`xor2` has no post-layout record of its own, and there is still no
+LVS-clean array, sampler, or top-level layout, so the whole-block bar is
+still unmet.)
 
 ---
 
@@ -256,7 +274,7 @@ without a sky130-specific citation.
 |---|---|---|---|---|---|---|---|---|
 | A | Combining-node (`xo`) toggle frequency, assembled `N = 4` array | 530.2 MHz | 944.0 MHz | 1516.7 MHz | not itself a ratified row (feeds row B) | min: `ss`/−40 °C/1.62 V; typ: `tt`/27 °C/1.8 V; max: `ff`/−40 °C/1.98 V | `sim/ro-array-core-combining/records/20260825-{094545,094718,094856}-53f1f7a.md` | Measured, supplementary |
 | B | Raw sample rate, sustained at the raw tap | — | 50 kbps (chosen operating point) | — | Draft: **> 1 Mbps** (stretch: > 4 Mbps) | architectural ceiling ~78 kbps at any array size, binding at `ff`/−40 °C/1.98 V (fastest loaded corner, not the entropy-binding one) | [DR-0003](../../spec/decision-records/DR-0003-sky130-trng-operating-point.md) §1–3 (status Proposed); `sim/xor-combining-bandwidth/`, `sim/ro-array-operating-point/` | **Unmet** — DR-0003 retires the README's draft `> 1 Mbps` row as *architecturally unreachable at this topology*, not merely expensive: the XOR combining gate's own bandwidth caps any array size at ~78 kbps, roughly two orders of magnitude below the draft target. The 50 kbps operating point drawn here sits below even that ceiling for margin. DR-0003 is Proposed, not ratified — the README's rate row has not moved yet. |
-| C | Raw min-entropy per bit | — | — | — | Design target: `H0 = 0.5` bit/sample (a sizing input, per DR-0002/DR-0003, not a claim) | n/a — no bitstream has been simulated | none — **no `sim/` record digitizes an actual noise-driven raw bit anywhere in this repository** | **Unmet/TBD, more fundamentally than a "not yet measured" caveat**: every `sim/` record under `ro-ring-jitter-accumulation/`, `ro-array-sizing/`, `ro-array-core-combining/`, etc. measures oscillator period/swing/jitter statistics ($\sigma_1$, $T_0$) or deterministic (noise-off) currents — none of them runs `sampler_dff` against a noise-injected ring and records the resulting 0/1 sequence. Not even a preliminary point estimate exists yet, unlike the sibling gf180-trng repository's own (explicitly-caveated) MCV estimate. |
+| C | Raw min-entropy per bit | 0.1898 bit/sample (`ss`) | 0.3053 bit/sample (`tt`/`ff`) | 0.3053 bit/sample (`tt`/`ff`) | Design target: `H0 = 0.5` bit/sample (a sizing input, per DR-0002/DR-0003, not a claim) | `ss`/27 °C/1.8 V (lowest `H_hat` of the three corners run) | `sim/raw-bit-min-entropy/` (noise-injected transient digitization + MCV-style SP 800-90B §6.3.1 reduction, issue #21) | **First raw-bitstream evidence in this repository, but still Unmet against `H0` and NOT at DR-0003's operating point.** 24 raw bits per corner, one seed each, at `Ts` = 100 ns (a disclosed compute-budget deviation from DR-0003's `Ts` = 20 µs — see the testbench's own header) all clear a non-degenerate go/no-go bar (mixed 0/1, `ro1_swing_frac` ≈ 1.06 confirming real oscillation) but fall short of `H0 = 0.5`. This is explicitly a **Tier 2 design estimate** (gf180-trng's own DR-0004 three-tier claim discipline, cited by `spec/porting-plan.md`), not a Tier 3 SP 800-90B validation, and it is provisional until measured on silicon per the root `CLAUDE.md`. Sample-count-limited (`n` = 23-24), single seed per corner (not independent trials — `se_naive` ≈ 0.10 is therefore an UNDER-estimate of the true uncertainty), and measured at 200× DR-0003's sample rate, so `H_hat` should not be rescaled to the literal 20 µs operating point without re-running at that `Ts`. See the record's own caveats for the full disclosure. |
 | D | Active power, array only (rings + buffers + XOR; excludes sampler and any digital section) | 81.0 µW | — | 431.6 µW | < 500 µW | min: `ss`/−40 °C/1.62 V; max: `ff`/−40 °C/1.98 V | [DR-0003](../../spec/decision-records/DR-0003-sky130-trng-operating-point.md) §7; `sim/ro-array-core-combining/` | **Unmet/TBD as a whole-block claim.** The array term alone (431.6 µW worst-measured) already consumes 86.3% of the 500 µW budget, with the 6× `sampler_dff` instances (unsimulated — DR-0003's own "Follow-up required" lists this gap) and the entire not-yet-designed digital section still to add. gf180-trng's own experience is a direct warning here: its synthesized digital section alone cost 712.4 µW, more than this entire budget row by itself. This row should not be read as "passing" — it is an array-only partial measurement against a whole-block target. |
 | E | Idle current, per ring (stopped) | 0.6 nA | — | 255 nA | not yet set — `spec/porting-plan.md` §2.5's leakage survey has not run | min: cold; max: `ff`/125 °C | `sim/ro-ring5-swing-and-current/` | No target exists to grade against. Reported because it exists now and did not before; excludes sampler/digital-section idle current, all unmeasured. |
 | F | Time-to-first-valid | 0.64 ms (first **raw** word) | — | 25.60 ms (first **conditioned** word) | not stated | n/a (sample-count derived; the 50 kHz clock is fixed and external) | [DR-0004](../../spec/decision-records/DR-0004-sky130-digital-section-architecture.md) §6 (status Proposed); `sim/digital-health-test-parameters/`, `sim/digital-section-behavioral/` experiment A | **Derived, no target to grade against.** The raw path is never gated, so its first 32-bit word lands 32 samples after `raw_valid` (0.64 ms at 50 kHz). The conditioned path waits for the mandatory 1024-sample start-up health test (20.48 ms) plus one 256-bit conditioner block (5.12 ms). Both figures are sample counts at DR-0003's clock, verified in the behavioural campaign — not silicon, and not PVT-dependent (nothing here is a timing-closure claim). |
@@ -372,9 +390,14 @@ that lands this document):
   alarm, status bits and a conditioned-stream tap now exist to claim the
   spare test-output slots, and the §2 tables still describe the pre-DR-0004
   block.
-- **Simulate an actual noise-driven raw bitstream** (row C) — even a
+- ~~**Simulate an actual noise-driven raw bitstream** (row C) — even a
   preliminary, heavily-caveated point estimate, the way gf180-trng's own
-  proposal had one, does not exist here yet.
+  proposal had one, does not exist here yet.~~ **Landed (issue #21,
+  `sim/raw-bit-min-entropy/`).** A preliminary, heavily-caveated MCV-style
+  point estimate now exists per corner (row C above) — but it does not
+  close this item's underlying gap on its own: it is a Tier 2 design
+  estimate at a 200×-compressed sample rate, not the Tier 3 SP 800-90B
+  validation §5.2 step 3 above still requires from real silicon.
 - **Sampler_dff and whole-block power/area** — DR-0003's own "Follow-up
   required" already names sampler characterization as missing; row D's
   "Unmet/TBD" verdict will not improve until it and the digital section are
@@ -382,20 +405,94 @@ that lands this document):
 - **Ratify DR-0001, DR-0002, and DR-0003.** Every quantitative row in §4
   ultimately traces to at least one of these three Proposed records; none
   is yet an operator-accepted decision.
-- **Layout and DRC/LVS.** `layout/` now holds one composed **DRC-clean and
-  LVS-clean cell** — `layout/ro_buf/`, the per-ring output inverter, `klt drc`
-  clean and `klt lvs`-matching against `design/ro_array_core.spice`'s own
-  `.subckt ro_buf` — on top of the earlier device-level evidence
-  (`layout/primitives/`) and well-strap finding (`layout/well-strap-poc/`);
-  see `layout/README.md`. The `klayout-tools` regression previously recorded
+- **Layout and DRC/LVS.** `layout/` now holds fourteen composed **DRC-clean
+  and LVS-clean cells** — which is **every leaf cell `ro_array_core`
+  instantiates**. The newest is `layout/xor2/`, the combining tree's XOR
+  gate (`xa1`-`xa3`): twelve devices, ten nets, `klt drc` clean (0
+  violations) and `klt lvs` **match** against
+  `design/ro_array_core.spice`'s own `.subckt xor2` (12/12 devices, 10/10
+  nets, 0 errors), occupying 23.97 × 17.585 µm. It supersedes the
+  placement-only `layout/xor2-placement-poc/` and corrects that PoC's
+  conclusion that this gate needed a channel router and a third routing
+  plane: it needs neither — reading its two device trees as four
+  two-transistor series chains, placing its two inverters as
+  already-composed `ro_buf` cells, and splitting its nets across two
+  *layers* rather than across lanes on one reduces it from 17 blocks and 31
+  nets to 9 blocks and 12 net legs. Four more of the fourteen are the whole `ro_ring5` ring, one
+  physical cell per ring (`layout/ro_ring5/` at `wstv=0.42` plus
+  `ro_ring5_wstv0p{44,46,48}/`), each composed from five leaf gates and each
+  `klt drc` clean (0 violations) and `klt lvs` **matching**
+  `design/ro_array_core.spice`'s own `.subckt ro_ring5` at that ring's
+  `wstv` (22/22 devices, 19/19 nets, 0 errors), with the forward signal
+  chain, the `ro` feedback and both `vddr`/`vss` rails routed across three
+  physical metal planes — the first multi-gate cells in this repository to
+  reach that bar. Each ring cell occupies 41.125 × 9.17 µm including its
+  rail lanes. Underneath them are the nine leaf cells:
+  `layout/ro_buf/` (the per-ring output inverter),
+  `layout/ro_stage/` plus its three `wstv` siblings
+  (`ro_stage_wstv0p{44,46,48}/`, the array's per-stage starved delay cell at
+  all four ring widths), and `layout/ro_nand2/` plus its three `wstv`
+  siblings (`ro_nand2_wstv0p{44,46,48}/`, each ring's enable-gated first
+  stage at all four ring widths) — all `klt drc` clean and `klt
+  lvs`-matching against `design/ro_array_core.spice`'s own `.subckt`s — on
+  top of the earlier device-level evidence (`layout/primitives/`) and
+  well-strap finding (`layout/well-strap-poc/`); see `layout/README.md`.
+  `ro_stage`'s and `ro_nand2`'s starve devices cross-couple their gates to
+  the opposite rail, which needed a new two-pass composition technique
+  (routing the crossing nets on a second metal level in a second `klt
+  gen-compose` call) to avoid a short; `ro_nand2`'s own parallel PMOS
+  pull-up pair and series NMOS pull-down pair needed that same technique
+  generalized further (six same-block self-nets resolved in one final pass,
+  not two); the three non-nominal `wstv` widths needed the starve devices'
+  own placement origin re-derived per width, since a naive
+  clone-and-reparametrize breaks DRC/LVS (`layout/README.md`'s "Starve-width
+  variants" section). The `klayout-tools` regression previously recorded
   here as a blocker
   ([2AMLogic/klayout-tools#1491](https://github.com/2AMLogic/klayout-tools/issues/1491))
-  is fixed. Still outstanding for the brief's full sign-off bar: every other
-  gate (`ro_stage`, `ro_nand2`, `xor2`), the ring, the array, the sampler,
-  parasitic extraction, and post-layout PVT simulation — none of which is
-  attempted in this document. Note also that "DRC-clean" here means clean
-  against `klt`'s **curated** sky130 deck (a documented subset — see each
-  `drc.json`'s own `coverage` block), not a full sky130 sign-off deck.
+  is fixed. Those nine cells are now also extracted with parasitics and
+  simulated: `layout/pex/` is a generated, `--check`-guarded post-layout
+  netlist library and `sim/post-layout-ro-ring5/` runs the five-stage ring
+  from it over the PVT grid (twelve records, thirty-six corner runs) with
+  the pre-layout netlist as a same-deck control — intra-cell parasitics cost
+  1.378×–1.479× in ring period, and the `wstv` frequency ladder survives
+  them (`spec/decision-records/DR-0005-*.md`). The four ring cells
+  themselves are now also parasitic-extracted, as whole composed rings with
+  real inter-gate wiring rather than leaf-cell compositions:
+  `layout/pex-ring/` extracts each ring's own GDS directly, and
+  `sim/post-layout-ro-ring5-assembled/` re-runs the same measurement from it
+  — real inter-gate wiring costs the ring 1.5045×–1.6546× more slowdown on
+  top of intra-cell parasitics alone (period vs. pre-layout overall
+  2.0819×–2.3666×), and the ladder still survives. `xor2` itself has no
+  post-layout record: it is composed and verified, not extracted or
+  simulated. A floorplan attempt at the array itself now exists —
+  `layout/ro_array_core-placement-poc/` places all eleven sibling instances
+  `ro_array_core` needs (the four rings, four buffers, three combining-tree
+  XORs) on one 216.2 × 31.755 µm grid, `klt drc` clean, `klt extract`
+  reporting the expected 132 devices — its "Increment 2" routed the
+  forward ring→buffer signal chain on top of that floorplan (`en1..en4`, the
+  four `vddrN` domains and `ro1..ro4` exposed as top-level pins, `rn1..rn4`
+  really routed on met1), its "Increment 3" routed the buffer→XOR
+  `a` leg for both first-stage XORs (`ro1`→`xa1.a`, `ro3`→`xa2.a`), and its
+  "Increment 4" now routes the `b` leg for both as well (`ro2`→`xa1.b`,
+  `ro4`→`xa2.b`) — completing the forward ring→buffer→XOR signal path for
+  `xa1`/`xa2` — still `klt drc` clean (132 devices, 104 nets, each of the
+  two new merges confirmed by net diff to join only its intended net).
+  `b`'s recipe needed distinct source-side channel heights rather than
+  reusing `a`'s rows, since a naive shared-row approach either collided
+  with `a`'s own backbone or crossed a third block's bbox (both ruled out
+  empirically, see the PoC's own README). `vdd`/`vss` distribution, the XOR
+  combining tree, and any LVS attempt remain open, so this is still a
+  partial assembly, not a DRC/LVS-clean block. Still outstanding for
+  the brief's full sign-off bar: the array's own routing/LVS
+  and the sampler as assembled layout — and therefore the *whole-block*
+  post-layout PVT simulation the bar actually asks for, since the assembled
+  *inter-ring* interconnect (supply distribution, XOR tree routing, buffer
+  fan-in) that would dominate it does not exist yet; every ring-level number
+  above is still one ring's own real interconnect with ideal wires to its
+  neighbours. None of that is attempted in this document. Note also that
+  "DRC-clean" here means clean against `klt`'s **curated** sky130 deck (a
+  documented subset — see each `drc.json`'s own `coverage` block), not a
+  full sky130 sign-off deck.
 - **Reconcile against `rules-4.html`** once it publishes — this document was
   written against the assumed `rules-2.html`/`rules-3.html` structure
   because the real Challenge #4 brief was not yet published as of this

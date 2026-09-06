@@ -1,0 +1,132 @@
+{
+  "_comment": [
+    "Descriptor for layout/bin/pex-netlist.py -- which composed, DRC-clean and",
+    "LVS-clean cells under layout/ are re-extracted WITH parasitics and folded",
+    "into one ngspice-runnable post-layout library. Read that script's module",
+    "docstring for why each rewrite exists and layout/pex/README.md for what",
+    "the resulting library is and is not evidence of.",
+    "",
+    "  library         output file, relative to this descriptor",
+    "  expect_device_models",
+    "                  the device subcircuits `klt extract --pdk` is expected to",
+    "                  write. NOT a rewrite map -- klt already emits these; this",
+    "                  is the allowlist the build ASSERTS every device card",
+    "                  against, so a klt that changed the written form (back to",
+    "                  deck-native M cards, or to a different device flavor) is",
+    "                  a hard error rather than a silently wrong netlist.",
+    "  deck_scale      the `.option scale=` a deck including this library must",
+    "                  set. `klt extract --pdk` writes unitless geometry, which",
+    "                  means micrometres at this scale and something else at any",
+    "                  other; the build asserts every geometry value is in fact",
+    "                  unsuffixed. A contract with the testbench, not decoration.",
+    "  substrate_net   the extractor's substrate return node, emitted .global",
+    "                  (klayout-tools#1503). A deck must tie it explicitly.",
+    "  cells[].ports   the DESIGN's own port order for this cell, from",
+    "                  design/ro_array_core.spice's .subckt line -- the wrapper",
+    "                  subcircuit's port list, so a post-layout deck reads like",
+    "                  the pre-layout one.",
+    "  cells[].net_aliases",
+    "                  extractor joined net name -> design-level net name. A",
+    "                  cell composed in two passes carries a pin label and a",
+    "                  net label on one physical net and the extractor joins",
+    "                  them; naming the survivor here keeps the choice",
+    "                  reviewable instead of inferred. Every joined name in an",
+    "                  extracted netlist must appear here or the build fails."
+  ],
+  "pdk": {"variant": "sky130A", "deck": "sky130"},
+  "library": "ro_ring5_pex.spice",
+  "deck_scale": "1u",
+  "expect_device_models": [
+    "sky130_fd_pr__nfet_01v8",
+    "sky130_fd_pr__pfet_01v8"
+  ],
+  "substrate_net": "vsubs",
+  "cells": [
+    {
+      "name": "ro_nand2_pex_wstv0p42",
+      "gds": "../ro_nand2/ro_nand2.gds",
+      "ports": ["a", "en", "y", "vddr", "vss"],
+      "net_aliases": {
+        "mnab_y|mpa_y|mpb_y|y": "y",
+        "mnt_g|vddr": "vddr",
+        "mpa_py|mpb_py|mph_py|py": "py",
+        "mph_g|vss": "vss"
+      }
+    },
+    {
+      "name": "ro_nand2_pex_wstv0p44",
+      "gds": "../ro_nand2_wstv0p44/ro_nand2_wstv0p44.gds",
+      "ports": ["a", "en", "y", "vddr", "vss"],
+      "net_aliases": {
+        "mnab_y|mpa_y|mpb_y|y": "y",
+        "mnt_g|vddr": "vddr",
+        "mpa_py|mpb_py|mph_py|py": "py",
+        "mph_g|vss": "vss"
+      }
+    },
+    {
+      "name": "ro_nand2_pex_wstv0p46",
+      "gds": "../ro_nand2_wstv0p46/ro_nand2_wstv0p46.gds",
+      "ports": ["a", "en", "y", "vddr", "vss"],
+      "net_aliases": {
+        "mnab_y|mpa_y|mpb_y|y": "y",
+        "mnt_g|vddr": "vddr",
+        "mpa_py|mpb_py|mph_py|py": "py",
+        "mph_g|vss": "vss"
+      }
+    },
+    {
+      "name": "ro_nand2_pex_wstv0p48",
+      "gds": "../ro_nand2_wstv0p48/ro_nand2_wstv0p48.gds",
+      "ports": ["a", "en", "y", "vddr", "vss"],
+      "net_aliases": {
+        "mnab_y|mpa_y|mpb_y|y": "y",
+        "mnt_g|vddr": "vddr",
+        "mpa_py|mpb_py|mph_py|py": "py",
+        "mph_g|vss": "vss"
+      }
+    },
+    {
+      "name": "ro_stage_pex_wstv0p42",
+      "gds": "../ro_stage/ro_stage.gds",
+      "ports": ["a", "y", "vddr", "vss"],
+      "net_aliases": {
+        "mnt_g|vddr": "vddr",
+        "mph_g|vss": "vss"
+      }
+    },
+    {
+      "name": "ro_stage_pex_wstv0p44",
+      "gds": "../ro_stage_wstv0p44/ro_stage_wstv0p44.gds",
+      "ports": ["a", "y", "vddr", "vss"],
+      "net_aliases": {
+        "mnt_g|vddr": "vddr",
+        "mph_g|vss": "vss"
+      }
+    },
+    {
+      "name": "ro_stage_pex_wstv0p46",
+      "gds": "../ro_stage_wstv0p46/ro_stage_wstv0p46.gds",
+      "ports": ["a", "y", "vddr", "vss"],
+      "net_aliases": {
+        "mnt_g|vddr": "vddr",
+        "mph_g|vss": "vss"
+      }
+    },
+    {
+      "name": "ro_stage_pex_wstv0p48",
+      "gds": "../ro_stage_wstv0p48/ro_stage_wstv0p48.gds",
+      "ports": ["a", "y", "vddr", "vss"],
+      "net_aliases": {
+        "mnt_g|vddr": "vddr",
+        "mph_g|vss": "vss"
+      }
+    },
+    {
+      "name": "ro_buf_pex",
+      "gds": "../ro_buf/ro_buf.gds",
+      "ports": ["a", "y", "vdd", "vss"],
+      "net_aliases": {}
+    }
+  ]
+}

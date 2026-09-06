@@ -42,7 +42,7 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO_ROOT / "digital"))
 sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
 
-from behavioral_record import mint_record  # noqa: E402
+from evidence_record import mint_behavioral_record  # noqa: E402
 from model.conditioner import (Crc32Conditioner, bit_reverse32,  # noqa: E402
                                crc32_polynomial_remainder, lfsr_over_bits)
 from model.params import COND_BLOCK_BITS, CRC32_INIT, CRC32_POLY  # noqa: E402
@@ -205,7 +205,8 @@ def main(argv: list[str] | None = None) -> int:
         print("\nEQUIVALENCE FAILED", file=sys.stderr)
 
     if args.emit_record:
-        mint_record(
+        mint_behavioral_record(
+            repo_root=REPO_ROOT,
             slug="digital-conditioner-equivalence",
             claim=("the committed CRC-32/LFSR conditioner model is bit-exact "
                    "against two independently-constructed references, and each "

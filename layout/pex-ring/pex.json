@@ -1,0 +1,110 @@
+{
+  "_comment": [
+    "Sibling of layout/pex/pex.json, over layout/ro_ring5*/ instead of the",
+    "nine leaf cells -- extracts each fully-composed, DRC-clean and",
+    "LVS-clean ring GDS (real inter-gate metal routing, not the ideal wires",
+    "layout/pex/ro_ring5_pex.spice's leaf-cell composition assumes between",
+    "gates) with `klt extract --parasitics`, and rewrites the result the",
+    "same way: `layout/bin/pex-netlist.py` is shared, unmodified, between",
+    "both descriptors. See layout/README.md's 'Newly possible, not yet",
+    "done' note (issue #22/#27 step 5) for why this is a separate library",
+    "rather than a rewrite of layout/pex/ro_ring5_pex.spice -- the two",
+    "measure different things (per-gate composition with ideal inter-gate",
+    "wires vs. one flat ring extraction with real inter-gate wires) and",
+    "swapping the netlist under sim/post-layout-ro-ring5/'s existing",
+    "records would make them incomparable with what they were measured",
+    "against.",
+    "",
+    "Same field contract as layout/pex/pex.json -- see that file's own",
+    "_comment block. cells[].ports is design/ro_array_core.spice's own",
+    "`.subckt ro_ring5 en ro vddr vss` port order; n1-n4 and py are",
+    "internal-to-the-ring nets the two-pass leaf composition promoted to",
+    "physical pins (see layout/README.md), kept local by pex-netlist.py's",
+    "wrapper the same way ro_stage/ro_nand2's own ny/py already are in",
+    "layout/pex/pex.json. ro_buf_pex is duplicated here (same GDS as",
+    "layout/pex/pex.json's own ro_buf_pex entry) so this library is",
+    "self-contained for a testbench that .includes only @@PEX_LIB@@ plus",
+    "design/ro_ring5.spice -- avoiding a same-subckt-name collision from",
+    ".include-ing both pex libraries in one deck."
+  ],
+  "pdk": {"variant": "sky130A", "deck": "sky130"},
+  "library": "ro_ring5_assembled_pex.spice",
+  "deck_scale": "1u",
+  "expect_device_models": [
+    "sky130_fd_pr__nfet_01v8",
+    "sky130_fd_pr__pfet_01v8"
+  ],
+  "substrate_net": "vsubs",
+  "cells": [
+    {
+      "name": "ro_ring5_assembled_pex_wstv0p42",
+      "gds": "../ro_ring5/ro_ring5.gds",
+      "ports": ["en", "ro", "vddr", "vss"],
+      "net_aliases": {
+        "a|g_a|ro|s4_y|y": "ro",
+        "a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y": "sig_n1",
+        "a|n2|s1_y|s2_a|y": "sig_n2",
+        "a|n3|s2_y|s3_a|y": "sig_n3",
+        "a|n4|s3_y|s4_a|y": "sig_n4",
+        "en|g_en": "en",
+        "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr": "vddr",
+        "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss": "vss",
+        "mpa_py|mpb_py|mph_py|py": "py_g"
+      }
+    },
+    {
+      "name": "ro_ring5_assembled_pex_wstv0p44",
+      "gds": "../ro_ring5_wstv0p44/ro_ring5_wstv0p44.gds",
+      "ports": ["en", "ro", "vddr", "vss"],
+      "net_aliases": {
+        "a|g_a|ro|s4_y|y": "ro",
+        "a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y": "sig_n1",
+        "a|n2|s1_y|s2_a|y": "sig_n2",
+        "a|n3|s2_y|s3_a|y": "sig_n3",
+        "a|n4|s3_y|s4_a|y": "sig_n4",
+        "en|g_en": "en",
+        "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr": "vddr",
+        "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss": "vss",
+        "mpa_py|mpb_py|mph_py|py": "py_g"
+      }
+    },
+    {
+      "name": "ro_ring5_assembled_pex_wstv0p46",
+      "gds": "../ro_ring5_wstv0p46/ro_ring5_wstv0p46.gds",
+      "ports": ["en", "ro", "vddr", "vss"],
+      "net_aliases": {
+        "a|g_a|ro|s4_y|y": "ro",
+        "a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y": "sig_n1",
+        "a|n2|s1_y|s2_a|y": "sig_n2",
+        "a|n3|s2_y|s3_a|y": "sig_n3",
+        "a|n4|s3_y|s4_a|y": "sig_n4",
+        "en|g_en": "en",
+        "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr": "vddr",
+        "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss": "vss",
+        "mpa_py|mpb_py|mph_py|py": "py_g"
+      }
+    },
+    {
+      "name": "ro_ring5_assembled_pex_wstv0p48",
+      "gds": "../ro_ring5_wstv0p48/ro_ring5_wstv0p48.gds",
+      "ports": ["en", "ro", "vddr", "vss"],
+      "net_aliases": {
+        "a|g_a|ro|s4_y|y": "ro",
+        "a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y": "sig_n1",
+        "a|n2|s1_y|s2_a|y": "sig_n2",
+        "a|n3|s2_y|s3_a|y": "sig_n3",
+        "a|n4|s3_y|s4_a|y": "sig_n4",
+        "en|g_en": "en",
+        "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr": "vddr",
+        "g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss": "vss",
+        "mpa_py|mpb_py|mph_py|py": "py_g"
+      }
+    },
+    {
+      "name": "ro_buf_pex",
+      "gds": "../ro_buf/ro_buf.gds",
+      "ports": ["a", "y", "vdd", "vss"],
+      "net_aliases": {}
+    }
+  ]
+}

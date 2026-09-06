@@ -1,0 +1,190 @@
+{
+  "pdk": {
+    "variant": "sky130A"
+  },
+  "blocks": [
+    {
+      "id": "mnt",
+      "generator_report": "gen/mnt.gen.json"
+    },
+    {
+      "id": "mn",
+      "generator_report": "gen/mn.gen.json"
+    },
+    {
+      "id": "mph",
+      "generator_report": "gen/mph.gen.json",
+      "orientation": "mirror_y"
+    },
+    {
+      "id": "mp",
+      "generator_report": "gen/mp.gen.json",
+      "orientation": "mirror_y"
+    },
+    {
+      "id": "nwell_tap",
+      "generator_report": "gen/nwell_tap.gen.json"
+    },
+    {
+      "id": "psub_tap",
+      "generator_report": "gen/psub_tap.gen.json"
+    }
+  ],
+  "placement": {
+    "strategy": "explicit",
+    "order": [
+      "mnt",
+      "psub_tap",
+      "mn",
+      "mph",
+      "nwell_tap",
+      "mp"
+    ],
+    "origins_um": {
+      "mnt": {
+        "x": 0.0,
+        "y": -0.02
+      },
+      "mn": {
+        "x": 3.24,
+        "y": 0.0
+      },
+      "mph": {
+        "x": 0.0,
+        "y": 3.97
+      },
+      "mp": {
+        "x": 3.04,
+        "y": 4.16
+      },
+      "nwell_tap": {
+        "x": -2.04,
+        "y": 2.82
+      },
+      "psub_tap": {
+        "x": -2.14,
+        "y": -0.71
+      }
+    }
+  },
+  "routing": {
+    "layer_role": "metal",
+    "width_um": 0.17
+  },
+  "connectivity": [
+    {
+      "net": "a",
+      "pins": [
+        {
+          "block": "mp",
+          "port": "U0_G"
+        },
+        {
+          "block": "mn",
+          "port": "U0_G"
+        }
+      ]
+    },
+    {
+      "net": "y",
+      "pins": [
+        {
+          "block": "mp",
+          "port": "U0_D"
+        },
+        {
+          "block": "mn",
+          "port": "U0_D"
+        }
+      ],
+      "waypoints_um": [
+        [
+          4.9,
+          3.74
+        ],
+        [
+          4.9,
+          0.21
+        ]
+      ]
+    },
+    {
+      "net": "py",
+      "pins": [
+        {
+          "block": "mph",
+          "port": "U0_D"
+        },
+        {
+          "block": "mp",
+          "port": "U0_S"
+        }
+      ]
+    },
+    {
+      "net": "ny",
+      "pins": [
+        {
+          "block": "mnt",
+          "port": "U0_D"
+        },
+        {
+          "block": "mn",
+          "port": "U0_S"
+        }
+      ]
+    },
+    {
+      "net": "vddr",
+      "pins": [
+        {
+          "block": "mph",
+          "port": "U0_S"
+        },
+        {
+          "block": "nwell_tap",
+          "port": "TAP_E"
+        }
+      ]
+    },
+    {
+      "net": "vss",
+      "pins": [
+        {
+          "block": "mnt",
+          "port": "U0_S"
+        },
+        {
+          "block": "psub_tap",
+          "port": "TAP_E"
+        }
+      ]
+    }
+  ],
+  "pins": [
+    {
+      "block": "nwell_tap",
+      "port": "TAP_W",
+      "net": "vddr"
+    },
+    {
+      "block": "psub_tap",
+      "port": "TAP_N",
+      "net": "vss"
+    },
+    {
+      "block": "mph",
+      "port": "U0_G",
+      "net": "mph_g"
+    },
+    {
+      "block": "mnt",
+      "port": "U0_G",
+      "net": "mnt_g"
+    }
+  ],
+  "options": {
+    "cell_name": "core",
+    "output": "core.gds"
+  }
+}

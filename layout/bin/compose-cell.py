@@ -44,6 +44,61 @@ See ``layout/README.md`` and ``layout/ro_buf/cell.json``. In brief::
       "lvs": {"reference": "design/ro_array_core.spice", "subckt": "ro_buf"}
     }
 
+Two-pass composition (``"stages"``, #27 step 2)
+------------------------------------------------
+
+Some gates have two nets that would short if both were routed on the same
+metal layer in one ``klt gen-compose`` call -- ``ro_stage``/``ro_nand2``'s
+always-on starve devices cross-couple their gates to the *opposite* rail
+(``Mph.g = vss``, ``Mnt.g = vddr``), so wiring both crossing nets on the
+base ``"metal"`` role in a single pass is not routable without one net
+running through the other's block or backbone (see ``layout/README.md``'s
+"Composing a gate" section). A cell.json may replace its top-level
+``blocks``/``placement``/``routing``/``connectivity``/``pins`` fields with a
+``"stages"`` list instead, each entry shaped like those same fields plus a
+``"name"`` (required on every stage but the last, which is always named
+after the cell itself and always ends up as ``compose.request.json``/
+``compose.response.json`` with no prefix -- so ``--check`` and the DRC/
+extract/LVS steps below are completely unaware whether a cell used one
+stage or several). A later stage's ``blocks[]`` entry may reference an
+earlier stage's own composed cell instead of a fresh ``klt gen`` call via
+``{"id": ..., "from_stage": "<earlier stage's name>"}``, which resolves to
+that stage's own ``<name>.compose.response.json`` -- a valid
+``generator_report`` in its own right, since ``klt gen-compose``'s response
+already carries ``generator: "gen-compose"`` plus a composed-frame
+``ports[]`` promoted from that stage's own ``pins[]`` (this is what the CLI
+itself calls composition "nesting"). The usual second stage routes the two
+gate-crossing nets on ``"metal2"`` (sky130 met1) with an automatic via-drop
+back to each pin's own base-``"metal"``-role pad, over the first stage's
+already-composed cell -- see ``layout/ro_stage/cell.json`` for a worked
+example and ``layout/ro_stage/README.md`` for why each net landed on the
+layer it did.
+
+Placing an already-composed sibling cell (``blocks[].cell``, #27 step 3)
+-----------------------------------------------------------------------
+
+A stage's ``blocks[]`` entry may name an *existing* committed stream instead
+of a generator or an earlier stage::
+
+    {"id": "g", "cell": {"gds_path": "../ro_nand2/ro_nand2.gds",
+                         "cell_name": "ro_nand2", "ports": [...]}}
+
+``gds_path`` is relative to **the cell.json**, not to the output directory,
+so it keeps the repo-relative spelling that keeps absolute home paths out of
+the committed provenance. ``--check`` rebuilds into a temporary directory
+where that relative path resolves to nothing, so there -- and only there --
+this script substitutes the resolved absolute path.
+
+Because a pre-existing stream never reported a ``ports[]`` list to any ``klt
+gen`` response, its ports are hand-declared. Two things that costs, both
+learned building ``layout/ro_ring5/``: the *only* authoritative source for a
+two-stage cell's port geometry is its own **intermediate** stage response
+(the final one reports ``"ports": []``), and a port may legitimately be
+declared on a layer other than li1 -- declaring a rail port on met1, where
+the leaf gate's own second stage already drew it, is what lets a later stage
+route that rail on ``"metal3"`` within ``gen-compose``'s single-hop via-drop
+rule.
+
 The reference-netlist unit rewrite
 ----------------------------------
 
@@ -65,6 +120,26 @@ any parameter substituted into them), which the converter then reads
 correctly. Only the unit spelling changes -- no topology, no net names, no
 device count, and the rewritten reference is written to disk
 (``<cell>.ref.spice``) so a reviewer can diff it against the source subckt.
+
+A multi-subckt reference (``lvs.dependencies``) needs two more knobs, both
+first exercised by ``layout/ro_ring5/``:
+
+``lvs.reference_top``
+    Names the reference's top circuit. A file holding three ``.subckt``
+    definitions has three *top* circuits as far as the SPICE reader is
+    concerned, and ``klt lvs`` errors out rather than guessing which one to
+    compare (``reference netlist has 3 top circuits (...); pass 'top' to
+    select one``).
+``lvs.flatten_reference``
+    ``klt extract`` hands LVS a **flat** layout netlist, so a hierarchical
+    reference has to be flattened to compare against it. LVS reports this
+    back as a ``topology.flattened`` warning on an otherwise-matching run:
+    the resulting ``match`` verifies device-for-device and net-for-net
+    correspondence, but NOT that the layout's cell hierarchy mirrors the
+    schematic's.
+``lvs.drop_kwargs``
+    Pass-through keyword arguments to strip from instance-call lines that
+    are not in ``lvs.params`` -- see ``build_reference``'s transformation 2.
 """
 
 from __future__ import annotations
@@ -73,10 +148,12 @@ import argparse
 import json
 import os
 import re
-import subprocess
 import sys
 import tempfile
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _klt_common import BuildError, run_klt, write_json  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
@@ -87,50 +164,6 @@ CHECK_FIELDS: dict[str, tuple[str, ...]] = {
     "lvs.json": ("status", "mismatch_count", "error_count", "counts"),
     "compose.response.json": ("cell_name", "bbox_um"),
 }
-
-
-class BuildError(RuntimeError):
-    """A step of the chain failed."""
-
-
-def run_klt(args: list[str], *, env: dict[str, str], cwd: Path) -> dict:
-    """Run ``klt`` with ``--format json`` and return its parsed response.
-
-    Always run from the cell's own output directory with *relative* paths, so
-    that every committed response records repo-relative provenance and no
-    absolute home path leaks into the evidence (the leak ``klt
-    env-provenance --scan`` exists to catch).
-
-    A non-zero exit is not automatically fatal: ``klt gen-compose`` exits 3
-    for a partial success (some net unrouted) and ``klt lvs`` exits 3 for a
-    clean-run mismatch, both of which this script wants to report from the
-    response body rather than from a traceback. A response that is not JSON
-    at all is fatal.
-    """
-    proc = subprocess.run(
-        ["klt", *args, "--format", "json"],
-        capture_output=True,
-        text=True,
-        env=env,
-        cwd=cwd,
-        check=False,
-    )
-    try:
-        response = json.loads(proc.stdout)
-    except json.JSONDecodeError as exc:
-        raise BuildError(
-            f"klt {' '.join(args)} produced no JSON response "
-            f"(exit {proc.returncode}):\n{proc.stdout}\n{proc.stderr}"
-        ) from exc
-    if "error" in response:
-        raise BuildError(
-            f"klt {' '.join(args)} failed: {response['error'].get('message')}"
-        )
-    return response
-
-
-def write_json(path: Path, payload: dict) -> None:
-    path.write_text(json.dumps(payload, indent=2, sort_keys=False) + "\n")
 
 
 # --------------------------------------------------------------------------
@@ -159,21 +192,46 @@ def build_reference(
     *,
     params: dict[str, float] | None,
     drop_prefixes: tuple[str, ...],
+    drop_kwargs: tuple[str, ...] = (),
 ) -> list[str]:
     """Rewrite an xschem-exported subckt into a klt-lvs-ready reference.
 
-    Three transformations, each deliberately minimal and each visible in the
+    Four transformations, each deliberately minimal and each visible in the
     written-out result:
 
     1. ``params`` values are substituted for the subckt's own parameter names
-       wherever they appear as an ``L=``/``W=`` value (this design's starve
-       devices are sized ``L=lstv W=wstv``), and the parameter defaults are
-       dropped from the ``.subckt`` line.
-    2. Element cards whose name starts with one of ``drop_prefixes`` are
+       wherever they appear as an ``=<name>`` value token (this design's
+       starve devices are sized ``L=lstv W=wstv``, so this covers ``L=``/
+       ``W=`` in particular, but is not limited to them), and the parameter
+       defaults are dropped from the ``.subckt`` line. A bare occurrence of
+       the parameter name *inside* a quoted expression (e.g. the ``wstv`` in
+       ``ad='int((1 + 1)/2) * wstv / 1 * 0.29'``, not immediately preceded by
+       ``=``) is deliberately left unevaluated, unchanged from this script's
+       original single-subckt behaviour -- see "The LVS match is
+       width-sensitive" in ``layout/README.md`` for why that is fine (``klt
+       lvs`` does not compare ``ad``/``as``/``pd``/``ps`` for these devices).
+    2. A pass-through keyword argument on an instance-call line (``name=name``
+       -- e.g. ``xg ro en n1 vddr vss ro_nand2 wstv=wstv lstv=lstv cld=cld``,
+       ``ro_ring5``'s own forwarding of its parameters to each sub-gate
+       instance) is dropped entirely rather than substituted, once a
+       multi-subckt reference (``lvs.dependencies``, below) needs to
+       instantiate one already-parameterized subckt from another: the callee
+       subckt's own header no longer declares that parameter (transformation
+       1 already stripped it, replacing every internal use with a literal),
+       so passing it by keyword would name an undeclared parameter.
+       ``drop_kwargs`` extends this to a pass-through parameter that is *not*
+       in ``params`` because nothing surviving the rewrite reads it -- e.g.
+       ``cld``, whose only use is the ``Cld`` load capacitor transformation 3
+       removes. Left in place, ``klt lvs``'s SPICE reader warns
+       ``Not a known parameter for circuit 'RO_STAGE': 'CLD'`` once per
+       instance line and silently ignores it, so dropping it is cosmetic
+       for the verdict but keeps the generated reference free of warnings a
+       reviewer would otherwise have to triage.
+    3. Element cards whose name starts with one of ``drop_prefixes`` are
        removed -- for this design that is ``ro_stage``/``ro_nand2``'s ``Cld``
        lumped load capacitor, a *simulation* load model with no physical
        counterpart in the layout, not a device the layout omits.
-    3. Unitless ``L=``/``W=`` values gain an explicit ``u`` suffix -- see this
+    4. Unitless ``L=``/``W=`` values gain an explicit ``u`` suffix -- see this
        module's docstring for why (klayout-tools#1492).
     """
     out: list[str] = []
@@ -188,11 +246,12 @@ def build_reference(
             tuple(p.upper() for p in drop_prefixes)
         ):
             continue
+        for name in drop_kwargs:
+            line = re.sub(rf"\s+{re.escape(name)}={re.escape(name)}\b", "", line)
         if params:
             for name, value in params.items():
-                line = re.sub(
-                    rf"\b([LW])={re.escape(name)}\b", rf"\1={value}", line
-                )
+                line = re.sub(rf"\s+{re.escape(name)}={re.escape(str(name))}\b", "", line)
+                line = re.sub(rf"=({re.escape(name)})\b", f"={value}", line)
         out.append(_GEOMETRY_RE.sub(r"\1=\2u", line))
     return out
 
@@ -202,18 +261,99 @@ def build_reference(
 # --------------------------------------------------------------------------
 
 
-def compose_cell(spec: dict, spec_dir: Path, out_dir: Path) -> dict:
-    """Run the full gen -> compose -> drc -> extract -> lvs chain."""
-    cell = spec["cell"]
-    variant = spec["pdk"]["variant"]
-    deck = spec["pdk"]["deck"]
-    env = {**os.environ, "PDK": variant}
+def compose_stage(
+    stage: dict,
+    *,
+    is_final: bool,
+    cell: str,
+    variant: str,
+    env: dict[str, str],
+    spec_dir: Path,
+    out_dir: Path,
+    stage_responses: dict[str, str],
+) -> dict:
+    """Run one stage's ``gen`` (per new block) + ``gen-compose`` (place/route).
 
+    A stage's ``blocks[]`` entries are either freshly generated (the
+    ``generator``/``params``/``cell_name`` shape ``compose_cell`` always
+    supported) or a reference to an *earlier* stage's own composed output
+    (``block["from_stage"]``, naming that earlier stage's ``name``) -- which
+    ``klt gen-compose`` accepts unmodified as a further ``generator_report``,
+    since its own response already carries ``generator: "gen-compose"`` plus
+    a ``ports[]`` promoted from that stage's own ``pins[]`` (see this
+    module's docstring and ``layout/README.md``'s "Two-pass composition"
+    section for why a cell ever needs more than one stage: routing two nets
+    that would otherwise cross on the same metal layer, resolved by moving
+    one of them to a second routing-metal level in a second pass over the
+    first pass's own composed output).
+
+    The **final** stage (``is_final=True``) writes ``compose.request.json``/
+    ``compose.response.json`` with no prefix, and its ``options.cell_name``
+    is the cell's own name -- unprefixed, exactly as every single-stage cell
+    already committed under ``layout/`` expects, so a cell.json with no
+    ``"stages"`` key (wrapped by ``compose_cell`` into one implicit final
+    stage) is byte-for-byte unaffected by this function's existence. A
+    non-final stage's files are prefixed with its own ``name`` instead
+    (``<name>.compose.request.json`` etc.), and its composed cell is named
+    ``<name>``, so every stage's evidence lives in the cell's own directory
+    without filename collisions.
+    """
     gen_dir = out_dir / "gen"
     gen_dir.mkdir(parents=True, exist_ok=True)
 
-    # 1. Per-block generation.
-    for block in spec["blocks"]:
+    blocks_request = []
+    for block in stage["blocks"]:
+        if "from_stage" in block:
+            ref_name = block["from_stage"]
+            blocks_request.append(
+                {
+                    "id": block["id"],
+                    "generator_report": stage_responses[ref_name],
+                    **(
+                        {"orientation": block["orientation"]}
+                        if block.get("orientation", "none") != "none"
+                        else {}
+                    ),
+                }
+            )
+            continue
+        if "cell" in block:
+            # An *existing* library cell -- a previously-composed,
+            # already-committed layout/<other-cell>/<other-cell>.gds this
+            # cell.json did not (re)generate -- placed via klt gen-compose's
+            # own `blocks[].cell` request shape (`{gds_path, cell_name,
+            # ports[], bbox_um}`, #1189 in klayout-tools). No `klt gen` call:
+            # there is nothing to generate, only an existing stream to
+            # place. See layout/ro_ring5-connectivity-poc/README.md for why
+            # this needs hand-declared `ports[]` (a pre-existing cell never
+            # reported a ports[] list to any `klt gen` response the way a
+            # fresh primitive does).
+            #
+            # `gds_path` is written relative to the *cell.json* (e.g.
+            # "../ro_nand2/ro_nand2.gds"), not relative to wherever this run
+            # happens to write its output. Rebuilding in place (out_dir is
+            # the cell's own directory) those are the same thing, and the
+            # request keeps the repo-relative spelling that keeps absolute
+            # home paths out of the committed provenance. `--check` rebuilds
+            # into a temporary directory instead, where that relative path
+            # resolves to nothing -- so there, and only there, substitute the
+            # resolved absolute path of the sibling cell's committed stream.
+            gds_path = block["cell"]["gds_path"]
+            if out_dir.resolve() != spec_dir.resolve():
+                gds_path = str((spec_dir / gds_path).resolve())
+            cell_block = {**block["cell"], "gds_path": gds_path}
+            blocks_request.append(
+                {
+                    "id": block["id"],
+                    "cell": cell_block,
+                    **(
+                        {"orientation": block["orientation"]}
+                        if block.get("orientation", "none") != "none"
+                        else {}
+                    ),
+                }
+            )
+            continue
         response = run_klt(
             [
                 "gen",
@@ -231,11 +371,7 @@ def compose_cell(spec: dict, spec_dir: Path, out_dir: Path) -> dict:
             cwd=out_dir,
         )
         write_json(gen_dir / f"{block['id']}.gen.json", response)
-
-    # 2. Composition (place + route).
-    request = {
-        "pdk": {"variant": variant},
-        "blocks": [
+        blocks_request.append(
             {
                 "id": block["id"],
                 "generator_report": f"gen/{block['id']}.gen.json",
@@ -245,20 +381,73 @@ def compose_cell(spec: dict, spec_dir: Path, out_dir: Path) -> dict:
                     else {}
                 ),
             }
-            for block in spec["blocks"]
-        ],
-        "placement": spec["placement"],
-        "routing": spec["routing"],
-        "connectivity": spec["connectivity"],
-        "pins": spec.get("pins", []),
-        "options": {"cell_name": cell, "output": f"{cell}.gds"},
+        )
+
+    name = cell if is_final else stage["name"]
+    prefix = "" if is_final else f"{stage['name']}."
+    request = {
+        "pdk": {"variant": variant},
+        "blocks": blocks_request,
+        "placement": stage["placement"],
+        "routing": stage["routing"],
+        "connectivity": stage["connectivity"],
+        "pins": stage.get("pins", []),
+        "options": {"cell_name": name, "output": f"{name}.gds"},
     }
-    write_json(out_dir / "compose.request.json", request)
-    compose = run_klt(["gen-compose", "compose.request.json"], env=env, cwd=out_dir)
-    write_json(out_dir / "compose.response.json", compose)
+    write_json(out_dir / f"{prefix}compose.request.json", request)
+    compose = run_klt(
+        ["gen-compose", f"{prefix}compose.request.json"], env=env, cwd=out_dir
+    )
+    write_json(out_dir / f"{prefix}compose.response.json", compose)
     unrouted = [net["net"] for net in compose.get("nets", []) if not net.get("routed")]
     if unrouted:
-        raise BuildError(f"{cell}: nets left unrouted by gen-compose: {unrouted}")
+        raise BuildError(f"{name}: nets left unrouted by gen-compose: {unrouted}")
+    return compose
+
+
+def compose_cell(spec: dict, spec_dir: Path, out_dir: Path) -> dict:
+    """Run the full gen -> compose -> drc -> extract -> lvs chain.
+
+    ``spec["stages"]`` is optional (#27 step 2): a list of stage dicts, each
+    shaped like this function's single-stage fields
+    (``blocks``/``placement``/``routing``/``connectivity``/``pins``) plus a
+    ``name`` (required on every stage but the last, which is always named
+    after the cell itself). When absent, ``spec`` itself is wrapped as the
+    one implicit final stage -- every cell.json committed before #27 step 2
+    has no ``"stages"`` key and is therefore unaffected by this branch.
+    """
+    cell = spec["cell"]
+    variant = spec["pdk"]["variant"]
+    deck = spec["pdk"]["deck"]
+    env = {**os.environ, "PDK": variant}
+
+    stages = spec.get("stages") or [
+        {
+            "blocks": spec["blocks"],
+            "placement": spec["placement"],
+            "routing": spec["routing"],
+            "connectivity": spec["connectivity"],
+            "pins": spec.get("pins", []),
+        }
+    ]
+
+    stage_responses: dict[str, str] = {}
+    compose = None
+    for index, stage in enumerate(stages):
+        is_final = index == len(stages) - 1
+        compose = compose_stage(
+            stage,
+            is_final=is_final,
+            cell=cell,
+            variant=variant,
+            env=env,
+            spec_dir=spec_dir,
+            out_dir=out_dir,
+            stage_responses=stage_responses,
+        )
+        if not is_final:
+            stage_responses[stage["name"]] = f"{stage['name']}.compose.response.json"
+    assert compose is not None  # stages is always non-empty
 
     # 3. DRC.
     drc = run_klt(["drc", f"{cell}.gds", "--deck", deck], env=env, cwd=out_dir)
@@ -270,18 +459,43 @@ def compose_cell(spec: dict, spec_dir: Path, out_dir: Path) -> dict:
 
     # 5. LVS against the design's own schematic-exported subckt.
     lvs_spec = spec["lvs"]
-    reference_lines = build_reference(
-        extract_subckt(REPO_ROOT / lvs_spec["reference"], lvs_spec["subckt"]),
-        params=lvs_spec.get("params"),
-        drop_prefixes=tuple(lvs_spec.get("drop_prefixes", ())),
+    reference_source = REPO_ROOT / lvs_spec["reference"]
+    lvs_params = lvs_spec.get("params")
+    lvs_drop_prefixes = tuple(lvs_spec.get("drop_prefixes", ()))
+    lvs_drop_kwargs = tuple(lvs_spec.get("drop_kwargs", ()))
+    dependency_subckts = lvs_spec.get("dependencies", ())
+    reference_lines: list[str] = []
+    for dependency in dependency_subckts:
+        reference_lines.extend(
+            build_reference(
+                extract_subckt(reference_source, dependency),
+                params=lvs_params,
+                drop_prefixes=lvs_drop_prefixes,
+                drop_kwargs=lvs_drop_kwargs,
+            )
+        )
+        reference_lines.append("")
+    reference_lines.extend(
+        build_reference(
+            extract_subckt(reference_source, lvs_spec["subckt"]),
+            params=lvs_params,
+            drop_prefixes=lvs_drop_prefixes,
+            drop_kwargs=lvs_drop_kwargs,
+        )
     )
     reference_path = out_dir / f"{cell}.ref.spice"
+    dependency_note = (
+        f" plus dependency subckt(s) {', '.join(dependency_subckts)}"
+        if dependency_subckts
+        else ""
+    )
     reference_path.write_text(
         "\n".join(
             [
                 f"* Reference netlist for {cell} LVS -- GENERATED by "
                 "layout/bin/compose-cell.py",
-                f"* Source: {lvs_spec['reference']} .subckt {lvs_spec['subckt']}",
+                f"* Source: {lvs_spec['reference']} .subckt "
+                f"{lvs_spec['subckt']}{dependency_note}",
                 "* Only unit spellings (and any substituted subckt parameter)",
                 "* differ from the source -- see compose-cell.py's docstring.",
                 *reference_lines,
@@ -289,13 +503,30 @@ def compose_cell(spec: dict, spec_dir: Path, out_dir: Path) -> dict:
             ]
         )
     )
+    lvs_options = {}
+    if lvs_spec.get("flatten_reference"):
+        lvs_options["flatten_reference"] = True
+    if lvs_spec.get("flatten_layout"):
+        lvs_options["flatten_layout"] = True
     lvs_request = {
         "layout": {"netlist": str(Path(extract["netlist_path"]).name)},
         "reference": {
             "netlist": reference_path.name,
             "form": "subckt-call",
             "deck": deck,
+            # A multi-subckt reference (lvs.dependencies) leaves klt lvs more
+            # than one candidate top circuit -- for ro_ring5, RO_NAND2 and
+            # RO_STAGE are top circuits of the *file* even though the design
+            # instantiates them from RO_RING5, because the reader sees three
+            # definitions and no single root. `reference.top` names the one
+            # to compare against; klt errors out rather than guessing.
+            **(
+                {"top": lvs_spec["reference_top"]}
+                if lvs_spec.get("reference_top")
+                else {}
+            ),
         },
+        **({"options": lvs_options} if lvs_options else {}),
     }
     write_json(out_dir / "lvs.request.json", lvs_request)
     lvs = run_klt(["lvs", "lvs.request.json"], env=env, cwd=out_dir)
@@ -340,6 +571,28 @@ def check_cell(spec: dict, spec_dir: Path) -> int:
                 if committed.get(field) != rebuilt.get(field):
                     drift.append(
                         f"{name}.{field}: committed={committed.get(field)!r} "
+                        f"rebuilt={rebuilt.get(field)!r}"
+                    )
+        # A multi-stage cell.json (#27 step 2) also commits each non-final
+        # stage's own "<name>.compose.response.json" (see compose_stage's
+        # docstring) -- diff those too, on the same verdict-bearing fields
+        # as the final compose.response.json above, so drift in an earlier
+        # stage's own placement/routing is caught even when it happens not
+        # to move the final cell's own bbox/DRC/LVS verdict.
+        for committed_path in sorted(spec_dir.glob("*.compose.response.json")):
+            if committed_path.name == "compose.response.json":
+                continue  # the final stage, already diffed above
+            rebuilt_path = tmp_dir / committed_path.name
+            if not rebuilt_path.exists():
+                drift.append(f"{committed_path.name}: missing from rebuild")
+                continue
+            committed = json.loads(committed_path.read_text())
+            rebuilt = json.loads(rebuilt_path.read_text())
+            for field in CHECK_FIELDS["compose.response.json"]:
+                if committed.get(field) != rebuilt.get(field):
+                    drift.append(
+                        f"{committed_path.name}.{field}: "
+                        f"committed={committed.get(field)!r} "
                         f"rebuilt={rebuilt.get(field)!r}"
                     )
     if drift:

@@ -1,0 +1,878 @@
+{
+  "schema_version": 1,
+  "generator": "gen-compose",
+  "cell_name": "core",
+  "gds_path": "core.gds",
+  "pdk": {
+    "name": "sky130A",
+    "variant": "sky130A",
+    "version": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b"
+  },
+  "bbox_um": {
+    "x0": -6.175,
+    "y0": -1.5,
+    "x1": 16.175,
+    "y1": 14.07
+  },
+  "ports": [
+    {
+      "name": "mp13_g0",
+      "net": "mp13_g0",
+      "layer": {
+        "layer": 67,
+        "datatype": 20,
+        "name": null
+      },
+      "x_um": 0.545,
+      "y_um": 11.55,
+      "width_um": 0.42000000000000004,
+      "direction_deg": 270,
+      "block": "mp13",
+      "port": "U0_G0"
+    },
+    {
+      "name": "mp13_g1",
+      "net": "mp13_g1",
+      "layer": {
+        "layer": 67,
+        "datatype": 20,
+        "name": null
+      },
+      "x_um": 1.215,
+      "y_um": 11.55,
+      "width_um": 0.42000000000000004,
+      "direction_deg": 270,
+      "block": "mp13",
+      "port": "U0_G1"
+    },
+    {
+      "name": "mp24_g0",
+      "net": "mp24_g0",
+      "layer": {
+        "layer": 67,
+        "datatype": 20,
+        "name": null
+      },
+      "x_um": 8.365,
+      "y_um": 11.55,
+      "width_um": 0.42000000000000004,
+      "direction_deg": 270,
+      "block": "mp24",
+      "port": "U0_G0"
+    },
+    {
+      "name": "mp24_g1",
+      "net": "mp24_g1",
+      "layer": {
+        "layer": 67,
+        "datatype": 20,
+        "name": null
+      },
+      "x_um": 7.695,
+      "y_um": 11.55,
+      "width_um": 0.42000000000000004,
+      "direction_deg": 270,
+      "block": "mp24",
+      "port": "U0_G1"
+    },
+    {
+      "name": "mn34_g0",
+      "net": "mn34_g0",
+      "layer": {
+        "layer": 67,
+        "datatype": 20,
+        "name": null
+      },
+      "x_um": 0.895,
+      "y_um": 4.03,
+      "width_um": 0.42000000000000004,
+      "direction_deg": 90,
+      "block": "mn34",
+      "port": "U0_G0"
+    },
+    {
+      "name": "mn34_g1",
+      "net": "mn34_g1",
+      "layer": {
+        "layer": 67,
+        "datatype": 20,
+        "name": null
+      },
+      "x_um": 1.565,
+      "y_um": 4.03,
+      "width_um": 0.42000000000000004,
+      "direction_deg": 90,
+      "block": "mn34",
+      "port": "U0_G1"
+    },
+    {
+      "name": "mn12_g0",
+      "net": "mn12_g0",
+      "layer": {
+        "layer": 67,
+        "datatype": 20,
+        "name": null
+      },
+      "x_um": 7.895,
+      "y_um": 4.03,
+      "width_um": 0.42000000000000004,
+      "direction_deg": 90,
+      "block": "mn12",
+      "port": "U0_G0"
+    },
+    {
+      "name": "mn12_g1",
+      "net": "mn12_g1",
+      "layer": {
+        "layer": 67,
+        "datatype": 20,
+        "name": null
+      },
+      "x_um": 8.565,
+      "y_um": 4.03,
+      "width_um": 0.42000000000000004,
+      "direction_deg": 90,
+      "block": "mn12",
+      "port": "U0_G1"
+    },
+    {
+      "name": "inva_a",
+      "net": "inva_a",
+      "layer": {
+        "layer": 67,
+        "datatype": 20
+      },
+      "x_um": -3.44,
+      "y_um": 6.8100000000000005,
+      "width_um": 0.17,
+      "direction_deg": 180,
+      "block": "inv_a",
+      "port": "a"
+    },
+    {
+      "name": "inva_y",
+      "net": "inva_y",
+      "layer": {
+        "layer": 67,
+        "datatype": 20
+      },
+      "x_um": -2.085,
+      "y_um": 6.3100000000000005,
+      "width_um": 0.17,
+      "direction_deg": 0,
+      "block": "inv_a",
+      "port": "y"
+    },
+    {
+      "name": "invb_a",
+      "net": "invb_a",
+      "layer": {
+        "layer": 67,
+        "datatype": 20
+      },
+      "x_um": 14.735,
+      "y_um": 6.8100000000000005,
+      "width_um": 0.17,
+      "direction_deg": 180,
+      "block": "inv_b",
+      "port": "a"
+    },
+    {
+      "name": "invb_y",
+      "net": "invb_y",
+      "layer": {
+        "layer": 67,
+        "datatype": 20
+      },
+      "x_um": 16.09,
+      "y_um": 6.3100000000000005,
+      "width_um": 0.17,
+      "direction_deg": 0,
+      "block": "inv_b",
+      "port": "y"
+    }
+  ],
+  "blocks": [
+    {
+      "id": "mp13",
+      "source": "generator_report",
+      "generator": "mos_array",
+      "cell_name": "mp13",
+      "offset_um": {
+        "x": 0.0,
+        "y": 13.84
+      },
+      "bbox_um": {
+        "x0": -0.15,
+        "y0": 11.19,
+        "x1": 1.9100000000000001,
+        "y1": 13.99
+      },
+      "orientation": "mirror_y"
+    },
+    {
+      "id": "mp24",
+      "source": "generator_report",
+      "generator": "mos_array",
+      "cell_name": "mp24",
+      "offset_um": {
+        "x": 8.91,
+        "y": 13.84
+      },
+      "bbox_um": {
+        "x0": 7.0,
+        "y0": 11.19,
+        "x1": 9.06,
+        "y1": 13.99
+      },
+      "orientation": "rotate_180"
+    },
+    {
+      "id": "mn34",
+      "source": "generator_report",
+      "generator": "mos_array",
+      "cell_name": "mn34",
+      "offset_um": {
+        "x": 0.35,
+        "y": 2.58
+      },
+      "bbox_um": {
+        "x0": 0.35,
+        "y0": 2.58,
+        "x1": 2.11,
+        "y1": 4.24
+      },
+      "orientation": "none"
+    },
+    {
+      "id": "mn12",
+      "source": "generator_report",
+      "generator": "mos_array",
+      "cell_name": "mn12",
+      "offset_um": {
+        "x": 7.35,
+        "y": 2.58
+      },
+      "bbox_um": {
+        "x0": 7.35,
+        "y0": 2.58,
+        "x1": 9.11,
+        "y1": 4.24
+      },
+      "orientation": "none"
+    },
+    {
+      "id": "nwt1",
+      "source": "generator_report",
+      "generator": "guard_ring",
+      "cell_name": "nwt1",
+      "offset_um": {
+        "x": -2.04,
+        "y": 12.08
+      },
+      "bbox_um": {
+        "x0": -2.19,
+        "y0": 11.93,
+        "x1": -0.050000000000000044,
+        "y1": 14.07
+      },
+      "orientation": "none"
+    },
+    {
+      "id": "nwt2",
+      "source": "generator_report",
+      "generator": "guard_ring",
+      "cell_name": "nwt2",
+      "offset_um": {
+        "x": 9.11,
+        "y": 12.08
+      },
+      "bbox_um": {
+        "x0": 8.959999999999999,
+        "y0": 11.93,
+        "x1": 11.1,
+        "y1": 14.07
+      },
+      "orientation": "none"
+    },
+    {
+      "id": "pst",
+      "source": "generator_report",
+      "generator": "guard_ring",
+      "cell_name": "pst",
+      "offset_um": {
+        "x": 3.0,
+        "y": -1.5
+      },
+      "bbox_um": {
+        "x0": 3.0,
+        "y0": -1.5,
+        "x1": 4.84,
+        "y1": 0.3400000000000001
+      },
+      "orientation": "none"
+    },
+    {
+      "id": "inv_a",
+      "source": "cell",
+      "generator": null,
+      "cell_name": "ro_buf",
+      "offset_um": {
+        "x": -3.985,
+        "y": 5.11
+      },
+      "bbox_um": {
+        "x0": -6.175,
+        "y0": 4.4,
+        "x1": -1.9999999999999998,
+        "y1": 9.71
+      },
+      "orientation": "none"
+    },
+    {
+      "id": "inv_b",
+      "source": "cell",
+      "generator": null,
+      "cell_name": "ro_buf",
+      "offset_um": {
+        "x": 14.19,
+        "y": 5.11
+      },
+      "bbox_um": {
+        "x0": 12.0,
+        "y0": 4.4,
+        "x1": 16.175,
+        "y1": 9.71
+      },
+      "orientation": "none"
+    }
+  ],
+  "nets": [
+    {
+      "net": "vdd",
+      "pins": [
+        {
+          "block": "mp13",
+          "port": "U0_S0"
+        },
+        {
+          "block": "nwt1",
+          "port": "TAP_E"
+        }
+      ],
+      "routed": true,
+      "route_length_um": 0.6200000000000001,
+      "status": "routed",
+      "legs": [
+        {
+          "pins": [
+            {
+              "block": "mp13",
+              "port": "U0_S0"
+            },
+            {
+              "block": "nwt1",
+              "port": "TAP_E"
+            }
+          ],
+          "routed": true,
+          "route_length_um": 0.6200000000000001,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "net": "vdd",
+      "pins": [
+        {
+          "block": "mp24",
+          "port": "U0_S0"
+        },
+        {
+          "block": "nwt2",
+          "port": "TAP_W"
+        }
+      ],
+      "routed": true,
+      "route_length_um": 0.620000000000001,
+      "status": "routed",
+      "legs": [
+        {
+          "pins": [
+            {
+              "block": "mp24",
+              "port": "U0_S0"
+            },
+            {
+              "block": "nwt2",
+              "port": "TAP_W"
+            }
+          ],
+          "routed": true,
+          "route_length_um": 0.620000000000001,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "net": "vdd",
+      "pins": [
+        {
+          "block": "inv_a",
+          "port": "vdd"
+        },
+        {
+          "block": "nwt1",
+          "port": "TAP_N"
+        }
+      ],
+      "routed": true,
+      "route_length_um": 10.924999999999997,
+      "status": "routed",
+      "legs": [
+        {
+          "pins": [
+            {
+              "block": "inv_a",
+              "port": "vdd"
+            },
+            {
+              "block": "nwt1",
+              "port": "TAP_N"
+            }
+          ],
+          "routed": true,
+          "route_length_um": 10.924999999999997,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "net": "vdd",
+      "pins": [
+        {
+          "block": "nwt1",
+          "port": "TAP_N"
+        },
+        {
+          "block": "nwt2",
+          "port": "TAP_N"
+        }
+      ],
+      "routed": true,
+      "route_length_um": 13.729999999999997,
+      "status": "routed",
+      "legs": [
+        {
+          "pins": [
+            {
+              "block": "nwt1",
+              "port": "TAP_N"
+            },
+            {
+              "block": "nwt2",
+              "port": "TAP_N"
+            }
+          ],
+          "routed": true,
+          "route_length_um": 13.729999999999997,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "net": "vdd",
+      "pins": [
+        {
+          "block": "nwt2",
+          "port": "TAP_N"
+        },
+        {
+          "block": "inv_b",
+          "port": "vdd"
+        }
+      ],
+      "routed": true,
+      "route_length_um": 9.979999999999999,
+      "status": "routed",
+      "legs": [
+        {
+          "pins": [
+            {
+              "block": "nwt2",
+              "port": "TAP_N"
+            },
+            {
+              "block": "inv_b",
+              "port": "vdd"
+            }
+          ],
+          "routed": true,
+          "route_length_um": 9.979999999999999,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "net": "mid",
+      "pins": [
+        {
+          "block": "mp13",
+          "port": "U0_D0"
+        },
+        {
+          "block": "mp24",
+          "port": "U0_D0"
+        }
+      ],
+      "routed": true,
+      "route_length_um": 9.950000000000001,
+      "status": "routed",
+      "legs": [
+        {
+          "pins": [
+            {
+              "block": "mp13",
+              "port": "U0_D0"
+            },
+            {
+              "block": "mp24",
+              "port": "U0_D0"
+            }
+          ],
+          "routed": true,
+          "route_length_um": 9.950000000000001,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "net": "y",
+      "pins": [
+        {
+          "block": "mp13",
+          "port": "U0_S1"
+        },
+        {
+          "block": "mp24",
+          "port": "U0_S1"
+        }
+      ],
+      "routed": true,
+      "route_length_um": 5.809999999999999,
+      "status": "routed",
+      "legs": [
+        {
+          "pins": [
+            {
+              "block": "mp13",
+              "port": "U0_S1"
+            },
+            {
+              "block": "mp24",
+              "port": "U0_S1"
+            }
+          ],
+          "routed": true,
+          "route_length_um": 5.809999999999999,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "net": "y",
+      "pins": [
+        {
+          "block": "mp24",
+          "port": "U0_S1"
+        },
+        {
+          "block": "mn12",
+          "port": "U0_S0"
+        }
+      ],
+      "routed": true,
+      "route_length_um": 15.919999999999998,
+      "status": "routed",
+      "legs": [
+        {
+          "pins": [
+            {
+              "block": "mp24",
+              "port": "U0_S1"
+            },
+            {
+              "block": "mn12",
+              "port": "U0_S0"
+            }
+          ],
+          "routed": true,
+          "route_length_um": 15.919999999999998,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "net": "y",
+      "pins": [
+        {
+          "block": "mn12",
+          "port": "U0_S0"
+        },
+        {
+          "block": "mn34",
+          "port": "U0_S0"
+        }
+      ],
+      "routed": true,
+      "route_length_um": 11.32,
+      "status": "routed",
+      "legs": [
+        {
+          "pins": [
+            {
+              "block": "mn12",
+              "port": "U0_S0"
+            },
+            {
+              "block": "mn34",
+              "port": "U0_S0"
+            }
+          ],
+          "routed": true,
+          "route_length_um": 11.32,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "net": "vss",
+      "pins": [
+        {
+          "block": "inv_a",
+          "port": "vss"
+        },
+        {
+          "block": "mn34",
+          "port": "U0_S1"
+        }
+      ],
+      "routed": true,
+      "route_length_um": 11.715,
+      "status": "routed",
+      "legs": [
+        {
+          "pins": [
+            {
+              "block": "inv_a",
+              "port": "vss"
+            },
+            {
+              "block": "mn34",
+              "port": "U0_S1"
+            }
+          ],
+          "routed": true,
+          "route_length_um": 11.715,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "net": "vss",
+      "pins": [
+        {
+          "block": "mn34",
+          "port": "U0_S1"
+        },
+        {
+          "block": "pst",
+          "port": "TAP_N"
+        }
+      ],
+      "routed": true,
+      "route_length_um": 4.89,
+      "status": "routed",
+      "legs": [
+        {
+          "pins": [
+            {
+              "block": "mn34",
+              "port": "U0_S1"
+            },
+            {
+              "block": "pst",
+              "port": "TAP_N"
+            }
+          ],
+          "routed": true,
+          "route_length_um": 4.89,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "net": "vss",
+      "pins": [
+        {
+          "block": "pst",
+          "port": "TAP_N"
+        },
+        {
+          "block": "mn12",
+          "port": "U0_S1"
+        }
+      ],
+      "routed": true,
+      "route_length_um": 8.850000000000001,
+      "status": "routed",
+      "legs": [
+        {
+          "pins": [
+            {
+              "block": "pst",
+              "port": "TAP_N"
+            },
+            {
+              "block": "mn12",
+              "port": "U0_S1"
+            }
+          ],
+          "routed": true,
+          "route_length_um": 8.850000000000001,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "net": "vss",
+      "pins": [
+        {
+          "block": "mn12",
+          "port": "U0_S1"
+        },
+        {
+          "block": "inv_b",
+          "port": "vss"
+        }
+      ],
+      "routed": true,
+      "route_length_um": 7.680000000000002,
+      "status": "routed",
+      "legs": [
+        {
+          "pins": [
+            {
+              "block": "mn12",
+              "port": "U0_S1"
+            },
+            {
+              "block": "inv_b",
+              "port": "vss"
+            }
+          ],
+          "routed": true,
+          "route_length_um": 7.680000000000002,
+          "reason": null
+        }
+      ]
+    }
+  ],
+  "pins": [
+    {
+      "net": "mp13_g0",
+      "block": "mp13",
+      "port": "U0_G0",
+      "labelled": true
+    },
+    {
+      "net": "mp13_g1",
+      "block": "mp13",
+      "port": "U0_G1",
+      "labelled": true
+    },
+    {
+      "net": "mp24_g0",
+      "block": "mp24",
+      "port": "U0_G0",
+      "labelled": true
+    },
+    {
+      "net": "mp24_g1",
+      "block": "mp24",
+      "port": "U0_G1",
+      "labelled": true
+    },
+    {
+      "net": "mn34_g0",
+      "block": "mn34",
+      "port": "U0_G0",
+      "labelled": true
+    },
+    {
+      "net": "mn34_g1",
+      "block": "mn34",
+      "port": "U0_G1",
+      "labelled": true
+    },
+    {
+      "net": "mn12_g0",
+      "block": "mn12",
+      "port": "U0_G0",
+      "labelled": true
+    },
+    {
+      "net": "mn12_g1",
+      "block": "mn12",
+      "port": "U0_G1",
+      "labelled": true
+    },
+    {
+      "net": "inva_a",
+      "block": "inv_a",
+      "port": "a",
+      "labelled": true
+    },
+    {
+      "net": "inva_y",
+      "block": "inv_a",
+      "port": "y",
+      "labelled": true
+    },
+    {
+      "net": "invb_a",
+      "block": "inv_b",
+      "port": "a",
+      "labelled": true
+    },
+    {
+      "net": "invb_y",
+      "block": "inv_b",
+      "port": "y",
+      "labelled": true
+    }
+  ],
+  "unrouted_nets": [],
+  "drc_hints": {
+    "min_spacing_um": null,
+    "matched_groups": [
+      {
+        "matched_group_id": "mos_array:1x1:common_centroid",
+        "blocks": [
+          "mp13",
+          "mp24",
+          "mn34",
+          "mn12"
+        ],
+        "placement_symmetric": null
+      }
+    ],
+    "notes": []
+  },
+  "warnings": [
+    "block 'nwt1' is placed 0.00um from block 'mp13' (strategy: explicit), closer than mp13's own declared drc_hints.min_spacing_um of 0.40um",
+    "block 'nwt2' is placed 0.00um from block 'mp24' (strategy: explicit), closer than mp24's own declared drc_hints.min_spacing_um of 0.40um",
+    "block 'mp13' is placed 0.00um from block 'nwt1' (strategy: explicit), closer than nwt1's own declared drc_hints.min_spacing_um of 0.40um",
+    "block 'mp24' is placed 0.00um from block 'nwt2' (strategy: explicit), closer than nwt2's own declared drc_hints.min_spacing_um of 0.40um"
+  ]
+}

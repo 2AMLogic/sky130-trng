@@ -35,8 +35,8 @@ status **Proposed**). Those runs are **behavioural**, not ngspice: they have
 no PVT axis and never will, because the verification-level split
 (`spec/porting-plan.md` §1.1) puts everything past `raw_bit` in a bit-exact
 model rather than a transistor-level deck. They follow the same
-append-only record rules through `sim/bin/behavioral_record.py` instead of
-`sim/bin/corner-run.py`:
+append-only record rules through `sim/bin/evidence_record.py`'s
+`mint_behavioral_record()` instead of `sim/bin/corner-run.py`:
 
 | Slug | Claim under test | Landed by |
 |---|---|---|
@@ -45,9 +45,49 @@ append-only record rules through `sim/bin/behavioral_record.py` instead of
 | `digital-section-behavioral/` | do the assembled section's health tests, start-up gate, latch-and-gate policy, raw-path invariant and mode-switch flush behave as DR-0004 specifies, over declared synthetic sources? | #20 |
 | `digital-rtl-equivalence/` | does `digital/rtl/trng_digital.v` match the normative behavioural model cycle for cycle? | #20 |
 
+Issue #21 then closed the one gap every campaign above left open: none of
+them ever digitizes an actual noise-driven raw bit. It drives the same
+assembled `ro_array_core` + `sampler_dff` path from injected per-stage
+`trnoise()` sources (all four rings, in place, following
+`ro-ring-jitter-accumulation/`'s own injection topology) through a real
+`.tran` run and reduces the resulting sequence to a Most-Common-Value
+(SP 800-90B section 6.3.1 style) min-entropy point estimate:
+
+| Slug | Claim under test | Landed by |
+|---|---|---|
+| `raw-bit-min-entropy/` | a real, noise-driven raw bit sequence from the assembled array + sampler, and its MCV-style min-entropy point estimate, per PVT corner | #21 |
+
+`sim/tests/test_raw_bit_entropy.py` is the fast, always-runnable unit-test
+suite behind that record's reduction step (standard library only, no
+simulator, no PDK).
+
 `sim/tests/test_digital_section.py` is the fast, always-runnable unit-test
 suite behind those records (standard library only, no simulator, no PDK):
 `python3 sim/tests/test_digital_section.py`.
+
+Issue #22 then added the first **post-layout** campaign — every record above
+this line is driven from `design/*.spice`, xschem's schematic export, which
+contains no physical interconnect at all. The first two slugs below are
+driven from `layout/pex/ro_ring5_pex.spice`: `klt extract --parasitics` over
+the nine *leaf* composed, DRC-clean and LVS-clean cells under `layout/`
+(`layout/pex/README.md` states exactly what that parasitic model does and
+does not contain, and why its numbers are *intra-cell* parasitics only —
+there was no inter-cell interconnect in `layout/` to extract yet when that
+library was built). A later increment of the same issue landed
+`layout/ro_ring5*/` — the composed, DRC-clean and LVS-clean whole rings, with
+real inter-gate metal routing drawn — which the third slug below extracts
+directly, via the sibling library `layout/pex-ring/ro_ring5_assembled_pex.spice`
+(`layout/pex-ring/README.md`):
+
+| Slug | Claim under test | Landed by |
+|---|---|---|
+| `post-layout-ro-ring5/` | the five-stage ring's period, swing and supply current with extracted **intra-cell-only** parasitics (ideal inter-gate wires), at all four `wstv` widths, with the pre-layout netlist as a same-deck control — plus the shared-substrate-node coupling bound and its loading control | #22 |
+| `post-layout-parasitic-impact/` | reduction of the above: what the parasitics cost, whether the `wstv` frequency ladder survives them, and how large the inter-ring coupling actually is | #22 |
+| `post-layout-ro-ring5-assembled/` | the same period/swing/supply-current measurement, from extracting each **whole assembled ring's own GDS** directly — real inter-gate wiring included, not just intra-cell parasitics — with the pre-layout netlist as a same-deck control | #22 |
+
+See "The post-layout campaign (issue #22)" below for what those decks are,
+why the third leaf-level deck exists, and the one deck defect it caught; see
+"Assembled-ring post-layout" for the ring-level extraction.
 
 Two rules from the root `CLAUDE.md` govern everything under this directory:
 
@@ -85,7 +125,7 @@ from sky130-bandgap's" below.
 |---|---|---|
 | PDK pin | `sim/pdk.json` | open_pdks commit, variant, ngspice library path, the process-corner names the PDK actually ships |
 | corner runner | `sim/bin/corner-run.py` | resolves the PDK, renders a deck template per corner, runs ngspice, parses results, mints a record |
-| behavioural record minter | `sim/bin/behavioral_record.py` | the same append-only record discipline for runs that have no simulator and no PDK (`level: behavioral`); a library each `sim/digital-*/` harness calls, not a runner |
+| evidence-record minter | `sim/bin/evidence_record.py` | shared append-only record-minting scaffolding; `mint_record()` for pure-reduction `analysis/*.py` scripts, `mint_behavioral_record()` for runs that have no simulator and no PDK (`level: behavioral`); a library each caller calls, not a runner |
 | testbench | `sim/<slug>/testbench/*.spice` | deck **templates** (see placeholders below) -- not runnable decks as committed |
 | records | `sim/<slug>/records/<record-id>.{md,json}` | one append-only evidence record per run: `.md` (human), `.json` (machine) |
 | raw logs | `sim/<slug>/corners/<record-id>/<corner>.log` | the exact deck each corner ran, embedded, plus its raw ngspice stdout/stderr -- committed evidence, exempted from the root `.gitignore`'s `*.log` rule by `!sim/*/corners/**/*.log` |
@@ -120,6 +160,15 @@ is a template, not a runnable deck. `corner-run.py` substitutes:
   library that defines `ro_stage`/`ro_nand2`/`ro_ring5` (see
   `design/README.md` § "Regenerating the netlists"). Overridable via
   `--ro-ring5` for a testbench that wants a different netlist.
+- `@@PEX_LIB@@` -- absolute path to the committed **post-layout** subcircuit
+  library (`--pex-lib`, default `layout/pex/ro_ring5_pex.spice`), the
+  `pex-netlist.py --check`-guarded `klt extract --parasitics` netlist of the
+  composed cells under `layout/`. A post-layout deck includes this *in
+  addition to* `@@RO_RING5@@` when it wants the pre-layout netlist alongside
+  as a same-deck control (see "The post-layout campaign" below). Both
+  substituted paths, with their sha256, are recorded in every record's
+  `netlists` block, so a record always names the netlist revision behind its
+  numbers.
 - `@@OUT_ONOISE@@` -- a per-(record, corner) scratch path a deck can
   `wrdata` an `onoise_spectrum` trace to. If a testbench writes one, the
   runner reads it back and records a spread check (max/min ratio over the
@@ -294,6 +343,130 @@ corner and seed as the grid:
   transient solver by itself manufactures 0.58 ps (5p) / 0.65 ps (20p) of
   period scatter. Every grid `sigma_1` is corrected against it in
   quadrature, which lowers `Q` and raises `N` -- the conservative direction.
+
+## The post-layout campaign (issue #22)
+
+`sim/post-layout-ro-ring5/` is this repo's first campaign driven from a
+*layout*-derived netlist rather than from a schematic export. Its input is
+`layout/pex/ro_ring5_pex.spice` -- `klt extract --parasitics` over the nine
+composed, DRC-clean and LVS-clean cells under `layout/`, rewritten for
+ngspice by `layout/bin/pex-netlist.py`. Read `layout/pex/README.md` before
+citing any number from it: the parasitic model is a lumped star resistance
+per net (conservative) with **no inter-cell interconnect at all** (there is
+none in `layout/` yet to extract), so these are intra-cell parasitics
+specifically, not a full post-layout ring.
+
+Three decks, run at the same four (temp, Vdd) points
+`ro-ring5-swing-and-current/` used, each bundling `tt`/`ss`/`ff` -- twelve
+records, thirty-six corner runs:
+
+| Testbench | What it holds fixed | What it answers |
+|---|---|---|
+| `tb_post_layout_ro_ring5.spice` | `vsubs` tied hard to 0; four post-layout rings AND four pre-layout rings in one deck | what the parasitics cost (period, swing, supply current), as a same-corner ratio rather than a cross-record comparison |
+| `tb_post_layout_substrate_float.spice` | `vsubs` untied (the extractor's own 1 TOhm dc tie); four rings running | the pessimistic inter-ring coupling bound -- the shared substrate node is the only node four independently-supplied rings share |
+| `tb_post_layout_substrate_float_solo.spice` | `vsubs` untied; rings 2/3/4 present but **stopped** | the control that separates the floating node's capacitive *loading* from actual *coupling* |
+
+`sim/post-layout-parasitic-impact/analysis/parasitic-impact.py` reduces all
+twelve records (no simulator; run it to reproduce every number below):
+
+- **Parasitics cost 1.378x - 1.479x in ring period** across the grid and all
+  four widths, and *raise* the ring-node swing 1-4% (a slower ring reaches
+  its rails more completely). Per-ring supply current falls 2-6%.
+- **The `wstv` frequency ladder survives.** Post-layout ladder span
+  (slowest/fastest ring) is 1.1122x - 1.2096x, against 1.1225x - 1.2464x
+  pre-layout. The closest any ring pair comes to a mutual-injection-lock
+  rational (4/3, 3/2, 2/1 -- DR-0003 §8's own criterion) anywhere on the
+  grid is 9.3%.
+- **Inter-ring coupling through the shared substrate node is at most 0.033%
+  of the ring period** at the pessimistic bound -- an upper bound, not a
+  resolved measurement, since only 1 of 12 grid points exceeds the transient
+  solver's own 0.024% numerical period scatter and the shift's sign is not
+  consistent across the grid. What *is* resolved is that the node genuinely
+  carries all four rings' activity (3.8% of Vdd peak to peak with four rings
+  running, 1.1% with one).
+
+`spec/decision-records/DR-0005-*.md` states what this does and does not
+settle for DR-0003 §8.
+
+### The control that caught a deck defect
+
+The solo control exists because the float-vs-tied difference alone is
+uninterpretable -- but writing it caught something else first. An earlier,
+uncommitted pass over these decks buffered only *one* of the four rings
+(`ro_array_core.sch` buffers all four). The buffered ring ran ~18% slower
+than its unbuffered neighbours purely from the extra load, and that showed
+up in `skew_span` as if it were ladder span. The decks now buffer every
+ring, on both the post-layout and pre-layout side, and all twelve committed
+records are from the corrected decks -- **no record from the defective deck
+was ever committed**, so there is nothing under `records/` to supersede.
+The defect is recorded here, and in `tb_post_layout_ro_ring5.spice`'s own
+buffer block, rather than left as a silent fix.
+
+### Assembled-ring post-layout: real inter-gate wiring (issue #22)
+
+`sim/post-layout-ro-ring5-assembled/` answers the question the section above
+explicitly leaves open: `layout/pex/`'s numbers have **no inter-cell
+interconnect at all**, so they are a lower bound on the ring's real
+parasitic penalty. Once `layout/ro_ring5*/` existed as composed, DRC-clean
+and LVS-clean *whole rings* (issue #22/#27, PR #51) with the `n1`-`n4`
+signal chain, `ro` feedback and `vddr`/`vss` rail busing actually drawn,
+extracting that GDS directly — rather than five separately-extracted leaf
+cells wired by the testbench's own ideal nets — includes that inter-gate
+metal in the ring's own period/swing/current numbers for the first time.
+`layout/pex-ring/ro_ring5_assembled_pex.spice` is that extraction
+(`layout/pex-ring/README.md` states the model and the two net-naming
+collisions this flattening surfaces that leaf extraction never hits), and
+`tb_post_layout_ro_ring5_assembled.spice` is the single deck: post-layout
+assembled ring vs. the identical pre-layout `ro_ring5` subcircuit, same
+corner, same deck, at the same four (temp, Vdd) points as every other deck
+in this section.
+
+Four records, twelve corner runs:
+
+- **Real inter-gate wiring costs far more than intra-cell parasitics alone.**
+  Period slows **2.0819x - 2.3666x** against the pre-layout control across
+  the full grid and all four `wstv` widths, against `layout/pex/`'s
+  intra-cell-only **1.378x - 1.479x**. Pairing the two campaigns' twelve
+  matching (temp, Vdd, corner) points and four widths each (48 pairs, exact
+  PVT-grid match) rather than just comparing the two ranges: the assembled
+  deck's own slowdown is **1.5045x - 1.6546x** *of* the leaf-only deck's
+  slowdown at that same point, mean 1.573x — i.e. drawing the real
+  inter-gate wiring costs the ring another ~50-65% multiplicatively on top
+  of intra-cell parasitics alone, fairly consistently across the grid (the
+  48-pair range is narrower than either campaign's own per-width/per-corner
+  spread). This is not a contradiction between the two libraries; it is the
+  inter-cell wiring `layout/pex/README.md` itself names as entirely absent
+  from its own model, now measured for the first time. The two campaigns are
+  still not a same-deck ratio in the same sense every other ratio in this
+  file is (two separate extractions, two separate ngspice runs) — see
+  `layout/pex-ring/README.md` for why a single three-way deck was not built
+  this increment.
+- **The `wstv` frequency ladder still survives.** Assembled post-layout
+  ladder span (slowest/fastest ring) is **1.0937x - 1.1822x** against
+  **1.1225x - 1.2464x** on the identical same-deck pre-layout control — the
+  pre-layout figure matches `post-layout-parasitic-impact/`'s own
+  independently-computed pre-layout span almost exactly, cross-validating
+  both reductions. The ladder is, if anything, *more* compressed with real
+  inter-gate wiring than either the intra-cell-only or pre-layout figures,
+  i.e. real routing parasitics do not introduce a new risk of closing the
+  ladder onto a mutual-injection-lock rational (DR-0003 §8's own criterion).
+- **`wstv` inter-ring decorrelation (DR-0003 §8, re-evaluated by
+  `spec/decision-records/DR-0005-*.md`) is not superseded by this
+  measurement.** DR-0005's own open finding — no supply-distribution layout
+  exists, so §8's first-named mechanism (shared supply impedance) remains
+  entirely unmodelled — is unaffected: this deck's `vddr1`..`vddr4` are
+  still four ideal isolated sources, one ring's own GDS at a time. What this
+  measurement adds is that a *single* ring's own real interconnect is now in
+  the model; the inter-ring question DR-0005 leaves open is orthogonal to
+  it and still requires the array-level assembly `layout/README.md`'s
+  "What's deferred" tracks.
+- **The memory trap this deck hit, and its fix, are recorded in
+  `layout/pex-ring/README.md`** — the `ff` corner exhausted ngspice's
+  default per-node history memory on the first run (a flat ring extraction
+  has far more nodes than the leaf-cell composition's own subcircuit
+  library, most of them parasitic-star leg nodes no `.meas` reads) until a
+  `.save` line scoped the saved trace set to only the nodes measurements
+  actually use.
 
 ## Writing a new record
 

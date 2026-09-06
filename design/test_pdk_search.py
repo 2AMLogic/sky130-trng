@@ -27,17 +27,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import _pdk_search  # path insert above must run before this import resolves
 from _pdk_search import PdkSearchError, search_pdk
+from _test_check import Checker
 
-_FAILURES: list[str] = []
-
-
-def _check(label: str, condition: bool, detail: str = "") -> None:
-    if condition:
-        print(f"ok     {label}")
-    else:
-        msg = f"{label}" + (f": {detail}" if detail else "")
-        print(f"FAIL   {msg}")
-        _FAILURES.append(msg)
+_checker = Checker()
+_check = _checker.check
 
 
 def _make_variant_dir(root: Path, name: str, marker: str = "libs.tech/xschem") -> Path:
@@ -291,11 +284,7 @@ def main() -> int:
     check_full_fallback_order()
     check_builtin_search_roots_is_the_shared_tuple()
 
-    if _FAILURES:
-        print(f"FAIL   {len(_FAILURES)} check(s) failed")
-        return 1
-    print("PASS   design/test_pdk_search.py")
-    return 0
+    return _checker.summary("design/test_pdk_search.py")
 
 
 if __name__ == "__main__":

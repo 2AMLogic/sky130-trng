@@ -179,7 +179,7 @@ otherwise unmeasured on sky130).
 | PMOS width | 0.84 µm | placeholder | 2:1 P:N ratio **carried over from gf180-trng**. Issue #10 measured the cell's trip point at 0.805–0.844 V against a 0.81–0.99 V mid-supply across the grid, i.e. the ratio is not grossly mismatched — but that is a by-product, not a P:N sizing sweep, and no sweep was run |
 | Series-stack widths | 2× the device they replace | placeholder | rule of thumb from the source cell, not a sky130 stage-delay match measurement |
 | Starve length `lstv` | 2 µm | placeholder | gf180-trng reached 2 µm by measuring an array power rollup against its own ratified power row. **No sky130 lstv sweep exists** — both campaigns measured jitter, swing and current at this fixed value, so this row is untouched |
-| Starve width `wstv` | 0.42–0.48 µm, four 0.02 µm steps | **measured (realized ratio), placeholder (decorrelation)** | The REALIZED frequency ratio across the ladder is measured on the assembled array (`sim/ro-array-core-combining/`, `skew_span` 1.12–1.19×, well clear of small rationals). What decorrelates two *sky130* rings — the coupling a real layout would have — is **still not measured**: the array as drawn has no shared supply impedance or substrate model, so a netlist-level check can only confirm the absence of a path the netlist does not contain. Needs extracted parasitics (DR-0003 §8) |
+| Starve width `wstv` | 0.42–0.48 µm, four 0.02 µm steps | **measured (realized ratio), placeholder (decorrelation)** | The REALIZED frequency ratio across the ladder is measured on the assembled array (`sim/ro-array-core-combining/`, `skew_span` 1.12–1.19×, well clear of small rationals). What decorrelates two *sky130* rings — the coupling a real layout would have — is **still not measured**: the array as drawn has no shared supply impedance or substrate model, so a netlist-level check can only confirm the absence of a path the netlist does not contain. Extracted parasitics now exist for the leaf cells, and DR-0005 bounds ONE coupling path (the shared substrate return node) at ≤ 0.033% of the ring period — an upper bound, unresolved above the solver's own numerical floor. The ladder itself survives the parasitics (span 1.11–1.21×). §8's first-named mechanism, shared supply impedance, still has no layout to be measured on, so this row stays **placeholder** for decorrelation (DR-0003 §8, DR-0005 §3–4) |
 | Per-stage gain | −14.3 nominal, −11.8 worst | **measured** | `sim/ro-stage-small-signal-gain/`, three headline points. ~12× the Barkhausen minimum at any stage count in play; retires DR-0001's gain risk |
 | Ring swing (`ro_ring5`, buffered output) | 0.999–1.033 × Vdd p-p | **measured** | `sim/ro-ring5-swing-and-current/`, 12 PVT points, under this cell's own output-buffer load. The internal ring node itself swings less (0.78–0.96 × Vdd), but the BUFFERED node — what the XOR tree and liveness taps see — reaches the rails at every point measured |
 | Ring stage count | 5 | **measured, chosen** | 12–48× better `Q_ring` than 11 stages at the same points (DR-0002 §4); own-count swing re-measured and confirmed above (this table's previous row cited it as an open objection — it is now retired). `ro_ring11` remains in `design/xschem/` as a standalone characterization cell, no longer part of this hierarchy |
@@ -188,7 +188,7 @@ otherwise unmeasured on sky130).
 | Entropy-binding corner | `ss` / −40 °C / 1.62 V | **measured** | Full 27-point grid, `sim/ro-array-sizing/`. Cold — the direction gf180-trng's DR-0012 guessed and its DR-0015 later reversed. Measured here, inherited from neither |
 | XOR combining tree contribution | `w_90` = 122–241 ps (gate bandwidth); 0.56–0.68 edge retention at `N = 4` | **measured** | `sim/xor-combining-bandwidth/` (single-gate pulse-width sweep, the figure that sizes `N`) and `sim/ro-array-core-combining/` (assembled-array edge retention and combining-node DC bias, 0.31–0.53 × Vdd, no gross systematic offset). DR-0003 §5–6 |
 | Array active power | 81.0–431.6 µW measured across the PVT grid run | **measured** | `sim/ro-array-core-combining/`. Worst-measured 431.6 µW clears the top-level README's `< 500 µW active` row with 13.7% margin |
-| Array area | ~0.0026–0.0088 mm² (ROM estimate, no layout) | **estimated** | Device-count-based estimate (DR-0003 §7): comfortably inside the `< 0.05 mm²` budget (~5–18%), but not a layout measurement — `layout/` remains empty |
+| Array area | ~0.0026–0.0088 mm² (ROM estimate); every `ro_array_core` leaf cell now drawn, summing to 4 × 377 + 4 × 22.2 + 3 × 421.5 µm² = 0.00286 mm² | **estimated (array), measured (leaf cells only)** | Device-count-based estimate (DR-0003 §7): comfortably inside the `< 0.05 mm²` budget (~5–18%). Not yet an array measurement, but every cell it instantiates is now drawn: `ro_ring5` 41.125 × 9.17 µm (`layout/ro_ring5/README.md`), `ro_buf` 4.175 × 5.31 µm, `xor2` 23.97 × 17.585 µm (`klt stats` on each committed GDS). The 0.00286 mm² sum is leaf-cell bounding boxes only — it is a **floor**, not a floorplan: no inter-ring channel, no supply distribution, no sampler and no top-level PDN are drawn, and it assumes the eleven cell instances (4 rings + 4 buffers + 3 XORs) pack with zero waste between their bounding boxes |
 | Idle current (per ring) | 0.6 nA (cold) – 255 nA (`ff`/125 °C) | **measured (per-ring), no target yet** | `sim/ro-ring5-swing-and-current/`. The top-level README's own idle-current target is still unset pending `spec/porting-plan.md` §2.5's leakage survey, so this is a reported number, not a pass/fail against a row that does not exist yet |
 | Load cap `cld` | 0.5 fF | placeholder | an estimate of local interconnect load, not an extracted parasitic, and sky130's metal stack differs from gf180mcu's |
 
@@ -233,20 +233,110 @@ DR-0003 surfaces and does not resolve on its own authority.
   (status **Proposed**) it lives in [`digital/`](../digital/README.md), not
   here, and none of it is or will be a `design/*.spice` netlist. `raw_bit`
   and `raw_valid` are the interface between the two directories.
-- **Layout and DRC/LVS.** `layout/` now holds **one composed, DRC-clean and
-  LVS-clean cell** — [`layout/ro_buf/`](../layout/ro_buf/README.md), this
-  file's own `ro_buf` inverter, built from `klt gen` primitives, placed and
-  routed by `klt gen-compose`, `klt drc` clean (0 violations against `klt`'s
-  curated sky130 deck) and `klt lvs` **matching** the `.subckt ro_buf` in
-  `design/ro_array_core.spice` (2/2 devices, 4/4 nets, 0 mismatches), at this
-  design's real `l_um=0.15` sizing. It is reproducible from a committed
-  descriptor: `python3 layout/bin/compose-cell.py layout/ro_buf/cell.json`
-  (add `--check` to verify without overwriting). Earlier increments established
+- **Layout and DRC/LVS.** `layout/` holds **fourteen composed, DRC-clean
+  and LVS-clean cells** — every leaf cell `ro_array_core` instantiates
+  (rings, buffers, the combining-tree XOR; see
+  [`layout/xor2/`](../layout/xor2/README.md) for the newest) — plus, this
+  increment, `ro_array_core`'s own **buffer→XOR `b` leg routed** for both
+  first-stage XORs, completing the forward ring→buffer→XOR signal path for
+  `xa1`/`xa2`:
+  [`layout/ro_array_core-placement-poc/`](../layout/ro_array_core-placement-poc/README.md)'s
+  "Increment 4" section really routes `ro2` (`buf2.y`) into `xa1.b` and
+  `ro4` (`buf4.y`) into `xa2.b` on met1, resolving the previous increment's
+  open finding. Still `klt drc` clean (0 violations); `klt extract` now
+  reports the same 132 devices and 104 nets (down from 106, exactly the two
+  new merges, each confirmed by a net-by-net diff to join only its intended
+  `b`-labelled net). Two findings this increment: `gen-compose` rejects a
+  backbone that crosses through a *third*, unrelated block's own bounding
+  box even well above the row being routed through (hit when a first
+  attempt tried routing above `xa1`/`xa2`'s own row height to dodge
+  congestion); and the corridor between row 1 and row 2 had room for
+  exactly one more pair of dedicated channels once reasoned about via the
+  two existing backbones' own vertical-segment extents (`y=8.5`/`10.0`,
+  distinct from `a`'s `y=8.0`/`9.0`) — see the PoC's own README for both
+  findings in full. The prior increment routed `ro_array_core`'s
+  buffer→XOR `a` leg: `ro1` (`buf1.y`) into `xa1.a` and `ro3` (`buf3.y`)
+  into `xa2.a` on met1 — the first routing this hierarchy level drew
+  between the ring/buffer row and the XOR combining-tree row, with an
+  escape-margin fix for the source pin's own tiny edge margin. Before that,
+  `ro_array_core`'s forward ring→buffer signal chain was routed: the same
+  eleven-sibling, 216.2 x 31.755 µm floorplan exposes `en1..en4`/the four
+  `vddrN` domains/`ro1..ro4` as top-level pins (no routing needed — each is
+  already a single node inside its own block) plus really routes `rn1..rn4`
+  (`ro_ring5.ro` → `ro_buf.a`) on met1. Still open: `vdd`/`vss` (a
+  genuinely global net shared by rings, buffers *and* XORs), and the XOR
+  combining tree (`t1`, `t2`, `xo`), and therefore any LVS attempt — so
+  `ro_array_core` is not yet a DRC/LVS-clean block. `sampler_core`/
+  `sampler_dff` remain untouched. The thirteen before it are nine leaf gates plus all
+  four `ro_ring5` rings ([`layout/ro_ring5/`](../layout/ro_ring5/README.md)
+  and `ro_ring5_wstv0p{44,46,48}/`), each `klt drc` clean (0 violations) and
+  `klt lvs` **matching** `.subckt ro_ring5` at that ring's own `wstv`
+  (22/22 devices, 19/19 nets, 0 errors). Those are the first *multi-gate*
+  cells in the repository to reach that bar: five leaf gates placed via
+  `klt gen-compose`'s `blocks[].cell` shape, the four forward inter-stage
+  nets plus the `ro` feedback routed on met1, and `vddr`/`vss` bussed on
+  met2 — four `gen-compose` stages across three physical routing planes.
+  See [`layout/ro_ring5/README.md`](../layout/ro_ring5/README.md), which also
+  records the two claims it corrects in the previous increment's
+  `ro_ring5-connectivity-poc` (its `n1`-`n4` were a single shorted node, and
+  its "unexplained device-internal DRC violations" were its own routes).
+  The nine leaf cells are
+  [`layout/ro_buf/`](../layout/ro_buf/README.md), this
+  file's own `ro_buf` inverter,
+  [`layout/ro_stage/`](../layout/ro_stage/README.md) and its three sibling
+  `wstv` variants (`ro_stage_wstv0p{44,46,48}/`), the array's per-stage
+  starved delay cell at all four ring widths, and
+  [`layout/ro_nand2/`](../layout/ro_nand2/README.md) and its three sibling
+  `wstv` variants (`ro_nand2_wstv0p{44,46,48}/`), each `ro_ring5`'s
+  enable-gated first stage at all four ring widths — all built from `klt gen`
+  primitives, placed and routed by `klt gen-compose`, `klt drc` clean (0
+  violations against `klt`'s curated sky130 deck) and `klt lvs` **matching**
+  their own `.subckt` in `design/ro_array_core.spice` (`ro_buf`: 2/2 devices,
+  4/4 nets; `ro_stage`: 4/4 devices, 6/6 nets; `ro_nand2`: 6/6 devices, 8/8
+  nets — each at all four `wstv`/`lstv=2` values, matching ring instances
+  `xr1`-`xr4`), at this design's real `l_um=0.15` sizing. `ro_stage`'s and
+  `ro_nand2`'s starve devices cross-couple their gates to the *opposite*
+  rail, which needed a new two-pass composition technique (a second `klt
+  gen-compose` call routing the crossing nets on a second metal level) to
+  avoid a short — `ro_nand2`'s own parallel PMOS pull-up pair and series
+  NMOS pull-down pair additionally needed that same technique generalized to
+  a six-same-block-self-net final pass, and the three non-nominal `wstv`
+  widths additionally needed the starve devices' own placement origin
+  re-derived per width (a naive clone-and-reparametrize breaks DRC/LVS — see
+  `layout/README.md`'s "Starve-width variants" section for the closed form)
+  — see `layout/ro_stage/README.md` and `layout/ro_nand2/README.md` for the
+  full derivations. All nine cells are reproducible from a committed
+  descriptor, e.g.
+  `python3 layout/bin/compose-cell.py layout/ro_nand2/cell.json` (add
+  `--check` to verify without overwriting). Earlier increments established
   the per-device geometries (`layout/primitives/`) and the PMOS well-strap
   finding (`layout/well-strap-poc/`); the `klayout-tools` regression they
   recorded as a blocker
   ([#1491](https://github.com/2AMLogic/klayout-tools/issues/1491)) is fixed.
-  Still open: **no** `ro_stage`/`ro_nand2`/`xor2`, no ring, no array, no
-  sampler, no parasitic extraction, and no post-layout PVT re-verification.
-  See `layout/README.md` for the full status and the follow-up issue (#27) it
-  tracks. (`sim/` is no longer empty either — see `sim/README.md`.)
+  Those nine cells are now also **extracted with parasitics and simulated**:
+  [`layout/pex/`](../layout/pex/README.md) is a generated, `--check`-guarded
+  post-layout netlist library (`klt extract --parasitics` over each
+  committed GDS, rewritten for ngspice by `layout/bin/pex-netlist.py`), and
+  `sim/post-layout-ro-ring5/` runs the five-stage ring from it across the
+  PVT grid with the pre-layout netlist as a same-deck control — intra-cell
+  parasitics cost **1.378×–1.479× in ring period**, raise ring-node swing
+  1–4%, and lower per-ring supply current 2–6%
+  (`spec/decision-records/DR-0005-*.md`).
+  The four `ro_ring5` cells themselves are now **also** parasitic-extracted
+  and simulated, this time as whole composed rings rather than leaf-cell
+  compositions: [`layout/pex-ring/`](../layout/pex-ring/README.md) extracts
+  each ring's own GDS directly (real inter-gate `n1`-`n4`/`ro` routing and
+  `vddr`/`vss` rail busing included), and
+  `sim/post-layout-ro-ring5-assembled/` re-runs the same period/swing/current
+  measurement from it. Real inter-gate wiring costs the ring **1.5045×–1.6546×**
+  more slowdown on top of intra-cell parasitics alone (period vs. pre-layout
+  overall: **2.0819×–2.3666×**), and the `wstv` frequency ladder still
+  survives. `xor2` has no post-layout record of its own: it is composed and
+  verified but not extracted or simulated, since a PVT campaign is its own
+  deliverable. Still open: no `ro_array_core` and no sampler as *assembled* layout, so
+  there is still no *inter-ring* interconnect (supply distribution, XOR
+  tree routing, buffer fan-in) to extract, and no whole-block post-layout
+  PVT re-verification — every number above is one ring's own real
+  interconnect with ideal wires to its neighbours. See `layout/README.md`
+  for the full status and the follow-up issue (#27) it tracks. (`sim/` is no
+  longer empty either — see `sim/README.md`.)

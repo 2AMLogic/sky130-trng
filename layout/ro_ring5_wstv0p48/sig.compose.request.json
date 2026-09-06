@@ -1,0 +1,192 @@
+{
+  "pdk": {
+    "variant": "sky130A"
+  },
+  "blocks": [
+    {
+      "id": "core",
+      "generator_report": "place.compose.response.json"
+    }
+  ],
+  "placement": {
+    "strategy": "explicit",
+    "order": [
+      "core"
+    ],
+    "origins_um": {
+      "core": {
+        "x": 0.0,
+        "y": 0.0
+      }
+    }
+  },
+  "routing": {
+    "layer_role": "metal2",
+    "width_um": 0.17
+  },
+  "connectivity": [
+    {
+      "net": "n1",
+      "pins": [
+        {
+          "block": "core",
+          "port": "g_y"
+        },
+        {
+          "block": "core",
+          "port": "s1_a"
+        }
+      ],
+      "waypoints_um": [
+        [
+          4.79,
+          -1.5
+        ],
+        [
+          12.985,
+          -1.5
+        ]
+      ]
+    },
+    {
+      "net": "n2",
+      "pins": [
+        {
+          "block": "core",
+          "port": "s1_y"
+        },
+        {
+          "block": "core",
+          "port": "s2_a"
+        }
+      ],
+      "waypoints_um": [
+        [
+          14.2,
+          -1.5
+        ],
+        [
+          21.16,
+          -1.5
+        ]
+      ]
+    },
+    {
+      "net": "n3",
+      "pins": [
+        {
+          "block": "core",
+          "port": "s2_y"
+        },
+        {
+          "block": "core",
+          "port": "s3_a"
+        }
+      ],
+      "waypoints_um": [
+        [
+          22.375,
+          -1.5
+        ],
+        [
+          29.335,
+          -1.5
+        ]
+      ]
+    },
+    {
+      "net": "n4",
+      "pins": [
+        {
+          "block": "core",
+          "port": "s3_y"
+        },
+        {
+          "block": "core",
+          "port": "s4_a"
+        }
+      ],
+      "waypoints_um": [
+        [
+          30.55,
+          -1.5
+        ],
+        [
+          37.51,
+          -1.5
+        ]
+      ]
+    }
+  ],
+  "pins": [
+    {
+      "block": "core",
+      "port": "g_a",
+      "net": "g_a"
+    },
+    {
+      "block": "core",
+      "port": "g_en",
+      "net": "g_en"
+    },
+    {
+      "block": "core",
+      "port": "s4_y",
+      "net": "s4_y"
+    },
+    {
+      "block": "core",
+      "port": "g_vddr_m1",
+      "net": "g_vddr_m1"
+    },
+    {
+      "block": "core",
+      "port": "g_vss_m1",
+      "net": "g_vss_m1"
+    },
+    {
+      "block": "core",
+      "port": "s1_vddr_m1",
+      "net": "s1_vddr_m1"
+    },
+    {
+      "block": "core",
+      "port": "s1_vss_m1",
+      "net": "s1_vss_m1"
+    },
+    {
+      "block": "core",
+      "port": "s2_vddr_m1",
+      "net": "s2_vddr_m1"
+    },
+    {
+      "block": "core",
+      "port": "s2_vss_m1",
+      "net": "s2_vss_m1"
+    },
+    {
+      "block": "core",
+      "port": "s3_vddr_m1",
+      "net": "s3_vddr_m1"
+    },
+    {
+      "block": "core",
+      "port": "s3_vss_m1",
+      "net": "s3_vss_m1"
+    },
+    {
+      "block": "core",
+      "port": "s4_vddr_m1",
+      "net": "s4_vddr_m1"
+    },
+    {
+      "block": "core",
+      "port": "s4_vss_m1",
+      "net": "s4_vss_m1"
+    }
+  ],
+  "options": {
+    "cell_name": "sig",
+    "output": "sig.gds"
+  }
+}

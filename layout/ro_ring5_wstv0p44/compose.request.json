@@ -1,0 +1,224 @@
+{
+  "pdk": {
+    "variant": "sky130A"
+  },
+  "blocks": [
+    {
+      "id": "core",
+      "generator_report": "fb.compose.response.json"
+    }
+  ],
+  "placement": {
+    "strategy": "explicit",
+    "order": [
+      "core"
+    ],
+    "origins_um": {
+      "core": {
+        "x": 0.0,
+        "y": 0.0
+      }
+    }
+  },
+  "routing": {
+    "layer_role": "metal3",
+    "width_um": 0.17
+  },
+  "connectivity": [
+    {
+      "net": "vddr",
+      "pins": [
+        {
+          "block": "core",
+          "port": "g_vddr_m1"
+        },
+        {
+          "block": "core",
+          "port": "s1_vddr_m1"
+        }
+      ],
+      "waypoints_um": [
+        [
+          0.0,
+          6.0
+        ],
+        [
+          9.3,
+          6.0
+        ]
+      ]
+    },
+    {
+      "net": "vddr",
+      "pins": [
+        {
+          "block": "core",
+          "port": "s1_vddr_m1"
+        },
+        {
+          "block": "core",
+          "port": "s2_vddr_m1"
+        }
+      ],
+      "waypoints_um": [
+        [
+          9.3,
+          6.0
+        ],
+        [
+          17.475,
+          6.0
+        ]
+      ]
+    },
+    {
+      "net": "vddr",
+      "pins": [
+        {
+          "block": "core",
+          "port": "s2_vddr_m1"
+        },
+        {
+          "block": "core",
+          "port": "s3_vddr_m1"
+        }
+      ],
+      "waypoints_um": [
+        [
+          17.475,
+          6.0
+        ],
+        [
+          25.65,
+          6.0
+        ]
+      ]
+    },
+    {
+      "net": "vddr",
+      "pins": [
+        {
+          "block": "core",
+          "port": "s3_vddr_m1"
+        },
+        {
+          "block": "core",
+          "port": "s4_vddr_m1"
+        }
+      ],
+      "waypoints_um": [
+        [
+          25.65,
+          6.0
+        ],
+        [
+          33.825,
+          6.0
+        ]
+      ]
+    },
+    {
+      "net": "vss",
+      "pins": [
+        {
+          "block": "core",
+          "port": "g_vss_m1"
+        },
+        {
+          "block": "core",
+          "port": "s1_vss_m1"
+        }
+      ],
+      "waypoints_um": [
+        [
+          0.5,
+          -3.0
+        ],
+        [
+          9.8,
+          -3.0
+        ]
+      ]
+    },
+    {
+      "net": "vss",
+      "pins": [
+        {
+          "block": "core",
+          "port": "s1_vss_m1"
+        },
+        {
+          "block": "core",
+          "port": "s2_vss_m1"
+        }
+      ],
+      "waypoints_um": [
+        [
+          9.8,
+          -3.0
+        ],
+        [
+          17.975,
+          -3.0
+        ]
+      ]
+    },
+    {
+      "net": "vss",
+      "pins": [
+        {
+          "block": "core",
+          "port": "s2_vss_m1"
+        },
+        {
+          "block": "core",
+          "port": "s3_vss_m1"
+        }
+      ],
+      "waypoints_um": [
+        [
+          17.975,
+          -3.0
+        ],
+        [
+          26.15,
+          -3.0
+        ]
+      ]
+    },
+    {
+      "net": "vss",
+      "pins": [
+        {
+          "block": "core",
+          "port": "s3_vss_m1"
+        },
+        {
+          "block": "core",
+          "port": "s4_vss_m1"
+        }
+      ],
+      "waypoints_um": [
+        [
+          26.15,
+          -3.0
+        ],
+        [
+          34.325,
+          -3.0
+        ]
+      ]
+    }
+  ],
+  "pins": [
+    {
+      "block": "core",
+      "port": "g_en",
+      "net": "en"
+    }
+  ],
+  "options": {
+    "cell_name": "ro_ring5_wstv0p44",
+    "output": "ro_ring5_wstv0p44.gds"
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "pdk": {
+    "variant": "sky130A"
+  },
+  "blocks": [
+    {
+      "id": "core",
+      "generator_report": "core.compose.response.json"
+    }
+  ],
+  "placement": {
+    "strategy": "explicit",
+    "order": [
+      "core"
+    ],
+    "origins_um": {
+      "core": {
+        "x": 0.0,
+        "y": 0.0
+      }
+    }
+  },
+  "routing": {
+    "layer_role": "metal2",
+    "width_um": 0.17
+  },
+  "connectivity": [
+    {
+      "net": "vss",
+      "pins": [
+        {
+          "block": "core",
+          "port": "mph_g"
+        },
+        {
+          "block": "core",
+          "port": "vss"
+        }
+      ],
+      "waypoints_um": [
+        [
+          0.5,
+          2.92
+        ],
+        [
+          0.5,
+          0.92
+        ]
+      ]
+    },
+    {
+      "net": "vddr",
+      "pins": [
+        {
+          "block": "core",
+          "port": "mnt_g"
+        },
+        {
+          "block": "core",
+          "port": "vddr"
+        }
+      ],
+      "waypoints_um": [
+        [
+          2.4,
+          1.03
+        ],
+        [
+          2.4,
+          4.4
+        ],
+        [
+          -1.83,
+          4.4
+        ]
+      ]
+    }
+  ],
+  "pins": [],
+  "options": {
+    "cell_name": "ro_stage_wstv0p48",
+    "output": "ro_stage_wstv0p48.gds"
+  }
+}

@@ -1,0 +1,385 @@
+{
+  "pdk": {
+    "variant": "sky130A"
+  },
+  "blocks": [
+    {
+      "id": "mnia",
+      "generator_report": "gen/mnia.gen.json"
+    },
+    {
+      "id": "mpia",
+      "generator_report": "gen/mpia.gen.json",
+      "orientation": "mirror_y"
+    },
+    {
+      "id": "tapia",
+      "generator_report": "gen/tapia.gen.json"
+    },
+    {
+      "id": "mnib",
+      "generator_report": "gen/mnib.gen.json"
+    },
+    {
+      "id": "mpib",
+      "generator_report": "gen/mpib.gen.json",
+      "orientation": "mirror_y"
+    },
+    {
+      "id": "tapib",
+      "generator_report": "gen/tapib.gen.json"
+    },
+    {
+      "id": "mn12",
+      "generator_report": "gen/mn12.gen.json"
+    },
+    {
+      "id": "mn34",
+      "generator_report": "gen/mn34.gen.json"
+    },
+    {
+      "id": "psub_tap",
+      "generator_report": "gen/psub_tap.gen.json"
+    },
+    {
+      "id": "mp1",
+      "generator_report": "gen/mp1.gen.json"
+    },
+    {
+      "id": "tap1",
+      "generator_report": "gen/tap1.gen.json"
+    },
+    {
+      "id": "mp2",
+      "generator_report": "gen/mp2.gen.json"
+    },
+    {
+      "id": "tap2",
+      "generator_report": "gen/tap2.gen.json"
+    },
+    {
+      "id": "mp3",
+      "generator_report": "gen/mp3.gen.json"
+    },
+    {
+      "id": "tap3",
+      "generator_report": "gen/tap3.gen.json"
+    },
+    {
+      "id": "mp4",
+      "generator_report": "gen/mp4.gen.json"
+    },
+    {
+      "id": "tap4",
+      "generator_report": "gen/tap4.gen.json"
+    }
+  ],
+  "placement": {
+    "strategy": "explicit",
+    "order": [
+      "mnia",
+      "mpia",
+      "tapia",
+      "mnib",
+      "mpib",
+      "tapib",
+      "mn12",
+      "mn34",
+      "psub_tap",
+      "mp1",
+      "tap1",
+      "mp2",
+      "tap2",
+      "mp3",
+      "tap3",
+      "mp4",
+      "tap4"
+    ],
+    "origins_um": {
+      "mnia": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "mpia": {
+        "x": 0.0,
+        "y": 11.0
+      },
+      "tapia": {
+        "x": -2.04,
+        "y": 9.66
+      },
+      "mnib": {
+        "x": 8.0,
+        "y": 0.0
+      },
+      "mpib": {
+        "x": 8.0,
+        "y": 11.0
+      },
+      "tapib": {
+        "x": 5.96,
+        "y": 9.66
+      },
+      "mn12": {
+        "x": 16.0,
+        "y": 0.0
+      },
+      "mn34": {
+        "x": 28.0,
+        "y": 0.0
+      },
+      "psub_tap": {
+        "x": 13.86,
+        "y": -0.71
+      },
+      "mp1": {
+        "x": 16.0,
+        "y": 11.0
+      },
+      "tap1": {
+        "x": 15.475,
+        "y": 13.7
+      },
+      "mp2": {
+        "x": 22.0,
+        "y": 11.0
+      },
+      "tap2": {
+        "x": 21.475,
+        "y": 13.7
+      },
+      "mp3": {
+        "x": 28.0,
+        "y": 11.0
+      },
+      "tap3": {
+        "x": 27.475,
+        "y": 13.7
+      },
+      "mp4": {
+        "x": 34.0,
+        "y": 11.0
+      },
+      "tap4": {
+        "x": 33.475,
+        "y": 13.7
+      }
+    }
+  },
+  "routing": {
+    "layer_role": "metal",
+    "width_um": 0.17
+  },
+  "connectivity": [],
+  "pins": [
+    {
+      "block": "tapia",
+      "port": "TAP_N",
+      "net": "tapia_n"
+    },
+    {
+      "block": "tapia",
+      "port": "TAP_E",
+      "net": "tapia_e"
+    },
+    {
+      "block": "tapib",
+      "port": "TAP_N",
+      "net": "tapib_n"
+    },
+    {
+      "block": "tapib",
+      "port": "TAP_E",
+      "net": "tapib_e"
+    },
+    {
+      "block": "tap1",
+      "port": "TAP_S",
+      "net": "tap1_s"
+    },
+    {
+      "block": "tap2",
+      "port": "TAP_S",
+      "net": "tap2_s"
+    },
+    {
+      "block": "tap3",
+      "port": "TAP_S",
+      "net": "tap3_s"
+    },
+    {
+      "block": "tap4",
+      "port": "TAP_S",
+      "net": "tap4_s"
+    },
+    {
+      "block": "mp1",
+      "port": "U0_S",
+      "net": "mp1_s"
+    },
+    {
+      "block": "mp2",
+      "port": "U0_S",
+      "net": "mp2_s"
+    },
+    {
+      "block": "mp1",
+      "port": "U0_D",
+      "net": "mp1_d"
+    },
+    {
+      "block": "mp2",
+      "port": "U0_D",
+      "net": "mp2_d"
+    },
+    {
+      "block": "mp3",
+      "port": "U0_S",
+      "net": "mp3_s"
+    },
+    {
+      "block": "mp4",
+      "port": "U0_S",
+      "net": "mp4_s"
+    },
+    {
+      "block": "mp3",
+      "port": "U0_D",
+      "net": "mp3_d"
+    },
+    {
+      "block": "mp4",
+      "port": "U0_D",
+      "net": "mp4_d"
+    },
+    {
+      "block": "mp1",
+      "port": "U0_G",
+      "net": "mp1_g"
+    },
+    {
+      "block": "mp2",
+      "port": "U0_G",
+      "net": "mp2_g"
+    },
+    {
+      "block": "mp3",
+      "port": "U0_G",
+      "net": "mp3_g"
+    },
+    {
+      "block": "mp4",
+      "port": "U0_G",
+      "net": "mp4_g"
+    },
+    {
+      "block": "psub_tap",
+      "port": "TAP_N",
+      "net": "psub_tap_n"
+    },
+    {
+      "block": "mnia",
+      "port": "U0_S",
+      "net": "mnia_s"
+    },
+    {
+      "block": "mnib",
+      "port": "U0_S",
+      "net": "mnib_s"
+    },
+    {
+      "block": "mnia",
+      "port": "U0_G",
+      "net": "mnia_g"
+    },
+    {
+      "block": "mnib",
+      "port": "U0_G",
+      "net": "mnib_g"
+    },
+    {
+      "block": "mnia",
+      "port": "U0_D",
+      "net": "mnia_d"
+    },
+    {
+      "block": "mnib",
+      "port": "U0_D",
+      "net": "mnib_d"
+    },
+    {
+      "block": "mpia",
+      "port": "U0_G",
+      "net": "mpia_g"
+    },
+    {
+      "block": "mpib",
+      "port": "U0_G",
+      "net": "mpib_g"
+    },
+    {
+      "block": "mpia",
+      "port": "U0_D",
+      "net": "mpia_d"
+    },
+    {
+      "block": "mpib",
+      "port": "U0_D",
+      "net": "mpib_d"
+    },
+    {
+      "block": "mpia",
+      "port": "U0_S",
+      "net": "mpia_s"
+    },
+    {
+      "block": "mpib",
+      "port": "U0_S",
+      "net": "mpib_s"
+    },
+    {
+      "block": "mn12",
+      "port": "U0_S0",
+      "net": "mn12_s0"
+    },
+    {
+      "block": "mn12",
+      "port": "U0_S1",
+      "net": "mn12_s1"
+    },
+    {
+      "block": "mn12",
+      "port": "U0_G0",
+      "net": "mn12_g0"
+    },
+    {
+      "block": "mn12",
+      "port": "U0_G1",
+      "net": "mn12_g1"
+    },
+    {
+      "block": "mn34",
+      "port": "U0_S0",
+      "net": "mn34_s0"
+    },
+    {
+      "block": "mn34",
+      "port": "U0_S1",
+      "net": "mn34_s1"
+    },
+    {
+      "block": "mn34",
+      "port": "U0_G0",
+      "net": "mn34_g0"
+    },
+    {
+      "block": "mn34",
+      "port": "U0_G1",
+      "net": "mn34_g1"
+    }
+  ],
+  "options": {
+    "cell_name": "xor2core",
+    "output": "xor2core.gds"
+  }
+}
