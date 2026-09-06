@@ -43,12 +43,14 @@ plus RTL under `digital/`, per
 **No synthesis against `sky130_fd_sc_hd` has been run**, so that section
 contributes no `Fmax`, area, power or leakage figure to §4, and no
 DRC/LVS-clean array or sampler layout exists: `layout/` now holds
-thirteen composed, individually DRC-clean and LVS-clean cells — nine leaf
-gates (`ro_buf`, plus `ro_stage`/`ro_nand2` at all four ring `wstv` widths)
-and all four `ro_ring5` rings (`layout/ro_ring5/` + three `wstv` siblings,
-22/22 devices and 19/19 nets LVS-matching each) — see `layout/README.md`.
-That is a composed *ring*, not yet a composed array, sampler, or
-whole-block GDS.
+fourteen composed, individually DRC-clean and LVS-clean cells — nine leaf
+gates (`ro_buf`, plus `ro_stage`/`ro_nand2` at all four ring `wstv` widths),
+all four `ro_ring5` rings (`layout/ro_ring5/` + three `wstv` siblings,
+22/22 devices and 19/19 nets LVS-matching each), and the combining tree's
+`xor2` (`layout/xor2/`, 12/12 devices and 10/10 nets) — see
+`layout/README.md`. That is every cell `ro_array_core` instantiates, but
+still not a composed array, sampler, or whole-block GDS: nothing wires the
+fourteen together yet.
 Every decision record cited below (DR-0001,
 DR-0002, DR-0003, DR-0004) carries status **Proposed** — drafted, not yet
 accepted by an operator.
@@ -69,10 +71,13 @@ sign-off bar — do not exist in this repository *for the whole block* and are
 **not** claimed here; they are named as explicit follow-up work at the end
 of this document. (Updated since this document's first revision: nine leaf
 cells are DRC/LVS-clean and have been extracted with parasitics and
-simulated over the PVT grid — see §5.3 — and all four `ro_ring5` rings are
-now composed DRC/LVS-clean on top of them. The rings themselves have not
-been parasitic-extracted, and there is still no array-, sampler- or
-top-level layout, so the whole-block bar is still unmet.)
+simulated over the PVT grid — see §5.3 — all four `ro_ring5` rings are
+now composed DRC/LVS-clean on top of them and parasitic-extracted as whole
+rings, and the combining tree's `xor2` is composed DRC/LVS-clean as well,
+which completes every leaf cell `ro_array_core` instantiates. Nothing wires
+those cells into an array yet, `xor2` has no post-layout record of its own,
+and there is still no array-, sampler- or top-level layout, so the
+whole-block bar is still unmet.)
 
 ---
 
@@ -396,8 +401,20 @@ that lands this document):
 - **Ratify DR-0001, DR-0002, and DR-0003.** Every quantitative row in §4
   ultimately traces to at least one of these three Proposed records; none
   is yet an operator-accepted decision.
-- **Layout and DRC/LVS.** `layout/` now holds thirteen composed **DRC-clean
-  and LVS-clean cells**. Four of them are the whole `ro_ring5` ring, one
+- **Layout and DRC/LVS.** `layout/` now holds fourteen composed **DRC-clean
+  and LVS-clean cells** — which is **every leaf cell `ro_array_core`
+  instantiates**. The newest is `layout/xor2/`, the combining tree's XOR
+  gate (`xa1`-`xa3`): twelve devices, ten nets, `klt drc` clean (0
+  violations) and `klt lvs` **match** against
+  `design/ro_array_core.spice`'s own `.subckt xor2` (12/12 devices, 10/10
+  nets, 0 errors), occupying 23.97 × 17.585 µm. It supersedes the
+  placement-only `layout/xor2-placement-poc/` and corrects that PoC's
+  conclusion that this gate needed a channel router and a third routing
+  plane: it needs neither — reading its two device trees as four
+  two-transistor series chains, placing its two inverters as
+  already-composed `ro_buf` cells, and splitting its nets across two
+  *layers* rather than across lanes on one reduces it from 17 blocks and 31
+  nets to 9 blocks and 12 net legs. Four more of the fourteen are the whole `ro_ring5` ring, one
   physical cell per ring (`layout/ro_ring5/` at `wstv=0.42` plus
   `ro_ring5_wstv0p{44,46,48}/`), each composed from five leaf gates and each
   `klt drc` clean (0 violations) and `klt lvs` **matching**
@@ -441,10 +458,10 @@ that lands this document):
   `sim/post-layout-ro-ring5-assembled/` re-runs the same measurement from it
   — real inter-gate wiring costs the ring 1.5045×–1.6546× more slowdown on
   top of intra-cell parasitics alone (period vs. pre-layout overall
-  2.0819×–2.3666×), and the ladder still survives. Still outstanding for
-  the brief's full sign-off bar: `xor2` routing (its 12-device placement is
-  now DRC-clean, see `layout/xor2-placement-poc/README.md`, but its routing
-  is a genuine multi-net channel-routing problem not yet solved); the array
+  2.0819×–2.3666×), and the ladder still survives. `xor2` itself has no
+  post-layout record: it is composed and verified, not extracted or
+  simulated. Still outstanding for
+  the brief's full sign-off bar: the array
   and the sampler as assembled layout — and therefore the *whole-block*
   post-layout PVT simulation the bar actually asks for, since the assembled
   *inter-ring* interconnect (supply distribution, XOR tree routing, buffer

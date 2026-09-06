@@ -4,8 +4,35 @@ Physical layout evidence for the sky130-trng entropy source, verified with
 `klayout-tools` (`klt`) against the sky130 open PDK. See `layout/pdk.json`
 for the PDK/tool pin.
 
-**Status (issue #22/#27, this increment): the four composed `ro_ring5` rings
-now have their own ring-level post-layout PVT evidence** —
+**Status (issue #22/#27, this increment): `xor2` is composed, DRC-clean and
+LVS-clean, so every leaf cell `ro_array_core` instantiates now exists as a
+verified physical cell.** [`layout/xor2/`](xor2/README.md) is
+`design/ro_array_core.spice`'s own `.subckt xor2` — twelve devices, ten nets
+— **`klt drc` clean (0 violations)** and **`klt lvs` match (12/12 devices,
+10/10 nets, 0 errors)**, in two `gen-compose` stages across two routing
+planes. It supersedes `layout/xor2-placement-poc/`, whose prediction that
+this cell would need "full channel-router-style joint net ordering" and
+plausibly a third routing plane was **wrong**: three structural moves —
+reading the pull-up tree as two `finger_topology: "series"` chains sharing a
+*contactable interior* `U0_D0` (`mid`), placing the two inverters as
+already-composed `ro_buf` `blocks[].cell` blocks, and splitting the nets
+across *layers* (`vdd`/`mid`/`y`/`vss` on li1, `a`/`an`/`b`/`bn` on met1)
+rather than across lanes on one layer — reduce the problem from 17 blocks
+and 31 nets to 9 blocks and 12 net legs. All fourteen composed cells
+(`ro_buf`, `ro_stage` x4, `ro_nand2` x4, `ro_ring5` x4, `xor2`) `--check`
+clean against `layout/pdk.json`'s `klt_version_pin` in the same session.
+**Still open:** `ro_array_core` itself (the four rings + `ro_buf` fan-out +
+the three-`xor2` combining tree) and `sampler_core`, so this is still not a
+DRC/LVS-clean *block*; the array-level (inter-ring) parasitics — supply
+distribution, the XOR tree's own routing, buffer fan-in — remain undrawn,
+and DR-0003 §8's decorrelation gap is unchanged by this increment (still
+bounded but not closed, for the reasons
+`spec/decision-records/DR-0005-*.md` already states). `xor2` has no `sim/`
+record and no `layout/pex/` entry: a post-layout campaign is its own
+deliverable with its own PVT-corner discipline.
+
+**A previous increment: the four composed `ro_ring5` rings
+have their own ring-level post-layout PVT evidence** —
 [`layout/pex-ring/`](pex-ring/README.md) extracts each ring's *whole*
 composed GDS directly (real inter-gate `n1`-`n4`/`ro` routing and `vddr`/`vss`
 rail busing included, not the ideal inter-cell wires the earlier leaf-cell
@@ -83,23 +110,18 @@ issue #27 step 2's "repeat for... the 4-way `wstv` variants" in full. See
 "Starve-width variants" below for what does (and does not) change per width,
 and why the naive clone-and-reparametrize approach fails without it.
 
-**A previous increment (issue #22, follow-up)**:
-[`layout/xor2-placement-poc/`](xor2-placement-poc/README.md) places all
-twelve of `xor2`'s real devices (double `ro_nand2`'s six — two inverters
-feeding a PMOS pull-up tree and an NMOS pull-down tree) with **zero
-merged multi-device wells** (every PMOS gets its own individual well tap,
-deliberately avoiding the 3+-device-merged-row shape that needed
-`ro_nand2`'s two-pass promotion) — **`klt drc` clean (0 violations)**,
-**`klt extract` confirms exactly 12 devices, 6 nfet + 6 pfet**, matching
-`.subckt xor2` precisely. **Routing is not composed** — `xor2`'s four
-fan-out signals (`a`/`b`/`an`/`bn`, each reaching two physically separate
-gate destinations across the same `mid`/`y`-carrying cluster) is a genuine
-multi-net channel-routing problem, materially harder than any gate composed
-so far; see that PoC's README for the concrete failure evidence (specific
-`gen-compose` conflict reasons, a real `klt` capability correction — three
-routing planes are resolvable, not two, see "Two-pass composition" below —
-and a reproducible net-naming bug this session found and fixed) so the next
-attempt does not have to re-derive the same ground.
+**A previous increment (issue #22, follow-up), now superseded**:
+[`layout/xor2-placement-poc/`](xor2-placement-poc/README.md) placed all
+twelve of `xor2`'s real devices individually (every PMOS with its own well
+tap), **`klt drc` clean (0 violations)** and **`klt extract` confirming 12
+devices, 6 nfet + 6 pfet** — but left routing open and concluded it was a
+channel-routing problem needing a third routing plane. `layout/xor2/`
+above shows it is not, and shares none of that PoC's coordinates; its
+README now opens with the correction. Two findings from it *are* still
+load-bearing and are used by `layout/xor2/`: `"metal3"`'s single-hop
+via-drop rule (see "Floorplan decisions made so far" below), and the rule
+that two wired segments sharing an endpoint pin must be chained under **one**
+shared net name rather than two.
 
 **A previous increment (issue #22, post-layout)**: the nine composed cells are now
 **simulated**. [`layout/pex/`](pex/README.md) is a generated, `--check`-guarded
@@ -144,9 +166,9 @@ turned out to be **unnecessary**: both rails are already drawn on met1
 inside every leaf gate, so declaring the block's rail port on met1 satisfies
 the single-hop rule directly (see `layout/ro_ring5/README.md`).
 
-Everything else is still open: `xor2` routing, `ro_array_core`,
-`sampler_core`, and therefore any *whole-block* post-layout claim. See
-"What's deferred" below and the tracking issue (#27).
+Everything else is still open: `ro_array_core`, `sampler_core`, and
+therefore any *whole-block* post-layout claim. See "What's deferred" below
+and the tracking issue (#27).
 
 The earlier increments remain the foundation: `layout/primitives/` is
 per-device evidence (every distinct transistor geometry `design/xschem/`
@@ -200,7 +222,7 @@ python3 -m venv /tmp/klt-venv
 PATH=/tmp/klt-venv/bin:$PATH python3 layout/bin/compose-cell.py layout/ro_ring5/cell.json --check
 ```
 
-That commit is `layout/pdk.json`'s own `klt_version_pin`, and all thirteen
+That commit is `layout/pdk.json`'s own `klt_version_pin`, and all fourteen
 composed cells `--check` clean against it. Not filed upstream as a tool
 gap: klayout-tools is behaving correctly at every version; this is an
 environment-management problem on the consuming side, and the pin plus the
@@ -252,7 +274,7 @@ trng_top                   (not in scope for #22 — stops at the raw tap)
         ro_nand2   (x1/ring)  BUILT, all 4 wstv values — DRC-clean + LVS-clean (layout/ro_nand2/, ro_nand2_wstv0p{44,46,48}/) — 4 distinct physical cells, one per ring
         ro_stage   (x4/ring)  BUILT, all 4 wstv values — DRC-clean + LVS-clean (layout/ro_stage/, ro_stage_wstv0p{44,46,48}/) — 4 distinct physical cells (one per ring's wstv), each reused 4x within its own ring
       ro_buf     (x4)        BUILT — DRC-clean + LVS-clean (layout/ro_buf/)
-      xor2       (x3)        PLACEMENT PROVEN, ROUTING OPEN — 12x mos_array + 7x guard_ring, DRC-clean (layout/xor2-placement-poc/); routing is a genuine multi-net channel-routing problem, not yet solved
+      xor2       (x3)        BUILT — DRC-clean + LVS-clean (layout/xor2/) — 4x mos_array (two series chains per tree) + 3x guard_ring + 2x ro_buf cell; one physical cell reused 3x (xa1/xa2/xa3 are identical instances)
     sampler_dff  (x6)        NOT STARTED — transmission-gate master-slave DFF, no generator surveyed yet
 ```
 
@@ -290,9 +312,12 @@ not exist yet.
   single-hop-only, so it can only bridge two pins *already* wired onto
   `"metal2"` by an earlier stage — it cannot reach a bare `li1` pin
   directly the way `"metal2"` can. `ro_stage`/`ro_nand2` only ever needed
-  `"metal2"`; `xor2-placement-poc`'s own routing attempt is the first case
-  in this repo where a `"metal3"` stage looks necessary (see that
-  directory's README, "Suggested next steps"). **`layout/ro_ring5/` is the
+  `"metal2"`; `xor2-placement-poc`'s own routing attempt predicted that
+  `xor2` would be the first case in this repo where a `"metal3"` stage is
+  necessary — **falsified by `layout/xor2/`**, which routes the whole gate
+  on li1 + `"metal2"` and leaves met2 empty (see that cell's README, and
+  points 9-10 in "Composing a gate" above). `"metal3"` remains used by
+  exactly one cell family, `ro_ring5`'s rail busing. **`layout/ro_ring5/` is the
   first cell that actually uses all three planes**, and it shows the
   single-hop rule is cheaper to satisfy than it looks: rather than adding a
   promotion stage, declare the block port on the layer the pin is *already*
@@ -408,7 +433,48 @@ cells (`blocks[].cell`) rather than from fresh `klt gen` primitives:
    so a port's position — not its width — is what decides whether its pad
    clears neighbouring metal. `ro_ring5`'s `ro` feedback needed the `g`-end
    port moved by `0.08 µm` for exactly this reason
-   (`layout/ro_ring5/README.md` has the measured sweep).
+   (`layout/ro_ring5/README.md` has the measured sweep). **The same pad
+   also has to clear the port's own net**, once the port is hand-declared
+   on a composed cell's *internal* route: `layout/xor2/`'s `inv_b` output
+   port first landed `0.095 µm` above a perpendicular leg of `ro_buf`'s own
+   `y` wire — one `li1.space.1` violation on the pad's own net, which the
+   curated deck checks net-agnostically. Budget `0.21 µm + li1.space.1`
+   from any perpendicular leg of the wire the port sits on, or overlap it
+   outright. `gen-compose` does not warn about this — a `blocks[].cell`
+   block is modelled by bbox + declared `ports[]` only, so the cell's own
+   internal geometry never enters the clearance check that route-vs-route
+   conflicts already get. Filed generically as
+   [klayout-tools#1520](https://github.com/2AMLogic/klayout-tools/issues/1520).
+
+Two more, discovered while composing `xor2` (see
+[`layout/xor2/README.md`](xor2/README.md) for the worked example):
+
+9. **A series transistor chain is one `mos_array` block, and its interior
+   S/D segment is contactable.** `finger_topology: "series"` with
+   `fingers: 2` draws two transistors sharing one diffusion strip and
+   reports `U0_S0`/`U0_G0`/`U0_D0`/`U0_G1`/`U0_S1`. `ro_nand2` used this
+   for its series NMOS pull-down pair and left `U0_D0` unconnected (its
+   `nm` is internal by construction, which is the *cheap* case). `xor2`
+   shows the other half: `U0_D0` is a real contacted pad, so two series
+   chains can be wired to **share** their interior node — that is how
+   `xor2`'s `mid` (`Mp1`/`Mp2` drains and `Mp3`/`Mp4` sources) becomes a
+   single two-pin route rather than a four-pin bundle. Reading a
+   parallel-then-parallel tree as chain-then-chain wherever the schematic
+   allows it is worth doing *before* floor-planning: it halved `xor2`'s
+   block count and removed four well taps with it.
+10. **Split a gate's nets across layers before splitting them across
+   lanes.** `compose-cell.py`'s `"stages"` shape has always been used to
+   move *one crossing net* to a second metal (points 4 and 5 above). The
+   more general use is to partition the whole net list: `xor2`'s stage
+   `core` routes `vdd`/`mid`/`y`/`vss` on the base `"metal"` (li1) role and
+   its final stage routes `a`/`an`/`b`/`bn` on `"metal2"`. The two groups
+   cross each other freely and at no cost, leaving two much smaller
+   single-layer problems — each of which turned out to be planar by
+   construction, with no waypoint tuning beyond the lane choices. The
+   corollary is a floorplan question worth asking early: *which* nets can
+   be made to live entirely above and below the rows (supplies, and any
+   output whose pads face outward), leaving the channel to the gate nets
+   alone?
 
 Two more, discovered while planning `ro_stage`:
 
@@ -700,17 +766,19 @@ deliver, tracked in follow-up issue
    capacitor, a simulation load model with no physical counterpart) were
    already in place from `ro_stage`/`ro_nand2`'s own initial build and
    needed no changes for the variants.
-   Still open: `xor2`. **Placement half done** — see
-   `layout/xor2-placement-poc/README.md`: all twelve real devices (6 nfet +
-   6 pfet, no starve devices), individually well-strapped (no merged
-   multi-device rows), `klt drc` clean (0 violations), `klt extract`
-   confirms the exact device count/class breakdown. **Routing not done** —
-   this is not "a bigger single-pass floorplan" as this bullet previously
-   assumed; the four fan-out signals (`a`/`b`/`an`/`bn`, each reaching two
-   separate gate destinations across the shared `mid`/`y` cluster) is a
-   genuine multi-net channel-routing problem, the first in this repo to
-   plausibly need `klt`'s third routing plane (`"metal3"`, see "Floorplan
-   decisions made so far" above) rather than `"metal2"` alone.
+   **`xor2` is now DONE too, closing this step in full** — see
+   [`layout/xor2/README.md`](xor2/README.md): `klt drc` clean (0
+   violations) and `klt lvs` **match** (12/12 devices, 10/10 nets, 0
+   errors) against `design/ro_array_core.spice`'s own `.subckt xor2`, in
+   two `gen-compose` stages. It did **not** need the channel router or the
+   third routing plane this bullet previously predicted, and the reason is
+   the reusable part: `xor2`'s twelve devices are eight tree devices that
+   read as **four two-transistor series chains** (point 9 below) plus two
+   inverters that *are* `ro_buf` (placed via `blocks[].cell`), so only nine
+   blocks are placed at all; and its ten nets split cleanly across **two
+   layers** (point 10 below) instead of competing for lanes on one. The
+   placement-only PoC that predicted otherwise is superseded and now opens
+   with that correction.
 3. Hierarchical assembly: `ro_ring5` (5 gates + inter-gate routing),
    `ro_array_core` (4 non-identical rings + combining XOR tree),
    `sampler_dff`/`sampler_core` (no generator surveyed yet for a
@@ -974,7 +1042,7 @@ A violation that first appears at stage *n* was introduced by stage *n*.
 This is the check that turned the previous attempt's "5 unexplained
 device-internal violations" into "the routes did it".
 
-## Reproducing `layout/xor2-placement-poc/`
+## Reproducing `layout/xor2-placement-poc/` (superseded)
 
 ```bash
 volare enable --pdk sky130 c6d73a35f524070e85faff4a6a9eef49553ebc2b
@@ -984,12 +1052,14 @@ klt drc xor2core.gds --deck sky130 --format json
 klt extract xor2core.gds --deck sky130 --format json
 ```
 
-Not a `compose-cell.py` cell (no `cell.json`, no `--check`) — this is a
+Not a `compose-cell.py` cell (no `cell.json`, no `--check`) — this was a
 placement-only proof of concept, not a composed-and-verified gate; there is
-no `connectivity[]`/`lvs.json` to check against. See
-`layout/xor2-placement-poc/README.md` for what is (placement, DRC, device
-count) and is not (routing, LVS) established, and for the concrete routing
-obstacle a future increment needs to solve.
+no `connectivity[]`/`lvs.json` to check against. **The composed, DRC-clean,
+LVS-clean `xor2` is `layout/xor2/`**, which shares none of this PoC's
+coordinates and is built and checked the ordinary way (`python3
+layout/bin/compose-cell.py layout/xor2/cell.json --check`). This PoC is
+kept because its own README now records, with evidence, which of its
+conclusions the composed cell contradicts — see its correction header.
 
 ## Reproducing `layout/pex/` (the post-layout netlist library)
 

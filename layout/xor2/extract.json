@@ -1,0 +1,370 @@
+{
+  "schema_version": 3,
+  "file": "xor2.gds",
+  "deck": "sky130",
+  "top": "xor2",
+  "dbu_um": 0.001,
+  "netlist_path": "xor2.spice",
+  "netlist_sha256": "3541f322898a528539ae2e59727a69998b8787575ac3e30c2988f93847e74c87",
+  "status": "extracted",
+  "device_count": 12,
+  "net_count": 10,
+  "pin_count": 8,
+  "device_counts": {
+    "nfet": 6,
+    "pfet": 6
+  },
+  "dummy_devices_dropped": 0,
+  "ignored_layers": [],
+  "device_recognition_only_layers": [],
+  "device_classes": [
+    "nfet",
+    "pfet",
+    "pnp",
+    "sky130_fd_pr__model__cap_mim",
+    "sky130_fd_pr__model__cap_mim_m4",
+    "resistor"
+  ],
+  "devices": [
+    {
+      "name": "$1",
+      "class": "nfet",
+      "nets": {
+        "s": "y",
+        "g": "an|inva_y|mn34_g0|mp13_g1|y",
+        "d": "\\$3",
+        "b": "vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.2184,
+        "ps_um": 2.62,
+        "pd_um": 1.36
+      }
+    },
+    {
+      "name": "$10",
+      "class": "pfet",
+      "nets": {
+        "s": "mid",
+        "g": "an|inva_y|mn34_g0|mp13_g1|y",
+        "d": "y",
+        "b": "vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 1.68,
+        "as_um2": 0.4368,
+        "ad_um2": 0.7896,
+        "ps_um": 2.2,
+        "pd_um": 4.3
+      }
+    },
+    {
+      "name": "$11",
+      "class": "pfet",
+      "nets": {
+        "s": "y",
+        "g": "bn|invb_y|mn34_g1|mp24_g1|y",
+        "d": "mid",
+        "b": "vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 1.68,
+        "as_um2": 0.7896,
+        "ad_um2": 0.4368,
+        "ps_um": 4.3,
+        "pd_um": 2.2
+      }
+    },
+    {
+      "name": "$12",
+      "class": "pfet",
+      "nets": {
+        "s": "mid",
+        "g": "a|b|invb_a|mn12_g1|mp24_g0",
+        "d": "vdd",
+        "b": "vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 1.68,
+        "as_um2": 0.4368,
+        "ad_um2": 0.7896,
+        "ps_um": 2.2,
+        "pd_um": 4.3
+      }
+    },
+    {
+      "name": "$2",
+      "class": "nfet",
+      "nets": {
+        "s": "\\$3",
+        "g": "bn|invb_y|mn34_g1|mp24_g1|y",
+        "d": "vss",
+        "b": "vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.2184,
+        "ad_um2": 0.3948,
+        "ps_um": 1.36,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$3",
+      "class": "nfet",
+      "nets": {
+        "s": "y",
+        "g": "a|inva_a|mn12_g0|mp13_g0",
+        "d": "\\$6",
+        "b": "vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.2184,
+        "ps_um": 2.62,
+        "pd_um": 1.36
+      }
+    },
+    {
+      "name": "$4",
+      "class": "nfet",
+      "nets": {
+        "s": "\\$6",
+        "g": "a|b|invb_a|mn12_g1|mp24_g0",
+        "d": "vss",
+        "b": "vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.2184,
+        "ad_um2": 0.3948,
+        "ps_um": 1.36,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$5",
+      "class": "nfet",
+      "nets": {
+        "s": "vss",
+        "g": "a|inva_a|mn12_g0|mp13_g0",
+        "d": "an|inva_y|mn34_g0|mp13_g1|y",
+        "b": "vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$6",
+      "class": "nfet",
+      "nets": {
+        "s": "vss",
+        "g": "a|b|invb_a|mn12_g1|mp24_g0",
+        "d": "bn|invb_y|mn34_g1|mp24_g1|y",
+        "b": "vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$7",
+      "class": "pfet",
+      "nets": {
+        "s": "vdd",
+        "g": "a|inva_a|mn12_g0|mp13_g0",
+        "d": "an|inva_y|mn34_g0|mp13_g1|y",
+        "b": "vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$8",
+      "class": "pfet",
+      "nets": {
+        "s": "vdd",
+        "g": "a|b|invb_a|mn12_g1|mp24_g0",
+        "d": "bn|invb_y|mn34_g1|mp24_g1|y",
+        "b": "vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$9",
+      "class": "pfet",
+      "nets": {
+        "s": "vdd",
+        "g": "a|inva_a|mn12_g0|mp13_g0",
+        "d": "mid",
+        "b": "vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 1.68,
+        "as_um2": 0.7896,
+        "ad_um2": 0.4368,
+        "ps_um": 4.3,
+        "pd_um": 2.2
+      }
+    }
+  ],
+  "nets": [
+    {
+      "name": "\\$3",
+      "pin": false,
+      "device_count": 2
+    },
+    {
+      "name": "\\$6",
+      "pin": false,
+      "device_count": 2
+    },
+    {
+      "name": "an|inva_y|mn34_g0|mp13_g1|y",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "a|b|invb_a|mn12_g1|mp24_g0",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "a|inva_a|mn12_g0|mp13_g0",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "bn|invb_y|mn34_g1|mp24_g1|y",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "mid",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "vdd",
+      "pin": true,
+      "device_count": 10
+    },
+    {
+      "name": "vss",
+      "pin": true,
+      "device_count": 10
+    },
+    {
+      "name": "y",
+      "pin": true,
+      "device_count": 4
+    }
+  ],
+  "warnings": [
+    "promoted 4 net(s) to top-level pins from label(s) found only below the top cell (inside instanced sub-cells): mid, vdd, vss, y -- these are internal nodes once instanced; pass top_cell_pins_only (--top-cell-pins) to keep them internal (issue #291)",
+    "net 'an|inva_y|mn34_g0|mp13_g1|y' merges 5 distinct labels (an, inva_y, mn34_g0, mp13_g1, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|b|invb_a|mn12_g1|mp24_g0' merges 5 distinct labels (a, b, invb_a, mn12_g1, mp24_g0) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|inva_a|mn12_g0|mp13_g0' merges 4 distinct labels (a, inva_a, mn12_g0, mp13_g0) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'bn|invb_y|mn34_g1|mp24_g1|y' merges 5 distinct labels (bn, invb_y, mn34_g1, mp24_g1, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section."
+  ],
+  "black_box_regions": [],
+  "abstracted_cells": [],
+  "unmodelled_poly": [],
+  "merged_net_labels": [
+    {
+      "net": "an|inva_y|mn34_g0|mp13_g1|y",
+      "labels": [
+        "an",
+        "inva_y",
+        "mn34_g0",
+        "mp13_g1",
+        "y"
+      ]
+    },
+    {
+      "net": "a|b|invb_a|mn12_g1|mp24_g0",
+      "labels": [
+        "a",
+        "b",
+        "invb_a",
+        "mn12_g1",
+        "mp24_g0"
+      ]
+    },
+    {
+      "net": "a|inva_a|mn12_g0|mp13_g0",
+      "labels": [
+        "a",
+        "inva_a",
+        "mn12_g0",
+        "mp13_g0"
+      ]
+    },
+    {
+      "net": "bn|invb_y|mn34_g1|mp24_g1|y",
+      "labels": [
+        "bn",
+        "invb_y",
+        "mn34_g1",
+        "mp24_g1",
+        "y"
+      ]
+    }
+  ],
+  "voltage_domain_warnings": [],
+  "unbiased_pmos_body_nets": [],
+  "single_terminal_nets": [],
+  "dead_metal": [],
+  "matched_device_groups": [],
+  "pdk": null,
+  "provenance": {
+    "klt_version": "0.3.0",
+    "klayout_version": "0.30.12",
+    "pdk": null,
+    "deck": {
+      "name": "sky130",
+      "content_hash": "sha256:5afac7ab8561545859f5e2e74f4621c6ffc052756dc8fe344ea263398e96b240",
+      "released": false
+    },
+    "input": {
+      "content_hash": "sha256:419768b9023cf853af7269c36e4acefe95266f6294965efbf714b31b059fc045"
+    }
+  },
+  "parasitics": null,
+  "spef_path": null
+}

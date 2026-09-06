@@ -1,5 +1,40 @@
 # layout/xor2-placement-poc
 
+> **SUPERSEDED — `xor2` is composed, DRC-clean and LVS-clean, in
+> [`layout/xor2/`](../xor2/README.md)** (12/12 devices, 10/10 nets, 0
+> violations). Two of this PoC's conclusions did not survive that, and both
+> are corrected here rather than edited away, since the reasoning below is
+> what a future reader would otherwise repeat:
+>
+> 1. **"A genuine multi-net channel-routing problem ... plausibly needing
+>    `klt`'s third routing plane" was wrong** — not about the geometry this
+>    PoC measured, which is reproducible, but about the conclusion drawn
+>    from it. `layout/xor2/` uses **two** routing planes (li1 and met1), no
+>    channel router, and no joint net ordering, because it does not present
+>    the router with this PoC's problem at all: it places **9 blocks and 12
+>    net legs** where this PoC placed 17 blocks and offered 31 nets. Three
+>    moves do that — reading the pull-up tree as two *series* chains
+>    (`mos_array`'s `finger_topology: "series"`, four devices per two
+>    blocks, `mid` as a contactable interior `U0_D0`), placing the two
+>    inverters as already-composed `ro_buf` cells, and splitting the nets
+>    across *layers* (supplies + `y` on li1, the four gate nets on met1)
+>    instead of across lanes on one layer. See `layout/xor2/README.md`
+>    § "Why the PoC's prediction did not hold".
+> 2. **The floorplan below is not the one that composed.** Twelve
+>    individually-well-strapped devices with 41 bare promoted pins is a
+>    valid DRC-clean placement and its port table is still correct for
+>    *itself*, but `layout/xor2/` shares none of its coordinates.
+>
+> What **does** survive, and is used by `layout/xor2/`: the `"metal3"`
+> single-hop finding (finding 1 below — still true, and still the reason a
+> third plane is expensive), and the "chain multiple `connectivity[]`
+> entries under one shared net name whenever two wired segments share an
+> endpoint pin" rule (finding 2 below), which `layout/xor2/`'s five-leg
+> `vdd` and four-leg `vss` chains depend on. The "friction candidate, not
+> yet filed" note below was also **not** filed, and this increment did not
+> find new grounds to file it: with 12 net legs rather than 31, the
+> conflict diagnostics were never ambiguous.
+
 **Placement-only proof of concept for `xor2`** — `design/ro_array_core.spice`'s
 combining-tree XOR gate, the last leaf cell issue #27 step 2 names as not yet
 attempted (`ro_buf`/`ro_stage`/`ro_nand2` are all DRC-clean *and* LVS-clean;
@@ -195,5 +230,9 @@ increment leans on them again).
    ~14 external-reach legs plus `mid`/`y`/`vdd`/`vss` is over double that
    count, interacting pairwise.
 
-Tracked in issue #27 (step 2's `xor2` item, still open) — not a new issue,
-since #27 already names this exact gap.
+Tracked in issue #27 (step 2's `xor2` item) — **now closed by
+[`layout/xor2/`](../xor2/README.md)**, which took none of the three
+suggested next steps above: it did not reorder this cluster (it replaced the
+cluster), did not need a `metal3` bridge, and needed *fewer* `gen-compose`
+iterations than `ro_nand2`, not "substantially more" (two stages, one
+DRC-driven port move).
