@@ -74,7 +74,7 @@ klt drc ro_array_core_signal_poc.gds --deck sky130 --format json      # -> clean
 klt extract ro_array_core_signal_poc.gds --deck sky130 --format json  # -> 132 devices, 108 nets
 ```
 
-## Increment 3: buffer→XOR "a" leg routed for both first-stage XORs (this update)
+## Increment 3: buffer→XOR "a" leg routed for both first-stage XORs
 
 Continues directly from Increment 2's own "Suggested next steps" item 2:
 `ro1` (`buf1.y`, already a top-level pin) is now **really routed** into
@@ -152,15 +152,16 @@ theorized:**
    `b` next should budget a fresh escape-margin derivation for `buf2.y`/
    `buf4.y` rather than reusing `buf1`/`buf3`'s numbers unchanged.
 
-**Still not a DRC/LVS-clean `ro_array_core`**: `ro2`/`ro4` into `xa1.b`/
-`xa2.b` (open per finding 2 above), `vdd`/`vss` (rings, buffers *and* XORs
-all share `vss`; `vdd` is separate and only feeds buffers/XORs), the
-`t1`/`t2`/`xo` combining-tree wiring (`xa1`/`xa2`'s outputs into `xa3`, and
-`xa3`'s own output), and therefore any `klt lvs` attempt. Not re-attempted:
-`compose-cell.py`-style `--check` reproducibility for this multi-file,
-multi-stage POC (unlike the single-cell `layout/<cell>/cell.json` recipe,
-this directory's `signal*.compose.request.json` files are hand-maintained,
-same as Increment 2 left them).
+**Still not a DRC/LVS-clean `ro_array_core`** as of Increment 3: `ro2`/`ro4`
+into `xa1.b`/`xa2.b` (open per finding 2 above — resolved by Increment 4
+below), `vdd`/`vss` (rings, buffers *and* XORs all share `vss`; `vdd` is
+separate and only feeds buffers/XORs), the `t1`/`t2`/`xo` combining-tree
+wiring (`xa1`/`xa2`'s outputs into `xa3`, and `xa3`'s own output), and
+therefore any `klt lvs` attempt. Not re-attempted: `compose-cell.py`-style
+`--check` reproducibility for this multi-file, multi-stage POC (unlike the
+single-cell `layout/<cell>/cell.json` recipe, this directory's
+`signal*.compose.request.json` files are hand-maintained, same as
+Increment 2 left them).
 
 ### Reproduce this increment
 
@@ -170,6 +171,105 @@ cd layout/ro_array_core-placement-poc
 klt gen-compose signal2.compose.request.json --format json   # -> signal2.compose.response.json, ro_array_core_signal2_poc.gds
 klt drc ro_array_core_signal2_poc.gds --deck sky130 --format json      # -> clean, 0 violations
 klt extract ro_array_core_signal2_poc.gds --deck sky130 --format json  # -> 132 devices, 106 nets
+```
+
+## Increment 4: buffer→XOR "b" leg routed for both first-stage XORs (this update)
+
+Resolves Increment 3's own finding 2: `ro2` (`buf2.y`) is now **really
+routed** into `xa1`'s `b` input, and `ro4` (`buf4.y`) into `xa2`'s `b`
+input — the second and final buffer→XOR leg for the two first-stage XORs,
+using the same `b` ports Increment 3 already declared on the `blocks[].cell`
+references but left unwired.
+
+```
+$ klt gen-compose signal3.compose.request.json --format json   # -> signal3.compose.response.json, ro_array_core_signal3_poc.gds
+unrouted_nets: []
+$ klt drc ro_array_core_signal3_poc.gds --deck sky130 --format json
+status: clean, violation_count: 0
+$ klt extract ro_array_core_signal3_poc.gds --deck sky130 --format json
+device_count: 132 (unchanged), net_count: 104 (down from 106), pin_count: 94
+```
+
+`signal3.extract.json`'s own `merged_net_labels` confirms each of the two
+new merges joins **only** its intended `b`-labelled net (`ro2` lands on
+`a|b|invb_a|mn12_g1|mp24_g0|ro2|y`, `ro4` on the `xa2` equivalent) —
+diffed against Increment 3's own committed `signal2.extract.json`, nothing
+else changed labels. The extra `a` label on `xor2`'s own `b` net (and vice
+versa on `a`'s net, back in Increment 3) is `xor2`'s own internal alias
+reuse, the same harmless-label phenomenon `layout/README.md` and
+`ro_ring5-connectivity-poc` already document — not a short between the
+design's actual `a` and `b` nets.
+
+**Two more findings, both empirically confirmed, neither requiring a
+`2AMLogic/klayout-tools` tool-gap filing (the diagnostics below were both
+specific and actionable):**
+
+1. **A structural rule not previously exercised: `gen-compose` rejects a
+   backbone that crosses through a *third*, unrelated block's own bounding
+   box, even when that block sits well above the row being routed through.**
+   The first attempt routed `ro2`/`ro4` in a channel *above* `xa1`/`xa2`'s
+   own row (`y=20.5`/`21.5`, i.e. higher than the `y=19.395` pin row) so as
+   to clear both of `xor2`'s already-used `y=8.0`/`9.0` source-side
+   channels entirely. `gen-compose` rejected both nets with a precise
+   diagnostic: `"backbone's 0.17um-wide drawn path crosses 24.14um through
+   unrelated block 'xa2''s bbox (including its own edge, within half the
+   route's width) -- the route is not point-to-point between only the two
+   connected blocks"` (and the `xa3` equivalent for `ro4`) — `xa1`/`xa2`'s
+   own bbox extends up to `y=26.655` (`xor2`'s composed height, per
+   `layout/xor2/core.compose.response.json`'s `bbox_um`), so a route merely
+   *above the pin row* is not automatically clear of the block's own full
+   footprint. This is a different failure mode than Increment 2's
+   block-interior edge-margin rule (that one was about the route's *own*
+   source/destination block; this one is about an *uninvolved third* block
+   the backbone happens to pass over) but the same practical lesson: know
+   every placed block's full `bbox_um`, not just the row it visually reads
+   as occupying.
+2. **The corridor between row 1 and row 2 has room for exactly one more
+   pair of dedicated channels, found by reasoning about the two existing
+   backbones' own vertical-segment extents rather than by trial and error.**
+   `ro1`'s vertical rise (`x=50.5`) only occupies `y` `1.2`-`8.0`; `ro3`'s
+   *source-side* vertical (`x=161.1`) only occupies `y` `1.2`-`9.0`; `ro3`'s
+   *destination-side* vertical (`x=28.47`) occupies `y` `9.0`-`19.395`. A
+   horizontal run at `y=8.5` (strictly between `8.0` and `9.0`) crosses
+   `x=50.5` above `ro1`'s vertical's top and `x=28.47` below `ro3`'s
+   vertical's bottom — clear of both — which is exactly `ro2`'s recipe
+   (`buf2.y` escape at `(105.8, 1.2)` -> `(105.8, 8.5)` -> `(20.5, 8.5)` ->
+   `(20.5, 19.395)` -> pin `xa1.b` at `(21.62, 19.395)`). `ro4` doesn't need
+   to clear `x=28.47` at all (its own destination, `xa2.b` at `x=50.59`, sits
+   *east* of that column), so a plain `y=10.0` channel — above both `ro1`'s
+   and `ro3`'s source-side verticals' tops (`8.0`/`9.0`) — suffices:
+   `buf4.y` escape at `(216.4, 1.2)` -> `(216.4, 10.0)` -> `(49.5, 10.0)` ->
+   `(49.5, 19.395)` -> pin `xa2.b` at `(50.59, 19.395)`. Both escapes use
+   Increment 3's own generalized rule (escape east past the source block's
+   *own* `x1` edge, translated to `buf2`/`buf4`'s actual placement — `buf2`
+   `x1=105.6` -> escape `105.8`; `buf4` `x1=216.2` -> escape `216.4` — not
+   copy-pasted from `buf1`/`buf3`'s absolute numbers), confirming the prior
+   increment's own guidance that a literal copy would have been wrong.
+
+**`ro_array_core`'s forward ring→buffer→XOR signal path is now fully routed
+for both first-stage XORs (`xa1`, `xa2`) — all four of `ro1`-`ro4` reach
+their intended `a`/`b` inputs.** Still not a DRC/LVS-clean `ro_array_core`:
+`vdd`/`vss` (rings, buffers *and* XORs all share `vss`; `vdd` is separate
+and only feeds buffers/XORs — eleven taps total, the largest remaining
+unknown per the "Suggested next steps" list below), the `t1`/`t2`/`xo`
+combining-tree wiring (`xa1`/`xa2`'s outputs into `xa3`, and `xa3`'s own
+output), and therefore any `klt lvs` attempt. Not re-attempted (same as
+every prior increment): `compose-cell.py`-style `--check` reproducibility
+for this multi-file, multi-stage POC.
+
+### Reproduce this increment
+
+```bash
+volare enable --pdk sky130 c6d73a35f524070e85faff4a6a9eef49553ebc2b
+cd layout/ro_array_core-placement-poc
+# klt's shared install has been observed to churn mid-session below the
+# blocks[].cell request shape this directory depends on -- pin it in a venv
+# per layout/README.md's "Correcting the curation note":
+#   python3 -m venv /tmp/klt-venv && /tmp/klt-venv/bin/pip install \
+#     "git+https://github.com/2AMLogic/klayout-tools@c6dbf66c53c6e9a73c4f5ae5e41a98e8fe414252"
+klt gen-compose signal3.compose.request.json --format json   # -> signal3.compose.response.json, ro_array_core_signal3_poc.gds
+klt drc ro_array_core_signal3_poc.gds --deck sky130 --format json      # -> clean, 0 violations
+klt extract ro_array_core_signal3_poc.gds --deck sky130 --format json  # -> 132 devices, 104 nets
 ```
 
 ## What this establishes
@@ -231,13 +331,12 @@ else below is still open.
   already a single node inside its own block) and `rn1..rn4` (really
   routed) by Increment 2 above.** **Increment 3 further resolves `ro1`'s and
   `ro3`'s second leg** (into `xa1.a`/`xa2.a`, really routed — see "Increment
-  3" above). Still open: `ro2`/`ro4`'s second leg (into `xa1.b`/`xa2.b` —
-  Increment 3 found a naive copy of `ro1`/`ro3`'s recipe risks a real short
-  with `a`, and a closer approach hit a genuine `klt drc` violation instead,
-  so this needs its own derivation, not a parameter swap), `vdd`/`vss` (the
-  buffer/XOR-tree supply, and the vss bus shared by rings, buffers *and*
-  XORs — eleven taps total), `t1`, `t2`, `xo`, and therefore any LVS
-  attempt.
+  3" above), **and Increment 4 resolves `ro2`'s and `ro4`'s second leg**
+  (into `xa1.b`/`xa2.b`, really routed — see "Increment 4" above), so all
+  four of `ro1..ro4` now reach their intended XOR inputs. Still open:
+  `vdd`/`vss` (the buffer/XOR-tree supply, and the vss bus shared by rings,
+  buffers *and* XORs — eleven taps total), `t1`, `t2`, `xo`, and therefore
+  any LVS attempt.
 - **The floorplan is a first-pass grid, not a routing-aware plan.** 5 µm
   gaps were chosen for guaranteed DRC clearance (nwell/tap spacing rules in
   sky130 are sub-micron), not for routability. A next increment may need to
@@ -364,15 +463,16 @@ klt extract ro_array_core_poc.gds --deck sky130 --format json  # -> 132 devices 
    one floorplan finding (the block-interior edge-margin rule — see
    Increment 2's own section).
 2. ~~Route `ro1..ro4` (buf `y`, already a top-level pin) into `xor2` `a`/`b`
-   next~~ **`a` DONE, Increment 3 above** (`ro1`->`xa1.a`, `ro3`->`xa2.a`,
-   on `"metal2"`, own dedicated channel per net so their backbones cannot
-   intersect — confirmed needed, matching this bullet's own prediction).
-   **`b` still open** (`ro2`->`xa1.b`, `ro4`->`xa2.b`): Increment 3 found
-   `a`/`b` share the identical `y=19.395` (both only openable from the
-   block's west edge), so `b`'s own recipe cannot be `a`'s with different
-   numbers — see Increment 3's finding 2 for the two approaches already
-   ruled out (a same-request backbone collision with `a`, and a real
-   `met1.space.1` violation near `buf2`'s own escape).
+   next~~ **DONE — `a` in Increment 3, `b` in Increment 4** (`ro1`->`xa1.a`,
+   `ro3`->`xa2.a`, `ro2`->`xa1.b`, `ro4`->`xa2.b`, all on `"metal2"`, each
+   net its own dedicated channel so backbones cannot intersect — confirmed
+   needed, matching this bullet's own prediction). `b`'s own recipe needed
+   distinct source-side channel heights (`y=8.5`/`10.0`, see Increment 4's
+   finding 2) rather than reusing `a`'s `y=8.0`/`9.0` rows, since `a`/`b`
+   share the identical destination `y=19.395` and a naive shared-row
+   approach either collided with `a`'s own backbone or crossed a third
+   block's bbox (Increment 3's finding 2 and Increment 4's finding 1,
+   respectively).
 3. Confirm `xor2`'s `y`/`vdd`/`vss` taps by attempting a real routed
    connection and checking `klt drc`/`klt extract` agree, before trusting
    the `approx` rows above for the combining tree (`t1`, `t2`, `xo`) and the

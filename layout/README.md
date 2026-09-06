@@ -4,35 +4,43 @@ Physical layout evidence for the sky130-trng entropy source, verified with
 `klayout-tools` (`klt`) against the sky130 open PDK. See `layout/pdk.json`
 for the PDK/tool pin.
 
-**Status (issue #22, this increment): `ro_array_core`'s buffer→XOR `a` leg
-is now really routed for both first-stage XORs —
+**Status (issue #22, this increment): `ro_array_core`'s buffer→XOR `b` leg
+is now really routed for both first-stage XORs, completing the forward
+ring→buffer→XOR signal path for `xa1`/`xa2` —
 [`layout/ro_array_core-placement-poc/`](ro_array_core-placement-poc/README.md)'s
-"Increment 3" section.** `ro1` (`buf1.y`) is now really routed into `xa1`'s
-`a` input, and `ro3` (`buf3.y`) into `xa2`'s `a` input, on `"metal2"` — the
-first routing this directory has drawn between row 1 (rings/buffers) and row
-2 (the XOR combining tree). Still **`klt drc` clean (0 violations)**, and
-`klt extract` now reports `132` devices (unchanged) and `106` nets (down
-from `108`, exactly the two new merges, each confirmed by a net-by-net diff
-against the previous increment's own committed extract to join only its
-intended `a`-labelled net). Two findings: the escape from `buf1.y`/`buf3.y`
-needed its own fix (an eastward escape past the block's own edge before
-turning into the inter-row channel — a different failure mode than the
-"approach the destination horizontally" rule the previous increment found,
-this time about the *source* pin's own tiny edge margin); and `b` (`ro2`/
-`ro4` into `xa1.b`/`xa2.b`) is deliberately **not** wired this increment —
-`a` and `b` sit at the identical `y`, so a naive copy of `a`'s recipe risks
-routing straight through `a`'s own backbone, and a closer-approach probe hit
-a genuine `klt drc` violation instead — see the PoC's own README "Increment
-3" section for both ruled-out attempts. **Still not a DRC/LVS-clean
-`ro_array_core`**: `ro2`/`ro4`'s leg into `xa1.b`/`xa2.b`, `vdd`/`vss` (a
-genuinely global net — rings, buffers *and* XORs all share `vss`, eleven
-taps total), the XOR combining tree (`t1`, `t2`, `xo`), and therefore any
-LVS attempt, are all still open. The PoC's README also carries an open
-question on `compose-cell.py`'s `lvs.dependencies` mechanism, unchanged by
-this increment: the reference netlist defines one `ro_ring5` subckt called
-four times with four different `wstv=` overrides, not four separate
-subckts, and the current dependency mechanism has not been exercised
-against that shape.
+"Increment 4" section.** `ro2` (`buf2.y`) is now really routed into `xa1`'s
+`b` input, and `ro4` (`buf4.y`) into `xa2`'s `b` input, on `"metal2"`,
+resolving the previous increment's own open finding. Still **`klt drc`
+clean (0 violations)**, and `klt extract` now reports `132` devices
+(unchanged) and `104` nets (down from `106`, exactly the two new merges,
+each confirmed by a net-by-net diff to join only its intended `b`-labelled
+net). Two findings: `gen-compose` rejects a backbone that crosses through a
+*third*, unrelated block's own bounding box even well above the row being
+routed through (discovered when a first attempt tried routing above
+`xa1`/`xa2`'s own row height to dodge congestion, and was rejected for
+crossing `xa2`'s/`xa3`'s own bbox); and the corridor between row 1 and row 2
+had room for exactly one more pair of dedicated channels once reasoned about
+via the two existing backbones' own vertical-segment extents (`y=8.5`/
+`10.0`, distinct from `a`'s `y=8.0`/`9.0`) — see the PoC's own README
+"Increment 4" section for both findings in full. **Still not a
+DRC/LVS-clean `ro_array_core`**: `vdd`/`vss` (a genuinely global net —
+rings, buffers *and* XORs all share `vss`, eleven taps total), the XOR
+combining tree (`t1`, `t2`, `xo`), and therefore any LVS attempt, are all
+still open. The PoC's README also carries an open question on
+`compose-cell.py`'s `lvs.dependencies` mechanism, unchanged by this
+increment: the reference netlist defines one `ro_ring5` subckt called four
+times with four different `wstv=` overrides, not four separate subckts, and
+the current dependency mechanism has not been exercised against that shape.
+
+**A previous increment: `ro_array_core`'s buffer→XOR `a` leg was routed for
+both first-stage XORs** —
+[`layout/ro_array_core-placement-poc/`](ro_array_core-placement-poc/README.md)'s
+"Increment 3" section. `ro1` (`buf1.y`) was routed into `xa1`'s `a` input,
+and `ro3` (`buf3.y`) into `xa2`'s `a` input, on `"metal2"` — the first
+routing this directory drew between row 1 (rings/buffers) and row 2 (the XOR
+combining tree), needing an escape-margin fix for the source pin's own tiny
+edge margin. `b` was deliberately left unwired that increment (resolved
+above).
 
 **A previous increment: `ro_array_core`'s forward
 ring→buffer signal chain was routed** —
