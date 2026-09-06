@@ -1,0 +1,201 @@
+{
+  "cell": "xor2",
+  "_comment": [
+    "Cell descriptor for layout/bin/compose-cell.py -- see layout/README.md",
+    "section 'Composing a gate' for the floorplan reasoning shared with every",
+    "other cell, and layout/xor2/README.md for this cell's own result and for",
+    "why it needs neither a third routing plane nor a channel router, both of",
+    "which layout/xor2-placement-poc/ predicted it would.",
+    "",
+    "xor2 is design/ro_array_core.spice's combining-tree XOR: two inverters",
+    "(a->an, b->bn) feeding a static-CMOS XOR network -- a PMOS pull-up tree",
+    "(Mp1||Mp2 from vdd to mid, Mp3||Mp4 from mid to y) and an NMOS pull-down",
+    "tree (Mn1-Mn2 and Mn3-Mn4, two series pairs from y to vss). Twelve",
+    "devices, ten nets. Three structural moves collapse that into SIX placed",
+    "blocks plus three taps, and the whole cell into two gen-compose stages:",
+    "",
+    "1. READ THE PULL-UP TREE AS TWO SERIES CHAINS, NOT TWO PARALLEL PAIRS.",
+    "   vdd -[Mp1,g=a]- mid -[Mp3,g=an]- y and vdd -[Mp2,g=b]- mid -[Mp4,",
+    "   g=bn]- y are each a two-transistor series chain, so each is ONE",
+    "   mos_array call with fingers=2, finger_topology='series' (ports",
+    "   U0_S0/U0_G0/U0_D0/U0_G1/U0_S1). The two chains share `mid`, which is",
+    "   each chain's INTERIOR U0_D0 segment -- reported and contactable, so",
+    "   the shared node is a single 2-pin route rather than a 4-pin bundle.",
+    "   ro_nand2 already used a series pair (mnab) but left its U0_D0",
+    "   deliberately unconnected; this is the first cell here to wire one.",
+    "   The pull-down tree is the same shape (mn12, mn34), and there BOTH",
+    "   interior nodes (s1, s2) stay unwired exactly as ro_nand2's did.",
+    "2. THE TWO INVERTERS ARE ro_buf. XMpiA/XMniA and XMpiB/XMniB are",
+    "   byte-for-byte ro_buf's own device pair (pfet 0.84/0.15 + nfet",
+    "   0.42/0.15, out/in/vdd/vss), so each is placed as an already-composed",
+    "   blocks[].cell -- ro_ring5's technique, applied to a leaf gate instead",
+    "   of a ring. Its `a` and `y` ports are hand-declared on ro_buf's own",
+    "   internal li1 wires: `a` at local (0.545, 1.70) exits WEST through the",
+    "   free band between ro_buf's mn (top edge 1.24) and mp (bottom edge",
+    "   2.14); `y` at local (1.90, 1.20) exits EAST on the x=1.90 leg of",
+    "   ro_buf's own y route, clear of both device bboxes (mn x1=1.09, mp",
+    "   x1=1.24). The two exit in OPPOSITE directions, which is what lets",
+    "   inv_a feed the west columns and inv_b the east ones.",
+    "3. SPLIT THE NETS BY LAYER, NOT BY LANE. Stage 'core' routes vdd, mid, y",
+    "   and vss on li1 -- attic (y=14.4/15.0) for mid/vdd, one li1 lane at",
+    "   y=4.6 across the channel for y, basement (y=2.0) for vss -- and",
+    "   promotes all eight gate pads plus the four inverter signal ports as",
+    "   bare pins. The final stage routes a/an/b/bn on metal2 (met1) over",
+    "   that composed cell. The gate nets therefore share the channel with",
+    "   nothing, and the supply/output nets share the attic and basement with",
+    "   nothing: the two groups cross each other freely because they are on",
+    "   different layers, which is what removes the congestion the",
+    "   placement-only PoC hit.",
+    "",
+    "Column order (chosen so that only two of the four gate nets are long):",
+    "mp13 is mirror_y and mp24 is rotate_180, so the top row reads",
+    "vdd,a,mid,an,y | y,bn,mid,b,vdd -- the two `y` pads face each other",
+    "across the top gap (one straight li1 route) and the two `vdd` pads land",
+    "at the two outer ends (one attic run). The NMOS row has no such freedom",
+    "(an nfet's gates only face up in orientation 'none'), so mn34/mn12 read",
+    "y,an,s2,bn,vss | y,a,s1,b,vss. The resulting gate columns are",
+    "a(0.545)/an(1.215)/bn(7.695)/b(8.365) on top and",
+    "an(0.895)/bn(1.565)/a(7.895)/b(8.565) on the bottom, which makes `an`",
+    "and `b` adjacent local pairs and leaves exactly two nets spanning the",
+    "cell: `a` west-to-east and `bn` east-to-west. Those two would cross in",
+    "the channel, so `a` takes the met1 basement (y=1.0) and `bn` the met1",
+    "attic (y=16.0) -- opposite sides of the cell, no crossing, and no third",
+    "routing plane needed."
+  ],
+  "pdk": {
+    "variant": "sky130A",
+    "deck": "sky130"
+  },
+  "stages": [
+    {
+      "name": "core",
+      "blocks": [
+        {"id": "mp13", "generator": "mos_array", "cell_name": "mp13", "orientation": "mirror_y",
+         "params": {"w_um": 1.68, "l_um": 0.15, "rows": 1, "cols": 1, "fingers": 2, "finger_topology": "series", "dummy": 0, "flavor": "pfet", "gate_contact": true}},
+        {"id": "mp24", "generator": "mos_array", "cell_name": "mp24", "orientation": "rotate_180",
+         "params": {"w_um": 1.68, "l_um": 0.15, "rows": 1, "cols": 1, "fingers": 2, "finger_topology": "series", "dummy": 0, "flavor": "pfet", "gate_contact": true}},
+        {"id": "mn34", "generator": "mos_array", "cell_name": "mn34", "orientation": "none",
+         "params": {"w_um": 0.84, "l_um": 0.15, "rows": 1, "cols": 1, "fingers": 2, "finger_topology": "series", "dummy": 0, "flavor": "nfet", "gate_contact": true}},
+        {"id": "mn12", "generator": "mos_array", "cell_name": "mn12", "orientation": "none",
+         "params": {"w_um": 0.84, "l_um": 0.15, "rows": 1, "cols": 1, "fingers": 2, "finger_topology": "series", "dummy": 0, "flavor": "nfet", "gate_contact": true}},
+        {"id": "nwt1", "generator": "guard_ring", "cell_name": "nwt1", "orientation": "none",
+         "params": {"inner_width_um": 1.0, "inner_height_um": 1.0, "ring_width_um": 0.42, "contacts_per_side": 2, "add_well": true}},
+        {"id": "nwt2", "generator": "guard_ring", "cell_name": "nwt2", "orientation": "none",
+         "params": {"inner_width_um": 1.0, "inner_height_um": 1.0, "ring_width_um": 0.42, "contacts_per_side": 2, "add_well": true}},
+        {"id": "pst", "generator": "guard_ring", "cell_name": "pst", "orientation": "none",
+         "params": {"inner_width_um": 1.0, "inner_height_um": 1.0, "ring_width_um": 0.42, "contacts_per_side": 2, "add_well": false}},
+        {"id": "inv_a", "orientation": "none",
+         "cell": {
+           "gds_path": "../ro_buf/ro_buf.gds",
+           "cell_name": "ro_buf",
+           "ports": [
+             {"name": "a", "x_um": 0.545, "y_um": 1.7, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.17, "direction_deg": 180},
+             {"name": "y", "x_um": 1.9, "y_um": 1.2, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.17, "direction_deg": 0},
+             {"name": "vdd", "x_um": -1.12, "y_um": 4.24, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.42, "direction_deg": 90},
+             {"name": "vss", "x_um": -1.22, "y_um": -0.5, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.42, "direction_deg": 270}
+           ]
+         }},
+        {"id": "inv_b", "orientation": "none",
+         "cell": {
+           "gds_path": "../ro_buf/ro_buf.gds",
+           "cell_name": "ro_buf",
+           "ports": [
+             {"name": "a", "x_um": 0.545, "y_um": 1.7, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.17, "direction_deg": 180},
+             {"name": "y", "x_um": 1.9, "y_um": 1.2, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.17, "direction_deg": 0},
+             {"name": "vdd", "x_um": -1.12, "y_um": 4.24, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.42, "direction_deg": 90},
+             {"name": "vss", "x_um": -1.22, "y_um": -0.5, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.42, "direction_deg": 270}
+           ]
+         }}
+      ],
+      "placement": {
+        "strategy": "explicit",
+        "order": ["mp13", "mp24", "mn34", "mn12", "nwt1", "nwt2", "pst", "inv_a", "inv_b"],
+        "origins_um": {
+          "mp13": {"x": 0.0, "y": 13.84},
+          "mp24": {"x": 8.91, "y": 13.84},
+          "mn34": {"x": 0.35, "y": 2.58},
+          "mn12": {"x": 7.35, "y": 2.58},
+          "nwt1": {"x": -2.04, "y": 12.08},
+          "nwt2": {"x": 9.11, "y": 12.08},
+          "pst": {"x": 3.0, "y": -1.5},
+          "inv_a": {"x": -3.985, "y": 5.11},
+          "inv_b": {"x": 14.19, "y": 5.11}
+        }
+      },
+      "routing": {"layer_role": "metal", "width_um": 0.17},
+      "connectivity": [
+        {"net": "vdd", "pins": [{"block": "mp13", "port": "U0_S0"}, {"block": "nwt1", "port": "TAP_E"}]},
+        {"net": "vdd", "pins": [{"block": "mp24", "port": "U0_S0"}, {"block": "nwt2", "port": "TAP_W"}]},
+        {"net": "vdd", "pins": [{"block": "inv_a", "port": "vdd"}, {"block": "nwt1", "port": "TAP_N"}],
+         "waypoints_um": [[-5.105, 15.0], [-1.12, 15.0]]},
+        {"net": "vdd", "pins": [{"block": "nwt1", "port": "TAP_N"}, {"block": "nwt2", "port": "TAP_N"}],
+         "waypoints_um": [[-1.12, 15.0], [10.03, 15.0]]},
+        {"net": "vdd", "pins": [{"block": "nwt2", "port": "TAP_N"}, {"block": "inv_b", "port": "vdd"}],
+         "waypoints_um": [[10.03, 15.0], [13.07, 15.0]]},
+
+        {"net": "mid", "pins": [{"block": "mp13", "port": "U0_D0"}, {"block": "mp24", "port": "U0_D0"}],
+         "waypoints_um": [[0.88, 14.4], [8.03, 14.4]]},
+
+        {"net": "y", "pins": [{"block": "mp13", "port": "U0_S1"}, {"block": "mp24", "port": "U0_S1"}]},
+        {"net": "y", "pins": [{"block": "mp24", "port": "U0_S1"}, {"block": "mn12", "port": "U0_S0"}],
+         "waypoints_um": [[4.5, 13.0], [4.5, 4.6], [7.0, 4.6], [7.0, 3.0]]},
+        {"net": "y", "pins": [{"block": "mn12", "port": "U0_S0"}, {"block": "mn34", "port": "U0_S0"}],
+         "waypoints_um": [[7.0, 3.0], [7.0, 4.6], [0.0, 4.6], [0.0, 3.0]]},
+
+        {"net": "vss", "pins": [{"block": "inv_a", "port": "vss"}, {"block": "mn34", "port": "U0_S1"}],
+         "waypoints_um": [[-5.205, 2.0], [2.4, 2.0], [2.4, 3.0]]},
+        {"net": "vss", "pins": [{"block": "mn34", "port": "U0_S1"}, {"block": "pst", "port": "TAP_N"}],
+         "waypoints_um": [[2.4, 3.0], [2.4, 2.0], [3.92, 2.0]]},
+        {"net": "vss", "pins": [{"block": "pst", "port": "TAP_N"}, {"block": "mn12", "port": "U0_S1"}],
+         "waypoints_um": [[3.92, 2.0], [9.4, 2.0], [9.4, 3.0]]},
+        {"net": "vss", "pins": [{"block": "mn12", "port": "U0_S1"}, {"block": "inv_b", "port": "vss"}],
+         "waypoints_um": [[9.4, 3.0], [9.4, 2.0], [12.97, 2.0]]}
+      ],
+      "pins": [
+        {"block": "mp13", "port": "U0_G0", "net": "mp13_g0"},
+        {"block": "mp13", "port": "U0_G1", "net": "mp13_g1"},
+        {"block": "mp24", "port": "U0_G0", "net": "mp24_g0"},
+        {"block": "mp24", "port": "U0_G1", "net": "mp24_g1"},
+        {"block": "mn34", "port": "U0_G0", "net": "mn34_g0"},
+        {"block": "mn34", "port": "U0_G1", "net": "mn34_g1"},
+        {"block": "mn12", "port": "U0_G0", "net": "mn12_g0"},
+        {"block": "mn12", "port": "U0_G1", "net": "mn12_g1"},
+        {"block": "inv_a", "port": "a", "net": "inva_a"},
+        {"block": "inv_a", "port": "y", "net": "inva_y"},
+        {"block": "inv_b", "port": "a", "net": "invb_a"},
+        {"block": "inv_b", "port": "y", "net": "invb_y"}
+      ]
+    },
+    {
+      "blocks": [{"id": "core", "from_stage": "core"}],
+      "placement": {"strategy": "explicit", "order": ["core"], "origins_um": {"core": {"x": 0.0, "y": 0.0}}},
+      "routing": {"layer_role": "metal2", "width_um": 0.17},
+      "connectivity": [
+        {"net": "a", "pins": [{"block": "core", "port": "mp13_g0"}, {"block": "core", "port": "inva_a"}],
+         "waypoints_um": [[0.545, 10.4], [-6.8, 10.4], [-6.8, 6.81]]},
+        {"net": "a", "pins": [{"block": "core", "port": "inva_a"}, {"block": "core", "port": "mn12_g0"}],
+         "waypoints_um": [[-6.8, 6.81], [-6.8, 1.0], [6.0, 1.0], [6.0, 5.0], [7.895, 5.0]]},
+
+        {"net": "an", "pins": [{"block": "core", "port": "inva_y"}, {"block": "core", "port": "mp13_g1"}],
+         "waypoints_um": [[1.215, 6.31]]},
+        {"net": "an", "pins": [{"block": "core", "port": "inva_y"}, {"block": "core", "port": "mn34_g0"}],
+         "waypoints_um": [[0.895, 6.31]]},
+
+        {"net": "b", "pins": [{"block": "core", "port": "invb_a"}, {"block": "core", "port": "mp24_g0"}],
+         "waypoints_um": [[8.365, 6.81]]},
+        {"net": "b", "pins": [{"block": "core", "port": "invb_a"}, {"block": "core", "port": "mn12_g1"}],
+         "waypoints_um": [[8.565, 6.81]]},
+
+        {"net": "bn", "pins": [{"block": "core", "port": "invb_y"}, {"block": "core", "port": "mp24_g1"}],
+         "waypoints_um": [[17.0, 6.31], [17.0, 16.0], [3.0, 16.0], [3.0, 9.0], [7.695, 9.0]]},
+        {"net": "bn", "pins": [{"block": "core", "port": "invb_y"}, {"block": "core", "port": "mn34_g1"}],
+         "waypoints_um": [[17.0, 6.31], [17.0, 16.0], [3.0, 16.0], [3.0, 9.0], [1.565, 9.0]]}
+      ],
+      "pins": []
+    }
+  ],
+  "lvs": {
+    "reference": "design/ro_array_core.spice",
+    "subckt": "xor2"
+  }
+}

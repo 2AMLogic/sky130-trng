@@ -1,0 +1,242 @@
+{
+  "pdk": {
+    "variant": "sky130A"
+  },
+  "blocks": [
+    {
+      "id": "core",
+      "generator_report": "core.compose.response.json"
+    }
+  ],
+  "placement": {
+    "strategy": "explicit",
+    "order": [
+      "core"
+    ],
+    "origins_um": {
+      "core": {
+        "x": 0.0,
+        "y": 0.0
+      }
+    }
+  },
+  "routing": {
+    "layer_role": "metal2",
+    "width_um": 0.17
+  },
+  "connectivity": [
+    {
+      "net": "a",
+      "pins": [
+        {
+          "block": "core",
+          "port": "mp13_g0"
+        },
+        {
+          "block": "core",
+          "port": "inva_a"
+        }
+      ],
+      "waypoints_um": [
+        [
+          0.545,
+          10.4
+        ],
+        [
+          -6.8,
+          10.4
+        ],
+        [
+          -6.8,
+          6.81
+        ]
+      ]
+    },
+    {
+      "net": "a",
+      "pins": [
+        {
+          "block": "core",
+          "port": "inva_a"
+        },
+        {
+          "block": "core",
+          "port": "mn12_g0"
+        }
+      ],
+      "waypoints_um": [
+        [
+          -6.8,
+          6.81
+        ],
+        [
+          -6.8,
+          1.0
+        ],
+        [
+          6.0,
+          1.0
+        ],
+        [
+          6.0,
+          5.0
+        ],
+        [
+          7.895,
+          5.0
+        ]
+      ]
+    },
+    {
+      "net": "an",
+      "pins": [
+        {
+          "block": "core",
+          "port": "inva_y"
+        },
+        {
+          "block": "core",
+          "port": "mp13_g1"
+        }
+      ],
+      "waypoints_um": [
+        [
+          1.215,
+          6.31
+        ]
+      ]
+    },
+    {
+      "net": "an",
+      "pins": [
+        {
+          "block": "core",
+          "port": "inva_y"
+        },
+        {
+          "block": "core",
+          "port": "mn34_g0"
+        }
+      ],
+      "waypoints_um": [
+        [
+          0.895,
+          6.31
+        ]
+      ]
+    },
+    {
+      "net": "b",
+      "pins": [
+        {
+          "block": "core",
+          "port": "invb_a"
+        },
+        {
+          "block": "core",
+          "port": "mp24_g0"
+        }
+      ],
+      "waypoints_um": [
+        [
+          8.365,
+          6.81
+        ]
+      ]
+    },
+    {
+      "net": "b",
+      "pins": [
+        {
+          "block": "core",
+          "port": "invb_a"
+        },
+        {
+          "block": "core",
+          "port": "mn12_g1"
+        }
+      ],
+      "waypoints_um": [
+        [
+          8.565,
+          6.81
+        ]
+      ]
+    },
+    {
+      "net": "bn",
+      "pins": [
+        {
+          "block": "core",
+          "port": "invb_y"
+        },
+        {
+          "block": "core",
+          "port": "mp24_g1"
+        }
+      ],
+      "waypoints_um": [
+        [
+          17.0,
+          6.31
+        ],
+        [
+          17.0,
+          16.0
+        ],
+        [
+          3.0,
+          16.0
+        ],
+        [
+          3.0,
+          9.0
+        ],
+        [
+          7.695,
+          9.0
+        ]
+      ]
+    },
+    {
+      "net": "bn",
+      "pins": [
+        {
+          "block": "core",
+          "port": "invb_y"
+        },
+        {
+          "block": "core",
+          "port": "mn34_g1"
+        }
+      ],
+      "waypoints_um": [
+        [
+          17.0,
+          6.31
+        ],
+        [
+          17.0,
+          16.0
+        ],
+        [
+          3.0,
+          16.0
+        ],
+        [
+          3.0,
+          9.0
+        ],
+        [
+          1.565,
+          9.0
+        ]
+      ]
+    }
+  ],
+  "pins": [],
+  "options": {
+    "cell_name": "xor2",
+    "output": "xor2.gds"
+  }
+}

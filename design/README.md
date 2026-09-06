@@ -188,7 +188,7 @@ otherwise unmeasured on sky130).
 | Entropy-binding corner | `ss` / −40 °C / 1.62 V | **measured** | Full 27-point grid, `sim/ro-array-sizing/`. Cold — the direction gf180-trng's DR-0012 guessed and its DR-0015 later reversed. Measured here, inherited from neither |
 | XOR combining tree contribution | `w_90` = 122–241 ps (gate bandwidth); 0.56–0.68 edge retention at `N = 4` | **measured** | `sim/xor-combining-bandwidth/` (single-gate pulse-width sweep, the figure that sizes `N`) and `sim/ro-array-core-combining/` (assembled-array edge retention and combining-node DC bias, 0.31–0.53 × Vdd, no gross systematic offset). DR-0003 §5–6 |
 | Array active power | 81.0–431.6 µW measured across the PVT grid run | **measured** | `sim/ro-array-core-combining/`. Worst-measured 431.6 µW clears the top-level README's `< 500 µW active` row with 13.7% margin |
-| Array area | ~0.0026–0.0088 mm² (ROM estimate); rings alone now drawn at 4 × 377 µm² = 0.00151 mm² | **estimated (array), measured (rings only)** | Device-count-based estimate (DR-0003 §7): comfortably inside the `< 0.05 mm²` budget (~5–18%). Not yet an array measurement — but no longer with an empty `layout/` behind it: each `ro_ring5` cell's composed GDS is 41.125 × 9.17 µm including its rail lanes (`layout/ro_ring5/README.md`), so the four rings account for ~0.0015 mm² before any `ro_buf`, XOR tree, sampler, inter-ring channel or top-level PDN is drawn |
+| Array area | ~0.0026–0.0088 mm² (ROM estimate); every `ro_array_core` leaf cell now drawn, summing to 4 × 377 + 4 × 22.2 + 3 × 421.5 µm² = 0.00286 mm² | **estimated (array), measured (leaf cells only)** | Device-count-based estimate (DR-0003 §7): comfortably inside the `< 0.05 mm²` budget (~5–18%). Not yet an array measurement, but every cell it instantiates is now drawn: `ro_ring5` 41.125 × 9.17 µm (`layout/ro_ring5/README.md`), `ro_buf` 4.175 × 5.31 µm, `xor2` 23.97 × 17.585 µm (`klt stats` on each committed GDS). The 0.00286 mm² sum is leaf-cell bounding boxes only — it is a **floor**, not a floorplan: no inter-ring channel, no supply distribution, no sampler and no top-level PDN are drawn, and it assumes the eleven cell instances (4 rings + 4 buffers + 3 XORs) pack with zero waste between their bounding boxes |
 | Idle current (per ring) | 0.6 nA (cold) – 255 nA (`ff`/125 °C) | **measured (per-ring), no target yet** | `sim/ro-ring5-swing-and-current/`. The top-level README's own idle-current target is still unset pending `spec/porting-plan.md` §2.5's leakage survey, so this is a reported number, not a pass/fail against a row that does not exist yet |
 | Load cap `cld` | 0.5 fF | placeholder | an estimate of local interconnect load, not an extracted parasitic, and sky130's metal stack differs from gf180mcu's |
 
@@ -233,8 +233,22 @@ DR-0003 surfaces and does not resolve on its own authority.
   (status **Proposed**) it lives in [`digital/`](../digital/README.md), not
   here, and none of it is or will be a `design/*.spice` netlist. `raw_bit`
   and `raw_valid` are the interface between the two directories.
-- **Layout and DRC/LVS.** `layout/` now holds **thirteen composed, DRC-clean
-  and LVS-clean cells** — nine leaf gates plus, as of this increment, all
+- **Layout and DRC/LVS.** `layout/` now holds **fourteen composed, DRC-clean
+  and LVS-clean cells**, which as of this increment is **every leaf cell
+  `ro_array_core` instantiates**: the newest is
+  [`layout/xor2/`](../layout/xor2/README.md), the combining-tree XOR
+  (`xa1`-`xa3`) — twelve devices, ten nets, `klt drc` clean (0 violations)
+  and `klt lvs` **match** (12/12 devices, 10/10 nets, 0 errors) against
+  `.subckt xor2`, in two `gen-compose` stages across two routing planes. It
+  supersedes `layout/xor2-placement-poc/`, whose prediction that this gate
+  needed channel routing and a third routing plane was wrong: reading its
+  pull-up and pull-down trees as four two-transistor `finger_topology:
+  "series"` chains (with `mid` wired through a chain's *contactable*
+  interior `U0_D0`), placing its two inverters as already-composed `ro_buf`
+  `blocks[].cell` blocks, and splitting its nets across *layers*
+  (`vdd`/`mid`/`y`/`vss` on li1, `a`/`an`/`b`/`bn` on met1) reduces it from
+  17 blocks and 31 nets to 9 blocks and 12 net legs.
+  The thirteen before it are nine leaf gates plus all
   four `ro_ring5` rings ([`layout/ro_ring5/`](../layout/ro_ring5/README.md)
   and `ro_ring5_wstv0p{44,46,48}/`), each `klt drc` clean (0 violations) and
   `klt lvs` **matching** `.subckt ro_ring5` at that ring's own `wstv`
@@ -298,10 +312,9 @@ DR-0003 surfaces and does not resolve on its own authority.
   measurement from it. Real inter-gate wiring costs the ring **1.5045×–1.6546×**
   more slowdown on top of intra-cell parasitics alone (period vs. pre-layout
   overall: **2.0819×–2.3666×**), and the `wstv` frequency ladder still
-  survives. Still open: `xor2` routing (its 12-device placement is now
-  DRC-clean — see `layout/xor2-placement-poc/README.md` — but its
-  four-signal fan-out is a genuine multi-net channel-routing problem, not
-  yet solved); no `ro_array_core` and no sampler as *assembled* layout, so
+  survives. `xor2` has no post-layout record of its own: it is composed and
+  verified but not extracted or simulated, since a PVT campaign is its own
+  deliverable. Still open: no `ro_array_core` and no sampler as *assembled* layout, so
   there is still no *inter-ring* interconnect (supply distribution, XOR
   tree routing, buffer fan-in) to extract, and no whole-block post-layout
   PVT re-verification — every number above is one ring's own real

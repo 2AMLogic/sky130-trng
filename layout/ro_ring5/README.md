@@ -206,8 +206,10 @@ chain, so LVS gets a chance to fail. The expensive guard is reading
 - **Is not**:
   - **A whole-block claim.** `ro_array_core` still needs the four rings
     tiled with a shared supply, `ro_buf` fan-out and the `xor2` combining
-    tree — and `xor2` routing is still open
-    (`layout/xor2-placement-poc/`).
+    tree. (`xor2` itself is no longer the blocker it was when this was
+    written: it is composed, DRC-clean and LVS-clean in
+    [`layout/xor2/`](../xor2/README.md). What is missing is the
+    array-level assembly, not a leaf cell.)
   - **A full sky130 sign-off.** `klt`'s sky130 deck is a curated subset;
     read `drc.json`'s own `coverage` block. For this cell the checked layer
     set does cover the entire stack it uses (`li1`/`mcon`/`met1`/`via`/

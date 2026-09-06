@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "engine": "klayout",
+  "layout": "xor2.spice",
+  "reference": "xor2.ref.spice",
+  "top": "XOR2",
+  "reference_top": "XOR2",
+  "parameter_tolerance": null,
+  "options": {
+    "combine_devices": false,
+    "flatten_layout": false,
+    "flatten_reference": false,
+    "netgen_setup": null,
+    "parameter_tolerance": null
+  },
+  "status": "match",
+  "mismatch_count": 0,
+  "error_count": 0,
+  "category_counts": {},
+  "category_error_counts": {},
+  "counts": {
+    "nets": {
+      "layout": 10,
+      "reference": 10,
+      "matched": 10
+    },
+    "devices": {
+      "layout": 12,
+      "reference": 12,
+      "matched": 12
+    },
+    "pins": {
+      "layout": 8,
+      "reference": 5,
+      "matched": 8
+    }
+  },
+  "device_classes": null,
+  "environment": {
+    "engine": "klayout",
+    "engine_version": "0.30.12",
+    "layout_sha256": "3541f322898a528539ae2e59727a69998b8787575ac3e30c2988f93847e74c87",
+    "reference_sha256": "b4ce7f7adf667191187616502a1463ba31c20e049747f20e93a26e797a9b8fe4",
+    "extracted_netlist": null
+  },
+  "provenance": {
+    "klt_version": "0.3.0",
+    "klayout_version": "0.30.12",
+    "pdk": null,
+    "deck": null,
+    "input": null
+  },
+  "mismatches": [],
+  "net_correspondence": [
+    {
+      "layout": "A|INVA_A|MN12_G0|MP13_G0",
+      "reference": "A",
+      "pin": true
+    },
+    {
+      "layout": "AN|INVA_Y|MN34_G0|MP13_G1|Y",
+      "reference": "AN",
+      "pin": true
+    },
+    {
+      "layout": "A|B|INVB_A|MN12_G1|MP24_G0",
+      "reference": "B",
+      "pin": true
+    },
+    {
+      "layout": "BN|INVB_Y|MN34_G1|MP24_G1|Y",
+      "reference": "BN",
+      "pin": true
+    },
+    {
+      "layout": "MID",
+      "reference": "MID",
+      "pin": true
+    },
+    {
+      "layout": "\\$6",
+      "reference": "S1",
+      "pin": false
+    },
+    {
+      "layout": "\\$3",
+      "reference": "S2",
+      "pin": false
+    },
+    {
+      "layout": "VDD",
+      "reference": "VDD",
+      "pin": true
+    },
+    {
+      "layout": "VSS",
+      "reference": "VSS",
+      "pin": true
+    },
+    {
+      "layout": "Y",
+      "reference": "Y",
+      "pin": true
+    }
+  ]
+}
