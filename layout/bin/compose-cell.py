@@ -103,10 +103,12 @@ import argparse
 import json
 import os
 import re
-import subprocess
 import sys
 import tempfile
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _klt_common import BuildError, run_klt, write_json  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
@@ -117,50 +119,6 @@ CHECK_FIELDS: dict[str, tuple[str, ...]] = {
     "lvs.json": ("status", "mismatch_count", "error_count", "counts"),
     "compose.response.json": ("cell_name", "bbox_um"),
 }
-
-
-class BuildError(RuntimeError):
-    """A step of the chain failed."""
-
-
-def run_klt(args: list[str], *, env: dict[str, str], cwd: Path) -> dict:
-    """Run ``klt`` with ``--format json`` and return its parsed response.
-
-    Always run from the cell's own output directory with *relative* paths, so
-    that every committed response records repo-relative provenance and no
-    absolute home path leaks into the evidence (the leak ``klt
-    env-provenance --scan`` exists to catch).
-
-    A non-zero exit is not automatically fatal: ``klt gen-compose`` exits 3
-    for a partial success (some net unrouted) and ``klt lvs`` exits 3 for a
-    clean-run mismatch, both of which this script wants to report from the
-    response body rather than from a traceback. A response that is not JSON
-    at all is fatal.
-    """
-    proc = subprocess.run(
-        ["klt", *args, "--format", "json"],
-        capture_output=True,
-        text=True,
-        env=env,
-        cwd=cwd,
-        check=False,
-    )
-    try:
-        response = json.loads(proc.stdout)
-    except json.JSONDecodeError as exc:
-        raise BuildError(
-            f"klt {' '.join(args)} produced no JSON response "
-            f"(exit {proc.returncode}):\n{proc.stdout}\n{proc.stderr}"
-        ) from exc
-    if "error" in response:
-        raise BuildError(
-            f"klt {' '.join(args)} failed: {response['error'].get('message')}"
-        )
-    return response
-
-
-def write_json(path: Path, payload: dict) -> None:
-    path.write_text(json.dumps(payload, indent=2, sort_keys=False) + "\n")
 
 
 # --------------------------------------------------------------------------
