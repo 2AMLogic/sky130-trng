@@ -1,0 +1,58 @@
+{
+  "record_id": "20260906-003407-6b86c9c",
+  "slug": "raw-bit-min-entropy",
+  "level": "transistor (derived)",
+  "analysis": "sim/raw-bit-min-entropy/analysis/raw-bit-entropy.py",
+  "source_record": "20260905-231908-6b86c9c",
+  "author": "agent-12@2amlogic.com",
+  "timestamp_utc": "2026-09-06T00:34:07.767292+00:00",
+  "repo_sha": "6b86c9c",
+  "per_corner": [
+    {
+      "corner": "tt",
+      "temp_c": 27.0,
+      "vdd_v": 1.8,
+      "bits": "000110111010010001111000",
+      "ro1_swing_frac": 1.058948,
+      "verdict": "OK",
+      "n": 24,
+      "ones": 11,
+      "zeros": 13,
+      "p_hat": 0.5416666666666666,
+      "p_u_99": 0.8092813501321166,
+      "h_hat_bits": 0.3052867459090958,
+      "se_naive": 0.10170707302692229
+    },
+    {
+      "corner": "ss",
+      "temp_c": 27.0,
+      "vdd_v": 1.8,
+      "bits": "11001001111101110110100",
+      "ro1_swing_frac": 1.062555,
+      "verdict": "OK",
+      "n": 23,
+      "ones": 14,
+      "zeros": 9,
+      "p_hat": 0.6086956521739131,
+      "p_u_99": 0.8767131668771857,
+      "h_hat_bits": 0.1898231797085226,
+      "se_naive": 0.10176384751376008
+    },
+    {
+      "corner": "ff",
+      "temp_c": 27.0,
+      "vdd_v": 1.8,
+      "bits": "001101010100101110000101",
+      "ro1_swing_frac": 1.06175,
+      "verdict": "OK",
+      "n": 24,
+      "ones": 11,
+      "zeros": 13,
+      "p_hat": 0.5416666666666666,
+      "p_u_99": 0.8092813501321166,
+      "h_hat_bits": 0.3052867459090958,
+      "se_naive": 0.10170707302692229
+    }
+  ],
+  "z_99": 2.5758293035489004
+}
