@@ -21,7 +21,42 @@ it got there, and the "What this does NOT establish" section below is
 preserved as Increment 1's own milestone text with each item's resolution
 marked inline.
 
-## Increment 8: the `vdd` supply bus routed — `ro_array_core` is DRC-clean and LVS-clean (this update)
+## Increment 9: `array-reference.py` now calls a generic `compose-cell.py` mechanism (this update)
+
+Increment 8's own "Suggested next steps" left one thing "deliberately not
+smuggled into this increment": folding `array-reference.py`'s bespoke
+per-ring rename+parametrize loop back into `layout/bin/compose-cell.py` as a
+reusable, unit-tested mechanism. That is now done — see
+`layout/README.md`'s current status section and `compose-cell.py`'s own
+docstring, "A same-subckt, differently-parametrized reference"
+(`lvs.dependency_variants`). `array-reference.py` (still here, not yet moved
+to `layout/bin/`) is rewritten to call `build_variant_reference`/
+`repoint_variant_instances` instead of hand-rolling the rename; the
+`RING_VARIANT` descriptor it now builds is exactly the
+`lvs.dependency_variants[]` entry a future `layout/ro_array_core/cell.json`
+would carry verbatim.
+
+**Verified, not just refactored**: the regenerated `ro_array_core.ref.spice`
+is byte-identical in body to the version this increment's own history
+committed (diffed directly; only the provenance header comment line
+changed), and re-running `klt lvs` against it, plus both
+`lvs-negative-controls.py` controls, reproduces the identical
+`match`/`mismatch` verdicts and device/net counts. All fourteen
+already-composed cells (`ro_buf`, `ro_stage` × 4, `ro_nand2` × 4, `ro_ring5`
+× 4, `xor2`) still `--check` clean against `layout/pdk.json`'s
+`klt_version_pin` in the same session, confirming the `compose-cell.py`
+change is additive to the existing single-instance `lvs.dependencies` path.
+
+**Still not done**: this increment only closes the *LVS-reference*
+half of "promote this PoC directory into a `--check`-reproducible
+`layout/ro_array_core/` cell recipe" — the placement/routing half (folding
+all nine `gen-compose` stages this directory ran into one multi-stage
+`cell.json`, using `from_stage` chaining the way `layout/ro_ring5/`'s own
+promotion did) is real, separate layout engineering and remains open, along
+with everything else this directory's own "What is still open" section
+below already lists.
+
+## Increment 8: the `vdd` supply bus routed — `ro_array_core` is DRC-clean and LVS-clean
 
 Closes the last open net. Increment 7 left `vdd` — the buffer/XOR-tree
 supply, distinct from the four per-ring `vddrN` starve domains — as **seven
@@ -153,24 +188,26 @@ nothing else. The seven `vdd` nets (`4 x 2 + 3 x 10 = 38` devices) become one
 README's own "Suggested next steps" item 6 — including the open question it
 raised, which turned out to be real:
 
-**`layout/bin/compose-cell.py`'s `lvs.dependencies` mechanism genuinely cannot
-express this reference.** It rewrites a flat list of dependency subckt *names*
-with **one** shared `lvs.params` dict, and `ro_array_core` needs the *same*
-`ro_ring5` subckt four times with four different `wstv=` overrides
-(0.42/0.44/0.46/0.48). `array-reference.py` (committed) is the narrowest
-answer: it reuses `compose-cell.py`'s own `extract_subckt`/`build_reference`
-rewrite verbatim — same substitutions, same `Cld` drop, same unit-suffix fix
-(klayout-tools#1492) — but calls it four times over the ring hierarchy
+**`layout/bin/compose-cell.py`'s *plain* `lvs.dependencies` mechanism
+genuinely cannot express this reference** — it rewrites a flat list of
+dependency subckt *names* with **one** shared `lvs.params` dict, and
+`ro_array_core` needs the *same* `ro_ring5` subckt four times with four
+different `wstv=` overrides (0.42/0.44/0.46/0.48). At the time of this
+increment, `array-reference.py` (committed) was the narrowest answer: it
+reused `compose-cell.py`'s own `extract_subckt`/`build_reference` rewrite
+verbatim — same substitutions, same `Cld` drop, same unit-suffix fix
+(klayout-tools#1492) — but called it four times over the ring hierarchy
 (`ro_nand2`/`ro_stage`/`ro_ring5`), renaming each pass's copies to `*_r1`..
-`*_r4` so the four sizings coexist in one file, then repoints
+`*_r4` so the four sizings coexist in one file, then repointed
 `ro_array_core`'s `xr1`-`xr4` at them. The renames exist only inside the
 generated reference (so `flatten_reference: true` has four distinct
 definitions to inline); nothing in `design/` or in the layout is renamed.
 Folding this back into `compose-cell.py` as a per-dependency `params`
-override — and with it promoting this directory into a `layout/ro_array_core/`
-`cell.json` recipe with `--check` reproducibility and the unit-test coverage
-this repo's CI requires of netlist-rewriting code — is deliberately left as
-follow-up, not smuggled into this increment.
+override was deliberately left as follow-up, not smuggled into this
+increment — **Increment 9 above does exactly that**: `compose-cell.py` now
+has a generic `lvs.dependency_variants` mechanism, unit-tested, and
+`array-reference.py` calls it instead of hand-rolling the loop, verified
+byte-identical.
 
 **The match is verified to be discriminating, not vacuous.**
 `lvs-negative-controls.py` (committed, with its `lvs-negative-controls.json`

@@ -10,25 +10,26 @@ right for every leaf/ring cell committed so far, and exactly wrong for
 times with four different ``wstv=`` overrides (0.42/0.44/0.46/0.48), while
 ``layout/`` holds four physically distinct ring cells for those four sizings.
 One shared ``params`` dict cannot express that, which is the open question
-this directory's README has carried since Increment 2 ("Suggested next steps",
+this directory's README carried since Increment 2 ("Suggested next steps",
 item 6).
 
-This script is the narrowest thing that answers it: it reuses
-``compose-cell.py``'s own ``extract_subckt``/``build_reference`` rewrite
-verbatim -- same substitution rules, same ``Cld`` drop, same unit-suffix fix
-(klayout-tools#1492) -- and calls it **four times over the ring hierarchy**,
-once per ``wstv``, renaming ``ro_nand2``/``ro_stage``/``ro_ring5`` to
-``*_r1``..``*_r4`` in each pass so the four differently-sized copies coexist in
-one reference file.  ``ro_array_core``'s own ``xr1``..``xr4`` instance lines
-are then repointed at the four renamed subckts (and their now-meaningless
-``wstv=``/``lstv=``/``cld=`` pass-through kwargs dropped, the same rule
-``compose-cell.py``'s transformation 2 applies).  ``ro_buf``/``xor2`` take no
-parameters and pass through the unmodified single-pass rewrite.
+**Updated (issue #22 follow-up to #27 step 1)**: the per-ring rename +
+per-instance-parametrize rewrite this script needed is no longer a
+one-off -- it is now ``compose-cell.py``'s own generic
+``lvs.dependency_variants`` mechanism (see that module's docstring, "A
+same-subckt, differently-parametrized reference"), covered by
+``layout/test_compose_cell.py``'s unit tests. This script is now a thin
+caller of that mechanism (``build_variant_reference``/
+``repoint_variant_instances``) rather than a bespoke rename loop -- the
+``RING_VARIANT`` descriptor below is exactly the ``lvs.dependency_variants[]``
+entry a future ``layout/ro_array_core/cell.json`` promotion would carry
+verbatim. Verified byte-for-byte identical output (module docstring's own
+worked check, not re-run automatically here) against the original
+hand-rolled rewrite this script carried through PR #68.
 
-The rename is deliberately *not* a new sizing convention: ``_r1``..``_r4``
-exist only inside the generated reference so that ``flatten_reference: true``
-sees four distinct definitions to inline.  Nothing in ``design/`` or the
-composed layout is renamed.
+Nothing in ``design/`` or the composed layout is renamed by this rewrite --
+``_r1``..``_r4`` exist only inside the generated reference file, so that
+``flatten_reference: true`` sees four distinct definitions to inline.
 
 Because a reference-netlist rewrite can silently produce a
 plausible-but-wrong netlist that still yields a confident verdict (the exact
@@ -46,7 +47,6 @@ from __future__ import annotations
 
 import importlib.util
 import pathlib
-import re
 import sys
 import types
 
@@ -55,20 +55,31 @@ REPO_ROOT = HERE.parents[1]
 SOURCE = REPO_ROOT / "design" / "ro_array_core.spice"
 OUT = HERE / "ro_array_core.ref.spice"
 
-#: ``design/ro_array_core.spice``'s own four ``xrN ... ro_ring5 wstv=<w>``
-#: overrides, in instance order.  ``lstv`` is the same for all four; ``cld``
-#: is dropped along with the ``Cld`` load capacitor it parameterises.
-RING_WSTV = {1: 0.42, 2: 0.44, 3: 0.46, 4: 0.48}
-
-#: The ring hierarchy, innermost first -- every one of these carries the
-#: ``wstv``/``lstv`` parameters and therefore needs one rewritten copy per ring.
-RING_SUBCKTS = ("ro_nand2", "ro_stage", "ro_ring5")
-
 #: Subckts with no parameters at all: one copy, rewritten once.
 FLAT_SUBCKTS = ("ro_buf", "xor2")
 
 DROP_PREFIXES = ("Cld",)
 DROP_KWARGS = ("cld",)
+
+#: The one ``lvs.dependency_variants[]`` entry this design needs: a single
+#: ``ro_ring5`` definition (plus its own ``ro_nand2``/``ro_stage``
+#: dependencies), instantiated four times by ``design/ro_array_core.spice``'s
+#: own ``xr1``-``xr4`` with four different ``wstv`` overrides. See
+#: ``compose-cell.py``'s docstring for the full schema.
+RING_VARIANT = {
+    "subckt": "ro_ring5",
+    "nested": ["ro_nand2", "ro_stage"],
+    "drop_prefixes": list(DROP_PREFIXES),
+    "drop_kwargs": list(DROP_KWARGS),
+    "instances": [
+        {
+            "rename": f"_r{index}",
+            "top_instance_pattern": rf"^xr{index}\b",
+            "params": {"wstv": wstv, "lstv": 2},
+        }
+        for index, wstv in enumerate((0.42, 0.44, 0.46, 0.48), start=1)
+    ],
+}
 
 
 def load_compose_cell() -> types.ModuleType:
@@ -86,21 +97,16 @@ def build() -> list[str]:
     cc = load_compose_cell()
     lines: list[str] = []
 
-    for index, wstv in RING_WSTV.items():
-        suffix = f"_r{index}"
-        params = {"wstv": wstv, "lstv": 2}
-        for subckt in RING_SUBCKTS:
-            rewritten = cc.build_reference(
-                cc.extract_subckt(SOURCE, subckt),
-                params=params,
-                drop_prefixes=DROP_PREFIXES,
-                drop_kwargs=DROP_KWARGS,
+    for instance in RING_VARIANT["instances"]:
+        lines.extend(
+            cc.build_variant_reference(
+                SOURCE,
+                RING_VARIANT,
+                instance,
+                default_drop_prefixes=DROP_PREFIXES,
+                default_drop_kwargs=DROP_KWARGS,
             )
-            for line in rewritten:
-                for name in RING_SUBCKTS:
-                    line = re.sub(rf"\b{name}\b", name + suffix, line)
-                lines.append(line)
-            lines.append("")
+        )
 
     for subckt in FLAT_SUBCKTS:
         lines.extend(
@@ -119,19 +125,16 @@ def build() -> list[str]:
         drop_prefixes=DROP_PREFIXES,
         drop_kwargs=DROP_KWARGS,
     )
-    for line in top:
-        match = re.match(r"^(xr(\d)\s+.*?)\bro_ring5\b(.*)$", line)
-        if match:
-            line = f"{match.group(1)}ro_ring5_r{match.group(2)}{match.group(3)}"
-            line = re.sub(r"\s+(wstv|lstv|cld)=\S+", "", line)
-        lines.append(line)
+    lines.extend(cc.repoint_variant_instances(top, [RING_VARIANT]))
     return lines
 
 
 def main() -> int:
     header = [
         "* Reference netlist for ro_array_core LVS -- GENERATED by",
-        "* layout/ro_array_core-placement-poc/array-reference.py",
+        "* layout/ro_array_core-placement-poc/array-reference.py, via",
+        "* layout/bin/compose-cell.py's generic lvs.dependency_variants",
+        "* mechanism (#22/#27).",
         "* Source: design/ro_array_core.spice .subckt ro_array_core plus",
         "* ro_ring5/ro_nand2/ro_stage (one renamed copy per ring wstv),",
         "* ro_buf and xor2. Only unit spellings, the four substituted wstv",
