@@ -236,10 +236,31 @@ DR-0003 surfaces and does not resolve on its own authority.
 - **Layout and DRC/LVS.** `layout/` holds **fourteen composed, DRC-clean
   and LVS-clean cells** — every leaf cell `ro_array_core` instantiates
   (rings, buffers, the combining-tree XOR; see
-  [`layout/xor2/`](../layout/xor2/README.md) for the newest) — plus, this
-  increment, `ro_array_core`'s own **XOR combining-tree inputs, fully
-  wired**:
+  [`layout/xor2/`](../layout/xor2/README.md)) — and, **this increment,
+  `ro_array_core` itself is DRC-clean *and* LVS-clean**:
   [`layout/ro_array_core-placement-poc/`](../layout/ro_array_core-placement-poc/README.md)'s
+  "Increment 8" section routes the last open net, the `vdd` supply, as
+  seven `"metal2"`-role (met1) promotion stubs plus a six-leg `"metal3"`
+  (met2) bus, merging the seven previously-separate per-instance `vdd`
+  nets into one 38-device net. The composed block is **`klt drc` clean
+  (0 violations)**, extracts to **132 devices / 96 nets**, and **`klt lvs`
+  reports `match`: 132/132 devices, 96/96 nets** against
+  `design/ro_array_core.spice`'s own `.subckt ro_array_core` — the whole
+  entropy source (four differently-sized rings, four buffers, the
+  three-XOR combining tree), not a leaf cell. Two committed negative
+  controls (`lvs-negative-controls.py`) show that verdict is
+  discriminating rather than vacuous: resizing ring 4's starve devices to
+  ring 1's `wstv`, and crossing `xa1`/`xa2`'s inputs, each turn the same
+  comparison into `mismatch`. The generated reference needed one thing
+  `layout/bin/compose-cell.py` cannot express — four differently
+  parameterised copies of the *same* `ro_ring5` subckt — so it is built by
+  a small committed script (`array-reference.py`) that reuses
+  `compose-cell.py`'s own rewrite four times over renamed copies; folding
+  that back into `compose-cell.py` as a per-dependency `params` override
+  (and promoting this PoC directory into a `layout/ro_array_core/`
+  `cell.json` recipe with `--check` reproducibility) is follow-up work.
+  A prior increment wired the XOR combining tree's inputs:
+  that directory's
   "Increment 7" section routes `t2` (`xa2.y` → `xa3.b`) via a `"metal3"`
   (met2) bridge fed by two short `"metal2"`-role (met1) promotion stubs
   added at the array-composition level, over the fence of already-routed
@@ -276,13 +297,13 @@ DR-0003 surfaces and does not resolve on its own authority.
   ring's own parasitics, now confirmed at the array level). The bus is still
   real, DRC-clean, load-bearing metal a fabricated die needs — the substrate
   alone has no modelled resistance — just not what was blocking LVS. `vdd`
-  is the opposite and stays genuinely open: still seven separate nets (one
-  per `buf`/`xor2` instance), and a first buffer-only `vdd` bus attempt
-  failed outright (every candidate leg crosses a neighbouring ring's own
-  bounding box); the corridor-height retry that increment recommended is
-  superseded by Increment 6's fence measurement, and `vdd` is expected to
-  need the same met1-stub-then-met2-bridge recipe Increment 7 proved out for
-  `t2` above. Before that, an
+  was the opposite and stayed open for three increments: seven separate
+  nets (one per `buf`/`xor2` instance), with a first buffer-only bus
+  attempt failing outright (every candidate leg crosses a neighbouring
+  ring's own bounding box) and Increment 6's fence measurement showing no
+  met1 corridor could work at all — **closed by Increment 8 above**, using
+  exactly the met1-stub-then-met2-bus recipe Increment 7 proved out for
+  `t2`. Before that, an
   increment routed `ro_array_core`'s buffer→XOR `b` leg: `ro2` (`buf2.y`) into `xa1.b` and
   `ro4` (`buf4.y`) into `xa2.b` on met1, resolving that increment's own open
   finding (`klt drc` clean; `klt extract` 132 devices, 104 nets, down from
@@ -295,10 +316,14 @@ DR-0003 surfaces and does not resolve on its own authority.
   floorplan exposes `en1..en4`/the four `vddrN` domains/`ro1..ro4` as
   top-level pins (no routing needed — each is already a single node inside
   its own block) plus really routes `rn1..rn4` (`ro_ring5.ro` → `ro_buf.a`)
-  on met1. Still open: `vdd` and `t2` (both waiting on a second drawing
-  plane, see above), `ring1..4`'s and `xa1..3`'s own `vss` taps (not
-  LVS-blocking per the substrate finding, but not yet drawn), and therefore
-  any LVS attempt — so `ro_array_core` is not yet a DRC/LVS-clean block. `sampler_core`/
+  on met1. Still open after Increment 8, none of it LVS-blocking:
+  `ring1..4`'s and `xa1..3`'s own `vss` taps are still not drawn (a
+  fabricated die wants the explicit strap; `klt extract`'s substrate model
+  already merges the net, per the finding above), the PoC directory is not
+  yet a `--check`-reproducible `layout/ro_array_core/` cell recipe, and no
+  array-level parasitic extraction or post-layout PVT run exists yet — so
+  the `wstv` inter-ring decorrelation question DR-0003 §8 leaves open is
+  still open. `sampler_core`/
   `sampler_dff` remain untouched. The thirteen before it are nine leaf gates plus all
   four `ro_ring5` rings ([`layout/ro_ring5/`](../layout/ro_ring5/README.md)
   and `ro_ring5_wstv0p{44,46,48}/`), each `klt drc` clean (0 violations) and

@@ -1,0 +1,77 @@
+{
+  "layout_netlist": "ro_array_core_signal9_poc.spice",
+  "reference": "ro_array_core.ref.spice",
+  "baseline_status": "match",
+  "baseline_counts": {
+    "nets": {
+      "layout": 96,
+      "reference": 96,
+      "matched": 96
+    },
+    "devices": {
+      "layout": 132,
+      "reference": 132,
+      "matched": 132
+    },
+    "pins": {
+      "layout": 86,
+      "reference": 15,
+      "matched": 86
+    }
+  },
+  "all_controls_detected": true,
+  "controls": {
+    "width": {
+      "description": "ring 4's starve devices resized 0.48um -> 0.42um (ring 1's wstv); topology untouched",
+      "status": "mismatch",
+      "detected": true,
+      "counts": {
+        "nets": {
+          "layout": 96,
+          "reference": 96,
+          "matched": 84
+        },
+        "devices": {
+          "layout": 132,
+          "reference": 132,
+          "matched": 122
+        },
+        "pins": {
+          "layout": 86,
+          "reference": 15,
+          "matched": 86
+        }
+      },
+      "mismatch_categories": [
+        "device.property",
+        "topology"
+      ]
+    },
+    "topology": {
+      "description": "xa1/xa2's second XOR inputs crossed (ro2 <-> ro3); every device and device parameter untouched",
+      "status": "mismatch",
+      "detected": true,
+      "counts": {
+        "nets": {
+          "layout": 96,
+          "reference": 96,
+          "matched": 74
+        },
+        "devices": {
+          "layout": 132,
+          "reference": 132,
+          "matched": 112
+        },
+        "pins": {
+          "layout": 86,
+          "reference": 15,
+          "matched": 86
+        }
+      },
+      "mismatch_categories": [
+        "device.property",
+        "topology"
+      ]
+    }
+  }
+}
