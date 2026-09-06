@@ -4,39 +4,32 @@ Physical layout evidence for the sky130-trng entropy source, verified with
 `klayout-tools` (`klt`) against the sky130 open PDK. See `layout/pdk.json`
 for the PDK/tool pin.
 
-**Status (issue #22, this increment): `ro_array_core`'s XOR combining tree
-starts — `t1` is really routed, `xo`/`t2` are exposed on measured taps, and
-a first probe that `klt drc` called clean turned out to be an electrical
-short —**
+**Status (issue #22, this increment): `ro_array_core`'s XOR combining tree's
+inputs are fully wired — `t2` is really routed over a met2 bridge, and a
+prior increment's own prediction that this would need a leaf-cell change
+turned out to be wrong —**
 [`layout/ro_array_core-placement-poc/`](ro_array_core-placement-poc/README.md)'s
-"Increment 6" section. `t1` (`xa1.y` → `xa3.a`) is routed on `"metal2"`
-(`66.97 µm`), and `xo` (`xa3.y`, a genuine top-level port of
-`design/ro_array_core.spice`) and `t2` (`xa2.y`) are exposed as pins.
-**`klt drc` clean (0 violations)**; `klt extract` reports `132` devices
-(unchanged) and `103` nets (down from `104`), a net-by-net diff confirming
-exactly one merge — `xa3`'s 4-device `a` net plus `xa1`'s 4-device `y` net
-into one 8-device `t1` — with the two remaining `y` nets gaining only their
-new pin labels. Three findings. **(1) `klt drc` clean is not connectivity
-evidence**: a first `t1` probe reported `unrouted_nets: []` and `0`
-violations while shorting `xa1`'s internal `bn` node to its own output,
-because `klt gen-compose` models a placed block as an opaque *bbox* and has
-no obstacle model of its interior, so an escape stub from an interior port
-crosses that block's own metal unchecked (filed generically against
-`2AMLogic/klayout-tools` per `CLAUDE.md`'s friction protocol, filed as
-`klayout-tools#1527`; the probe's artifacts are not committed). Every
-routed net here is now proven by a net-by-net `klt extract` diff, not by
-DRC. **(2) `xor2`'s `y` has exactly
-four legal met1 escape windows**, measured by a committed scan script
-(`xor2-y-escape-scan.py`/`.json`) rather than guessed — the failed probe's
-tap was on the right net, in the wrong window. **(3) `t2` and `vdd` are
-both blocked by the same fence**: `ro1`-`ro4`'s already-routed backbones
-cut the row-1/row-2 corridor in both axes, and the router rejected two `t2`
-probes itself (`crosses already-routed net 'ro4'`, then `'t1'`), so both
-nets now need a second drawing plane (`"metal3"`/met2) rather than a better
-waypoint — which in turn needs a met1 promotion inside the leaf cell first,
-since `xor2`'s `y` and every `ro_buf` port are li1-only. **Still not a
-DRC/LVS-clean `ro_array_core`**: `vdd`, `t2`, `ring1..4`'s and `xa1..3`'s
-own `vss` taps, and therefore any LVS attempt, are all still open.
+"Increment 7" section. `t2` (`xa2.y` → `xa3.b`) is routed via two short
+`"metal2"`-role (met1) promotion stubs added at the array-composition level
+(`xa2.y`→`y_m1`, `1.4 µm`; `xa3.b`→`b_m1`, `0.9 µm`), bridged by a
+`"metal3"`-role (met2) route at `y = 31.0`, clear of every row-2 block's own
+bbox and of `t1`'s own met1 backbone (a different physical layer). **`klt
+drc` clean (0 violations) at every step**; net-by-net diffs confirm each
+stub only extends its own existing net (no merge), and the final met2
+bridge merges exactly `xa2`'s 4-device `y` net with `xa3`'s 4-device `b`
+net into one 8-device net — `132` devices unchanged throughout, `103` nets
+(unchanged after the stubs) → `102` nets (after the bridge). The prior
+increment (Increment 6) predicted the met1 promotion would need to happen
+inside `xor2`'s own leaf cell, since met3's via-drop is single-hop-only and
+cannot reach a bare li1 pin — **this increment shows that's unnecessary**:
+`klt gen-compose`'s `blocks[].cell` mechanism lets an already-composed
+block gain extra hand-declared ports at any layer, at any point an earlier
+increment's own routing already proved clear, so the promotion can happen
+one level up instead. `vdd` (still seven separate nets) is the one
+remaining open net and is expected to need the same recipe. **Still not a
+DRC/LVS-clean `ro_array_core`**: `vdd`, `ring1..4`'s and `xa1..3`'s own
+`vss` taps (not LVS-blocking, per Increment 5's substrate finding), and
+therefore any LVS attempt, are all still open.
 
 **A previous increment: `ro_array_core`'s four buffers got a really-routed
 `vss` bus, and extraction showed `vss` was already one electrically merged

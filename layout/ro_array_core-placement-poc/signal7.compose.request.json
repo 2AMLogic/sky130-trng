@@ -1,0 +1,85 @@
+{
+  "pdk": {
+    "variant": "sky130A"
+  },
+  "options": {
+    "cell_name": "ro_array_core_signal7_poc",
+    "output": "ro_array_core_signal7_poc.gds"
+  },
+  "blocks": [
+    {
+      "id": "core",
+      "orientation": "none",
+      "cell": {
+        "gds_path": "ro_array_core_signal6_poc.gds",
+        "cell_name": "ro_array_core_signal6_poc",
+        "ports": [
+          {
+            "name": "t2_m1",
+            "x_um": 37.405,
+            "y_um": 26.985,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 90
+          },
+          {
+            "name": "b3_m1",
+            "x_um": 78.66,
+            "y_um": 19.395,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 180
+          }
+        ]
+      }
+    }
+  ],
+  "placement": {
+    "strategy": "explicit",
+    "order": [
+      "core"
+    ],
+    "origins_um": {
+      "core": {
+        "x": 0.0,
+        "y": 0.0
+      }
+    }
+  },
+  "routing": {
+    "layer_role": "metal3",
+    "width_um": 0.17
+  },
+  "connectivity": [
+    {
+      "net": "t2",
+      "pins": [
+        {
+          "block": "core",
+          "port": "t2_m1"
+        },
+        {
+          "block": "core",
+          "port": "b3_m1"
+        }
+      ],
+      "waypoints_um": [
+        [
+          37.405,
+          31.0
+        ],
+        [
+          78.66,
+          31.0
+        ]
+      ]
+    }
+  ],
+  "pins": []
+}

@@ -237,26 +237,34 @@ DR-0003 surfaces and does not resolve on its own authority.
   and LVS-clean cells** — every leaf cell `ro_array_core` instantiates
   (rings, buffers, the combining-tree XOR; see
   [`layout/xor2/`](../layout/xor2/README.md) for the newest) — plus, this
-  increment, the first of `ro_array_core`'s own **XOR combining-tree nets
-  routed**:
+  increment, `ro_array_core`'s own **XOR combining-tree inputs, fully
+  wired**:
   [`layout/ro_array_core-placement-poc/`](../layout/ro_array_core-placement-poc/README.md)'s
-  "Increment 6" section routes `t1` (`xa1.y` → `xa3.a`, 66.97 µm on met1)
-  and exposes `xo` (`xa3.y`, a real top-level port of `ro_array_core`) and
-  `t2` (`xa2.y`) as pins on measured taps — `klt drc` clean (0 violations),
-  `klt extract` 132 devices (unchanged) and 103 nets (down from 104), a
-  net-by-net diff confirming exactly one merge and nothing else. It also
-  records three findings that matter beyond this block. **`klt drc` clean is
+  "Increment 7" section routes `t2` (`xa2.y` → `xa3.b`) via a `"metal3"`
+  (met2) bridge fed by two short `"metal2"`-role (met1) promotion stubs
+  added at the array-composition level, over the fence of already-routed
+  met1 backbones the prior increment found blocking it — `klt drc` clean
+  (0 violations) at every step, `klt extract` 132 devices (unchanged), 103
+  nets (unchanged after the stubs) then 102 nets (after the bridge merges
+  `xa2`'s `y` net with `xa3`'s `b` net, confirmed by net diff, nothing
+  else). The prior increment (Increment 6) predicted the met1 promotion
+  would need a change inside `xor2`'s own leaf cell, since met3's via-drop
+  is single-hop and cannot reach a bare li1 pin — **this increment shows
+  that's unnecessary**: an already-composed block can gain extra
+  hand-declared ports at any layer, at any point an earlier increment's own
+  routing already proved clear, one level up from the leaf cell rather than
+  inside it. `t1` (`xa1.y` → `xa3.a`, 66.97 µm on met1, Increment 6) and
+  `t2` together complete the tree's inputs; `xo` (`xa3.y`) remains exposed
+  as a bare top-level pin. Increment 6 also recorded a finding that matters
+  beyond this block: **`klt drc` clean is
   not connectivity evidence**: a first `t1` probe reported `unrouted_nets:
   []` and 0 violations while electrically shorting `xa1`'s internal `bn`
   node to its own output, because `klt gen-compose` models a placed block as
   an opaque bbox and cannot see its interior metal (filed generically
   against `2AMLogic/klayout-tools` as `klayout-tools#1527` per `CLAUDE.md`'s
-  friction protocol; probe artifacts not committed). **`xor2`'s `y` has exactly four legal met1
-  escape windows**, now measured by a committed scan script rather than
-  approximated. And **`t2` and `vdd` are blocked by the same fence** —
-  `ro1`-`ro4`'s already-routed backbones cut the row-1/row-2 corridor in
-  both axes, the router rejected two `t2` probes itself — so both need a
-  second drawing plane (met2), not a better waypoint. The prior increment
+  friction protocol; probe artifacts not committed). `xor2`'s `y` has exactly four legal met1
+  escape windows, measured by a committed scan script rather than
+  approximated. Before that, an increment
   routed `buf1`-`buf4`'s `vss` taps together as one
   bundle net on met1 (`klt drc` clean, 0 violations), but `klt extract`
   reports the same 132 devices and 104 nets as before — the merged `vss`
@@ -272,7 +280,9 @@ DR-0003 surfaces and does not resolve on its own authority.
   per `buf`/`xor2` instance), and a first buffer-only `vdd` bus attempt
   failed outright (every candidate leg crosses a neighbouring ring's own
   bounding box); the corridor-height retry that increment recommended is
-  superseded by Increment 6's fence measurement above. Before that, an
+  superseded by Increment 6's fence measurement, and `vdd` is expected to
+  need the same met1-stub-then-met2-bridge recipe Increment 7 proved out for
+  `t2` above. Before that, an
   increment routed `ro_array_core`'s buffer→XOR `b` leg: `ro2` (`buf2.y`) into `xa1.b` and
   `ro4` (`buf4.y`) into `xa2.b` on met1, resolving that increment's own open
   finding (`klt drc` clean; `klt extract` 132 devices, 104 nets, down from
