@@ -1,0 +1,284 @@
+{
+  "pdk": {
+    "variant": "sky130A"
+  },
+  "blocks": [
+    {
+      "id": "core",
+      "cell": {
+        "ports": [
+          {
+            "name": "buf1_vdd",
+            "x_um": 47.195,
+            "y_um": 4.24,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 90
+          },
+          {
+            "name": "buf1_vdd_m1",
+            "x_um": 47.195,
+            "y_um": 6.0,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 90
+          },
+          {
+            "name": "buf2_vdd",
+            "x_um": 102.495,
+            "y_um": 4.24,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 90
+          },
+          {
+            "name": "buf2_vdd_m1",
+            "x_um": 102.495,
+            "y_um": 6.0,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 90
+          },
+          {
+            "name": "buf3_vdd",
+            "x_um": 157.795,
+            "y_um": 4.24,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 90
+          },
+          {
+            "name": "buf3_vdd_m1",
+            "x_um": 157.795,
+            "y_um": 6.0,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 90
+          },
+          {
+            "name": "buf4_vdd",
+            "x_um": 212.995,
+            "y_um": 4.24,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 90
+          },
+          {
+            "name": "buf4_vdd_m1",
+            "x_um": 212.995,
+            "y_um": 6.0,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 90
+          },
+          {
+            "name": "xa1_vdd",
+            "x_um": 5.765,
+            "y_um": 26.385,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 90
+          },
+          {
+            "name": "xa1_vdd_m1",
+            "x_um": 5.765,
+            "y_um": 27.885,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 90
+          },
+          {
+            "name": "xa2_vdd",
+            "x_um": 34.735,
+            "y_um": 26.385,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 90
+          },
+          {
+            "name": "xa2_vdd_m1",
+            "x_um": 34.735,
+            "y_um": 27.885,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 90
+          },
+          {
+            "name": "xa3_vdd",
+            "x_um": 63.705,
+            "y_um": 26.385,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 90
+          },
+          {
+            "name": "xa3_vdd_m1",
+            "x_um": 63.705,
+            "y_um": 27.885,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 90
+          }
+        ],
+        "cell_name": "t2bridge",
+        "gds_path": "t2bridge.gds"
+      }
+    }
+  ],
+  "placement": {
+    "strategy": "explicit",
+    "order": [
+      "core"
+    ],
+    "origins_um": {
+      "core": {
+        "x": 0.0,
+        "y": 0.0
+      }
+    }
+  },
+  "routing": {
+    "layer_role": "metal2",
+    "width_um": 0.42
+  },
+  "connectivity": [
+    {
+      "net": "vdd_b1",
+      "pins": [
+        {
+          "block": "core",
+          "port": "buf1_vdd"
+        },
+        {
+          "block": "core",
+          "port": "buf1_vdd_m1"
+        }
+      ]
+    },
+    {
+      "net": "vdd_b2",
+      "pins": [
+        {
+          "block": "core",
+          "port": "buf2_vdd"
+        },
+        {
+          "block": "core",
+          "port": "buf2_vdd_m1"
+        }
+      ]
+    },
+    {
+      "net": "vdd_b3",
+      "pins": [
+        {
+          "block": "core",
+          "port": "buf3_vdd"
+        },
+        {
+          "block": "core",
+          "port": "buf3_vdd_m1"
+        }
+      ]
+    },
+    {
+      "net": "vdd_b4",
+      "pins": [
+        {
+          "block": "core",
+          "port": "buf4_vdd"
+        },
+        {
+          "block": "core",
+          "port": "buf4_vdd_m1"
+        }
+      ]
+    },
+    {
+      "net": "vdd_x1",
+      "pins": [
+        {
+          "block": "core",
+          "port": "xa1_vdd"
+        },
+        {
+          "block": "core",
+          "port": "xa1_vdd_m1"
+        }
+      ]
+    },
+    {
+      "net": "vdd_x2",
+      "pins": [
+        {
+          "block": "core",
+          "port": "xa2_vdd"
+        },
+        {
+          "block": "core",
+          "port": "xa2_vdd_m1"
+        }
+      ]
+    },
+    {
+      "net": "vdd_x3",
+      "pins": [
+        {
+          "block": "core",
+          "port": "xa3_vdd"
+        },
+        {
+          "block": "core",
+          "port": "xa3_vdd_m1"
+        }
+      ]
+    }
+  ],
+  "pins": [],
+  "options": {
+    "cell_name": "vddstub",
+    "output": "vddstub.gds"
+  }
+}

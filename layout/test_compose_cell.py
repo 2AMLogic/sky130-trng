@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Unit test for ``layout/bin/compose-cell.py``'s reference-netlist rewrite.
+"""Unit tests for ``layout/bin/compose-cell.py``'s two silent-failure paths.
 
 Standalone script, following ``design/test_pdk_search.py``'s and
 ``layout/test_pex_netlist.py``'s "run it directly" convention -- there is no
@@ -29,6 +29,18 @@ are silent:
 Each check below pins one of the four documented transformations against a
 minimal ro_ring5/ro_stage-shaped input, so a future edit to the regexes has
 to break a test rather than a verdict.
+
+The second silent path, and the second group of checks:
+``resolve_cell_block``, which decides what a ``blocks[].cell`` entry's
+``gds_path`` is resolved *relative to*. A committed sibling cell's path is
+relative to the cell.json (and so must be absolutized when ``--check``
+rebuilds into a temp directory); an earlier **stage**'s own stream
+(``cell.from_stage``) is relative to the output directory (and so must NOT
+be). Swap those two and nothing fails loudly: a ``--check`` rebuild would
+compose its later stages over the *committed* earlier stages and report
+"rebuild matches committed evidence" no matter what drifted in stage 1 --
+i.e. the reproducibility guarantee would silently become vacuous for exactly
+the multi-stage cells that need it most.
 """
 
 from __future__ import annotations
@@ -387,6 +399,126 @@ def check_variant_reference_is_end_to_end_self_consistent() -> None:
         path.unlink()
 
 
+def check_cell_block_from_stage_is_output_relative() -> None:
+    """``cell.from_stage`` resolves against the OUTPUT dir, not the cell.json.
+
+    The reproducibility-critical case is a ``--check`` rebuild, where
+    ``out_dir`` is a temp directory and ``spec_dir`` is the committed cell
+    directory. A committed sibling cell's ``gds_path`` MUST be absolutized
+    against ``spec_dir`` there (the temp dir has no ``../ro_buf/``); a stage's
+    own stream MUST NOT be, because the run just wrote it into ``out_dir``.
+    Absolutizing it too would silently compose every later stage over the
+    *committed* earlier stage, so a ``--check`` would report "matches" no
+    matter what drifted in stage 1.
+    """
+    spec_dir = Path("/repo/layout/ro_array_core")
+    out_dir = Path("/tmp/klt-compose-cell-xyz")
+    resolved = cc.resolve_cell_block(
+        {"from_stage": "vddstub", "ports": [{"name": "vdd", "x_um": 1.0}]},
+        block_id="core",
+        spec_dir=spec_dir,
+        out_dir=out_dir,
+        stage_responses={"core": "core.compose.response.json",
+                         "vddstub": "vddstub.compose.response.json"},
+    )
+    _check(
+        "gds_path is the stage's own output-relative stream",
+        resolved["gds_path"] == "vddstub.gds",
+        resolved,
+    )
+    _check(
+        "cell_name defaults to the stage's own composed-cell name",
+        resolved["cell_name"] == "vddstub",
+        resolved,
+    )
+    _check(
+        "the from_stage key itself does not leak into the klt request",
+        "from_stage" not in resolved,
+        resolved,
+    )
+    _check(
+        "hand-declared ports[] pass through untouched",
+        resolved["ports"] == [{"name": "vdd", "x_um": 1.0}],
+        resolved,
+    )
+
+    explicit = cc.resolve_cell_block(
+        {"from_stage": "vddstub", "cell_name": "something_else", "ports": []},
+        block_id="core",
+        spec_dir=spec_dir,
+        out_dir=out_dir,
+        stage_responses={"vddstub": "vddstub.compose.response.json"},
+    )
+    _check(
+        "an explicit cell_name overrides the stage-name default",
+        explicit["cell_name"] == "something_else",
+        explicit,
+    )
+
+
+def check_cell_block_from_stage_rejects_unknown_stage() -> None:
+    """The negative case: a stage name that is not an EARLIER stage.
+
+    Without this, a typo (or a stage referenced before it runs) would fall
+    through to ``klt gen-compose`` with a ``gds_path`` naming a file that
+    either does not exist yet or -- worse, when rebuilding in place -- is the
+    *previous run's* leftover stream, composing this run's later stages over
+    stale geometry.
+    """
+    for name, known in (("vddbus", {"core": "core.compose.response.json"}),
+                        ("typo", {})):
+        try:
+            cc.resolve_cell_block(
+                {"from_stage": name, "ports": []},
+                block_id="core",
+                spec_dir=Path("/repo/layout/ro_array_core"),
+                out_dir=Path("/repo/layout/ro_array_core"),
+                stage_responses=known,
+            )
+        except cc.BuildError as exc:
+            _check(
+                f"from_stage {name!r} raises BuildError naming the block and stage",
+                "core" in str(exc) and name in str(exc),
+                str(exc),
+            )
+        else:
+            _check(f"from_stage {name!r} raises BuildError", False, "no exception")
+
+
+def check_cell_block_sibling_path_rule_is_unchanged() -> None:
+    """Regression guard: the committed-sibling path keeps its old behaviour.
+
+    Every cell.json already committed under ``layout/`` (``ro_ring5``,
+    ``xor2``, ``ro_array_core``'s own first stage) places committed sibling
+    cells this way, so the ``from_stage`` branch must not have moved this one.
+    """
+    spec_dir = Path("/repo/layout/xor2")
+    in_place = cc.resolve_cell_block(
+        {"gds_path": "../ro_buf/ro_buf.gds", "cell_name": "ro_buf", "ports": []},
+        block_id="inv_a",
+        spec_dir=spec_dir,
+        out_dir=spec_dir,
+        stage_responses={},
+    )
+    _check(
+        "rebuilding in place keeps the repo-relative spelling",
+        in_place["gds_path"] == "../ro_buf/ro_buf.gds",
+        in_place,
+    )
+    rebuilt = cc.resolve_cell_block(
+        {"gds_path": "../ro_buf/ro_buf.gds", "cell_name": "ro_buf", "ports": []},
+        block_id="inv_a",
+        spec_dir=spec_dir,
+        out_dir=Path("/tmp/klt-compose-cell-xyz"),
+        stage_responses={},
+    )
+    _check(
+        "--check absolutizes it against the cell.json's own directory",
+        rebuilt["gds_path"] == str(Path("/repo/layout/ro_buf/ro_buf.gds")),
+        rebuilt,
+    )
+
+
 def main() -> int:
     check_param_substitution_and_units()
     check_drop_prefixes()
@@ -397,6 +529,9 @@ def main() -> int:
     check_variant_reference_two_instances_differ()
     check_repoint_variant_instances_matches_only_its_own_instance()
     check_variant_reference_is_end_to_end_self_consistent()
+    check_cell_block_from_stage_is_output_relative()
+    check_cell_block_from_stage_rejects_unknown_stage()
+    check_cell_block_sibling_path_rule_is_unchanged()
 
     return _checker.summary("layout/test_compose_cell.py")
 

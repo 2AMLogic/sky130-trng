@@ -1,0 +1,144 @@
+{
+  "pdk": {
+    "variant": "sky130A"
+  },
+  "blocks": [
+    {
+      "id": "core",
+      "cell": {
+        "ports": [
+          {
+            "name": "xa1_vss",
+            "x_um": 10.805,
+            "y_um": 11.295,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 270
+          },
+          {
+            "name": "xa1_vss_m1",
+            "x_um": 10.805,
+            "y_um": 9.6,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 270
+          },
+          {
+            "name": "xa2_vss",
+            "x_um": 39.775,
+            "y_um": 11.295,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 270
+          },
+          {
+            "name": "xa2_vss_m1",
+            "x_um": 39.775,
+            "y_um": 9.6,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 270
+          },
+          {
+            "name": "xa3_vss",
+            "x_um": 68.745,
+            "y_um": 11.295,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 270
+          },
+          {
+            "name": "xa3_vss_m1",
+            "x_um": 68.745,
+            "y_um": 10.8,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 270
+          }
+        ],
+        "cell_name": "vddbus",
+        "gds_path": "vddbus.gds"
+      }
+    }
+  ],
+  "placement": {
+    "strategy": "explicit",
+    "order": [
+      "core"
+    ],
+    "origins_um": {
+      "core": {
+        "x": 0.0,
+        "y": 0.0
+      }
+    }
+  },
+  "routing": {
+    "layer_role": "metal2",
+    "width_um": 0.42
+  },
+  "connectivity": [
+    {
+      "net": "vss_x1",
+      "pins": [
+        {
+          "block": "core",
+          "port": "xa1_vss"
+        },
+        {
+          "block": "core",
+          "port": "xa1_vss_m1"
+        }
+      ]
+    },
+    {
+      "net": "vss_x2",
+      "pins": [
+        {
+          "block": "core",
+          "port": "xa2_vss"
+        },
+        {
+          "block": "core",
+          "port": "xa2_vss_m1"
+        }
+      ]
+    },
+    {
+      "net": "vss_x3",
+      "pins": [
+        {
+          "block": "core",
+          "port": "xa3_vss"
+        },
+        {
+          "block": "core",
+          "port": "xa3_vss_m1"
+        }
+      ]
+    }
+  ],
+  "pins": [],
+  "options": {
+    "cell_name": "vssstub",
+    "output": "vssstub.gds"
+  }
+}
