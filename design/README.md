@@ -237,10 +237,27 @@ DR-0003 surfaces and does not resolve on its own authority.
   and LVS-clean cells** — every leaf cell `ro_array_core` instantiates
   (rings, buffers, the combining-tree XOR; see
   [`layout/xor2/`](../layout/xor2/README.md) for the newest) — plus, this
-  increment, `ro_array_core`'s own **buffer `vss` bus routed**, and a
-  substrate-connectivity finding that narrows what is actually still open:
+  increment, the first of `ro_array_core`'s own **XOR combining-tree nets
+  routed**:
   [`layout/ro_array_core-placement-poc/`](../layout/ro_array_core-placement-poc/README.md)'s
-  "Increment 5" section routes `buf1`-`buf4`'s `vss` taps together as one
+  "Increment 6" section routes `t1` (`xa1.y` → `xa3.a`, 66.97 µm on met1)
+  and exposes `xo` (`xa3.y`, a real top-level port of `ro_array_core`) and
+  `t2` (`xa2.y`) as pins on measured taps — `klt drc` clean (0 violations),
+  `klt extract` 132 devices (unchanged) and 103 nets (down from 104), a
+  net-by-net diff confirming exactly one merge and nothing else. It also
+  records three findings that matter beyond this block. **`klt drc` clean is
+  not connectivity evidence**: a first `t1` probe reported `unrouted_nets:
+  []` and 0 violations while electrically shorting `xa1`'s internal `bn`
+  node to its own output, because `klt gen-compose` models a placed block as
+  an opaque bbox and cannot see its interior metal (filed generically
+  against `2AMLogic/klayout-tools` as `klayout-tools#1527` per `CLAUDE.md`'s
+  friction protocol; probe artifacts not committed). **`xor2`'s `y` has exactly four legal met1
+  escape windows**, now measured by a committed scan script rather than
+  approximated. And **`t2` and `vdd` are blocked by the same fence** —
+  `ro1`-`ro4`'s already-routed backbones cut the row-1/row-2 corridor in
+  both axes, the router rejected two `t2` probes itself — so both need a
+  second drawing plane (met2), not a better waypoint. The prior increment
+  routed `buf1`-`buf4`'s `vss` taps together as one
   bundle net on met1 (`klt drc` clean, 0 violations), but `klt extract`
   reports the same 132 devices and 104 nets as before — the merged `vss`
   net's own device count (122) is unchanged, because `klt extract`'s sky130
@@ -254,9 +271,9 @@ DR-0003 surfaces and does not resolve on its own authority.
   is the opposite and stays genuinely open: still seven separate nets (one
   per `buf`/`xor2` instance), and a first buffer-only `vdd` bus attempt
   failed outright (every candidate leg crosses a neighbouring ring's own
-  bounding box) — see the PoC's own README for the corridor-height reasoning
-  a next attempt should start from. The prior increment routed
-  `ro_array_core`'s buffer→XOR `b` leg: `ro2` (`buf2.y`) into `xa1.b` and
+  bounding box); the corridor-height retry that increment recommended is
+  superseded by Increment 6's fence measurement above. Before that, an
+  increment routed `ro_array_core`'s buffer→XOR `b` leg: `ro2` (`buf2.y`) into `xa1.b` and
   `ro4` (`buf4.y`) into `xa2.b` on met1, resolving that increment's own open
   finding (`klt drc` clean; `klt extract` 132 devices, 104 nets, down from
   106). Before that, the buffer→XOR `a` leg: `ro1` (`buf1.y`) into `xa1.a`
@@ -268,10 +285,10 @@ DR-0003 surfaces and does not resolve on its own authority.
   floorplan exposes `en1..en4`/the four `vddrN` domains/`ro1..ro4` as
   top-level pins (no routing needed — each is already a single node inside
   its own block) plus really routes `rn1..rn4` (`ro_ring5.ro` → `ro_buf.a`)
-  on met1. Still open: `vdd` (see above), `ring1..4`'s and `xa1..3`'s own
-  `vss` taps (not LVS-blocking per the finding above, but not yet drawn),
-  the XOR combining tree (`t1`, `t2`, `xo`), and therefore any LVS attempt —
-  so `ro_array_core` is not yet a DRC/LVS-clean block. `sampler_core`/
+  on met1. Still open: `vdd` and `t2` (both waiting on a second drawing
+  plane, see above), `ring1..4`'s and `xa1..3`'s own `vss` taps (not
+  LVS-blocking per the substrate finding, but not yet drawn), and therefore
+  any LVS attempt — so `ro_array_core` is not yet a DRC/LVS-clean block. `sampler_core`/
   `sampler_dff` remain untouched. The thirteen before it are nine leaf gates plus all
   four `ro_ring5` rings ([`layout/ro_ring5/`](../layout/ro_ring5/README.md)
   and `ro_ring5_wstv0p{44,46,48}/`), each `klt drc` clean (0 violations) and
