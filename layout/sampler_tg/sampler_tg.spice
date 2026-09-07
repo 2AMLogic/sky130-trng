@@ -1,0 +1,15 @@
+* extracted by klt extract --deck sky130
+
+* cell sampler_tg
+* pin a
+* pin b
+* pin ctrl
+* pin ctrlb
+* pin vdd
+* pin vss
+.SUBCKT sampler_tg a b ctrl ctrlb vdd vss
+* device instance $1 r0 *1 0.545,0.21 nfet
+M$1 a ctrlb b vss nfet L=0.15U W=0.42U AS=0.1974P AD=0.1974P PS=1.78U PD=1.78U
+* device instance $2 r0 *1 0.545,3.53 pfet
+M$2 a ctrl b vdd pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
+.ENDS sampler_tg

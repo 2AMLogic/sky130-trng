@@ -1,0 +1,17 @@
+* Hand-authored micro-reference for layout/sampler_tg/'s own LVS check --
+* NOT an xschem export. design/sampler_core.spice's sampler_dff subckt draws
+* this exact two-device shape four times (TG_D, TG_FBM, TG_S, TG_FBS), but
+* flat -- design/xschem/sampler_dff.sch has no sub-schematic symbol for a
+* transmission gate, so there is no committed .subckt this leaf cell's LVS
+* can reference the way ro_stage/ro_nand2 reference design/ro_array_core.spice's
+* own .subckt ro_stage/ro_nand2. This file exists solely so
+* layout/bin/compose-cell.py's lvs.reference has a real .subckt to extract:
+* it reproduces one representative instance's own device lines byte-for-byte
+* against design/sampler_core.spice's XMtdp/XMtdn (TG_D), down to the
+* ad/as/pd/ps/nrd/nrs geometry terms -- see layout/sampler_tg/README.md.
+.subckt sampler_tg a b ctrl ctrlb vdd vss
+XMp a ctrl b vdd sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 nf=1 ad=0.2436 as=0.2436 pd=2.26 ps=2.26
++ nrd=0.345238095238095 nrs=0.345238095238095 sa=0 sb=0 sd=0 mult=1 m=1
+XMn a ctrlb b vss sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 nf=1 ad=0.1218 as=0.1218 pd=1.42 ps=1.42
++ nrd=0.69047619047619 nrs=0.69047619047619 sa=0 sb=0 sd=0 mult=1 m=1
+.ends

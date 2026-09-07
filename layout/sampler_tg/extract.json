@@ -1,0 +1,124 @@
+{
+  "schema_version": 3,
+  "file": "sampler_tg.gds",
+  "deck": "sky130",
+  "top": "sampler_tg",
+  "dbu_um": 0.001,
+  "netlist_path": "sampler_tg.spice",
+  "netlist_sha256": "35439a1e16d28ccf0c411b174b662d6ac85c30cfc01827e91fb567a7e45610fe",
+  "status": "extracted",
+  "device_count": 2,
+  "net_count": 6,
+  "pin_count": 6,
+  "device_counts": {
+    "nfet": 1,
+    "pfet": 1
+  },
+  "dummy_devices_dropped": 0,
+  "ignored_layers": [],
+  "device_recognition_only_layers": [],
+  "device_classes": [
+    "nfet",
+    "pfet",
+    "pnp",
+    "sky130_fd_pr__model__cap_mim",
+    "sky130_fd_pr__model__cap_mim_m4",
+    "resistor"
+  ],
+  "devices": [
+    {
+      "name": "$1",
+      "class": "nfet",
+      "nets": {
+        "s": "b",
+        "g": "ctrlb",
+        "d": "a",
+        "b": "vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$2",
+      "class": "pfet",
+      "nets": {
+        "s": "b",
+        "g": "ctrl",
+        "d": "a",
+        "b": "vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    }
+  ],
+  "nets": [
+    {
+      "name": "a",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "b",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "ctrl",
+      "pin": true,
+      "device_count": 1
+    },
+    {
+      "name": "ctrlb",
+      "pin": true,
+      "device_count": 1
+    },
+    {
+      "name": "vdd",
+      "pin": true,
+      "device_count": 1
+    },
+    {
+      "name": "vss",
+      "pin": true,
+      "device_count": 1
+    }
+  ],
+  "warnings": [],
+  "black_box_regions": [],
+  "abstracted_cells": [],
+  "unmodelled_poly": [],
+  "merged_net_labels": [],
+  "voltage_domain_warnings": [],
+  "unbiased_pmos_body_nets": [],
+  "single_terminal_nets": [],
+  "dead_metal": [],
+  "matched_device_groups": [],
+  "pdk": null,
+  "provenance": {
+    "klt_version": "0.3.0",
+    "klayout_version": "0.30.12",
+    "pdk": null,
+    "deck": {
+      "name": "sky130",
+      "content_hash": "sha256:5afac7ab8561545859f5e2e74f4621c6ffc052756dc8fe344ea263398e96b240",
+      "released": false
+    },
+    "input": {
+      "content_hash": "sha256:1a7f64e132f457f4b0f8177dc395b58ba8c54dd11085293cf6653181383a88c0"
+    }
+  },
+  "parasitics": null,
+  "spef_path": null
+}
