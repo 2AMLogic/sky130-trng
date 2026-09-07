@@ -1,0 +1,96 @@
+{
+  "pdk": {
+    "variant": "sky130A"
+  },
+  "blocks": [
+    {
+      "id": "core",
+      "cell": {
+        "ports": [
+          {
+            "name": "nand_s2_y",
+            "x_um": 44.18,
+            "y_um": 0.21,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 90
+          },
+          {
+            "name": "tg_fbs_a",
+            "x_um": 50.2,
+            "y_um": 0.21,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 0
+          }
+        ],
+        "cell_name": "q_bus",
+        "gds_path": "q_bus.gds"
+      }
+    }
+  ],
+  "placement": {
+    "strategy": "explicit",
+    "order": [
+      "core"
+    ],
+    "origins_um": {
+      "core": {
+        "x": 0.0,
+        "y": 0.0
+      }
+    }
+  },
+  "routing": {
+    "layer_role": "metal2",
+    "width_um": 0.17
+  },
+  "connectivity": [
+    {
+      "net": "qb",
+      "pins": [
+        {
+          "block": "core",
+          "port": "nand_s2_y"
+        },
+        {
+          "block": "core",
+          "port": "tg_fbs_a"
+        }
+      ],
+      "waypoints_um": [
+        [
+          44.18,
+          0.21
+        ],
+        [
+          44.35,
+          0.21
+        ],
+        [
+          44.35,
+          2.0
+        ],
+        [
+          50.2,
+          2.0
+        ],
+        [
+          50.2,
+          0.21
+        ]
+      ]
+    }
+  ],
+  "pins": [],
+  "options": {
+    "cell_name": "qb_bus",
+    "output": "qb_bus.gds"
+  }
+}

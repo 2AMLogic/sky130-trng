@@ -4,7 +4,39 @@ Physical layout evidence for the sky130-trng entropy source, verified with
 `klayout-tools` (`klt`) against the sky130 open PDK. See `layout/pdk.json`
 for the PDK/tool pin.
 
-**Status (issue #22, this increment): `sampler_dff`'s third data-path net,
+**Status (issue #22, this increment): `sampler_dff`'s fourth data-path net,
+`s`, is routed — DRC-clean, the cell's first three-pin data-path net, and
+the only one of the three that were left open which touches neither
+`sampler_nand2` instance (so it is unaffected by the open pin swap
+[#84](https://github.com/2AMLogic/sky130-trng/issues/84), and does not
+add to that fix's blast radius).** `s` is the slave latch's own storage
+node — `tg_s.b` (`28.895, 1.2`), `inv_q.a` (`36.545, 1.7`), `tg_fbs.b`
+(`48.185, 1.2`), i.e. `design/sampler_core.spice`'s own
+`XMtsp`/`XMtsn`/`XMisp`/`XMisn`/`XMfsp`/`XMfsn` — `19.29 µm` apart end to
+end, two thirds of the cell's width. **No met1 lane can carry it**: every
+lane between the pins' own `y = 1.2` and the `vdd` bus is blocked at two or
+more columns by metal earlier increments drew (`q`'s L-lane, `qb`'s east
+run, `clkb_bus`'s east segment, `clkb_seg2`'s own vertical) plus
+`sampler_nand2`'s own internal met1 blob — so this net takes `mc`'s
+two-stage recipe one plane further out: `s_met1` vias all three li1 pins
+straight up to met1 (three single-hop via-drops, zero lateral distance),
+and the final stage runs **one straight `met2` lane at `y = 1.7`**, steered
+leg-by-leg with `connectivity[].legs[]`. That `y` is the *middle pin's own*
+`y`, deliberately: the round `y = 2.0` first attempt produced exactly one
+DRC violation, an **0.005 µm same-net notch** between `inv_q.a`'s own
+`0.42 µm` via-drop pad (top edge `y = 1.91`) and the lane's own bottom edge
+(`y = 1.915`) — running the lane at `1.7` makes the two shapes overlap
+instead of nearly touching, and drops a corner from the route. **`klt drc`
+clean, 0 violations; cell bbox unchanged**; `klt extract`'s net count drops
+from 20 to **18** (exactly the two merges a three-pin net makes), and the
+merged net's own **six**-device list matches
+`design/sampler_core.spice` device for device on class, width *and* every
+gate/terminal role — no discrepancy of the kind `qb`'s own check turned up.
+See [`layout/sampler_dff/README.md`](sampler_dff/README.md)'s "Result: `s`
+fan-out". Two data-path nets (`m`, `mb`) remain, and both touch `NAND_M`,
+so both are downstream of #84.
+
+**A previous increment (issue #22): `sampler_dff`'s third data-path net,
 `qb`, is routed — DRC-clean — and its own device-list check found a
 pre-existing, LVS-blocking pin swap on both `sampler_nand2` instances
 (filed as [#84](https://github.com/2AMLogic/sky130-trng/issues/84)).**
@@ -33,7 +65,7 @@ functionally harmless (a NAND2's inputs commute) but verified LVS-blocking,
 and is left for #84 rather than re-derived here, since fixing it re-does two
 already-merged increments. See
 [`layout/sampler_dff/README.md`](sampler_dff/README.md)'s "Result: `qb`
-fan-out" and "The `sampler_nand2` input swap this increment found".
+fan-out" and "The `sampler_nand2` input swap the `qb` increment found".
 
 **A previous increment (issue #22): `sampler_dff`'s second data-path net,
 `q`, is routed — DRC-clean on the first attempt, and the first data-path net
@@ -765,7 +797,7 @@ trng_top                   (not in scope for #22 — stops at the raw tap)
         ro_stage   (x4/ring)  BUILT, all 4 wstv values — DRC-clean + LVS-clean (layout/ro_stage/, ro_stage_wstv0p{44,46,48}/) — 4 distinct physical cells (one per ring's wstv), each reused 4x within its own ring
       ro_buf     (x4)        BUILT — DRC-clean + LVS-clean (layout/ro_buf/)
       xor2       (x3)        BUILT — DRC-clean + LVS-clean (layout/xor2/) — 4x mos_array (two series chains per tree) + 3x guard_ring + 2x ro_buf cell; one physical cell reused 3x (xa1/xa2/xa3 are identical instances)
-    sampler_dff  (x6)        ASSEMBLY STARTED — layout/sampler_dff/ places all nine leaf-cell instances (3x ro_buf, 4x sampler_tg, 2x sampler_nand2) via blocks[].cell, DRC-clean (0 violations), plus a routed vdd/vss bus and routed rst_n/clk/clkb fan-outs (all DRC-clean, 0 violations, 0 unrouted nets; klt extract confirms each is one physically merged net landing on exactly the devices design/sampler_core.spice has) and the first of the six data-path nets, mc (inv_mc.y -> tg_fbm.a, routed on met2 since met1 is blocked for its whole useful height band by clkb's own backbone and clk's own via-drop pad). klt extract confirms 22/22 devices at the correct 11 nfet/11 pfet split against design/sampler_core.spice's own .subckt sampler_dff. Still open: five data-path nets (m/mb/s/q/qb), and the resulting whole-cell klt lvs sign-off (#27)
+    sampler_dff  (x6)        ASSEMBLY STARTED — layout/sampler_dff/ places all nine leaf-cell instances (3x ro_buf, 4x sampler_tg, 2x sampler_nand2) via blocks[].cell, DRC-clean (0 violations), plus a routed vdd/vss bus, routed rst_n/clk/clkb fan-outs and four of the six data-path nets: mc (met2 U-lane), q (met1 L-lane), qb (met1, jogged climb out of sampler_nand2's own met1 blob) and s (the first three-pin one: three met1 via-drops plus a straight met2 lane at the middle pin's own y). All DRC-clean, 0 violations, 0 unrouted nets; klt extract confirms each is one physically merged net whose device list matches design/sampler_core.spice's own — with the single exception qb's check found, the sampler_nand2 input-pin swap tracked as #84. klt extract also confirms 22/22 devices at the correct 11 nfet/11 pfet split against design/sampler_core.spice's own .subckt sampler_dff. Still open: two data-path nets (m/mb, both downstream of #84), #84 itself, whole-cell pin promotion, and the resulting whole-cell klt lvs sign-off (#27)
 ```
 
 "PROVEN AT DEVICE LEVEL" means: every transistor geometry the cell needs is

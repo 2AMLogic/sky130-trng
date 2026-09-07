@@ -14,23 +14,23 @@
     "parameter_tolerance": null
   },
   "status": "mismatch",
-  "mismatch_count": 18,
-  "error_count": 18,
+  "mismatch_count": 16,
+  "error_count": 16,
   "category_counts": {
     "device.unmatched": 10,
     "net.merged": 1,
-    "net.split": 7
+    "net.split": 5
   },
   "category_error_counts": {
     "device.unmatched": 10,
     "net.merged": 1,
-    "net.split": 7
+    "net.split": 5
   },
   "counts": {
     "nets": {
-      "layout": 20,
+      "layout": 18,
       "reference": 14,
-      "matched": 4
+      "matched": 5
     },
     "devices": {
       "layout": 22,
@@ -38,16 +38,16 @@
       "matched": 12
     },
     "pins": {
-      "layout": 18,
+      "layout": 16,
       "reference": 6,
-      "matched": 19
+      "matched": 17
     }
   },
   "device_classes": null,
   "environment": {
     "engine": "klayout",
     "engine_version": "0.30.12",
-    "layout_sha256": "ef4f84a3f83136d7dc82c13af5399d12938e1067de6da9c556667c860ae8494c",
+    "layout_sha256": "6d967f813eaf497614415f1fd7a225060a897a649bf478d2ac07a19c4cac5495",
     "reference_sha256": "66009a496f55fac466075bbac7c9a2216dfc2e18e1eb02eda823233534918e2c",
     "extracted_netlist": null
   },
@@ -101,7 +101,7 @@
       "net": null,
       "device": {
         "layout": "\\$17",
-        "reference": "IMPB",
+        "reference": "ISP",
         "class": "PFET"
       },
       "property": null,
@@ -118,7 +118,7 @@
       "net": null,
       "device": {
         "layout": "\\$19",
-        "reference": "TSP",
+        "reference": "IMPB",
         "class": "PFET"
       },
       "property": null,
@@ -152,7 +152,7 @@
       "net": null,
       "device": {
         "layout": "\\$20",
-        "reference": "ISP",
+        "reference": "TSP",
         "class": "PFET"
       },
       "property": null,
@@ -251,22 +251,6 @@
       "description": "a reference net's role is divided across multiple layout nets",
       "side": "layout",
       "net": {
-        "layout": "A|INV_Q_A",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.split",
-      "severity": "error",
-      "description": "a reference net's role is divided across multiple layout nets",
-      "side": "layout",
-      "net": {
         "layout": "A|TG_D_A",
         "reference": null
       },
@@ -300,22 +284,6 @@
       "side": "layout",
       "net": {
         "layout": "B|TG_D_B",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.split",
-      "severity": "error",
-      "description": "a reference net's role is divided across multiple layout nets",
-      "side": "layout",
-      "net": {
-        "layout": "B|TG_S_B",
         "reference": null
       },
       "device": null,
@@ -365,7 +333,7 @@
       "pin": true
     },
     {
-      "layout": "\\$9",
+      "layout": "\\$6",
       "reference": "MMID",
       "pin": false
     },
@@ -375,7 +343,12 @@
       "pin": true
     },
     {
-      "layout": "\\$14",
+      "layout": "A|B|INV_Q_A|INV_Q_A_VIA|S|TG_FBS_B|TG_FBS_B_VIA|TG_S_B|TG_S_B_VIA",
+      "reference": "S",
+      "pin": true
+    },
+    {
+      "layout": "\\$10",
       "reference": "S2MID",
       "pin": false
     }
