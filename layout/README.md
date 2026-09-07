@@ -4,7 +4,45 @@ Physical layout evidence for the sky130-trng entropy source, verified with
 `klayout-tools` (`klt`) against the sky130 open PDK. See `layout/pdk.json`
 for the PDK/tool pin.
 
-**Status (issue #22, this increment): `sampler_core`'s shared `vdd`/`vss`
+**Status (issue #22, this increment): `sampler_core`'s shared `clk`
+fan-out and shared `rst_n` fan-out are both routed across all six
+`sampler_dff` instances, DRC-clean.** [`layout/sampler_core/`](sampler_core/README.md)
+adds a third stage, `route_ctrl`, on top of the `vdd`/`vss` `route_supplies`
+stage below, reusing the same chain-of-six technique for `clk` and `rst_n`
+— both are already single, already-routed nets *inside* every
+`sampler_dff` instance, so no fresh six-pin-bundle derivation was needed.
+`clk` chains `sb`→`sv`→`sr1`→`sr2`→`sr3`→`sr4` as five straight legs at a
+fixed height (met2, `"metal3"` role, landing directly on each instance's
+own already-drawn run, no via) — clean on the **first** attempt, since
+that lane already spans each instance's full width clear of everything
+else. `rst_n`'s first attempt (the same recipe, same shared local x as
+`clk`) failed all five legs: `gen-compose` reported a self-net short
+against `clk`'s own drawn metal, because a straight haul out of `rst_n`'s
+own narrower in-cell span crosses several *other* nets' met2 verticals
+near each instance's east edge (confirmed directly with `klayout.db`: a
+thin y-band slice across the full cell width finds real met2 at those x
+positions that is neither `rst_n`'s own bus nor anything the naive
+"port x is inside the labelled span" check saw coming). The fix: a
+`klayout.db` scan for a completely empty met2 band found one at
+`y=3.4..6.9` in every instance, clear of every net this repo has ever
+drawn there (`vdd`'s own rail starts at `y=6.915`, everything else tops
+out at `y≈2.8`); each `rst_n` leg now climbs (same layer, still no via)
+from its own bus to that empty band, buses across, and drops back down at
+the next instance, via an explicit four-point `waypoints_um` U-shape per
+leg. `klt drc`: clean, 0 violations, on the corrected attempt, cell bbox
+unchanged. `klt extract`: 132 devices unchanged, and **64 nets** (down
+from the `vdd`/`vss` increment's 74 — `clk`/`rst_n` each merge from six
+separate per-instance nets into one, saving 5 apiece). `klt lvs` against
+`design/sampler_core.spice`'s real `.subckt sampler_core`: mismatch, as
+expected (no `ro_array_core` instance placed yet, `d`/`q` still unwired).
+Placing the `ro_array_core` instance and wiring it to the samplers' `d`
+pins, `d`/`q`/`vdd`/`vss` pin promotion, and whole-cell `klt lvs` sign-off
+all remain open, tracked here and in #27. No `2AMLogic/klayout-tools`
+friction was found by this increment — the self-net short check and its
+error message (naming the exact ports involved) worked as documented and
+correctly caught a real problem in the first attempt's own anchor choice.
+
+**A previous increment (issue #22): `sampler_core`'s shared `vdd`/`vss`
 bus is routed across all six `sampler_dff` instances, DRC-clean.**
 [`layout/sampler_core/`](sampler_core/README.md) promotes the placement
 proof-of-concept below into a real, `compose-cell.py --check`-reproducible
@@ -28,10 +66,7 @@ plain `dependencies[]` entry's own body, so `ro_array_core`'s nested
 `ro_ring5` calls in the generated reference are silently left unresolved
 (`klt lvs` drops them rather than erroring) — recorded in
 `layout/sampler_core/README.md` for whoever attempts the real whole-cell
-LVS pass. `clk`/`rst_n` fan-out, the `ro_array_core` instance and its
-wiring to the samplers' `d` pins, `d`/`q` pin promotion, and that whole-cell
-`klt lvs` sign-off all remain open, tracked here and in #27. No
-`2AMLogic/klayout-tools` friction was found by this increment.
+LVS pass. No `2AMLogic/klayout-tools` friction was found by this increment.
 
 **A previous increment (issue #22): the `sampler_core` six-`sampler_dff`
 bank has a verified, DRC-clean floorplan.**

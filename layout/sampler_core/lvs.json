@@ -14,24 +14,26 @@
     "parameter_tolerance": null
   },
   "status": "mismatch",
-  "mismatch_count": 348,
-  "error_count": 347,
+  "mismatch_count": 330,
+  "error_count": 329,
   "category_counts": {
     "device.unmatched": 176,
-    "net.unmatched": 166,
+    "net.merged": 88,
+    "net.split": 60,
     "topology": 5,
     "topology.flattened": 1
   },
   "category_error_counts": {
     "device.unmatched": 176,
-    "net.unmatched": 166,
+    "net.merged": 88,
+    "net.split": 60,
     "topology": 5
   },
   "counts": {
     "nets": {
-      "layout": 74,
+      "layout": 64,
       "reference": 92,
-      "matched": 0
+      "matched": 1
     },
     "devices": {
       "layout": 132,
@@ -39,21 +41,21 @@
       "matched": 0
     },
     "pins": {
-      "layout": 62,
+      "layout": 52,
       "reference": 18,
-      "matched": 80
+      "matched": 66
     }
   },
   "device_classes": null,
   "environment": {
     "engine": "klayout",
     "engine_version": "0.30.12",
-    "layout_sha256": "468555e446c3e196754f543f71f093255076f421aa73f0c4e11d54cf61ea7d28",
+    "layout_sha256": "5bb088c4c31f45c5acd8387a446c1dbf86f02ccaff8c65af48724308969b4f8f",
     "reference_sha256": "f9ea00e041e48abfe18e36794aa60752781aa3ae9affe66157cf1c3d4ecadf4d",
     "extracted_netlist": null
   },
   "provenance": {
-    "klt_version": "0.4.0",
+    "klt_version": "0.3.0",
     "klayout_version": "0.30.12",
     "pdk": null,
     "deck": null,
@@ -986,7 +988,7 @@
       "net": null,
       "device": {
         "layout": "\\$108",
-        "reference": "SR4.IS2PB",
+        "reference": "SR2.FSP",
         "class": "PFET"
       },
       "property": null,
@@ -1122,7 +1124,7 @@
       "net": null,
       "device": {
         "layout": "\\$115",
-        "reference": "SR2.FSP",
+        "reference": "SR4.IS2PB",
         "class": "PFET"
       },
       "property": null,
@@ -1666,7 +1668,7 @@
       "net": null,
       "device": {
         "layout": "\\$25",
-        "reference": "SR1.ISN",
+        "reference": "SV.FMN",
         "class": "NFET"
       },
       "property": null,
@@ -1836,7 +1838,7 @@
       "net": null,
       "device": {
         "layout": "\\$34",
-        "reference": "SV.FMN",
+        "reference": "SR1.ISN",
         "class": "NFET"
       },
       "property": null,
@@ -3053,1209 +3055,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "A|B|INV_Q_A|INV_Q_A_VIA|S|TG_FBS_B|TG_FBS_B_VIA|TG_S_B|TG_S_B_VIA",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "A|B|INV_Q_A|INV_Q_A_VIA|S|TG_FBS_B|TG_FBS_B_VIA|TG_S_B|TG_S_B_VIA$1",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "A|B|INV_Q_A|INV_Q_A_VIA|S|TG_FBS_B|TG_FBS_B_VIA|TG_S_B|TG_S_B_VIA$2",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "A|B|INV_Q_A|INV_Q_A_VIA|S|TG_FBS_B|TG_FBS_B_VIA|TG_S_B|TG_S_B_VIA$3",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "A|B|INV_Q_A|INV_Q_A_VIA|S|TG_FBS_B|TG_FBS_B_VIA|TG_S_B|TG_S_B_VIA$4",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "A|B|INV_Q_A|INV_Q_A_VIA|S|TG_FBS_B|TG_FBS_B_VIA|TG_S_B|TG_S_B_VIA$5",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "A|B|M_EAST|M_WEST|NAND_M_A|NAND_M_A_EXT_VIA|NAND_M_A_EXT_VIA2|NAND_M_A_STUB|TG_D_B|TG_D_B_VIA|TG_D_B_VIA2|TG_FBM_B|TG_FBM_B_ALT_VIA|TG_FBM_B_ALT_VIA2",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "A|B|M_EAST|M_WEST|NAND_M_A|NAND_M_A_EXT_VIA|NAND_M_A_EXT_VIA2|NAND_M_A_STUB|TG_D_B|TG_D_B_VIA|TG_D_B_VIA2|TG_FBM_B|TG_FBM_B_ALT_VIA|TG_FBM_B_ALT_VIA2$1",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "A|B|M_EAST|M_WEST|NAND_M_A|NAND_M_A_EXT_VIA|NAND_M_A_EXT_VIA2|NAND_M_A_STUB|TG_D_B|TG_D_B_VIA|TG_D_B_VIA2|TG_FBM_B|TG_FBM_B_ALT_VIA|TG_FBM_B_ALT_VIA2$2",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "A|B|M_EAST|M_WEST|NAND_M_A|NAND_M_A_EXT_VIA|NAND_M_A_EXT_VIA2|NAND_M_A_STUB|TG_D_B|TG_D_B_VIA|TG_D_B_VIA2|TG_FBM_B|TG_FBM_B_ALT_VIA|TG_FBM_B_ALT_VIA2$3",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "A|B|M_EAST|M_WEST|NAND_M_A|NAND_M_A_EXT_VIA|NAND_M_A_EXT_VIA2|NAND_M_A_STUB|TG_D_B|TG_D_B_VIA|TG_D_B_VIA2|TG_FBM_B|TG_FBM_B_ALT_VIA|TG_FBM_B_ALT_VIA2$4",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "A|B|M_EAST|M_WEST|NAND_M_A|NAND_M_A_EXT_VIA|NAND_M_A_EXT_VIA2|NAND_M_A_STUB|TG_D_B|TG_D_B_VIA|TG_D_B_VIA2|TG_FBM_B|TG_FBM_B_ALT_VIA|TG_FBM_B_ALT_VIA2$5",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "A|CLK|CTRL|CTRLB|INV_CLK_A|INV_CLK_CLK_VIA|TG_D_CTRL|TG_D_CTRL_VIA|TG_FBM_CTRLB|TG_FBM_CTRLB_VIA|TG_FBS_CTRL|TG_FBS_CTRL_VIA|TG_S_CTRLB|TG_S_CTRLB_VIA",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "A|CLK|CTRL|CTRLB|INV_CLK_A|INV_CLK_CLK_VIA|TG_D_CTRL|TG_D_CTRL_VIA|TG_FBM_CTRLB|TG_FBM_CTRLB_VIA|TG_FBS_CTRL|TG_FBS_CTRL_VIA|TG_S_CTRLB|TG_S_CTRLB_VIA$1",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "A|CLK|CTRL|CTRLB|INV_CLK_A|INV_CLK_CLK_VIA|TG_D_CTRL|TG_D_CTRL_VIA|TG_FBM_CTRLB|TG_FBM_CTRLB_VIA|TG_FBS_CTRL|TG_FBS_CTRL_VIA|TG_S_CTRLB|TG_S_CTRLB_VIA$2",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "A|CLK|CTRL|CTRLB|INV_CLK_A|INV_CLK_CLK_VIA|TG_D_CTRL|TG_D_CTRL_VIA|TG_FBM_CTRLB|TG_FBM_CTRLB_VIA|TG_FBS_CTRL|TG_FBS_CTRL_VIA|TG_S_CTRLB|TG_S_CTRLB_VIA$3",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "A|CLK|CTRL|CTRLB|INV_CLK_A|INV_CLK_CLK_VIA|TG_D_CTRL|TG_D_CTRL_VIA|TG_FBM_CTRLB|TG_FBM_CTRLB_VIA|TG_FBS_CTRL|TG_FBS_CTRL_VIA|TG_S_CTRLB|TG_S_CTRLB_VIA$4",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "A|CLK|CTRL|CTRLB|INV_CLK_A|INV_CLK_CLK_VIA|TG_D_CTRL|TG_D_CTRL_VIA|TG_FBM_CTRLB|TG_FBM_CTRLB_VIA|TG_FBS_CTRL|TG_FBS_CTRL_VIA|TG_S_CTRLB|TG_S_CTRLB_VIA$5",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "A|D|TG_D_A",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "A|D|TG_D_A$1",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "A|D|TG_D_A$2",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "A|D|TG_D_A$3",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "A|D|TG_D_A$4",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "A|D|TG_D_A$5",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "A|INV_MC_A|MB|MNAB_Y|MPA_Y|MPB_Y|NAND_M_Y|TG_S_A|Y",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "A|INV_MC_A|MB|MNAB_Y|MPA_Y|MPB_Y|NAND_M_Y|TG_S_A|Y$1",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "A|INV_MC_A|MB|MNAB_Y|MPA_Y|MPB_Y|NAND_M_Y|TG_S_A|Y$2",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "A|INV_MC_A|MB|MNAB_Y|MPA_Y|MPB_Y|NAND_M_Y|TG_S_A|Y$3",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "A|INV_MC_A|MB|MNAB_Y|MPA_Y|MPB_Y|NAND_M_Y|TG_S_A|Y$4",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "A|INV_MC_A|MB|MNAB_Y|MPA_Y|MPB_Y|NAND_M_Y|TG_S_A|Y$5",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "A|INV_MC_Y|INV_MC_Y_VIA|MC|TG_FBM_A|TG_FBM_A_VIA|Y",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "A|INV_MC_Y|INV_MC_Y_VIA|MC|TG_FBM_A|TG_FBM_A_VIA|Y$1",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "A|INV_MC_Y|INV_MC_Y_VIA|MC|TG_FBM_A|TG_FBM_A_VIA|Y$2",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "A|INV_MC_Y|INV_MC_Y_VIA|MC|TG_FBM_A|TG_FBM_A_VIA|Y$3",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "A|INV_MC_Y|INV_MC_Y_VIA|MC|TG_FBM_A|TG_FBM_A_VIA|Y$4",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "A|INV_MC_Y|INV_MC_Y_VIA|MC|TG_FBM_A|TG_FBM_A_VIA|Y$5",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "A|INV_Q_Y|INV_Q_Y_VIA|INV_Q_Y_VIA2|NAND_S2_A|NAND_S2_A_STUB|NAND_S2_A_VIA|NAND_S2_A_VIA2|Q|Y",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "A|INV_Q_Y|INV_Q_Y_VIA|INV_Q_Y_VIA2|NAND_S2_A|NAND_S2_A_STUB|NAND_S2_A_VIA|NAND_S2_A_VIA2|Q|Y$1",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "A|INV_Q_Y|INV_Q_Y_VIA|INV_Q_Y_VIA2|NAND_S2_A|NAND_S2_A_STUB|NAND_S2_A_VIA|NAND_S2_A_VIA2|Q|Y$2",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "A|INV_Q_Y|INV_Q_Y_VIA|INV_Q_Y_VIA2|NAND_S2_A|NAND_S2_A_STUB|NAND_S2_A_VIA|NAND_S2_A_VIA2|Q|Y$3",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "A|INV_Q_Y|INV_Q_Y_VIA|INV_Q_Y_VIA2|NAND_S2_A|NAND_S2_A_STUB|NAND_S2_A_VIA|NAND_S2_A_VIA2|Q|Y$4",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "A|INV_Q_Y|INV_Q_Y_VIA|INV_Q_Y_VIA2|NAND_S2_A|NAND_S2_A_STUB|NAND_S2_A_VIA|NAND_S2_A_VIA2|Q|Y$5",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "A|MNAB_Y|MPA_Y|MPB_Y|NAND_S2_Y|QB|TG_FBS_A|Y",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "A|MNAB_Y|MPA_Y|MPB_Y|NAND_S2_Y|QB|TG_FBS_A|Y$1",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "A|MNAB_Y|MPA_Y|MPB_Y|NAND_S2_Y|QB|TG_FBS_A|Y$2",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "A|MNAB_Y|MPA_Y|MPB_Y|NAND_S2_Y|QB|TG_FBS_A|Y$3",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "A|MNAB_Y|MPA_Y|MPB_Y|NAND_S2_Y|QB|TG_FBS_A|Y$4",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "A|MNAB_Y|MPA_Y|MPB_Y|NAND_S2_Y|QB|TG_FBS_A|Y$5",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "CLKB|CLKB_BRIDGE1|CLKB_BRIDGE2|CLKB_MID|CLKB_W|CTRL|CTRLB|INV_CLK_Y|TG_D_CTRLB|TG_FBM_CTRL|TG_FBS_CTRLB|TG_S_CTRL|Y",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "CLKB|CLKB_BRIDGE1|CLKB_BRIDGE2|CLKB_MID|CLKB_W|CTRL|CTRLB|INV_CLK_Y|TG_D_CTRLB|TG_FBM_CTRL|TG_FBS_CTRLB|TG_S_CTRL|Y$1",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "CLKB|CLKB_BRIDGE1|CLKB_BRIDGE2|CLKB_MID|CLKB_W|CTRL|CTRLB|INV_CLK_Y|TG_D_CTRLB|TG_FBM_CTRL|TG_FBS_CTRLB|TG_S_CTRL|Y$2",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "CLKB|CLKB_BRIDGE1|CLKB_BRIDGE2|CLKB_MID|CLKB_W|CTRL|CTRLB|INV_CLK_Y|TG_D_CTRLB|TG_FBM_CTRL|TG_FBS_CTRLB|TG_S_CTRL|Y$3",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "CLKB|CLKB_BRIDGE1|CLKB_BRIDGE2|CLKB_MID|CLKB_W|CTRL|CTRLB|INV_CLK_Y|TG_D_CTRLB|TG_FBM_CTRL|TG_FBS_CTRLB|TG_S_CTRL|Y$4",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "CLKB|CLKB_BRIDGE1|CLKB_BRIDGE2|CLKB_MID|CLKB_W|CTRL|CTRLB|INV_CLK_Y|TG_D_CTRLB|TG_FBM_CTRL|TG_FBS_CTRLB|TG_S_CTRL|Y$5",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "EN|NAND_M_EN|NAND_M_EN_VIA|NAND_S2_EN|NAND_S2_EN_VIA|RST_N",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "EN|NAND_M_EN|NAND_M_EN_VIA|NAND_S2_EN|NAND_S2_EN_VIA|RST_N$1",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "EN|NAND_M_EN|NAND_M_EN_VIA|NAND_S2_EN|NAND_S2_EN_VIA|RST_N$2",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "EN|NAND_M_EN|NAND_M_EN_VIA|NAND_S2_EN|NAND_S2_EN_VIA|RST_N$3",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "EN|NAND_M_EN|NAND_M_EN_VIA|NAND_S2_EN|NAND_S2_EN_VIA|RST_N$4",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "EN|NAND_M_EN|NAND_M_EN_VIA|NAND_S2_EN|NAND_S2_EN_VIA|RST_N$5",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "INV_CLK_VDD|INV_MC_VDD|INV_Q_VDD|MPA_PY|MPB_PY|NAND_M_VDD|NAND_S2_VDD|NWELL_VDD|SB_VDD|SR1_VDD|SR2_VDD|SR3_VDD|SR4_VDD|SV_VDD|TG_D_VDD|TG_FBM_VDD|TG_FBS_VDD|TG_S_VDD|VDD",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "INV_CLK_VSS|INV_MC_VSS|INV_Q_VSS|NAND_M_VSS|NAND_S2_VSS|SB_VSS|SR1_VSS|SR2_VSS|SR3_VSS|SR4_VSS|SV_VSS|TG_D_VSS|TG_FBM_VSS|TG_FBS_VSS|TG_S_VSS|VSS",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "\\$18",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "\\$19",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "\\$22",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "\\$23",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "\\$26",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "\\$27",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "\\$30",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "\\$31",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "\\$34",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "\\$35",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "\\$38",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "\\$39",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "reference net has no layout counterpart",
-      "side": "reference",
-      "net": {
-        "layout": null,
-        "reference": "CLK"
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -4269,9 +3071,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -4285,9 +3087,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -4301,9 +3103,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -4317,9 +3119,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -4333,9 +3135,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -4349,9 +3151,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -4365,9 +3167,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -4381,9 +3183,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -4397,9 +3199,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -4413,9 +3215,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -4429,9 +3231,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -4445,9 +3247,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -4461,9 +3263,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -4477,9 +3279,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -4493,9 +3295,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -4509,9 +3311,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -4525,9 +3327,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -4541,9 +3343,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -4557,9 +3359,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -4573,9 +3375,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -4589,9 +3391,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -4605,9 +3407,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -4621,9 +3423,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -4637,9 +3439,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -4653,9 +3455,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -4669,9 +3471,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -4685,9 +3487,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -4701,9 +3503,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -4717,9 +3519,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -4733,9 +3535,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -4749,9 +3551,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -4765,9 +3567,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -4781,9 +3583,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -4797,9 +3599,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -4813,25 +3615,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
-      "side": "reference",
-      "net": {
-        "layout": null,
-        "reference": "RST_N"
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -4845,9 +3631,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -4861,9 +3647,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -4877,9 +3663,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -4893,9 +3679,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -4909,9 +3695,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -4925,9 +3711,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -4941,9 +3727,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -4957,9 +3743,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -4973,9 +3759,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -4989,9 +3775,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -5005,9 +3791,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -5021,9 +3807,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -5037,9 +3823,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -5053,9 +3839,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -5069,9 +3855,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -5085,9 +3871,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -5101,9 +3887,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -5117,9 +3903,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -5133,9 +3919,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -5149,9 +3935,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -5165,9 +3951,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -5181,9 +3967,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -5197,9 +3983,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -5213,9 +3999,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -5229,9 +4015,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -5245,9 +4031,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -5261,9 +4047,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -5277,9 +4063,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -5293,9 +4079,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -5309,9 +4095,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -5325,9 +4111,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -5341,9 +4127,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -5357,9 +4143,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -5373,9 +4159,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -5389,9 +4175,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -5405,9 +4191,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -5421,9 +4207,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -5437,9 +4223,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -5453,9 +4239,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -5469,9 +4255,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -5485,9 +4271,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -5501,9 +4287,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -5517,9 +4303,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -5533,9 +4319,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -5549,9 +4335,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -5565,9 +4351,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -5581,9 +4367,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -5597,25 +4383,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
-      "side": "reference",
-      "net": {
-        "layout": null,
-        "reference": "VDD"
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -5629,9 +4399,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -5645,9 +4415,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -5661,9 +4431,9 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
@@ -5677,13 +4447,13 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.merged",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
+      "description": "multiple reference nets were collapsed into one layout net",
       "side": "reference",
       "net": {
         "layout": null,
-        "reference": "VSS"
+        "reference": "XO"
       },
       "device": null,
       "property": null,
@@ -5693,13 +4463,957 @@
       "subcircuit": null
     },
     {
-      "category": "net.unmatched",
+      "category": "net.split",
       "severity": "error",
-      "description": "reference net has no layout counterpart",
-      "side": "reference",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
       "net": {
-        "layout": null,
-        "reference": "XO"
+        "layout": "A|B|INV_Q_A|INV_Q_A_VIA|S|TG_FBS_B|TG_FBS_B_VIA|TG_S_B|TG_S_B_VIA",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "A|B|INV_Q_A|INV_Q_A_VIA|S|TG_FBS_B|TG_FBS_B_VIA|TG_S_B|TG_S_B_VIA$1",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "A|B|INV_Q_A|INV_Q_A_VIA|S|TG_FBS_B|TG_FBS_B_VIA|TG_S_B|TG_S_B_VIA$2",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "A|B|INV_Q_A|INV_Q_A_VIA|S|TG_FBS_B|TG_FBS_B_VIA|TG_S_B|TG_S_B_VIA$3",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "A|B|INV_Q_A|INV_Q_A_VIA|S|TG_FBS_B|TG_FBS_B_VIA|TG_S_B|TG_S_B_VIA$4",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "A|B|INV_Q_A|INV_Q_A_VIA|S|TG_FBS_B|TG_FBS_B_VIA|TG_S_B|TG_S_B_VIA$5",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "A|B|M_EAST|M_WEST|NAND_M_A|NAND_M_A_EXT_VIA|NAND_M_A_EXT_VIA2|NAND_M_A_STUB|TG_D_B|TG_D_B_VIA|TG_D_B_VIA2|TG_FBM_B|TG_FBM_B_ALT_VIA|TG_FBM_B_ALT_VIA2",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "A|B|M_EAST|M_WEST|NAND_M_A|NAND_M_A_EXT_VIA|NAND_M_A_EXT_VIA2|NAND_M_A_STUB|TG_D_B|TG_D_B_VIA|TG_D_B_VIA2|TG_FBM_B|TG_FBM_B_ALT_VIA|TG_FBM_B_ALT_VIA2$1",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "A|B|M_EAST|M_WEST|NAND_M_A|NAND_M_A_EXT_VIA|NAND_M_A_EXT_VIA2|NAND_M_A_STUB|TG_D_B|TG_D_B_VIA|TG_D_B_VIA2|TG_FBM_B|TG_FBM_B_ALT_VIA|TG_FBM_B_ALT_VIA2$2",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "A|B|M_EAST|M_WEST|NAND_M_A|NAND_M_A_EXT_VIA|NAND_M_A_EXT_VIA2|NAND_M_A_STUB|TG_D_B|TG_D_B_VIA|TG_D_B_VIA2|TG_FBM_B|TG_FBM_B_ALT_VIA|TG_FBM_B_ALT_VIA2$3",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "A|B|M_EAST|M_WEST|NAND_M_A|NAND_M_A_EXT_VIA|NAND_M_A_EXT_VIA2|NAND_M_A_STUB|TG_D_B|TG_D_B_VIA|TG_D_B_VIA2|TG_FBM_B|TG_FBM_B_ALT_VIA|TG_FBM_B_ALT_VIA2$4",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "A|B|M_EAST|M_WEST|NAND_M_A|NAND_M_A_EXT_VIA|NAND_M_A_EXT_VIA2|NAND_M_A_STUB|TG_D_B|TG_D_B_VIA|TG_D_B_VIA2|TG_FBM_B|TG_FBM_B_ALT_VIA|TG_FBM_B_ALT_VIA2$5",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "A|D|TG_D_A",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "A|D|TG_D_A$1",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "A|D|TG_D_A$2",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "A|D|TG_D_A$3",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "A|D|TG_D_A$4",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "A|D|TG_D_A$5",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "A|INV_MC_A|MB|MNAB_Y|MPA_Y|MPB_Y|NAND_M_Y|TG_S_A|Y",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "A|INV_MC_A|MB|MNAB_Y|MPA_Y|MPB_Y|NAND_M_Y|TG_S_A|Y$1",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "A|INV_MC_A|MB|MNAB_Y|MPA_Y|MPB_Y|NAND_M_Y|TG_S_A|Y$2",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "A|INV_MC_A|MB|MNAB_Y|MPA_Y|MPB_Y|NAND_M_Y|TG_S_A|Y$3",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "A|INV_MC_A|MB|MNAB_Y|MPA_Y|MPB_Y|NAND_M_Y|TG_S_A|Y$4",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "A|INV_MC_A|MB|MNAB_Y|MPA_Y|MPB_Y|NAND_M_Y|TG_S_A|Y$5",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "A|INV_MC_Y|INV_MC_Y_VIA|MC|TG_FBM_A|TG_FBM_A_VIA|Y",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "A|INV_MC_Y|INV_MC_Y_VIA|MC|TG_FBM_A|TG_FBM_A_VIA|Y$1",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "A|INV_MC_Y|INV_MC_Y_VIA|MC|TG_FBM_A|TG_FBM_A_VIA|Y$2",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "A|INV_MC_Y|INV_MC_Y_VIA|MC|TG_FBM_A|TG_FBM_A_VIA|Y$3",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "A|INV_MC_Y|INV_MC_Y_VIA|MC|TG_FBM_A|TG_FBM_A_VIA|Y$4",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "A|INV_MC_Y|INV_MC_Y_VIA|MC|TG_FBM_A|TG_FBM_A_VIA|Y$5",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "A|INV_Q_Y|INV_Q_Y_VIA|INV_Q_Y_VIA2|NAND_S2_A|NAND_S2_A_STUB|NAND_S2_A_VIA|NAND_S2_A_VIA2|Q|Y",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "A|INV_Q_Y|INV_Q_Y_VIA|INV_Q_Y_VIA2|NAND_S2_A|NAND_S2_A_STUB|NAND_S2_A_VIA|NAND_S2_A_VIA2|Q|Y$1",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "A|INV_Q_Y|INV_Q_Y_VIA|INV_Q_Y_VIA2|NAND_S2_A|NAND_S2_A_STUB|NAND_S2_A_VIA|NAND_S2_A_VIA2|Q|Y$2",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "A|INV_Q_Y|INV_Q_Y_VIA|INV_Q_Y_VIA2|NAND_S2_A|NAND_S2_A_STUB|NAND_S2_A_VIA|NAND_S2_A_VIA2|Q|Y$3",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "A|INV_Q_Y|INV_Q_Y_VIA|INV_Q_Y_VIA2|NAND_S2_A|NAND_S2_A_STUB|NAND_S2_A_VIA|NAND_S2_A_VIA2|Q|Y$4",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "A|INV_Q_Y|INV_Q_Y_VIA|INV_Q_Y_VIA2|NAND_S2_A|NAND_S2_A_STUB|NAND_S2_A_VIA|NAND_S2_A_VIA2|Q|Y$5",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "A|MNAB_Y|MPA_Y|MPB_Y|NAND_S2_Y|QB|TG_FBS_A|Y",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "A|MNAB_Y|MPA_Y|MPB_Y|NAND_S2_Y|QB|TG_FBS_A|Y$1",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "A|MNAB_Y|MPA_Y|MPB_Y|NAND_S2_Y|QB|TG_FBS_A|Y$2",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "A|MNAB_Y|MPA_Y|MPB_Y|NAND_S2_Y|QB|TG_FBS_A|Y$3",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "A|MNAB_Y|MPA_Y|MPB_Y|NAND_S2_Y|QB|TG_FBS_A|Y$4",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "A|MNAB_Y|MPA_Y|MPB_Y|NAND_S2_Y|QB|TG_FBS_A|Y$5",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "CLKB|CLKB_BRIDGE1|CLKB_BRIDGE2|CLKB_MID|CLKB_W|CTRL|CTRLB|INV_CLK_Y|TG_D_CTRLB|TG_FBM_CTRL|TG_FBS_CTRLB|TG_S_CTRL|Y",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "CLKB|CLKB_BRIDGE1|CLKB_BRIDGE2|CLKB_MID|CLKB_W|CTRL|CTRLB|INV_CLK_Y|TG_D_CTRLB|TG_FBM_CTRL|TG_FBS_CTRLB|TG_S_CTRL|Y$1",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "CLKB|CLKB_BRIDGE1|CLKB_BRIDGE2|CLKB_MID|CLKB_W|CTRL|CTRLB|INV_CLK_Y|TG_D_CTRLB|TG_FBM_CTRL|TG_FBS_CTRLB|TG_S_CTRL|Y$2",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "CLKB|CLKB_BRIDGE1|CLKB_BRIDGE2|CLKB_MID|CLKB_W|CTRL|CTRLB|INV_CLK_Y|TG_D_CTRLB|TG_FBM_CTRL|TG_FBS_CTRLB|TG_S_CTRL|Y$3",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "CLKB|CLKB_BRIDGE1|CLKB_BRIDGE2|CLKB_MID|CLKB_W|CTRL|CTRLB|INV_CLK_Y|TG_D_CTRLB|TG_FBM_CTRL|TG_FBS_CTRLB|TG_S_CTRL|Y$4",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "CLKB|CLKB_BRIDGE1|CLKB_BRIDGE2|CLKB_MID|CLKB_W|CTRL|CTRLB|INV_CLK_Y|TG_D_CTRLB|TG_FBM_CTRL|TG_FBS_CTRLB|TG_S_CTRL|Y$5",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "\\$17",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "\\$18",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "\\$21",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "\\$22",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "\\$25",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "\\$26",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "\\$29",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "\\$30",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "\\$33",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "\\$34",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "\\$37",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
+        "layout": "\\$38",
+        "reference": null
       },
       "device": null,
       "property": null,
@@ -5802,5 +5516,11 @@
       "subcircuit": null
     }
   ],
-  "net_correspondence": []
+  "net_correspondence": [
+    {
+      "layout": "EN|NAND_M_EN|NAND_M_EN_VIA|NAND_S2_EN|NAND_S2_EN_VIA|RST_N",
+      "reference": "RST_N",
+      "pin": true
+    }
+  ]
 }

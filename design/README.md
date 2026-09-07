@@ -236,11 +236,36 @@ DR-0003 surfaces and does not resolve on its own authority.
   here, and none of it is or will be a `design/*.spice` netlist. `raw_bit`
   and `raw_valid` are the interface between the two directories.
 - **Layout and DRC/LVS.** **Latest (issue #22): `sampler_core`'s shared
-  `vdd`/`vss` bus is routed across all six `sampler_dff` instances,
-  DRC-clean.** [`layout/sampler_core/`](../layout/sampler_core/README.md)
+  `clk` fan-out and shared `rst_n` fan-out are both routed across all six
+  `sampler_dff` instances, DRC-clean.** [`layout/sampler_core/`](../layout/sampler_core/README.md)
+  adds a new `route_ctrl` stage on top of the `vdd`/`vss` `route_supplies`
+  stage below, chaining `clk` and `rst_n` across
+  `sb`→`sv`→`sr1`→`sr2`→`sr3`→`sr4` — both nets are already single,
+  already-routed nets *inside* every `sampler_dff` instance, so this reuses
+  route_supplies's own chain-of-six technique rather than re-deriving a
+  fresh six-pin bundle from scratch. `clk` lands directly on each instance's
+  own already-drawn met2 run and buses straight across at a lane clear of
+  everything else in every instance (met2, no via, first attempt). `rst_n`
+  needed one correction first: a same-height haul out of its own narrower
+  in-cell span crosses several *other* nets' own met2 verticals near each
+  instance's east edge, so its cross-instance leg instead climbs (same
+  layer, no via) to an empty met2 band well above every other net, buses
+  across there, and drops back down at the next instance. `klt drc`: clean,
+  0 violations; `klt extract`: 132 devices unchanged, 64 nets (down from the
+  `vdd`/`vss` increment's 74 — each of `clk`/`rst_n` merges from six
+  per-instance nets into one, saving 5 apiece). `klt lvs` against
+  `design/sampler_core.spice`'s real `.subckt sampler_core`: mismatch, as
+  expected (no `ro_array_core` instance placed yet, `d`/`q` still unwired).
+  Placing a `ro_array_core` instance and wiring it to the samplers' `d`
+  pins, `d`/`q`/`vdd`/`vss` pin promotion, and whole-cell `klt lvs`
+  sign-off all remain open, tracked here and in #27.
+
+- **A previous increment (issue #22): `sampler_core`'s shared `vdd`/`vss`
+  bus is routed across all six `sampler_dff` instances, DRC-clean.**
+  [`layout/sampler_core/`](../layout/sampler_core/README.md)
   promotes the placement proof-of-concept below into a real,
   `compose-cell.py --check`-reproducible `cell.json` (stage `place`,
-  byte-for-byte the same six-instance floorplan) plus a new `route_supplies`
+  byte-for-byte the same six-instance floorplan) plus a `route_supplies`
   stage chaining `vdd` and `vss` across `sb`→`sv`→`sr1`→`sr2`→`sr3`→`sr4` on
   met1 — landing directly on each `sampler_dff` instance's own already-drawn
   rail (no via-drop needed, since that cell's own routing already put
@@ -252,10 +277,7 @@ DR-0003 surfaces and does not resolve on its own authority.
   expected (no `ro_array_core` instance placed yet, `clk`/`rst_n`/`d`/`q`
   all unwired) — assembling that `lvs` block also surfaced a real
   `compose-cell.py` limitation (not a `klt` gap), recorded in
-  `layout/sampler_core/README.md`. `clk`/`rst_n` fan-out, placing a
-  `ro_array_core` instance and wiring it to the samplers' `d` pins, `d`/`q`
-  pin promotion, and whole-cell `klt lvs` sign-off all remain open, tracked
-  here and in #27.
+  `layout/sampler_core/README.md`.
 
 - **A previous increment (issue #22): the `sampler_core` six-`sampler_dff`
   bank has a verified, DRC-clean floorplan.**

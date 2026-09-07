@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "generator": "gen-compose",
-  "cell_name": "sampler_core",
-  "gds_path": "sampler_core.gds",
+  "cell_name": "route_supplies",
+  "gds_path": "route_supplies.gds",
   "pdk": {
     "name": "sky130A",
     "variant": "sky130A",
@@ -20,7 +20,7 @@
       "id": "core",
       "source": "cell",
       "generator": null,
-      "cell_name": "route_supplies",
+      "cell_name": "place",
       "offset_um": {
         "x": 0.0,
         "y": 0.0
@@ -36,15 +36,15 @@
   ],
   "nets": [
     {
-      "net": "clk",
+      "net": "vdd",
       "pins": [
         {
           "block": "core",
-          "port": "sb_clk"
+          "port": "sb_vdd"
         },
         {
           "block": "core",
-          "port": "sv_clk"
+          "port": "sv_vdd"
         }
       ],
       "routed": true,
@@ -55,11 +55,11 @@
           "pins": [
             {
               "block": "core",
-              "port": "sb_clk"
+              "port": "sb_vdd"
             },
             {
               "block": "core",
-              "port": "sv_clk"
+              "port": "sv_vdd"
             }
           ],
           "routed": true,
@@ -69,15 +69,15 @@
       ]
     },
     {
-      "net": "clk",
+      "net": "vdd",
       "pins": [
         {
           "block": "core",
-          "port": "sv_clk"
+          "port": "sv_vdd"
         },
         {
           "block": "core",
-          "port": "sr1_clk"
+          "port": "sr1_vdd"
         }
       ],
       "routed": true,
@@ -88,11 +88,11 @@
           "pins": [
             {
               "block": "core",
-              "port": "sv_clk"
+              "port": "sv_vdd"
             },
             {
               "block": "core",
-              "port": "sr1_clk"
+              "port": "sr1_vdd"
             }
           ],
           "routed": true,
@@ -102,15 +102,15 @@
       ]
     },
     {
-      "net": "clk",
+      "net": "vdd",
       "pins": [
         {
           "block": "core",
-          "port": "sr1_clk"
+          "port": "sr1_vdd"
         },
         {
           "block": "core",
-          "port": "sr2_clk"
+          "port": "sr2_vdd"
         }
       ],
       "routed": true,
@@ -121,11 +121,11 @@
           "pins": [
             {
               "block": "core",
-              "port": "sr1_clk"
+              "port": "sr1_vdd"
             },
             {
               "block": "core",
-              "port": "sr2_clk"
+              "port": "sr2_vdd"
             }
           ],
           "routed": true,
@@ -135,15 +135,15 @@
       ]
     },
     {
-      "net": "clk",
+      "net": "vdd",
       "pins": [
         {
           "block": "core",
-          "port": "sr2_clk"
+          "port": "sr2_vdd"
         },
         {
           "block": "core",
-          "port": "sr3_clk"
+          "port": "sr3_vdd"
         }
       ],
       "routed": true,
@@ -154,11 +154,11 @@
           "pins": [
             {
               "block": "core",
-              "port": "sr2_clk"
+              "port": "sr2_vdd"
             },
             {
               "block": "core",
-              "port": "sr3_clk"
+              "port": "sr3_vdd"
             }
           ],
           "routed": true,
@@ -168,15 +168,15 @@
       ]
     },
     {
-      "net": "clk",
+      "net": "vdd",
       "pins": [
         {
           "block": "core",
-          "port": "sr3_clk"
+          "port": "sr3_vdd"
         },
         {
           "block": "core",
-          "port": "sr4_clk"
+          "port": "sr4_vdd"
         }
       ],
       "routed": true,
@@ -187,11 +187,11 @@
           "pins": [
             {
               "block": "core",
-              "port": "sr3_clk"
+              "port": "sr3_vdd"
             },
             {
               "block": "core",
-              "port": "sr4_clk"
+              "port": "sr4_vdd"
             }
           ],
           "routed": true,
@@ -201,166 +201,166 @@
       ]
     },
     {
-      "net": "rst_n",
+      "net": "vss",
       "pins": [
         {
           "block": "core",
-          "port": "sb_rst_n"
+          "port": "sb_vss"
         },
         {
           "block": "core",
-          "port": "sv_rst_n"
+          "port": "sv_vss"
         }
       ],
       "routed": true,
-      "route_length_um": 61.25999999999999,
+      "route_length_um": 55.66,
       "status": "routed",
       "legs": [
         {
           "pins": [
             {
               "block": "core",
-              "port": "sb_rst_n"
+              "port": "sb_vss"
             },
             {
               "block": "core",
-              "port": "sv_rst_n"
+              "port": "sv_vss"
             }
           ],
           "routed": true,
-          "route_length_um": 61.25999999999999,
+          "route_length_um": 55.66,
           "reason": null
         }
       ]
     },
     {
-      "net": "rst_n",
+      "net": "vss",
       "pins": [
         {
           "block": "core",
-          "port": "sv_rst_n"
+          "port": "sv_vss"
         },
         {
           "block": "core",
-          "port": "sr1_rst_n"
+          "port": "sr1_vss"
         }
       ],
       "routed": true,
-      "route_length_um": 61.25999999999999,
+      "route_length_um": 55.66,
       "status": "routed",
       "legs": [
         {
           "pins": [
             {
               "block": "core",
-              "port": "sv_rst_n"
+              "port": "sv_vss"
             },
             {
               "block": "core",
-              "port": "sr1_rst_n"
+              "port": "sr1_vss"
             }
           ],
           "routed": true,
-          "route_length_um": 61.25999999999999,
+          "route_length_um": 55.66,
           "reason": null
         }
       ]
     },
     {
-      "net": "rst_n",
+      "net": "vss",
       "pins": [
         {
           "block": "core",
-          "port": "sr1_rst_n"
+          "port": "sr1_vss"
         },
         {
           "block": "core",
-          "port": "sr2_rst_n"
+          "port": "sr2_vss"
         }
       ],
       "routed": true,
-      "route_length_um": 61.25999999999999,
+      "route_length_um": 55.66,
       "status": "routed",
       "legs": [
         {
           "pins": [
             {
               "block": "core",
-              "port": "sr1_rst_n"
+              "port": "sr1_vss"
             },
             {
               "block": "core",
-              "port": "sr2_rst_n"
+              "port": "sr2_vss"
             }
           ],
           "routed": true,
-          "route_length_um": 61.25999999999999,
+          "route_length_um": 55.66,
           "reason": null
         }
       ]
     },
     {
-      "net": "rst_n",
+      "net": "vss",
       "pins": [
         {
           "block": "core",
-          "port": "sr2_rst_n"
+          "port": "sr2_vss"
         },
         {
           "block": "core",
-          "port": "sr3_rst_n"
+          "port": "sr3_vss"
         }
       ],
       "routed": true,
-      "route_length_um": 61.25999999999999,
+      "route_length_um": 55.66,
       "status": "routed",
       "legs": [
         {
           "pins": [
             {
               "block": "core",
-              "port": "sr2_rst_n"
+              "port": "sr2_vss"
             },
             {
               "block": "core",
-              "port": "sr3_rst_n"
+              "port": "sr3_vss"
             }
           ],
           "routed": true,
-          "route_length_um": 61.25999999999999,
+          "route_length_um": 55.66,
           "reason": null
         }
       ]
     },
     {
-      "net": "rst_n",
+      "net": "vss",
       "pins": [
         {
           "block": "core",
-          "port": "sr3_rst_n"
+          "port": "sr3_vss"
         },
         {
           "block": "core",
-          "port": "sr4_rst_n"
+          "port": "sr4_vss"
         }
       ],
       "routed": true,
-      "route_length_um": 61.26000000000002,
+      "route_length_um": 55.660000000000025,
       "status": "routed",
       "legs": [
         {
           "pins": [
             {
               "block": "core",
-              "port": "sr3_rst_n"
+              "port": "sr3_vss"
             },
             {
               "block": "core",
-              "port": "sr4_rst_n"
+              "port": "sr4_vss"
             }
           ],
           "routed": true,
-          "route_length_um": 61.26000000000002,
+          "route_length_um": 55.660000000000025,
           "reason": null
         }
       ]
