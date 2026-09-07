@@ -278,11 +278,6 @@ class TrngDigital:
 
     # -- convenience for testbenches --------------------------------------
 
-    def run_bits(self, bits, out_ready: int = 0) -> list[dict]:
-        """Feed a bit sequence with ``raw_valid`` high; returns the trace."""
-        return [self.cycle(raw_bit=b, raw_valid=1, out_ready=out_ready)
-                for b in bits]
-
     def write(self, addr: int, value: int) -> None:
         self.cycle(addr=addr, we=1, wdata=value)
 
