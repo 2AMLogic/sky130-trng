@@ -1,0 +1,125 @@
+{
+  "record_id": "20260907-000944-368b943",
+  "slug": "post-layout-ro-array-core",
+  "claim": "post-layout ro_array_core with the shared substrate node left FLOATING (array-scale sibling of sim/post-layout-ro-ring5/'s own substrate-float study, now over the REAL composed array GDS -- real ring-to-ring proximity, not four separately-placed leaf cells) -- brackets DR-0003 section 8's inter-ring decorrelation question against the same-corner TIED run already recorded in this slug",
+  "level": "transistor",
+  "seed": "N/A (deterministic small-signal .noise analysis, not Monte Carlo)",
+  "pvt": {
+    "temp_c": 125.0,
+    "vdd_v": 1.98
+  },
+  "tran": {
+    "tmax": "5p",
+    "noise_amp": "2.0e-3"
+  },
+  "testbench": "sim/post-layout-ro-array-core/testbench/tb_post_layout_ro_array_core_substrate_float.spice",
+  "netlists": {
+    "RO_RING5": {
+      "path": "design/ro_ring5.spice",
+      "sha256": "19dccb82a3e9a1239d509a03e645954f79a857ab3b11e41a2a53faa105b58ea4"
+    },
+    "PEX_LIB": {
+      "path": "layout/pex-array/ro_array_core_pex.spice",
+      "sha256": "82dede47fd59ec14bf8f907051e541dbc9b48bbd28a5d00f20d92a01b9cd7087"
+    }
+  },
+  "pdk": {
+    "variant": "sky130A",
+    "installed_commit": "c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+    "pin_commit": "c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+    "matches_pin": true,
+    "lib_file": "/Users/rwalters/.volare/volare/sky130/versions/c6d73a35f524070e85faff4a6a9eef49553ebc2b/sky130A/libs.tech/combined/sky130.lib.spice"
+  },
+  "tools": {
+    "ngspice": "** ngspice-46 : Circuit level simulation program",
+    "python": "3.14.7",
+    "os": "macOS-26.6.2-arm64-arm-64bit-Mach-O"
+  },
+  "repo_state": {
+    "sha": "368b943",
+    "branch": "feature/issue-22",
+    "dirty": true
+  },
+  "corners": [
+    {
+      "corner": "tt",
+      "ok": true,
+      "returncode": 0,
+      "measurements": {
+        "pt1a": 8.08881e-09,
+        "pt1b": 7.00941e-08,
+        "pt2a": 1.38719e-08,
+        "pt2b": 7.26484e-08,
+        "pt3a": 1.34892e-08,
+        "pt3b": 6.93445e-08,
+        "pt4a": 1.31906e-08,
+        "pt4b": 6.64725e-08,
+        "p_tr1": 6.200527e-09,
+        "p_tr2": 5.87765e-09,
+        "p_tr3": 5.585529e-09,
+        "p_tr4": 5.328195e-09,
+        "p_skew_span": 1.16372
+      },
+      "onoise_min": null,
+      "onoise_max": null,
+      "onoise_spread_ratio": null,
+      "problems": [],
+      "log": "corners/tt.log"
+    },
+    {
+      "corner": "ss",
+      "ok": true,
+      "returncode": 0,
+      "measurements": {
+        "pt1a": 1.6267e-08,
+        "pt1b": 9.09005e-08,
+        "pt2a": 8.48696e-09,
+        "pt2b": 7.88119e-08,
+        "pt3a": 8.39627e-09,
+        "pt3b": 7.48705e-08,
+        "pt4a": 8.28902e-09,
+        "pt4b": 7.14448e-08,
+        "p_tr1": 7.463344e-09,
+        "p_tr2": 7.032492e-09,
+        "p_tr3": 6.647426e-09,
+        "p_tr4": 6.315576e-09,
+        "p_skew_span": 1.181736
+      },
+      "onoise_min": null,
+      "onoise_max": null,
+      "onoise_spread_ratio": null,
+      "problems": [],
+      "log": "corners/ss.log"
+    },
+    {
+      "corner": "ff",
+      "ok": true,
+      "returncode": 0,
+      "measurements": {
+        "pt1a": 1.30053e-08,
+        "pt1b": 6.57384e-08,
+        "pt2a": 1.26206e-08,
+        "pt2b": 6.2968e-08,
+        "pt3a": 1.23227e-08,
+        "pt3b": 6.04024e-08,
+        "pt4a": 1.21036e-08,
+        "pt4b": 5.81382e-08,
+        "p_tr1": 5.273305e-09,
+        "p_tr2": 5.034736e-09,
+        "p_tr3": 4.807966e-09,
+        "p_tr4": 4.603462e-09,
+        "p_skew_span": 1.145509
+      },
+      "onoise_min": null,
+      "onoise_max": null,
+      "onoise_spread_ratio": null,
+      "problems": [],
+      "log": "corners/ff.log"
+    }
+  ],
+  "overall": "PASS",
+  "subset_reason": null,
+  "supersedes": "20260906-223327-6adba77",
+  "author": "ci@loom.test",
+  "timestamp_utc": "2026-09-07T00:36:14.420552+00:00"
+}

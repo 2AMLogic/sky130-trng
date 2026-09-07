@@ -290,7 +290,7 @@ without a sky130-specific citation.
 | F | Time-to-first-valid | 0.64 ms (first **raw** word) | — | 25.60 ms (first **conditioned** word) | not stated | n/a (sample-count derived; the 50 kHz clock is fixed and external) | [DR-0004](../../spec/decision-records/DR-0004-sky130-digital-section-architecture.md) §6 (status Proposed); `sim/digital-health-test-parameters/`, `sim/digital-section-behavioral/` experiment A | **Derived, no target to grade against.** The raw path is never gated, so its first 32-bit word lands 32 samples after `raw_valid` (0.64 ms at 50 kHz). The conditioned path waits for the mandatory 1024-sample start-up health test (20.48 ms) plus one 256-bit conditioner block (5.12 ms). Both figures are sample counts at DR-0003's clock, verified in the behavioural campaign — not silicon, and not PVT-dependent (nothing here is a timing-closure claim). |
 | G | Digital section max clean sample-clock frequency (`Fmax`) | — | — | — | supplementary, informative only | n/a | none — RTL now exists (`digital/rtl/trng_digital.v`, DR-0004) but **no synthesis has been run against `sky130_fd_sc_hd`** | **Still N/A — the design exists, the number does not.** DR-0004 § "Consequences" names synthesis as the largest gap it leaves: without a mapped netlist and STA there is no `Fmax`, gate count, area or leakage figure for this section, and none should be inferred from the RTL simulating correctly. The block is designed to run entirely in the 50 kHz sample-clock domain, so `Fmax` is expected to be enormously in excess of what is needed — but expected is not measured. |
 | H | Health-test cutoffs (RCT / APT) | — | `C_RCT` = 81, `C_APT` = 824 at `H` = 0.5, `α` = 2⁻⁴⁰, `W` = 1024 | — | formula-derived once `H` is measured | n/a (a formula evaluation, not a corner-dependent measurement) | [DR-0004](../../spec/decision-records/DR-0004-sky130-digital-section-architecture.md) §2 (status Proposed); `sim/digital-health-test-parameters/` (cutoff table over an `H` grid, exact APT degeneracy floor, false-alarm intervals at 50 kbps) | **Derived and implemented, but PROVISIONAL — conditional on row C.** The cutoffs are the SP 800-90B formulas evaluated at the README's `H` = 0.5 *design target*, because sky130 has no measured `H` (row C). They are deliberately evaluated at the design floor rather than at DR-0003's model-derived `H` = 0.5415, so the false-alarm guarantee stays valid across the whole claimed range. The evidence record tabulates the cutoff at every `H` from the exact APT degeneracy floor (`H` = 0.0390625) upward, so closing row C moves this row by lookup. The values coincide with gf180-trng's own because the formulas, `α`, `W` and the `H` target all coincide — recomputed here, not copied. |
-| I | Area, array only (rings + buffers + XOR; device-count estimate, no layout) | 0.0026 mm² | — | 0.0088 mm² | < 0.05 mm² | n/a (not PVT-dependent) | [DR-0003](../../spec/decision-records/DR-0003-sky130-trng-operating-point.md) §7 | Array-only estimate sits at 5–18% of budget — but excludes the sampler, any digital section, and actual layout (`layout/` is empty). **Not a whole-block claim; not a layout measurement.** |
+| I | Area, array only (rings + buffers + XOR; device-count estimate, not derived from the real layout's own measured bbox) | 0.0026 mm² | — | 0.0088 mm² | < 0.05 mm² | n/a (not PVT-dependent) | [DR-0003](../../spec/decision-records/DR-0003-sky130-trng-operating-point.md) §7 | Array-only estimate sits at 5–18% of budget — but excludes the sampler and any digital section. **Not a whole-block claim; not a layout measurement** — a composed, DRC-clean, LVS-matching `ro_array_core` layout now exists (`layout/ro_array_core/`, see §5.3) with a measured `bbox_um` in its own committed evidence, but this row has not been re-derived from it. |
 | J | Architectural raw-rate ceiling (XOR combining-gate bandwidth), any array size | — | — | ~78 kbps | informative only — the hard constraint row B's operating point is chosen against | `ff`/−40 °C/1.98 V | [DR-0003](../../spec/decision-records/DR-0003-sky130-trng-operating-point.md) §1–2; `sim/xor-combining-bandwidth/` | Measured. This is the figure that forces row B's verdict — no amount of array resizing raises it; only redesigning the combining gate (wider devices, a different tree) would (DR-0003's own "Follow-up required"). |
 
 ### Rail-routing note (mirrors gf180-trng's own VDDA gap, opposite direction)
@@ -539,18 +539,35 @@ that lands this document):
   **Two committed negative controls** (resizing ring 4's starve
   devices to ring 1's `wstv`; crossing `xa1`/`xa2`'s inputs) both turn the
   comparison into `mismatch`, so the verdict is discriminating rather than
-  vacuous. Still outstanding for the brief's full sign-off bar:
-  `ring1..4`/`xa1..3`'s own `vss` taps (not LVS-blocking, but a real die
-  wants the strap), promoting that PoC directory into a
-  `--check`-reproducible cell recipe (the placement/routing side), **the sampler as assembled layout**
-  (`sampler_core`/`sampler_dff` have no layout at all), and — since a
-  whole-*block* post-layout PVT run needs both halves — the block-level
-  post-layout simulation itself. Array-level parasitic extraction is now
-  unblocked by this increment but not yet done, so every post-layout number
-  above is still one ring's own real interconnect with ideal wires to its
-  neighbours, and DR-0003 §8's `wstv` inter-ring decorrelation question
-  (which needs real inter-ring coupling) stays open. None of that is
-  attempted in this document. Note also that
+  vacuous. **A later increment (issue #69) promotes that PoC directory into
+  a real `--check`-reproducible cell recipe** — `layout/ro_array_core/`,
+  six `gen-compose` stages in one `cell.json`, rebuilt and re-verified by
+  the same one command every other cell under `layout/` is, and
+  additionally drawing `ring1..4`'s and `xa1..3`'s own `vss` taps (not
+  LVS-blocking, but a real die wants the strap). That GDS, not the PoC's,
+  is the canonical array layout. **A later increment still (issue #22)
+  closes the block-level
+  post-layout PVT gap this section used to name as unattempted**:
+  `layout/pex-array/` extracts that canonical array GDS flat with `klt extract
+  --parasitics`, and `sim/post-layout-ro-array-core/` runs it across the
+  same four-(temp, Vdd)-point, `tt`/`ss`/`ff` grid every other post-layout
+  campaign here uses (36 corner runs) — array-level parasitics cost
+  2.158×–2.501× in ring period against pre-layout, the `wstv` ladder still
+  discriminates (span 1.084×–1.175×), combining-node bias stays close to
+  0.5×Vdd (no new systematic bias from the real routing), and a tied/float/
+  solo inter-ring substrate bracket — the first one run on a real,
+  physically-placed layout rather than leaf cells hand-tied to a shared
+  node — finds coupling wider than the prior ring-scale study and, for the
+  first time in this repo, consistent in sign across all twelve grid points
+  (+0.044% to +0.293% of ring period), though still a bracket on magnitude
+  rather than a resolved measurement (`spec/decision-records/DR-0006-*.md`).
+  **This does not close DR-0003 §8**: its first-named mechanism, shared
+  `vddr1`-`vddr4` supply impedance, still has no layout to be measured on at
+  any scale. Still outstanding for the brief's full sign-off bar:
+  a `vddr1`-`vddr4` supply-distribution layout, and
+  **the sampler as assembled layout** (`sampler_core`/`sampler_dff` have no
+  layout at all, so no whole-*chain*, raw-tap-to-sampled-bit post-layout
+  claim exists yet). Note also that
   "DRC-clean" here means clean against `klt`'s **curated** sky130 deck (a
   documented subset — see each `drc.json`'s own `coverage` block), not a
   full sky130 sign-off deck.
