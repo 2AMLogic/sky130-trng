@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "generator": "gen-compose",
-  "cell_name": "sampler_dff",
-  "gds_path": "sampler_dff.gds",
+  "cell_name": "s_bus",
+  "gds_path": "s_bus.gds",
   "pdk": {
     "name": "sky130A",
     "variant": "sky130A",
@@ -15,28 +15,13 @@
     "x1": 50.47,
     "y1": 7.085
   },
-  "ports": [
-    {
-      "name": "d",
-      "net": "d",
-      "layer": {
-        "layer": 67,
-        "datatype": 20
-      },
-      "x_um": 6.665,
-      "y_um": 1.2,
-      "width_um": 0.17,
-      "direction_deg": 0,
-      "block": "core",
-      "port": "tg_d_a"
-    }
-  ],
+  "ports": [],
   "blocks": [
     {
       "id": "core",
       "source": "cell",
       "generator": null,
-      "cell_name": "s_bus",
+      "cell_name": "s_met1",
       "offset_um": {
         "x": 0.0,
         "y": 0.0
@@ -52,66 +37,59 @@
   ],
   "nets": [
     {
-      "net": "mb",
+      "net": "s",
       "pins": [
         {
           "block": "core",
-          "port": "nand_m_y"
+          "port": "tg_s_b_m1"
         },
         {
           "block": "core",
-          "port": "inv_mc_a"
+          "port": "inv_q_a_m1"
         },
         {
           "block": "core",
-          "port": "tg_s_a"
+          "port": "tg_fbs_b_m1"
         }
       ],
       "routed": true,
-      "route_length_um": 23.105000000000004,
+      "route_length_um": 23.64,
       "status": "routed",
       "legs": [
         {
           "pins": [
             {
               "block": "core",
-              "port": "nand_m_y"
+              "port": "tg_s_b_m1"
             },
             {
               "block": "core",
-              "port": "inv_mc_a"
+              "port": "inv_q_a_m1"
             }
           ],
           "routed": true,
-          "route_length_um": 8.005,
+          "route_length_um": 8.150000000000002,
           "reason": null
         },
         {
           "pins": [
             {
               "block": "core",
-              "port": "inv_mc_a"
+              "port": "inv_q_a_m1"
             },
             {
               "block": "core",
-              "port": "tg_s_a"
+              "port": "tg_fbs_b_m1"
             }
           ],
           "routed": true,
-          "route_length_um": 15.100000000000001,
+          "route_length_um": 15.49,
           "reason": null
         }
       ]
     }
   ],
-  "pins": [
-    {
-      "net": "d",
-      "block": "core",
-      "port": "tg_d_a",
-      "labelled": true
-    }
-  ],
+  "pins": [],
   "unrouted_nets": [],
   "drc_hints": {
     "min_spacing_um": null,

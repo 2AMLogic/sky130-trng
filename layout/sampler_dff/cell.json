@@ -1256,6 +1256,7 @@
       "pins": []
     },
     {
+      "name": "s_bus",
       "_comment": [
         "s fan-out, stage 2 of 2 (issue #22): the met2 long haul, 23.64um",
         "end to end across two thirds of the cell, steered leg-by-leg with",
@@ -1347,10 +1348,11 @@
         "is 0.205um, between the west landing pad's top edge (y=1.41) and",
         "the lane's own bottom edge (y=1.615).",
         "",
-        "Still open (issue #22 / #27): m and mb. The sampler_nand2 input",
-        "swap (#84) is fixed as of this cell.json, and the whole-cell",
-        "external pins (d/clk/rst_n/q/vdd/vss) are all promoted -- see",
-        "layout/sampler_dff/README.md's 'What remains' section."
+        "Still open (issue #22 / #27): m. mb is routed by the final stage",
+        "below. The sampler_nand2 input swap (#84) is fixed as of this",
+        "cell.json, and the whole-cell external pins (d/clk/rst_n/q/vdd/",
+        "vss) are all promoted -- see layout/sampler_dff/README.md's",
+        "'What remains' section."
       ],
       "blocks": [
         {
@@ -1361,8 +1363,7 @@
             "ports": [
               {"name": "tg_s_b_m1", "x_um": 28.895, "y_um": 1.2, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 180},
               {"name": "inv_q_a_m1", "x_um": 36.545, "y_um": 1.7, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 180},
-              {"name": "tg_fbs_b_m1", "x_um": 48.185, "y_um": 1.2, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 180},
-              {"name": "tg_d_a", "x_um": 6.665, "y_um": 1.2, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.17, "direction_deg": 0}
+              {"name": "tg_fbs_b_m1", "x_um": 48.185, "y_um": 1.2, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 180}
             ]
           }
         }
@@ -1380,6 +1381,98 @@
             "to_pin": {"block": "core", "port": "tg_fbs_b_m1"},
             "waypoints_um": [[40.0, 1.7], [40.0, 1.525], [44.0, 1.525],
                              [44.0, 3.2], [48.185, 3.2]]}
+         ]}
+      ],
+      "pins": []
+    },
+    {
+      "_comment": [
+        "mb fan-out (issue #22): the fifth of the six data-path nets, and",
+        "the last one that can be routed before m closes the cell. mb is",
+        "the master latch's own inverted output -- design/sampler_core.spice",
+        "puts NAND_M's output (XMimpa/XMimpb/XMimna's shared drain, i.e.",
+        "nand_m.y), inv_mc's input (XMim2p/XMim2n's shared gate, i.e.",
+        "inv_mc.a) and TG_S's pass input (XMtsp mb clkb s vdd / XMtsn mb clk",
+        "s vss -- the device line's FIRST terminal, i.e. tg_s's 'a' pin per",
+        "README.md's device-line template) all on one node. Global",
+        "coordinates: nand_m.y (13.32, 0.21), inv_mc.a (19.835, 1.7),",
+        "tg_s.a (31.095, 1.2).",
+        "",
+        "ONE stage, not two: unlike mc/s, this net never needs met2. A",
+        "0.17um-wide met1 lane plus 0.14um met1.space.1 on each side is",
+        "clear over the whole east span x=19.835..31.095 for every centre",
+        "height y=2.935..4.000 (measured on the composed sampler_dff.gds",
+        "with klayout.db, sampling y in 5nm steps), and over the west span",
+        "x=13.49..19.835 for every centre height y=1.310..3.305. So the",
+        "route is a two-height T: west leg at the MIDDLE pin's own y=1.7,",
+        "east leg up at y=3.2. Both are single-hop met1 ('metal2' role),",
+        "which is what lets gen-compose's own via-drop reach each li1 pin",
+        "directly -- no *_met1 pre-stage, the same single-stage recipe q and",
+        "qb used.",
+        "",
+        "The west end reuses qb's own nand2-output recipe verbatim, at the",
+        "other sampler_nand2 instance. nand_m's internal met1 blob is the",
+        "mirror image of nand_s2's: a 0.42um-square via-drop landing pad at",
+        "nand_m.y (x=13.11..13.53, y=0.0..0.42) is entirely CONTAINED in it",
+        "(the pin is the blob's own net), so the west landing adds no met1",
+        "and no li1 at all, and above y=1.085 the blob narrows to a",
+        "0.17um-wide bar at x=12.985..13.155 running to y=3.53. A climb",
+        "centred on the pin's own x=13.32 would leave an 0.08um same-net",
+        "notch against that bar; jogging 0.17um EAST first, to x=13.49",
+        "(wire 13.405..13.575), makes the climb an exact overlay on the",
+        "blob's own x=13.405..13.575, y=0.42..0.915 section and clears the",
+        "narrow bar by 0.25um everywhere above it. Same arithmetic, same",
+        "0.17um jog, same direction as qb -- the two instances are placed",
+        "with identical internal geometry 30.86um apart.",
+        "",
+        "Why the west leg runs at y=1.7 and the east leg at y=3.2. y=1.7 is",
+        "inv_mc.a's own y, so the lane passes THROUGH that pin's own",
+        "via-drop pad instead of stopping short of it -- the same same-net",
+        "notch avoidance the s increment derived at inv_q.a (an identical",
+        "ro_buf 'a' dogbone: two 0.42um gate pads at y=0.82..1.24 and",
+        "y=2.29..2.71 joined by a 0.17um bar, leaving 0.25um and 0.38um",
+        "same-net li1 gaps around the new pad, both over sky130's 0.17um",
+        "li1.space.1). East of inv_mc that height is not available: the",
+        "clkb_bus backbone occupies x=14.21..25.115 at y=0.315..0.485 and",
+        "climbs to y=2.245..2.415 across x=25.285..30.255, and clk_bus's",
+        "own via-drop pads at tg_fbm_ctrl and tg_s_ctrl reach y=2.71 -- so",
+        "the east leg climbs to y=3.2, the same height s's own east leg",
+        "uses one plane up. Above y=2.71 and below the vdd bus's own drops",
+        "(which start at y=5.57 over this span, x=24.39..24.81 and",
+        "29.53..29.95) met1 is completely empty across x=19.6..31.3, so",
+        "y=3.2 clears 0.405um below and 2.285um above.",
+        "",
+        "Still open (issue #22 / #27): m, the sixth and last data-path net",
+        "(tg_d.b <-> nand_m.a <-> tg_fbm.b) -- see",
+        "layout/sampler_dff/README.md's 'What remains' section."
+      ],
+      "blocks": [
+        {
+          "id": "core",
+          "orientation": "none",
+          "cell": {
+            "from_stage": "s_bus",
+            "ports": [
+              {"name": "nand_m_y", "x_um": 13.32, "y_um": 0.21, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.42, "direction_deg": 90},
+              {"name": "inv_mc_a", "x_um": 19.835, "y_um": 1.7, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.17, "direction_deg": 180},
+              {"name": "tg_s_a", "x_um": 31.095, "y_um": 1.2, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.17, "direction_deg": 0},
+              {"name": "tg_d_a", "x_um": 6.665, "y_um": 1.2, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.17, "direction_deg": 0}
+            ]
+          }
+        }
+      ],
+      "placement": {"strategy": "explicit", "order": ["core"], "origins_um": {"core": {"x": 0.0, "y": 0.0}}},
+      "routing": {"layer_role": "metal2", "width_um": 0.17},
+      "connectivity": [
+        {"net": "mb",
+         "pins": [{"block": "core", "port": "nand_m_y"}, {"block": "core", "port": "inv_mc_a"}, {"block": "core", "port": "tg_s_a"}],
+         "legs": [
+           {"from_pin": {"block": "core", "port": "nand_m_y"},
+            "to_pin": {"block": "core", "port": "inv_mc_a"},
+            "waypoints_um": [[13.49, 0.21], [13.49, 1.7]]},
+           {"from_pin": {"block": "core", "port": "inv_mc_a"},
+            "to_pin": {"block": "core", "port": "tg_s_a"},
+            "waypoints_um": [[19.835, 3.2], [31.095, 3.2]]}
          ]}
       ],
       "pins": [

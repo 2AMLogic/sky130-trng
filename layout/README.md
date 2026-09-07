@@ -4,7 +4,32 @@ Physical layout evidence for the sky130-trng entropy source, verified with
 `klayout-tools` (`klt`) against the sky130 open PDK. See `layout/pdk.json`
 for the PDK/tool pin.
 
-**Status (issue #22, this increment): the sampler is extracted with
+**Status (issue #22, this increment): `sampler_dff`'s fifth data-path net,
+`mb`, is routed — DRC-clean on the first attempt, on `met1` alone, in a
+single `gen-compose` stage, leaving `m` as the *only* net between this cell
+and a clean `klt lvs` sign-off.** `mb` is the master latch's inverted output
+(`nand_m.y` ↔ `inv_mc.a` ↔ `tg_s.a`), and unlike `mc`/`s` it needs no `met2`
+and therefore no `*_met1` pre-stage: a `0.17 µm` met1 lane plus `0.14 µm`
+clearance is free over the *west* span at any centre height
+`y = 1.310..3.305` but over the *east* span only at `y = 2.935..4.000`, so
+the route is a two-height **T** — west leg at the middle pin's own
+`y = 1.7`, east leg up at `y = 3.2`, climb at that pin's own column. The
+west end reuses `qb`'s nand2-output recipe verbatim at the other
+`sampler_nand2` instance (landing pad wholly contained in the instance's own
+met1 blob, then a `0.17 µm` jog east before climbing, clearing the blob's
+narrow upper bar by `0.25 µm`). **`klt drc` clean, 0 violations, cell bbox
+unchanged**; `klt extract`'s net count **18 → 16**, exactly the two merges a
+three-pin net makes, and the merged net's seven-device list matches
+`design/sampler_core.spice`'s
+`XMimpa`/`XMimpb`/`XMimna`/`XMim2p`/`XMim2n`/`XMtsp`/`XMtsn` on class, width
+and every gate/terminal role. `klt lvs` improves to **18/22 devices, 8/14
+nets** (from 15/22, 7/14), and all 8 remaining mismatches name `m` or one of
+its three still-disconnected fragments. See
+[`layout/sampler_dff/README.md`](sampler_dff/README.md)'s "Result: `mb`
+fan-out". No new `2AMLogic/klayout-tools` friction was found by this
+increment.
+
+**A previous increment (issue #22): the sampler is extracted with
 parasitics and simulated — the first `sim/` evidence about `sampler_dff` of
 any kind, pre- or post-layout, and the first post-layout campaign in this
 repo on the far side of the raw tap.** [`layout/pex/pex-sampler.json`](pex/README.md)
@@ -42,7 +67,10 @@ quoted, and per DR-0011 nothing here is a metastability claim).
 **Deliberately not attempted**: extracting `layout/sampler_dff/`'s own
 assembly GDS flat — its `m`/`mb` data-path nets are still unrouted, so its
 `klt lvs` still does not match (15/22 devices, 7/14 nets as of the #84 fix
-below) and that extraction would be of an incomplete circuit. So this is
+below; **`mb` is routed as of the `mb` increment above, so this reads
+`m` only, 18/22 and 8/14, today** — the reasoning is unchanged while any
+data-path net is open) and that extraction would be of an incomplete
+circuit. So this is
 intra-cell parasitics plus **ideal** inter-cell wires, the same scope
 [`layout/pex/`](pex/README.md) has for the ring and one level below
 [`layout/pex-ring/`](pex-ring/README.md) — a floor on the real cost, and
