@@ -4,30 +4,32 @@ Physical layout evidence for the sky130-trng entropy source, verified with
 `klayout-tools` (`klt`) against the sky130 open PDK. See `layout/pdk.json`
 for the PDK/tool pin.
 
-**Status (issue #22, this increment): `sampler_dff`'s fifth data-path net,
-`mb`, is routed — DRC-clean on the first attempt, on `met1` alone, in a
-single `gen-compose` stage, leaving `m` as the *only* net between this cell
-and a clean `klt lvs` sign-off.** `mb` is the master latch's inverted output
-(`nand_m.y` ↔ `inv_mc.a` ↔ `tg_s.a`), and unlike `mc`/`s` it needs no `met2`
-and therefore no `*_met1` pre-stage: a `0.17 µm` met1 lane plus `0.14 µm`
-clearance is free over the *west* span at any centre height
-`y = 1.310..3.305` but over the *east* span only at `y = 2.935..4.000`, so
-the route is a two-height **T** — west leg at the middle pin's own
-`y = 1.7`, east leg up at `y = 3.2`, climb at that pin's own column. The
-west end reuses `qb`'s nand2-output recipe verbatim at the other
-`sampler_nand2` instance (landing pad wholly contained in the instance's own
-met1 blob, then a `0.17 µm` jog east before climbing, clearing the blob's
-narrow upper bar by `0.25 µm`). **`klt drc` clean, 0 violations, cell bbox
-unchanged**; `klt extract`'s net count **18 → 16**, exactly the two merges a
-three-pin net makes, and the merged net's seven-device list matches
-`design/sampler_core.spice`'s
-`XMimpa`/`XMimpb`/`XMimna`/`XMim2p`/`XMim2n`/`XMtsp`/`XMtsn` on class, width
-and every gate/terminal role. `klt lvs` improves to **18/22 devices, 8/14
-nets** (from 15/22, 7/14), and all 8 remaining mismatches name `m` or one of
-its three still-disconnected fragments. See
-[`layout/sampler_dff/README.md`](sampler_dff/README.md)'s "Result: `mb`
-fan-out". No new `2AMLogic/klayout-tools` friction was found by this
-increment.
+**Status (issue #22, this increment): `sampler_dff` is DRC-clean and `klt
+lvs`-clean.** The sixth and last data-path net, `m` (`TG_D.b` ↔ `NAND_M.a`
+↔ `TG_FBM.b`), is routed across four `gen-compose` stages
+(`m_stub`/`m_met1`/`m_met2`/final), completing every net the cell needs.
+`klt drc`: clean, 0 violations. `klt extract`: 22 devices, 14 nets. `klt
+lvs` against `design/sampler_core.spice`'s own `.subckt sampler_dff`:
+**match — 22/22 devices, 14/14 nets, 0 mismatches, 0 errors** — the first
+fully DRC/LVS-clean multi-cell assembly in this repo, on the first attempt.
+`m`'s own tricky part: `TG_FBM.b`'s declared `(23.755, 1.2)` port cannot be
+via'd to `met1` or `met2` in place (both planes are inside `mc`'s own bus
+footprint there, a foreign net), so the route lands instead on a *second*
+point of that same physical net's own already-drawn `li1` diffusion strap,
+`(23.8, 2.71)` — directly above both `mc`'s and `rst_n`'s own bus bars
+rather than crossing either. See
+[`layout/sampler_dff/README.md`](sampler_dff/README.md)'s "`m` fan-out"
+section for the full derivation, including a false-blocked reading
+(a small-box check found the pin itself clear; a full-column check found
+the *route* to it was not, for a different reason) that was caught and
+corrected before it produced a wrong route. No new `2AMLogic/klayout-tools`
+friction filed: this increment independently reproduced the already-filed
+`#1548` finding (an unrecognized `connectivity[].legs[]` field is silently
+dropped by a stale `klt` build rather than rejected) on this session's own
+installed `klt` (a *different* build than `#1548`'s own filing used), and
+worked around it the way `_parse_connectivity`'s own error message
+suggests — two 2-pin `connectivity[]` entries sharing an endpoint instead
+of one 3-pin bundle net — rather than filing a duplicate.
 
 **A previous increment (issue #22): the sampler is extracted with
 parasitics and simulated — the first `sim/` evidence about `sampler_dff` of

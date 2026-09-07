@@ -235,7 +235,18 @@ DR-0003 surfaces and does not resolve on its own authority.
   (status **Proposed**) it lives in [`digital/`](../digital/README.md), not
   here, and none of it is or will be a `design/*.spice` netlist. `raw_bit`
   and `raw_valid` are the interface between the two directories.
-- **Layout and DRC/LVS.** `layout/` holds **fifteen composed, DRC-clean
+- **Layout and DRC/LVS.** **Latest (issue #22): `sampler_dff` is now fully
+  `klt drc`-clean (0 violations) and `klt lvs`-**match** (22/22 devices,
+  14/14 nets, 0 mismatches) against `design/sampler_core.spice`'s own
+  `.subckt sampler_dff`** — the sixth and last data-path net, `m`, is
+  routed (see [`layout/sampler_dff/README.md`](../layout/sampler_dff/README.md)),
+  completing the sampler-side counterpart to `ro_array_core`'s own clean
+  sign-off below. `sampler_core`'s own six-instance wiring and the
+  whole-chain (raw-tap-to-sampled-bit) post-layout PVT campaign remain open
+  (#27) — the note below about `layout/sampler_dff/`'s GDS not yet being an
+  extraction source (`m`/`mb` unrouted) describes the state at the time of
+  the sampler post-layout PVT entry further down, not the current one.
+  `layout/` holds **fifteen composed, DRC-clean
   and LVS-clean cells** — every leaf cell `ro_array_core` instantiates
   (rings, buffers, the combining-tree XOR; see
   [`layout/xor2/`](../layout/xor2/README.md)) **plus `ro_array_core`

@@ -8,6 +8,39 @@
       "cell": {
         "ports": [
           {
+            "name": "tg_d_b_m1",
+            "x_um": 4.465,
+            "y_um": 1.2,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 180
+          },
+          {
+            "name": "nand_m_a_ext_m1",
+            "x_um": 14.0,
+            "y_um": 2.71,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 0
+          },
+          {
+            "name": "tg_fbm_b_alt_m1",
+            "x_um": 23.8,
+            "y_um": 2.71,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 0
+          },
+          {
             "name": "tg_d_b_m2",
             "x_um": 4.465,
             "y_um": 1.2,
@@ -41,8 +74,8 @@
             "direction_deg": 0
           }
         ],
-        "cell_name": "m_met2",
-        "gds_path": "m_met2.gds"
+        "cell_name": "m_met1",
+        "gds_path": "m_met1.gds"
       }
     }
   ],
@@ -64,34 +97,37 @@
   },
   "connectivity": [
     {
-      "net": "m_west",
+      "net": "tg_d_b_via2",
       "pins": [
         {
           "block": "core",
+          "port": "tg_d_b_m1"
+        },
+        {
+          "block": "core",
           "port": "tg_d_b_m2"
+        }
+      ]
+    },
+    {
+      "net": "nand_m_a_ext_via2",
+      "pins": [
+        {
+          "block": "core",
+          "port": "nand_m_a_ext_m1"
         },
         {
           "block": "core",
           "port": "nand_m_a_ext_m2"
         }
-      ],
-      "waypoints_um": [
-        [
-          4.465,
-          3.2
-        ],
-        [
-          14.0,
-          3.2
-        ]
       ]
     },
     {
-      "net": "m_east",
+      "net": "tg_fbm_b_alt_via2",
       "pins": [
         {
           "block": "core",
-          "port": "nand_m_a_ext_m2"
+          "port": "tg_fbm_b_alt_m1"
         },
         {
           "block": "core",
@@ -102,7 +138,7 @@
   ],
   "pins": [],
   "options": {
-    "cell_name": "sampler_dff",
-    "output": "sampler_dff.gds"
+    "cell_name": "m_met2",
+    "output": "m_met2.gds"
   }
 }

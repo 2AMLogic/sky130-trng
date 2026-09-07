@@ -1,0 +1,148 @@
+{
+  "pdk": {
+    "variant": "sky130A"
+  },
+  "blocks": [
+    {
+      "id": "core",
+      "cell": {
+        "ports": [
+          {
+            "name": "nand_m_y",
+            "x_um": 13.32,
+            "y_um": 0.21,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 90
+          },
+          {
+            "name": "inv_mc_a",
+            "x_um": 19.835,
+            "y_um": 1.7,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 180
+          },
+          {
+            "name": "tg_s_a",
+            "x_um": 31.095,
+            "y_um": 1.2,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 0
+          },
+          {
+            "name": "tg_d_a",
+            "x_um": 6.665,
+            "y_um": 1.2,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 0
+          }
+        ],
+        "cell_name": "s_bus",
+        "gds_path": "s_bus.gds"
+      }
+    }
+  ],
+  "placement": {
+    "strategy": "explicit",
+    "order": [
+      "core"
+    ],
+    "origins_um": {
+      "core": {
+        "x": 0.0,
+        "y": 0.0
+      }
+    }
+  },
+  "routing": {
+    "layer_role": "metal2",
+    "width_um": 0.17
+  },
+  "connectivity": [
+    {
+      "net": "mb",
+      "pins": [
+        {
+          "block": "core",
+          "port": "nand_m_y"
+        },
+        {
+          "block": "core",
+          "port": "inv_mc_a"
+        },
+        {
+          "block": "core",
+          "port": "tg_s_a"
+        }
+      ],
+      "legs": [
+        {
+          "from_pin": {
+            "block": "core",
+            "port": "nand_m_y"
+          },
+          "to_pin": {
+            "block": "core",
+            "port": "inv_mc_a"
+          },
+          "waypoints_um": [
+            [
+              13.49,
+              0.21
+            ],
+            [
+              13.49,
+              1.7
+            ]
+          ]
+        },
+        {
+          "from_pin": {
+            "block": "core",
+            "port": "inv_mc_a"
+          },
+          "to_pin": {
+            "block": "core",
+            "port": "tg_s_a"
+          },
+          "waypoints_um": [
+            [
+              19.835,
+              3.2
+            ],
+            [
+              31.095,
+              3.2
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "pins": [
+    {
+      "net": "d",
+      "block": "core",
+      "port": "tg_d_a"
+    }
+  ],
+  "options": {
+    "cell_name": "mb_bus",
+    "output": "mb_bus.gds"
+  }
+}

@@ -8,46 +8,39 @@
   "parameter_tolerance": null,
   "options": {
     "combine_devices": false,
+    "combine_devices_per_circuit": null,
     "flatten_layout": false,
     "flatten_reference": false,
     "netgen_setup": null,
     "parameter_tolerance": null
   },
-  "status": "mismatch",
-  "mismatch_count": 8,
-  "error_count": 8,
-  "category_counts": {
-    "device.unmatched": 4,
-    "net.merged": 1,
-    "net.split": 3
-  },
-  "category_error_counts": {
-    "device.unmatched": 4,
-    "net.merged": 1,
-    "net.split": 3
-  },
+  "status": "match",
+  "mismatch_count": 0,
+  "error_count": 0,
+  "category_counts": {},
+  "category_error_counts": {},
   "counts": {
     "nets": {
-      "layout": 16,
+      "layout": 14,
       "reference": 14,
-      "matched": 8
+      "matched": 14
     },
     "devices": {
       "layout": 22,
       "reference": 22,
-      "matched": 18
+      "matched": 22
     },
     "pins": {
-      "layout": 14,
+      "layout": 12,
       "reference": 6,
-      "matched": 15
+      "matched": 12
     }
   },
   "device_classes": null,
   "environment": {
     "engine": "klayout",
     "engine_version": "0.30.12",
-    "layout_sha256": "4d2ab2cd5fb72be281b0b0555a2cf444a5a95aae3979e86fb64c2ecdcf5cb235",
+    "layout_sha256": "8edea38d1fc2c99cf4e98b9003c86692ac7255168219ca718251a51a99c03de8",
     "reference_sha256": "66009a496f55fac466075bbac7c9a2216dfc2e18e1eb02eda823233534918e2c",
     "extracted_netlist": null
   },
@@ -58,141 +51,28 @@
     "deck": null,
     "input": null
   },
-  "mismatches": [
-    {
-      "category": "device.unmatched",
-      "severity": "error",
-      "description": "device has no counterpart on the other side",
-      "side": "reference",
-      "net": null,
-      "device": {
-        "layout": "\\$13",
-        "reference": "TDP",
-        "class": "PFET"
-      },
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "device.unmatched",
-      "severity": "error",
-      "description": "device has no counterpart on the other side",
-      "side": "reference",
-      "net": null,
-      "device": {
-        "layout": "\\$2",
-        "reference": "TDN",
-        "class": "NFET"
-      },
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "device.unmatched",
-      "severity": "error",
-      "description": "device has no counterpart on the other side",
-      "side": "reference",
-      "net": null,
-      "device": {
-        "layout": "\\$20",
-        "reference": "IMPA",
-        "class": "PFET"
-      },
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "device.unmatched",
-      "severity": "error",
-      "description": "device has no counterpart on the other side",
-      "side": "reference",
-      "net": null,
-      "device": {
-        "layout": "\\$9",
-        "reference": "IMNA",
-        "class": "NFET"
-      },
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.merged",
-      "severity": "error",
-      "description": "multiple reference nets were collapsed into one layout net",
-      "side": "reference",
-      "net": {
-        "layout": null,
-        "reference": "D"
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.split",
-      "severity": "error",
-      "description": "a reference net's role is divided across multiple layout nets",
-      "side": "layout",
-      "net": {
-        "layout": "A|D|TG_D_A",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.split",
-      "severity": "error",
-      "description": "a reference net's role is divided across multiple layout nets",
-      "side": "layout",
-      "net": {
-        "layout": "A|NAND_M_A",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.split",
-      "severity": "error",
-      "description": "a reference net's role is divided across multiple layout nets",
-      "side": "layout",
-      "net": {
-        "layout": "B|TG_D_B",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    }
-  ],
+  "mismatches": [],
   "net_correspondence": [
+    {
+      "layout": "A|CLK|CTRL|CTRLB|INV_CLK_A|INV_CLK_CLK_VIA|TG_D_CTRL|TG_D_CTRL_VIA|TG_FBM_CTRLB|TG_FBM_CTRLB_VIA|TG_FBS_CTRL|TG_FBS_CTRL_VIA|TG_S_CTRLB|TG_S_CTRLB_VIA",
+      "reference": "CLK",
+      "pin": true
+    },
+    {
+      "layout": "CLKB|CLKB_BRIDGE1|CLKB_BRIDGE2|CLKB_MID|CLKB_W|CTRL|CTRLB|INV_CLK_Y|TG_D_CTRLB|TG_FBM_CTRL|TG_FBS_CTRLB|TG_S_CTRL|Y",
+      "reference": "CLKB",
+      "pin": true
+    },
+    {
+      "layout": "A|D|TG_D_A",
+      "reference": "D",
+      "pin": true
+    },
+    {
+      "layout": "A|B|M_EAST|M_WEST|NAND_M_A|NAND_M_A_EXT_VIA|NAND_M_A_EXT_VIA2|NAND_M_A_STUB|TG_D_B|TG_D_B_VIA|TG_D_B_VIA2|TG_FBM_B|TG_FBM_B_ALT_VIA|TG_FBM_B_ALT_VIA2",
+      "reference": "M",
+      "pin": true
+    },
     {
       "layout": "A|INV_MC_A|MB|MNAB_Y|MPA_Y|MPB_Y|NAND_M_Y|TG_S_A|Y",
       "reference": "MB",
@@ -204,7 +84,7 @@
       "pin": true
     },
     {
-      "layout": "\\$8",
+      "layout": "\\$6",
       "reference": "MMID",
       "pin": false
     },
@@ -229,9 +109,19 @@
       "pin": true
     },
     {
-      "layout": "\\$10",
+      "layout": "\\$7",
       "reference": "S2MID",
       "pin": false
+    },
+    {
+      "layout": "INV_CLK_VDD|INV_MC_VDD|INV_Q_VDD|MPA_PY|MPB_PY|NAND_M_VDD|NAND_S2_VDD|NWELL_VDD|TG_D_VDD|TG_FBM_VDD|TG_FBS_VDD|TG_S_VDD|VDD",
+      "reference": "VDD",
+      "pin": true
+    },
+    {
+      "layout": "INV_CLK_VSS|INV_MC_VSS|INV_Q_VSS|NAND_M_VSS|NAND_S2_VSS|TG_D_VSS|TG_FBM_VSS|TG_FBS_VSS|TG_S_VSS|VSS",
+      "reference": "VSS",
+      "pin": true
     }
   ]
 }
