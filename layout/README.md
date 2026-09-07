@@ -4,7 +4,41 @@ Physical layout evidence for the sky130-trng entropy source, verified with
 `klayout-tools` (`klt`) against the sky130 open PDK. See `layout/pdk.json`
 for the PDK/tool pin.
 
-**Status (issue #22, this increment): the `ro_array_core` instance is
+**Status (issue #22, this increment): `sampler_core`'s whole data path is
+routed — all five raw-tap nets reach their samplers, `sv`'s own `d` is tied
+to `vdd` as the schematic requires, and every `d` pin in the cell is driven.
+DRC-clean, 264 devices, 153 nets.** [`layout/sampler_core/`](sampler_core/README.md)
+adds two stages on top of the six below: `data2_m1` (met1) draws nine legs —
+the `d` climbs for `sb`/`sr2`/`sr3`, `sv`'s `d`→`vdd` tie, `ro2`'s and `ro3`'s
+**westward** escapes along their own already-drawn horizontals, and the two
+short legs `xo` needs — and `route_data2` (met2) closes the three remaining
+hauls plus the 2.1 µm hop that joins `ro3`'s split escape over `ro2`'s own
+vertical. `klt drc`: **clean, 0 violations**, first attempt on both stages.
+`klt extract`: **264 devices, 153 nets** — `157 − 4`, exactly one merge per
+net joined, each confirmed net-by-net rather than by the count. `klt lvs`:
+mismatch, improved to **138/264 devices, 100/152 nets** (from 136/264,
+94/152); a match still waits on the inter-block `vdd`/`vss` straps and
+top-level pin promotion (#27), not on the data path.
+
+The finding worth carrying forward is that the previous increment's own
+framing — `ro2`/`ro3` "need a layer change *inside* the array's footprint"
+— was right about the constraint and wrong about the move. Neither net hops
+its fencing horizontals at all: a scan of the pre-increment stream for
+columns where **met2** is free over the array's *whole* height (`y` 19.4 ..
+50.0) finds exactly two bands, `x -2.1..1.65` (the array's west margin) and
+`x 215.05..220.0`, and met1 at both nets' own run heights is free all the way
+west to the first one — so they walk sideways on their own metal and descend
+outside the array's congestion instead. The east band is free and *useless*:
+reaching it needs a met1↔met2 via dropped into the 0.605 µm gap between the
+array's own east supply riser and `ro4`'s escape leg, and the via's
+concentric 0.42 µm pads need 0.70 µm at sky130's 0.14 µm spacing — measured
+edges, checked arithmetic, one of the six new claims in that directory's own
+`data-path-scan.py` (19 claims, up from 13). No new `2AMLogic/klayout-tools`
+friction was found: the increment hit `#1567` (no multi-level via drop) at
+`xa3`'s own li1 `y` pad exactly where the previous one predicted, and worked
+around it with the hand-built met1 rung that filing itself describes.
+
+**A previous increment (issue #22): the `ro_array_core` instance is
 placed in `sampler_core`, and the first two raw-tap data nets are routed
 end to end — DRC-clean, 264 devices, 157 nets.**
 [`layout/sampler_core/`](sampler_core/README.md) adds three stages on top

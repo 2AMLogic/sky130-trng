@@ -1,0 +1,137 @@
+{
+  "pdk": {
+    "variant": "sky130A"
+  },
+  "blocks": [
+    {
+      "id": "core",
+      "cell": {
+        "ports": [
+          {
+            "name": "ro1_esc_m1",
+            "x_um": -0.5,
+            "y_um": 17.0,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 90
+          },
+          {
+            "name": "sr1_d_m1",
+            "x_um": 117.985,
+            "y_um": 6.0,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 90
+          },
+          {
+            "name": "ro4_esc_m1",
+            "x_um": 215.4,
+            "y_um": 15.0,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 90
+          },
+          {
+            "name": "sr4_d_m1",
+            "x_um": 284.965,
+            "y_um": 6.0,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 90
+          }
+        ],
+        "cell_name": "data_m1",
+        "gds_path": "data_m1.gds"
+      }
+    }
+  ],
+  "placement": {
+    "strategy": "explicit",
+    "order": [
+      "core"
+    ],
+    "origins_um": {
+      "core": {
+        "x": 0.0,
+        "y": 0.0
+      }
+    }
+  },
+  "routing": {
+    "layer_role": "metal3",
+    "width_um": 0.17
+  },
+  "connectivity": [
+    {
+      "net": "ro1",
+      "pins": [
+        {
+          "block": "core",
+          "port": "ro1_esc_m1"
+        },
+        {
+          "block": "core",
+          "port": "sr1_d_m1"
+        }
+      ],
+      "waypoints_um": [
+        [
+          -0.5,
+          17.0
+        ],
+        [
+          117.985,
+          17.0
+        ],
+        [
+          117.985,
+          6.0
+        ]
+      ]
+    },
+    {
+      "net": "ro4",
+      "pins": [
+        {
+          "block": "core",
+          "port": "ro4_esc_m1"
+        },
+        {
+          "block": "core",
+          "port": "sr4_d_m1"
+        }
+      ],
+      "waypoints_um": [
+        [
+          215.4,
+          15.0
+        ],
+        [
+          284.965,
+          15.0
+        ],
+        [
+          284.965,
+          6.0
+        ]
+      ]
+    }
+  ],
+  "pins": [],
+  "options": {
+    "cell_name": "route_data",
+    "output": "route_data.gds"
+  }
+}

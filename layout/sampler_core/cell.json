@@ -1772,6 +1772,757 @@
         }
       ],
       "pins": []
+    },
+    {
+      "name": "data2_m1",
+      "_comment": [
+        "Stage 'data2_m1' (met1, layer_role 'metal2', issue #22 / #105): the met1",
+        "legs the three remaining data nets and sv's own vdd tie need, before any",
+        "of them can be hauled on met2. Nothing crosses the channel in this stage.",
+        "",
+        "Sampler side -- 'sb_d_stub'/'sr2_d_stub'/'sr3_d_stub' are the same",
+        "recipe data_m1 already used for sr1/sr4: climb that instance's own d",
+        "input from its li1 pad (local (6.665, 1.2), sampler_dff's own promoted",
+        "'d' label, global x = origin_x + 6.665) straight up to a met1 landing",
+        "point at y=6.0, just under the shared vdd rail. gen-compose draws the",
+        "li1->met1 mcon at the pad itself. data-path-scan.py's group-A scan",
+        "already measured all SIX d columns clear on met1 from y=0.485 to",
+        "y=6.915, not just sr1's and sr4's, so these three need no new lane",
+        "search.",
+        "",
+        "'sv_d_vdd_tie' is the fourth, different job: design/sampler_core.spice",
+        "wires xsv's own d input to vdd (the valid-flag sampler samples a",
+        "constant 1), not to the array, so this leg climbs the same column but",
+        "keeps going to y=7.0 -- an interior point ON the shared vdd rail's own",
+        "met1 (drawn at y=6.915..7.085 by route_supplies), the same 'land",
+        "directly on the target net's own metal, no via needed' technique that",
+        "stage's own vdd/vss ports already use.",
+        "",
+        "Array side -- ro2 and ro3 have NO free met1 column to the array's own",
+        "south edge (data-path-scan.py group B: every column over their own runs",
+        "is fenced), so instead of escaping downward on met1 like ro1/ro4, they",
+        "walk WEST on met1 along their own already-drawn horizontals to the",
+        "array's own west margin, where met2 -- measured over the full 19.4..50.0",
+        "um height -- is free in one continuous column band (x -2.1 .. 1.65).",
+        "  * 'ro2_esc' extends ro2's own horizontal (met1, global y=32.135,",
+        "    x 20.415..105.885) west from its corner at x=20.5 to x=0.3.",
+        "  * ro3 cannot do the same in one leg: ro2's own vertical (met1,",
+        "    x 20.415..20.585) sits between ro3's horizontal and that margin, and",
+        "    a met1 leg through it would short the two nets. So ro3's escape is",
+        "    split -- 'ro3_esc_e' walks west from its corner at (28.47, 32.635)",
+        "    to x=21.6, 'ro3_esc_w' is a detached met1 leg from x=19.5 to x=1.3",
+        "    at the same y, and the final stage's own 'ro3_hop' jumps the 2.1 um",
+        "    gap between them on met2, over ro2's vertical.",
+        "",
+        "'xo_stub' is the multi-level via drop klayout-tools#1567 says gen-compose",
+        "will not do in one route: xa3's own y output is an li1 pad at global",
+        "(66.375, 49.22) and the haul that has to reach sb's d pin runs on met2,",
+        "two hops away. This is the same 1.4 um straight-north li1->met1 promotion",
+        "layout/ro_array_core/cell.json's own 'core' stage already declares for",
+        "xa2 (its y_m1 port at xor2-local (1.55, 14.4)), at xa3 instead of xa2.",
+        "",
+        "'xo_dip' is a detached met1 leg at y=52.5, x 36.5..38.2, drawn here so",
+        "the final stage's met2 work can step around one obstacle: xa2's own t2",
+        "riser (met2, x 37.32..37.49) runs from y=50.41 up into the t2 bridge at",
+        "y=54.635, and that bridge spans x 37.32..78.575 -- so met2 is fenced both",
+        "west of xa3 and above it. met1 at y=52.5 is free from x=30 to x=38.77",
+        "(the nearest met1 is xa2's own plate at y=53.05 and a met1 region east of",
+        "x=38.77, both >= 0.34 um away), so the dip crosses under the riser."
+      ],
+      "blocks": [
+        {
+          "id": "core",
+          "orientation": "none",
+          "cell": {
+            "from_stage": "route_data",
+            "ports": [
+              {
+                "name": "sb_d",
+                "x_um": 6.665,
+                "y_um": 1.2,
+                "layer": {
+                  "layer": 67,
+                  "datatype": 20
+                },
+                "width_um": 0.17,
+                "direction_deg": 90
+              },
+              {
+                "name": "sb_d_m1",
+                "x_um": 6.665,
+                "y_um": 6.0,
+                "layer": {
+                  "layer": 68,
+                  "datatype": 20
+                },
+                "width_um": 0.17,
+                "direction_deg": 90
+              },
+              {
+                "name": "sv_d",
+                "x_um": 62.325,
+                "y_um": 1.2,
+                "layer": {
+                  "layer": 67,
+                  "datatype": 20
+                },
+                "width_um": 0.17,
+                "direction_deg": 90
+              },
+              {
+                "name": "sv_vdd",
+                "x_um": 62.325,
+                "y_um": 7.0,
+                "layer": {
+                  "layer": 68,
+                  "datatype": 20
+                },
+                "width_um": 0.17,
+                "direction_deg": 90
+              },
+              {
+                "name": "sr2_d",
+                "x_um": 173.645,
+                "y_um": 1.2,
+                "layer": {
+                  "layer": 67,
+                  "datatype": 20
+                },
+                "width_um": 0.17,
+                "direction_deg": 90
+              },
+              {
+                "name": "sr2_d_m1",
+                "x_um": 173.645,
+                "y_um": 6.0,
+                "layer": {
+                  "layer": 68,
+                  "datatype": 20
+                },
+                "width_um": 0.17,
+                "direction_deg": 90
+              },
+              {
+                "name": "sr3_d",
+                "x_um": 229.305,
+                "y_um": 1.2,
+                "layer": {
+                  "layer": 67,
+                  "datatype": 20
+                },
+                "width_um": 0.17,
+                "direction_deg": 90
+              },
+              {
+                "name": "sr3_d_m1",
+                "x_um": 229.305,
+                "y_um": 6.0,
+                "layer": {
+                  "layer": 68,
+                  "datatype": 20
+                },
+                "width_um": 0.17,
+                "direction_deg": 90
+              },
+              {
+                "name": "ro2_tap",
+                "x_um": 20.5,
+                "y_um": 32.135,
+                "layer": {
+                  "layer": 68,
+                  "datatype": 20
+                },
+                "width_um": 0.17,
+                "direction_deg": 180
+              },
+              {
+                "name": "ro2_esc_m1",
+                "x_um": 0.3,
+                "y_um": 32.135,
+                "layer": {
+                  "layer": 68,
+                  "datatype": 20
+                },
+                "width_um": 0.17,
+                "direction_deg": 0
+              },
+              {
+                "name": "ro3_tap",
+                "x_um": 28.47,
+                "y_um": 32.635,
+                "layer": {
+                  "layer": 68,
+                  "datatype": 20
+                },
+                "width_um": 0.17,
+                "direction_deg": 180
+              },
+              {
+                "name": "ro3_hop_e",
+                "x_um": 21.6,
+                "y_um": 32.635,
+                "layer": {
+                  "layer": 68,
+                  "datatype": 20
+                },
+                "width_um": 0.17,
+                "direction_deg": 0
+              },
+              {
+                "name": "ro3_hop_w",
+                "x_um": 19.5,
+                "y_um": 32.635,
+                "layer": {
+                  "layer": 68,
+                  "datatype": 20
+                },
+                "width_um": 0.17,
+                "direction_deg": 180
+              },
+              {
+                "name": "ro3_esc_m1",
+                "x_um": 1.3,
+                "y_um": 32.635,
+                "layer": {
+                  "layer": 68,
+                  "datatype": 20
+                },
+                "width_um": 0.17,
+                "direction_deg": 0
+              },
+              {
+                "name": "xo_y",
+                "x_um": 66.375,
+                "y_um": 49.22,
+                "layer": {
+                  "layer": 67,
+                  "datatype": 20
+                },
+                "width_um": 0.42,
+                "direction_deg": 90
+              },
+              {
+                "name": "xo_m1",
+                "x_um": 66.375,
+                "y_um": 50.62,
+                "layer": {
+                  "layer": 68,
+                  "datatype": 20
+                },
+                "width_um": 0.42,
+                "direction_deg": 90
+              },
+              {
+                "name": "xo_dip_e",
+                "x_um": 38.2,
+                "y_um": 52.5,
+                "layer": {
+                  "layer": 68,
+                  "datatype": 20
+                },
+                "width_um": 0.17,
+                "direction_deg": 0
+              },
+              {
+                "name": "xo_dip_w",
+                "x_um": 36.5,
+                "y_um": 52.5,
+                "layer": {
+                  "layer": 68,
+                  "datatype": 20
+                },
+                "width_um": 0.17,
+                "direction_deg": 180
+              }
+            ]
+          }
+        }
+      ],
+      "placement": {
+        "strategy": "explicit",
+        "order": [
+          "core"
+        ],
+        "origins_um": {
+          "core": {
+            "x": 0.0,
+            "y": 0.0
+          }
+        }
+      },
+      "routing": {
+        "layer_role": "metal2",
+        "width_um": 0.17
+      },
+      "connectivity": [
+        {
+          "net": "sb_d_stub",
+          "pins": [
+            {
+              "block": "core",
+              "port": "sb_d"
+            },
+            {
+              "block": "core",
+              "port": "sb_d_m1"
+            }
+          ]
+        },
+        {
+          "net": "sv_d_vdd_tie",
+          "pins": [
+            {
+              "block": "core",
+              "port": "sv_d"
+            },
+            {
+              "block": "core",
+              "port": "sv_vdd"
+            }
+          ]
+        },
+        {
+          "net": "sr2_d_stub",
+          "pins": [
+            {
+              "block": "core",
+              "port": "sr2_d"
+            },
+            {
+              "block": "core",
+              "port": "sr2_d_m1"
+            }
+          ]
+        },
+        {
+          "net": "sr3_d_stub",
+          "pins": [
+            {
+              "block": "core",
+              "port": "sr3_d"
+            },
+            {
+              "block": "core",
+              "port": "sr3_d_m1"
+            }
+          ]
+        },
+        {
+          "net": "ro2_esc",
+          "pins": [
+            {
+              "block": "core",
+              "port": "ro2_tap"
+            },
+            {
+              "block": "core",
+              "port": "ro2_esc_m1"
+            }
+          ]
+        },
+        {
+          "net": "ro3_esc_e",
+          "pins": [
+            {
+              "block": "core",
+              "port": "ro3_tap"
+            },
+            {
+              "block": "core",
+              "port": "ro3_hop_e"
+            }
+          ]
+        },
+        {
+          "net": "ro3_esc_w",
+          "pins": [
+            {
+              "block": "core",
+              "port": "ro3_hop_w"
+            },
+            {
+              "block": "core",
+              "port": "ro3_esc_m1"
+            }
+          ]
+        },
+        {
+          "net": "xo_stub",
+          "pins": [
+            {
+              "block": "core",
+              "port": "xo_y"
+            },
+            {
+              "block": "core",
+              "port": "xo_m1"
+            }
+          ]
+        },
+        {
+          "net": "xo_dip",
+          "pins": [
+            {
+              "block": "core",
+              "port": "xo_dip_e"
+            },
+            {
+              "block": "core",
+              "port": "xo_dip_w"
+            }
+          ]
+        }
+      ],
+      "pins": []
+    },
+    {
+      "name": "route_data2",
+      "_comment": [
+        "Final stage 'route_data2' (met2, layer_role 'metal3', issue #22 / #105):",
+        "the three remaining raw-tap-to-sampler hauls, plus the one met2 hop ro3's",
+        "own split met1 escape needs. Every entry is a 2-pin connectivity[] entry",
+        "between two met1 landing points data2_m1 drew, so gen-compose drops a",
+        "met1<->met2 via at BOTH ends and each haul is pure met2 in between --",
+        "the same shape route_data's own ro1/ro4 hauls use, with explicit",
+        "waypoints_um rather than a bundle net for the portability reason",
+        "route_supplies/route_ctrl/route_data already record",
+        "(klayout-tools#1548).",
+        "",
+        "  ro3_hop: (19.5, 32.635) -> (21.6, 32.635)   [2.1 um, over ro2's own",
+        "           met1 vertical -- joins ro3_esc_w to ro3_esc_e]",
+        "  ro2:     (0.3, 32.135) -> south to y=18.6 -> east to x=173.645 ->",
+        "           south to (173.645, 6.0) = sr2's own d stub",
+        "  ro3:     (1.3, 32.635) -> south to y=19.4 -> east to x=210.0 ->",
+        "           south to y=13.6 -> east to x=229.305 -> south to",
+        "           (229.305, 6.0) = sr3's own d stub",
+        "  xo_hop:  (66.375, 50.62) -> north to y=52.5 -> west to (38.2, 52.5)",
+        "  xo:      (36.5, 52.5) -> north to y=53.5 -> west to x=-1.5 -> south",
+        "           to y=13.0 -> east to x=6.665 -> south to (6.665, 6.0) =",
+        "           sb's own d stub",
+        "",
+        "Four measured facts pick these lanes, all re-derived by",
+        "data-path-scan.py:",
+        "  * The west margin (x -2.1 .. 1.65) is the only met2 column band that",
+        "    is free over the whole 19.4..50.0 um height of the array; the east",
+        "    one (x 215.05 .. 220.0) is free too but unreachable from ro2/ro3,",
+        "    which are fenced from it by the array's own east vdd/vss riser",
+        "    (met2, x 214.2..214.71, y 20.425..34.645) and by ro4's own met1",
+        "    escape leg at x=215.4.",
+        "  * ro1's own channel haul (met2, y=17.0) runs from x=-0.5 east to",
+        "    x=117.985, so a column that has to reach BELOW y=17 must sit west of",
+        "    x=-1.02. xo's does (x=-1.5); ro2's and ro3's turn east above it",
+        "    (y=18.6 and y=19.4), inside the empty band the previous increment's",
+        "    channel scan measured.",
+        "  * ro3's target column (x=229.305) is east of ro2's (x=173.645), so ro3",
+        "    takes the HIGHER channel lane (y=19.4 vs 18.6) and the EASTERN of the",
+        "    two west-margin columns (x=1.3 vs 0.3): with that ordering neither",
+        "    net's lane ever crosses the other's column. ro3 then drops to a",
+        "    second lane at y=13.6 at x=210.0 -- west of ro4's own haul (met2,",
+        "    y=15.0, x 215.4..284.965), which its target column would otherwise",
+        "    cross.",
+        "  * The array's own bottom met2 (y 20.0..20.6, x 2.605..214.71) and a via",
+        "    pad hanging to y=19.6 at x~58 cap the channel: y=19.4 is the highest",
+        "    lane that scans clear across the full width."
+      ],
+      "blocks": [
+        {
+          "id": "core",
+          "orientation": "none",
+          "cell": {
+            "from_stage": "data2_m1",
+            "ports": [
+              {
+                "name": "ro3_hop_w",
+                "x_um": 19.5,
+                "y_um": 32.635,
+                "layer": {
+                  "layer": 68,
+                  "datatype": 20
+                },
+                "width_um": 0.17,
+                "direction_deg": 0
+              },
+              {
+                "name": "ro3_hop_e",
+                "x_um": 21.6,
+                "y_um": 32.635,
+                "layer": {
+                  "layer": 68,
+                  "datatype": 20
+                },
+                "width_um": 0.17,
+                "direction_deg": 180
+              },
+              {
+                "name": "ro2_esc_m1",
+                "x_um": 0.3,
+                "y_um": 32.135,
+                "layer": {
+                  "layer": 68,
+                  "datatype": 20
+                },
+                "width_um": 0.17,
+                "direction_deg": 270
+              },
+              {
+                "name": "sr2_d_m1",
+                "x_um": 173.645,
+                "y_um": 6.0,
+                "layer": {
+                  "layer": 68,
+                  "datatype": 20
+                },
+                "width_um": 0.17,
+                "direction_deg": 90
+              },
+              {
+                "name": "ro3_esc_m1",
+                "x_um": 1.3,
+                "y_um": 32.635,
+                "layer": {
+                  "layer": 68,
+                  "datatype": 20
+                },
+                "width_um": 0.17,
+                "direction_deg": 270
+              },
+              {
+                "name": "sr3_d_m1",
+                "x_um": 229.305,
+                "y_um": 6.0,
+                "layer": {
+                  "layer": 68,
+                  "datatype": 20
+                },
+                "width_um": 0.17,
+                "direction_deg": 90
+              },
+              {
+                "name": "xo_m1",
+                "x_um": 66.375,
+                "y_um": 50.62,
+                "layer": {
+                  "layer": 68,
+                  "datatype": 20
+                },
+                "width_um": 0.42,
+                "direction_deg": 90
+              },
+              {
+                "name": "xo_dip_e",
+                "x_um": 38.2,
+                "y_um": 52.5,
+                "layer": {
+                  "layer": 68,
+                  "datatype": 20
+                },
+                "width_um": 0.17,
+                "direction_deg": 0
+              },
+              {
+                "name": "xo_dip_w",
+                "x_um": 36.5,
+                "y_um": 52.5,
+                "layer": {
+                  "layer": 68,
+                  "datatype": 20
+                },
+                "width_um": 0.17,
+                "direction_deg": 180
+              },
+              {
+                "name": "sb_d_m1",
+                "x_um": 6.665,
+                "y_um": 6.0,
+                "layer": {
+                  "layer": 68,
+                  "datatype": 20
+                },
+                "width_um": 0.17,
+                "direction_deg": 90
+              }
+            ]
+          }
+        }
+      ],
+      "placement": {
+        "strategy": "explicit",
+        "order": [
+          "core"
+        ],
+        "origins_um": {
+          "core": {
+            "x": 0.0,
+            "y": 0.0
+          }
+        }
+      },
+      "routing": {
+        "layer_role": "metal3",
+        "width_um": 0.17
+      },
+      "connectivity": [
+        {
+          "net": "ro3_hop",
+          "pins": [
+            {
+              "block": "core",
+              "port": "ro3_hop_w"
+            },
+            {
+              "block": "core",
+              "port": "ro3_hop_e"
+            }
+          ],
+          "waypoints_um": [
+            [
+              19.5,
+              32.635
+            ],
+            [
+              21.6,
+              32.635
+            ]
+          ]
+        },
+        {
+          "net": "ro2",
+          "pins": [
+            {
+              "block": "core",
+              "port": "ro2_esc_m1"
+            },
+            {
+              "block": "core",
+              "port": "sr2_d_m1"
+            }
+          ],
+          "waypoints_um": [
+            [
+              0.3,
+              32.135
+            ],
+            [
+              0.3,
+              18.6
+            ],
+            [
+              173.645,
+              18.6
+            ],
+            [
+              173.645,
+              6.0
+            ]
+          ]
+        },
+        {
+          "net": "ro3",
+          "pins": [
+            {
+              "block": "core",
+              "port": "ro3_esc_m1"
+            },
+            {
+              "block": "core",
+              "port": "sr3_d_m1"
+            }
+          ],
+          "waypoints_um": [
+            [
+              1.3,
+              32.635
+            ],
+            [
+              1.3,
+              19.4
+            ],
+            [
+              210.0,
+              19.4
+            ],
+            [
+              210.0,
+              13.6
+            ],
+            [
+              229.305,
+              13.6
+            ],
+            [
+              229.305,
+              6.0
+            ]
+          ]
+        },
+        {
+          "net": "xo_hop",
+          "pins": [
+            {
+              "block": "core",
+              "port": "xo_m1"
+            },
+            {
+              "block": "core",
+              "port": "xo_dip_e"
+            }
+          ],
+          "waypoints_um": [
+            [
+              66.375,
+              50.62
+            ],
+            [
+              66.375,
+              52.5
+            ],
+            [
+              38.2,
+              52.5
+            ]
+          ]
+        },
+        {
+          "net": "xo",
+          "pins": [
+            {
+              "block": "core",
+              "port": "xo_dip_w"
+            },
+            {
+              "block": "core",
+              "port": "sb_d_m1"
+            }
+          ],
+          "waypoints_um": [
+            [
+              36.5,
+              52.5
+            ],
+            [
+              36.5,
+              53.5
+            ],
+            [
+              -1.5,
+              53.5
+            ],
+            [
+              -1.5,
+              13.0
+            ],
+            [
+              6.665,
+              13.0
+            ],
+            [
+              6.665,
+              6.0
+            ]
+          ]
+        }
+      ],
+      "pins": []
     }
   ],
   "lvs": {

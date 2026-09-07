@@ -235,7 +235,34 @@ DR-0003 surfaces and does not resolve on its own authority.
   (status **Proposed**) it lives in [`digital/`](../digital/README.md), not
   here, and none of it is or will be a `design/*.spice` netlist. `raw_bit`
   and `raw_valid` are the interface between the two directories.
-- **Layout and DRC/LVS.** **Latest (issue #22): the `ro_array_core`
+- **Layout and DRC/LVS.** **Latest (issue #22): `sampler_core`'s whole data
+  path is routed — all five raw-tap nets (`ro1`-`ro4`, `xo`) reach their own
+  samplers, `sv`'s `d` is tied to `vdd` as the schematic requires, and every
+  `d` pin in the cell is driven. DRC-clean, 264 devices, 153 nets.**
+  [`layout/sampler_core/`](../layout/sampler_core/README.md) adds two stages
+  on top of the six below: `data2_m1` (met1) draws the `d` climbs for
+  `sb`/`sr2`/`sr3`, `sv`'s `d`→`vdd` tie (landing directly on the shared
+  `vdd` rail's own met1), `ro2`'s and `ro3`'s westward escapes along their
+  own already-drawn horizontals, and the two short legs `xo` needs; and
+  `route_data2` (met2) closes the three remaining hauls plus the 2.1 µm hop
+  joining `ro3`'s split escape over `ro2`'s own vertical. The previous
+  increment's reading that `ro2`/`ro3` need "a layer change inside the
+  array's footprint" was right about the constraint and wrong about the
+  move: a scan of the pre-increment stream finds exactly two `x` bands where
+  met2 is free over the array's *whole* height (`x -2.1..1.65`, the west
+  margin, and `x 215.05..220.0`), met1 is clear all the way west to the
+  first one at both nets' own run heights, and the east band is unreachable
+  — the via that would have to land there needs 0.70 µm between the array's
+  east supply riser and `ro4`'s escape leg, which are 0.605 µm apart. `klt
+  drc`: clean, 0 violations, first attempt on both stages. `klt extract`:
+  264 devices, **153 nets** — `157 − 4`, exactly one merge per net joined,
+  each confirmed net-by-net. `klt lvs` against `design/sampler_core.spice`'s
+  real `.subckt sampler_core`: mismatch, improved to **138/264 devices,
+  100/152 nets**. The inter-block `vdd`/`vss` straps, top-level pin
+  promotion, whole-cell LVS sign-off and the assembled post-layout PVT run
+  remain open, tracked here and in #27.
+
+- **A previous increment (issue #22): the `ro_array_core`
   instance is placed inside `sampler_core`, and the first two raw-tap data
   nets are routed end to end — DRC-clean, 264 devices, 157 nets.**
   [`layout/sampler_core/`](../layout/sampler_core/README.md) adds three
