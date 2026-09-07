@@ -2920,6 +2920,338 @@
         }
       ],
       "pins": []
+    },
+    {
+      "name": "vdd_strap1",
+      "_comment": [
+        "Stage 'vdd_strap1' (issue #22 / #27 step 5, second half, 1 of 3): the",
+        "vdd half of the inter-block supply strap the vss_strap1-vss_strap4",
+        "stages above left open. Unlike vss, a pure single-layer (met1) run",
+        "does not work here: vdd-strap-scan.py's own column scan found the",
+        "array's own internal routing between the tap and the rail is far",
+        "denser than vss's own path -- a met1-only net belonging to some",
+        "other signal spans the WHOLE x=211.64..214.97 corridor at",
+        "composed y=25.25..25.42, with no gap to route through at any x in",
+        "that span (re-measured directly, not assumed). This stage only",
+        "draws the met1 leg from the tap down to a point safely above that",
+        "obstruction; 'vdd_strap2' bridges past it on met2 (a layer that",
+        "obstruction cannot short on), and 'vdd_strap3' returns to met1 for",
+        "the final drop onto the rail.",
+        "",
+        "Access point: (212.995, 29.6) is an interior point on the array's",
+        "own vdd via stack at buf4_vdd_m1 -- layout/ro_array_core/cell.json's",
+        "own 'vddstub' stage vias buf4's own vdd pin from li1 up to met1 at",
+        "local x=212.995, y=6.0 (the array's own y offset in this cell is",
+        "23.635, so local y=6.0 -> composed y=29.635); the stub's own via",
+        "pad extends from composed y=27.665 to 29.845 at this x (confirmed",
+        "by the klayout.db scan committed as vdd-strap-scan.py), so y=29.6",
+        "lands inside it -- the same 'land directly on already-drawn metal,",
+        "no via needed' technique 'vss_tap' above used for vss.",
+        "",
+        "This stage jogs east from the tap to composed x=213.7 at y=29.6 (a",
+        "column vdd-strap-scan.py confirms clear of every other obstruction",
+        "in the array's own footprint -- including the array's own east vss",
+        "riser, met2 x=214.29..214.71, which sits close enough east of",
+        "213.7 that a via there would violate spacing, exactly why 213.7",
+        "was chosen over the previously-tried 215.0/217.0 columns further",
+        "east) then descends on met1 to (213.7, 25.9): 0.48 um of clearance",
+        "above the 25.25..25.42 obstruction's own top edge, comfortably",
+        "more than the 0.14 um sky130 met1 spacing rule plus the via pad",
+        "'vdd_strap2' drops here needs.",
+        "",
+        "Two rejected paths from an earlier attempt on this same stage,",
+        "both real dead ends, not just untried:",
+        "1. East along the array's own vdd bus (composed y=31.135) then",
+        "   south at x~215-220, crossing the array's own east vss riser",
+        "   (met2, x=214.29..214.71) and 'ro4_esc' (ro4's own raw-tap data",
+        "   escape, TWO met1 risers at x=215.315..215.485 and",
+        "   x=215.905..216.485, composed y=20.0..33.0 -- ro4_esc's own",
+        "   label sits at (215.4, 24.318), inside the first riser) at the",
+        "   SAME height as the array's own vdd bus. An earlier attempt",
+        "   composed clean (gen-compose's own overlap check does not catch",
+        "   an auto-via's pad against pre-existing same-cell metal the way",
+        "   it catches a plain wire segment -- 2AMLogic/klayout-tools",
+        "   friction, filed generically) but klt extract then showed ro4's",
+        "   whole raw-tap data net merged into vdd -- a real short, caught",
+        "   only after the fact by LVS, not by drc/gen-compose. Retrying",
+        "   with wider via-to-riser clearance found the underlying gap",
+        "   itself is too narrow for ANY via: the 214.71..215.315 gap",
+        "   between the vss riser and ro4_esc's own riser is 0.605 um, and",
+        "   a via's own 0.42 um pad plus 0.14 um clearance on both sides",
+        "   needs 0.70 um -- the exact same arithmetic route_data2's own",
+        "   README section already found for the data path (\"the east",
+        "   band is free and useless\"), independently re-derived here for",
+        "   vdd.",
+        "2. A route entirely on met1, crossing ro4_esc's own two risers",
+        "   directly: both are real, drawn ro4 metal (not the array's own",
+        "   'east-edge guard' this stage's own first draft assumed) --",
+        "   crossing either draws a hard, DRC-invisible short (DRC does",
+        "   not check connectivity), exactly the 'ro4|ro4_esc' net.merged",
+        "   LVS finding above surfaced.",
+        "3. A pure met1 run straight down composed x=215.0 (no eastward jog",
+        "   at all): this looked clear in a first-pass column scan (the",
+        "   211.64..214.97 obstruction's own bbox was misread from a",
+        "   region-merge result whose bounding box is far bigger than its",
+        "   actual footprint, a real pitfall documented in this stage's own",
+        "   vdd-strap-scan.py) but a fresh, fully re-verified scan (exact",
+        "   polygon intersection against the intended route footprint, not",
+        "   a bbox) found a genuine 0.055 um^2 overlap at (214.915..214.97,",
+        "   25.125..25.545) -- confirmed by actually running gen-compose,",
+        "   which rejected it with the exact same overlap area reported.",
+        "   That is what motivated re-deriving the obstruction's true shape",
+        "   (it turned out to be a solid met1 bar spanning the whole",
+        "   211.64..214.97 corridor at y=25.25..25.42, not a small pad) and",
+        "   the two-via met1/met2/met1 approach this stage and its two",
+        "   siblings use instead."
+      ],
+      "blocks": [
+        {
+          "id": "core",
+          "orientation": "none",
+          "cell": {
+            "from_stage": "vss_strap4",
+            "ports": [
+              {
+                "name": "vdd_tap",
+                "x_um": 212.995,
+                "y_um": 29.6,
+                "layer": {
+                  "layer": 68,
+                  "datatype": 20
+                },
+                "width_um": 0.17,
+                "direction_deg": 0
+              },
+              {
+                "name": "vdd_pre_dip",
+                "x_um": 213.7,
+                "y_um": 25.9,
+                "layer": {
+                  "layer": 68,
+                  "datatype": 20
+                },
+                "width_um": 0.17,
+                "direction_deg": 270
+              }
+            ]
+          }
+        }
+      ],
+      "placement": {
+        "strategy": "explicit",
+        "order": [
+          "core"
+        ],
+        "origins_um": {
+          "core": {
+            "x": 0.0,
+            "y": 0.0
+          }
+        }
+      },
+      "routing": {
+        "layer_role": "metal2",
+        "width_um": 0.17
+      },
+      "connectivity": [
+        {
+          "net": "vdd_link",
+          "pins": [
+            {
+              "block": "core",
+              "port": "vdd_tap"
+            },
+            {
+              "block": "core",
+              "port": "vdd_pre_dip"
+            }
+          ],
+          "waypoints_um": [
+            [
+              212.995,
+              29.6
+            ],
+            [
+              213.7,
+              29.6
+            ],
+            [
+              213.7,
+              25.9
+            ]
+          ]
+        }
+      ],
+      "pins": []
+    },
+    {
+      "name": "vdd_strap2",
+      "_comment": [
+        "Stage 'vdd_strap2' (2 of 3): the met2 bridge past the",
+        "211.64..214.97 obstruction 'vdd_strap1' stopped short of.",
+        "'vdd_pre_dip' is declared met1 (matching the previous stage's own",
+        "end) but this stage's own routing role is metal3 (met2), so",
+        "gen-compose vias up at 'vdd_pre_dip' (y=25.9) and runs the short",
+        "1.1 um span to 'vdd_post_dip' (y=24.8, 0.45 um clear of the",
+        "obstruction's own bottom edge y=25.25) entirely on met2 -- a layer",
+        "the obstruction (met1) cannot short against. Both via pads sit at",
+        "composed x=213.7, west (0.38 um clear, past the 0.14 um sky130",
+        "spacing rule) of the array's own east vss riser",
+        "(met2, x=214.29..214.71) -- the same riser 'vss_tap' above lands",
+        "directly on, so the clearance here is a deliberate, re-measured",
+        "choice, not an oversight."
+      ],
+      "blocks": [
+        {
+          "id": "core",
+          "orientation": "none",
+          "cell": {
+            "from_stage": "vdd_strap1",
+            "ports": [
+              {
+                "name": "vdd_pre_dip",
+                "x_um": 213.7,
+                "y_um": 25.9,
+                "layer": {
+                  "layer": 68,
+                  "datatype": 20
+                },
+                "width_um": 0.17,
+                "direction_deg": 270
+              },
+              {
+                "name": "vdd_post_dip",
+                "x_um": 213.7,
+                "y_um": 24.8,
+                "layer": {
+                  "layer": 69,
+                  "datatype": 20
+                },
+                "width_um": 0.17,
+                "direction_deg": 270
+              }
+            ]
+          }
+        }
+      ],
+      "placement": {
+        "strategy": "explicit",
+        "order": [
+          "core"
+        ],
+        "origins_um": {
+          "core": {
+            "x": 0.0,
+            "y": 0.0
+          }
+        }
+      },
+      "routing": {
+        "layer_role": "metal3",
+        "width_um": 0.17
+      },
+      "connectivity": [
+        {
+          "net": "vdd_link_dip",
+          "pins": [
+            {
+              "block": "core",
+              "port": "vdd_pre_dip"
+            },
+            {
+              "block": "core",
+              "port": "vdd_post_dip"
+            }
+          ]
+        }
+      ],
+      "pins": []
+    },
+    {
+      "name": "vdd_strap3",
+      "_comment": [
+        "Final stage 'vdd_strap3' (3 of 3): the last met1 leg, from just",
+        "below the 211.64..214.97 obstruction's own bottom edge down to a",
+        "direct landing on the sampler bank's own vdd rail -- closing the",
+        "vdd inter-block strap and, for the first time, merging the",
+        "array's own vdd bus and the sampler bank's own vdd rail into one",
+        "real net (previously two separate nets, both containing a literal",
+        "'vdd' label -- see this cell's own README). 'vdd_post_dip' is",
+        "declared met2 (matching the previous stage's own end) but this",
+        "stage's own routing role is metal2 (met1), so gen-compose vias",
+        "down at 'vdd_post_dip' (y=24.8) and runs the whole remaining span",
+        "to 'vdd_rail_tap' (y=7.0, an interior point on the sampler bank's",
+        "own already-drawn vdd rail, composed x=213.7 sits inside its",
+        "continuous sr2->sr3 span 166.98..222.64) entirely on met1 -- a",
+        "column vdd-strap-scan.py confirms is clear the whole way, the",
+        "same 'land directly on already-drawn metal, no via needed'",
+        "technique 'vss_strap4' above used for vss."
+      ],
+      "blocks": [
+        {
+          "id": "core",
+          "orientation": "none",
+          "cell": {
+            "from_stage": "vdd_strap2",
+            "ports": [
+              {
+                "name": "vdd_post_dip",
+                "x_um": 213.7,
+                "y_um": 24.8,
+                "layer": {
+                  "layer": 69,
+                  "datatype": 20
+                },
+                "width_um": 0.17,
+                "direction_deg": 270
+              },
+              {
+                "name": "vdd_rail_tap",
+                "x_um": 213.7,
+                "y_um": 7.0,
+                "layer": {
+                  "layer": 68,
+                  "datatype": 20
+                },
+                "width_um": 0.17,
+                "direction_deg": 270
+              }
+            ]
+          }
+        }
+      ],
+      "placement": {
+        "strategy": "explicit",
+        "order": [
+          "core"
+        ],
+        "origins_um": {
+          "core": {
+            "x": 0.0,
+            "y": 0.0
+          }
+        }
+      },
+      "routing": {
+        "layer_role": "metal2",
+        "width_um": 0.17
+      },
+      "connectivity": [
+        {
+          "net": "vdd_link",
+          "pins": [
+            {
+              "block": "core",
+              "port": "vdd_post_dip"
+            },
+            {
+              "block": "core",
+              "port": "vdd_rail_tap"
+            }
+          ]
+        }
+      ],
+      "pins": []
     }
   ],
   "lvs": {

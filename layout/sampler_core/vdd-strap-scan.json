@@ -1,0 +1,185 @@
+{
+  "all_claims_hold": true,
+  "claims": {
+    "obstruction_spans_the_whole_211_64_214_97_band": true,
+    "rejected_x215_0_route_really_did_collide": true,
+    "met1_col_tap_to_pre_dip_clear": true,
+    "met1_col_post_dip_to_rail_clear": true,
+    "met1_via_pad_pre_dip_clear": true,
+    "met1_via_pad_post_dip_clear": true,
+    "met2_via_pad_pre_dip_clear": true,
+    "met2_via_pad_post_dip_clear": true,
+    "met2_bridge_clear": true,
+    "via_pad_to_vss_riser_clearance_meets_min_space": true,
+    "drc_clean": true,
+    "device_count_264": true,
+    "net_count_dropped_to_152": true,
+    "lvs_is_a_full_match": true,
+    "lvs_devices_fully_matched": true,
+    "lvs_nets_fully_matched": true,
+    "strap_is_part_of_the_merged_vdd_net": true
+  },
+  "obstruction": {
+    "full_window_polys": [
+      [
+        205.0,
+        20.125,
+        213.205,
+        24.765
+      ],
+      [
+        205.0,
+        20.0,
+        216.485,
+        33.72
+      ],
+      [
+        217.79,
+        20.0,
+        218.21,
+        20.11
+      ],
+      [
+        205.0,
+        22.05,
+        205.81,
+        25.715
+      ],
+      [
+        205.0,
+        25.125,
+        214.97,
+        29.32
+      ],
+      [
+        212.785,
+        27.665,
+        213.205,
+        29.845
+      ]
+    ],
+    "no_gap_probe": {
+      "clear": false,
+      "overlap_area_um2": 0.3663,
+      "polys": [
+        [
+          211.64,
+          25.28,
+          214.97,
+          25.39
+        ]
+      ]
+    },
+    "obstruction_spans_the_whole_probed_band": true,
+    "rejected_route_215_0_collision": {
+      "clear": false,
+      "overlap_area_um2": 0.03755,
+      "polys": [
+        [
+          214.915,
+          7.0,
+          215.085,
+          7.085
+        ],
+        [
+          214.915,
+          25.125,
+          214.97,
+          25.545
+        ]
+      ]
+    },
+    "rejected_route_actually_overlaps": true
+  },
+  "column": {
+    "met1_col_tap_to_pre_dip": {
+      "clear": true,
+      "overlap_area_um2": 0.0,
+      "polys": []
+    },
+    "met1_col_post_dip_to_rail": {
+      "clear": true,
+      "overlap_area_um2": 0.0,
+      "polys": []
+    },
+    "met1_via_pad_pre_dip": {
+      "clear": true,
+      "overlap_area_um2": 0.0,
+      "polys": []
+    },
+    "met1_via_pad_post_dip": {
+      "clear": true,
+      "overlap_area_um2": 0.0,
+      "polys": []
+    },
+    "met2_via_pad_pre_dip": {
+      "clear": true,
+      "overlap_area_um2": 0.0,
+      "polys": []
+    },
+    "met2_via_pad_post_dip": {
+      "clear": true,
+      "overlap_area_um2": 0.0,
+      "polys": []
+    },
+    "met2_bridge_pre_to_post_dip": {
+      "clear": true,
+      "overlap_area_um2": 0.0,
+      "polys": []
+    },
+    "via_pad_to_vss_riser_clearance_um": 0.38,
+    "via_pad_to_vss_riser_clearance_meets_min_space": true
+  },
+  "strap_ports_composed_frame_um": {
+    "vdd_tap": [
+      212.995,
+      29.6
+    ],
+    "vdd_pre_dip": [
+      213.7,
+      25.9
+    ],
+    "vdd_post_dip": [
+      213.7,
+      24.8
+    ],
+    "vdd_rail_tap": [
+      213.7,
+      7.0
+    ]
+  },
+  "final_result": {
+    "drc_status": "clean",
+    "drc_violation_count": 0,
+    "device_count": 264,
+    "net_count": 152,
+    "lvs_status": "match",
+    "lvs_error_count": 0,
+    "lvs_counts": {
+      "nets": {
+        "layout": 152,
+        "reference": 152,
+        "matched": 152
+      },
+      "devices": {
+        "layout": 264,
+        "reference": 264,
+        "matched": 264
+      },
+      "pins": {
+        "layout": 130,
+        "reference": 18,
+        "matched": 130
+      }
+    },
+    "strap_segments_on_the_merged_vdd_net": [
+      "a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_d_vdd_tie|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd|vdd_b1|vdd_b2|vdd_b3|vdd_b4|vdd_link|vdd_link_dip|vdd_x1|vdd_x2|vdd_x3"
+    ],
+    "sampler_vdd_on_the_same_net_as_the_strap": [
+      "a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_d_vdd_tie|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd|vdd_b1|vdd_b2|vdd_b3|vdd_b4|vdd_link|vdd_link_dip|vdd_x1|vdd_x2|vdd_x3"
+    ],
+    "array_vdd_tap_on_the_same_net_as_the_strap": [
+      "a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_d_vdd_tie|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd|vdd_b1|vdd_b2|vdd_b3|vdd_b4|vdd_link|vdd_link_dip|vdd_x1|vdd_x2|vdd_x3"
+    ]
+  }
+}

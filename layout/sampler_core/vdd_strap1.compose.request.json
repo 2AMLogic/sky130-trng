@@ -8,20 +8,20 @@
       "cell": {
         "ports": [
           {
-            "name": "vdd_post_dip",
-            "x_um": 213.7,
-            "y_um": 24.8,
+            "name": "vdd_tap",
+            "x_um": 212.995,
+            "y_um": 29.6,
             "layer": {
-              "layer": 69,
+              "layer": 68,
               "datatype": 20
             },
             "width_um": 0.17,
-            "direction_deg": 270
+            "direction_deg": 0
           },
           {
-            "name": "vdd_rail_tap",
+            "name": "vdd_pre_dip",
             "x_um": 213.7,
-            "y_um": 7.0,
+            "y_um": 25.9,
             "layer": {
               "layer": 68,
               "datatype": 20
@@ -30,8 +30,8 @@
             "direction_deg": 270
           }
         ],
-        "cell_name": "vdd_strap2",
-        "gds_path": "vdd_strap2.gds"
+        "cell_name": "vss_strap4",
+        "gds_path": "vss_strap4.gds"
       }
     }
   ],
@@ -57,18 +57,32 @@
       "pins": [
         {
           "block": "core",
-          "port": "vdd_post_dip"
+          "port": "vdd_tap"
         },
         {
           "block": "core",
-          "port": "vdd_rail_tap"
+          "port": "vdd_pre_dip"
         }
+      ],
+      "waypoints_um": [
+        [
+          212.995,
+          29.6
+        ],
+        [
+          213.7,
+          29.6
+        ],
+        [
+          213.7,
+          25.9
+        ]
       ]
     }
   ],
   "pins": [],
   "options": {
-    "cell_name": "sampler_core",
-    "output": "sampler_core.gds"
+    "cell_name": "vdd_strap1",
+    "output": "vdd_strap1.gds"
   }
 }

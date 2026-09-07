@@ -32,7 +32,8 @@ public, Apache-2.0.
 
 ## Status of this repository — read this before anything below
 
-**Pre-layout, pre-synthesis.** The entropy source (an `N = 4`, five-stage,
+**Pre-synthesis; laid out at analog-block scale, not at whole-block
+scale.** The entropy source (an `N = 4`, five-stage,
 free-running ring-oscillator array, XOR-combined) and its sampler are drawn
 as SPICE schematics and characterized across PVT at the transistor level
 (`sim/`). Everything downstream of the raw tap — health tests, conditioner,
@@ -41,16 +42,27 @@ plus RTL under `digital/`, per
 [DR-0004](../../spec/decision-records/DR-0004-sky130-digital-section-architecture.md)
 (status Proposed, issue #20), verified behaviourally under `sim/digital-*/`.
 **No synthesis against `sky130_fd_sc_hd` has been run**, so that section
-contributes no `Fmax`, area, power or leakage figure to §4, and no
-DRC/LVS-clean array or sampler layout exists: `layout/` now holds
-fourteen composed, individually DRC-clean and LVS-clean cells — nine leaf
-gates (`ro_buf`, plus `ro_stage`/`ro_nand2` at all four ring `wstv` widths),
-all four `ro_ring5` rings (`layout/ro_ring5/` + three `wstv` siblings,
-22/22 devices and 19/19 nets LVS-matching each), and the combining tree's
-`xor2` (`layout/xor2/`, 12/12 devices and 10/10 nets) — see
-`layout/README.md`. That is every cell `ro_array_core` instantiates, but
-still not a composed array, sampler, or whole-block GDS: nothing wires the
-fourteen together yet.
+contributes no `Fmax`, area, power or leakage figure to §4, and **no
+whole-block GDS exists** — the DR-0004 digital section has no layout at
+all. The analog side is further along than this paragraph's first revision
+allowed: `layout/` now holds **nineteen composed cells, every one of them
+`klt drc`-clean (0 violations) and `klt lvs`-matching** its own
+`design/*.spice` subckt — the nine leaf gates (`ro_buf`, plus
+`ro_stage`/`ro_nand2` at all four ring `wstv` widths), all four `ro_ring5`
+rings (22/22 devices and 19/19 nets each), the combining tree's `xor2`
+(12/12 devices, 10/10 nets), the two sampler-specific leaf cells
+(`sampler_tg`, `sampler_nand2` — the sampler's third leaf is `ro_buf`,
+reused unchanged), `sampler_dff` (22/22 devices, 14/14 nets), the whole
+entropy source `ro_array_core`
+(132/132 devices, 96/96 nets), and `sampler_core` itself: the entropy
+source and all six samplers wired together, **264/264 devices, 152/152
+nets, 0 errors** — the entire `.subckt sampler_core` device population in
+one DRC/LVS-clean stream. `layout/README.md` is the current record. What
+this does **not** yet include is a post-layout PVT campaign over the
+assembled `sampler_core` (the deepest post-layout campaigns to date stop at
+`ro_array_core` and at `sampler_dff` separately), so the brief's full
+sign-off bar — post-layout PVT over a DRC/LVS-clean **block** GDS — is
+still unmet, on both counts.
 Every decision record cited below (DR-0001,
 DR-0002, DR-0003, DR-0004) carries status **Proposed** — drafted, not yet
 accepted by an operator.
@@ -90,8 +102,13 @@ un-isolated NMOS body to one global node regardless of drawn routing
 (`layout/README.md`'s "Increment 5"), so `vdd` distribution is the array's
 one remaining unwired net, expected to need the same met1-stub-then-met2-bridge
 recipe "Increment 7" proved out for `t2` — `xor2` has no post-layout record
-of its own, and there is still no LVS-clean array, sampler, or top-level
-layout, so the whole-block bar is still unmet.)
+of its own. That last clause is now superseded: `ro_array_core`'s own `vdd`
+distribution was routed and the array reached a full `klt lvs` match
+(132/132 devices, 96/96 nets), `sampler_dff` did the same (22/22, 14/14),
+and `sampler_core` — the array and all six samplers in one cell — now does
+too (264/264, 152/152, 0 errors). What keeps the whole-block bar unmet is
+the un-laid-out digital section plus the missing assembled-`sampler_core`
+post-layout PVT run, not a missing LVS-clean array or sampler.)
 
 ---
 
@@ -442,9 +459,17 @@ that lands this document):
   `clk` fan-out and shared `rst_n` fan-out across all six instances
   (DRC-clean, 0 violations; `klt extract` confirms 132 devices unchanged,
   64 nets — `clk`/`rst_n` each merged from six per-instance nets into one).
-  Still missing for row D: the `ro_array_core` wiring, `d`/`q`/`vdd`/`vss`
-  pin promotion, whole-cell `klt lvs`, and therefore whole-block
-  power/area.
+  **Further discharged**: the same directory now places the
+  `ro_array_core` instance, routes all five raw-tap data nets and both
+  inter-block supply straps, and reaches a full whole-cell `klt lvs` match
+  against `design/sampler_core.spice`'s own `.subckt sampler_core`
+  (DRC-clean, 0 violations; 264/264 devices, 152/152 nets, 0 errors).
+  Top-level `d`/`q`/`vdd`/`vss` pin promotion, listed here as also
+  required, turned out **not** to be: `klt lvs` compares flattened
+  topology, not declared top-level pins. Still missing for row D: a
+  post-layout (parasitic-extracted) power measurement over this cell, and
+  the digital section's own synthesized area/power — so the whole-block
+  figure remains Unmet/TBD.
 - **Ratify DR-0001, DR-0002, and DR-0003.** Every quantitative row in §4
   ultimately traces to at least one of these three Proposed records; none
   is yet an operator-accepted decision.
@@ -467,16 +492,22 @@ that lands this document):
   (`layout/sampler_core-placement-poc/`, 132 devices, no routing yet), then
   that bank promoted to a real `cell.json` recipe with its shared
   `vdd`/`vss` bus and its shared `clk`/`rst_n` fan-out routed across all six
-  instances; and, most recently, the `ro_array_core` instance placed inside
-  `sampler_core` with the first two raw-tap data nets (`ro1`→`sr1.d`,
-  `ro4`→`sr4.d`) routed end to end — `layout/sampler_core/`, DRC-clean, 264
-  devices (the whole `.subckt sampler_core` population), 157 nets, `klt lvs`
-  a quantified mismatch at 136/264 devices against a now-complete reference.
-  **Still open on this bullet**: the other three data nets (`xo`, `ro2`,
-  `ro3`), the inter-block `vdd`/`vss` straps, top-level pin promotion, a
-  whole-cell LVS *match*, and the assembled `sampler_core` post-layout PVT
-  run — so the brief's full sign-off bar (post-layout PVT over a DRC/LVS-
-  clean **block** GDS) is closer but not met. The snapshot follows.
+  instances; the `ro_array_core` instance placed inside `sampler_core` and
+  its five raw-tap data nets (`ro1`-`ro4`, `xo`) routed end to end; and,
+  most recently, both inter-block supply straps (`vss`, then `vdd` — the
+  latter bridging past a met1 obstruction on met2) drawn as real metal,
+  which takes `sampler_core` to **DRC-clean (0 violations) and a full
+  `klt lvs` match: 264/264 devices, 152/152 nets, 0 errors** against
+  `design/sampler_core.spice`'s own `.subckt sampler_core` — the whole
+  entropy-source-plus-sampler population in one verified stream, and this
+  document's first DRC/LVS-clean layout at analog-block scale.
+  **Still open on this bullet**: the assembled `sampler_core` post-layout
+  PVT run (its parasitic extraction has no committed evidence yet) and any
+  layout at all for the DR-0004 digital section — so the brief's full
+  sign-off bar (post-layout PVT over a DRC/LVS-clean **block** GDS) is
+  closer but not met. Top-level pin promotion, previously listed here as
+  also open, is not required for the match and is struck rather than
+  carried forward. The snapshot follows.
 
   `layout/` held fourteen composed **DRC-clean
   and LVS-clean cells** at the time of writing — which was **every leaf cell

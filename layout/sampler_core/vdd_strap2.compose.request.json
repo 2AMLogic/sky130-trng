@@ -8,6 +8,17 @@
       "cell": {
         "ports": [
           {
+            "name": "vdd_pre_dip",
+            "x_um": 213.7,
+            "y_um": 25.9,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 270
+          },
+          {
             "name": "vdd_post_dip",
             "x_um": 213.7,
             "y_um": 24.8,
@@ -17,21 +28,10 @@
             },
             "width_um": 0.17,
             "direction_deg": 270
-          },
-          {
-            "name": "vdd_rail_tap",
-            "x_um": 213.7,
-            "y_um": 7.0,
-            "layer": {
-              "layer": 68,
-              "datatype": 20
-            },
-            "width_um": 0.17,
-            "direction_deg": 270
           }
         ],
-        "cell_name": "vdd_strap2",
-        "gds_path": "vdd_strap2.gds"
+        "cell_name": "vdd_strap1",
+        "gds_path": "vdd_strap1.gds"
       }
     }
   ],
@@ -48,27 +48,27 @@
     }
   },
   "routing": {
-    "layer_role": "metal2",
+    "layer_role": "metal3",
     "width_um": 0.17
   },
   "connectivity": [
     {
-      "net": "vdd_link",
+      "net": "vdd_link_dip",
       "pins": [
         {
           "block": "core",
-          "port": "vdd_post_dip"
+          "port": "vdd_pre_dip"
         },
         {
           "block": "core",
-          "port": "vdd_rail_tap"
+          "port": "vdd_post_dip"
         }
       ]
     }
   ],
   "pins": [],
   "options": {
-    "cell_name": "sampler_core",
-    "output": "sampler_core.gds"
+    "cell_name": "vdd_strap2",
+    "output": "vdd_strap2.gds"
   }
 }
