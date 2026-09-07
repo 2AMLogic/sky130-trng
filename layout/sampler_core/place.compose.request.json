@@ -1,0 +1,301 @@
+{
+  "pdk": {
+    "variant": "sky130A"
+  },
+  "blocks": [
+    {
+      "id": "sb",
+      "cell": {
+        "gds_path": "../sampler_dff/sampler_dff.gds",
+        "cell_name": "sampler_dff",
+        "ports": [
+          {
+            "name": "vdd",
+            "x_um": 0.0,
+            "y_um": 7.0,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 90
+          },
+          {
+            "name": "vss",
+            "x_um": 0.0,
+            "y_um": -3.5,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 270
+          }
+        ]
+      }
+    },
+    {
+      "id": "sv",
+      "cell": {
+        "gds_path": "../sampler_dff/sampler_dff.gds",
+        "cell_name": "sampler_dff",
+        "ports": [
+          {
+            "name": "vdd",
+            "x_um": 0.0,
+            "y_um": 7.0,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 90
+          },
+          {
+            "name": "vss",
+            "x_um": 0.0,
+            "y_um": -3.5,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 270
+          }
+        ]
+      }
+    },
+    {
+      "id": "sr1",
+      "cell": {
+        "gds_path": "../sampler_dff/sampler_dff.gds",
+        "cell_name": "sampler_dff",
+        "ports": [
+          {
+            "name": "vdd",
+            "x_um": 0.0,
+            "y_um": 7.0,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 90
+          },
+          {
+            "name": "vss",
+            "x_um": 0.0,
+            "y_um": -3.5,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 270
+          }
+        ]
+      }
+    },
+    {
+      "id": "sr2",
+      "cell": {
+        "gds_path": "../sampler_dff/sampler_dff.gds",
+        "cell_name": "sampler_dff",
+        "ports": [
+          {
+            "name": "vdd",
+            "x_um": 0.0,
+            "y_um": 7.0,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 90
+          },
+          {
+            "name": "vss",
+            "x_um": 0.0,
+            "y_um": -3.5,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 270
+          }
+        ]
+      }
+    },
+    {
+      "id": "sr3",
+      "cell": {
+        "gds_path": "../sampler_dff/sampler_dff.gds",
+        "cell_name": "sampler_dff",
+        "ports": [
+          {
+            "name": "vdd",
+            "x_um": 0.0,
+            "y_um": 7.0,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 90
+          },
+          {
+            "name": "vss",
+            "x_um": 0.0,
+            "y_um": -3.5,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 270
+          }
+        ]
+      }
+    },
+    {
+      "id": "sr4",
+      "cell": {
+        "gds_path": "../sampler_dff/sampler_dff.gds",
+        "cell_name": "sampler_dff",
+        "ports": [
+          {
+            "name": "vdd",
+            "x_um": 0.0,
+            "y_um": 7.0,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 90
+          },
+          {
+            "name": "vss",
+            "x_um": 0.0,
+            "y_um": -3.5,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 270
+          }
+        ]
+      }
+    }
+  ],
+  "placement": {
+    "strategy": "explicit",
+    "order": [
+      "sb",
+      "sv",
+      "sr1",
+      "sr2",
+      "sr3",
+      "sr4"
+    ],
+    "origins_um": {
+      "sb": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "sv": {
+        "x": 55.66,
+        "y": 0.0
+      },
+      "sr1": {
+        "x": 111.32,
+        "y": 0.0
+      },
+      "sr2": {
+        "x": 166.98,
+        "y": 0.0
+      },
+      "sr3": {
+        "x": 222.64,
+        "y": 0.0
+      },
+      "sr4": {
+        "x": 278.3,
+        "y": 0.0
+      }
+    }
+  },
+  "routing": {
+    "layer_role": "metal",
+    "width_um": 0.17
+  },
+  "connectivity": [],
+  "pins": [
+    {
+      "block": "sb",
+      "port": "vdd",
+      "net": "sb_vdd"
+    },
+    {
+      "block": "sb",
+      "port": "vss",
+      "net": "sb_vss"
+    },
+    {
+      "block": "sv",
+      "port": "vdd",
+      "net": "sv_vdd"
+    },
+    {
+      "block": "sv",
+      "port": "vss",
+      "net": "sv_vss"
+    },
+    {
+      "block": "sr1",
+      "port": "vdd",
+      "net": "sr1_vdd"
+    },
+    {
+      "block": "sr1",
+      "port": "vss",
+      "net": "sr1_vss"
+    },
+    {
+      "block": "sr2",
+      "port": "vdd",
+      "net": "sr2_vdd"
+    },
+    {
+      "block": "sr2",
+      "port": "vss",
+      "net": "sr2_vss"
+    },
+    {
+      "block": "sr3",
+      "port": "vdd",
+      "net": "sr3_vdd"
+    },
+    {
+      "block": "sr3",
+      "port": "vss",
+      "net": "sr3_vss"
+    },
+    {
+      "block": "sr4",
+      "port": "vdd",
+      "net": "sr4_vdd"
+    },
+    {
+      "block": "sr4",
+      "port": "vss",
+      "net": "sr4_vss"
+    }
+  ],
+  "options": {
+    "cell_name": "place",
+    "output": "place.gds"
+  }
+}

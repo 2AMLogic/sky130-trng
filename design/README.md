@@ -235,7 +235,29 @@ DR-0003 surfaces and does not resolve on its own authority.
   (status **Proposed**) it lives in [`digital/`](../digital/README.md), not
   here, and none of it is or will be a `design/*.spice` netlist. `raw_bit`
   and `raw_valid` are the interface between the two directories.
-- **Layout and DRC/LVS.** **Latest (issue #22): `sampler_core`'s six-`sampler_dff`
+- **Layout and DRC/LVS.** **Latest (issue #22): `sampler_core`'s shared
+  `vdd`/`vss` bus is routed across all six `sampler_dff` instances,
+  DRC-clean.** [`layout/sampler_core/`](../layout/sampler_core/README.md)
+  promotes the placement proof-of-concept below into a real,
+  `compose-cell.py --check`-reproducible `cell.json` (stage `place`,
+  byte-for-byte the same six-instance floorplan) plus a new `route_supplies`
+  stage chaining `vdd` and `vss` across `sb`→`sv`→`sr1`→`sr2`→`sr3`→`sr4` on
+  met1 — landing directly on each `sampler_dff` instance's own already-drawn
+  rail (no via-drop needed, since that cell's own routing already put
+  `vdd`/`vss` on met1). `klt drc`: clean, 0 violations; `klt extract`: 132
+  devices unchanged, 74 nets (down from the placement PoC's 79 — `vdd`
+  merges from six per-instance nets into one, saving exactly 5; `vss` was
+  already merged via sky130's own global NMOS substrate). `klt lvs` against
+  `design/sampler_core.spice`'s real `.subckt sampler_core`: mismatch, as
+  expected (no `ro_array_core` instance placed yet, `clk`/`rst_n`/`d`/`q`
+  all unwired) — assembling that `lvs` block also surfaced a real
+  `compose-cell.py` limitation (not a `klt` gap), recorded in
+  `layout/sampler_core/README.md`. `clk`/`rst_n` fan-out, placing a
+  `ro_array_core` instance and wiring it to the samplers' `d` pins, `d`/`q`
+  pin promotion, and whole-cell `klt lvs` sign-off all remain open, tracked
+  here and in #27.
+
+- **A previous increment (issue #22): the `sampler_core` six-`sampler_dff`
   bank has a verified, DRC-clean floorplan.**
   [`layout/sampler_core-placement-poc/`](../layout/sampler_core-placement-poc/README.md)
   places six already-composed `layout/sampler_dff/sampler_dff.gds` instances
@@ -245,12 +267,9 @@ DR-0003 surfaces and does not resolve on its own authority.
   nets (the 5-net gap from the naive 84 is sky130's own global-substrate
   NMOS-bulk merge — traced and confirmed benign). `design/sampler_core.spice`'s
   own `.subckt sampler_core` wires the source (`ro_array_core`) *and* the
-  samplers together, not "six samplers" alone, so this is a placement-only
+  samplers together, not "six samplers" alone, so this was a placement-only
   proof-of-concept (like `layout/ro_array_core-placement-poc/` before
-  `layout/ro_array_core/`), not yet an LVS-checkable committed cell — see that
-  directory's own README for the full remaining-scope list (bus/fan-out
-  routing, placing a `ro_array_core` instance, pin promotion, whole-cell LVS,
-  whole-chain post-layout PVT), tracked here and in #27.
+  `layout/ro_array_core/`), not yet an LVS-checkable committed cell.
 
 - **A previous increment (issue #22): `sampler_dff`'s whole-cell
   assembly is now extracted with real intra-cell parasitics and re-run

@@ -432,8 +432,14 @@ that lands this document):
   0 violations; `klt extract` confirms 132 devices, 66 nfet + 66 pfet) — a
   placement-only proof-of-concept, not yet the shared `vdd`/`vss`/`clk`/
   `rst_n` bus, the `ro_array_core` wiring, or an LVS-checkable
-  `sampler_core` cell. Still missing for row D: `sampler_core`'s own bus
-  routing and source wiring, and therefore whole-block power/area.
+  `sampler_core` cell.
+  **Further discharged**: [`layout/sampler_core/`](../../layout/sampler_core/README.md)
+  promotes that floorplan into a real cell recipe and routes the shared
+  `vdd`/`vss` bus across all six instances (DRC-clean, 0 violations; `klt
+  extract` confirms 132 devices unchanged, 74 nets — `vdd` merged from six
+  per-instance nets into one). Still missing for row D: `clk`/`rst_n`
+  fan-out, the `ro_array_core` wiring, and therefore whole-block
+  power/area.
 - **Ratify DR-0001, DR-0002, and DR-0003.** Every quantitative row in §4
   ultimately traces to at least one of these three Proposed records; none
   is yet an operator-accepted decision.
