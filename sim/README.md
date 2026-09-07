@@ -525,6 +525,52 @@ Four records, twelve corner runs:
   `.save` line scoped the saved trace set to only the nodes measurements
   actually use.
 
+### `PEX_LIB` provenance re-stamp (issue #96)
+
+All four records in `sim/post-layout-ro-ring5-assembled/` name
+`layout/pex-ring/ro_ring5_assembled_pex.spice` in their `netlists.PEX_LIB`
+block with sha256 `5f9074c2c382…`. **That file has since been re-extracted
+and now hashes `b4fdb68a8c42…`.** The records are append-only evidence and
+were *not* edited; this note is the re-stamp explanation the change owes
+them, following the convention § "`PEX_LIB` provenance re-stamp (issue #93)"
+above established for `ro_ring5_pex.spice`.
+
+Why it changed, and why it is provenance-only:
+
+- The old library was produced by `klt 0.4.0`, the pin
+  (`layout/pdk.json`'s `klt_version_pin`) is `0.3.0+gc6dbf66c53c6`, and
+  `layout/bin/pex-netlist.py layout/pex-ring/pex.json --check` therefore
+  failed on a checkout matching the pin. Issue #96 re-extracted all five
+  cells on the pinned build so the committed evidence and the pin agree;
+  `--check` now exits 0 there.
+- **The entire 278-line diff is the extractor's own node-label
+  bookkeeping**: one anonymous net renamed (`n4` -> `n5`, in the
+  `wstv0p42` cell only), the per-terminal leg-node suffix renumbered
+  (`vddr__t9` <-> `vddr__t12` and similar, each carrying its own series-R
+  value with it), and `net_id` permuted in the reports. Every R value, C
+  value, coupling value, count, device, model, geometry parameter and
+  connection is unchanged. `layout/pex-ring/README.md` § "Re-extracted on
+  the pin, and what that did and did not move" has the three independent
+  checks, including a label-free colour-refinement (Weisfeiler-Lehman)
+  isomorphism test that is itself validated against a
+  randomly-relabelled control.
+- **Directly demonstrated, not merely argued**: the deck
+  `tb_post_layout_ro_ring5_assembled.spice` was rendered twice at the
+  records' own `tt` / 27 °C / 1.8 V point — once against the old library,
+  once against the new — and ngspice's two output logs are
+  **byte-identical**. Every measured value in them also matches record
+  `20260906-085753-9109b23.json`'s `tt` corner to every recorded digit
+  (`t_asm_wstv0p42 = 6.446773e-09`, `t_asm_wstv0p48 = 5.673425e-09`,
+  `slowdown_wstv0p42 = 2.212519`, `swing_frac_asm_ring = 0.8905795`,
+  `i_asm_wstv0p42 = 9.536944e-06`, `skew_span_asm = 1.136311`), reproduced
+  on a *different* host and OS (Linux here, macOS when the records were
+  minted) on the same ngspice-46.
+
+So nothing in `sim/post-layout-ro-ring5-assembled/` is superseded: the
+numbers stand, and re-running any of those four records today would
+reproduce them from the new library. Only the recorded input hash is stale,
+deliberately, and this is where that is written down.
+
 ### Array-level post-layout: the whole entropy source, real inter-ring wiring (issue #22)
 
 `sim/post-layout-ro-array-core/` answers the question the section above
@@ -625,6 +671,40 @@ deleted: each `20260907-*` record names the one it supersedes in its own
 `supersedes` field, so the two passes are diffable line for line. That
 diff is what surfaced the coupling-sign result above, which is why the
 superseded pass is worth keeping rather than merely tolerable to keep.
+
+### No `PEX_LIB` re-stamp here — and why that is the finding (issue #96)
+
+Issue #96 re-extracted `layout/pex-ring/` on `layout/pdk.json`'s
+`klt_version_pin` and re-stamped this slug's assembled-ring sibling above.
+**It deliberately did *not* do the same for
+`layout/pex-array/ro_array_core_pex.spice`**, so all twenty-five records
+here still name the file they were actually measured against
+(`ac97e365…` for the superseded pass, `82dede47…` for the current one) and
+no re-stamp is owed.
+
+The reason is a finding, not a deferral. Re-extracting this array from the
+identical GDS on the pinned `klt 0.3.0+gc6dbf66c53c6` — **and, byte for
+byte, on today's ambient `klt 0.4.0` too** — does not reproduce the
+committed evidence, and the difference is not the node-relabelling class
+that made the ring re-extraction safe. Three of the four `sig_n*` inter-net
+coupling capacitors land on a different one of the four rings; a label-free
+colour-refinement test proves the two netlists are not isomorphic; and the
+`tt` / 27 °C / 1.8 V run moves this slug's headline combining figures
+(`p_edge_retention` 0.7664580 -> 0.7195908, `p_f_xo` 4.920442e+08 ->
+4.619850e+08, both −6.1%) where a pure relabelling of the same library
+moves nothing at all. Full measurement, controls and the reasoning about
+which extraction is likely correct:
+`layout/pex-array/README.md` § "The array evidence is not reproducible, and
+the difference is not cosmetic".
+
+Consequence for a reader of these records: every number in this slug is
+reproducible **only** against the committed
+`layout/pex-array/ro_array_core_pex.spice` (sha256 as recorded), not from
+a fresh extraction of the same GDS on any `klt` installable today.
+`python3 layout/bin/pex-netlist.py layout/pex-array/pex.json --check` is
+expected to exit 1 until that is settled — which is an operator decision
+(re-measure the slug on today's tool, or keep the historical extraction and
+pin harder), not something a re-extraction should quietly pre-empt.
 
 ## Sampler post-layout: the first measurement of `sampler_dff` at all (issue #22)
 

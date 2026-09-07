@@ -30,6 +30,29 @@ contract `layout/pex/pex.json` and `layout/bin/compose-cell.py --check`
 offer. `layout/test_pex_netlist.py` (shared, unmodified) is the other half
 of the guard for the rewrite logic itself.
 
+### What `--check` should print, and when (issue #96)
+
+**On a checkout whose `klt` matches `layout/pdk.json`'s `klt_version_pin`
+(`0.3.0+gc6dbf66c53c6`), this descriptor exits 0.** Verified 2026-09-07 on
+that exact build, installed via the venv recipe in `layout/README.md` §
+"Correcting the curation note":
+
+| Command | Expected on the pinned `klt` |
+|---|---|
+| `python3 layout/bin/pex-netlist.py layout/pex-ring/pex.json --check` | exit 0, `rebuild matches committed evidence` |
+
+It did **not** until issue #96 re-extracted all five cells here on the pin:
+the committed evidence had been produced by `klt 0.4.0`, exactly the
+provenance gap issue #93 closed for `layout/pex/`. See "Re-extracted on the
+pin, and what that did and did not move" below for the measurement, and
+`layout/pex/README.md` § "When `--check` is red because the tool moved" for
+what a red `--check` on some *other* `klt` build is telling you.
+
+**`layout/pex-array/pex.json` is deliberately still red on the pin**, and
+for a different reason -- not a relabel. That is a recorded finding, not an
+oversight: see `layout/pex-array/README.md` § "What `--check` should print,
+and when".
+
 ## Why a separate library, not a rewrite of `layout/pex/ro_ring5_pex.spice`
 
 The two measure different things on purpose, and
@@ -64,8 +87,65 @@ deck.) Device/net counts match `layout/ro_ring5*/extract.json` exactly, as
 expected: `--parasitics` adds R/C elements, it does not re-recognize
 devices. 22 = `ro_nand2`'s 6 + 4x`ro_stage`'s 4, matching `layout/ro_ring5/README.md`.
 
-Produced by `klt 0.4.0` (each report's own `provenance.klt_version` is the
-authoritative per-file record).
+Produced by `klt 0.3.0+gc6dbf66c53c6` / KLayout 0.30.12 (each report's own
+`provenance.klt_version` is the authoritative per-file record) -- which is
+`layout/pdk.json`'s `klt_version_pin`, i.e. the same build that produced
+the composed-cell evidence under `layout/ro_ring5*/`. **These five cells
+were re-extracted on the pin by issue #96**; every number in the table
+above is unchanged from the `klt 0.4.0` extraction that first produced
+them, to every digit shown.
+
+## Re-extracted on the pin, and what that did and did not move (issue #96)
+
+The library and reports here were regenerated on `klt
+0.3.0+gc6dbf66c53c6` so that `--check` agrees with `layout/pdk.json`'s
+pin. The committed-vs-rebuilt diff is **278 lines and entirely the
+extractor's own node-label bookkeeping**, in exactly the two classes
+klayout-tools#1063 / #1072 declined to make a contract:
+
+| What moved | Where | Class |
+|---|---|---|
+| one anonymous net, `n4` -> `n5` (in `ro_ring5_assembled_pex_wstv0p42` only) | node token, the extractor's `R_4_*`/`C_4` element names, its `* device instance _4_*` comments, and the report's `net`/`hub_net`/`net_id` | the `\$N` counter |
+| the per-terminal *leg* node suffix (`vddr__t9` <-> `vddr__t12`, `vss__t2` <-> `vss__t5`, …) and the series-R value that travels with each leg | device cards, `R*` cards, the reports' `terminals[].leg_net` | the `__tK` counter |
+| `net_id` on most nets | reports only | the same counter |
+
+Nothing else. Three independent checks agree, each stricter than the last:
+
+1. **Reduced circuit description.** For every `.subckt`: identical port
+   list; identical multiset of device cards described as (model, every
+   geometry parameter, and per terminal the *hub net* it lands on plus the
+   *series-R value* it lands through); identical multiset of `(hub, hub,
+   value)` capacitances and `(hub, value)` resistances; identical hub-net
+   name sets modulo the single `n4`->`n5` rename. Folding a leg into
+   `(hub, R)` is what makes the `__tK` counter invisible while still
+   catching a device that moves to a different net or through a different
+   resistance.
+2. **Colour refinement (Weisfeiler-Lehman) on the label-free hub graph** --
+   no node names at all, so a relabeling cannot hide a topology change.
+   Equivalent for all five cells. (The checker was itself validated
+   against a control: a random relabeling of 538 internal nodes of a
+   committed library must, and does, come back equivalent.)
+3. **ngspice A/B.** `sim/post-layout-ro-ring5-assembled/`'s own deck
+   rendered twice at that slug's `tt` / 27 °C / 1.8 V point -- once against
+   the old library, once against the new -- gives **byte-identical** output
+   logs, and every `.meas` value in them reproduces record
+   `20260906-085753-9109b23.json`'s `tt` corner to every recorded digit
+   (`t_asm_wstv0p42 = 6.446773e-09`, `t_asm_wstv0p48 = 5.673425e-09`,
+   `slowdown_wstv0p42 = 2.212519`, `swing_frac_asm_ring = 0.8905795`,
+   `i_asm_wstv0p42 = 9.536944e-06`, `skew_span_asm = 1.136311`), on a
+   *different* host and OS from the one that minted the records.
+
+   One caveat worth recording so a future reader does not chase it:
+   ngspice-46 prints a `Reference value : …` crossing-search diagnostic
+   line that is **not** reproducible run to run -- two runs of the
+   *identical* deck against the *identical* library differ on it. It is
+   excluded from the byte-comparison above for that reason, and it carries
+   no measured value.
+
+The affected `sim/` records' `PEX_LIB` hash (`5f9074c2c382…` ->
+`b4fdb68a8c42…`) is re-stamped in `sim/README.md` § "`PEX_LIB` provenance
+re-stamp (issue #96)"; the records themselves are append-only and were not
+edited.
 
 ## Net aliasing: a ring-level wrinkle leaf extraction never hits
 
