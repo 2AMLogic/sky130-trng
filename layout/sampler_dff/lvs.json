@@ -14,19 +14,19 @@
     "parameter_tolerance": null
   },
   "status": "mismatch",
-  "mismatch_count": 68,
-  "error_count": 68,
+  "mismatch_count": 67,
+  "error_count": 67,
   "category_counts": {
     "device.unmatched": 22,
-    "net.unmatched": 46
+    "net.unmatched": 45
   },
   "category_error_counts": {
     "device.unmatched": 22,
-    "net.unmatched": 46
+    "net.unmatched": 45
   },
   "counts": {
     "nets": {
-      "layout": 32,
+      "layout": 31,
       "reference": 14,
       "matched": 0
     },
@@ -36,21 +36,21 @@
       "matched": 0
     },
     "pins": {
-      "layout": 30,
+      "layout": 29,
       "reference": 6,
-      "matched": 36
+      "matched": 35
     }
   },
   "device_classes": null,
   "environment": {
     "engine": "klayout",
     "engine_version": "0.30.12",
-    "layout_sha256": "ede9a223f8590183cab77ccbafb857132227f3ffa8dd2d0e0f0c628b88134f53",
+    "layout_sha256": "ba078699c316c4999f7b6bfb4aece762059077f8aa0ace3a400072b42d5aa69a",
     "reference_sha256": "66009a496f55fac466075bbac7c9a2216dfc2e18e1eb02eda823233534918e2c",
     "extracted_netlist": null
   },
   "provenance": {
-    "klt_version": "0.4.0",
+    "klt_version": "0.3.0",
     "klayout_version": "0.30.12",
     "pdk": null,
     "deck": null,
@@ -82,7 +82,7 @@
       "net": null,
       "device": {
         "layout": "\\$10",
-        "reference": "IS2NB",
+        "reference": "IS2NA",
         "class": "NFET"
       },
       "property": null,
@@ -99,7 +99,7 @@
       "net": null,
       "device": {
         "layout": "\\$11",
-        "reference": "IMNA",
+        "reference": "IS2NB",
         "class": "NFET"
       },
       "property": null,
@@ -116,7 +116,7 @@
       "net": null,
       "device": {
         "layout": "\\$12",
-        "reference": "FSP",
+        "reference": "PC",
         "class": "PFET"
       },
       "property": null,
@@ -133,40 +133,6 @@
       "net": null,
       "device": {
         "layout": "\\$13",
-        "reference": "IS2PB",
-        "class": "PFET"
-      },
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "device.unmatched",
-      "severity": "error",
-      "description": "device has no counterpart on the other side",
-      "side": "reference",
-      "net": null,
-      "device": {
-        "layout": "\\$14",
-        "reference": "IS2PA",
-        "class": "PFET"
-      },
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "device.unmatched",
-      "severity": "error",
-      "description": "device has no counterpart on the other side",
-      "side": "reference",
-      "net": null,
-      "device": {
-        "layout": "\\$15",
         "reference": "TDP",
         "class": "PFET"
       },
@@ -183,8 +149,42 @@
       "side": "reference",
       "net": null,
       "device": {
+        "layout": "\\$14",
+        "reference": "IMPA",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$15",
+        "reference": "IMPB",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
         "layout": "\\$16",
-        "reference": "ISP",
+        "reference": "IM2P",
         "class": "PFET"
       },
       "property": null,
@@ -201,7 +201,7 @@
       "net": null,
       "device": {
         "layout": "\\$17",
-        "reference": "IMPB",
+        "reference": "FMP",
         "class": "PFET"
       },
       "property": null,
@@ -235,7 +235,7 @@
       "net": null,
       "device": {
         "layout": "\\$19",
-        "reference": "PC",
+        "reference": "ISP",
         "class": "PFET"
       },
       "property": null,
@@ -252,7 +252,7 @@
       "net": null,
       "device": {
         "layout": "\\$2",
-        "reference": "FMN",
+        "reference": "TDN",
         "class": "NFET"
       },
       "property": null,
@@ -269,7 +269,7 @@
       "net": null,
       "device": {
         "layout": "\\$20",
-        "reference": "FMP",
+        "reference": "IS2PA",
         "class": "PFET"
       },
       "property": null,
@@ -286,7 +286,7 @@
       "net": null,
       "device": {
         "layout": "\\$21",
-        "reference": "IMPA",
+        "reference": "IS2PB",
         "class": "PFET"
       },
       "property": null,
@@ -303,7 +303,7 @@
       "net": null,
       "device": {
         "layout": "\\$22",
-        "reference": "IM2P",
+        "reference": "FSP",
         "class": "PFET"
       },
       "property": null,
@@ -320,7 +320,7 @@
       "net": null,
       "device": {
         "layout": "\\$3",
-        "reference": "FSN",
+        "reference": "IM2N",
         "class": "NFET"
       },
       "property": null,
@@ -337,7 +337,7 @@
       "net": null,
       "device": {
         "layout": "\\$4",
-        "reference": "ISN",
+        "reference": "FMN",
         "class": "NFET"
       },
       "property": null,
@@ -371,7 +371,7 @@
       "net": null,
       "device": {
         "layout": "\\$6",
-        "reference": "IM2N",
+        "reference": "ISN",
         "class": "NFET"
       },
       "property": null,
@@ -388,7 +388,7 @@
       "net": null,
       "device": {
         "layout": "\\$7",
-        "reference": "TDN",
+        "reference": "FSN",
         "class": "NFET"
       },
       "property": null,
@@ -405,7 +405,7 @@
       "net": null,
       "device": {
         "layout": "\\$8",
-        "reference": "IMNB",
+        "reference": "IMNA",
         "class": "NFET"
       },
       "property": null,
@@ -422,7 +422,7 @@
       "net": null,
       "device": {
         "layout": "\\$9",
-        "reference": "IS2NA",
+        "reference": "IMNB",
         "class": "NFET"
       },
       "property": null,
@@ -485,23 +485,7 @@
       "description": "layout net has no reference counterpart",
       "side": "layout",
       "net": {
-        "layout": "A|NAND_M_A",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "A|NAND_S2_A",
+        "layout": "A|NAND_M_A|NAND_M_A_STUB|NAND_M_A_VIA|NAND_S2_A|NAND_S2_A_STUB|NAND_S2_A_VIA|RST_N",
         "reference": null
       },
       "device": null,
@@ -917,7 +901,7 @@
       "description": "layout net has no reference counterpart",
       "side": "layout",
       "net": {
-        "layout": "\\$13",
+        "layout": "\\$11",
         "reference": null
       },
       "device": null,
@@ -933,7 +917,7 @@
       "description": "layout net has no reference counterpart",
       "side": "layout",
       "net": {
-        "layout": "\\$21",
+        "layout": "\\$18",
         "reference": null
       },
       "device": null,

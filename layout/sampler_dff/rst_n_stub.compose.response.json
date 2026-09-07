@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "generator": "gen-compose",
-  "cell_name": "sampler_dff",
-  "gds_path": "sampler_dff.gds",
+  "cell_name": "rst_n_stub",
+  "gds_path": "rst_n_stub.gds",
   "pdk": {
     "name": "sky130A",
     "variant": "sky130A",
@@ -20,7 +20,7 @@
       "id": "core",
       "source": "cell",
       "generator": null,
-      "cell_name": "rst_n_met1",
+      "cell_name": "route_supplies",
       "offset_um": {
         "x": 0.0,
         "y": 0.0
@@ -36,34 +36,67 @@
   ],
   "nets": [
     {
-      "net": "rst_n",
+      "net": "nand_m_a_stub",
       "pins": [
         {
           "block": "core",
-          "port": "nand_m_a_m1"
+          "port": "nand_m_a"
         },
         {
           "block": "core",
-          "port": "nand_s2_a_m1"
+          "port": "nand_m_a_ext"
         }
       ],
       "routed": true,
-      "route_length_um": 30.9,
+      "route_length_um": 0.5700000000000003,
       "status": "routed",
       "legs": [
         {
           "pins": [
             {
               "block": "core",
-              "port": "nand_m_a_m1"
+              "port": "nand_m_a"
             },
             {
               "block": "core",
-              "port": "nand_s2_a_m1"
+              "port": "nand_m_a_ext"
             }
           ],
           "routed": true,
-          "route_length_um": 30.9,
+          "route_length_um": 0.5700000000000003,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "net": "nand_s2_a_stub",
+      "pins": [
+        {
+          "block": "core",
+          "port": "nand_s2_a"
+        },
+        {
+          "block": "core",
+          "port": "nand_s2_a_ext"
+        }
+      ],
+      "routed": true,
+      "route_length_um": 0.6099999999999994,
+      "status": "routed",
+      "legs": [
+        {
+          "pins": [
+            {
+              "block": "core",
+              "port": "nand_s2_a"
+            },
+            {
+              "block": "core",
+              "port": "nand_s2_a_ext"
+            }
+          ],
+          "routed": true,
+          "route_length_um": 0.6099999999999994,
           "reason": null
         }
       ]

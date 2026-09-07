@@ -591,6 +591,15 @@ that lands this document):
   the composed geometry's 22-device, 11 nfet/11 pfet split already matches
   `design/sampler_core.spice`'s own subckt before any signal wiring exists).
   `rst_n`/`clk`/`clkb` fan-out, the six data-path nets, and the resulting
+  whole-cell `klt lvs` sign-off remain open (#27). **A later increment
+  routed `rst_n`**: both `sampler_nand2` instances' `a` pin sits inside that
+  leaf's own internal `met1` via stack, so a direct `metal2`-role via-drop
+  always shorted to it; the fix routes a short `li1`-only stub clear of the
+  obstruction, vias to `met1`, then vias again to `met3`/`"metal3"` role for
+  the long haul — a plane no leaf cell here draws on, clear of the
+  `vdd`/`vss` buses too. `klt drc` clean (0 violations), and `klt extract`
+  confirms `nand_m`'s and `nand_s2`'s `a` pins and `rst_n` are one physically
+  merged net. `clk`/`clkb` fan-out, the six data-path nets, and the
   whole-cell `klt lvs` sign-off remain open (#27). Note also that
   "DRC-clean" here means clean against `klt`'s **curated** sky130 deck (a
   documented subset — see each `drc.json`'s own `coverage` block), not a

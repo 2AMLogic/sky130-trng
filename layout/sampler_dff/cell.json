@@ -267,6 +267,7 @@
       ]
     },
     {
+      "name": "route_supplies",
       "blocks": [{"id": "core", "from_stage": "place"}],
       "placement": {"strategy": "explicit", "order": ["core"], "origins_um": {"core": {"x": 0.0, "y": 0.0}}},
       "routing": {"layer_role": "metal2", "width_um": 0.17},
@@ -304,6 +305,143 @@
          "waypoints_um": [[34.78, -3.5], [41.33, -3.5]]},
         {"net": "vss", "pins": [{"block": "core", "port": "nand_s2_vss"}, {"block": "core", "port": "tg_fbs_vss"}],
          "waypoints_um": [[41.33, -3.5], [49.03, -3.5]]}
+      ],
+      "pins": [
+        {"block": "core", "port": "nand_m_a", "net": "nand_m_a"},
+        {"block": "core", "port": "nand_s2_a", "net": "nand_s2_a"}
+      ]
+    },
+    {
+      "name": "rst_n_stub",
+      "_comment": [
+        "rst_n's two sampler_nand2 'a' pins (NAND_M/NAND_S2's rst_n input)",
+        "sit at local (4.98, 2.71) -- INSIDE sampler_nand2's own internal",
+        "met1 usage (a single via/pad blob spanning local x 4.455..5.045,",
+        "y 0.125..3.74, confirmed with klayout.db against sampler_nand2.gds:",
+        "this is the leaf cell's own internal 'y'-net via stack, not a port).",
+        "A metal2 via-drop landing directly on the pin (this cell's first",
+        "attempt) always shorts to that blob regardless of approach side --",
+        "gen-compose's own diagnostic ('self-net's drawn metal overlaps",
+        "block core's own drawn pad metal ... route to a layer_role with a",
+        "metal2/via stack instead') names exactly this. The fix used here: a",
+        "same-layer (li1/'metal' role, no via) stub FIRST, on each pin's OWN",
+        "native layer, moving 0.32um EAST of the blob's east edge (local",
+        "x=5.045) before any metal2 transition -- both nand_m_a and",
+        "nand_s2_a use the same east-side escape (direction_deg 0, matching",
+        "sampler_nand2's own 'a' pin orientation, identical for both",
+        "instances since both are placed at orientation 'none'). Since",
+        "nand_s2 sits east of nand_m, the metal2 bus (next stage) has to",
+        "detour around nand_s2's own blob rather than through it -- see that",
+        "stage's own waypoints_um.",
+        "",
+        "x_um=4.90 (not the 'place' stage's own 4.98) for the real 'a' pins",
+        "is this stub's own re-derivation: klayout.db against",
+        "sampler_nand2.gds shows the pin's own li1 pad at local x 4.665..5.085",
+        "but a SEPARATE, only-transitively-connected li1 strap (the mpb/mpa",
+        "gate strap the 'a' net is itself defined by) at local x 4.37..4.96 --",
+        "the two already overlap each other in the leaf cell's own composed",
+        "geometry, but 4.98 sits just east of the strap's own edge (a 0.02um",
+        "gap), so a wire starting there touches only the pad, not the strap,",
+        "and klt drc flags the near-miss as a li1.space.1 violation even",
+        "though every shape involved is the same 'a' net. 4.90 sits in both",
+        "the pad's and the strap's own ranges, so the new wire touches (and",
+        "merges with) both directly -- 0 violations. y_um=2.71 (not the",
+        "'place' stage's own 2.75, a value carried over from",
+        "layout/ro_ring5/cell.json's identical mpa/mnab placement for an",
+        "unrelated port) matches the real li1 pad's own centerline exactly.",
+        "The two stub segments below are two independent li1 rectangles, not",
+        "yet one net by JSON construction -- 'rst_n' becomes one net only",
+        "once the next stage bridges nand_m_a_ext to nand_s2_a_ext on",
+        "metal2; klt extract confirms physical connectivity from drawn",
+        "geometry, not from JSON net-name bookkeeping, so this is not a",
+        "correctness gap."
+      ],
+      "blocks": [
+        {
+          "id": "core",
+          "orientation": "none",
+          "cell": {
+            "from_stage": "route_supplies",
+            "ports": [
+              {"name": "nand_m_a", "x_um": 13.43, "y_um": 2.71, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.17, "direction_deg": 0},
+              {"name": "nand_m_a_ext", "x_um": 14.0, "y_um": 2.71, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.17, "direction_deg": 0},
+              {"name": "nand_s2_a", "x_um": 44.29, "y_um": 2.71, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.17, "direction_deg": 0},
+              {"name": "nand_s2_a_ext", "x_um": 44.9, "y_um": 2.71, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.17, "direction_deg": 0}
+            ]
+          }
+        }
+      ],
+      "placement": {"strategy": "explicit", "order": ["core"], "origins_um": {"core": {"x": 0.0, "y": 0.0}}},
+      "routing": {"layer_role": "metal", "width_um": 0.17},
+      "connectivity": [
+        {"net": "nand_m_a_stub", "pins": [{"block": "core", "port": "nand_m_a"}, {"block": "core", "port": "nand_m_a_ext"}]},
+        {"net": "nand_s2_a_stub", "pins": [{"block": "core", "port": "nand_s2_a"}, {"block": "core", "port": "nand_s2_a_ext"}]}
+      ],
+      "pins": []
+    },
+    {
+      "name": "rst_n_met1",
+      "_comment": [
+        "A metal2 (met1) bus cannot cross either nand2 instance's own",
+        "footprint at y=2.71 -- that is exactly the met1 blob the previous",
+        "stage's li1 stubs route around, and vdd/vss's own met1 buses",
+        "already span the entire cell width at y=7.0/-3.5, so there is no",
+        "clear met1 lane at ANY height that both avoids the blobs and",
+        "avoids crossing vdd/vss's own vertical via stubs (tried and",
+        "rejected: climbing to y=6.0 to go over nand_s2 still crosses",
+        "nand_s2_vdd's own vertical stub at x=41.31, y 4.45..7.0). This",
+        "stage instead vias EACH stub tip independently, zero lateral",
+        "distance, straight up from li1 to met1 -- a single-hop via-drop,",
+        "identical in kind to every vdd/vss leg in 'route_supplies', just",
+        "with both ends at the same (x, y). The NEXT stage vias again,",
+        "met1 to met3 (also a single hop, the same hop 'ro_array_core's",
+        "own t2bridge stage uses), and runs the long haul entirely on",
+        "met3/'metal3' -- a plane no leaf cell in this assembly draws on at",
+        "all, so it is clear of every leaf's own internal congestion AND",
+        "of the met1 vdd/vss buses, without needing to dodge either."
+      ],
+      "blocks": [
+        {
+          "id": "core",
+          "orientation": "none",
+          "cell": {
+            "from_stage": "rst_n_stub",
+            "ports": [
+              {"name": "nand_m_a_ext", "x_um": 14.0, "y_um": 2.71, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.17, "direction_deg": 0},
+              {"name": "nand_s2_a_ext", "x_um": 44.9, "y_um": 2.71, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.17, "direction_deg": 0},
+              {"name": "nand_m_a_m1", "x_um": 14.0, "y_um": 2.71, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 0},
+              {"name": "nand_s2_a_m1", "x_um": 44.9, "y_um": 2.71, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 0}
+            ]
+          }
+        }
+      ],
+      "placement": {"strategy": "explicit", "order": ["core"], "origins_um": {"core": {"x": 0.0, "y": 0.0}}},
+      "routing": {"layer_role": "metal2", "width_um": 0.17},
+      "connectivity": [
+        {"net": "nand_m_a_via", "pins": [{"block": "core", "port": "nand_m_a_ext"}, {"block": "core", "port": "nand_m_a_m1"}]},
+        {"net": "nand_s2_a_via", "pins": [{"block": "core", "port": "nand_s2_a_ext"}, {"block": "core", "port": "nand_s2_a_m1"}]}
+      ],
+      "pins": []
+    },
+    {
+      "blocks": [
+        {
+          "id": "core",
+          "orientation": "none",
+          "cell": {
+            "from_stage": "rst_n_met1",
+            "ports": [
+              {"name": "nand_m_a_m1", "x_um": 14.0, "y_um": 2.71, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 0},
+              {"name": "nand_s2_a_m1", "x_um": 44.9, "y_um": 2.71, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 0}
+            ]
+          }
+        }
+      ],
+      "placement": {"strategy": "explicit", "order": ["core"], "origins_um": {"core": {"x": 0.0, "y": 0.0}}},
+      "routing": {"layer_role": "metal3", "width_um": 0.17},
+      "connectivity": [
+        {"net": "rst_n", "pins": [{"block": "core", "port": "nand_m_a_m1"}, {"block": "core", "port": "nand_s2_a_m1"}],
+         "waypoints_um": [[14.0, 2.71], [44.9, 2.71]]}
       ],
       "pins": []
     }
