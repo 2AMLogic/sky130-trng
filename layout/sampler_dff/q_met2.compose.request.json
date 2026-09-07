@@ -8,6 +8,28 @@
       "cell": {
         "ports": [
           {
+            "name": "inv_q_y_m1",
+            "x_um": 37.9,
+            "y_um": 1.2,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 0
+          },
+          {
+            "name": "nand_s2_a_ext_m1",
+            "x_um": 44.9,
+            "y_um": 2.71,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 0
+          },
+          {
             "name": "inv_q_y_m2",
             "x_um": 37.9,
             "y_um": 1.2,
@@ -30,8 +52,8 @@
             "direction_deg": 0
           }
         ],
-        "cell_name": "q_met2",
-        "gds_path": "q_met2.gds"
+        "cell_name": "q_met1",
+        "gds_path": "q_met1.gds"
       }
     }
   ],
@@ -53,36 +75,35 @@
   },
   "connectivity": [
     {
-      "net": "q",
+      "net": "inv_q_y_via2",
       "pins": [
         {
           "block": "core",
+          "port": "inv_q_y_m1"
+        },
+        {
+          "block": "core",
           "port": "inv_q_y_m2"
+        }
+      ]
+    },
+    {
+      "net": "nand_s2_a_via2",
+      "pins": [
+        {
+          "block": "core",
+          "port": "nand_s2_a_ext_m1"
         },
         {
           "block": "core",
           "port": "nand_s2_a_ext_m2"
         }
-      ],
-      "waypoints_um": [
-        [
-          37.9,
-          1.2
-        ],
-        [
-          44.9,
-          1.2
-        ],
-        [
-          44.9,
-          2.71
-        ]
       ]
     }
   ],
   "pins": [],
   "options": {
-    "cell_name": "q_bus",
-    "output": "q_bus.gds"
+    "cell_name": "q_met2",
+    "output": "q_met2.gds"
   }
 }

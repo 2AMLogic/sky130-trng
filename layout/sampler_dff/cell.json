@@ -312,71 +312,38 @@
       ]
     },
     {
-      "name": "rst_n_stub",
+      "name": "rst_n_met1",
       "_comment": [
-        "rst_n's two sampler_nand2 'a' pins (NAND_M/NAND_S2's rst_n input)",
-        "sit at local (4.98, 2.71) -- INSIDE sampler_nand2's own internal",
-        "met1 usage (a single via/pad blob spanning local x 4.455..5.045,",
-        "y 0.125..3.74, confirmed with klayout.db against sampler_nand2.gds:",
-        "this is the leaf cell's own internal 'y'-net via stack, not a port).",
-        "A metal2 via-drop landing directly on the pin (this cell's first",
-        "attempt) always shorts to that blob regardless of approach side --",
-        "gen-compose's own diagnostic ('self-net's drawn metal overlaps",
-        "block core's own drawn pad metal ... route to a layer_role with a",
-        "metal2/via stack instead') names exactly this. The fix used here: a",
-        "same-layer (li1/'metal' role, no via) stub FIRST, on each pin's OWN",
-        "native layer, carrying each 'a' pin EAST past the blob's east edge",
-        "(local x=5.045) before any metal2 transition. Both nand_m_a and",
-        "nand_s2_a use the same east-side escape (direction_deg 0, matching",
-        "sampler_nand2's own 'a' pin orientation, identical for both",
-        "instances since both are placed at orientation 'none').",
+        "CORRECTION (issue #84): this stage used to be a three-stage chain",
+        "(rst_n_stub / rst_n_met1 / rst_n_bus) targeting each sampler_nand2",
+        "instance's 'a' pin -- design/sampler_core.spice's XMimna/XMis2na",
+        "require rst_n on the 'en' pin instead (a gates the data input,",
+        "adjacent to the output 'y'; en gates the vss-adjacent device --",
+        "see sampler_nand2/extract.json and sampler_nand2.source.spice's own",
+        "XMna y a nm vss / XMnb nm en vss vss). See",
+        "'The sampler_nand2 input swap' in layout/sampler_dff/README.md for",
+        "the full evidence trail; this stage is the fix.",
         "",
-        "The two stubs are the same in METHOD but NOT the same length. Each",
-        "tip is snapped to a round global x -- 14.0 for nand_m_a_ext, 44.9",
-        "for nand_s2_a_ext, which are also the final met3 bus's own two",
-        "endpoints (route_length_um 30.9 = 44.9 - 14.0) -- while the pins",
-        "themselves land wherever each instance's own placement origin puts",
-        "them: 8.53 + 4.90 = 13.43 for nand_m, 39.39 + 4.90 = 44.29 for",
-        "nand_s2. The two origins are 30.86um apart and the two tips 30.9um",
-        "apart, so the stubs run 0.57um (nand_m_a_stub) and 0.61um",
-        "(nand_s2_a_stub) -- exactly the route_length_um values",
-        "rst_n_stub.compose.response.json reports -- and the tips sit",
-        "0.425um / 0.465um east of their own instance's blob edge (global",
-        "13.575 and 44.435). Do not read the 0.04um difference as a",
-        "derivation asymmetry: neither stub is length-critical. What has to",
-        "clear the blob is the 0.42um-wide landing pad the NEXT stage's via",
-        "drops at the tip, and measured on the composed sampler_dff.gds",
-        "that pad spans x 13.79..14.21 against a blob edge at 13.575",
-        "(0.215um of met1-to-met1 space) and x 44.69..45.11 against 44.435",
-        "(0.255um) -- both clear, drc.json: 0 violations. An earlier,",
-        "shorter stub put that pad too close and drew the second",
-        "li1.space.1 violation this cell hit; 14.0 / 44.9 are simply the",
-        "first round global coordinates comfortably past that bound. Since",
-        "nand_s2 sits east of nand_m, the metal2 bus (next stage) has to",
-        "detour around nand_s2's own blob rather than through it -- see that",
-        "stage's own waypoints_um.",
-        "",
-        "x_um=4.90 (not the 'place' stage's own 4.98) for the real 'a' pins",
-        "is this stub's own re-derivation: klayout.db against",
-        "sampler_nand2.gds shows the pin's own li1 pad at local x 4.665..5.085",
-        "but a SEPARATE, only-transitively-connected li1 strap (the mpb/mpa",
-        "gate strap the 'a' net is itself defined by) at local x 4.37..4.96 --",
-        "the two already overlap each other in the leaf cell's own composed",
-        "geometry, but 4.98 sits just east of the strap's own edge (a 0.02um",
-        "gap), so a wire starting there touches only the pad, not the strap,",
-        "and klt drc flags the near-miss as a li1.space.1 violation even",
-        "though every shape involved is the same 'a' net. 4.90 sits in both",
-        "the pad's and the strap's own ranges, so the new wire touches (and",
-        "merges with) both directly -- 0 violations. y_um=2.71 (not the",
-        "'place' stage's own 2.75, a value carried over from",
-        "layout/ro_ring5/cell.json's identical mpa/mnab placement for an",
-        "unrelated port) matches the real li1 pad's own centerline exactly.",
-        "The two stub segments below are two independent li1 rectangles, not",
-        "yet one net by JSON construction -- 'rst_n' becomes one net only",
-        "once the next stage bridges nand_m_a_ext to nand_s2_a_ext on",
-        "metal2; klt extract confirms physical connectivity from drawn",
-        "geometry, not from JSON net-name bookkeeping, so this is not a",
-        "correctness gap."
+        "Unlike 'a' (local (4.98, 2.71), inside sampler_nand2's own internal",
+        "met1 via/pad blob spanning local x 4.455..5.045, y 0.125..3.74),",
+        "'en' sits at local (3.685, 1.975) -- west of the blob's own x range",
+        "entirely, confirmed with klayout.db against sampler_nand2.gds and",
+        "already proven DRC-clean at the nand_s2 instance specifically: this",
+        "is the exact point the pre-fix q_bus stage via'd directly with no",
+        "stub (global (43.075, 1.975), the same coordinate this stage's own",
+        "nand_s2_en below reuses). So the li1 stub escape 'a' needed is not",
+        "needed here -- rst_n gets simpler, exactly as the issue predicted",
+        "('the stub escape moves onto the data nets instead': see the new",
+        "q_stub stage below). This stage vias each 'en' pin straight up from",
+        "li1 to met1, zero lateral distance -- a single-hop via-drop,",
+        "identical in kind to every vdd/vss leg in 'route_supplies' and to",
+        "'clk_met1'/'mc_met1' below. The NEXT stage vias again, met1 to met3",
+        "(also a single hop), and runs the long haul entirely on met3/",
+        "'metal3' -- a plane no leaf cell in this assembly draws on at all,",
+        "so it is clear of every leaf's own internal congestion AND of the",
+        "met1 vdd/vss buses, without needing to dodge either -- the same",
+        "reasoning the pre-fix rst_n_bus stage already established, still",
+        "valid: only the pin fed into it changed."
       ],
       "blocks": [
         {
@@ -385,54 +352,10 @@
           "cell": {
             "from_stage": "route_supplies",
             "ports": [
-              {"name": "nand_m_a", "x_um": 13.43, "y_um": 2.71, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.17, "direction_deg": 0},
-              {"name": "nand_m_a_ext", "x_um": 14.0, "y_um": 2.71, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.17, "direction_deg": 0},
-              {"name": "nand_s2_a", "x_um": 44.29, "y_um": 2.71, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.17, "direction_deg": 0},
-              {"name": "nand_s2_a_ext", "x_um": 44.9, "y_um": 2.71, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.17, "direction_deg": 0}
-            ]
-          }
-        }
-      ],
-      "placement": {"strategy": "explicit", "order": ["core"], "origins_um": {"core": {"x": 0.0, "y": 0.0}}},
-      "routing": {"layer_role": "metal", "width_um": 0.17},
-      "connectivity": [
-        {"net": "nand_m_a_stub", "pins": [{"block": "core", "port": "nand_m_a"}, {"block": "core", "port": "nand_m_a_ext"}]},
-        {"net": "nand_s2_a_stub", "pins": [{"block": "core", "port": "nand_s2_a"}, {"block": "core", "port": "nand_s2_a_ext"}]}
-      ],
-      "pins": []
-    },
-    {
-      "name": "rst_n_met1",
-      "_comment": [
-        "A metal2 (met1) bus cannot cross either nand2 instance's own",
-        "footprint at y=2.71 -- that is exactly the met1 blob the previous",
-        "stage's li1 stubs route around, and vdd/vss's own met1 buses",
-        "already span the entire cell width at y=7.0/-3.5, so there is no",
-        "clear met1 lane at ANY height that both avoids the blobs and",
-        "avoids crossing vdd/vss's own vertical via stubs (tried and",
-        "rejected: climbing to y=6.0 to go over nand_s2 still crosses",
-        "nand_s2_vdd's own vertical stub at x=41.31, y 4.45..7.0). This",
-        "stage instead vias EACH stub tip independently, zero lateral",
-        "distance, straight up from li1 to met1 -- a single-hop via-drop,",
-        "identical in kind to every vdd/vss leg in 'route_supplies', just",
-        "with both ends at the same (x, y). The NEXT stage vias again,",
-        "met1 to met3 (also a single hop, the same hop 'ro_array_core's",
-        "own t2bridge stage uses), and runs the long haul entirely on",
-        "met3/'metal3' -- a plane no leaf cell in this assembly draws on at",
-        "all, so it is clear of every leaf's own internal congestion AND",
-        "of the met1 vdd/vss buses, without needing to dodge either."
-      ],
-      "blocks": [
-        {
-          "id": "core",
-          "orientation": "none",
-          "cell": {
-            "from_stage": "rst_n_stub",
-            "ports": [
-              {"name": "nand_m_a_ext", "x_um": 14.0, "y_um": 2.71, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.17, "direction_deg": 0},
-              {"name": "nand_s2_a_ext", "x_um": 44.9, "y_um": 2.71, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.17, "direction_deg": 0},
-              {"name": "nand_m_a_m1", "x_um": 14.0, "y_um": 2.71, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 0},
-              {"name": "nand_s2_a_m1", "x_um": 44.9, "y_um": 2.71, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 0}
+              {"name": "nand_m_en", "x_um": 12.215, "y_um": 1.975, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.42, "direction_deg": 90},
+              {"name": "nand_s2_en", "x_um": 43.075, "y_um": 1.975, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.42, "direction_deg": 90},
+              {"name": "nand_m_en_m1", "x_um": 12.215, "y_um": 1.975, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.42, "direction_deg": 90},
+              {"name": "nand_s2_en_m1", "x_um": 43.075, "y_um": 1.975, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.42, "direction_deg": 90}
             ]
           }
         }
@@ -440,8 +363,8 @@
       "placement": {"strategy": "explicit", "order": ["core"], "origins_um": {"core": {"x": 0.0, "y": 0.0}}},
       "routing": {"layer_role": "metal2", "width_um": 0.17},
       "connectivity": [
-        {"net": "nand_m_a_via", "pins": [{"block": "core", "port": "nand_m_a_ext"}, {"block": "core", "port": "nand_m_a_m1"}]},
-        {"net": "nand_s2_a_via", "pins": [{"block": "core", "port": "nand_s2_a_ext"}, {"block": "core", "port": "nand_s2_a_m1"}]}
+        {"net": "nand_m_en_via", "pins": [{"block": "core", "port": "nand_m_en"}, {"block": "core", "port": "nand_m_en_m1"}]},
+        {"net": "nand_s2_en_via", "pins": [{"block": "core", "port": "nand_s2_en"}, {"block": "core", "port": "nand_s2_en_m1"}]}
       ],
       "pins": []
     },
@@ -454,8 +377,8 @@
           "cell": {
             "from_stage": "rst_n_met1",
             "ports": [
-              {"name": "nand_m_a_m1", "x_um": 14.0, "y_um": 2.71, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 0},
-              {"name": "nand_s2_a_m1", "x_um": 44.9, "y_um": 2.71, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 0}
+              {"name": "nand_m_en_m1", "x_um": 12.215, "y_um": 1.975, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.42, "direction_deg": 90},
+              {"name": "nand_s2_en_m1", "x_um": 43.075, "y_um": 1.975, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.42, "direction_deg": 90}
             ]
           }
         }
@@ -463,8 +386,8 @@
       "placement": {"strategy": "explicit", "order": ["core"], "origins_um": {"core": {"x": 0.0, "y": 0.0}}},
       "routing": {"layer_role": "metal3", "width_um": 0.17},
       "connectivity": [
-        {"net": "rst_n", "pins": [{"block": "core", "port": "nand_m_a_m1"}, {"block": "core", "port": "nand_s2_a_m1"}],
-         "waypoints_um": [[14.0, 2.71], [44.9, 2.71]]}
+        {"net": "rst_n", "pins": [{"block": "core", "port": "nand_m_en_m1"}, {"block": "core", "port": "nand_s2_en_m1"}],
+         "waypoints_um": [[12.215, 1.975], [12.215, 2.2], [43.075, 2.2], [43.075, 1.975]]}
       ],
       "pins": []
     },
@@ -565,18 +488,24 @@
         "    vdd buses' own merged met1 footprints) is blocked at BOTH",
         "    nand2 instances by that leaf's own internal met1 via stack",
         "    (global x 12.24..13.575 and 43.10..44.435, y 0..3.95) -- the",
-        "    same obstruction 'rst_n_stub' above had to escape, here",
-        "    spanning the full height of the usable band instead of just",
-        "    part of it.",
-        "  - met2 is drawn by no leaf cell in this assembly at all; before",
-        "    this stage the only met2 in the whole composed cell is rst_n's",
-        "    own bus at (13.79,2.50;45.11,2.92). A lane BELOW the device",
-        "    rows keeps every clk leg clear of it by construction: the two",
-        "    ctrlb drops (x=24.6 and x=29.74) are the only clk verticals",
-        "    whose x falls inside rst_n's own span, and both stop at their",
-        "    pin (y=1.03, met2 pad top 1.24), 1.26 um short of rst_n's own",
-        "    lower edge. Routing clk ABOVE instead would short those two",
-        "    verticals straight through rst_n's bus.",
+        "    same obstruction the pre-#84 rst_n_stub stage (since replaced,",
+        "    see rst_n_met1's own _comment) had to escape, here spanning",
+        "    the full height of the usable band instead of just part of it.",
+        "  - met2 is drawn by no leaf cell in this assembly at all; at the",
+        "    time this stage was derived (pre-#84) the only met2 in the",
+        "    whole composed cell was rst_n's own bus at",
+        "    (13.79,2.50;45.11,2.92) -- issue #84 later moved rst_n's own",
+        "    bus to y=1.975 (see rst_n_met1/rst_n_bus above), still clear",
+        "    of this stage's own y=-1.70 lane by construction and",
+        "    re-verified DRC-clean as part of that fix, not re-derived",
+        "    here. A lane BELOW the device rows keeps every clk leg clear",
+        "    of rst_n by construction regardless of rst_n's own exact",
+        "    height: the two ctrlb drops (x=24.6 and x=29.74) are the only",
+        "    clk verticals whose x falls inside rst_n's own span, and both",
+        "    stop at their own pin (y=1.03, met2 pad top 1.24), well short",
+        "    of rst_n's own lower edge at either height. Routing clk ABOVE",
+        "    instead would risk shorting those two verticals through",
+        "    rst_n's bus.",
         "  - y=-1.70 specifically: below every leaf's own drawn geometry",
         "    (the tallest southward reach is sampler_tg's psub tap at",
         "    y=-2.49) and above nothing it must clear on its own layer",
@@ -650,7 +579,10 @@
         "(lowest edge y=0.82, 0.335um away) and of the vss bus's own met1",
         "(top edge y=-0.29). hop1w itself carries no device -- it is a",
         "chain hub the next stage (clkb_bridge1) continues from, exactly",
-        "the way rst_n_stub's own nand_m_a_ext/nand_s2_a_ext hubs worked.",
+        "the way the pre-#84 rst_n_stub stage's own nand_m_a_ext/",
+        "nand_s2_a_ext hubs worked (since replaced -- see q_stub's own",
+        "nand_s2_a_ext hub above, added by issue #84, for the still-live",
+        "example of the same pattern).",
         "",
         "Both legs route straight down/up to y=0.40 at their own pin's x --",
         "1.9 and 5.31 -- since neither collides with anything on met1 at",
@@ -660,12 +592,13 @@
         "drop toward y=0.40 which is BELOW tg_d_ctrlb's own y=1.03).",
         "hop1w=11.8 keeps the via-drop's own fixed 0.42um landing pad",
         "(_VIA_LANDING_SIZE_UM, independent of routing.width_um -- the same",
-        "convention rst_n_stub/clk_met1 both ran into) 0.23um clear of",
-        "sampler_nand2's own internal met1 blob at nand_m (global bbox",
-        "x=12.24..13.575, y=0..3.95, confirmed with klayout.db against",
-        "sampler_nand2.gds -- the same obstruction rst_n_stub escaped, here",
-        "spanning the corridor's own full width) -- comfortably above",
-        "sky130's own met1.space.1 (0.14um)."
+        "convention the pre-#84 rst_n_stub stage and clk_met1 both ran",
+        "into) 0.23um clear of sampler_nand2's own internal met1 blob at",
+        "nand_m (global bbox x=12.24..13.575, y=0..3.95, confirmed with",
+        "klayout.db against sampler_nand2.gds -- the same obstruction the",
+        "pre-#84 rst_n_stub stage escaped, here spanning the corridor's",
+        "own full width) -- comfortably above sky130's own met1.space.1",
+        "(0.14um)."
       ],
       "blocks": [
         {
@@ -713,9 +646,15 @@
         "other stage in this cell uses) and runs the short backbone",
         "entirely on met2 between them -- a plane no leaf cell in this",
         "assembly draws on, so it cannot short to the blob it is clearing.",
-        "hop1e=14.0 reuses rst_n_bus's own already-proven east-side",
-        "clearance figure for this exact blob (0.215um from the blob's own",
-        "x=13.575 edge, measured and DRC-clean there already)."
+        "hop1e=14.0 reused the pre-#84 rst_n_stub stage's own already-proven",
+        "east-side clearance figure for this exact blob (0.215um from the",
+        "blob's own x=13.575 edge, measured and DRC-clean there already) --",
+        "issue #84 has since moved rst_n off of x=14.0 entirely (rst_n now",
+        "vias directly at nand_m.en, x=12.215, clear of the blob without an",
+        "escape at all), so this stage's own hop1e is now the sole live",
+        "proof of that clearance figure; its own DRC-clean result is",
+        "unaffected either way, since it never depended on rst_n's own",
+        "geometry, only on the shared physical blob."
       ],
       "blocks": [
         {
@@ -807,9 +746,14 @@
         "clkb fan-out, bridge 2 of 2 (issue #22): hop over sampler_nand2's",
         "own internal met1 blob at nand_s2 (global x=43.1..44.435), the",
         "same met1->'metal3'->met1 excursion clkb_bridge1 already used for",
-        "the nand_m blob. hop2e=44.9 reuses rst_n_bus's own already-proven",
-        "east-side clearance figure for this exact blob (0.255um from the",
-        "blob's own x=44.435 edge, measured and DRC-clean there already)."
+        "the nand_m blob. hop2e=44.9 reused the pre-#84 rst_n_stub stage's",
+        "own already-proven east-side clearance figure for this exact blob",
+        "(0.255um from the blob's own x=44.435 edge, measured and",
+        "DRC-clean there already) -- issue #84 has since moved that exact",
+        "coordinate from rst_n onto q instead (see q_stub/q_met1/q_bus",
+        "above, whose own nand_s2_a_ext tip reuses the identical x=44.9),",
+        "so the clearance figure still has a live proof in the committed",
+        "cell.json, just under a different net name."
       ],
       "blocks": [
         {
@@ -847,7 +791,7 @@
         "(clkb_seg1/clkb_bridge1/clkb_seg2/clkb_bridge2/this stage) --",
         "klt extract confirms physical connectivity from drawn geometry,",
         "not from JSON net-name bookkeeping, the same discipline",
-        "rst_n_stub/rst_n_met1/rst_n_bus already established for rst_n.",
+        "rst_n_met1/rst_n_bus already established for rst_n.",
         "",
         "Still open (issue #22 / #27): the six data-path nets",
         "m/mb/mc/s/q/qb, and promoting the whole-cell external pins",
@@ -979,39 +923,30 @@
       "pins": []
     },
     {
-      "name": "q_bus",
+      "name": "q_stub",
       "_comment": [
-        "q fan-out (issue #22): the second of the six data-path nets --",
-        "design/sampler_core.spice's inv_q's own OUTPUT (XMiqp/XMiqn's",
-        "shared drain node) driving NAND_S2's 'en' input (XMs2ap/XMs2bn's",
-        "shared gate) -- inv_q.y (37.9, 1.2) to nand_s2.en (43.075, 1.975).",
-        "The cell's own eventual output pin also lands on this net once",
-        "top-level promotion happens (not this increment -- see 'What",
-        "remains').",
-        "",
-        "Unlike mc, this net needs only ONE stage, not two: klayout.db",
-        "against the composed sampler_dff.gds (post-mc) shows met1 is",
-        "completely empty across the whole x=37..44.5, y=0.8..2.2 box other",
-        "than sampler_nand2's own internal met1 blob at nand_s2",
-        "(x=43.845..44.435, the same obstruction rst_n/clk/clkb's own long",
-        "hauls all had to route around at other columns) -- and this net's",
-        "own east end, nand_s2.en at x=43.075, sits 0.77um WEST of that",
-        "blob's own west edge, so a route that never crosses x=43.845 has no",
-        "reason to detour around it at all. A single 'metal2'-role stage",
-        "(one hop from li1, same as clkb_seg1's own single-stage recipe)",
-        "vias both pins straight up from li1 -- inv_q_y's own 0.42um",
-        "landing pad overlaps only inv_q_y's own li1 strap (identical",
-        "geometry to inv_mc_y's already-proven overlay, since both are the",
-        "same ro_buf leaf's 'y' port) and nand_s2_en's landing pad lands",
-        "entirely INSIDE that pin's own real li1 pad (measured 0.37 x 1.2um,",
-        "x=42.89..43.26, y=1.375..2.575 -- comfortably containing the",
-        "0.42um-square landing centered at 43.075,1.975) -- and runs the",
-        "whole L-shaped haul on met1 itself: east from (37.9,1.2) to",
-        "(43.075,1.2), then north to (43.075,1.975). Both segments measured",
-        "clear of every other net's own met1 on klayout.db (clkb_seg2's own",
-        "backbone stays at y=0.4 here, well below; the vdd/vss buses stay at",
-        "y=7.0/-3.5; rst_n/clk/mc all run on met2/met3, a different layer",
-        "entirely)."
+        "CORRECTION (issue #84): q used to land on nand_s2.en (43.075,",
+        "1.975), a pin clear of sampler_nand2's own internal met1 blob --",
+        "design/sampler_core.spice's XMis2na requires q on the 'a' pin",
+        "instead (see rst_n_met1's own _comment above for the full pin-swap",
+        "evidence). nand_s2.a sits at local (4.98, 2.75) -- INSIDE that same",
+        "blob (a single via/pad blob spanning local x 4.455..5.045,",
+        "y 0.125..3.74) -- so q now needs exactly the li1 stub escape 'a'",
+        "always needed, which used to belong to rst_n's own derivation:",
+        "this stage, q_met1 and q_bus below reuse rst_n's pre-#84 nand_s2",
+        "geometry byte-for-byte (same re-derived local pin (4.90, 2.71),",
+        "not the 'place' stage's own (4.98, 2.75) -- see the historical",
+        "derivation note this replaces, preserved in git history at",
+        "rst_n_stub's own pre-#84 _comment), since it is the identical",
+        "physical conductor and the identical DRC-clean geometry already",
+        "proven for it. Only nand_s2's own 'a' pin is escaped here -- q, unlike",
+        "the old rst_n bus, touches only NAND_S2, not NAND_M (see the",
+        "signal-flow graph in this cell.json's own top _comment: q feeds",
+        "NAND_S2 only), so there is no nand_m-side stub to carry forward.",
+        "A same-layer (li1/'metal' role, no via) stub carries nand_s2.a",
+        "EAST past the blob's east edge (local x=5.045) before any metal2",
+        "transition, direction_deg 0 matching sampler_nand2's own 'a' pin",
+        "orientation, exactly as rst_n's pre-#84 stub did."
       ],
       "blocks": [
         {
@@ -1020,8 +955,41 @@
           "cell": {
             "from_stage": "mc_bus",
             "ports": [
+              {"name": "nand_s2_a", "x_um": 44.29, "y_um": 2.71, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.17, "direction_deg": 0},
+              {"name": "nand_s2_a_ext", "x_um": 44.9, "y_um": 2.71, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.17, "direction_deg": 0}
+            ]
+          }
+        }
+      ],
+      "placement": {"strategy": "explicit", "order": ["core"], "origins_um": {"core": {"x": 0.0, "y": 0.0}}},
+      "routing": {"layer_role": "metal", "width_um": 0.17},
+      "connectivity": [
+        {"net": "nand_s2_a_stub", "pins": [{"block": "core", "port": "nand_s2_a"}, {"block": "core", "port": "nand_s2_a_ext"}]}
+      ],
+      "pins": []
+    },
+    {
+      "name": "q_met1",
+      "_comment": [
+        "q fan-out, step 2 of 4 (issue #84 correction of issue #22's",
+        "original recipe): via inv_q's output pin and the stub tip from",
+        "q_stub straight up from li1 to met1, zero lateral distance on",
+        "each -- the same single-hop via-drop every other fan-out in this",
+        "cell uses. inv_q_y's own via here is unchanged from the pre-#84",
+        "q_bus stage (it never needed a stub); nand_s2_a_ext's via reuses",
+        "rst_n's pre-#84 nand_s2 via geometry byte-for-byte."
+      ],
+      "blocks": [
+        {
+          "id": "core",
+          "orientation": "none",
+          "cell": {
+            "from_stage": "q_stub",
+            "ports": [
               {"name": "inv_q_y", "x_um": 37.9, "y_um": 1.2, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.17, "direction_deg": 0},
-              {"name": "nand_s2_en", "x_um": 43.075, "y_um": 1.975, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.42, "direction_deg": 90}
+              {"name": "nand_s2_a_ext", "x_um": 44.9, "y_um": 2.71, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.17, "direction_deg": 0},
+              {"name": "inv_q_y_m1", "x_um": 37.9, "y_um": 1.2, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 0},
+              {"name": "nand_s2_a_ext_m1", "x_um": 44.9, "y_um": 2.71, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 0}
             ]
           }
         }
@@ -1029,9 +997,108 @@
       "placement": {"strategy": "explicit", "order": ["core"], "origins_um": {"core": {"x": 0.0, "y": 0.0}}},
       "routing": {"layer_role": "metal2", "width_um": 0.17},
       "connectivity": [
+        {"net": "inv_q_y_via", "pins": [{"block": "core", "port": "inv_q_y"}, {"block": "core", "port": "inv_q_y_m1"}]},
+        {"net": "nand_s2_a_via", "pins": [{"block": "core", "port": "nand_s2_a_ext"}, {"block": "core", "port": "nand_s2_a_ext_m1"}]}
+      ],
+      "pins": []
+    },
+    {
+      "name": "q_met2",
+      "_comment": [
+        "q fan-out, step 3 of 4 (issue #84 correction of issue #22's",
+        "original recipe): the pre-#84 recipe's own long haul stayed on",
+        "met1 the whole way, since its destination (nand_s2.en, west of",
+        "sampler_nand2's own internal met1 blob) never needed to cross it.",
+        "The corrected destination, nand_s2.a, sits on the blob's OWN east",
+        "side, and klayout.db against the composed q_met1.gds shows the",
+        "blob's own met1 footprint is not a simple rectangle: a 0.17um-wide",
+        "bar at local x=43.845..44.015 (global) runs continuously from",
+        "y=0.915 up to y=3.53, directly across the straight-line path from",
+        "inv_q_y (y=1.2) to nand_s2_a_ext (y=2.71) -- an L-shaped met1 route",
+        "at that height band cannot avoid it (confirmed directly: a",
+        "same-net-relative overlap of 0.0289um^2 at x=43.845..44.015,",
+        "y=1.115..1.285, gen-compose's own diagnostic for 'self-net's",
+        "drawn metal overlaps ... block core's own drawn pad metal').",
+        "The fix used for rst_n's own pre-#84 'a'-pin bus applies here for",
+        "the identical reason: escape to a plane no leaf cell in this",
+        "assembly draws on. This stage vias each met1 point straight up to",
+        "met2, zero lateral distance -- a single-hop via-drop, the same",
+        "mechanic every other met1->met2 transition in this cell uses.",
+        "Checked directly against klayout.db (met2 layer, post-q_met1):",
+        "the L-shaped path this net's own final stage draws (east at",
+        "y=1.2, north at x=44.9) has zero overlap with every other met2",
+        "shape already drawn (clk's own basement/vertical network,",
+        "clkb_bridge1/clkb_bridge2, mc_bus's own U-lane, and rst_n's own",
+        "new bus at y=1.975) even after growing every obstacle by 0.14um",
+        "(sky130's own met2.space.1) -- comfortably clear, not a near miss."
+      ],
+      "blocks": [
+        {
+          "id": "core",
+          "orientation": "none",
+          "cell": {
+            "from_stage": "q_met1",
+            "ports": [
+              {"name": "inv_q_y_m1", "x_um": 37.9, "y_um": 1.2, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 0},
+              {"name": "nand_s2_a_ext_m1", "x_um": 44.9, "y_um": 2.71, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 0},
+              {"name": "inv_q_y_m2", "x_um": 37.9, "y_um": 1.2, "layer": {"layer": 69, "datatype": 20}, "width_um": 0.17, "direction_deg": 0},
+              {"name": "nand_s2_a_ext_m2", "x_um": 44.9, "y_um": 2.71, "layer": {"layer": 69, "datatype": 20}, "width_um": 0.17, "direction_deg": 0}
+            ]
+          }
+        }
+      ],
+      "placement": {"strategy": "explicit", "order": ["core"], "origins_um": {"core": {"x": 0.0, "y": 0.0}}},
+      "routing": {"layer_role": "metal3", "width_um": 0.17},
+      "connectivity": [
+        {"net": "inv_q_y_via2", "pins": [{"block": "core", "port": "inv_q_y_m1"}, {"block": "core", "port": "inv_q_y_m2"}]},
+        {"net": "nand_s2_a_via2", "pins": [{"block": "core", "port": "nand_s2_a_ext_m1"}, {"block": "core", "port": "nand_s2_a_ext_m2"}]}
+      ],
+      "pins": []
+    },
+    {
+      "name": "q_bus",
+      "_comment": [
+        "q fan-out, step 4 of 4 (issue #84 correction of issue #22's",
+        "original recipe): design/sampler_core.spice's inv_q's own OUTPUT",
+        "(XMiqp/XMiqn's shared drain node) driving NAND_S2's 'a' input",
+        "(XMis2na's input-side series NMOS gate, output-adjacent per",
+        "sampler_nand2's own leaf pin table) -- inv_q.y (37.9, 1.2) to",
+        "nand_s2.a (44.37, 2.75; this stage's own met2 landing sits above",
+        "the re-derived (44.9, 2.71) q_met1/q_met2 vias below it).",
+        "The cell's own eventual output pin also lands on this net once",
+        "top-level promotion happens (not this increment -- see 'What",
+        "remains').",
+        "",
+        "Both pins are already on met2 by this stage (via'd in q_met2",
+        "above), so this stage's own 'metal3'-role routing draws a plain",
+        "met2 wire with no further via -- the same same-layer-continuation",
+        "pattern clkb_seg2 already established on met1, applied here one",
+        "plane up. The route runs east from (37.9,1.2) to (44.9,1.2), then",
+        "north to (44.9,2.71) -- entirely on met2, so nand_s2's own",
+        "internal met1 blob (x=43.845..44.435) is on a different layer",
+        "and cannot be shorted regardless of the route's own shape; see",
+        "q_met2's own _comment for the direct klayout.db clearance check",
+        "against every other net already drawn on met2."
+      ],
+      "blocks": [
+        {
+          "id": "core",
+          "orientation": "none",
+          "cell": {
+            "from_stage": "q_met2",
+            "ports": [
+              {"name": "inv_q_y_m2", "x_um": 37.9, "y_um": 1.2, "layer": {"layer": 69, "datatype": 20}, "width_um": 0.17, "direction_deg": 0},
+              {"name": "nand_s2_a_ext_m2", "x_um": 44.9, "y_um": 2.71, "layer": {"layer": 69, "datatype": 20}, "width_um": 0.17, "direction_deg": 0}
+            ]
+          }
+        }
+      ],
+      "placement": {"strategy": "explicit", "order": ["core"], "origins_um": {"core": {"x": 0.0, "y": 0.0}}},
+      "routing": {"layer_role": "metal3", "width_um": 0.17},
+      "connectivity": [
         {"net": "q",
-         "pins": [{"block": "core", "port": "inv_q_y"}, {"block": "core", "port": "nand_s2_en"}],
-         "waypoints_um": [[37.9, 1.2], [43.075, 1.2], [43.075, 1.975]]}
+         "pins": [{"block": "core", "port": "inv_q_y_m2"}, {"block": "core", "port": "nand_s2_a_ext_m2"}],
+         "waypoints_um": [[37.9, 1.2], [44.9, 1.2], [44.9, 2.71]]}
       ],
       "pins": []
     },
@@ -1053,11 +1120,11 @@
         "nand_s2.y (x=43.97..44.39, y=0.0..0.42) is entirely CONTAINED in",
         "that blob's own outline, and klt extract already names the blob",
         "net 'mnab_y|mpa_y|mpb_y|nand_s2_y|y' -- it is this very net's own",
-        "output via stack, not a foreign obstruction. So unlike rst_n (whose",
-        "nand2 'a' pin sits inside the same blob but on a DIFFERENT net and",
-        "therefore needed an li1 stub escape), qb needs no stub at all: the",
-        "landing pad merges with metal it is already electrically shorted",
-        "to.",
+        "output via stack, not a foreign obstruction. So unlike q (whose",
+        "nand2 'a' pin sits inside the same blob but on a DIFFERENT net --",
+        "q, not y -- and therefore needs an li1 stub escape: see q_stub",
+        "below, added by issue #84), qb needs no stub at all: the landing",
+        "pad merges with metal it is already electrically shorted to.",
         "",
         "What the blob does constrain is WHERE the vertical climb runs.",
         "Above y=1.085 the blob narrows to a 0.17um-wide bar at",
@@ -1074,10 +1141,14 @@
         "The long haul then runs east on met1 at y=2.0 -- the only free",
         "met1 lane between clkb_bus's own east segment (top edge y=1.24,",
         "0.675um below) and clk_bus's own via-drop pad at tg_fbs_ctrl",
-        "(x=48.82..49.24, y=2.29..2.71, 0.205um above); rst_n's own met1",
-        "via pad at nand_s2_a (x=44.69..45.11, y=2.5..2.92) clears by",
-        "0.415um and q's own met1 (east edge x=43.285) by 0.56um. Nothing",
-        "else is drawn on met1 east of x=44.435 below the vdd bus.",
+        "(x=48.82..49.24, y=2.29..2.71, 0.205um above). At the time this",
+        "stage was derived, rst_n's own met1 via pad at nand_s2_a",
+        "(x=44.69..45.11, y=2.5..2.92) cleared by 0.415um and q's own met1",
+        "(east edge x=43.285) by 0.56um; issue #84 later moved q onto",
+        "nand_s2_a (see q_stub/q_met1/q_bus below) -- re-verified DRC-clean",
+        "against this stage's own unchanged geometry as part of that fix,",
+        "not re-derived here. Nothing else is drawn on met1 east of",
+        "x=44.435 below the vdd bus.",
         "",
         "The destination port is declared at (50.2, 0.21), NOT at the",
         "(50.385, 1.2) the README's own sampler_tg port table uses. Same",
@@ -1186,7 +1257,7 @@
     },
     {
       "_comment": [
-        "s fan-out, stage 2 of 2 (issue #22): the met2 long haul, 19.29um",
+        "s fan-out, stage 2 of 2 (issue #22): the met2 long haul, 23.64um",
         "end to end across two thirds of the cell, steered leg-by-leg with",
         "connectivity[].legs[] (klayout-tools #1529 -- waypoints_um is",
         "rejected outright on a >2-pin net, the same reason clk_bus needed",
@@ -1211,7 +1282,38 @@
         "pad). rst_n_bus's own met2 backbone (y=2.5..2.92) is the nearest",
         "neighbour above, 0.715um clear of this lane.",
         "",
-        "The lane runs at y=1.7 -- the MIDDLE pin's own y -- with a 0.5um",
+        "CORRECTION (issue #84): the two paragraphs above describe the",
+        "pre-#84 cell and are kept for the met1 finding, which still holds",
+        "-- but two of the met1 obstacles they name have MOVED and the met2",
+        "band they call 'all but empty' no longer is. q's met1 L-lane is",
+        "gone (q's long haul is on met2 now, since its corrected",
+        "destination nand_s2.a sits east of sampler_nand2's own met1 blob),",
+        "and in its place met2 now carries q's east climb",
+        "(x=44.815..44.985, y=1.285..2.5) and its landing pad",
+        "(x=44.69..45.11, y=2.5..2.92), while rst_n's corrected via pad at",
+        "nand_s2.en occupies x=42.865..43.285 from y=1.765 up and its",
+        "backbone dropped from y=2.5..2.92 to y=2.115..2.285. s's span",
+        "(36.545..48.185) strictly contains q's (37.9..44.9) with q below",
+        "this lane at one end and above it at the other, so the two MUST",
+        "cross and sky130's curated deck exposes no fourth plane to cross",
+        "on (_PDK_ROLE_LAYERS tops out at 'metal3'/met2). gen-compose",
+        "confirms it directly: the unchanged straight lane comes back as",
+        "'nets left unrouted by gen-compose: [s]'. Leg 2 is therefore",
+        "re-steered around q -- y=1.7 east to x=40.0, a 0.175um dip to",
+        "y=1.525 (the exact middle of the 0.48um window between q's own",
+        "east lane at y<=1.285 and rst_n's en pad at y>=1.765) out to",
+        "x=44.0, a climb at the one column clear of both rst_n's backbone",
+        "(east edge 43.285) and q's climb (west edge 44.815), then east at",
+        "y=3.2 -- the first lane clear of q's landing pad, above which met2",
+        "is empty across x=20..55 -- and back down at x=48.185. Tightest",
+        "new-to-existing met2 gap 0.1555um against sky130's own 0.14um",
+        "met2.space.1; DRC clean, 0 violations, bbox unchanged, net_count",
+        "still 18. leg 1, the s_met1 stage and all three via-drop pads are",
+        "unchanged. See layout/sampler_dff/README.md's 'Re-derivation of",
+        "the s long haul (issue #84)'.",
+        "",
+        "The lane still meets inv_q.a at y=1.7 -- the MIDDLE pin's own y --",
+        "and, before #84, ran straight across at that height with a 0.5um",
         "jog up at the west pin and down at the east one, so it passes",
         "straight through inv_q.a's own via-drop pad instead of stopping",
         "short of it. The round y=2.0 was tried first and was NOT",
@@ -1229,23 +1331,26 @@
         "",
         "Clearances measured on the composed GDS (minimum edge-to-edge,",
         "this increment's own geometry to the nearest foreign shape):",
-        "met2 0.375um to clk_bus's own tg_s_ctrlb pad, 0.55um to its",
-        "tg_fbs_ctrl vertical, 0.715um to rst_n_bus's backbone; met1",
-        "0.425um to clk_bus's own met1 pads at both columns, 0.505um to",
-        "clkb_bus's east segment below tg_fbs.b and 0.505um to qb's own",
+        "met1 0.425um to clk_bus's own met1 pads at both columns, 0.505um",
+        "to clkb_bus's east segment below tg_fbs.b and 0.505um to qb's own",
         "east met1 run above it; li1 0.425um to clk_bus's own li1 pads and",
-        "1.06um to inv_q's own internal li1 at x=37.815. At inv_q.a the pad",
-        "lands between that pin's own two existing li1 gate contacts",
-        "(y=0.82..1.24 and y=2.29..2.71, both x=36.335..36.755), leaving",
-        "0.25um and 0.38um same-net gaps -- both over sky130's 0.17um",
-        "li1.space.1. The tightest same-net gap the lane itself leaves is",
-        "0.205um, between the west landing pad's top edge (y=1.41) and the",
-        "lane's own bottom edge (y=1.615).",
+        "1.06um to inv_q's own internal li1 at x=37.815 (all three",
+        "unchanged by #84 -- this stage adds no met1 or li1 geometry). At",
+        "inv_q.a the pad lands between that pin's own two existing li1 gate",
+        "contacts (y=0.82..1.24 and y=2.29..2.71, both x=36.335..36.755),",
+        "leaving 0.25um and 0.38um same-net gaps -- both over sky130's",
+        "0.17um li1.space.1. On met2 the pre-#84 figures (0.375um to",
+        "clk_bus's tg_s_ctrlb pad, 0.55um to its tg_fbs_ctrl vertical,",
+        "0.715um to rst_n_bus's backbone) are superseded by the re-steered",
+        "route's own measurement: 0.1555um minimum, in the dip under",
+        "rst_n's en pad. The tightest same-net gap the lane itself leaves",
+        "is 0.205um, between the west landing pad's top edge (y=1.41) and",
+        "the lane's own bottom edge (y=1.615).",
         "",
-        "Still open (issue #22 / #27): m, mb, the sampler_nand2 input swap",
-        "(#84), and promoting the whole-cell external pins",
-        "(d/clk/rst_n/q/vdd/vss) -- see layout/sampler_dff/README.md's",
-        "'What remains' section."
+        "Still open (issue #22 / #27): m and mb. The sampler_nand2 input",
+        "swap (#84) is fixed as of this cell.json, and the whole-cell",
+        "external pins (d/clk/rst_n/q/vdd/vss) are all promoted -- see",
+        "layout/sampler_dff/README.md's 'What remains' section."
       ],
       "blocks": [
         {
@@ -1273,7 +1378,8 @@
             "waypoints_um": [[28.895, 1.7]]},
            {"from_pin": {"block": "core", "port": "inv_q_a_m1"},
             "to_pin": {"block": "core", "port": "tg_fbs_b_m1"},
-            "waypoints_um": [[48.185, 1.7]]}
+            "waypoints_um": [[40.0, 1.7], [40.0, 1.525], [44.0, 1.525],
+                             [44.0, 3.2], [48.185, 3.2]]}
          ]}
       ],
       "pins": [

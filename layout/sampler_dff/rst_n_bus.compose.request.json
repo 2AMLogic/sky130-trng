@@ -8,26 +8,26 @@
       "cell": {
         "ports": [
           {
-            "name": "nand_m_a_m1",
-            "x_um": 14.0,
-            "y_um": 2.71,
+            "name": "nand_m_en_m1",
+            "x_um": 12.215,
+            "y_um": 1.975,
             "layer": {
               "layer": 68,
               "datatype": 20
             },
-            "width_um": 0.17,
-            "direction_deg": 0
+            "width_um": 0.42,
+            "direction_deg": 90
           },
           {
-            "name": "nand_s2_a_m1",
-            "x_um": 44.9,
-            "y_um": 2.71,
+            "name": "nand_s2_en_m1",
+            "x_um": 43.075,
+            "y_um": 1.975,
             "layer": {
               "layer": 68,
               "datatype": 20
             },
-            "width_um": 0.17,
-            "direction_deg": 0
+            "width_um": 0.42,
+            "direction_deg": 90
           }
         ],
         "cell_name": "rst_n_met1",
@@ -57,21 +57,29 @@
       "pins": [
         {
           "block": "core",
-          "port": "nand_m_a_m1"
+          "port": "nand_m_en_m1"
         },
         {
           "block": "core",
-          "port": "nand_s2_a_m1"
+          "port": "nand_s2_en_m1"
         }
       ],
       "waypoints_um": [
         [
-          14.0,
-          2.71
+          12.215,
+          1.975
         ],
         [
-          44.9,
-          2.71
+          12.215,
+          2.2
+        ],
+        [
+          43.075,
+          2.2
+        ],
+        [
+          43.075,
+          1.975
         ]
       ]
     }

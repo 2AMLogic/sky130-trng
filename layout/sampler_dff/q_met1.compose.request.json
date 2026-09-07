@@ -8,52 +8,52 @@
       "cell": {
         "ports": [
           {
-            "name": "nand_m_en",
-            "x_um": 12.215,
-            "y_um": 1.975,
+            "name": "inv_q_y",
+            "x_um": 37.9,
+            "y_um": 1.2,
             "layer": {
               "layer": 67,
               "datatype": 20
             },
-            "width_um": 0.42,
-            "direction_deg": 90
+            "width_um": 0.17,
+            "direction_deg": 0
           },
           {
-            "name": "nand_s2_en",
-            "x_um": 43.075,
-            "y_um": 1.975,
+            "name": "nand_s2_a_ext",
+            "x_um": 44.9,
+            "y_um": 2.71,
             "layer": {
               "layer": 67,
               "datatype": 20
             },
-            "width_um": 0.42,
-            "direction_deg": 90
+            "width_um": 0.17,
+            "direction_deg": 0
           },
           {
-            "name": "nand_m_en_m1",
-            "x_um": 12.215,
-            "y_um": 1.975,
+            "name": "inv_q_y_m1",
+            "x_um": 37.9,
+            "y_um": 1.2,
             "layer": {
               "layer": 68,
               "datatype": 20
             },
-            "width_um": 0.42,
-            "direction_deg": 90
+            "width_um": 0.17,
+            "direction_deg": 0
           },
           {
-            "name": "nand_s2_en_m1",
-            "x_um": 43.075,
-            "y_um": 1.975,
+            "name": "nand_s2_a_ext_m1",
+            "x_um": 44.9,
+            "y_um": 2.71,
             "layer": {
               "layer": 68,
               "datatype": 20
             },
-            "width_um": 0.42,
-            "direction_deg": 90
+            "width_um": 0.17,
+            "direction_deg": 0
           }
         ],
-        "cell_name": "route_supplies",
-        "gds_path": "route_supplies.gds"
+        "cell_name": "q_stub",
+        "gds_path": "q_stub.gds"
       }
     }
   ],
@@ -75,35 +75,35 @@
   },
   "connectivity": [
     {
-      "net": "nand_m_en_via",
+      "net": "inv_q_y_via",
       "pins": [
         {
           "block": "core",
-          "port": "nand_m_en"
+          "port": "inv_q_y"
         },
         {
           "block": "core",
-          "port": "nand_m_en_m1"
+          "port": "inv_q_y_m1"
         }
       ]
     },
     {
-      "net": "nand_s2_en_via",
+      "net": "nand_s2_a_via",
       "pins": [
         {
           "block": "core",
-          "port": "nand_s2_en"
+          "port": "nand_s2_a_ext"
         },
         {
           "block": "core",
-          "port": "nand_s2_en_m1"
+          "port": "nand_s2_a_ext_m1"
         }
       ]
     }
   ],
   "pins": [],
   "options": {
-    "cell_name": "rst_n_met1",
-    "output": "rst_n_met1.gds"
+    "cell_name": "q_met1",
+    "output": "q_met1.gds"
   }
 }

@@ -1,6 +1,36 @@
 # layout/sampler_dff
 
-**`sampler_dff` assembly, continued: the cell's `d` input pin is promoted
+**`sampler_dff` assembly, continued (issue #84, this increment): the
+`sampler_nand2` input swap the `qb` increment below found is fixed.**
+`layout/sampler_dff/cell.json` wired `rst_n` to each `sampler_nand2`
+instance's `a` pin and the data input to its `en` pin;
+`design/sampler_core.spice` requires the opposite (`a` gates the
+output-adjacent device, `en` gates the `vss`-adjacent device — see
+`layout/sampler_nand2/sampler_nand2.source.spice`'s own `XMna y a nm vss` /
+`XMnb nm en vss vss`). The fix: `rst_n_met1`/`rst_n_bus` (three stages,
+`rst_n_stub`/`rst_n_met1`/`rst_n_bus`, before this increment) now target
+both `en` pins instead of both `a` pins — and get *simpler* doing it (two
+stages, not three: `en` sits outside `sampler_nand2`'s own internal `met1`
+via/pad blob, so the `li1` stub escape `a` needed is not needed here). `q`
+moves the other way, from `nand_s2.en` onto `nand_s2.a` — and inherits the
+stub escape `rst_n` no longer needs, plus (new, since `q`'s own approach
+direction differs from `rst_n`'s) a `met1`→`met2` plane change for its own
+long haul, since the corrected destination sits directly on the path a
+plain `met1` L-route would otherwise take. That plane change displaces one
+already-merged route: the `s` increment below runs its long haul on the
+same `met2` plane, so **`s`'s own east leg is re-derived here too** (same
+three pins, same `s_met1` stage, same `y = 1.7` lane height at both ends —
+only the middle of leg 2 moves; see "Re-derivation of the `s` long haul"
+below). **`klt drc` stays clean (0 violations), cell bbox unchanged
+(`-2.19 .. 50.47 x -3.585 .. 7.085` µm, same as every increment since
+placement); `klt extract`'s device list for both the `nand_m_y` node and
+the `qb` node now shows the output-adjacent nfet gated by the data net**
+(`a`/`nand_m_a`, and `q` respectively), **matching
+`design/sampler_core.spice`'s `XMimna`/`XMis2na` exactly** — see
+"Correction (issue #84): the `sampler_nand2` input swap is fixed" below for
+the full derivation and evidence.
+
+**A previous increment (issue #22): the cell's `d` input pin is promoted
 to a real, labelled top-level port for the first time (issue #22).** Of
 the whole-cell external pins `design/sampler_core.spice`'s
 `.subckt sampler_dff d clk rst_n q vdd vss` declares, five (`clk`, `rst_n`,
@@ -24,6 +54,12 @@ draws a label, not a wire, and the two still-unrouted data-path nets
 ([#84](https://github.com/2AMLogic/sky130-trng/issues/84)) are what block
 a clean sign-off, not a missing `d` label. See "Result: `d` pin promotion"
 below.
+
+> **Superseded in part by the issue #84 increment above.** The `d` label
+> itself is untouched — `klt extract` still reads `a|d|tg_d_a`. Only the
+> `klt lvs` verdict quoted here is historical: it reads **15/22 devices,
+> 7/14 nets, 13 mismatches** as of the #84 fix, and the pin swap is no
+> longer open.
 
 An LVS-side idea explored and **abandoned** for this increment:
 `klt extract --pins <comma-list>` (`declared_pins`, issue #514) demotes
@@ -77,11 +113,20 @@ gate/terminal role: `XMtsp`/`XMtsn`/`XMisp`/`XMisn`/`XMfsp`/`XMfsn`, with
 no discrepancy of the kind `qb`'s own check turned up. See "Result: `s`
 fan-out" below.
 
-**A previous increment (issue #22): the third of the six data-path nets,
-`qb`, is routed — DRC-clean, and its own device-list check found a
-pre-existing, LVS-blocking pin swap on both `sampler_nand2` instances
-(the swap is filed as
-[#84](https://github.com/2AMLogic/sky130-trng/issues/84)).** `qb` is
+> **Superseded in part by the issue #84 increment above.** The premise, the
+> three pins, the `s_met1` stage, the `y = 1.7` lane height at both ends and
+> the `y = 2.0` same-net-notch finding all still stand. What is historical is
+> "**one straight** `met2` lane": the #84 fix puts `q`'s own long haul on
+> `met2` directly across this lane's path, so leg 2 is re-steered. See
+> "Re-derivation of the `s` long haul (issue #84)" below for the full
+> derivation, clearances and the re-measured route length.
+
+**A previous increment (issue #22): `sampler_dff` assembly, continued: the
+third of the six data-path nets, `qb`, is routed — DRC-clean, and its own
+device-list check found a pre-existing, LVS-blocking pin swap on both
+`sampler_nand2` instances (issue #22; the swap is filed as
+[#84](https://github.com/2AMLogic/sky130-trng/issues/84), fixed above).**
+`qb` is
 `design/sampler_core.spice`'s `NAND_S2` output node
 (`XMis2pa`/`XMis2pb`'s shared PMOS drain and `XMis2na`'s NMOS drain)
 driving `TG_FBS`'s own `a` terminal (`XMfsp`/`XMfsn`'s first terminal —
@@ -581,6 +626,184 @@ Nothing about `qb` itself is affected: `nand_s2.y` ↔ `tg_fbs.a` is the same
 connection under either pin assignment, which is why this increment lands as
 routed rather than being held.
 
+> **Fixed by the issue #84 increment above.** See "Correction (issue #84):
+> the `sampler_nand2` input swap is fixed" immediately below for the
+> re-derivation and evidence. This section is left as-is, append-only, as
+> the original finding record.
+
+## Correction (issue #84): the `sampler_nand2` input swap is fixed
+
+**Scope of the fix**, per the issue: `nand_m.a`/`nand_s2.a` must carry the
+data nets (`m`/`q`); `nand_m.en`/`nand_s2.en` must carry `rst_n`. That
+re-derives the whole `rst_n_stub`/`rst_n_met1`/`rst_n_bus` recipe (the
+`en` pin needs no stub escape, so it collapses to two stages) and
+`q`'s own route (`nand_s2.en` → `nand_s2.a`, which *now* needs the stub
+escape `rst_n` no longer does). No change to `design/`, to
+`layout/sampler_nand2/`, or to the already-verified `rst_n` bus geometry
+as such — only to which pin each end lands on, exactly as scoped. `m`/`mb`
+(not yet routed) are unaffected in substance: they were always going to
+land on `nand_m.a`/`nand_m.en` per the corrected mapping, since no prior
+increment had wired them yet.
+
+**`rst_n`: three stages become two.** The pre-#84 `rst_n_stub` stage
+existed because `sampler_nand2`'s `a` pin (local `(4.98, 2.71)`) sits
+*inside* that leaf's own internal `met1` via/pad blob (local
+`x = 4.455..5.045, y = 0.125..3.74`) — a direct via-drop there always
+shorts to the blob, so `rst_n_stub` walked each `a` pin east on `li1` to
+an `_ext` point clear of it before `rst_n_met1` vias up. `en` (local
+`(3.685, 1.975)`) sits *west* of the blob's own `x` range entirely — the
+exact point the pre-#84 `q_bus` stage already via'd directly with no stub,
+proven DRC-clean at `nand_s2` specifically (global `(43.075, 1.975)`, the
+same coordinate this fix's own `rst_n_met1` reuses). So `rst_n_met1` (now
+the first stage, built directly on `route_supplies`) vias both `en` pins
+straight up to `met1`, zero lateral distance; `rst_n_bus` (still the final
+stage — downstream stages that reference it by name, `clk_met1` onward,
+did not need to change) buses the two `met1` points to `met3`/`"metal3"`
+role and back down, and runs the long haul there, jogged to
+`y = 2.2` at both ends (see "Why `rst_n`'s new bus jogs" below) rather
+than a flat `y = 1.975` line.
+
+**`q`: one stage becomes four.** The pre-#84 `q_bus` stage's own
+single-stage, stay-on-`met1` recipe worked because its destination
+(`nand_s2.en`) sat clear of `sampler_nand2`'s own internal `met1` blob.
+The corrected destination, `nand_s2.a`, does not: it is the same pin
+`rst_n`'s own pre-#84 stub had to escape, so `q` now inherits that
+recipe almost verbatim — `q_stub` (new) re-derives the identical `li1`
+stub `rst_n`'s own pre-#84 stage used for `nand_s2` specifically (same
+re-derived local pin `(4.90, 2.71)`, not the `place` stage's own
+`(4.98, 2.75)`; same round global tip `x = 44.9`), since it is the
+identical physical conductor and the identical already-DRC-clean
+geometry. `q_met1` (new) vias `inv_q_y` and the stub tip up to `met1`,
+zero lateral distance each. Unlike `rst_n`, `q` cannot stay on `met1` for
+its own long haul: `klayout.db` against the composed `q_met1.gds` shows
+`sampler_nand2`'s own internal `met1` blob is not a simple rectangle — a
+`0.17 µm`-wide bar at `x = 43.845..44.015` runs continuously from
+`y = 0.915` up to `y = 3.53`, directly across the straight-line path from
+`inv_q_y` (`y = 1.2`) to `nand_s2_a_ext` (`y = 2.71`) — confirmed directly
+by a first attempt that kept the pre-#84 recipe's own `met1`-only routing:
+`gen-compose` refused it with the same `self-net's drawn metal overlaps
+... block core's own drawn pad metal` diagnostic `rst_n`'s own pre-#84
+derivation hit, this time a `0.0289 µm²` overlap at
+`x = 43.845..44.015, y = 1.115..1.285`. `q_met2` (new) vias both `met1`
+points up to `met2`, zero lateral distance each, and `q_bus` (still the
+final stage name — `qb`, which references it by name, did not need to
+change) runs the long haul entirely on `met2`: checked directly against
+`klayout.db` (met2 layer, post-`q_met1`), the L-shaped path (east at
+`y = 1.2`, north at `x = 44.9`) has zero overlap with every other met2
+shape already drawn — `clk`'s own basement/vertical network,
+`clkb_bridge1`/`clkb_bridge2`, `mc_bus`'s own U-lane, and `rst_n`'s own
+new bus — even after growing every obstacle by `0.14 µm`
+(sky130's own `met2.space.1`), i.e. comfortably clear, not a near miss.
+(That check is "every met2 shape drawn *by q's own compose time*". The `s`
+increment's own met2 long haul composes **after** `q` in this cell's stage
+order, and it is the one route this plane change does displace — see
+"Re-derivation of the `s` long haul (issue #84)" below.)
+
+**Why `rst_n`'s new bus jogs.** `rst_n_bus` composes *before* `mc_bus` in
+this cell's own stage order (`rst_n` → `clk` → `clkb` → `mc` → `q` →
+`qb`), so a flat `rst_n` bus at `y = 1.975` (the `en` pin's own height)
+composed without complaint — `mc_bus`'s own U-lane (`x = 21.19..25.955`,
+`met2`, top edge `y = 1.8`) did not exist yet at that point in the chain.
+The *whole-cell* `klt drc` pass (which runs after every stage, seeing
+everything) caught what the per-stage check could not: a `met2.space.1`
+violation where the two nets' own met2 passed within `0.13 µm` of each
+other, `0.01 µm` short of sky130's own `0.14 µm` minimum. Jogging
+`rst_n_bus` up to `y = 2.2` (from its own `en` pins at `y = 1.975`, a
+short vertical leg at each end before the long horizontal run) reopens
+that clearance to a comfortable `0.315 µm` — re-verified: **`klt drc`
+clean, 0 violations** on the fully composed cell.
+
+**Verification: the device-list fingerprint is gone.** `klt extract`
+against the corrected `sampler_dff.gds`:
+
+| node | device | class | width | gate (before #84) | gate (after #84) | `design/sampler_core.spice` |
+|---|---|---|---|---|---|---|
+| `nand_m_y`, series NMOS adjacent to `y` | `$9` | nfet | `W=0.84` | `a`\|`nand_m_a`\|...\|`rst_n` (wrong — `rst_n` on the output-adjacent device) | `a`\|`nand_m_a` (unwired pending `m`, but the correct *pin*) | `XMimna`: gate = `m` |
+| `nand_m_y`, series NMOS adjacent to `vss` | `$8` | nfet | `W=0.84` | `en`\|`nand_m_en` (isolated — `en` was unwired) | `en`\|`nand_m_en`\|`nand_s2_en`\|...\|`rst_n` (correct) | `XMimnb`: gate = `rst_n` |
+| `qb`, series NMOS adjacent to `y` | `$11` | nfet | `W=0.84` | `a`\|`nand_m_a`\|...\|`rst_n` (wrong — the issue's own reported finding) | `a`\|`inv_q_y`\|...\|`q`\|`y` (correct — includes `q`) | `XMis2na`: gate = `q` |
+| `qb`-side PMOS, data-gated leg | `$22` | pfet | `W=0.84` | `a`\|`nand_m_a`\|...\|`rst_n` (wrong) | `a`\|`inv_q_y`\|...\|`q`\|`y` (correct — includes `q`) | `XMis2pa`: gate = `q` |
+| `qb`-side PMOS, `rst_n`-gated leg | `$21` | pfet | `W=0.84` | `en`\|`inv_q_y`\|`nand_s2_en`\|`q`\|`y` (wrong — `q` on the `rst_n`-gated device) | `en`\|`nand_m_en`\|`nand_s2_en`\|...\|`rst_n` (correct) | `XMis2pb`: gate = `rst_n` |
+
+(Device IDs (`$8`/`$9`/`$11`/`$21`/`$22`) are `klt extract`'s own
+per-run identifiers, not stable across regenerations; re-derive by device
+class/width/net rather than by ID if this table is checked against a
+future rebuild's `extract.json`. Pre-#84 values are read directly from
+`git show <pre-#84 commit>:layout/sampler_dff/extract.json`, not
+reconstructed from memory.)
+
+`klt extract`'s own `net_count` is unchanged at **18** and its
+`device_count` at **22** (this fix moves which pin two already-existing
+nets land on; it does not add or remove a merge). `klt lvs` against
+`design/sampler_core.spice`'s own `.subckt sampler_dff`: **mismatch, as
+still expected** — **15/22 devices, 7/14 nets** matched, up from 12/22,
+5/14 before this fix, since `rst_n`'s own devices now also correctly
+match — critically, the mismatch no longer contains the `topology: nets
+were paired despite a name/identity conflict` fingerprint the issue's own
+minimal symmetry-broken-pair experiment reproduced. The remaining **13**
+mismatches (down from 16) fall in exactly the categories every prior
+increment's own `lvs.json` already showed — `device.unmatched` ×7 (the
+still-unwired `m`/`mb` devices), `net.split` ×5 and `net.merged` ×1 (their
+still-isolated per-instance net labels; identical counts to `main`'s own
+pre-fix `lvs.json`) — not a new regression.
+
+Cell extent unchanged (`-2.19 .. 50.47 x -3.585 .. 7.085` µm). Generated
+on `klt 0.4.0+ge2edd1bb15a5` (a local build of the `klayout-tools`
+checkout with `legs[]` support, `git+https://github.com/2AMLogic/klayout-tools@e2edd1bb15a5`
+— the same install-staleness workaround every increment since `clkb` has
+needed; the ambient `uv`-managed `klt` on this host still refuses
+`clkb_seg2`'s `legs[]` with `nets left unrouted by gen-compose:
+['clkb_mid']`. See "Correcting the curation note" in `layout/README.md`) /
+KLayout 0.30.12 against open_pdks `c6d73a35f524070e85faff4a6a9eef49553ebc2b`
+— matches `layout/pdk.json`'s own pin.
+
+## Re-derivation of the `s` long haul (issue #84)
+
+The `s` increment ran **one straight `met2` lane at `y = 1.7`** across two
+thirds of the cell (`x = 28.895 .. 48.185`), and derived that height when
+`met2` between `x = 28.6` and `x = 48.4` in the band `y = 0.9 .. 2.4` held
+nothing but `clk_bus`'s own via-drop pad at `tg_s_ctrlb`. The #84 fix puts
+two new things directly in that band:
+
+| new `met2` obstacle | extent | why it lands there |
+|---|---|---|
+| `q`'s east climb (`q_bus`) | `x = 44.815 .. 44.985`, `y = 1.285 .. 2.5` | the corrected destination `nand_s2.a` is *east* of `sampler_nand2`'s internal `met1` blob, so `q`'s long haul has to climb after crossing it |
+| `q`'s landing pad at `nand_s2_a_ext` | `x = 44.69 .. 45.11`, `y = 2.5 .. 2.92` | the `met1`→`met2` via drop at the stub tip |
+| `rst_n`'s via pad at `nand_s2.en` | `x = 42.865 .. 43.285`, `y = 1.765 .. 2.115` | `rst_n` now lands on `en`, whose own `y` is `1.975` |
+
+`s` runs from `inv_q.a` (`36.545, 1.7`) to `tg_fbs.b` (`48.185, 1.2`), so
+its span strictly contains `q`'s (`inv_q.y` at `37.9` to `44.9`) — with
+`q` below the lane at its west end and above it at its east end, the two
+**must** cross, and sky130's curated deck exposes no fourth routing plane
+(`_PDK_ROLE_LAYERS` tops out at `"metal3"`/met2), so neither net can hop
+over the other. `gen-compose` says so directly: recomposing with the
+unchanged lane returns `nets left unrouted by gen-compose: ['s']`.
+
+`s`'s leg 2 is therefore re-steered, leg 1 and the `s_met1` stage
+untouched. Waypoints, and the window each one is the middle of:
+
+| segment | `met2` extent | bounded by |
+|---|---|---|
+| `(36.545, 1.7) → (40.0, 1.7)` | `y = 1.615 .. 1.785` | `q`'s `inv_q_y` pad below (top `y = 1.41`, `0.205 µm` clear); `rst_n`'s backbone above (bottom `y = 2.115`, `0.33 µm`) |
+| dip `(40.0, 1.7) → (40.0, 1.525)` | `x = 39.915 .. 40.085` | placed between `q`'s `inv_q_y` pad (east edge `38.11`) and `rst_n`'s `en` pad (west edge `42.865`), where both windows overlap |
+| `(40.0, 1.525) → (44.0, 1.525)` | `y = 1.44 .. 1.61` | the exact middle of the `0.48 µm` window between `q`'s own east lane (top `y = 1.285`) and `rst_n`'s `en` pad (bottom `y = 1.765`) — `0.155 µm` each side |
+| climb `(44.0, 1.525) → (44.0, 3.2)` | `x = 43.915 .. 44.085` | the only column that clears both `rst_n`'s backbone (east edge `x = 43.285`, `0.63 µm`) and `q`'s climb (west edge `x = 44.815`, `0.73 µm`); everywhere west of `x = 43.285` the `rst_n` backbone blocks the ascent outright |
+| `(44.0, 3.2) → (48.185, 3.2)` | `y = 3.115 .. 3.285` | the first lane clear of `q`'s landing pad (top `y = 2.92`, `0.195 µm`); `met2` above `y = 2.92` is otherwise **empty** across `x = 20 .. 55` |
+| descent `(48.185, 3.2) → (48.185, 1.2)` | `x = 48.1 .. 48.27` | `clk_bus`'s own `tg_fbs_ctrl` stack to the east (`x = 48.82`, `0.55 µm`) |
+
+Measured on the composed GDS (`sampler_dff.gds` minus `s_met1.gds` on
+layer 69/20, binary-searched against everything already drawn there): the
+**tightest new-to-existing `met2` gap is `0.1555 µm`**, against sky130's
+`0.14 µm` `met2.space.1`. Route length grows `20.29 → 23.64 µm`; the
+`s_met1` stage, both `y = 1.7` lane ends and the three via-drop pads are
+byte-identical to the `s` increment's own. **`klt drc` clean, 0
+violations; cell bbox unchanged**; `klt extract` still merges the same
+three pins into one six-device net and `net_count` stays at **18** — this
+is the same conductor on a different path, not a different net.
+
+The `y = 2.0` same-net-notch finding the `s` increment recorded is
+unaffected and still the reason the lane meets `inv_q.a` at `y = 1.7`
+rather than a rounder number: the dip starts `3.455 µm` east of that pad.
+
 ## Result: `q` fan-out (previous increment)
 
 | Stage | Verdict | Evidence |
@@ -980,15 +1203,12 @@ instance's own internal `metal2` wiring occupies (the tallest leaf,
   jogged climb that keeps 0.14 µm off the blob's own narrow upper bar.
   Note also that `m`/`mb`'s own `NAND_M` pin assignment must follow the
   corrected mapping below, not the committed one.
-- **The `sampler_nand2` input swap**
-  ([#84](https://github.com/2AMLogic/sky130-trng/issues/84)): `rst_n` is
-  wired to both instances' `a` pins and the data inputs to their `en` pins;
-  `design/sampler_core.spice` requires the opposite. Verified LVS-blocking —
-  see "The `sampler_nand2` input swap the `qb` increment found" above
-  (unchanged by the `s` and `d`-pin-promotion increments, neither of which
-  touches either `sampler_nand2` instance). This gates the whole-cell
-  `klt lvs` sign-off below and should land before, or together with,
-  `m`/`mb`.
+- ~~**The `sampler_nand2` input swap**
+  ([#84](https://github.com/2AMLogic/sky130-trng/issues/84))~~ — **fixed**:
+  `rst_n` now wires to both instances' `en` pins and the data nets to their
+  `a` pins, matching `design/sampler_core.spice`. See "Correction (issue
+  #84): the `sampler_nand2` input swap is fixed" above. `m`/`mb`'s own
+  `NAND_M` pin assignment must follow that corrected mapping.
 - **Whole-cell external pin promotion is done** (`d`, `clk`, `rst_n`, `q`,
   `vdd`, `vss` — the `d` increment above closed the one gap; the other
   five each already carried a correctly-spelled label from their own
@@ -998,7 +1218,8 @@ instance's own internal `metal2` wiring occupies (the tallest leaf,
   comparer's topology match is insensitive to promoted-pin status for this
   cell's flat, subckt-call comparison form. What still blocks a clean
   `klt lvs` sign-off against `design/sampler_core.spice`'s real `.subckt
-  sampler_dff` is `m`/`mb` and the `#84` pin swap above, not pin naming.
+  sampler_dff` is `m`/`mb` — the `#84` pin swap above is fixed, and closing
+  it moved the verdict from 12/22 devices, 5/14 nets to **15/22, 7/14**.
 - **`sampler_core`**'s own six-instance wiring, and the whole-chain
   (raw-tap-to-sampled-bit) post-layout PVT campaign, both still fully
   open behind the above.
