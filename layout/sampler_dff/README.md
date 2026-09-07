@@ -1454,3 +1454,76 @@ instance's own internal `metal2` wiring occupies (the tallest leaf,
 - **`sampler_core`**'s own six-instance wiring, and the whole-chain
   (raw-tap-to-sampled-bit) post-layout PVT campaign, both still fully
   open — now the sole remaining scope behind a DRC/LVS-clean `sampler_dff`.
+
+## Reproducing this cell's own `--check` (issue #106)
+
+**Root cause: tool-behaviour drift, not recipe drift — confirmed, not just
+hypothesized.** `python3 layout/bin/compose-cell.py
+layout/sampler_dff/cell.json --check` fails during *composition itself*
+(before `klt drc`/`extract`/`lvs` ever run) against both this environment's
+ambient `klt` (`uv tool`, `v0.4.0` tagged release, `git_commit
+34548dc1353cc6ff71e89ed2a91db7f6902b4b27`) and `layout/pdk.json`'s own
+`klt_version_pin` (`0.3.0+gc6dbf66c53c6`, full commit
+`c6dbf66c53c6e9a73c4f5ae5e41a98e8fe414252`):
+
+```
+error: clkb_seg2: nets left unrouted by gen-compose: ['clkb_mid']
+```
+
+Both builds' own `gen_compose.py` predate `connectivity[].legs[]` support
+(klayout-tools #1529/#1536 — confirmed directly: `git show
+<commit>:src/klayout_tools/gen_compose.py | grep _parse_legs` returns
+nothing for either), and `clkb_seg2`'s own `connectivity[]` entry for
+`clkb_mid` is a 4-pin bundle net steered with three hand-waypointed
+`legs[]` (see its own `_comment` above). This is the *fixed* failure mode
+for that gap, not a new one: an older build silently dropping an
+unrecognized `legs` key and drawing a *different*, unsteered route while
+still reporting `routed: true` was
+[`2AMLogic/klayout-tools#1548`](https://github.com/2AMLogic/klayout-tools/issues/1548),
+now **CLOSED** upstream — today's hard `nets left unrouted by gen-compose`
+error is that fix doing its job (a version-incompatible request is now
+rejected loudly instead of silently mis-routed). **No new klayout-tools
+issue is filed for this** — #1548 already covers the generic tool gap, and
+it is already fixed; what remains is purely an environment/pin staleness
+question on this repo's side.
+
+**The recipe itself is unchanged and correct.** Installing a `klt` build
+that *does* implement `legs[]` reproduces every stage of
+`layout/sampler_dff/cell.json`, including `clkb_seg2`'s own `clkb_mid`
+route, byte-for-byte against the committed evidence:
+
+```bash
+python3 -m venv /tmp/klt-venv-legs
+/tmp/klt-venv-legs/bin/pip install \
+  "git+https://github.com/2AMLogic/klayout-tools@245a841afd65c30ae9ad6f64c6e8b1da97362146"
+/tmp/klt-venv-legs/bin/klt --version    # klt 0.4.0+g245a841afd65
+PATH=/tmp/klt-venv-legs/bin:$PATH python3 layout/bin/compose-cell.py layout/sampler_dff/cell.json --check
+# -> layout/sampler_dff: rebuild matches committed evidence
+```
+
+Use the **full 40-character commit SHA**, not an abbreviated one: a
+12-char abbreviated ref (`e2edd1bb15a5`, an earlier commit also known to
+carry `legs[]` support) was observed to resolve to a *different* commit
+(`245a841afd65c30ae9ad6f64c6e8b1da97362146`, 44 commits later on
+`klayout-tools` `main`) through `pip install git+...@<short-sha>` in this
+environment — a non-determinism worth flagging for anyone else hitting
+this, though it happens to resolve to another `legs[]`-capable commit here
+and does not change the outcome. `245a841afd65c30ae9ad6f64c6e8b1da97362146`
+itself does implement `_parse_legs` (confirmed directly against that
+commit's own source) and is 44 commits past the `v0.4.0` tag
+(`34548dc`) on `klayout-tools` `main`; no tagged release implements
+`legs[]` yet, so a scratch venv pinned to a specific commit — the same
+workaround every increment since `clkb` has used — remains necessary.
+
+**The shared `layout/pdk.json` `klt_version_pin` is deliberately left
+unmoved.** Several other evidence directories
+(`layout/pex*/README.md`, `layout/ro_array_core*/README.md`) document
+reproducing their own `--check` against that exact pinned value
+(`0.3.0+gc6dbf66c53c6`); bumping the fleet-wide default to a `legs[]`
+-capable build is out of this issue's scope and would need re-verifying
+every one of those directories, not just this one. `layout/pdk.json`'s own
+comment block records this cell as a named exception instead. All 19
+`layout/*/cell.json` directories (every cell under `layout/`, this one
+included) were re-verified with `--check` against the `legs[]`-capable
+build above and reproduce cleanly — `sampler_dff` was the only regression
+against the older builds, and it is now understood, not papered over.
