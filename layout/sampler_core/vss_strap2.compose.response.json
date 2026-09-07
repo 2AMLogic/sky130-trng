@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "generator": "gen-compose",
-  "cell_name": "sampler_core",
-  "gds_path": "sampler_core.gds",
+  "cell_name": "vss_strap2",
+  "gds_path": "vss_strap2.gds",
   "pdk": {
     "name": "sky130A",
     "variant": "sky130A",
@@ -20,7 +20,7 @@
       "id": "core",
       "source": "cell",
       "generator": null,
-      "cell_name": "vss_strap3",
+      "cell_name": "vss_strap1",
       "offset_um": {
         "x": 0.0,
         "y": 0.0
@@ -36,34 +36,34 @@
   ],
   "nets": [
     {
-      "net": "vss_link",
+      "net": "vss_link_m1",
       "pins": [
         {
           "block": "core",
-          "port": "vss_post_vdd"
+          "port": "vss_dip"
         },
         {
           "block": "core",
-          "port": "vss_rail_tap"
+          "port": "vss_pre_vdd"
         }
       ],
       "routed": true,
-      "route_length_um": 9.85,
+      "route_length_um": 12.249999999999998,
       "status": "routed",
       "legs": [
         {
           "pins": [
             {
               "block": "core",
-              "port": "vss_post_vdd"
+              "port": "vss_dip"
             },
             {
               "block": "core",
-              "port": "vss_rail_tap"
+              "port": "vss_pre_vdd"
             }
           ],
           "routed": true,
-          "route_length_um": 9.85,
+          "route_length_um": 12.249999999999998,
           "reason": null
         }
       ]

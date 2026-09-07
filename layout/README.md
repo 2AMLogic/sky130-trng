@@ -4,7 +4,25 @@ Physical layout evidence for the sky130-trng entropy source, verified with
 `klayout-tools` (`klt`) against the sky130 open PDK. See `layout/pdk.json`
 for the PDK/tool pin.
 
-**Status (issue #22, this increment): `sampler_core`'s whole data path is
+**Status (issue #22, this increment): the `vss` half of `sampler_core`'s
+inter-block supply strap is real metal, not just the shared p-substrate.**
+[`layout/sampler_core/`](sampler_core/README.md) adds four stages
+(`vss_strap1`-`vss_strap4`) routing `ro_array_core`'s own `vss` (tapped on
+its east riser) down through the `sr2`→`sr3` inter-instance gap, across the
+shared `vdd` rail's own height on a met2 bridge, to a direct landing on the
+six-`sampler_dff` bank's own `vss` rail. `klt drc`: **clean, 0 violations**.
+`klt extract`: **264 devices, 153 nets**, both unchanged — `vss` was already
+one net via the substrate, so a real metal strap changes how the net is
+*realized*, not its topology. `klt lvs`: mismatch, unchanged at **138/264
+devices, 100/152 nets** (`vss` was already merged for LVS too; the
+remaining mismatch is `vdd`'s own two-nets-not-one plus top-level pin
+promotion, neither touched by this increment). A first attempt at the same
+gap the previous increment's own data nets used (`sb`→`sv`) hit two real,
+tool-caught obstacles — an array-internal met1 bar with no declared port,
+and too little room for a via between it and `ro3`'s own channel haul — and
+moved east instead; see this increment's own section for the measurements.
+
+**A previous increment (issue #22): `sampler_core`'s whole data path is
 routed — all five raw-tap nets reach their samplers, `sv`'s own `d` is tied
 to `vdd` as the schematic requires, and every `d` pin in the cell is driven.
 DRC-clean, 264 devices, 153 nets.** [`layout/sampler_core/`](sampler_core/README.md)

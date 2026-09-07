@@ -235,7 +235,27 @@ DR-0003 surfaces and does not resolve on its own authority.
   (status **Proposed**) it lives in [`digital/`](../digital/README.md), not
   here, and none of it is or will be a `design/*.spice` netlist. `raw_bit`
   and `raw_valid` are the interface between the two directories.
-- **Layout and DRC/LVS.** **Latest (issue #22): `sampler_core`'s whole data
+- **Layout and DRC/LVS.** **Latest (issue #22): the `vss` half of
+  `sampler_core`'s inter-block supply strap is real metal, not just the
+  shared p-substrate.** [`layout/sampler_core/`](../layout/sampler_core/README.md)
+  adds four stages routing `ro_array_core`'s own `vss` — tapped on its east
+  riser at an exact point taken from `layout/ro_array_core/cell.json`'s own
+  `vssbus` stage — down through the `sr2`→`sr3` inter-instance gap, across
+  the shared `vdd` rail's own height on a met2 bridge, to a direct landing
+  on the six-`sampler_dff` bank's own `vss` rail. `klt drc`: clean, 0
+  violations. `klt extract`: 264 devices, **153 nets**, both unchanged —
+  `vss` was already one net via the substrate, so real metal changes how it
+  is realized, not its topology. `klt lvs`: mismatch, unchanged at
+  **138/264 devices, 100/152 nets** (`vss` was already merged for LVS too;
+  the remaining mismatch is `vdd`'s own two-nets-not-one plus top-level pin
+  promotion). A first attempt at the same gap the previous increment's data
+  nets used hit two real, tool-caught obstacles — an unlabelled
+  array-internal met1 bar, and too little room for a via between it and
+  `ro3`'s own channel haul — and moved east instead. The `vdd` strap,
+  top-level pin promotion, whole-cell LVS sign-off and the assembled
+  post-layout PVT run remain open, tracked here and in #27.
+
+- **A previous increment (issue #22): `sampler_core`'s whole data
   path is routed — all five raw-tap nets (`ro1`-`ro4`, `xo`) reach their own
   samplers, `sv`'s `d` is tied to `vdd` as the schematic requires, and every
   `d` pin in the cell is driven. DRC-clean, 264 devices, 153 nets.**

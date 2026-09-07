@@ -8,30 +8,30 @@
       "cell": {
         "ports": [
           {
-            "name": "vss_post_vdd",
-            "x_um": 218.0,
-            "y_um": 6.35,
+            "name": "vss_tap",
+            "x_um": 214.5,
+            "y_um": 25.0,
             "layer": {
-              "layer": 68,
+              "layer": 69,
               "datatype": 20
             },
             "width_um": 0.17,
-            "direction_deg": 270
+            "direction_deg": 0
           },
           {
-            "name": "vss_rail_tap",
+            "name": "vss_dip",
             "x_um": 218.0,
-            "y_um": -3.5,
+            "y_um": 19.9,
             "layer": {
-              "layer": 68,
+              "layer": 69,
               "datatype": 20
             },
             "width_um": 0.17,
             "direction_deg": 270
           }
         ],
-        "cell_name": "vss_strap3",
-        "gds_path": "vss_strap3.gds"
+        "cell_name": "route_data2",
+        "gds_path": "route_data2.gds"
       }
     }
   ],
@@ -48,27 +48,41 @@
     }
   },
   "routing": {
-    "layer_role": "metal2",
+    "layer_role": "metal3",
     "width_um": 0.17
   },
   "connectivity": [
     {
-      "net": "vss_link",
+      "net": "vss_link_dip",
       "pins": [
         {
           "block": "core",
-          "port": "vss_post_vdd"
+          "port": "vss_tap"
         },
         {
           "block": "core",
-          "port": "vss_rail_tap"
+          "port": "vss_dip"
         }
+      ],
+      "waypoints_um": [
+        [
+          214.5,
+          25.0
+        ],
+        [
+          218.0,
+          25.0
+        ],
+        [
+          218.0,
+          19.9
+        ]
       ]
     }
   ],
   "pins": [],
   "options": {
-    "cell_name": "sampler_core",
-    "output": "sampler_core.gds"
+    "cell_name": "vss_strap1",
+    "output": "vss_strap1.gds"
   }
 }
