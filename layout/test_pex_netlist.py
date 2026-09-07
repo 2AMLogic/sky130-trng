@@ -518,6 +518,39 @@ def check_library_header_names_its_own_descriptor() -> None:
             )
 
 
+def check_descriptor_path_is_not_hardcoded_to_layout_pex() -> None:
+    """``main``'s descriptor string is derived from the real path, issue #22.
+
+    ``check_library_header_names_its_own_descriptor`` above covers
+    ``library_header`` itself; this covers the caller that used to compute
+    the string it passes in. The old ``main`` did
+    ``f"layout/pex/{spec_path.name}"`` -- varying only the filename -- so a
+    descriptor living in a sibling directory (``layout/pex-ring/pex.json``,
+    ``layout/pex-array/pex.json``, or any future ``layout/pex-*/`` directory)
+    got a header naming the WRONG directory, silently: the banner's own
+    quoted ``--check`` command would re-verify a different descriptor (or
+    none at all) than the one that actually built the library.
+    """
+    repo_root = Path("/repo")
+    cases = (
+        (repo_root / "layout" / "pex" / "pex.json", "layout/pex/pex.json"),
+        (repo_root / "layout" / "pex" / "pex-sampler.json", "layout/pex/pex-sampler.json"),
+        (repo_root / "layout" / "pex-ring" / "pex.json", "layout/pex-ring/pex.json"),
+        (repo_root / "layout" / "pex-array" / "pex.json", "layout/pex-array/pex.json"),
+        (
+            repo_root / "layout" / "pex-sampler-dff-assembled" / "pex.json",
+            "layout/pex-sampler-dff-assembled/pex.json",
+        ),
+    )
+    for spec_path, expected in cases:
+        got = pex.descriptor_path(spec_path, repo_root=repo_root)
+        _check(
+            f"descriptor_path({spec_path}) -> {expected!r}",
+            got == expected,
+            got,
+        )
+
+
 def check_anonymous_base() -> None:
     for name, expected in (
         ("\\$3", "\\$3"),
@@ -547,6 +580,7 @@ def main() -> int:
     check_unknown_element_card_is_an_error()
     check_wrapper_port_order()
     check_library_header_names_its_own_descriptor()
+    check_descriptor_path_is_not_hardcoded_to_layout_pex()
     check_anonymous_base()
     check_canonicalization_absorbs_pure_renumbering()
     check_canonicalization_still_sees_real_change()

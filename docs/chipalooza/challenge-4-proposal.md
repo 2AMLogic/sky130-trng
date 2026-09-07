@@ -415,9 +415,18 @@ that lands this document):
   `sim/post-layout-sampler-dff/` is the first simulation of `sampler_dff`
   in this repository, pre- or post-layout — clk→q capture delay
   103.6–299.0 ps, setup 60–150 ps and a leakage-limited (19.3 pA–293 nA)
-  reset window, all post-layout over the full PVT grid, with the pre-layout
-  netlist as a same-deck control
+  reset window, all post-layout (leaf-cell composition, ideal inter-cell
+  wires) over the full PVT grid, with the pre-layout netlist as a same-deck
+  control
   ([`spec/decision-records/DR-0007-*.md`](../../spec/decision-records/DR-0007-sampler-dff-post-layout-and-reset-contention.md)).
+  **Further discharged**: `sim/post-layout-sampler-dff-assembled/` re-runs
+  the capture-timing/reset-contention deck against `sampler_dff`'s own
+  whole composed GDS (real intra-cell routing included, `m`/`mb` now
+  routed) — clk→q capture delay 131.4–426.0 ps (1.704x–2.013x pre-layout,
+  still ≤ 21.3 ppm of the ratified 20 µs `T_s`) and the same
+  leakage-limited reset-window finding, confirmed at a second, stricter
+  extraction scope
+  ([`spec/decision-records/DR-0008-*.md`](../../spec/decision-records/DR-0008-sampler-dff-assembled-post-layout.md)).
   Still missing for row D: `sampler_core` (six `sampler_dff` instances on
   one shared clock, no layout at all yet) and therefore whole-block
   power/area.
@@ -433,9 +442,12 @@ that lands this document):
   parasitic extraction and post-layout PVT campaign behind
   `spec/decision-records/DR-0006-*.md`, the two remaining sampler leaf cells
   (`layout/sampler_tg/`, `layout/sampler_nand2/`), `layout/sampler_dff/`'s
-  own placement plus supply buses and most of its routing, and the sampler
-  post-layout campaign behind `spec/decision-records/DR-0007-*.md`. The
-  snapshot follows.
+  own placement, supply buses and full routing (`klt lvs` now a full match,
+  22/22 devices, 14/14 nets), the sampler post-layout campaign behind
+  `spec/decision-records/DR-0007-*.md`, and — now that `sampler_dff`'s own
+  assembly GDS is a valid extraction source — the whole-cell (assembled)
+  sampler post-layout campaign behind
+  `spec/decision-records/DR-0008-*.md`. The snapshot follows.
 
   `layout/` held fourteen composed **DRC-clean
   and LVS-clean cells** at the time of writing — which was **every leaf cell

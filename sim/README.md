@@ -108,6 +108,20 @@ follow-up item ("**Sampler_dff characterization** ... unsimulated") and
 are discharged for sky130 —
 [`spec/decision-records/DR-0007-*.md`](../spec/decision-records/DR-0007-sampler-dff-post-layout-and-reset-contention.md).
 
+Once `layout/sampler_dff/`'s own `m`/`mb` nets routed (the sampler's
+equivalent of the leaf-to-assembled step already taken above for the ring),
+its whole-cell assembly GDS became a valid extraction source for the first
+time, and `post-layout-sampler-dff-assembled/` re-runs the capture-timing/
+reset-contention deck against it:
+
+| Slug | Claim under test | Landed by |
+|---|---|---|
+| `post-layout-sampler-dff-assembled/` | the same clk→q capture delay, output levels, and reset-window / idle / active supply current, from extracting `sampler_dff`'s **whole assembled GDS** directly — real intra-cell routing included, not just leaf-cell composition with ideal wires — with the pre-layout netlist as a same-deck control | #22 |
+
+See "Sampler post-layout, assembled" below —
+[`spec/decision-records/DR-0008-*.md`](../spec/decision-records/DR-0008-sampler-dff-assembled-post-layout.md)
+is the full re-evaluation.
+
 Two rules from the root `CLAUDE.md` govern everything under this directory:
 
 - **Verification is the product.** No claim without a testbench, and PVT
@@ -947,6 +961,82 @@ So nothing in `sim/post-layout-sampler-dff/` is superseded: the numbers
 stand, and re-running any of those eight records today would reproduce them
 from the new library. Only the recorded input hash is stale, deliberately,
 and this is where that is written down.
+
+## Sampler post-layout, assembled: real intra-cell routing (issue #22)
+
+`sim/post-layout-sampler-dff-assembled/` answers the question the section
+above explicitly leaves open, the sampler's own sibling of "Assembled-ring
+post-layout" earlier in this file: `layout/pex/sampler_dff_pex.spice`'s
+numbers are a leaf-cell composition wired by **ideal** testbench nets, a
+lower bound on the real parasitic penalty by construction. Once
+`layout/sampler_dff/`'s own `m`/`mb` data-path nets routed (PR #95, PR #99)
+and its `klt lvs` matched (22/22 devices, 14/14 nets, 0 mismatches),
+extracting that whole composed GDS directly — rather than three
+separately-extracted leaf cells wired by the testbench itself — includes
+the real `rst_n`/`clk`/`clkb`/`mc`/`q`/`qb`/`s`/`m`/`mb` routing in the
+cell's own clk→q delay, output-level and current numbers for the first
+time. `layout/pex-sampler-dff-assembled/sampler_dff_assembled_pex.spice` is
+that extraction (`layout/pex-sampler-dff-assembled/README.md` states the
+model and the net-aliasing details), and
+`tb_post_layout_sampler_dff_assembled.spice` re-runs
+`sim/post-layout-sampler-dff/`'s own capture-timing/reset-contention deck
+topology — same stimulus, same waveform, same PVT grid — swapping only
+which post-layout library and subcircuit name it instantiates.
+
+Four records, twelve corner runs, all `PASS`:
+
+- **Real intra-cell routing costs more than the leaf-cell composition
+  alone.** clk→q delay slows **1.704x - 2.013x** against the pre-layout
+  control across the full grid, against the leaf-cell composition's own
+  **1.314x - 1.418x**. Pairing the two campaigns' twelve matching (temp,
+  Vdd, corner) points directly (12 pairs, exact PVT-grid match) rather than
+  just comparing the two ranges: the assembled deck's own slowdown is
+  **1.268x - 1.294x** (rise) / **1.383x - 1.425x** (fall) *of* the
+  leaf-only deck's own slowdown at that same point — i.e. drawing the real
+  intra-cell routing costs the cell another ~27-42% multiplicatively on top
+  of the leaf-cell composition alone. That is smaller than the ~1.5x-1.7x
+  DR-0007 named as a placeholder estimate (borrowed from DR-0006's
+  *array-scale* ring/buffer/XOR-tree result, a materially different
+  interconnect shape) — not a contradiction, since DR-0007 offered that
+  figure explicitly as an order-of-magnitude placeholder for a different
+  cell family, not a `sampler_dff`-specific prediction. Worst-case absolute
+  capture delay is 426.0 ps (fall, `ss`/−40 °C/1.62 V), still
+  **≤ 21.3 ppm of** the ratified 20 µs `T_s` — four orders of magnitude
+  below mattering, same conclusion as the leaf-cell scope with a wider
+  margin measured rather than assumed.
+- **The reset window still carries no contention current.** `i_rst_pex` and
+  `i_rst_pre` agree to 4-5 significant figures at every one of the twelve
+  grid points — the same "identical pre- and post-layout" signature the
+  leaf-cell campaign found — and `i_rst_pex / i_idle_pex` ranges
+  **0.5012 - 1.0141**, inside the leaf-cell campaign's own **0.501 - 1.014**
+  range for the same ratio to three significant figures, on a *different*
+  extraction. Two independent measurements at two different extraction
+  scopes now agree: this reset topology's own window is leakage-limited on
+  sky130, not contention-limited.
+- **The assembled cell is functionally correct.** Captured levels are
+  ≥ 0.9988x Vdd high and ≤ 0.00195x Vdd low at every grid point; asserted
+  reset holds `q` ≤ 0.386 mV while `d` drives the opposite value — both
+  effectively identical to the leaf-cell campaign's own figures, now
+  measured on the real routed assembly rather than an ideal-wire
+  composition of its own leaf cells.
+- **Active-window supply current costs more than the leaf-cell composition
+  finds**, as expected: 1.585 - 2.637 µA post-layout, **1.739x - 2.300x**
+  the pre-layout figure, against the leaf-cell scope's own
+  1.306x - 1.548x — the real intra-cell routing's extra capacitance shows up
+  here as current, the one place besides delay that it has somewhere to go.
+- **This record does not re-run the setup-time-bracket deck** — matching
+  "Assembled-ring post-layout"'s own precedent of adding one new deck per
+  "assembled" increment rather than replaying every sibling deck at the new
+  extraction scope. DR-0007's own setup-time figures (60 - 150 ps,
+  leaf-cell scope) still stand as the most recent measurement of that
+  quantity; see
+  [`spec/decision-records/DR-0008-*.md`](../spec/decision-records/DR-0008-sampler-dff-assembled-post-layout.md)
+  "Known limitations" for what a whole-cell re-run of that deck is expected
+  to find.
+
+See `spec/decision-records/DR-0008-*.md` for the full re-evaluation of
+DR-0007's own named follow-up item, and what this record does and does not
+close.
 
 ## Writing a new record
 

@@ -189,8 +189,8 @@ otherwise unmeasured on sky130).
 | XOR combining tree contribution | `w_90` = 122–241 ps (gate bandwidth); 0.56–0.68 edge retention at `N = 4` | **measured** | `sim/xor-combining-bandwidth/` (single-gate pulse-width sweep, the figure that sizes `N`) and `sim/ro-array-core-combining/` (assembled-array edge retention and combining-node DC bias, 0.31–0.53 × Vdd, no gross systematic offset). DR-0003 §5–6 |
 | Array active power | 81.0–431.6 µW measured across the PVT grid run | **measured** | `sim/ro-array-core-combining/`. Worst-measured 431.6 µW clears the top-level README's `< 500 µW active` row with 13.7% margin |
 | Array area | ~0.0026–0.0088 mm² (ROM estimate); every `ro_array_core` leaf cell now drawn, summing to 4 × 377 + 4 × 22.2 + 3 × 421.5 µm² = 0.00286 mm² | **estimated (array), measured (leaf cells only)** | Device-count-based estimate (DR-0003 §7): comfortably inside the `< 0.05 mm²` budget (~5–18%). Not yet an array measurement, but every cell it instantiates is now drawn: `ro_ring5` 41.125 × 9.17 µm (`layout/ro_ring5/README.md`), `ro_buf` 4.175 × 5.31 µm, `xor2` 23.97 × 17.585 µm (`klt stats` on each committed GDS). The 0.00286 mm² sum is leaf-cell bounding boxes only — it is a **floor**, not a floorplan: no inter-ring channel, no supply distribution, no sampler and no top-level PDN are drawn, and it assumes the eleven cell instances (4 rings + 4 buffers + 3 XORs) pack with zero waste between their bounding boxes |
-| Sampler (`sampler_dff`) capture timing | clk→q 103.6–299.0 ps; setup 60–150 ps; both post-layout, worst at `ss`/−40 °C/1.62 V | **measured (post-layout, intra-cell parasitics)** | `sim/post-layout-sampler-dff/`, 8 records / 24 corner runs, with the pre-layout `.subckt sampler_dff` as a same-deck control (intra-cell parasitics cost 1.314–1.418× in clk→q, inside DR-0005's own 1.378–1.479× ring finding). Compared per corner against DR-0003 §1's own `w_90` table, setup is below that corner's `w_90` at each of the nine (temp, Vdd, corner) points where both are measured — including (60, 73] ps against 122.0 ps at `ff`/−40 °C/1.98 V, the corner where `N_max_combine` binds (`sim/xor-combining-bandwidth/` has no 125 °C point, so this campaign's three 125 °C/1.98 V points are outside the comparison). DR-0003 §1's `N_max_combine` bound is therefore unchanged — the digitizer is not the bandwidth bottleneck. Capture delay is ≤ 15 ppm of the ratified 20 µs `T_s`. Ideal inter-cell wires and ideal PWL stimulus, so a **floor** on the real cost. DR-0007 |
-| Sampler reset-window current | 19.3 pA (`ss`/−40 °C/1.62 V) – 293 nA (`ff`/125 °C/1.98 V), i.e. 0.90 nW nominal / 580 nW worst | **measured** | `sim/post-layout-sampler-dff/`, measured with `rst_n` asserted *while* `d` drives the opposite value through the transparent master. Leakage-limited: at or below the same cell's own idle current at every grid point (0.501–1.014×) and identical pre- and post-layout to 3–5 significant figures, so there is no contention component to find. This is `spec/porting-plan.md`'s DR-0014 **methodology** transfer re-derived on sky130 — not gf180mcu's 967 µW → 66 nW numbers transplanted, and **no** reduction ratio is claimed, because the brute-force pull-device alternative was not simulated. DR-0007 |
+| Sampler (`sampler_dff`) capture timing | clk→q 103.6–299.0 ps (leaf-cell, ideal inter-cell wires); **131.4–426.0 ps (whole-cell assembled, real intra-cell routing)**; both post-layout, worst at `ss`/−40 °C/1.62 V | **measured (post-layout, two extraction scopes)** | `sim/post-layout-sampler-dff/` (leaf-cell composition, 8 records / 24 corner runs) and `sim/post-layout-sampler-dff-assembled/` (whole-cell flat extraction of `layout/sampler_dff/sampler_dff.gds`, 4 records / 12 corner runs), both with the pre-layout `.subckt sampler_dff` as a same-deck control. Leaf-cell intra-cell parasitics cost 1.314–1.418× in clk→q, inside DR-0005's own 1.378–1.479× ring finding (DR-0007); the whole-cell assembly costs **1.704–2.013×** against pre-layout, i.e. **1.268–1.425× on top of** the leaf-cell figure at the same PVT/corner points (DR-0008). Setup time is not yet re-measured at the assembled scope (DR-0007's 60–150 ps, leaf-cell only, still stands — see DR-0008 "Known limitations"); compared per corner against DR-0003 §1's own `w_90` table at leaf-cell scope, setup is below that corner's `w_90` at each of the nine (temp, Vdd, corner) points where both are measured — including (60, 73] ps against 122.0 ps at `ff`/−40 °C/1.98 V, the corner where `N_max_combine` binds (`sim/xor-combining-bandwidth/` has no 125 °C point, so this campaign's three 125 °C/1.98 V points are outside the comparison). DR-0003 §1's `N_max_combine` bound is therefore unchanged — the digitizer is not the bandwidth bottleneck. Worst-case capture delay is ≤ 21.3 ppm of the ratified 20 µs `T_s` even at the assembled scope. Both scopes use ideal PWL stimulus, so a **floor** on the real cost. DR-0007, DR-0008 |
+| Sampler reset-window current | 19.3 pA (`ss`/−40 °C/1.62 V) – 293 nA (`ff`/125 °C/1.98 V), i.e. 0.90 nW nominal / 580 nW worst | **measured** | `sim/post-layout-sampler-dff/` and `sim/post-layout-sampler-dff-assembled/`, both measured with `rst_n` asserted *while* `d` drives the opposite value through the transparent master. Leakage-limited: at or below the same cell's own idle current at every grid point (0.501–1.014×, both extraction scopes agree on this ratio to three significant figures) and identical pre- and post-layout to 3–5 significant figures at both scopes, so there is no contention component to find. This is `spec/porting-plan.md`'s DR-0014 **methodology** transfer re-derived on sky130 — not gf180mcu's 967 µW → 66 nW numbers transplanted, and **no** reduction ratio is claimed, because the brute-force pull-device alternative was not simulated. DR-0007, DR-0008 |
 | Idle current (per ring) | 0.6 nA (cold) – 255 nA (`ff`/125 °C) | **measured (per-ring), no target yet** | `sim/ro-ring5-swing-and-current/`. The top-level README's own idle-current target is still unset pending `spec/porting-plan.md` §2.5's leakage survey, so this is a reported number, not a pass/fail against a row that does not exist yet |
 | Load cap `cld` | 0.5 fF | placeholder | an estimate of local interconnect load, not an extracted parasitic, and sky130's metal stack differs from gf180mcu's |
 
@@ -235,17 +235,44 @@ DR-0003 surfaces and does not resolve on its own authority.
   (status **Proposed**) it lives in [`digital/`](../digital/README.md), not
   here, and none of it is or will be a `design/*.spice` netlist. `raw_bit`
   and `raw_valid` are the interface between the two directories.
-- **Layout and DRC/LVS.** **Latest (issue #22): `sampler_dff` is now fully
+- **Layout and DRC/LVS.** **Latest (issue #22): `sampler_dff`'s whole-cell
+  assembly is now extracted with real intra-cell parasitics and re-run
+  through the same post-layout deck DR-0007 used at leaf-cell scope.**
+  [`layout/pex-sampler-dff-assembled/`](../layout/pex-sampler-dff-assembled/README.md)
+  runs `klt extract --parasitics` directly over
+  `layout/sampler_dff/sampler_dff.gds` — the same DRC-clean, `klt
+  lvs`-matching (22/22 devices, 14/14 nets, 0 mismatches) assembly the
+  previous increment below landed — instead of the three separately
+  composed leaf cells wired by ideal testbench nets. `sim/post-layout-sampler-dff-assembled/`
+  re-runs the capture-timing/reset-contention deck across the same
+  four-(temp, Vdd)-point, `tt`/`ss`/`ff` grid (4 records, 12 corner runs, all
+  `PASS`): clk→q capture delay now costs **1.704–2.013×** against
+  pre-layout (up from the leaf-cell composition's own 1.314–1.418×), i.e.
+  **1.268–1.425× on top of** the leaf-cell figure at matching PVT points —
+  smaller than the ~1.5–1.7× DR-0007 borrowed from DR-0006's *array-scale*
+  result as a placeholder, which is not a contradiction (a different
+  interconnect shape, not a wrong estimate); the reset window still carries
+  no contention current, agreeing with the leaf-cell figure to 4–5
+  significant figures; and the assembly is functionally correct (captured
+  levels ≥ 0.9988×Vdd high / ≤ 0.00195×Vdd low, reset holds `q` ≤ 0.386 mV).
+  See
+  [`spec/decision-records/DR-0008-*.md`](../spec/decision-records/DR-0008-sampler-dff-assembled-post-layout.md)
+  for the full re-evaluation, including what it explicitly does not
+  re-measure (DR-0007's own setup-time bracket, and `sampler_core`'s
+  six-instance fan-out). `sampler_core`'s own six-instance wiring and the
+  whole-chain (raw-tap-to-sampled-bit) post-layout PVT campaign remain open
+  (#27).
+
+- **A previous increment (issue #22): `sampler_dff` reached
   `klt drc`-clean (0 violations) and `klt lvs`-**match** (22/22 devices,
   14/14 nets, 0 mismatches) against `design/sampler_core.spice`'s own
   `.subckt sampler_dff`** — the sixth and last data-path net, `m`, is
   routed (see [`layout/sampler_dff/README.md`](../layout/sampler_dff/README.md)),
   completing the sampler-side counterpart to `ro_array_core`'s own clean
-  sign-off below. `sampler_core`'s own six-instance wiring and the
-  whole-chain (raw-tap-to-sampled-bit) post-layout PVT campaign remain open
-  (#27) — the note below about `layout/sampler_dff/`'s GDS not yet being an
-  extraction source (`m`/`mb` unrouted) describes the state at the time of
-  the sampler post-layout PVT entry further down, not the current one.
+  sign-off below. The note below about `layout/sampler_dff/`'s GDS not yet
+  being an extraction source (`m`/`mb` unrouted) describes the state at the
+  time of the sampler post-layout PVT entry further down, not the current
+  one (superseded by the whole-cell assembled extraction above).
   `layout/` holds **fifteen composed, DRC-clean
   and LVS-clean cells** — every leaf cell `ro_array_core` instantiates
   (rings, buffers, the combining-tree XOR; see
@@ -411,6 +438,13 @@ DR-0003 surfaces and does not resolve on its own authority.
   unrouted and `klt lvs` not matching, extracting it flat would extract an
   incomplete circuit), and ideal PWL stimulus, so every post-layout figure
   is a floor on the real cost.
+
+  **Both nets have since routed** (`mb`: PR #95; `m`: PR #99), making
+  `layout/sampler_dff/sampler_dff.gds` itself a valid, `klt lvs`-matching
+  extraction source for the first time — see the "Latest" entry at the top
+  of this bullet for the whole-cell (assembled) re-run and
+  [`spec/decision-records/DR-0008-*.md`](../spec/decision-records/DR-0008-sampler-dff-assembled-post-layout.md)
+  for the full result.
 
   A prior increment wired the XOR combining tree's inputs:
   that directory's

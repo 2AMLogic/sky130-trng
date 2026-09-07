@@ -593,6 +593,25 @@ def build_library(spec: dict, spec_dir: Path, out_dir: Path, descriptor: str) ->
     return {"cells": summary, "library": spec["library"]}
 
 
+def descriptor_path(spec_path: Path, repo_root: Path = REPO_ROOT) -> str:
+    """The repo-relative descriptor path *spec_path* should be named as.
+
+    Used for :func:`library_header`'s banner and its quoted ``--check``
+    command. Issue #94 fixed that banner to name the *invoked* descriptor
+    instead of a hardcoded ``layout/pex/pex.json`` string, but its fix
+    (``main``'s old ``f"layout/pex/{spec_path.name}"``) only ever varied the
+    *filename*, not the directory -- so every descriptor living outside
+    ``layout/pex/`` (``layout/pex-ring/pex.json``, ``layout/pex-array/pex.json``,
+    and any future sibling) got a header naming the wrong directory, silently:
+    the quoted ``--check`` command in that header re-verifies a *different*
+    descriptor (or none at all) than the one that actually produced the
+    library. This derives the descriptor string from the real path instead,
+    so it is correct for any directory under the repo root, not just
+    ``layout/pex/``.
+    """
+    return spec_path.resolve().relative_to(repo_root).as_posix()
+
+
 def klt_version_pin() -> str:
     """``layout/pdk.json``'s ``klt_version_pin``, or ``"(unknown)"``."""
     try:
@@ -768,8 +787,10 @@ def main(argv: list[str] | None = None) -> int:
     spec_dir = spec_path.parent
     # Repo-relative, so no absolute home path leaks into the generated
     # library's own header -- the same constraint _mirror_dir's docstring
-    # states for the GDS paths inside the descriptor (issue #94).
-    descriptor = f"layout/pex/{spec_path.name}"
+    # states for the GDS paths inside the descriptor (issue #94), and
+    # correct for a descriptor directory other than layout/pex/ (see
+    # descriptor_path's own docstring).
+    descriptor = descriptor_path(spec_path)
 
     try:
         if args.check:
@@ -779,7 +800,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"error: {exc}", file=sys.stderr)
         return 1
 
-    print(f"library: layout/pex/{summary['library']}")
+    print(f"library: {(Path(descriptor).parent / summary['library']).as_posix()}")
     for cell in summary["cells"]:
         par = cell["parasitics"] or {}
         print(

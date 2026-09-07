@@ -1,0 +1,140 @@
+{
+  "record_id": "20260907-155526-709dc0b",
+  "slug": "post-layout-sampler-dff-assembled",
+  "claim": "post-layout (klt extract --parasitics over the whole DRC/LVS-clean composed layout/sampler_dff/sampler_dff.gds, real intra-cell interconnect included) sampler_dff capture timing, output levels, and reset-window/idle/active supply current, against the pre-layout design/sampler_core.spice .subckt sampler_dff as a same-deck control",
+  "level": "transistor",
+  "seed": "N/A (deterministic small-signal .noise analysis, not Monte Carlo)",
+  "pvt": {
+    "temp_c": -40.0,
+    "vdd_v": 1.98
+  },
+  "tran": {
+    "tmax": "5p",
+    "noise_amp": "2.0e-3"
+  },
+  "testbench": "sim/post-layout-sampler-dff-assembled/testbench/tb_post_layout_sampler_dff_assembled.spice",
+  "netlists": {
+    "RO_RING5": {
+      "path": "design/sampler_core.spice",
+      "sha256": "34a9af2714b7cfd71092c9733fb4007a61747b032eadcf5491ae9db811999b71"
+    },
+    "PEX_LIB": {
+      "path": "layout/pex-sampler-dff-assembled/sampler_dff_assembled_pex.spice",
+      "sha256": "53ab4d9c920a6e54d9703ece2fee8c92574729bcdff214b24097f6ec0ece03a5"
+    }
+  },
+  "pdk": {
+    "variant": "sky130A",
+    "installed_commit": "c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+    "pin_commit": "c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+    "matches_pin": true,
+    "lib_file": "/home/ubuntu/.volare/volare/sky130/versions/c6d73a35f524070e85faff4a6a9eef49553ebc2b/sky130A/libs.tech/combined/sky130.lib.spice"
+  },
+  "tools": {
+    "ngspice": "** ngspice-46 : Circuit level simulation program",
+    "python": "3.12.3",
+    "os": "Linux-7.0.0-1010-aws-x86_64-with-glibc2.39"
+  },
+  "repo_state": {
+    "sha": "709dc0b",
+    "branch": "feature/issue-22",
+    "dirty": true
+  },
+  "corners": [
+    {
+      "corner": "tt",
+      "ok": true,
+      "returncode": 0,
+      "measurements": {
+        "tcq_rise_pex": 1.54288e-10,
+        "tcq_rise_pre": 8.937414e-11,
+        "tcq_fall_pex": 2.200163e-10,
+        "tcq_fall_pre": 1.173819e-10,
+        "slowdown_tcq_rise": 1.726316,
+        "slowdown_tcq_fall": 1.874363,
+        "vq_hi_frac_pex": 0.9992111,
+        "vq_hi_frac_pre": 0.9984904,
+        "vq_lo_frac_pex": 0.001235658,
+        "vq_lo_frac_pre": 0.002582144,
+        "vq_rst_pex": 1.518823e-08,
+        "vq_rst_pre": 1.606858e-08,
+        "i_rst_pex": 3.702705e-11,
+        "i_rst_pre": 3.702621e-11,
+        "i_idle_pex": 4.254486e-11,
+        "i_idle_pre": 4.252986e-11,
+        "i_act_pex": 1.973594e-06,
+        "i_act_pre": 8.656554e-07
+      },
+      "onoise_min": null,
+      "onoise_max": null,
+      "onoise_spread_ratio": null,
+      "problems": [],
+      "log": "corners/tt.log"
+    },
+    {
+      "corner": "ss",
+      "ok": true,
+      "returncode": 0,
+      "measurements": {
+        "tcq_rise_pex": 1.867571e-10,
+        "tcq_rise_pre": 1.058917e-10,
+        "tcq_fall_pex": 2.744175e-10,
+        "tcq_fall_pre": 1.426439e-10,
+        "slowdown_tcq_rise": 1.763661,
+        "slowdown_tcq_fall": 1.923794,
+        "vq_hi_frac_pex": 0.9990561,
+        "vq_hi_frac_pre": 0.9981803,
+        "vq_lo_frac_pex": 0.001238472,
+        "vq_lo_frac_pre": 0.003227209,
+        "vq_rst_pex": 1.277011e-08,
+        "vq_rst_pre": 1.341124e-08,
+        "i_rst_pex": 3.23519e-11,
+        "i_rst_pre": 3.235119e-11,
+        "i_idle_pex": 3.474998e-11,
+        "i_idle_pre": 3.474315e-11,
+        "i_act_pex": 1.982334e-06,
+        "i_act_pre": 8.693363e-07
+      },
+      "onoise_min": null,
+      "onoise_max": null,
+      "onoise_spread_ratio": null,
+      "problems": [],
+      "log": "corners/ss.log"
+    },
+    {
+      "corner": "ff",
+      "ok": true,
+      "returncode": 0,
+      "measurements": {
+        "tcq_rise_pex": 1.313653e-10,
+        "tcq_rise_pre": 7.707423e-11,
+        "tcq_fall_pex": 1.783062e-10,
+        "tcq_fall_pre": 9.729007e-11,
+        "slowdown_tcq_rise": 1.7044,
+        "slowdown_tcq_fall": 1.832728,
+        "vq_hi_frac_pex": 0.9993237,
+        "vq_hi_frac_pre": 0.9985763,
+        "vq_lo_frac_pex": 0.001212103,
+        "vq_lo_frac_pre": 0.001779652,
+        "vq_rst_pex": 8.839038e-08,
+        "vq_rst_pre": 9.415037e-08,
+        "i_rst_pex": 1.176909e-10,
+        "i_rst_pre": 1.176905e-10,
+        "i_idle_pex": 2.015456e-10,
+        "i_idle_pre": 2.014932e-10,
+        "i_act_pex": 1.967133e-06,
+        "i_act_pre": 8.665302e-07
+      },
+      "onoise_min": null,
+      "onoise_max": null,
+      "onoise_spread_ratio": null,
+      "problems": [],
+      "log": "corners/ff.log"
+    }
+  ],
+  "overall": "PASS",
+  "subset_reason": null,
+  "supersedes": "(none)",
+  "author": "auditor@loom.local",
+  "timestamp_utc": "2026-09-07T15:56:22.366504+00:00"
+}
