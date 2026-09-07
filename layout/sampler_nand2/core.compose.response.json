@@ -1,0 +1,359 @@
+{
+  "schema_version": 1,
+  "generator": "gen-compose",
+  "cell_name": "core",
+  "gds_path": "core.gds",
+  "pdk": {
+    "name": "sky130A",
+    "variant": "sky130A",
+    "version": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b"
+  },
+  "bbox_um": {
+    "x0": 0.85,
+    "y0": -0.71,
+    "x1": 5.57,
+    "y1": 4.81
+  },
+  "ports": [
+    {
+      "name": "nwell_vdd",
+      "net": "nwell_vdd",
+      "layer": {
+        "layer": 67,
+        "datatype": 20,
+        "name": null
+      },
+      "x_um": 2.63,
+      "y_um": 3.7399999999999998,
+      "width_um": 0.42,
+      "direction_deg": 0,
+      "block": "nwell_tap",
+      "port": "TAP_E"
+    },
+    {
+      "name": "mpa_py",
+      "net": "mpa_py",
+      "layer": {
+        "layer": 67,
+        "datatype": 20,
+        "name": null
+      },
+      "x_um": 3.25,
+      "y_um": 3.74,
+      "width_um": 0.84,
+      "direction_deg": 180,
+      "block": "mpa",
+      "port": "U0_S"
+    },
+    {
+      "name": "mpb_py",
+      "net": "mpb_py",
+      "layer": {
+        "layer": 67,
+        "datatype": 20,
+        "name": null
+      },
+      "x_um": 5.21,
+      "y_um": 3.74,
+      "width_um": 0.84,
+      "direction_deg": 0,
+      "block": "mpb",
+      "port": "U0_S"
+    },
+    {
+      "name": "mpa_y",
+      "net": "mpa_y",
+      "layer": {
+        "layer": 67,
+        "datatype": 20,
+        "name": null
+      },
+      "x_um": 3.92,
+      "y_um": 3.74,
+      "width_um": 0.84,
+      "direction_deg": 0,
+      "block": "mpa",
+      "port": "U0_D"
+    },
+    {
+      "name": "mpb_y",
+      "net": "mpb_y",
+      "layer": {
+        "layer": 67,
+        "datatype": 20,
+        "name": null
+      },
+      "x_um": 4.54,
+      "y_um": 3.74,
+      "width_um": 0.84,
+      "direction_deg": 180,
+      "block": "mpb",
+      "port": "U0_D"
+    },
+    {
+      "name": "mnab_y",
+      "net": "mnab_y",
+      "layer": {
+        "layer": 67,
+        "datatype": 20,
+        "name": null
+      },
+      "x_um": 4.790000000000001,
+      "y_um": 0.21,
+      "width_um": 0.84,
+      "direction_deg": 0,
+      "block": "mnab",
+      "port": "U0_S1"
+    }
+  ],
+  "blocks": [
+    {
+      "id": "nwell_tap",
+      "source": "generator_report",
+      "generator": "guard_ring",
+      "cell_name": "nwell_tap",
+      "offset_um": {
+        "x": 1.0,
+        "y": 2.82
+      },
+      "bbox_um": {
+        "x0": 0.85,
+        "y0": 2.67,
+        "x1": 2.99,
+        "y1": 4.81
+      },
+      "orientation": "none"
+    },
+    {
+      "id": "mpa",
+      "source": "generator_report",
+      "generator": "mos_array",
+      "cell_name": "mpa",
+      "offset_um": {
+        "x": 3.04,
+        "y": 4.16
+      },
+      "bbox_um": {
+        "x0": 2.89,
+        "y0": 2.35,
+        "x1": 4.28,
+        "y1": 4.3100000000000005
+      },
+      "orientation": "mirror_y"
+    },
+    {
+      "id": "mpb",
+      "source": "generator_report",
+      "generator": "mos_array",
+      "cell_name": "mpb",
+      "offset_um": {
+        "x": 5.42,
+        "y": 4.16
+      },
+      "bbox_um": {
+        "x0": 4.18,
+        "y0": 2.35,
+        "x1": 5.57,
+        "y1": 4.3100000000000005
+      },
+      "orientation": "rotate_180"
+    },
+    {
+      "id": "psub_tap",
+      "source": "generator_report",
+      "generator": "guard_ring",
+      "cell_name": "psub_tap",
+      "offset_um": {
+        "x": 1.02,
+        "y": -0.71
+      },
+      "bbox_um": {
+        "x0": 1.02,
+        "y0": -0.71,
+        "x1": 2.8600000000000003,
+        "y1": 1.1300000000000001
+      },
+      "orientation": "none"
+    },
+    {
+      "id": "mnab",
+      "source": "generator_report",
+      "generator": "mos_array",
+      "cell_name": "mnab",
+      "offset_um": {
+        "x": 3.24,
+        "y": -0.21
+      },
+      "bbox_um": {
+        "x0": 3.24,
+        "y0": -0.21,
+        "x1": 5.0,
+        "y1": 1.4500000000000002
+      },
+      "orientation": "none"
+    }
+  ],
+  "nets": [
+    {
+      "net": "en",
+      "pins": [
+        {
+          "block": "mpa",
+          "port": "U0_G"
+        },
+        {
+          "block": "mnab",
+          "port": "U0_G0"
+        }
+      ],
+      "routed": true,
+      "route_length_um": 1.6700000000000002,
+      "status": "routed",
+      "legs": [
+        {
+          "pins": [
+            {
+              "block": "mpa",
+              "port": "U0_G"
+            },
+            {
+              "block": "mnab",
+              "port": "U0_G0"
+            }
+          ],
+          "routed": true,
+          "route_length_um": 1.6700000000000002,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "net": "a",
+      "pins": [
+        {
+          "block": "mpb",
+          "port": "U0_G"
+        },
+        {
+          "block": "mnab",
+          "port": "U0_G1"
+        }
+      ],
+      "routed": true,
+      "route_length_um": 1.89,
+      "status": "routed",
+      "legs": [
+        {
+          "pins": [
+            {
+              "block": "mpb",
+              "port": "U0_G"
+            },
+            {
+              "block": "mnab",
+              "port": "U0_G1"
+            }
+          ],
+          "routed": true,
+          "route_length_um": 1.89,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "net": "vss",
+      "pins": [
+        {
+          "block": "psub_tap",
+          "port": "TAP_E"
+        },
+        {
+          "block": "mnab",
+          "port": "U0_S0"
+        }
+      ],
+      "routed": true,
+      "route_length_um": 0.8000000000000003,
+      "status": "routed",
+      "legs": [
+        {
+          "pins": [
+            {
+              "block": "psub_tap",
+              "port": "TAP_E"
+            },
+            {
+              "block": "mnab",
+              "port": "U0_S0"
+            }
+          ],
+          "routed": true,
+          "route_length_um": 0.8000000000000003,
+          "reason": null
+        }
+      ]
+    }
+  ],
+  "pins": [
+    {
+      "net": "nwell_vdd",
+      "block": "nwell_tap",
+      "port": "TAP_E",
+      "labelled": true
+    },
+    {
+      "net": "mpa_py",
+      "block": "mpa",
+      "port": "U0_S",
+      "labelled": true
+    },
+    {
+      "net": "mpb_py",
+      "block": "mpb",
+      "port": "U0_S",
+      "labelled": true
+    },
+    {
+      "net": "mpa_y",
+      "block": "mpa",
+      "port": "U0_D",
+      "labelled": true
+    },
+    {
+      "net": "mpb_y",
+      "block": "mpb",
+      "port": "U0_D",
+      "labelled": true
+    },
+    {
+      "net": "mnab_y",
+      "block": "mnab",
+      "port": "U0_S1",
+      "labelled": true
+    }
+  ],
+  "unrouted_nets": [],
+  "drc_hints": {
+    "min_spacing_um": null,
+    "matched_groups": [
+      {
+        "matched_group_id": "mos_array:1x1:common_centroid",
+        "blocks": [
+          "mpa",
+          "mpb",
+          "mnab"
+        ],
+        "placement_symmetric": null
+      }
+    ],
+    "notes": []
+  },
+  "warnings": [
+    "block 'mpa' is placed 0.00um from block 'nwell_tap' (strategy: explicit), closer than nwell_tap's own declared drc_hints.min_spacing_um of 0.40um",
+    "block 'nwell_tap' is placed 0.00um from block 'mpa' (strategy: explicit), closer than mpa's own declared drc_hints.min_spacing_um of 0.40um",
+    "block 'mpb' is placed 0.00um from block 'mpa' (strategy: explicit), closer than mpa's own declared drc_hints.min_spacing_um of 0.40um",
+    "block 'mpa' is placed 0.00um from block 'mpb' (strategy: explicit), closer than mpb's own declared drc_hints.min_spacing_um of 0.40um",
+    "block 'mnab' is placed 0.38um from block 'psub_tap' (strategy: explicit), closer than psub_tap's own declared drc_hints.min_spacing_um of 0.40um",
+    "block 'psub_tap' is placed 0.38um from block 'mnab' (strategy: explicit), closer than mnab's own declared drc_hints.min_spacing_um of 0.40um"
+  ]
+}

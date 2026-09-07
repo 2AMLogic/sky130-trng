@@ -1,0 +1,28 @@
+* Hand-authored micro-reference for layout/sampler_nand2/'s own LVS check --
+* NOT an xschem export. design/sampler_core.spice's sampler_dff subckt draws
+* this exact four-device NAND2 shape twice (NANDM: XMimpa/XMimpb/XMimna/
+* XMimnb, gating m/rst_n -> mb; NANDS2: XMis2pa/XMis2pb/XMis2na/XMis2nb,
+* gating q/rst_n -> qb), but flat -- design/xschem/sampler_dff.sch has no
+* sub-schematic symbol for a plain NAND2, so there is no committed .subckt
+* this leaf cell's LVS can reference the way ro_nand2 references
+* design/ro_array_core.spice's own .subckt ro_nand2. This file exists solely
+* so layout/bin/compose-cell.py's lvs.reference has a real .subckt to
+* extract: it reproduces the NANDM instance's own device lines byte-for-byte
+* against design/sampler_core.spice's XMimpa/XMimpb/XMimna/XMimnb, down to
+* the ad/as/pd/ps/nrd/nrs geometry terms, renamed to this cell's own generic
+* port names (a=m, en=rst_n, y=mb, nm=mmid internal) -- the same generic a/
+* en/y/vdd/vss convention layout/ro_nand2/ already uses for its own (starved)
+* NAND2, minus ro_nand2's vddr/vss starve-device rail distinction: this gate
+* has no starve devices, so both PMOS sources tie directly to vdd and the
+* series NMOS pair's far end ties directly to vss -- see
+* layout/sampler_nand2/README.md.
+.subckt sampler_nand2 a en y vdd vss
+XMpa y a vdd vdd sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 nf=1 ad=0.2436 as=0.2436 pd=2.26 ps=2.26
++ nrd=0.345238095238095 nrs=0.345238095238095 sa=0 sb=0 sd=0 mult=1 m=1
+XMpb y en vdd vdd sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 nf=1 ad=0.2436 as=0.2436 pd=2.26 ps=2.26
++ nrd=0.345238095238095 nrs=0.345238095238095 sa=0 sb=0 sd=0 mult=1 m=1
+XMna y a nm vss sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 nf=1 ad=0.2436 as=0.2436 pd=2.26 ps=2.26
++ nrd=0.345238095238095 nrs=0.345238095238095 sa=0 sb=0 sd=0 mult=1 m=1
+XMnb nm en vss vss sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 nf=1 ad=0.2436 as=0.2436 pd=2.26 ps=2.26
++ nrd=0.345238095238095 nrs=0.345238095238095 sa=0 sb=0 sd=0 mult=1 m=1
+.ends

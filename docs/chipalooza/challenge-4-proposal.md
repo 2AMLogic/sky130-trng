@@ -567,17 +567,24 @@ that lands this document):
   a `vddr1`-`vddr4` supply-distribution layout, and
   **the sampler as assembled layout** (`sampler_core`/`sampler_dff` have no
   *assembled* layout at all, so no whole-*chain*, raw-tap-to-sampled-bit
-  post-layout claim exists yet). **A later increment starts the sampler's own
-  composition**: `layout/sampler_tg/` composes the plain sky130 transmission
-  gate `sampler_dff`'s four `TG_D`/`TG_FBM`/`TG_S`/`TG_FBS` instances share —
-  `klt drc` clean, `klt lvs` match (2/2 devices, 6/6 nets) against a
-  hand-authored micro-reference, since `design/xschem/sampler_dff.sch` is
-  flat and has no `.subckt` of this shape for `compose-cell.py`'s LVS to
-  reference directly — confirming `mos_array` is sufficient for this shape
-  (no `klayout-tools` tool gap). `sampler_dff`'s other two leaf shapes (a
-  plain inverter, already `ro_buf`; a plain rst_n-gated NAND2, not yet
-  composed) and the 22-device whole-cell assembly and LVS check remain open.
-  Note also that
+  post-layout claim exists yet). **Later increments composed all three of
+  the sampler's own leaf shapes**: `layout/sampler_tg/` composes the plain
+  sky130 transmission gate `sampler_dff`'s four `TG_D`/`TG_FBM`/`TG_S`/
+  `TG_FBS` instances share — `klt drc` clean, `klt lvs` match (2/2 devices,
+  6/6 nets) against a hand-authored micro-reference, since
+  `design/xschem/sampler_dff.sch` is flat and has no `.subckt` of this shape
+  for `compose-cell.py`'s LVS to reference directly — confirming `mos_array`
+  is sufficient for this shape (no `klayout-tools` tool gap).
+  `layout/sampler_nand2/` composes the other missing leaf shape — a plain
+  rst_n-gated NAND2, structurally `ro_nand2` minus its two always-on starve
+  devices — also `klt drc` clean, `klt lvs` match (4/4 devices, 6/6 nets)
+  against a hand-authored micro-reference for the same reason, reusing
+  `ro_nand2`'s own parallel-PMOS/series-NMOS floorplan and its three-pin-net
+  promote-then-resolve technique. With the third leaf shape (a plain
+  inverter, already `ro_buf`), all 22 of `sampler_dff`'s devices now reduce
+  to already-composed leaf cells; the 22-device whole-cell assembly and LVS
+  check against `design/sampler_core.spice`'s own `.subckt sampler_dff`
+  remains open. Note also that
   "DRC-clean" here means clean against `klt`'s **curated** sky130 deck (a
   documented subset — see each `drc.json`'s own `coverage` block), not a
   full sky130 sign-off deck.

@@ -1,0 +1,106 @@
+{
+  "cell": "sampler_nand2",
+  "_comment": [
+    "Cell descriptor for layout/bin/compose-cell.py -- see layout/README.md",
+    "section 'Composing a gate' for the floorplan reasoning shared with every",
+    "other cell, and layout/sampler_nand2/README.md for this cell's own",
+    "result.",
+    "",
+    "sampler_nand2 is design/sampler_core.spice's sampler_dff subckt's",
+    "NANDM/NANDS2 gate: a plain rst_n-gated 2-input NAND2 -- a parallel PMOS",
+    "pull-up pair (Mpa/Mpb, gates a/en, sources tied DIRECTLY to vdd) and a",
+    "series NMOS pull-down pair (Mna/Mnb, gates a/en, far end tied DIRECTLY",
+    "to vss) -- structurally layout/ro_nand2/ minus its two always-on starve",
+    "devices (Mph/Mnt). Four devices total, reusing ro_nand2's own",
+    "parallel-PMOS and series-NMOS floorplan moves (mpb 'rotate_180' so its",
+    "drain faces mpa's drain; mnab as one mos_array fingers=2",
+    "finger_topology='series' call) but with NO starve devices to cross-couple",
+    "to the opposite rail, so this composes in ONE 'stages' pass fewer of",
+    "cross-coupled-gate routing than ro_nand2 needed -- the two-pass",
+    "structure below exists solely for the 3-way 'vdd' net (nwell_tap.TAP_E +",
+    "Mpa.S + Mpb.S) and 'y' net (Mpa.D + Mpb.D + Mnab.S1), whose 'far' leg",
+    "(Mpb's own S/D, on the block's far side from the tap/NMOS row) cannot be",
+    "wired in the base stage without re-crossing another block's own S/D pad",
+    "-- exactly ro_nand2's own 'py'/'y' finding, minus the starve pair's own",
+    "extra vddr/vss gate-routing legs.",
+    "",
+    "mpa/mpb/mnab keep the IDENTICAL origins_um ro_nand2 uses for its own",
+    "same-shaped blocks (so the already-proven core.compose.response.json",
+    "port coordinates and final-stage waypoints_um for the 'y' net carry over",
+    "unchanged); nwell_tap/psub_tap are repositioned to abut mpa/mnab",
+    "directly (no starve device to abut instead), using klt gen's own",
+    "reported local bboxes/ports for guard_ring(add_well=true/false) and",
+    "mos_array(pfet 0.84/0.15, nfet 0.84/0.15 fingers=2 series) transformed",
+    "by each block's own orientation (none/mirror_y/rotate_180) to place",
+    "nwell_tap's TAP_E at mpa.U0_S's own y (3.74um, a direct wire once both",
+    "are promoted to the final stage) and psub_tap's TAP_E at mnab.U0_S0's",
+    "own y (0.21um, wired directly in the base stage since this 2-way net,",
+    "unlike vdd/y, has no far-side conflict -- the same reason ro_nand2's own",
+    "'ny' net, mnt.U0_D<->mnab.U0_S0, routed directly in its base stage)."
+  ],
+  "pdk": {
+    "variant": "sky130A",
+    "deck": "sky130"
+  },
+  "stages": [
+    {
+      "name": "core",
+      "blocks": [
+        {"id": "mpa", "generator": "mos_array", "cell_name": "mpa", "orientation": "mirror_y",
+         "params": {"w_um": 0.84, "l_um": 0.15, "rows": 1, "cols": 1, "dummy": 0, "flavor": "pfet", "gate_contact": true}},
+        {"id": "mpb", "generator": "mos_array", "cell_name": "mpb", "orientation": "rotate_180",
+         "params": {"w_um": 0.84, "l_um": 0.15, "rows": 1, "cols": 1, "dummy": 0, "flavor": "pfet", "gate_contact": true}},
+        {"id": "mnab", "generator": "mos_array", "cell_name": "mnab", "orientation": "none",
+         "params": {"w_um": 0.84, "l_um": 0.15, "rows": 1, "cols": 1, "fingers": 2, "finger_topology": "series", "dummy": 0, "flavor": "nfet", "gate_contact": true}},
+        {"id": "nwell_tap", "generator": "guard_ring", "cell_name": "nwell_tap", "orientation": "none",
+         "params": {"inner_width_um": 1.0, "inner_height_um": 1.0, "ring_width_um": 0.42, "contacts_per_side": 2, "add_well": true}},
+        {"id": "psub_tap", "generator": "guard_ring", "cell_name": "psub_tap", "orientation": "none",
+         "params": {"inner_width_um": 1.0, "inner_height_um": 1.0, "ring_width_um": 0.42, "contacts_per_side": 2, "add_well": false}}
+      ],
+      "placement": {
+        "strategy": "explicit",
+        "order": ["nwell_tap", "mpa", "mpb", "psub_tap", "mnab"],
+        "origins_um": {
+          "mpa": {"x": 3.04, "y": 4.16},
+          "mpb": {"x": 5.42, "y": 4.16},
+          "mnab": {"x": 3.24, "y": -0.21},
+          "nwell_tap": {"x": 1.00, "y": 2.82},
+          "psub_tap": {"x": 1.02, "y": -0.71}
+        }
+      },
+      "routing": {"layer_role": "metal", "width_um": 0.17},
+      "connectivity": [
+        {"net": "en", "pins": [{"block": "mpa", "port": "U0_G"}, {"block": "mnab", "port": "U0_G0"}]},
+        {"net": "a", "pins": [{"block": "mpb", "port": "U0_G"}, {"block": "mnab", "port": "U0_G1"}]},
+        {"net": "vss", "pins": [{"block": "psub_tap", "port": "TAP_E"}, {"block": "mnab", "port": "U0_S0"}]}
+      ],
+      "pins": [
+        {"block": "nwell_tap", "port": "TAP_E", "net": "nwell_vdd"},
+        {"block": "mpa", "port": "U0_S", "net": "mpa_py"},
+        {"block": "mpb", "port": "U0_S", "net": "mpb_py"},
+        {"block": "mpa", "port": "U0_D", "net": "mpa_y"},
+        {"block": "mpb", "port": "U0_D", "net": "mpb_y"},
+        {"block": "mnab", "port": "U0_S1", "net": "mnab_y"}
+      ]
+    },
+    {
+      "blocks": [
+        {"id": "core", "from_stage": "core"}
+      ],
+      "placement": {"strategy": "explicit", "order": ["core"], "origins_um": {"core": {"x": 0.0, "y": 0.0}}},
+      "routing": {"layer_role": "metal2", "width_um": 0.17},
+      "connectivity": [
+        {"net": "vdd", "pins": [{"block": "core", "port": "nwell_vdd"}, {"block": "core", "port": "mpa_py"}]},
+        {"net": "vdd", "pins": [{"block": "core", "port": "mpa_py"}, {"block": "core", "port": "mpb_py"}],
+         "waypoints_um": [[3.25, 4.5], [5.21, 4.5]]},
+        {"net": "y", "pins": [{"block": "core", "port": "mpa_y"}, {"block": "core", "port": "mpb_y"}]},
+        {"net": "y", "pins": [{"block": "core", "port": "mpb_y"}, {"block": "core", "port": "mnab_y"}],
+         "waypoints_um": [[4.54, 1.0], [4.79, 1.0]]}
+      ]
+    }
+  ],
+  "lvs": {
+    "reference": "layout/sampler_nand2/sampler_nand2.source.spice",
+    "subckt": "sampler_nand2"
+  }
+}

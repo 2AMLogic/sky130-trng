@@ -4,7 +4,34 @@ Physical layout evidence for the sky130-trng entropy source, verified with
 `klayout-tools` (`klt`) against the sky130 open PDK. See `layout/pdk.json`
 for the PDK/tool pin.
 
-**Status (issue #22, this increment): the whole array is extracted with
+**Status (issue #22, this increment): `sampler_dff`'s second and last
+missing leaf shape is composed.** [`layout/sampler_nand2/`](sampler_nand2/README.md)
+is `design/sampler_core.spice`'s `sampler_dff` subckt's `NANDM`/`NANDS2`
+gate — a plain rst_n-gated 2-input NAND2, structurally
+[`layout/ro_nand2/`](ro_nand2/README.md) minus its two always-on starve
+devices (both PMOS sources tie directly to `vdd`, the series NMOS pair's far
+end ties directly to `vss`) — **`klt drc` clean (0 violations)** and **`klt
+lvs` match** (4/4 devices, 6/6 nets) against a hand-authored micro-reference
+(`design/xschem/sampler_dff.sch` is flat, so there is no independently
+netlisted `.subckt sampler_nand2` in `design/*.spice` for `compose-cell.py`'s
+LVS to reference directly — same reason `layout/sampler_tg/` needed one).
+`mpa`/`mpb`/`mnab` reuse `ro_nand2`'s own `origins_um` unchanged (identical
+device shapes and sizes); `nwell_tap`/`psub_tap` were repositioned to abut
+`mpa`/`mnab` directly (no starve pair to abut instead) by transforming `klt
+gen`'s own standalone local bbox/port reports through each block's
+orientation, cross-checked against `ro_nand2`'s own committed evidence
+before use — the cell composed DRC/LVS-clean on the first attempt. With this
+and [`layout/sampler_tg/`](sampler_tg/README.md) (the transmission gate) plus
+[`layout/ro_buf/`](ro_buf/README.md) (the plain inverter, reusable as-is per
+`layout/xor2/`'s own `blocks[].cell` precedent), **all three of
+`sampler_dff`'s 22 devices now reduce to already-composed leaf shapes.**
+Still open (#27): assembling all 22 devices into one `sampler_dff` cell,
+placed and routed, and LVS-checked against `design/sampler_core.spice`'s
+real `.subckt sampler_dff`; then `sampler_core`'s own six-instance wiring;
+then a whole-chain (raw-tap-to-sampled-bit) post-layout PVT campaign. No
+`2AMLogic/klayout-tools` friction was found composing this cell.
+
+**A previous increment (issue #22): the whole array is extracted with
 parasitics and run through a full PVT post-layout campaign — array-level
 period, `wstv` ladder, XOR-tree combining fidelity and supply current, plus
 a tied/float/solo inter-ring substrate bracket on a REAL physically-placed
@@ -544,7 +571,7 @@ trng_top                   (not in scope for #22 — stops at the raw tap)
         ro_stage   (x4/ring)  BUILT, all 4 wstv values — DRC-clean + LVS-clean (layout/ro_stage/, ro_stage_wstv0p{44,46,48}/) — 4 distinct physical cells (one per ring's wstv), each reused 4x within its own ring
       ro_buf     (x4)        BUILT — DRC-clean + LVS-clean (layout/ro_buf/)
       xor2       (x3)        BUILT — DRC-clean + LVS-clean (layout/xor2/) — 4x mos_array (two series chains per tree) + 3x guard_ring + 2x ro_buf cell; one physical cell reused 3x (xa1/xa2/xa3 are identical instances)
-    sampler_dff  (x6)        LEAF PRIMITIVES STARTED, CELL NOT ASSEMBLED — transmission-gate master-slave DFF. layout/sampler_tg/ composes and LVS-verifies the one genuinely new leaf shape (a plain transmission gate, 4x per sampler_dff instance) DRC-clean + LVS-match (2/2 devices, 6/6 nets, against a hand-authored micro-reference — see that directory's README for why); mos_array is sufficient, no klayout-tools generator gap. The other two leaf shapes: 3x plain inverter (already ro_buf, reusable as-is per xor2's own blocks[].cell precedent) and 2x a plain rst_n-gated NAND2 (sampler_nand2, not yet composed — structurally ro_nand2 minus its two starve devices). Assembling all 22 devices into one sampler_dff cell and LVS-checking it against design/sampler_core.spice's own .subckt sampler_dff remains open (#27)
+    sampler_dff  (x6)        ALL LEAF SHAPES BUILT, CELL NOT ASSEMBLED — transmission-gate master-slave DFF. layout/sampler_tg/ composes the transmission gate (4x per sampler_dff instance) DRC-clean + LVS-match (2/2 devices, 6/6 nets, against a hand-authored micro-reference); layout/sampler_nand2/ composes the other missing leaf shape, a plain rst_n-gated NAND2 (2x per sampler_dff instance, structurally ro_nand2 minus its two starve devices) DRC-clean + LVS-match (4/4 devices, 6/6 nets, against a hand-authored micro-reference, reusing ro_nand2's own parallel-PMOS/series-NMOS floorplan and three-pin-net promote-then-resolve technique); mos_array is sufficient for both, no klayout-tools generator gap. The third leaf shape (3x plain inverter) is already ro_buf, reusable as-is per xor2's own blocks[].cell precedent. Assembling all 22 devices into one sampler_dff cell and LVS-checking it against design/sampler_core.spice's own .subckt sampler_dff remains open (#27)
 ```
 
 "PROVEN AT DEVICE LEVEL" means: every transistor geometry the cell needs is
