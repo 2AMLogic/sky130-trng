@@ -609,8 +609,18 @@ that lands this document):
   feedback gates run the opposite clock phase from their own stage's input
   gate, `clk` and `clkb` cannot be two mirrored buses; that increment
   reserved a separate `met1` corridor at `y ≈ 0.40` for `clkb` rather than
-  consuming it. `clkb` fan-out, the six data-path nets, and the
-  whole-cell `klt lvs` sign-off remain open (#27). Note also that
+  consuming it. **A later increment routed `clkb`**: the differential
+  half of `clk`'s own fan-out, across five stages taking the reserved
+  `met1` corridor with two `met1`→`met2`→`met1` bridges hopping over
+  `sampler_nand2`'s own internal `met1` blobs and two east-side jogs
+  dodging `clk`'s own via-drop pads at the shared `tg_fbm`/`tg_s`
+  columns — `klt drc` clean (0 violations), cell bbox unchanged, and
+  `klt extract`'s net count drops from 27 to 23 (exactly the four merges
+  a five-pin net makes), with the merged net's own six-device list
+  matching `design/sampler_core.spice`'s
+  `XMpc`/`XMnc`/`XMtdn`/`XMfsn`/`XMfmp`/`XMtsp` exactly. The six
+  data-path nets and the whole-cell `klt lvs` sign-off remain open (#27).
+  Note also that
   "DRC-clean" here means clean against `klt`'s **curated** sky130 deck (a
   documented subset — see each `drc.json`'s own `coverage` block), not a
   full sky130 sign-off deck.

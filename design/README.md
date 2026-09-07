@@ -350,10 +350,18 @@ DR-0003 surfaces and does not resolve on its own authority.
   runs the opposite phase from its own stage's input gate — is exactly why
   `clk` and `clkb` cannot be two mirrored buses, so the same increment
   reserved (but did not draw) a separate `met1` corridor at `y ≈ 0.40` for
-  `clkb`. `klt lvs` is still not expected to match: `clkb` and the six
-  data-path nets (`m`/`mb`/`mc`/`s`/`q`/`qb`) remain open (#27) — see
-  `layout/sampler_dff/README.md`'s "Why `clk` and `clkb` cannot be two
-  mirrored lanes" and "What remains".
+  `clkb`. The next increment routed that corridor: `clkb`'s own five-pin
+  fan-out, across five stages (two `met1` long-haul segments, two
+  `met1`→`met2`→`met1` bridges hopping over `sampler_nand2`'s own internal
+  `met1` blobs, and two east-side jogs dodging `clk`'s own via-drop pads at
+  the shared `tg_fbm`/`tg_s` columns) — also **DRC-clean (0 violations)**,
+  with `klt extract`'s net count dropping from 27 to 23 (exactly the four
+  merges a five-pin net makes) and the merged net's own six-device list
+  matching `design/sampler_core.spice`'s
+  `XMpc`/`XMnc`/`XMtdn`/`XMfsn`/`XMfmp`/`XMtsp` exactly. `klt lvs` is still
+  not expected to match: the six data-path nets (`m`/`mb`/`mc`/`s`/`q`/`qb`)
+  remain open (#27) — see `layout/sampler_dff/README.md`'s "Result: `clkb`
+  fan-out" and "What remains".
 
   A prior increment wired the XOR combining tree's inputs:
   that directory's

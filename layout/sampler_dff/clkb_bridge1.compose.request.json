@@ -8,8 +8,8 @@
       "cell": {
         "ports": [
           {
-            "name": "hop2e",
-            "x_um": 44.9,
+            "name": "hop1w",
+            "x_um": 11.8,
             "y_um": 0.4,
             "layer": {
               "layer": 68,
@@ -19,19 +19,19 @@
             "direction_deg": 0
           },
           {
-            "name": "tg_fbs_ctrlb",
-            "x_um": 49.03,
-            "y_um": 1.03,
+            "name": "hop1e",
+            "x_um": 14.0,
+            "y_um": 0.4,
             "layer": {
-              "layer": 67,
+              "layer": 68,
               "datatype": 20
             },
-            "width_um": 0.42,
-            "direction_deg": 90
+            "width_um": 0.17,
+            "direction_deg": 0
           }
         ],
-        "cell_name": "clkb_bridge2",
-        "gds_path": "clkb_bridge2.gds"
+        "cell_name": "clkb_seg1",
+        "gds_path": "clkb_seg1.gds"
       }
     }
   ],
@@ -48,45 +48,27 @@
     }
   },
   "routing": {
-    "layer_role": "metal2",
+    "layer_role": "metal3",
     "width_um": 0.17
   },
   "connectivity": [
     {
-      "net": "clkb",
+      "net": "clkb_bridge1",
       "pins": [
         {
           "block": "core",
-          "port": "hop2e"
+          "port": "hop1w"
         },
         {
           "block": "core",
-          "port": "tg_fbs_ctrlb"
-        }
-      ],
-      "legs": [
-        {
-          "from_pin": {
-            "block": "core",
-            "port": "hop2e"
-          },
-          "to_pin": {
-            "block": "core",
-            "port": "tg_fbs_ctrlb"
-          },
-          "waypoints_um": [
-            [
-              49.03,
-              0.4
-            ]
-          ]
+          "port": "hop1e"
         }
       ]
     }
   ],
   "pins": [],
   "options": {
-    "cell_name": "sampler_dff",
-    "output": "sampler_dff.gds"
+    "cell_name": "clkb_bridge1",
+    "output": "clkb_bridge1.gds"
   }
 }

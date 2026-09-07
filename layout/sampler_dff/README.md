@@ -1,19 +1,60 @@
 # layout/sampler_dff
 
-**`sampler_dff` assembly, continued: the five-pin `clk` fan-out is now
-routed, DRC-clean, and lands on exactly the right six transistor gates
-(issue #22).** `clk` is the first *fan-out* net in this cell — `vdd`/`vss`
-are rails and `rst_n` was a two-pin point-to-point — and the first to be
-drawn as a `gen-compose` **bundle net** with hand-steered
-`connectivity[].legs[]`. Two stages: `clk_met1` vias all five pins straight
-up from `li1` to `met1` (zero lateral distance, the same single-hop
-via-drop `rst_n_met1` already uses), and the final stage runs the entire
-long haul on `met2`/`"metal3"` as one basement lane at `y = -1.70` with a
-vertical drop at each pin's own x. **0 DRC violations, 0 unrouted nets, and
-the cell bbox is unchanged** (`-2.19 .. 50.47 x -3.585 .. 7.085` µm — the
-lane fits under the device rows and inside the existing `vss` bus's own
-vertical extent). Still open: `clkb` and the six `m`/`mb`/`mc`/`s`/`q`/`qb`
+**`sampler_dff` assembly, continued: `clkb`'s own five-pin fan-out is now
+routed too, DRC-clean, landing on exactly the six transistor gates
+`design/sampler_core.spice` puts it on (issue #22).** `clkb` is `clk`'s
+differential pair, but — as `clk`'s own increment already derived and
+recorded below — it cannot reuse `clk`'s own `met2` lane: the two nets'
+verticals share four of five x-columns (`tg_d`/`tg_fbm`/`tg_s`/`tg_fbs`'s
+`ctrl`/`ctrlb` pins sit at identical x, opposite y, on each transmission
+gate), so any single `met2` lane for `clkb` would cross `clk`'s own
+verticals in the middle. `clkb` instead takes the `met1` corridor `clk`'s
+own final stage reserved (`y ≈ 0.40`), with two short `met1`→`met2`→`met1`
+bridges (`clkb_bridge1`/`clkb_bridge2`) hopping over `sampler_nand2`'s own
+internal `met1` blobs exactly where `clk`'s own long haul also had to stay
+clear of them, and two east-side jogs (in `clkb_seg2`) around `clk`'s own
+via-drop pads at the `tg_fbm`/`tg_s` columns, the two places a straight
+drop from `clkb`'s own pin down to the corridor would otherwise run
+through `clk`'s own metal on the same layer. Five stages
+(`clkb_seg1`/`clkb_bridge1`/`clkb_seg2`/`clkb_bridge2`, plus the new final
+stage), all `met1`/`met2`, no cell-bbox growth. **0 DRC violations, `klt
+extract` merges exactly the four pin pairs a five-pin net should, and the
+merged net's own six-device list matches `design/sampler_core.spice`'s
+`XMpc`/`XMnc`/`XMtdn`/`XMfmp`/`XMtsp`/`XMfsn` exactly** — see "Result:
+`clkb` fan-out" below. Still open: the six `m`/`mb`/`mc`/`s`/`q`/`qb`
 data-path nets — see "What remains" below.
+
+**Environment note (klayout-tools `legs[]` support): verify the installed
+`klt` actually implements the request field you are about to use, not just
+its own `--version` string.** The host's installed `klt`
+(`~/.local/bin/klt`, a `uv tool`) reported `0.4.0+g59c2a2873c17.dirty` —
+plausible-looking, same major/minor as the `klayout-tools` git checkout —
+but its own `gen_compose.py` predates `connectivity[].legs[]` (issue
+#1529) entirely: no `_parse_legs` function at all.
+`_parse_connectivity` does not reject an unrecognized `"legs"` key, so a
+request built for `legs[]` composes *without error* against this build —
+every named leg's own `waypoints_um` is silently dropped, and
+`route_bundle()` falls back to its default nearest-first search with no
+caller-supplied steering, which can still report `routed: true` while
+having drawn a *different* path than the one requested (in this case, a
+straight one-jog backbone that ran directly through `clk`'s own via-drop
+pad — caught only because `klt extract`'s own device-list check, not
+`gen-compose`'s own `unrouted_nets`/DRC signal, disagreed with the
+intended connectivity). Confirmed by installing the `klayout-tools` git
+checkout (`fdc5018`, includes `legs[]` via #1536) into a scratch venv and
+re-running: `entry.get("legs")` is `None` on the stale build,
+`route_bundle()`'s own `explicit_legs` argument is `None` in a trace, and
+the same request routes exactly as authored once the venv's `klt` — the
+one this increment's own evidence was built with — is used instead. The
+underlying install-staleness itself is the same class PR #80 already hit
+and worked around the same way (see its own "Environment note for
+reviewers") — not a tool defect on its own — but the *silent* fallback (no
+error, no warning, a request field simply ignored by an older build) is a
+generic tool gap: filed as
+[`2AMLogic/klayout-tools#1548`](https://github.com/2AMLogic/klayout-tools/issues/1548)
+(an unrecognized `connectivity[]` key, e.g. `legs`, should be a hard parse
+error, not a silent no-op, since a `routed: true` response can otherwise
+diverge from the caller's own intended path with no signal at all).
 
 **Why `clk` and `clkb` cannot be two mirrored lanes.** The obvious plan for
 a differential clock pair — one bus above the device rows, one below, each
@@ -71,7 +112,40 @@ for no benefit. `y = 1.03` is chosen for that reason, not for a DRC one.
 No `2AMLogic/klayout-tools` friction was filed either way: nothing about
 this is a tool gap.
 
-## Result: `clk` fan-out (this increment)
+## Result: `clkb` fan-out (this increment)
+
+| Stage | Verdict | Evidence |
+|---|---|---|
+| `klt gen-compose` (`clkb_seg1`, `metal2`/met1 role, 3-pin bundle, 2 `legs[]`) | `inv_clk_y` → `tg_d_ctrlb` → `hop1w` (a bare waypoint pin, no device) — **routed, 11.96 µm over two legs (4.84 / 7.12 µm)**, 0 unrouted, 0 warnings | `clkb_seg1.compose.request.json`, `clkb_seg1.compose.response.json`, `clkb_seg1.gds` |
+| `klt gen-compose` (`clkb_bridge1`, `metal3`/met2 role, 2-pin) | `hop1w` → `hop1e`, a met1→met2→met1 hop clearing `sampler_nand2`'s own `nand_m` blob (global x `12.24..13.575`) — **routed, 2.20 µm**, 0 unrouted | `clkb_bridge1.compose.request.json/response.json`, `clkb_bridge1.gds` |
+| `klt gen-compose` (`clkb_seg2`, `metal2`/met1 role, 4-pin bundle, 3 `legs[]`) | `hop1e` → `tg_fbm_ctrl` → `tg_s_ctrl` → `hop2w` — **routed, 34.39 µm over three legs (13.90 / 5.48 / 15.01 µm)**, the first and third jogging east around `clk`'s own via-drop pads at those two columns, 0 unrouted | `clkb_seg2.compose.request.json/response.json`, `clkb_seg2.gds` |
+| `klt gen-compose` (`clkb_bridge2`, `metal3`/met2 role, 2-pin) | `hop2w` → `hop2e`, the second met1→met2→met1 hop, clearing `nand_s2`'s own blob (global x `43.1..44.435`) — **routed, 2.25 µm**, 0 unrouted | `clkb_bridge2.compose.request.json/response.json`, `clkb_bridge2.gds` |
+| `klt gen-compose` (final stage, `metal2`/met1 role, 2-pin) | `hop2e` → `tg_fbs_ctrlb` — **routed, 4.76 µm**, 0 unrouted, 0 warnings | `compose.request.json`, `compose.response.json` |
+| `klt drc --deck sky130` (whole `sampler_dff.gds`) | **clean, 0 violations** | `drc.json` |
+| `klt extract --deck sky130` | **22 devices (11 nfet, 11 pfet)**, unchanged; `net_count` **27 → 23**, exactly the four merges a five-pin net makes. The merged net's own six-device list is the real check: `M$1`/`M$12` (`inv_clk` nfet/pfet, drain = `clkb`), `M$2` (`tg_d` **nfet**), `M$7` (`tg_fbs` **nfet**), `M$15` (`tg_fbm` **pfet**), `M$16` (`tg_s` **pfet**) — matching `XMpc`/`XMnc`/`XMtdn`/`XMfsn`/`XMfmp`/`XMtsp` exactly, with `clk`'s own merged group (still `a\|clk\|ctrl\|ctrlb\|...`) staying a separate net | `extract.json`, `sampler_dff.spice` |
+| `klt lvs` vs. `design/sampler_core.spice`'s own `.subckt sampler_dff` | **mismatch, as expected** — 0/22 devices, 0/23 layout nets vs. 14 reference nets; the six data-path nets are still unwired and no top-level cell pins are promoted | `lvs.json` |
+
+Geometry, measured on the composed `sampler_dff.gds`: `clkb`'s own drawn
+metal is five separate merged shapes — three on `met1` (`1.69 .. 12.01 x
+0.19 .. 1.41`, `13.79 .. 42.86 x 0.19 .. 2.71`, `44.69 .. 49.24 x 0.19 ..
+1.24`) and two small `met2` bridges (`11.59 .. 14.21 x 0.19 .. 0.61`,
+`42.44 .. 45.11 x 0.19 .. 0.61`) — that `klt extract` still resolves to
+**one** electrical node, the same "drawn geometry, not JSON net-name
+bookkeeping" discipline `rst_n`'s own three-stage derivation already
+established. `clk`'s own `met2` polygon (`0.335 .. 49.24 x -1.785 ..
+2.71`) and `clkb`'s two `met2` bridges stay four *separate* merged shapes
+after `klt gen-compose`'s own region-merge pass, even though the bridges'
+x spans (`11.59 .. 14.21`, `42.44 .. 45.11`) sit well inside `clk`'s own
+x range — a bbox overlap, not a shape one: `clk`'s polygon is one
+contiguous sheet up to `y = 2.71`, but its own drawn extent stops well
+short of `y = 0.61` everywhere in that x range (the corridor `clk`'s own
+increment reserved and did not consume), so the two bridges never
+actually touch it. `klt drc`'s clean result is consistent with this: two
+same-layer shapes that *did* overlap would either merge into one polygon
+(a real short `klt extract` would also report as a merged node) or trip
+a spacing rule.
+
+## Result: `clk` fan-out (previous increment)
 
 | Stage | Verdict | Evidence |
 |---|---|---|
@@ -365,22 +439,6 @@ instance's own internal `metal2` wiring occupies (the tallest leaf,
 
 ## What remains (issue #27)
 
-- **`clkb` fan-out** — the other half of the clock pair: `inv_clk`'s own
-  output plus `tg_d.ctrlb` (`5.31, 1.03`), `tg_fbm.ctrl` (`24.6, 2.5`),
-  `tg_s.ctrl` (`29.74, 2.5`) and `tg_fbs.ctrlb` (`49.03, 1.03`). **`clk`'s
-  own scheme cannot simply be mirrored** — see "Why `clk` and `clkb` cannot
-  be two mirrored lanes" at the top of this file. The corridor the `clk`
-  increment deliberately reserved for it, and did not consume, is: a `met1`
-  long haul at `y ≈ 0.40` (clear of `clk`'s own `met1` pads, whose lowest
-  edge is `y = 0.82`, and of the `vss` bus's own `met1` at `y = -0.29`),
-  with a short `met2` hop over each of the two `sampler_nand2` internal
-  `met1` blobs at `x` 12..14 and 43..45 — the only two places a `met1`
-  lane across this cell is blocked, and two places where `clk` has no
-  vertical to collide with. `clkb`'s own short `met1` risers to its four
-  gate pins would sit at each pin's own x, crossing `clk`'s `met2`
-  verticals on a *different layer* (not a short). None of this is drawn
-  yet; the numbers above are derived from the committed geometry but not
-  DRC-proven.
 - **The six data-path nets**: `m` (`TG_D.a`/`b` <-> `NAND_M.en` <->
   `TG_FBM.a`/`b`), `mb` (`NAND_M.y` <-> `inv_mc.a` <-> `TG_S.a`/`b`), `mc`
   (`inv_mc.y` <-> `TG_FBM.a`/`b`), `s` (`TG_S.a`/`b` <-> `inv_q.a` <->

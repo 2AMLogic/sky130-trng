@@ -1,0 +1,162 @@
+{
+  "pdk": {
+    "variant": "sky130A"
+  },
+  "blocks": [
+    {
+      "id": "core",
+      "cell": {
+        "ports": [
+          {
+            "name": "hop1e",
+            "x_um": 14.0,
+            "y_um": 0.4,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 0
+          },
+          {
+            "name": "tg_fbm_ctrl",
+            "x_um": 24.6,
+            "y_um": 2.5,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 270
+          },
+          {
+            "name": "tg_s_ctrl",
+            "x_um": 29.74,
+            "y_um": 2.5,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 270
+          },
+          {
+            "name": "hop2w",
+            "x_um": 42.65,
+            "y_um": 0.4,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 0
+          }
+        ],
+        "cell_name": "clkb_bridge1",
+        "gds_path": "clkb_bridge1.gds"
+      }
+    }
+  ],
+  "placement": {
+    "strategy": "explicit",
+    "order": [
+      "core"
+    ],
+    "origins_um": {
+      "core": {
+        "x": 0.0,
+        "y": 0.0
+      }
+    }
+  },
+  "routing": {
+    "layer_role": "metal2",
+    "width_um": 0.17
+  },
+  "connectivity": [
+    {
+      "net": "clkb_mid",
+      "pins": [
+        {
+          "block": "core",
+          "port": "hop1e"
+        },
+        {
+          "block": "core",
+          "port": "tg_fbm_ctrl"
+        },
+        {
+          "block": "core",
+          "port": "tg_s_ctrl"
+        },
+        {
+          "block": "core",
+          "port": "hop2w"
+        }
+      ],
+      "legs": [
+        {
+          "from_pin": {
+            "block": "core",
+            "port": "hop1e"
+          },
+          "to_pin": {
+            "block": "core",
+            "port": "tg_fbm_ctrl"
+          },
+          "waypoints_um": [
+            [
+              25.2,
+              0.4
+            ],
+            [
+              25.2,
+              2.5
+            ]
+          ]
+        },
+        {
+          "from_pin": {
+            "block": "core",
+            "port": "tg_fbm_ctrl"
+          },
+          "to_pin": {
+            "block": "core",
+            "port": "tg_s_ctrl"
+          },
+          "waypoints_um": [
+            [
+              27.0,
+              2.5
+            ]
+          ]
+        },
+        {
+          "from_pin": {
+            "block": "core",
+            "port": "tg_s_ctrl"
+          },
+          "to_pin": {
+            "block": "core",
+            "port": "hop2w"
+          },
+          "waypoints_um": [
+            [
+              30.34,
+              2.5
+            ],
+            [
+              30.34,
+              0.4
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "pins": [],
+  "options": {
+    "cell_name": "clkb_seg2",
+    "output": "clkb_seg2.gds"
+  }
+}

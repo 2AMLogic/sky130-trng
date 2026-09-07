@@ -13,15 +13,11 @@
 * pin b,tg_fbm_b
 * pin b,tg_fbs_b
 * pin b,tg_s_b
-* pin ctrl,tg_fbm_ctrl
-* pin ctrl,tg_s_ctrl
-* pin ctrlb,tg_d_ctrlb
-* pin ctrlb,tg_fbs_ctrlb
+* pin clkb,clkb_bridge1,clkb_bridge2,clkb_mid,clkb_w,ctrl,ctrlb,inv_clk_y,tg_d_ctrlb,tg_fbm_ctrl,tg_fbs_ctrlb,tg_s_ctrl,y
 * pin en,nand_m_en
 * pin en,nand_s2_en
 * pin inv_clk_vdd,inv_mc_vdd,inv_q_vdd,mpa_py,mpb_py,nand_m_vdd,nand_s2_vdd,nwell_vdd,tg_d_vdd,tg_fbm_vdd,tg_fbs_vdd,tg_s_vdd,vdd
 * pin inv_clk_vss,inv_mc_vss,inv_q_vss,nand_m_vss,nand_s2_vss,tg_d_vss,tg_fbm_vss,tg_fbs_vss,tg_s_vss,vss
-* pin inv_clk_y,y
 * pin inv_mc_y,y
 * pin inv_q_y,y
 * pin mnab_y,mpa_y,mpb_y,nand_m_y,y
@@ -31,20 +27,24 @@
 + a|inv_mc_a a|inv_q_a
 + a|nand_m_a|nand_m_a_stub|nand_m_a_via|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|rst_n
 + a|tg_d_a a|tg_fbm_a a|tg_fbs_a a|tg_s_a b|tg_d_b b|tg_fbm_b b|tg_fbs_b
-+ b|tg_s_b ctrl|tg_fbm_ctrl ctrl|tg_s_ctrl ctrlb|tg_d_ctrlb ctrlb|tg_fbs_ctrlb
++ b|tg_s_b
++ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y
 + en|nand_m_en en|nand_s2_en
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss
-+ inv_clk_y|y inv_mc_y|y inv_q_y|y mnab_y|mpa_y|mpb_y|nand_m_y|y
++ inv_mc_y|y inv_q_y|y mnab_y|mpa_y|mpb_y|nand_m_y|y
 + mnab_y|mpa_y|mpb_y|nand_s2_y|y
 * device instance $1 r0 *1 0.545,0.21 nfet
-M$1 inv_clk_y|y
+M$1
++ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y
 + a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss
 + nfet L=0.15U W=0.42U AS=0.1974P AD=0.1974P PS=1.78U PD=1.78U
 * device instance $2 r0 *1 5.31,0.21 nfet
-M$2 a|tg_d_a ctrlb|tg_d_ctrlb b|tg_d_b
+M$2 a|tg_d_a
++ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y
++ b|tg_d_b
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss
 + nfet L=0.15U W=0.42U AS=0.1974P AD=0.1974P PS=1.78U PD=1.78U
 * device instance $3 r0 *1 19.835,0.21 nfet
@@ -70,33 +70,36 @@ M$6 inv_q_y|y a|inv_q_a
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss
 + nfet L=0.15U W=0.42U AS=0.1974P AD=0.1974P PS=1.78U PD=1.78U
 * device instance $7 r0 *1 49.03,0.21 nfet
-M$7 a|tg_fbs_a ctrlb|tg_fbs_ctrlb b|tg_fbs_b
+M$7 a|tg_fbs_a
++ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y
++ b|tg_fbs_b
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss
 + nfet L=0.15U W=0.42U AS=0.1974P AD=0.1974P PS=1.78U PD=1.78U
 * device instance $8 r0 *1 12.315,0.21 nfet
-M$8 \$10 en|nand_m_en
+M$8 \$8 en|nand_m_en
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss
 + nfet L=0.15U W=0.84U AS=0.3948P AD=0.2184P PS=2.62U PD=1.36U
 * device instance $9 r0 *1 12.985,0.21 nfet
 M$9 mnab_y|mpa_y|mpb_y|nand_m_y|y
 + a|nand_m_a|nand_m_a_stub|nand_m_a_via|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|rst_n
-+ \$10
++ \$8
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss
 + nfet L=0.15U W=0.84U AS=0.2184P AD=0.3948P PS=1.36U PD=2.62U
 * device instance $10 r0 *1 43.175,0.21 nfet
-M$10 \$18 en|nand_s2_en
+M$10 \$15 en|nand_s2_en
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss
 + nfet L=0.15U W=0.84U AS=0.3948P AD=0.2184P PS=2.62U PD=1.36U
 * device instance $11 r0 *1 43.845,0.21 nfet
 M$11 mnab_y|mpa_y|mpb_y|nand_s2_y|y
 + a|nand_m_a|nand_m_a_stub|nand_m_a_via|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|rst_n
-+ \$18
++ \$15
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss
 + nfet L=0.15U W=0.84U AS=0.2184P AD=0.3948P PS=1.36U PD=2.62U
 * device instance $12 r0 *1 0.545,3.53 pfet
-M$12 inv_clk_y|y
+M$12
++ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y
 + a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
@@ -113,11 +116,15 @@ M$14 inv_mc_y|y a|inv_mc_a
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $15 r0 *1 24.6,3.53 pfet
-M$15 a|tg_fbm_a ctrl|tg_fbm_ctrl b|tg_fbm_b
+M$15 a|tg_fbm_a
++ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y
++ b|tg_fbm_b
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $16 r0 *1 29.74,3.53 pfet
-M$16 a|tg_s_a ctrl|tg_s_ctrl b|tg_s_b
+M$16 a|tg_s_a
++ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y
++ b|tg_s_b
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $17 r0 *1 36.545,3.53 pfet
