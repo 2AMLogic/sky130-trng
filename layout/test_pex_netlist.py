@@ -34,10 +34,18 @@ test covers that half:
   is the extractor's, and a declared port the extraction does not have is an
   error (the "terminals on the wrong node" case)
 - R and C element values are passed through untouched
+- ``--check``'s report comparison canonicalizes the extractor's OWN net
+  numbering (issue #93) -- an anonymous net relabelled ``\\$3`` -> ``\\$4``
+  by a different ``klt`` build, or a permuted ``net_id``, is not verdict
+  drift, while any change to an R, a C, a count, a terminal or a connection
+  still is (the "a cosmetic upstream relabel reads as a failed
+  reproducibility gate" case, and its far more dangerous inverse, "a real
+  parasitic change hides inside a canonicalization that is too eager")
 """
 
 from __future__ import annotations
 
+import copy
 import importlib.util
 import sys
 from pathlib import Path
@@ -295,6 +303,205 @@ def check_wrapper_port_order() -> None:
     )
 
 
+# --------------------------------------------------------------------------
+# canonicalizing the extractor's own net numbering (issue #93)
+# --------------------------------------------------------------------------
+
+#: An extraction report's `parasitics` block for a two-device cell with one
+#: named net (`y`) and one extractor-anonymous net (`\$3`), shaped exactly
+#: like layout/pex/reports/*.extract.json's. `_renumbered()` below produces
+#: the SAME cell as a different klt build spells it: the anonymous net is
+#: `\$4`, and every net_id is permuted. That is the whole of the drift
+#: measured on this repo's ro_nand2 cells in issue #93.
+PARASITICS = {
+    "r_count": 4,
+    "c_count": 2,
+    "total_resistance_ohm": 100.0,
+    "total_capacitance_ff": 1.5,
+    "substrate_dc_tie": {"resistance_ohm": 1e12},
+    "nets": [
+        {
+            "net": "\\$3",
+            "net_id": 3,
+            "resistance_ohm": 25.6,
+            "capacitance_ff": 0.115618,
+            "hub_net": "\\$3",
+            "rc_model": "lumped",
+            "terminals": [
+                {"device": "$2", "terminal": "D", "leg_net": "\\$3__t0",
+                 "resistance_ohm": 12.8},
+                {"device": "$3", "terminal": "S", "leg_net": "\\$3__t1",
+                 "resistance_ohm": 12.8},
+            ],
+            "segments": [],
+            "coupled": [],
+        },
+        {
+            "net": "y",
+            "net_id": 6,
+            "resistance_ohm": 74.4,
+            "capacitance_ff": 1.384382,
+            "hub_net": "y",
+            "rc_model": "lumped",
+            "terminals": [
+                {"device": "$2", "terminal": "S", "leg_net": "y__t0",
+                 "resistance_ohm": 74.4},
+            ],
+            "segments": [],
+            "coupled": [{"net": "\\$3", "capacitance_ff": 0.0159, "levels": [[0, 1]]}],
+        },
+    ],
+}
+
+
+def _renumbered() -> dict:
+    """The same cell as a different klt build numbers it."""
+    other = copy.deepcopy(PARASITICS)
+    anon, named = other["nets"]
+    anon["net"] = anon["hub_net"] = "\\$4"
+    anon["net_id"] = 4
+    for index, terminal in enumerate(anon["terminals"]):
+        terminal["leg_net"] = f"\\$4__t{index}"
+    named["net_id"] = 2
+    named["coupled"][0]["net"] = "\\$4"
+    # ...and emits the nets in the new counter's order, not the old one's.
+    other["nets"] = [named, anon]
+    return other
+
+
+def check_canonicalization_absorbs_pure_renumbering() -> None:
+    left = pex.canonical_parasitics(PARASITICS)
+    right = pex.canonical_parasitics(_renumbered())
+    _check(
+        "canonical_parasitics: a pure \\$3->\\$4 relabel + net_id permutation "
+        "compares equal",
+        left == right,
+        f"{left!r}\n!=\n{right!r}",
+    )
+    _check(
+        "canonical_parasitics: the anonymous net is keyed on its own device "
+        "terminals, not on the extractor's counter",
+        left["nets"][0]["net"] == "\\$anon($2.D,$3.S)",
+        str([n["net"] for n in left["nets"]]),
+    )
+    _check(
+        "canonical_parasitics: net_id is dropped on both sides",
+        not any("net_id" in n for n in left["nets"]),
+        str(left["nets"]),
+    )
+    _check(
+        "canonical_parasitics: a named net keeps its own name",
+        any(n["net"] == "y" for n in left["nets"]),
+        str([n["net"] for n in left["nets"]]),
+    )
+    for field in ("r_count", "c_count", "total_resistance_ohm",
+                  "total_capacitance_ff", "substrate_dc_tie"):
+        _check(
+            f"canonical_parasitics: passes `{field}` through untouched",
+            left[field] == PARASITICS[field],
+            f"{left[field]!r}",
+        )
+    _check(
+        "compare_report: a pure relabel is not reported as drift",
+        pex.compare_report(
+            {"parasitics": PARASITICS}, {"parasitics": _renumbered()}, "demo"
+        )
+        == [],
+    )
+
+
+def _net(parasitics: dict, name: str) -> dict:
+    """The net entry called *name*, whatever order the block lists nets in."""
+    return next(n for n in parasitics["nets"] if n["net"] == name)
+
+
+def check_canonicalization_still_sees_real_change() -> None:
+    """The dangerous inverse: a real parasitic change must NOT be absorbed."""
+    for label, mutate in (
+        ("a per-net resistance",
+         lambda p: _net(p, "y").update(resistance_ohm=99.9)),
+        ("a per-net capacitance",
+         lambda p: _net(p, "\\$4").update(capacitance_ff=0.9)),
+        ("a total", lambda p: p.update(total_resistance_ohm=101.0)),
+        ("a count", lambda p: p.update(r_count=5)),
+        ("a coupling value",
+         lambda p: _net(p, "y")["coupled"][0].update(capacitance_ff=0.5)),
+        ("a coupling partner",
+         lambda p: _net(p, "y")["coupled"][0].update(net="vss")),
+        ("a terminal's device",
+         lambda p: _net(p, "y")["terminals"][0].update(device="$9")),
+        ("a terminal's leg resistance",
+         lambda p: _net(p, "\\$4")["terminals"][0].update(resistance_ohm=1.0)),
+        ("the substrate tie",
+         lambda p: p.update(substrate_dc_tie={"resistance_ohm": 1.0})),
+        ("a dropped net", lambda p: p["nets"].remove(_net(p, "y"))),
+    ):
+        changed = _renumbered()
+        mutate(changed)
+        drift = pex.compare_report(
+            {"parasitics": PARASITICS}, {"parasitics": changed}, "demo"
+        )
+        _check(
+            f"compare_report: canonicalization does NOT hide a change to {label}",
+            drift != [],
+            "no drift reported",
+        )
+    _check(
+        "compare_report: a non-parasitic verdict field is still compared",
+        pex.compare_report(
+            {"device_count": 6, "parasitics": PARASITICS},
+            {"device_count": 7, "parasitics": _renumbered()},
+            "demo",
+        )
+        != [],
+    )
+
+
+def check_canonicalization_cannot_merge_two_nets() -> None:
+    """Two anonymous nets that share a structural key must be an error.
+
+    A collision would make two distinct nets compare as one, which is the
+    same class of silent failure `rewrite_cell`'s injectivity guard exists
+    to prevent -- so it is loud here too rather than "close enough".
+    """
+    colliding = copy.deepcopy(PARASITICS)
+    twin = copy.deepcopy(colliding["nets"][0])
+    twin["net"] = twin["hub_net"] = "\\$7"
+    colliding["nets"].append(twin)
+    _raises(
+        lambda: pex.canonical_parasitics(colliding),
+        "canonical_parasitics: two anonymous nets sharing a structural key is "
+        "an error",
+        "share the structural key",
+    )
+    detached = copy.deepcopy(PARASITICS)
+    detached["nets"][0]["terminals"] = []
+    _raises(
+        lambda: pex.canonical_parasitics(detached),
+        "canonical_parasitics: an anonymous net with no terminals is an error",
+        "no device terminals",
+    )
+
+
+def check_anonymous_base() -> None:
+    for name, expected in (
+        ("\\$3", "\\$3"),
+        ("\\$3__t0", "\\$3"),
+        ("$12", "$12"),
+        ("$12__t7", "$12"),
+        ("a", None),
+        ("a__t0", None),
+        ("vsubs", None),
+        ("mnab_y|mpa_y|mpb_y|y", None),
+        ("n3", None),
+    ):
+        _check(
+            f"anonymous_base({name!r}) -> {expected!r}",
+            pex.anonymous_base(name) == expected,
+            repr(pex.anonymous_base(name)),
+        )
+
+
 def main() -> int:
     check_device_card_contract()
     check_joined_net_rename()
@@ -304,6 +511,10 @@ def main() -> int:
     check_continuation_lines_are_folded()
     check_unknown_element_card_is_an_error()
     check_wrapper_port_order()
+    check_anonymous_base()
+    check_canonicalization_absorbs_pure_renumbering()
+    check_canonicalization_still_sees_real_change()
+    check_canonicalization_cannot_merge_two_nets()
 
     return _checker.summary("layout/test_pex_netlist.py")
 
