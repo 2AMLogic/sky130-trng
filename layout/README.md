@@ -4,7 +4,32 @@ Physical layout evidence for the sky130-trng entropy source, verified with
 `klayout-tools` (`klt`) against the sky130 open PDK. See `layout/pdk.json`
 for the PDK/tool pin.
 
-**Status (issue #22, this increment): `sampler_dff`'s first data-path net,
+**Status (issue #22, this increment): `sampler_dff`'s second data-path net,
+`q`, is routed — DRC-clean on the first attempt, and the first data-path net
+needing only one `gen-compose` stage.** `q` (`inv_q.y` → `nand_s2.en`,
+`design/sampler_core.spice`'s own `XMisp`/`XMisn`/`XMis2pa`/`XMis2na`) is
+the second of the six `m`/`mb`/`mc`/`s`/`q`/`qb` data-path nets #27 left
+open after `rst_n`/`clk`/`clkb`/`mc`. Unlike `mc`, this net needs no
+via-then-bus split: `klt`'s own layout database shows `met1` is completely
+empty across the whole span except `sampler_nand2`'s own internal `met1`
+via stack at `nand_s2` (`x = 43.845..44.435`, the same obstruction
+`rst_n`/`clk`/`clkb` all had to route around at other columns), and this
+net's own east pin, `nand_s2.en` at `x = 43.075`, sits far enough west of
+that blob (`0.77 µm` to its near edge) that a route which never crosses
+`x = 43.845` has no reason to detour at all — so one `metal2`-role
+(`met1`) stage vias both pins and runs the whole L-shaped haul
+(`5.95 µm`: `5.175 µm` east + `0.775 µm` north) on `met1` itself, the same
+single-stage recipe `clkb_seg1` already established for a one-hop route.
+**`klt drc` clean, 0 violations, first attempt; cell bbox unchanged**;
+`klt extract`'s net count drops from 22 to **21** (the one merge a
+two-pin net makes), and the merged net's own four-device list —
+`inv_q`'s own PMOS/NMOS output pair (`XMisp`/`XMisn`) plus `NAND_S2`'s two
+`en`-gated devices, the parallel PMOS and the input-side series NMOS
+(`XMis2pa`/`XMis2na`) — matches `design/sampler_core.spice` exactly. See
+`layout/sampler_dff/README.md`'s "Result: `q` fan-out" for the full
+derivation and "What remains" for the four nets still open.
+
+**A previous increment (issue #22): `sampler_dff`'s first data-path net,
 `mc`, is routed — DRC-clean on the first attempt.** `mc`
 (`inv_mc.y` → `tg_fbm.a`, `design/sampler_core.spice`'s own
 `XMim2p`/`XMim2n`/`XMfmp`/`XMfmn`) is the first of the six `m`/`mb`/`mc`/
