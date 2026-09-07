@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "generator": "gen-compose",
-  "cell_name": "rst_n_met1",
-  "gds_path": "rst_n_met1.gds",
+  "cell_name": "q_met1",
+  "gds_path": "q_met1.gds",
   "pdk": {
     "name": "sky130A",
     "variant": "sky130A",
@@ -21,7 +21,7 @@
       "id": "core",
       "source": "cell",
       "generator": null,
-      "cell_name": "route_supplies",
+      "cell_name": "q_stub",
       "offset_um": {
         "x": 0.0,
         "y": 0.0
@@ -37,15 +37,15 @@
   ],
   "nets": [
     {
-      "net": "nand_m_en_via",
+      "net": "inv_q_y_via",
       "pins": [
         {
           "block": "core",
-          "port": "nand_m_en"
+          "port": "inv_q_y"
         },
         {
           "block": "core",
-          "port": "nand_m_en_m1"
+          "port": "inv_q_y_m1"
         }
       ],
       "routed": true,
@@ -56,11 +56,11 @@
           "pins": [
             {
               "block": "core",
-              "port": "nand_m_en"
+              "port": "inv_q_y"
             },
             {
               "block": "core",
-              "port": "nand_m_en_m1"
+              "port": "inv_q_y_m1"
             }
           ],
           "routed": true,
@@ -70,15 +70,15 @@
       ]
     },
     {
-      "net": "nand_s2_en_via",
+      "net": "nand_s2_a_via",
       "pins": [
         {
           "block": "core",
-          "port": "nand_s2_en"
+          "port": "nand_s2_a_ext"
         },
         {
           "block": "core",
-          "port": "nand_s2_en_m1"
+          "port": "nand_s2_a_ext_m1"
         }
       ],
       "routed": true,
@@ -89,11 +89,11 @@
           "pins": [
             {
               "block": "core",
-              "port": "nand_s2_en"
+              "port": "nand_s2_a_ext"
             },
             {
               "block": "core",
-              "port": "nand_s2_en_m1"
+              "port": "nand_s2_a_ext_m1"
             }
           ],
           "routed": true,

@@ -8,28 +8,6 @@
       "cell": {
         "ports": [
           {
-            "name": "nand_m_a",
-            "x_um": 13.43,
-            "y_um": 2.71,
-            "layer": {
-              "layer": 67,
-              "datatype": 20
-            },
-            "width_um": 0.17,
-            "direction_deg": 0
-          },
-          {
-            "name": "nand_m_a_ext",
-            "x_um": 14.0,
-            "y_um": 2.71,
-            "layer": {
-              "layer": 67,
-              "datatype": 20
-            },
-            "width_um": 0.17,
-            "direction_deg": 0
-          },
-          {
             "name": "nand_s2_a",
             "x_um": 44.29,
             "y_um": 2.71,
@@ -52,8 +30,8 @@
             "direction_deg": 0
           }
         ],
-        "cell_name": "route_supplies",
-        "gds_path": "route_supplies.gds"
+        "cell_name": "mc_bus",
+        "gds_path": "mc_bus.gds"
       }
     }
   ],
@@ -75,19 +53,6 @@
   },
   "connectivity": [
     {
-      "net": "nand_m_a_stub",
-      "pins": [
-        {
-          "block": "core",
-          "port": "nand_m_a"
-        },
-        {
-          "block": "core",
-          "port": "nand_m_a_ext"
-        }
-      ]
-    },
-    {
       "net": "nand_s2_a_stub",
       "pins": [
         {
@@ -103,7 +68,7 @@
   ],
   "pins": [],
   "options": {
-    "cell_name": "rst_n_stub",
-    "output": "rst_n_stub.gds"
+    "cell_name": "q_stub",
+    "output": "q_stub.gds"
   }
 }

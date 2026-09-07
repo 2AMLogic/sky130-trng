@@ -4,7 +4,36 @@ Physical layout evidence for the sky130-trng entropy source, verified with
 `klayout-tools` (`klt`) against the sky130 open PDK. See `layout/pdk.json`
 for the PDK/tool pin.
 
-**Status (issue #22, this increment): `sampler_dff`'s `d` input pin is
+**Status (issue #84, this increment): the `sampler_nand2` input swap the
+`qb` increment below found is fixed — `rst_n` now wires to both instances'
+`en` pins and the data nets (`m`/`q`) to their `a` pins, `klt drc` stays
+clean (0 violations, cell bbox unchanged at `-2.19 .. 50.47` ×
+`-3.585 .. 7.085` µm), and `klt extract`'s device list for both the
+`nand_m_y` node and the `qb` node now shows the output-adjacent nfet gated
+by the data net, matching `design/sampler_core.spice`'s `XMimna`/`XMis2na`
+exactly.** The fix re-derives `rst_n`'s own three-stage stub escape (now
+two stages: `en` sits outside `sampler_nand2`'s internal `met1` blob, so no
+stub is needed — see `rst_n_met1` in `layout/sampler_dff/cell.json`) and
+`q`'s own route (now four stages: `nand_s2.a` sits *inside* that same blob,
+so `q` inherits the stub escape `rst_n` no longer needs, plus a
+`met1`→`met2` plane change the corrected destination's own obstruction
+geometry requires — see `q_stub`/`q_met1`/`q_met2`/`q_bus`). **It also
+re-derives one already-merged route it displaces**: `q`'s new `met2` stack
+lands squarely on the plane the `s` increment below runs its long haul on,
+so `s`'s own east leg is re-steered around it (same three pins, same
+`s_met1` stage, same lane height at both ends — only the middle of leg 2
+moves). `klt extract`'s own net count is unchanged at **18**, device count
+unchanged at **22**, and `klt lvs` against `design/sampler_core.spice`'s
+`.subckt sampler_dff` improves to **15/22 devices, 7/14 nets** (from 12/22,
+5/14) with the `topology: nets were paired despite a name/identity
+conflict` fingerprint of the swap **gone** — the remaining 13 mismatches
+are exactly the categories every prior increment's own `lvs.json` already
+showed (`device.unmatched`, `net.split`, `net.merged`; unwired `m`/`mb`),
+not a new regression. See `layout/sampler_dff/README.md`'s "Correction
+(issue #84): the `sampler_nand2` input swap is fixed" for the full
+derivation.
+
+**A previous increment (issue #22): `sampler_dff`'s `d` input pin is
 promoted to a real, labelled top-level port for the first time.** Five of
 the cell's six external pins (`clk`, `rst_n`, `q`, `vdd`, `vss`) already
 carried a genuine, correctly-spelled net-name label as a side effect of
@@ -30,6 +59,12 @@ substring, so it demoted every net's pin status to zero and left the
 See [`layout/sampler_dff/README.md`](sampler_dff/README.md)'s "Result: `d`
 pin promotion" for the full writeup. Whole-cell external pin promotion is
 now done for all six ports; what remains is `m`/`mb` and `#84`.
+
+> **Superseded in part by the issue #84 increment above.** The `d` label
+> itself is untouched (`klt extract` still reads `a|d|tg_d_a`) and the
+> `net_count` claim still holds at 18. Only the `klt lvs` verdict quoted
+> above is now historical: it reads **15/22 devices, 7/14 nets, 13
+> mismatches** as of the #84 fix, and `#84` is no longer open.
 
 **A previous increment (issue #22): `sampler_dff`'s fourth data-path net,
 `s`, is routed — DRC-clean, the cell's first three-pin data-path net, and
@@ -63,10 +98,29 @@ See [`layout/sampler_dff/README.md`](sampler_dff/README.md)'s "Result: `s`
 fan-out". Two data-path nets (`m`, `mb`) remain, and both touch `NAND_M`,
 so both are downstream of #84.
 
+> **Superseded in part by the issue #84 increment above.** The premise, the
+> three pins, the `s_met1` stage and the `y = 1.7` lane height at both ends
+> are unchanged, and the `y = 2.0` same-net-notch finding still stands. What
+> is now historical is "**one straight** `met2` lane": #84 moves `q`'s own
+> long haul onto `met2` directly across this lane's path (`q`'s east
+> climb occupies `x = 44.815 .. 44.985`, `y = 1.285 .. 2.5`, and its landing
+> pad `x = 44.69 .. 45.11`, `y = 2.5 .. 2.92`), and `rst_n`'s corrected `en`
+> via pad occupies `x = 42.865 .. 43.285` from `y = 1.765` up. `s`'s leg 2 is
+> therefore re-steered: `y = 1.7` east to `x = 40.0`, a **0.175 µm dip to
+> `y = 1.525`** (the exact middle of the 0.48 µm window between `q`'s lane
+> and `rst_n`'s pad) to `x = 44.0`, then a climb to **`y = 3.2`** — the first
+> `met2` lane clear of `q`'s landing pad — east to `x = 48.185` and back down
+> to the pin. Route length `20.29 → 23.64 µm`; **still `klt drc` clean, 0
+> violations, cell bbox unchanged**, tightest new-to-existing `met2` gap
+> **0.1555 µm** against sky130's 0.14 µm `met2.space.1`. The net's own
+> six-device list and the `net_count` of 18 are unaffected — this is the same
+> conductor on a different path.
+
 **A previous increment (issue #22): `sampler_dff`'s third data-path net,
 `qb`, is routed — DRC-clean — and its own device-list check found a
 pre-existing, LVS-blocking pin swap on both `sampler_nand2` instances
-(filed as [#84](https://github.com/2AMLogic/sky130-trng/issues/84)).**
+(filed as [#84](https://github.com/2AMLogic/sky130-trng/issues/84), fixed
+above).**
 `qb` (`nand_s2.y` → `tg_fbs.a`, `design/sampler_core.spice`'s own
 `XMis2pa`/`XMis2pb`/`XMis2na`/`XMfsp`/`XMfsn`) is the third of the six
 `m`/`mb`/`mc`/`s`/`q`/`qb` data-path nets #27 left open. It is the first
@@ -93,6 +147,11 @@ and is left for #84 rather than re-derived here, since fixing it re-does two
 already-merged increments. See
 [`layout/sampler_dff/README.md`](sampler_dff/README.md)'s "Result: `qb`
 fan-out" and "The `sampler_nand2` input swap the `qb` increment found".
+
+> **Superseded by the issue #84 increment above.** The `qb` node's own
+> five-device list, count, class and width claims above still hold; only
+> the fifth device's gate assignment claim is now current-tense wrong —
+> it is gated by `q` (matching `XMis2na`), not `rst_n`, as of the #84 fix.
 
 **A previous increment (issue #22): `sampler_dff`'s second data-path net,
 `q`, is routed — DRC-clean on the first attempt, and the first data-path net
@@ -123,6 +182,15 @@ superseded by the `qb` increment above: three of those four devices are
 `XMis2nb`'s `vss`-adjacent position rather than `XMis2na`'s — the
 [#84](https://github.com/2AMLogic/sky130-trng/issues/84) pin swap, not a
 property of the `q` route.)
+
+> **Superseded by the issue #84 increment above.** `q`'s own destination
+> pin changed (`nand_s2.en` → `nand_s2.a`) and with it the route itself —
+> `q` now lands on the output-adjacent device exactly as `XMis2na`
+> requires, the four-device-list claim above holds again in full, and the
+> route recipe grew from one `gen-compose` stage to four (`q_stub`/
+> `q_met1`/`q_met2`/`q_bus`) since the corrected destination sits inside
+> `sampler_nand2`'s own internal `met1` blob. See
+> `layout/sampler_dff/README.md`'s "Correction (issue #84)" section.
 
 **A previous increment (issue #22): `sampler_dff`'s first data-path net,
 `mc`, is routed — DRC-clean on the first attempt.** `mc`
@@ -229,6 +297,18 @@ are promoted yet) — see `layout/sampler_dff/README.md`'s "What remains" and
 its own "Why `rst_n` needed three routing stages, not one" for the full
 derivation, including two `li1.space.1` DRC violations hit and fixed along
 the way.
+
+> **Superseded by the issue #84 increment above.** `rst_n` wired to both
+> instances' **`a`** pins here — `design/sampler_core.spice` requires the
+> **`en`** pins instead (see "The `sampler_nand2` input swap" the `qb`
+> increment above found). The merged-net and DRC claims above described
+> real, DRC-clean geometry at the time, but on the wrong pin; issue #84
+> re-derives this net onto `en` (now two stages, not three — `en` sits
+> outside the internal `met1` blob the `a`-pin stub above existed to
+> escape, so no stub is needed) and the `a` pins are freed for the
+> data-path nets (`q`, and eventually `m`) that `design/sampler_core.spice`
+> actually puts there. See `layout/sampler_dff/README.md`'s "Correction
+> (issue #84)" section.
 
 **A previous increment (issue #22): `sampler_dff` assembly is started —
 placement plus the `vdd`/`vss` supply buses are DRC-clean.**

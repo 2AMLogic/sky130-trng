@@ -14,15 +14,15 @@
     "parameter_tolerance": null
   },
   "status": "mismatch",
-  "mismatch_count": 16,
-  "error_count": 16,
+  "mismatch_count": 13,
+  "error_count": 13,
   "category_counts": {
-    "device.unmatched": 10,
+    "device.unmatched": 7,
     "net.merged": 1,
     "net.split": 5
   },
   "category_error_counts": {
-    "device.unmatched": 10,
+    "device.unmatched": 7,
     "net.merged": 1,
     "net.split": 5
   },
@@ -30,12 +30,12 @@
     "nets": {
       "layout": 18,
       "reference": 14,
-      "matched": 5
+      "matched": 7
     },
     "devices": {
       "layout": 22,
       "reference": 22,
-      "matched": 12
+      "matched": 15
     },
     "pins": {
       "layout": 16,
@@ -47,7 +47,7 @@
   "environment": {
     "engine": "klayout",
     "engine_version": "0.30.12",
-    "layout_sha256": "0f064bcbb371668ca6e8c6021ebf516bbaa26e6b1c8a114ad9607977da52a268",
+    "layout_sha256": "f6c3569633d822745a5229047d50f9ea46be3ba42458db7c5d47e698bc8d379d",
     "reference_sha256": "66009a496f55fac466075bbac7c9a2216dfc2e18e1eb02eda823233534918e2c",
     "extracted_netlist": null
   },
@@ -85,23 +85,6 @@
       "device": {
         "layout": "\\$16",
         "reference": "IMPA",
-        "class": "PFET"
-      },
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "device.unmatched",
-      "severity": "error",
-      "description": "device has no counterpart on the other side",
-      "side": "reference",
-      "net": null,
-      "device": {
-        "layout": "\\$17",
-        "reference": "ISP",
         "class": "PFET"
       },
       "property": null,
@@ -185,40 +168,6 @@
       "side": "reference",
       "net": null,
       "device": {
-        "layout": "\\$6",
-        "reference": "ISN",
-        "class": "NFET"
-      },
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "device.unmatched",
-      "severity": "error",
-      "description": "device has no counterpart on the other side",
-      "side": "reference",
-      "net": null,
-      "device": {
-        "layout": "\\$8",
-        "reference": "IMNB",
-        "class": "NFET"
-      },
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "device.unmatched",
-      "severity": "error",
-      "description": "device has no counterpart on the other side",
-      "side": "reference",
-      "net": null,
-      "device": {
         "layout": "\\$9",
         "reference": "IMNA",
         "class": "NFET"
@@ -267,6 +216,22 @@
       "description": "a reference net's role is divided across multiple layout nets",
       "side": "layout",
       "net": {
+        "layout": "A|NAND_M_A",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.split",
+      "severity": "error",
+      "description": "a reference net's role is divided across multiple layout nets",
+      "side": "layout",
+      "net": {
         "layout": "A|TG_S_A",
         "reference": null
       },
@@ -284,22 +249,6 @@
       "side": "layout",
       "net": {
         "layout": "B|TG_D_B",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.split",
-      "severity": "error",
-      "description": "a reference net's role is divided across multiple layout nets",
-      "side": "layout",
-      "net": {
-        "layout": "EN|NAND_M_EN",
         "reference": null
       },
       "device": null,
@@ -338,8 +287,18 @@
       "pin": false
     },
     {
+      "layout": "A|INV_Q_Y|INV_Q_Y_VIA|INV_Q_Y_VIA2|NAND_S2_A|NAND_S2_A_STUB|NAND_S2_A_VIA|NAND_S2_A_VIA2|Q|Y",
+      "reference": "Q",
+      "pin": true
+    },
+    {
       "layout": "A|MNAB_Y|MPA_Y|MPB_Y|NAND_S2_Y|QB|TG_FBS_A|Y",
       "reference": "QB",
+      "pin": true
+    },
+    {
+      "layout": "EN|NAND_M_EN|NAND_M_EN_VIA|NAND_S2_EN|NAND_S2_EN_VIA|RST_N",
+      "reference": "RST_N",
       "pin": true
     },
     {

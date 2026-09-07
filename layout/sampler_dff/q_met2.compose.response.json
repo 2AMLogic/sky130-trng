@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "generator": "gen-compose",
-  "cell_name": "rst_n_stub",
-  "gds_path": "rst_n_stub.gds",
+  "cell_name": "q_met2",
+  "gds_path": "q_met2.gds",
   "pdk": {
     "name": "sky130A",
     "variant": "sky130A",
@@ -21,7 +21,7 @@
       "id": "core",
       "source": "cell",
       "generator": null,
-      "cell_name": "route_supplies",
+      "cell_name": "q_met1",
       "offset_um": {
         "x": 0.0,
         "y": 0.0
@@ -37,67 +37,67 @@
   ],
   "nets": [
     {
-      "net": "nand_m_a_stub",
+      "net": "inv_q_y_via2",
       "pins": [
         {
           "block": "core",
-          "port": "nand_m_a"
+          "port": "inv_q_y_m1"
         },
         {
           "block": "core",
-          "port": "nand_m_a_ext"
+          "port": "inv_q_y_m2"
         }
       ],
       "routed": true,
-      "route_length_um": 0.5700000000000003,
+      "route_length_um": 0.0,
       "status": "routed",
       "legs": [
         {
           "pins": [
             {
               "block": "core",
-              "port": "nand_m_a"
+              "port": "inv_q_y_m1"
             },
             {
               "block": "core",
-              "port": "nand_m_a_ext"
+              "port": "inv_q_y_m2"
             }
           ],
           "routed": true,
-          "route_length_um": 0.5700000000000003,
+          "route_length_um": 0.0,
           "reason": null
         }
       ]
     },
     {
-      "net": "nand_s2_a_stub",
+      "net": "nand_s2_a_via2",
       "pins": [
         {
           "block": "core",
-          "port": "nand_s2_a"
+          "port": "nand_s2_a_ext_m1"
         },
         {
           "block": "core",
-          "port": "nand_s2_a_ext"
+          "port": "nand_s2_a_ext_m2"
         }
       ],
       "routed": true,
-      "route_length_um": 0.6099999999999994,
+      "route_length_um": 0.0,
       "status": "routed",
       "legs": [
         {
           "pins": [
             {
               "block": "core",
-              "port": "nand_s2_a"
+              "port": "nand_s2_a_ext_m1"
             },
             {
               "block": "core",
-              "port": "nand_s2_a_ext"
+              "port": "nand_s2_a_ext_m2"
             }
           ],
           "routed": true,
-          "route_length_um": 0.6099999999999994,
+          "route_length_um": 0.0,
           "reason": null
         }
       ]
