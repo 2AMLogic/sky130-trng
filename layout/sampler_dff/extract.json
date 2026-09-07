@@ -1,0 +1,881 @@
+{
+  "schema_version": 3,
+  "file": "sampler_dff.gds",
+  "deck": "sky130",
+  "top": "sampler_dff",
+  "dbu_um": 0.001,
+  "netlist_path": "sampler_dff.spice",
+  "netlist_sha256": "ede9a223f8590183cab77ccbafb857132227f3ffa8dd2d0e0f0c628b88134f53",
+  "status": "extracted",
+  "device_count": 22,
+  "net_count": 32,
+  "pin_count": 30,
+  "device_counts": {
+    "nfet": 11,
+    "pfet": 11
+  },
+  "dummy_devices_dropped": 0,
+  "ignored_layers": [],
+  "device_recognition_only_layers": [],
+  "device_classes": [
+    "nfet",
+    "pfet",
+    "pnp",
+    "sky130_fd_pr__model__cap_mim",
+    "sky130_fd_pr__model__cap_mim_m4",
+    "resistor"
+  ],
+  "devices": [
+    {
+      "name": "$1",
+      "class": "nfet",
+      "nets": {
+        "s": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss",
+        "g": "a|inv_clk_a",
+        "d": "inv_clk_y|y",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$10",
+      "class": "nfet",
+      "nets": {
+        "s": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss",
+        "g": "en|nand_s2_en",
+        "d": "\\$21",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.2184,
+        "ps_um": 2.62,
+        "pd_um": 1.36
+      }
+    },
+    {
+      "name": "$11",
+      "class": "nfet",
+      "nets": {
+        "s": "\\$21",
+        "g": "a|nand_s2_a",
+        "d": "mnab_y|mpa_y|mpb_y|nand_s2_y|y",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.2184,
+        "ad_um2": 0.3948,
+        "ps_um": 1.36,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$12",
+      "class": "pfet",
+      "nets": {
+        "s": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
+        "g": "a|inv_clk_a",
+        "d": "inv_clk_y|y",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$13",
+      "class": "pfet",
+      "nets": {
+        "s": "b|tg_d_b",
+        "g": "ctrl|tg_d_ctrl",
+        "d": "a|tg_d_a",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$14",
+      "class": "pfet",
+      "nets": {
+        "s": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
+        "g": "a|inv_mc_a",
+        "d": "inv_mc_y|y",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$15",
+      "class": "pfet",
+      "nets": {
+        "s": "b|tg_fbm_b",
+        "g": "ctrl|tg_fbm_ctrl",
+        "d": "a|tg_fbm_a",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$16",
+      "class": "pfet",
+      "nets": {
+        "s": "b|tg_s_b",
+        "g": "ctrl|tg_s_ctrl",
+        "d": "a|tg_s_a",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$17",
+      "class": "pfet",
+      "nets": {
+        "s": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
+        "g": "a|inv_q_a",
+        "d": "inv_q_y|y",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$18",
+      "class": "pfet",
+      "nets": {
+        "s": "b|tg_fbs_b",
+        "g": "ctrl|tg_fbs_ctrl",
+        "d": "a|tg_fbs_a",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$19",
+      "class": "pfet",
+      "nets": {
+        "s": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
+        "g": "en|nand_m_en",
+        "d": "mnab_y|mpa_y|mpb_y|nand_m_y|y",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$2",
+      "class": "nfet",
+      "nets": {
+        "s": "b|tg_d_b",
+        "g": "ctrlb|tg_d_ctrlb",
+        "d": "a|tg_d_a",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$20",
+      "class": "pfet",
+      "nets": {
+        "s": "mnab_y|mpa_y|mpb_y|nand_m_y|y",
+        "g": "a|nand_m_a",
+        "d": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$21",
+      "class": "pfet",
+      "nets": {
+        "s": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
+        "g": "en|nand_s2_en",
+        "d": "mnab_y|mpa_y|mpb_y|nand_s2_y|y",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$22",
+      "class": "pfet",
+      "nets": {
+        "s": "mnab_y|mpa_y|mpb_y|nand_s2_y|y",
+        "g": "a|nand_s2_a",
+        "d": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$3",
+      "class": "nfet",
+      "nets": {
+        "s": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss",
+        "g": "a|inv_mc_a",
+        "d": "inv_mc_y|y",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$4",
+      "class": "nfet",
+      "nets": {
+        "s": "b|tg_fbm_b",
+        "g": "ctrlb|tg_fbm_ctrlb",
+        "d": "a|tg_fbm_a",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$5",
+      "class": "nfet",
+      "nets": {
+        "s": "b|tg_s_b",
+        "g": "ctrlb|tg_s_ctrlb",
+        "d": "a|tg_s_a",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$6",
+      "class": "nfet",
+      "nets": {
+        "s": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss",
+        "g": "a|inv_q_a",
+        "d": "inv_q_y|y",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$7",
+      "class": "nfet",
+      "nets": {
+        "s": "b|tg_fbs_b",
+        "g": "ctrlb|tg_fbs_ctrlb",
+        "d": "a|tg_fbs_a",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$8",
+      "class": "nfet",
+      "nets": {
+        "s": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss",
+        "g": "en|nand_m_en",
+        "d": "\\$13",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.2184,
+        "ps_um": 2.62,
+        "pd_um": 1.36
+      }
+    },
+    {
+      "name": "$9",
+      "class": "nfet",
+      "nets": {
+        "s": "\\$13",
+        "g": "a|nand_m_a",
+        "d": "mnab_y|mpa_y|mpb_y|nand_m_y|y",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.2184,
+        "ad_um2": 0.3948,
+        "ps_um": 1.36,
+        "pd_um": 2.62
+      }
+    }
+  ],
+  "nets": [
+    {
+      "name": "\\$13",
+      "pin": false,
+      "device_count": 2
+    },
+    {
+      "name": "\\$21",
+      "pin": false,
+      "device_count": 2
+    },
+    {
+      "name": "a|inv_clk_a",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "a|inv_mc_a",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "a|inv_q_a",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "a|nand_m_a",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "a|nand_s2_a",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "a|tg_d_a",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "a|tg_fbm_a",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "a|tg_fbs_a",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "a|tg_s_a",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "b|tg_d_b",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "b|tg_fbm_b",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "b|tg_fbs_b",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "b|tg_s_b",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "ctrlb|tg_d_ctrlb",
+      "pin": true,
+      "device_count": 1
+    },
+    {
+      "name": "ctrlb|tg_fbm_ctrlb",
+      "pin": true,
+      "device_count": 1
+    },
+    {
+      "name": "ctrlb|tg_fbs_ctrlb",
+      "pin": true,
+      "device_count": 1
+    },
+    {
+      "name": "ctrlb|tg_s_ctrlb",
+      "pin": true,
+      "device_count": 1
+    },
+    {
+      "name": "ctrl|tg_d_ctrl",
+      "pin": true,
+      "device_count": 1
+    },
+    {
+      "name": "ctrl|tg_fbm_ctrl",
+      "pin": true,
+      "device_count": 1
+    },
+    {
+      "name": "ctrl|tg_fbs_ctrl",
+      "pin": true,
+      "device_count": 1
+    },
+    {
+      "name": "ctrl|tg_s_ctrl",
+      "pin": true,
+      "device_count": 1
+    },
+    {
+      "name": "en|nand_m_en",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "en|nand_s2_en",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
+      "pin": true,
+      "device_count": 18
+    },
+    {
+      "name": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss",
+      "pin": true,
+      "device_count": 16
+    },
+    {
+      "name": "inv_clk_y|y",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "inv_mc_y|y",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "inv_q_y|y",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "mnab_y|mpa_y|mpb_y|nand_m_y|y",
+      "pin": true,
+      "device_count": 3
+    },
+    {
+      "name": "mnab_y|mpa_y|mpb_y|nand_s2_y|y",
+      "pin": true,
+      "device_count": 3
+    }
+  ],
+  "warnings": [
+    "net 'a|inv_clk_a' merges 2 distinct labels (a, inv_clk_a) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|inv_mc_a' merges 2 distinct labels (a, inv_mc_a) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|inv_q_a' merges 2 distinct labels (a, inv_q_a) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|nand_m_a' merges 2 distinct labels (a, nand_m_a) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|nand_s2_a' merges 2 distinct labels (a, nand_s2_a) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|tg_d_a' merges 2 distinct labels (a, tg_d_a) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|tg_fbm_a' merges 2 distinct labels (a, tg_fbm_a) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|tg_fbs_a' merges 2 distinct labels (a, tg_fbs_a) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|tg_s_a' merges 2 distinct labels (a, tg_s_a) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'b|tg_d_b' merges 2 distinct labels (b, tg_d_b) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'b|tg_fbm_b' merges 2 distinct labels (b, tg_fbm_b) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'b|tg_fbs_b' merges 2 distinct labels (b, tg_fbs_b) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'b|tg_s_b' merges 2 distinct labels (b, tg_s_b) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'ctrlb|tg_d_ctrlb' merges 2 distinct labels (ctrlb, tg_d_ctrlb) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'ctrlb|tg_fbm_ctrlb' merges 2 distinct labels (ctrlb, tg_fbm_ctrlb) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'ctrlb|tg_fbs_ctrlb' merges 2 distinct labels (ctrlb, tg_fbs_ctrlb) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'ctrlb|tg_s_ctrlb' merges 2 distinct labels (ctrlb, tg_s_ctrlb) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'ctrl|tg_d_ctrl' merges 2 distinct labels (ctrl, tg_d_ctrl) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'ctrl|tg_fbm_ctrl' merges 2 distinct labels (ctrl, tg_fbm_ctrl) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'ctrl|tg_fbs_ctrl' merges 2 distinct labels (ctrl, tg_fbs_ctrl) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'ctrl|tg_s_ctrl' merges 2 distinct labels (ctrl, tg_s_ctrl) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'en|nand_m_en' merges 2 distinct labels (en, nand_m_en) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'en|nand_s2_en' merges 2 distinct labels (en, nand_s2_en) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd' merges 13 distinct labels (inv_clk_vdd, inv_mc_vdd, inv_q_vdd, mpa_py, mpb_py, nand_m_vdd, nand_s2_vdd, nwell_vdd, tg_d_vdd, tg_fbm_vdd, tg_fbs_vdd, tg_s_vdd, vdd) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss' merges 10 distinct labels (inv_clk_vss, inv_mc_vss, inv_q_vss, nand_m_vss, nand_s2_vss, tg_d_vss, tg_fbm_vss, tg_fbs_vss, tg_s_vss, vss) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'inv_clk_y|y' merges 2 distinct labels (inv_clk_y, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'inv_mc_y|y' merges 2 distinct labels (inv_mc_y, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'inv_q_y|y' merges 2 distinct labels (inv_q_y, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'mnab_y|mpa_y|mpb_y|nand_m_y|y' merges 5 distinct labels (mnab_y, mpa_y, mpb_y, nand_m_y, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'mnab_y|mpa_y|mpb_y|nand_s2_y|y' merges 5 distinct labels (mnab_y, mpa_y, mpb_y, nand_s2_y, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section."
+  ],
+  "black_box_regions": [],
+  "abstracted_cells": [],
+  "unmodelled_poly": [],
+  "merged_net_labels": [
+    {
+      "net": "a|inv_clk_a",
+      "labels": [
+        "a",
+        "inv_clk_a"
+      ]
+    },
+    {
+      "net": "a|inv_mc_a",
+      "labels": [
+        "a",
+        "inv_mc_a"
+      ]
+    },
+    {
+      "net": "a|inv_q_a",
+      "labels": [
+        "a",
+        "inv_q_a"
+      ]
+    },
+    {
+      "net": "a|nand_m_a",
+      "labels": [
+        "a",
+        "nand_m_a"
+      ]
+    },
+    {
+      "net": "a|nand_s2_a",
+      "labels": [
+        "a",
+        "nand_s2_a"
+      ]
+    },
+    {
+      "net": "a|tg_d_a",
+      "labels": [
+        "a",
+        "tg_d_a"
+      ]
+    },
+    {
+      "net": "a|tg_fbm_a",
+      "labels": [
+        "a",
+        "tg_fbm_a"
+      ]
+    },
+    {
+      "net": "a|tg_fbs_a",
+      "labels": [
+        "a",
+        "tg_fbs_a"
+      ]
+    },
+    {
+      "net": "a|tg_s_a",
+      "labels": [
+        "a",
+        "tg_s_a"
+      ]
+    },
+    {
+      "net": "b|tg_d_b",
+      "labels": [
+        "b",
+        "tg_d_b"
+      ]
+    },
+    {
+      "net": "b|tg_fbm_b",
+      "labels": [
+        "b",
+        "tg_fbm_b"
+      ]
+    },
+    {
+      "net": "b|tg_fbs_b",
+      "labels": [
+        "b",
+        "tg_fbs_b"
+      ]
+    },
+    {
+      "net": "b|tg_s_b",
+      "labels": [
+        "b",
+        "tg_s_b"
+      ]
+    },
+    {
+      "net": "ctrlb|tg_d_ctrlb",
+      "labels": [
+        "ctrlb",
+        "tg_d_ctrlb"
+      ]
+    },
+    {
+      "net": "ctrlb|tg_fbm_ctrlb",
+      "labels": [
+        "ctrlb",
+        "tg_fbm_ctrlb"
+      ]
+    },
+    {
+      "net": "ctrlb|tg_fbs_ctrlb",
+      "labels": [
+        "ctrlb",
+        "tg_fbs_ctrlb"
+      ]
+    },
+    {
+      "net": "ctrlb|tg_s_ctrlb",
+      "labels": [
+        "ctrlb",
+        "tg_s_ctrlb"
+      ]
+    },
+    {
+      "net": "ctrl|tg_d_ctrl",
+      "labels": [
+        "ctrl",
+        "tg_d_ctrl"
+      ]
+    },
+    {
+      "net": "ctrl|tg_fbm_ctrl",
+      "labels": [
+        "ctrl",
+        "tg_fbm_ctrl"
+      ]
+    },
+    {
+      "net": "ctrl|tg_fbs_ctrl",
+      "labels": [
+        "ctrl",
+        "tg_fbs_ctrl"
+      ]
+    },
+    {
+      "net": "ctrl|tg_s_ctrl",
+      "labels": [
+        "ctrl",
+        "tg_s_ctrl"
+      ]
+    },
+    {
+      "net": "en|nand_m_en",
+      "labels": [
+        "en",
+        "nand_m_en"
+      ]
+    },
+    {
+      "net": "en|nand_s2_en",
+      "labels": [
+        "en",
+        "nand_s2_en"
+      ]
+    },
+    {
+      "net": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
+      "labels": [
+        "inv_clk_vdd",
+        "inv_mc_vdd",
+        "inv_q_vdd",
+        "mpa_py",
+        "mpb_py",
+        "nand_m_vdd",
+        "nand_s2_vdd",
+        "nwell_vdd",
+        "tg_d_vdd",
+        "tg_fbm_vdd",
+        "tg_fbs_vdd",
+        "tg_s_vdd",
+        "vdd"
+      ]
+    },
+    {
+      "net": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss",
+      "labels": [
+        "inv_clk_vss",
+        "inv_mc_vss",
+        "inv_q_vss",
+        "nand_m_vss",
+        "nand_s2_vss",
+        "tg_d_vss",
+        "tg_fbm_vss",
+        "tg_fbs_vss",
+        "tg_s_vss",
+        "vss"
+      ]
+    },
+    {
+      "net": "inv_clk_y|y",
+      "labels": [
+        "inv_clk_y",
+        "y"
+      ]
+    },
+    {
+      "net": "inv_mc_y|y",
+      "labels": [
+        "inv_mc_y",
+        "y"
+      ]
+    },
+    {
+      "net": "inv_q_y|y",
+      "labels": [
+        "inv_q_y",
+        "y"
+      ]
+    },
+    {
+      "net": "mnab_y|mpa_y|mpb_y|nand_m_y|y",
+      "labels": [
+        "mnab_y",
+        "mpa_y",
+        "mpb_y",
+        "nand_m_y",
+        "y"
+      ]
+    },
+    {
+      "net": "mnab_y|mpa_y|mpb_y|nand_s2_y|y",
+      "labels": [
+        "mnab_y",
+        "mpa_y",
+        "mpb_y",
+        "nand_s2_y",
+        "y"
+      ]
+    }
+  ],
+  "voltage_domain_warnings": [],
+  "unbiased_pmos_body_nets": [],
+  "single_terminal_nets": [],
+  "dead_metal": [],
+  "matched_device_groups": [],
+  "pdk": null,
+  "provenance": {
+    "klt_version": "0.4.0",
+    "klayout_version": "0.30.12",
+    "pdk": null,
+    "deck": {
+      "name": "sky130",
+      "content_hash": "sha256:5afac7ab8561545859f5e2e74f4621c6ffc052756dc8fe344ea263398e96b240",
+      "released": true
+    },
+    "input": {
+      "content_hash": "sha256:470860554f8dc5c04d2727460969986886f486d2c4657cf9bc033b251cd56124"
+    }
+  },
+  "parasitics": null,
+  "spef_path": null
+}

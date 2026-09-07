@@ -4,7 +4,34 @@ Physical layout evidence for the sky130-trng entropy source, verified with
 `klayout-tools` (`klt`) against the sky130 open PDK. See `layout/pdk.json`
 for the PDK/tool pin.
 
-**Status (issue #22, this increment): `sampler_dff`'s second and last
+**Status (issue #22, this increment): `sampler_dff` assembly is started —
+placement plus the `vdd`/`vss` supply buses are DRC-clean.**
+[`layout/sampler_dff/`](sampler_dff/README.md) places all nine of
+`sampler_dff`'s already-composed leaf-cell instances (3x
+[`ro_buf`](ro_buf/README.md), 4x [`sampler_tg`](sampler_tg/README.md), 2x
+[`sampler_nand2`](sampler_nand2/README.md)) via `blocks[].cell`, reading
+`design/sampler_core.spice`'s flat 22-device `.subckt sampler_dff` as a
+signal-flow pipeline (`d -> TG_D -> NAND_M -> inv_mc -> TG_FBM` feedback into
+`m`; `NAND_M`'s own output cascades into `TG_S -> inv_q -> NAND_S2 -> TG_FBS`
+feedback into `s`) rather than as an unordered device list. The placement
+`klt gen-compose` stage is **DRC-clean (0 violations)** on the first attempt,
+and a second stage routes `vdd`/`vss` as two attic/basement buses (`metal2`
+role) across all nine instances — also **DRC-clean (0 violations)**, and `klt
+extract` confirms both rails fully merged into one `vdd` net and one `vss`
+net (13 and 10 promoted-label legs respectively) spanning every instance.
+`klt extract` also independently confirms the composed geometry's own device
+count and type split exactly match the schematic before any signal wiring
+exists: **22 devices, 11 nfet / 11 pfet**, identical to
+`design/sampler_core.spice`'s own `.subckt sampler_dff`. `klt lvs` is not
+yet expected to match (`rst_n`/`clk`/`clkb` fan-out and the six data-path
+nets `m`/`mb`/`mc`/`s`/`q`/`qb` are still unwired) — see
+`layout/sampler_dff/README.md`'s "What remains" for the open routing work,
+including why `clk`/`clkb` need a routing-plane strategy distinct from
+`vdd`/`vss`'s (their gate pins sit inside each transmission gate's own
+row gap, not at a block extremity, so a naive attic/basement bus for them
+would cross the `vdd`/`vss` bus already drawn there).
+
+**A previous increment (issue #22): `sampler_dff`'s second and last
 missing leaf shape is composed.** [`layout/sampler_nand2/`](sampler_nand2/README.md)
 is `design/sampler_core.spice`'s `sampler_dff` subckt's `NANDM`/`NANDS2`
 gate — a plain rst_n-gated 2-input NAND2, structurally
@@ -571,7 +598,7 @@ trng_top                   (not in scope for #22 — stops at the raw tap)
         ro_stage   (x4/ring)  BUILT, all 4 wstv values — DRC-clean + LVS-clean (layout/ro_stage/, ro_stage_wstv0p{44,46,48}/) — 4 distinct physical cells (one per ring's wstv), each reused 4x within its own ring
       ro_buf     (x4)        BUILT — DRC-clean + LVS-clean (layout/ro_buf/)
       xor2       (x3)        BUILT — DRC-clean + LVS-clean (layout/xor2/) — 4x mos_array (two series chains per tree) + 3x guard_ring + 2x ro_buf cell; one physical cell reused 3x (xa1/xa2/xa3 are identical instances)
-    sampler_dff  (x6)        ALL LEAF SHAPES BUILT, CELL NOT ASSEMBLED — transmission-gate master-slave DFF. layout/sampler_tg/ composes the transmission gate (4x per sampler_dff instance) DRC-clean + LVS-match (2/2 devices, 6/6 nets, against a hand-authored micro-reference); layout/sampler_nand2/ composes the other missing leaf shape, a plain rst_n-gated NAND2 (2x per sampler_dff instance, structurally ro_nand2 minus its two starve devices) DRC-clean + LVS-match (4/4 devices, 6/6 nets, against a hand-authored micro-reference, reusing ro_nand2's own parallel-PMOS/series-NMOS floorplan and three-pin-net promote-then-resolve technique); mos_array is sufficient for both, no klayout-tools generator gap. The third leaf shape (3x plain inverter) is already ro_buf, reusable as-is per xor2's own blocks[].cell precedent. Assembling all 22 devices into one sampler_dff cell and LVS-checking it against design/sampler_core.spice's own .subckt sampler_dff remains open (#27)
+    sampler_dff  (x6)        ASSEMBLY STARTED — layout/sampler_dff/ places all nine leaf-cell instances (3x ro_buf, 4x sampler_tg, 2x sampler_nand2) via blocks[].cell, DRC-clean (0 violations), plus a routed vdd/vss bus (also DRC-clean, klt extract confirms both rails merged into one net each across all nine instances). klt extract also confirms 22/22 devices at the correct 11 nfet/11 pfet split against design/sampler_core.spice's own .subckt sampler_dff before any signal wiring exists. Still open: rst_n fan-out, clk/clkb fan-out (needs a routing-plane strategy that does not cross the vdd/vss bus), the six data-path nets (m/mb/mc/s/q/qb), and the resulting whole-cell klt lvs sign-off (#27)
 ```
 
 "PROVEN AT DEVICE LEVEL" means: every transistor geometry the cell needs is
