@@ -237,12 +237,24 @@ moved. Regenerate on the `klt` the note names and re-stamp the affected
 "`PEX_LIB` provenance re-stamp"), or install the pinned build via
 `layout/README.md`'s venv recipe and re-run.
 
-**`layout/pex-ring/` and `layout/pex-array/` still carry `klt 0.4.0`
-provenance** and are expected to fail `--check` on the pin the same way
-these nine cells did. They were left alone here deliberately -- their
-re-extraction re-stamps 29 `sim/` records rather than 12 — and are tracked
-separately in
-[#96](https://github.com/2AMLogic/sky130-trng/issues/96).
+**`layout/pex-ring/` and `layout/pex-array/` also carried `klt 0.4.0`
+provenance.** They were left alone here deliberately -- their re-extraction
+re-stamps 29 `sim/` records rather than 12 — and were tracked separately in
+[#96](https://github.com/2AMLogic/sky130-trng/issues/96), which found that
+only *one* of the two was the same story:
+
+- **`layout/pex-ring/` was.** Same drift class (the `\$N` counter, plus the
+  per-terminal `__tK` leg counter this directory's smaller cells did not
+  exercise), re-extracted on the pin, `--check` exits 0, four `sim/`
+  records re-stamped. See that directory's README.
+- **`layout/pex-array/` was not.** Its committed evidence is not
+  reproducible by the pinned `klt` *or* by today's ambient `klt 0.4.0` —
+  which agree byte for byte with each other — and the difference is
+  topological, not a relabel: two of the four `sig_n*` inter-net coupling
+  capacitors land on a different ring. It is deliberately left un-regenerated and
+  `--check`-red, with the measurement recorded in
+  `layout/pex-array/README.md` § "The array evidence is not reproducible,
+  and the difference is not cosmetic".
 
 ## What the parasitic model contains
 
