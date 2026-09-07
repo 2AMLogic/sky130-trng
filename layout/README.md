@@ -4,7 +4,38 @@ Physical layout evidence for the sky130-trng entropy source, verified with
 `klayout-tools` (`klt`) against the sky130 open PDK. See `layout/pdk.json`
 for the PDK/tool pin.
 
-**Status (issue #22, this increment): `sampler_dff`'s second data-path net,
+**Status (issue #22, this increment): `sampler_dff`'s third data-path net,
+`qb`, is routed — DRC-clean — and its own device-list check found a
+pre-existing, LVS-blocking pin swap on both `sampler_nand2` instances
+(filed as [#84](https://github.com/2AMLogic/sky130-trng/issues/84)).**
+`qb` (`nand_s2.y` → `tg_fbs.a`, `design/sampler_core.spice`'s own
+`XMis2pa`/`XMis2pb`/`XMis2na`/`XMfsp`/`XMfsn`) is the third of the six
+`m`/`mb`/`mc`/`s`/`q`/`qb` data-path nets #27 left open. It is the first
+whose `sampler_nand2` end is *inside* that leaf's own internal `met1` blob
+while being **on that blob's own net** — `klt extract` names the blob
+`mnab_y|mpa_y|mpb_y|nand_s2_y|y` — so unlike `rst_n` (whose `a` pin sits in
+the same blob on a *different* net and needed a three-stage li1 stub escape)
+this net needs no escape at all: the via-drop landing pad is an exact
+overlay on metal it is already shorted to, and adds no geometry. One
+`metal2`-role (`met1`) stage, `9.6 µm`, climbing on a column jogged 0.17 µm
+east of the pin (so the climb overlays the blob rather than leaving an
+0.08 µm same-net notch against its narrow upper bar) and then running the
+whole span east at `y = 2.0` — the only free met1 lane between `clkb`'s own
+east segment (0.675 µm below) and `clk`'s own via pad at `tg_fbs_ctrl`
+(0.205 µm above). **`klt drc` clean, 0 violations; cell bbox unchanged**;
+`klt extract`'s net count drops from 21 to **20**, and the merged net's own
+five-device list matches `design/sampler_core.spice` in count, class and
+width exactly and in four of five gate assignments. The fifth is the
+finding: the `W=0.84` NMOS on this node is gated by `rst_n` where `XMis2na`
+says `q` — the fingerprint of `rst_n` and the data input being wired to the
+swapped `sampler_nand2` pins, on **both** instances. That swap is
+functionally harmless (a NAND2's inputs commute) but verified LVS-blocking,
+and is left for #84 rather than re-derived here, since fixing it re-does two
+already-merged increments. See
+[`layout/sampler_dff/README.md`](sampler_dff/README.md)'s "Result: `qb`
+fan-out" and "The `sampler_nand2` input swap this increment found".
+
+**A previous increment (issue #22): `sampler_dff`'s second data-path net,
 `q`, is routed — DRC-clean on the first attempt, and the first data-path net
 needing only one `gen-compose` stage.** `q` (`inv_q.y` → `nand_s2.en`,
 `design/sampler_core.spice`'s own `XMisp`/`XMisn`/`XMis2pa`/`XMis2na`) is
@@ -27,7 +58,12 @@ two-pin net makes), and the merged net's own four-device list —
 `en`-gated devices, the parallel PMOS and the input-side series NMOS
 (`XMis2pa`/`XMis2na`) — matches `design/sampler_core.spice` exactly. See
 `layout/sampler_dff/README.md`'s "Result: `q` fan-out" for the full
-derivation and "What remains" for the four nets still open.
+derivation and "What remains" for the four nets still open. (Partly
+superseded by the `qb` increment above: three of those four devices are
+`XMisp`/`XMisn`/`XMis2pa` exactly, but the `q`-gated `W=0.84` NMOS sits in
+`XMis2nb`'s `vss`-adjacent position rather than `XMis2na`'s — the
+[#84](https://github.com/2AMLogic/sky130-trng/issues/84) pin swap, not a
+property of the `q` route.)
 
 **A previous increment (issue #22): `sampler_dff`'s first data-path net,
 `mc`, is routed — DRC-clean on the first attempt.** `mc`
