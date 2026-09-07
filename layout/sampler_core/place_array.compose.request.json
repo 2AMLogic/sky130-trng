@@ -1,0 +1,50 @@
+{
+  "pdk": {
+    "variant": "sky130A"
+  },
+  "blocks": [
+    {
+      "id": "core",
+      "cell": {
+        "ports": [],
+        "cell_name": "route_ctrl",
+        "gds_path": "route_ctrl.gds"
+      }
+    },
+    {
+      "id": "array",
+      "cell": {
+        "gds_path": "../ro_array_core/ro_array_core.gds",
+        "cell_name": "ro_array_core",
+        "ports": []
+      }
+    }
+  ],
+  "placement": {
+    "strategy": "explicit",
+    "order": [
+      "core",
+      "array"
+    ],
+    "origins_um": {
+      "core": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "array": {
+        "x": 0.0,
+        "y": 23.635
+      }
+    }
+  },
+  "routing": {
+    "layer_role": "metal2",
+    "width_um": 0.17
+  },
+  "connectivity": [],
+  "pins": [],
+  "options": {
+    "cell_name": "place_array",
+    "output": "place_array.gds"
+  }
+}

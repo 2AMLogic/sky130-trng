@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "generator": "gen-compose",
-  "cell_name": "sampler_core",
-  "gds_path": "sampler_core.gds",
+  "cell_name": "data_m1",
+  "gds_path": "data_m1.gds",
   "pdk": {
     "name": "sky130A",
     "variant": "sky130A",
@@ -20,7 +20,7 @@
       "id": "core",
       "source": "cell",
       "generator": null,
-      "cell_name": "data_m1",
+      "cell_name": "place_array",
       "offset_um": {
         "x": 0.0,
         "y": 0.0
@@ -36,11 +36,11 @@
   ],
   "nets": [
     {
-      "net": "ro1",
+      "net": "sr1_d_stub",
       "pins": [
         {
           "block": "core",
-          "port": "ro1_esc_m1"
+          "port": "sr1_d"
         },
         {
           "block": "core",
@@ -48,14 +48,14 @@
         }
       ],
       "routed": true,
-      "route_length_um": 129.485,
+      "route_length_um": 4.8,
       "status": "routed",
       "legs": [
         {
           "pins": [
             {
               "block": "core",
-              "port": "ro1_esc_m1"
+              "port": "sr1_d"
             },
             {
               "block": "core",
@@ -63,17 +63,17 @@
             }
           ],
           "routed": true,
-          "route_length_um": 129.485,
+          "route_length_um": 4.8,
           "reason": null
         }
       ]
     },
     {
-      "net": "ro4",
+      "net": "sr4_d_stub",
       "pins": [
         {
           "block": "core",
-          "port": "ro4_esc_m1"
+          "port": "sr4_d"
         },
         {
           "block": "core",
@@ -81,14 +81,14 @@
         }
       ],
       "routed": true,
-      "route_length_um": 78.56499999999997,
+      "route_length_um": 4.8,
       "status": "routed",
       "legs": [
         {
           "pins": [
             {
               "block": "core",
-              "port": "ro4_esc_m1"
+              "port": "sr4_d"
             },
             {
               "block": "core",
@@ -96,7 +96,73 @@
             }
           ],
           "routed": true,
-          "route_length_um": 78.56499999999997,
+          "route_length_um": 4.8,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "net": "ro1_esc",
+      "pins": [
+        {
+          "block": "core",
+          "port": "ro1_tap"
+        },
+        {
+          "block": "core",
+          "port": "ro1_esc_m1"
+        }
+      ],
+      "routed": true,
+      "route_length_um": 14.635000000000002,
+      "status": "routed",
+      "legs": [
+        {
+          "pins": [
+            {
+              "block": "core",
+              "port": "ro1_tap"
+            },
+            {
+              "block": "core",
+              "port": "ro1_esc_m1"
+            }
+          ],
+          "routed": true,
+          "route_length_um": 14.635000000000002,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "net": "ro4_esc",
+      "pins": [
+        {
+          "block": "core",
+          "port": "ro4_tap"
+        },
+        {
+          "block": "core",
+          "port": "ro4_esc_m1"
+        }
+      ],
+      "routed": true,
+      "route_length_um": 18.634999999999998,
+      "status": "routed",
+      "legs": [
+        {
+          "pins": [
+            {
+              "block": "core",
+              "port": "ro4_tap"
+            },
+            {
+              "block": "core",
+              "port": "ro4_esc_m1"
+            }
+          ],
+          "routed": true,
+          "route_length_um": 18.634999999999998,
           "reason": null
         }
       ]

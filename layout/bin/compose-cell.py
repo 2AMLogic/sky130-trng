@@ -435,6 +435,69 @@ def repoint_variant_instances(
     return out
 
 
+def build_lvs_reference(
+    reference_source: Path, lvs_spec: dict
+) -> tuple[list[str], list[str]]:
+    """Assemble a cell's whole LVS reference netlist from its ``lvs`` block.
+
+    Returns ``(lines, variant_names)`` -- the reference body (dependencies,
+    then renamed dependency variants, then the top subckt) and the renamed
+    variant subckt names, for the generated file's own provenance header.
+
+    **Every** emitted subckt body is put through
+    :func:`repoint_variant_instances`, not just the top one. A plain
+    ``lvs.dependencies`` entry can itself instantiate a variant subckt --
+    ``ro_array_core``'s own ``xr1``..``xr4`` call ``ro_ring5`` at four
+    different ``wstv`` widths, and only the renamed ``ro_ring5_r1``..``_r4``
+    copies are ever emitted -- so skipping it there leaves the generated
+    reference calling a bare, undefined name.
+
+    That failure is silent, which is why it is called out here: ``klt lvs``
+    does **not** error on an unresolvable instance call, it drops the
+    instance and compares what is left. Before this, ``layout/sampler_core``'s
+    own generated reference was short by exactly its four dropped
+    ``ro_ring5`` instances -- 176 devices where the schematic has 264 -- and
+    nothing in the run said so. The only visible symptom was a reference
+    device count a reader had to already know was wrong.
+    """
+    params = lvs_spec.get("params")
+    drop_prefixes = tuple(lvs_spec.get("drop_prefixes", ()))
+    drop_kwargs = tuple(lvs_spec.get("drop_kwargs", ()))
+    dependency_subckts = lvs_spec.get("dependencies", ())
+    dependency_variants = lvs_spec.get("dependency_variants", ())
+
+    def rewritten(subckt: str) -> list[str]:
+        lines = build_reference(
+            extract_subckt(reference_source, subckt),
+            params=params,
+            drop_prefixes=drop_prefixes,
+            drop_kwargs=drop_kwargs,
+        )
+        if dependency_variants:
+            lines = repoint_variant_instances(lines, dependency_variants)
+        return lines
+
+    out: list[str] = []
+    for dependency in dependency_subckts:
+        out.extend(rewritten(dependency))
+        out.append("")
+    variant_names: list[str] = []
+    for variant in dependency_variants:
+        for instance in variant.get("instances", ()):
+            out.extend(
+                build_variant_reference(
+                    reference_source,
+                    variant,
+                    instance,
+                    default_drop_prefixes=drop_prefixes,
+                    default_drop_kwargs=drop_kwargs,
+                )
+            )
+            variant_names.append(variant["subckt"] + instance["rename"])
+    out.extend(rewritten(lvs_spec["subckt"]))
+    return out, variant_names
+
+
 # --------------------------------------------------------------------------
 # The chain
 # --------------------------------------------------------------------------
@@ -684,44 +747,8 @@ def compose_cell(spec: dict, spec_dir: Path, out_dir: Path) -> dict:
     # 5. LVS against the design's own schematic-exported subckt.
     lvs_spec = spec["lvs"]
     reference_source = REPO_ROOT / lvs_spec["reference"]
-    lvs_params = lvs_spec.get("params")
-    lvs_drop_prefixes = tuple(lvs_spec.get("drop_prefixes", ()))
-    lvs_drop_kwargs = tuple(lvs_spec.get("drop_kwargs", ()))
     dependency_subckts = lvs_spec.get("dependencies", ())
-    dependency_variants = lvs_spec.get("dependency_variants", ())
-    reference_lines: list[str] = []
-    for dependency in dependency_subckts:
-        reference_lines.extend(
-            build_reference(
-                extract_subckt(reference_source, dependency),
-                params=lvs_params,
-                drop_prefixes=lvs_drop_prefixes,
-                drop_kwargs=lvs_drop_kwargs,
-            )
-        )
-        reference_lines.append("")
-    variant_names: list[str] = []
-    for variant in dependency_variants:
-        for instance in variant.get("instances", ()):
-            reference_lines.extend(
-                build_variant_reference(
-                    reference_source,
-                    variant,
-                    instance,
-                    default_drop_prefixes=lvs_drop_prefixes,
-                    default_drop_kwargs=lvs_drop_kwargs,
-                )
-            )
-            variant_names.append(variant["subckt"] + instance["rename"])
-    top_lines = build_reference(
-        extract_subckt(reference_source, lvs_spec["subckt"]),
-        params=lvs_params,
-        drop_prefixes=lvs_drop_prefixes,
-        drop_kwargs=lvs_drop_kwargs,
-    )
-    if dependency_variants:
-        top_lines = repoint_variant_instances(top_lines, dependency_variants)
-    reference_lines.extend(top_lines)
+    reference_lines, variant_names = build_lvs_reference(reference_source, lvs_spec)
     reference_path = out_dir / f"{cell}.ref.spice"
     dependency_note = (
         f" plus dependency subckt(s) {', '.join(dependency_subckts)}"

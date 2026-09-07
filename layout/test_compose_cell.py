@@ -399,6 +399,98 @@ def check_variant_reference_is_end_to_end_self_consistent() -> None:
         path.unlink()
 
 
+def check_lvs_reference_repoints_dependency_bodies_too() -> None:
+    """A *dependency*'s own variant instance calls are repointed as well.
+
+    ``layout/sampler_core``'s ``lvs`` block names ``ro_array_core`` as a
+    plain ``dependencies[]`` entry (there, ``sampler_core`` is the top
+    subckt, not ``ro_array_core``) while the ``ro_ring5`` variants stay in
+    ``dependency_variants``. Only the renamed ``ro_ring5_r1``/``_r2``
+    definitions are ever emitted, so ``ro_array_core``'s own ``xr1``/``xr2``
+    lines have to be repointed at them.
+
+    The bug this pins is silent: ``klt lvs`` does not error on a call to an
+    undefined subckt, it drops the instance. The generated reference simply
+    comes out short -- ``sampler_core``'s read 176 devices where the
+    schematic has 264 -- and the LVS verdict is then a comparison against
+    the wrong netlist with nothing in the run saying so.
+    """
+    sampler_core = [
+        ".subckt sampler_core en1 en2 vddr1 vddr2 vdd vss",
+        "xdut en1 en2 vddr1 vddr2 vss ro_array_core",
+        ".ends",
+    ]
+    path = _write_netlist(
+        RO_NAND2 + RO_STAGE + RO_RING5 + RO_ARRAY_CORE + sampler_core
+    )
+    try:
+        lines, variant_names = cc.build_lvs_reference(
+            path,
+            {
+                "subckt": "sampler_core",
+                "dependencies": ["ro_array_core"],
+                "dependency_variants": [RING_VARIANT],
+                "drop_prefixes": ["Cld"],
+                "drop_kwargs": ["cld"],
+            },
+        )
+        text = "\n".join(lines)
+        _check(
+            "the renamed ring definitions are emitted",
+            ".subckt ro_ring5_r1" in text and ".subckt ro_ring5_r2" in text,
+        )
+        _check(
+            "the dependency's own instance lines are repointed one-for-one",
+            "xr1 en1 ro1 vddr1 vss ro_ring5_r1" in text
+            and "xr2 en2 ro2 vddr2 vss ro_ring5_r2" in text,
+            text,
+        )
+        _check(
+            "no call anywhere names the bare, never-defined ro_ring5",
+            not re.search(r"\bro_ring5\b(?!_r)", text),
+            text,
+        )
+        _check(
+            "every subckt a call names is actually defined in the reference",
+            _undefined_calls(lines) == [],
+            f"undefined: {_undefined_calls(lines)}",
+        )
+        _check(
+            "the variant names are reported for the provenance header",
+            variant_names == ["ro_ring5_r1", "ro_ring5_r2"],
+            str(variant_names),
+        )
+    finally:
+        path.unlink()
+
+
+def _undefined_calls(lines: list[str]) -> list[str]:
+    """Subckt names called by an ``x...`` card but never defined."""
+    defined = {
+        line.split()[1].lower()
+        for line in lines
+        if line.strip().lower().startswith(".subckt")
+    }
+    called = []
+    for line in lines:
+        stripped = line.strip()
+        if not stripped or stripped[0] not in "xX":
+            continue
+        # Drop `key='expr with spaces'` and `key=value` before tokenizing --
+        # a quoted geometry expression would otherwise leave its own trailing
+        # fragment looking like the card's subckt name.
+        stripped = re.sub(r"\S+='[^']*'", "", stripped)
+        tokens = [tok for tok in stripped.split() if "=" not in tok]
+        if len(tokens) < 2:
+            continue
+        name = tokens[-1].lower()
+        if name.startswith("sky130_fd_pr__"):
+            continue  # a device model card, not a subckt call
+        if name not in defined:
+            called.append(tokens[-1])
+    return sorted(set(called))
+
+
 def check_cell_block_from_stage_is_output_relative() -> None:
     """``cell.from_stage`` resolves against the OUTPUT dir, not the cell.json.
 
@@ -529,6 +621,7 @@ def main() -> int:
     check_variant_reference_two_instances_differ()
     check_repoint_variant_instances_matches_only_its_own_instance()
     check_variant_reference_is_end_to_end_self_consistent()
+    check_lvs_reference_repoints_dependency_bodies_too()
     check_cell_block_from_stage_is_output_relative()
     check_cell_block_from_stage_rejects_unknown_stage()
     check_cell_block_sibling_path_rule_is_unchanged()
