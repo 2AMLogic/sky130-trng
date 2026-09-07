@@ -1429,11 +1429,16 @@ volare enable --pdk sky130 c6d73a35f524070e85faff4a6a9eef49553ebc2b
 python3 layout/bin/pex-netlist.py layout/pex-array/pex.json --check   # verify
 ```
 
-Same `--check` contract as `layout/pex/` above, run against
-`layout/ro_array_core-placement-poc/`'s own committed `signal9` GDS instead
-of nine leaf cells. `layout/test_pex_netlist.py` is shared, unmodified —
-its coverage of the rewrite logic (net renames, unit-suffix stripping,
-device-card swap) applies here too, since `layout/bin/pex-netlist.py` itself
-did not change. See [`layout/pex-array/README.md`](pex-array/README.md) for
+Same `--check` contract as `layout/pex/` above, run against a single flat
+extraction of the canonical
+[`layout/ro_array_core/ro_array_core.gds`](ro_array_core/README.md) — the
+`--check`-reproducible cell recipe's own committed, `vss`-strapped output —
+instead of nine leaf cells. (An earlier revision of this directory sourced
+`layout/ro_array_core-placement-poc/`'s superseded `signal9` stream, before
+the recipe promotion landed; see `layout/pex-array/README.md`'s "Which GDS"
+section for what changed numerically.) `layout/test_pex_netlist.py` is
+shared, unmodified — its coverage of the rewrite logic (net renames,
+unit-suffix stripping, device-card swap) applies here too, since
+`layout/bin/pex-netlist.py` itself did not change. See [`layout/pex-array/README.md`](pex-array/README.md) for
 the array-scale net-aliasing technique and what the parasitic model does and
 does not contain.
