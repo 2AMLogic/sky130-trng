@@ -1,0 +1,1209 @@
+|* Post-layout ro_array_core (whole array, real inter-ring wiring) with the
+|* shared substrate node left FLOATING -- the array-scale sibling of
+|* sim/post-layout-ro-ring5/testbench/tb_post_layout_substrate_float.spice,
+|* now over the REAL composed array GDS (real physical ring-to-ring
+|* proximity, well spacing and shared psub geometry, not four separately
+|* extracted leaf cells hand-tied to a shared node as if placed at infinite
+|* separation -- see DR-0005's own "Proximity" limitation, which this deck
+|* closes for the substrate mechanism specifically).
+|*
+|* Purpose (DR-0003 section 8's inter-ring decorrelation gap; DR-0005's own
+|* "Follow-up required" section: "Findings 1 and 3 should be re-run against
+|* the assembled block when it exists"). This deck differs from
+|* tb_post_layout_ro_array_core.spice's post-layout half in exactly one
+|* respect: that deck ties `vsubs` hard to 0 (`Vsub vsubs 0 dc 0`), this one
+|* does not tie it at all, leaving it on
+|* layout/pex-array/ro_array_core_pex.spice's own
+|* `Rvsubs_dctie vsubs 0 1e+12` (klayout-tools#1503). The pair brackets the
+|* real answer the same way DR-0005's ring-level pair did:
+|*
+|*   TIED   (sibling deck, already run) -- ideal zero-impedance substrate,
+|*          no inter-ring coupling possible by construction.
+|*   FLOAT  (this deck) -- ideal infinite-impedance shared substrate: every
+|*          ring's switching current is forced through the shared node's
+|*          capacitance and into every other ring.
+|*
+|* No pre-layout control: a pre-layout netlist has no substrate node, so it
+|* has nothing to say about this question (same choice
+|* tb_post_layout_substrate_float.spice made at ring scope).
+|*
+|* Measured: each ring's own period (line for line comparable against the
+|* sibling tied deck's p_tr1-p_tr4 at the same corner/temp/vdd), the array
+|* skew span, and the substrate node's own peak-to-peak excursion -- the
+|* direct measure of how hard the four rings (now WITH the buffer + XOR tree
+|* load, both riding the same block vdd, also present) are driving each
+|* other through it.
+|*
+|* This file is a TEMPLATE: sim/bin/corner-run.py substitutes /Users/rwalters/.volare/volare/sky130/versions/c6d73a35f524070e85faff4a6a9eef49553ebc2b/sky130A/libs.tech/combined/sky130.lib.spice,
+|* ff, /Users/rwalters/GitHub/sky130-trng/.loom/worktrees/issue-22/layout/pex-array/ro_array_core_pex.spice, 27.0 and 1.8. As committed it is not a
+|* runnable deck. Invoke with
+|* `--pex-lib layout/pex-array/ro_array_core_pex.spice` (no --ro-ring5
+|* needed: this deck includes only the post-layout library).
+|
+|.option scale=1u
+|.lib "/Users/rwalters/.volare/volare/sky130/versions/c6d73a35f524070e85faff4a6a9eef49553ebc2b/sky130A/libs.tech/combined/sky130.lib.spice" ff
+|
+|* post-layout ARRAY subcircuit library only -- no pre-layout control, see
+|* header for why.
+|.include "/Users/rwalters/GitHub/sky130-trng/.loom/worktrees/issue-22/layout/pex-array/ro_array_core_pex.spice"
+|
+|.temp 27.0
+|
+|* --- substrate return node: FLOATING (see header) -- no Vsub source ----
+|
+|Vddrp1 pvddr1 0 dc 1.8
+|Vddrp2 pvddr2 0 dc 1.8
+|Vddrp3 pvddr3 0 dc 1.8
+|Vddrp4 pvddr4 0 dc 1.8
+|Vddp pvdd 0 dc 1.8
+|Venp1 pen1 0 PULSE(0 1.8 5n 100p 100p 1u 2u)
+|Venp2 pen2 0 PULSE(0 1.8 5n 100p 100p 1u 2u)
+|Venp3 pen3 0 PULSE(0 1.8 5n 100p 100p 1u 2u)
+|Venp4 pen4 0 PULSE(0 1.8 5n 100p 100p 1u 2u)
+|xarr pen1 pen2 pen3 pen4 pvddr1 pvddr2 pvddr3 pvddr4 pvdd 0 pxo pro1 pro2 pro3 pro4 ro_array_core_pex
+|
+|.ic v(pro1)=0
+|.ic v(pro2)=0
+|.ic v(pro3)=0
+|.ic v(pro4)=0
+|
+|.save v(pro1) v(pro2) v(pro3) v(pro4) v(xarr.vsubs)
+|.save i(Vddrp1) i(Vddrp2) i(Vddrp3) i(Vddrp4) i(Vddp)
+|
+|.tran 5p 800n uic
+|
+|.control
+|run
+|
+|meas tran pt1a when v(pro1)=0.5*1.8 rise=3
+|meas tran pt1b when v(pro1)=0.5*1.8 rise=13
+|let p_tr1 = (pt1b - pt1a)/10
+|meas tran pt2a when v(pro2)=0.5*1.8 rise=3
+|meas tran pt2b when v(pro2)=0.5*1.8 rise=13
+|let p_tr2 = (pt2b - pt2a)/10
+|meas tran pt3a when v(pro3)=0.5*1.8 rise=3
+|meas tran pt3b when v(pro3)=0.5*1.8 rise=13
+|let p_tr3 = (pt3b - pt3a)/10
+|meas tran pt4a when v(pro4)=0.5*1.8 rise=3
+|meas tran pt4b when v(pro4)=0.5*1.8 rise=13
+|let p_tr4 = (pt4b - pt4a)/10
+|let p_skew_span = p_tr1/p_tr4
+|
+|meas tran vsub_max MAX v(xarr.vsubs) from=100n to=800n
+|meas tran vsub_min MIN v(xarr.vsubs) from=100n to=800n
+|let vsub_swing_frac = (vsub_max - vsub_min) / 1.8
+|
+|print p_tr1
+|print p_tr2
+|print p_tr3
+|print p_tr4
+|print p_skew_span
+|print vsub_swing_frac
+|.endc
+|.end
+|
+
+----- stdout -----
+
+Note: Compatibility modes selected: hs a
+
+
+Circuit: * post-layout ro_array_core (whole array, real inter-ring wiring) with the
+
+option SCALE: Scale is set to 1e-06 for instance and model parameters
+option SCALE: Scale is set to 1e-06 for instance and model parameters
+option SCALE: Scale is set to 1e-06 for instance and model parameters
+option SCALE: Scale is set to 1e-06 for instance and model parameters
+option SCALE: Scale is set to 1e-06 for instance and model parameters
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+Operating point simulation skipped by 'uic',
+  now using transient initial conditions.
+ Reference value :  5.00000e-14
+ Reference value :  1.12217e-09
+ Reference value :  2.40717e-09
+ Reference value :  3.69717e-09
+ Reference value :  4.99217e-09
+ Reference value :  6.20250e-09
+ Reference value :  7.48750e-09
+ Reference value :  8.73750e-09
+ Reference value :  1.00575e-08
+ Reference value :  1.13225e-08
+ Reference value :  1.26125e-08
+ Reference value :  1.38425e-08
+ Reference value :  1.51225e-08
+ Reference value :  1.63875e-08
+ Reference value :  1.76625e-08
+ Reference value :  1.89175e-08
+ Reference value :  2.02025e-08
+ Reference value :  2.14175e-08
+ Reference value :  2.26375e-08
+ Reference value :  2.38725e-08
+ Reference value :  2.52275e-08
+ Reference value :  2.64475e-08
+ Reference value :  2.76575e-08
+ Reference value :  2.88275e-08
+ Reference value :  3.00825e-08
+ Reference value :  3.12575e-08
+ Reference value :  3.24975e-08
+ Reference value :  3.37375e-08
+ Reference value :  3.49425e-08
+ Reference value :  3.61425e-08
+ Reference value :  3.74225e-08
+ Reference value :  3.86225e-08
+ Reference value :  3.97875e-08
+ Reference value :  4.09325e-08
+ Reference value :  4.21325e-08
+ Reference value :  4.33675e-08
+ Reference value :  4.44725e-08
+ Reference value :  4.56475e-08
+ Reference value :  4.68875e-08
+ Reference value :  4.81275e-08
+ Reference value :  4.93925e-08
+ Reference value :  5.06175e-08
+ Reference value :  5.18825e-08
+ Reference value :  5.31125e-08
+ Reference value :  5.44725e-08
+ Reference value :  5.56475e-08
+ Reference value :  5.69125e-08
+ Reference value :  5.81875e-08
+ Reference value :  5.94175e-08
+ Reference value :  6.06775e-08
+ Reference value :  6.19425e-08
+ Reference value :  6.32625e-08
+ Reference value :  6.44725e-08
+ Reference value :  6.56475e-08
+ Reference value :  6.69375e-08
+ Reference value :  6.82425e-08
+ Reference value :  6.94675e-08
+ Reference value :  7.07075e-08
+ Reference value :  7.19975e-08
+ Reference value :  7.32775e-08
+ Reference value :  7.45625e-08
+ Reference value :  7.57725e-08
+ Reference value :  7.70175e-08
+ Reference value :  7.82275e-08
+ Reference value :  7.95225e-08
+ Reference value :  8.06925e-08
+ Reference value :  8.19775e-08
+ Reference value :  8.32225e-08
+ Reference value :  8.45125e-08
+ Reference value :  8.57375e-08
+ Reference value :  8.70025e-08
+ Reference value :  8.81875e-08
+ Reference value :  8.95125e-08
+ Reference value :  9.08125e-08
+ Reference value :  9.19825e-08
+ Reference value :  9.32425e-08
+ Reference value :  9.45725e-08
+ Reference value :  9.59525e-08
+ Reference value :  9.71425e-08
+ Reference value :  9.83875e-08
+ Reference value :  9.96775e-08
+ Reference value :  1.00908e-07
+ Reference value :  1.02178e-07
+ Reference value :  1.03443e-07
+ Reference value :  1.04718e-07
+ Reference value :  1.05988e-07
+ Reference value :  1.07213e-07
+ Reference value :  1.08458e-07
+ Reference value :  1.09703e-07
+ Reference value :  1.10933e-07
+ Reference value :  1.12148e-07
+ Reference value :  1.13393e-07
+ Reference value :  1.14613e-07
+ Reference value :  1.15868e-07
+ Reference value :  1.17103e-07
+ Reference value :  1.18338e-07
+ Reference value :  1.19603e-07
+ Reference value :  1.20803e-07
+ Reference value :  1.22068e-07
+ Reference value :  1.23278e-07
+ Reference value :  1.24528e-07
+ Reference value :  1.25683e-07
+ Reference value :  1.26908e-07
+ Reference value :  1.28168e-07
+ Reference value :  1.29368e-07
+ Reference value :  1.30683e-07
+ Reference value :  1.31903e-07
+ Reference value :  1.33238e-07
+ Reference value :  1.34533e-07
+ Reference value :  1.35768e-07
+ Reference value :  1.37028e-07
+ Reference value :  1.38358e-07
+ Reference value :  1.39653e-07
+ Reference value :  1.40868e-07
+ Reference value :  1.42118e-07
+ Reference value :  1.43423e-07
+ Reference value :  1.44668e-07
+ Reference value :  1.45913e-07
+ Reference value :  1.47148e-07
+ Reference value :  1.48478e-07
+ Reference value :  1.49703e-07
+ Reference value :  1.50883e-07
+ Reference value :  1.52083e-07
+ Reference value :  1.53163e-07
+ Reference value :  1.54433e-07
+ Reference value :  1.55623e-07
+ Reference value :  1.56833e-07
+ Reference value :  1.58063e-07
+ Reference value :  1.59298e-07
+ Reference value :  1.60493e-07
+ Reference value :  1.61693e-07
+ Reference value :  1.62878e-07
+ Reference value :  1.64113e-07
+ Reference value :  1.65348e-07
+ Reference value :  1.66578e-07
+ Reference value :  1.67778e-07
+ Reference value :  1.69033e-07
+ Reference value :  1.70238e-07
+ Reference value :  1.71498e-07
+ Reference value :  1.72718e-07
+ Reference value :  1.73933e-07
+ Reference value :  1.75113e-07
+ Reference value :  1.76383e-07
+ Reference value :  1.77588e-07
+ Reference value :  1.78808e-07
+ Reference value :  1.80008e-07
+ Reference value :  1.81288e-07
+ Reference value :  1.82473e-07
+ Reference value :  1.83748e-07
+ Reference value :  1.84953e-07
+ Reference value :  1.86223e-07
+ Reference value :  1.87473e-07
+ Reference value :  1.88808e-07
+ Reference value :  1.90158e-07
+ Reference value :  1.91428e-07
+ Reference value :  1.92698e-07
+ Reference value :  1.94013e-07
+ Reference value :  1.95343e-07
+ Reference value :  1.96643e-07
+ Reference value :  1.97908e-07
+ Reference value :  1.99233e-07
+ Reference value :  2.00538e-07
+ Reference value :  2.01858e-07
+ Reference value :  2.03068e-07
+ Reference value :  2.04358e-07
+ Reference value :  2.05578e-07
+ Reference value :  2.06833e-07
+ Reference value :  2.08118e-07
+ Reference value :  2.09318e-07
+ Reference value :  2.10508e-07
+ Reference value :  2.11743e-07
+ Reference value :  2.13033e-07
+ Reference value :  2.14343e-07
+ Reference value :  2.15558e-07
+ Reference value :  2.16763e-07
+ Reference value :  2.18023e-07
+ Reference value :  2.19248e-07
+ Reference value :  2.20458e-07
+ Reference value :  2.21663e-07
+ Reference value :  2.22918e-07
+ Reference value :  2.24183e-07
+ Reference value :  2.25373e-07
+ Reference value :  2.26488e-07
+ Reference value :  2.27718e-07
+ Reference value :  2.28988e-07
+ Reference value :  2.30218e-07
+ Reference value :  2.31358e-07
+ Reference value :  2.32633e-07
+ Reference value :  2.33888e-07
+ Reference value :  2.35083e-07
+ Reference value :  2.36318e-07
+ Reference value :  2.37573e-07
+ Reference value :  2.38848e-07
+ Reference value :  2.40093e-07
+ Reference value :  2.41283e-07
+ Reference value :  2.42568e-07
+ Reference value :  2.43838e-07
+ Reference value :  2.45053e-07
+ Reference value :  2.46378e-07
+ Reference value :  2.47633e-07
+ Reference value :  2.48883e-07
+ Reference value :  2.50168e-07
+ Reference value :  2.51378e-07
+ Reference value :  2.52673e-07
+ Reference value :  2.53913e-07
+ Reference value :  2.55193e-07
+ Reference value :  2.56433e-07
+ Reference value :  2.57793e-07
+ Reference value :  2.59093e-07
+ Reference value :  2.60398e-07
+ Reference value :  2.61623e-07
+ Reference value :  2.62928e-07
+ Reference value :  2.64168e-07
+ Reference value :  2.65448e-07
+ Reference value :  2.66663e-07
+ Reference value :  2.67958e-07
+ Reference value :  2.69208e-07
+ Reference value :  2.70513e-07
+ Reference value :  2.71758e-07
+ Reference value :  2.73018e-07
+ Reference value :  2.74273e-07
+ Reference value :  2.75523e-07
+ Reference value :  2.76783e-07
+ Reference value :  2.77993e-07
+ Reference value :  2.79243e-07
+ Reference value :  2.80478e-07
+ Reference value :  2.81748e-07
+ Reference value :  2.83013e-07
+ Reference value :  2.84258e-07
+ Reference value :  2.85487e-07
+ Reference value :  2.86757e-07
+ Reference value :  2.88017e-07
+ Reference value :  2.89157e-07
+ Reference value :  2.90402e-07
+ Reference value :  2.91587e-07
+ Reference value :  2.92867e-07
+ Reference value :  2.94042e-07
+ Reference value :  2.95287e-07
+ Reference value :  2.96437e-07
+ Reference value :  2.97662e-07
+ Reference value :  2.98937e-07
+ Reference value :  3.00177e-07
+ Reference value :  3.01357e-07
+ Reference value :  3.02582e-07
+ Reference value :  3.03852e-07
+ Reference value :  3.05077e-07
+ Reference value :  3.06292e-07
+ Reference value :  3.07562e-07
+ Reference value :  3.08827e-07
+ Reference value :  3.09992e-07
+ Reference value :  3.11162e-07
+ Reference value :  3.12362e-07
+ Reference value :  3.13602e-07
+ Reference value :  3.14812e-07
+ Reference value :  3.15992e-07
+ Reference value :  3.17097e-07
+ Reference value :  3.18392e-07
+ Reference value :  3.19647e-07
+ Reference value :  3.20852e-07
+ Reference value :  3.22037e-07
+ Reference value :  3.23297e-07
+ Reference value :  3.24487e-07
+ Reference value :  3.25712e-07
+ Reference value :  3.26837e-07
+ Reference value :  3.28062e-07
+ Reference value :  3.29312e-07
+ Reference value :  3.30582e-07
+ Reference value :  3.31812e-07
+ Reference value :  3.33082e-07
+ Reference value :  3.34292e-07
+ Reference value :  3.35607e-07
+ Reference value :  3.36862e-07
+ Reference value :  3.38112e-07
+ Reference value :  3.39322e-07
+ Reference value :  3.40597e-07
+ Reference value :  3.41852e-07
+ Reference value :  3.43117e-07
+ Reference value :  3.44372e-07
+ Reference value :  3.45602e-07
+ Reference value :  3.46832e-07
+ Reference value :  3.48022e-07
+ Reference value :  3.49242e-07
+ Reference value :  3.50482e-07
+ Reference value :  3.51702e-07
+ Reference value :  3.52912e-07
+ Reference value :  3.54122e-07
+ Reference value :  3.55412e-07
+ Reference value :  3.56677e-07
+ Reference value :  3.57897e-07
+ Reference value :  3.59092e-07
+ Reference value :  3.60322e-07
+ Reference value :  3.61562e-07
+ Reference value :  3.62817e-07
+ Reference value :  3.63972e-07
+ Reference value :  3.65187e-07
+ Reference value :  3.66407e-07
+ Reference value :  3.67662e-07
+ Reference value :  3.68842e-07
+ Reference value :  3.69982e-07
+ Reference value :  3.71212e-07
+ Reference value :  3.72492e-07
+ Reference value :  3.73707e-07
+ Reference value :  3.74967e-07
+ Reference value :  3.76202e-07
+ Reference value :  3.77537e-07
+ Reference value :  3.78727e-07
+ Reference value :  3.79927e-07
+ Reference value :  3.81127e-07
+ Reference value :  3.82422e-07
+ Reference value :  3.83667e-07
+ Reference value :  3.84912e-07
+ Reference value :  3.86132e-07
+ Reference value :  3.87597e-07
+ Reference value :  3.89057e-07
+ Reference value :  3.90432e-07
+ Reference value :  3.91742e-07
+ Reference value :  3.93082e-07
+ Reference value :  3.94332e-07
+ Reference value :  3.95637e-07
+ Reference value :  3.96927e-07
+ Reference value :  3.98247e-07
+ Reference value :  3.99522e-07
+ Reference value :  4.00767e-07
+ Reference value :  4.02072e-07
+ Reference value :  4.03362e-07
+ Reference value :  4.04657e-07
+ Reference value :  4.05892e-07
+ Reference value :  4.07187e-07
+ Reference value :  4.08397e-07
+ Reference value :  4.09727e-07
+ Reference value :  4.11002e-07
+ Reference value :  4.12287e-07
+ Reference value :  4.13532e-07
+ Reference value :  4.14802e-07
+ Reference value :  4.16072e-07
+ Reference value :  4.17297e-07
+ Reference value :  4.18592e-07
+ Reference value :  4.19857e-07
+ Reference value :  4.21097e-07
+ Reference value :  4.22277e-07
+ Reference value :  4.23512e-07
+ Reference value :  4.24682e-07
+ Reference value :  4.25947e-07
+ Reference value :  4.27152e-07
+ Reference value :  4.28382e-07
+ Reference value :  4.29577e-07
+ Reference value :  4.30927e-07
+ Reference value :  4.32282e-07
+ Reference value :  4.33502e-07
+ Reference value :  4.34732e-07
+ Reference value :  4.35962e-07
+ Reference value :  4.37187e-07
+ Reference value :  4.38507e-07
+ Reference value :  4.39727e-07
+ Reference value :  4.40902e-07
+ Reference value :  4.42122e-07
+ Reference value :  4.43297e-07
+ Reference value :  4.44477e-07
+ Reference value :  4.45727e-07
+ Reference value :  4.46962e-07
+ Reference value :  4.48167e-07
+ Reference value :  4.49457e-07
+ Reference value :  4.50702e-07
+ Reference value :  4.51972e-07
+ Reference value :  4.53177e-07
+ Reference value :  4.54472e-07
+ Reference value :  4.55727e-07
+ Reference value :  4.57027e-07
+ Reference value :  4.58202e-07
+ Reference value :  4.59502e-07
+ Reference value :  4.60782e-07
+ Reference value :  4.62077e-07
+ Reference value :  4.63232e-07
+ Reference value :  4.64452e-07
+ Reference value :  4.65662e-07
+ Reference value :  4.66912e-07
+ Reference value :  4.68137e-07
+ Reference value :  4.69362e-07
+ Reference value :  4.70627e-07
+ Reference value :  4.71892e-07
+ Reference value :  4.73112e-07
+ Reference value :  4.74357e-07
+ Reference value :  4.75597e-07
+ Reference value :  4.76892e-07
+ Reference value :  4.78087e-07
+ Reference value :  4.79387e-07
+ Reference value :  4.80592e-07
+ Reference value :  4.81842e-07
+ Reference value :  4.83127e-07
+ Reference value :  4.84397e-07
+ Reference value :  4.85572e-07
+ Reference value :  4.86832e-07
+ Reference value :  4.88112e-07
+ Reference value :  4.89417e-07
+ Reference value :  4.90617e-07
+ Reference value :  4.91882e-07
+ Reference value :  4.93207e-07
+ Reference value :  4.94502e-07
+ Reference value :  4.95657e-07
+ Reference value :  4.96917e-07
+ Reference value :  4.98187e-07
+ Reference value :  4.99507e-07
+ Reference value :  5.00767e-07
+ Reference value :  5.01987e-07
+ Reference value :  5.03157e-07
+ Reference value :  5.04447e-07
+ Reference value :  5.05692e-07
+ Reference value :  5.06962e-07
+ Reference value :  5.08187e-07
+ Reference value :  5.09447e-07
+ Reference value :  5.11192e-07
+ Reference value :  5.12692e-07
+ Reference value :  5.13842e-07
+ Reference value :  5.15072e-07
+ Reference value :  5.16402e-07
+ Reference value :  5.17662e-07
+ Reference value :  5.18737e-07
+ Reference value :  5.19892e-07
+ Reference value :  5.21112e-07
+ Reference value :  5.22297e-07
+ Reference value :  5.23447e-07
+ Reference value :  5.24572e-07
+ Reference value :  5.25722e-07
+ Reference value :  5.26902e-07
+ Reference value :  5.28037e-07
+ Reference value :  5.29182e-07
+ Reference value :  5.30327e-07
+ Reference value :  5.31532e-07
+ Reference value :  5.32692e-07
+ Reference value :  5.33762e-07
+ Reference value :  5.34892e-07
+ Reference value :  5.36052e-07
+ Reference value :  5.37232e-07
+ Reference value :  5.38322e-07
+ Reference value :  5.39437e-07
+ Reference value :  5.40532e-07
+ Reference value :  5.41652e-07
+ Reference value :  5.42792e-07
+ Reference value :  5.43867e-07
+ Reference value :  5.44967e-07
+ Reference value :  5.46122e-07
+ Reference value :  5.47237e-07
+ Reference value :  5.48372e-07
+ Reference value :  5.49507e-07
+ Reference value :  5.50622e-07
+ Reference value :  5.51742e-07
+ Reference value :  5.52852e-07
+ Reference value :  5.53972e-07
+ Reference value :  5.55047e-07
+ Reference value :  5.56102e-07
+ Reference value :  5.57212e-07
+ Reference value :  5.58332e-07
+ Reference value :  5.59477e-07
+ Reference value :  5.60612e-07
+ Reference value :  5.61742e-07
+ Reference value :  5.62847e-07
+ Reference value :  5.64007e-07
+ Reference value :  5.65087e-07
+ Reference value :  5.66277e-07
+ Reference value :  5.67357e-07
+ Reference value :  5.68482e-07
+ Reference value :  5.69622e-07
+ Reference value :  5.70677e-07
+ Reference value :  5.71852e-07
+ Reference value :  5.72987e-07
+ Reference value :  5.74147e-07
+ Reference value :  5.75252e-07
+ Reference value :  5.76412e-07
+ Reference value :  5.77552e-07
+ Reference value :  5.78672e-07
+ Reference value :  5.79802e-07
+ Reference value :  5.80952e-07
+ Reference value :  5.82152e-07
+ Reference value :  5.83267e-07
+ Reference value :  5.84467e-07
+ Reference value :  5.85697e-07
+ Reference value :  5.86877e-07
+ Reference value :  5.87987e-07
+ Reference value :  5.89097e-07
+ Reference value :  5.90272e-07
+ Reference value :  5.91432e-07
+ Reference value :  5.92607e-07
+ Reference value :  5.93742e-07
+ Reference value :  5.94872e-07
+ Reference value :  5.96067e-07
+ Reference value :  5.97192e-07
+ Reference value :  5.98372e-07
+ Reference value :  5.99512e-07
+ Reference value :  6.00672e-07
+ Reference value :  6.01843e-07
+ Reference value :  6.02948e-07
+ Reference value :  6.04128e-07
+ Reference value :  6.05318e-07
+ Reference value :  6.06473e-07
+ Reference value :  6.07603e-07
+ Reference value :  6.08668e-07
+ Reference value :  6.09743e-07
+ Reference value :  6.10873e-07
+ Reference value :  6.12043e-07
+ Reference value :  6.13123e-07
+ Reference value :  6.14188e-07
+ Reference value :  6.15263e-07
+ Reference value :  6.16458e-07
+ Reference value :  6.17563e-07
+ Reference value :  6.18648e-07
+ Reference value :  6.19748e-07
+ Reference value :  6.21013e-07
+ Reference value :  6.22213e-07
+ Reference value :  6.23363e-07
+ Reference value :  6.24468e-07
+ Reference value :  6.25553e-07
+ Reference value :  6.26728e-07
+ Reference value :  6.27878e-07
+ Reference value :  6.28978e-07
+ Reference value :  6.30098e-07
+ Reference value :  6.31238e-07
+ Reference value :  6.32393e-07
+ Reference value :  6.33553e-07
+ Reference value :  6.34623e-07
+ Reference value :  6.35793e-07
+ Reference value :  6.36983e-07
+ Reference value :  6.38103e-07
+ Reference value :  6.39228e-07
+ Reference value :  6.40428e-07
+ Reference value :  6.41518e-07
+ Reference value :  6.42643e-07
+ Reference value :  6.43833e-07
+ Reference value :  6.45033e-07
+ Reference value :  6.46188e-07
+ Reference value :  6.47308e-07
+ Reference value :  6.48508e-07
+ Reference value :  6.49658e-07
+ Reference value :  6.50843e-07
+ Reference value :  6.51983e-07
+ Reference value :  6.53093e-07
+ Reference value :  6.54273e-07
+ Reference value :  6.55398e-07
+ Reference value :  6.56533e-07
+ Reference value :  6.57643e-07
+ Reference value :  6.58833e-07
+ Reference value :  6.60028e-07
+ Reference value :  6.61118e-07
+ Reference value :  6.62238e-07
+ Reference value :  6.63333e-07
+ Reference value :  6.64498e-07
+ Reference value :  6.65708e-07
+ Reference value :  6.66758e-07
+ Reference value :  6.67833e-07
+ Reference value :  6.68953e-07
+ Reference value :  6.70103e-07
+ Reference value :  6.71263e-07
+ Reference value :  6.72378e-07
+ Reference value :  6.73503e-07
+ Reference value :  6.74553e-07
+ Reference value :  6.75768e-07
+ Reference value :  6.76878e-07
+ Reference value :  6.78008e-07
+ Reference value :  6.79138e-07
+ Reference value :  6.80263e-07
+ Reference value :  6.81418e-07
+ Reference value :  6.82543e-07
+ Reference value :  6.83668e-07
+ Reference value :  6.84798e-07
+ Reference value :  6.85998e-07
+ Reference value :  6.87118e-07
+ Reference value :  6.88323e-07
+ Reference value :  6.89408e-07
+ Reference value :  6.90573e-07
+ Reference value :  6.91743e-07
+ Reference value :  6.92883e-07
+ Reference value :  6.94013e-07
+ Reference value :  6.95138e-07
+ Reference value :  6.96333e-07
+ Reference value :  6.97468e-07
+ Reference value :  6.98588e-07
+ Reference value :  6.99708e-07
+ Reference value :  7.00898e-07
+ Reference value :  7.02028e-07
+ Reference value :  7.03213e-07
+ Reference value :  7.04243e-07
+ Reference value :  7.05308e-07
+ Reference value :  7.06508e-07
+ Reference value :  7.07618e-07
+ Reference value :  7.08733e-07
+ Reference value :  7.09718e-07
+ Reference value :  7.10873e-07
+ Reference value :  7.11973e-07
+ Reference value :  7.13113e-07
+ Reference value :  7.14173e-07
+ Reference value :  7.15213e-07
+ Reference value :  7.16348e-07
+ Reference value :  7.17423e-07
+ Reference value :  7.18588e-07
+ Reference value :  7.19673e-07
+ Reference value :  7.20833e-07
+ Reference value :  7.21913e-07
+ Reference value :  7.23043e-07
+ Reference value :  7.24183e-07
+ Reference value :  7.25353e-07
+ Reference value :  7.26503e-07
+ Reference value :  7.27593e-07
+ Reference value :  7.28728e-07
+ Reference value :  7.29743e-07
+ Reference value :  7.30863e-07
+ Reference value :  7.31968e-07
+ Reference value :  7.33113e-07
+ Reference value :  7.34248e-07
+ Reference value :  7.35383e-07
+ Reference value :  7.36513e-07
+ Reference value :  7.37573e-07
+ Reference value :  7.38733e-07
+ Reference value :  7.39888e-07
+ Reference value :  7.40983e-07
+ Reference value :  7.42063e-07
+ Reference value :  7.43223e-07
+ Reference value :  7.44363e-07
+ Reference value :  7.45498e-07
+ Reference value :  7.46728e-07
+ Reference value :  7.47788e-07
+ Reference value :  7.48928e-07
+ Reference value :  7.50113e-07
+ Reference value :  7.51278e-07
+ Reference value :  7.52393e-07
+ Reference value :  7.53548e-07
+ Reference value :  7.54723e-07
+ Reference value :  7.55883e-07
+ Reference value :  7.57013e-07
+ Reference value :  7.58098e-07
+ Reference value :  7.59253e-07
+ Reference value :  7.60458e-07
+ Reference value :  7.61588e-07
+ Reference value :  7.62743e-07
+ Reference value :  7.63853e-07
+ Reference value :  7.65053e-07
+ Reference value :  7.66208e-07
+ Reference value :  7.67318e-07
+ Reference value :  7.68473e-07
+ Reference value :  7.69608e-07
+ Reference value :  7.70818e-07
+ Reference value :  7.71958e-07
+ Reference value :  7.73123e-07
+ Reference value :  7.74228e-07
+ Reference value :  7.75423e-07
+ Reference value :  7.76603e-07
+ Reference value :  7.77778e-07
+ Reference value :  7.78903e-07
+ Reference value :  7.80093e-07
+ Reference value :  7.81278e-07
+ Reference value :  7.82463e-07
+ Reference value :  7.83603e-07
+ Reference value :  7.84758e-07
+ Reference value :  7.85898e-07
+ Reference value :  7.87018e-07
+ Reference value :  7.88198e-07
+ Reference value :  7.89328e-07
+ Reference value :  7.90498e-07
+ Reference value :  7.91628e-07
+ Reference value :  7.92753e-07
+ Reference value :  7.93888e-07
+ Reference value :  7.94933e-07
+ Reference value :  7.96093e-07
+ Reference value :  7.97218e-07
+ Reference value :  7.98423e-07
+ Reference value :  7.99598e-07
+No. of Data Rows : 160024
+pt1a                =  1.33039e-08
+pt1b                =  6.88671e-08
+pt2a                =  1.29387e-08
+pt2b                =  6.63693e-08
+pt3a                =  1.26789e-08
+pt3b                =  6.39618e-08
+pt4a                =  1.24922e-08
+pt4b                =  6.17853e-08
+ meas tran vsub_max max v(xarr.vsubs) from=100n to=800n failed!
+
+ meas tran vsub_min min v(xarr.vsubs) from=100n to=800n failed!
+
+p_tr1 = 5.556320e-09
+p_tr2 = 5.343062e-09
+p_tr3 = 5.128286e-09
+p_tr4 = 4.929308e-09
+p_skew_span = 1.127201e+00
+Note: Simulation executed from .control section 
+
+----- stderr -----
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn132:pshort_model.43
+Warning: Eta0 = -0.000373202 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn131:pshort_model.43
+Warning: Eta0 = -0.000373202 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn130:pshort_model.43
+Warning: Eta0 = -0.000373202 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn129:pshort_model.43
+Warning: Eta0 = -0.000373202 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn128:pshort_model.43
+Warning: Eta0 = -0.000373202 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn127:pshort_model.43
+Warning: Eta0 = -0.000373202 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn126:pshort_model.43
+Warning: Eta0 = -0.000373202 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn125:pshort_model.43
+Warning: Eta0 = -0.000373202 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn124:pshort_model.43
+Warning: Eta0 = -0.000373202 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn123:pshort_model.43
+Warning: Eta0 = -0.000373202 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn122:pshort_model.43
+Warning: Eta0 = -0.000373202 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn121:pshort_model.43
+Warning: Eta0 = -0.000373202 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn120:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn119:pshort_model.43
+Warning: Eta0 = -0.000373202 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn118:pshort_model.32
+Warning: A2 = 1.14662 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.0493749 is negative.
+Warning: Pdibl2 = -0.000925472 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn117:pshort_model.32
+Warning: A2 = 1.14662 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.0493749 is negative.
+Warning: Pdibl2 = -0.000925472 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn116:pshort_model.43
+Warning: Eta0 = -0.000373202 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn115:pshort_model.32
+Warning: A2 = 1.14662 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.0493749 is negative.
+Warning: Pdibl2 = -0.000925472 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn114:pshort_model.32
+Warning: A2 = 1.14662 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.0493749 is negative.
+Warning: Pdibl2 = -0.000925472 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn113:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn112:pshort_model.43
+Warning: Eta0 = -0.000373202 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn111:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn110:pshort_model.32
+Warning: A2 = 1.14662 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.0493749 is negative.
+Warning: Pdibl2 = -0.000925472 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn109:pshort_model.32
+Warning: A2 = 1.14662 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.0493749 is negative.
+Warning: Pdibl2 = -0.000925472 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn108:pshort_model.43
+Warning: Eta0 = -0.000373202 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn107:pshort_model.32
+Warning: A2 = 1.14662 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.0493749 is negative.
+Warning: Pdibl2 = -0.000925472 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn106:pshort_model.32
+Warning: A2 = 1.14662 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.0493749 is negative.
+Warning: Pdibl2 = -0.000925472 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn105:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn104:pshort_model.43
+Warning: Eta0 = -0.000373202 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn103:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn102:pshort_model.43
+Warning: Eta0 = -0.000373202 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn101:pshort_model.32
+Warning: A2 = 1.14662 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.0493749 is negative.
+Warning: Pdibl2 = -0.000925472 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn100:pshort_model.32
+Warning: A2 = 1.14662 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.0493749 is negative.
+Warning: Pdibl2 = -0.000925472 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn99:pshort_model.43
+Warning: Eta0 = -0.000373202 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn98:pshort_model.32
+Warning: A2 = 1.14662 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.0493749 is negative.
+Warning: Pdibl2 = -0.000925472 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn97:pshort_model.32
+Warning: A2 = 1.14662 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.0493749 is negative.
+Warning: Pdibl2 = -0.000925472 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn96:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn95:pshort_model.43
+Warning: Eta0 = -0.000373202 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn94:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn93:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn92:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn91:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn90:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn89:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn88:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn87:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn86:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn85:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn84:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn83:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn82:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn81:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn80:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn79:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn78:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn77:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn76:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn75:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn74:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn73:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn72:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn71:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn70:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn69:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn68:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn67:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn66:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn65:nshort_model.40
+Warning: Eta0 = -0.00908636 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn64:nshort_model.40
+Warning: Eta0 = -0.00908636 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn63:nshort_model.40
+Warning: Eta0 = -0.00908636 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn62:nshort_model.40
+Warning: Eta0 = -0.00908636 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn61:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn60:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn59:nshort_model.40
+Warning: Eta0 = -0.00908636 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn58:nshort_model.40
+Warning: Eta0 = -0.00908636 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn57:nshort_model.40
+Warning: Eta0 = -0.00908636 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn56:nshort_model.40
+Warning: Eta0 = -0.00908636 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn55:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn54:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn53:nshort_model.40
+Warning: Eta0 = -0.00908636 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn52:nshort_model.40
+Warning: Eta0 = -0.00908636 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn51:nshort_model.40
+Warning: Eta0 = -0.00908636 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn50:nshort_model.40
+Warning: Eta0 = -0.00908636 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn49:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn48:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn47:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn46:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn45:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn44:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn43:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn42:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn41:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn40:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn39:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn38:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn37:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn35:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn33:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn31:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn28:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn27:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn25:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn23:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn21:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn8:nshort_model.40
+Warning: Eta0 = -0.00908636 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn7:nshort_model.40
+Warning: Eta0 = -0.00908636 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn6:nshort_model.40
+Warning: Eta0 = -0.00908636 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn5:nshort_model.40
+Warning: Eta0 = -0.00908636 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn4:nshort_model.40
+Warning: Eta0 = -0.00908636 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn3:nshort_model.40
+Warning: Eta0 = -0.00908636 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn2:nshort_model.40
+Warning: Eta0 = -0.00908636 is negative.
+
+Checking parameters for BSIM 4.5 model xarr.xpex.xn1:nshort_model.40
+Warning: Eta0 = -0.00908636 is negative.
+
+Error: measure  vsub_max  max(TRIG) : no such vector as 'v(xarr.vsubs)'
+
+Error: measure  vsub_min  min(TRIG) : no such vector as 'v(xarr.vsubs)'
+Warning from checkvalid: vector vsub_max is not available or has zero length.
+Error: RHS "(vsub_max - vsub_min) / 1.8" invalid
+Warning from checkvalid: vector vsub_swing_frac is not available or has zero length.
+

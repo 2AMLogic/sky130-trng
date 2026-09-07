@@ -1,0 +1,95 @@
+{
+  "record_id": "20260907-001005-368b943",
+  "slug": "post-layout-ro-array-core",
+  "claim": "post-layout ro_array_core, FLOATING substrate, rings 2-4 present but stopped -- separates loading from coupling in the tied/float bracket above, the array-scale sibling of sim/post-layout-ro-ring5/'s own solo study",
+  "level": "transistor",
+  "seed": "N/A (deterministic small-signal .noise analysis, not Monte Carlo)",
+  "pvt": {
+    "temp_c": -40.0,
+    "vdd_v": 1.98
+  },
+  "tran": {
+    "tmax": "5p",
+    "noise_amp": "2.0e-3"
+  },
+  "testbench": "sim/post-layout-ro-array-core/testbench/tb_post_layout_ro_array_core_substrate_float_solo.spice",
+  "netlists": {
+    "RO_RING5": {
+      "path": "design/ro_ring5.spice",
+      "sha256": "19dccb82a3e9a1239d509a03e645954f79a857ab3b11e41a2a53faa105b58ea4"
+    },
+    "PEX_LIB": {
+      "path": "layout/pex-array/ro_array_core_pex.spice",
+      "sha256": "82dede47fd59ec14bf8f907051e541dbc9b48bbd28a5d00f20d92a01b9cd7087"
+    }
+  },
+  "pdk": {
+    "variant": "sky130A",
+    "installed_commit": "c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+    "pin_commit": "c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+    "matches_pin": true,
+    "lib_file": "/Users/rwalters/.volare/volare/sky130/versions/c6d73a35f524070e85faff4a6a9eef49553ebc2b/sky130A/libs.tech/combined/sky130.lib.spice"
+  },
+  "tools": {
+    "ngspice": "** ngspice-46 : Circuit level simulation program",
+    "python": "3.14.7",
+    "os": "macOS-26.6.2-arm64-arm-64bit-Mach-O"
+  },
+  "repo_state": {
+    "sha": "368b943",
+    "branch": "feature/issue-22",
+    "dirty": true
+  },
+  "corners": [
+    {
+      "corner": "tt",
+      "ok": true,
+      "returncode": 0,
+      "measurements": {
+        "pt1a": 1.16663e-08,
+        "pt1b": 5.60536e-08,
+        "p_tr1": 4.438729e-09
+      },
+      "onoise_min": null,
+      "onoise_max": null,
+      "onoise_spread_ratio": null,
+      "problems": [],
+      "log": "corners/tt.log"
+    },
+    {
+      "corner": "ss",
+      "ok": true,
+      "returncode": 0,
+      "measurements": {
+        "pt1a": 1.28813e-08,
+        "pt1b": 6.53971e-08,
+        "p_tr1": 5.251578e-09
+      },
+      "onoise_min": null,
+      "onoise_max": null,
+      "onoise_spread_ratio": null,
+      "problems": [],
+      "log": "corners/ss.log"
+    },
+    {
+      "corner": "ff",
+      "ok": true,
+      "returncode": 0,
+      "measurements": {
+        "pt1a": 1.06647e-08,
+        "pt1b": 4.82739e-08,
+        "p_tr1": 3.760917e-09
+      },
+      "onoise_min": null,
+      "onoise_max": null,
+      "onoise_spread_ratio": null,
+      "problems": [],
+      "log": "corners/ff.log"
+    }
+  ],
+  "overall": "PASS",
+  "subset_reason": null,
+  "supersedes": "20260906-232524-6adba77",
+  "author": "ci@loom.test",
+  "timestamp_utc": "2026-09-07T00:36:07.831703+00:00"
+}

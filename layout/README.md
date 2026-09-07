@@ -17,21 +17,25 @@ and `klt lvs` matching at 132/132 devices, 96/96 nets against
 extract --parasitics`, and `sim/post-layout-ro-array-core/` runs three
 decks from it across the same four-(temp, Vdd)-point, `tt`/`ss`/`ff` grid
 every prior post-layout campaign in this repo uses (36 corner runs).
-Headline: array-level parasitics cost **2.158x - 2.490x** in ring period
+Headline: array-level parasitics cost **2.158x - 2.501x** in ring period
 (against intra-cell-only's 1.378x - 1.479x and one ring's own real
 interconnect's 2.08x - 2.45x, since the array additionally carries buffer
 and XOR-tree loading neither smaller-scope campaign could include); the
-`wstv` ladder still discriminates (span 1.089x - 1.180x); combining-node
+`wstv` ladder still discriminates (span 1.084x - 1.175x); combining-node
 bias stays close to 0.5x Vdd post-layout (no new systematic bias); and a
 tied/float/solo bracket — now on the array's own real physical placement,
 not leaf cells hand-tied to a shared substrate node at assumed infinite
-separation — finds a *wider*, still-unresolved-direction coupling bound
-than the prior ring-scale study (loading -0.379% to -0.247% of ring period,
-coupling -0.081% to +0.230%). See
+separation — finds a *wider* coupling bound than the prior ring-scale
+study, and, for the first time in this repo, one whose sign is consistent
+across every grid point (loading -0.353% to -0.192% of ring period,
+coupling +0.044% to +0.293%, 12 of 12 positive). See
 [`spec/decision-records/DR-0006-*.md`](../spec/decision-records/DR-0006-array-level-post-layout-and-wstv-decorrelation.md)
 for the full re-evaluation of DR-0003 §8 and what this does and does not
 close, and `sim/README.md`'s "Array-level post-layout" section for every
-number plus two documented incidents (a `.global` net addressed
+number, the two-extraction-pass history (the campaign was run once against
+the placement PoC's un-strapped GDS before the recipe landed, and again
+against the canonical one; both passes are kept), and two documented
+incidents (a `.global` net addressed
 hierarchically by mistake in the first substrate-float run, and a transient
 resource-contention failure on a retry that passed unmodified). **Explicitly
 does not attempt**: `sampler_dff`/`sampler_core` (no layout at all yet), or
@@ -1173,28 +1177,27 @@ deliver, tracked in follow-up issue
    real interconnect with ideal wires to its neighbours, not a whole-array
    measurement.
    **DONE for the whole-array scope, this increment**: the composed,
-   DRC-clean, LVS-matching whole array (`layout/ro_array_core-placement-poc/`'s
-   "Increment 8" GDS — four non-identical rings, four buffers, the three-`xor2`
-   combining tree, and the array-wide `vdd` bus, all really wired) is now
+   DRC-clean, LVS-matching whole array (`layout/ro_array_core/`'s canonical,
+   `--check`-reproducible GDS — four non-identical rings, four buffers, the
+   three-`xor2` combining tree, the array-wide `vdd` bus and the array-wide
+   `vss` strap, all really wired) is now
    extracted directly — [`layout/pex-array/`](pex-array/README.md) — and
    `sim/post-layout-ro-array-core/` runs the same period/ladder measurement
    plus, for the first time, XOR-tree combining fidelity and array supply
    current, across the identical four-point PVT grid, 36 corner runs (12
    tied + 12 float + 12 solo) — see `sim/README.md`'s "Array-level
    post-layout" section for the full reduction. Headline: array-level
-   parasitics cost **2.158x - 2.490x** in ring period against pre-layout
+   parasitics cost **2.158x - 2.501x** in ring period against pre-layout
    (against the assembled-ring-only figure's 2.0819x - 2.3666x above, since
    the array additionally carries buffer and XOR-tree loading neither
    smaller-scope campaign could include), the `wstv` ladder still
-   discriminates (span 1.089x - 1.180x), and combining-node bias stays close
-   to 0.5x Vdd post-layout (0.381 - 0.521, against 0.355 - 0.537 pre-layout
+   discriminates (span 1.084x - 1.175x), and combining-node bias stays close
+   to 0.5x Vdd post-layout (0.433 - 0.554, against 0.355 - 0.537 pre-layout
    in the same deck) — no new systematic bias from the real routing. **Still
    open**: `sampler_dff`/`sampler_core` (no layout at all yet, so this is
-   still not a whole-chain raw-tap-to-sampled-bit measurement), and the
-   `--check`-reproducible `layout/ro_array_core/` recipe promotion (this
-   extraction sources the PoC's own GDS directly — see
-   `layout/pex-array/README.md` for why that is deliberate, not a shortcut
-   taken in place of the recipe).
+   still not a whole-chain raw-tap-to-sampled-bit measurement), and a
+   `vddr1`-`vddr4` supply-distribution layout (the one array-scale routing
+   item `layout/ro_array_core/`'s recipe does not contain).
 6. Re-evaluate DR-0003 §8's `wstv` inter-ring decorrelation gap using the
    extracted parasitics from step 5 — the measurement DR-0003 explicitly
    flagged as needing a real layout and unmeasurable at the netlist level.
@@ -1255,11 +1258,16 @@ deliver, tracked in follow-up issue
      spacing and shared psub geometry exactly as drawn — closing DR-0005's
      own named "Proximity" limitation for the substrate mechanism
      specifically. The result: a **wider**, not narrower, bound
-     (loading -0.379% to -0.247% of ring period, coupling -0.081% to
-     +0.230%, against DR-0005's -0.151% to -0.057% / -0.033% to +0.018%),
-     with the coupling figure's sign still inconsistent across the grid —
-     still not a resolved directional pull, only a wider bracket than the
-     prior ring-scale study. §8's own statement of the gap is therefore
+     (loading -0.353% to -0.192% of ring period, coupling +0.044% to
+     +0.293%, against DR-0005's -0.151% to -0.057% / -0.033% to +0.018%),
+     and — unlike every prior bracket in this repo — a coupling figure whose
+     **sign is consistent across all twelve grid points** (12 of 12
+     positive), which appeared only once the canonical `vss`-strapped GDS
+     became the extraction source. DR-0006 is deliberate about the limit of
+     that: the magnitude is still a bracket, not a measurement, and the
+     array-scale numerical period-scatter floor has not been re-derived, so
+     this is a directional signature rather than a resolved pull.
+     §8's own statement of the gap is therefore
      *still* accurate — nothing here supersedes DR-0003 §8 or DR-0005 — and
      the first-named mechanism (shared supply impedance) still has no
      layout to be measured on at any scale.

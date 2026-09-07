@@ -16,11 +16,25 @@ related: "#22 (this record), DR-0003 §8 (the inter-ring decorrelation gap this 
 - 2026-09-06: **Proposed.** Not accepted by anyone. This record re-runs
   DR-0005's own two open follow-up items ("Findings 1 and 3 should be
   re-run against the assembled block when it exists") now that
-  `layout/ro_array_core-placement-poc/` gives a DRC-clean, LVS-matching
-  whole-array GDS to extract, and states what does and does not move as a
+  `layout/ro_array_core/` gives a DRC-clean, LVS-matching, and
+  `--check`-reproducible whole-array GDS to extract, and states what does
+  and does not move as a
   result. It does not ratify DR-0001 through DR-0005, does not move any
   `design/README.md` target row, and does not change the array size, stage
   count, `wstv` ladder or operating point DR-0003 chose.
+
+**Which records this record's numbers come from.** Every figure below is
+measured against `layout/pex-array/ro_array_core_pex.spice` as extracted
+from `layout/ro_array_core/ro_array_core.gds` -- the canonical,
+`vss`-strapped array GDS -- i.e. the twelve `sim/post-layout-ro-array-core/`
+records dated `20260907-0009xx`/`20260907-0010xx`. An earlier draft of this
+record measured the same three decks against an extraction of the
+placement PoC's `ro_array_core_signal9_poc.gds`, which has no `vss` straps
+drawn and is superseded by the recipe promotion. Those thirteen
+`20260906-*` records are **kept**, per this repo's append-only `sim/`
+convention, and each new record names the one it supersedes in its own
+`supersedes` field. The difference is not cosmetic (+25.0 fF of
+capacitance to substrate) and it moved a finding -- see finding 2.
 
 ## Context
 
@@ -37,12 +51,15 @@ exactly what this record does:
 > 2AMLogic/sky130-trng#27. Findings 1 and 3 should be re-run against the
 > assembled block when it exists; both will move.
 
-`layout/ro_array_core-placement-poc/`'s "Increment 8" now gives a `klt drc`
+`layout/ro_array_core/` now gives a `klt drc`
 clean (0 violations), `klt lvs` **matching** (132/132 devices, 96/96 nets,
-two committed negative controls confirming discrimination) whole-array GDS
+two committed negative controls confirming discrimination),
+`--check`-reproducible whole-array GDS
 -- four non-identical rings, four output buffers, and the three-`xor2`
 combining tree, with the ring-to-buffer signal chain, buffer-to-XOR fan-in,
-XOR tree routing and array-wide `vdd` bus all really drawn. `layout/pex-array/`
+XOR tree routing, the array-wide `vdd` bus and the array-wide `vss` strap
+(`ring1..4`'s met2 rails plus `xa1..3`'s own taps) all really drawn.
+`layout/pex-array/`
 extracts that GDS flat with `klt extract --parasitics`, and
 `sim/post-layout-ro-array-core/` runs three decks from it across the same
 four-(temp, Vdd)-point, `tt`/`ss`/`ff` grid every prior post-layout campaign
@@ -57,7 +74,7 @@ hand-tied to a shared node at assumed infinite separation.
 **We record the following findings as the current, provisional array-level
 post-layout position, and we do NOT close DR-0003 §8.**
 
-### 1. Real array-level parasitics cost 2.158x - 2.490x in ring period
+### 1. Real array-level parasitics cost 2.158x - 2.501x in ring period
 
 `sim/post-layout-ro-array-core/testbench/tb_post_layout_ro_array_core.spice`
 runs the post-layout array and an identical-topology pre-layout array in one
@@ -67,20 +84,21 @@ corner):
 
 | Quantity | Pre-layout | Post-layout (array) | Post-layout (ring only, DR-0005) |
 |---|---|---|---|
-| Ring period, ratio to pre-layout | 1.000x | **2.158x - 2.490x** | 1.378x - 1.479x |
-| `wstv` ladder span (slowest/fastest) | 1.1234x - 1.2514x | **1.0890x - 1.1796x** | 1.1122x - 1.2096x |
-| XOR-tree edge retention (N=4) | 0.5469 - 0.7236 | 0.6093 - 0.7977 | n/a (ring-only decks have no combining tree) |
-| Combining-node bias (fraction of Vdd) | 0.3551 - 0.5370 | 0.3809 - 0.5212 | n/a |
-| Array supply current, ratio to pre-layout | 1.000x | **0.911x - 1.033x** | n/a |
+| Ring period, ratio to pre-layout | 1.000x | **2.158x - 2.501x** (mean 2.323x, n=48) | 1.378x - 1.479x |
+| `wstv` ladder span (slowest/fastest) | 1.1234x - 1.2514x | **1.0843x - 1.1746x** | 1.1122x - 1.2096x |
+| XOR-tree edge retention (N=4) | 0.5469 - 0.7236 | 0.6996 - 0.8208 | n/a (ring-only decks have no combining tree) |
+| Combining-node bias (fraction of Vdd) | 0.3551 - 0.5371 | 0.4325 - 0.5542 | n/a |
+| Array supply current, ratio to pre-layout | 1.000x | **0.911x - 1.039x** | n/a |
 
 The array-level slowdown is substantially larger than the ring-only figure,
 as expected: it now includes the ring-to-buffer signal routing, the
-buffer-to-XOR fan-in, the XOR tree's own `t1`/`t2` routing, and the
-array-wide `vdd` bus for four buffers plus three `xor2` instances, none of
+buffer-to-XOR fan-in, the XOR tree's own `t1`/`t2` routing, the
+array-wide `vdd` bus for four buffers plus three `xor2` instances, and the
+array-wide `vss` strap, none of
 which DR-0005's ring-only extraction could include. It is not a clean
 multiplicative composition of DR-0005's own two figures (1.378x-1.479x
 intra-cell, 1.5045x-1.6546x more for one ring's own real interconnect,
-whose product is 2.08x-2.45x) -- the array figure's range (2.158x-2.490x)
+whose product is 2.08x-2.45x) -- the array figure's range (2.158x-2.501x)
 sits close to but not inside that product range, which is expected: the
 array adds buffer and XOR-tree loading the single-ring campaigns never
 carried at all, on top of the same per-ring effects.
@@ -88,8 +106,10 @@ carried at all, on top of the same per-ring effects.
 The `wstv` ladder still discriminates (narrower than pre-layout, as every
 prior post-layout campaign in this repo finds, but not collapsed).
 Combining-node bias stays close to 0.5x Vdd in both cases (no new systematic
-bias from the real routing). Edge retention is, on this measurement,
-somewhat *higher* post-layout than pre-layout at most grid points --
+bias from the real routing; post-layout is, if anything, marginally *closer*
+to 0.5x than pre-layout). Edge retention is, on this measurement,
+*higher* post-layout than pre-layout at every grid point (0.6996-0.8208
+against 0.5469-0.7236) --
 plausibly because the real parasitics slow every ring's edges enough to
 shift the beat pattern between them, changing which near-coincident edge
 pairs get swallowed by the combining tree -- but this record does not derive
@@ -123,29 +143,54 @@ Same three-deck bracket as DR-0005, now over the array:
   from actual inter-ring *coupling*, the same decomposition DR-0005's own
   solo deck used.
 
-Twelve records per deck (36 total), ring 1's own period as the probe in
-every deck (comparable line for line):
+Twelve grid points per deck (36 corner runs total), ring 1's own period as
+the probe in every deck (comparable line for line):
 
-    loading  = t(solo)  - t(tied)   = -0.379% to -0.247%
-    coupling = t(float) - t(solo)   = -0.081% to +0.230%
+    loading  = t(solo)  - t(tied)   = -0.353% to -0.192%
+    coupling = t(float) - t(solo)   = +0.044% to +0.293%
 
 Against DR-0005's ring-scope figures (loading -0.151% to -0.057%, coupling
 -0.033% to +0.018%), both magnitudes are larger at array scale, plausibly
 because the shared node now collects switching current from four rings
 **plus four buffers plus three `xor2` gates**, all riding the same physical
 substrate return -- more total capacitive activity landing on one node than
-DR-0005's own ring-only extraction ever modelled. **The coupling figure's
-sign is still not consistent across the twelve grid points** (7 of 12
-positive, 5 of 12 negative), which is the same signature DR-0005 read as "a
-real frequency pull would move every ring the same way" -- so this is still
-not a resolved directional coupling, only a wider bound than DR-0005's own.
-This record does not re-derive the transient solver's own numerical period
-scatter at array scale (DR-0005 cited 0.024% of `T_0`, measured on the
-ring-only deck in `sim/ro-ring-timestep-convergence/`); several of the
-twelve `coupling` points here (up to 0.230%) clear that ring-scale floor by
-a wider margin than DR-0005's own single point did, but confirming that
-floor's value carries over unchanged to a deck with roughly 6x the node
-count is not established by this record and is named as a follow-up below.
+DR-0005's own ring-only extraction ever modelled.
+
+**The new result here, and the one this record is least willing to
+overstate: the coupling figure's sign is consistent across all twelve grid
+points** (12 of 12 positive; `float` is slower than `solo` everywhere,
++0.044% at the mildest point and +0.293% at the hottest). That is the
+signature DR-0005 named as what a *real* frequency pull would look like
+("a real frequency pull would move every ring the same way") and did not
+observe at ring scope -- nor did an earlier revision of this record, which
+extracted the placement PoC's `signal9` GDS (no `vss` straps drawn) and
+read a mixed-sign bracket of -0.081% to +0.230%. Re-extracting the
+canonical, `vss`-strapped `layout/ro_array_core/ro_array_core.gds`
+(+25.0 fF, +6.8%, of capacitance to substrate; see
+`layout/pex-array/README.md`) is the only change between those two
+readings, since these are deterministic transients with no injected noise.
+
+**This record still does not call that a resolved coupling magnitude**, for
+two reasons it states rather than argues around:
+
+- The transient solver's own numerical period scatter has **not** been
+  re-derived at array scale. DR-0005 cited 0.024% of `T_0`, measured on the
+  ring-only deck in `sim/ro-ring-timestep-convergence/`. All twelve
+  `coupling` points here exceed that ring-scale figure, and the sign
+  consistency is itself hard to produce from symmetric numerical scatter --
+  but whether 0.024% carries over unchanged to a deck with roughly 6x the
+  node count is not established by this record, and is named as a follow-up
+  below.
+- The magnitude still depends on an unmodelled substrate resistance (see
+  finding 3): `tied` and `float` bracket the *terminals* of that range, so
+  a consistent sign tells us the direction of the effect at the
+  infinite-impedance terminal, not its size at the real one.
+
+What changed relative to the pre-`vss`-strap reading is therefore the
+*sign consistency*, not the bound's width -- and the honest reading is that
+the array's real substrate return now shows a directionally consistent
+loading of ring 1 by its neighbours' switching, whose magnitude remains
+bracketed rather than measured.
 
 **A testbench defect, caught and documented rather than silently fixed**:
 the first run of the float/solo decks referenced the shared substrate node
@@ -165,7 +210,8 @@ addressing is standard ngspice behaviour, not a tool defect, and this is
 recorded here as a testbench-authoring note for whoever writes the follow-up
 deck that re-measures the swing.
 
-**Environment note, not a testbench defect**: the first attempt at the
+**Environment note, not a testbench defect**: during the earlier
+(pre-`vss`-strap) pass, the first attempt at the
 `solo` deck's coldest/highest-current corner point failed two of three
 process corners (`ss`, `ff`) with the ngspice process killed outright
 (`exited -15`, then `exited -9`) inside a few minutes, well under this
@@ -174,8 +220,10 @@ contention from other concurrent jobs on the same host (unrelated `ngspice`
 processes from other simulation work were observed running concurrently), not
 a fault in the deck. An immediate retry of the identical command, with
 nothing else changed, passed all three corners; the earlier partial-failure
-record was **not** deleted (this repo's `sim/` evidence is append-only) and
-stands alongside the successful retry as the record of what happened.
+record (`20260906-225010-6adba77`) was **not** deleted (this repo's `sim/`
+evidence is append-only) and stands alongside the successful retry as the
+record of what happened. The re-run against the canonical GDS passed all
+twelve records / thirty-six corners on the first attempt.
 
 ### 3. DR-0003 §8 still stays open, and this record does not supersede it or DR-0005
 
@@ -183,12 +231,17 @@ stands alongside the successful retry as the record of what happened.
 rings." Finding 2 above measures the same one coupling path DR-0005 finding
 3 measured -- capacitive substrate return -- now on a real, physically-placed
 layout rather than an approximated one, and finds a *wider* (not narrower)
-bound than DR-0005's own ring-level study. It still does not measure the two
-paths §8 names as more likely to dominate:
+bound than DR-0005's own ring-level study, this time with a consistent sign.
+A consistent sign on **one** of three named mechanisms is not an answer to
+§8's question, which asks for a decorrelating *skew fraction*, not for
+whether one coupling path pulls in a reproducible direction. It still does
+not measure the two paths §8 names as more likely to dominate:
 
 - **Shared supply impedance**, §8's first-named mechanism. Still entirely
-  unmodelled: `layout/ro_array_core-placement-poc/`'s own "Still open" list
-  names `vddr1`-`vddr4`'s own per-ring supply distribution as undrawn, and
+  unmodelled: `layout/README.md`'s own "Still open" list
+  names `vddr1`-`vddr4`'s own per-ring supply distribution as undrawn (the
+  one array-layout item the `layout/ro_array_core/` recipe does *not*
+  contain), and
   this record's own testbenches keep all four `vddr` sources ideal and
   independent, matching the design's own intentional per-ring supply
   independence (`design/README.md`'s pin table). There is no layout fact
@@ -202,8 +255,8 @@ than edits in place. **There is no correction to make to DR-0003 §8 or to
 DR-0005**: both records' own statements of the gap remain accurate. What
 this record adds is that the gap has now been re-measured on a real,
 physically-placed whole-array layout rather than an approximation of one,
-and the measured bound moved (wider, not narrower) without changing which
-mechanism the gap is actually about.
+and the measured bound moved (wider, not narrower, and now consistent in
+sign) without changing which mechanism the gap is actually about.
 
 ## Alternatives considered
 
@@ -263,10 +316,11 @@ chain against the array GDS that already exists.
 - **Follow-up required:**
   - **Ratification** of this record, and of DR-0001 through DR-0005 -- an
     operator/Champion action, not performed here.
-  - **`layout/ro_array_core/` as a `--check`-reproducible `cell.json`
-    recipe** (folding the PoC's nine `gen-compose` stages into one, per
-    `layout/README.md`'s own "Still open" note), and `sampler_dff`/
-    `sampler_core`, both tracked in #27.
+  - **`sampler_dff`/`sampler_core` as layout at all**, tracked in #27 —
+    the only remaining hierarchy level with no physical implementation.
+    (`layout/ro_array_core/` as a `--check`-reproducible `cell.json`
+    recipe, with `ring1..4`/`xa1..3`'s own `vss` taps, is **done**; it is
+    what this record extracts from.)
   - **A supply-distribution layout for `vddr1`-`vddr4`**, without which
     §8's first-named coupling mechanism cannot be measured at all, at any
     scale.
@@ -275,7 +329,10 @@ chain against the array GDS that already exists.
   - **Re-derive the numerical period-scatter floor at array scale** before
     treating any single grid point's `coupling` figure as individually
     significant, rather than reading the twelve-point range as a bound (see
-    "Alternatives considered" above).
+    "Alternatives considered" above). This is now the *load-bearing*
+    follow-up for finding 2: the sign consistency (12 of 12) is the strongest
+    claim this record makes, and confirming it against an array-scale
+    scatter floor is what would turn it from a signature into a measurement.
   - **A follow-up deck correcting the `v(vsubs)` addressing** to capture
     the substrate node's own peak-to-peak swing at array scale, corroborating
     (or not) DR-0005's own ring-scale swing figures.

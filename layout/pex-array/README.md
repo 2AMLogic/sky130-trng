@@ -10,16 +10,18 @@ extraction rather than nine leaf cells or four separate rings.
 `layout/bin/pex-netlist.py` -- the same, unmodified script `layout/pex/` and
 `layout/pex-ring/` both use -- runs `klt extract --pdk sky130A --parasitics`
 directly over
-[`layout/ro_array_core-placement-poc/ro_array_core_signal9_poc.gds`](../ro_array_core-placement-poc/README.md)'s
-own committed GDS: the same stream that PoC directory's own "Increment 8"
-reports **`klt drc` clean (0 violations)** and **`klt lvs` matching**
-`design/ro_array_core.spice`'s own `.subckt ro_array_core` (132/132 devices,
-96/96 nets, with two committed negative controls confirming the match is
+[`layout/ro_array_core/ro_array_core.gds`](../ro_array_core/README.md), the
+canonical array stream: the `--check`-reproducible six-stage `cell.json`
+recipe's own output, which that directory reports **`klt drc` clean (0
+violations)** and **`klt lvs` matching** `design/ro_array_core.spice`'s own
+`.subckt ro_array_core` (132/132 devices, 96/96 nets, with two committed
+negative controls confirming the match is
 discriminating). Because that GDS carries the whole array's real inter-ring
 wiring -- the ring-to-buffer signal chain, the buffer-to-XOR fan-in, the XOR
-tree's own `t1`/`t2` routing, and the array-wide `vdd` bus for the four
-buffers plus three `xor2` instances -- the resulting parasitic model
-includes all of that for the first time; neither `layout/pex/` (nine
+tree's own `t1`/`t2` routing, the array-wide `vdd` bus for the four
+buffers plus three `xor2` instances, and the array-wide `vss` strap that
+merges `ring1..4`'s met2 rails with `xa1..3`'s own taps -- the resulting
+parasitic model includes all of that; neither `layout/pex/` (nine
 separately-extracted leaf cells, ideal wires between them) nor
 `layout/pex-ring/` (one ring's own real interconnect, but ideal wires
 *between* rings and the still-undrawn buffer/XOR tree) could.
@@ -34,18 +36,37 @@ python3 layout/bin/pex-netlist.py layout/pex-array/pex.json           # regenera
 directory and fails on any byte-for-byte or verdict-field drift -- the same
 contract `layout/pex/pex.json` and `layout/pex-ring/pex.json` offer.
 
-## Sourcing the PoC's own GDS, not a `--check`-reproducible cell.json recipe
+## Which GDS, and why the `vss` straps mattered
 
-Deliberate, not an oversight. `layout/README.md`'s own "Still open" note
-names folding `layout/ro_array_core-placement-poc/`'s nine `gen-compose`
-stages into one `--check`-reproducible `layout/ro_array_core/cell.json`
-recipe as separate, still-undone layout engineering (tracked by
-[#27](https://github.com/2AMLogic/sky130-trng/issues/27)). Extraction does
-not need that recipe to exist -- it needs a GDS whose DRC/LVS verdicts are
-trustworthy, and the PoC's committed `signal9` GDS already carries both (see
-above). A future recipe promotion is expected to reproduce that exact GDS
-byte-for-byte and can swap this descriptor's `gds` path with no other change
-once it lands.
+This descriptor extracts `layout/ro_array_core/ro_array_core.gds` -- the
+canonical, `--check`-reproducible recipe's output -- **not**
+`layout/ro_array_core-placement-poc/ro_array_core_signal9_poc.gds`. An
+earlier revision of this directory did source the PoC stream, because at the
+time the recipe promotion had not landed; it has (`layout/ro_array_core/`),
+and the promoted recipe additionally draws `ring1..4`'s and `xa1..3`'s own
+`vss` taps, which the PoC stream does not have.
+
+That is not a relabelling, and the re-extraction says so numerically. The
+canonical GDS extracts to the **same 132 devices and 96 nets** -- the straps
+are not LVS-visible, since `vss` was already one net electrically at the
+`.subckt` level -- but its parasitic network is measurably different:
+
+| Extracted from | Devices | Nets | Total series R | Total C to substrate |
+|---|---|---|---|---|
+| `ro_array_core-placement-poc/…signal9_poc.gds` (superseded) | 132 | 96 | 81891.77 Ω | 367.43 fF |
+| `ro_array_core/ro_array_core.gds` (canonical, this library) | 132 | 96 | 81935.47 Ω | 392.44 fF |
+
+**+25.0 fF (+6.8%) of capacitance to substrate**, from the added met2/met1
+strap metal. Every number `sim/post-layout-ro-array-core/` reports is
+measured against the canonical row; the superseded row is recorded here only
+so the difference is on the record rather than assumed negligible.
+
+The one descriptor change the swap needed beyond the `gds` path: the
+extractor's own joined label for the `vss` net grows from seven merged
+labels to ten (`g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss`
+gains `|vss_x1|vss_x2|vss_x3`, the three `xor2` taps), so that one
+`net_aliases` key is updated to match. All 27 other aliases are unchanged --
+the straps touch no signal net's labelling.
 
 ## Net aliasing: the same technique, four rings' worth
 
@@ -86,12 +107,12 @@ docstring for why.
 
 | Cell | Devices | Nets | Total series R | Total C to substrate |
 |---|---|---|---|---|
-| `ro_array_core_pex` | 132 | 96 | 81891.77 Ω | 367.43 fF |
+| `ro_array_core_pex` | 132 | 96 | 81935.47 Ω | 392.44 fF |
 
 Device/net counts match
-[`layout/ro_array_core-placement-poc/signal9.extract.json`](../ro_array_core-placement-poc/README.md)
-exactly, as expected: `--parasitics` adds R/C elements, it does not
-re-recognize devices or merge/split nets.
+[`layout/ro_array_core/extract.json`](../ro_array_core/README.md) exactly,
+as expected: `--parasitics` adds R/C elements, it does not re-recognize
+devices or merge/split nets.
 
 Produced by `klt 0.4.0` (the report's own `provenance.klt_version` is the
 authoritative record).

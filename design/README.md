@@ -279,13 +279,14 @@ DR-0003 surfaces and does not resolve on its own authority.
   [`sim/post-layout-ro-array-core/`](../sim/README.md) runs it across the
   same four-(temp, Vdd)-point, `tt`/`ss`/`ff` grid every prior post-layout
   campaign in this repo uses (36 corner runs): array-level parasitics cost
-  **2.158x - 2.490x** in ring period against pre-layout, the `wstv` ladder
-  still discriminates (span 1.089x - 1.180x), and a tied/float/solo
+  **2.158x - 2.501x** in ring period against pre-layout, the `wstv` ladder
+  still discriminates (span 1.084x - 1.175x), and a tied/float/solo
   inter-ring substrate bracket — the first one in this repo run on a real,
   physically-placed layout rather than leaf cells hand-tied to a shared
-  node — finds coupling still bounded, still not resolved in direction, and
-  wider than the prior ring-scale study (loading -0.379% to -0.247% of ring
-  period, coupling -0.081% to +0.230%). See
+  node — finds coupling still bounded in magnitude but, for the first time,
+  consistent in sign across every grid point, and wider than the prior
+  ring-scale study (loading -0.353% to -0.192% of ring
+  period, coupling +0.044% to +0.293%, 12 of 12 positive). See
   [`spec/decision-records/DR-0006-*.md`](../spec/decision-records/DR-0006-array-level-post-layout-and-wstv-decorrelation.md)
   for the full re-evaluation: it does **not** close DR-0003 §8 — the gap's
   first-named mechanism, shared `vddr1`-`vddr4` supply impedance, still has

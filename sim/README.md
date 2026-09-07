@@ -475,9 +475,10 @@ still leaves open: `layout/pex-ring/`'s numbers are one ring's own real
 interconnect with **ideal wires to its neighbours** — the ring-to-buffer
 signal chain, buffer-to-XOR fan-in, XOR combining tree and array-wide `vdd`
 bus are all still undrawn there. Now that
-`layout/ro_array_core-placement-poc/`'s "Increment 8" gives a `klt drc`
-clean (0 violations), `klt lvs` **matching** (132/132 devices, 96/96 nets)
-whole-array GDS, `layout/pex-array/ro_array_core_pex.spice` extracts it flat
+`layout/ro_array_core/` gives a `klt drc`
+clean (0 violations), `klt lvs` **matching** (132/132 devices, 96/96 nets),
+`--check`-reproducible whole-array GDS — `vdd` bus and array-wide `vss`
+strap included — `layout/pex-array/ro_array_core_pex.spice` extracts it flat
 — see that directory's own README for the parasitic model and the net-alias
 technique extended to four rings' worth of duplicate internal labels.
 
@@ -494,30 +495,39 @@ runs across the three decks:
 `spec/decision-records/DR-0006-*.md` states what this does and does not
 settle for DR-0003 §8 in full; headline numbers:
 
-- **Real array-level parasitics cost 2.158x - 2.490x in ring period** — far
+- **Real array-level parasitics cost 2.158x - 2.501x in ring period** (mean
+  2.323x over 48 paired ring/PVT points) — far
   more than intra-cell-only parasitics alone (1.378x - 1.479x), because the
-  array now carries real ring-to-buffer, buffer-to-XOR and array-wide-`vdd`
-  routing that no smaller-scope extraction in this repo could include.
+  array now carries real ring-to-buffer, buffer-to-XOR, array-wide-`vdd` and
+  array-wide-`vss` routing that no smaller-scope extraction in this repo
+  could include.
 - **The `wstv` ladder still discriminates.** Post-layout array span
-  (slowest/fastest ring) is 1.089x - 1.180x, against 1.1234x - 1.2514x
+  (slowest/fastest ring) is 1.084x - 1.175x, against 1.1234x - 1.2514x
   pre-layout in the same deck.
 - **XOR-tree combining fidelity, measured post-layout for the first time.**
-  Edge retention (N=4) is 0.609 - 0.798 post-layout against 0.547 - 0.724
-  pre-layout in the same deck (retention is, if anything, slightly *higher*
-  with real routing at most grid points — reported as measured, not
+  Edge retention (N=4) is 0.700 - 0.821 post-layout against 0.547 - 0.724
+  pre-layout in the same deck (retention is *higher*
+  with real routing at every grid point — reported as measured, not
   explained); combining-node bias stays close to 0.5x Vdd in both cases
-  (0.381 - 0.521 post-layout, 0.355 - 0.537 pre-layout), i.e. no new
+  (0.433 - 0.554 post-layout, 0.355 - 0.537 pre-layout), i.e. no new
   systematic bias from the real routing.
 - **Array supply current stays the same order of magnitude**: 0.911x -
-  1.033x of the pre-layout figure across the grid — real parasitic loading
+  1.039x of the pre-layout figure across the grid — real parasitic loading
   slows switching enough in most corners to slightly *reduce* net current,
   not raise it.
 - **The tied/float/solo substrate bracket, now on a real physically-placed
-  layout**: loading -0.379% to -0.247% of ring period, coupling -0.081% to
-  +0.230% — both wider in magnitude than DR-0005's own ring-scale bracket
-  (-0.151% to -0.057% loading, -0.033% to +0.018% coupling), and the
-  coupling figure's sign is still not consistent across the twelve grid
-  points, so this is a wider bound, not a resolved directional pull.
+  layout**: loading -0.353% to -0.192% of ring period, coupling **+0.044% to
+  +0.293%** — both wider in magnitude than DR-0005's own ring-scale bracket
+  (-0.151% to -0.057% loading, -0.033% to +0.018% coupling), and, unlike
+  DR-0005's, **the coupling figure's sign is consistent across all twelve
+  grid points** (12 of 12 positive). That is the signature DR-0005 named as
+  what a real frequency pull would look like, and it appeared only once the
+  canonical, `vss`-strapped GDS was the extraction source — the earlier
+  extraction of the placement PoC's un-strapped `signal9` GDS read a
+  mixed-sign -0.081% to +0.230% over the identical decks. DR-0006 is
+  deliberate about what that does and does not license: the magnitude is
+  still bracketed, not measured, and the array-scale numerical period-scatter
+  floor has not been re-derived.
 
 ### A testbench defect and an environment note, both documented rather than fixed silently
 
@@ -531,7 +541,8 @@ The period-based bracket above is unaffected (it reads the array's own
 exposed ports, not the internal global node). Not filed against
 `klayout-tools`: `.global` addressing is standard ngspice behaviour.
 
-Separately, the `solo` deck's first attempt at its coldest/highest-current
+Separately, during the earlier (pre-`vss`-strap) pass the `solo` deck's
+first attempt at its coldest/highest-current
 corner point had two of three process corners killed outright
 (`exited -15`, then `exited -9`) within a few minutes — well under the 1800 s
 per-corner timeout — consistent with transient memory contention from other
@@ -539,6 +550,24 @@ concurrent jobs on the shared host, not a deck fault. An immediate,
 unmodified retry passed all three corners. Per this repo's append-only
 convention, the partial-failure record was not deleted; it stands alongside
 the successful retry.
+
+### Two extraction passes, both kept
+
+This slug holds **twenty-five** records, not twelve, because the whole
+campaign was run twice against two different extractions of the same array:
+
+| Records | Extracted from | Status |
+|---|---|---|
+| `20260906-*` (13, of which one is the host-contention `FAIL` above) | `layout/ro_array_core-placement-poc/ro_array_core_signal9_poc.gds` — the placement PoC's stream, no `vss` straps drawn | **superseded** |
+| `20260907-*` (12, all `PASS`) | `layout/ro_array_core/ro_array_core.gds` — the canonical `cell.json` recipe's output, `vss` straps drawn | **current**; every number in the section above |
+
+The recipe promotion landed after the first pass was measured, and it draws
+`ring1..4`'s and `xa1..3`'s own `vss` taps, which moved the extracted
+network's capacitance to substrate by +25.0 fF (+6.8%). Nothing was
+deleted: each `20260907-*` record names the one it supersedes in its own
+`supersedes` field, so the two passes are diffable line for line. That
+diff is what surfaced the coupling-sign result above, which is why the
+superseded pass is worth keeping rather than merely tolerable to keep.
 
 ## Writing a new record
 
