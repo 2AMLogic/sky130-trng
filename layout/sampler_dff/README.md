@@ -1,7 +1,97 @@
 # layout/sampler_dff
 
-**`sampler_dff` assembly, continued: `rst_n` fan-out to both `sampler_nand2`
-instances is now routed, DRC-clean and electrically merged (issue #22).**
+**`sampler_dff` assembly, continued: the five-pin `clk` fan-out is now
+routed, DRC-clean, and lands on exactly the right six transistor gates
+(issue #22).** `clk` is the first *fan-out* net in this cell — `vdd`/`vss`
+are rails and `rst_n` was a two-pin point-to-point — and the first to be
+drawn as a `gen-compose` **bundle net** with hand-steered
+`connectivity[].legs[]`. Two stages: `clk_met1` vias all five pins straight
+up from `li1` to `met1` (zero lateral distance, the same single-hop
+via-drop `rst_n_met1` already uses), and the final stage runs the entire
+long haul on `met2`/`"metal3"` as one basement lane at `y = -1.70` with a
+vertical drop at each pin's own x. **0 DRC violations, 0 unrouted nets, and
+the cell bbox is unchanged** (`-2.19 .. 50.47 x -3.585 .. 7.085` µm — the
+lane fits under the device rows and inside the existing `vss` bus's own
+vertical extent). Still open: `clkb` and the six `m`/`mb`/`mc`/`s`/`q`/`qb`
+data-path nets — see "What remains" below.
+
+**Why `clk` and `clkb` cannot be two mirrored lanes.** The obvious plan for
+a differential clock pair — one bus above the device rows, one below, each
+dropping straight onto its own gate — does not work here, and the reason is
+circuit-level, not tool-level. `design/sampler_core.spice`'s own gate
+assignments put `clk` on `tg_d`'s **PMOS** gate (`XMtdp`) and `tg_fbs`'s
+**PMOS** gate (`XMfsp`), but on `tg_fbm`'s and `tg_s`'s **NMOS** gates
+(`XMfmn`, `XMtsn`) — because a master-slave DFF's feedback gate runs the
+opposite phase from its own stage's input gate. In `sampler_tg`'s layout
+the PMOS gate (`ctrl`) sits at local `y = 2.50` and the NMOS gate (`ctrlb`)
+at `y = 1.03`, so **the height `clk` has to reach alternates along the
+row** — 2.50, 1.03, 1.03, 2.50 — and so does `clkb`'s, in antiphase. Any
+single lane serving `clk` therefore has to pass *through* the height of a
+`clkb` pin at two of the four transmission gates (and vice versa), at the
+same x. Two mirrored lanes short in exactly two places, whichever way round
+they are assigned. What this increment does instead: give `clk` the whole
+`met2` plane below the rows (verticals at each pin's own x, since nothing
+else is drawn down there), and leave `clkb` a **`met1` corridor at
+`y ≈ 0.40`** — clear of `clk`'s own `met1` pads (lowest edge `y = 0.82`,
+0.335 µm away against sky130's 0.14 µm `met1.space.1`) and of the `vss`
+bus's own `met1` (top edge `y = -0.29`) — with a short `met2` hop over each
+of the two `sampler_nand2` internal `met1` blobs, at `x` 12..14 and 43..45
+where `clk` has no vertical at all. `clkb`'s verticals then cross `clk`'s
+only on a *different layer*, which is not a short. The final stage's own
+`_comment` in `cell.json` records this reservation so the next increment
+does not have to re-derive it.
+
+**Why `inv_clk`'s `clk` port is declared at `y = 1.03`, not the `y = 1.70`
+the `place` stage uses — and what the alternative actually costs.** The
+`place` stage declares `ro_buf`'s own `a` port at `(0.545, 1.70)`, a value
+inherited from `layout/xor2/cell.json`, but that point is the middle of the
+input strap's *narrow* section. `klayout.db` against `ro_buf.gds` shows the
+strap is a dogbone: two 0.42 µm square gate pads at `y 0.82..1.24` and
+`y 2.29..2.71`, joined by a 0.17 µm-wide bar (`x 0.46..0.63`) spanning
+exactly the `y = 1.70` band. `gen-compose`'s via-drop landing pad is a
+**fixed 0.42 µm square** (`_VIA_LANDING_SIZE_UM`, sized independently of
+`routing.width_um` — the same convention the `rst_n_stub` derivation ran
+into), so where the port lands decides whether that pad is an exact overlay
+on existing metal or new geometry.
+
+**Both were built and measured, not reasoned about.** With the port at
+`y = 1.03` — the centre of the dogbone's own *lower* pad, which is the
+identical 0.42 µm geometry as the two `ctrlb` pins this same net lands on —
+`inv_clk`'s li1 strap in the composed `sampler_dff.gds` is
+**polygon-for-polygon identical to `ro_buf.gds`'s own**: the landing pad is
+an exact overlay and adds no li1 at all. With the port at `y = 1.70` (all
+three of its declarations moved together and the cell rebuilt), the result
+is **also `klt drc`-clean, 0 violations** — the concave step the pad leaves
+against the lower pad's top edge measures 0.25 µm, comfortably above
+sky130's 0.17 µm `li1.space.1`, so the "it would notch" intuition is simply
+wrong and is recorded here so nobody re-derives it. What that variant does
+cost is a 0.42 µm-wide li1 pad dropped across a 0.17 µm-wide bar directly
+over the inverter's own gates — extra li1-over-poly area on a clock net,
+for no benefit. `y = 1.03` is chosen for that reason, not for a DRC one.
+No `2AMLogic/klayout-tools` friction was filed either way: nothing about
+this is a tool gap.
+
+## Result: `clk` fan-out (this increment)
+
+| Stage | Verdict | Evidence |
+|---|---|---|
+| `klt gen-compose` (stage `clk_met1`, `metal2`/`met1` role) | All five `clk` pins vias li1→met1, zero lateral distance — **5/5 routed, 0 unrouted nets, 0 warnings** | `clk_met1.compose.request.json`, `clk_met1.compose.response.json`, `clk_met1.gds` |
+| `klt gen-compose` (final stage, `metal3`/`met2` role, 5-pin bundle net with 4 hand-steered `legs[]`) | `clk` routed as one net, **74.735 µm total** over four legs (11.695 / 26.220 / 10.600 / 26.220 µm) — **`status: "routed"`, 0 unrouted nets, 0 warnings** | `compose.request.json`, `compose.response.json` |
+| `klt drc --deck sky130` (whole `sampler_dff.gds`) | **clean, 0 violations** — first attempt, no iteration needed | `drc.json` |
+| `klt extract --deck sky130` | **22 devices (11 nfet, 11 pfet)**, unchanged; `net_count` **31 → 27**, exactly the four merges a five-pin net makes. The merged net's own device list is the real check: `M$1` (`inv_clk` nfet), `M$12` (`inv_clk` pfet), `M$13` (`tg_d` **pfet**), `M$4` (`tg_fbm` **nfet**), `M$5` (`tg_s` **nfet**), `M$18` (`tg_fbs` **pfet**) — matching `XMnc`/`XMpc`/`XMtdp`/`XMfmn`/`XMtsn`/`XMfsp`, with `ctrlb\|tg_d_ctrlb`, `ctrl\|tg_fbm_ctrl`, `ctrl\|tg_s_ctrl`, `ctrlb\|tg_fbs_ctrlb` still four separate, correctly-unwired nets | `extract.json`, `sampler_dff.spice` |
+| `klt lvs` vs. `design/sampler_core.spice`'s own `.subckt sampler_dff` | **mismatch, as expected** — 0/22 devices, 0/27 layout nets vs. 14 reference nets; `clkb` and the six data-path nets are still unwired and no top-level cell pins are promoted, so a full match is not attempted this increment | `lvs.json` |
+
+Geometry, measured on the composed `sampler_dff.gds`: the whole `clk`
+network is **one merged `met2` polygon** (`0.335 .. 49.24 x -1.785 ..
+2.71` µm), physically separate from `rst_n`'s own `met2` bus
+(`13.79 .. 45.11 x 2.50 .. 2.92` µm). The only two `clk` verticals whose x
+falls inside `rst_n`'s span (`x = 24.6` and `29.74`) stop at their own
+`ctrlb` pins — `met2` pad top edge `y = 1.24`, **1.26 µm** short of
+`rst_n`'s lower edge — which is the whole reason the lane goes *below*
+rather than above.
+
+**A previous increment (issue #22): `rst_n` fan-out to both `sampler_nand2`
+instances is routed, DRC-clean and electrically merged.**
 `klt extract` confirms `nand_m_a`/`nand_s2_a`/`rst_n` are one net spanning
 both instances (`sampler_dff.spice`'s own `.SUBCKT` pin line lists
 `a|nand_m_a|nand_m_a_stub|nand_m_a_via|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|rst_n`
@@ -115,22 +205,32 @@ python3 layout/bin/compose-cell.py layout/sampler_dff/cell.json           # rebu
 python3 layout/bin/compose-cell.py layout/sampler_dff/cell.json --check   # verify, don't overwrite
 ```
 
-## Result: `rst_n` fan-out (this increment)
+## Result: `rst_n` fan-out (previous increment)
 
 | Stage | Verdict | Evidence |
 |---|---|---|
 | `klt gen-compose` (stage `rst_n_stub`, `metal`/`li1` role) | Both `sampler_nand2` `a` pins get an li1-only stub east of that leaf's internal `met1` blob — **0.57 µm** (`nand_m_a_stub`, `x=13.43`→`14.0`) and **0.61 µm** (`nand_s2_a_stub`, `x=44.29`→`44.9`) per the response JSON's own `route_length_um`; same escape method, different lengths because the tips are snapped to round global x (see "Why the two stubs are not the same length"). **DRC-clean on its own** (`klt drc` against `rst_n_stub.gds` directly: 0 violations) | `rst_n_stub.compose.request.json`, `rst_n_stub.compose.response.json`, `rst_n_stub.gds` |
 | `klt gen-compose` (stage `rst_n_met1`, `metal2`/`met1` role) | Each stub tip vias straight up to `met1`, zero lateral distance — **0 unrouted nets** | `rst_n_met1.compose.request.json`, `rst_n_met1.compose.response.json`, `rst_n_met1.gds` |
-| `klt gen-compose` (final stage, `metal3`/`met2` role) | `rst_n` bussed the full `nand_m` → `nand_s2` span (`x=14.0..44.9`) entirely on `met3`, clear of every leaf's own `met1` usage and of the `vdd`/`vss` buses — **0 unrouted nets** | `compose.request.json`, `compose.response.json` |
+| `klt gen-compose` (stage `rst_n_bus`, `metal3`/`met2` role) | `rst_n` bussed the full `nand_m` → `nand_s2` span (`x=14.0..44.9`) entirely on `met3`, clear of every leaf's own `met1` usage and of the `vdd`/`vss` buses — **0 unrouted nets** | `rst_n_bus.compose.request.json`, `rst_n_bus.compose.response.json`, `rst_n_bus.gds` |
 | `klt drc --deck sky130` (whole `sampler_dff.gds`) | **clean, 0 violations** — the two `li1.space.1` violations hit mid-derivation (both an `a`-pin-to-strap near-miss and a stub-pad-to-neighbour-pad near-miss, see the narrative above) are both resolved in the committed `cell.json` | `drc.json` |
 | `klt extract --deck sky130` | **22 devices (11 nfet, 11 pfet)**, unchanged — `net_count` rises from `vdd`/`vss`-only (14 nets counting per-instance labels) to **31 nets**; `sampler_dff.spice`'s own pin line for this net lists `a\|nand_m_a\|nand_m_a_stub\|nand_m_a_via\|nand_s2_a\|nand_s2_a_stub\|nand_s2_a_via\|rst_n` as one merged label group, confirming real electrical connectivity from drawn geometry (not just JSON net-name bookkeeping) | `extract.json`, `sampler_dff.spice` |
 | `klt lvs` vs. `design/sampler_core.spice`'s own `.subckt sampler_dff` | **mismatch, as expected** — 0/22 devices, 0/14 nets matched; `clk`/`clkb` and the six data-path nets are still unwired and no top-level cell pins are promoted yet, so a full match is not attempted this increment | `lvs.json` |
 
 Cell extent is unchanged (`-2.19 .. 50.47 x -3.585 .. 7.085` µm — the ±0.085
 µm growth on the y extremes is the `vdd`/`vss` bus width itself, already
-present before this increment). Generated on `klt 0.3.0+gc6dbf66c53c6` /
-KLayout 0.30.12 against open_pdks `c6d73a35f524070e85faff4a6a9eef49553ebc2b`
-— matches `layout/pdk.json`'s pin exactly.
+present before this increment). Originally generated on
+`klt 0.3.0+gc6dbf66c53c6`; re-generated unchanged (same verdicts, same
+geometry) on `klt 0.4.0` by the `clk` increment above, which is what moves
+`provenance.klt_version` to `0.4.0`, flips the deck's own
+`released: false` → `true`, and adds a `dbu_um` field to every stage
+response. Two mechanical consequences of that increment worth knowing when
+reading a `git diff`: the previously-unnamed final stage is now named
+`rst_n_bus` (so its evidence moved from `compose.*` to `rst_n_bus.*`,
+freeing `compose.*` for the new final stage), and `net_count` in the
+`rst_n` row below reads 31 against the state *before* `clk` was routed —
+the current `extract.json` reports 27. KLayout 0.30.12 against open_pdks
+`c6d73a35f524070e85faff4a6a9eef49553ebc2b` — matches `layout/pdk.json`'s
+pin exactly, unchanged.
 
 ## Result: nine-block placement and `vdd`/`vss` (previous increment)
 
@@ -265,25 +365,22 @@ instance's own internal `metal2` wiring occupies (the tallest leaf,
 
 ## What remains (issue #27)
 
-- **`clk`/`clkb` fan-out** to `inv_clk` (input/output) and all four
-  transmission gates' `ctrl`/`ctrlb` pins (opposite assignment between
-  `TG_D`/`TG_S` and `TG_FBM`/`TG_FBS`, see the signal-flow diagram above).
-  **Not a simple repeat of the `vdd`/`vss` bus technique**: `ctrl`/`ctrlb`
-  sit at local `y = 2.5`/`1.03`, inside each transmission gate's own device
-  row gap rather than at a block extremity, so a bus at `y=7.0` or `y=-3.5`
-  (already claimed by `vdd`/`vss`) would force a vertical stub straight
-  through the already-drawn horizontal bus wire at that instance's own `x`
-  — a same-layer short. This needs either its own distinct `y` band
-  strictly between the device rows and the `vdd`/`vss` buses, or a route
-  that goes around the assembly's own east/west ends rather than through
-  the middle; not yet attempted. The `met3`/`"metal3"` long-haul technique
-  this increment used for `rst_n` (clear of every leaf cell's own `met1`
-  usage *and* of the `vdd`/`vss` buses, since no leaf here draws anything
-  above `met1`) is a plausible reusable strategy for `clk`/`clkb` too — a
-  `met3` bus can run at `y=2.5`/`1.03`-adjacent heights without touching
-  `vdd`/`vss`'s own `met1` bus at all — but `ctrl`/`ctrlb` fan out to *four*
-  transmission gates each (not two point-to-point pins), so the via-drop
-  siting work is a larger version of the same derivation, not yet attempted.
+- **`clkb` fan-out** — the other half of the clock pair: `inv_clk`'s own
+  output plus `tg_d.ctrlb` (`5.31, 1.03`), `tg_fbm.ctrl` (`24.6, 2.5`),
+  `tg_s.ctrl` (`29.74, 2.5`) and `tg_fbs.ctrlb` (`49.03, 1.03`). **`clk`'s
+  own scheme cannot simply be mirrored** — see "Why `clk` and `clkb` cannot
+  be two mirrored lanes" at the top of this file. The corridor the `clk`
+  increment deliberately reserved for it, and did not consume, is: a `met1`
+  long haul at `y ≈ 0.40` (clear of `clk`'s own `met1` pads, whose lowest
+  edge is `y = 0.82`, and of the `vss` bus's own `met1` at `y = -0.29`),
+  with a short `met2` hop over each of the two `sampler_nand2` internal
+  `met1` blobs at `x` 12..14 and 43..45 — the only two places a `met1`
+  lane across this cell is blocked, and two places where `clk` has no
+  vertical to collide with. `clkb`'s own short `met1` risers to its four
+  gate pins would sit at each pin's own x, crossing `clk`'s `met2`
+  verticals on a *different layer* (not a short). None of this is drawn
+  yet; the numbers above are derived from the committed geometry but not
+  DRC-proven.
 - **The six data-path nets**: `m` (`TG_D.a`/`b` <-> `NAND_M.en` <->
   `TG_FBM.a`/`b`), `mb` (`NAND_M.y` <-> `inv_mc.a` <-> `TG_S.a`/`b`), `mc`
   (`inv_mc.y` <-> `TG_FBM.a`/`b`), `s` (`TG_S.a`/`b` <-> `inv_q.a` <->

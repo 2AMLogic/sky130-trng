@@ -337,13 +337,23 @@ DR-0003 surfaces and does not resolve on its own authority.
   sits *inside* its own leaf cell's internal `met1` via stack: an `li1`-only
   stub east out of the congestion, a via up to `met1`, then a second via to
   `met3` for the long `nand_m` → `nand_s2` haul on a plane no leaf cell in
-  this assembly draws on. `klt lvs` is still not expected to match:
-  `clk`/`clkb` fan-out and the six data-path nets
-  (`m`/`mb`/`mc`/`s`/`q`/`qb`) remain open (#27), and `clk`/`clkb`
-  specifically need a routing-plane strategy distinct from `vdd`/`vss`'s own
-  attic/basement bus — though the `met3` technique `rst_n` just proved is
-  the leading candidate (see `layout/sampler_dff/README.md`'s "What
-  remains").
+  this assembly draws on. The increment after that routed the **`clk`
+  fan-out** — the cell's first true fan-out net (five pins), drawn as a
+  `gen-compose` bundle net with hand-steered `connectivity[].legs[]`, whose
+  whole long haul runs on `met2` in one basement lane at `y = -1.70` with a
+  vertical drop at each pin's own x. Also **DRC-clean (0 violations), 0
+  unrouted nets**, and `klt extract` confirms it lands on exactly the six
+  clk-gated devices `design/sampler_core.spice` has (`XMpc`/`XMnc`,
+  `tg_d`'s PMOS, `tg_fbm`'s and `tg_s`'s NMOS, `tg_fbs`'s PMOS), leaving
+  the four `clkb`-gated devices correctly isolated. That
+  PMOS/NMOS-alternating assignment — a master-slave DFF's feedback gate
+  runs the opposite phase from its own stage's input gate — is exactly why
+  `clk` and `clkb` cannot be two mirrored buses, so the same increment
+  reserved (but did not draw) a separate `met1` corridor at `y ≈ 0.40` for
+  `clkb`. `klt lvs` is still not expected to match: `clkb` and the six
+  data-path nets (`m`/`mb`/`mc`/`s`/`q`/`qb`) remain open (#27) — see
+  `layout/sampler_dff/README.md`'s "Why `clk` and `clkb` cannot be two
+  mirrored lanes" and "What remains".
 
   A prior increment wired the XOR combining tree's inputs:
   that directory's

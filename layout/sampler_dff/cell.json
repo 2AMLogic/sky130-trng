@@ -446,6 +446,7 @@
       "pins": []
     },
     {
+      "name": "rst_n_bus",
       "blocks": [
         {
           "id": "core",
@@ -464,6 +465,174 @@
       "connectivity": [
         {"net": "rst_n", "pins": [{"block": "core", "port": "nand_m_a_m1"}, {"block": "core", "port": "nand_s2_a_m1"}],
          "waypoints_um": [[14.0, 2.71], [44.9, 2.71]]}
+      ],
+      "pins": []
+    },
+    {
+      "name": "clk_met1",
+      "_comment": [
+        "clk fan-out, step 1 of 2 (issue #22): via each of the five clk pins",
+        "straight up from li1 to met1, zero lateral distance -- the same",
+        "single-hop via-drop 'rst_n_met1' above uses, just five times.",
+        "",
+        "design/sampler_core.spice's own gate assignments make clk a 5-pin",
+        "net: XMpc/XMnc's shared gate (inv_clk's input), XMtdp's gate",
+        "(tg_d's PMOS -> sampler_tg's 'ctrl'), XMfmn's gate (tg_fbm's NMOS",
+        "-> 'ctrlb'), XMtsn's gate (tg_s's NMOS -> 'ctrlb') and XMfsp's gate",
+        "(tg_fbs's PMOS -> 'ctrl'). The ctrl/ctrlb split ALTERNATES between",
+        "the four transmission gates (tg_d/tg_fbs take clk on ctrl, tg_fbm/",
+        "tg_s take it on ctrlb) because a master-slave DFF's feedback gates",
+        "run the opposite phase from their own stage's input gate -- which",
+        "is why no single 'clk above / clkb below' lane pair can serve both",
+        "nets, and why clk's own long haul (next stage) runs on met2 rather",
+        "than sharing a plane with clkb. See layout/sampler_dff/README.md.",
+        "",
+        "Every one of the five pins is a real 0.42x0.42 li1 gate pad in its",
+        "own leaf cell (klayout.db against sampler_tg.gds: ctrl at local",
+        "(0.335,2.29;0.755,2.71), ctrlb at (0.335,0.82;0.755,1.24); ro_buf's",
+        "own input strap is a dogbone with the IDENTICAL two pads joined by",
+        "a 0.17-wide bar). gen-compose's via-drop landing pad is a fixed",
+        "0.42 um square (_VIA_LANDING_SIZE_UM, independent of",
+        "routing.width_um), so it lands exactly on such a pad and merges",
+        "with it, adding no notch.",
+        "",
+        "That fixed pad size is why inv_clk's clk port is declared here at",
+        "y=1.03 and NOT at the y=1.7 the 'place' stage uses for ro_buf's own",
+        "'a' port. y=1.7 is the middle of the dogbone's narrow 0.17-wide bar",
+        "(li1 x 0.46..0.63 there); y=1.03 is the centre of its own lower 0.42",
+        "pad, the same height as the two ctrlb pins this net also lands on.",
+        "BOTH were built and DRC'd, not just reasoned about, and BOTH are",
+        "clean -- the y=1.7 variant's concave step against the lower pad's",
+        "top edge measures 0.25 um, above sky130's own li1.space.1 (0.17 um),",
+        "so 'it would notch' is wrong; recorded here so it is not",
+        "re-derived. What y=1.7 costs is a 0.42-wide li1 pad dropped across a",
+        "0.17-wide bar directly over the inverter's gates -- extra",
+        "li1-over-poly on a clock net for no benefit. At y=1.03 the landing",
+        "pad is an EXACT overlay: inv_clk's li1 strap in the composed",
+        "sampler_dff.gds is polygon-for-polygon identical to ro_buf.gds's",
+        "own, adding no li1 at all, and the whole net's met1 geometry sits",
+        "on two heights only (1.03 and 2.5)."
+      ],
+      "blocks": [
+        {
+          "id": "core",
+          "orientation": "none",
+          "cell": {
+            "from_stage": "rst_n_bus",
+            "ports": [
+              {"name": "inv_clk_clk", "x_um": 0.545, "y_um": 1.03, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.42, "direction_deg": 270},
+              {"name": "tg_d_ctrl", "x_um": 5.31, "y_um": 2.5, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.42, "direction_deg": 270},
+              {"name": "tg_fbm_ctrlb", "x_um": 24.6, "y_um": 1.03, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.42, "direction_deg": 270},
+              {"name": "tg_s_ctrlb", "x_um": 29.74, "y_um": 1.03, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.42, "direction_deg": 270},
+              {"name": "tg_fbs_ctrl", "x_um": 49.03, "y_um": 2.5, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.42, "direction_deg": 270},
+              {"name": "inv_clk_clk_m1", "x_um": 0.545, "y_um": 1.03, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.42, "direction_deg": 270},
+              {"name": "tg_d_ctrl_m1", "x_um": 5.31, "y_um": 2.5, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.42, "direction_deg": 270},
+              {"name": "tg_fbm_ctrlb_m1", "x_um": 24.6, "y_um": 1.03, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.42, "direction_deg": 270},
+              {"name": "tg_s_ctrlb_m1", "x_um": 29.74, "y_um": 1.03, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.42, "direction_deg": 270},
+              {"name": "tg_fbs_ctrl_m1", "x_um": 49.03, "y_um": 2.5, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.42, "direction_deg": 270}
+            ]
+          }
+        }
+      ],
+      "placement": {"strategy": "explicit", "order": ["core"], "origins_um": {"core": {"x": 0.0, "y": 0.0}}},
+      "routing": {"layer_role": "metal2", "width_um": 0.17},
+      "connectivity": [
+        {"net": "inv_clk_clk_via", "pins": [{"block": "core", "port": "inv_clk_clk"}, {"block": "core", "port": "inv_clk_clk_m1"}]},
+        {"net": "tg_d_ctrl_via", "pins": [{"block": "core", "port": "tg_d_ctrl"}, {"block": "core", "port": "tg_d_ctrl_m1"}]},
+        {"net": "tg_fbm_ctrlb_via", "pins": [{"block": "core", "port": "tg_fbm_ctrlb"}, {"block": "core", "port": "tg_fbm_ctrlb_m1"}]},
+        {"net": "tg_s_ctrlb_via", "pins": [{"block": "core", "port": "tg_s_ctrlb"}, {"block": "core", "port": "tg_s_ctrlb_m1"}]},
+        {"net": "tg_fbs_ctrl_via", "pins": [{"block": "core", "port": "tg_fbs_ctrl"}, {"block": "core", "port": "tg_fbs_ctrl_m1"}]}
+      ],
+      "pins": []
+    },
+    {
+      "_comment": [
+        "clk fan-out, step 2 of 2 (issue #22): one 5-pin bundle net whose",
+        "whole long haul runs on met2 ('metal3' role) in a single basement",
+        "lane at y=-1.70, with a vertical drop at each pin's own x and an",
+        "automatic met2->met1 via-drop onto the met1 pad the previous stage",
+        "put there. legs[] (klayout-tools #1529) names all four legs",
+        "explicitly so the spanning tree is the intended left-to-right",
+        "chain and every leg's path is steered through the lane, rather",
+        "than letting the nearest-first search pick default L-shapes.",
+        "waypoints_um is rejected outright on a >2-pin net, so legs[] is",
+        "the only way to steer a fan-out of this shape.",
+        "",
+        "Why y=-1.70, and why met2 rather than met1:",
+        "  - met1 is unusable for ANY horizontal haul across this cell.",
+        "    The band it would need (-0.29 < y < 4.03, between the vss and",
+        "    vdd buses' own merged met1 footprints) is blocked at BOTH",
+        "    nand2 instances by that leaf's own internal met1 via stack",
+        "    (global x 12.24..13.575 and 43.10..44.435, y 0..3.95) -- the",
+        "    same obstruction 'rst_n_stub' above had to escape, here",
+        "    spanning the full height of the usable band instead of just",
+        "    part of it.",
+        "  - met2 is drawn by no leaf cell in this assembly at all; before",
+        "    this stage the only met2 in the whole composed cell is rst_n's",
+        "    own bus at (13.79,2.50;45.11,2.92). A lane BELOW the device",
+        "    rows keeps every clk leg clear of it by construction: the two",
+        "    ctrlb drops (x=24.6 and x=29.74) are the only clk verticals",
+        "    whose x falls inside rst_n's own span, and both stop at their",
+        "    pin (y=1.03, met2 pad top 1.24), 1.26 um short of rst_n's own",
+        "    lower edge. Routing clk ABOVE instead would short those two",
+        "    verticals straight through rst_n's bus.",
+        "  - y=-1.70 specifically: below every leaf's own drawn geometry",
+        "    (the tallest southward reach is sampler_tg's psub tap at",
+        "    y=-2.49) and above nothing it must clear on its own layer",
+        "    (met2 is empty down here). The met1 vss bus underneath it",
+        "    (y -3.585..-0.29) is a different layer and needs no clearance.",
+        "    The lane spans x 0.545..49.03, so the cell bbox does not grow.",
+        "",
+        "Reserved for clkb (next increment, NOT routed here): clkb's own",
+        "five pins are inv_clk's output plus the OPPOSITE gate of each",
+        "transmission gate -- tg_d.ctrlb (5.31,1.03), tg_fbm.ctrl",
+        "(24.6,2.5), tg_s.ctrl (29.74,2.5), tg_fbs.ctrlb (49.03,1.03).",
+        "Because that assignment alternates against clk's, clkb cannot use",
+        "a second met2 lane on either side without crossing one of clk's",
+        "own five verticals. The corridor left for it is met1 at y ~ 0.40",
+        "-- clear of clk's own met1 pads (whose lowest edge is y=0.82,",
+        "0.335 um away, against sky130's 0.14 um met1.space.1) and of the",
+        "vss bus's own met1 (top edge y=-0.29) -- with a short met2 hop",
+        "over each of the two nand2 met1 blobs named above. Those two hops",
+        "sit at x 12..14 and x 43..45, where clk has no vertical at all."
+      ],
+      "blocks": [
+        {
+          "id": "core",
+          "orientation": "none",
+          "cell": {
+            "from_stage": "clk_met1",
+            "ports": [
+              {"name": "inv_clk_clk_m1", "x_um": 0.545, "y_um": 1.03, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.42, "direction_deg": 270},
+              {"name": "tg_d_ctrl_m1", "x_um": 5.31, "y_um": 2.5, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.42, "direction_deg": 270},
+              {"name": "tg_fbm_ctrlb_m1", "x_um": 24.6, "y_um": 1.03, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.42, "direction_deg": 270},
+              {"name": "tg_s_ctrlb_m1", "x_um": 29.74, "y_um": 1.03, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.42, "direction_deg": 270},
+              {"name": "tg_fbs_ctrl_m1", "x_um": 49.03, "y_um": 2.5, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.42, "direction_deg": 270}
+            ]
+          }
+        }
+      ],
+      "placement": {"strategy": "explicit", "order": ["core"], "origins_um": {"core": {"x": 0.0, "y": 0.0}}},
+      "routing": {"layer_role": "metal3", "width_um": 0.17},
+      "connectivity": [
+        {"net": "clk",
+         "pins": [
+           {"block": "core", "port": "inv_clk_clk_m1"},
+           {"block": "core", "port": "tg_d_ctrl_m1"},
+           {"block": "core", "port": "tg_fbm_ctrlb_m1"},
+           {"block": "core", "port": "tg_s_ctrlb_m1"},
+           {"block": "core", "port": "tg_fbs_ctrl_m1"}
+         ],
+         "legs": [
+           {"from_pin": {"block": "core", "port": "inv_clk_clk_m1"}, "to_pin": {"block": "core", "port": "tg_d_ctrl_m1"},
+            "waypoints_um": [[0.545, -1.7], [5.31, -1.7]]},
+           {"from_pin": {"block": "core", "port": "tg_d_ctrl_m1"}, "to_pin": {"block": "core", "port": "tg_fbm_ctrlb_m1"},
+            "waypoints_um": [[5.31, -1.7], [24.6, -1.7]]},
+           {"from_pin": {"block": "core", "port": "tg_fbm_ctrlb_m1"}, "to_pin": {"block": "core", "port": "tg_s_ctrlb_m1"},
+            "waypoints_um": [[24.6, -1.7], [29.74, -1.7]]},
+           {"from_pin": {"block": "core", "port": "tg_s_ctrlb_m1"}, "to_pin": {"block": "core", "port": "tg_fbs_ctrl_m1"},
+            "waypoints_um": [[29.74, -1.7], [49.03, -1.7]]}
+         ]}
       ],
       "pins": []
     }

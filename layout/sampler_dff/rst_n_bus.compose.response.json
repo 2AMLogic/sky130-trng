@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "generator": "gen-compose",
-  "cell_name": "rst_n_stub",
-  "gds_path": "rst_n_stub.gds",
+  "cell_name": "rst_n_bus",
+  "gds_path": "rst_n_bus.gds",
   "pdk": {
     "name": "sky130A",
     "variant": "sky130A",
@@ -21,7 +21,7 @@
       "id": "core",
       "source": "cell",
       "generator": null,
-      "cell_name": "route_supplies",
+      "cell_name": "rst_n_met1",
       "offset_um": {
         "x": 0.0,
         "y": 0.0
@@ -37,67 +37,34 @@
   ],
   "nets": [
     {
-      "net": "nand_m_a_stub",
+      "net": "rst_n",
       "pins": [
         {
           "block": "core",
-          "port": "nand_m_a"
+          "port": "nand_m_a_m1"
         },
         {
           "block": "core",
-          "port": "nand_m_a_ext"
+          "port": "nand_s2_a_m1"
         }
       ],
       "routed": true,
-      "route_length_um": 0.5700000000000003,
+      "route_length_um": 30.9,
       "status": "routed",
       "legs": [
         {
           "pins": [
             {
               "block": "core",
-              "port": "nand_m_a"
+              "port": "nand_m_a_m1"
             },
             {
               "block": "core",
-              "port": "nand_m_a_ext"
+              "port": "nand_s2_a_m1"
             }
           ],
           "routed": true,
-          "route_length_um": 0.5700000000000003,
-          "reason": null
-        }
-      ]
-    },
-    {
-      "net": "nand_s2_a_stub",
-      "pins": [
-        {
-          "block": "core",
-          "port": "nand_s2_a"
-        },
-        {
-          "block": "core",
-          "port": "nand_s2_a_ext"
-        }
-      ],
-      "routed": true,
-      "route_length_um": 0.6099999999999994,
-      "status": "routed",
-      "legs": [
-        {
-          "pins": [
-            {
-              "block": "core",
-              "port": "nand_s2_a"
-            },
-            {
-              "block": "core",
-              "port": "nand_s2_a_ext"
-            }
-          ],
-          "routed": true,
-          "route_length_um": 0.6099999999999994,
+          "route_length_um": 30.9,
           "reason": null
         }
       ]

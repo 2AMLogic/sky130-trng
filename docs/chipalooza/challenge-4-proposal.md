@@ -599,7 +599,17 @@ that lands this document):
   the long haul — a plane no leaf cell here draws on, clear of the
   `vdd`/`vss` buses too. `klt drc` clean (0 violations), and `klt extract`
   confirms `nand_m`'s and `nand_s2`'s `a` pins and `rst_n` are one physically
-  merged net. `clk`/`clkb` fan-out, the six data-path nets, and the
+  merged net. **A later increment routed `clk`**: a five-pin fan-out drawn
+  as a `gen-compose` bundle net with hand-steered `connectivity[].legs[]`,
+  long-hauled on `met2` in one basement lane at `y = -1.70` with a vertical
+  drop at each pin's own x — `klt drc` clean (0 violations), 0 unrouted
+  nets, cell bbox unchanged, and `klt extract` confirms it reaches exactly
+  the six clk-gated devices `design/sampler_core.spice` has (with the four
+  `clkb`-gated devices still correctly isolated). Because the DFF's
+  feedback gates run the opposite clock phase from their own stage's input
+  gate, `clk` and `clkb` cannot be two mirrored buses; that increment
+  reserved a separate `met1` corridor at `y ≈ 0.40` for `clkb` rather than
+  consuming it. `clkb` fan-out, the six data-path nets, and the
   whole-cell `klt lvs` sign-off remain open (#27). Note also that
   "DRC-clean" here means clean against `klt`'s **curated** sky130 deck (a
   documented subset — see each `drc.json`'s own `coverage` block), not a

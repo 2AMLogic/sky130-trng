@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "generator": "gen-compose",
-  "cell_name": "sampler_dff",
-  "gds_path": "sampler_dff.gds",
+  "cell_name": "clk_met1",
+  "gds_path": "clk_met1.gds",
   "pdk": {
     "name": "sky130A",
     "variant": "sky130A",
@@ -21,7 +21,7 @@
       "id": "core",
       "source": "cell",
       "generator": null,
-      "cell_name": "clk_met1",
+      "cell_name": "rst_n_bus",
       "offset_um": {
         "x": 0.0,
         "y": 0.0
@@ -37,23 +37,143 @@
   ],
   "nets": [
     {
-      "net": "clk",
+      "net": "inv_clk_clk_via",
       "pins": [
         {
           "block": "core",
+          "port": "inv_clk_clk"
+        },
+        {
+          "block": "core",
           "port": "inv_clk_clk_m1"
+        }
+      ],
+      "routed": true,
+      "route_length_um": 0.0,
+      "status": "routed",
+      "legs": [
+        {
+          "pins": [
+            {
+              "block": "core",
+              "port": "inv_clk_clk"
+            },
+            {
+              "block": "core",
+              "port": "inv_clk_clk_m1"
+            }
+          ],
+          "routed": true,
+          "route_length_um": 0.0,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "net": "tg_d_ctrl_via",
+      "pins": [
+        {
+          "block": "core",
+          "port": "tg_d_ctrl"
         },
         {
           "block": "core",
           "port": "tg_d_ctrl_m1"
+        }
+      ],
+      "routed": true,
+      "route_length_um": 0.0,
+      "status": "routed",
+      "legs": [
+        {
+          "pins": [
+            {
+              "block": "core",
+              "port": "tg_d_ctrl"
+            },
+            {
+              "block": "core",
+              "port": "tg_d_ctrl_m1"
+            }
+          ],
+          "routed": true,
+          "route_length_um": 0.0,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "net": "tg_fbm_ctrlb_via",
+      "pins": [
+        {
+          "block": "core",
+          "port": "tg_fbm_ctrlb"
         },
         {
           "block": "core",
           "port": "tg_fbm_ctrlb_m1"
+        }
+      ],
+      "routed": true,
+      "route_length_um": 0.0,
+      "status": "routed",
+      "legs": [
+        {
+          "pins": [
+            {
+              "block": "core",
+              "port": "tg_fbm_ctrlb"
+            },
+            {
+              "block": "core",
+              "port": "tg_fbm_ctrlb_m1"
+            }
+          ],
+          "routed": true,
+          "route_length_um": 0.0,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "net": "tg_s_ctrlb_via",
+      "pins": [
+        {
+          "block": "core",
+          "port": "tg_s_ctrlb"
         },
         {
           "block": "core",
           "port": "tg_s_ctrlb_m1"
+        }
+      ],
+      "routed": true,
+      "route_length_um": 0.0,
+      "status": "routed",
+      "legs": [
+        {
+          "pins": [
+            {
+              "block": "core",
+              "port": "tg_s_ctrlb"
+            },
+            {
+              "block": "core",
+              "port": "tg_s_ctrlb_m1"
+            }
+          ],
+          "routed": true,
+          "route_length_um": 0.0,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "net": "tg_fbs_ctrl_via",
+      "pins": [
+        {
+          "block": "core",
+          "port": "tg_fbs_ctrl"
         },
         {
           "block": "core",
@@ -61,59 +181,14 @@
         }
       ],
       "routed": true,
-      "route_length_um": 74.735,
+      "route_length_um": 0.0,
       "status": "routed",
       "legs": [
         {
           "pins": [
             {
               "block": "core",
-              "port": "inv_clk_clk_m1"
-            },
-            {
-              "block": "core",
-              "port": "tg_d_ctrl_m1"
-            }
-          ],
-          "routed": true,
-          "route_length_um": 11.695,
-          "reason": null
-        },
-        {
-          "pins": [
-            {
-              "block": "core",
-              "port": "tg_d_ctrl_m1"
-            },
-            {
-              "block": "core",
-              "port": "tg_fbm_ctrlb_m1"
-            }
-          ],
-          "routed": true,
-          "route_length_um": 26.220000000000002,
-          "reason": null
-        },
-        {
-          "pins": [
-            {
-              "block": "core",
-              "port": "tg_fbm_ctrlb_m1"
-            },
-            {
-              "block": "core",
-              "port": "tg_s_ctrlb_m1"
-            }
-          ],
-          "routed": true,
-          "route_length_um": 10.599999999999998,
-          "reason": null
-        },
-        {
-          "pins": [
-            {
-              "block": "core",
-              "port": "tg_s_ctrlb_m1"
+              "port": "tg_fbs_ctrl"
             },
             {
               "block": "core",
@@ -121,7 +196,7 @@
             }
           ],
           "routed": true,
-          "route_length_um": 26.220000000000002,
+          "route_length_um": 0.0,
           "reason": null
         }
       ]

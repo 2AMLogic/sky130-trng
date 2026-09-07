@@ -5,11 +5,11 @@
   "top": "sampler_dff",
   "dbu_um": 0.001,
   "netlist_path": "sampler_dff.spice",
-  "netlist_sha256": "ba078699c316c4999f7b6bfb4aece762059077f8aa0ace3a400072b42d5aa69a",
+  "netlist_sha256": "71e568866e40e86f8d80a9bb0ac9f7c22ba145c272dc89d16bdbec1ea10ac66f",
   "status": "extracted",
   "device_count": 22,
-  "net_count": 31,
-  "pin_count": 29,
+  "net_count": 27,
+  "pin_count": 25,
   "device_counts": {
     "nfet": 11,
     "pfet": 11
@@ -31,7 +31,7 @@
       "class": "nfet",
       "nets": {
         "s": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss",
-        "g": "a|inv_clk_a",
+        "g": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
         "d": "inv_clk_y|y",
         "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
       },
@@ -85,7 +85,7 @@
       "class": "pfet",
       "nets": {
         "s": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
-        "g": "a|inv_clk_a",
+        "g": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
         "d": "inv_clk_y|y",
         "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
       },
@@ -103,7 +103,7 @@
       "class": "pfet",
       "nets": {
         "s": "b|tg_d_b",
-        "g": "ctrl|tg_d_ctrl",
+        "g": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
         "d": "a|tg_d_a",
         "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
       },
@@ -193,7 +193,7 @@
       "class": "pfet",
       "nets": {
         "s": "b|tg_fbs_b",
-        "g": "ctrl|tg_fbs_ctrl",
+        "g": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
         "d": "a|tg_fbs_a",
         "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
       },
@@ -319,7 +319,7 @@
       "class": "nfet",
       "nets": {
         "s": "b|tg_fbm_b",
-        "g": "ctrlb|tg_fbm_ctrlb",
+        "g": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
         "d": "a|tg_fbm_a",
         "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
       },
@@ -337,7 +337,7 @@
       "class": "nfet",
       "nets": {
         "s": "b|tg_s_b",
-        "g": "ctrlb|tg_s_ctrlb",
+        "g": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
         "d": "a|tg_s_a",
         "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
       },
@@ -392,7 +392,7 @@
       "nets": {
         "s": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss",
         "g": "en|nand_m_en",
-        "d": "\\$11",
+        "d": "\\$10",
         "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
       },
       "params": {
@@ -408,7 +408,7 @@
       "name": "$9",
       "class": "nfet",
       "nets": {
-        "s": "\\$11",
+        "s": "\\$10",
         "g": "a|nand_m_a|nand_m_a_stub|nand_m_a_via|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|rst_n",
         "d": "mnab_y|mpa_y|mpb_y|nand_m_y|y",
         "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
@@ -425,7 +425,7 @@
   ],
   "nets": [
     {
-      "name": "\\$11",
+      "name": "\\$10",
       "pin": false,
       "device_count": 2
     },
@@ -435,9 +435,9 @@
       "device_count": 2
     },
     {
-      "name": "a|inv_clk_a",
+      "name": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
       "pin": true,
-      "device_count": 2
+      "device_count": 6
     },
     {
       "name": "a|inv_mc_a",
@@ -500,32 +500,12 @@
       "device_count": 1
     },
     {
-      "name": "ctrlb|tg_fbm_ctrlb",
-      "pin": true,
-      "device_count": 1
-    },
-    {
       "name": "ctrlb|tg_fbs_ctrlb",
       "pin": true,
       "device_count": 1
     },
     {
-      "name": "ctrlb|tg_s_ctrlb",
-      "pin": true,
-      "device_count": 1
-    },
-    {
-      "name": "ctrl|tg_d_ctrl",
-      "pin": true,
-      "device_count": 1
-    },
-    {
       "name": "ctrl|tg_fbm_ctrl",
-      "pin": true,
-      "device_count": 1
-    },
-    {
-      "name": "ctrl|tg_fbs_ctrl",
       "pin": true,
       "device_count": 1
     },
@@ -581,7 +561,7 @@
     }
   ],
   "warnings": [
-    "net 'a|inv_clk_a' merges 2 distinct labels (a, inv_clk_a) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via' merges 14 distinct labels (a, clk, ctrl, ctrlb, inv_clk_a, inv_clk_clk_via, tg_d_ctrl, tg_d_ctrl_via, tg_fbm_ctrlb, tg_fbm_ctrlb_via, tg_fbs_ctrl, tg_fbs_ctrl_via, tg_s_ctrlb, tg_s_ctrlb_via) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
     "net 'a|inv_mc_a' merges 2 distinct labels (a, inv_mc_a) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
     "net 'a|inv_q_a' merges 2 distinct labels (a, inv_q_a) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
     "net 'a|nand_m_a|nand_m_a_stub|nand_m_a_via|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|rst_n' merges 8 distinct labels (a, nand_m_a, nand_m_a_stub, nand_m_a_via, nand_s2_a, nand_s2_a_stub, nand_s2_a_via, rst_n) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
@@ -594,12 +574,8 @@
     "net 'b|tg_fbs_b' merges 2 distinct labels (b, tg_fbs_b) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
     "net 'b|tg_s_b' merges 2 distinct labels (b, tg_s_b) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
     "net 'ctrlb|tg_d_ctrlb' merges 2 distinct labels (ctrlb, tg_d_ctrlb) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
-    "net 'ctrlb|tg_fbm_ctrlb' merges 2 distinct labels (ctrlb, tg_fbm_ctrlb) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
     "net 'ctrlb|tg_fbs_ctrlb' merges 2 distinct labels (ctrlb, tg_fbs_ctrlb) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
-    "net 'ctrlb|tg_s_ctrlb' merges 2 distinct labels (ctrlb, tg_s_ctrlb) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
-    "net 'ctrl|tg_d_ctrl' merges 2 distinct labels (ctrl, tg_d_ctrl) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
     "net 'ctrl|tg_fbm_ctrl' merges 2 distinct labels (ctrl, tg_fbm_ctrl) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
-    "net 'ctrl|tg_fbs_ctrl' merges 2 distinct labels (ctrl, tg_fbs_ctrl) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
     "net 'ctrl|tg_s_ctrl' merges 2 distinct labels (ctrl, tg_s_ctrl) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
     "net 'en|nand_m_en' merges 2 distinct labels (en, nand_m_en) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
     "net 'en|nand_s2_en' merges 2 distinct labels (en, nand_s2_en) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
@@ -616,10 +592,22 @@
   "unmodelled_poly": [],
   "merged_net_labels": [
     {
-      "net": "a|inv_clk_a",
+      "net": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
       "labels": [
         "a",
-        "inv_clk_a"
+        "clk",
+        "ctrl",
+        "ctrlb",
+        "inv_clk_a",
+        "inv_clk_clk_via",
+        "tg_d_ctrl",
+        "tg_d_ctrl_via",
+        "tg_fbm_ctrlb",
+        "tg_fbm_ctrlb_via",
+        "tg_fbs_ctrl",
+        "tg_fbs_ctrl_via",
+        "tg_s_ctrlb",
+        "tg_s_ctrlb_via"
       ]
     },
     {
@@ -713,13 +701,6 @@
       ]
     },
     {
-      "net": "ctrlb|tg_fbm_ctrlb",
-      "labels": [
-        "ctrlb",
-        "tg_fbm_ctrlb"
-      ]
-    },
-    {
       "net": "ctrlb|tg_fbs_ctrlb",
       "labels": [
         "ctrlb",
@@ -727,31 +708,10 @@
       ]
     },
     {
-      "net": "ctrlb|tg_s_ctrlb",
-      "labels": [
-        "ctrlb",
-        "tg_s_ctrlb"
-      ]
-    },
-    {
-      "net": "ctrl|tg_d_ctrl",
-      "labels": [
-        "ctrl",
-        "tg_d_ctrl"
-      ]
-    },
-    {
       "net": "ctrl|tg_fbm_ctrl",
       "labels": [
         "ctrl",
         "tg_fbm_ctrl"
-      ]
-    },
-    {
-      "net": "ctrl|tg_fbs_ctrl",
-      "labels": [
-        "ctrl",
-        "tg_fbs_ctrl"
       ]
     },
     {
@@ -857,16 +817,16 @@
   "matched_device_groups": [],
   "pdk": null,
   "provenance": {
-    "klt_version": "0.3.0",
+    "klt_version": "0.4.0",
     "klayout_version": "0.30.12",
     "pdk": null,
     "deck": {
       "name": "sky130",
       "content_hash": "sha256:5afac7ab8561545859f5e2e74f4621c6ffc052756dc8fe344ea263398e96b240",
-      "released": false
+      "released": true
     },
     "input": {
-      "content_hash": "sha256:a4b39e676fe8b74d8ab0176116c7c4840dd86ef4cb6cba98a2af01da7b4a1960"
+      "content_hash": "sha256:54eb89e0aec6f2bdc9cc817a65d1a2fa7bd9a31f2fd5670bf524262c3349bb97"
     }
   },
   "parasitics": null,
