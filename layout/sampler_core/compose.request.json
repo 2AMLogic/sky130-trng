@@ -8,140 +8,52 @@
       "cell": {
         "ports": [
           {
-            "name": "sb_clk",
-            "x_um": 25.0,
-            "y_um": -1.7,
+            "name": "ro1_esc_m1",
+            "x_um": -0.5,
+            "y_um": 17.0,
             "layer": {
-              "layer": 69,
-              "datatype": 20
-            },
-            "width_um": 0.17,
-            "direction_deg": 0
-          },
-          {
-            "name": "sv_clk",
-            "x_um": 80.66,
-            "y_um": -1.7,
-            "layer": {
-              "layer": 69,
-              "datatype": 20
-            },
-            "width_um": 0.17,
-            "direction_deg": 0
-          },
-          {
-            "name": "sr1_clk",
-            "x_um": 136.32,
-            "y_um": -1.7,
-            "layer": {
-              "layer": 69,
-              "datatype": 20
-            },
-            "width_um": 0.17,
-            "direction_deg": 0
-          },
-          {
-            "name": "sr2_clk",
-            "x_um": 191.98,
-            "y_um": -1.7,
-            "layer": {
-              "layer": 69,
-              "datatype": 20
-            },
-            "width_um": 0.17,
-            "direction_deg": 0
-          },
-          {
-            "name": "sr3_clk",
-            "x_um": 247.64,
-            "y_um": -1.7,
-            "layer": {
-              "layer": 69,
-              "datatype": 20
-            },
-            "width_um": 0.17,
-            "direction_deg": 0
-          },
-          {
-            "name": "sr4_clk",
-            "x_um": 303.3,
-            "y_um": -1.7,
-            "layer": {
-              "layer": 69,
-              "datatype": 20
-            },
-            "width_um": 0.17,
-            "direction_deg": 0
-          },
-          {
-            "name": "sb_rst_n",
-            "x_um": 27.0,
-            "y_um": 2.2,
-            "layer": {
-              "layer": 69,
+              "layer": 68,
               "datatype": 20
             },
             "width_um": 0.17,
             "direction_deg": 90
           },
           {
-            "name": "sv_rst_n",
-            "x_um": 82.66,
-            "y_um": 2.2,
+            "name": "sr1_d_m1",
+            "x_um": 117.985,
+            "y_um": 6.0,
             "layer": {
-              "layer": 69,
+              "layer": 68,
               "datatype": 20
             },
             "width_um": 0.17,
             "direction_deg": 90
           },
           {
-            "name": "sr1_rst_n",
-            "x_um": 138.32,
-            "y_um": 2.2,
+            "name": "ro4_esc_m1",
+            "x_um": 215.4,
+            "y_um": 15.0,
             "layer": {
-              "layer": 69,
+              "layer": 68,
               "datatype": 20
             },
             "width_um": 0.17,
             "direction_deg": 90
           },
           {
-            "name": "sr2_rst_n",
-            "x_um": 193.98,
-            "y_um": 2.2,
+            "name": "sr4_d_m1",
+            "x_um": 284.965,
+            "y_um": 6.0,
             "layer": {
-              "layer": 69,
-              "datatype": 20
-            },
-            "width_um": 0.17,
-            "direction_deg": 90
-          },
-          {
-            "name": "sr3_rst_n",
-            "x_um": 249.64,
-            "y_um": 2.2,
-            "layer": {
-              "layer": 69,
-              "datatype": 20
-            },
-            "width_um": 0.17,
-            "direction_deg": 90
-          },
-          {
-            "name": "sr4_rst_n",
-            "x_um": 305.3,
-            "y_um": 2.2,
-            "layer": {
-              "layer": 69,
+              "layer": 68,
               "datatype": 20
             },
             "width_um": 0.17,
             "direction_deg": 90
           }
         ],
-        "cell_name": "route_supplies",
-        "gds_path": "route_supplies.gds"
+        "cell_name": "data_m1",
+        "gds_path": "data_m1.gds"
       }
     }
   ],
@@ -163,272 +75,56 @@
   },
   "connectivity": [
     {
-      "net": "clk",
+      "net": "ro1",
       "pins": [
         {
           "block": "core",
-          "port": "sb_clk"
+          "port": "ro1_esc_m1"
         },
         {
           "block": "core",
-          "port": "sv_clk"
+          "port": "sr1_d_m1"
         }
       ],
       "waypoints_um": [
         [
-          25.0,
-          -1.7
+          -0.5,
+          17.0
         ],
         [
-          80.66,
-          -1.7
+          117.985,
+          17.0
+        ],
+        [
+          117.985,
+          6.0
         ]
       ]
     },
     {
-      "net": "clk",
+      "net": "ro4",
       "pins": [
         {
           "block": "core",
-          "port": "sv_clk"
+          "port": "ro4_esc_m1"
         },
         {
           "block": "core",
-          "port": "sr1_clk"
+          "port": "sr4_d_m1"
         }
       ],
       "waypoints_um": [
         [
-          80.66,
-          -1.7
+          215.4,
+          15.0
         ],
         [
-          136.32,
-          -1.7
-        ]
-      ]
-    },
-    {
-      "net": "clk",
-      "pins": [
-        {
-          "block": "core",
-          "port": "sr1_clk"
-        },
-        {
-          "block": "core",
-          "port": "sr2_clk"
-        }
-      ],
-      "waypoints_um": [
-        [
-          136.32,
-          -1.7
+          284.965,
+          15.0
         ],
         [
-          191.98,
-          -1.7
-        ]
-      ]
-    },
-    {
-      "net": "clk",
-      "pins": [
-        {
-          "block": "core",
-          "port": "sr2_clk"
-        },
-        {
-          "block": "core",
-          "port": "sr3_clk"
-        }
-      ],
-      "waypoints_um": [
-        [
-          191.98,
-          -1.7
-        ],
-        [
-          247.64,
-          -1.7
-        ]
-      ]
-    },
-    {
-      "net": "clk",
-      "pins": [
-        {
-          "block": "core",
-          "port": "sr3_clk"
-        },
-        {
-          "block": "core",
-          "port": "sr4_clk"
-        }
-      ],
-      "waypoints_um": [
-        [
-          247.64,
-          -1.7
-        ],
-        [
-          303.3,
-          -1.7
-        ]
-      ]
-    },
-    {
-      "net": "rst_n",
-      "pins": [
-        {
-          "block": "core",
-          "port": "sb_rst_n"
-        },
-        {
-          "block": "core",
-          "port": "sv_rst_n"
-        }
-      ],
-      "waypoints_um": [
-        [
-          27.0,
-          2.2
-        ],
-        [
-          27.0,
-          5.0
-        ],
-        [
-          82.66,
-          5.0
-        ],
-        [
-          82.66,
-          2.2
-        ]
-      ]
-    },
-    {
-      "net": "rst_n",
-      "pins": [
-        {
-          "block": "core",
-          "port": "sv_rst_n"
-        },
-        {
-          "block": "core",
-          "port": "sr1_rst_n"
-        }
-      ],
-      "waypoints_um": [
-        [
-          82.66,
-          2.2
-        ],
-        [
-          82.66,
-          5.0
-        ],
-        [
-          138.32,
-          5.0
-        ],
-        [
-          138.32,
-          2.2
-        ]
-      ]
-    },
-    {
-      "net": "rst_n",
-      "pins": [
-        {
-          "block": "core",
-          "port": "sr1_rst_n"
-        },
-        {
-          "block": "core",
-          "port": "sr2_rst_n"
-        }
-      ],
-      "waypoints_um": [
-        [
-          138.32,
-          2.2
-        ],
-        [
-          138.32,
-          5.0
-        ],
-        [
-          193.98,
-          5.0
-        ],
-        [
-          193.98,
-          2.2
-        ]
-      ]
-    },
-    {
-      "net": "rst_n",
-      "pins": [
-        {
-          "block": "core",
-          "port": "sr2_rst_n"
-        },
-        {
-          "block": "core",
-          "port": "sr3_rst_n"
-        }
-      ],
-      "waypoints_um": [
-        [
-          193.98,
-          2.2
-        ],
-        [
-          193.98,
-          5.0
-        ],
-        [
-          249.64,
-          5.0
-        ],
-        [
-          249.64,
-          2.2
-        ]
-      ]
-    },
-    {
-      "net": "rst_n",
-      "pins": [
-        {
-          "block": "core",
-          "port": "sr3_rst_n"
-        },
-        {
-          "block": "core",
-          "port": "sr4_rst_n"
-        }
-      ],
-      "waypoints_um": [
-        [
-          249.64,
-          2.2
-        ],
-        [
-          249.64,
-          5.0
-        ],
-        [
-          305.3,
-          5.0
-        ],
-        [
-          305.3,
-          2.2
+          284.965,
+          6.0
         ]
       ]
     }

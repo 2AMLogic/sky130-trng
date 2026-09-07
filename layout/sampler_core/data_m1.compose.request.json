@@ -1,0 +1,179 @@
+{
+  "pdk": {
+    "variant": "sky130A"
+  },
+  "blocks": [
+    {
+      "id": "core",
+      "cell": {
+        "ports": [
+          {
+            "name": "sr1_d",
+            "x_um": 117.985,
+            "y_um": 1.2,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 90
+          },
+          {
+            "name": "sr1_d_m1",
+            "x_um": 117.985,
+            "y_um": 6.0,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 90
+          },
+          {
+            "name": "sr4_d",
+            "x_um": 284.965,
+            "y_um": 1.2,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 90
+          },
+          {
+            "name": "sr4_d_m1",
+            "x_um": 284.965,
+            "y_um": 6.0,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 90
+          },
+          {
+            "name": "ro1_tap",
+            "x_um": -0.5,
+            "y_um": 31.635,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 270
+          },
+          {
+            "name": "ro1_esc_m1",
+            "x_um": -0.5,
+            "y_um": 17.0,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 270
+          },
+          {
+            "name": "ro4_tap",
+            "x_um": 215.4,
+            "y_um": 33.635,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 270
+          },
+          {
+            "name": "ro4_esc_m1",
+            "x_um": 215.4,
+            "y_um": 15.0,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 270
+          }
+        ],
+        "cell_name": "place_array",
+        "gds_path": "place_array.gds"
+      }
+    }
+  ],
+  "placement": {
+    "strategy": "explicit",
+    "order": [
+      "core"
+    ],
+    "origins_um": {
+      "core": {
+        "x": 0.0,
+        "y": 0.0
+      }
+    }
+  },
+  "routing": {
+    "layer_role": "metal2",
+    "width_um": 0.17
+  },
+  "connectivity": [
+    {
+      "net": "sr1_d_stub",
+      "pins": [
+        {
+          "block": "core",
+          "port": "sr1_d"
+        },
+        {
+          "block": "core",
+          "port": "sr1_d_m1"
+        }
+      ]
+    },
+    {
+      "net": "sr4_d_stub",
+      "pins": [
+        {
+          "block": "core",
+          "port": "sr4_d"
+        },
+        {
+          "block": "core",
+          "port": "sr4_d_m1"
+        }
+      ]
+    },
+    {
+      "net": "ro1_esc",
+      "pins": [
+        {
+          "block": "core",
+          "port": "ro1_tap"
+        },
+        {
+          "block": "core",
+          "port": "ro1_esc_m1"
+        }
+      ]
+    },
+    {
+      "net": "ro4_esc",
+      "pins": [
+        {
+          "block": "core",
+          "port": "ro4_tap"
+        },
+        {
+          "block": "core",
+          "port": "ro4_esc_m1"
+        }
+      ]
+    }
+  ],
+  "pins": [],
+  "options": {
+    "cell_name": "data_m1",
+    "output": "data_m1.gds"
+  }
+}

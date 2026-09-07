@@ -4,43 +4,70 @@ Physical layout evidence for the sky130-trng entropy source, verified with
 `klayout-tools` (`klt`) against the sky130 open PDK. See `layout/pdk.json`
 for the PDK/tool pin.
 
-**Status (issue #22, this increment): `sampler_core`'s shared `clk`
-fan-out and shared `rst_n` fan-out are both routed across all six
-`sampler_dff` instances, DRC-clean.** [`layout/sampler_core/`](sampler_core/README.md)
-adds a third stage, `route_ctrl`, on top of the `vdd`/`vss` `route_supplies`
-stage below, reusing the same chain-of-six technique for `clk` and `rst_n`
-— both are already single, already-routed nets *inside* every
-`sampler_dff` instance, so no fresh six-pin-bundle derivation was needed.
-`clk` chains `sb`→`sv`→`sr1`→`sr2`→`sr3`→`sr4` as five straight legs at a
-fixed height (met2, `"metal3"` role, landing directly on each instance's
-own already-drawn run, no via) — clean on the **first** attempt, since
-that lane already spans each instance's full width clear of everything
-else. `rst_n`'s first attempt (the same recipe, same shared local x as
-`clk`) failed all five legs: `gen-compose` reported a self-net short
-against `clk`'s own drawn metal, because a straight haul out of `rst_n`'s
-own narrower in-cell span crosses several *other* nets' met2 verticals
-near each instance's east edge (confirmed directly with `klayout.db`: a
-thin y-band slice across the full cell width finds real met2 at those x
-positions that is neither `rst_n`'s own bus nor anything the naive
-"port x is inside the labelled span" check saw coming). The fix: a
-`klayout.db` scan for a completely empty met2 band found one at
-`y=3.4..6.9` in every instance, clear of every net this repo has ever
-drawn there (`vdd`'s own rail starts at `y=6.915`, everything else tops
-out at `y≈2.8`); each `rst_n` leg now climbs (same layer, still no via)
-from its own bus to that empty band, buses across, and drops back down at
-the next instance, via an explicit four-point `waypoints_um` U-shape per
-leg. `klt drc`: clean, 0 violations, on the corrected attempt, cell bbox
-unchanged. `klt extract`: 132 devices unchanged, and **64 nets** (down
-from the `vdd`/`vss` increment's 74 — `clk`/`rst_n` each merge from six
-separate per-instance nets into one, saving 5 apiece). `klt lvs` against
-`design/sampler_core.spice`'s real `.subckt sampler_core`: mismatch, as
-expected (no `ro_array_core` instance placed yet, `d`/`q` still unwired).
-Placing the `ro_array_core` instance and wiring it to the samplers' `d`
-pins, `d`/`q`/`vdd`/`vss` pin promotion, and whole-cell `klt lvs` sign-off
-all remain open, tracked here and in #27. No `2AMLogic/klayout-tools`
-friction was found by this increment — the self-net short check and its
-error message (naming the exact ports involved) worked as documented and
-correctly caught a real problem in the first attempt's own anchor choice.
+**Status (issue #22, this increment): the `ro_array_core` instance is
+placed in `sampler_core`, and the first two raw-tap data nets are routed
+end to end — DRC-clean, 264 devices, 157 nets.**
+[`layout/sampler_core/`](sampler_core/README.md) adds three stages on top
+of the `place`/`route_supplies`/`route_ctrl` stages below: `place_array`
+puts one `ro_array_core` instance (the DRC-clean, LVS-*matching* entropy
+source) at origin `(0.0, 23.635)`, directly above the six-`sampler_dff`
+row with a 12.915 µm routing channel between them, so the whole
+`design/sampler_core.spice` device population exists in one stream for
+the first time; `data_m1` (met1) climbs `sr1`'s and `sr4`'s own `d` pins
+out of li1 to a landing point under the shared `vdd` rail and extends
+`ro1`'s and `ro4`'s own array metal south into the channel; `route_data`
+(met2) closes the two hauls. `klt drc`: clean, 0 violations. `klt extract`:
+**264 devices, 157 nets** — exactly two nets fewer than the unrouted
+placement's 159, i.e. exactly the two intended connections and nothing
+else. `klt lvs`: mismatch at 136/**264** devices, against a *complete*
+reference for the first time (it read 176 before; see below).
+
+Two derivations are worth carrying forward. **Above, not below**: a
+`sampler_dff`'s own `d` pin is an li1 pad with the shared `vdd` rail
+(met1) as the only obstacle above it but the shared `vss` rail (met1),
+the shared `clk` lane (met2) *and* the in-cell `clkb` lane (met1) below —
+and sky130's `klt` routing roles stop at the third metal, so from above
+costs one layer change and from below costs a three-rung weave.
+**Two of five data nets, not five**: a column-by-column met1 scan of
+`ro_array_core.gds` finds a clear south escape over `ro1`'s own run and
+over `ro4`'s, and **none at all** over `ro2`'s or `ro3`'s (the four ring
+taps are stacked horizontals, so each lower one is fenced in by the ones
+above it); `xo` is an li1 pad, two via hops from met2, which
+`gen-compose` will not do in one route. All of that is re-derivable:
+`layout/sampler_core/data-path-scan.py` re-measures 13 claims and exits
+non-zero if any stops holding.
+
+This increment also closed a `compose-cell.py` gap the previous one
+recorded: the LVS reference generator repointed variant subckt calls only
+in the top subckt's body, never in a `dependencies[]` entry's, so
+`sampler_core`'s generated reference called an undefined `ro_ring5` and
+`klt lvs` silently dropped four ring instances — 176 reference devices
+where the schematic has 264. `build_lvs_reference` now repoints every
+emitted body, with a unit test on the PR-blocking CI path.
+
+Two `2AMLogic/klayout-tools` items were filed (`klayout-tools#1567`,
+`klayout-tools#1568`): `gen-compose` has no
+multi-level via drop (a third-metal route cannot land on a
+base-`"metal"` pad, so a per-level ladder stage has to be hand-built —
+this is what keeps `xo`, an li1 pad, unrouted), and its module docstring
+denies an orientation capability the request validator actually has
+(`mirror_x`/`mirror_y`/`rotate_180` all work), which cost this increment a
+floorplan detour.
+
+**A previous increment (issue #22): `sampler_core`'s shared `clk` fan-out
+and shared `rst_n` fan-out are both routed across all six `sampler_dff`
+instances, DRC-clean.** [`layout/sampler_core/`](sampler_core/README.md)'s
+`route_ctrl` stage reuses the chain-of-six technique below for both nets.
+`clk` was clean on the first attempt (five straight met2 legs at a lane
+that already spans each instance's full width); `rst_n`'s first attempt
+failed all five legs on a self-net short against other nets' met2
+verticals near each instance's east edge, and was fixed by climbing to a
+completely empty met2 band at `y=5.0` for the cross-instance haul and
+dropping back down at the next instance. `klt drc`: clean, 0 violations.
+`klt extract`: 132 devices unchanged, 64 nets (down from 74 — `clk` and
+`rst_n` each merge six per-instance nets into one). No klayout-tools
+friction: the self-net short check and its error message worked as
+documented and caught a real problem.
 
 **A previous increment (issue #22): `sampler_core`'s shared `vdd`/`vss`
 bus is routed across all six `sampler_dff` instances, DRC-clean.**

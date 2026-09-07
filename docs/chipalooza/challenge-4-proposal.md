@@ -462,10 +462,21 @@ that lands this document):
   `spec/decision-records/DR-0007-*.md`, and — now that `sampler_dff`'s own
   assembly GDS is a valid extraction source — the whole-cell (assembled)
   sampler post-layout campaign behind
-  `spec/decision-records/DR-0008-*.md`; and, most recently, a DRC-clean
-  placement proof-of-concept for `sampler_core`'s own six-`sampler_dff` bank
-  (`layout/sampler_core-placement-poc/`, 132 devices, no routing yet). The
-  snapshot follows.
+  `spec/decision-records/DR-0008-*.md`; a DRC-clean placement
+  proof-of-concept for `sampler_core`'s own six-`sampler_dff` bank
+  (`layout/sampler_core-placement-poc/`, 132 devices, no routing yet), then
+  that bank promoted to a real `cell.json` recipe with its shared
+  `vdd`/`vss` bus and its shared `clk`/`rst_n` fan-out routed across all six
+  instances; and, most recently, the `ro_array_core` instance placed inside
+  `sampler_core` with the first two raw-tap data nets (`ro1`→`sr1.d`,
+  `ro4`→`sr4.d`) routed end to end — `layout/sampler_core/`, DRC-clean, 264
+  devices (the whole `.subckt sampler_core` population), 157 nets, `klt lvs`
+  a quantified mismatch at 136/264 devices against a now-complete reference.
+  **Still open on this bullet**: the other three data nets (`xo`, `ro2`,
+  `ro3`), the inter-block `vdd`/`vss` straps, top-level pin promotion, a
+  whole-cell LVS *match*, and the assembled `sampler_core` post-layout PVT
+  run — so the brief's full sign-off bar (post-layout PVT over a DRC/LVS-
+  clean **block** GDS) is closer but not met. The snapshot follows.
 
   `layout/` held fourteen composed **DRC-clean
   and LVS-clean cells** at the time of writing — which was **every leaf cell
