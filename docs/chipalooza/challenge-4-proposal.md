@@ -427,9 +427,13 @@ that lands this document):
   leakage-limited reset-window finding, confirmed at a second, stricter
   extraction scope
   ([`spec/decision-records/DR-0008-*.md`](../../spec/decision-records/DR-0008-sampler-dff-assembled-post-layout.md)).
-  Still missing for row D: `sampler_core` (six `sampler_dff` instances on
-  one shared clock, no layout at all yet) and therefore whole-block
-  power/area.
+  **Further discharged**: `layout/sampler_core-placement-poc/` places all
+  six `sampler_dff` instances `sampler_core` needs side by side (DRC-clean,
+  0 violations; `klt extract` confirms 132 devices, 66 nfet + 66 pfet) — a
+  placement-only proof-of-concept, not yet the shared `vdd`/`vss`/`clk`/
+  `rst_n` bus, the `ro_array_core` wiring, or an LVS-checkable
+  `sampler_core` cell. Still missing for row D: `sampler_core`'s own bus
+  routing and source wiring, and therefore whole-block power/area.
 - **Ratify DR-0001, DR-0002, and DR-0003.** Every quantitative row in §4
   ultimately traces to at least one of these three Proposed records; none
   is yet an operator-accepted decision.
@@ -447,7 +451,10 @@ that lands this document):
   `spec/decision-records/DR-0007-*.md`, and — now that `sampler_dff`'s own
   assembly GDS is a valid extraction source — the whole-cell (assembled)
   sampler post-layout campaign behind
-  `spec/decision-records/DR-0008-*.md`. The snapshot follows.
+  `spec/decision-records/DR-0008-*.md`; and, most recently, a DRC-clean
+  placement proof-of-concept for `sampler_core`'s own six-`sampler_dff` bank
+  (`layout/sampler_core-placement-poc/`, 132 devices, no routing yet). The
+  snapshot follows.
 
   `layout/` held fourteen composed **DRC-clean
   and LVS-clean cells** at the time of writing — which was **every leaf cell
