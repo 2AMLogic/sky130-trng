@@ -925,6 +925,7 @@
       "pins": []
     },
     {
+      "name": "mc_bus",
       "_comment": [
         "mc fan-out, step 2 of 2 (issue #22): the long haul, on met2",
         "('metal3' role, single-hop from met1). A plain met1 route between",
@@ -974,6 +975,62 @@
         {"net": "mc",
          "pins": [{"block": "core", "port": "inv_mc_y_m1"}, {"block": "core", "port": "tg_fbm_a_m1"}],
          "waypoints_um": [[21.19, 1.2], [21.19, 1.8], [25.955, 1.8], [25.955, 1.2]]}
+      ],
+      "pins": []
+    },
+    {
+      "_comment": [
+        "q fan-out (issue #22): the second of the six data-path nets --",
+        "design/sampler_core.spice's inv_q's own OUTPUT (XMiqp/XMiqn's",
+        "shared drain node) driving NAND_S2's 'en' input (XMs2ap/XMs2bn's",
+        "shared gate) -- inv_q.y (37.9, 1.2) to nand_s2.en (43.075, 1.975).",
+        "The cell's own eventual output pin also lands on this net once",
+        "top-level promotion happens (not this increment -- see 'What",
+        "remains').",
+        "",
+        "Unlike mc, this net needs only ONE stage, not two: klayout.db",
+        "against the composed sampler_dff.gds (post-mc) shows met1 is",
+        "completely empty across the whole x=37..44.5, y=0.8..2.2 box other",
+        "than sampler_nand2's own internal met1 blob at nand_s2",
+        "(x=43.845..44.435, the same obstruction rst_n/clk/clkb's own long",
+        "hauls all had to route around at other columns) -- and this net's",
+        "own east end, nand_s2.en at x=43.075, sits 0.77um WEST of that",
+        "blob's own west edge, so a route that never crosses x=43.845 has no",
+        "reason to detour around it at all. A single 'metal2'-role stage",
+        "(one hop from li1, same as clkb_seg1's own single-stage recipe)",
+        "vias both pins straight up from li1 -- inv_q_y's own 0.42um",
+        "landing pad overlaps only inv_q_y's own li1 strap (identical",
+        "geometry to inv_mc_y's already-proven overlay, since both are the",
+        "same ro_buf leaf's 'y' port) and nand_s2_en's landing pad lands",
+        "entirely INSIDE that pin's own real li1 pad (measured 0.37 x 1.2um,",
+        "x=42.89..43.26, y=1.375..2.575 -- comfortably containing the",
+        "0.42um-square landing centered at 43.075,1.975) -- and runs the",
+        "whole L-shaped haul on met1 itself: east from (37.9,1.2) to",
+        "(43.075,1.2), then north to (43.075,1.975). Both segments measured",
+        "clear of every other net's own met1 on klayout.db (clkb_seg2's own",
+        "backbone stays at y=0.4 here, well below; the vdd/vss buses stay at",
+        "y=7.0/-3.5; rst_n/clk/mc all run on met2/met3, a different layer",
+        "entirely)."
+      ],
+      "blocks": [
+        {
+          "id": "core",
+          "orientation": "none",
+          "cell": {
+            "from_stage": "mc_bus",
+            "ports": [
+              {"name": "inv_q_y", "x_um": 37.9, "y_um": 1.2, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.17, "direction_deg": 0},
+              {"name": "nand_s2_en", "x_um": 43.075, "y_um": 1.975, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.42, "direction_deg": 90}
+            ]
+          }
+        }
+      ],
+      "placement": {"strategy": "explicit", "order": ["core"], "origins_um": {"core": {"x": 0.0, "y": 0.0}}},
+      "routing": {"layer_role": "metal2", "width_um": 0.17},
+      "connectivity": [
+        {"net": "q",
+         "pins": [{"block": "core", "port": "inv_q_y"}, {"block": "core", "port": "nand_s2_en"}],
+         "waypoints_um": [[37.9, 1.2], [43.075, 1.2], [43.075, 1.975]]}
       ],
       "pins": []
     }
