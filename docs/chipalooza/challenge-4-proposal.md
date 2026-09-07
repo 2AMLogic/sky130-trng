@@ -437,8 +437,13 @@ that lands this document):
   promotes that floorplan into a real cell recipe and routes the shared
   `vdd`/`vss` bus across all six instances (DRC-clean, 0 violations; `klt
   extract` confirms 132 devices unchanged, 74 nets — `vdd` merged from six
-  per-instance nets into one). Still missing for row D: `clk`/`rst_n`
-  fan-out, the `ro_array_core` wiring, and therefore whole-block
+  per-instance nets into one).
+  **Further discharged**: the same directory now also routes the shared
+  `clk` fan-out and shared `rst_n` fan-out across all six instances
+  (DRC-clean, 0 violations; `klt extract` confirms 132 devices unchanged,
+  64 nets — `clk`/`rst_n` each merged from six per-instance nets into one).
+  Still missing for row D: the `ro_array_core` wiring, `d`/`q`/`vdd`/`vss`
+  pin promotion, whole-cell `klt lvs`, and therefore whole-block
   power/area.
 - **Ratify DR-0001, DR-0002, and DR-0003.** Every quantitative row in §4
   ultimately traces to at least one of these three Proposed records; none

@@ -7,28 +7,109 @@
 [`layout/sampler_core-placement-poc/`](../sampler_core-placement-poc/README.md)'s
 own six-instance floorplan (unchanged: 55.66 µm pitch, the same `sb`/`sv`/
 `sr1`-`sr4` instance order and naming, the same `y=0.0` origin for every
-instance) into a real, `compose-cell.py --check`-reproducible cell recipe,
-and adds this increment's own new work: **routing the shared `vdd` bus and
-shared `vss` bus across all six `sampler_dff` instances** — issue #27's own
-step 1, the item its "What remains" list called "the most mechanically
-similar step to `layout/sampler_dff/`'s own first routing increment, since
-every instance already has an identical rail pad at an identical y."
+instance) into a real, `compose-cell.py --check`-reproducible cell recipe.
 
-## Result (this increment)
+## Result (this increment: `clk`/`rst_n` fan-out, issue #27 step 2)
+
+On top of the `place`/`route_supplies` stages below (unchanged), a third
+stage, `route_ctrl`, routes the shared `clk` fan-out and shared `rst_n`
+fan-out across all six instances — the item flagged as likely the hardest
+remaining step, by analogy with `layout/sampler_dff/README.md`'s own
+single-cell `clk` fan-out derivation (a five-pin bundle net *inside* one
+cell). At this scope `clk`/`rst_n` are each already a single, already-routed
+net inside every `sampler_dff` instance (`layout/sampler_dff/cell.json`'s
+own `clk_met1`/`clk_bus` and `rst_n_met1`/`rst_n_bus` stages), each carrying
+its own correctly-spelled net-name text label as a side effect of that
+routing (confirmed directly against `layout/sampler_dff/sampler_dff.gds`
+with `klayout.db`: layer `69/20` — met2, `"metal3"` role — text labels
+`clk` at local `(3.662, -1.7)` and `rst_n` at local `(27.645, 2.2)`), so this
+stage's own job is the *same* chain-of-six technique `route_supplies` already
+used for `vdd`/`vss`, not a fresh six-pin-bundle derivation.
 
 | Stage | Verdict | Evidence |
 |---|---|---|
-| `klt gen-compose` (stage `place`, six `blocks[].cell` instances at 55.66 µm pitch, zero routing beyond hand-declaring each instance's own `vdd`/`vss` landing port) | **DRC-clean, 0 violations** — byte-for-byte the same floorplan `layout/sampler_core-placement-poc/build.py` already proved (132 devices, 79 nets); declaring ports changes no drawn geometry | `place.compose.request.json`, `place.compose.response.json`, `place.gds` |
-| `klt gen-compose` (stage `route_supplies`, `"metal2"` role — met1, landing directly on each instance's own already-drawn rail, no via) | `vdd`/`vss` each routed as a five-leg chain (`sb`→`sv`→`sr1`→`sr2`→`sr3`→`sr4`) at `y=7.0`/`y=-3.5`, **0 unrouted nets, 0 warnings** | `compose.request.json`, `compose.response.json` |
-| `klt drc --deck sky130` | **clean, 0 violations**, on the first attempt | `drc.json` |
-| `klt extract --deck sky130` | **132 devices** (66 nfet + 66 pfet, unchanged from the placement PoC — routing adds no devices), **74 nets** (down from the PoC's 79: `vdd` merges from six separate per-instance nets into **one**, saving exactly 5; `vss` was already merged into one net at the PoC stage via sky130's own global NMOS substrate, unaffected by this increment's own routing) | `extract.json`, `sampler_core.spice` |
-| `klt lvs` vs. `design/sampler_core.spice`'s own `.subckt sampler_core` | **mismatch, as expected** — 0/132 devices, 0/74 nets matched on the layout side; 0/176 devices, 0/92 nets matched against a reference that is itself still incomplete (see "A known reference-generation gap" below). Not a regression: no `ro_array_core` instance exists yet, and `clk`/`rst_n`/`d`/`q` are all still unwired | `lvs.json`, `sampler_core.ref.spice` |
+| `klt gen-compose` (stage `place`) | DRC-clean, unchanged from the previous increment | `place.compose.request.json`, `place.compose.response.json`, `place.gds` |
+| `klt gen-compose` (stage `route_supplies`, `vdd`/`vss`, met1) | DRC-clean, unchanged from the previous increment (now non-final — files renamed `route_supplies.compose.*`/`route_supplies.gds`, the same file-naming convention `place`'s own non-final stage already uses) | `route_supplies.compose.request.json`, `route_supplies.compose.response.json`, `route_supplies.gds` |
+| `klt gen-compose` (stage `route_ctrl`, `clk`/`rst_n`, met2 — `"metal3"` role) | `clk` clean on the **first** attempt (five straight legs at `y=-1.7`); `rst_n`'s first attempt (a straight leg at `y=2.2`, mirroring `clk`'s recipe) failed all five legs — see "The `rst_n` correction" below — fixed by climbing to an empty band at `y=5.0` for the cross-instance haul. **0 unrouted nets** on the corrected attempt | `compose.request.json`, `compose.response.json` |
+| `klt drc --deck sky130` | **clean, 0 violations**, on the corrected attempt; cell bbox unchanged | `drc.json` |
+| `klt extract --deck sky130` | **132 devices** unchanged, **64 nets** (down from the `vdd`/`vss` increment's 74: `clk`/`rst_n` each merge from six separate per-instance nets into **one**, saving 5 apiece) | `extract.json`, `sampler_core.spice` |
+| `klt lvs` vs. `design/sampler_core.spice`'s own `.subckt sampler_core` | **mismatch, as expected** — 0/132 devices, 1/64 nets matched (the `vdd` merge from a later dependency lookup); 0/176 devices, 1/92 nets matched against the reference (still incomplete, see "A known reference-generation gap" below). Not a regression: no `ro_array_core` instance exists yet, and `d`/`q` are still unwired | `lvs.json`, `sampler_core.ref.spice` |
 
-Cell extent (final GDS, unchanged from the placement PoC — the new bus wiring
-stays within each instance's own already-drawn rail plus the inter-instance
-gaps) `x0=-2.19 x1=328.77 y0=-3.585 y1=7.085` µm. Generated on `klt 0.4.0` /
-KLayout 0.30.12 against open_pdks `c6d73a35f524070e85faff4a6a9eef49553ebc2b`
-— `layout/pdk.json`'s own pin.
+Cell extent (final GDS, unchanged from every earlier increment — the new
+`clk`/`rst_n` wiring stays within each instance's own already-drawn rail
+footprint plus the inter-instance gaps) `x0=-2.19 x1=328.77 y0=-3.585
+y1=7.085` µm. Generated on `klt 0.3.0+gc6dbf66c53c6` against open_pdks
+`c6d73a35f524070e85faff4a6a9eef49553ebc2b` — `layout/pdk.json`'s own pin.
+
+## The `rst_n` correction: a same-height haul is not safe outside its own span
+
+`clk`'s own in-cell lane (`y=-1.7`) already spans the *entire* local width
+of every instance (`layout/sampler_dff/README.md`'s own `clk_bus`
+derivation: "below every leaf's own drawn geometry ... The lane spans
+`x 0.545..49.03`"), so a straight cross-instance leg at that same height
+never crosses anything else — confirmed empirically: all five `clk` legs
+routed clean on the first attempt, using a shared local anchor `x=25.0`
+(inside `clk`'s own `0.46..49.115` span).
+
+`rst_n` is not that simple. Its own in-cell bus (`rst_n_bus`, `y=2.2`) spans
+only local `x 12.215..43.075` **by design** — clear of `clk`'s own verticals
+*only inside that window* (`rst_n_bus`'s own `_comment`: `clk`'s two
+`ctrlb` drops at `x=24.6`/`29.74` stop at `y=1.03`/`1.24`, well below
+`rst_n`'s own `y=1.975` lower edge). Outside that window `clk` has two
+*other* verticals (`tg_d.ctrl` at local `(5.31, 2.5)`, `tg_fbs.ctrl` at
+local `(49.03, 2.5)`) that reach well above `rst_n`'s own height. The first
+attempt reused `clk`'s own anchor `x=25.0` for `rst_n` too (for a uniform
+anchor across both nets) and failed all five legs:
+
+```
+self-net's drawn 0.17um metal overlaps 0.1734um^2 of block 'core''s own
+drawn pad metal on the route layer (ports 'sb_clk', 'sv_clk') -- bussing
+this net across the block would draw a silent short to that pad ...
+```
+
+Not a collision at the port itself (`x=25.0` is mid-span and clear at
+`y=2.2` in isolation) — the *straight haul* from that port all the way to
+the block's own edge (needed to reach the next instance) crosses local
+`x 43.9..49.1`, where `clk`'s own `tg_fbs.ctrl` riser lives, confirmed
+directly with `klayout.db`: a `y=2.15..2.25` band slice across the whole
+cell width finds real met2 at local `x` `4.38-4.55`, `5.225-5.395`,
+`43.915-44.085`, `44.815-44.985`, `47.93-48.1` and `48.945-49.115` — none of
+them `rst_n`'s own bus (`12.005-43.285`), every one a *different* net's own
+narrow vertical (`clk`'s `tg_fbs.ctrl` riser among them), invisible to a
+naive "is the anchor `x` inside `rst_n`'s own labelled span" check.
+
+**Fix**: route `rst_n`'s cross-instance haul on a completely empty met2 lane
+instead of reusing `y=2.2` outside `rst_n_bus`'s own span. A `klayout.db`
+band scan (thin y-slices, full local `x -3..52`) found local `y=3.4..6.9`
+entirely free of met2 in every one of the six identical instances — nothing
+this repo has ever drawn there (`vdd`'s own rail starts at `y=6.915`;
+everything else — `clk`, `rst_n`, `q`/`qb`/`s`/`mc`/`mb`, the leaf gates'
+own `vdd`/`ctrl` pads — tops out at or below `y=2.795`). Also confirmed at
+the chosen anchor column specifically (local `x=27.0`, inside `rst_n`'s own
+`12.215..43.075` span and clear of both `ctrlb` drops at `24.6`/`29.74`):
+met2 there is only `rst_n`'s own lane (`y 2.115..2.285`) and `clk`'s own
+basement lane (`y -1.785..-1.615`) — nothing between `2.285` and `7.1`. Each
+leg now climbs (same layer, still no via) from `(27.0, 2.2)` straight up to
+`(27.0, 5.0)`, runs the whole inter-instance haul at `y=5.0`, and drops back
+down to `(27.0, 2.2)` at the next instance — an explicit four-point
+`waypoints_um` U-shape per leg, the same recipe `rst_n_bus`'s own in-cell
+stage already used at a smaller scale (`[[x1,y1],[x1,y2],[x2,y2],[x2,y1]]`),
+just one plane "higher" in `y` rather than crossing a plane in layer. `clk`
+needed no such detour and keeps its own single straight-line legs at
+`y=-1.7` unchanged.
+
+## Where the `clk`/`rst_n` ports land
+
+Global `x` per instance: `clk` = `origin_x + 25.0` (`sb=25.0`, `sv=80.66`,
+`sr1=136.32`, `sr2=191.98`, `sr3=247.64`, `sr4=303.3`); `rst_n` =
+`origin_x + 27.0` (`sb=27.0`, `sv=82.66`, `sr1=138.32`, `sr2=193.98`,
+`sr3=249.64`, `sr4=305.3`) — the same offset arithmetic `route_supplies`
+already used for `vdd`/`vss` at `x=0.0`. Ten two-pin `connectivity[]`
+entries (five legs each), not a single six-pin bundle net with
+`connectivity[].legs[]`, for the same portability reason `route_supplies`'s
+own `_comment` already gives (`klayout-tools#1548`: an unrecognized
+`legs[]` field is silently dropped rather than rejected on some installed
+`klt` builds encountered in this repo's history).
 
 ## Where the `vdd`/`vss` ports land
 
