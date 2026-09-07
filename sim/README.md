@@ -89,6 +89,25 @@ See "The post-layout campaign (issue #22)" below for what those decks are,
 why the third leaf-level deck exists, and the one deck defect it caught; see
 "Assembled-ring post-layout" for the ring-level extraction.
 
+A later increment of the same issue extracted the **whole array**
+(`layout/pex-array/`, slug `post-layout-ro-array-core/`; see "Array-level
+post-layout" below), and the increment after that crossed the raw tap for
+the first time: every slug named so far is on the **entropy-source** side of
+it, and none of them measures the digitizer at all. `post-layout-sampler-dff/`
+does, from `layout/pex/sampler_dff_pex.spice` — the second descriptor
+(`layout/pex/pex-sampler.json`) over the three DRC-clean, LVS-clean leaf
+cells `layout/sampler_dff/` places:
+
+| Slug | Claim under test | Landed by |
+|---|---|---|
+| `post-layout-sampler-dff/` | the raw-tap digitizer's own clk→q capture delay, output levels, setup-time bracket, and reset-window / idle / active supply current, with extracted **intra-cell** parasitics and the pre-layout `.subckt sampler_dff` as a same-deck control | #22 |
+
+See "Sampler post-layout" below. That slug is also where DR-0003's own named
+follow-up item ("**Sampler_dff characterization** ... unsimulated") and
+`spec/porting-plan.md`'s DR-0014 reset-contention **methodology** transfer
+are discharged for sky130 —
+[`spec/decision-records/DR-0007-*.md`](../spec/decision-records/DR-0007-sampler-dff-post-layout-and-reset-contention.md).
+
 Two rules from the root `CLAUDE.md` govern everything under this directory:
 
 - **Verification is the product.** No claim without a testbench, and PVT
@@ -568,6 +587,197 @@ deleted: each `20260907-*` record names the one it supersedes in its own
 `supersedes` field, so the two passes are diffable line for line. That
 diff is what surfaced the coupling-sign result above, which is why the
 superseded pass is worth keeping rather than merely tolerable to keep.
+
+## Sampler post-layout: the first measurement of `sampler_dff` at all (issue #22)
+
+Every slug above this line sits on the **entropy-source** side of the raw
+tap. `sim/post-layout-sampler-dff/` is the first that crosses it. Two
+standing gaps meet here:
+
+- **DR-0003's own "Follow-up required" list** names "**Sampler_dff
+  characterization** for the now six-instance-per-block liveness/raw-tap
+  digitizer fan-out (unsimulated, per `design/xschem/trng_top.sch`'s own
+  text block)". It had been unsimulated ever since — `sim/raw-bit-min-entropy/`
+  digitizes *through* this cell but measures the bitstream, not the cell.
+- **`spec/porting-plan.md`'s DR-0014 entry** is explicit that the
+  gf180-trng reset-window contention measurement's *methodology* transfers
+  to sky130 while its *numbers and polarity argument* do not: "measure
+  reset-window contention current explicitly, per the specific storage-loop
+  topology chosen, before assuming a brute-force reset is 'free'". Nobody
+  had measured it here.
+
+Two decks, the same four (temp, Vdd) points every post-layout campaign in
+this file uses, each bundling `tt`/`ss`/`ff` — twenty-four corner runs:
+
+| Testbench | What it answers |
+|---|---|
+| `tb_post_layout_sampler_dff.spice` | what the sampler does **after** the edge: clk→q capture delay both directions, captured output levels, and reset-window / idle / active supply current — post-layout and pre-layout DFF in one deck on one shared stimulus |
+| `tb_post_layout_sampler_setup.spice` | what it needs **before** the edge: a twelve-rung d-to-clk offset ladder (3200, 800, 260, 215, 180, 150, 125, 105, 88, 73, 60, 45 ps) run simultaneously on twelve post-layout and twelve pre-layout instances, bracketing each side's setup time per corner |
+
+**Scope, stated up front.** This is `layout/pex/sampler_dff_pex.spice` —
+`klt extract --parasitics` over the three composed leaf cells
+`layout/sampler_dff/` places (`layout/ro_buf/`, `layout/sampler_tg/`,
+`layout/sampler_nand2/`, each `klt drc` clean and `klt lvs` matching its own
+reference), wired per `design/sampler_core.spice` device for device with
+**ideal inter-cell wires**. It is exactly the scope
+`sim/post-layout-ro-ring5/` has for the ring, one level below
+`sim/post-layout-ro-ring5-assembled/`'s whole-GDS extraction.
+`layout/sampler_dff/`'s own assembly exists and is DRC-clean, but its
+`m`/`mb` data-path nets are still unrouted and its `klt lvs` therefore does
+not match yet (15/22 devices, 7/14 nets as of PR #87's `sampler_nand2`
+pin-swap fix), so extracting *that* GDS flat would extract an incomplete
+circuit. Both deck headers state the same scope, but were authored while
+the pin swap ([#84](https://github.com/2AMLogic/sky130-trng/issues/84)) was
+still open and cite it as a second reason; that half is now closed and the
+unrouted `m`/`mb` pair is the whole of what remains. The deck text is left
+exactly as it was run — the committed per-corner logs under `corners/`
+echo the deck verbatim, so editing the header after the fact would make
+this slug's own transcripts disagree with its own decks. Stimulus is ideal
+PWL (100 ps edges), identical on both sides, so
+the post-layout cell's larger input capacitance never slows its own input
+edges. **Every post-layout figure below is therefore a floor on the real
+cost, not the whole of it.**
+
+### What the capture-timing deck found
+
+| PVT | corner | clk→q rise, post | pre | ratio | clk→q fall, post | pre | ratio |
+|---|---|---|---|---|---|---|---|
+| −40 °C / 1.62 V | `tt` | 167.6 ps | 120.6 ps | 1.389x | 231.9 ps | 167.9 ps | 1.382x |
+| −40 °C / 1.62 V | `ss` | 210.4 ps | 148.4 ps | 1.418x | 299.0 ps | 211.6 ps | 1.413x |
+| −40 °C / 1.62 V | `ff` | 137.9 ps | 101.0 ps | 1.365x | 183.8 ps | 135.7 ps | 1.354x |
+| 27 °C / 1.80 V | `tt` | 141.3 ps | 102.9 ps | 1.373x | 187.6 ps | 139.0 ps | 1.350x |
+| 27 °C / 1.80 V | `ss` | 174.2 ps | 124.5 ps | 1.400x | 236.9 ps | 172.1 ps | 1.376x |
+| 27 °C / 1.80 V | `ff` | 118.4 ps | 87.5 ps | 1.353x | 151.4 ps | 114.0 ps | 1.327x |
+| 125 °C / 1.98 V | `tt` | 127.6 ps | 93.7 ps | 1.361x | 169.2 ps | 126.9 ps | 1.333x |
+| 125 °C / 1.98 V | `ss` | 155.6 ps | 112.2 ps | 1.387x | 212.2 ps | 156.5 ps | 1.356x |
+| 125 °C / 1.98 V | `ff` | 108.1 ps | 80.4 ps | 1.344x | 138.1 ps | 105.1 ps | 1.314x |
+| −40 °C / 1.98 V | `tt` | 121.1 ps | 89.4 ps | 1.355x | 157.5 ps | 117.4 ps | 1.342x |
+| −40 °C / 1.98 V | `ss` | 145.8 ps | 105.9 ps | 1.377x | 194.7 ps | 142.6 ps | 1.365x |
+| −40 °C / 1.98 V | `ff` | 103.6 ps | 77.1 ps | 1.344x | 128.6 ps | 97.3 ps | 1.321x |
+
+- **Intra-cell parasitics cost 1.314x - 1.418x in clk→q delay** (mean 1.362x
+  over the 24 paired rise/fall points). That lands squarely inside DR-0005's
+  own intra-cell ring-period finding of **1.378x - 1.479x** for the same
+  extraction scope on a different cell family — the sampler is not
+  anomalously parasitic-sensitive, and the two independent measurements
+  agree on the size of the intra-cell penalty.
+- **Post-layout capture delay is 103.6 - 299.0 ps** across the grid, against
+  the 20 µs sample period DR-0003 ratified: **≤ 15 ppm of `T_s`**. Capture
+  delay is nowhere near a constraint on the raw rate.
+- **The post-layout cell is functionally correct.** Captured levels are
+  ≥ 0.9983 × Vdd high and ≤ 0.0023 × Vdd low at every one of the 12 grid
+  points, `q` does not move when `d` changes with the slave opaque, and
+  asserted reset holds `q` ≤ 0.38 mV while `d` drives the opposite value.
+
+### Reset-window current: DR-0014's methodology, re-derived on sky130
+
+The reset window is measured with **`rst_n` asserted while `d` drives the
+opposite value through the transparent master** — i.e. the condition under
+which the pull-device reset DR-0014 rejected would be fighting the `d`
+driver. Both DFFs see it on the same stimulus in the same run.
+
+| PVT | corner | reset window, post | idle, post | reset/idle | reset, post vs. pre |
+|---|---|---|---|---|---|
+| −40 °C / 1.62 V | `tt` | 20.31 pA | 20.75 pA | 0.979 | +3.1e−05 |
+| −40 °C / 1.62 V | `ss` | 19.30 pA | 19.03 pA | 1.014 | +2.2e−05 |
+| −40 °C / 1.62 V | `ff` | 45.54 pA | 70.78 pA | 0.643 | +1.2e−05 |
+| 27 °C / 1.80 V | `tt` | 502.2 pA | 979.6 pA | 0.513 | +5.0e−06 |
+| 27 °C / 1.80 V | `ss` | 68.74 pA | 113.6 pA | 0.605 | +3.5e−05 |
+| 27 °C / 1.80 V | `ff` | 4.294 nA | 8.562 nA | 0.502 | +1.3e−05 |
+| 125 °C / 1.98 V | `tt` | 55.38 nA | 110.5 nA | 0.501 | +5.0e−04 |
+| 125 °C / 1.98 V | `ss` | 13.00 nA | 25.80 nA | 0.504 | +1.8e−03 |
+| 125 °C / 1.98 V | `ff` | 293.0 nA | 584.6 nA | 0.501 | +7.5e−04 |
+| −40 °C / 1.98 V | `tt` | 37.03 pA | 42.54 pA | 0.870 | +1.3e−05 |
+| −40 °C / 1.98 V | `ss` | 32.35 pA | 34.75 pA | 0.931 | +1.9e−05 |
+| −40 °C / 1.98 V | `ff` | 117.7 pA | 201.6 pA | 0.584 | +8.5e−06 |
+
+**There is no contention component.** Three independent readings of the same
+conclusion:
+
+1. **Magnitude.** 19.3 pA (`ss` / −40 °C / 1.62 V) to 293 nA (`ff` / 125 °C
+   / 1.98 V), i.e. **0.90 nW at nominal (`tt` / 27 °C / 1.8 V) and 580 nW at
+   the hottest/fastest grid point** — leakage-scale, and it tracks
+   temperature/corner the way leakage does (three and a half orders of
+   magnitude across a grid over which the *switching* figures move by less
+   than 2x).
+2. **It is at or below the same cell's own idle current** at every grid
+   point (ratio 0.501 - 1.014). A reset fighting a driver cannot be *below*
+   the quiescent current of the same cell in the same run. The recurring
+   ~0.50 ratio is itself the mechanism: with `rst_n` low the NAND2s' series
+   NMOS stacks are cut off, so a leakage path that is present at idle is not
+   present during reset.
+3. **It is the same number pre-layout and post-layout**, to between 5
+   significant figures (+8.5e−06) and 3 (+1.8e−03), across the whole grid.
+   Parasitic R and C can only change *dynamic* current; a reset window whose
+   current is invariant to them is carrying no switching current to change.
+
+What this does **not** claim: the brute-force pull-device alternative was
+not simulated, so no reduction *ratio* against it is quoted here, and
+gf180-trng's own 967 µW → 66 nW figure is not transplanted or compared
+against. See
+[`spec/decision-records/DR-0007-*.md`](../spec/decision-records/DR-0007-sampler-dff-post-layout-and-reset-contention.md)
+for what the measurement does and does not license.
+
+The active-window average (the same 55 ns containing both capture edges) is
+1.063 - 1.980 µA post-layout, 1.306x - 1.548x the pre-layout figure — the
+one place where the parasitics *do* cost real current, as extra capacitance
+being charged and discharged.
+
+### The setup-time bracket
+
+Every rung of the ladder read back either a clean 1.000 or ~0 (largest
+non-rail reading anywhere in the 24 rungs × 12 corner runs: 2.0e−04 × Vdd).
+No rung landed on an intermediate level at any corner, so there is no
+boundary-rung ambiguity to report — and, per DR-0011's standing judgment
+that resolution-time statistics are not credibly reproducible in a
+general-purpose transient solver, **nothing here is a metastability claim**:
+the brackets below are deterministic captured/not-captured results at stated
+offsets.
+
+| PVT | corner | setup, post-layout | setup, pre-layout |
+|---|---|---|---|
+| −40 °C / 1.62 V | `tt` | (105, 125] ps | (88, 105] ps |
+| −40 °C / 1.62 V | `ss` | (125, 150] ps | (88, 105] ps |
+| −40 °C / 1.62 V | `ff` | (88, 105] ps | (73, 88] ps |
+| 27 °C / 1.80 V | `tt` | (73, 88] ps | (60, 73] ps |
+| 27 °C / 1.80 V | `ss` | (88, 105] ps | (73, 88] ps |
+| 27 °C / 1.80 V | `ff` | (73, 88] ps | (60, 73] ps |
+| 125 °C / 1.98 V | `tt` | (73, 88] ps | (45, 60] ps |
+| 125 °C / 1.98 V | `ss` | (73, 88] ps | (60, 73] ps |
+| 125 °C / 1.98 V | `ff` | (60, 73] ps | (45, 60] ps |
+| −40 °C / 1.98 V | `tt` | (73, 88] ps | (60, 73] ps |
+| −40 °C / 1.98 V | `ss` | (88, 105] ps | (73, 88] ps |
+| −40 °C / 1.98 V | `ff` | (60, 73] ps | (45, 60] ps |
+
+- **Worst-case post-layout setup time is ≤ 150 ps** over the whole grid
+  (`ss` / −40 °C / 1.62 V — the same entropy-binding corner DR-0002/DR-0003
+  identified, so the two worst cases coincide), and ≤ 88 ps at every
+  1.8 V-or-above point.
+- **Parasitics cost one ladder rung (~1.2x) at 10 of the 12 grid points and
+  two (~1.44x) at the other two.** The direction and size agree with the
+  clk→q result; the ladder is not fine enough to quote a ratio more
+  precisely than that, which is why the rungs are the reported quantity
+  rather than an interpolated number.
+- **The digitizer is not the block's bandwidth bottleneck.** The combining
+  gate's own minimum resolvable pulse width `w_90` is 122 - 241 ps
+  (`sim/xor-combining-bandwidth/`, the figure DR-0003 §1 uses to bound `N`);
+  the sampler's post-layout setup window is at or below the *bottom* of that
+  range at every grid point. A pulse narrow enough to trouble the sampler
+  has already been swallowed by the XOR tree.
+- An earlier, purely geometric factor-of-two version of this ladder
+  (3200…25 ps, 8 rungs) is *not* committed: it bracketed correctly but put
+  both sides in the same rung at all three corners it was scouted at, i.e.
+  it could not resolve the post-vs-pre difference that is the reason the two
+  ladders share a deck. The committed twelve-rung spacing (~1.2x across
+  45 - 260 ps, plus two wide anchors) was chosen from that scouting run and
+  the deck header records why.
+
+### Records
+
+Eight records, all `PASS`: four (temp, Vdd) points × two decks, each
+bundling `tt`/`ss`/`ff`. `20260907-1203..1206` are the capture-timing deck,
+`20260907-1207..1220` the setup ladder. Nothing in this slug supersedes
+anything — it is the first campaign of its kind here.
 
 ## Writing a new record
 

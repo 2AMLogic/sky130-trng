@@ -1,0 +1,81 @@
+{
+  "_comment": [
+    "Second descriptor for layout/bin/pex-netlist.py -- the SAMPLER side of",
+    "the post-layout library, sibling to pex.json (the entropy-source side).",
+    "Same script, same schema, same --check contract; a separate descriptor",
+    "rather than more cells[] entries in pex.json because pex.json's output",
+    "file is named ro_ring5_pex.spice and every sim/ record already minted",
+    "from it carries that path plus its sha256 in its own `netlists` block.",
+    "Renaming it (or growing it with cells no ring deck instantiates) would",
+    "invalidate that provenance for a naming convenience.",
+    "",
+    "The three cells below are exactly the leaf shapes",
+    "design/sampler_core.spice's flat `.subckt sampler_dff` reduces to:",
+    "3 x inverter (XMpc/XMnc, XMim2p/XMim2n, XMisp/XMisn), 4 x transmission",
+    "gate (TG_D, TG_FBM, TG_S, TG_FBS) and 2 x NAND2 (NAND_M, NAND_S2) --",
+    "22 devices, the same 22 that subckt lists. Every one of them is a",
+    "composed cell under layout/ that is `klt drc` clean (0 violations) and",
+    "`klt lvs` matching its own reference netlist.",
+    "",
+    "  sampler_inv_pex   layout/ro_buf/ -- the plain CMOS inverter. Same",
+    "                    physical cell pex.json extracts as `ro_buf_pex`,",
+    "                    deliberately under a DIFFERENT cell name here: the",
+    "                    script writes raw/<name>.pex.spice and",
+    "                    reports/<name>.extract.json into the shared",
+    "                    layout/pex/ directory, so reusing the name would",
+    "                    make this descriptor's run overwrite artifacts",
+    "                    pex.json's own --check compares against (they were",
+    "                    produced by a different klt build -- see",
+    "                    layout/pdk.json's klt_version_pin comment on the",
+    "                    install churn). Two names, two artifact sets, two",
+    "                    independently checkable libraries.",
+    "  sampler_tg_pex    layout/sampler_tg/ -- the transmission gate.",
+    "  sampler_nand2_pex layout/sampler_nand2/ -- the rst_n-gated NAND2.",
+    "",
+    "A deck includes ONE of the two libraries, never both: they each define",
+    "the inverter's parasitics, under different subcircuit names but from",
+    "the identical GDS.",
+    "",
+    "cells[].ports is the DESIGN's own port order, as in pex.json. For the",
+    "two sampler leaves that order comes from each cell's own committed",
+    "micro-reference (layout/sampler_tg/sampler_tg.source.spice and",
+    "layout/sampler_nand2/sampler_nand2.source.spice), which is what those",
+    "cells' own `klt lvs` match is against -- design/xschem/sampler_dff.sch",
+    "is flat and has no sub-schematic symbol for either shape.",
+    "",
+    "See pex.json's own _comment for the meaning of every other field, and",
+    "layout/pex/README.md for what the parasitic model does and does not",
+    "contain."
+  ],
+  "pdk": {"variant": "sky130A", "deck": "sky130"},
+  "library": "sampler_dff_pex.spice",
+  "deck_scale": "1u",
+  "expect_device_models": [
+    "sky130_fd_pr__nfet_01v8",
+    "sky130_fd_pr__pfet_01v8"
+  ],
+  "substrate_net": "vsubs",
+  "cells": [
+    {
+      "name": "sampler_inv_pex",
+      "gds": "../ro_buf/ro_buf.gds",
+      "ports": ["a", "y", "vdd", "vss"],
+      "net_aliases": {}
+    },
+    {
+      "name": "sampler_tg_pex",
+      "gds": "../sampler_tg/sampler_tg.gds",
+      "ports": ["a", "b", "ctrl", "ctrlb", "vdd", "vss"],
+      "net_aliases": {}
+    },
+    {
+      "name": "sampler_nand2_pex",
+      "gds": "../sampler_nand2/sampler_nand2.gds",
+      "ports": ["a", "en", "y", "vdd", "vss"],
+      "net_aliases": {
+        "mnab_y|mpa_y|mpb_y|y": "y",
+        "mpa_py|mpb_py|nwell_vdd|vdd": "vdd"
+      }
+    }
+  ]
+}
