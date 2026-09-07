@@ -102,7 +102,6 @@ module trng_digital #(
 
     // scratch (procedural only)
     reg        bit_in, rct_fail, apt_fail, raised, gated_before;
-    reg        fb;
     reg [31:0] rd_value;
     reg [1:0]  popped;            // 0 none, 1 raw, 2 cond
     reg [2:0]  new_ctrl;
