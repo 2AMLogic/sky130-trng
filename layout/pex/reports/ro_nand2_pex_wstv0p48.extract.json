@@ -5,7 +5,7 @@
   "top": "ro_nand2_wstv0p48",
   "dbu_um": 0.001,
   "netlist_path": "raw/ro_nand2_pex_wstv0p48.pex.spice",
-  "netlist_sha256": "ac9d53339caec8a9f76290fdba03a8519dbe2e0d10551113e0a3e69c1788a978",
+  "netlist_sha256": "6a62747d9253683a187067955526af2f71e594713c59d856d6cc8898b32e89ea",
   "status": "extracted",
   "device_count": 6,
   "net_count": 8,
@@ -50,7 +50,7 @@
       "nets": {
         "s": "ny",
         "g": "en",
-        "d": "\\$3",
+        "d": "\\$4",
         "b": "mph_g|vss"
       },
       "params": {
@@ -66,7 +66,7 @@
       "name": "$3",
       "class": "nfet",
       "nets": {
-        "s": "\\$3",
+        "s": "\\$4",
         "g": "a",
         "d": "mnab_y|mpa_y|mpb_y|y",
         "b": "mph_g|vss"
@@ -137,7 +137,7 @@
   ],
   "nets": [
     {
-      "name": "\\$3",
+      "name": "\\$4",
       "pin": false,
       "device_count": 2
     },
@@ -235,7 +235,7 @@
     "version": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b"
   },
   "provenance": {
-    "klt_version": "0.4.0",
+    "klt_version": "0.3.0",
     "klayout_version": "0.30.12",
     "pdk": {
       "name": "sky130A",
@@ -262,24 +262,24 @@
     "total_inductance_nh": 0.0,
     "nets": [
       {
-        "net": "\\$3",
-        "net_id": 3,
+        "net": "\\$4",
+        "net_id": 4,
         "resistance_ohm": 25.6,
         "capacitance_ff": 0.115618,
         "inductance_nh": 0.0,
-        "hub_net": "\\$3",
+        "hub_net": "\\$4",
         "rc_model": "lumped",
         "terminals": [
           {
             "device": "$2",
             "terminal": "D",
-            "leg_net": "\\$3__t0",
+            "leg_net": "\\$4__t0",
             "resistance_ohm": 12.8
           },
           {
             "device": "$3",
             "terminal": "S",
-            "leg_net": "\\$3__t1",
+            "leg_net": "\\$4__t1",
             "resistance_ohm": 12.8
           }
         ],
@@ -288,7 +288,7 @@
       },
       {
         "net": "a",
-        "net_id": 6,
+        "net_id": 2,
         "resistance_ohm": 488.8662,
         "capacitance_ff": 0.607536,
         "inductance_nh": 0.0,
@@ -325,7 +325,7 @@
       },
       {
         "net": "en",
-        "net_id": 5,
+        "net_id": 6,
         "resistance_ohm": 472.6379,
         "capacitance_ff": 0.593421,
         "inductance_nh": 0.0,
@@ -350,7 +350,7 @@
       },
       {
         "net": "mnab_y|mpa_y|mpb_y|y",
-        "net_id": 4,
+        "net_id": 5,
         "resistance_ohm": 149.5915,
         "capacitance_ff": 0.856767,
         "inductance_nh": 0.0,
@@ -510,7 +510,7 @@
       },
       {
         "net": "ny",
-        "net_id": 2,
+        "net_id": 3,
         "resistance_ohm": 90.0531,
         "capacitance_ff": 0.217575,
         "inductance_nh": 0.0,

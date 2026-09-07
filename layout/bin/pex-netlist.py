@@ -114,6 +114,41 @@ emitted twice: ``<name>__core`` with the extractor's own port list, and
 local nodes. A ``sim/`` deck instantiating ``ro_stage_pex_wstv0p42`` then
 reads exactly like the pre-layout deck instantiating ``ro_stage``, which is
 what makes a pre-vs-post comparison a one-token diff.
+
+What ``--check`` does NOT treat as drift (issue #93)
+----------------------------------------------------
+
+``klt extract`` names an unlabelled internal net after a counter its own
+KLayout ``l2n.extract_netlist()`` call assigns (``\\$3``), and stamps every
+net with a ``net_id`` from the same counter. Neither is a stable contract
+across ``klt``/KLayout builds -- upstream says so explicitly
+(klayout-tools#1063, and its documentation follow-up #1072, both closed:
+"compare via ``klt lvs`` (topological), not by byte-diffing extracted
+netlist text"). Measured here on 2026-09-07 against the nine
+``layout/pex/pex.json`` cells: three of them relabel one anonymous net
+``\\$3`` -> ``\\$4`` and permute every net's ``net_id``, with **every** R
+value, C value, coupling value, count, terminal and connection identical.
+
+So :func:`canonical_parasitics` rewrites those two identifiers to a
+*structural* key -- an anonymous net is named after the sorted
+``<device>.<terminal>`` list it actually attaches to -- on **both** sides
+before the report comparison. A pure renumbering therefore stops being
+reported as verdict drift, while any change to an R, a C, a count, a
+terminal or a connection still is.
+
+The library text is deliberately **still** compared byte for byte: the same
+counter reaches the composed library in three different spellings (the node
+token ``n3``, the extractor's own element names ``R_3_t0``/``C_3``, and its
+per-element ``* device instance _3_t0`` provenance comments), only the first
+of which sits at a parseable node position. Canonicalizing the other two
+would mean pattern-matching ``klt``'s element-naming derivation -- binding
+this repo *harder* to the very spelling upstream declines to make a
+contract. A loud, once-per-``klt``-move failure is the better trade, so
+instead ``--check`` **classifies** it: when the library text differs but
+every canonicalized parasitic value agrees, it says so in as many words, and
+prints the committed evidence's own ``provenance.klt_version`` next to the
+running one and to ``layout/pdk.json``'s ``klt_version_pin``, so the result
+explains itself instead of dumping a raw diff.
 """
 
 from __future__ import annotations
@@ -144,6 +179,114 @@ CHECK_FIELDS = (
 #: Geometry parameters a device card may carry, all of which must be
 #: unitless for this library's `.option scale=1u` contract to hold.
 _GEOM_PARAMS = ("L", "W", "AS", "AD", "PS", "PD", "NRD", "NRS")
+
+#: An extractor-anonymous net, optionally with its per-terminal leg suffix:
+#: `\$3` (the hub) and `\$3__t0` (one leg). The digits are KLayout's own
+#: net counter, which is not stable across klt/KLayout builds -- see this
+#: module's docstring and klayout-tools#1063/#1072.
+_ANON_NET = re.compile(r"^(\\?\$\d+)(__t\d+)?$")
+
+
+# --------------------------------------------------------------------------
+# Canonicalizing the extractor's own net numbering (issue #93)
+# --------------------------------------------------------------------------
+
+
+def anonymous_base(name: str) -> str | None:
+    """Return *name*'s anonymous-net hub, or ``None`` if it is not one.
+
+    ``\\$3`` -> ``\\$3``; ``\\$3__t0`` -> ``\\$3``; ``a``/``a__t0`` -> None.
+    """
+    match = _ANON_NET.match(name)
+    return match.group(1) if match else None
+
+
+def _structural_key(net: dict) -> str:
+    """A name for one anonymous net that does not use the extractor's counter.
+
+    Derived from the net's own device attachments -- the sorted
+    ``<device>.<terminal>`` list -- so two extractions of the same GDS agree
+    on it regardless of what order KLayout happened to number its nets in.
+    """
+    terminals = sorted(
+        f"{t.get('device')}.{t.get('terminal')}" for t in net.get("terminals", [])
+    )
+    if not terminals:
+        raise BuildError(
+            f"anonymous net {net.get('net')!r} has no device terminals, so it "
+            "has no structural identity to canonicalize against"
+        )
+    return "\\$anon(" + ",".join(terminals) + ")"
+
+
+def canonical_parasitics(parasitics: dict) -> dict:
+    """Rewrite extractor-internal net identifiers to structural ones.
+
+    Returns a copy of a report's ``parasitics`` block in which
+
+    - every anonymous net (``\\$N``, and the ``\\$N__tK`` leg nodes derived
+      from it) is renamed to :func:`_structural_key`'s device-terminal key,
+      wherever it appears (``net``, ``hub_net``, ``terminals[].leg_net``,
+      ``coupled[].net``);
+    - every ``net_id`` -- the raw counter value -- is dropped;
+    - ``nets`` and each net's ``coupled`` list are sorted by (canonical) name,
+      since their order follows the same counter.
+
+    **Nothing else is touched.** Every R, C, coupling value, count, device,
+    terminal and connection is passed through unchanged, so a real
+    electrical or topological difference still compares unequal. This exists
+    only so that the identifiers upstream explicitly declines to make a
+    contract (klayout-tools#1063/#1072) stop being reported as verdict drift
+    -- see this module's docstring, and issue #93 for the measurement that
+    motivated it.
+    """
+    nets = parasitics.get("nets")
+    if not isinstance(nets, list):
+        return parasitics
+
+    mapping: dict[str, str] = {}
+    claimed: dict[str, str] = {}
+    for net in nets:
+        base = anonymous_base(str(net.get("net", "")))
+        if base is None:
+            continue
+        key = _structural_key(net)
+        previous = claimed.setdefault(key, base)
+        if previous != base:
+            raise BuildError(
+                f"anonymous nets {previous!r} and {base!r} share the structural "
+                f"key {key!r} -- canonicalizing them would merge two distinct "
+                "nets, so this report cannot be compared this way"
+            )
+        mapping[base] = key
+
+    def rename(name: str) -> str:
+        base = anonymous_base(name)
+        if base is None or base not in mapping:
+            return name
+        return mapping[base] + name[len(base) :]
+
+    out = dict(parasitics)
+    canonical_nets = []
+    for net in nets:
+        entry = {k: v for k, v in net.items() if k != "net_id"}
+        entry["net"] = rename(str(net.get("net", "")))
+        if "hub_net" in entry:
+            entry["hub_net"] = rename(str(entry["hub_net"]))
+        entry["terminals"] = [
+            {
+                **t,
+                **({"leg_net": rename(str(t["leg_net"]))} if "leg_net" in t else {}),
+            }
+            for t in net.get("terminals", [])
+        ]
+        entry["coupled"] = sorted(
+            ({**c, "net": rename(str(c.get("net", "")))} for c in net.get("coupled", [])),
+            key=lambda c: c["net"],
+        )
+        canonical_nets.append(entry)
+    out["nets"] = sorted(canonical_nets, key=lambda n: n["net"])
+    return out
 
 
 # --------------------------------------------------------------------------
@@ -429,6 +572,70 @@ def build_library(spec: dict, spec_dir: Path, out_dir: Path) -> dict:
     return {"cells": summary, "library": spec["library"]}
 
 
+def klt_version_pin() -> str:
+    """``layout/pdk.json``'s ``klt_version_pin``, or ``"(unknown)"``."""
+    try:
+        return json.loads((REPO_ROOT / "layout" / "pdk.json").read_text())[
+            "klt_version_pin"
+        ]
+    except (OSError, KeyError, ValueError):
+        return "(unknown)"
+
+
+def _tool_stamp(report: dict) -> str:
+    """``klt X / KLayout Y`` from one extraction report's own provenance."""
+    provenance = report.get("provenance") or {}
+    return (
+        f"klt {provenance.get('klt_version', '(unknown)')} / "
+        f"KLayout {provenance.get('klayout_version', '(unknown)')}"
+    )
+
+
+def compare_report(committed: dict, rebuilt: dict, label: str) -> list[str]:
+    """Diff one extraction report's verdict-bearing fields, compactly.
+
+    ``parasitics`` is compared through :func:`canonical_parasitics` on both
+    sides, so the extractor's own net numbering (which upstream declines to
+    make a contract -- klayout-tools#1063/#1072) is not reported as drift
+    while every R, C, count, terminal and connection still is. The parasitics
+    diff is reported per *net* rather than by printing the whole block, which
+    on this repo's nine cells is the difference between a readable failure
+    and ~99 kB of JSON (issue #93).
+    """
+    drift: list[str] = []
+    for field in CHECK_FIELDS:
+        if field == "parasitics":
+            continue
+        if committed.get(field) != rebuilt.get(field):
+            drift.append(
+                f"{label}.{field}: committed={committed.get(field)!r} "
+                f"rebuilt={rebuilt.get(field)!r}"
+            )
+    left = canonical_parasitics(committed.get("parasitics") or {})
+    right = canonical_parasitics(rebuilt.get("parasitics") or {})
+    for key in sorted(set(left) | set(right)):
+        if key == "nets":
+            continue
+        if left.get(key) != right.get(key):
+            drift.append(
+                f"{label}.parasitics.{key}: committed={left.get(key)!r} "
+                f"rebuilt={right.get(key)!r}"
+            )
+    by_name_left = {n["net"]: n for n in left.get("nets", [])}
+    by_name_right = {n["net"]: n for n in right.get("nets", [])}
+    for name in sorted(set(by_name_left) - set(by_name_right)):
+        drift.append(f"{label}.parasitics: net {name!r} is committed but not rebuilt")
+    for name in sorted(set(by_name_right) - set(by_name_left)):
+        drift.append(f"{label}.parasitics: net {name!r} is rebuilt but not committed")
+    for name in sorted(set(by_name_left) & set(by_name_right)):
+        if by_name_left[name] != by_name_right[name]:
+            drift.append(
+                f"{label}.parasitics: net {name!r} differs "
+                f"(committed={by_name_left[name]!r} rebuilt={by_name_right[name]!r})"
+            )
+    return drift
+
+
 def check_library(spec: dict, spec_dir: Path) -> int:
     """Re-extract into a temp dir and diff against the committed evidence."""
     with tempfile.TemporaryDirectory(prefix="klt-pex-netlist-") as tmp:
@@ -438,28 +645,61 @@ def check_library(spec: dict, spec_dir: Path) -> int:
         # those "../<cell>/<cell>.gds" paths to resolve.
         work = tmp_dir / "pex"
         build_library(spec, spec_dir, _mirror_dir(spec_dir, work))
-        drift: list[str] = []
+        library_drift: list[str] = []
+        report_drift: list[str] = []
         committed_lib = spec_dir / spec["library"]
         rebuilt_lib = work / spec["library"]
         if not committed_lib.exists():
-            drift.append(f"{spec['library']}: missing from {spec_dir}")
+            library_drift.append(f"{spec['library']}: missing from {spec_dir}")
         elif committed_lib.read_text() != rebuilt_lib.read_text():
-            drift.append(f"{spec['library']}: rebuilt library differs from committed")
+            library_drift.append(
+                f"{spec['library']}: rebuilt library differs from committed"
+            )
+        stamps: list[tuple[str, str, str]] = []
         for cell in spec["cells"]:
             rel = Path("reports") / f"{cell['name']}.extract.json"
             if not (spec_dir / rel).exists():
-                drift.append(f"{rel}: missing from {spec_dir}")
+                report_drift.append(f"{rel}: missing from {spec_dir}")
                 continue
             committed = json.loads((spec_dir / rel).read_text())
             rebuilt = json.loads((work / rel).read_text())
-            for field in CHECK_FIELDS:
-                if committed.get(field) != rebuilt.get(field):
-                    drift.append(
-                        f"{rel}.{field}: committed={committed.get(field)!r} "
-                        f"rebuilt={rebuilt.get(field)!r}"
-                    )
+            stamps.append(
+                (cell["name"], _tool_stamp(committed), _tool_stamp(rebuilt))
+            )
+            report_drift.extend(compare_report(committed, rebuilt, str(rel)))
+        drift = [*library_drift, *report_drift]
     if drift:
         print(f"DRIFT in {spec_dir}:", file=sys.stderr)
+        mismatched: dict[tuple[str, str], list[str]] = {}
+        for name, committed_stamp, rebuilt_stamp in stamps:
+            if committed_stamp != rebuilt_stamp:
+                mismatched.setdefault((committed_stamp, rebuilt_stamp), []).append(name)
+        for (committed_stamp, rebuilt_stamp), cells in mismatched.items():
+            print(
+                f"  provenance: {len(cells)} cell(s) committed by "
+                f"{committed_stamp}; this rebuild by {rebuilt_stamp}\n"
+                f"    ({', '.join(cells)})",
+                file=sys.stderr,
+            )
+        print(
+            f"  layout/pdk.json klt_version_pin: {klt_version_pin()}", file=sys.stderr
+        )
+        if library_drift and not report_drift and committed_lib.exists():
+            print(
+                "  NOTE: the library text differs, but every verdict-bearing "
+                "parasitic value\n"
+                "        matches after canonicalizing the extractor's own net "
+                "numbering. That\n"
+                "        numbering is explicitly not a stable contract across "
+                "klt/KLayout builds\n"
+                "        (klayout-tools#1063, #1072), so this is a relabeling, "
+                "not an electrical\n"
+                "        or topological difference. Regenerate the library on "
+                "the klt named above\n"
+                "        (and re-stamp the affected sim/ records' PEX_LIB "
+                "provenance) to clear it.",
+                file=sys.stderr,
+            )
         for entry in drift:
             print(f"  {entry}", file=sys.stderr)
         return 1

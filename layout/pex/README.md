@@ -35,6 +35,30 @@ half of the guard: `--check` proves the committed library is what the script
 produces *today*, the unit test proves the script's own transformations are
 correct.
 
+### What `--check` should print, and when (issue #93)
+
+**On a checkout whose `klt` matches `layout/pdk.json`'s `klt_version_pin`
+(`0.3.0+gc6dbf66c53c6`), both descriptors here exit 0.** Verified 2026-09-07
+on that exact build, installed via the venv recipe in `layout/README.md` §
+"Correcting the curation note":
+
+| Command | Expected on the pinned `klt` |
+|---|---|
+| `python3 layout/bin/pex-netlist.py layout/pex/pex.json --check` | exit 0, `rebuild matches committed evidence` |
+| `python3 layout/bin/pex-netlist.py layout/pex/pex-sampler.json --check` | exit 0, `rebuild matches committed evidence` |
+
+**On a different `klt` build, a `DRIFT` here is expected and does not by
+itself mean the evidence is wrong.** `layout/pdk.json`'s own comment block
+records that the installed `klt` churns between (and within) sessions, and
+`klt extract`'s anonymous-net numbering is explicitly *not* a stable
+contract across builds -- see "When `--check` is red because the tool
+moved" below for what the output tells you and what to do about it. The
+ambient `klt` on the host that last regenerated this directory was
+`0.4.0+g59c2a2873c17.dirty`, on which `pex.json --check` exits 1 on a
+report-schema key (`parasitics.substrate_dc_tie.node_scope`, which that
+build adds and `0.3.0` does not emit) while the *library* still rebuilds
+byte-identically.
+
 ## What is in here
 
 | Path | What it is |
@@ -63,12 +87,14 @@ of is the same GDS that carries the DRC/LVS verdicts:
 | `ro_stage_pex_wstv0p48` | 4 | 6 | 1717.84 Ω | 4.7378 fF | 0.00356 fF |
 | `ro_buf_pex` | 2 | 4 | 1261.24 Ω | 2.4937 fF | 0.0 fF |
 
-Produced by `klt 0.4.0` / KLayout 0.30.12 (each report's own
-`provenance.klt_version` is the authoritative per-file record --
-`layout/pdk.json`'s `klt_version_pin` still reads `0.3.0+gc6dbf66c53c6`,
-which is what produced the *composed-cell* evidence under
-`layout/<cell>/`, and is deliberately left alone rather than retro-fitted
-to a build that did not produce it).
+Produced by `klt 0.3.0+gc6dbf66c53c6` / KLayout 0.30.12 (each report's own
+`provenance.klt_version` is the authoritative per-file record) -- which is
+`layout/pdk.json`'s `klt_version_pin`, i.e. the same build that produced the
+composed-cell evidence under `layout/<cell>/` and the sampler library below.
+**These nine cells were re-extracted on the pin by issue #93**; the table's
+numbers are unchanged from the `klt 0.4.0` extraction that first produced
+them, to every digit shown. See "When `--check` is red because the tool
+moved" for what did move and why the re-extraction was worth its cost.
 
 The device count and net count of every cell match its own
 `layout/<cell>/extract.json` exactly -- `--parasitics` adds R/C elements, it
@@ -90,8 +116,10 @@ to (3 x inverter + 4 x transmission gate + 2 x NAND2 = 22 devices):
 Produced by `klt 0.3.0+gc6dbf66c53c6` (each report's own
 `provenance.klt_version` reads `0.3.0`) — which is `layout/pdk.json`'s
 `klt_version_pin`, i.e. the build that produced the composed-cell evidence
-under `layout/<cell>/`, unlike the nine cells above (`klt 0.4.0`). Two
-consequences worth recording:
+under `layout/<cell>/`. The nine cells above now read the same; they did
+**not** until issue #93 re-extracted them (they had been produced by `klt
+0.4.0`, which is what made `pex.json --check` red on the pinned toolchain
+while this descriptor stayed green). Two consequences worth recording:
 
 - **The extractor reproduced across that version gap exactly.**
   `sampler_inv_pex` is the *same GDS* as `ro_buf_pex` above, extracted by a
@@ -134,6 +162,87 @@ reason), so a flat extraction of it would be an extraction of an
 incomplete circuit. When `m`/`mb` close, the sampler's equivalent of
 `layout/pex-ring/` becomes possible and these numbers become the intra-cell
 control for it.
+
+## When `--check` is red because the tool moved (issue #93)
+
+`klt extract` names an unlabelled internal net after a counter KLayout's own
+`l2n.extract_netlist()` assigns (`\$3`), and stamps every net with a
+`net_id` from the same counter. **Neither is a stable contract across
+`klt`/KLayout builds**, and upstream says so in as many words:
+[klayout-tools#1063](https://github.com/2AMLogic/klayout-tools/issues/1063)
+and its documentation follow-up
+[#1072](https://github.com/2AMLogic/klayout-tools/issues/1072) (both closed)
+resolved that the numbering is deliberately not guaranteed, and that
+extracted netlists should be compared *topologically* (`klt lvs`), not by
+byte-diffing their text.
+
+That is exactly what made `pex.json --check` red for a while. Measured here
+on 2026-09-07 across three `klt` builds over the identical GDS:
+
+| | committed (before #93) | pinned `0.3.0+gc6dbf66c53c6` | ambient `0.4.0+g59c2a2873c17.dirty` |
+|---|---|---|---|
+| anonymous net in the three widest `ro_nand2` cells | `\$3` | `\$4` | `\$4` |
+| every `net_id` | one permutation | another | same as pinned |
+| **every R, C, coupling, count, terminal and connection** | identical | identical | identical |
+| `parasitics.substrate_dc_tie` | no `node_scope` key | no `node_scope` key | adds `node_scope: global` |
+| composed `ro_ring5_pex.spice` | — | byte-identical to the ambient build's | byte-identical to the pinned build's |
+
+Three things follow, and all three are implemented:
+
+1. **The nine cells were re-extracted on the pin.** That closes the
+   provenance gap the issue was filed about (`klt_version_pin` said `0.3.0`,
+   the evidence said `0.4.0`) and makes `pex.json --check` exit 0 on the
+   pinned toolchain. Chasing the *other* direction -- bumping the pin to
+   `0.4.0` -- was rejected on measurement, not taste: today's ambient
+   `0.4.0` build is not the `0.4.0` build that produced the old evidence and
+   relabels exactly the same way, so "0.4.0" is not a version the pin can
+   even name usefully.
+2. **`--check` no longer counts the numbering as verdict drift.**
+   `pex-netlist.py`'s `canonical_parasitics()` renames every anonymous net
+   to a *structural* key -- the sorted `<device>.<terminal>` list it
+   actually attaches to -- and drops `net_id`, on **both** sides, before the
+   report comparison. Every R, C, coupling value, count, terminal and
+   connection is still compared exactly as before;
+   `layout/test_pex_netlist.py` asserts both halves (a pure relabel compares
+   equal; ten different real changes still do not).
+3. **The library text is still compared byte for byte, and the failure
+   explains itself.** The same counter reaches the composed library in three
+   spellings -- the node token `n3`, the extractor's own element names
+   `R_3_t0`/`C_3`, and its `* device instance _3_t0` provenance comments --
+   only the first of which sits at a parseable node position. Canonicalizing
+   the other two would mean pattern-matching `klt`'s element-naming
+   derivation, i.e. binding this repo *harder* to the very spelling #1072
+   declines to make a contract. So instead `--check` classifies the failure:
+   it prints the committed evidence's own `provenance.klt_version` next to
+   the running one and to `layout/pdk.json`'s pin, and, when the library
+   text differs while every canonicalized parasitic value agrees, says so
+   explicitly. A red `--check` here is now ~15 self-describing lines rather
+   than the ~99 kB raw JSON dump it used to be.
+
+Point 2 above is a canonicalization this repo had to write for itself, and
+that every other consumer of `klt extract`'s report has to write for itself
+too — the report mixes electrically-meaningful content with extractor
+bookkeeping the tool explicitly does not promise, and with schema keys that
+grow additively between builds, and nothing in the tool distinguishes the
+three. Filed generically per this repo's friction protocol as
+[klayout-tools#1559](https://github.com/2AMLogic/klayout-tools/issues/1559)
+(asking for either an `extract-diff`-style comparison mode or a documented,
+machine-readable partition of the report schema), as the parasitics-side
+follow-on to #1063/#1072, whose `klt lvs` recommendation covers connectivity
+but says nothing about extracted R/C values.
+
+**If you see that classification note**, the evidence is not wrong; the tool
+moved. Regenerate on the `klt` the note names and re-stamp the affected
+`sim/` records' `PEX_LIB` provenance (see `sim/README.md` §
+"`PEX_LIB` provenance re-stamp"), or install the pinned build via
+`layout/README.md`'s venv recipe and re-run.
+
+**`layout/pex-ring/` and `layout/pex-array/` still carry `klt 0.4.0`
+provenance** and are expected to fail `--check` on the pin the same way
+these nine cells did. They were left alone here deliberately -- their
+re-extraction re-stamps 29 `sim/` records rather than 12 — and are tracked
+separately in
+[#96](https://github.com/2AMLogic/sky130-trng/issues/96).
 
 ## What the parasitic model contains
 

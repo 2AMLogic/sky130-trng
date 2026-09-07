@@ -421,6 +421,44 @@ was ever committed**, so there is nothing under `records/` to supersede.
 The defect is recorded here, and in `tb_post_layout_ro_ring5.spice`'s own
 buffer block, rather than left as a silent fix.
 
+### `PEX_LIB` provenance re-stamp (issue #93)
+
+All twelve records in `sim/post-layout-ro-ring5/` name
+`layout/pex/ro_ring5_pex.spice` in their `netlists.PEX_LIB` block with
+sha256 `c975689411eb…`. **That file has since been re-extracted and now
+hashes `53ec4e3c78f3…`.** The records are append-only evidence and were
+*not* edited; this note is the re-stamp explanation the change owes them.
+
+Why it changed, and why it is provenance-only:
+
+- The old library was produced by `klt 0.4.0`, the pin
+  (`layout/pdk.json`'s `klt_version_pin`) is `0.3.0+gc6dbf66c53c6`, and
+  `layout/bin/pex-netlist.py layout/pex/pex.json --check` therefore failed
+  on a checkout matching the pin. Issue #93 re-extracted the nine cells on
+  the pinned build so the committed evidence and the pin agree.
+- **The entire diff is one anonymous net's name in three of the nine cells**
+  (`n3` -> `n4` and back, in the node token, the extractor's own `R_*`/`C_*`
+  element names, and its per-element provenance comments). All 24 changed
+  lines were verified to be explained by that relabel and nothing else, and
+  every R value, C value, coupling value, count, device, terminal and
+  connection in every extraction report is identical. `layout/pex/README.md`
+  § "When `--check` is red because the tool moved" has the measurement.
+- **Directly demonstrated, not merely argued**: the deck
+  `tb_post_layout_ro_ring5.spice` was rendered twice at the records' own
+  `tt` / 27 °C / 1.8 V point -- once against the old library, once against
+  the new -- and ngspice's two output logs are **byte-identical**. Every
+  measured value in them also matches record
+  `20260906-033032-4fe8c49.json`'s `tt` corner to every recorded digit
+  (`t_pex_wstv0p42 = 4.10667e-09`, `slowdown_wstv0p42 = 1.408806`,
+  `swing_frac_pex_ring = 0.8756866`, `i_pex_wstv0p42 = 1.057331e-05`),
+  reproduced on a *different* host and a different ngspice (46 here, 47
+  when the records were minted).
+
+So nothing in `sim/post-layout-ro-ring5/` is superseded: the numbers stand,
+and re-running any of those twelve records today would reproduce them from
+the new library. Only the recorded input hash is stale, deliberately, and
+this is where that is written down.
+
 ### Assembled-ring post-layout: real inter-gate wiring (issue #22)
 
 `sim/post-layout-ro-ring5-assembled/` answers the question the section above
