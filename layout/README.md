@@ -4,7 +4,34 @@ Physical layout evidence for the sky130-trng entropy source, verified with
 `klayout-tools` (`klt`) against the sky130 open PDK. See `layout/pdk.json`
 for the PDK/tool pin.
 
-**Status (issue #22, this increment): `sampler_dff`'s fourth data-path net,
+**Status (issue #22, this increment): `sampler_dff`'s `d` input pin is
+promoted to a real, labelled top-level port for the first time.** Five of
+the cell's six external pins (`clk`, `rst_n`, `q`, `vdd`, `vss`) already
+carried a genuine, correctly-spelled net-name label as a side effect of
+their own routing increment; `d` never did, since `tg_d.a` is its only
+connection and no fan-out/bus route ever crossed it — `klt extract` named
+that node only `a|tg_d_a`, with no `d` anywhere. Fixed with
+`gen-compose`'s `pins[]` mechanism (issue #210, a label-only promotion,
+zero routing): a `{"net": "d", "block": "core", "port": "tg_d_a"}` entry
+in the final stage draws a `kdb.Text` label on that port's own
+already-drawn li1 pad. **`klt drc` clean, 0 violations, cell bbox
+unchanged**; `klt extract` confirms the node now reads `a|d|tg_d_a`, and
+`net_count` is unchanged at 18 (a label renames a net, it does not create
+or merge one). `klt lvs`'s verdict is unchanged from the `s` increment
+(12/22 devices, 5/14 nets, 16 mismatches) — a label does not wire `m`/`mb`
+or fix the open `sampler_nand2` pin swap
+([#84](https://github.com/2AMLogic/sky130-trng/issues/84)), which is what
+still blocks a clean sign-off. A `klt extract --pins` (`declared_pins`)
+experiment aimed at narrowing the extracted netlist's pin set to exactly
+this cell's six real ports was tried and abandoned: `declared_pins`
+matches a net's whole already-joined SPICE name verbatim, not a bare
+substring, so it demoted every net's pin status to zero and left the
+`klt lvs` mismatch count completely unchanged either way — not committed.
+See [`layout/sampler_dff/README.md`](sampler_dff/README.md)'s "Result: `d`
+pin promotion" for the full writeup. Whole-cell external pin promotion is
+now done for all six ports; what remains is `m`/`mb` and `#84`.
+
+**A previous increment (issue #22): `sampler_dff`'s fourth data-path net,
 `s`, is routed — DRC-clean, the cell's first three-pin data-path net, and
 the only one of the three that were left open which touches neither
 `sampler_nand2` instance (so it is unaffected by the open pin swap
@@ -797,7 +824,7 @@ trng_top                   (not in scope for #22 — stops at the raw tap)
         ro_stage   (x4/ring)  BUILT, all 4 wstv values — DRC-clean + LVS-clean (layout/ro_stage/, ro_stage_wstv0p{44,46,48}/) — 4 distinct physical cells (one per ring's wstv), each reused 4x within its own ring
       ro_buf     (x4)        BUILT — DRC-clean + LVS-clean (layout/ro_buf/)
       xor2       (x3)        BUILT — DRC-clean + LVS-clean (layout/xor2/) — 4x mos_array (two series chains per tree) + 3x guard_ring + 2x ro_buf cell; one physical cell reused 3x (xa1/xa2/xa3 are identical instances)
-    sampler_dff  (x6)        ASSEMBLY STARTED — layout/sampler_dff/ places all nine leaf-cell instances (3x ro_buf, 4x sampler_tg, 2x sampler_nand2) via blocks[].cell, DRC-clean (0 violations), plus a routed vdd/vss bus, routed rst_n/clk/clkb fan-outs and four of the six data-path nets: mc (met2 U-lane), q (met1 L-lane), qb (met1, jogged climb out of sampler_nand2's own met1 blob) and s (the first three-pin one: three met1 via-drops plus a straight met2 lane at the middle pin's own y). All DRC-clean, 0 violations, 0 unrouted nets; klt extract confirms each is one physically merged net whose device list matches design/sampler_core.spice's own — with the single exception qb's check found, the sampler_nand2 input-pin swap tracked as #84. klt extract also confirms 22/22 devices at the correct 11 nfet/11 pfet split against design/sampler_core.spice's own .subckt sampler_dff. Still open: two data-path nets (m/mb, both downstream of #84), #84 itself, whole-cell pin promotion, and the resulting whole-cell klt lvs sign-off (#27)
+    sampler_dff  (x6)        ASSEMBLY STARTED — layout/sampler_dff/ places all nine leaf-cell instances (3x ro_buf, 4x sampler_tg, 2x sampler_nand2) via blocks[].cell, DRC-clean (0 violations), plus a routed vdd/vss bus, routed rst_n/clk/clkb fan-outs and four of the six data-path nets: mc (met2 U-lane), q (met1 L-lane), qb (met1, jogged climb out of sampler_nand2's own met1 blob) and s (the first three-pin one: three met1 via-drops plus a straight met2 lane at the middle pin's own y). All DRC-clean, 0 violations, 0 unrouted nets; klt extract confirms each is one physically merged net whose device list matches design/sampler_core.spice's own — with the single exception qb's check found, the sampler_nand2 input-pin swap tracked as #84. klt extract also confirms 22/22 devices at the correct 11 nfet/11 pfet split against design/sampler_core.spice's own .subckt sampler_dff. Whole-cell external pin promotion is now done: the d input pin (its only connection, never routed/fanned-out, so never previously labelled) got a gen-compose pins[] label-only promotion, DRC-clean, klt extract confirms the node now reads a|d|tg_d_a; the other five ports (clk/rst_n/q/vdd/vss) already carried correct labels from their own routing increments. Still open: two data-path nets (m/mb, both downstream of #84), #84 itself, and the resulting whole-cell klt lvs sign-off (#27) — pin promotion does not by itself move the klt lvs verdict (verified: unchanged at 12/22 devices, 5/14 nets both before and after)
 ```
 
 "PROVEN AT DEVICE LEVEL" means: every transistor geometry the cell needs is
