@@ -4,7 +4,36 @@ Physical layout evidence for the sky130-trng entropy source, verified with
 `klayout-tools` (`klt`) against the sky130 open PDK. See `layout/pdk.json`
 for the PDK/tool pin.
 
-**Status (issue #22, this increment): the `sampler_core` six-`sampler_dff`
+**Status (issue #22, this increment): `sampler_core`'s shared `vdd`/`vss`
+bus is routed across all six `sampler_dff` instances, DRC-clean.**
+[`layout/sampler_core/`](sampler_core/README.md) promotes the placement
+proof-of-concept below into a real, `compose-cell.py --check`-reproducible
+cell recipe (`cell.json`, stage `place`, byte-for-byte the same
+floorplan) and adds a second stage, `route_supplies`, chaining `vdd` and
+`vss` across `sb`→`sv`→`sr1`→`sr2`→`sr3`→`sr4` on met1 (`"metal2"` role) —
+landing directly on each instance's own already-merged rail (a
+`layout/sampler_dff/sampler_dff.gds` interior point, not a li1 pad needing
+a via-drop, since that cell's own `route_supplies` stage already drew its
+`vdd`/`vss` on met1). `klt drc`: clean, 0 violations, on the first attempt,
+cell bbox unchanged. `klt extract`: 132 devices unchanged, and **74 nets**
+(down from the placement PoC's 79 — `vdd` merges from six separate
+per-instance nets into one, saving exactly 5; `vss` was already merged via
+sky130's own global NMOS substrate). `klt lvs` against
+`design/sampler_core.spice`'s real `.subckt sampler_core`: mismatch, as
+expected (no `ro_array_core` instance placed yet, `clk`/`rst_n`/`d`/`q` all
+unwired) — wiring up that `lvs` block also surfaced a real
+`compose-cell.py` limitation (not a `klt` gap): `dependency_variants`'s
+subckt-call repointing only rewrites the *top* subckt's own lines, not a
+plain `dependencies[]` entry's own body, so `ro_array_core`'s nested
+`ro_ring5` calls in the generated reference are silently left unresolved
+(`klt lvs` drops them rather than erroring) — recorded in
+`layout/sampler_core/README.md` for whoever attempts the real whole-cell
+LVS pass. `clk`/`rst_n` fan-out, the `ro_array_core` instance and its
+wiring to the samplers' `d` pins, `d`/`q` pin promotion, and that whole-cell
+`klt lvs` sign-off all remain open, tracked here and in #27. No
+`2AMLogic/klayout-tools` friction was found by this increment.
+
+**A previous increment (issue #22): the `sampler_core` six-`sampler_dff`
 bank has a verified, DRC-clean floorplan.**
 [`layout/sampler_core-placement-poc/`](sampler_core-placement-poc/README.md)
 places six already-composed, individually DRC-clean and `klt lvs`-clean

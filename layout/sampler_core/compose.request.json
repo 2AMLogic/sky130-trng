@@ -1,0 +1,401 @@
+{
+  "pdk": {
+    "variant": "sky130A"
+  },
+  "blocks": [
+    {
+      "id": "core",
+      "cell": {
+        "ports": [
+          {
+            "name": "sb_vdd",
+            "x_um": 0.0,
+            "y_um": 7.0,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 90
+          },
+          {
+            "name": "sb_vss",
+            "x_um": 0.0,
+            "y_um": -3.5,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 270
+          },
+          {
+            "name": "sv_vdd",
+            "x_um": 55.66,
+            "y_um": 7.0,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 90
+          },
+          {
+            "name": "sv_vss",
+            "x_um": 55.66,
+            "y_um": -3.5,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 270
+          },
+          {
+            "name": "sr1_vdd",
+            "x_um": 111.32,
+            "y_um": 7.0,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 90
+          },
+          {
+            "name": "sr1_vss",
+            "x_um": 111.32,
+            "y_um": -3.5,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 270
+          },
+          {
+            "name": "sr2_vdd",
+            "x_um": 166.98,
+            "y_um": 7.0,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 90
+          },
+          {
+            "name": "sr2_vss",
+            "x_um": 166.98,
+            "y_um": -3.5,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 270
+          },
+          {
+            "name": "sr3_vdd",
+            "x_um": 222.64,
+            "y_um": 7.0,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 90
+          },
+          {
+            "name": "sr3_vss",
+            "x_um": 222.64,
+            "y_um": -3.5,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 270
+          },
+          {
+            "name": "sr4_vdd",
+            "x_um": 278.3,
+            "y_um": 7.0,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 90
+          },
+          {
+            "name": "sr4_vss",
+            "x_um": 278.3,
+            "y_um": -3.5,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 270
+          }
+        ],
+        "cell_name": "place",
+        "gds_path": "place.gds"
+      }
+    }
+  ],
+  "placement": {
+    "strategy": "explicit",
+    "order": [
+      "core"
+    ],
+    "origins_um": {
+      "core": {
+        "x": 0.0,
+        "y": 0.0
+      }
+    }
+  },
+  "routing": {
+    "layer_role": "metal2",
+    "width_um": 0.17
+  },
+  "connectivity": [
+    {
+      "net": "vdd",
+      "pins": [
+        {
+          "block": "core",
+          "port": "sb_vdd"
+        },
+        {
+          "block": "core",
+          "port": "sv_vdd"
+        }
+      ],
+      "waypoints_um": [
+        [
+          0.0,
+          7.0
+        ],
+        [
+          55.66,
+          7.0
+        ]
+      ]
+    },
+    {
+      "net": "vdd",
+      "pins": [
+        {
+          "block": "core",
+          "port": "sv_vdd"
+        },
+        {
+          "block": "core",
+          "port": "sr1_vdd"
+        }
+      ],
+      "waypoints_um": [
+        [
+          55.66,
+          7.0
+        ],
+        [
+          111.32,
+          7.0
+        ]
+      ]
+    },
+    {
+      "net": "vdd",
+      "pins": [
+        {
+          "block": "core",
+          "port": "sr1_vdd"
+        },
+        {
+          "block": "core",
+          "port": "sr2_vdd"
+        }
+      ],
+      "waypoints_um": [
+        [
+          111.32,
+          7.0
+        ],
+        [
+          166.98,
+          7.0
+        ]
+      ]
+    },
+    {
+      "net": "vdd",
+      "pins": [
+        {
+          "block": "core",
+          "port": "sr2_vdd"
+        },
+        {
+          "block": "core",
+          "port": "sr3_vdd"
+        }
+      ],
+      "waypoints_um": [
+        [
+          166.98,
+          7.0
+        ],
+        [
+          222.64,
+          7.0
+        ]
+      ]
+    },
+    {
+      "net": "vdd",
+      "pins": [
+        {
+          "block": "core",
+          "port": "sr3_vdd"
+        },
+        {
+          "block": "core",
+          "port": "sr4_vdd"
+        }
+      ],
+      "waypoints_um": [
+        [
+          222.64,
+          7.0
+        ],
+        [
+          278.3,
+          7.0
+        ]
+      ]
+    },
+    {
+      "net": "vss",
+      "pins": [
+        {
+          "block": "core",
+          "port": "sb_vss"
+        },
+        {
+          "block": "core",
+          "port": "sv_vss"
+        }
+      ],
+      "waypoints_um": [
+        [
+          0.0,
+          -3.5
+        ],
+        [
+          55.66,
+          -3.5
+        ]
+      ]
+    },
+    {
+      "net": "vss",
+      "pins": [
+        {
+          "block": "core",
+          "port": "sv_vss"
+        },
+        {
+          "block": "core",
+          "port": "sr1_vss"
+        }
+      ],
+      "waypoints_um": [
+        [
+          55.66,
+          -3.5
+        ],
+        [
+          111.32,
+          -3.5
+        ]
+      ]
+    },
+    {
+      "net": "vss",
+      "pins": [
+        {
+          "block": "core",
+          "port": "sr1_vss"
+        },
+        {
+          "block": "core",
+          "port": "sr2_vss"
+        }
+      ],
+      "waypoints_um": [
+        [
+          111.32,
+          -3.5
+        ],
+        [
+          166.98,
+          -3.5
+        ]
+      ]
+    },
+    {
+      "net": "vss",
+      "pins": [
+        {
+          "block": "core",
+          "port": "sr2_vss"
+        },
+        {
+          "block": "core",
+          "port": "sr3_vss"
+        }
+      ],
+      "waypoints_um": [
+        [
+          166.98,
+          -3.5
+        ],
+        [
+          222.64,
+          -3.5
+        ]
+      ]
+    },
+    {
+      "net": "vss",
+      "pins": [
+        {
+          "block": "core",
+          "port": "sr3_vss"
+        },
+        {
+          "block": "core",
+          "port": "sr4_vss"
+        }
+      ],
+      "waypoints_um": [
+        [
+          222.64,
+          -3.5
+        ],
+        [
+          278.3,
+          -3.5
+        ]
+      ]
+    }
+  ],
+  "pins": [],
+  "options": {
+    "cell_name": "sampler_core",
+    "output": "sampler_core.gds"
+  }
+}

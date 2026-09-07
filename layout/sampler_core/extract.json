@@ -1,0 +1,3771 @@
+{
+  "schema_version": 3,
+  "file": "sampler_core.gds",
+  "deck": "sky130",
+  "top": "sampler_core",
+  "dbu_um": 0.001,
+  "netlist_path": "sampler_core.spice",
+  "netlist_sha256": "468555e446c3e196754f543f71f093255076f421aa73f0c4e11d54cf61ea7d28",
+  "status": "extracted",
+  "device_count": 132,
+  "net_count": 74,
+  "pin_count": 62,
+  "device_counts": {
+    "nfet": 66,
+    "pfet": 66
+  },
+  "dummy_devices_dropped": 0,
+  "ignored_layers": [],
+  "device_recognition_only_layers": [],
+  "device_classes": [
+    "nfet",
+    "pfet",
+    "pnp",
+    "sky130_fd_pr__model__cap_mim",
+    "sky130_fd_pr__model__cap_mim_m4",
+    "resistor"
+  ],
+  "devices": [
+    {
+      "name": "$1",
+      "class": "nfet",
+      "nets": {
+        "s": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss",
+        "g": "en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n",
+        "d": "\\$18",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.2184,
+        "ps_um": 2.62,
+        "pd_um": 1.36
+      }
+    },
+    {
+      "name": "$10",
+      "class": "nfet",
+      "nets": {
+        "s": "\\$26",
+        "g": "a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2",
+        "d": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.2184,
+        "ad_um2": 0.3948,
+        "ps_um": 1.36,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$100",
+      "class": "pfet",
+      "nets": {
+        "s": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
+        "g": "a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via",
+        "d": "a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$101",
+      "class": "pfet",
+      "nets": {
+        "s": "a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via",
+        "g": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
+        "d": "a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$102",
+      "class": "pfet",
+      "nets": {
+        "s": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
+        "g": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
+        "d": "clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$103",
+      "class": "pfet",
+      "nets": {
+        "s": "a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2",
+        "g": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
+        "d": "a|d|tg_d_a",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$104",
+      "class": "pfet",
+      "nets": {
+        "s": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
+        "g": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+        "d": "a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$105",
+      "class": "pfet",
+      "nets": {
+        "s": "a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2",
+        "g": "clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y",
+        "d": "a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$106",
+      "class": "pfet",
+      "nets": {
+        "s": "a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via",
+        "g": "clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y",
+        "d": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$107",
+      "class": "pfet",
+      "nets": {
+        "s": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
+        "g": "a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via",
+        "d": "a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$108",
+      "class": "pfet",
+      "nets": {
+        "s": "a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via",
+        "g": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
+        "d": "a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$109",
+      "class": "pfet",
+      "nets": {
+        "s": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
+        "g": "en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n",
+        "d": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$11",
+      "class": "nfet",
+      "nets": {
+        "s": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss",
+        "g": "en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n",
+        "d": "\\$27",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.2184,
+        "ps_um": 2.62,
+        "pd_um": 1.36
+      }
+    },
+    {
+      "name": "$110",
+      "class": "pfet",
+      "nets": {
+        "s": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+        "g": "a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2",
+        "d": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$111",
+      "class": "pfet",
+      "nets": {
+        "s": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
+        "g": "en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n",
+        "d": "a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$112",
+      "class": "pfet",
+      "nets": {
+        "s": "a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y",
+        "g": "a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y",
+        "d": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$113",
+      "class": "pfet",
+      "nets": {
+        "s": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
+        "g": "en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n",
+        "d": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$114",
+      "class": "pfet",
+      "nets": {
+        "s": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+        "g": "a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2",
+        "d": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$115",
+      "class": "pfet",
+      "nets": {
+        "s": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
+        "g": "en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n",
+        "d": "a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$116",
+      "class": "pfet",
+      "nets": {
+        "s": "a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y",
+        "g": "a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y",
+        "d": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$117",
+      "class": "pfet",
+      "nets": {
+        "s": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
+        "g": "en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n",
+        "d": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$118",
+      "class": "pfet",
+      "nets": {
+        "s": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+        "g": "a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2",
+        "d": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$119",
+      "class": "pfet",
+      "nets": {
+        "s": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
+        "g": "en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n",
+        "d": "a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$12",
+      "class": "nfet",
+      "nets": {
+        "s": "\\$27",
+        "g": "a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y",
+        "d": "a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.2184,
+        "ad_um2": 0.3948,
+        "ps_um": 1.36,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$120",
+      "class": "pfet",
+      "nets": {
+        "s": "a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y",
+        "g": "a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y",
+        "d": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$121",
+      "class": "pfet",
+      "nets": {
+        "s": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
+        "g": "en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n",
+        "d": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$122",
+      "class": "pfet",
+      "nets": {
+        "s": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+        "g": "a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2",
+        "d": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$123",
+      "class": "pfet",
+      "nets": {
+        "s": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
+        "g": "en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n",
+        "d": "a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$124",
+      "class": "pfet",
+      "nets": {
+        "s": "a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y",
+        "g": "a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y",
+        "d": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$125",
+      "class": "pfet",
+      "nets": {
+        "s": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
+        "g": "en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n",
+        "d": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$126",
+      "class": "pfet",
+      "nets": {
+        "s": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+        "g": "a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2",
+        "d": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$127",
+      "class": "pfet",
+      "nets": {
+        "s": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
+        "g": "en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n",
+        "d": "a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$128",
+      "class": "pfet",
+      "nets": {
+        "s": "a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y",
+        "g": "a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y",
+        "d": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$129",
+      "class": "pfet",
+      "nets": {
+        "s": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
+        "g": "en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n",
+        "d": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$13",
+      "class": "nfet",
+      "nets": {
+        "s": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss",
+        "g": "en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n",
+        "d": "\\$30",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.2184,
+        "ps_um": 2.62,
+        "pd_um": 1.36
+      }
+    },
+    {
+      "name": "$130",
+      "class": "pfet",
+      "nets": {
+        "s": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+        "g": "a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2",
+        "d": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$131",
+      "class": "pfet",
+      "nets": {
+        "s": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
+        "g": "en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n",
+        "d": "a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$132",
+      "class": "pfet",
+      "nets": {
+        "s": "a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y",
+        "g": "a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y",
+        "d": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$14",
+      "class": "nfet",
+      "nets": {
+        "s": "\\$30",
+        "g": "a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2",
+        "d": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.2184,
+        "ad_um2": 0.3948,
+        "ps_um": 1.36,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$15",
+      "class": "nfet",
+      "nets": {
+        "s": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss",
+        "g": "en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n",
+        "d": "\\$31",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.2184,
+        "ps_um": 2.62,
+        "pd_um": 1.36
+      }
+    },
+    {
+      "name": "$16",
+      "class": "nfet",
+      "nets": {
+        "s": "\\$31",
+        "g": "a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y",
+        "d": "a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.2184,
+        "ad_um2": 0.3948,
+        "ps_um": 1.36,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$17",
+      "class": "nfet",
+      "nets": {
+        "s": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss",
+        "g": "en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n",
+        "d": "\\$34",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.2184,
+        "ps_um": 2.62,
+        "pd_um": 1.36
+      }
+    },
+    {
+      "name": "$18",
+      "class": "nfet",
+      "nets": {
+        "s": "\\$34",
+        "g": "a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2",
+        "d": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.2184,
+        "ad_um2": 0.3948,
+        "ps_um": 1.36,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$19",
+      "class": "nfet",
+      "nets": {
+        "s": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss",
+        "g": "en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n",
+        "d": "\\$35",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.2184,
+        "ps_um": 2.62,
+        "pd_um": 1.36
+      }
+    },
+    {
+      "name": "$2",
+      "class": "nfet",
+      "nets": {
+        "s": "\\$18",
+        "g": "a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2",
+        "d": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.2184,
+        "ad_um2": 0.3948,
+        "ps_um": 1.36,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$20",
+      "class": "nfet",
+      "nets": {
+        "s": "\\$35",
+        "g": "a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y",
+        "d": "a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.2184,
+        "ad_um2": 0.3948,
+        "ps_um": 1.36,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$21",
+      "class": "nfet",
+      "nets": {
+        "s": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss",
+        "g": "en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n",
+        "d": "\\$38",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.2184,
+        "ps_um": 2.62,
+        "pd_um": 1.36
+      }
+    },
+    {
+      "name": "$22",
+      "class": "nfet",
+      "nets": {
+        "s": "\\$38",
+        "g": "a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2",
+        "d": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.2184,
+        "ad_um2": 0.3948,
+        "ps_um": 1.36,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$23",
+      "class": "nfet",
+      "nets": {
+        "s": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss",
+        "g": "en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n",
+        "d": "\\$39",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.2184,
+        "ps_um": 2.62,
+        "pd_um": 1.36
+      }
+    },
+    {
+      "name": "$24",
+      "class": "nfet",
+      "nets": {
+        "s": "\\$39",
+        "g": "a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y",
+        "d": "a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.2184,
+        "ad_um2": 0.3948,
+        "ps_um": 1.36,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$25",
+      "class": "nfet",
+      "nets": {
+        "s": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss",
+        "g": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
+        "d": "clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$26",
+      "class": "nfet",
+      "nets": {
+        "s": "a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2",
+        "g": "clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y",
+        "d": "a|d|tg_d_a",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$27",
+      "class": "nfet",
+      "nets": {
+        "s": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss",
+        "g": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+        "d": "a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$28",
+      "class": "nfet",
+      "nets": {
+        "s": "a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2",
+        "g": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
+        "d": "a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$29",
+      "class": "nfet",
+      "nets": {
+        "s": "a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via",
+        "g": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
+        "d": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$3",
+      "class": "nfet",
+      "nets": {
+        "s": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss",
+        "g": "en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n",
+        "d": "\\$19",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.2184,
+        "ps_um": 2.62,
+        "pd_um": 1.36
+      }
+    },
+    {
+      "name": "$30",
+      "class": "nfet",
+      "nets": {
+        "s": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss",
+        "g": "a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via",
+        "d": "a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$31",
+      "class": "nfet",
+      "nets": {
+        "s": "a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via",
+        "g": "clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y",
+        "d": "a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$32",
+      "class": "nfet",
+      "nets": {
+        "s": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss",
+        "g": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
+        "d": "clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$33",
+      "class": "nfet",
+      "nets": {
+        "s": "a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2",
+        "g": "clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y",
+        "d": "a|d|tg_d_a",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$34",
+      "class": "nfet",
+      "nets": {
+        "s": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss",
+        "g": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+        "d": "a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$35",
+      "class": "nfet",
+      "nets": {
+        "s": "a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2",
+        "g": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
+        "d": "a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$36",
+      "class": "nfet",
+      "nets": {
+        "s": "a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via",
+        "g": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
+        "d": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$37",
+      "class": "nfet",
+      "nets": {
+        "s": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss",
+        "g": "a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via",
+        "d": "a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$38",
+      "class": "nfet",
+      "nets": {
+        "s": "a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via",
+        "g": "clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y",
+        "d": "a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$39",
+      "class": "nfet",
+      "nets": {
+        "s": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss",
+        "g": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
+        "d": "clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$4",
+      "class": "nfet",
+      "nets": {
+        "s": "\\$19",
+        "g": "a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y",
+        "d": "a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.2184,
+        "ad_um2": 0.3948,
+        "ps_um": 1.36,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$40",
+      "class": "nfet",
+      "nets": {
+        "s": "a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2",
+        "g": "clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y",
+        "d": "a|d|tg_d_a",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$41",
+      "class": "nfet",
+      "nets": {
+        "s": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss",
+        "g": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+        "d": "a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$42",
+      "class": "nfet",
+      "nets": {
+        "s": "a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2",
+        "g": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
+        "d": "a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$43",
+      "class": "nfet",
+      "nets": {
+        "s": "a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via",
+        "g": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
+        "d": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$44",
+      "class": "nfet",
+      "nets": {
+        "s": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss",
+        "g": "a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via",
+        "d": "a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$45",
+      "class": "nfet",
+      "nets": {
+        "s": "a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via",
+        "g": "clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y",
+        "d": "a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$46",
+      "class": "nfet",
+      "nets": {
+        "s": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss",
+        "g": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
+        "d": "clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$47",
+      "class": "nfet",
+      "nets": {
+        "s": "a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2",
+        "g": "clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y",
+        "d": "a|d|tg_d_a",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$48",
+      "class": "nfet",
+      "nets": {
+        "s": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss",
+        "g": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+        "d": "a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$49",
+      "class": "nfet",
+      "nets": {
+        "s": "a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2",
+        "g": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
+        "d": "a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$5",
+      "class": "nfet",
+      "nets": {
+        "s": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss",
+        "g": "en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n",
+        "d": "\\$22",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.2184,
+        "ps_um": 2.62,
+        "pd_um": 1.36
+      }
+    },
+    {
+      "name": "$50",
+      "class": "nfet",
+      "nets": {
+        "s": "a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via",
+        "g": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
+        "d": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$51",
+      "class": "nfet",
+      "nets": {
+        "s": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss",
+        "g": "a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via",
+        "d": "a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$52",
+      "class": "nfet",
+      "nets": {
+        "s": "a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via",
+        "g": "clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y",
+        "d": "a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$53",
+      "class": "nfet",
+      "nets": {
+        "s": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss",
+        "g": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
+        "d": "clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$54",
+      "class": "nfet",
+      "nets": {
+        "s": "a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2",
+        "g": "clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y",
+        "d": "a|d|tg_d_a",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$55",
+      "class": "nfet",
+      "nets": {
+        "s": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss",
+        "g": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+        "d": "a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$56",
+      "class": "nfet",
+      "nets": {
+        "s": "a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2",
+        "g": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
+        "d": "a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$57",
+      "class": "nfet",
+      "nets": {
+        "s": "a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via",
+        "g": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
+        "d": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$58",
+      "class": "nfet",
+      "nets": {
+        "s": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss",
+        "g": "a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via",
+        "d": "a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$59",
+      "class": "nfet",
+      "nets": {
+        "s": "a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via",
+        "g": "clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y",
+        "d": "a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$6",
+      "class": "nfet",
+      "nets": {
+        "s": "\\$22",
+        "g": "a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2",
+        "d": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.2184,
+        "ad_um2": 0.3948,
+        "ps_um": 1.36,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$60",
+      "class": "nfet",
+      "nets": {
+        "s": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss",
+        "g": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
+        "d": "clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$61",
+      "class": "nfet",
+      "nets": {
+        "s": "a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2",
+        "g": "clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y",
+        "d": "a|d|tg_d_a",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$62",
+      "class": "nfet",
+      "nets": {
+        "s": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss",
+        "g": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+        "d": "a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$63",
+      "class": "nfet",
+      "nets": {
+        "s": "a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2",
+        "g": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
+        "d": "a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$64",
+      "class": "nfet",
+      "nets": {
+        "s": "a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via",
+        "g": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
+        "d": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$65",
+      "class": "nfet",
+      "nets": {
+        "s": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss",
+        "g": "a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via",
+        "d": "a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$66",
+      "class": "nfet",
+      "nets": {
+        "s": "a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via",
+        "g": "clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y",
+        "d": "a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.42,
+        "as_um2": 0.1974,
+        "ad_um2": 0.1974,
+        "ps_um": 1.78,
+        "pd_um": 1.78
+      }
+    },
+    {
+      "name": "$67",
+      "class": "pfet",
+      "nets": {
+        "s": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
+        "g": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
+        "d": "clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$68",
+      "class": "pfet",
+      "nets": {
+        "s": "a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2",
+        "g": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
+        "d": "a|d|tg_d_a",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$69",
+      "class": "pfet",
+      "nets": {
+        "s": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
+        "g": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+        "d": "a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$7",
+      "class": "nfet",
+      "nets": {
+        "s": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss",
+        "g": "en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n",
+        "d": "\\$23",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.2184,
+        "ps_um": 2.62,
+        "pd_um": 1.36
+      }
+    },
+    {
+      "name": "$70",
+      "class": "pfet",
+      "nets": {
+        "s": "a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2",
+        "g": "clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y",
+        "d": "a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$71",
+      "class": "pfet",
+      "nets": {
+        "s": "a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via",
+        "g": "clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y",
+        "d": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$72",
+      "class": "pfet",
+      "nets": {
+        "s": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
+        "g": "a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via",
+        "d": "a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$73",
+      "class": "pfet",
+      "nets": {
+        "s": "a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via",
+        "g": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
+        "d": "a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$74",
+      "class": "pfet",
+      "nets": {
+        "s": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
+        "g": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
+        "d": "clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$75",
+      "class": "pfet",
+      "nets": {
+        "s": "a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2",
+        "g": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
+        "d": "a|d|tg_d_a",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$76",
+      "class": "pfet",
+      "nets": {
+        "s": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
+        "g": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+        "d": "a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$77",
+      "class": "pfet",
+      "nets": {
+        "s": "a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2",
+        "g": "clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y",
+        "d": "a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$78",
+      "class": "pfet",
+      "nets": {
+        "s": "a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via",
+        "g": "clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y",
+        "d": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$79",
+      "class": "pfet",
+      "nets": {
+        "s": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
+        "g": "a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via",
+        "d": "a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$8",
+      "class": "nfet",
+      "nets": {
+        "s": "\\$23",
+        "g": "a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y",
+        "d": "a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.2184,
+        "ad_um2": 0.3948,
+        "ps_um": 1.36,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$80",
+      "class": "pfet",
+      "nets": {
+        "s": "a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via",
+        "g": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
+        "d": "a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$81",
+      "class": "pfet",
+      "nets": {
+        "s": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
+        "g": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
+        "d": "clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$82",
+      "class": "pfet",
+      "nets": {
+        "s": "a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2",
+        "g": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
+        "d": "a|d|tg_d_a",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$83",
+      "class": "pfet",
+      "nets": {
+        "s": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
+        "g": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+        "d": "a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$84",
+      "class": "pfet",
+      "nets": {
+        "s": "a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2",
+        "g": "clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y",
+        "d": "a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$85",
+      "class": "pfet",
+      "nets": {
+        "s": "a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via",
+        "g": "clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y",
+        "d": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$86",
+      "class": "pfet",
+      "nets": {
+        "s": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
+        "g": "a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via",
+        "d": "a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$87",
+      "class": "pfet",
+      "nets": {
+        "s": "a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via",
+        "g": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
+        "d": "a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$88",
+      "class": "pfet",
+      "nets": {
+        "s": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
+        "g": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
+        "d": "clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$89",
+      "class": "pfet",
+      "nets": {
+        "s": "a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2",
+        "g": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
+        "d": "a|d|tg_d_a",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$9",
+      "class": "nfet",
+      "nets": {
+        "s": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss",
+        "g": "en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n",
+        "d": "\\$26",
+        "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.2184,
+        "ps_um": 2.62,
+        "pd_um": 1.36
+      }
+    },
+    {
+      "name": "$90",
+      "class": "pfet",
+      "nets": {
+        "s": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
+        "g": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+        "d": "a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$91",
+      "class": "pfet",
+      "nets": {
+        "s": "a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2",
+        "g": "clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y",
+        "d": "a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$92",
+      "class": "pfet",
+      "nets": {
+        "s": "a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via",
+        "g": "clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y",
+        "d": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$93",
+      "class": "pfet",
+      "nets": {
+        "s": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
+        "g": "a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via",
+        "d": "a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$94",
+      "class": "pfet",
+      "nets": {
+        "s": "a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via",
+        "g": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
+        "d": "a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$95",
+      "class": "pfet",
+      "nets": {
+        "s": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
+        "g": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
+        "d": "clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$96",
+      "class": "pfet",
+      "nets": {
+        "s": "a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2",
+        "g": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
+        "d": "a|d|tg_d_a",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$97",
+      "class": "pfet",
+      "nets": {
+        "s": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
+        "g": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+        "d": "a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$98",
+      "class": "pfet",
+      "nets": {
+        "s": "a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2",
+        "g": "clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y",
+        "d": "a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$99",
+      "class": "pfet",
+      "nets": {
+        "s": "a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via",
+        "g": "clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y",
+        "d": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+        "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    }
+  ],
+  "nets": [
+    {
+      "name": "\\$18",
+      "pin": false,
+      "device_count": 2
+    },
+    {
+      "name": "\\$19",
+      "pin": false,
+      "device_count": 2
+    },
+    {
+      "name": "\\$22",
+      "pin": false,
+      "device_count": 2
+    },
+    {
+      "name": "\\$23",
+      "pin": false,
+      "device_count": 2
+    },
+    {
+      "name": "\\$26",
+      "pin": false,
+      "device_count": 2
+    },
+    {
+      "name": "\\$27",
+      "pin": false,
+      "device_count": 2
+    },
+    {
+      "name": "\\$30",
+      "pin": false,
+      "device_count": 2
+    },
+    {
+      "name": "\\$31",
+      "pin": false,
+      "device_count": 2
+    },
+    {
+      "name": "\\$34",
+      "pin": false,
+      "device_count": 2
+    },
+    {
+      "name": "\\$35",
+      "pin": false,
+      "device_count": 2
+    },
+    {
+      "name": "\\$38",
+      "pin": false,
+      "device_count": 2
+    },
+    {
+      "name": "\\$39",
+      "pin": false,
+      "device_count": 2
+    },
+    {
+      "name": "a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via",
+      "pin": true,
+      "device_count": 6
+    },
+    {
+      "name": "a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via",
+      "pin": true,
+      "device_count": 6
+    },
+    {
+      "name": "a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via",
+      "pin": true,
+      "device_count": 6
+    },
+    {
+      "name": "a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via",
+      "pin": true,
+      "device_count": 6
+    },
+    {
+      "name": "a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via",
+      "pin": true,
+      "device_count": 6
+    },
+    {
+      "name": "a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via",
+      "pin": true,
+      "device_count": 6
+    },
+    {
+      "name": "a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2",
+      "pin": true,
+      "device_count": 6
+    },
+    {
+      "name": "a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2",
+      "pin": true,
+      "device_count": 6
+    },
+    {
+      "name": "a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2",
+      "pin": true,
+      "device_count": 6
+    },
+    {
+      "name": "a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2",
+      "pin": true,
+      "device_count": 6
+    },
+    {
+      "name": "a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2",
+      "pin": true,
+      "device_count": 6
+    },
+    {
+      "name": "a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2",
+      "pin": true,
+      "device_count": 6
+    },
+    {
+      "name": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
+      "pin": true,
+      "device_count": 6
+    },
+    {
+      "name": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
+      "pin": true,
+      "device_count": 6
+    },
+    {
+      "name": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
+      "pin": true,
+      "device_count": 6
+    },
+    {
+      "name": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
+      "pin": true,
+      "device_count": 6
+    },
+    {
+      "name": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
+      "pin": true,
+      "device_count": 6
+    },
+    {
+      "name": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
+      "pin": true,
+      "device_count": 6
+    },
+    {
+      "name": "a|d|tg_d_a",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "a|d|tg_d_a",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "a|d|tg_d_a",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "a|d|tg_d_a",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "a|d|tg_d_a",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "a|d|tg_d_a",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+      "pin": true,
+      "device_count": 7
+    },
+    {
+      "name": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+      "pin": true,
+      "device_count": 7
+    },
+    {
+      "name": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+      "pin": true,
+      "device_count": 7
+    },
+    {
+      "name": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+      "pin": true,
+      "device_count": 7
+    },
+    {
+      "name": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+      "pin": true,
+      "device_count": 7
+    },
+    {
+      "name": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+      "pin": true,
+      "device_count": 7
+    },
+    {
+      "name": "a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y",
+      "pin": true,
+      "device_count": 5
+    },
+    {
+      "name": "a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y",
+      "pin": true,
+      "device_count": 5
+    },
+    {
+      "name": "a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y",
+      "pin": true,
+      "device_count": 5
+    },
+    {
+      "name": "a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y",
+      "pin": true,
+      "device_count": 5
+    },
+    {
+      "name": "a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y",
+      "pin": true,
+      "device_count": 5
+    },
+    {
+      "name": "a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y",
+      "pin": true,
+      "device_count": 5
+    },
+    {
+      "name": "clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y",
+      "pin": true,
+      "device_count": 6
+    },
+    {
+      "name": "clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y",
+      "pin": true,
+      "device_count": 6
+    },
+    {
+      "name": "clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y",
+      "pin": true,
+      "device_count": 6
+    },
+    {
+      "name": "clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y",
+      "pin": true,
+      "device_count": 6
+    },
+    {
+      "name": "clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y",
+      "pin": true,
+      "device_count": 6
+    },
+    {
+      "name": "clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y",
+      "pin": true,
+      "device_count": 6
+    },
+    {
+      "name": "en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
+      "pin": true,
+      "device_count": 108
+    },
+    {
+      "name": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss",
+      "pin": true,
+      "device_count": 96
+    }
+  ],
+  "warnings": [
+    "net 'a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via' merges 9 distinct labels (a, b, inv_q_a, inv_q_a_via, s, tg_fbs_b, tg_fbs_b_via, tg_s_b, tg_s_b_via) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via' merges 9 distinct labels (a, b, inv_q_a, inv_q_a_via, s, tg_fbs_b, tg_fbs_b_via, tg_s_b, tg_s_b_via) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via' merges 9 distinct labels (a, b, inv_q_a, inv_q_a_via, s, tg_fbs_b, tg_fbs_b_via, tg_s_b, tg_s_b_via) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via' merges 9 distinct labels (a, b, inv_q_a, inv_q_a_via, s, tg_fbs_b, tg_fbs_b_via, tg_s_b, tg_s_b_via) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via' merges 9 distinct labels (a, b, inv_q_a, inv_q_a_via, s, tg_fbs_b, tg_fbs_b_via, tg_s_b, tg_s_b_via) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via' merges 9 distinct labels (a, b, inv_q_a, inv_q_a_via, s, tg_fbs_b, tg_fbs_b_via, tg_s_b, tg_s_b_via) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2' merges 14 distinct labels (a, b, m_east, m_west, nand_m_a, nand_m_a_ext_via, nand_m_a_ext_via2, nand_m_a_stub, tg_d_b, tg_d_b_via, tg_d_b_via2, tg_fbm_b, tg_fbm_b_alt_via, tg_fbm_b_alt_via2) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2' merges 14 distinct labels (a, b, m_east, m_west, nand_m_a, nand_m_a_ext_via, nand_m_a_ext_via2, nand_m_a_stub, tg_d_b, tg_d_b_via, tg_d_b_via2, tg_fbm_b, tg_fbm_b_alt_via, tg_fbm_b_alt_via2) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2' merges 14 distinct labels (a, b, m_east, m_west, nand_m_a, nand_m_a_ext_via, nand_m_a_ext_via2, nand_m_a_stub, tg_d_b, tg_d_b_via, tg_d_b_via2, tg_fbm_b, tg_fbm_b_alt_via, tg_fbm_b_alt_via2) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2' merges 14 distinct labels (a, b, m_east, m_west, nand_m_a, nand_m_a_ext_via, nand_m_a_ext_via2, nand_m_a_stub, tg_d_b, tg_d_b_via, tg_d_b_via2, tg_fbm_b, tg_fbm_b_alt_via, tg_fbm_b_alt_via2) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2' merges 14 distinct labels (a, b, m_east, m_west, nand_m_a, nand_m_a_ext_via, nand_m_a_ext_via2, nand_m_a_stub, tg_d_b, tg_d_b_via, tg_d_b_via2, tg_fbm_b, tg_fbm_b_alt_via, tg_fbm_b_alt_via2) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2' merges 14 distinct labels (a, b, m_east, m_west, nand_m_a, nand_m_a_ext_via, nand_m_a_ext_via2, nand_m_a_stub, tg_d_b, tg_d_b_via, tg_d_b_via2, tg_fbm_b, tg_fbm_b_alt_via, tg_fbm_b_alt_via2) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via' merges 14 distinct labels (a, clk, ctrl, ctrlb, inv_clk_a, inv_clk_clk_via, tg_d_ctrl, tg_d_ctrl_via, tg_fbm_ctrlb, tg_fbm_ctrlb_via, tg_fbs_ctrl, tg_fbs_ctrl_via, tg_s_ctrlb, tg_s_ctrlb_via) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via' merges 14 distinct labels (a, clk, ctrl, ctrlb, inv_clk_a, inv_clk_clk_via, tg_d_ctrl, tg_d_ctrl_via, tg_fbm_ctrlb, tg_fbm_ctrlb_via, tg_fbs_ctrl, tg_fbs_ctrl_via, tg_s_ctrlb, tg_s_ctrlb_via) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via' merges 14 distinct labels (a, clk, ctrl, ctrlb, inv_clk_a, inv_clk_clk_via, tg_d_ctrl, tg_d_ctrl_via, tg_fbm_ctrlb, tg_fbm_ctrlb_via, tg_fbs_ctrl, tg_fbs_ctrl_via, tg_s_ctrlb, tg_s_ctrlb_via) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via' merges 14 distinct labels (a, clk, ctrl, ctrlb, inv_clk_a, inv_clk_clk_via, tg_d_ctrl, tg_d_ctrl_via, tg_fbm_ctrlb, tg_fbm_ctrlb_via, tg_fbs_ctrl, tg_fbs_ctrl_via, tg_s_ctrlb, tg_s_ctrlb_via) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via' merges 14 distinct labels (a, clk, ctrl, ctrlb, inv_clk_a, inv_clk_clk_via, tg_d_ctrl, tg_d_ctrl_via, tg_fbm_ctrlb, tg_fbm_ctrlb_via, tg_fbs_ctrl, tg_fbs_ctrl_via, tg_s_ctrlb, tg_s_ctrlb_via) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via' merges 14 distinct labels (a, clk, ctrl, ctrlb, inv_clk_a, inv_clk_clk_via, tg_d_ctrl, tg_d_ctrl_via, tg_fbm_ctrlb, tg_fbm_ctrlb_via, tg_fbs_ctrl, tg_fbs_ctrl_via, tg_s_ctrlb, tg_s_ctrlb_via) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|d|tg_d_a' merges 3 distinct labels (a, d, tg_d_a) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|d|tg_d_a' merges 3 distinct labels (a, d, tg_d_a) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|d|tg_d_a' merges 3 distinct labels (a, d, tg_d_a) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|d|tg_d_a' merges 3 distinct labels (a, d, tg_d_a) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|d|tg_d_a' merges 3 distinct labels (a, d, tg_d_a) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|d|tg_d_a' merges 3 distinct labels (a, d, tg_d_a) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y' merges 9 distinct labels (a, inv_mc_a, mb, mnab_y, mpa_y, mpb_y, nand_m_y, tg_s_a, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y' merges 9 distinct labels (a, inv_mc_a, mb, mnab_y, mpa_y, mpb_y, nand_m_y, tg_s_a, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y' merges 9 distinct labels (a, inv_mc_a, mb, mnab_y, mpa_y, mpb_y, nand_m_y, tg_s_a, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y' merges 9 distinct labels (a, inv_mc_a, mb, mnab_y, mpa_y, mpb_y, nand_m_y, tg_s_a, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y' merges 9 distinct labels (a, inv_mc_a, mb, mnab_y, mpa_y, mpb_y, nand_m_y, tg_s_a, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y' merges 9 distinct labels (a, inv_mc_a, mb, mnab_y, mpa_y, mpb_y, nand_m_y, tg_s_a, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y' merges 7 distinct labels (a, inv_mc_y, inv_mc_y_via, mc, tg_fbm_a, tg_fbm_a_via, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y' merges 7 distinct labels (a, inv_mc_y, inv_mc_y_via, mc, tg_fbm_a, tg_fbm_a_via, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y' merges 7 distinct labels (a, inv_mc_y, inv_mc_y_via, mc, tg_fbm_a, tg_fbm_a_via, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y' merges 7 distinct labels (a, inv_mc_y, inv_mc_y_via, mc, tg_fbm_a, tg_fbm_a_via, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y' merges 7 distinct labels (a, inv_mc_y, inv_mc_y_via, mc, tg_fbm_a, tg_fbm_a_via, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y' merges 7 distinct labels (a, inv_mc_y, inv_mc_y_via, mc, tg_fbm_a, tg_fbm_a_via, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y' merges 10 distinct labels (a, inv_q_y, inv_q_y_via, inv_q_y_via2, nand_s2_a, nand_s2_a_stub, nand_s2_a_via, nand_s2_a_via2, q, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y' merges 10 distinct labels (a, inv_q_y, inv_q_y_via, inv_q_y_via2, nand_s2_a, nand_s2_a_stub, nand_s2_a_via, nand_s2_a_via2, q, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y' merges 10 distinct labels (a, inv_q_y, inv_q_y_via, inv_q_y_via2, nand_s2_a, nand_s2_a_stub, nand_s2_a_via, nand_s2_a_via2, q, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y' merges 10 distinct labels (a, inv_q_y, inv_q_y_via, inv_q_y_via2, nand_s2_a, nand_s2_a_stub, nand_s2_a_via, nand_s2_a_via2, q, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y' merges 10 distinct labels (a, inv_q_y, inv_q_y_via, inv_q_y_via2, nand_s2_a, nand_s2_a_stub, nand_s2_a_via, nand_s2_a_via2, q, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y' merges 10 distinct labels (a, inv_q_y, inv_q_y_via, inv_q_y_via2, nand_s2_a, nand_s2_a_stub, nand_s2_a_via, nand_s2_a_via2, q, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y' merges 8 distinct labels (a, mnab_y, mpa_y, mpb_y, nand_s2_y, qb, tg_fbs_a, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y' merges 8 distinct labels (a, mnab_y, mpa_y, mpb_y, nand_s2_y, qb, tg_fbs_a, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y' merges 8 distinct labels (a, mnab_y, mpa_y, mpb_y, nand_s2_y, qb, tg_fbs_a, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y' merges 8 distinct labels (a, mnab_y, mpa_y, mpb_y, nand_s2_y, qb, tg_fbs_a, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y' merges 8 distinct labels (a, mnab_y, mpa_y, mpb_y, nand_s2_y, qb, tg_fbs_a, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y' merges 8 distinct labels (a, mnab_y, mpa_y, mpb_y, nand_s2_y, qb, tg_fbs_a, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y' merges 13 distinct labels (clkb, clkb_bridge1, clkb_bridge2, clkb_mid, clkb_w, ctrl, ctrlb, inv_clk_y, tg_d_ctrlb, tg_fbm_ctrl, tg_fbs_ctrlb, tg_s_ctrl, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y' merges 13 distinct labels (clkb, clkb_bridge1, clkb_bridge2, clkb_mid, clkb_w, ctrl, ctrlb, inv_clk_y, tg_d_ctrlb, tg_fbm_ctrl, tg_fbs_ctrlb, tg_s_ctrl, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y' merges 13 distinct labels (clkb, clkb_bridge1, clkb_bridge2, clkb_mid, clkb_w, ctrl, ctrlb, inv_clk_y, tg_d_ctrlb, tg_fbm_ctrl, tg_fbs_ctrlb, tg_s_ctrl, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y' merges 13 distinct labels (clkb, clkb_bridge1, clkb_bridge2, clkb_mid, clkb_w, ctrl, ctrlb, inv_clk_y, tg_d_ctrlb, tg_fbm_ctrl, tg_fbs_ctrlb, tg_s_ctrl, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y' merges 13 distinct labels (clkb, clkb_bridge1, clkb_bridge2, clkb_mid, clkb_w, ctrl, ctrlb, inv_clk_y, tg_d_ctrlb, tg_fbm_ctrl, tg_fbs_ctrlb, tg_s_ctrl, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y' merges 13 distinct labels (clkb, clkb_bridge1, clkb_bridge2, clkb_mid, clkb_w, ctrl, ctrlb, inv_clk_y, tg_d_ctrlb, tg_fbm_ctrl, tg_fbs_ctrlb, tg_s_ctrl, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n' merges 6 distinct labels (en, nand_m_en, nand_m_en_via, nand_s2_en, nand_s2_en_via, rst_n) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n' merges 6 distinct labels (en, nand_m_en, nand_m_en_via, nand_s2_en, nand_s2_en_via, rst_n) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n' merges 6 distinct labels (en, nand_m_en, nand_m_en_via, nand_s2_en, nand_s2_en_via, rst_n) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n' merges 6 distinct labels (en, nand_m_en, nand_m_en_via, nand_s2_en, nand_s2_en_via, rst_n) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n' merges 6 distinct labels (en, nand_m_en, nand_m_en_via, nand_s2_en, nand_s2_en_via, rst_n) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n' merges 6 distinct labels (en, nand_m_en, nand_m_en_via, nand_s2_en, nand_s2_en_via, rst_n) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd' merges 19 distinct labels (inv_clk_vdd, inv_mc_vdd, inv_q_vdd, mpa_py, mpb_py, nand_m_vdd, nand_s2_vdd, nwell_vdd, sb_vdd, sr1_vdd, sr2_vdd, sr3_vdd, sr4_vdd, sv_vdd, tg_d_vdd, tg_fbm_vdd, tg_fbs_vdd, tg_s_vdd, vdd) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss' merges 16 distinct labels (inv_clk_vss, inv_mc_vss, inv_q_vss, nand_m_vss, nand_s2_vss, sb_vss, sr1_vss, sr2_vss, sr3_vss, sr4_vss, sv_vss, tg_d_vss, tg_fbm_vss, tg_fbs_vss, tg_s_vss, vss) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section."
+  ],
+  "black_box_regions": [],
+  "abstracted_cells": [],
+  "unmodelled_poly": [],
+  "merged_net_labels": [
+    {
+      "net": "a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via",
+      "labels": [
+        "a",
+        "b",
+        "inv_q_a",
+        "inv_q_a_via",
+        "s",
+        "tg_fbs_b",
+        "tg_fbs_b_via",
+        "tg_s_b",
+        "tg_s_b_via"
+      ]
+    },
+    {
+      "net": "a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via",
+      "labels": [
+        "a",
+        "b",
+        "inv_q_a",
+        "inv_q_a_via",
+        "s",
+        "tg_fbs_b",
+        "tg_fbs_b_via",
+        "tg_s_b",
+        "tg_s_b_via"
+      ]
+    },
+    {
+      "net": "a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via",
+      "labels": [
+        "a",
+        "b",
+        "inv_q_a",
+        "inv_q_a_via",
+        "s",
+        "tg_fbs_b",
+        "tg_fbs_b_via",
+        "tg_s_b",
+        "tg_s_b_via"
+      ]
+    },
+    {
+      "net": "a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via",
+      "labels": [
+        "a",
+        "b",
+        "inv_q_a",
+        "inv_q_a_via",
+        "s",
+        "tg_fbs_b",
+        "tg_fbs_b_via",
+        "tg_s_b",
+        "tg_s_b_via"
+      ]
+    },
+    {
+      "net": "a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via",
+      "labels": [
+        "a",
+        "b",
+        "inv_q_a",
+        "inv_q_a_via",
+        "s",
+        "tg_fbs_b",
+        "tg_fbs_b_via",
+        "tg_s_b",
+        "tg_s_b_via"
+      ]
+    },
+    {
+      "net": "a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via",
+      "labels": [
+        "a",
+        "b",
+        "inv_q_a",
+        "inv_q_a_via",
+        "s",
+        "tg_fbs_b",
+        "tg_fbs_b_via",
+        "tg_s_b",
+        "tg_s_b_via"
+      ]
+    },
+    {
+      "net": "a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2",
+      "labels": [
+        "a",
+        "b",
+        "m_east",
+        "m_west",
+        "nand_m_a",
+        "nand_m_a_ext_via",
+        "nand_m_a_ext_via2",
+        "nand_m_a_stub",
+        "tg_d_b",
+        "tg_d_b_via",
+        "tg_d_b_via2",
+        "tg_fbm_b",
+        "tg_fbm_b_alt_via",
+        "tg_fbm_b_alt_via2"
+      ]
+    },
+    {
+      "net": "a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2",
+      "labels": [
+        "a",
+        "b",
+        "m_east",
+        "m_west",
+        "nand_m_a",
+        "nand_m_a_ext_via",
+        "nand_m_a_ext_via2",
+        "nand_m_a_stub",
+        "tg_d_b",
+        "tg_d_b_via",
+        "tg_d_b_via2",
+        "tg_fbm_b",
+        "tg_fbm_b_alt_via",
+        "tg_fbm_b_alt_via2"
+      ]
+    },
+    {
+      "net": "a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2",
+      "labels": [
+        "a",
+        "b",
+        "m_east",
+        "m_west",
+        "nand_m_a",
+        "nand_m_a_ext_via",
+        "nand_m_a_ext_via2",
+        "nand_m_a_stub",
+        "tg_d_b",
+        "tg_d_b_via",
+        "tg_d_b_via2",
+        "tg_fbm_b",
+        "tg_fbm_b_alt_via",
+        "tg_fbm_b_alt_via2"
+      ]
+    },
+    {
+      "net": "a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2",
+      "labels": [
+        "a",
+        "b",
+        "m_east",
+        "m_west",
+        "nand_m_a",
+        "nand_m_a_ext_via",
+        "nand_m_a_ext_via2",
+        "nand_m_a_stub",
+        "tg_d_b",
+        "tg_d_b_via",
+        "tg_d_b_via2",
+        "tg_fbm_b",
+        "tg_fbm_b_alt_via",
+        "tg_fbm_b_alt_via2"
+      ]
+    },
+    {
+      "net": "a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2",
+      "labels": [
+        "a",
+        "b",
+        "m_east",
+        "m_west",
+        "nand_m_a",
+        "nand_m_a_ext_via",
+        "nand_m_a_ext_via2",
+        "nand_m_a_stub",
+        "tg_d_b",
+        "tg_d_b_via",
+        "tg_d_b_via2",
+        "tg_fbm_b",
+        "tg_fbm_b_alt_via",
+        "tg_fbm_b_alt_via2"
+      ]
+    },
+    {
+      "net": "a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2",
+      "labels": [
+        "a",
+        "b",
+        "m_east",
+        "m_west",
+        "nand_m_a",
+        "nand_m_a_ext_via",
+        "nand_m_a_ext_via2",
+        "nand_m_a_stub",
+        "tg_d_b",
+        "tg_d_b_via",
+        "tg_d_b_via2",
+        "tg_fbm_b",
+        "tg_fbm_b_alt_via",
+        "tg_fbm_b_alt_via2"
+      ]
+    },
+    {
+      "net": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
+      "labels": [
+        "a",
+        "clk",
+        "ctrl",
+        "ctrlb",
+        "inv_clk_a",
+        "inv_clk_clk_via",
+        "tg_d_ctrl",
+        "tg_d_ctrl_via",
+        "tg_fbm_ctrlb",
+        "tg_fbm_ctrlb_via",
+        "tg_fbs_ctrl",
+        "tg_fbs_ctrl_via",
+        "tg_s_ctrlb",
+        "tg_s_ctrlb_via"
+      ]
+    },
+    {
+      "net": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
+      "labels": [
+        "a",
+        "clk",
+        "ctrl",
+        "ctrlb",
+        "inv_clk_a",
+        "inv_clk_clk_via",
+        "tg_d_ctrl",
+        "tg_d_ctrl_via",
+        "tg_fbm_ctrlb",
+        "tg_fbm_ctrlb_via",
+        "tg_fbs_ctrl",
+        "tg_fbs_ctrl_via",
+        "tg_s_ctrlb",
+        "tg_s_ctrlb_via"
+      ]
+    },
+    {
+      "net": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
+      "labels": [
+        "a",
+        "clk",
+        "ctrl",
+        "ctrlb",
+        "inv_clk_a",
+        "inv_clk_clk_via",
+        "tg_d_ctrl",
+        "tg_d_ctrl_via",
+        "tg_fbm_ctrlb",
+        "tg_fbm_ctrlb_via",
+        "tg_fbs_ctrl",
+        "tg_fbs_ctrl_via",
+        "tg_s_ctrlb",
+        "tg_s_ctrlb_via"
+      ]
+    },
+    {
+      "net": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
+      "labels": [
+        "a",
+        "clk",
+        "ctrl",
+        "ctrlb",
+        "inv_clk_a",
+        "inv_clk_clk_via",
+        "tg_d_ctrl",
+        "tg_d_ctrl_via",
+        "tg_fbm_ctrlb",
+        "tg_fbm_ctrlb_via",
+        "tg_fbs_ctrl",
+        "tg_fbs_ctrl_via",
+        "tg_s_ctrlb",
+        "tg_s_ctrlb_via"
+      ]
+    },
+    {
+      "net": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
+      "labels": [
+        "a",
+        "clk",
+        "ctrl",
+        "ctrlb",
+        "inv_clk_a",
+        "inv_clk_clk_via",
+        "tg_d_ctrl",
+        "tg_d_ctrl_via",
+        "tg_fbm_ctrlb",
+        "tg_fbm_ctrlb_via",
+        "tg_fbs_ctrl",
+        "tg_fbs_ctrl_via",
+        "tg_s_ctrlb",
+        "tg_s_ctrlb_via"
+      ]
+    },
+    {
+      "net": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
+      "labels": [
+        "a",
+        "clk",
+        "ctrl",
+        "ctrlb",
+        "inv_clk_a",
+        "inv_clk_clk_via",
+        "tg_d_ctrl",
+        "tg_d_ctrl_via",
+        "tg_fbm_ctrlb",
+        "tg_fbm_ctrlb_via",
+        "tg_fbs_ctrl",
+        "tg_fbs_ctrl_via",
+        "tg_s_ctrlb",
+        "tg_s_ctrlb_via"
+      ]
+    },
+    {
+      "net": "a|d|tg_d_a",
+      "labels": [
+        "a",
+        "d",
+        "tg_d_a"
+      ]
+    },
+    {
+      "net": "a|d|tg_d_a",
+      "labels": [
+        "a",
+        "d",
+        "tg_d_a"
+      ]
+    },
+    {
+      "net": "a|d|tg_d_a",
+      "labels": [
+        "a",
+        "d",
+        "tg_d_a"
+      ]
+    },
+    {
+      "net": "a|d|tg_d_a",
+      "labels": [
+        "a",
+        "d",
+        "tg_d_a"
+      ]
+    },
+    {
+      "net": "a|d|tg_d_a",
+      "labels": [
+        "a",
+        "d",
+        "tg_d_a"
+      ]
+    },
+    {
+      "net": "a|d|tg_d_a",
+      "labels": [
+        "a",
+        "d",
+        "tg_d_a"
+      ]
+    },
+    {
+      "net": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+      "labels": [
+        "a",
+        "inv_mc_a",
+        "mb",
+        "mnab_y",
+        "mpa_y",
+        "mpb_y",
+        "nand_m_y",
+        "tg_s_a",
+        "y"
+      ]
+    },
+    {
+      "net": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+      "labels": [
+        "a",
+        "inv_mc_a",
+        "mb",
+        "mnab_y",
+        "mpa_y",
+        "mpb_y",
+        "nand_m_y",
+        "tg_s_a",
+        "y"
+      ]
+    },
+    {
+      "net": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+      "labels": [
+        "a",
+        "inv_mc_a",
+        "mb",
+        "mnab_y",
+        "mpa_y",
+        "mpb_y",
+        "nand_m_y",
+        "tg_s_a",
+        "y"
+      ]
+    },
+    {
+      "net": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+      "labels": [
+        "a",
+        "inv_mc_a",
+        "mb",
+        "mnab_y",
+        "mpa_y",
+        "mpb_y",
+        "nand_m_y",
+        "tg_s_a",
+        "y"
+      ]
+    },
+    {
+      "net": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+      "labels": [
+        "a",
+        "inv_mc_a",
+        "mb",
+        "mnab_y",
+        "mpa_y",
+        "mpb_y",
+        "nand_m_y",
+        "tg_s_a",
+        "y"
+      ]
+    },
+    {
+      "net": "a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y",
+      "labels": [
+        "a",
+        "inv_mc_a",
+        "mb",
+        "mnab_y",
+        "mpa_y",
+        "mpb_y",
+        "nand_m_y",
+        "tg_s_a",
+        "y"
+      ]
+    },
+    {
+      "net": "a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y",
+      "labels": [
+        "a",
+        "inv_mc_y",
+        "inv_mc_y_via",
+        "mc",
+        "tg_fbm_a",
+        "tg_fbm_a_via",
+        "y"
+      ]
+    },
+    {
+      "net": "a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y",
+      "labels": [
+        "a",
+        "inv_mc_y",
+        "inv_mc_y_via",
+        "mc",
+        "tg_fbm_a",
+        "tg_fbm_a_via",
+        "y"
+      ]
+    },
+    {
+      "net": "a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y",
+      "labels": [
+        "a",
+        "inv_mc_y",
+        "inv_mc_y_via",
+        "mc",
+        "tg_fbm_a",
+        "tg_fbm_a_via",
+        "y"
+      ]
+    },
+    {
+      "net": "a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y",
+      "labels": [
+        "a",
+        "inv_mc_y",
+        "inv_mc_y_via",
+        "mc",
+        "tg_fbm_a",
+        "tg_fbm_a_via",
+        "y"
+      ]
+    },
+    {
+      "net": "a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y",
+      "labels": [
+        "a",
+        "inv_mc_y",
+        "inv_mc_y_via",
+        "mc",
+        "tg_fbm_a",
+        "tg_fbm_a_via",
+        "y"
+      ]
+    },
+    {
+      "net": "a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y",
+      "labels": [
+        "a",
+        "inv_mc_y",
+        "inv_mc_y_via",
+        "mc",
+        "tg_fbm_a",
+        "tg_fbm_a_via",
+        "y"
+      ]
+    },
+    {
+      "net": "a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y",
+      "labels": [
+        "a",
+        "inv_q_y",
+        "inv_q_y_via",
+        "inv_q_y_via2",
+        "nand_s2_a",
+        "nand_s2_a_stub",
+        "nand_s2_a_via",
+        "nand_s2_a_via2",
+        "q",
+        "y"
+      ]
+    },
+    {
+      "net": "a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y",
+      "labels": [
+        "a",
+        "inv_q_y",
+        "inv_q_y_via",
+        "inv_q_y_via2",
+        "nand_s2_a",
+        "nand_s2_a_stub",
+        "nand_s2_a_via",
+        "nand_s2_a_via2",
+        "q",
+        "y"
+      ]
+    },
+    {
+      "net": "a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y",
+      "labels": [
+        "a",
+        "inv_q_y",
+        "inv_q_y_via",
+        "inv_q_y_via2",
+        "nand_s2_a",
+        "nand_s2_a_stub",
+        "nand_s2_a_via",
+        "nand_s2_a_via2",
+        "q",
+        "y"
+      ]
+    },
+    {
+      "net": "a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y",
+      "labels": [
+        "a",
+        "inv_q_y",
+        "inv_q_y_via",
+        "inv_q_y_via2",
+        "nand_s2_a",
+        "nand_s2_a_stub",
+        "nand_s2_a_via",
+        "nand_s2_a_via2",
+        "q",
+        "y"
+      ]
+    },
+    {
+      "net": "a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y",
+      "labels": [
+        "a",
+        "inv_q_y",
+        "inv_q_y_via",
+        "inv_q_y_via2",
+        "nand_s2_a",
+        "nand_s2_a_stub",
+        "nand_s2_a_via",
+        "nand_s2_a_via2",
+        "q",
+        "y"
+      ]
+    },
+    {
+      "net": "a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y",
+      "labels": [
+        "a",
+        "inv_q_y",
+        "inv_q_y_via",
+        "inv_q_y_via2",
+        "nand_s2_a",
+        "nand_s2_a_stub",
+        "nand_s2_a_via",
+        "nand_s2_a_via2",
+        "q",
+        "y"
+      ]
+    },
+    {
+      "net": "a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y",
+      "labels": [
+        "a",
+        "mnab_y",
+        "mpa_y",
+        "mpb_y",
+        "nand_s2_y",
+        "qb",
+        "tg_fbs_a",
+        "y"
+      ]
+    },
+    {
+      "net": "a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y",
+      "labels": [
+        "a",
+        "mnab_y",
+        "mpa_y",
+        "mpb_y",
+        "nand_s2_y",
+        "qb",
+        "tg_fbs_a",
+        "y"
+      ]
+    },
+    {
+      "net": "a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y",
+      "labels": [
+        "a",
+        "mnab_y",
+        "mpa_y",
+        "mpb_y",
+        "nand_s2_y",
+        "qb",
+        "tg_fbs_a",
+        "y"
+      ]
+    },
+    {
+      "net": "a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y",
+      "labels": [
+        "a",
+        "mnab_y",
+        "mpa_y",
+        "mpb_y",
+        "nand_s2_y",
+        "qb",
+        "tg_fbs_a",
+        "y"
+      ]
+    },
+    {
+      "net": "a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y",
+      "labels": [
+        "a",
+        "mnab_y",
+        "mpa_y",
+        "mpb_y",
+        "nand_s2_y",
+        "qb",
+        "tg_fbs_a",
+        "y"
+      ]
+    },
+    {
+      "net": "a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y",
+      "labels": [
+        "a",
+        "mnab_y",
+        "mpa_y",
+        "mpb_y",
+        "nand_s2_y",
+        "qb",
+        "tg_fbs_a",
+        "y"
+      ]
+    },
+    {
+      "net": "clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y",
+      "labels": [
+        "clkb",
+        "clkb_bridge1",
+        "clkb_bridge2",
+        "clkb_mid",
+        "clkb_w",
+        "ctrl",
+        "ctrlb",
+        "inv_clk_y",
+        "tg_d_ctrlb",
+        "tg_fbm_ctrl",
+        "tg_fbs_ctrlb",
+        "tg_s_ctrl",
+        "y"
+      ]
+    },
+    {
+      "net": "clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y",
+      "labels": [
+        "clkb",
+        "clkb_bridge1",
+        "clkb_bridge2",
+        "clkb_mid",
+        "clkb_w",
+        "ctrl",
+        "ctrlb",
+        "inv_clk_y",
+        "tg_d_ctrlb",
+        "tg_fbm_ctrl",
+        "tg_fbs_ctrlb",
+        "tg_s_ctrl",
+        "y"
+      ]
+    },
+    {
+      "net": "clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y",
+      "labels": [
+        "clkb",
+        "clkb_bridge1",
+        "clkb_bridge2",
+        "clkb_mid",
+        "clkb_w",
+        "ctrl",
+        "ctrlb",
+        "inv_clk_y",
+        "tg_d_ctrlb",
+        "tg_fbm_ctrl",
+        "tg_fbs_ctrlb",
+        "tg_s_ctrl",
+        "y"
+      ]
+    },
+    {
+      "net": "clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y",
+      "labels": [
+        "clkb",
+        "clkb_bridge1",
+        "clkb_bridge2",
+        "clkb_mid",
+        "clkb_w",
+        "ctrl",
+        "ctrlb",
+        "inv_clk_y",
+        "tg_d_ctrlb",
+        "tg_fbm_ctrl",
+        "tg_fbs_ctrlb",
+        "tg_s_ctrl",
+        "y"
+      ]
+    },
+    {
+      "net": "clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y",
+      "labels": [
+        "clkb",
+        "clkb_bridge1",
+        "clkb_bridge2",
+        "clkb_mid",
+        "clkb_w",
+        "ctrl",
+        "ctrlb",
+        "inv_clk_y",
+        "tg_d_ctrlb",
+        "tg_fbm_ctrl",
+        "tg_fbs_ctrlb",
+        "tg_s_ctrl",
+        "y"
+      ]
+    },
+    {
+      "net": "clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y",
+      "labels": [
+        "clkb",
+        "clkb_bridge1",
+        "clkb_bridge2",
+        "clkb_mid",
+        "clkb_w",
+        "ctrl",
+        "ctrlb",
+        "inv_clk_y",
+        "tg_d_ctrlb",
+        "tg_fbm_ctrl",
+        "tg_fbs_ctrlb",
+        "tg_s_ctrl",
+        "y"
+      ]
+    },
+    {
+      "net": "en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n",
+      "labels": [
+        "en",
+        "nand_m_en",
+        "nand_m_en_via",
+        "nand_s2_en",
+        "nand_s2_en_via",
+        "rst_n"
+      ]
+    },
+    {
+      "net": "en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n",
+      "labels": [
+        "en",
+        "nand_m_en",
+        "nand_m_en_via",
+        "nand_s2_en",
+        "nand_s2_en_via",
+        "rst_n"
+      ]
+    },
+    {
+      "net": "en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n",
+      "labels": [
+        "en",
+        "nand_m_en",
+        "nand_m_en_via",
+        "nand_s2_en",
+        "nand_s2_en_via",
+        "rst_n"
+      ]
+    },
+    {
+      "net": "en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n",
+      "labels": [
+        "en",
+        "nand_m_en",
+        "nand_m_en_via",
+        "nand_s2_en",
+        "nand_s2_en_via",
+        "rst_n"
+      ]
+    },
+    {
+      "net": "en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n",
+      "labels": [
+        "en",
+        "nand_m_en",
+        "nand_m_en_via",
+        "nand_s2_en",
+        "nand_s2_en_via",
+        "rst_n"
+      ]
+    },
+    {
+      "net": "en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n",
+      "labels": [
+        "en",
+        "nand_m_en",
+        "nand_m_en_via",
+        "nand_s2_en",
+        "nand_s2_en_via",
+        "rst_n"
+      ]
+    },
+    {
+      "net": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd",
+      "labels": [
+        "inv_clk_vdd",
+        "inv_mc_vdd",
+        "inv_q_vdd",
+        "mpa_py",
+        "mpb_py",
+        "nand_m_vdd",
+        "nand_s2_vdd",
+        "nwell_vdd",
+        "sb_vdd",
+        "sr1_vdd",
+        "sr2_vdd",
+        "sr3_vdd",
+        "sr4_vdd",
+        "sv_vdd",
+        "tg_d_vdd",
+        "tg_fbm_vdd",
+        "tg_fbs_vdd",
+        "tg_s_vdd",
+        "vdd"
+      ]
+    },
+    {
+      "net": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss",
+      "labels": [
+        "inv_clk_vss",
+        "inv_mc_vss",
+        "inv_q_vss",
+        "nand_m_vss",
+        "nand_s2_vss",
+        "sb_vss",
+        "sr1_vss",
+        "sr2_vss",
+        "sr3_vss",
+        "sr4_vss",
+        "sv_vss",
+        "tg_d_vss",
+        "tg_fbm_vss",
+        "tg_fbs_vss",
+        "tg_s_vss",
+        "vss"
+      ]
+    }
+  ],
+  "voltage_domain_warnings": [],
+  "unbiased_pmos_body_nets": [],
+  "single_terminal_nets": [],
+  "dead_metal": [],
+  "matched_device_groups": [],
+  "pdk": null,
+  "provenance": {
+    "klt_version": "0.4.0",
+    "klayout_version": "0.30.12",
+    "pdk": null,
+    "deck": {
+      "name": "sky130",
+      "content_hash": "sha256:5afac7ab8561545859f5e2e74f4621c6ffc052756dc8fe344ea263398e96b240",
+      "released": true
+    },
+    "input": {
+      "content_hash": "sha256:8e6d6ae4317a262385eec558738a96ac7ae3ec478020c7bc266b5007b8d754a6"
+    }
+  },
+  "parasitics": null,
+  "spef_path": null
+}

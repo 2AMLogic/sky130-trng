@@ -1,0 +1,279 @@
+{
+  "cell": "sampler_core",
+  "_comment": [
+    "Cell descriptor for layout/bin/compose-cell.py -- see layout/README.md",
+    "section 'Composing a gate' for the floorplan reasoning shared with every",
+    "other cell here, and layout/sampler_core/README.md for this cell's own",
+    "result and open items (issue #27 step 1 / issue #22).",
+    "",
+    "sampler_core is design/sampler_core.spice's top-level subckt: xdut (one",
+    "ro_array_core instance) plus six sampler_dff instances (xsb/xsv/xsr1-",
+    "xsr4). This descriptor promotes layout/sampler_core-placement-poc/'s",
+    "own six-instance floorplan (unchanged: 55.66 um pitch, same sb/sv/",
+    "sr1-sr4 instance order/naming, same y=0.0 origin for every instance) to",
+    "a real, --check-reproducible cell recipe and adds this increment's",
+    "own new work: routing the shared vdd bus and shared vss bus across all",
+    "six sampler_dff instances.",
+    "",
+    "Stage 'place' is the identical placement layout/sampler_core-placement",
+    "-poc/build.py already proved DRC-clean (132 devices, 79 nets) -- see",
+    "that directory's own README for the full floorplan derivation. This",
+    "descriptor additionally hand-declares, for each of the six instances,",
+    "the two ports the final stage needs: 'vdd' and 'vss', each landing",
+    "directly on that instance's own already-merged met1 rail (NOT a li1",
+    "gate pad needing a via-drop -- see layout/sampler_core/README.md's",
+    "'Where the vdd/vss ports land' section for the klayout.db measurement",
+    "that found this). Every declared port coordinate is in that BLOCK's",
+    "own local frame (x_um=0.0, the same local x for every instance since",
+    "all six reference the identical layout/sampler_dff/sampler_dff.gds",
+    "stream): y_um=7.0 for vdd (sampler_dff's own attic rail, met1/'metal2'",
+    "role, layer 68/20) and y_um=-3.5 for vss (its own basement rail, same",
+    "layer). 0.0 sits inside both rails' own measured x-span (vdd:",
+    "-1.205..49.115; vss: -1.305..49.115 local, per",
+    "layout/sampler_dff/sampler_dff.gds itself) for every one of the six",
+    "instances, so no per-instance x offset is needed.",
+    "",
+    "Stage 'route_supplies' wraps the whole six-instance placement as one",
+    "'core' block (from_stage: 'place', the same re-placement mechanic",
+    "layout/sampler_dff/cell.json's own 'route_supplies' stage and",
+    "layout/ro_array_core/cell.json's 'vddstub'/'vddbus'/'vssstub'/'vssbus'",
+    "stages already use), re-declares those twelve ports in the composed",
+    "cell's own GLOBAL frame (block offset + local x_um, i.e. x_um = i *",
+    "55.66 for each instance's own y=7.0/-3.5 point), and routes two",
+    "five-leg buses -- vdd chaining sb->sv->sr1->sr2->sr3->sr4 at y=7.0,",
+    "vss at the same chain at y=-3.5 -- each leg a plain 2-pin",
+    "'connectivity[]' entry with a same-height waypoint bridging the ~5.3 um",
+    "gap between adjacent instances' own bboxes, the same per-leg-entry",
+    "style (not a single N-pin bundle net) layout/sampler_dff/cell.json's",
+    "own 'route_supplies' stage already used for the identical reason: it",
+    "is portable across every klt build encountered in this repo's history,",
+    "including ones that silently drop an unrecognized 'legs[]' field",
+    "(klayout-tools#1548) rather than reject it.",
+    "",
+    "Only vdd/vss are attempted this increment. clk/rst_n fan-out, the",
+    "ro_array_core instance and its wiring to the samplers' d pins, the",
+    "six d/q (plus en1-4/vddr1-4) top-level pin promotions, and whole-cell",
+    "klt lvs against design/sampler_core.spice's real .subckt sampler_core",
+    "all remain open -- see layout/sampler_core/README.md's 'What remains'",
+    "section. lvs below is expected to MISMATCH heavily this increment (no",
+    "ro_array_core instance placed yet, no clk/rst_n/d/q wiring at all) --",
+    "recorded as expected and documented, not treated as a regression, the",
+    "same convention layout/sampler_dff/cell.json's own first vdd/vss-only",
+    "increment (PR #78) used.",
+    "",
+    "A compose-cell.py limitation found (not a klt gap) while wiring up",
+    "this lvs block, worth recording for whoever attempts the real",
+    "whole-cell LVS pass (issue #27 step 5): 'dependency_variants' repoints",
+    "renamed subckt calls (repoint_variant_instances) ONLY inside the TOP",
+    "subckt's own extracted lines (lvs.subckt); a plain 'dependencies'",
+    "entry's own body is emitted via build_reference alone, with no",
+    "repoint pass. ro_array_core is listed as a plain dependency here (it",
+    "is sampler_core's dependency, not its own top subckt in THIS",
+    "descriptor, unlike layout/ro_array_core/cell.json's own lvs block,",
+    "where it IS the top subckt and gets repointed correctly) -- so its",
+    "own 'xr1 ... ro_ring5 wstv=0.42 ...' instance lines still call the",
+    "bare, undefined 'ro_ring5' name even though only the renamed",
+    "'ro_ring5_r1'..'_r4' definitions exist in the generated reference.",
+    "klt lvs does not error on this (confirmed: it silently drops the",
+    "unresolvable instances rather than failing the run), which is why",
+    "this stays a MISMATCH-with-a-known-incomplete-reference rather than a",
+    "crash -- reference device count reads 176 here (6x sampler_dff's own",
+    "22 plus ro_array_core's 4 ro_buf + 3 xor2 devices only; its four",
+    "ro_ring5 instances' 132 devices are the ones silently dropped), not",
+    "the full 264 a fully-resolved reference would have. Confirmed by",
+    "grepping sampler_core.ref.spice directly: 'ro_ring5' (bare) appears",
+    "only on instance-call lines, never as a '.subckt' header. Fixing this",
+    "generically (extending repoint_variant_instances to every",
+    "dependencies[] entry's own body, not just the top subckt's) is real,",
+    "separable compose-cell.py work -- left for whoever attempts a genuine",
+    "LVS MATCH at this scope, since no match is claimed or needed by this",
+    "vdd/vss-only increment either way."
+  ],
+  "pdk": {
+    "variant": "sky130A",
+    "deck": "sky130"
+  },
+  "stages": [
+    {
+      "name": "place",
+      "blocks": [
+        {
+          "id": "sb",
+          "orientation": "none",
+          "cell": {
+            "gds_path": "../sampler_dff/sampler_dff.gds",
+            "cell_name": "sampler_dff",
+            "ports": [
+              {"name": "vdd", "x_um": 0.0, "y_um": 7.0, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 90},
+              {"name": "vss", "x_um": 0.0, "y_um": -3.5, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 270}
+            ]
+          }
+        },
+        {
+          "id": "sv",
+          "orientation": "none",
+          "cell": {
+            "gds_path": "../sampler_dff/sampler_dff.gds",
+            "cell_name": "sampler_dff",
+            "ports": [
+              {"name": "vdd", "x_um": 0.0, "y_um": 7.0, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 90},
+              {"name": "vss", "x_um": 0.0, "y_um": -3.5, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 270}
+            ]
+          }
+        },
+        {
+          "id": "sr1",
+          "orientation": "none",
+          "cell": {
+            "gds_path": "../sampler_dff/sampler_dff.gds",
+            "cell_name": "sampler_dff",
+            "ports": [
+              {"name": "vdd", "x_um": 0.0, "y_um": 7.0, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 90},
+              {"name": "vss", "x_um": 0.0, "y_um": -3.5, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 270}
+            ]
+          }
+        },
+        {
+          "id": "sr2",
+          "orientation": "none",
+          "cell": {
+            "gds_path": "../sampler_dff/sampler_dff.gds",
+            "cell_name": "sampler_dff",
+            "ports": [
+              {"name": "vdd", "x_um": 0.0, "y_um": 7.0, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 90},
+              {"name": "vss", "x_um": 0.0, "y_um": -3.5, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 270}
+            ]
+          }
+        },
+        {
+          "id": "sr3",
+          "orientation": "none",
+          "cell": {
+            "gds_path": "../sampler_dff/sampler_dff.gds",
+            "cell_name": "sampler_dff",
+            "ports": [
+              {"name": "vdd", "x_um": 0.0, "y_um": 7.0, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 90},
+              {"name": "vss", "x_um": 0.0, "y_um": -3.5, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 270}
+            ]
+          }
+        },
+        {
+          "id": "sr4",
+          "orientation": "none",
+          "cell": {
+            "gds_path": "../sampler_dff/sampler_dff.gds",
+            "cell_name": "sampler_dff",
+            "ports": [
+              {"name": "vdd", "x_um": 0.0, "y_um": 7.0, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 90},
+              {"name": "vss", "x_um": 0.0, "y_um": -3.5, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 270}
+            ]
+          }
+        }
+      ],
+      "placement": {
+        "strategy": "explicit",
+        "order": ["sb", "sv", "sr1", "sr2", "sr3", "sr4"],
+        "origins_um": {
+          "sb": {"x": 0.0, "y": 0.0},
+          "sv": {"x": 55.66, "y": 0.0},
+          "sr1": {"x": 111.32, "y": 0.0},
+          "sr2": {"x": 166.98, "y": 0.0},
+          "sr3": {"x": 222.64, "y": 0.0},
+          "sr4": {"x": 278.3, "y": 0.0}
+        }
+      },
+      "routing": {"layer_role": "metal", "width_um": 0.17},
+      "connectivity": [],
+      "pins": [
+        {"block": "sb", "port": "vdd", "net": "sb_vdd"},
+        {"block": "sb", "port": "vss", "net": "sb_vss"},
+        {"block": "sv", "port": "vdd", "net": "sv_vdd"},
+        {"block": "sv", "port": "vss", "net": "sv_vss"},
+        {"block": "sr1", "port": "vdd", "net": "sr1_vdd"},
+        {"block": "sr1", "port": "vss", "net": "sr1_vss"},
+        {"block": "sr2", "port": "vdd", "net": "sr2_vdd"},
+        {"block": "sr2", "port": "vss", "net": "sr2_vss"},
+        {"block": "sr3", "port": "vdd", "net": "sr3_vdd"},
+        {"block": "sr3", "port": "vss", "net": "sr3_vss"},
+        {"block": "sr4", "port": "vdd", "net": "sr4_vdd"},
+        {"block": "sr4", "port": "vss", "net": "sr4_vss"}
+      ]
+    },
+    {
+      "name": "route_supplies",
+      "blocks": [
+        {
+          "id": "core",
+          "orientation": "none",
+          "cell": {
+            "from_stage": "place",
+            "ports": [
+              {"name": "sb_vdd", "x_um": 0.0, "y_um": 7.0, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 90},
+              {"name": "sb_vss", "x_um": 0.0, "y_um": -3.5, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 270},
+              {"name": "sv_vdd", "x_um": 55.66, "y_um": 7.0, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 90},
+              {"name": "sv_vss", "x_um": 55.66, "y_um": -3.5, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 270},
+              {"name": "sr1_vdd", "x_um": 111.32, "y_um": 7.0, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 90},
+              {"name": "sr1_vss", "x_um": 111.32, "y_um": -3.5, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 270},
+              {"name": "sr2_vdd", "x_um": 166.98, "y_um": 7.0, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 90},
+              {"name": "sr2_vss", "x_um": 166.98, "y_um": -3.5, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 270},
+              {"name": "sr3_vdd", "x_um": 222.64, "y_um": 7.0, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 90},
+              {"name": "sr3_vss", "x_um": 222.64, "y_um": -3.5, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 270},
+              {"name": "sr4_vdd", "x_um": 278.3, "y_um": 7.0, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 90},
+              {"name": "sr4_vss", "x_um": 278.3, "y_um": -3.5, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 270}
+            ]
+          }
+        }
+      ],
+      "placement": {"strategy": "explicit", "order": ["core"], "origins_um": {"core": {"x": 0.0, "y": 0.0}}},
+      "routing": {"layer_role": "metal2", "width_um": 0.17},
+      "connectivity": [
+        {"net": "vdd", "pins": [{"block": "core", "port": "sb_vdd"}, {"block": "core", "port": "sv_vdd"}],
+         "waypoints_um": [[0.0, 7.0], [55.66, 7.0]]},
+        {"net": "vdd", "pins": [{"block": "core", "port": "sv_vdd"}, {"block": "core", "port": "sr1_vdd"}],
+         "waypoints_um": [[55.66, 7.0], [111.32, 7.0]]},
+        {"net": "vdd", "pins": [{"block": "core", "port": "sr1_vdd"}, {"block": "core", "port": "sr2_vdd"}],
+         "waypoints_um": [[111.32, 7.0], [166.98, 7.0]]},
+        {"net": "vdd", "pins": [{"block": "core", "port": "sr2_vdd"}, {"block": "core", "port": "sr3_vdd"}],
+         "waypoints_um": [[166.98, 7.0], [222.64, 7.0]]},
+        {"net": "vdd", "pins": [{"block": "core", "port": "sr3_vdd"}, {"block": "core", "port": "sr4_vdd"}],
+         "waypoints_um": [[222.64, 7.0], [278.3, 7.0]]},
+
+        {"net": "vss", "pins": [{"block": "core", "port": "sb_vss"}, {"block": "core", "port": "sv_vss"}],
+         "waypoints_um": [[0.0, -3.5], [55.66, -3.5]]},
+        {"net": "vss", "pins": [{"block": "core", "port": "sv_vss"}, {"block": "core", "port": "sr1_vss"}],
+         "waypoints_um": [[55.66, -3.5], [111.32, -3.5]]},
+        {"net": "vss", "pins": [{"block": "core", "port": "sr1_vss"}, {"block": "core", "port": "sr2_vss"}],
+         "waypoints_um": [[111.32, -3.5], [166.98, -3.5]]},
+        {"net": "vss", "pins": [{"block": "core", "port": "sr2_vss"}, {"block": "core", "port": "sr3_vss"}],
+         "waypoints_um": [[166.98, -3.5], [222.64, -3.5]]},
+        {"net": "vss", "pins": [{"block": "core", "port": "sr3_vss"}, {"block": "core", "port": "sr4_vss"}],
+         "waypoints_um": [[222.64, -3.5], [278.3, -3.5]]}
+      ],
+      "pins": []
+    }
+  ],
+  "lvs": {
+    "reference": "design/sampler_core.spice",
+    "subckt": "sampler_core",
+    "reference_top": "SAMPLER_CORE",
+    "flatten_reference": true,
+    "flatten_layout": true,
+    "drop_prefixes": ["Cld"],
+    "drop_kwargs": ["cld"],
+    "dependencies": ["sampler_dff", "ro_array_core", "ro_buf", "xor2"],
+    "dependency_variants": [
+      {
+        "subckt": "ro_ring5",
+        "nested": ["ro_nand2", "ro_stage"],
+        "drop_prefixes": ["Cld"],
+        "drop_kwargs": ["cld"],
+        "instances": [
+          {"rename": "_r1", "top_instance_pattern": "^xr1\\b", "params": {"wstv": 0.42, "lstv": 2}},
+          {"rename": "_r2", "top_instance_pattern": "^xr2\\b", "params": {"wstv": 0.44, "lstv": 2}},
+          {"rename": "_r3", "top_instance_pattern": "^xr3\\b", "params": {"wstv": 0.46, "lstv": 2}},
+          {"rename": "_r4", "top_instance_pattern": "^xr4\\b", "params": {"wstv": 0.48, "lstv": 2}}
+        ]
+      }
+    ]
+  }
+}

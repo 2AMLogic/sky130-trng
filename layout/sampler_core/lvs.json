@@ -1,0 +1,5806 @@
+{
+  "schema_version": 1,
+  "engine": "klayout",
+  "layout": "sampler_core.spice",
+  "reference": "sampler_core.ref.spice",
+  "top": "SAMPLER_CORE",
+  "reference_top": "SAMPLER_CORE",
+  "parameter_tolerance": null,
+  "options": {
+    "combine_devices": false,
+    "flatten_layout": true,
+    "flatten_reference": true,
+    "netgen_setup": null,
+    "parameter_tolerance": null
+  },
+  "status": "mismatch",
+  "mismatch_count": 348,
+  "error_count": 347,
+  "category_counts": {
+    "device.unmatched": 176,
+    "net.unmatched": 166,
+    "topology": 5,
+    "topology.flattened": 1
+  },
+  "category_error_counts": {
+    "device.unmatched": 176,
+    "net.unmatched": 166,
+    "topology": 5
+  },
+  "counts": {
+    "nets": {
+      "layout": 74,
+      "reference": 92,
+      "matched": 0
+    },
+    "devices": {
+      "layout": 132,
+      "reference": 176,
+      "matched": 0
+    },
+    "pins": {
+      "layout": 62,
+      "reference": 18,
+      "matched": 80
+    }
+  },
+  "device_classes": null,
+  "environment": {
+    "engine": "klayout",
+    "engine_version": "0.30.12",
+    "layout_sha256": "468555e446c3e196754f543f71f093255076f421aa73f0c4e11d54cf61ea7d28",
+    "reference_sha256": "f9ea00e041e48abfe18e36794aa60752781aa3ae9affe66157cf1c3d4ecadf4d",
+    "extracted_netlist": null
+  },
+  "provenance": {
+    "klt_version": "0.4.0",
+    "klayout_version": "0.30.12",
+    "pdk": null,
+    "deck": null,
+    "input": null
+  },
+  "mismatches": [
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": null,
+        "reference": "DUT.A1.NIA",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": null,
+        "reference": "DUT.A1.NIB",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": null,
+        "reference": "DUT.A1.P1",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": null,
+        "reference": "DUT.A1.P2",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": null,
+        "reference": "DUT.A1.P3",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": null,
+        "reference": "DUT.A1.P4",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": null,
+        "reference": "DUT.A2.NIA",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": null,
+        "reference": "DUT.A2.NIB",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": null,
+        "reference": "DUT.A2.P1",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": null,
+        "reference": "DUT.A2.P2",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": null,
+        "reference": "DUT.A2.P3",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": null,
+        "reference": "DUT.A2.P4",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": null,
+        "reference": "DUT.A3.N1",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": null,
+        "reference": "DUT.A3.N2",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": null,
+        "reference": "DUT.A3.N3",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": null,
+        "reference": "DUT.A3.NIA",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": null,
+        "reference": "DUT.A3.NIB",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": null,
+        "reference": "DUT.A3.P1",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": null,
+        "reference": "DUT.A3.P2",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": null,
+        "reference": "DUT.A3.P3",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": null,
+        "reference": "DUT.A3.P4",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": null,
+        "reference": "DUT.B2.N",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": null,
+        "reference": "DUT.B3.N",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": null,
+        "reference": "DUT.B4.N",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": null,
+        "reference": "SB.IMNA",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": null,
+        "reference": "SB.IMNB",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": null,
+        "reference": "SB.IS2NB",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": null,
+        "reference": "SR1.FMP",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": null,
+        "reference": "SR1.FSP",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": null,
+        "reference": "SR1.IM2P",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": null,
+        "reference": "SR1.IMPA",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": null,
+        "reference": "SR1.IMPB",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": null,
+        "reference": "SR1.IS2PA",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": null,
+        "reference": "SR1.IS2PB",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": null,
+        "reference": "SR1.ISP",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": null,
+        "reference": "SR1.PC",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": null,
+        "reference": "SR1.TSP",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": null,
+        "reference": "SR2.TDN",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": null,
+        "reference": "SR4.IMNA",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": null,
+        "reference": "SR4.IMNB",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": null,
+        "reference": "SR4.IS2NA",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": null,
+        "reference": "SR4.IS2NB",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": null,
+        "reference": "SV.IMNA",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": null,
+        "reference": "SV.IMNB",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$1",
+        "reference": "SV.IS2NB",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$10",
+        "reference": "SR3.IMNA",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$100",
+        "reference": "SR4.PC",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$101",
+        "reference": "SR3.IS2PA",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$102",
+        "reference": "DUT.B1.P",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$103",
+        "reference": "SR2.TSP",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$104",
+        "reference": "SR4.FSP",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$105",
+        "reference": "SR2.ISP",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$106",
+        "reference": "SR2.IS2PA",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$107",
+        "reference": "SR2.IS2PB",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$108",
+        "reference": "SR4.IS2PB",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$109",
+        "reference": "DUT.B3.P",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$11",
+        "reference": "SR1.IS2NA",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$110",
+        "reference": "SR4.ISP",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$111",
+        "reference": "SR3.PC",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$112",
+        "reference": "SR3.TDP",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$113",
+        "reference": "DUT.B2.P",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$114",
+        "reference": "SR4.IS2PA",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$115",
+        "reference": "SR2.FSP",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$116",
+        "reference": "SR4.IM2P",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$117",
+        "reference": "SR4.TSP",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$118",
+        "reference": "SR3.IM2P",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$119",
+        "reference": "SR3.FMP",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$12",
+        "reference": "SR1.IS2NB",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$120",
+        "reference": "SR4.FMP",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$121",
+        "reference": "SR3.TSP",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$122",
+        "reference": "DUT.A1.PIB",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$123",
+        "reference": "SR3.ISP",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$124",
+        "reference": "DUT.A1.PIA",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$125",
+        "reference": "SR3.IMPA",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$126",
+        "reference": "SR4.IMPB",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$127",
+        "reference": "SR4.IMPA",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$128",
+        "reference": "SR3.IS2PB",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$129",
+        "reference": "DUT.A2.PIB",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$13",
+        "reference": "DUT.A3.N4",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$130",
+        "reference": "DUT.B4.P",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$131",
+        "reference": "SR4.TDP",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$132",
+        "reference": "SR3.FSP",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$14",
+        "reference": "SR2.IS2NB",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$15",
+        "reference": "SB.IS2NA",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$16",
+        "reference": "DUT.A1.N3",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$17",
+        "reference": "DUT.A1.N4",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$18",
+        "reference": "DUT.A1.N2",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$19",
+        "reference": "SR2.IMNB",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$2",
+        "reference": "SV.IS2NA",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$20",
+        "reference": "SR2.IMNA",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$21",
+        "reference": "DUT.A1.N1",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$22",
+        "reference": "SR2.IS2NA",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$23",
+        "reference": "SR3.IMNB",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$24",
+        "reference": "DUT.A2.N2",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$25",
+        "reference": "SR1.ISN",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$26",
+        "reference": "SR1.TSN",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$27",
+        "reference": "SR1.FMN",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$28",
+        "reference": "SR1.IM2N",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$29",
+        "reference": "SR1.TDN",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$3",
+        "reference": "DUT.A2.N3",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$30",
+        "reference": "SR1.NC",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$31",
+        "reference": "SV.FSN",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$32",
+        "reference": "SV.ISN",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$33",
+        "reference": "SV.TSN",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$34",
+        "reference": "SV.FMN",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$35",
+        "reference": "SV.IM2N",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$36",
+        "reference": "SV.TDN",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$37",
+        "reference": "SV.NC",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$38",
+        "reference": "SB.FSN",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$39",
+        "reference": "SB.ISN",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$4",
+        "reference": "DUT.A2.N1",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$40",
+        "reference": "SB.TSN",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$41",
+        "reference": "SB.FMN",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$42",
+        "reference": "SB.IM2N",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$43",
+        "reference": "SB.TDN",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$44",
+        "reference": "SB.NC",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$45",
+        "reference": "SR1.FSN",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$46",
+        "reference": "SR2.NC",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$47",
+        "reference": "SR3.FMN",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$48",
+        "reference": "SR2.IM2N",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$49",
+        "reference": "SR2.FMN",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$5",
+        "reference": "SR3.IS2NB",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$50",
+        "reference": "SR2.TSN",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$51",
+        "reference": "SR2.ISN",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$52",
+        "reference": "SR2.FSN",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$53",
+        "reference": "SR3.NC",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$54",
+        "reference": "SR3.TDN",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$55",
+        "reference": "SR3.IM2N",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$56",
+        "reference": "DUT.B1.N",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$57",
+        "reference": "SR3.TSN",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$58",
+        "reference": "SR3.ISN",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$59",
+        "reference": "SR3.FSN",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$6",
+        "reference": "DUT.A2.N4",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$60",
+        "reference": "SR4.NC",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$61",
+        "reference": "SR4.TDN",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$62",
+        "reference": "SR4.IM2N",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$63",
+        "reference": "SR4.FMN",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$64",
+        "reference": "SR4.TSN",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$65",
+        "reference": "SR4.ISN",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$66",
+        "reference": "SR4.FSN",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$67",
+        "reference": "SB.IS2PB",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$68",
+        "reference": "SB.FSP",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$69",
+        "reference": "SV.IS2PB",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$7",
+        "reference": "SR1.IMNA",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$70",
+        "reference": "SV.TDP",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$71",
+        "reference": "DUT.A3.PIB",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$72",
+        "reference": "SV.IMPA",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$73",
+        "reference": "SV.IMPB",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$74",
+        "reference": "SR3.IMPB",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$75",
+        "reference": "SV.FMP",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$76",
+        "reference": "DUT.A3.PIA",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$77",
+        "reference": "SV.TSP",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$78",
+        "reference": "SV.ISP",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$79",
+        "reference": "SV.IS2PA",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$8",
+        "reference": "SR1.IMNB",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$80",
+        "reference": "SR2.FMP",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$81",
+        "reference": "SV.FSP",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$82",
+        "reference": "SV.PC",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$83",
+        "reference": "SV.IM2P",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$84",
+        "reference": "SB.ISP",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$85",
+        "reference": "SB.TSP",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$86",
+        "reference": "SB.FMP",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$87",
+        "reference": "SB.IM2P",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$88",
+        "reference": "SB.IMPB",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$89",
+        "reference": "SB.IMPA",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$9",
+        "reference": "SR3.IS2NA",
+        "class": "NFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$90",
+        "reference": "SB.TDP",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$91",
+        "reference": "SB.PC",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$92",
+        "reference": "SR1.TDP",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$93",
+        "reference": "SR2.IM2P",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$94",
+        "reference": "SR2.IMPB",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$95",
+        "reference": "SR2.IMPA",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$96",
+        "reference": "DUT.A2.PIA",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$97",
+        "reference": "SR2.TDP",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$98",
+        "reference": "SR2.PC",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "device.unmatched",
+      "severity": "error",
+      "description": "device has no counterpart on the other side",
+      "side": "reference",
+      "net": null,
+      "device": {
+        "layout": "\\$99",
+        "reference": "SB.IS2PA",
+        "class": "PFET"
+      },
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "A|B|INV_Q_A|INV_Q_A_VIA|S|TG_FBS_B|TG_FBS_B_VIA|TG_S_B|TG_S_B_VIA",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "A|B|INV_Q_A|INV_Q_A_VIA|S|TG_FBS_B|TG_FBS_B_VIA|TG_S_B|TG_S_B_VIA$1",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "A|B|INV_Q_A|INV_Q_A_VIA|S|TG_FBS_B|TG_FBS_B_VIA|TG_S_B|TG_S_B_VIA$2",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "A|B|INV_Q_A|INV_Q_A_VIA|S|TG_FBS_B|TG_FBS_B_VIA|TG_S_B|TG_S_B_VIA$3",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "A|B|INV_Q_A|INV_Q_A_VIA|S|TG_FBS_B|TG_FBS_B_VIA|TG_S_B|TG_S_B_VIA$4",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "A|B|INV_Q_A|INV_Q_A_VIA|S|TG_FBS_B|TG_FBS_B_VIA|TG_S_B|TG_S_B_VIA$5",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "A|B|M_EAST|M_WEST|NAND_M_A|NAND_M_A_EXT_VIA|NAND_M_A_EXT_VIA2|NAND_M_A_STUB|TG_D_B|TG_D_B_VIA|TG_D_B_VIA2|TG_FBM_B|TG_FBM_B_ALT_VIA|TG_FBM_B_ALT_VIA2",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "A|B|M_EAST|M_WEST|NAND_M_A|NAND_M_A_EXT_VIA|NAND_M_A_EXT_VIA2|NAND_M_A_STUB|TG_D_B|TG_D_B_VIA|TG_D_B_VIA2|TG_FBM_B|TG_FBM_B_ALT_VIA|TG_FBM_B_ALT_VIA2$1",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "A|B|M_EAST|M_WEST|NAND_M_A|NAND_M_A_EXT_VIA|NAND_M_A_EXT_VIA2|NAND_M_A_STUB|TG_D_B|TG_D_B_VIA|TG_D_B_VIA2|TG_FBM_B|TG_FBM_B_ALT_VIA|TG_FBM_B_ALT_VIA2$2",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "A|B|M_EAST|M_WEST|NAND_M_A|NAND_M_A_EXT_VIA|NAND_M_A_EXT_VIA2|NAND_M_A_STUB|TG_D_B|TG_D_B_VIA|TG_D_B_VIA2|TG_FBM_B|TG_FBM_B_ALT_VIA|TG_FBM_B_ALT_VIA2$3",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "A|B|M_EAST|M_WEST|NAND_M_A|NAND_M_A_EXT_VIA|NAND_M_A_EXT_VIA2|NAND_M_A_STUB|TG_D_B|TG_D_B_VIA|TG_D_B_VIA2|TG_FBM_B|TG_FBM_B_ALT_VIA|TG_FBM_B_ALT_VIA2$4",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "A|B|M_EAST|M_WEST|NAND_M_A|NAND_M_A_EXT_VIA|NAND_M_A_EXT_VIA2|NAND_M_A_STUB|TG_D_B|TG_D_B_VIA|TG_D_B_VIA2|TG_FBM_B|TG_FBM_B_ALT_VIA|TG_FBM_B_ALT_VIA2$5",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "A|CLK|CTRL|CTRLB|INV_CLK_A|INV_CLK_CLK_VIA|TG_D_CTRL|TG_D_CTRL_VIA|TG_FBM_CTRLB|TG_FBM_CTRLB_VIA|TG_FBS_CTRL|TG_FBS_CTRL_VIA|TG_S_CTRLB|TG_S_CTRLB_VIA",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "A|CLK|CTRL|CTRLB|INV_CLK_A|INV_CLK_CLK_VIA|TG_D_CTRL|TG_D_CTRL_VIA|TG_FBM_CTRLB|TG_FBM_CTRLB_VIA|TG_FBS_CTRL|TG_FBS_CTRL_VIA|TG_S_CTRLB|TG_S_CTRLB_VIA$1",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "A|CLK|CTRL|CTRLB|INV_CLK_A|INV_CLK_CLK_VIA|TG_D_CTRL|TG_D_CTRL_VIA|TG_FBM_CTRLB|TG_FBM_CTRLB_VIA|TG_FBS_CTRL|TG_FBS_CTRL_VIA|TG_S_CTRLB|TG_S_CTRLB_VIA$2",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "A|CLK|CTRL|CTRLB|INV_CLK_A|INV_CLK_CLK_VIA|TG_D_CTRL|TG_D_CTRL_VIA|TG_FBM_CTRLB|TG_FBM_CTRLB_VIA|TG_FBS_CTRL|TG_FBS_CTRL_VIA|TG_S_CTRLB|TG_S_CTRLB_VIA$3",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "A|CLK|CTRL|CTRLB|INV_CLK_A|INV_CLK_CLK_VIA|TG_D_CTRL|TG_D_CTRL_VIA|TG_FBM_CTRLB|TG_FBM_CTRLB_VIA|TG_FBS_CTRL|TG_FBS_CTRL_VIA|TG_S_CTRLB|TG_S_CTRLB_VIA$4",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "A|CLK|CTRL|CTRLB|INV_CLK_A|INV_CLK_CLK_VIA|TG_D_CTRL|TG_D_CTRL_VIA|TG_FBM_CTRLB|TG_FBM_CTRLB_VIA|TG_FBS_CTRL|TG_FBS_CTRL_VIA|TG_S_CTRLB|TG_S_CTRLB_VIA$5",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "A|D|TG_D_A",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "A|D|TG_D_A$1",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "A|D|TG_D_A$2",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "A|D|TG_D_A$3",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "A|D|TG_D_A$4",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "A|D|TG_D_A$5",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "A|INV_MC_A|MB|MNAB_Y|MPA_Y|MPB_Y|NAND_M_Y|TG_S_A|Y",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "A|INV_MC_A|MB|MNAB_Y|MPA_Y|MPB_Y|NAND_M_Y|TG_S_A|Y$1",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "A|INV_MC_A|MB|MNAB_Y|MPA_Y|MPB_Y|NAND_M_Y|TG_S_A|Y$2",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "A|INV_MC_A|MB|MNAB_Y|MPA_Y|MPB_Y|NAND_M_Y|TG_S_A|Y$3",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "A|INV_MC_A|MB|MNAB_Y|MPA_Y|MPB_Y|NAND_M_Y|TG_S_A|Y$4",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "A|INV_MC_A|MB|MNAB_Y|MPA_Y|MPB_Y|NAND_M_Y|TG_S_A|Y$5",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "A|INV_MC_Y|INV_MC_Y_VIA|MC|TG_FBM_A|TG_FBM_A_VIA|Y",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "A|INV_MC_Y|INV_MC_Y_VIA|MC|TG_FBM_A|TG_FBM_A_VIA|Y$1",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "A|INV_MC_Y|INV_MC_Y_VIA|MC|TG_FBM_A|TG_FBM_A_VIA|Y$2",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "A|INV_MC_Y|INV_MC_Y_VIA|MC|TG_FBM_A|TG_FBM_A_VIA|Y$3",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "A|INV_MC_Y|INV_MC_Y_VIA|MC|TG_FBM_A|TG_FBM_A_VIA|Y$4",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "A|INV_MC_Y|INV_MC_Y_VIA|MC|TG_FBM_A|TG_FBM_A_VIA|Y$5",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "A|INV_Q_Y|INV_Q_Y_VIA|INV_Q_Y_VIA2|NAND_S2_A|NAND_S2_A_STUB|NAND_S2_A_VIA|NAND_S2_A_VIA2|Q|Y",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "A|INV_Q_Y|INV_Q_Y_VIA|INV_Q_Y_VIA2|NAND_S2_A|NAND_S2_A_STUB|NAND_S2_A_VIA|NAND_S2_A_VIA2|Q|Y$1",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "A|INV_Q_Y|INV_Q_Y_VIA|INV_Q_Y_VIA2|NAND_S2_A|NAND_S2_A_STUB|NAND_S2_A_VIA|NAND_S2_A_VIA2|Q|Y$2",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "A|INV_Q_Y|INV_Q_Y_VIA|INV_Q_Y_VIA2|NAND_S2_A|NAND_S2_A_STUB|NAND_S2_A_VIA|NAND_S2_A_VIA2|Q|Y$3",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "A|INV_Q_Y|INV_Q_Y_VIA|INV_Q_Y_VIA2|NAND_S2_A|NAND_S2_A_STUB|NAND_S2_A_VIA|NAND_S2_A_VIA2|Q|Y$4",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "A|INV_Q_Y|INV_Q_Y_VIA|INV_Q_Y_VIA2|NAND_S2_A|NAND_S2_A_STUB|NAND_S2_A_VIA|NAND_S2_A_VIA2|Q|Y$5",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "A|MNAB_Y|MPA_Y|MPB_Y|NAND_S2_Y|QB|TG_FBS_A|Y",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "A|MNAB_Y|MPA_Y|MPB_Y|NAND_S2_Y|QB|TG_FBS_A|Y$1",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "A|MNAB_Y|MPA_Y|MPB_Y|NAND_S2_Y|QB|TG_FBS_A|Y$2",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "A|MNAB_Y|MPA_Y|MPB_Y|NAND_S2_Y|QB|TG_FBS_A|Y$3",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "A|MNAB_Y|MPA_Y|MPB_Y|NAND_S2_Y|QB|TG_FBS_A|Y$4",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "A|MNAB_Y|MPA_Y|MPB_Y|NAND_S2_Y|QB|TG_FBS_A|Y$5",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "CLKB|CLKB_BRIDGE1|CLKB_BRIDGE2|CLKB_MID|CLKB_W|CTRL|CTRLB|INV_CLK_Y|TG_D_CTRLB|TG_FBM_CTRL|TG_FBS_CTRLB|TG_S_CTRL|Y",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "CLKB|CLKB_BRIDGE1|CLKB_BRIDGE2|CLKB_MID|CLKB_W|CTRL|CTRLB|INV_CLK_Y|TG_D_CTRLB|TG_FBM_CTRL|TG_FBS_CTRLB|TG_S_CTRL|Y$1",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "CLKB|CLKB_BRIDGE1|CLKB_BRIDGE2|CLKB_MID|CLKB_W|CTRL|CTRLB|INV_CLK_Y|TG_D_CTRLB|TG_FBM_CTRL|TG_FBS_CTRLB|TG_S_CTRL|Y$2",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "CLKB|CLKB_BRIDGE1|CLKB_BRIDGE2|CLKB_MID|CLKB_W|CTRL|CTRLB|INV_CLK_Y|TG_D_CTRLB|TG_FBM_CTRL|TG_FBS_CTRLB|TG_S_CTRL|Y$3",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "CLKB|CLKB_BRIDGE1|CLKB_BRIDGE2|CLKB_MID|CLKB_W|CTRL|CTRLB|INV_CLK_Y|TG_D_CTRLB|TG_FBM_CTRL|TG_FBS_CTRLB|TG_S_CTRL|Y$4",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "CLKB|CLKB_BRIDGE1|CLKB_BRIDGE2|CLKB_MID|CLKB_W|CTRL|CTRLB|INV_CLK_Y|TG_D_CTRLB|TG_FBM_CTRL|TG_FBS_CTRLB|TG_S_CTRL|Y$5",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "EN|NAND_M_EN|NAND_M_EN_VIA|NAND_S2_EN|NAND_S2_EN_VIA|RST_N",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "EN|NAND_M_EN|NAND_M_EN_VIA|NAND_S2_EN|NAND_S2_EN_VIA|RST_N$1",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "EN|NAND_M_EN|NAND_M_EN_VIA|NAND_S2_EN|NAND_S2_EN_VIA|RST_N$2",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "EN|NAND_M_EN|NAND_M_EN_VIA|NAND_S2_EN|NAND_S2_EN_VIA|RST_N$3",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "EN|NAND_M_EN|NAND_M_EN_VIA|NAND_S2_EN|NAND_S2_EN_VIA|RST_N$4",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "EN|NAND_M_EN|NAND_M_EN_VIA|NAND_S2_EN|NAND_S2_EN_VIA|RST_N$5",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "INV_CLK_VDD|INV_MC_VDD|INV_Q_VDD|MPA_PY|MPB_PY|NAND_M_VDD|NAND_S2_VDD|NWELL_VDD|SB_VDD|SR1_VDD|SR2_VDD|SR3_VDD|SR4_VDD|SV_VDD|TG_D_VDD|TG_FBM_VDD|TG_FBS_VDD|TG_S_VDD|VDD",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "INV_CLK_VSS|INV_MC_VSS|INV_Q_VSS|NAND_M_VSS|NAND_S2_VSS|SB_VSS|SR1_VSS|SR2_VSS|SR3_VSS|SR4_VSS|SV_VSS|TG_D_VSS|TG_FBM_VSS|TG_FBS_VSS|TG_S_VSS|VSS",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "\\$18",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "\\$19",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "\\$22",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "\\$23",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "\\$26",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "\\$27",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "\\$30",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "\\$31",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "\\$34",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "\\$35",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "\\$38",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "layout net has no reference counterpart",
+      "side": "layout",
+      "net": {
+        "layout": "\\$39",
+        "reference": null
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "CLK"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "DUT.A1.AN"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "DUT.A1.BN"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "DUT.A1.MID"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "DUT.A1.S1"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "DUT.A1.S2"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "DUT.A2.AN"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "DUT.A2.BN"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "DUT.A2.MID"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "DUT.A2.S1"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "DUT.A2.S2"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "DUT.A3.AN"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "DUT.A3.BN"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "DUT.A3.MID"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "DUT.A3.S1"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "DUT.A3.S2"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "DUT.RN1"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "DUT.RN2"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "DUT.RN3"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "DUT.RN4"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "DUT.T1"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "DUT.T2"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "EN1"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "EN2"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "EN3"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "EN4"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "RAW_BIT"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "RAW_VALID"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "RING_BIT1"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "RING_BIT2"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "RING_BIT3"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "RING_BIT4"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "RO1"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "RO2"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "RO3"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "RO4"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "RST_N"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "SB.CLKB"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "SB.M"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "SB.MB"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "SB.MC"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "SB.MMID"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "SB.QB"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "SB.S"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "SB.S2MID"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "SR1.CLKB"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "SR1.M"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "SR1.MB"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "SR1.MC"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "SR1.MMID"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "SR1.QB"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "SR1.S"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "SR1.S2MID"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "SR2.CLKB"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "SR2.M"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "SR2.MB"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "SR2.MC"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "SR2.MMID"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "SR2.QB"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "SR2.S"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "SR2.S2MID"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "SR3.CLKB"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "SR3.M"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "SR3.MB"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "SR3.MC"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "SR3.MMID"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "SR3.QB"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "SR3.S"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "SR3.S2MID"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "SR4.CLKB"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "SR4.M"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "SR4.MB"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "SR4.MC"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "SR4.MMID"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "SR4.QB"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "SR4.S"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "SR4.S2MID"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "SV.CLKB"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "SV.M"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "SV.MB"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "SV.MC"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "SV.MMID"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "SV.QB"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "SV.S"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "SV.S2MID"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "VDD"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "VDDR1"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "VDDR2"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "VDDR3"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "VDDR4"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "VSS"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "net.unmatched",
+      "severity": "error",
+      "description": "reference net has no layout counterpart",
+      "side": "reference",
+      "net": {
+        "layout": null,
+        "reference": "XO"
+      },
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "topology",
+      "severity": "error",
+      "description": "circuit could not be matched to a counterpart",
+      "side": "reference",
+      "net": null,
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": {
+        "layout": null,
+        "reference": "RO_RING5"
+      },
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "topology",
+      "severity": "error",
+      "description": "circuit could not be matched to a counterpart",
+      "side": "reference",
+      "net": null,
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": {
+        "layout": null,
+        "reference": "RO_RING5_R1"
+      },
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "topology",
+      "severity": "error",
+      "description": "circuit could not be matched to a counterpart",
+      "side": "reference",
+      "net": null,
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": {
+        "layout": null,
+        "reference": "RO_RING5_R2"
+      },
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "topology",
+      "severity": "error",
+      "description": "circuit could not be matched to a counterpart",
+      "side": "reference",
+      "net": null,
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": {
+        "layout": null,
+        "reference": "RO_RING5_R3"
+      },
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "topology",
+      "severity": "error",
+      "description": "circuit could not be matched to a counterpart",
+      "side": "reference",
+      "net": null,
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": {
+        "layout": null,
+        "reference": "RO_RING5_R4"
+      },
+      "instance": null,
+      "subcircuit": null
+    },
+    {
+      "category": "topology.flattened",
+      "severity": "warning",
+      "description": "options.flatten_reference flattened the reference netlist before comparing: 22 circuit(s) were collapsed into 6 top-level circuit(s), substituting every subcircuit-call instance in place -- this compare verified topology only after removing the original hierarchy boundaries on this side (see docs/cli/lvs.md, \"topology.flattened\")",
+      "side": "reference",
+      "net": null,
+      "device": null,
+      "property": null,
+      "details": null,
+      "circuit": null,
+      "instance": null,
+      "subcircuit": null
+    }
+  ],
+  "net_correspondence": []
+}
