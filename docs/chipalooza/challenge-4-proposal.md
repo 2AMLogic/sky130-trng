@@ -618,8 +618,18 @@ that lands this document):
   `klt extract`'s net count drops from 27 to 23 (exactly the four merges
   a five-pin net makes), with the merged net's own six-device list
   matching `design/sampler_core.spice`'s
-  `XMpc`/`XMnc`/`XMtdn`/`XMfsn`/`XMfmp`/`XMtsp` exactly. The six
-  data-path nets and the whole-cell `klt lvs` sign-off remain open (#27).
+  `XMpc`/`XMnc`/`XMtdn`/`XMfsn`/`XMfmp`/`XMtsp` exactly. **A later increment
+  routed the first data-path net, `mc`** (`inv_mc.y` → `tg_fbm.a`): blocked
+  on `met1` for its entire useful height band (`clkb`'s own backbone
+  crosses at `y ≈ 2.33`; `clk`'s via-drop pad sits at the same x as the
+  pin gap), so this net vias one plane further to `met2` — empty across
+  this span — and runs a short U-shaped lane at `y = 1.8`. `klt drc` clean
+  (0 violations) on the first attempt, cell bbox unchanged, `klt extract`'s
+  net count drops from 23 to 22 (the one merge a two-pin net makes), and
+  the merged net's own four-device list matches
+  `XMim2p`/`XMim2n`/`XMfmp`/`XMfmn` exactly. Five data-path nets
+  (`m`/`mb`/`s`/`q`/`qb`) and the whole-cell `klt lvs` sign-off remain open
+  (#27).
   Note also that
   "DRC-clean" here means clean against `klt`'s **curated** sky130 deck (a
   documented subset — see each `drc.json`'s own `coverage` block), not a

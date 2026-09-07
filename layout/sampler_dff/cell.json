@@ -832,6 +832,7 @@
       "pins": []
     },
     {
+      "name": "clkb_bus",
       "_comment": [
         "clkb fan-out, final span (issue #22): hop2e through tg_fbs's own",
         "'ctrlb' pin (design/sampler_core.spice's XMfsn -- clkb on the",
@@ -875,6 +876,104 @@
            {"from_pin": {"block": "core", "port": "hop2e"}, "to_pin": {"block": "core", "port": "tg_fbs_ctrlb"},
             "waypoints_um": [[49.03, 0.40]]}
          ]}
+      ],
+      "pins": []
+    },
+    {
+      "name": "mc_met1",
+      "_comment": [
+        "mc fan-out, step 1 of 2 (issue #22): the first of the six data-path",
+        "nets (m/mb/mc/s/q/qb -- see layout/sampler_dff/README.md's own",
+        "device-line derivation of which sampler_tg 'a'/'b' pin each",
+        "net lands on). mc is design/sampler_core.spice's XMim2p/XMim2n",
+        "(inv_mc's own OUTPUT, i.e. inv_mc.y) driving XMfmp's/XMfmn's shared",
+        "gate-side terminal -- which the hand-authored sampler_tg.source.spice",
+        "template (a=first device terminal, b=third) resolves to tg_fbm's",
+        "'a' pin, NOT 'b': XMfmp is 'mc clkb m vdd', so a=mc, ctrl=clkb,",
+        "b=m. (tg_fbm's 'b' pin is the OTHER data net, 'm' -- issue #22's",
+        "next increment after this one, not this one.)",
+        "",
+        "Both ends are plain li1 S/D pads with no internal-blob conflict at",
+        "their own (x, y) (confirmed with klayout.db against the composed",
+        "sampler_dff.gds: a 0.42um square via-drop landing centered on each",
+        "pin overlaps no existing met1) -- unlike rst_n's nand2 'a' pins, no",
+        "stub escape is needed here. This stage vias each pin straight up",
+        "from li1 to met1, zero lateral distance -- the same single-hop",
+        "via-drop every other fan-out in this cell uses."
+      ],
+      "blocks": [
+        {
+          "id": "core",
+          "orientation": "none",
+          "cell": {
+            "from_stage": "clkb_bus",
+            "ports": [
+              {"name": "inv_mc_y", "x_um": 21.19, "y_um": 1.2, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.17, "direction_deg": 0},
+              {"name": "tg_fbm_a", "x_um": 25.955, "y_um": 1.2, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.17, "direction_deg": 0},
+              {"name": "inv_mc_y_m1", "x_um": 21.19, "y_um": 1.2, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 0},
+              {"name": "tg_fbm_a_m1", "x_um": 25.955, "y_um": 1.2, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 0}
+            ]
+          }
+        }
+      ],
+      "placement": {"strategy": "explicit", "order": ["core"], "origins_um": {"core": {"x": 0.0, "y": 0.0}}},
+      "routing": {"layer_role": "metal2", "width_um": 0.17},
+      "connectivity": [
+        {"net": "inv_mc_y_via", "pins": [{"block": "core", "port": "inv_mc_y"}, {"block": "core", "port": "inv_mc_y_m1"}]},
+        {"net": "tg_fbm_a_via", "pins": [{"block": "core", "port": "tg_fbm_a"}, {"block": "core", "port": "tg_fbm_a_m1"}]}
+      ],
+      "pins": []
+    },
+    {
+      "_comment": [
+        "mc fan-out, step 2 of 2 (issue #22): the long haul, on met2",
+        "('metal3' role, single-hop from met1). A plain met1 route between",
+        "these two pins is blocked for its entire useful height band:",
+        "clkb_seg2's own 'clkb_mid' net (issue #22, previous increment) runs",
+        "a met1 backbone at y~=2.33 spanning x=24.6..29.74 -- squarely",
+        "between tg_fbm's block (x=24.055..25.955) and inv_mc's (x=19.29..",
+        "21.19) -- and clk_bus's own via-drop pad at tg_fbm_ctrlb (met1,",
+        "x=24.39..24.81, y=0.82..1.24) sits at the SAME x as the pin gap.",
+        "There is no met1 lane height between those two obstructions that",
+        "both pins can reach without crossing one of them (confirmed with",
+        "klayout.db against the composed GDS: every candidate met1 lane",
+        "height sampled in y=0.5..2.4 across x=21.4..24.935 hits one or the",
+        "other except a narrow y=0.7/1.5/1.8/2.0 band that clkb_seg2's own",
+        "x=25.2 vertical excursion still crosses at destination x=25.955's",
+        "own approach). met2 is empty in this whole x/y span (the only met2",
+        "here is clk_bus's own basement lane at y=-1.7 and clkb's two",
+        "bridges at x=11.59..14.21/42.44..45.11, none of which reach x=21..",
+        "26 at any positive y), so this stage vias each mc_met1 tip up to",
+        "met2 and runs the whole haul there instead: up from (21.19, 1.2) to",
+        "(21.19, 1.8), across to (25.955, 1.8), back down to (25.955, 1.2).",
+        "y=1.8 clears clk's own ctrlb pad (top edge 1.24, 0.56um away) and",
+        "clkb_seg2's own backbone (bottom edge ~2.245 at its nearest, 0.445um",
+        "away) with margin on both sides.",
+        "",
+        "Still open (issue #22 / #27): m, mb, s, q, qb, and promoting the",
+        "whole-cell external pins (d/clk/rst_n/q/vdd/vss) once all six",
+        "data-path nets exist -- see layout/sampler_dff/README.md's 'What",
+        "remains' section."
+      ],
+      "blocks": [
+        {
+          "id": "core",
+          "orientation": "none",
+          "cell": {
+            "from_stage": "mc_met1",
+            "ports": [
+              {"name": "inv_mc_y_m1", "x_um": 21.19, "y_um": 1.2, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 0},
+              {"name": "tg_fbm_a_m1", "x_um": 25.955, "y_um": 1.2, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 0}
+            ]
+          }
+        }
+      ],
+      "placement": {"strategy": "explicit", "order": ["core"], "origins_um": {"core": {"x": 0.0, "y": 0.0}}},
+      "routing": {"layer_role": "metal3", "width_um": 0.17},
+      "connectivity": [
+        {"net": "mc",
+         "pins": [{"block": "core", "port": "inv_mc_y_m1"}, {"block": "core", "port": "tg_fbm_a_m1"}],
+         "waypoints_um": [[21.19, 1.2], [21.19, 1.8], [25.955, 1.8], [25.955, 1.2]]}
       ],
       "pins": []
     }

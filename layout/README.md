@@ -4,7 +4,26 @@ Physical layout evidence for the sky130-trng entropy source, verified with
 `klayout-tools` (`klt`) against the sky130 open PDK. See `layout/pdk.json`
 for the PDK/tool pin.
 
-**Status (issue #22, this increment): `sampler_dff`'s `clkb` fan-out is
+**Status (issue #22, this increment): `sampler_dff`'s first data-path net,
+`mc`, is routed — DRC-clean on the first attempt.** `mc`
+(`inv_mc.y` → `tg_fbm.a`, `design/sampler_core.spice`'s own
+`XMim2p`/`XMim2n`/`XMfmp`/`XMfmn`) is the first of the six `m`/`mb`/`mc`/
+`s`/`q`/`qb` data-path nets #27 left open after `rst_n`/`clk`/`clkb`. A
+plain `met1` route is blocked for its entire useful height band — `clkb`'s
+own `clkb_mid` backbone crosses at `y ≈ 2.33`, and `clk`'s own via-drop
+pad at `tg_fbm.ctrlb` sits at the same x as the pin gap — so this net vias
+one plane further, to `met2` (empty across this span), and runs a short
+U-shaped lane at `y = 1.8`. `klt drc` clean (0 violations), cell bbox
+unchanged, `klt extract`'s net count drops from 23 to **22** (the one
+merge a two-pin net makes), and the merged net's own four-device list
+matches `XMim2p`/`XMim2n`/`XMfmp`/`XMfmn` exactly — the correctness check
+that matters, since a route landing on the wrong side of `tg_fbm`'s pass
+gate would still pass DRC. See `layout/sampler_dff/README.md`'s "Result:
+`mc` fan-out" for the full derivation (including why the direct-`met1`
+and several `met1`-with-a-jog candidates were rejected before `met2`)
+and "What remains" for the five nets still open.
+
+**A previous increment (issue #22): `sampler_dff`'s `clkb` fan-out is
 routed too — the differential half of `clk`'s own five-pin bundle,
 DRC-clean, and confirmed by `klt extract` to reach exactly the six
 clkb-gated devices the schematic has.** [`layout/sampler_dff/`](sampler_dff/README.md)
@@ -685,7 +704,7 @@ trng_top                   (not in scope for #22 — stops at the raw tap)
         ro_stage   (x4/ring)  BUILT, all 4 wstv values — DRC-clean + LVS-clean (layout/ro_stage/, ro_stage_wstv0p{44,46,48}/) — 4 distinct physical cells (one per ring's wstv), each reused 4x within its own ring
       ro_buf     (x4)        BUILT — DRC-clean + LVS-clean (layout/ro_buf/)
       xor2       (x3)        BUILT — DRC-clean + LVS-clean (layout/xor2/) — 4x mos_array (two series chains per tree) + 3x guard_ring + 2x ro_buf cell; one physical cell reused 3x (xa1/xa2/xa3 are identical instances)
-    sampler_dff  (x6)        ASSEMBLY STARTED — layout/sampler_dff/ places all nine leaf-cell instances (3x ro_buf, 4x sampler_tg, 2x sampler_nand2) via blocks[].cell, DRC-clean (0 violations), plus a routed vdd/vss bus, a routed rst_n fan-out and a routed 5-pin clk fan-out (all DRC-clean, 0 violations, 0 unrouted nets; klt extract confirms each is one physically merged net, and that clk lands on exactly the six clk-gated devices design/sampler_core.spice has). klt extract also confirms 22/22 devices at the correct 11 nfet/11 pfet split against design/sampler_core.spice's own .subckt sampler_dff. Still open: clkb fan-out (a met1 corridor at y ~ 0.40 is reserved for it), the six data-path nets (m/mb/mc/s/q/qb), and the resulting whole-cell klt lvs sign-off (#27)
+    sampler_dff  (x6)        ASSEMBLY STARTED — layout/sampler_dff/ places all nine leaf-cell instances (3x ro_buf, 4x sampler_tg, 2x sampler_nand2) via blocks[].cell, DRC-clean (0 violations), plus a routed vdd/vss bus and routed rst_n/clk/clkb fan-outs (all DRC-clean, 0 violations, 0 unrouted nets; klt extract confirms each is one physically merged net landing on exactly the devices design/sampler_core.spice has) and the first of the six data-path nets, mc (inv_mc.y -> tg_fbm.a, routed on met2 since met1 is blocked for its whole useful height band by clkb's own backbone and clk's own via-drop pad). klt extract confirms 22/22 devices at the correct 11 nfet/11 pfet split against design/sampler_core.spice's own .subckt sampler_dff. Still open: five data-path nets (m/mb/s/q/qb), and the resulting whole-cell klt lvs sign-off (#27)
 ```
 
 "PROVEN AT DEVICE LEVEL" means: every transistor geometry the cell needs is
