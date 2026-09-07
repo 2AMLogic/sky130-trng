@@ -8,6 +8,28 @@
       "cell": {
         "ports": [
           {
+            "name": "inv_mc_y",
+            "x_um": 21.19,
+            "y_um": 1.2,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 0
+          },
+          {
+            "name": "tg_fbm_a",
+            "x_um": 25.955,
+            "y_um": 1.2,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 0
+          },
+          {
             "name": "inv_mc_y_m1",
             "x_um": 21.19,
             "y_um": 1.2,
@@ -30,8 +52,8 @@
             "direction_deg": 0
           }
         ],
-        "cell_name": "mc_met1",
-        "gds_path": "mc_met1.gds"
+        "cell_name": "clkb_bus",
+        "gds_path": "clkb_bus.gds"
       }
     }
   ],
@@ -48,45 +70,40 @@
     }
   },
   "routing": {
-    "layer_role": "metal3",
+    "layer_role": "metal2",
     "width_um": 0.17
   },
   "connectivity": [
     {
-      "net": "mc",
+      "net": "inv_mc_y_via",
       "pins": [
         {
           "block": "core",
+          "port": "inv_mc_y"
+        },
+        {
+          "block": "core",
           "port": "inv_mc_y_m1"
+        }
+      ]
+    },
+    {
+      "net": "tg_fbm_a_via",
+      "pins": [
+        {
+          "block": "core",
+          "port": "tg_fbm_a"
         },
         {
           "block": "core",
           "port": "tg_fbm_a_m1"
         }
-      ],
-      "waypoints_um": [
-        [
-          21.19,
-          1.2
-        ],
-        [
-          21.19,
-          1.8
-        ],
-        [
-          25.955,
-          1.8
-        ],
-        [
-          25.955,
-          1.2
-        ]
       ]
     }
   ],
   "pins": [],
   "options": {
-    "cell_name": "sampler_dff",
-    "output": "sampler_dff.gds"
+    "cell_name": "mc_met1",
+    "output": "mc_met1.gds"
   }
 }

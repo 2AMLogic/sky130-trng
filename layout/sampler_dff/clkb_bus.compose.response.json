@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "generator": "gen-compose",
-  "cell_name": "sampler_dff",
-  "gds_path": "sampler_dff.gds",
+  "cell_name": "clkb_bus",
+  "gds_path": "clkb_bus.gds",
   "pdk": {
     "name": "sky130A",
     "variant": "sky130A",
@@ -21,7 +21,7 @@
       "id": "core",
       "source": "cell",
       "generator": null,
-      "cell_name": "mc_met1",
+      "cell_name": "clkb_bridge2",
       "offset_um": {
         "x": 0.0,
         "y": 0.0
@@ -37,34 +37,34 @@
   ],
   "nets": [
     {
-      "net": "mc",
+      "net": "clkb",
       "pins": [
         {
           "block": "core",
-          "port": "inv_mc_y_m1"
+          "port": "hop2e"
         },
         {
           "block": "core",
-          "port": "tg_fbm_a_m1"
+          "port": "tg_fbs_ctrlb"
         }
       ],
       "routed": true,
-      "route_length_um": 5.964999999999996,
+      "route_length_um": 4.7600000000000025,
       "status": "routed",
       "legs": [
         {
           "pins": [
             {
               "block": "core",
-              "port": "inv_mc_y_m1"
+              "port": "hop2e"
             },
             {
               "block": "core",
-              "port": "tg_fbm_a_m1"
+              "port": "tg_fbs_ctrlb"
             }
           ],
           "routed": true,
-          "route_length_um": 5.964999999999996,
+          "route_length_um": 4.7600000000000025,
           "reason": null
         }
       ]

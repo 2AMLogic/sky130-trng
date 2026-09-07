@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "generator": "gen-compose",
-  "cell_name": "sampler_dff",
-  "gds_path": "sampler_dff.gds",
+  "cell_name": "mc_met1",
+  "gds_path": "mc_met1.gds",
   "pdk": {
     "name": "sky130A",
     "variant": "sky130A",
@@ -21,7 +21,7 @@
       "id": "core",
       "source": "cell",
       "generator": null,
-      "cell_name": "mc_met1",
+      "cell_name": "clkb_bus",
       "offset_um": {
         "x": 0.0,
         "y": 0.0
@@ -37,11 +37,44 @@
   ],
   "nets": [
     {
-      "net": "mc",
+      "net": "inv_mc_y_via",
       "pins": [
         {
           "block": "core",
+          "port": "inv_mc_y"
+        },
+        {
+          "block": "core",
           "port": "inv_mc_y_m1"
+        }
+      ],
+      "routed": true,
+      "route_length_um": 0.0,
+      "status": "routed",
+      "legs": [
+        {
+          "pins": [
+            {
+              "block": "core",
+              "port": "inv_mc_y"
+            },
+            {
+              "block": "core",
+              "port": "inv_mc_y_m1"
+            }
+          ],
+          "routed": true,
+          "route_length_um": 0.0,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "net": "tg_fbm_a_via",
+      "pins": [
+        {
+          "block": "core",
+          "port": "tg_fbm_a"
         },
         {
           "block": "core",
@@ -49,14 +82,14 @@
         }
       ],
       "routed": true,
-      "route_length_um": 5.964999999999996,
+      "route_length_um": 0.0,
       "status": "routed",
       "legs": [
         {
           "pins": [
             {
               "block": "core",
-              "port": "inv_mc_y_m1"
+              "port": "tg_fbm_a"
             },
             {
               "block": "core",
@@ -64,7 +97,7 @@
             }
           ],
           "routed": true,
-          "route_length_um": 5.964999999999996,
+          "route_length_um": 0.0,
           "reason": null
         }
       ]

@@ -363,6 +363,20 @@ DR-0003 surfaces and does not resolve on its own authority.
   remain open (#27) — see `layout/sampler_dff/README.md`'s "Result: `clkb`
   fan-out" and "What remains".
 
+  The increment after that routed the first of the six data-path nets,
+  **`mc`** (`inv_mc.y` → `tg_fbm.a`, `design/sampler_core.spice`'s
+  `XMim2p`/`XMim2n`/`XMfmp`/`XMfmn`). A direct `met1` route is blocked for
+  its entire useful height band (`clkb`'s own `clkb_mid` backbone crosses
+  at `y ≈ 2.33`, `clk`'s via-drop pad at `tg_fbm.ctrlb` sits at the same
+  x), so this net vias up one plane further, to `met2` — empty across this
+  whole span — and runs a short U-shaped lane at `y = 1.8`. **DRC-clean (0
+  violations)** on the first attempt, `klt extract`'s net count drops from
+  23 to 22 (exactly the one merge a two-pin net makes), and the merged
+  net's own four-device list matches `XMim2p`/`XMim2n`/`XMfmp`/`XMfmn`
+  exactly. Five data-path nets remain (`m`/`mb`/`s`/`q`/`qb`) — see
+  `layout/sampler_dff/README.md`'s "Result: `mc` fan-out" and "What
+  remains".
+
   A prior increment wired the XOR combining tree's inputs:
   that directory's
   "Increment 7" section routes `t2` (`xa2.y` → `xa3.b`) via a `"metal3"`

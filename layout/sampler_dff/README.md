@@ -1,8 +1,66 @@
 # layout/sampler_dff
 
-**`sampler_dff` assembly, continued: `clkb`'s own five-pin fan-out is now
-routed too, DRC-clean, landing on exactly the six transistor gates
-`design/sampler_core.spice` puts it on (issue #22).** `clkb` is `clk`'s
+**`sampler_dff` assembly, continued: the first of the six data-path nets,
+`mc`, is routed — DRC-clean on the first attempt (issue #22).** `mc` is
+`design/sampler_core.spice`'s `XMim2p`/`XMim2n` (`inv_mc`'s own inverter
+output) driving `XMfmp`/`XMfmn`'s shared drain-side pass terminal — which
+`sampler_tg.source.spice`'s own device-line template (`a` = first
+terminal, `b` = third) resolves to `tg_fbm`'s **`a`** pin, not `b`
+(`tg_fbm`'s `b` pin is the *other* data net, `m` — a future increment, not
+this one; see "Deriving which `sampler_tg` pin carries which data net"
+below). A plain `met1` route between `inv_mc.y` (`21.19, 1.2`) and
+`tg_fbm.a` (`25.955, 1.2`) is blocked for its entire useful height band:
+`clkb_seg2`'s own `clkb_mid` backbone (a previous increment) runs a `met1`
+backbone at `y ≈ 2.33` spanning `x = 24.6..29.74` — squarely between the
+two pins — and `clk_bus`'s own via-drop pad at `tg_fbm.ctrlb`
+(`met1`, `x = 24.39..24.81`, `y = 0.82..1.24`) sits at the same x as the
+pin gap. `met2` is empty across this whole span (the only `met2` here is
+`clk`'s own basement lane at `y = -1.70` and `clkb`'s two bridges, neither
+of which reaches `x = 21..26` at any positive `y`), so this net vias each
+end up one further plane, to `met2`, and runs a short U-shaped lane at
+`y = 1.8` — up from `(21.19, 1.2)`, across to `(25.955, 1.8)`, back down to
+`tg_fbm.a`. Two stages (`mc_met1`/final), no cell-bbox growth. **0 DRC
+violations on the first attempt, `klt extract` merges exactly the one pin
+pair a two-pin net should, and the merged net's own four-device list
+matches `design/sampler_core.spice`'s
+`XMim2p`/`XMim2n`/`XMfmp`/`XMfmn` exactly** — see "Result: `mc` fan-out"
+below. Still open: five data-path nets, `m`/`mb`/`s`/`q`/`qb` — see "What
+remains" below.
+
+## Deriving which `sampler_tg` pin carries which data net
+
+`layout/sampler_tg/sampler_tg.source.spice` (the hand-authored LVS
+micro-reference every `sampler_tg` instance checks against) reproduces one
+representative device pair's own lines byte-for-byte:
+`.subckt sampler_tg a b ctrl ctrlb vdd vss` / `XMp a ctrl b vdd ...` / `XMn
+a ctrlb b vss ...`, built from `design/sampler_core.spice`'s own
+`XMtdp`/`XMtdn` (`TG_D`). That fixes the mapping for every transmission
+gate: `a` = the device line's own **first** terminal, `ctrl` = the PMOS
+gate (second terminal of the `XMxxp` line), `b` = the **third** terminal,
+`ctrlb` = the NMOS gate. Reading each TG's own two device lines against
+that template (and cross-checking against `clk_bus`/`clkb_bus`'s own
+already-*committed, DRC-clean and `klt extract`-verified* `ctrl`/`ctrlb`
+net assignments,
+which independently confirm the `ctrl`/`ctrlb` half of each row):
+
+| TG | Device lines | `a` | `ctrl` | `b` | `ctrlb` |
+|---|---|---|---|---|---|
+| `TG_D` | `XMtdp d clk m vdd` / `XMtdn d clkb m vss` | `d` | `clk` | `m` | `clkb` |
+| `TG_FBM` | `XMfmp mc clkb m vdd` / `XMfmn mc clk m vss` | `mc` | `clkb` | `m` | `clk` |
+| `TG_S` | `XMtsp mb clkb s vdd` / `XMtsn mb clk s vss` | `mb` | `clkb` | `s` | `clk` |
+| `TG_FBS` | `XMfsp qb clk s vdd` / `XMfsn qb clkb s vss` | `qb` | `clk` | `s` | `clkb` |
+
+Every `ctrl`/`ctrlb` entry above matches `clk_bus`/`clkb_bus`'s own already
+-verified routing exactly (e.g. `TG_FBM`'s `ctrl` carries `clkb`, and
+`clkb_seg2`'s own connectivity names `tg_fbm_ctrl` on the `clkb_mid` net) —
+independent confirmation that the `a`/`b` half of the same table, derived
+from the identical device lines by the identical rule, is trustworthy too.
+This table is the working reference for deriving the remaining five
+data-path nets' own pin positions; it is not re-derived per net below.
+
+**A previous increment (issue #22): `clkb`'s own five-pin fan-out is
+routed, DRC-clean, landing on exactly the six transistor gates
+`design/sampler_core.spice` puts it on.** `clkb` is `clk`'s
 differential pair, but — as `clk`'s own increment already derived and
 recorded below — it cannot reuse `clk`'s own `met2` lane: the two nets'
 verticals share four of five x-columns (`tg_d`/`tg_fbm`/`tg_s`/`tg_fbs`'s
@@ -112,7 +170,33 @@ for no benefit. `y = 1.03` is chosen for that reason, not for a DRC one.
 No `2AMLogic/klayout-tools` friction was filed either way: nothing about
 this is a tool gap.
 
-## Result: `clkb` fan-out (this increment)
+## Result: `mc` fan-out (this increment)
+
+| Stage | Verdict | Evidence |
+|---|---|---|
+| `klt gen-compose` (`mc_met1`, `metal2`/met1 role) | `inv_mc_y` and `tg_fbm_a` each via li1→met1, zero lateral distance — **2/2 routed, 0 unrouted nets, 0 warnings** | `mc_met1.compose.request.json`, `mc_met1.compose.response.json`, `mc_met1.gds` |
+| `klt gen-compose` (final stage, `metal3`/met2 role, 2-pin, explicit `waypoints_um`) | `inv_mc_y_m1` → `tg_fbm_a_m1` via a U-shaped lane (`(21.19,1.2)→(21.19,1.8)→(25.955,1.8)→(25.955,1.2)`) — **routed, 0 unrouted nets, 0 warnings** | `compose.request.json`, `compose.response.json` |
+| `klt drc --deck sky130` (whole `sampler_dff.gds`) | **clean, 0 violations** — first attempt, no iteration needed | `drc.json` |
+| `klt extract --deck sky130` | **22 devices (11 nfet, 11 pfet)**, unchanged; `net_count` **23 → 22**, exactly the one merge a two-pin net makes. The merged net's own device list is the real check: two pfets (`W=0.84`) and two nfets (`W=0.42`), all with `mc` on their drain terminal — matching `XMim2p`/`XMfmp` (pfets) and `XMim2n`/`XMfmn` (nfets) exactly, and nothing else | `extract.json`, `sampler_dff.spice` |
+| `klt lvs` vs. `design/sampler_core.spice`'s own `.subckt sampler_dff` | **mismatch, as expected** — 6/22 devices, 1/14 nets matched; five data-path nets are still unwired and no top-level cell pins are promoted | `lvs.json` |
+
+Cell extent unchanged (`-2.19 .. 50.47 x -3.585 .. 7.085` µm). Before
+settling on the `met2` U-lane, three `met1`-only candidates were checked
+directly against the composed GDS's own drawn geometry (via
+`klayout.db`, not just reasoned about) and all three collide with
+`clkb_seg2`'s own backbone or its `x = 25.2` vertical excursion
+somewhere in their span: a straight run at `y = 1.2` (crosses `tg_fbm.b`'s
+own li1 pad, a different net, on the same layer it would need to switch
+off of anyway), a `y = 1.8` U-lane taken straight through `x = 25.2`
+(clips `clkb_mid`'s vertical jog there directly), and a `y = 1.8` lane
+jogging north around that jog at `x ≈ 24.95..25.4` (still clips
+`clkb_mid`'s own via landing pad near `tg_fbm.ctrl`, or a plain `y = 2.8`
+full-height lane, which clips `clkb_mid`'s backbone itself around
+`x = 25.7..26.2`, next to `tg_fbm.a`'s own pin). `met2` needed no such
+iteration: empty across the whole span, so the first `met2` candidate
+tried was DRC-clean.
+
+## Result: `clkb` fan-out (previous increment)
 
 | Stage | Verdict | Evidence |
 |---|---|---|
@@ -439,11 +523,19 @@ instance's own internal `metal2` wiring occupies (the tallest leaf,
 
 ## What remains (issue #27)
 
-- **The six data-path nets**: `m` (`TG_D.a`/`b` <-> `NAND_M.en` <->
-  `TG_FBM.a`/`b`), `mb` (`NAND_M.y` <-> `inv_mc.a` <-> `TG_S.a`/`b`), `mc`
-  (`inv_mc.y` <-> `TG_FBM.a`/`b`), `s` (`TG_S.a`/`b` <-> `inv_q.a` <->
-  `TG_FBS.a`/`b`), `q` (`inv_q.y` <-> `NAND_S2.en`, and the cell's own
-  output pin), `qb` (`NAND_S2.y` <-> `TG_FBS.a`/`b`).
+- **Five data-path nets** (`mc` is now routed, see "Result: `mc` fan-out"
+  above): `m` (`TG_D.b` <-> `NAND_M.en` <-> `TG_FBM.b` — per "Deriving
+  which `sampler_tg` pin carries which data net" above, `TG_D`'s and
+  `TG_FBM`'s *`b`* pins, not `a`), `mb` (`NAND_M.y` <-> `inv_mc.a` <->
+  `TG_S.a`), `s` (`TG_S.b` <-> `inv_q.a` <-> `TG_FBS.b`), `q` (`inv_q.y`
+  <-> `NAND_S2.en`, and the cell's own output pin), `qb` (`NAND_S2.y` <->
+  `TG_FBS.a`). `m` and `s` are three-pin fan-outs spanning most of the
+  cell's own width (`TG_D.b` at `x = 4.465` to `TG_FBM.b` at `x = 23.755`
+  for `m`; a comparable span for `s`) and, unlike `mc`, cross
+  `sampler_nand2`'s own internal `met1` blob (the same obstruction
+  `rst_n`'s own stub escape and `clk`/`clkb`'s own bridges already solved)
+  — expect these to need a stub-plus-bridge recipe closer to `rst_n`'s or
+  `clkb`'s own than `mc`'s single U-lane.
 - **Promoting the whole-cell external pins** (`d`, `clk`, `rst_n`, `q`,
   `vdd`, `vss`) once the above wiring exists, and the resulting
   `klt lvs` sign-off against `design/sampler_core.spice`'s real `.subckt
