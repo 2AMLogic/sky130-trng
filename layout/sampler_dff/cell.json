@@ -1036,6 +1036,7 @@
       "pins": []
     },
     {
+      "name": "qb_bus",
       "_comment": [
         "qb fan-out (issue #22): the third of the six data-path nets --",
         "design/sampler_core.spice's NAND_S2 OUTPUT node (XMis2pa/XMis2pb's",
@@ -1133,6 +1134,146 @@
         {"net": "qb",
          "pins": [{"block": "core", "port": "nand_s2_y"}, {"block": "core", "port": "tg_fbs_a"}],
          "waypoints_um": [[44.18, 0.21], [44.35, 0.21], [44.35, 2.0], [50.2, 2.0], [50.2, 0.21]]}
+      ],
+      "pins": []
+    },
+    {
+      "name": "s_met1",
+      "_comment": [
+        "s fan-out, stage 1 of 2 (issue #22): the fourth of the six",
+        "data-path nets, and the first three-pin one. s is the slave",
+        "latch's own storage node -- TG_S's pass output, inv_q's input and",
+        "TG_FBS's feedback return: 'XMtsp mb clkb s vdd' / 'XMfsp qb clk s",
+        "vdd' put s on BOTH transmission gates' third terminal, i.e. their",
+        "'b' pin per README.md's device-line template, and inv_q's own",
+        "gate pair (XMiqp/XMiqn) is its third leg. tg_s.b (28.895, 1.2),",
+        "inv_q.a (36.545, 1.7), tg_fbs.b (48.185, 1.2).",
+        "",
+        "This stage does nothing but via all three li1 pins straight up to",
+        "met1, zero lateral distance -- the same single-hop via-drop",
+        "clk_met1 and mc_met1 already use, three times. It exists because",
+        "the long haul below runs on met2 ('metal3' role), which is two via",
+        "hops from li1 and gen-compose's via-drop is single-hop only."
+      ],
+      "blocks": [
+        {
+          "id": "core",
+          "orientation": "none",
+          "cell": {
+            "from_stage": "qb_bus",
+            "ports": [
+              {"name": "tg_s_b", "x_um": 28.895, "y_um": 1.2, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.17, "direction_deg": 180},
+              {"name": "inv_q_a", "x_um": 36.545, "y_um": 1.7, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.17, "direction_deg": 180},
+              {"name": "tg_fbs_b", "x_um": 48.185, "y_um": 1.2, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.17, "direction_deg": 180},
+              {"name": "tg_s_b_m1", "x_um": 28.895, "y_um": 1.2, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 180},
+              {"name": "inv_q_a_m1", "x_um": 36.545, "y_um": 1.7, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 180},
+              {"name": "tg_fbs_b_m1", "x_um": 48.185, "y_um": 1.2, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 180}
+            ]
+          }
+        }
+      ],
+      "placement": {"strategy": "explicit", "order": ["core"], "origins_um": {"core": {"x": 0.0, "y": 0.0}}},
+      "routing": {"layer_role": "metal2", "width_um": 0.17},
+      "connectivity": [
+        {"net": "tg_s_b_via",
+         "pins": [{"block": "core", "port": "tg_s_b"}, {"block": "core", "port": "tg_s_b_m1"}]},
+        {"net": "inv_q_a_via",
+         "pins": [{"block": "core", "port": "inv_q_a"}, {"block": "core", "port": "inv_q_a_m1"}]},
+        {"net": "tg_fbs_b_via",
+         "pins": [{"block": "core", "port": "tg_fbs_b"}, {"block": "core", "port": "tg_fbs_b_m1"}]}
+      ],
+      "pins": []
+    },
+    {
+      "_comment": [
+        "s fan-out, stage 2 of 2 (issue #22): the met2 long haul, 19.29um",
+        "end to end across two thirds of the cell, steered leg-by-leg with",
+        "connectivity[].legs[] (klayout-tools #1529 -- waypoints_um is",
+        "rejected outright on a >2-pin net, the same reason clk_bus needed",
+        "legs[]).",
+        "",
+        "met1 cannot carry this net. Measured on the composed",
+        "sampler_dff.gds (post-qb) with klayout.db, every met1 lane between",
+        "the pins' own y=1.2 and the vdd bus (y>=4.03) is blocked at at",
+        "least two columns across this span: q's own L-lane occupies",
+        "x=37.69..43.285 at y=0.99..2.185 (squarely between inv_q and",
+        "nand_s2), qb's own east run occupies x=44.265..50.285 at y up to",
+        "2.085, clkb_bus's east segment occupies x=44.69..49.115 at",
+        "y=0.19..0.61, sampler_nand2's own internal met1 blob runs",
+        "x=43.845..44.015 from y=0.19 all the way to y=3.53, and",
+        "clkb_seg2's own x=30.34 vertical (drawn x=30.2..30.5,",
+        "y=0.315..2.415) stands in the way at the west end. met2 over the",
+        "same span is all but empty: the only 69/20 drawn between x=28.6",
+        "and x=48.4 in the band y=0.9..2.4 is clk_bus's own via-drop pad at",
+        "tg_s_ctrlb (x=29.53..29.95, y=0.82..1.24), and east of x=30 that",
+        "band is completely empty out to clk_bus's own tg_fbs_ctrl vertical",
+        "(x=48.945..49.115, 0.55um east of this net's own east landing",
+        "pad). rst_n_bus's own met2 backbone (y=2.5..2.92) is the nearest",
+        "neighbour above, 0.715um clear of this lane.",
+        "",
+        "The lane runs at y=1.7 -- the MIDDLE pin's own y -- with a 0.5um",
+        "jog up at the west pin and down at the east one, so it passes",
+        "straight through inv_q.a's own via-drop pad instead of stopping",
+        "short of it. The round y=2.0 was tried first and was NOT",
+        "DRC-clean: exactly one met2.space.1 violation, an 0.005um same-net",
+        "notch at x=36.63..36.895, y=1.910..1.915, between that pad's own",
+        "top edge (the pad is 0.42um square about y=1.7, so it reaches",
+        "1.91) and a 0.17um-wide lane centred on y=2.0 (which starts at",
+        "1.915). The two shapes are the same net and are joined through the",
+        "drop wire between them, but they are DRAWN 5nm apart and a",
+        "net-unaware deck flags that exactly as it would a foreign gap --",
+        "the same class of same-net notch qb's own jogged climb avoids, at",
+        "5nm instead of 80nm. Running the lane at the pin's own y makes the",
+        "pad and the lane overlap instead of nearly touching, and drops a",
+        "corner from the route.",
+        "",
+        "Clearances measured on the composed GDS (minimum edge-to-edge,",
+        "this increment's own geometry to the nearest foreign shape):",
+        "met2 0.375um to clk_bus's own tg_s_ctrlb pad, 0.55um to its",
+        "tg_fbs_ctrl vertical, 0.715um to rst_n_bus's backbone; met1",
+        "0.425um to clk_bus's own met1 pads at both columns, 0.505um to",
+        "clkb_bus's east segment below tg_fbs.b and 0.505um to qb's own",
+        "east met1 run above it; li1 0.425um to clk_bus's own li1 pads and",
+        "1.06um to inv_q's own internal li1 at x=37.815. At inv_q.a the pad",
+        "lands between that pin's own two existing li1 gate contacts",
+        "(y=0.82..1.24 and y=2.29..2.71, both x=36.335..36.755), leaving",
+        "0.25um and 0.38um same-net gaps -- both over sky130's 0.17um",
+        "li1.space.1. The tightest same-net gap the lane itself leaves is",
+        "0.205um, between the west landing pad's top edge (y=1.41) and the",
+        "lane's own bottom edge (y=1.615).",
+        "",
+        "Still open (issue #22 / #27): m, mb, the sampler_nand2 input swap",
+        "(#84), and promoting the whole-cell external pins",
+        "(d/clk/rst_n/q/vdd/vss) -- see layout/sampler_dff/README.md's",
+        "'What remains' section."
+      ],
+      "blocks": [
+        {
+          "id": "core",
+          "orientation": "none",
+          "cell": {
+            "from_stage": "s_met1",
+            "ports": [
+              {"name": "tg_s_b_m1", "x_um": 28.895, "y_um": 1.2, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 180},
+              {"name": "inv_q_a_m1", "x_um": 36.545, "y_um": 1.7, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 180},
+              {"name": "tg_fbs_b_m1", "x_um": 48.185, "y_um": 1.2, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 180}
+            ]
+          }
+        }
+      ],
+      "placement": {"strategy": "explicit", "order": ["core"], "origins_um": {"core": {"x": 0.0, "y": 0.0}}},
+      "routing": {"layer_role": "metal3", "width_um": 0.17},
+      "connectivity": [
+        {"net": "s",
+         "pins": [{"block": "core", "port": "tg_s_b_m1"}, {"block": "core", "port": "inv_q_a_m1"}, {"block": "core", "port": "tg_fbs_b_m1"}],
+         "legs": [
+           {"from_pin": {"block": "core", "port": "tg_s_b_m1"},
+            "to_pin": {"block": "core", "port": "inv_q_a_m1"},
+            "waypoints_um": [[28.895, 1.7]]},
+           {"from_pin": {"block": "core", "port": "inv_q_a_m1"},
+            "to_pin": {"block": "core", "port": "tg_fbs_b_m1"},
+            "waypoints_um": [[48.185, 1.7]]}
+         ]}
       ],
       "pins": []
     }

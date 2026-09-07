@@ -8,6 +8,39 @@
       "cell": {
         "ports": [
           {
+            "name": "tg_s_b",
+            "x_um": 28.895,
+            "y_um": 1.2,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 180
+          },
+          {
+            "name": "inv_q_a",
+            "x_um": 36.545,
+            "y_um": 1.7,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 180
+          },
+          {
+            "name": "tg_fbs_b",
+            "x_um": 48.185,
+            "y_um": 1.2,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 180
+          },
+          {
             "name": "tg_s_b_m1",
             "x_um": 28.895,
             "y_um": 1.2,
@@ -41,8 +74,8 @@
             "direction_deg": 180
           }
         ],
-        "cell_name": "s_met1",
-        "gds_path": "s_met1.gds"
+        "cell_name": "qb_bus",
+        "gds_path": "qb_bus.gds"
       }
     }
   ],
@@ -59,65 +92,53 @@
     }
   },
   "routing": {
-    "layer_role": "metal3",
+    "layer_role": "metal2",
     "width_um": 0.17
   },
   "connectivity": [
     {
-      "net": "s",
+      "net": "tg_s_b_via",
       "pins": [
         {
           "block": "core",
+          "port": "tg_s_b"
+        },
+        {
+          "block": "core",
           "port": "tg_s_b_m1"
+        }
+      ]
+    },
+    {
+      "net": "inv_q_a_via",
+      "pins": [
+        {
+          "block": "core",
+          "port": "inv_q_a"
         },
         {
           "block": "core",
           "port": "inv_q_a_m1"
+        }
+      ]
+    },
+    {
+      "net": "tg_fbs_b_via",
+      "pins": [
+        {
+          "block": "core",
+          "port": "tg_fbs_b"
         },
         {
           "block": "core",
           "port": "tg_fbs_b_m1"
-        }
-      ],
-      "legs": [
-        {
-          "from_pin": {
-            "block": "core",
-            "port": "tg_s_b_m1"
-          },
-          "to_pin": {
-            "block": "core",
-            "port": "inv_q_a_m1"
-          },
-          "waypoints_um": [
-            [
-              28.895,
-              1.7
-            ]
-          ]
-        },
-        {
-          "from_pin": {
-            "block": "core",
-            "port": "inv_q_a_m1"
-          },
-          "to_pin": {
-            "block": "core",
-            "port": "tg_fbs_b_m1"
-          },
-          "waypoints_um": [
-            [
-              48.185,
-              1.7
-            ]
-          ]
         }
       ]
     }
   ],
   "pins": [],
   "options": {
-    "cell_name": "sampler_dff",
-    "output": "sampler_dff.gds"
+    "cell_name": "s_met1",
+    "output": "s_met1.gds"
   }
 }
