@@ -546,6 +546,7 @@
       "pins": []
     },
     {
+      "name": "clk_bus",
       "_comment": [
         "clk fan-out, step 2 of 2 (issue #22): one 5-pin bundle net whose",
         "whole long haul runs on met2 ('metal3' role) in a single basement",
@@ -632,6 +633,247 @@
             "waypoints_um": [[24.6, -1.7], [29.74, -1.7]]},
            {"from_pin": {"block": "core", "port": "tg_s_ctrlb_m1"}, "to_pin": {"block": "core", "port": "tg_fbs_ctrl_m1"},
             "waypoints_um": [[29.74, -1.7], [49.03, -1.7]]}
+         ]}
+      ],
+      "pins": []
+    },
+    {
+      "name": "clkb_seg1",
+      "_comment": [
+        "clkb fan-out (issue #22), west span: inv_clk's own OUTPUT (its 'y'",
+        "port, not the 'clk' input this cell already wired) through tg_d's",
+        "OTHER transmission-gate control pin, 'ctrlb' -- design/sampler_core",
+        ".spice's XMtdn puts clkb on tg_d's NMOS gate, the opposite polarity",
+        "from clk's own XMtdp/PMOS/'ctrl' -- to a bare waypoint pin, hop1w,",
+        "at the west edge of the corridor clk_bus's own _comment reserved:",
+        "met1 ('metal2' role) at y=0.40, clear of clk's own met1 pads",
+        "(lowest edge y=0.82, 0.335um away) and of the vss bus's own met1",
+        "(top edge y=-0.29). hop1w itself carries no device -- it is a",
+        "chain hub the next stage (clkb_bridge1) continues from, exactly",
+        "the way rst_n_stub's own nand_m_a_ext/nand_s2_a_ext hubs worked.",
+        "",
+        "Both legs route straight down/up to y=0.40 at their own pin's x --",
+        "1.9 and 5.31 -- since neither collides with anything on met1 at",
+        "that x: inv_clk_y sits at x=1.9 (clk's OWN inv_clk_clk pad is at",
+        "x=0.335..0.755, well clear) and tg_d_ctrlb at x=5.31 has clk's own",
+        "tg_d_ctrl pad directly above it (y=2.29..2.71, not in the way of a",
+        "drop toward y=0.40 which is BELOW tg_d_ctrlb's own y=1.03).",
+        "hop1w=11.8 keeps the via-drop's own fixed 0.42um landing pad",
+        "(_VIA_LANDING_SIZE_UM, independent of routing.width_um -- the same",
+        "convention rst_n_stub/clk_met1 both ran into) 0.23um clear of",
+        "sampler_nand2's own internal met1 blob at nand_m (global bbox",
+        "x=12.24..13.575, y=0..3.95, confirmed with klayout.db against",
+        "sampler_nand2.gds -- the same obstruction rst_n_stub escaped, here",
+        "spanning the corridor's own full width) -- comfortably above",
+        "sky130's own met1.space.1 (0.14um)."
+      ],
+      "blocks": [
+        {
+          "id": "core",
+          "orientation": "none",
+          "cell": {
+            "from_stage": "clk_bus",
+            "ports": [
+              {"name": "inv_clk_y", "x_um": 1.9, "y_um": 1.2, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.17, "direction_deg": 0},
+              {"name": "tg_d_ctrlb", "x_um": 5.31, "y_um": 1.03, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.42, "direction_deg": 90},
+              {"name": "hop1w", "x_um": 11.8, "y_um": 0.40, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 0}
+            ]
+          }
+        }
+      ],
+      "placement": {"strategy": "explicit", "order": ["core"], "origins_um": {"core": {"x": 0.0, "y": 0.0}}},
+      "routing": {"layer_role": "metal2", "width_um": 0.17},
+      "connectivity": [
+        {"net": "clkb_w",
+         "pins": [
+           {"block": "core", "port": "inv_clk_y"},
+           {"block": "core", "port": "tg_d_ctrlb"},
+           {"block": "core", "port": "hop1w"}
+         ],
+         "legs": [
+           {"from_pin": {"block": "core", "port": "inv_clk_y"}, "to_pin": {"block": "core", "port": "tg_d_ctrlb"},
+            "waypoints_um": [[1.9, 0.40], [5.31, 0.40]]},
+           {"from_pin": {"block": "core", "port": "tg_d_ctrlb"}, "to_pin": {"block": "core", "port": "hop1w"},
+            "waypoints_um": [[5.31, 0.40]]}
+         ]}
+      ],
+      "pins": []
+    },
+    {
+      "name": "clkb_bridge1",
+      "_comment": [
+        "clkb fan-out, bridge 1 of 2 (issue #22): hop over sampler_nand2's",
+        "own internal met1 blob at nand_m (global x=12.24..13.575) the same",
+        "way clk_bus's own final leg avoided the identical obstruction --",
+        "except here the whole corridor is met1, so this is a short met1",
+        "-> 'metal3' (met2) -> met1 excursion, not a permanent layer change.",
+        "Both hop1w and hop1e are already declared on met1 ('metal2'",
+        "role); selecting 'metal3' here auto-vias each one up to met2 at",
+        "its own position (single hop, the same via-drop mechanic every",
+        "other stage in this cell uses) and runs the short backbone",
+        "entirely on met2 between them -- a plane no leaf cell in this",
+        "assembly draws on, so it cannot short to the blob it is clearing.",
+        "hop1e=14.0 reuses rst_n_bus's own already-proven east-side",
+        "clearance figure for this exact blob (0.215um from the blob's own",
+        "x=13.575 edge, measured and DRC-clean there already)."
+      ],
+      "blocks": [
+        {
+          "id": "core",
+          "orientation": "none",
+          "cell": {
+            "from_stage": "clkb_seg1",
+            "ports": [
+              {"name": "hop1w", "x_um": 11.8, "y_um": 0.40, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 0},
+              {"name": "hop1e", "x_um": 14.0, "y_um": 0.40, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 0}
+            ]
+          }
+        }
+      ],
+      "placement": {"strategy": "explicit", "order": ["core"], "origins_um": {"core": {"x": 0.0, "y": 0.0}}},
+      "routing": {"layer_role": "metal3", "width_um": 0.17},
+      "connectivity": [
+        {"net": "clkb_bridge1", "pins": [{"block": "core", "port": "hop1w"}, {"block": "core", "port": "hop1e"}]}
+      ],
+      "pins": []
+    },
+    {
+      "name": "clkb_seg2",
+      "_comment": [
+        "clkb fan-out (issue #22), middle span: hop1e through tg_fbm's and",
+        "tg_s's own 'ctrl' pins (design/sampler_core.spice's XMfmp/XMtsp --",
+        "clkb lands on the PMOS gate here, the opposite polarity from clk's",
+        "own XMfmn/XMtsn NMOS/'ctrlb' assignment) to hop2w, the west hub for",
+        "the second blob crossing.",
+        "",
+        "tg_fbm_ctrl (x=24.6) and tg_s_ctrl (x=29.74) are the two columns",
+        "clk_bus's own README already flagged: clk's OWN via-drop pad sits",
+        "directly below each one (tg_fbm_ctrlb/tg_s_ctrlb, met1",
+        "x=24.39..24.81/29.53..29.95, y=0.82..1.24) -- a straight drop from",
+        "either pin down to the y=0.40 corridor would run right through",
+        "clk's own pad on the SAME layer. Both legs instead jog 0.6um EAST",
+        "(to x=25.2/30.34, clear of clk's pad's own right edge by 0.39um)",
+        "BEFORE dropping, so the vertical run never revisits the blocked",
+        "column below y=2.5, then jog back west at y=2.5 (clear -- nothing",
+        "else drawn at that height in this x range) to land on the pin.",
+        "The reverse leg (tg_s_ctrl -> hop2w) uses the identical shape,",
+        "since hop2w is also reached by dropping through the same kind of",
+        "clk-pad-blocked column.",
+        "",
+        "The middle leg (tg_fbm_ctrl -> tg_s_ctrl) is a plain same-height",
+        "run at y=2.5 -- clear across this whole x span (checked against",
+        "every other met1 shape in the composed cell: no rst_n via pad, no",
+        "clk pad, no nand2 blob sits between x=24.6 and 29.74)."
+      ],
+      "blocks": [
+        {
+          "id": "core",
+          "orientation": "none",
+          "cell": {
+            "from_stage": "clkb_bridge1",
+            "ports": [
+              {"name": "hop1e", "x_um": 14.0, "y_um": 0.40, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 0},
+              {"name": "tg_fbm_ctrl", "x_um": 24.6, "y_um": 2.5, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.42, "direction_deg": 270},
+              {"name": "tg_s_ctrl", "x_um": 29.74, "y_um": 2.5, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.42, "direction_deg": 270},
+              {"name": "hop2w", "x_um": 42.65, "y_um": 0.40, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 0}
+            ]
+          }
+        }
+      ],
+      "placement": {"strategy": "explicit", "order": ["core"], "origins_um": {"core": {"x": 0.0, "y": 0.0}}},
+      "routing": {"layer_role": "metal2", "width_um": 0.17},
+      "connectivity": [
+        {"net": "clkb_mid",
+         "pins": [
+           {"block": "core", "port": "hop1e"},
+           {"block": "core", "port": "tg_fbm_ctrl"},
+           {"block": "core", "port": "tg_s_ctrl"},
+           {"block": "core", "port": "hop2w"}
+         ],
+         "legs": [
+           {"from_pin": {"block": "core", "port": "hop1e"}, "to_pin": {"block": "core", "port": "tg_fbm_ctrl"},
+            "waypoints_um": [[25.2, 0.40], [25.2, 2.5]]},
+           {"from_pin": {"block": "core", "port": "tg_fbm_ctrl"}, "to_pin": {"block": "core", "port": "tg_s_ctrl"},
+            "waypoints_um": [[27.0, 2.5]]},
+           {"from_pin": {"block": "core", "port": "tg_s_ctrl"}, "to_pin": {"block": "core", "port": "hop2w"},
+            "waypoints_um": [[30.34, 2.5], [30.34, 0.40]]}
+         ]}
+      ],
+      "pins": []
+    },
+    {
+      "name": "clkb_bridge2",
+      "_comment": [
+        "clkb fan-out, bridge 2 of 2 (issue #22): hop over sampler_nand2's",
+        "own internal met1 blob at nand_s2 (global x=43.1..44.435), the",
+        "same met1->'metal3'->met1 excursion clkb_bridge1 already used for",
+        "the nand_m blob. hop2e=44.9 reuses rst_n_bus's own already-proven",
+        "east-side clearance figure for this exact blob (0.255um from the",
+        "blob's own x=44.435 edge, measured and DRC-clean there already)."
+      ],
+      "blocks": [
+        {
+          "id": "core",
+          "orientation": "none",
+          "cell": {
+            "from_stage": "clkb_seg2",
+            "ports": [
+              {"name": "hop2w", "x_um": 42.65, "y_um": 0.40, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 0},
+              {"name": "hop2e", "x_um": 44.9, "y_um": 0.40, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 0}
+            ]
+          }
+        }
+      ],
+      "placement": {"strategy": "explicit", "order": ["core"], "origins_um": {"core": {"x": 0.0, "y": 0.0}}},
+      "routing": {"layer_role": "metal3", "width_um": 0.17},
+      "connectivity": [
+        {"net": "clkb_bridge2", "pins": [{"block": "core", "port": "hop2w"}, {"block": "core", "port": "hop2e"}]}
+      ],
+      "pins": []
+    },
+    {
+      "_comment": [
+        "clkb fan-out, final span (issue #22): hop2e through tg_fbs's own",
+        "'ctrlb' pin (design/sampler_core.spice's XMfsn -- clkb on the",
+        "NMOS gate here, the opposite polarity from clk's own XMfsp/PMOS/",
+        "'ctrl') closes out the 5-pin net. No column collision with clk's",
+        "own tg_fbs_ctrl pad (met1 x=48.82..49.24, y=2.29..2.71): this leg",
+        "stays at y<=1.03 throughout, well below that pad's own bottom",
+        "edge, so a direct drop at the pin's own x is clear.",
+        "",
+        "This closes clkb as ONE electrically-merged net across five",
+        "separately-named connectivity[] entries spanning six stages",
+        "(clkb_seg1/clkb_bridge1/clkb_seg2/clkb_bridge2/this stage) --",
+        "klt extract confirms physical connectivity from drawn geometry,",
+        "not from JSON net-name bookkeeping, the same discipline",
+        "rst_n_stub/rst_n_met1/rst_n_bus already established for rst_n.",
+        "",
+        "Still open (issue #22 / #27): the six data-path nets",
+        "m/mb/mc/s/q/qb, and promoting the whole-cell external pins",
+        "(d/clk/rst_n/q/vdd/vss) once all wiring exists -- see",
+        "layout/sampler_dff/README.md's 'What remains' section."
+      ],
+      "blocks": [
+        {
+          "id": "core",
+          "orientation": "none",
+          "cell": {
+            "from_stage": "clkb_bridge2",
+            "ports": [
+              {"name": "hop2e", "x_um": 44.9, "y_um": 0.40, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 0},
+              {"name": "tg_fbs_ctrlb", "x_um": 49.03, "y_um": 1.03, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.42, "direction_deg": 90}
+            ]
+          }
+        }
+      ],
+      "placement": {"strategy": "explicit", "order": ["core"], "origins_um": {"core": {"x": 0.0, "y": 0.0}}},
+      "routing": {"layer_role": "metal2", "width_um": 0.17},
+      "connectivity": [
+        {"net": "clkb",
+         "pins": [{"block": "core", "port": "hop2e"}, {"block": "core", "port": "tg_fbs_ctrlb"}],
+         "legs": [
+           {"from_pin": {"block": "core", "port": "hop2e"}, "to_pin": {"block": "core", "port": "tg_fbs_ctrlb"},
+            "waypoints_um": [[49.03, 0.40]]}
          ]}
       ],
       "pins": []

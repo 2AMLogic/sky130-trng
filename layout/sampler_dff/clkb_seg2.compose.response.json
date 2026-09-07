@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "generator": "gen-compose",
-  "cell_name": "sampler_dff",
-  "gds_path": "sampler_dff.gds",
+  "cell_name": "clkb_seg2",
+  "gds_path": "clkb_seg2.gds",
   "pdk": {
     "name": "sky130A",
     "variant": "sky130A",
@@ -21,7 +21,7 @@
       "id": "core",
       "source": "cell",
       "generator": null,
-      "cell_name": "clkb_bridge2",
+      "cell_name": "clkb_bridge1",
       "offset_um": {
         "x": 0.0,
         "y": 0.0
@@ -37,34 +37,72 @@
   ],
   "nets": [
     {
-      "net": "clkb",
+      "net": "clkb_mid",
       "pins": [
         {
           "block": "core",
-          "port": "hop2e"
+          "port": "hop1e"
         },
         {
           "block": "core",
-          "port": "tg_fbs_ctrlb"
+          "port": "tg_fbm_ctrl"
+        },
+        {
+          "block": "core",
+          "port": "tg_s_ctrl"
+        },
+        {
+          "block": "core",
+          "port": "hop2w"
         }
       ],
       "routed": true,
-      "route_length_um": 4.7600000000000025,
+      "route_length_um": 34.38999999999999,
       "status": "routed",
       "legs": [
         {
           "pins": [
             {
               "block": "core",
-              "port": "hop2e"
+              "port": "hop1e"
             },
             {
               "block": "core",
-              "port": "tg_fbs_ctrlb"
+              "port": "tg_fbm_ctrl"
             }
           ],
           "routed": true,
-          "route_length_um": 4.7600000000000025,
+          "route_length_um": 13.899999999999997,
+          "reason": null
+        },
+        {
+          "pins": [
+            {
+              "block": "core",
+              "port": "tg_fbm_ctrl"
+            },
+            {
+              "block": "core",
+              "port": "tg_s_ctrl"
+            }
+          ],
+          "routed": true,
+          "route_length_um": 5.479999999999997,
+          "reason": null
+        },
+        {
+          "pins": [
+            {
+              "block": "core",
+              "port": "tg_s_ctrl"
+            },
+            {
+              "block": "core",
+              "port": "hop2w"
+            }
+          ],
+          "routed": true,
+          "route_length_um": 15.01,
           "reason": null
         }
       ]

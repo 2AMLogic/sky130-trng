@@ -1,0 +1,201 @@
+{
+  "pdk": {
+    "variant": "sky130A"
+  },
+  "blocks": [
+    {
+      "id": "core",
+      "cell": {
+        "ports": [
+          {
+            "name": "inv_clk_clk_m1",
+            "x_um": 0.545,
+            "y_um": 1.03,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 270
+          },
+          {
+            "name": "tg_d_ctrl_m1",
+            "x_um": 5.31,
+            "y_um": 2.5,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 270
+          },
+          {
+            "name": "tg_fbm_ctrlb_m1",
+            "x_um": 24.6,
+            "y_um": 1.03,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 270
+          },
+          {
+            "name": "tg_s_ctrlb_m1",
+            "x_um": 29.74,
+            "y_um": 1.03,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 270
+          },
+          {
+            "name": "tg_fbs_ctrl_m1",
+            "x_um": 49.03,
+            "y_um": 2.5,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 270
+          }
+        ],
+        "cell_name": "clk_met1",
+        "gds_path": "clk_met1.gds"
+      }
+    }
+  ],
+  "placement": {
+    "strategy": "explicit",
+    "order": [
+      "core"
+    ],
+    "origins_um": {
+      "core": {
+        "x": 0.0,
+        "y": 0.0
+      }
+    }
+  },
+  "routing": {
+    "layer_role": "metal3",
+    "width_um": 0.17
+  },
+  "connectivity": [
+    {
+      "net": "clk",
+      "pins": [
+        {
+          "block": "core",
+          "port": "inv_clk_clk_m1"
+        },
+        {
+          "block": "core",
+          "port": "tg_d_ctrl_m1"
+        },
+        {
+          "block": "core",
+          "port": "tg_fbm_ctrlb_m1"
+        },
+        {
+          "block": "core",
+          "port": "tg_s_ctrlb_m1"
+        },
+        {
+          "block": "core",
+          "port": "tg_fbs_ctrl_m1"
+        }
+      ],
+      "legs": [
+        {
+          "from_pin": {
+            "block": "core",
+            "port": "inv_clk_clk_m1"
+          },
+          "to_pin": {
+            "block": "core",
+            "port": "tg_d_ctrl_m1"
+          },
+          "waypoints_um": [
+            [
+              0.545,
+              -1.7
+            ],
+            [
+              5.31,
+              -1.7
+            ]
+          ]
+        },
+        {
+          "from_pin": {
+            "block": "core",
+            "port": "tg_d_ctrl_m1"
+          },
+          "to_pin": {
+            "block": "core",
+            "port": "tg_fbm_ctrlb_m1"
+          },
+          "waypoints_um": [
+            [
+              5.31,
+              -1.7
+            ],
+            [
+              24.6,
+              -1.7
+            ]
+          ]
+        },
+        {
+          "from_pin": {
+            "block": "core",
+            "port": "tg_fbm_ctrlb_m1"
+          },
+          "to_pin": {
+            "block": "core",
+            "port": "tg_s_ctrlb_m1"
+          },
+          "waypoints_um": [
+            [
+              24.6,
+              -1.7
+            ],
+            [
+              29.74,
+              -1.7
+            ]
+          ]
+        },
+        {
+          "from_pin": {
+            "block": "core",
+            "port": "tg_s_ctrlb_m1"
+          },
+          "to_pin": {
+            "block": "core",
+            "port": "tg_fbs_ctrl_m1"
+          },
+          "waypoints_um": [
+            [
+              29.74,
+              -1.7
+            ],
+            [
+              49.03,
+              -1.7
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "pins": [],
+  "options": {
+    "cell_name": "clk_bus",
+    "output": "clk_bus.gds"
+  }
+}

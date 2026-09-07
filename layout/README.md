@@ -4,7 +4,38 @@ Physical layout evidence for the sky130-trng entropy source, verified with
 `klayout-tools` (`klt`) against the sky130 open PDK. See `layout/pdk.json`
 for the PDK/tool pin.
 
-**Status (issue #22, this increment): `sampler_dff`'s `clk` fan-out is
+**Status (issue #22, this increment): `sampler_dff`'s `clkb` fan-out is
+routed too — the differential half of `clk`'s own five-pin bundle,
+DRC-clean, and confirmed by `klt extract` to reach exactly the six
+clkb-gated devices the schematic has.** [`layout/sampler_dff/`](sampler_dff/README.md)
+adds five more stages on top of the `clk` work below. `clkb` cannot reuse
+`clk`'s own `met2` lane below the rows (their verticals share four of five
+x-columns, opposite y, on each transmission gate — see "Why `clk` and
+`clkb` cannot be two mirrored lanes" in the cell's own README), so it
+instead takes the `met1` corridor `clk`'s own final stage reserved
+(`y ≈ 0.40`): `clkb_seg1`/`clkb_seg2` route the `met1` long haul, with two
+`clkb_bridge1`/`clkb_bridge2` stages hopping onto `met2` and back to clear
+`sampler_nand2`'s own internal `met1` blobs (the same obstruction `clk`'s
+own long haul also had to route around), and two east-side jogs in
+`clkb_seg2` dodge `clk`'s own via-drop pads at the `tg_fbm`/`tg_s`
+columns. **`klt drc` clean, 0 violations; cell bbox unchanged.**
+`klt extract`'s net count drops from 27 to **23** — exactly the four
+merges a five-pin net makes — and the merged net's own six-device list is
+the correctness check that matters: the two `inv_clk` devices, `tg_d`'s
+**NMOS**, `tg_fbs`'s **NMOS**, `tg_fbm`'s **PMOS** and `tg_s`'s **PMOS**
+gates, matching `design/sampler_core.spice`'s
+`XMpc`/`XMnc`/`XMtdn`/`XMfsn`/`XMfmp`/`XMtsp` exactly, with `clk`'s own
+merged group staying a separate net. `klt lvs` is still not expected to
+match (the six data-path nets `m`/`mb`/`mc`/`s`/`q`/`qb` remain unwired,
+and no top-level cell pins are promoted yet). See
+`layout/sampler_dff/README.md`'s own "Result: `clkb` fan-out" for the full
+stage-by-stage breakdown, and its "Environment note" for a `klt`
+install-staleness finding filed as
+[`2AMLogic/klayout-tools#1548`](https://github.com/2AMLogic/klayout-tools/issues/1548)
+(an unrecognized `connectivity[]` request field, e.g. `legs[]` on a build
+that predates it, is silently dropped instead of rejected).
+
+**A previous increment (issue #22): `sampler_dff`'s `clk` fan-out is
 routed — a five-pin bundle net, DRC-clean, and confirmed by `klt extract`
 to reach exactly the six clk-gated devices the schematic has and no
 others.** [`layout/sampler_dff/`](sampler_dff/README.md) adds two more

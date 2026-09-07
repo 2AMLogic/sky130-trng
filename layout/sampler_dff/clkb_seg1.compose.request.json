@@ -8,19 +8,19 @@
       "cell": {
         "ports": [
           {
-            "name": "hop2e",
-            "x_um": 44.9,
-            "y_um": 0.4,
+            "name": "inv_clk_y",
+            "x_um": 1.9,
+            "y_um": 1.2,
             "layer": {
-              "layer": 68,
+              "layer": 67,
               "datatype": 20
             },
             "width_um": 0.17,
             "direction_deg": 0
           },
           {
-            "name": "tg_fbs_ctrlb",
-            "x_um": 49.03,
+            "name": "tg_d_ctrlb",
+            "x_um": 5.31,
             "y_um": 1.03,
             "layer": {
               "layer": 67,
@@ -28,10 +28,21 @@
             },
             "width_um": 0.42,
             "direction_deg": 90
+          },
+          {
+            "name": "hop1w",
+            "x_um": 11.8,
+            "y_um": 0.4,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 0
           }
         ],
-        "cell_name": "clkb_bridge2",
-        "gds_path": "clkb_bridge2.gds"
+        "cell_name": "clk_bus",
+        "gds_path": "clk_bus.gds"
       }
     }
   ],
@@ -53,30 +64,54 @@
   },
   "connectivity": [
     {
-      "net": "clkb",
+      "net": "clkb_w",
       "pins": [
         {
           "block": "core",
-          "port": "hop2e"
+          "port": "inv_clk_y"
         },
         {
           "block": "core",
-          "port": "tg_fbs_ctrlb"
+          "port": "tg_d_ctrlb"
+        },
+        {
+          "block": "core",
+          "port": "hop1w"
         }
       ],
       "legs": [
         {
           "from_pin": {
             "block": "core",
-            "port": "hop2e"
+            "port": "inv_clk_y"
           },
           "to_pin": {
             "block": "core",
-            "port": "tg_fbs_ctrlb"
+            "port": "tg_d_ctrlb"
           },
           "waypoints_um": [
             [
-              49.03,
+              1.9,
+              0.4
+            ],
+            [
+              5.31,
+              0.4
+            ]
+          ]
+        },
+        {
+          "from_pin": {
+            "block": "core",
+            "port": "tg_d_ctrlb"
+          },
+          "to_pin": {
+            "block": "core",
+            "port": "hop1w"
+          },
+          "waypoints_um": [
+            [
+              5.31,
               0.4
             ]
           ]
@@ -86,7 +121,7 @@
   ],
   "pins": [],
   "options": {
-    "cell_name": "sampler_dff",
-    "output": "sampler_dff.gds"
+    "cell_name": "clkb_seg1",
+    "output": "clkb_seg1.gds"
   }
 }
