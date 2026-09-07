@@ -1,0 +1,148 @@
+{
+  "cell": "sampler_tg",
+  "_comment": [
+    "Cell descriptor for layout/bin/compose-cell.py -- see layout/README.md",
+    "section 'Composing a gate' for the floorplan reasoning shared with every",
+    "other cell, and layout/sampler_tg/README.md for this cell's own result.",
+    "",
+    "sampler_tg is a plain sky130 transmission gate: an 0.84/0.15 pfet and an",
+    "0.42/0.15 nfet whose drains are tied together (net 'a') and whose",
+    "sources are tied together (net 'b'), gated by independent control",
+    "signals (pfet gate 'ctrl', nfet gate 'ctrlb' -- normally clk/clkb, an",
+    "external complementary pair) rather than sharing one gate net the way",
+    "an inverter's pfet/nfet do. design/sampler_core.spice's sampler_dff",
+    "subckt draws this exact two-device shape four times, flat (no",
+    "sub-schematic symbol for it in design/xschem/sampler_dff.sch), so unlike",
+    "ro_stage/ro_nand2 there is no committed .subckt this cell's own LVS can",
+    "reference: lvs.reference below points at a hand-authored two-device",
+    "micro-netlist (sampler_tg.ref.spice, committed alongside this recipe)",
+    "matching the device-for-device shape sampler_dff.sch's TG_D/TG_FBM/",
+    "TG_S/TG_FBS instances share, not an xschem export.",
+    "",
+    "Placement reuses ro_buf's own two-row stack (nfet at the origin, pfet",
+    "mirror_y directly above it, gates facing across the row gap) --",
+    "mirror_y flips the block's Y extent only (not X), so mn.U0_G and",
+    "mp.U0_G land at the SAME local x with no waypoint needed, exactly as in",
+    "ro_buf. What differs from ro_buf is which pins share a net: an inverter",
+    "ties both GATES together (net 'a') and lets each device's own SOURCE",
+    "go to its own supply tap; a transmission gate ties both DRAINS (net",
+    "'a', the same D-D route ro_buf's 'y' net already proves at x=1.9) and",
+    "both SOURCES together (net 'b', a short west-side vertical run at",
+    "x=0.1, well clear of the nwell/psub taps parked further west at",
+    "x=-2.0x) -- and leaves the two gates as two INDEPENDENT top-level pins",
+    "(ctrl/ctrlb) rather than one shared net. The taps supply bulk only (PMOS",
+    "well merge / NMOS substrate tie): their own TAP_N ports are promoted",
+    "directly as the 'vdd'/'vss' pins with no internal route to the device",
+    "row at all, since neither S/D pin is itself a supply node here."
+  ],
+  "pdk": {
+    "variant": "sky130A",
+    "deck": "sky130"
+  },
+  "blocks": [
+    {
+      "id": "mn",
+      "generator": "mos_array",
+      "cell_name": "nfet_w0p42_l0p15",
+      "orientation": "none",
+      "params": {
+        "w_um": 0.42,
+        "l_um": 0.15,
+        "rows": 1,
+        "cols": 1,
+        "dummy": 0,
+        "flavor": "nfet",
+        "gate_contact": true
+      }
+    },
+    {
+      "id": "mp",
+      "generator": "mos_array",
+      "cell_name": "pfet_w0p84_l0p15",
+      "orientation": "mirror_y",
+      "params": {
+        "w_um": 0.84,
+        "l_um": 0.15,
+        "rows": 1,
+        "cols": 1,
+        "dummy": 0,
+        "flavor": "pfet",
+        "gate_contact": true
+      }
+    },
+    {
+      "id": "nwell_tap",
+      "generator": "guard_ring",
+      "cell_name": "nwell_tap",
+      "orientation": "none",
+      "params": {
+        "inner_width_um": 1.0,
+        "inner_height_um": 1.0,
+        "ring_width_um": 0.42,
+        "contacts_per_side": 2,
+        "add_well": true
+      }
+    },
+    {
+      "id": "psub_tap",
+      "generator": "guard_ring",
+      "cell_name": "psub_tap",
+      "orientation": "none",
+      "params": {
+        "inner_width_um": 1.0,
+        "inner_height_um": 1.0,
+        "ring_width_um": 0.42,
+        "contacts_per_side": 2,
+        "add_well": false
+      }
+    }
+  ],
+  "placement": {
+    "strategy": "explicit",
+    "order": ["psub_tap", "mn", "nwell_tap", "mp"],
+    "origins_um": {
+      "mn": { "x": 0.0, "y": 0.0 },
+      "mp": { "x": 0.0, "y": 3.95 },
+      "nwell_tap": { "x": -0.375, "y": 4.15 },
+      "psub_tap": { "x": -0.375, "y": -2.49 }
+    }
+  },
+  "routing": {
+    "layer_role": "metal",
+    "width_um": 0.17
+  },
+  "connectivity": [
+    {
+      "net": "a",
+      "pins": [
+        { "block": "mp", "port": "U0_D" },
+        { "block": "mn", "port": "U0_D" }
+      ],
+      "waypoints_um": [
+        [1.9, 3.53],
+        [1.9, 0.21]
+      ]
+    },
+    {
+      "net": "b",
+      "pins": [
+        { "block": "mn", "port": "U0_S" },
+        { "block": "mp", "port": "U0_S" }
+      ],
+      "waypoints_um": [
+        [-0.3, 0.21],
+        [-0.3, 3.53]
+      ]
+    }
+  ],
+  "pins": [
+    { "block": "mp", "port": "U0_G", "net": "ctrl" },
+    { "block": "mn", "port": "U0_G", "net": "ctrlb" },
+    { "block": "nwell_tap", "port": "TAP_N", "net": "vdd" },
+    { "block": "psub_tap", "port": "TAP_S", "net": "vss" }
+  ],
+  "lvs": {
+    "reference": "layout/sampler_tg/sampler_tg.source.spice",
+    "subckt": "sampler_tg"
+  }
+}

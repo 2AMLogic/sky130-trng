@@ -544,7 +544,7 @@ trng_top                   (not in scope for #22 — stops at the raw tap)
         ro_stage   (x4/ring)  BUILT, all 4 wstv values — DRC-clean + LVS-clean (layout/ro_stage/, ro_stage_wstv0p{44,46,48}/) — 4 distinct physical cells (one per ring's wstv), each reused 4x within its own ring
       ro_buf     (x4)        BUILT — DRC-clean + LVS-clean (layout/ro_buf/)
       xor2       (x3)        BUILT — DRC-clean + LVS-clean (layout/xor2/) — 4x mos_array (two series chains per tree) + 3x guard_ring + 2x ro_buf cell; one physical cell reused 3x (xa1/xa2/xa3 are identical instances)
-    sampler_dff  (x6)        NOT STARTED — transmission-gate master-slave DFF, no generator surveyed yet
+    sampler_dff  (x6)        LEAF PRIMITIVES STARTED, CELL NOT ASSEMBLED — transmission-gate master-slave DFF. layout/sampler_tg/ composes and LVS-verifies the one genuinely new leaf shape (a plain transmission gate, 4x per sampler_dff instance) DRC-clean + LVS-match (2/2 devices, 6/6 nets, against a hand-authored micro-reference — see that directory's README for why); mos_array is sufficient, no klayout-tools generator gap. The other two leaf shapes: 3x plain inverter (already ro_buf, reusable as-is per xor2's own blocks[].cell precedent) and 2x a plain rst_n-gated NAND2 (sampler_nand2, not yet composed — structurally ro_nand2 minus its two starve devices). Assembling all 22 devices into one sampler_dff cell and LVS-checking it against design/sampler_core.spice's own .subckt sampler_dff remains open (#27)
 ```
 
 "PROVEN AT DEVICE LEVEL" means: every transistor geometry the cell needs is
@@ -1083,6 +1083,19 @@ deliver, tracked in follow-up issue
    transmission-gate DFF — may need `klt draw` or a new `klt gen` generator;
    if the latter is a genuine gap, *that* is the point to file a
    `2AMLogic/klayout-tools` issue, described generically).
+   **The transmission-gate survey is now done, and the answer is "no gap":**
+   see [`layout/sampler_tg/README.md`](sampler_tg/README.md) — `mos_array`
+   composes a transmission gate exactly as it composes an inverter (same two
+   devices, same two-row stack; only which pins share a net differs), `klt
+   drc` clean and `klt lvs` **match** (2/2 devices, 6/6 nets) against a
+   hand-authored micro-reference (no `design/*.spice` `.subckt` exists for
+   this shape — `sampler_dff.sch` is flat, unlike `ro_ring5.sch`). No `klt
+   draw` and no new `klt gen` generator needed. `sampler_dff`/`sampler_core`
+   assembly itself remains open (#27): the other missing leaf shape is a
+   plain rst_n-gated NAND2 (`sampler_nand2`, structurally `ro_nand2` minus
+   its two starve devices), then all 22 devices need placing and routing as
+   one cell, LVS-checked against `design/sampler_core.spice`'s real `.subckt
+   sampler_dff`.
    **`ro_ring5` is DONE, all four `wstv` values** — see
    [`layout/ro_ring5/README.md`](ro_ring5/README.md) and its three `wstv`
    siblings: `klt drc` clean (0 violations) and `klt lvs` **match**

@@ -566,8 +566,18 @@ that lands this document):
   any scale. Still outstanding for the brief's full sign-off bar:
   a `vddr1`-`vddr4` supply-distribution layout, and
   **the sampler as assembled layout** (`sampler_core`/`sampler_dff` have no
-  layout at all, so no whole-*chain*, raw-tap-to-sampled-bit post-layout
-  claim exists yet). Note also that
+  *assembled* layout at all, so no whole-*chain*, raw-tap-to-sampled-bit
+  post-layout claim exists yet). **A later increment starts the sampler's own
+  composition**: `layout/sampler_tg/` composes the plain sky130 transmission
+  gate `sampler_dff`'s four `TG_D`/`TG_FBM`/`TG_S`/`TG_FBS` instances share —
+  `klt drc` clean, `klt lvs` match (2/2 devices, 6/6 nets) against a
+  hand-authored micro-reference, since `design/xschem/sampler_dff.sch` is
+  flat and has no `.subckt` of this shape for `compose-cell.py`'s LVS to
+  reference directly — confirming `mos_array` is sufficient for this shape
+  (no `klayout-tools` tool gap). `sampler_dff`'s other two leaf shapes (a
+  plain inverter, already `ro_buf`; a plain rst_n-gated NAND2, not yet
+  composed) and the 22-device whole-cell assembly and LVS check remain open.
+  Note also that
   "DRC-clean" here means clean against `klt`'s **curated** sky130 deck (a
   documented subset — see each `drc.json`'s own `coverage` block), not a
   full sky130 sign-off deck.
