@@ -8,30 +8,30 @@
       "cell": {
         "ports": [
           {
-            "name": "nand_s2_y",
-            "x_um": 44.18,
-            "y_um": 0.21,
-            "layer": {
-              "layer": 67,
-              "datatype": 20
-            },
-            "width_um": 0.42,
-            "direction_deg": 90
-          },
-          {
-            "name": "tg_fbs_a",
-            "x_um": 50.2,
-            "y_um": 0.21,
+            "name": "inv_q_y",
+            "x_um": 37.9,
+            "y_um": 1.2,
             "layer": {
               "layer": 67,
               "datatype": 20
             },
             "width_um": 0.17,
             "direction_deg": 0
+          },
+          {
+            "name": "nand_s2_en",
+            "x_um": 43.075,
+            "y_um": 1.975,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 90
           }
         ],
-        "cell_name": "q_bus",
-        "gds_path": "q_bus.gds"
+        "cell_name": "mc_bus",
+        "gds_path": "mc_bus.gds"
       }
     }
   ],
@@ -53,44 +53,36 @@
   },
   "connectivity": [
     {
-      "net": "qb",
+      "net": "q",
       "pins": [
         {
           "block": "core",
-          "port": "nand_s2_y"
+          "port": "inv_q_y"
         },
         {
           "block": "core",
-          "port": "tg_fbs_a"
+          "port": "nand_s2_en"
         }
       ],
       "waypoints_um": [
         [
-          44.18,
-          0.21
+          37.9,
+          1.2
         ],
         [
-          44.35,
-          0.21
+          43.075,
+          1.2
         ],
         [
-          44.35,
-          2.0
-        ],
-        [
-          50.2,
-          2.0
-        ],
-        [
-          50.2,
-          0.21
+          43.075,
+          1.975
         ]
       ]
     }
   ],
   "pins": [],
   "options": {
-    "cell_name": "sampler_dff",
-    "output": "sampler_dff.gds"
+    "cell_name": "q_bus",
+    "output": "q_bus.gds"
   }
 }
