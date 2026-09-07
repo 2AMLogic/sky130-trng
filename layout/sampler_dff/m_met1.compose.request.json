@@ -1,0 +1,144 @@
+{
+  "pdk": {
+    "variant": "sky130A"
+  },
+  "blocks": [
+    {
+      "id": "core",
+      "cell": {
+        "ports": [
+          {
+            "name": "tg_d_b",
+            "x_um": 4.465,
+            "y_um": 1.2,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 180
+          },
+          {
+            "name": "nand_m_a_ext",
+            "x_um": 14.0,
+            "y_um": 2.71,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 0
+          },
+          {
+            "name": "tg_fbm_b_alt",
+            "x_um": 23.8,
+            "y_um": 2.71,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 0
+          },
+          {
+            "name": "tg_d_b_m1",
+            "x_um": 4.465,
+            "y_um": 1.2,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 180
+          },
+          {
+            "name": "nand_m_a_ext_m1",
+            "x_um": 14.0,
+            "y_um": 2.71,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 0
+          },
+          {
+            "name": "tg_fbm_b_alt_m1",
+            "x_um": 23.8,
+            "y_um": 2.71,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 0
+          }
+        ],
+        "cell_name": "m_stub",
+        "gds_path": "m_stub.gds"
+      }
+    }
+  ],
+  "placement": {
+    "strategy": "explicit",
+    "order": [
+      "core"
+    ],
+    "origins_um": {
+      "core": {
+        "x": 0.0,
+        "y": 0.0
+      }
+    }
+  },
+  "routing": {
+    "layer_role": "metal2",
+    "width_um": 0.17
+  },
+  "connectivity": [
+    {
+      "net": "tg_d_b_via",
+      "pins": [
+        {
+          "block": "core",
+          "port": "tg_d_b"
+        },
+        {
+          "block": "core",
+          "port": "tg_d_b_m1"
+        }
+      ]
+    },
+    {
+      "net": "nand_m_a_ext_via",
+      "pins": [
+        {
+          "block": "core",
+          "port": "nand_m_a_ext"
+        },
+        {
+          "block": "core",
+          "port": "nand_m_a_ext_m1"
+        }
+      ]
+    },
+    {
+      "net": "tg_fbm_b_alt_via",
+      "pins": [
+        {
+          "block": "core",
+          "port": "tg_fbm_b_alt"
+        },
+        {
+          "block": "core",
+          "port": "tg_fbm_b_alt_m1"
+        }
+      ]
+    }
+  ],
+  "pins": [],
+  "options": {
+    "cell_name": "m_met1",
+    "output": "m_met1.gds"
+  }
+}

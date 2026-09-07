@@ -1,9 +1,115 @@
 # layout/sampler_dff
 
-**`sampler_dff` assembly, continued (issue #22, this increment): the fifth
-of the six data-path nets, `mb`, is routed — DRC-clean on the first
-attempt, on `met1` alone, and it leaves `m` as the *only* thing between
-this cell and a clean `klt lvs` sign-off.** `mb` is the master latch's own
+**`sampler_dff` is DRC-clean and `klt lvs`-clean (issue #22, this
+increment): the sixth and last data-path net, `m`, is routed, and
+`sampler_dff` is now a fully verified cell — `klt drc` 0 violations, `klt
+extract` 22 devices / 14 nets, `klt lvs` **match: 22/22 devices, 14/14
+nets, 0 mismatches** against `design/sampler_core.spice`'s own `.subckt
+sampler_dff`, on the first attempt.** `m` is `design/sampler_core.spice`'s
+`TG_D.b` ↔ `NAND_M.a` ↔ `TG_FBM.b` (`XMtdp`/`XMtdn`'s shared pass node,
+`XMimna`'s gate, `XMfmp`/`XMfmn`'s shared pass node): `tg_d.b` (`4.465,
+1.2`), `nand_m.a` (`13.51, 2.75` per the `place` stage's own declared port;
+`13.43, 2.71` once re-derived, see below), `tg_fbm.b` (`23.755, 1.2`). Four
+`gen-compose` stages (`m_stub`/`m_met1`/`m_met2`/final):
+
+- **`m_stub`** reuses the pre-`#84` `rst_n_stub` stage's own nand_m-side
+  escape byte for byte — a same-layer (`li1`) stub carrying `nand_m.a` east
+  past `sampler_nand2`'s own internal `met1` via/pad blob (global
+  `x = 12.985..13.575` for the `nand_m` instance) to `(14.0, 2.71)`. That
+  exact geometry was DRC-clean once already (before `#84` moved `rst_n` off
+  `nand_m.a` onto `nand_m.en`, leaving this escape unused until now).
+- **`m_met1`**/**`m_met2`** via three anchors from `li1` to `met2`,
+  two single-hop steps, the same climb `q`/`qb`/`mc` already used. Two of
+  the three anchors are the net's own already-declared pins (`tg_d.b`,
+  `m_stub`'s own `nand_m_a_ext`); the third, `tg_fbm_b_alt` at
+  `(23.8, 2.71)`, is a **new** anchor point — not `TG_FBM.b`'s own declared
+  `(23.755, 1.2)` port, but a second point on that same physical net's
+  already-drawn `li1` diffusion strap, which `klayout.db` against the
+  composed GDS shows spans the full local column
+  `x = 23.670..24.265, y = 0.125..3.615` (nearly this row's own full
+  height) — landing anywhere on it is the same electrical node, exactly the
+  "land directly on the target net's own metal" move `mb`'s own `nand_m_y`
+  anchor already used. This detour is necessary: `TG_FBM.b`'s own declared
+  `(23.755, 1.2)` cannot be via'd to `met1` or `met2` in place — both
+  planes are inside `mc`'s own bus footprint there (`mc_bus`'s
+  `[21.19,1.2]-[21.19,1.8]-[25.955,1.8]-[25.955,1.2]` U-shape spans
+  `x = 21.105..26.04` on `met2` at `y = 1.2..1.885`, and `rst_n_bus`'s own
+  met2 bar spans nearly the whole cell width at `y = 1.765..2.285`) — a
+  foreign net, confirmed directly with `klayout.db` against the composed
+  `sampler_dff.gds`, not inferred from a bounding box (a non-convex U-shape's
+  own bbox looks like a solid rectangle and is not one; see "A false-blocked
+  reading, corrected" below for the exact mistake this derivation caught and
+  fixed before it produced a wrong route).
+- **The final stage** connects `tg_d_b_m2`/`nand_m_a_ext_m2`/`tg_fbm_b_alt_m2`
+  on `met2` as **two 2-pin `connectivity[]` entries** (`m_west`, `m_east`),
+  not one 3-pin bundle net with `connectivity[].legs[]` — see "Environment
+  note: `legs[]` unsupported by this session's installed `klt`" below for
+  why. `m_west` (`tg_d_b_m2` → `nand_m_a_ext_m2`) climbs at `tg_d_b`'s own
+  `x = 4.465` to `y = 3.2` (the same lane height `mb`'s own east leg and
+  `s`'s own east climb already prove clear this far west — a direct route
+  at `nand_m_a_ext`'s own `y = 2.71` instead crosses `TG_D`'s own
+  `ctrl`/`ctrlb` via columns, solid `met2` at `x = 5.1..5.52` for the entire
+  `y = 0..2.71`), runs east to `x = 14.0`, then drops the short remaining
+  `0.49 µm` to `2.71`. `m_east` (`nand_m_a_ext_m2` → `tg_fbm_b_alt_m2`) is a
+  single straight run at `y = 2.71`, no waypoints needed — both `mc_bus`'s
+  own bar and `rst_n_bus`'s own bar sit entirely below `2.71 + 0.14`, so a
+  straight shot clears both. **`klt drc` clean, 0 violations, cell bbox
+  unchanged**, first attempt on both counts. `klt extract`'s merged net
+  label group for `m` (`a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|
+  nand_m_a_stub|tg_d_b|tg_d_b_via|tg_fbm_b|tg_fbm_b_alt_via`) confirms
+  `tg_d.b`, `nand_m.a` and `tg_fbm.b` are one physically merged net, and
+  `klt lvs`'s own full match (22/22 devices, 14/14 nets, 0 mismatches, 0
+  errors) is the correctness check that matters — a route landing on the
+  wrong pin or leaving a fragment unwired would still be visible here even
+  if `m_east`/`m_west`'s own `klt drc` passed.
+
+**A false-blocked reading, corrected before it produced a wrong route.**
+An early candidate for `m_east` tried a straight vertical drop from the
+`y = 3.2` lane down to `TG_FBM.b`'s own declared `(23.755, 1.2)` pin.
+`klayout.db`'s own `Region` intersection against a small box centred
+exactly on that pin reported **no overlap** — genuinely correct, since
+`mc_bus`'s own U-shape has metal only along its own three drawn segments
+(two verticals at `x = 21.19`/`25.955`, one horizontal at `y = 1.8`), not
+across its own bounding box's full interior. But a full-column check
+(`y = 1.2..3.2` at `x = 23.755`, the shape a straight vertical *route*
+would actually need) correctly found the crossing: the horizontal segment
+of `mc_bus`'s own U sits directly in the way. The fix was not "the point is
+blocked, give up" (the small-box check was already right that the point
+itself is clear) but "get there without a straight vertical crossing
+`mc_bus`'s own bar" — hence `tg_fbm_b_alt`'s approach from directly above,
+at `y = 2.71`, well clear of both bars. Recorded here because the two
+checks look contradictory at a glance and the correct read (both are right,
+about different things) is not obvious without re-deriving it.
+
+**Environment note: `legs[]` unsupported by this session's installed
+`klt`, confirmed independently of `2AMLogic/klayout-tools#1548`.** This
+session's `~/.local/bin/klt` (`0.4.0` release, `git_commit 34548dc`,
+`is_release: true`) does not implement `connectivity[].legs[]` at all —
+`gen_compose.py`'s own `_parse_connectivity` has no `legs` handling
+whatsoever, and running `python3 layout/bin/compose-cell.py
+layout/sampler_dff/cell.json --check` against it fails to reproduce
+`clkb_seg2`'s own already-committed `clkb_mid` route (`nets left unrouted
+by gen-compose: ['clkb_mid']`), the same "unrecognized `connectivity[]`
+field silently dropped instead of rejected" class `#1548` already names.
+Worked around the same way prior sessions did: a scratch venv
+(`uv venv /tmp/klt-scratch-venv && uv pip install --python
+/tmp/klt-scratch-venv/bin/python git+https://github.com/2AMLogic/
+klayout-tools.git`), pinned to git commit `37a390e87b8d`, which reproduces
+every prior stage byte for byte (`--check` clean) and does implement
+`legs[]`. Rather than depend on that scratch venv for `m`'s own *new*
+routing too, this increment took `_parse_connectivity`'s own error message
+at face value — "split the net into 2-pin `connectivity[]` entries to
+steer individual legs" — and used two 2-pin entries (`m_west`/`m_east`)
+sharing one endpoint instead of one 3-pin bundle net, which needs no
+`legs[]` support at all and is therefore reproducible on *either* klt
+build. No new `2AMLogic/klayout-tools` issue filed: this confirms `#1548`'s
+already-filed finding with a second, independent reproduction (a different
+"stale" build than the one that issue's own filing used) rather than
+surfacing a new gap.
+
+**A previous increment (issue #22): the fifth of the six data-path nets,
+`mb`, is routed — DRC-clean on the first attempt, on `met1` alone.** `mb`
+is the master latch's own
 inverted output: `design/sampler_core.spice` puts `NAND_M`'s output
 (`XMimpa`/`XMimpb`'s shared PMOS drain and `XMimna`'s NMOS drain),
 `inv_mc`'s input (`XMim2p`/`XMim2n`'s shared gate) and `TG_S`'s pass input
@@ -1329,43 +1435,22 @@ instance's own internal `metal2` wiring occupies (the tallest leaf,
 
 ## What remains (issue #27)
 
-- **One data-path net** (`mc`, `q`, `qb`, `s` and `mb` are now routed, see
-  their five "Result:" sections above): `m` (`TG_D.b` <-> `NAND_M.a` <->
-  `TG_FBM.b` — per "Deriving which `sampler_tg` pin carries which data
-  net" above, `TG_D`'s and `TG_FBM`'s *`b`* pins, not `a`; and `NAND_M`'s
-  **`a`** pin, per the corrected mapping the #84 fix established, not the
-  `en` pin an earlier revision of this list named). `m` is a three-pin
-  fan-out spanning `TG_D.b` at `x = 4.465` to `TG_FBM.b` at `x = 23.755`,
-  with `NAND_M.a` at `(13.51, 2.75)` in the middle, and — unlike
-  `mc`/`q`/`qb`/`s`/`mb` — it crosses `sampler_nand2`'s own internal `met1`
-  blob at a *foreign*-net column (the same obstruction `rst_n`'s own stub
-  escape and `clk`/`clkb`'s own bridges already solved). Expect a
-  stub-plus-bridge recipe closer to `rst_n`'s or `clkb`'s own than to the
-  single-lane recipes, or `s`'s own "go one plane out to met2, where the
-  blob does not reach" move if met2 is still free that far west. Note that
-  `mb`'s own `y = 3.2` east lane and its `x = 19.75..19.92` climb are new
-  met1 obstacles in the `x = 19.8..31.1` band that any `m` route west of
-  `x = 23.755` now has to be measured against.
+- ~~**One data-path net** (`m`)~~ — **routed** (this increment, see "the
+  sixth and last data-path net, `m`, is routed" above). All six data-path
+  nets (`mc`/`q`/`qb`/`s`/`mb`/`m`) are now wired, `sampler_dff` is
+  `klt drc`-clean (0 violations) and `klt lvs`-**match** (22/22 devices,
+  14/14 nets, 0 mismatches) against `design/sampler_core.spice`'s own
+  `.subckt sampler_dff` — the first fully DRC/LVS-clean multi-cell assembly
+  in this repo.
 - ~~**The `sampler_nand2` input swap**
   ([#84](https://github.com/2AMLogic/sky130-trng/issues/84))~~ — **fixed**:
   `rst_n` now wires to both instances' `en` pins and the data nets to their
   `a` pins, matching `design/sampler_core.spice`. See "Correction (issue
-  #84): the `sampler_nand2` input swap is fixed" above. `m`/`mb`'s own
-  `NAND_M` pin assignment must follow that corrected mapping.
+  #84): the `sampler_nand2` input swap is fixed" above.
 - **Whole-cell external pin promotion is done** (`d`, `clk`, `rst_n`, `q`,
   `vdd`, `vss` — the `d` increment above closed the one gap; the other
   five each already carried a correctly-spelled label from their own
-  routing increment). This does **not** by itself change the `klt lvs`
-  verdict — a scratch experiment with `klt extract --pins` (see the `d`
-  increment's "LVS-side idea explored and abandoned" note above) found the
-  comparer's topology match is insensitive to promoted-pin status for this
-  cell's flat, subckt-call comparison form. What still blocks a clean
-  `klt lvs` sign-off against `design/sampler_core.spice`'s real `.subckt
-  sampler_dff` is now **`m` and only `m`** — the `#84` pin swap above is
-  fixed (which moved the verdict from 12/22 devices, 5/14 nets to 15/22,
-  7/14), and `mb` moved it again to **18/22, 8/14**. All 8 remaining
-  `klt lvs` mismatches name `m` or one of its three still-disconnected
-  fragments; see "Result: `mb` fan-out" above for the enumeration.
+  routing increment).
 - **`sampler_core`**'s own six-instance wiring, and the whole-chain
   (raw-tap-to-sampled-bit) post-layout PVT campaign, both still fully
-  open behind the above.
+  open — now the sole remaining scope behind a DRC/LVS-clean `sampler_dff`.

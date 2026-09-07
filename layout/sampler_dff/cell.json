@@ -1386,6 +1386,7 @@
       "pins": []
     },
     {
+      "name": "mb_bus",
       "_comment": [
         "mb fan-out (issue #22): the fifth of the six data-path nets, and",
         "the last one that can be routed before m closes the cell. mb is",
@@ -1478,6 +1479,242 @@
       "pins": [
         {"net": "d", "block": "core", "port": "tg_d_a"}
       ]
+    },
+    {
+      "name": "m_stub",
+      "_comment": [
+        "m fan-out, step 1 of 4 (issue #22): the sixth and last data-path",
+        "net -- design/sampler_core.spice's TG_D.b <-> NAND_M.a <->",
+        "TG_FBM.b (XMtdp/XMtdn's shared pass node, XMimna's gate,",
+        "XMfmp/XMfmn's shared pass node). Global coordinates: tg_d.b",
+        "(4.465, 1.2), nand_m.a (13.51, 2.75 per the 'place' stage's own",
+        "declared port; 13.43, 2.71 once re-derived below), tg_fbm.b",
+        "(23.755, 1.2).",
+        "",
+        "nand_m.a sits inside sampler_nand2's own internal met1 via/pad",
+        "blob for its 'y' net (confirmed directly against",
+        "layout/sampler_nand2/sampler_nand2.gds with klayout.db: one met1",
+        "box at local x=4.455..5.045, y=0.125..3.74, i.e. global",
+        "x=12.985..13.575 for the nand_m instance) -- the same obstruction",
+        "the pre-#84 rst_n_stub stage first solved for BOTH sampler_nand2",
+        "instances' 'a' pins (nand_m_a AND nand_s2_a, one bus), before #84",
+        "moved rst_n off nand_m.a entirely (onto nand_m.en instead) and",
+        "q_stub later re-solved the escape for nand_s2.a alone. This stage",
+        "reuses the nand_m-side half of that already-DRC-clean escape byte",
+        "for byte: a same-layer (li1/'metal' role, no via) stub carries",
+        "nand_m.a EAST past the blob's own east edge (global 13.575) to",
+        "(14.0, 2.71) -- the identical geometry rst_n_stub proved clean",
+        "pre-#84, left unused since.",
+        "",
+        "x_um=13.43 (not the 'place' stage's own 13.51) and y_um=2.71 (not",
+        "2.75) match rst_n_stub's own historical re-derivation: klayout.db",
+        "against sampler_nand2.gds shows the real li1 pad and the 'a'",
+        "net's own gate strap both centered there, not at the 'place'",
+        "stage's carried-over ro_ring5 value -- see rst_n_stub's own",
+        "pre-#84 _comment (git history) for the full derivation; not",
+        "re-run here since it is leaf-cell geometry that has not changed."
+      ],
+      "blocks": [
+        {
+          "id": "core",
+          "orientation": "none",
+          "cell": {
+            "from_stage": "mb_bus",
+            "ports": [
+              {"name": "nand_m_a", "x_um": 13.43, "y_um": 2.71, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.17, "direction_deg": 0},
+              {"name": "nand_m_a_ext", "x_um": 14.0, "y_um": 2.71, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.17, "direction_deg": 0}
+            ]
+          }
+        }
+      ],
+      "placement": {"strategy": "explicit", "order": ["core"], "origins_um": {"core": {"x": 0.0, "y": 0.0}}},
+      "routing": {"layer_role": "metal", "width_um": 0.17},
+      "connectivity": [
+        {"net": "nand_m_a_stub", "pins": [{"block": "core", "port": "nand_m_a"}, {"block": "core", "port": "nand_m_a_ext"}]}
+      ],
+      "pins": []
+    },
+    {
+      "name": "m_met1",
+      "_comment": [
+        "m fan-out, step 2 of 4 (issue #22): via three anchors from li1",
+        "straight up to met1, zero lateral distance on each -- the same",
+        "single-hop via-drop every other fan-out in this cell uses.",
+        "tg_d_b is TG_D's own already-declared 'b' pin (4.465, 1.2).",
+        "nand_m_a_ext is m_stub's own li1 escape point above (14.0, 2.71).",
+        "tg_fbm_b_alt is a NEW anchor at (23.8, 2.71) -- not TG_FBM's own",
+        "declared 'b' port (23.755, 1.2), but a second point on that same",
+        "physical net's own already-drawn li1 diffusion strap, which",
+        "klayout.db against the composed sampler_dff.gds shows spans the",
+        "full local column x=23.670..24.265, y=0.125..3.615 (nearly the",
+        "cell's own full row height) -- so any point along it is the same",
+        "electrical node as the 'place' stage's own tg_fbm_b port, exactly",
+        "the same 'land directly on the target net's own metal' move mb's",
+        "own nand_m_y anchor and rst_n's own nand_s2_a via already used.",
+        "",
+        "This detour exists because TG_FBM.b's own declared (23.755, 1.2)",
+        "cannot be via'd to met1 or met2 in place: at that exact point,",
+        "met1 is inside mc_bus's own U-shaped footprint (waypoints_um",
+        "[21.19,1.2]-[21.19,1.8]-[25.955,1.8]-[25.955,1.2], global",
+        "x=21.105..26.04 at y=1.2..1.885) and met2 there is likewise",
+        "foreign -- both confirmed directly with klayout.db against the",
+        "composed sampler_dff.gds. (23.8, 2.71) sits just east of",
+        "nand_m_a_ext's own column and well above mc_bus's own bar and",
+        "rst_n_bus's own met2 bar (see the final stage's own _comment for",
+        "the clearance derivation), while still landing on TG_FBM.b's own",
+        "li1 geometry."
+      ],
+      "blocks": [
+        {
+          "id": "core",
+          "orientation": "none",
+          "cell": {
+            "from_stage": "m_stub",
+            "ports": [
+              {"name": "tg_d_b", "x_um": 4.465, "y_um": 1.2, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.17, "direction_deg": 180},
+              {"name": "nand_m_a_ext", "x_um": 14.0, "y_um": 2.71, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.17, "direction_deg": 0},
+              {"name": "tg_fbm_b_alt", "x_um": 23.8, "y_um": 2.71, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.17, "direction_deg": 0},
+              {"name": "tg_d_b_m1", "x_um": 4.465, "y_um": 1.2, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 180},
+              {"name": "nand_m_a_ext_m1", "x_um": 14.0, "y_um": 2.71, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 0},
+              {"name": "tg_fbm_b_alt_m1", "x_um": 23.8, "y_um": 2.71, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 0}
+            ]
+          }
+        }
+      ],
+      "placement": {"strategy": "explicit", "order": ["core"], "origins_um": {"core": {"x": 0.0, "y": 0.0}}},
+      "routing": {"layer_role": "metal2", "width_um": 0.17},
+      "connectivity": [
+        {"net": "tg_d_b_via", "pins": [{"block": "core", "port": "tg_d_b"}, {"block": "core", "port": "tg_d_b_m1"}]},
+        {"net": "nand_m_a_ext_via", "pins": [{"block": "core", "port": "nand_m_a_ext"}, {"block": "core", "port": "nand_m_a_ext_m1"}]},
+        {"net": "tg_fbm_b_alt_via", "pins": [{"block": "core", "port": "tg_fbm_b_alt"}, {"block": "core", "port": "tg_fbm_b_alt_m1"}]}
+      ],
+      "pins": []
+    },
+    {
+      "name": "m_met2",
+      "_comment": [
+        "m fan-out, step 3 of 4 (issue #22): via the same three anchors",
+        "again, met1 to met2, reusing m_met1's own via-drop mechanic one",
+        "plane further out -- the same two-hop climb q_met1/q_met2 and",
+        "mc_met1/mc_bus already used to reach met2 from li1."
+      ],
+      "blocks": [
+        {
+          "id": "core",
+          "orientation": "none",
+          "cell": {
+            "from_stage": "m_met1",
+            "ports": [
+              {"name": "tg_d_b_m1", "x_um": 4.465, "y_um": 1.2, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 180},
+              {"name": "nand_m_a_ext_m1", "x_um": 14.0, "y_um": 2.71, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 0},
+              {"name": "tg_fbm_b_alt_m1", "x_um": 23.8, "y_um": 2.71, "layer": {"layer": 68, "datatype": 20}, "width_um": 0.17, "direction_deg": 0},
+              {"name": "tg_d_b_m2", "x_um": 4.465, "y_um": 1.2, "layer": {"layer": 69, "datatype": 20}, "width_um": 0.17, "direction_deg": 180},
+              {"name": "nand_m_a_ext_m2", "x_um": 14.0, "y_um": 2.71, "layer": {"layer": 69, "datatype": 20}, "width_um": 0.17, "direction_deg": 0},
+              {"name": "tg_fbm_b_alt_m2", "x_um": 23.8, "y_um": 2.71, "layer": {"layer": 69, "datatype": 20}, "width_um": 0.17, "direction_deg": 0}
+            ]
+          }
+        }
+      ],
+      "placement": {"strategy": "explicit", "order": ["core"], "origins_um": {"core": {"x": 0.0, "y": 0.0}}},
+      "routing": {"layer_role": "metal3", "width_um": 0.17},
+      "connectivity": [
+        {"net": "tg_d_b_via2", "pins": [{"block": "core", "port": "tg_d_b_m1"}, {"block": "core", "port": "tg_d_b_m2"}]},
+        {"net": "nand_m_a_ext_via2", "pins": [{"block": "core", "port": "nand_m_a_ext_m1"}, {"block": "core", "port": "nand_m_a_ext_m2"}]},
+        {"net": "tg_fbm_b_alt_via2", "pins": [{"block": "core", "port": "tg_fbm_b_alt_m1"}, {"block": "core", "port": "tg_fbm_b_alt_m2"}]}
+      ],
+      "pins": []
+    },
+    {
+      "_comment": [
+        "m fan-out, step 4 of 4 (issue #22): the whole-cell final stage --",
+        "route the met2 wire connecting all three anchors and complete",
+        "sampler_dff's sixth and last data-path net. Split into two 2-pin",
+        "connectivity[] entries (m_west, m_east) rather than one 3-pin",
+        "bundle net with connectivity[].legs[]: the klt build installed in",
+        "this environment (0.4.0 release, git_commit 34548dc) does not",
+        "parse a request's own legs[] field at all -- klayout-tools#1548's",
+        "'silently dropped, not rejected' finding, reproduced directly here",
+        "(`python3 layout/bin/compose-cell.py layout/sampler_dff/cell.json",
+        "--check` against the installed klt fails to reproduce clkb_seg2's",
+        "own committed clkb_mid route). This increment's own evidence was",
+        "built against a scratch venv pinned to klayout-tools git commit",
+        "37a390e87b8d ('uv pip install --python <venv>/bin/python",
+        "git+https://github.com/2AMLogic/klayout-tools.git'), which",
+        "reproduces every prior stage byte for byte (--check clean) and",
+        "does implement legs[] -- but gen_compose.py's own",
+        "_parse_connectivity already names the environment-independent",
+        "alternative: 'split the net into 2-pin connectivity[] entries to",
+        "steer individual legs', which is what m_west/m_east below do. Two",
+        "2-pin nets sharing one endpoint (nand_m_a_ext_m2) draw one",
+        "physically merged conductor at that shared via -- klt extract",
+        "confirms connectivity from drawn geometry, not from JSON net-name",
+        "bookkeeping, the same principle rst_n's own multi-stage bus",
+        "already relied on.",
+        "",
+        "m_west: tg_d_b_m2 (4.465, 1.2) to nand_m_a_ext_m2 (14.0, 2.71). A",
+        "direct met2 path at nand_m_a_ext's own y=2.71 crosses TG_D's own",
+        "ctrl/ctrlb via columns (met2 solid at x=5.1..5.52 for the ENTIRE",
+        "y=0..2.71, confirmed with klayout.db); a direct climb at tg_d_b's",
+        "own x=4.465 up to a lane at y=3.2 clears that column with room to",
+        "spare (klayout.db: 0 met2 overlap for a 0.17um-wide, 0.14um-",
+        "clearance box along x=4.465, y=1.2..3.2). So m_west climbs at",
+        "tg_d_b's own x to y=3.2 -- the same lane height mb's own east leg",
+        "and s's own east climb already prove clear this far west -- runs",
+        "east to nand_m_a_ext's own x=14.0, then drops the short remaining",
+        "0.49um to 2.71.",
+        "",
+        "m_east: nand_m_a_ext_m2 (14.0, 2.71) to tg_fbm_b_alt_m2",
+        "(23.8, 2.71) -- a single straight met2 run at nand_m_a_ext's own",
+        "y, no waypoints needed. Both rst_n_bus's own met2 bar (global",
+        "x=12.13..43.16, y=1.765..2.285 -- nearly the cell's full width,",
+        "confirmed with klayout.db) and mc_bus's own U-shaped bar (global",
+        "x=21.105..26.04, y=1.2..1.885) sit entirely below y=2.71+0.14, so",
+        "a straight run at 2.71 clears both with room to spare -- this is",
+        "exactly why tg_fbm_b_alt (see m_met1's own _comment) lands at",
+        "y=2.71 rather than TG_FBM.b's own y=1.2: at y=1.2, ANY approach",
+        "to x=23.755 from outside mc_bus's own x-span crosses that span at",
+        "a height (1.2..1.885) mc_bus's own bar already occupies for its",
+        "full width with no gap; TG_FBM.b's own li1 diffusion strap,",
+        "unlike the pin coordinate the 'place' stage declared, is tall",
+        "enough (y=0.125..3.615) to reach from directly above instead.",
+        "",
+        "A false-blocked reading, corrected before it produced a wrong",
+        "route: an early m_east candidate tried a straight vertical drop",
+        "from y=3.2 down to TG_FBM.b's own declared (23.755, 1.2) pin.",
+        "klayout.db's own Region intersection against a small box centred",
+        "exactly on that pin reported no overlap -- genuinely correct,",
+        "since mc_bus's own U-shape has metal only along its own three",
+        "drawn segments, not across its own bounding box's full interior.",
+        "But a full-column check (y=1.2..3.2 at x=23.755, the shape a",
+        "straight vertical route would actually need) correctly found the",
+        "crossing: the horizontal segment of mc_bus's own U sits directly",
+        "in the way. The fix was not 'the point is blocked' (the small-box",
+        "check was already right that the point itself is clear) but 'get",
+        "there without crossing mc_bus's own bar' -- hence tg_fbm_b_alt's",
+        "approach from directly above instead."
+      ],
+      "blocks": [
+        {
+          "id": "core",
+          "orientation": "none",
+          "cell": {
+            "from_stage": "m_met2",
+            "ports": [
+              {"name": "tg_d_b_m2", "x_um": 4.465, "y_um": 1.2, "layer": {"layer": 69, "datatype": 20}, "width_um": 0.17, "direction_deg": 180},
+              {"name": "nand_m_a_ext_m2", "x_um": 14.0, "y_um": 2.71, "layer": {"layer": 69, "datatype": 20}, "width_um": 0.17, "direction_deg": 0},
+              {"name": "tg_fbm_b_alt_m2", "x_um": 23.8, "y_um": 2.71, "layer": {"layer": 69, "datatype": 20}, "width_um": 0.17, "direction_deg": 0}
+            ]
+          }
+        }
+      ],
+      "placement": {"strategy": "explicit", "order": ["core"], "origins_um": {"core": {"x": 0.0, "y": 0.0}}},
+      "routing": {"layer_role": "metal3", "width_um": 0.17},
+      "connectivity": [
+        {"net": "m_west", "pins": [{"block": "core", "port": "tg_d_b_m2"}, {"block": "core", "port": "nand_m_a_ext_m2"}],
+         "waypoints_um": [[4.465, 3.2], [14.0, 3.2]]},
+        {"net": "m_east", "pins": [{"block": "core", "port": "nand_m_a_ext_m2"}, {"block": "core", "port": "tg_fbm_b_alt_m2"}]}
+      ],
+      "pins": []
     }
   ],
   "lvs": {
