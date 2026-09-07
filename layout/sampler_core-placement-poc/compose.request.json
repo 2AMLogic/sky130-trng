@@ -1,0 +1,102 @@
+{
+  "pdk": {
+    "variant": "sky130A"
+  },
+  "blocks": [
+    {
+      "id": "sb",
+      "orientation": "none",
+      "cell": {
+        "gds_path": "../sampler_dff/sampler_dff.gds",
+        "cell_name": "sampler_dff"
+      }
+    },
+    {
+      "id": "sv",
+      "orientation": "none",
+      "cell": {
+        "gds_path": "../sampler_dff/sampler_dff.gds",
+        "cell_name": "sampler_dff"
+      }
+    },
+    {
+      "id": "sr1",
+      "orientation": "none",
+      "cell": {
+        "gds_path": "../sampler_dff/sampler_dff.gds",
+        "cell_name": "sampler_dff"
+      }
+    },
+    {
+      "id": "sr2",
+      "orientation": "none",
+      "cell": {
+        "gds_path": "../sampler_dff/sampler_dff.gds",
+        "cell_name": "sampler_dff"
+      }
+    },
+    {
+      "id": "sr3",
+      "orientation": "none",
+      "cell": {
+        "gds_path": "../sampler_dff/sampler_dff.gds",
+        "cell_name": "sampler_dff"
+      }
+    },
+    {
+      "id": "sr4",
+      "orientation": "none",
+      "cell": {
+        "gds_path": "../sampler_dff/sampler_dff.gds",
+        "cell_name": "sampler_dff"
+      }
+    }
+  ],
+  "placement": {
+    "strategy": "explicit",
+    "order": [
+      "sb",
+      "sv",
+      "sr1",
+      "sr2",
+      "sr3",
+      "sr4"
+    ],
+    "origins_um": {
+      "sb": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "sv": {
+        "x": 55.66,
+        "y": 0.0
+      },
+      "sr1": {
+        "x": 111.32,
+        "y": 0.0
+      },
+      "sr2": {
+        "x": 166.98,
+        "y": 0.0
+      },
+      "sr3": {
+        "x": 222.64,
+        "y": 0.0
+      },
+      "sr4": {
+        "x": 278.29999999999995,
+        "y": 0.0
+      }
+    }
+  },
+  "routing": {
+    "layer_role": "metal",
+    "width_um": 0.17
+  },
+  "connectivity": [],
+  "pins": [],
+  "options": {
+    "cell_name": "sampler_core_placement_poc",
+    "output": "sampler_core_placement_poc.gds"
+  }
+}

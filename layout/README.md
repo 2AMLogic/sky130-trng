@@ -4,7 +4,28 @@ Physical layout evidence for the sky130-trng entropy source, verified with
 `klayout-tools` (`klt`) against the sky130 open PDK. See `layout/pdk.json`
 for the PDK/tool pin.
 
-**Status (issue #22, this increment): `sampler_dff`'s own composed assembly
+**Status (issue #22, this increment): the `sampler_core` six-`sampler_dff`
+bank has a verified, DRC-clean floorplan.**
+[`layout/sampler_core-placement-poc/`](sampler_core-placement-poc/README.md)
+places six already-composed, individually DRC-clean and `klt lvs`-clean
+`layout/sampler_dff/sampler_dff.gds` instances side by side (55.66 um pitch,
+`design/sampler_core.spice`'s own `sb`/`sv`/`sr1`-`sr4` instance order and
+naming), with zero routing — `klt drc` clean, 0 violations, on the first
+attempt, and `klt extract` confirms 132 devices (66 nfet + 66 pfet, exactly
+6x `sampler_dff`'s own split) and 79 nets (not the naively-expected 84 — the
+five-net difference is sky130's own global-substrate NMOS-bulk merge, traced
+and confirmed benign, not a false short). This is a proof-of-concept
+placement stage, the same first move every earlier hierarchy level in this
+repo made (`layout/ro_ring5/`, `layout/sampler_dff/` itself,
+`layout/ro_array_core-placement-poc/` before `layout/ro_array_core/`) —
+`sampler_core`'s own shared `vdd`/`vss`/`clk`/`rst_n` bus routing, wiring in
+a `ro_array_core` instance, `d`/`q` pin promotion, and whole-cell `klt lvs`
+against `design/sampler_core.spice`'s real `.subckt sampler_core` (which
+wires the source *and* the samplers together, not "six samplers" alone —
+see that directory's own README) all remain open, tracked here and in #27.
+No `2AMLogic/klayout-tools` friction was found by this increment.
+
+**A previous increment (issue #22): `sampler_dff`'s own composed assembly
 GDS is now extracted with real intra-cell parasitics and re-simulated,
 the sampler-side sibling of `layout/pex-ring/`.** Now that `m`/`mb` are
 both routed (`mb`: PR #95; `m`: PR #99, previous increment below) and

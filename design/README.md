@@ -235,7 +235,24 @@ DR-0003 surfaces and does not resolve on its own authority.
   (status **Proposed**) it lives in [`digital/`](../digital/README.md), not
   here, and none of it is or will be a `design/*.spice` netlist. `raw_bit`
   and `raw_valid` are the interface between the two directories.
-- **Layout and DRC/LVS.** **Latest (issue #22): `sampler_dff`'s whole-cell
+- **Layout and DRC/LVS.** **Latest (issue #22): `sampler_core`'s six-`sampler_dff`
+  bank has a verified, DRC-clean floorplan.**
+  [`layout/sampler_core-placement-poc/`](../layout/sampler_core-placement-poc/README.md)
+  places six already-composed `layout/sampler_dff/sampler_dff.gds` instances
+  side by side (55.66 um pitch, `design/sampler_core.spice`'s own
+  `sb`/`sv`/`sr1`-`sr4` instance order), zero routing: `klt drc` clean (0
+  violations), `klt extract` confirms 132 devices (66 nfet + 66 pfet) and 79
+  nets (the 5-net gap from the naive 84 is sky130's own global-substrate
+  NMOS-bulk merge — traced and confirmed benign). `design/sampler_core.spice`'s
+  own `.subckt sampler_core` wires the source (`ro_array_core`) *and* the
+  samplers together, not "six samplers" alone, so this is a placement-only
+  proof-of-concept (like `layout/ro_array_core-placement-poc/` before
+  `layout/ro_array_core/`), not yet an LVS-checkable committed cell — see that
+  directory's own README for the full remaining-scope list (bus/fan-out
+  routing, placing a `ro_array_core` instance, pin promotion, whole-cell LVS,
+  whole-chain post-layout PVT), tracked here and in #27.
+
+- **A previous increment (issue #22): `sampler_dff`'s whole-cell
   assembly is now extracted with real intra-cell parasitics and re-run
   through the same post-layout deck DR-0007 used at leaf-cell scope.**
   [`layout/pex-sampler-dff-assembled/`](../layout/pex-sampler-dff-assembled/README.md)
