@@ -20,7 +20,7 @@
       "id": "core",
       "source": "cell",
       "generator": null,
-      "cell_name": "data_m1",
+      "cell_name": "data2_m1",
       "offset_um": {
         "x": 0.0,
         "y": 0.0
@@ -36,67 +36,166 @@
   ],
   "nets": [
     {
-      "net": "ro1",
+      "net": "ro3_hop",
       "pins": [
         {
           "block": "core",
-          "port": "ro1_esc_m1"
+          "port": "ro3_hop_w"
         },
         {
           "block": "core",
-          "port": "sr1_d_m1"
+          "port": "ro3_hop_e"
         }
       ],
       "routed": true,
-      "route_length_um": 129.485,
+      "route_length_um": 2.1000000000000014,
       "status": "routed",
       "legs": [
         {
           "pins": [
             {
               "block": "core",
-              "port": "ro1_esc_m1"
+              "port": "ro3_hop_w"
             },
             {
               "block": "core",
-              "port": "sr1_d_m1"
+              "port": "ro3_hop_e"
             }
           ],
           "routed": true,
-          "route_length_um": 129.485,
+          "route_length_um": 2.1000000000000014,
           "reason": null
         }
       ]
     },
     {
-      "net": "ro4",
+      "net": "ro2",
       "pins": [
         {
           "block": "core",
-          "port": "ro4_esc_m1"
+          "port": "ro2_esc_m1"
         },
         {
           "block": "core",
-          "port": "sr4_d_m1"
+          "port": "sr2_d_m1"
         }
       ],
       "routed": true,
-      "route_length_um": 78.56499999999997,
+      "route_length_um": 199.48,
       "status": "routed",
       "legs": [
         {
           "pins": [
             {
               "block": "core",
-              "port": "ro4_esc_m1"
+              "port": "ro2_esc_m1"
             },
             {
               "block": "core",
-              "port": "sr4_d_m1"
+              "port": "sr2_d_m1"
             }
           ],
           "routed": true,
-          "route_length_um": 78.56499999999997,
+          "route_length_um": 199.48,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "net": "ro3",
+      "pins": [
+        {
+          "block": "core",
+          "port": "ro3_esc_m1"
+        },
+        {
+          "block": "core",
+          "port": "sr3_d_m1"
+        }
+      ],
+      "routed": true,
+      "route_length_um": 254.64000000000001,
+      "status": "routed",
+      "legs": [
+        {
+          "pins": [
+            {
+              "block": "core",
+              "port": "ro3_esc_m1"
+            },
+            {
+              "block": "core",
+              "port": "sr3_d_m1"
+            }
+          ],
+          "routed": true,
+          "route_length_um": 254.64000000000001,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "net": "xo_hop",
+      "pins": [
+        {
+          "block": "core",
+          "port": "xo_m1"
+        },
+        {
+          "block": "core",
+          "port": "xo_dip_e"
+        }
+      ],
+      "routed": true,
+      "route_length_um": 30.055,
+      "status": "routed",
+      "legs": [
+        {
+          "pins": [
+            {
+              "block": "core",
+              "port": "xo_m1"
+            },
+            {
+              "block": "core",
+              "port": "xo_dip_e"
+            }
+          ],
+          "routed": true,
+          "route_length_um": 30.055,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "net": "xo",
+      "pins": [
+        {
+          "block": "core",
+          "port": "xo_dip_w"
+        },
+        {
+          "block": "core",
+          "port": "sb_d_m1"
+        }
+      ],
+      "routed": true,
+      "route_length_um": 94.66499999999999,
+      "status": "routed",
+      "legs": [
+        {
+          "pins": [
+            {
+              "block": "core",
+              "port": "xo_dip_w"
+            },
+            {
+              "block": "core",
+              "port": "sb_d_m1"
+            }
+          ],
+          "routed": true,
+          "route_length_um": 94.66499999999999,
           "reason": null
         }
       ]

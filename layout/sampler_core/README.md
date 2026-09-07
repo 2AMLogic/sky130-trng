@@ -8,10 +8,166 @@
 own six-instance floorplan (unchanged: 55.66 µm pitch, the same `sb`/`sv`/
 `sr1`-`sr4` instance order and naming, the same `y=0.0` origin for every
 instance) into a real, `compose-cell.py --check`-reproducible cell recipe,
-and — as of this increment — places the `ro_array_core` instance above it and
-starts wiring the two together.
+places the `ro_array_core` instance above it, and — as of this increment —
+finishes wiring the two together: **all five data nets are routed and every
+sampler `d` pin is driven.**
 
-## Result (this increment: the `ro_array_core` instance, and the first two data nets, issue #27 step 3)
+## Result (this increment: the last three data nets, and `sv`'s own `vdd` tie, issue #22 / #105)
+
+Two new stages on top of the six below (all six unchanged; `route_data` is now
+non-final, so its files are renamed `route_data.compose.*`/`route_data.gds`, the
+same convention the five stages before it already use):
+
+- **`data2_m1`** (met1) draws nine legs: the `d`-input climbs for `sb`, `sr2`
+  and `sr3` (the same `li1`→met1 recipe `data_m1` used for `sr1`/`sr4`), `sv`'s
+  own `d`→`vdd` tie, `ro2`'s and `ro3`'s **westward** escapes along their own
+  already-drawn horizontals, and the two short met1 legs `xo` needs — the
+  `li1`→met1 promotion of `xa3`'s own `y` pad, and a detached "dip" that ducks
+  under `xa2`'s own `t2` riser.
+- **`route_data2`** (met2) closes the three remaining hauls (`ro2`→`sr2.d`,
+  `ro3`→`sr3.d`, `xo`→`sb.d`) plus the one 2.1 µm met2 hop that joins `ro3`'s
+  split met1 escape across `ro2`'s own vertical.
+
+**Every `d` pin in the cell is now driven** — the five data nets from the array
+plus `sv`'s constant `1` — which is the precondition item 7 below has been
+waiting on.
+
+| Stage | Verdict | Evidence |
+|---|---|---|
+| `klt gen-compose` (stages `place`, `route_supplies`, `route_ctrl`, `place_array`, `data_m1`, `route_data`) | unchanged from the previous increments | `<stage>.compose.request.json`, `<stage>.compose.response.json`, `<stage>.gds` |
+| `klt gen-compose` (stage `data2_m1`, met1 — `"metal2"` role) | **9/9 routed**, first attempt | `data2_m1.compose.*.json`, `data2_m1.gds` |
+| `klt gen-compose` (final stage `route_data2`, met2 — `"metal3"` role) | **5/5 routed**, first attempt | `compose.request.json`, `compose.response.json` |
+| `klt drc --deck sky130` | **clean, 0 violations** | `drc.json` |
+| `klt extract --deck sky130` | **264 devices** (unchanged), **153 nets** — `157 − 4`, exactly one merge per net joined and nothing else | `extract.json`, `sampler_core.spice` |
+| `klt lvs` vs. `design/sampler_core.spice`'s own `.subckt sampler_core` | **mismatch, as expected and quantified** — 138/264 devices, 100/152 nets (from 136/264, 94/152). The supplies are still two `vdd` nets where the schematic has one, so a match is not reachable until item 5 below lands | `lvs.json`, `sampler_core.ref.spice` |
+| `data-path-scan.py` | **19/19 claims hold** (13 before) | `data-path-scan.json` |
+
+Cell extent unchanged at `x0=-2.19 x1=328.77 y0=-3.585 y1=54.72` µm; 8386
+polygons (from 8326), 22.9% density (`klt stats`). Generated on `klt
+0.3.0+gc6dbf66c53c6` against open_pdks `c6d73a35f524070e85faff4a6a9eef49553ebc2b`
+— `layout/pdk.json`'s own pin, the same build the previous increment used.
+
+### The one thing that changes the shape of the problem: escape *sideways*, not down
+
+The previous increment measured that `ro2` and `ro3` have no free met1 column
+from their own runs down past the array's south edge, and concluded each would
+need "a layer change *inside* the array's own footprint". That is right, but the
+useful move turned out not to be a rung over the fencing horizontals — it is to
+stay on met1, walk **west along the net's own horizontal** to the array's west
+margin, and descend there on met2.
+
+`data-path-scan.py`'s new group E scans `route_data.gds` — the state before this
+increment drew anything — for every 0.05 µm column that is free of met2 over the
+array's whole height (`y` 19.4 .. 50.0 in the composed frame, i.e. from just
+under its south edge to above the `xor2` row). There are exactly two bands:
+
+| Band | `x` (composed frame) | Reachable? |
+|---|---|---|
+| west margin | `-2.1 .. 1.65` | **yes** — met1 at `ro2`'s own `y=32.135` and at `ro3`'s `y=32.635` is free from `x=-0.415` to `x=20.415`, so both nets can walk to it |
+| east margin | `215.05 .. 220.0` | **no** — see below |
+
+The east band is free and useless. Getting onto it needs a met1↔met2 via
+dropped between the array's own east `vdd`/`vss` riser (met2, right edge
+`x=214.71`) and `ro4`'s own met1 escape leg (left edge `x=215.315`) — a
+**0.605 µm** gap, where the via's own concentric 0.42 µm pads need
+`0.42 + 2 × 0.14 = 0.70 µm` to clear both at sky130's 0.14 µm met spacing. Both
+edges are measured from the stream, and the arithmetic is a claim
+(`no_via_fits_between_the_east_riser_and_ro4s_escape_leg`), not a remark.
+
+### Three nets, one margin: what orders the lanes
+
+All three remaining nets descend the same 3.75 µm-wide west margin, so the
+ordering is forced by two facts rather than chosen:
+
+- **`ro1`'s own channel haul** (met2, `y=17.0`) runs east from `x=-0.71`. A
+  column that has to reach *below* `y=17` must therefore sit west of about
+  `x=-1.02`. Only `xo` needs that (its target, `sb`'s `d`, is at `x=6.665`,
+  east of the haul's own west end and under it), so `xo` takes `x=-1.5` and
+  `ro2`/`ro3` turn east *above* the haul, at `y=18.6` and `y=19.4`.
+- **`ro3`'s target column is east of `ro2`'s** (`x=229.305` vs `173.645`), so
+  `ro3` takes the **higher** channel lane *and* the **eastern** of the two
+  margin columns (`x=1.3` vs `0.3`). With that pairing neither net's lane ever
+  crosses the other's column — the first try had them the other way round and
+  the pre-flight scan found `ro3`'s lane crossing `ro2`'s descent, a silent
+  short that DRC would not have reported.
+
+`y=19.4` is the ceiling, not a round number: the array's own bottom met2 spans
+`y 20.0..20.6` across `x 2.605..214.71`, and a via pad hangs to `y≈19.6` at
+`x≈58`.
+
+`ro3` then needs one more dogleg. Its target column (`x=229.305`) would cross
+`ro4`'s own channel haul (met2, `y=15.0`, `x 215.4..284.965`) on the way down,
+so it drops to a second lane at `y=13.6` at `x=210.0` — west of that haul's own
+west end — and runs east underneath it before descending.
+
+### `ro3`'s split escape, and the 2.1 µm hop
+
+`ro2` walks west in one met1 leg (`x=20.5 → 0.3` at `y=32.135`). `ro3` cannot:
+`ro2`'s own vertical (met1, `x 20.415..20.585`) sits between `ro3`'s horizontal
+and the margin, and a met1 leg through it would short the two data nets
+together. So `ro3`'s escape is two detached met1 legs at the same `y=32.635` —
+`ro3_esc_e` (`28.47 → 21.6`) and `ro3_esc_w` (`19.5 → 1.3`) — joined by
+`ro3_hop`, a 2.1 µm met2 leg in the final stage that crosses over `ro2`'s
+vertical on a different plane. `klt extract` confirms the three fragments come
+out as one net (`ro3|ro3_esc_e|ro3_esc_w|ro3_hop|sr3_d_stub|…`), and that
+`ro2`'s stays separate.
+
+### `xo`: the two-hop via gap, and one dip
+
+`xa3`'s own `y` output is an li1 pad at `(66.375, 49.22)`, and the haul that has
+to reach `sb`'s `d` runs on met2 — two via hops away, which `klt gen-compose`
+will not do in one route (`klayout-tools#1567`, filed by the previous
+increment). The workaround that gap's own filing predicts is a hand-built met1
+rung, and this cell already contains the template for it:
+`layout/ro_array_core/cell.json`'s own `core` stage declares exactly such a
+promotion for `xa2` (its `y_m1` port, 1.4 µm straight north of the same `y` pad
+in the same `xor2` cell). `xo_stub` is that promotion at `xa3` instead of `xa2`.
+
+From there met2 is fenced in three directions by `xa2`'s own `t2` net: its riser
+(met2, `x 37.32..37.49`) climbs from `y=50.41` into the `t2` bridge, and that
+bridge spans `x 37.32..78.575` — so met2 is blocked west of `xa3` at `x≈37.4`,
+blocked north at `y=54.635`, and blocked east at `x≈78.5` by `xa3`'s own `b_m1`
+riser. The way through is one met1 **dip**: at `y=52.5`, met2 carries exactly
+one obstacle between `x=30` and `x=66.375` (the `t2` riser), while met1 at that
+same height is clear from `x=30` to `x=38.77`. So `xo_hop` runs met2 west at
+`y=52.5` to `x=38.2`, `xo_dip` crosses under the riser on met1 to `x=36.5`, and
+the final haul climbs back to met2, runs west at `y=53.5` (clear all the way to
+the margin), and descends `x=-1.5` to the channel.
+
+### `sv`'s `d` is not a haul at all
+
+`design/sampler_core.spice` wires `xsv`'s own `d` to `vdd`, not to the array —
+the valid-flag sampler samples a constant `1`. So `sv_d_vdd_tie` climbs the same
+`d` column the other five instances use and simply keeps going to `y=7.0`, an
+interior point **on** the shared `vdd` rail's own met1 (drawn at
+`y 6.915..7.085` by `route_supplies`), landing directly on the target net's
+metal with no via — the same technique that stage's own `vdd`/`vss` ports use.
+`klt extract` puts `sv`'s `d` on the sampler bank's `vdd` net, and
+`data-path-scan.py` checks both that and that the tie's own label sits in
+`sv`'s own column.
+
+### What the extraction says
+
+`157 → 153` nets, `264` devices unchanged — exactly the four merges this
+increment drew (`ro2`, `ro3`, `xo`, and `sv`'s tie), each confirmed
+net-by-net rather than by the count alone. Every one of the five data nets is
+one extracted net carrying the array's own promoted output label, every leg
+drawn for it, the sampler stub it ends on, and a sampler `d` pin; every
+`<instance>_d_stub` label sits in that instance's own `d` column, so each
+connection lands on the intended sampler rather than merely on *a* sampler;
+and **no unconnected `d` net remains**. The array's `vdd` and the sampler
+bank's `vdd` are still two separate nets (item 5 below), and `vss` is still
+one net through the shared p-substrate rather than through metal — both
+unchanged by this increment, both still asserted.
+
+### Friction
+
+No new `2AMLogic/klayout-tools` issue was filed by this increment. It hit
+`#1567` (no multi-level via drop) exactly where the previous increment
+predicted, and worked around it the way that filing itself describes rather
+than re-filing it.
+
+## A previous increment: the `ro_array_core` instance, and the first two data nets (issue #27 step 3)
 
 Three new stages on top of the `place`/`route_supplies`/`route_ctrl` stages
 below (all three unchanged):
@@ -104,6 +260,17 @@ the array's own `vss` met2 bus at local `y=10.59..11.01`, `x` `68.5..214.7`),
 via hops from li1, which `klt gen-compose` will not do in one route (see
 "Friction filed" below). That is a separable increment, not a harder version
 of this one, and it is filed as such.
+
+> **Answered by the increment at the top of this file.** Every measurement in
+> this section still reproduces (`data-path-scan.py` still asserts
+> `ro2_and_ro3_have_none`), and the conclusion "each needs a layer change
+> *inside* the array's own footprint" was right. What it did **not** anticipate
+> is the shape of that change: the two nets never hop their fencing horizontals
+> at all — they walk west on met1 along their own runs to the array's own west
+> margin, which is one of only two `x` bands where met2 is free over the array's
+> whole height, and descend there. The met1 escape-column scan in this section
+> looks straight down from each run and so cannot see that option; group E of
+> the same script is the scan that does.
 
 ## What the two hauls actually are
 
@@ -402,15 +569,15 @@ In rough dependency order:
 1. ~~**`vdd`/`vss` shared bus**~~ — **routed** (PR #103).
 2. ~~**`clk`/`rst_n` shared fan-out** across all six instances~~ —
    **routed** (PR #104).
-3. ~~**Placing a `ro_array_core` instance**~~ — **placed** (this increment,
-   stage `place_array`), and two of its five data nets (`ro1`→`sr1.d`,
+3. ~~**Placing a `ro_array_core` instance**~~ — **placed** (PR #107, stage
+   `place_array`), and two of its five data nets (`ro1`→`sr1.d`,
    `ro4`→`sr4.d`) routed.
-4. **The remaining three data nets** — `xo`→`sb.d`, `ro2`→`sr2.d`,
-   `ro3`→`sr3.d`. Each needs a layer change *inside* the array's own
-   footprint before it can escape, which the two routed here did not: see
-   "Two of five data nets, and the measured reason it is not five" above for
-   the per-net measurement. `sv`'s own `d` is a fourth, different job — the
-   schematic ties it to `vdd`, not to the array.
+4. ~~**The remaining three data nets**~~ — `xo`→`sb.d`, `ro2`→`sr2.d`,
+   `ro3`→`sr3.d`, plus `sv`'s own `d`→`vdd` tie: **routed** (this increment,
+   stages `data2_m1`/`route_data2`). The layer change each needed inside the
+   array's own footprint turned out to be a westward met1 walk to the array's
+   own west margin plus a met2 descent, not a rung over the fencing
+   horizontals — see this increment's own section above.
 5. **The inter-block supply straps.** `vdd` is two separate nets today (the
    array's and the sampler bank's); `vss` extracts as one only through the
    shared p-substrate, which is not a supply connection. Both need real
@@ -421,24 +588,24 @@ In rough dependency order:
    `vdd`/`vss` themselves, all real top-level pins of
    `design/sampler_core.spice`'s own `.subckt sampler_core`.
 7. **Whole-cell `klt lvs` match** against `design/sampler_core.spice`'s real
-   `.subckt sampler_core`. The reference side of that is now ready (264
-   devices, complete — see "The reference-generation gap, closed" above);
-   the layout side needs items 4-6 first. Today: 136/264 devices,
-   94/152 nets.
+   `.subckt sampler_core`. The reference side of that is ready (264 devices,
+   complete — see "The reference-generation gap, closed" below); the layout
+   side now needs items 5-6 only. Today: **138/264 devices, 100/152 nets**
+   (136/264 and 94/152 before this increment).
 8. **Post-layout PVT simulation** of the fully assembled, LVS-clean
    `sampler_core` — the whole-chain (raw-tap-to-sampled-bit) claim issue #22
    was originally filed for, still open. Nothing under `sim/` is added by
-   this increment, deliberately: extracting parasitics from a cell whose
-   three remaining data nets are unrouted would produce numbers about a
-   circuit that is not the schematic.
+   this increment either, deliberately: the supplies are still two `vdd`
+   nets where the schematic has one, so extracted parasitics would still be
+   of a circuit that is not the schematic.
 9. DR-0003 §8's `wstv` inter-ring decorrelation gap is **unaffected** by any
    of the above — it is about the entropy source's own inter-ring supply
    coupling (already re-evaluated at array scope by DR-0005/DR-0006), not
    the sampler side of the raw tap.
 
-Two `2AMLogic/klayout-tools` items *were* filed by this increment (no
-multi-level via drop; a docstring that denies a capability the tool has) —
-see "Friction filed" above. The `pins[]`/`connectivity[]` exclusivity rule the
+Two `2AMLogic/klayout-tools` items were filed by the `place_array` increment
+(no multi-level via drop; a docstring that denies a capability the tool has) —
+see "Friction filed" below; the current increment filed none. The `pins[]`/`connectivity[]` exclusivity rule the
 previous increment considered and dismissed is still not a gap, and the
 reference-generation limitation it recorded was this repo's own
 `compose-cell.py`, now fixed here.
@@ -447,10 +614,10 @@ reference-generation limitation it recorded was this repo's own
 
 | File | What it is |
 |---|---|
-| `cell.json` | the recipe: six stages plus the `lvs` block |
-| `<stage>.compose.request.json` / `.response.json` / `.gds` | each non-final stage's own request, response and composed stream (`place`, `route_supplies`, `route_ctrl`, `place_array`, `data_m1`) |
-| `compose.request.json` / `compose.response.json` | the final stage (`route_data`)'s own |
+| `cell.json` | the recipe: eight stages plus the `lvs` block |
+| `<stage>.compose.request.json` / `.response.json` / `.gds` | each non-final stage's own request, response and composed stream (`place`, `route_supplies`, `route_ctrl`, `place_array`, `data_m1`, `route_data`, `data2_m1`) |
+| `compose.request.json` / `compose.response.json` | the final stage (`route_data2`)'s own |
 | `sampler_core.gds` | the composed cell |
 | `drc.json`, `extract.json`, `sampler_core.spice` | sign-off + extracted netlist |
 | `lvs.request.json`, `sampler_core.ref.spice`, `lvs.json` | the LVS run and its generated reference |
-| `data-path-scan.py` / `.json` | the 13 geometric and electrical claims behind this increment, re-derivable and self-checking (exits non-zero if any stops holding) |
+| `data-path-scan.py` / `.json` | the 19 geometric and electrical claims behind this cell's own data-path routing (13 before this increment), re-derivable and self-checking (exits non-zero if any stops holding) |

@@ -8,19 +8,41 @@
       "cell": {
         "ports": [
           {
-            "name": "ro1_esc_m1",
-            "x_um": -0.5,
-            "y_um": 17.0,
+            "name": "ro3_hop_w",
+            "x_um": 19.5,
+            "y_um": 32.635,
             "layer": {
               "layer": 68,
               "datatype": 20
             },
             "width_um": 0.17,
-            "direction_deg": 90
+            "direction_deg": 0
           },
           {
-            "name": "sr1_d_m1",
-            "x_um": 117.985,
+            "name": "ro3_hop_e",
+            "x_um": 21.6,
+            "y_um": 32.635,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 180
+          },
+          {
+            "name": "ro2_esc_m1",
+            "x_um": 0.3,
+            "y_um": 32.135,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 270
+          },
+          {
+            "name": "sr2_d_m1",
+            "x_um": 173.645,
             "y_um": 6.0,
             "layer": {
               "layer": 68,
@@ -30,9 +52,20 @@
             "direction_deg": 90
           },
           {
-            "name": "ro4_esc_m1",
-            "x_um": 215.4,
-            "y_um": 15.0,
+            "name": "ro3_esc_m1",
+            "x_um": 1.3,
+            "y_um": 32.635,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 270
+          },
+          {
+            "name": "sr3_d_m1",
+            "x_um": 229.305,
+            "y_um": 6.0,
             "layer": {
               "layer": 68,
               "datatype": 20
@@ -41,8 +74,41 @@
             "direction_deg": 90
           },
           {
-            "name": "sr4_d_m1",
-            "x_um": 284.965,
+            "name": "xo_m1",
+            "x_um": 66.375,
+            "y_um": 50.62,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 90
+          },
+          {
+            "name": "xo_dip_e",
+            "x_um": 38.2,
+            "y_um": 52.5,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 0
+          },
+          {
+            "name": "xo_dip_w",
+            "x_um": 36.5,
+            "y_um": 52.5,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 180
+          },
+          {
+            "name": "sb_d_m1",
+            "x_um": 6.665,
             "y_um": 6.0,
             "layer": {
               "layer": 68,
@@ -52,8 +118,8 @@
             "direction_deg": 90
           }
         ],
-        "cell_name": "data_m1",
-        "gds_path": "data_m1.gds"
+        "cell_name": "data2_m1",
+        "gds_path": "data2_m1.gds"
       }
     }
   ],
@@ -75,55 +141,160 @@
   },
   "connectivity": [
     {
-      "net": "ro1",
+      "net": "ro3_hop",
       "pins": [
         {
           "block": "core",
-          "port": "ro1_esc_m1"
+          "port": "ro3_hop_w"
         },
         {
           "block": "core",
-          "port": "sr1_d_m1"
+          "port": "ro3_hop_e"
         }
       ],
       "waypoints_um": [
         [
-          -0.5,
-          17.0
+          19.5,
+          32.635
         ],
         [
-          117.985,
-          17.0
+          21.6,
+          32.635
+        ]
+      ]
+    },
+    {
+      "net": "ro2",
+      "pins": [
+        {
+          "block": "core",
+          "port": "ro2_esc_m1"
+        },
+        {
+          "block": "core",
+          "port": "sr2_d_m1"
+        }
+      ],
+      "waypoints_um": [
+        [
+          0.3,
+          32.135
         ],
         [
-          117.985,
+          0.3,
+          18.6
+        ],
+        [
+          173.645,
+          18.6
+        ],
+        [
+          173.645,
           6.0
         ]
       ]
     },
     {
-      "net": "ro4",
+      "net": "ro3",
       "pins": [
         {
           "block": "core",
-          "port": "ro4_esc_m1"
+          "port": "ro3_esc_m1"
         },
         {
           "block": "core",
-          "port": "sr4_d_m1"
+          "port": "sr3_d_m1"
         }
       ],
       "waypoints_um": [
         [
-          215.4,
-          15.0
+          1.3,
+          32.635
         ],
         [
-          284.965,
-          15.0
+          1.3,
+          19.4
         ],
         [
-          284.965,
+          210.0,
+          19.4
+        ],
+        [
+          210.0,
+          13.6
+        ],
+        [
+          229.305,
+          13.6
+        ],
+        [
+          229.305,
+          6.0
+        ]
+      ]
+    },
+    {
+      "net": "xo_hop",
+      "pins": [
+        {
+          "block": "core",
+          "port": "xo_m1"
+        },
+        {
+          "block": "core",
+          "port": "xo_dip_e"
+        }
+      ],
+      "waypoints_um": [
+        [
+          66.375,
+          50.62
+        ],
+        [
+          66.375,
+          52.5
+        ],
+        [
+          38.2,
+          52.5
+        ]
+      ]
+    },
+    {
+      "net": "xo",
+      "pins": [
+        {
+          "block": "core",
+          "port": "xo_dip_w"
+        },
+        {
+          "block": "core",
+          "port": "sb_d_m1"
+        }
+      ],
+      "waypoints_um": [
+        [
+          36.5,
+          52.5
+        ],
+        [
+          36.5,
+          53.5
+        ],
+        [
+          -1.5,
+          53.5
+        ],
+        [
+          -1.5,
+          13.0
+        ],
+        [
+          6.665,
+          13.0
+        ],
+        [
+          6.665,
           6.0
         ]
       ]
