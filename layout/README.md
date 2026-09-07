@@ -4,7 +4,31 @@ Physical layout evidence for the sky130-trng entropy source, verified with
 `klayout-tools` (`klt`) against the sky130 open PDK. See `layout/pdk.json`
 for the PDK/tool pin.
 
-**Status (issue #22, this increment): `sampler_core` is now DRC-clean *and*
+**Status (issue #22, this increment): `sampler_core` is extracted with real
+post-layout parasitics for the first time — the whole-cell sibling of
+`layout/pex-array/` (source alone) and `layout/pex-sampler-dff-assembled/`
+(one digitizer alone).** [`layout/pex-sampler-core/`](pex-sampler-core/README.md)
+runs `klt extract --parasitics` directly over the now DRC/LVS-clean
+`layout/sampler_core/sampler_core.gds` (264 devices, 152 nets, 169817.28 Ω
+total series R, 869.19 fF total C — matching the whole-cell hand-off
+measurement recorded on issue #22 before this directory existed). The
+`net_aliases` table needed for this is built from `klt lvs`'s own verified
+`net_correspondence` map rather than inferred from spelling, because one
+family of six same-labelled nets (each `sampler_dff` instance's own `q`
+pin) is never promoted to a GDS label at all — `sb`'s `q` becomes
+`raw_bit`, `sv`'s becomes `raw_valid`, `sr1`-`sr4`'s become
+`ring_bit1`-`ring_bit4`, and no naming convention in the extracted text
+distinguishes which is which without that map. The six-entry alias family
+this required, its order-sensitivity, and an independent union-find
+verification (152 connected components over the generated library's own
+`R` elements, matching `net_count` exactly, confirming no two instances'
+outputs are shorted despite a confusing "dup" leg-naming pattern `klt`
+itself uses) are documented in full in that directory's own README. Not
+yet attempted: a post-layout PVT simulation campaign against this library
+and DR-0003 §8's `wstv` re-evaluation — both remain open, tracked against
+this issue.
+
+**A previous increment (issue #22): `sampler_core` is now DRC-clean *and*
 LVS-clean — the first whole-cell DRC/LVS-clean `sampler_core` assembly in
 this repo.** [`layout/sampler_core/`](sampler_core/README.md) adds three
 stages (`vdd_strap1`-`vdd_strap3`) routing `ro_array_core`'s own `vdd` down

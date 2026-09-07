@@ -466,10 +466,14 @@ that lands this document):
   (DRC-clean, 0 violations; 264/264 devices, 152/152 nets, 0 errors).
   Top-level `d`/`q`/`vdd`/`vss` pin promotion, listed here as also
   required, turned out **not** to be: `klt lvs` compares flattened
-  topology, not declared top-level pins. Still missing for row D: a
-  post-layout (parasitic-extracted) power measurement over this cell, and
-  the digital section's own synthesized area/power — so the whole-block
-  figure remains Unmet/TBD.
+  topology, not declared top-level pins.
+  **Further discharged**: [`layout/pex-sampler-core/`](../../layout/pex-sampler-core/README.md)
+  extracts that whole-cell GDS with real parasitics for the first time
+  (264 devices, 152 nets, 169817.28 Ω total series R, 869.19 fF total C),
+  making a post-layout `vdd`/`vddr` current measurement tool-ready — but
+  the measurement itself has not been run. Still missing for row D: that
+  post-layout power measurement, and the digital section's own synthesized
+  area/power — so the whole-block figure remains Unmet/TBD.
 - **Ratify DR-0001, DR-0002, and DR-0003.** Every quantitative row in §4
   ultimately traces to at least one of these three Proposed records; none
   is yet an operator-accepted decision.

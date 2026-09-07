@@ -235,7 +235,21 @@ DR-0003 surfaces and does not resolve on its own authority.
   (status **Proposed**) it lives in [`digital/`](../digital/README.md), not
   here, and none of it is or will be a `design/*.spice` netlist. `raw_bit`
   and `raw_valid` are the interface between the two directories.
-- **Layout and DRC/LVS.** **Latest (issue #22): `sampler_core` is now
+- **Layout and DRC/LVS.** **Latest (issue #22): `sampler_core` is extracted
+  with real post-layout parasitics for the first time.**
+  [`layout/pex-sampler-core/`](../layout/pex-sampler-core/README.md) runs
+  `klt extract --parasitics` over the DRC/LVS-clean
+  `layout/sampler_core/sampler_core.gds` (264 devices, 152 nets, 169817.28 Ω
+  total series R, 869.19 fF total C). Its `net_aliases` table is built from
+  `klt lvs`'s own verified net map rather than inferred from spelling,
+  because the six `sampler_dff` instances' own `q` pins are never promoted
+  to a GDS label and so need that map to tell `raw_bit`/`raw_valid`/
+  `ring_bit1`-`ring_bit4` apart; see that directory's README for the full
+  derivation and its independent union-find cross-check. Not yet attempted:
+  a post-layout PVT simulation campaign against this library and DR-0003
+  §8's `wstv` re-evaluation, both still open, tracked against issue #22.
+
+  **A previous increment (issue #22): `sampler_core` is now
   DRC-clean *and* LVS-clean — the first whole-cell DRC/LVS-clean
   `sampler_core` assembly in this repo.**
   [`layout/sampler_core/`](../layout/sampler_core/README.md) adds three
