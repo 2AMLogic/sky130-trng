@@ -1,0 +1,183 @@
+{
+  "schema_version": 3,
+  "file": "sampler_nand2.gds",
+  "deck": "sky130",
+  "top": "sampler_nand2",
+  "dbu_um": 0.001,
+  "netlist_path": "sampler_nand2.spice",
+  "netlist_sha256": "1219bc3177bcf37686f1d8c69342a0550e0555ebf4809910ee09b3417f9c8d94",
+  "status": "extracted",
+  "device_count": 4,
+  "net_count": 6,
+  "pin_count": 5,
+  "device_counts": {
+    "nfet": 2,
+    "pfet": 2
+  },
+  "dummy_devices_dropped": 0,
+  "ignored_layers": [],
+  "device_recognition_only_layers": [],
+  "device_classes": [
+    "nfet",
+    "pfet",
+    "pnp",
+    "sky130_fd_pr__model__cap_mim",
+    "sky130_fd_pr__model__cap_mim_m4",
+    "resistor"
+  ],
+  "devices": [
+    {
+      "name": "$1",
+      "class": "nfet",
+      "nets": {
+        "s": "vss",
+        "g": "en",
+        "d": "\\$2",
+        "b": "vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.2184,
+        "ps_um": 2.62,
+        "pd_um": 1.36
+      }
+    },
+    {
+      "name": "$2",
+      "class": "nfet",
+      "nets": {
+        "s": "\\$2",
+        "g": "a",
+        "d": "mnab_y|mpa_y|mpb_y|y",
+        "b": "vss"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.2184,
+        "ad_um2": 0.3948,
+        "ps_um": 1.36,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$3",
+      "class": "pfet",
+      "nets": {
+        "s": "mpa_py|mpb_py|nwell_vdd|vdd",
+        "g": "en",
+        "d": "mnab_y|mpa_y|mpb_y|y",
+        "b": "mpa_py|mpb_py|nwell_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    },
+    {
+      "name": "$4",
+      "class": "pfet",
+      "nets": {
+        "s": "mnab_y|mpa_y|mpb_y|y",
+        "g": "a",
+        "d": "mpa_py|mpb_py|nwell_vdd|vdd",
+        "b": "mpa_py|mpb_py|nwell_vdd|vdd"
+      },
+      "params": {
+        "l_um": 0.15,
+        "w_um": 0.84,
+        "as_um2": 0.3948,
+        "ad_um2": 0.3948,
+        "ps_um": 2.62,
+        "pd_um": 2.62
+      }
+    }
+  ],
+  "nets": [
+    {
+      "name": "\\$2",
+      "pin": false,
+      "device_count": 2
+    },
+    {
+      "name": "a",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "en",
+      "pin": true,
+      "device_count": 2
+    },
+    {
+      "name": "mnab_y|mpa_y|mpb_y|y",
+      "pin": true,
+      "device_count": 3
+    },
+    {
+      "name": "mpa_py|mpb_py|nwell_vdd|vdd",
+      "pin": true,
+      "device_count": 4
+    },
+    {
+      "name": "vss",
+      "pin": true,
+      "device_count": 3
+    }
+  ],
+  "warnings": [
+    "promoted 3 net(s) to top-level pins from label(s) found only below the top cell (inside instanced sub-cells): a, en, vss -- these are internal nodes once instanced; pass top_cell_pins_only (--top-cell-pins) to keep them internal (issue #291)",
+    "net 'mnab_y|mpa_y|mpb_y|y' merges 4 distinct labels (mnab_y, mpa_y, mpb_y, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'mpa_py|mpb_py|nwell_vdd|vdd' merges 4 distinct labels (mpa_py, mpb_py, nwell_vdd, vdd) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section."
+  ],
+  "black_box_regions": [],
+  "abstracted_cells": [],
+  "unmodelled_poly": [],
+  "merged_net_labels": [
+    {
+      "net": "mnab_y|mpa_y|mpb_y|y",
+      "labels": [
+        "mnab_y",
+        "mpa_y",
+        "mpb_y",
+        "y"
+      ]
+    },
+    {
+      "net": "mpa_py|mpb_py|nwell_vdd|vdd",
+      "labels": [
+        "mpa_py",
+        "mpb_py",
+        "nwell_vdd",
+        "vdd"
+      ]
+    }
+  ],
+  "voltage_domain_warnings": [],
+  "unbiased_pmos_body_nets": [],
+  "single_terminal_nets": [],
+  "dead_metal": [],
+  "matched_device_groups": [],
+  "pdk": null,
+  "provenance": {
+    "klt_version": "0.3.0",
+    "klayout_version": "0.30.12",
+    "pdk": null,
+    "deck": {
+      "name": "sky130",
+      "content_hash": "sha256:5afac7ab8561545859f5e2e74f4621c6ffc052756dc8fe344ea263398e96b240",
+      "released": false
+    },
+    "input": {
+      "content_hash": "sha256:237f4c50bc2b50ddf9462b3ce781a6d671f153da38ce17d48fc32a70a64d085a"
+    }
+  },
+  "parasitics": null,
+  "spef_path": null
+}

@@ -294,24 +294,31 @@ DR-0003 surfaces and does not resolve on its own authority.
   still have no layout at all, so this is not a whole-chain (raw tap to
   sampled bit) post-layout measurement.
 
-  **The sampler's own composition has now started.**
-  [`layout/sampler_tg/`](../layout/sampler_tg/README.md) composes the one
-  genuinely new leaf shape `sampler_dff` needs — a plain sky130 transmission
-  gate (4 instances per `sampler_dff`) — `klt drc` clean (0 violations) and
-  `klt lvs` **match** (2/2 devices, 6/6 nets) against a hand-authored
-  micro-reference (`design/xschem/sampler_dff.sch` is flat, so unlike
-  `ro_ring5.sch` there is no `.subckt` of this shape in `design/*.spice` for
-  `compose-cell.py`'s LVS to reference directly). This also answers
-  `layout/README.md`'s own open "no generator surveyed yet" question for the
-  transmission-gate DFF: `mos_array`, the same generator every other leaf
-  gate here uses, is sufficient — no `klayout-tools` tool gap. The other two
-  leaf shapes `sampler_dff` needs are 3× a plain inverter (already `ro_buf`,
-  reusable as-is per `layout/xor2/`'s own `blocks[].cell` precedent) and 2× a
-  plain rst_n-gated NAND2 (not yet composed — structurally `ro_nand2` minus
-  its two starve devices). Assembling all 22 devices into one `sampler_dff`
-  cell, LVS-checked against `design/sampler_core.spice`'s own `.subckt
-  sampler_dff`, and then `sampler_core`'s own six-instance wiring, remain
-  open (#27).
+  **The sampler's own leaf-primitive composition is now complete.**
+  [`layout/sampler_tg/`](../layout/sampler_tg/README.md) composes the plain
+  sky130 transmission gate (4 instances per `sampler_dff`) — `klt drc` clean
+  (0 violations) and `klt lvs` **match** (2/2 devices, 6/6 nets) against a
+  hand-authored micro-reference (`design/xschem/sampler_dff.sch` is flat, so
+  unlike `ro_ring5.sch` there is no `.subckt` of this shape in
+  `design/*.spice` for `compose-cell.py`'s LVS to reference directly). This
+  also answered `layout/README.md`'s own open "no generator surveyed yet"
+  question for the transmission-gate DFF: `mos_array`, the same generator
+  every other leaf gate here uses, is sufficient — no `klayout-tools` tool
+  gap.
+  [`layout/sampler_nand2/`](../layout/sampler_nand2/README.md) composes the
+  other missing leaf shape — a plain rst_n-gated NAND2, structurally
+  `ro_nand2` minus its two always-on starve devices (both PMOS sources tie
+  directly to `vdd`, the series NMOS pair's far end ties directly to `vss`)
+  — reusing `ro_nand2`'s own parallel-PMOS/series-NMOS floorplan and its
+  three-pin-net promote-then-resolve-on-metal2 technique for the resulting
+  `vdd`/`y` nets, also `klt drc` clean (0 violations) and `klt lvs` **match**
+  (4/4 devices, 6/6 nets) against a hand-authored micro-reference for the
+  same reason. With these two plus 3× a plain inverter (already `ro_buf`,
+  reusable as-is per `layout/xor2/`'s own `blocks[].cell` precedent), all
+  three of `sampler_dff`'s 22 devices now reduce to already-composed leaf
+  shapes. Assembling all 22 devices into one `sampler_dff` cell, LVS-checked
+  against `design/sampler_core.spice`'s own `.subckt sampler_dff`, and then
+  `sampler_core`'s own six-instance wiring, remain open (#27).
 
   A prior increment wired the XOR combining tree's inputs:
   that directory's

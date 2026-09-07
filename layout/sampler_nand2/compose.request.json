@@ -1,0 +1,106 @@
+{
+  "pdk": {
+    "variant": "sky130A"
+  },
+  "blocks": [
+    {
+      "id": "core",
+      "generator_report": "core.compose.response.json"
+    }
+  ],
+  "placement": {
+    "strategy": "explicit",
+    "order": [
+      "core"
+    ],
+    "origins_um": {
+      "core": {
+        "x": 0.0,
+        "y": 0.0
+      }
+    }
+  },
+  "routing": {
+    "layer_role": "metal2",
+    "width_um": 0.17
+  },
+  "connectivity": [
+    {
+      "net": "vdd",
+      "pins": [
+        {
+          "block": "core",
+          "port": "nwell_vdd"
+        },
+        {
+          "block": "core",
+          "port": "mpa_py"
+        }
+      ]
+    },
+    {
+      "net": "vdd",
+      "pins": [
+        {
+          "block": "core",
+          "port": "mpa_py"
+        },
+        {
+          "block": "core",
+          "port": "mpb_py"
+        }
+      ],
+      "waypoints_um": [
+        [
+          3.25,
+          4.5
+        ],
+        [
+          5.21,
+          4.5
+        ]
+      ]
+    },
+    {
+      "net": "y",
+      "pins": [
+        {
+          "block": "core",
+          "port": "mpa_y"
+        },
+        {
+          "block": "core",
+          "port": "mpb_y"
+        }
+      ]
+    },
+    {
+      "net": "y",
+      "pins": [
+        {
+          "block": "core",
+          "port": "mpb_y"
+        },
+        {
+          "block": "core",
+          "port": "mnab_y"
+        }
+      ],
+      "waypoints_um": [
+        [
+          4.54,
+          1.0
+        ],
+        [
+          4.79,
+          1.0
+        ]
+      ]
+    }
+  ],
+  "pins": [],
+  "options": {
+    "cell_name": "sampler_nand2",
+    "output": "sampler_nand2.gds"
+  }
+}
