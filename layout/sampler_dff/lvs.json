@@ -14,40 +14,40 @@
     "parameter_tolerance": null
   },
   "status": "mismatch",
-  "mismatch_count": 13,
-  "error_count": 13,
+  "mismatch_count": 8,
+  "error_count": 8,
   "category_counts": {
-    "device.unmatched": 7,
+    "device.unmatched": 4,
     "net.merged": 1,
-    "net.split": 5
+    "net.split": 3
   },
   "category_error_counts": {
-    "device.unmatched": 7,
+    "device.unmatched": 4,
     "net.merged": 1,
-    "net.split": 5
+    "net.split": 3
   },
   "counts": {
     "nets": {
-      "layout": 18,
+      "layout": 16,
       "reference": 14,
-      "matched": 7
+      "matched": 8
     },
     "devices": {
       "layout": 22,
       "reference": 22,
-      "matched": 15
+      "matched": 18
     },
     "pins": {
-      "layout": 16,
+      "layout": 14,
       "reference": 6,
-      "matched": 17
+      "matched": 15
     }
   },
   "device_classes": null,
   "environment": {
     "engine": "klayout",
     "engine_version": "0.30.12",
-    "layout_sha256": "f6c3569633d822745a5229047d50f9ea46be3ba42458db7c5d47e698bc8d379d",
+    "layout_sha256": "4d2ab2cd5fb72be281b0b0555a2cf444a5a95aae3979e86fb64c2ecdcf5cb235",
     "reference_sha256": "66009a496f55fac466075bbac7c9a2216dfc2e18e1eb02eda823233534918e2c",
     "extracted_netlist": null
   },
@@ -83,40 +83,6 @@
       "side": "reference",
       "net": null,
       "device": {
-        "layout": "\\$16",
-        "reference": "IMPA",
-        "class": "PFET"
-      },
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "device.unmatched",
-      "severity": "error",
-      "description": "device has no counterpart on the other side",
-      "side": "reference",
-      "net": null,
-      "device": {
-        "layout": "\\$19",
-        "reference": "IMPB",
-        "class": "PFET"
-      },
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "device.unmatched",
-      "severity": "error",
-      "description": "device has no counterpart on the other side",
-      "side": "reference",
-      "net": null,
-      "device": {
         "layout": "\\$2",
         "reference": "TDN",
         "class": "NFET"
@@ -135,25 +101,8 @@
       "net": null,
       "device": {
         "layout": "\\$20",
-        "reference": "TSP",
+        "reference": "IMPA",
         "class": "PFET"
-      },
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "device.unmatched",
-      "severity": "error",
-      "description": "device has no counterpart on the other side",
-      "side": "reference",
-      "net": null,
-      "device": {
-        "layout": "\\$5",
-        "reference": "TSN",
-        "class": "NFET"
       },
       "property": null,
       "details": null,
@@ -232,39 +181,7 @@
       "description": "a reference net's role is divided across multiple layout nets",
       "side": "layout",
       "net": {
-        "layout": "A|TG_S_A",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.split",
-      "severity": "error",
-      "description": "a reference net's role is divided across multiple layout nets",
-      "side": "layout",
-      "net": {
         "layout": "B|TG_D_B",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.split",
-      "severity": "error",
-      "description": "a reference net's role is divided across multiple layout nets",
-      "side": "layout",
-      "net": {
-        "layout": "MNAB_Y|MPA_Y|MPB_Y|NAND_M_Y|Y",
         "reference": null
       },
       "device": null,
@@ -277,12 +194,17 @@
   ],
   "net_correspondence": [
     {
+      "layout": "A|INV_MC_A|MB|MNAB_Y|MPA_Y|MPB_Y|NAND_M_Y|TG_S_A|Y",
+      "reference": "MB",
+      "pin": true
+    },
+    {
       "layout": "A|INV_MC_Y|INV_MC_Y_VIA|MC|TG_FBM_A|TG_FBM_A_VIA|Y",
       "reference": "MC",
       "pin": true
     },
     {
-      "layout": "\\$6",
+      "layout": "\\$8",
       "reference": "MMID",
       "pin": false
     },

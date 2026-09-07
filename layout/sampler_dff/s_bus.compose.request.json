@@ -8,52 +8,41 @@
       "cell": {
         "ports": [
           {
-            "name": "nand_m_y",
-            "x_um": 13.32,
-            "y_um": 0.21,
+            "name": "tg_s_b_m1",
+            "x_um": 28.895,
+            "y_um": 1.2,
             "layer": {
-              "layer": 67,
-              "datatype": 20
-            },
-            "width_um": 0.42,
-            "direction_deg": 90
-          },
-          {
-            "name": "inv_mc_a",
-            "x_um": 19.835,
-            "y_um": 1.7,
-            "layer": {
-              "layer": 67,
+              "layer": 68,
               "datatype": 20
             },
             "width_um": 0.17,
             "direction_deg": 180
           },
           {
-            "name": "tg_s_a",
-            "x_um": 31.095,
-            "y_um": 1.2,
+            "name": "inv_q_a_m1",
+            "x_um": 36.545,
+            "y_um": 1.7,
             "layer": {
-              "layer": 67,
+              "layer": 68,
               "datatype": 20
             },
             "width_um": 0.17,
-            "direction_deg": 0
+            "direction_deg": 180
           },
           {
-            "name": "tg_d_a",
-            "x_um": 6.665,
+            "name": "tg_fbs_b_m1",
+            "x_um": 48.185,
             "y_um": 1.2,
             "layer": {
-              "layer": 67,
+              "layer": 68,
               "datatype": 20
             },
             "width_um": 0.17,
-            "direction_deg": 0
+            "direction_deg": 180
           }
         ],
-        "cell_name": "s_bus",
-        "gds_path": "s_bus.gds"
+        "cell_name": "s_met1",
+        "gds_path": "s_met1.gds"
       }
     }
   ],
@@ -70,43 +59,39 @@
     }
   },
   "routing": {
-    "layer_role": "metal2",
+    "layer_role": "metal3",
     "width_um": 0.17
   },
   "connectivity": [
     {
-      "net": "mb",
+      "net": "s",
       "pins": [
         {
           "block": "core",
-          "port": "nand_m_y"
+          "port": "tg_s_b_m1"
         },
         {
           "block": "core",
-          "port": "inv_mc_a"
+          "port": "inv_q_a_m1"
         },
         {
           "block": "core",
-          "port": "tg_s_a"
+          "port": "tg_fbs_b_m1"
         }
       ],
       "legs": [
         {
           "from_pin": {
             "block": "core",
-            "port": "nand_m_y"
+            "port": "tg_s_b_m1"
           },
           "to_pin": {
             "block": "core",
-            "port": "inv_mc_a"
+            "port": "inv_q_a_m1"
           },
           "waypoints_um": [
             [
-              13.49,
-              0.21
-            ],
-            [
-              13.49,
+              28.895,
               1.7
             ]
           ]
@@ -114,19 +99,31 @@
         {
           "from_pin": {
             "block": "core",
-            "port": "inv_mc_a"
+            "port": "inv_q_a_m1"
           },
           "to_pin": {
             "block": "core",
-            "port": "tg_s_a"
+            "port": "tg_fbs_b_m1"
           },
           "waypoints_um": [
             [
-              19.835,
+              40.0,
+              1.7
+            ],
+            [
+              40.0,
+              1.525
+            ],
+            [
+              44.0,
+              1.525
+            ],
+            [
+              44.0,
               3.2
             ],
             [
-              31.095,
+              48.185,
               3.2
             ]
           ]
@@ -134,15 +131,9 @@
       ]
     }
   ],
-  "pins": [
-    {
-      "net": "d",
-      "block": "core",
-      "port": "tg_d_a"
-    }
-  ],
+  "pins": [],
   "options": {
-    "cell_name": "sampler_dff",
-    "output": "sampler_dff.gds"
+    "cell_name": "s_bus",
+    "output": "s_bus.gds"
   }
 }
