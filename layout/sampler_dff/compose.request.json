@@ -1,0 +1,402 @@
+{
+  "pdk": {
+    "variant": "sky130A"
+  },
+  "blocks": [
+    {
+      "id": "core",
+      "generator_report": "place.compose.response.json"
+    }
+  ],
+  "placement": {
+    "strategy": "explicit",
+    "order": [
+      "core"
+    ],
+    "origins_um": {
+      "core": {
+        "x": 0.0,
+        "y": 0.0
+      }
+    }
+  },
+  "routing": {
+    "layer_role": "metal2",
+    "width_um": 0.17
+  },
+  "connectivity": [
+    {
+      "net": "vdd",
+      "pins": [
+        {
+          "block": "core",
+          "port": "inv_clk_vdd"
+        },
+        {
+          "block": "core",
+          "port": "tg_d_vdd"
+        }
+      ],
+      "waypoints_um": [
+        [
+          -1.12,
+          7.0
+        ],
+        [
+          5.31,
+          7.0
+        ]
+      ]
+    },
+    {
+      "net": "vdd",
+      "pins": [
+        {
+          "block": "core",
+          "port": "tg_d_vdd"
+        },
+        {
+          "block": "core",
+          "port": "nand_m_vdd"
+        }
+      ],
+      "waypoints_um": [
+        [
+          5.31,
+          7.0
+        ],
+        [
+          10.45,
+          7.0
+        ]
+      ]
+    },
+    {
+      "net": "vdd",
+      "pins": [
+        {
+          "block": "core",
+          "port": "nand_m_vdd"
+        },
+        {
+          "block": "core",
+          "port": "inv_mc_vdd"
+        }
+      ],
+      "waypoints_um": [
+        [
+          10.45,
+          7.0
+        ],
+        [
+          18.17,
+          7.0
+        ]
+      ]
+    },
+    {
+      "net": "vdd",
+      "pins": [
+        {
+          "block": "core",
+          "port": "inv_mc_vdd"
+        },
+        {
+          "block": "core",
+          "port": "tg_fbm_vdd"
+        }
+      ],
+      "waypoints_um": [
+        [
+          18.17,
+          7.0
+        ],
+        [
+          24.6,
+          7.0
+        ]
+      ]
+    },
+    {
+      "net": "vdd",
+      "pins": [
+        {
+          "block": "core",
+          "port": "tg_fbm_vdd"
+        },
+        {
+          "block": "core",
+          "port": "tg_s_vdd"
+        }
+      ],
+      "waypoints_um": [
+        [
+          24.6,
+          7.0
+        ],
+        [
+          29.74,
+          7.0
+        ]
+      ]
+    },
+    {
+      "net": "vdd",
+      "pins": [
+        {
+          "block": "core",
+          "port": "tg_s_vdd"
+        },
+        {
+          "block": "core",
+          "port": "inv_q_vdd"
+        }
+      ],
+      "waypoints_um": [
+        [
+          29.74,
+          7.0
+        ],
+        [
+          34.88,
+          7.0
+        ]
+      ]
+    },
+    {
+      "net": "vdd",
+      "pins": [
+        {
+          "block": "core",
+          "port": "inv_q_vdd"
+        },
+        {
+          "block": "core",
+          "port": "nand_s2_vdd"
+        }
+      ],
+      "waypoints_um": [
+        [
+          34.88,
+          7.0
+        ],
+        [
+          41.31,
+          7.0
+        ]
+      ]
+    },
+    {
+      "net": "vdd",
+      "pins": [
+        {
+          "block": "core",
+          "port": "nand_s2_vdd"
+        },
+        {
+          "block": "core",
+          "port": "tg_fbs_vdd"
+        }
+      ],
+      "waypoints_um": [
+        [
+          41.31,
+          7.0
+        ],
+        [
+          49.03,
+          7.0
+        ]
+      ]
+    },
+    {
+      "net": "vss",
+      "pins": [
+        {
+          "block": "core",
+          "port": "inv_clk_vss"
+        },
+        {
+          "block": "core",
+          "port": "tg_d_vss"
+        }
+      ],
+      "waypoints_um": [
+        [
+          -1.22,
+          -3.5
+        ],
+        [
+          5.31,
+          -3.5
+        ]
+      ]
+    },
+    {
+      "net": "vss",
+      "pins": [
+        {
+          "block": "core",
+          "port": "tg_d_vss"
+        },
+        {
+          "block": "core",
+          "port": "nand_m_vss"
+        }
+      ],
+      "waypoints_um": [
+        [
+          5.31,
+          -3.5
+        ],
+        [
+          10.47,
+          -3.5
+        ]
+      ]
+    },
+    {
+      "net": "vss",
+      "pins": [
+        {
+          "block": "core",
+          "port": "nand_m_vss"
+        },
+        {
+          "block": "core",
+          "port": "inv_mc_vss"
+        }
+      ],
+      "waypoints_um": [
+        [
+          10.47,
+          -3.5
+        ],
+        [
+          18.07,
+          -3.5
+        ]
+      ]
+    },
+    {
+      "net": "vss",
+      "pins": [
+        {
+          "block": "core",
+          "port": "inv_mc_vss"
+        },
+        {
+          "block": "core",
+          "port": "tg_fbm_vss"
+        }
+      ],
+      "waypoints_um": [
+        [
+          18.07,
+          -3.5
+        ],
+        [
+          24.6,
+          -3.5
+        ]
+      ]
+    },
+    {
+      "net": "vss",
+      "pins": [
+        {
+          "block": "core",
+          "port": "tg_fbm_vss"
+        },
+        {
+          "block": "core",
+          "port": "tg_s_vss"
+        }
+      ],
+      "waypoints_um": [
+        [
+          24.6,
+          -3.5
+        ],
+        [
+          29.74,
+          -3.5
+        ]
+      ]
+    },
+    {
+      "net": "vss",
+      "pins": [
+        {
+          "block": "core",
+          "port": "tg_s_vss"
+        },
+        {
+          "block": "core",
+          "port": "inv_q_vss"
+        }
+      ],
+      "waypoints_um": [
+        [
+          29.74,
+          -3.5
+        ],
+        [
+          34.78,
+          -3.5
+        ]
+      ]
+    },
+    {
+      "net": "vss",
+      "pins": [
+        {
+          "block": "core",
+          "port": "inv_q_vss"
+        },
+        {
+          "block": "core",
+          "port": "nand_s2_vss"
+        }
+      ],
+      "waypoints_um": [
+        [
+          34.78,
+          -3.5
+        ],
+        [
+          41.33,
+          -3.5
+        ]
+      ]
+    },
+    {
+      "net": "vss",
+      "pins": [
+        {
+          "block": "core",
+          "port": "nand_s2_vss"
+        },
+        {
+          "block": "core",
+          "port": "tg_fbs_vss"
+        }
+      ],
+      "waypoints_um": [
+        [
+          41.33,
+          -3.5
+        ],
+        [
+          49.03,
+          -3.5
+        ]
+      ]
+    }
+  ],
+  "pins": [],
+  "options": {
+    "cell_name": "sampler_dff",
+    "output": "sampler_dff.gds"
+  }
+}

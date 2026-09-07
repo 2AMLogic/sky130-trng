@@ -1,0 +1,887 @@
+{
+  "pdk": {
+    "variant": "sky130A"
+  },
+  "blocks": [
+    {
+      "id": "inv_clk",
+      "cell": {
+        "gds_path": "../ro_buf/ro_buf.gds",
+        "cell_name": "ro_buf",
+        "ports": [
+          {
+            "name": "a",
+            "x_um": 0.545,
+            "y_um": 1.7,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 180
+          },
+          {
+            "name": "y",
+            "x_um": 1.9,
+            "y_um": 1.2,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 0
+          },
+          {
+            "name": "vdd",
+            "x_um": -1.12,
+            "y_um": 4.24,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 90
+          },
+          {
+            "name": "vss",
+            "x_um": -1.22,
+            "y_um": -0.5,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 270
+          }
+        ]
+      }
+    },
+    {
+      "id": "tg_d",
+      "cell": {
+        "gds_path": "../sampler_tg/sampler_tg.gds",
+        "cell_name": "sampler_tg",
+        "ports": [
+          {
+            "name": "a",
+            "x_um": 1.9,
+            "y_um": 1.2,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 0
+          },
+          {
+            "name": "b",
+            "x_um": -0.3,
+            "y_um": 1.2,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 180
+          },
+          {
+            "name": "ctrl",
+            "x_um": 0.545,
+            "y_um": 2.5,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 270
+          },
+          {
+            "name": "ctrlb",
+            "x_um": 0.545,
+            "y_um": 1.03,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 90
+          },
+          {
+            "name": "vdd",
+            "x_um": 0.545,
+            "y_um": 5.78,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 90
+          },
+          {
+            "name": "vss",
+            "x_um": 0.545,
+            "y_um": -2.28,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 270
+          }
+        ]
+      }
+    },
+    {
+      "id": "nand_m",
+      "cell": {
+        "gds_path": "../sampler_nand2/sampler_nand2.gds",
+        "cell_name": "sampler_nand2",
+        "ports": [
+          {
+            "name": "en",
+            "x_um": 3.685,
+            "y_um": 1.975,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 90
+          },
+          {
+            "name": "a",
+            "x_um": 4.98,
+            "y_um": 2.75,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 0
+          },
+          {
+            "name": "y",
+            "x_um": 4.79,
+            "y_um": 0.21,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 90
+          },
+          {
+            "name": "vdd",
+            "x_um": 1.92,
+            "y_um": 4.45,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 90
+          },
+          {
+            "name": "vss",
+            "x_um": 1.94,
+            "y_um": -0.5,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 270
+          }
+        ]
+      }
+    },
+    {
+      "id": "inv_mc",
+      "cell": {
+        "gds_path": "../ro_buf/ro_buf.gds",
+        "cell_name": "ro_buf",
+        "ports": [
+          {
+            "name": "a",
+            "x_um": 0.545,
+            "y_um": 1.7,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 180
+          },
+          {
+            "name": "y",
+            "x_um": 1.9,
+            "y_um": 1.2,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 0
+          },
+          {
+            "name": "vdd",
+            "x_um": -1.12,
+            "y_um": 4.24,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 90
+          },
+          {
+            "name": "vss",
+            "x_um": -1.22,
+            "y_um": -0.5,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 270
+          }
+        ]
+      }
+    },
+    {
+      "id": "tg_fbm",
+      "cell": {
+        "gds_path": "../sampler_tg/sampler_tg.gds",
+        "cell_name": "sampler_tg",
+        "ports": [
+          {
+            "name": "a",
+            "x_um": 1.9,
+            "y_um": 1.2,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 0
+          },
+          {
+            "name": "b",
+            "x_um": -0.3,
+            "y_um": 1.2,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 180
+          },
+          {
+            "name": "ctrl",
+            "x_um": 0.545,
+            "y_um": 2.5,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 270
+          },
+          {
+            "name": "ctrlb",
+            "x_um": 0.545,
+            "y_um": 1.03,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 90
+          },
+          {
+            "name": "vdd",
+            "x_um": 0.545,
+            "y_um": 5.78,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 90
+          },
+          {
+            "name": "vss",
+            "x_um": 0.545,
+            "y_um": -2.28,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 270
+          }
+        ]
+      }
+    },
+    {
+      "id": "tg_s",
+      "cell": {
+        "gds_path": "../sampler_tg/sampler_tg.gds",
+        "cell_name": "sampler_tg",
+        "ports": [
+          {
+            "name": "a",
+            "x_um": 1.9,
+            "y_um": 1.2,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 0
+          },
+          {
+            "name": "b",
+            "x_um": -0.3,
+            "y_um": 1.2,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 180
+          },
+          {
+            "name": "ctrl",
+            "x_um": 0.545,
+            "y_um": 2.5,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 270
+          },
+          {
+            "name": "ctrlb",
+            "x_um": 0.545,
+            "y_um": 1.03,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 90
+          },
+          {
+            "name": "vdd",
+            "x_um": 0.545,
+            "y_um": 5.78,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 90
+          },
+          {
+            "name": "vss",
+            "x_um": 0.545,
+            "y_um": -2.28,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 270
+          }
+        ]
+      }
+    },
+    {
+      "id": "inv_q",
+      "cell": {
+        "gds_path": "../ro_buf/ro_buf.gds",
+        "cell_name": "ro_buf",
+        "ports": [
+          {
+            "name": "a",
+            "x_um": 0.545,
+            "y_um": 1.7,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 180
+          },
+          {
+            "name": "y",
+            "x_um": 1.9,
+            "y_um": 1.2,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 0
+          },
+          {
+            "name": "vdd",
+            "x_um": -1.12,
+            "y_um": 4.24,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 90
+          },
+          {
+            "name": "vss",
+            "x_um": -1.22,
+            "y_um": -0.5,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 270
+          }
+        ]
+      }
+    },
+    {
+      "id": "nand_s2",
+      "cell": {
+        "gds_path": "../sampler_nand2/sampler_nand2.gds",
+        "cell_name": "sampler_nand2",
+        "ports": [
+          {
+            "name": "en",
+            "x_um": 3.685,
+            "y_um": 1.975,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 90
+          },
+          {
+            "name": "a",
+            "x_um": 4.98,
+            "y_um": 2.75,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 0
+          },
+          {
+            "name": "y",
+            "x_um": 4.79,
+            "y_um": 0.21,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 90
+          },
+          {
+            "name": "vdd",
+            "x_um": 1.92,
+            "y_um": 4.45,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 90
+          },
+          {
+            "name": "vss",
+            "x_um": 1.94,
+            "y_um": -0.5,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 270
+          }
+        ]
+      }
+    },
+    {
+      "id": "tg_fbs",
+      "cell": {
+        "gds_path": "../sampler_tg/sampler_tg.gds",
+        "cell_name": "sampler_tg",
+        "ports": [
+          {
+            "name": "a",
+            "x_um": 1.9,
+            "y_um": 1.2,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 0
+          },
+          {
+            "name": "b",
+            "x_um": -0.3,
+            "y_um": 1.2,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 180
+          },
+          {
+            "name": "ctrl",
+            "x_um": 0.545,
+            "y_um": 2.5,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 270
+          },
+          {
+            "name": "ctrlb",
+            "x_um": 0.545,
+            "y_um": 1.03,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 90
+          },
+          {
+            "name": "vdd",
+            "x_um": 0.545,
+            "y_um": 5.78,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 90
+          },
+          {
+            "name": "vss",
+            "x_um": 0.545,
+            "y_um": -2.28,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 270
+          }
+        ]
+      }
+    }
+  ],
+  "placement": {
+    "strategy": "explicit",
+    "order": [
+      "inv_clk",
+      "tg_d",
+      "nand_m",
+      "inv_mc",
+      "tg_fbm",
+      "tg_s",
+      "inv_q",
+      "nand_s2",
+      "tg_fbs"
+    ],
+    "origins_um": {
+      "inv_clk": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "tg_d": {
+        "x": 4.765,
+        "y": 0.0
+      },
+      "nand_m": {
+        "x": 8.53,
+        "y": 0.0
+      },
+      "inv_mc": {
+        "x": 19.29,
+        "y": 0.0
+      },
+      "tg_fbm": {
+        "x": 24.055,
+        "y": 0.0
+      },
+      "tg_s": {
+        "x": 29.195,
+        "y": 0.0
+      },
+      "inv_q": {
+        "x": 36.0,
+        "y": 0.0
+      },
+      "nand_s2": {
+        "x": 39.39,
+        "y": 0.0
+      },
+      "tg_fbs": {
+        "x": 48.485,
+        "y": 0.0
+      }
+    }
+  },
+  "routing": {
+    "layer_role": "metal",
+    "width_um": 0.17
+  },
+  "connectivity": [],
+  "pins": [
+    {
+      "block": "inv_clk",
+      "port": "a",
+      "net": "inv_clk_a"
+    },
+    {
+      "block": "inv_clk",
+      "port": "y",
+      "net": "inv_clk_y"
+    },
+    {
+      "block": "inv_clk",
+      "port": "vdd",
+      "net": "inv_clk_vdd"
+    },
+    {
+      "block": "inv_clk",
+      "port": "vss",
+      "net": "inv_clk_vss"
+    },
+    {
+      "block": "tg_d",
+      "port": "a",
+      "net": "tg_d_a"
+    },
+    {
+      "block": "tg_d",
+      "port": "b",
+      "net": "tg_d_b"
+    },
+    {
+      "block": "tg_d",
+      "port": "ctrl",
+      "net": "tg_d_ctrl"
+    },
+    {
+      "block": "tg_d",
+      "port": "ctrlb",
+      "net": "tg_d_ctrlb"
+    },
+    {
+      "block": "tg_d",
+      "port": "vdd",
+      "net": "tg_d_vdd"
+    },
+    {
+      "block": "tg_d",
+      "port": "vss",
+      "net": "tg_d_vss"
+    },
+    {
+      "block": "nand_m",
+      "port": "en",
+      "net": "nand_m_en"
+    },
+    {
+      "block": "nand_m",
+      "port": "a",
+      "net": "nand_m_a"
+    },
+    {
+      "block": "nand_m",
+      "port": "y",
+      "net": "nand_m_y"
+    },
+    {
+      "block": "nand_m",
+      "port": "vdd",
+      "net": "nand_m_vdd"
+    },
+    {
+      "block": "nand_m",
+      "port": "vss",
+      "net": "nand_m_vss"
+    },
+    {
+      "block": "inv_mc",
+      "port": "a",
+      "net": "inv_mc_a"
+    },
+    {
+      "block": "inv_mc",
+      "port": "y",
+      "net": "inv_mc_y"
+    },
+    {
+      "block": "inv_mc",
+      "port": "vdd",
+      "net": "inv_mc_vdd"
+    },
+    {
+      "block": "inv_mc",
+      "port": "vss",
+      "net": "inv_mc_vss"
+    },
+    {
+      "block": "tg_fbm",
+      "port": "a",
+      "net": "tg_fbm_a"
+    },
+    {
+      "block": "tg_fbm",
+      "port": "b",
+      "net": "tg_fbm_b"
+    },
+    {
+      "block": "tg_fbm",
+      "port": "ctrl",
+      "net": "tg_fbm_ctrl"
+    },
+    {
+      "block": "tg_fbm",
+      "port": "ctrlb",
+      "net": "tg_fbm_ctrlb"
+    },
+    {
+      "block": "tg_fbm",
+      "port": "vdd",
+      "net": "tg_fbm_vdd"
+    },
+    {
+      "block": "tg_fbm",
+      "port": "vss",
+      "net": "tg_fbm_vss"
+    },
+    {
+      "block": "tg_s",
+      "port": "a",
+      "net": "tg_s_a"
+    },
+    {
+      "block": "tg_s",
+      "port": "b",
+      "net": "tg_s_b"
+    },
+    {
+      "block": "tg_s",
+      "port": "ctrl",
+      "net": "tg_s_ctrl"
+    },
+    {
+      "block": "tg_s",
+      "port": "ctrlb",
+      "net": "tg_s_ctrlb"
+    },
+    {
+      "block": "tg_s",
+      "port": "vdd",
+      "net": "tg_s_vdd"
+    },
+    {
+      "block": "tg_s",
+      "port": "vss",
+      "net": "tg_s_vss"
+    },
+    {
+      "block": "inv_q",
+      "port": "a",
+      "net": "inv_q_a"
+    },
+    {
+      "block": "inv_q",
+      "port": "y",
+      "net": "inv_q_y"
+    },
+    {
+      "block": "inv_q",
+      "port": "vdd",
+      "net": "inv_q_vdd"
+    },
+    {
+      "block": "inv_q",
+      "port": "vss",
+      "net": "inv_q_vss"
+    },
+    {
+      "block": "nand_s2",
+      "port": "en",
+      "net": "nand_s2_en"
+    },
+    {
+      "block": "nand_s2",
+      "port": "a",
+      "net": "nand_s2_a"
+    },
+    {
+      "block": "nand_s2",
+      "port": "y",
+      "net": "nand_s2_y"
+    },
+    {
+      "block": "nand_s2",
+      "port": "vdd",
+      "net": "nand_s2_vdd"
+    },
+    {
+      "block": "nand_s2",
+      "port": "vss",
+      "net": "nand_s2_vss"
+    },
+    {
+      "block": "tg_fbs",
+      "port": "a",
+      "net": "tg_fbs_a"
+    },
+    {
+      "block": "tg_fbs",
+      "port": "b",
+      "net": "tg_fbs_b"
+    },
+    {
+      "block": "tg_fbs",
+      "port": "ctrl",
+      "net": "tg_fbs_ctrl"
+    },
+    {
+      "block": "tg_fbs",
+      "port": "ctrlb",
+      "net": "tg_fbs_ctrlb"
+    },
+    {
+      "block": "tg_fbs",
+      "port": "vdd",
+      "net": "tg_fbs_vdd"
+    },
+    {
+      "block": "tg_fbs",
+      "port": "vss",
+      "net": "tg_fbs_vss"
+    }
+  ],
+  "options": {
+    "cell_name": "place",
+    "output": "place.gds"
+  }
+}

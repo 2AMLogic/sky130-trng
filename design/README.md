@@ -320,6 +320,21 @@ DR-0003 surfaces and does not resolve on its own authority.
   against `design/sampler_core.spice`'s own `.subckt sampler_dff`, and then
   `sampler_core`'s own six-instance wiring, remain open (#27).
 
+  **`sampler_dff` assembly has started.**
+  [`layout/sampler_dff/`](../layout/sampler_dff/README.md) places all nine
+  leaf-cell instances (3x `ro_buf`, 4x `sampler_tg`, 2x `sampler_nand2`) as
+  `blocks[].cell`, reading the flat 22-device subckt as a signal-flow
+  pipeline rather than a device list — DRC-clean placement (0 violations),
+  plus a DRC-clean `vdd`/`vss` supply bus routed across all nine instances
+  (`klt extract` confirms both rails fully merged into one net each, and
+  confirms the composed geometry's 22-device, 11 nfet/11 pfet split matches
+  `design/sampler_core.spice`'s own subckt before any signal wiring exists).
+  `klt lvs` is not yet expected to match: `rst_n`/`clk`/`clkb` fan-out and
+  the six data-path nets (`m`/`mb`/`mc`/`s`/`q`/`qb`) remain open (#27), and
+  `clk`/`clkb` specifically need a routing-plane strategy distinct from
+  `vdd`/`vss`'s own attic/basement bus (see
+  `layout/sampler_dff/README.md`'s "What remains").
+
   A prior increment wired the XOR combining tree's inputs:
   that directory's
   "Increment 7" section routes `t2` (`xa2.y` → `xa3.b`) via a `"metal3"`

@@ -1,0 +1,315 @@
+{
+  "cell": "sampler_dff",
+  "_comment": [
+    "Cell descriptor for layout/bin/compose-cell.py -- see layout/README.md",
+    "section 'Composing a gate' for the floorplan reasoning shared with every",
+    "other cell here, and layout/sampler_dff/README.md for this cell's own",
+    "result and open items (issue #27 step 5 / issue #22).",
+    "",
+    "sampler_dff is design/sampler_core.spice's 22-device transmission-gate",
+    "master-slave DFF, composed entirely from the three leaf shapes issue #27",
+    "already established: layout/ro_buf/ (plain inverter), layout/sampler_tg/",
+    "(transmission gate), layout/sampler_nand2/ (rst_n-gated NAND2). Reading",
+    "the flat device list (design/sampler_core.spice's own .subckt sampler_dff)",
+    "as a signal-flow graph rather than a device list shows it is almost a",
+    "linear pipeline with two small local feedback loops, not a crossbar:",
+    "",
+    "  clk -> inv_clk -> clkb",
+    "  d -> TG_D(clk/clkb) -> m -> NAND_M(m,rst_n) -> mb -> inv_mc -> mc",
+    "       -> TG_FBM(clkb/clk) -> (feeds back into m)",
+    "  mb -> TG_S(clkb/clk) -> s -> inv_q -> q -> NAND_S2(q,rst_n) -> qb",
+    "       -> TG_FBS(clk/clkb) -> (feeds back into s)",
+    "",
+    "(TG_FBM/TG_FBS run the OPPOSITE clk/clkb phase from their own stage's",
+    "input TG, the standard master-slave transparent-when-off-phase",
+    "structure -- confirmed against design/sampler_core.spice's own",
+    "Mtdp/Mtdn (clk/clkb), Mfmp/Mfmn (clkb/clk), Mtsp/Mtsn (clkb/clk),",
+    "Mfsp/Mfsn (clk/clkb) gate assignments.)",
+    "",
+    "This is a placement-only first stage (issue #27/#22 increment N): nine",
+    "already-composed sibling cells (3x ro_buf, 4x sampler_tg, 2x",
+    "sampler_nand2) placed in signal-flow left-to-right order with generous",
+    "(3.0 um bbox-to-bbox) spacing, zero routing. Verified DRC-clean on its",
+    "own -- the same 'place' stage technique layout/ro_ring5/cell.json used",
+    "for the identical reason (prove the floorplan has no collisions before",
+    "attempting the harder net-by-net routing). See layout/sampler_dff/README.md",
+    "for the full port-coordinate derivation (every blocks[].cell.ports entry",
+    "below is either a value already proven by a prior increment -- e.g. the",
+    "sampler_nand2 en/a/y ports are IDENTICAL to layout/ro_ring5/cell.json's",
+    "own already-merged ro_nand2 reuse, since sampler_nand2's mpa/mpb/mnab",
+    "keep ro_nand2's own origins_um unchanged -- or independently derived from",
+    "each leaf's own klt gen/gen-compose response JSON and cross-checked",
+    "against a known-working example of the same orientation transform).",
+    "",
+    "Routing (vdd/vss buses, rst_n fan-out, clk/clkb fan-out, and the six",
+    "data-path nets m/mb/mc/s/q/qb) is intentionally NOT attempted in this",
+    "increment -- see layout/sampler_dff/README.md's 'What remains' section.",
+    "This stage's own 'pins' list promotes every declared port of every block",
+    "under a unique '<id>_<port>' name so a later stage can address them."
+  ],
+  "pdk": {
+    "variant": "sky130A",
+    "deck": "sky130"
+  },
+  "stages": [
+    {
+      "name": "place",
+      "blocks": [
+        {
+          "id": "inv_clk",
+          "orientation": "none",
+          "cell": {
+            "gds_path": "../ro_buf/ro_buf.gds",
+            "cell_name": "ro_buf",
+            "ports": [
+              {"name": "a", "x_um": 0.545, "y_um": 1.7, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.17, "direction_deg": 180},
+              {"name": "y", "x_um": 1.9, "y_um": 1.2, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.17, "direction_deg": 0},
+              {"name": "vdd", "x_um": -1.12, "y_um": 4.24, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.42, "direction_deg": 90},
+              {"name": "vss", "x_um": -1.22, "y_um": -0.5, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.42, "direction_deg": 270}
+            ]
+          }
+        },
+        {
+          "id": "tg_d",
+          "orientation": "none",
+          "cell": {
+            "gds_path": "../sampler_tg/sampler_tg.gds",
+            "cell_name": "sampler_tg",
+            "ports": [
+              {"name": "a", "x_um": 1.9, "y_um": 1.2, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.17, "direction_deg": 0},
+              {"name": "b", "x_um": -0.3, "y_um": 1.2, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.17, "direction_deg": 180},
+              {"name": "ctrl", "x_um": 0.545, "y_um": 2.5, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.42, "direction_deg": 270},
+              {"name": "ctrlb", "x_um": 0.545, "y_um": 1.03, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.42, "direction_deg": 90},
+              {"name": "vdd", "x_um": 0.545, "y_um": 5.78, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.42, "direction_deg": 90},
+              {"name": "vss", "x_um": 0.545, "y_um": -2.28, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.42, "direction_deg": 270}
+            ]
+          }
+        },
+        {
+          "id": "nand_m",
+          "orientation": "none",
+          "cell": {
+            "gds_path": "../sampler_nand2/sampler_nand2.gds",
+            "cell_name": "sampler_nand2",
+            "ports": [
+              {"name": "en", "x_um": 3.685, "y_um": 1.975, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.42, "direction_deg": 90},
+              {"name": "a", "x_um": 4.98, "y_um": 2.75, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.17, "direction_deg": 0},
+              {"name": "y", "x_um": 4.79, "y_um": 0.21, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.42, "direction_deg": 90},
+              {"name": "vdd", "x_um": 1.92, "y_um": 4.45, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.42, "direction_deg": 90},
+              {"name": "vss", "x_um": 1.94, "y_um": -0.5, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.42, "direction_deg": 270}
+            ]
+          }
+        },
+        {
+          "id": "inv_mc",
+          "orientation": "none",
+          "cell": {
+            "gds_path": "../ro_buf/ro_buf.gds",
+            "cell_name": "ro_buf",
+            "ports": [
+              {"name": "a", "x_um": 0.545, "y_um": 1.7, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.17, "direction_deg": 180},
+              {"name": "y", "x_um": 1.9, "y_um": 1.2, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.17, "direction_deg": 0},
+              {"name": "vdd", "x_um": -1.12, "y_um": 4.24, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.42, "direction_deg": 90},
+              {"name": "vss", "x_um": -1.22, "y_um": -0.5, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.42, "direction_deg": 270}
+            ]
+          }
+        },
+        {
+          "id": "tg_fbm",
+          "orientation": "none",
+          "cell": {
+            "gds_path": "../sampler_tg/sampler_tg.gds",
+            "cell_name": "sampler_tg",
+            "ports": [
+              {"name": "a", "x_um": 1.9, "y_um": 1.2, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.17, "direction_deg": 0},
+              {"name": "b", "x_um": -0.3, "y_um": 1.2, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.17, "direction_deg": 180},
+              {"name": "ctrl", "x_um": 0.545, "y_um": 2.5, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.42, "direction_deg": 270},
+              {"name": "ctrlb", "x_um": 0.545, "y_um": 1.03, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.42, "direction_deg": 90},
+              {"name": "vdd", "x_um": 0.545, "y_um": 5.78, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.42, "direction_deg": 90},
+              {"name": "vss", "x_um": 0.545, "y_um": -2.28, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.42, "direction_deg": 270}
+            ]
+          }
+        },
+        {
+          "id": "tg_s",
+          "orientation": "none",
+          "cell": {
+            "gds_path": "../sampler_tg/sampler_tg.gds",
+            "cell_name": "sampler_tg",
+            "ports": [
+              {"name": "a", "x_um": 1.9, "y_um": 1.2, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.17, "direction_deg": 0},
+              {"name": "b", "x_um": -0.3, "y_um": 1.2, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.17, "direction_deg": 180},
+              {"name": "ctrl", "x_um": 0.545, "y_um": 2.5, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.42, "direction_deg": 270},
+              {"name": "ctrlb", "x_um": 0.545, "y_um": 1.03, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.42, "direction_deg": 90},
+              {"name": "vdd", "x_um": 0.545, "y_um": 5.78, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.42, "direction_deg": 90},
+              {"name": "vss", "x_um": 0.545, "y_um": -2.28, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.42, "direction_deg": 270}
+            ]
+          }
+        },
+        {
+          "id": "inv_q",
+          "orientation": "none",
+          "cell": {
+            "gds_path": "../ro_buf/ro_buf.gds",
+            "cell_name": "ro_buf",
+            "ports": [
+              {"name": "a", "x_um": 0.545, "y_um": 1.7, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.17, "direction_deg": 180},
+              {"name": "y", "x_um": 1.9, "y_um": 1.2, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.17, "direction_deg": 0},
+              {"name": "vdd", "x_um": -1.12, "y_um": 4.24, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.42, "direction_deg": 90},
+              {"name": "vss", "x_um": -1.22, "y_um": -0.5, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.42, "direction_deg": 270}
+            ]
+          }
+        },
+        {
+          "id": "nand_s2",
+          "orientation": "none",
+          "cell": {
+            "gds_path": "../sampler_nand2/sampler_nand2.gds",
+            "cell_name": "sampler_nand2",
+            "ports": [
+              {"name": "en", "x_um": 3.685, "y_um": 1.975, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.42, "direction_deg": 90},
+              {"name": "a", "x_um": 4.98, "y_um": 2.75, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.17, "direction_deg": 0},
+              {"name": "y", "x_um": 4.79, "y_um": 0.21, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.42, "direction_deg": 90},
+              {"name": "vdd", "x_um": 1.92, "y_um": 4.45, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.42, "direction_deg": 90},
+              {"name": "vss", "x_um": 1.94, "y_um": -0.5, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.42, "direction_deg": 270}
+            ]
+          }
+        },
+        {
+          "id": "tg_fbs",
+          "orientation": "none",
+          "cell": {
+            "gds_path": "../sampler_tg/sampler_tg.gds",
+            "cell_name": "sampler_tg",
+            "ports": [
+              {"name": "a", "x_um": 1.9, "y_um": 1.2, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.17, "direction_deg": 0},
+              {"name": "b", "x_um": -0.3, "y_um": 1.2, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.17, "direction_deg": 180},
+              {"name": "ctrl", "x_um": 0.545, "y_um": 2.5, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.42, "direction_deg": 270},
+              {"name": "ctrlb", "x_um": 0.545, "y_um": 1.03, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.42, "direction_deg": 90},
+              {"name": "vdd", "x_um": 0.545, "y_um": 5.78, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.42, "direction_deg": 90},
+              {"name": "vss", "x_um": 0.545, "y_um": -2.28, "layer": {"layer": 67, "datatype": 20}, "width_um": 0.42, "direction_deg": 270}
+            ]
+          }
+        }
+      ],
+      "placement": {
+        "strategy": "explicit",
+        "order": ["inv_clk", "tg_d", "nand_m", "inv_mc", "tg_fbm", "tg_s", "inv_q", "nand_s2", "tg_fbs"],
+        "origins_um": {
+          "inv_clk": {"x": 0.0, "y": 0.0},
+          "tg_d": {"x": 4.765, "y": 0.0},
+          "nand_m": {"x": 8.53, "y": 0.0},
+          "inv_mc": {"x": 19.29, "y": 0.0},
+          "tg_fbm": {"x": 24.055, "y": 0.0},
+          "tg_s": {"x": 29.195, "y": 0.0},
+          "inv_q": {"x": 36.0, "y": 0.0},
+          "nand_s2": {"x": 39.39, "y": 0.0},
+          "tg_fbs": {"x": 48.485, "y": 0.0}
+        }
+      },
+      "routing": {"layer_role": "metal", "width_um": 0.17},
+      "connectivity": [],
+      "pins": [
+        {"block": "inv_clk", "port": "a", "net": "inv_clk_a"},
+        {"block": "inv_clk", "port": "y", "net": "inv_clk_y"},
+        {"block": "inv_clk", "port": "vdd", "net": "inv_clk_vdd"},
+        {"block": "inv_clk", "port": "vss", "net": "inv_clk_vss"},
+
+        {"block": "tg_d", "port": "a", "net": "tg_d_a"},
+        {"block": "tg_d", "port": "b", "net": "tg_d_b"},
+        {"block": "tg_d", "port": "ctrl", "net": "tg_d_ctrl"},
+        {"block": "tg_d", "port": "ctrlb", "net": "tg_d_ctrlb"},
+        {"block": "tg_d", "port": "vdd", "net": "tg_d_vdd"},
+        {"block": "tg_d", "port": "vss", "net": "tg_d_vss"},
+
+        {"block": "nand_m", "port": "en", "net": "nand_m_en"},
+        {"block": "nand_m", "port": "a", "net": "nand_m_a"},
+        {"block": "nand_m", "port": "y", "net": "nand_m_y"},
+        {"block": "nand_m", "port": "vdd", "net": "nand_m_vdd"},
+        {"block": "nand_m", "port": "vss", "net": "nand_m_vss"},
+
+        {"block": "inv_mc", "port": "a", "net": "inv_mc_a"},
+        {"block": "inv_mc", "port": "y", "net": "inv_mc_y"},
+        {"block": "inv_mc", "port": "vdd", "net": "inv_mc_vdd"},
+        {"block": "inv_mc", "port": "vss", "net": "inv_mc_vss"},
+
+        {"block": "tg_fbm", "port": "a", "net": "tg_fbm_a"},
+        {"block": "tg_fbm", "port": "b", "net": "tg_fbm_b"},
+        {"block": "tg_fbm", "port": "ctrl", "net": "tg_fbm_ctrl"},
+        {"block": "tg_fbm", "port": "ctrlb", "net": "tg_fbm_ctrlb"},
+        {"block": "tg_fbm", "port": "vdd", "net": "tg_fbm_vdd"},
+        {"block": "tg_fbm", "port": "vss", "net": "tg_fbm_vss"},
+
+        {"block": "tg_s", "port": "a", "net": "tg_s_a"},
+        {"block": "tg_s", "port": "b", "net": "tg_s_b"},
+        {"block": "tg_s", "port": "ctrl", "net": "tg_s_ctrl"},
+        {"block": "tg_s", "port": "ctrlb", "net": "tg_s_ctrlb"},
+        {"block": "tg_s", "port": "vdd", "net": "tg_s_vdd"},
+        {"block": "tg_s", "port": "vss", "net": "tg_s_vss"},
+
+        {"block": "inv_q", "port": "a", "net": "inv_q_a"},
+        {"block": "inv_q", "port": "y", "net": "inv_q_y"},
+        {"block": "inv_q", "port": "vdd", "net": "inv_q_vdd"},
+        {"block": "inv_q", "port": "vss", "net": "inv_q_vss"},
+
+        {"block": "nand_s2", "port": "en", "net": "nand_s2_en"},
+        {"block": "nand_s2", "port": "a", "net": "nand_s2_a"},
+        {"block": "nand_s2", "port": "y", "net": "nand_s2_y"},
+        {"block": "nand_s2", "port": "vdd", "net": "nand_s2_vdd"},
+        {"block": "nand_s2", "port": "vss", "net": "nand_s2_vss"},
+
+        {"block": "tg_fbs", "port": "a", "net": "tg_fbs_a"},
+        {"block": "tg_fbs", "port": "b", "net": "tg_fbs_b"},
+        {"block": "tg_fbs", "port": "ctrl", "net": "tg_fbs_ctrl"},
+        {"block": "tg_fbs", "port": "ctrlb", "net": "tg_fbs_ctrlb"},
+        {"block": "tg_fbs", "port": "vdd", "net": "tg_fbs_vdd"},
+        {"block": "tg_fbs", "port": "vss", "net": "tg_fbs_vss"}
+      ]
+    },
+    {
+      "blocks": [{"id": "core", "from_stage": "place"}],
+      "placement": {"strategy": "explicit", "order": ["core"], "origins_um": {"core": {"x": 0.0, "y": 0.0}}},
+      "routing": {"layer_role": "metal2", "width_um": 0.17},
+      "connectivity": [
+        {"net": "vdd", "pins": [{"block": "core", "port": "inv_clk_vdd"}, {"block": "core", "port": "tg_d_vdd"}],
+         "waypoints_um": [[-1.12, 7.0], [5.31, 7.0]]},
+        {"net": "vdd", "pins": [{"block": "core", "port": "tg_d_vdd"}, {"block": "core", "port": "nand_m_vdd"}],
+         "waypoints_um": [[5.31, 7.0], [10.45, 7.0]]},
+        {"net": "vdd", "pins": [{"block": "core", "port": "nand_m_vdd"}, {"block": "core", "port": "inv_mc_vdd"}],
+         "waypoints_um": [[10.45, 7.0], [18.17, 7.0]]},
+        {"net": "vdd", "pins": [{"block": "core", "port": "inv_mc_vdd"}, {"block": "core", "port": "tg_fbm_vdd"}],
+         "waypoints_um": [[18.17, 7.0], [24.6, 7.0]]},
+        {"net": "vdd", "pins": [{"block": "core", "port": "tg_fbm_vdd"}, {"block": "core", "port": "tg_s_vdd"}],
+         "waypoints_um": [[24.6, 7.0], [29.74, 7.0]]},
+        {"net": "vdd", "pins": [{"block": "core", "port": "tg_s_vdd"}, {"block": "core", "port": "inv_q_vdd"}],
+         "waypoints_um": [[29.74, 7.0], [34.88, 7.0]]},
+        {"net": "vdd", "pins": [{"block": "core", "port": "inv_q_vdd"}, {"block": "core", "port": "nand_s2_vdd"}],
+         "waypoints_um": [[34.88, 7.0], [41.31, 7.0]]},
+        {"net": "vdd", "pins": [{"block": "core", "port": "nand_s2_vdd"}, {"block": "core", "port": "tg_fbs_vdd"}],
+         "waypoints_um": [[41.31, 7.0], [49.03, 7.0]]},
+
+        {"net": "vss", "pins": [{"block": "core", "port": "inv_clk_vss"}, {"block": "core", "port": "tg_d_vss"}],
+         "waypoints_um": [[-1.22, -3.5], [5.31, -3.5]]},
+        {"net": "vss", "pins": [{"block": "core", "port": "tg_d_vss"}, {"block": "core", "port": "nand_m_vss"}],
+         "waypoints_um": [[5.31, -3.5], [10.47, -3.5]]},
+        {"net": "vss", "pins": [{"block": "core", "port": "nand_m_vss"}, {"block": "core", "port": "inv_mc_vss"}],
+         "waypoints_um": [[10.47, -3.5], [18.07, -3.5]]},
+        {"net": "vss", "pins": [{"block": "core", "port": "inv_mc_vss"}, {"block": "core", "port": "tg_fbm_vss"}],
+         "waypoints_um": [[18.07, -3.5], [24.6, -3.5]]},
+        {"net": "vss", "pins": [{"block": "core", "port": "tg_fbm_vss"}, {"block": "core", "port": "tg_s_vss"}],
+         "waypoints_um": [[24.6, -3.5], [29.74, -3.5]]},
+        {"net": "vss", "pins": [{"block": "core", "port": "tg_s_vss"}, {"block": "core", "port": "inv_q_vss"}],
+         "waypoints_um": [[29.74, -3.5], [34.78, -3.5]]},
+        {"net": "vss", "pins": [{"block": "core", "port": "inv_q_vss"}, {"block": "core", "port": "nand_s2_vss"}],
+         "waypoints_um": [[34.78, -3.5], [41.33, -3.5]]},
+        {"net": "vss", "pins": [{"block": "core", "port": "nand_s2_vss"}, {"block": "core", "port": "tg_fbs_vss"}],
+         "waypoints_um": [[41.33, -3.5], [49.03, -3.5]]}
+      ],
+      "pins": []
+    }
+  ],
+  "lvs": {
+    "reference": "design/sampler_core.spice",
+    "subckt": "sampler_dff"
+  }
+}

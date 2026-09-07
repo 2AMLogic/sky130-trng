@@ -584,7 +584,14 @@ that lands this document):
   inverter, already `ro_buf`), all 22 of `sampler_dff`'s devices now reduce
   to already-composed leaf cells; the 22-device whole-cell assembly and LVS
   check against `design/sampler_core.spice`'s own `.subckt sampler_dff`
-  remains open. Note also that
+  remains open. **A later increment started that assembly**:
+  `layout/sampler_dff/` places all nine leaf-cell instances DRC-clean (0
+  violations) and routes a DRC-clean `vdd`/`vss` supply bus across all nine
+  (`klt extract` confirms both rails merged into one net each, and confirms
+  the composed geometry's 22-device, 11 nfet/11 pfet split already matches
+  `design/sampler_core.spice`'s own subckt before any signal wiring exists).
+  `rst_n`/`clk`/`clkb` fan-out, the six data-path nets, and the resulting
+  whole-cell `klt lvs` sign-off remain open (#27). Note also that
   "DRC-clean" here means clean against `klt`'s **curated** sky130 deck (a
   documented subset — see each `drc.json`'s own `coverage` block), not a
   full sky130 sign-off deck.
