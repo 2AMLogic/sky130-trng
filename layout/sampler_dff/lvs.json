@@ -14,19 +14,19 @@
     "parameter_tolerance": null
   },
   "status": "mismatch",
-  "mismatch_count": 67,
-  "error_count": 67,
+  "mismatch_count": 63,
+  "error_count": 63,
   "category_counts": {
     "device.unmatched": 22,
-    "net.unmatched": 45
+    "net.unmatched": 41
   },
   "category_error_counts": {
     "device.unmatched": 22,
-    "net.unmatched": 45
+    "net.unmatched": 41
   },
   "counts": {
     "nets": {
-      "layout": 31,
+      "layout": 27,
       "reference": 14,
       "matched": 0
     },
@@ -36,21 +36,21 @@
       "matched": 0
     },
     "pins": {
-      "layout": 29,
+      "layout": 25,
       "reference": 6,
-      "matched": 35
+      "matched": 31
     }
   },
   "device_classes": null,
   "environment": {
     "engine": "klayout",
     "engine_version": "0.30.12",
-    "layout_sha256": "ba078699c316c4999f7b6bfb4aece762059077f8aa0ace3a400072b42d5aa69a",
+    "layout_sha256": "71e568866e40e86f8d80a9bb0ac9f7c22ba145c272dc89d16bdbec1ea10ac66f",
     "reference_sha256": "66009a496f55fac466075bbac7c9a2216dfc2e18e1eb02eda823233534918e2c",
     "extracted_netlist": null
   },
   "provenance": {
-    "klt_version": "0.3.0",
+    "klt_version": "0.4.0",
     "klayout_version": "0.30.12",
     "pdk": null,
     "deck": null,
@@ -437,7 +437,7 @@
       "description": "layout net has no reference counterpart",
       "side": "layout",
       "net": {
-        "layout": "A|INV_CLK_A",
+        "layout": "A|CLK|CTRL|CTRLB|INV_CLK_A|INV_CLK_CLK_VIA|TG_D_CTRL|TG_D_CTRL_VIA|TG_FBM_CTRLB|TG_FBM_CTRLB_VIA|TG_FBS_CTRL|TG_FBS_CTRL_VIA|TG_S_CTRLB|TG_S_CTRLB_VIA",
         "reference": null
       },
       "device": null,
@@ -645,22 +645,6 @@
       "description": "layout net has no reference counterpart",
       "side": "layout",
       "net": {
-        "layout": "CTRLB|TG_FBM_CTRLB",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
         "layout": "CTRLB|TG_FBS_CTRLB",
         "reference": null
       },
@@ -677,55 +661,7 @@
       "description": "layout net has no reference counterpart",
       "side": "layout",
       "net": {
-        "layout": "CTRLB|TG_S_CTRLB",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "CTRL|TG_D_CTRL",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
         "layout": "CTRL|TG_FBM_CTRL",
-        "reference": null
-      },
-      "device": null,
-      "property": null,
-      "details": null,
-      "circuit": null,
-      "instance": null,
-      "subcircuit": null
-    },
-    {
-      "category": "net.unmatched",
-      "severity": "error",
-      "description": "layout net has no reference counterpart",
-      "side": "layout",
-      "net": {
-        "layout": "CTRL|TG_FBS_CTRL",
         "reference": null
       },
       "device": null,
@@ -901,7 +837,7 @@
       "description": "layout net has no reference counterpart",
       "side": "layout",
       "net": {
-        "layout": "\\$11",
+        "layout": "\\$10",
         "reference": null
       },
       "device": null,

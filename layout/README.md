@@ -4,7 +4,36 @@ Physical layout evidence for the sky130-trng entropy source, verified with
 `klayout-tools` (`klt`) against the sky130 open PDK. See `layout/pdk.json`
 for the PDK/tool pin.
 
-**Status (issue #22, this increment): `sampler_dff`'s `rst_n` fan-out is
+**Status (issue #22, this increment): `sampler_dff`'s `clk` fan-out is
+routed — a five-pin bundle net, DRC-clean, and confirmed by `klt extract`
+to reach exactly the six clk-gated devices the schematic has and no
+others.** [`layout/sampler_dff/`](sampler_dff/README.md) adds two more
+stages on top of the `rst_n` work below: `clk_met1` vias all five `clk`
+pins straight up from `li1` to `met1` (zero lateral distance, the same
+single-hop via-drop `rst_n_met1` uses, five times), and the final stage
+runs the whole long haul on `met2`/`"metal3"` as one basement lane at
+`y=-1.70` with a vertical drop at each pin's own x, steered leg-by-leg with
+`connectivity[].legs[]` (klayout-tools #1529 — `waypoints_um` is rejected
+outright on a >2-pin net, so `legs[]` is the only way to hand-route a
+fan-out of this shape). **`klt drc` clean, 0 violations; 0 unrouted nets;
+cell bbox unchanged.** `klt extract`'s net count drops from 31 to **27**
+— exactly the four merges a five-pin net makes — and the merged net's own
+device list is the correctness check that matters: the two `inv_clk`
+devices, `tg_d`'s **PMOS**, `tg_fbm`'s **NMOS**, `tg_s`'s **NMOS** and
+`tg_fbs`'s **PMOS** gates, matching `design/sampler_core.spice`'s
+`XMpc`/`XMnc`/`XMtdp`/`XMfmn`/`XMtsn`/`XMfsp` exactly, with the four
+`clkb`-gated devices still correctly isolated. That alternating
+PMOS/NMOS assignment (a master-slave DFF's feedback gates run the opposite
+phase from their own stage's input gate) is why `clk` and `clkb` cannot
+share a simple "one lane above, one lane below" plan — see
+`layout/sampler_dff/README.md`'s "Why `clk` and `clkb` cannot be two
+mirrored lanes" for the derivation and for the `met1` corridor at
+`y ≈ 0.40` this increment deliberately leaves free for `clkb`. `klt lvs` is
+still not expected to match (`clkb` and the six data-path nets
+`m`/`mb`/`mc`/`s`/`q`/`qb` remain unwired, and no top-level cell pins are
+promoted yet).
+
+**A previous increment (issue #22): `sampler_dff`'s `rst_n` fan-out is
 routed — DRC-clean and electrically merged across both `sampler_nand2`
 instances.** [`layout/sampler_dff/`](sampler_dff/README.md) adds three
 routing stages on top of the previous increment's placement + `vdd`/`vss`
@@ -625,7 +654,7 @@ trng_top                   (not in scope for #22 — stops at the raw tap)
         ro_stage   (x4/ring)  BUILT, all 4 wstv values — DRC-clean + LVS-clean (layout/ro_stage/, ro_stage_wstv0p{44,46,48}/) — 4 distinct physical cells (one per ring's wstv), each reused 4x within its own ring
       ro_buf     (x4)        BUILT — DRC-clean + LVS-clean (layout/ro_buf/)
       xor2       (x3)        BUILT — DRC-clean + LVS-clean (layout/xor2/) — 4x mos_array (two series chains per tree) + 3x guard_ring + 2x ro_buf cell; one physical cell reused 3x (xa1/xa2/xa3 are identical instances)
-    sampler_dff  (x6)        ASSEMBLY STARTED — layout/sampler_dff/ places all nine leaf-cell instances (3x ro_buf, 4x sampler_tg, 2x sampler_nand2) via blocks[].cell, DRC-clean (0 violations), plus a routed vdd/vss bus (also DRC-clean, klt extract confirms both rails merged into one net each across all nine instances). klt extract also confirms 22/22 devices at the correct 11 nfet/11 pfet split against design/sampler_core.spice's own .subckt sampler_dff before any signal wiring exists. Still open: rst_n fan-out, clk/clkb fan-out (needs a routing-plane strategy that does not cross the vdd/vss bus), the six data-path nets (m/mb/mc/s/q/qb), and the resulting whole-cell klt lvs sign-off (#27)
+    sampler_dff  (x6)        ASSEMBLY STARTED — layout/sampler_dff/ places all nine leaf-cell instances (3x ro_buf, 4x sampler_tg, 2x sampler_nand2) via blocks[].cell, DRC-clean (0 violations), plus a routed vdd/vss bus, a routed rst_n fan-out and a routed 5-pin clk fan-out (all DRC-clean, 0 violations, 0 unrouted nets; klt extract confirms each is one physically merged net, and that clk lands on exactly the six clk-gated devices design/sampler_core.spice has). klt extract also confirms 22/22 devices at the correct 11 nfet/11 pfet split against design/sampler_core.spice's own .subckt sampler_dff. Still open: clkb fan-out (a met1 corridor at y ~ 0.40 is reserved for it), the six data-path nets (m/mb/mc/s/q/qb), and the resulting whole-cell klt lvs sign-off (#27)
 ```
 
 "PROVEN AT DEVICE LEVEL" means: every transistor geometry the cell needs is
