@@ -4,7 +4,30 @@ Physical layout evidence for the sky130-trng entropy source, verified with
 `klayout-tools` (`klt`) against the sky130 open PDK. See `layout/pdk.json`
 for the PDK/tool pin.
 
-**Status (issue #22, this increment): the `vss` half of `sampler_core`'s
+**Status (issue #22, this increment): `sampler_core` is now DRC-clean *and*
+LVS-clean — the first whole-cell DRC/LVS-clean `sampler_core` assembly in
+this repo.** [`layout/sampler_core/`](sampler_core/README.md) adds three
+stages (`vdd_strap1`-`vdd_strap3`) routing `ro_array_core`'s own `vdd` down
+to the six-`sampler_dff` bank's own `vdd` rail, closing the second (and
+last) of the cell's two inter-block supply straps. Unlike `vss`'s own
+single-layer route, `vdd`'s path is blocked by a previously-undocumented
+met1 net spanning the whole composed `x=211.64..214.97` corridor at one
+height, so this strap uses a short met2 bridge (auto-via at both ends) to
+get past it — three real single-leg attempts at a pure-met1 route were
+tried and rejected first (two recovered from a prior interrupted session's
+own uncommitted work, re-verified rather than redone; a third found fresh
+this session when re-testing the recovered work's own chosen endpoint
+against the current toolchain), documented in full in `cell.json`'s own
+stage comment. `klt drc`: **clean, 0 violations**. `klt
+extract`: **264 devices, 152 nets** (down from 153 — `vdd`'s two nets are
+now genuinely one). `klt lvs` vs. `design/sampler_core.spice`'s own
+`.subckt sampler_core`: **match — 264/264 devices, 152/152 nets, 0
+errors**. Top-level pin promotion, previously thought also required for a
+full match, turned out not to be — `klt lvs`'s own flattened comparison
+does not need it. Still open: the assembled `sampler_core` post-layout PVT
+run and DR-0003 §8's `wstv` re-evaluation, tracked in #27.
+
+**A previous increment (issue #22): the `vss` half of `sampler_core`'s
 inter-block supply strap is real metal, not just the shared p-substrate.**
 [`layout/sampler_core/`](sampler_core/README.md) adds four stages
 (`vss_strap1`-`vss_strap4`) routing `ro_array_core`'s own `vss` (tapped on

@@ -8,13 +8,86 @@
 own six-instance floorplan (unchanged: 55.66 µm pitch, the same `sb`/`sv`/
 `sr1`-`sr4` instance order and naming, the same `y=0.0` origin for every
 instance) into a real, `compose-cell.py --check`-reproducible cell recipe,
-places the `ro_array_core` instance above it, and — as of this increment —
-finishes wiring the two together: **all five data nets are routed and every
-sampler `d` pin is driven.** As of the increment below, the `vss` half of
-the inter-block supply strap (issue #22 / #27 step 5) is real metal too, not
-just the shared p-substrate.
+places the `ro_array_core` instance above it, and finishes wiring the two
+together: all five data nets are routed and every sampler `d` pin is driven.
+**As of this increment, both inter-block supply straps (`vdd` and `vss`) are
+real metal, and `klt lvs` against `design/sampler_core.spice`'s own
+`.subckt sampler_core` is a full match — DRC-clean, 264/264 devices,
+152/152 nets, 0 errors.** This is the first whole-cell DRC/LVS-clean
+`sampler_core` assembly in this repo.
 
-## Result (this increment: the `vss` inter-block supply strap, issue #22 / #27 step 5)
+## Result (this increment: the `vdd` inter-block supply strap and a whole-cell `klt lvs` match, issue #22 / #27 step 5, second half)
+
+Three new stages on top of the twelve below (all unchanged): `vdd_strap1`
+through final `vdd_strap3` route real metal from `ro_array_core`'s own `vdd`
+to the six-`sampler_dff` bank's own `vdd` rail — the second and last of this
+cell's two supply straps. Until this increment the two extracted as **two
+separate nets**, both happening to contain the literal label `vdd` (the
+array's own internal `vdd` bus, and the sampler bank's own `vdd` rail) — not
+merged the way `vss` already was via the shared p-substrate, since sky130's
+substrate model is NMOS-body-only and has no equivalent PMOS-well merge.
+
+Unlike `vss`, a pure single-layer (met1) run from the array's own tap to the
+rail does not work here: the array's own internal routing between the two
+is far denser on this side, and a met1 net belonging to some other signal
+(not previously named in this cell's own documentation) spans the *whole*
+composed `x=211.64..214.97` corridor at `y=25.25..25.42`, with no gap to
+route through at any `x` in that span — re-measured directly by exact
+polygon intersection, not assumed, and not read off a `Region.merge()`
+bounding box (a real pitfall this increment's own `vdd-strap-scan.py`
+documents: a first-pass reading of this exact obstruction's *bbox* was
+`172.86..214.97` at `y=25.125..29.32`, far bigger than its actual footprint,
+because `merge()` unions many separate, unrelated same-layer shapes into one
+polygon whose bbox is not its area). `vdd_strap1` (met1) descends from the
+tap to a point safely above that obstruction; `vdd_strap2` (met2, a layer
+the obstruction cannot short against) bridges past it in a 1.1 µm hop;
+`vdd_strap3` (met1, final) returns to met1 for the last drop directly onto
+the sampler bank's own `vdd` rail — an interior point on already-drawn
+metal, the same technique `vss_strap4` used for `vss`. The chosen column,
+composed `x=213.7`, is also clear of the array's own east vss riser (met2,
+`x=214.29..214.71` — the same riser `vss_tap` lands directly on) with
+`0.38` µm of margin, past the `0.14` µm sky130 spacing rule.
+
+Three single-leg met1-only paths were tried and rejected before this
+increment's own met1/met2/met1 route: two (an eastward jog along the
+array's own vdd bus, and a direct crossing of `ro4_esc`'s own risers) are
+recovered from a prior interrupted session's own uncommitted work — their
+own descriptions, including the real short LVS caught, are preserved as
+written rather than re-run; a third (a pure-met1 run straight down composed
+`x=215.0`, the prior session's own chosen endpoint) was re-tested fresh
+this session against the current toolchain and found to collide too — its
+own exact `gen-compose` overlap-check output (`0.0231 um^2` at
+`214.915..214.97, 25.125..25.545`) is reproduced by `vdd-strap-scan.py`'s
+own "obstruction" claims. All three are documented in full in `cell.json`'s
+own `vdd_strap1` stage comment.
+
+| Stage | Verdict | Evidence |
+|---|---|---|
+| `klt gen-compose` (stages `place` … `vss_strap4`) | unchanged from the previous increments | `<stage>.compose.*.json`, `<stage>.gds` |
+| `klt gen-compose` (stage `vdd_strap1`, met1 — `"metal2"` role) | **1/1 routed** | `vdd_strap1.compose.*.json`, `vdd_strap1.gds` |
+| `klt gen-compose` (stage `vdd_strap2`, met2 — `"metal3"` role, auto-via both ends) | **1/1 routed** | `vdd_strap2.compose.*.json`, `vdd_strap2.gds` |
+| `klt gen-compose` (final stage `vdd_strap3`, met1 — `"metal2"` role, auto-via at entry) | **1/1 routed** | `compose.request.json`, `compose.response.json` |
+| `klt drc --deck sky130` | **clean, 0 violations** | `drc.json` |
+| `klt extract --deck sky130` | **264 devices** (unchanged), **152 nets** (down from 153 — `vdd`'s two nets are now genuinely one) | `extract.json`, `sampler_core.spice` |
+| `klt lvs` vs. `design/sampler_core.spice`'s own `.subckt sampler_core` | **match — 264/264 devices, 152/152 nets, 0 errors** (the one reported `mismatch` is the standard `topology.flattened` informational warning every `flatten_reference` run in this repo carries, not a real mismatch) | `lvs.json`, `sampler_core.ref.spice` |
+| `vdd-strap-scan.py` | **17/17 claims hold** | `vdd-strap-scan.json` |
+
+Cell extent unchanged at `x0=-2.19 x1=328.77 y0=-3.585 y1=54.72` µm; 8408
+polygons (from 8399), density essentially unchanged (`klt stats`).
+
+Against this issue's own acceptance bar: `sampler_core` is now
+DRC-clean **and** LVS-clean, closing #27 step 5 in full and step 7's
+layout-side requirement — top-level pin promotion (previously listed as
+also needed for step 7) turned out **not** to be required for a full `klt
+lvs` match with `flatten_layout`/`flatten_reference` both `true`, since the
+matcher compares flattened net/device topology rather than declared
+top-level pins; that line item in "What remains" below is corrected rather
+than carried forward. **Still open**: the assembled `sampler_core`
+post-layout PVT run (issue #22's own whole-chain claim) and DR-0003 §8's
+`wstv` inter-ring decorrelation re-evaluation — both deliberately not
+attempted in this increment, tracked in #27.
+
+## Result (a previous increment: the `vss` inter-block supply strap, issue #22 / #27 step 5)
 
 Four new stages on top of the eight below (all unchanged): `vss_strap1`
 through final `vss_strap4` route real metal from `ro_array_core`'s own `vss`
@@ -665,38 +738,38 @@ In rough dependency order:
    array's own footprint turned out to be a westward met1 walk to the array's
    own west margin plus a met2 descent, not a rung over the fencing
    horizontals — see this increment's own section above.
-5. **The inter-block supply straps.** `vdd` is two separate nets today (the
-   array's and the sampler bank's); `vss` extracted as one only through the
-   shared p-substrate, which is not a supply connection. `vss` is now real
-   metal too (this increment, stages `vss_strap1`-`vss_strap4` — see this
-   increment's own section above); `vdd` remains open. Its own access point
-   on the array side sits much deeper inside the array's own footprint
-   (composed `y ~31`, inside the buffer/XOR row) than `vss`'s own
-   (composed `y ~20.6-25`, essentially at the array's own south/east edge),
-   so it needs its own derivation rather than a trivial mirror of this
-   increment's own route.
-6. **Promoting the top-level pins** — the six `d`/`q` pin pairs (`sb`'s
-   `raw_bit`, `sv`'s `raw_valid`, `sr1`-`sr4`'s `ring_bit1`-`ring_bit4`)
-   plus `en1`-`en4`/`vddr1`-`vddr4` (from the placed `ro_array_core`) and
-   `vdd`/`vss` themselves, all real top-level pins of
-   `design/sampler_core.spice`'s own `.subckt sampler_core`.
-7. **Whole-cell `klt lvs` match** against `design/sampler_core.spice`'s real
-   `.subckt sampler_core`. The reference side of that is ready (264 devices,
-   complete — see "The reference-generation gap, closed" below); the layout
-   side now needs the `vdd` half of item 5 plus item 6. Today: **138/264
-   devices, 100/152 nets**, unchanged by this increment (`vss` was already
-   merged for LVS purposes via the substrate; the still-open mismatch is
-   `vdd`'s own two-nets-not-one plus pin promotion, neither touched here).
-8. **Post-layout PVT simulation** of the fully assembled, LVS-clean
+5. ~~**The inter-block supply straps.**~~ **Both routed.** `vss` (PR #112,
+   stages `vss_strap1`-`vss_strap4`); `vdd` (this increment, stages
+   `vdd_strap1`-`vdd_strap3` — see this increment's own section above). The
+   array-side access point for `vdd` did sit much deeper inside the array's
+   own footprint than `vss`'s own edge-adjacent riser, exactly as the
+   previous increment predicted, and did need its own derivation (a met2
+   bridge past a previously-undocumented met1 obstruction) rather than a
+   trivial mirror.
+6. ~~**Promoting the top-level pins**~~ — **turned out not to be required.**
+   The six `d`/`q` pin pairs, `en1`-`en4`/`vddr1`-`vddr4`, and `vdd`/`vss`
+   themselves are exercised as ordinary nets in `klt lvs`'s own flattened
+   comparison (`flatten_layout`/`flatten_reference` both `true`); no
+   `cell.json` `pins[]` declaration was needed for a full match (this
+   increment). This item is corrected, not carried forward.
+7. ~~**Whole-cell `klt lvs` match**~~ — **achieved (this increment): 264/264
+   devices, 152/152 nets, 0 errors**, against `design/sampler_core.spice`'s
+   real `.subckt sampler_core`, reference side unchanged (264 devices,
+   complete — see "The reference-generation gap, closed" below).
+8. **Post-layout PVT simulation** of the fully assembled, DRC/LVS-clean
    `sampler_core` — the whole-chain (raw-tap-to-sampled-bit) claim issue #22
-   was originally filed for, still open. Nothing under `sim/` is added by
-   this increment either, deliberately: the supplies are still two `vdd`
-   nets where the schematic has one, so extracted parasitics would still be
-   of a circuit that is not the schematic.
-9. DR-0003 §8's `wstv` inter-ring decorrelation gap is **unaffected** by any
-   of the above — it is about the entropy source's own inter-ring supply
-   coupling (already re-evaluated at array scope by DR-0005/DR-0006), not
-   the sampler side of the raw tap.
+   was originally filed for, still open. Now unblocked: the supplies are a
+   single `vdd` net and a single `vss` net, matching the schematic, so an
+   extraction of this cell's GDS is finally an extraction of the circuit the
+   schematic actually describes. Deliberately not attempted in this
+   increment.
+9. DR-0003 §8's `wstv` inter-ring decorrelation gap remains **unaffected**
+   by any of the above — it is about the entropy source's own inter-ring
+   supply coupling (already re-evaluated at array scope by
+   DR-0005/DR-0006), not the sampler side of the raw tap. A `sampler_core`
+   post-layout run (item 8) does not change that scope; re-evaluating it
+   would need parasitics of the *assembled array itself* across multiple
+   ring instances, which this cell's own extraction does not add.
 
 Two `2AMLogic/klayout-tools` items were filed by the `place_array` increment
 (no multi-level via drop; a docstring that denies a capability the tool has) —

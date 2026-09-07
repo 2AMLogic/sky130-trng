@@ -235,25 +235,23 @@ DR-0003 surfaces and does not resolve on its own authority.
   (status **Proposed**) it lives in [`digital/`](../digital/README.md), not
   here, and none of it is or will be a `design/*.spice` netlist. `raw_bit`
   and `raw_valid` are the interface between the two directories.
-- **Layout and DRC/LVS.** **Latest (issue #22): the `vss` half of
-  `sampler_core`'s inter-block supply strap is real metal, not just the
-  shared p-substrate.** [`layout/sampler_core/`](../layout/sampler_core/README.md)
-  adds four stages routing `ro_array_core`'s own `vss` — tapped on its east
-  riser at an exact point taken from `layout/ro_array_core/cell.json`'s own
-  `vssbus` stage — down through the `sr2`→`sr3` inter-instance gap, across
-  the shared `vdd` rail's own height on a met2 bridge, to a direct landing
-  on the six-`sampler_dff` bank's own `vss` rail. `klt drc`: clean, 0
-  violations. `klt extract`: 264 devices, **153 nets**, both unchanged —
-  `vss` was already one net via the substrate, so real metal changes how it
-  is realized, not its topology. `klt lvs`: mismatch, unchanged at
-  **138/264 devices, 100/152 nets** (`vss` was already merged for LVS too;
-  the remaining mismatch is `vdd`'s own two-nets-not-one plus top-level pin
-  promotion). A first attempt at the same gap the previous increment's data
-  nets used hit two real, tool-caught obstacles — an unlabelled
-  array-internal met1 bar, and too little room for a via between it and
-  `ro3`'s own channel haul — and moved east instead. The `vdd` strap,
-  top-level pin promotion, whole-cell LVS sign-off and the assembled
-  post-layout PVT run remain open, tracked here and in #27.
+- **Layout and DRC/LVS.** **Latest (issue #22): `sampler_core` is now
+  DRC-clean *and* LVS-clean — the first whole-cell DRC/LVS-clean
+  `sampler_core` assembly in this repo.**
+  [`layout/sampler_core/`](../layout/sampler_core/README.md) adds three
+  stages routing `ro_array_core`'s own `vdd` down to the six-`sampler_dff`
+  bank's own `vdd` rail, closing the second (and last) of the cell's two
+  inter-block supply straps (`vss` was routed by the previous increment).
+  `vdd`'s own path is blocked by a met1 net spanning a whole corridor at one
+  height, so this strap bridges past it on met2 (auto-via at both ends)
+  rather than staying on one layer the way `vss` could. `klt drc`: clean, 0
+  violations. `klt extract`: 264 devices, **152 nets** (down from 153 —
+  `vdd`'s two nets, previously separate, are now genuinely one). `klt lvs`
+  vs. `design/sampler_core.spice`'s own `.subckt sampler_core`: **match —
+  264/264 devices, 152/152 nets, 0 errors**. Top-level pin promotion,
+  previously thought also required for a full match, turned out not to be.
+  The assembled `sampler_core` post-layout PVT run and DR-0003 §8's `wstv`
+  re-evaluation remain open, tracked in #27.
 
 - **A previous increment (issue #22): `sampler_core`'s whole data
   path is routed — all five raw-tap nets (`ro1`-`ro4`, `xo`) reach their own
