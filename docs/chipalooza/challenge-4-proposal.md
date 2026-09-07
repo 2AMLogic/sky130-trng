@@ -411,13 +411,36 @@ that lands this document):
 - **Sampler_dff and whole-block power/area** — DR-0003's own "Follow-up
   required" already names sampler characterization as missing; row D's
   "Unmet/TBD" verdict will not improve until it and the digital section are
-  both measured.
+  both measured. **Partly discharged since this document was written**:
+  `sim/post-layout-sampler-dff/` is the first simulation of `sampler_dff`
+  in this repository, pre- or post-layout — clk→q capture delay
+  103.6–299.0 ps, setup 60–150 ps and a leakage-limited (19.3 pA–293 nA)
+  reset window, all post-layout over the full PVT grid, with the pre-layout
+  netlist as a same-deck control
+  ([`spec/decision-records/DR-0007-*.md`](../../spec/decision-records/DR-0007-sampler-dff-post-layout-and-reset-contention.md)).
+  Still missing for row D: `sampler_core` (six `sampler_dff` instances on
+  one shared clock, no layout at all yet) and therefore whole-block
+  power/area.
 - **Ratify DR-0001, DR-0002, and DR-0003.** Every quantitative row in §4
   ultimately traces to at least one of these three Proposed records; none
   is yet an operator-accepted decision.
-- **Layout and DRC/LVS.** `layout/` now holds fourteen composed **DRC-clean
-  and LVS-clean cells** — which is **every leaf cell `ro_array_core`
-  instantiates**. The newest is `layout/xor2/`, the combining tree's XOR
+- **Layout and DRC/LVS.** *The narrative in this bullet is a snapshot taken
+  when this document was written and is deliberately not rewritten per
+  increment; [`layout/README.md`](../../layout/README.md) and
+  [`sim/README.md`](../../sim/README.md) are the current record.* Landed
+  since: `ro_array_core` itself as a `--check`-reproducible cell recipe
+  (`klt lvs` matching at 132/132 devices, 96/96 nets), the whole-array
+  parasitic extraction and post-layout PVT campaign behind
+  `spec/decision-records/DR-0006-*.md`, the two remaining sampler leaf cells
+  (`layout/sampler_tg/`, `layout/sampler_nand2/`), `layout/sampler_dff/`'s
+  own placement plus supply buses and most of its routing, and the sampler
+  post-layout campaign behind `spec/decision-records/DR-0007-*.md`. The
+  snapshot follows.
+
+  `layout/` held fourteen composed **DRC-clean
+  and LVS-clean cells** at the time of writing — which was **every leaf cell
+  `ro_array_core`
+  instantiates**. The newest then was `layout/xor2/`, the combining tree's XOR
   gate (`xa1`-`xa3`): twelve devices, ten nets, `klt drc` clean (0
   violations) and `klt lvs` **match** against
   `design/ro_array_core.spice`'s own `.subckt xor2` (12/12 devices, 10/10

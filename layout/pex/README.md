@@ -11,6 +11,15 @@ library. It is what
 repo that lets a `sim/` record say anything about *physical* interconnect
 rather than about xschem's schematic export.
 
+**There are now two libraries here, from two descriptors, built by the same
+script.** `pex.json` -> `ro_ring5_pex.spice` is the entropy-source side
+(nine cells, everything a ring or the array instantiates).
+`pex-sampler.json` -> `sampler_dff_pex.spice` is the **sampler** side (three
+cells, everything `design/sampler_core.spice`'s flat 22-device
+`.subckt sampler_dff` reduces to), simulated by
+`sim/post-layout-sampler-dff/`. Everything below applies to both unless it
+names one; see "The sampler library" for what is specific to the second.
+
 ```bash
 volare enable --pdk sky130 c6d73a35f524070e85faff4a6a9eef49553ebc2b
 python3 layout/bin/pex-netlist.py layout/pex/pex.json --check   # verify
@@ -65,6 +74,67 @@ The device count and net count of every cell match its own
 `layout/<cell>/extract.json` exactly -- `--parasitics` adds R/C elements, it
 does not re-recognize devices.
 
+## The sampler library
+
+`pex-sampler.json` -> `sampler_dff_pex.spice` extracts the three leaf shapes
+`layout/sampler_dff/` physically places, which are exactly what
+`design/sampler_core.spice`'s flat 22-device `.subckt sampler_dff` reduces
+to (3 x inverter + 4 x transmission gate + 2 x NAND2 = 22 devices):
+
+| Cell | From | Devices | Nets | Total series R | Total C to substrate | Net-to-net coupling C |
+|---|---|---|---|---|---|---|
+| `sampler_inv_pex` | `layout/ro_buf/` | 2 | 4 | 1261.24 Ω | 2.4937 fF | 0.0 fF |
+| `sampler_tg_pex` | `layout/sampler_tg/` | 2 | 6 | 1262.17 Ω | 2.7292 fF | 0.0 fF |
+| `sampler_nand2_pex` | `layout/sampler_nand2/` | 4 | 6 | 1599.23 Ω | 4.1288 fF | 0.01598 fF |
+
+Produced by `klt 0.3.0+gc6dbf66c53c6` (each report's own
+`provenance.klt_version` reads `0.3.0`) — which is `layout/pdk.json`'s
+`klt_version_pin`, i.e. the build that produced the composed-cell evidence
+under `layout/<cell>/`, unlike the nine cells above (`klt 0.4.0`). Two
+consequences worth recording:
+
+- **The extractor reproduced across that version gap exactly.**
+  `sampler_inv_pex` is the *same GDS* as `ro_buf_pex` above, extracted by a
+  different `klt` build, and its totals agree to every digit the table
+  carries (1261.24 Ω / 2.4937 fF). The install churn
+  `layout/pdk.json`'s comment block documents does not move these numbers.
+- **Which is why the inverter is here under a second name.** The script
+  writes `raw/<name>.pex.spice` and `reports/<name>.extract.json` into this
+  one shared directory, so reusing `ro_buf_pex` would have made this
+  descriptor's run overwrite artifacts `pex.json --check` compares against.
+  Two names, two artifact sets, two libraries each independently
+  `--check`-able:
+
+```bash
+python3 layout/bin/pex-netlist.py layout/pex/pex-sampler.json --check
+```
+
+**A deck includes one library or the other, never both** — they each define
+the inverter's parasitics, under different subcircuit names, from the
+identical GDS.
+
+Both sampler leaves' `ports` come from each cell's own committed
+micro-reference (`layout/sampler_tg/sampler_tg.source.spice`,
+`layout/sampler_nand2/sampler_nand2.source.spice`) rather than from a
+`design/*.spice` subckt line, because `design/xschem/sampler_dff.sch` is
+flat and has no sub-schematic symbol for either shape — the same reason
+those two cells' own `klt lvs` runs reference a micro-reference. The
+micro-references are byte-for-byte reproductions of the design's own device
+lines for one representative instance, so the port order still is the
+design's.
+
+`sim/post-layout-sampler-dff/`'s two decks rebuild `sampler_dff` from these
+three cells with **ideal inter-cell wires**, and both deck headers say so.
+`layout/sampler_dff/`'s own assembly GDS is *not* extracted here: its
+`m`/`mb` data-path nets are still unrouted and its `klt lvs` therefore does
+not match yet (15/22 devices, 7/14 nets as of PR #87's `sampler_nand2`
+pin-swap fix — the deck headers, written before that fix landed, still cite
+[#84](https://github.com/2AMLogic/sky130-trng/issues/84) as a second
+reason), so a flat extraction of it would be an extraction of an
+incomplete circuit. When `m`/`mb` close, the sampler's equivalent of
+`layout/pex-ring/` becomes possible and these numbers become the intra-cell
+control for it.
+
 ## What the parasitic model contains
 
 `klt extract --parasitics` writes its own model description into the head of
@@ -96,7 +166,8 @@ for reading a `sim/post-layout-ro-ring5/` record:
 
 ## What is NOT in here, and why it matters more than what is
 
-**There is no inter-cell interconnect at all.** These are nine *leaf gates*.
+**There is no inter-cell interconnect at all.** These are twelve *leaf
+gates* (nine in `ro_ring5_pex.spice`, three in `sampler_dff_pex.spice`).
 `ro_ring5`'s stage-to-stage wires, `ro_array_core`'s ring-to-buffer and
 buffer-to-XOR wires, and every supply/ground distribution wire between cells
 do not exist as layout yet (`layout/README.md` § "What's deferred", steps 2

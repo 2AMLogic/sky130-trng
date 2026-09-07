@@ -1,0 +1,158 @@
+{
+  "record_id": "20260907-120710-e82623e",
+  "slug": "post-layout-sampler-dff",
+  "claim": "post-layout sampler_dff setup-time bracket: a twelve-rung d-to-clk offset ladder (3200..45 ps) run simultaneously on twelve post-layout and twelve pre-layout sampler_dff instances, bracketing the setup time of each side per corner",
+  "level": "transistor",
+  "seed": "N/A (deterministic PWL-driven transient, no injected noise)",
+  "pvt": {
+    "temp_c": -40.0,
+    "vdd_v": 1.62
+  },
+  "tran": {
+    "tmax": "5p",
+    "noise_amp": "2.0e-3"
+  },
+  "testbench": "sim/post-layout-sampler-dff/testbench/tb_post_layout_sampler_setup.spice",
+  "netlists": {
+    "RO_RING5": {
+      "path": "design/sampler_core.spice",
+      "sha256": "34a9af2714b7cfd71092c9733fb4007a61747b032eadcf5491ae9db811999b71"
+    },
+    "PEX_LIB": {
+      "path": "layout/pex/sampler_dff_pex.spice",
+      "sha256": "ec8578e251db779ad8d89e3a84406db30868c983db837109c7952d8391da6a3e"
+    }
+  },
+  "pdk": {
+    "variant": "sky130A",
+    "installed_commit": "c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+    "pin_commit": "c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+    "matches_pin": true,
+    "lib_file": "/home/ubuntu/.volare/volare/sky130/versions/c6d73a35f524070e85faff4a6a9eef49553ebc2b/sky130A/libs.tech/combined/sky130.lib.spice"
+  },
+  "tools": {
+    "ngspice": "** ngspice-46 : Circuit level simulation program",
+    "python": "3.12.3",
+    "os": "Linux-7.0.0-1010-aws-x86_64-with-glibc2.39"
+  },
+  "repo_state": {
+    "sha": "e82623e",
+    "branch": "feature/issue-22",
+    "dirty": true
+  },
+  "corners": [
+    {
+      "corner": "tt",
+      "ok": true,
+      "returncode": 0,
+      "measurements": {
+        "cap_pex_3200ps": 1.0,
+        "cap_pex_800ps": 1.0,
+        "cap_pex_260ps": 1.0,
+        "cap_pex_215ps": 1.0,
+        "cap_pex_180ps": 1.0,
+        "cap_pex_150ps": 1.0,
+        "cap_pex_125ps": 1.0,
+        "cap_pex_105ps": 3.484831e-09,
+        "cap_pex_88ps": 3.479334e-09,
+        "cap_pex_73ps": 3.484706e-09,
+        "cap_pex_60ps": 3.484522e-09,
+        "cap_pex_45ps": 3.484744e-09,
+        "cap_pre_3200ps": 1.0,
+        "cap_pre_800ps": 1.0,
+        "cap_pre_260ps": 1.0,
+        "cap_pre_215ps": 1.0,
+        "cap_pre_180ps": 1.0,
+        "cap_pre_150ps": 1.0,
+        "cap_pre_125ps": 1.0,
+        "cap_pre_105ps": 1.0,
+        "cap_pre_88ps": 3.724981e-09,
+        "cap_pre_73ps": 3.714217e-09,
+        "cap_pre_60ps": 3.716636e-09,
+        "cap_pre_45ps": 3.717418e-09
+      },
+      "onoise_min": null,
+      "onoise_max": null,
+      "onoise_spread_ratio": null,
+      "problems": [],
+      "log": "corners/tt.log"
+    },
+    {
+      "corner": "ss",
+      "ok": true,
+      "returncode": 0,
+      "measurements": {
+        "cap_pex_3200ps": 1.0,
+        "cap_pex_800ps": 1.0,
+        "cap_pex_260ps": 1.0,
+        "cap_pex_215ps": 1.0,
+        "cap_pex_180ps": 1.0,
+        "cap_pex_150ps": 1.0,
+        "cap_pex_125ps": 3.41873e-09,
+        "cap_pex_105ps": 3.41873e-09,
+        "cap_pex_88ps": 3.41873e-09,
+        "cap_pex_73ps": 3.41873e-09,
+        "cap_pex_60ps": 3.41873e-09,
+        "cap_pex_45ps": 3.41873e-09,
+        "cap_pre_3200ps": 1.0,
+        "cap_pre_800ps": 1.0,
+        "cap_pre_260ps": 1.0,
+        "cap_pre_215ps": 1.0,
+        "cap_pre_180ps": 1.0,
+        "cap_pre_150ps": 1.0,
+        "cap_pre_125ps": 1.0,
+        "cap_pre_105ps": 1.0,
+        "cap_pre_88ps": 3.615301e-09,
+        "cap_pre_73ps": 3.615275e-09,
+        "cap_pre_60ps": 3.61528e-09,
+        "cap_pre_45ps": 3.615281e-09
+      },
+      "onoise_min": null,
+      "onoise_max": null,
+      "onoise_spread_ratio": null,
+      "problems": [],
+      "log": "corners/ss.log"
+    },
+    {
+      "corner": "ff",
+      "ok": true,
+      "returncode": 0,
+      "measurements": {
+        "cap_pex_3200ps": 1.0,
+        "cap_pex_800ps": 1.0,
+        "cap_pex_260ps": 1.0,
+        "cap_pex_215ps": 1.0,
+        "cap_pex_180ps": 1.0,
+        "cap_pex_150ps": 1.0,
+        "cap_pex_125ps": 1.0,
+        "cap_pex_105ps": 1.0,
+        "cap_pex_88ps": 1.911662e-08,
+        "cap_pex_73ps": 1.911664e-08,
+        "cap_pex_60ps": 1.911663e-08,
+        "cap_pex_45ps": 1.911663e-08,
+        "cap_pre_3200ps": 1.0,
+        "cap_pre_800ps": 1.0,
+        "cap_pre_260ps": 1.0,
+        "cap_pre_215ps": 1.0,
+        "cap_pre_180ps": 1.0,
+        "cap_pre_150ps": 1.0,
+        "cap_pre_125ps": 1.0,
+        "cap_pre_105ps": 1.0,
+        "cap_pre_88ps": 1.0,
+        "cap_pre_73ps": 2.063527e-08,
+        "cap_pre_60ps": 2.063525e-08,
+        "cap_pre_45ps": 2.063525e-08
+      },
+      "onoise_min": null,
+      "onoise_max": null,
+      "onoise_spread_ratio": null,
+      "problems": [],
+      "log": "corners/ff.log"
+    }
+  ],
+  "overall": "PASS",
+  "subset_reason": null,
+  "supersedes": "(none)",
+  "author": "ci@loom.test",
+  "timestamp_utc": "2026-09-07T12:10:30.640671+00:00"
+}

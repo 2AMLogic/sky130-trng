@@ -4,7 +4,51 @@ Physical layout evidence for the sky130-trng entropy source, verified with
 `klayout-tools` (`klt`) against the sky130 open PDK. See `layout/pdk.json`
 for the PDK/tool pin.
 
-**Status (issue #84, this increment): the `sampler_nand2` input swap the
+**Status (issue #22, this increment): the sampler is extracted with
+parasitics and simulated — the first `sim/` evidence about `sampler_dff` of
+any kind, pre- or post-layout, and the first post-layout campaign in this
+repo on the far side of the raw tap.** [`layout/pex/pex-sampler.json`](pex/README.md)
+is a second descriptor for the same `layout/bin/pex-netlist.py`, producing
+`layout/pex/sampler_dff_pex.spice` from the three composed leaf cells
+[`layout/sampler_dff/`](sampler_dff/README.md) places
+([`ro_buf`](ro_buf/README.md), [`sampler_tg`](sampler_tg/README.md),
+[`sampler_nand2`](sampler_nand2/README.md) — each already `klt drc` clean at
+0 violations and `klt lvs` matching its own reference), and
+`sim/post-layout-sampler-dff/` runs two decks from it across the same
+four-(temp, Vdd)-point, `tt`/`ss`/`ff` grid every post-layout campaign here
+uses (24 corner runs, 8 records, all `PASS`). Headline: intra-cell
+parasitics cost **1.314x - 1.418x** in clk→q capture delay — *inside*
+DR-0005's own 1.378x - 1.479x intra-cell ring finding, two independent
+measurements of the same quantity agreeing; the setup-time window is
+**60 - 150 ps** post-layout — and, compared *per corner* against DR-0003
+§1's own `w_90` table rather than against a single range bottom, it is below
+that corner's own `w_90` at each of the nine (temp, Vdd, corner) points
+where both quantities are measured, including (60, 73] ps against 122.0 ps
+at `ff`/−40 °C/1.98 V, the corner where `N_max_combine` binds
+(`sim/xor-combining-bandwidth/` has no 125 °C point, so this campaign's
+three 125 °C/1.98 V points are outside that comparison), so the digitizer is
+**not** the block's bandwidth bottleneck; and the reset window carries **no
+contention current at all**
+(19.3 pA - 293 nA, at or below the same cell's idle current at every grid
+point, and identical pre- and post-layout to 3-5 significant figures) —
+which is `spec/porting-plan.md`'s DR-0014 **methodology** transfer, run on
+this repo's own drawn storage-loop topology instead of inherited from
+gf180mcu's numbers. See
+[`spec/decision-records/DR-0007-*.md`](../spec/decision-records/DR-0007-sampler-dff-post-layout-and-reset-contention.md)
+and `sim/README.md`'s "Sampler post-layout" section for every number and for
+what is and is not claimed (in particular: the brute-force pull-device reset
+alternative was **not** simulated, so no reduction ratio against it is
+quoted, and per DR-0011 nothing here is a metastability claim).
+**Deliberately not attempted**: extracting `layout/sampler_dff/`'s own
+assembly GDS flat — its `m`/`mb` data-path nets are still unrouted, so its
+`klt lvs` still does not match (15/22 devices, 7/14 nets as of the #84 fix
+below) and that extraction would be of an incomplete circuit. So this is
+intra-cell parasitics plus **ideal** inter-cell wires, the same scope
+[`layout/pex/`](pex/README.md) has for the ring and one level below
+[`layout/pex-ring/`](pex-ring/README.md) — a floor on the real cost, and
+both deck headers say so.
+
+**A previous increment (issue #84): the `sampler_nand2` input swap the
 `qb` increment below found is fixed — `rst_n` now wires to both instances'
 `en` pins and the data nets (`m`/`q`) to their `a` pins, `klt drc` stays
 clean (0 violations, cell bbox unchanged at `-2.19 .. 50.47` ×
