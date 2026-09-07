@@ -828,6 +828,46 @@ bundling `tt`/`ss`/`ff`. `20260907-1203..1206` are the capture-timing deck,
 `20260907-1207..1220` the setup ladder. Nothing in this slug supersedes
 anything — it is the first campaign of its kind here.
 
+### `PEX_LIB` provenance re-stamp (issue #94)
+
+All eight records above name `layout/pex/sampler_dff_pex.spice` in their
+`netlists.PEX_LIB` block with sha256 `ec8578e2…`. **That file has since been
+regenerated and now hashes `7efc1003…`.** The records are append-only
+evidence and were *not* edited; this note is the re-stamp explanation the
+change owes them, following the same convention § "`PEX_LIB` provenance
+re-stamp (issue #93)" above established for `ro_ring5_pex.spice`.
+
+Why it changed, and why it is provenance-only:
+
+- `layout/bin/pex-netlist.py`'s generated library header hardcoded the
+  literal string `layout/pex/pex.json` — the *entropy-source* descriptor —
+  regardless of which descriptor actually built the library. Since issue
+  #92 added a second descriptor (`pex-sampler.json` → this file), the
+  header both misnamed the file it was generated from and quoted a
+  `--check` command that verifies the *other* library. Issue #94 threads
+  the invoking descriptor's own path through `build_library()` /
+  `check_library()` so the header names itself correctly.
+- **The entire diff is those two header lines.** `git diff` on the
+  regenerated file shows exactly two changed lines — `from
+  layout/pex/pex.json` → `from layout/pex/pex-sampler.json`, and the
+  `--check` command line to match — nothing else in the library body
+  differs: same `klt` build (`0.3.0+gc6dbf66c53c6`, the
+  `layout/pdk.json` pin, used for both the old and new extraction here),
+  same devices, same nets, same R/C values, same connectivity.
+- `layout/pex/ro_ring5_pex.spice` (the `pex.json` library) is **not**
+  affected by this change and keeps its issue-#93 re-stamp hash
+  (`53ec4e3c78f3…`) unchanged: its own descriptor path already *is*
+  `layout/pex/pex.json`, so threading the real descriptor through produces
+  byte-identical header text for that file. `python3
+  layout/bin/pex-netlist.py layout/pex/pex.json --check` continues to exit
+  0 with no regeneration needed — the regression guard issue #94's
+  acceptance criteria asked for.
+
+So nothing in `sim/post-layout-sampler-dff/` is superseded: the numbers
+stand, and re-running any of those eight records today would reproduce them
+from the new library. Only the recorded input hash is stale, deliberately,
+and this is where that is written down.
+
 ## Writing a new record
 
 1. Author a deck template under `sim/<slug>/testbench/`, using the `@@...@@`
