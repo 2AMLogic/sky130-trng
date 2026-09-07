@@ -707,7 +707,7 @@ conclusion:
    NMOS stacks are cut off, so a leakage path that is present at idle is not
    present during reset.
 3. **It is the same number pre-layout and post-layout**, to between 5
-   significant figures (+8.5e−06) and 3 (+1.8e−03), across the whole grid.
+   significant figures (+5.0e−06) and 3 (+1.8e−03), across the whole grid.
    Parasitic R and C can only change *dynamic* current; a reset window whose
    current is invariant to them is carrying no switching current to change.
 
@@ -760,10 +760,21 @@ offsets.
   rather than an interpolated number.
 - **The digitizer is not the block's bandwidth bottleneck.** The combining
   gate's own minimum resolvable pulse width `w_90` is 122 - 241 ps
-  (`sim/xor-combining-bandwidth/`, the figure DR-0003 §1 uses to bound `N`);
-  the sampler's post-layout setup window is at or below the *bottom* of that
-  range at every grid point. A pulse narrow enough to trouble the sampler
-  has already been swallowed by the XOR tree.
+  (`sim/xor-combining-bandwidth/`, the figure DR-0003 §1 uses to bound `N`),
+  and the comparison that bears on `N_max_combine` is per corner, against
+  that corner's own `w_90` rather than against the bottom of the range.
+  `xor-combining-bandwidth/` covers −40 °C/1.62 V, 27 °C/1.80 V and
+  −40 °C/1.98 V, so nine of this campaign's twelve grid points have a `w_90`
+  to compare against (the three 125 °C/1.98 V points have none, and are
+  outside the comparison). At **all nine** of those points the post-layout
+  setup bracket lies entirely below that corner's own `w_90` from
+  DR-0003 §1's table — (105, 125] vs 190.9, (125, 150] vs 241.3, (88, 105]
+  vs 166.0 ps at −40 °C/1.62 V `tt`/`ss`/`ff`; (73, 88] vs 163.4, (88, 105]
+  vs 186.3, (73, 88] vs 133.2 ps at 27 °C/1.80 V; (73, 88] vs 134.0,
+  (88, 105] vs 163.9, (60, 73] vs 122.0 ps at −40 °C/1.98 V — the last of
+  those being `ff` / −40 °C / 1.98 V, the corner where `N_max_combine`
+  binds. A pulse narrow enough to trouble the sampler has already been
+  swallowed by the XOR tree.
 - An earlier, purely geometric factor-of-two version of this ladder
   (3200…25 ps, 8 rungs) is *not* committed: it bracketed correctly but put
   both sides in the same rung at all three corners it was scouted at, i.e.

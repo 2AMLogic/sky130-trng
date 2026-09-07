@@ -129,7 +129,7 @@ readings say that is leakage and nothing else:
   the NAND2s' series NMOS stacks are cut off, so a leakage path present at
   idle is absent during reset.
 - It is **the same number pre-layout and post-layout**, agreeing to between
-  5 significant figures (+8.5e−06) and 3 (+1.8e−03) across the whole grid.
+  5 significant figures (+5.0e−06) and 3 (+1.8e−03) across the whole grid.
   Parasitic R and C can only change *dynamic* current; a window whose
   current is invariant to them is carrying no switching current to change.
 
@@ -166,8 +166,29 @@ surprising: both are gated by the same slow devices.
 
 **Compared against the combining gate**, whose minimum resolvable pulse
 width `w_90` is 122 - 241 ps (`sim/xor-combining-bandwidth/`, the figure
-DR-0003 §1 uses to bound `N`), the sampler's post-layout setup window is at
-or below the *bottom* of that range at every grid point. A pulse narrow
+DR-0003 §1 uses to bound `N`), the comparison that bears on `N_max_combine`
+is *per corner*, against that corner's own `w_90` — not against the bottom
+of the range. `sim/xor-combining-bandwidth/` covers −40 °C/1.62 V,
+27 °C/1.80 V and −40 °C/1.98 V, so nine of this campaign's twelve grid
+points have a `w_90` to be compared against; the three 125 °C/1.98 V points
+do not, and are outside this comparison:
+
+| PVT / corner | setup, post-layout | `w_90` (DR-0003 §1) |
+|---|---|---|
+| −40 °C / 1.62 V `tt` | (105, 125] ps | 190.9 ps |
+| −40 °C / 1.62 V `ss` | (125, 150] ps | 241.3 ps |
+| −40 °C / 1.62 V `ff` | (88, 105] ps | 166.0 ps |
+| 27 °C / 1.80 V `tt` | (73, 88] ps | 163.4 ps |
+| 27 °C / 1.80 V `ss` | (88, 105] ps | 186.3 ps |
+| 27 °C / 1.80 V `ff` | (73, 88] ps | 133.2 ps |
+| −40 °C / 1.98 V `tt` | (73, 88] ps | 134.0 ps |
+| −40 °C / 1.98 V `ss` | (88, 105] ps | 163.9 ps |
+| −40 °C / 1.98 V `ff` (`N_max_combine` binds) | (60, 73] ps | 122.0 ps |
+| 125 °C / 1.98 V (×3) | (73, 88] / (73, 88] / (60, 73] ps | not measured |
+
+At **all nine** overlapping points the setup bracket lies entirely below
+that corner's own `w_90` — including (60, 73] ps against 122.0 ps at `ff` /
+−40 °C / 1.98 V, the corner where `N_max_combine` binds. A pulse narrow
 enough to trouble the sampler has already been swallowed by the XOR tree.
 **DR-0003 §1's `N_max_combine` bound therefore stands unchanged**: the
 digitizer does not add a tighter one.

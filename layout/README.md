@@ -20,9 +20,15 @@ uses (24 corner runs, 8 records, all `PASS`). Headline: intra-cell
 parasitics cost **1.314x - 1.418x** in clk→q capture delay — *inside*
 DR-0005's own 1.378x - 1.479x intra-cell ring finding, two independent
 measurements of the same quantity agreeing; the setup-time window is
-**60 - 150 ps** post-layout, at or below the bottom of the combining gate's
-own 122 - 241 ps `w_90`, so the digitizer is **not** the block's bandwidth
-bottleneck; and the reset window carries **no contention current at all**
+**60 - 150 ps** post-layout — and, compared *per corner* against DR-0003
+§1's own `w_90` table rather than against a single range bottom, it is below
+that corner's own `w_90` at each of the nine (temp, Vdd, corner) points
+where both quantities are measured, including (60, 73] ps against 122.0 ps
+at `ff`/−40 °C/1.98 V, the corner where `N_max_combine` binds
+(`sim/xor-combining-bandwidth/` has no 125 °C point, so this campaign's
+three 125 °C/1.98 V points are outside that comparison), so the digitizer is
+**not** the block's bandwidth bottleneck; and the reset window carries **no
+contention current at all**
 (19.3 pA - 293 nA, at or below the same cell's idle current at every grid
 point, and identical pre- and post-layout to 3-5 significant figures) —
 which is `spec/porting-plan.md`'s DR-0014 **methodology** transfer, run on
