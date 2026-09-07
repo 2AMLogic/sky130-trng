@@ -5,7 +5,7 @@
   "top": "sampler_dff",
   "dbu_um": 0.001,
   "netlist_path": "sampler_dff.spice",
-  "netlist_sha256": "6d967f813eaf497614415f1fd7a225060a897a649bf478d2ac07a19c4cac5495",
+  "netlist_sha256": "0f064bcbb371668ca6e8c6021ebf516bbaa26e6b1c8a114ad9607977da52a268",
   "status": "extracted",
   "device_count": 22,
   "net_count": 18,
@@ -104,7 +104,7 @@
       "nets": {
         "s": "b|tg_d_b",
         "g": "a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via",
-        "d": "a|tg_d_a",
+        "d": "a|d|tg_d_a",
         "b": "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
       },
       "params": {
@@ -230,7 +230,7 @@
       "nets": {
         "s": "b|tg_d_b",
         "g": "clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y",
-        "d": "a|tg_d_a",
+        "d": "a|d|tg_d_a",
         "b": "inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss"
       },
       "params": {
@@ -589,11 +589,35 @@
       ]
     },
     {
+      "name": "a|d|tg_d_a",
+      "pin": true,
+      "device_count": 2,
+      "net_id": 5,
+      "pin_index": 2,
+      "label_positions_um": [
+        {
+          "text": "a",
+          "x_um": 6.665,
+          "y_um": 1.87
+        },
+        {
+          "text": "d",
+          "x_um": 6.665,
+          "y_um": 1.2
+        },
+        {
+          "text": "tg_d_a",
+          "x_um": 6.665,
+          "y_um": 1.2
+        }
+      ]
+    },
+    {
       "name": "a|inv_mc_a",
       "pin": true,
       "device_count": 2,
       "net_id": 14,
-      "pin_index": 2,
+      "pin_index": 3,
       "label_positions_um": [
         {
           "text": "a",
@@ -612,7 +636,7 @@
       "pin": true,
       "device_count": 4,
       "net_id": 15,
-      "pin_index": 3,
+      "pin_index": 4,
       "label_positions_um": [
         {
           "text": "a",
@@ -656,7 +680,7 @@
       "pin": true,
       "device_count": 5,
       "net_id": 2,
-      "pin_index": 4,
+      "pin_index": 5,
       "label_positions_um": [
         {
           "text": "a",
@@ -710,7 +734,7 @@
       "pin": true,
       "device_count": 4,
       "net_id": 13,
-      "pin_index": 5,
+      "pin_index": 6,
       "label_positions_um": [
         {
           "text": "a",
@@ -766,25 +790,6 @@
           "text": "rst_n",
           "x_um": 29.45,
           "y_um": 2.71
-        }
-      ]
-    },
-    {
-      "name": "a|tg_d_a",
-      "pin": true,
-      "device_count": 2,
-      "net_id": 5,
-      "pin_index": 6,
-      "label_positions_um": [
-        {
-          "text": "a",
-          "x_um": 6.665,
-          "y_um": 1.87
-        },
-        {
-          "text": "tg_d_a",
-          "x_um": 6.665,
-          "y_um": 1.2
         }
       ]
     },
@@ -1373,11 +1378,11 @@
   "warnings": [
     "net 'a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via' merges 9 distinct labels (a, b, inv_q_a, inv_q_a_via, s, tg_fbs_b, tg_fbs_b_via, tg_s_b, tg_s_b_via) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
     "net 'a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via' merges 14 distinct labels (a, clk, ctrl, ctrlb, inv_clk_a, inv_clk_clk_via, tg_d_ctrl, tg_d_ctrl_via, tg_fbm_ctrlb, tg_fbm_ctrlb_via, tg_fbs_ctrl, tg_fbs_ctrl_via, tg_s_ctrlb, tg_s_ctrlb_via) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "net 'a|d|tg_d_a' merges 3 distinct labels (a, d, tg_d_a) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
     "net 'a|inv_mc_a' merges 2 distinct labels (a, inv_mc_a) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
     "net 'a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y' merges 7 distinct labels (a, inv_mc_y, inv_mc_y_via, mc, tg_fbm_a, tg_fbm_a_via, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
     "net 'a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y' merges 8 distinct labels (a, mnab_y, mpa_y, mpb_y, nand_s2_y, qb, tg_fbs_a, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
     "net 'a|nand_m_a|nand_m_a_stub|nand_m_a_via|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|rst_n' merges 8 distinct labels (a, nand_m_a, nand_m_a_stub, nand_m_a_via, nand_s2_a, nand_s2_a_stub, nand_s2_a_via, rst_n) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
-    "net 'a|tg_d_a' merges 2 distinct labels (a, tg_d_a) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
     "net 'a|tg_s_a' merges 2 distinct labels (a, tg_s_a) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
     "net 'b|tg_d_b' merges 2 distinct labels (b, tg_d_b) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
     "net 'b|tg_fbm_b' merges 2 distinct labels (b, tg_fbm_b) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
@@ -1426,6 +1431,14 @@
       ]
     },
     {
+      "net": "a|d|tg_d_a",
+      "labels": [
+        "a",
+        "d",
+        "tg_d_a"
+      ]
+    },
+    {
       "net": "a|inv_mc_a",
       "labels": [
         "a",
@@ -1468,13 +1481,6 @@
         "nand_s2_a_stub",
         "nand_s2_a_via",
         "rst_n"
-      ]
-    },
-    {
-      "net": "a|tg_d_a",
-      "labels": [
-        "a",
-        "tg_d_a"
       ]
     },
     {
@@ -1593,7 +1599,7 @@
       "released": true
     },
     "input": {
-      "content_hash": "sha256:23eeb4353053338d1cd9ec027626cd07ce458658ec185fea84488b11afb8688e"
+      "content_hash": "sha256:4737b52c82fd87c11ac0eb9563db55a01713c058645eb7763d4efc3ec90a7395"
     }
   },
   "parasitics": null,

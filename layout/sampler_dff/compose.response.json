@@ -15,7 +15,22 @@
     "x1": 50.47,
     "y1": 7.085
   },
-  "ports": [],
+  "ports": [
+    {
+      "name": "d",
+      "net": "d",
+      "layer": {
+        "layer": 67,
+        "datatype": 20
+      },
+      "x_um": 6.665,
+      "y_um": 1.2,
+      "width_um": 0.17,
+      "direction_deg": 0,
+      "block": "core",
+      "port": "tg_d_a"
+    }
+  ],
   "blocks": [
     {
       "id": "core",
@@ -89,7 +104,14 @@
       ]
     }
   ],
-  "pins": [],
+  "pins": [
+    {
+      "net": "d",
+      "block": "core",
+      "port": "tg_d_a",
+      "labelled": true
+    }
+  ],
   "unrouted_nets": [],
   "drc_hints": {
     "min_spacing_um": null,

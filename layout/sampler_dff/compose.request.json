@@ -39,6 +39,17 @@
             },
             "width_um": 0.17,
             "direction_deg": 180
+          },
+          {
+            "name": "tg_d_a",
+            "x_um": 6.665,
+            "y_um": 1.2,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 0
           }
         ],
         "cell_name": "s_met1",
@@ -115,7 +126,13 @@
       ]
     }
   ],
-  "pins": [],
+  "pins": [
+    {
+      "net": "d",
+      "block": "core",
+      "port": "tg_d_a"
+    }
+  ],
   "options": {
     "cell_name": "sampler_dff",
     "output": "sampler_dff.gds"

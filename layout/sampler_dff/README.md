@@ -1,6 +1,48 @@
 # layout/sampler_dff
 
-**`sampler_dff` assembly, continued: the fourth of the six data-path nets,
+**`sampler_dff` assembly, continued: the cell's `d` input pin is promoted
+to a real, labelled top-level port for the first time (issue #22).** Of
+the whole-cell external pins `design/sampler_core.spice`'s
+`.subckt sampler_dff d clk rst_n q vdd vss` declares, five (`clk`, `rst_n`,
+`q`, `vdd`, `vss`) already carry a genuine, identically-spelled net-name
+label — each was drawn as a side effect of its own routing increment (the
+`clk_bus`/`rst_n_bus`/`q_bus`/`route_supplies` stages each name their own
+connectivity net after the pin it fans out from). `d` never got that
+treatment: `tg_d.a` is `d`'s *only* connection (`design/sampler_core.spice`'s
+`TG_D` pass gate is the sole device `d` touches), so no fan-out or bus ever
+ran across it, and `klt extract` named it only `a|tg_d_a` — the leaf's own
+generic `a` label plus the `place` stage's internal composition alias, with
+no `d` anywhere. Fixed with `gen-compose`'s `pins[]` mechanism (issue #210):
+a `{"net": "d", "block": "core", "port": "tg_d_a"}` entry in the final
+stage's own `pins[]` list draws a `kdb.Text` label reading `d` on that
+port's own already-drawn geometry — no routing, no new metal, cell bbox
+unchanged. **`klt drc` clean, 0 violations; `klt extract` confirms the
+node now reads `a|d|tg_d_a`.** `klt lvs`'s mismatch count is unchanged
+(12/22 devices, 5/14 nets, 16 mismatches) — expected, since this increment
+draws a label, not a wire, and the two still-unrouted data-path nets
+(`m`/`mb`) plus the open `sampler_nand2` pin swap
+([#84](https://github.com/2AMLogic/sky130-trng/issues/84)) are what block
+a clean sign-off, not a missing `d` label. See "Result: `d` pin promotion"
+below.
+
+An LVS-side idea explored and **abandoned** for this increment:
+`klt extract --pins <comma-list>` (`declared_pins`, issue #514) demotes
+every labelled net *not* named in the list back to an internal node,
+which looked like a way to narrow the extracted netlist's own top-level
+pin set down to exactly `sampler_dff`'s six real ports. Tried against this
+cell's own already-labelled `clk`/`rst_n`/`q`/`vdd`/`vss` nets and found to
+do nothing useful here: `declared_pins` matches a net's *whole*,
+already-comma-joined SPICE name verbatim (e.g.
+`a|clk|ctrl|ctrlb|inv_clk_a|...`, not the bare substring `clk`), so passing
+the six bare port names matched nothing at all and demoted every net's pin
+status to zero (`pins: {"layout": 0, ...}` in a scratch run) with the
+`klt lvs` mismatch count **completely unchanged** (still 16) either way —
+the comparer's topology match does not appear to gate on promoted-pin
+status for this flat, subckt-call form. Not pursued further and not
+committed: `layout/bin/compose-cell.py` carries no new code for it. Left
+here so a later increment does not re-derive the same dead end.
+
+**A previous increment (issue #22): the fourth of the six data-path nets,
 `s`, is routed — DRC-clean, the cell's first three-pin data-path net, and
 the only one of the three that were still open (`m`, `mb`, `s`) that
 touches neither `sampler_nand2` instance and is therefore untouched by the
@@ -273,7 +315,34 @@ for no benefit. `y = 1.03` is chosen for that reason, not for a DRC one.
 No `2AMLogic/klayout-tools` friction was filed either way: nothing about
 this is a tool gap.
 
-## Result: `s` fan-out (this increment)
+## Result: `d` pin promotion (this increment)
+
+| Stage | Verdict | Evidence |
+|---|---|---|
+| `klt gen-compose` (final stage, `pins[]` entry `{"net": "d", "block": "core", "port": "tg_d_a"}`) | no routing, no new geometry -- a `kdb.Text` label reading `d` drawn on `tg_d.a`'s own already-drawn li1 pad (`x=6.665, y=1.2`, the exact global coordinate the `place` stage's own response already reported for this port); response echoes `"pins": [{"net": "d", "block": "core", "port": "tg_d_a", "labelled": true}]` | `compose.request.json`, `compose.response.json` |
+| `klt drc --deck sky130` (whole `sampler_dff.gds`) | **clean, 0 violations** -- expected: a label carries no drawn polygon | `drc.json` |
+| `klt extract --deck sky130` | **22 devices (11 nfet, 11 pfet)**, unchanged; `net_count` unchanged at **18** (a label does not create or merge a net, only renames one); the previously `a|tg_d_a`-named node (`TG_D.a`, `design/sampler_core.spice`'s sole `d`-touching device) now reads **`a|d|tg_d_a`** | `extract.json`, `sampler_dff.spice` |
+| `klt lvs` vs. `design/sampler_core.spice`'s own `.subckt sampler_dff` | **mismatch, unchanged from the `s` increment** -- 12/22 devices, 5/14 nets matched, 16 mismatches. Expected: this increment names a pin, it does not wire `m`/`mb` or fix the `sampler_nand2` swap ([#84](https://github.com/2AMLogic/sky130-trng/issues/84)), which is what the remaining mismatches trace to | `lvs.json` |
+
+Cell extent unchanged (`-2.19 .. 50.47 x -3.585 .. 7.085` µm). This
+increment's own diff against the pre-`d` GDS is a single new `kdb.Text`
+object at `(6.665, 1.2)` on the li1 pin-purpose layer -- no polygon, no
+via, no metal of any width or layer.
+
+**Why the other five pins needed nothing.** `clk`, `rst_n`, `q`, `vdd` and
+`vss` each already carry a literal, correctly-spelled net-name label,
+because each already has a routed `connectivity[]` net of that exact name
+from its own increment (`clk_bus`, `rst_n_bus`, `q_bus`,
+`route_supplies` x2). A routed net's own name is drawn as a label
+wherever `gen-compose` lands it, the same "net label" mechanism
+`layout/README.md`'s "Scouting `--parasitics`" section already documented
+for `ro_stage`'s `mph_g`/`vss` pair. `d` is the one exception because it
+is never *routed* at all -- `tg_d.a` is the net's only connection, so no
+stage ever draws a multi-pin net there, and the `place` stage's own
+internal composition alias (`tg_d_a`) is the only name anything gave it
+before this increment.
+
+## Result: `s` fan-out (previous increment)
 
 | Stage | Verdict | Evidence |
 |---|---|---|
@@ -893,9 +962,8 @@ instance's own internal `metal2` wiring occupies (the tallest leaf,
   four "Result:" sections above): `m` (`TG_D.b` <-> `NAND_M.en` <->
   `TG_FBM.b` — per "Deriving which `sampler_tg` pin carries which data
   net" above, `TG_D`'s and `TG_FBM`'s *`b`* pins, not `a`) and `mb`
-  (`NAND_M.y` <-> `inv_mc.a` <-> `TG_S.a`). `q` also still needs the cell's
-  own output pin promoted once top-level pin promotion happens (see below).
-  Both remaining nets touch `NAND_M`, so **both are downstream of the
+  (`NAND_M.y` <-> `inv_mc.a` <-> `TG_S.a`). Both remaining nets touch
+  `NAND_M`, so **both are downstream of the
   [#84](https://github.com/2AMLogic/sky130-trng/issues/84) pin swap** —
   that is why `s`, the one three-pin data-path net that touches neither
   `sampler_nand2` instance, was taken first. `m` is a three-pin fan-out
@@ -917,13 +985,20 @@ instance's own internal `metal2` wiring occupies (the tallest leaf,
   wired to both instances' `a` pins and the data inputs to their `en` pins;
   `design/sampler_core.spice` requires the opposite. Verified LVS-blocking —
   see "The `sampler_nand2` input swap the `qb` increment found" above
-  (unchanged by the `s` increment, which touches neither `sampler_nand2`
-  instance). This gates the whole-cell `klt lvs`
-  sign-off below and should land before, or together with, `m`/`mb`.
-- **Promoting the whole-cell external pins** (`d`, `clk`, `rst_n`, `q`,
-  `vdd`, `vss`) once the above wiring exists, and the resulting
+  (unchanged by the `s` and `d`-pin-promotion increments, neither of which
+  touches either `sampler_nand2` instance). This gates the whole-cell
+  `klt lvs` sign-off below and should land before, or together with,
+  `m`/`mb`.
+- **Whole-cell external pin promotion is done** (`d`, `clk`, `rst_n`, `q`,
+  `vdd`, `vss` — the `d` increment above closed the one gap; the other
+  five each already carried a correctly-spelled label from their own
+  routing increment). This does **not** by itself change the `klt lvs`
+  verdict — a scratch experiment with `klt extract --pins` (see the `d`
+  increment's "LVS-side idea explored and abandoned" note above) found the
+  comparer's topology match is insensitive to promoted-pin status for this
+  cell's flat, subckt-call comparison form. What still blocks a clean
   `klt lvs` sign-off against `design/sampler_core.spice`'s real `.subckt
-  sampler_dff` — the authoritative check for this cell, not yet attempted.
+  sampler_dff` is `m`/`mb` and the `#84` pin swap above, not pin naming.
 - **`sampler_core`**'s own six-instance wiring, and the whole-chain
   (raw-tap-to-sampled-bit) post-layout PVT campaign, both still fully
   open behind the above.
