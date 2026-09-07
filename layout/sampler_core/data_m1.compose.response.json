@@ -8,6 +8,7 @@
     "variant": "sky130A",
     "version": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b"
   },
+  "dbu_um": 0.001,
   "bbox_um": {
     "x0": -2.19,
     "y0": -3.585,
@@ -163,6 +164,39 @@
           ],
           "routed": true,
           "route_length_um": 18.634999999999998,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "net": "vdd",
+      "pins": [
+        {
+          "block": "core",
+          "port": "sv_d"
+        },
+        {
+          "block": "core",
+          "port": "sv_d_vdd"
+        }
+      ],
+      "routed": true,
+      "route_length_um": 5.8,
+      "status": "routed",
+      "legs": [
+        {
+          "pins": [
+            {
+              "block": "core",
+              "port": "sv_d"
+            },
+            {
+              "block": "core",
+              "port": "sv_d_vdd"
+            }
+          ],
+          "routed": true,
+          "route_length_um": 5.8,
           "reason": null
         }
       ]

@@ -94,6 +94,28 @@
             },
             "width_um": 0.17,
             "direction_deg": 270
+          },
+          {
+            "name": "sv_d",
+            "x_um": 62.325,
+            "y_um": 1.2,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 90
+          },
+          {
+            "name": "sv_d_vdd",
+            "x_um": 62.325,
+            "y_um": 7.0,
+            "layer": {
+              "layer": 68,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 90
           }
         ],
         "cell_name": "place_array",
@@ -167,6 +189,19 @@
         {
           "block": "core",
           "port": "ro4_esc_m1"
+        }
+      ]
+    },
+    {
+      "net": "vdd",
+      "pins": [
+        {
+          "block": "core",
+          "port": "sv_d"
+        },
+        {
+          "block": "core",
+          "port": "sv_d_vdd"
         }
       ]
     }

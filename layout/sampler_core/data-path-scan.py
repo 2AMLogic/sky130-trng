@@ -111,6 +111,32 @@ ESCAPE_SCAN_FLOOR_UM = -4.0
 #: The two taps this increment actually used (array-local x).
 CHOSEN_TAPS = {"ro1": -0.5, "ro4": 215.4}
 
+#: sv's own d column (composed frame): origin_x + D_LOCAL_X_UM, tied directly
+#: to the shared vdd bus at y=7.0 rather than hauled to the array.
+SV_D_X_UM = round(INSTANCES["sv"] + D_LOCAL_X_UM, 4)
+SV_VDD_Y_UM = 7.0
+
+#: Measured via geometry (klayout.db, this directory's own composed GDS):
+#: klt's mcon/via1 landing pad is 0.22 um square (half-width 0.11 um), and
+#: this repo's own met1/met2 minimum spacing (used throughout
+#: CLEAR_HALF_WIDTH_UM above) is 0.14 um. A via therefore needs a window at
+#: least VIA_SIDE_UM + 2 * MIN_SPACE_UM wide, clear on BOTH layers
+#: simultaneously, to land without violating spacing to whatever foreign
+#: metal borders the gap on either side -- not just a single point where
+#: both layers happen to be clear, which is a much weaker (and, it turns
+#: out, misleading) test.
+VIA_SIDE_UM = 0.22
+MIN_SPACE_UM = 0.14
+MIN_VIA_WINDOW_UM = VIA_SIDE_UM + 2 * MIN_SPACE_UM
+
+#: The still-unrouted nets, and the array-local x range to scan for a
+#: layer-alternating (met1/met2 via-hop) south escape -- the same run
+#: spans Group B already measured.
+RUNG_CANDIDATES = {
+    "ro2": RO_RUNS["ro2"],
+    "ro3": RO_RUNS["ro3"],
+}
+
 
 def merged(layout: db.Layout, cell: db.Cell, key: tuple[int, int]) -> db.Region:
     """Every shape on ``key``, flattened out of the hierarchy and merged."""
@@ -233,6 +259,113 @@ def scan_array_escapes() -> dict:
     return out
 
 
+def _occupied_intervals(region: db.Region, dbu: float, x: float, y0: float, y1: float) -> list:
+    return occupied(region, dbu, x, y0, y1)
+
+
+def _clear_intervals(occ: list, y0: float, y1: float) -> list:
+    """Complement of ``occ`` (a sorted, merged interval list) within [y0, y1]."""
+    out: list[list[float]] = []
+    cur = y0
+    for lo, hi in occ:
+        if lo > cur:
+            out.append([cur, lo])
+        cur = max(cur, hi)
+    if cur < y1:
+        out.append([cur, y1])
+    return out
+
+
+def _via_hop_reaches(
+    met1: db.Region,
+    met2: db.Region,
+    dbu: float,
+    x: float,
+    y_top: float,
+    y_bottom: float,
+) -> bool:
+    """Can a route starting just below the net's own met1 run at ``x`` reach
+    ``y_bottom`` by alternating met1/met2, switching layers only through a
+    window at least ``MIN_VIA_WINDOW_UM`` wide where BOTH layers are clear
+    simultaneously (the physical requirement a via actually has, not just a
+    single point of overlap)? Explores every reachable (layer, clear
+    interval) pair; returns whether any of them extends to ``y_bottom``.
+    """
+    occ1 = _occupied_intervals(met1, dbu, x, y_bottom - 0.5, y_top + 0.5)
+    occ2 = _occupied_intervals(met2, dbu, x, y_bottom - 0.5, y_top + 0.5)
+    clear1 = _clear_intervals(occ1, y_bottom - 0.5, y_top + 0.5)
+    clear2 = _clear_intervals(occ2, y_bottom - 0.5, y_top + 0.5)
+
+    def find(intervals: list, y: float):
+        for lo, hi in intervals:
+            if lo - 1e-9 <= y <= hi + 1e-9:
+                return (lo, hi)
+        return None
+
+    start = find(clear1, y_top)
+    if start is None:
+        return False
+    seen: set = set()
+    frontier = [("met1", start)]
+    while frontier:
+        layer, interval = frontier.pop()
+        key = (layer, interval)
+        if key in seen:
+            continue
+        seen.add(key)
+        lo, hi = interval
+        if lo <= y_bottom:
+            return True
+        other = clear2 if layer == "met1" else clear1
+        for olo, ohi in other:
+            ov_lo, ov_hi = max(lo, olo), min(hi, ohi)
+            if ov_hi - ov_lo >= MIN_VIA_WINDOW_UM:
+                frontier.append(("met2" if layer == "met1" else "met1", (olo, ohi)))
+    return False
+
+
+def scan_rung_feasibility() -> dict:
+    """Group E -- is a met1/met2 via-hop ("rung") south escape geometrically
+    possible for ro2/ro3 anywhere over their own drawn run, once a via's
+    REAL clearance requirement is modelled (not just a point where both
+    layers happen to be simultaneously clear -- see ``MIN_VIA_WINDOW_UM``)?
+
+    This is the harder, more realistic version of Group B's single-layer
+    scan: it allows unlimited met1<->met2 layer changes, and still finds
+    none, over EVERY 0.05 um column of each net's own run. That distinction
+    matters because a naive point-overlap check (ignoring the via's own
+    0.22 um footprint) reports the opposite answer -- there ARE points
+    where met1 and met2 are simultaneously clear near ro2's/ro3's own taps,
+    but every one of them sits in a gap too narrow for an actual via to
+    land in without violating this deck's own 0.14 um minimum spacing to
+    the foreign metal bordering it.
+    """
+    layout = db.Layout()
+    layout.read(str(ARRAY_GDS))
+    cell = layout.top_cell()
+    dbu = layout.dbu
+    met1 = merged(layout, cell, MET1)
+    met2 = merged(layout, cell, MET2)
+    out = {}
+    for net, (y, x0, x1) in RUNG_CANDIDATES.items():
+        viable_columns: list[float] = []
+        x = x0
+        while x <= x1 + 1e-9:
+            # Start just under the run's own drawn thickness (half width
+            # 0.085 um) so the scan does not misclassify the net's own
+            # metal as a foreign obstacle.
+            if _via_hop_reaches(met1, met2, dbu, x, y - 0.1, ESCAPE_SCAN_FLOOR_UM + 0.3):
+                viable_columns.append(round(x, 3))
+            x += 0.05
+        out[net] = {
+            "run_x_um": [x0, x1],
+            "min_via_window_um": MIN_VIA_WINDOW_UM,
+            "viable_columns_um": viable_columns,
+            "has_viable_rung": bool(viable_columns),
+        }
+    return out
+
+
 def scan_channel() -> dict:
     """Group C -- what is drawn in the channel between the two blocks."""
     layout = db.Layout()
@@ -295,6 +428,38 @@ def scan_electrical() -> dict:
             and all(abs(x - expected) < 1e-6 for x, _ in positions),
         }
 
+    # sv's own d->vdd tie: no stub label to check (it lands directly on the
+    # vdd rail, not on a mid-channel landing point), so confirm the merge
+    # geometrically instead -- the met1 region containing a point partway
+    # up sv's own d column must be ONE polygon reaching from the li1 via
+    # pad (y=1.2) up to the vdd rail's own top edge (y=7.085).
+    met1_region = merged(layout, cell, MET1)
+    dbu = layout.dbu
+    sv_d_column_bbox_um = None
+    for p in met1_region.each():
+        b = p.bbox()
+        left, bottom, right, top = (
+            b.left * dbu,
+            b.bottom * dbu,
+            b.right * dbu,
+            b.top * dbu,
+        )
+        if left <= SV_D_X_UM <= right and bottom <= 3.0 <= top:
+            sv_d_column_bbox_um = (left, bottom, right, top)
+            break
+    sv_d_vdd_tie = {
+        "probed_x_um": SV_D_X_UM,
+        "polygon_bbox_um": (
+            None
+            if sv_d_column_bbox_um is None
+            else [round(v, 4) for v in sv_d_column_bbox_um]
+        ),
+        "reaches_li1_via_pad": sv_d_column_bbox_um is not None
+        and sv_d_column_bbox_um[1] <= 1.31,
+        "reaches_vdd_rail": sv_d_column_bbox_um is not None
+        and sv_d_column_bbox_um[3] >= SV_VDD_Y_UM,
+    }
+
     return {
         "device_count": extract["device_count"],
         "net_count": extract["net_count"],
@@ -302,6 +467,7 @@ def scan_electrical() -> dict:
         "ro4_net": carrying("ro4", "ro4_esc", "sr4_d_stub", "tg_d_a"),
         "unconnected_d_nets": [n for n in nets if re.fullmatch(r"a\|d\|tg_d_a(\$\d+)?", n)],
         "stub_label_columns": stub_columns,
+        "sv_d_vdd_tie": sv_d_vdd_tie,
         # The one merge nobody drew: the array's own vss and the sampler
         # bank's own vss come out as ONE extracted net although no metal
         # joins them (see the channel scan -- the only conductors crossing
@@ -318,6 +484,7 @@ def scan_electrical() -> dict:
 def main() -> int:
     d_columns = scan_d_columns()
     escapes = scan_array_escapes()
+    rungs = scan_rung_feasibility()
     channel = scan_channel()
     electrical = scan_electrical()
 
@@ -347,9 +514,13 @@ def main() -> int:
         ),
         "exactly_one_net_joins_ro1_to_a_sampler_d": len(electrical["ro1_net"]) == 1,
         "exactly_one_net_joins_ro4_to_a_sampler_d": len(electrical["ro4_net"]) == 1,
-        "four_sampler_d_pins_remain_unconnected": len(electrical["unconnected_d_nets"]) == 4,
+        "three_sampler_d_pins_remain_unconnected": len(electrical["unconnected_d_nets"]) == 3,
         "stub_labels_land_in_their_own_instance_column": all(
             entry["in_expected_column"] for entry in electrical["stub_label_columns"].values()
+        ),
+        "sv_d_ties_directly_to_the_vdd_rail": (
+            electrical["sv_d_vdd_tie"]["reaches_li1_via_pad"]
+            and electrical["sv_d_vdd_tie"]["reaches_vdd_rail"]
         ),
         "whole_device_population_present": electrical["device_count"] == 264,
         "array_and_sampler_vss_are_one_net_via_the_substrate": (
@@ -360,6 +531,14 @@ def main() -> int:
             and len(electrical["sampler_vdd_nets"]) == 1
             and electrical["array_vdd_nets"] != electrical["sampler_vdd_nets"]
         ),
+        # Negative claims, expected to hold until a rung is actually found
+        # and routed (see README's "xo/ro2/ro3: why a rung was not found
+        # this increment" section and the follow-up issue it links): even
+        # allowing unlimited met1/met2 layer alternation with a physically
+        # real via clearance requirement, no column of ro2's or ro3's own
+        # run has a viable south escape.
+        "ro2_has_no_viable_rung_over_its_own_run": not rungs["ro2"]["has_viable_rung"],
+        "ro3_has_no_viable_rung_over_its_own_run": not rungs["ro3"]["has_viable_rung"],
     }
 
     report = {
@@ -372,6 +551,7 @@ def main() -> int:
         "claims": claims,
         "d_columns": d_columns,
         "array_south_escapes": escapes,
+        "rung_feasibility": rungs,
         "channel": channel,
         "electrical": electrical,
     }

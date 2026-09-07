@@ -11,7 +11,150 @@ instance) into a real, `compose-cell.py --check`-reproducible cell recipe,
 and — as of this increment — places the `ro_array_core` instance above it and
 starts wiring the two together.
 
-## Result (this increment: the `ro_array_core` instance, and the first two data nets, issue #27 step 3)
+## Result (this increment: `sv`'s `d`→`vdd` tie, issue #105)
+
+Issue #105 asked for four things: three more data nets routed (`xo`→`sb.d`,
+`ro2`→`sr2.d`, `ro3`→`sr3.d`) and `sv`'s own `d` tied to the shared `vdd`
+bus. This increment delivers the fourth item and investigates the first
+three — measured, not guessed, the same discipline the rest of this
+directory already uses — and finds that none of them has a viable rung with
+the tooling and geometry available today. That is a real, evidence-backed
+result, not a stall: see "`xo`/`ro2`/`ro3`: why a rung was not found this
+increment" below for the derivation, and the linked follow-up issue for the
+remainder.
+
+- **`sv`'s `d`→`vdd` tie** lands directly on the already-drawn `vdd` rail at
+  `y=7.0` (met1) — no channel haul needed, because `sv`'s own `d` column was
+  already proven clear from the li1 pad up to the rail in the previous
+  increment's own Group A scan (`every_d_column_reachable_from_above`).
+  Added as one more `data_m1`-style entry (net `"vdd"`) rather than a new
+  stage. See "`sv`'s `d`, tied directly to `vdd`" below.
+- **`xo`/`ro2`/`ro3` remain unrouted.** A new, more realistic geometric
+  scan — one that models a via's real 0.22 µm footprint and this deck's own
+  0.14 µm minimum spacing, not just a point where met1 and met2 happen to
+  both be clear — finds **no** column of `ro2`'s or `ro3`'s own run where a
+  met1/met2 layer-alternating ("rung") south escape is possible, over
+  *every* 0.05 µm column of each net's own run. `xo` is blocked even
+  earlier by the same `klayout-tools#1567` gap the previous increment
+  already filed. See below.
+
+| Stage | Verdict | Evidence |
+|---|---|---|
+| `klt gen-compose` (stage `data_m1`, extended with the `sv`→`vdd` entry) | **1/1 routed**, first attempt (5.8 µm, straight met1) | `data_m1.compose.*.json`, `data_m1.gds` |
+| `klt drc --deck sky130` | **clean, 0 violations** | `drc.json` |
+| `klt extract --deck sky130` | **264 devices** (unchanged), **156 nets** (down from 157 — `sv`'s `d` merges into the shared `vdd` net) | `extract.json`, `sampler_core.spice` |
+| `klt lvs` vs. `design/sampler_core.spice`'s own `.subckt sampler_core` | **mismatch, as expected** — 110/264 devices, 85/152 nets. (The match/mismatch *count* is not monotonic increment-to-increment: merging `sv`'s `d` into the already-6-way-merged `vdd` net changes which OTHER devices the matcher can anchor on. Whole-cell LVS match is explicitly out of scope until `xo`/`ro2`/`ro3` and the top-level pin promotions land — see "What remains" below.) | `lvs.json`, `sampler_core.ref.spice` |
+| `data-path-scan.py` | **16/16 claims hold** — the 13 from the previous increment, plus the `sv`→`vdd` merge claim and two negative rung-feasibility claims for `ro2`/`ro3` | `data-path-scan.json` |
+
+Cell extent unchanged: `x0=-2.19 x1=328.77 y0=-3.585 y1=54.72` µm —
+`330.96 x 58.305` µm (`klt stats`); polygon count `8326 → 8330` (the new
+tie's own met1 wire + li1↔met1 via). Generated on
+`klt 0.4.0+g59c2a2873c17.dirty` against open_pdks
+`c6d73a35f524070e85faff4a6a9eef49553ebc2b` — `layout/pdk.json`'s own pin.
+`dbu_um` now appears in the regenerated `*.compose.response.json` files
+(added by the installed `klt` build; already present in every other
+committed cell's own evidence, e.g. `layout/sampler_dff/`) — a tool-version
+provenance detail, not a geometry or verdict change; `compose-cell.py
+--check` confirms the rebuild still matches every committed verdict.
+
+## `sv`'s `d`, tied directly to `vdd`
+
+`design/sampler_core.spice` ties `xsv`'s own `d` input to `vdd`, not to the
+array (`sv` is the sampler for `raw_valid`, which this design derives from a
+fixed rail rather than a ring tap). The previous increment's own Group A
+scan (`layout/sampler_core/README.md`'s "Why the array goes above the row")
+already measured every one of the six samplers' `d` columns, `sv`'s
+included, as clear on met1 from the li1 pad (`y=1.2`) up to `y=6.9`, just
+under the shared `vdd` rail (`y=6.915..7.085`) — that is exactly what
+`every_d_column_reachable_from_above` asserts. So no new clearance
+measurement was needed: this increment just extends that already-proven
+column one more step, from `y=6.9` to `y=7.0`, landing squarely inside the
+rail's own thickness rather than stopping short at a mid-channel landing
+point the way `sr1`'s/`sr4`'s stubs do.
+
+One `data_m1`-style entry (net `"vdd"`, layer role `"metal2"` = met1) with
+two ports: `sv_d` (li1, `(62.325, 1.2)`, `62.325 = 55.66 + 6.665` — `sv`'s
+own origin plus `sampler_dff`'s promoted `d` pad offset) and `sv_d_vdd`
+(met1, `(62.325, 7.0)`). Declaring the landing port's own layer (met1)
+equal to the stage's routing role means `gen-compose` draws straight met1
+with **no via** at that end — the same "land directly on the target net's
+own metal" technique `route_supplies`'s own `_comment` already used for the
+`vdd`/`vss` taps — while the li1 pad end still gets its automatic
+li1↔met1 via, same as `sr1_d_stub`/`sr4_d_stub`. `klt gen-compose` routed
+it clean on the first attempt (5.8 µm).
+
+Confirmed by direct geometry query, not just by the extracted net list
+(`data-path-scan.py`'s `sv_d_ties_directly_to_the_vdd_rail` claim): the
+merged met1 region at `sv`'s own `d` column (`x=62.325`) is **one** polygon
+spanning `y 1.2..7.085` — the li1↔met1 via pad's own bottom edge up to the
+`vdd` rail's own top edge — with nothing else nearby (the column was already
+proven clear over that whole span). `klt extract` confirms the same result
+electrically: the net formerly written `a|d|tg_d_a` at `sv`'s own position
+disappears from the unconnected-`d` list (four → three), and the six-way
+`vdd` net (`sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|...`) gains the
+`a`/`d`/`tg_d_a` tokens that name the transmission gate now driven by it.
+
+## `xo`/`ro2`/`ro3`: why a rung was not found this increment
+
+The previous increment's own scan (`scan_array_escapes`, Group B below)
+already showed that `ro2`'s and `ro3`'s own runs have **no** column with a
+clear single-layer (met1-only) south escape — every column is crossed by a
+neighbouring `ro` net's own metal. Issue #105 asked the natural next
+question: does allowing a met1↔met2 layer change ("rung") *inside* the
+array's own footprint open one up, the same way `data_m1`'s two existing
+legs already use a layer change to cross the shared `vdd` rail on the
+sampler side?
+
+**First pass, and why it was wrong.** A column scan that only checks
+whether met1 and met2 happen to be clear *at the same point* finds plenty of
+candidates — at `x=25.0` (inside `ro2`'s own run), for instance, there is a
+sequence of three apparent layer-alternating hops that would walk all the
+way down to the array's south edge. That scan is the geometric-mistake this
+section exists to document: it ignores that a via has a **real physical
+footprint**. `klt gen-compose`'s own auto-via pads are `0.22 µm` square
+(measured directly off this directory's own composed GDS —
+`layer 67/44`, the li1↔met1 `mcon`, and `layer 68/44`, the met1↔met2
+`via1`, both `0.22 × 0.22 µm` at every via this cell has ever drawn), and
+this deck's own met1/met2 minimum spacing is `0.14 µm` (already the basis
+for `CLEAR_HALF_WIDTH_UM` above). A via therefore needs a window at least
+`0.22 + 2 × 0.14 = 0.50 µm` wide, clear on **both** layers simultaneously,
+to land without violating spacing to whatever foreign metal borders the
+gap — not a single point of overlap. Every one of the first pass's
+candidate switch points sits in a gap between `0.05` and `0.33 µm` wide:
+real, but far short of `0.50 µm`.
+
+**Second pass, with the real requirement.** `data-path-scan.py`'s
+`scan_rung_feasibility` (Group E) re-runs the same column-by-column scan
+`scan_array_escapes` already uses, but allows unlimited met1↔met2
+alternation subject to the `0.50 µm` window requirement above
+(`MIN_VIA_WINDOW_UM`). Over **every** `0.05 µm` column of `ro2`'s own run
+(`x` `20.5..105.8`) and `ro3`'s own run (`x` `28.47..161.1`), **none** has a
+viable rung — `ro2_has_no_viable_rung_over_its_own_run` and
+`ro3_has_no_viable_rung_over_its_own_run` both hold. The underlying cause is
+the same density the previous increment already measured for the
+single-layer case: `ro1`'s/`ro3`'s/`ro4`'s own metal, the buffered `vddr`
+rail (met1, `y=6.0`), the `vdd` bus (met2, `y=7.5`) and the per-stage gate
+polys all stack close enough together, over the whole width of `ro2`'s and
+`ro3`'s own runs, that no `0.50 µm` gap ever opens on both layers at once.
+
+**`xo` is blocked earlier still.** It is an li1 pad, two via hops from met2
+(`klayout-tools#1567`, already filed by the previous increment), so it
+needs a hand-built li1→met1 rung *before* the met1↔met2 problem above even
+applies — and its own tap sits at array-local `(66.375, 25.585)`, inside the
+`xa3` XOR gate's own dense local wiring, not over open ring-row space.
+
+**What this does and does not rule out.** The scan above is exhaustive
+*over each net's own drawn run* — it does not search the rest of the
+array's footprint (routing further away from the run before diving south,
+or escaping through the array's own north/top edge and back down outside
+its west/east bbox the way `ro1`'s/`ro4`'s own edge columns work). That
+wider search is real, separable work, filed as
+[2AMLogic/sky130-trng#109](https://github.com/2AMLogic/sky130-trng/issues/109)
+with this increment's own scan script and findings as its starting point,
+rather than attempted (and possibly gotten wrong) under this increment's own
+time budget.
+
+## A previous increment: the `ro_array_core` instance, and the first two data nets (issue #27 step 3)
 
 Three new stages on top of the `place`/`route_supplies`/`route_ctrl` stages
 below (all three unchanged):
@@ -405,33 +548,41 @@ In rough dependency order:
 3. ~~**Placing a `ro_array_core` instance**~~ — **placed** (this increment,
    stage `place_array`), and two of its five data nets (`ro1`→`sr1.d`,
    `ro4`→`sr4.d`) routed.
-4. **The remaining three data nets** — `xo`→`sb.d`, `ro2`→`sr2.d`,
+4. ~~**`sv`'s own `d`, tied to `vdd`**~~ — **routed** (this increment, issue
+   #105) — see "`sv`'s `d`, tied directly to `vdd`" above.
+5. **The remaining three data nets** — `xo`→`sb.d`, `ro2`→`sr2.d`,
    `ro3`→`sr3.d`. Each needs a layer change *inside* the array's own
-   footprint before it can escape, which the two routed here did not: see
-   "Two of five data nets, and the measured reason it is not five" above for
-   the per-net measurement. `sv`'s own `d` is a fourth, different job — the
-   schematic ties it to `vdd`, not to the array.
-5. **The inter-block supply straps.** `vdd` is two separate nets today (the
+   footprint before it can escape, which the two routed so far do not: see
+   "Two of five data nets, and the measured reason it is not five" and
+   "`xo`/`ro2`/`ro3`: why a rung was not found this increment" above for the
+   per-net measurement. This increment (#105) found, with a geometrically
+   realistic (via-footprint-aware) scan, that neither `ro2` nor `ro3` has a
+   viable rung anywhere over its own drawn run; the remaining search space
+   (routing further from the run before diving south, or escaping around the
+   array's own edges) is filed as follow-up issue
+   [#109](https://github.com/2AMLogic/sky130-trng/issues/109) rather than
+   attempted here.
+6. **The inter-block supply straps.** `vdd` is two separate nets today (the
    array's and the sampler bank's); `vss` extracts as one only through the
    shared p-substrate, which is not a supply connection. Both need real
    metal.
-6. **Promoting the top-level pins** — the six `d`/`q` pin pairs (`sb`'s
+7. **Promoting the top-level pins** — the six `d`/`q` pin pairs (`sb`'s
    `raw_bit`, `sv`'s `raw_valid`, `sr1`-`sr4`'s `ring_bit1`-`ring_bit4`)
    plus `en1`-`en4`/`vddr1`-`vddr4` (from the placed `ro_array_core`) and
    `vdd`/`vss` themselves, all real top-level pins of
    `design/sampler_core.spice`'s own `.subckt sampler_core`.
-7. **Whole-cell `klt lvs` match** against `design/sampler_core.spice`'s real
+8. **Whole-cell `klt lvs` match** against `design/sampler_core.spice`'s real
    `.subckt sampler_core`. The reference side of that is now ready (264
    devices, complete — see "The reference-generation gap, closed" above);
-   the layout side needs items 4-6 first. Today: 136/264 devices,
-   94/152 nets.
-8. **Post-layout PVT simulation** of the fully assembled, LVS-clean
+   the layout side needs items 5-7 first. Today: 110/264 devices,
+   85/152 nets.
+9. **Post-layout PVT simulation** of the fully assembled, LVS-clean
    `sampler_core` — the whole-chain (raw-tap-to-sampled-bit) claim issue #22
    was originally filed for, still open. Nothing under `sim/` is added by
    this increment, deliberately: extracting parasitics from a cell whose
    three remaining data nets are unrouted would produce numbers about a
    circuit that is not the schematic.
-9. DR-0003 §8's `wstv` inter-ring decorrelation gap is **unaffected** by any
+10. DR-0003 §8's `wstv` inter-ring decorrelation gap is **unaffected** by any
    of the above — it is about the entropy source's own inter-ring supply
    coupling (already re-evaluated at array scope by DR-0005/DR-0006), not
    the sampler side of the raw tap.
@@ -453,4 +604,4 @@ reference-generation limitation it recorded was this repo's own
 | `sampler_core.gds` | the composed cell |
 | `drc.json`, `extract.json`, `sampler_core.spice` | sign-off + extracted netlist |
 | `lvs.request.json`, `sampler_core.ref.spice`, `lvs.json` | the LVS run and its generated reference |
-| `data-path-scan.py` / `.json` | the 13 geometric and electrical claims behind this increment, re-derivable and self-checking (exits non-zero if any stops holding) |
+| `data-path-scan.py` / `.json` | the 16 geometric and electrical claims behind this and the previous increment, re-derivable and self-checking (exits non-zero if any stops holding); includes the Group E rung-feasibility scan issue #105 added |

@@ -17,8 +17,8 @@
 * pin a,b,m_east,m_west,nand_m_a,nand_m_a_ext_via,nand_m_a_ext_via2,nand_m_a_stub,tg_d_b,tg_d_b_via,tg_d_b_via2,tg_fbm_b,tg_fbm_b_alt_via,tg_fbm_b_alt_via2
 * pin a,b,m_east,m_west,nand_m_a,nand_m_a_ext_via,nand_m_a_ext_via2,nand_m_a_stub,tg_d_b,tg_d_b_via,tg_d_b_via2,tg_fbm_b,tg_fbm_b_alt_via,tg_fbm_b_alt_via2
 * pin a,clk,ctrl,ctrlb,inv_clk_a,inv_clk_clk_via,tg_d_ctrl,tg_d_ctrl_via,tg_fbm_ctrlb,tg_fbm_ctrlb_via,tg_fbs_ctrl,tg_fbs_ctrl_via,tg_s_ctrlb,tg_s_ctrlb_via
+* pin a,d,inv_clk_vdd,inv_mc_vdd,inv_q_vdd,mpa_py,mpb_py,nand_m_vdd,nand_s2_vdd,nwell_vdd,sb_vdd,sr1_vdd,sr2_vdd,sr3_vdd,sr4_vdd,sv_vdd,tg_d_a,tg_d_vdd,tg_fbm_vdd,tg_fbs_vdd,tg_s_vdd,vdd
 * pin a,d,inva_a,mn12_g0,mp13_g0,ro1,ro1_esc,sr1_d_stub,tg_d_a,y
-* pin a,d,tg_d_a
 * pin a,d,tg_d_a
 * pin a,d,tg_d_a
 * pin a,d,tg_d_a
@@ -90,7 +90,6 @@
 * pin g_vddr_m1,mnt_g,s1_vddr_m1,s2_vddr_m1,s3_vddr_m1,s4_vddr_m1,vddr,vddr3
 * pin g_vddr_m1,mnt_g,s1_vddr_m1,s2_vddr_m1,s3_vddr_m1,s4_vddr_m1,vddr,vddr4
 * pin g_vss_m1,inv_clk_vss,inv_mc_vss,inv_q_vss,mph_g,nand_m_vss,nand_s2_vss,s1_vss_m1,s2_vss_m1,s3_vss_m1,s4_vss_m1,sb_vss,sr1_vss,sr2_vss,sr3_vss,sr4_vss,sv_vss,tg_d_vss,tg_fbm_vss,tg_fbs_vss,tg_s_vss,vss,vss_x1,vss_x2,vss_x3
-* pin inv_clk_vdd,inv_mc_vdd,inv_q_vdd,mpa_py,mpb_py,nand_m_vdd,nand_s2_vdd,nwell_vdd,sb_vdd,sr1_vdd,sr2_vdd,sr3_vdd,sr4_vdd,sv_vdd,tg_d_vdd,tg_fbm_vdd,tg_fbs_vdd,tg_s_vdd,vdd
 * pin mid
 * pin mid
 * pin mid
@@ -152,11 +151,12 @@
 + a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2$4
 + a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2$5
 + a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + a|d|inva_a|mn12_g0|mp13_g0|ro1|ro1_esc|sr1_d_stub|tg_d_a|y a|d|tg_d_a
-+ a|d|tg_d_a$1 a|d|tg_d_a$2 a|d|tg_d_a$3 a|g_a|rn1|ro|s4_y|y
-+ a|g_a|rn2|ro|s4_y|y a|g_a|rn3|ro|s4_y|y a|g_a|rn4|ro|s4_y|y
-+ a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y$1
-+ a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y$2 a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y$3
++ a|d|tg_d_a$1 a|d|tg_d_a$2 a|g_a|rn1|ro|s4_y|y a|g_a|rn2|ro|s4_y|y
++ a|g_a|rn3|ro|s4_y|y a|g_a|rn4|ro|s4_y|y a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y
++ a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y$1 a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y$2
++ a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y$3
 + a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y
 + a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y$1
 + a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y$2
@@ -201,7 +201,6 @@
 + g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr3
 + g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr4
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + mid mid$1 mid$2 mpa_py|mpb_py|mph_py|py mpa_py|mpb_py|mph_py|py$1
 + mpa_py|mpb_py|mph_py|py$2 mpa_py|mpb_py|mph_py|py$3 ny ny$1 ny$2 ny$3 ny$4
 + ny$5 ny$6 ny$7 ny$8 ny$9 ny$10 ny$11 ny$12 ny$13 ny$14 ny$15 ny$16 ny$17
@@ -230,113 +229,113 @@ M$4 a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.84U AS=0.2184P AD=0.3948P PS=1.36U PD=2.62U
 * device instance $5 r0 *1 67.975,0.21 nfet
-M$5 \$21 en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n
+M$5 \$20 en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.84U AS=0.3948P AD=0.2184P PS=2.62U PD=1.36U
 * device instance $6 r0 *1 68.645,0.21 nfet
 M$6 a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y$1
 + a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2$1
-+ \$21
++ \$20
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.84U AS=0.2184P AD=0.3948P PS=1.36U PD=2.62U
 * device instance $7 r0 *1 98.835,0.21 nfet
-M$7 \$22 en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n
+M$7 \$21 en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.84U AS=0.3948P AD=0.2184P PS=2.62U PD=1.36U
 * device instance $8 r0 *1 99.505,0.21 nfet
 M$8 a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y$1
 + a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y$1
-+ \$22
++ \$21
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.84U AS=0.2184P AD=0.3948P PS=1.36U PD=2.62U
 * device instance $9 r0 *1 123.635,0.21 nfet
-M$9 \$25 en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n
+M$9 \$24 en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.84U AS=0.3948P AD=0.2184P PS=2.62U PD=1.36U
 * device instance $10 r0 *1 124.305,0.21 nfet
 M$10 a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y$2
 + a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2$2
-+ \$25
++ \$24
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.84U AS=0.2184P AD=0.3948P PS=1.36U PD=2.62U
 * device instance $11 r0 *1 154.495,0.21 nfet
-M$11 \$26 en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n
+M$11 \$25 en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.84U AS=0.3948P AD=0.2184P PS=2.62U PD=1.36U
 * device instance $12 r0 *1 155.165,0.21 nfet
 M$12 a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y$2
 + a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y$2
-+ \$26
++ \$25
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.84U AS=0.2184P AD=0.3948P PS=1.36U PD=2.62U
 * device instance $13 r0 *1 179.295,0.21 nfet
-M$13 \$29 en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n
+M$13 \$28 en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.84U AS=0.3948P AD=0.2184P PS=2.62U PD=1.36U
 * device instance $14 r0 *1 179.965,0.21 nfet
 M$14 a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y$3
 + a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2$3
-+ \$29
++ \$28
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.84U AS=0.2184P AD=0.3948P PS=1.36U PD=2.62U
 * device instance $15 r0 *1 210.155,0.21 nfet
-M$15 \$30 en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n
+M$15 \$29 en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.84U AS=0.3948P AD=0.2184P PS=2.62U PD=1.36U
 * device instance $16 r0 *1 210.825,0.21 nfet
 M$16 a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y$3
 + a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y$3
-+ \$30
++ \$29
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.84U AS=0.2184P AD=0.3948P PS=1.36U PD=2.62U
 * device instance $17 r0 *1 234.955,0.21 nfet
-M$17 \$33 en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n
+M$17 \$32 en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.84U AS=0.3948P AD=0.2184P PS=2.62U PD=1.36U
 * device instance $18 r0 *1 235.625,0.21 nfet
 M$18 a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y$4
 + a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2$4
-+ \$33
++ \$32
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.84U AS=0.2184P AD=0.3948P PS=1.36U PD=2.62U
 * device instance $19 r0 *1 265.815,0.21 nfet
-M$19 \$34 en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n
+M$19 \$33 en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.84U AS=0.3948P AD=0.2184P PS=2.62U PD=1.36U
 * device instance $20 r0 *1 266.485,0.21 nfet
 M$20 a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y$4
 + a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y$4
-+ \$34
++ \$33
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.84U AS=0.2184P AD=0.3948P PS=1.36U PD=2.62U
 * device instance $21 r0 *1 290.615,0.21 nfet
-M$21 \$37 en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n
+M$21 \$36 en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.84U AS=0.3948P AD=0.2184P PS=2.62U PD=1.36U
 * device instance $22 r0 *1 291.285,0.21 nfet
 M$22 a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y$5
 + a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2$5
-+ \$37
++ \$36
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.84U AS=0.2184P AD=0.3948P PS=1.36U PD=2.62U
 * device instance $23 r0 *1 321.475,0.21 nfet
-M$23 \$38 en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n
+M$23 \$37 en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.84U AS=0.3948P AD=0.2184P PS=2.62U PD=1.36U
 * device instance $24 r0 *1 322.145,0.21 nfet
 M$24 a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y$5
 + a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y$5
-+ \$38
++ \$37
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.84U AS=0.2184P AD=0.3948P PS=1.36U PD=2.62U
 * device instance $25 r0 *1 0.545,0.21 nfet
@@ -391,7 +390,8 @@ M$32
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.42U AS=0.1974P AD=0.1974P PS=1.78U PD=1.78U
 * device instance $33 r0 *1 60.97,0.21 nfet
-M$33 a|d|tg_d_a$1
+M$33
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y$1
 + a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2$1
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
@@ -479,7 +479,7 @@ M$46
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.42U AS=0.1974P AD=0.1974P PS=1.78U PD=1.78U
 * device instance $47 r0 *1 172.29,0.21 nfet
-M$47 a|d|tg_d_a$2
+M$47 a|d|tg_d_a$1
 + clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y$3
 + a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2$3
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
@@ -523,7 +523,7 @@ M$53
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.42U AS=0.1974P AD=0.1974P PS=1.78U PD=1.78U
 * device instance $54 r0 *1 227.95,0.21 nfet
-M$54 a|d|tg_d_a$3
+M$54 a|d|tg_d_a$2
 + clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y$4
 + a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2$4
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
@@ -615,21 +615,21 @@ M$68 an|inva_y|mn34_g0|mp13_g1|y
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.42U AS=0.1974P AD=0.1974P PS=1.78U PD=1.78U
 * device instance $69 r0 *1 5.975,23.845 nfet
-M$69 \$79 en|en1|g_en ny
+M$69 \$78 en|en1|g_en ny
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.84U AS=0.3948P AD=0.2184P PS=2.62U PD=1.36U
 * device instance $70 r0 *1 6.645,23.845 nfet
-M$70 a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y a|g_a|rn1|ro|s4_y|y \$79
+M$70 a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y a|g_a|rn1|ro|s4_y|y \$78
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.84U AS=0.2184P AD=0.3948P PS=1.36U PD=2.62U
 * device instance $71 r0 *1 7.78,39.22 nfet
-M$71 \$140 an|inva_y|mn34_g0|mp13_g1|y a|inva_a|mn12_g0|mp13_g0|t1|y
+M$71 \$139 an|inva_y|mn34_g0|mp13_g1|y a|inva_a|mn12_g0|mp13_g0|t1|y
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.84U AS=0.3948P AD=0.2184P PS=2.62U PD=1.36U
 * device instance $72 r0 *1 8.45,39.22 nfet
 M$72
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
-+ bn|invb_y|mn34_g1|mp24_g1|y \$140
++ bn|invb_y|mn34_g1|mp24_g1|y \$139
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.84U AS=0.2184P AD=0.3948P PS=1.36U PD=2.62U
 * device instance $73 r0 *1 12.91,23.845 nfet
@@ -639,14 +639,14 @@ M$73 ny$1
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=2U W=0.42U AS=0.1764P AD=0.1764P PS=1.68U PD=1.68U
 * device instance $74 r0 *1 14.78,39.22 nfet
-M$74 \$142 a|d|inva_a|mn12_g0|mp13_g0|ro1|ro1_esc|sr1_d_stub|tg_d_a|y
+M$74 \$141 a|d|inva_a|mn12_g0|mp13_g0|ro1|ro1_esc|sr1_d_stub|tg_d_a|y
 + a|inva_a|mn12_g0|mp13_g0|t1|y
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.84U AS=0.3948P AD=0.2184P PS=2.62U PD=1.36U
 * device instance $75 r0 *1 15.45,39.22 nfet
 M$75
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
-+ a|b|invb_a|mn12_g1|mp24_g0|ro2|y \$142
++ a|b|invb_a|mn12_g1|mp24_g0|ro2|y \$141
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.84U AS=0.2184P AD=0.3948P PS=1.36U PD=2.62U
 * device instance $76 r0 *1 15.275,23.845 nfet
@@ -665,7 +665,7 @@ M$78 bn|invb_y|mn34_g1|mp24_g1|y a|b|invb_a|mn12_g1|mp24_g0|ro2|y
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.42U AS=0.1974P AD=0.1974P PS=1.78U PD=1.78U
 * device instance $79 r0 *1 23.45,23.845 nfet
-M$79 a|n3|s2_y|s3_a|y a|n2|s1_y|s2_a|y ny$2
+M$79 a|n3|s2_y|s3_a|y$1 a|n2|s1_y|s2_a|y ny$2
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.42U AS=0.1974P AD=0.1974P PS=1.78U PD=1.78U
 * device instance $80 r0 *1 29.26,23.845 nfet
@@ -675,7 +675,7 @@ M$80 ny$3
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=2U W=0.42U AS=0.1764P AD=0.1764P PS=1.68U PD=1.68U
 * device instance $81 r0 *1 31.625,23.845 nfet
-M$81 a|n4|s3_y|s4_a|y a|n3|s2_y|s3_a|y ny$3
+M$81 a|n4|s3_y|s4_a|y$3 a|n3|s2_y|s3_a|y$1 ny$3
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.42U AS=0.1974P AD=0.1974P PS=1.78U PD=1.78U
 * device instance $82 r0 *1 32.415,41.54 nfet
@@ -690,27 +690,27 @@ M$83 ny$4
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=2U W=0.42U AS=0.1764P AD=0.1764P PS=1.68U PD=1.68U
 * device instance $84 r0 *1 36.75,39.22 nfet
-M$84 \$143 an|inva_y|mn34_g0|mp13_g1|y$1 a|b|b3|invb_a|mn12_g1|mp24_g0|t2|y
+M$84 \$142 an|inva_y|mn34_g0|mp13_g1|y$1 a|b|b3|invb_a|mn12_g1|mp24_g0|t2|y
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.84U AS=0.3948P AD=0.2184P PS=2.62U PD=1.36U
 * device instance $85 r0 *1 37.42,39.22 nfet
 M$85
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
-+ bn|invb_y|mn34_g1|mp24_g1|y$1 \$143
++ bn|invb_y|mn34_g1|mp24_g1|y$1 \$142
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.84U AS=0.2184P AD=0.3948P PS=1.36U PD=2.62U
 * device instance $86 r0 *1 39.8,23.845 nfet
-M$86 a|g_a|rn1|ro|s4_y|y a|n4|s3_y|s4_a|y ny$4
+M$86 a|g_a|rn1|ro|s4_y|y a|n4|s3_y|s4_a|y$3 ny$4
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.42U AS=0.1974P AD=0.1974P PS=1.78U PD=1.78U
 * device instance $87 r0 *1 43.75,39.22 nfet
-M$87 \$145 a|inva_a|mn12_g0|mp13_g0|ro3|y a|b|b3|invb_a|mn12_g1|mp24_g0|t2|y
+M$87 \$144 a|inva_a|mn12_g0|mp13_g0|ro3|y a|b|b3|invb_a|mn12_g1|mp24_g0|t2|y
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.84U AS=0.3948P AD=0.2184P PS=2.62U PD=1.36U
 * device instance $88 r0 *1 44.42,39.22 nfet
 M$88
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
-+ a|b|d|invb_a|mn12_g1|mp24_g0|ro4|ro4_esc|sr4_d_stub|tg_d_a|y \$145
++ a|b|d|invb_a|mn12_g1|mp24_g0|ro4|ro4_esc|sr4_d_stub|tg_d_a|y \$144
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.84U AS=0.2184P AD=0.3948P PS=1.36U PD=2.62U
 * device instance $89 r0 *1 48.86,23.845 nfet
@@ -732,11 +732,11 @@ M$91 ny$5
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=2U W=0.44U AS=0.1848P AD=0.1848P PS=1.72U PD=1.72U
 * device instance $92 r0 *1 61.275,23.845 nfet
-M$92 \$85 en|en2|g_en ny$5
+M$92 \$86 en|en2|g_en ny$5
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.84U AS=0.3948P AD=0.2184P PS=2.62U PD=1.36U
 * device instance $93 r0 *1 61.945,23.845 nfet
-M$93 a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y$1 a|g_a|rn2|ro|s4_y|y \$85
+M$93 a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y$1 a|g_a|rn2|ro|s4_y|y \$86
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.84U AS=0.2184P AD=0.3948P PS=1.36U PD=2.62U
 * device instance $94 r0 *1 61.385,41.54 nfet
@@ -745,13 +745,13 @@ M$94 an|inva_y|mn34_g0|mp13_g1|y$2 a|inva_a|mn12_g0|mp13_g0|t1|y
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.42U AS=0.1974P AD=0.1974P PS=1.78U PD=1.78U
 * device instance $95 r0 *1 65.72,39.22 nfet
-M$95 \$147 an|inva_y|mn34_g0|mp13_g1|y$2 xo|y
+M$95 \$146 an|inva_y|mn34_g0|mp13_g1|y$2 xo|y
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.84U AS=0.3948P AD=0.2184P PS=2.62U PD=1.36U
 * device instance $96 r0 *1 66.39,39.22 nfet
 M$96
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
-+ bn|invb_y|mn34_g1|mp24_g1|y$2 \$147
++ bn|invb_y|mn34_g1|mp24_g1|y$2 \$146
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.84U AS=0.2184P AD=0.3948P PS=1.36U PD=2.62U
 * device instance $97 r0 *1 68.21,23.845 nfet
@@ -761,17 +761,17 @@ M$97 ny$6
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=2U W=0.44U AS=0.1848P AD=0.1848P PS=1.72U PD=1.72U
 * device instance $98 r0 *1 70.575,23.845 nfet
-M$98 a|n2|s1_y|s2_a|y$1 a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y$1 ny$6
+M$98 a|n2|s1_y|s2_a|y$2 a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y$1 ny$6
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.42U AS=0.1974P AD=0.1974P PS=1.78U PD=1.78U
 * device instance $99 r0 *1 72.72,39.22 nfet
-M$99 \$150 a|inva_a|mn12_g0|mp13_g0|t1|y xo|y
+M$99 \$149 a|inva_a|mn12_g0|mp13_g0|t1|y xo|y
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.84U AS=0.3948P AD=0.2184P PS=2.62U PD=1.36U
 * device instance $100 r0 *1 73.39,39.22 nfet
 M$100
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
-+ a|b|b3|invb_a|mn12_g1|mp24_g0|t2|y \$150
++ a|b|b3|invb_a|mn12_g1|mp24_g0|t2|y \$149
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.84U AS=0.2184P AD=0.3948P PS=1.36U PD=2.62U
 * device instance $101 r0 *1 76.385,23.845 nfet
@@ -781,7 +781,7 @@ M$101 ny$7
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=2U W=0.44U AS=0.1848P AD=0.1848P PS=1.72U PD=1.72U
 * device instance $102 r0 *1 78.75,23.845 nfet
-M$102 a|n3|s2_y|s3_a|y$1 a|n2|s1_y|s2_a|y$1 ny$7
+M$102 a|n3|s2_y|s3_a|y$2 a|n2|s1_y|s2_a|y$2 ny$7
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.42U AS=0.1974P AD=0.1974P PS=1.78U PD=1.78U
 * device instance $103 r0 *1 79.56,41.54 nfet
@@ -796,7 +796,7 @@ M$104 ny$8
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=2U W=0.44U AS=0.1848P AD=0.1848P PS=1.72U PD=1.72U
 * device instance $105 r0 *1 86.925,23.845 nfet
-M$105 a|n4|s3_y|s4_a|y$1 a|n3|s2_y|s3_a|y$1 ny$8
+M$105 a|n4|s3_y|s4_a|y a|n3|s2_y|s3_a|y$2 ny$8
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.42U AS=0.1974P AD=0.1974P PS=1.78U PD=1.78U
 * device instance $106 r0 *1 92.735,23.845 nfet
@@ -806,7 +806,7 @@ M$106 ny$9
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=2U W=0.44U AS=0.1848P AD=0.1848P PS=1.72U PD=1.72U
 * device instance $107 r0 *1 95.1,23.845 nfet
-M$107 a|g_a|rn2|ro|s4_y|y a|n4|s3_y|s4_a|y$1 ny$9
+M$107 a|g_a|rn2|ro|s4_y|y a|n4|s3_y|s4_a|y ny$9
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.42U AS=0.1974P AD=0.1974P PS=1.78U PD=1.78U
 * device instance $108 r0 *1 104.16,23.845 nfet
@@ -821,11 +821,11 @@ M$109 ny$10
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=2U W=0.46U AS=0.1932P AD=0.1932P PS=1.76U PD=1.76U
 * device instance $110 r0 *1 116.575,23.845 nfet
-M$110 \$92 en|en3|g_en ny$10
+M$110 \$95 en|en3|g_en ny$10
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.84U AS=0.3948P AD=0.2184P PS=2.62U PD=1.36U
 * device instance $111 r0 *1 117.245,23.845 nfet
-M$111 a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y$2 a|g_a|rn3|ro|s4_y|y \$92
+M$111 a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y$2 a|g_a|rn3|ro|s4_y|y \$95
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.84U AS=0.2184P AD=0.3948P PS=1.36U PD=2.62U
 * device instance $112 r0 *1 123.51,23.845 nfet
@@ -835,7 +835,7 @@ M$112 ny$11
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=2U W=0.46U AS=0.1932P AD=0.1932P PS=1.76U PD=1.76U
 * device instance $113 r0 *1 125.875,23.845 nfet
-M$113 a|n2|s1_y|s2_a|y$2 a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y$2 ny$11
+M$113 a|n2|s1_y|s2_a|y$3 a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y$2 ny$11
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.42U AS=0.1974P AD=0.1974P PS=1.78U PD=1.78U
 * device instance $114 r0 *1 131.685,23.845 nfet
@@ -845,7 +845,7 @@ M$114 ny$12
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=2U W=0.46U AS=0.1932P AD=0.1932P PS=1.76U PD=1.76U
 * device instance $115 r0 *1 134.05,23.845 nfet
-M$115 a|n3|s2_y|s3_a|y$3 a|n2|s1_y|s2_a|y$2 ny$12
+M$115 a|n3|s2_y|s3_a|y a|n2|s1_y|s2_a|y$3 ny$12
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.42U AS=0.1974P AD=0.1974P PS=1.78U PD=1.78U
 * device instance $116 r0 *1 139.86,23.845 nfet
@@ -855,7 +855,7 @@ M$116 ny$13
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=2U W=0.46U AS=0.1932P AD=0.1932P PS=1.76U PD=1.76U
 * device instance $117 r0 *1 142.225,23.845 nfet
-M$117 a|n4|s3_y|s4_a|y$3 a|n3|s2_y|s3_a|y$3 ny$13
+M$117 a|n4|s3_y|s4_a|y$1 a|n3|s2_y|s3_a|y ny$13
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.42U AS=0.1974P AD=0.1974P PS=1.78U PD=1.78U
 * device instance $118 r0 *1 148.035,23.845 nfet
@@ -865,7 +865,7 @@ M$118 ny$14
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=2U W=0.46U AS=0.1932P AD=0.1932P PS=1.76U PD=1.76U
 * device instance $119 r0 *1 150.4,23.845 nfet
-M$119 a|g_a|rn3|ro|s4_y|y a|n4|s3_y|s4_a|y$3 ny$14
+M$119 a|g_a|rn3|ro|s4_y|y a|n4|s3_y|s4_a|y$1 ny$14
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.42U AS=0.1974P AD=0.1974P PS=1.78U PD=1.78U
 * device instance $120 r0 *1 159.46,23.845 nfet
@@ -880,11 +880,11 @@ M$121 ny$15
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=2U W=0.48U AS=0.2016P AD=0.2016P PS=1.8U PD=1.8U
 * device instance $122 r0 *1 171.875,23.845 nfet
-M$122 \$102 en|en4|g_en ny$15
+M$122 \$103 en|en4|g_en ny$15
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.84U AS=0.3948P AD=0.2184P PS=2.62U PD=1.36U
 * device instance $123 r0 *1 172.545,23.845 nfet
-M$123 a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y$3 a|g_a|rn4|ro|s4_y|y \$102
+M$123 a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y$3 a|g_a|rn4|ro|s4_y|y \$103
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.84U AS=0.2184P AD=0.3948P PS=1.36U PD=2.62U
 * device instance $124 r0 *1 178.81,23.845 nfet
@@ -894,7 +894,7 @@ M$124 ny$16
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=2U W=0.48U AS=0.2016P AD=0.2016P PS=1.8U PD=1.8U
 * device instance $125 r0 *1 181.175,23.845 nfet
-M$125 a|n2|s1_y|s2_a|y$3 a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y$3 ny$16
+M$125 a|n2|s1_y|s2_a|y$1 a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y$3 ny$16
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.42U AS=0.1974P AD=0.1974P PS=1.78U PD=1.78U
 * device instance $126 r0 *1 186.985,23.845 nfet
@@ -904,7 +904,7 @@ M$126 ny$17
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=2U W=0.48U AS=0.2016P AD=0.2016P PS=1.8U PD=1.8U
 * device instance $127 r0 *1 189.35,23.845 nfet
-M$127 a|n3|s2_y|s3_a|y$2 a|n2|s1_y|s2_a|y$3 ny$17
+M$127 a|n3|s2_y|s3_a|y$3 a|n2|s1_y|s2_a|y$1 ny$17
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.42U AS=0.1974P AD=0.1974P PS=1.78U PD=1.78U
 * device instance $128 r0 *1 195.16,23.845 nfet
@@ -914,7 +914,7 @@ M$128 ny$18
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=2U W=0.48U AS=0.2016P AD=0.2016P PS=1.8U PD=1.8U
 * device instance $129 r0 *1 197.525,23.845 nfet
-M$129 a|n4|s3_y|s4_a|y$2 a|n3|s2_y|s3_a|y$2 ny$18
+M$129 a|n4|s3_y|s4_a|y$2 a|n3|s2_y|s3_a|y$3 ny$18
 + g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3
 + nfet L=0.15U W=0.42U AS=0.1974P AD=0.1974P PS=1.78U PD=1.78U
 * device instance $130 r0 *1 203.335,23.845 nfet
@@ -937,265 +937,266 @@ M$132 a|b|d|invb_a|mn12_g1|mp24_g0|ro4|ro4_esc|sr4_d_stub|tg_d_a|y
 M$133
 + clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y
 + a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $134 r0 *1 5.31,3.53 pfet
 M$134 a|d|tg_d_a
 + a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via
 + a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $135 r0 *1 19.835,3.53 pfet
 M$135 a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y
 + a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $136 r0 *1 24.6,3.53 pfet
 M$136 a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y
 + clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y
 + a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $137 r0 *1 29.74,3.53 pfet
 M$137 a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y
 + clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y
 + a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $138 r0 *1 36.545,3.53 pfet
 M$138
 + a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y
 + a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $139 r0 *1 49.03,3.53 pfet
 M$139 a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y
 + a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via
 + a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $140 r0 *1 56.205,3.53 pfet
 M$140
 + clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y$1
 + a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $141 r0 *1 60.97,3.53 pfet
-M$141 a|d|tg_d_a$1
+M$141
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via
 + a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2$1
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $142 r0 *1 75.495,3.53 pfet
 M$142 a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y$1
 + a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y$1
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $143 r0 *1 80.26,3.53 pfet
 M$143 a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y$1
 + clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y$1
 + a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2$1
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $144 r0 *1 85.4,3.53 pfet
 M$144 a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y$1
 + clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y$1
 + a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via$1
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $145 r0 *1 92.205,3.53 pfet
 M$145
 + a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y$1
 + a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via$1
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $146 r0 *1 104.69,3.53 pfet
 M$146 a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y$1
 + a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via
 + a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via$1
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $147 r0 *1 111.865,3.53 pfet
 M$147
 + clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y$2
 + a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $148 r0 *1 116.63,3.53 pfet
 M$148 a|d|inva_a|mn12_g0|mp13_g0|ro1|ro1_esc|sr1_d_stub|tg_d_a|y
 + a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via
 + a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2$2
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $149 r0 *1 131.155,3.53 pfet
 M$149 a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y$2
 + a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y$2
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $150 r0 *1 135.92,3.53 pfet
 M$150 a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y$2
 + clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y$2
 + a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2$2
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $151 r0 *1 141.06,3.53 pfet
 M$151 a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y$2
 + clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y$2
 + a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via$2
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $152 r0 *1 147.865,3.53 pfet
 M$152
 + a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y$2
 + a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via$2
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $153 r0 *1 160.35,3.53 pfet
 M$153 a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y$2
 + a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via
 + a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via$2
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $154 r0 *1 167.525,3.53 pfet
 M$154
 + clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y$3
 + a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $155 r0 *1 172.29,3.53 pfet
-M$155 a|d|tg_d_a$2
+M$155 a|d|tg_d_a$1
 + a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via
 + a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2$3
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $156 r0 *1 186.815,3.53 pfet
 M$156 a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y$3
 + a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y$3
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $157 r0 *1 191.58,3.53 pfet
 M$157 a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y$3
 + clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y$3
 + a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2$3
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $158 r0 *1 196.72,3.53 pfet
 M$158 a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y$3
 + clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y$3
 + a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via$3
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $159 r0 *1 203.525,3.53 pfet
 M$159
 + a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y$3
 + a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via$3
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $160 r0 *1 216.01,3.53 pfet
 M$160 a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y$3
 + a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via
 + a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via$3
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $161 r0 *1 223.185,3.53 pfet
 M$161
 + clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y$4
 + a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $162 r0 *1 227.95,3.53 pfet
-M$162 a|d|tg_d_a$3
+M$162 a|d|tg_d_a$2
 + a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via
 + a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2$4
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $163 r0 *1 242.475,3.53 pfet
 M$163 a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y$4
 + a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y$4
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $164 r0 *1 247.24,3.53 pfet
 M$164 a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y$4
 + clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y$4
 + a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2$4
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $165 r0 *1 252.38,3.53 pfet
 M$165 a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y$4
 + clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y$4
 + a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via$4
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $166 r0 *1 259.185,3.53 pfet
 M$166
 + a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y$4
 + a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via$4
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $167 r0 *1 271.67,3.53 pfet
 M$167 a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y$4
 + a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via
 + a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via$4
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $168 r0 *1 278.845,3.53 pfet
 M$168
 + clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y$5
 + a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $169 r0 *1 283.61,3.53 pfet
 M$169 a|b|d|invb_a|mn12_g1|mp24_g0|ro4|ro4_esc|sr4_d_stub|tg_d_a|y
 + a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via
 + a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2$5
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $170 r0 *1 298.135,3.53 pfet
 M$170 a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y$5
 + a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y$5
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $171 r0 *1 302.9,3.53 pfet
 M$171 a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y$5
 + clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y$5
 + a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2$5
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $172 r0 *1 308.04,3.53 pfet
 M$172 a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y$5
 + clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y$5
 + a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via$5
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $173 r0 *1 314.845,3.53 pfet
 M$173
 + a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y$5
 + a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via$5
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $174 r0 *1 327.33,3.53 pfet
 M$174 a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y$5
 + a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via
 + a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via$5
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $175 r0 *1 5.775,27.375 pfet
 M$175 a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y en|en1|g_en mpa_py|mpb_py|mph_py|py
@@ -1209,44 +1210,44 @@ M$176 mpa_py|mpb_py|mph_py|py a|g_a|rn1|ro|s4_y|y
 * device instance $177 r0 *1 12.115,3.74 pfet
 M$177 a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y
 + en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $178 r0 *1 13.405,3.74 pfet
 M$178
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2
 + a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $179 r0 *1 15.075,27.375 pfet
 M$179 a|n2|s1_y|s2_a|y a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y py
 + g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr1 pfet
 + L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $180 r0 *1 23.25,27.375 pfet
-M$180 a|n3|s2_y|s3_a|y a|n2|s1_y|s2_a|y py$1
+M$180 a|n3|s2_y|s3_a|y$1 a|n2|s1_y|s2_a|y py$1
 + g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr1 pfet
 + L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $181 r0 *1 31.425,27.375 pfet
-M$181 a|n4|s3_y|s4_a|y a|n3|s2_y|s3_a|y py$2
+M$181 a|n4|s3_y|s4_a|y$3 a|n3|s2_y|s3_a|y$1 py$2
 + g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr1 pfet
 + L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $182 r0 *1 39.6,27.375 pfet
-M$182 a|g_a|rn1|ro|s4_y|y a|n4|s3_y|s4_a|y py$3
+M$182 a|g_a|rn1|ro|s4_y|y a|n4|s3_y|s4_a|y$3 py$3
 + g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr1 pfet
 + L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $183 r0 *1 42.975,3.74 pfet
 M$183 a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y
 + en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $184 r0 *1 44.265,3.74 pfet
 M$184
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y
 + a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $185 r0 *1 48.86,27.165 pfet
 M$185 a|d|inva_a|mn12_g0|mp13_g0|ro1|ro1_esc|sr1_d_stub|tg_d_a|y
@@ -1266,44 +1267,44 @@ M$187 mpa_py|mpb_py|mph_py|py$1 a|g_a|rn2|ro|s4_y|y
 * device instance $188 r0 *1 67.775,3.74 pfet
 M$188 a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y$1
 + en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $189 r0 *1 69.065,3.74 pfet
 M$189
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2$1
 + a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y$1
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $190 r0 *1 70.375,27.375 pfet
-M$190 a|n2|s1_y|s2_a|y$1 a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y$1 py$4
+M$190 a|n2|s1_y|s2_a|y$2 a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y$1 py$4
 + g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr2 pfet
 + L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $191 r0 *1 78.55,27.375 pfet
-M$191 a|n3|s2_y|s3_a|y$1 a|n2|s1_y|s2_a|y$1 py$5
+M$191 a|n3|s2_y|s3_a|y$2 a|n2|s1_y|s2_a|y$2 py$5
 + g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr2 pfet
 + L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $192 r0 *1 86.725,27.375 pfet
-M$192 a|n4|s3_y|s4_a|y$1 a|n3|s2_y|s3_a|y$1 py$6
+M$192 a|n4|s3_y|s4_a|y a|n3|s2_y|s3_a|y$2 py$6
 + g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr2 pfet
 + L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $193 r0 *1 94.9,27.375 pfet
-M$193 a|g_a|rn2|ro|s4_y|y a|n4|s3_y|s4_a|y$1 py$7
+M$193 a|g_a|rn2|ro|s4_y|y a|n4|s3_y|s4_a|y py$7
 + g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr2 pfet
 + L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $194 r0 *1 98.635,3.74 pfet
 M$194 a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y$1
 + en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $195 r0 *1 99.925,3.74 pfet
 M$195
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y$1
 + a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y$1
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $196 r0 *1 104.16,27.165 pfet
 M$196 a|b|invb_a|mn12_g1|mp24_g0|ro2|y a|g_a|rn2|ro|s4_y|y
@@ -1323,44 +1324,44 @@ M$198 mpa_py|mpb_py|mph_py|py$2 a|g_a|rn3|ro|s4_y|y
 * device instance $199 r0 *1 123.435,3.74 pfet
 M$199 a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y$2
 + en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $200 r0 *1 124.725,3.74 pfet
 M$200
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2$2
 + a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y$2
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $201 r0 *1 125.675,27.375 pfet
-M$201 a|n2|s1_y|s2_a|y$2 a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y$2 py$8
+M$201 a|n2|s1_y|s2_a|y$3 a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y$2 py$8
 + g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr3 pfet
 + L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $202 r0 *1 133.85,27.375 pfet
-M$202 a|n3|s2_y|s3_a|y$3 a|n2|s1_y|s2_a|y$2 py$9
+M$202 a|n3|s2_y|s3_a|y a|n2|s1_y|s2_a|y$3 py$9
 + g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr3 pfet
 + L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $203 r0 *1 142.025,27.375 pfet
-M$203 a|n4|s3_y|s4_a|y$3 a|n3|s2_y|s3_a|y$3 py$10
+M$203 a|n4|s3_y|s4_a|y$1 a|n3|s2_y|s3_a|y py$10
 + g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr3 pfet
 + L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $204 r0 *1 150.2,27.375 pfet
-M$204 a|g_a|rn3|ro|s4_y|y a|n4|s3_y|s4_a|y$3 py$11
+M$204 a|g_a|rn3|ro|s4_y|y a|n4|s3_y|s4_a|y$1 py$11
 + g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr3 pfet
 + L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $205 r0 *1 154.295,3.74 pfet
 M$205 a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y$2
 + en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $206 r0 *1 155.585,3.74 pfet
 M$206
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y$2
 + a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y$2
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $207 r0 *1 159.46,27.165 pfet
 M$207 a|inva_a|mn12_g0|mp13_g0|ro3|y a|g_a|rn3|ro|s4_y|y
@@ -1380,26 +1381,26 @@ M$209 mpa_py|mpb_py|mph_py|py$3 a|g_a|rn4|ro|s4_y|y
 * device instance $210 r0 *1 179.095,3.74 pfet
 M$210 a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y$3
 + en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $211 r0 *1 180.385,3.74 pfet
 M$211
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2$3
 + a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y$3
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $212 r0 *1 180.975,27.375 pfet
-M$212 a|n2|s1_y|s2_a|y$3 a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y$3 py$12
+M$212 a|n2|s1_y|s2_a|y$1 a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y$3 py$12
 + g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr4 pfet
 + L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $213 r0 *1 189.15,27.375 pfet
-M$213 a|n3|s2_y|s3_a|y$2 a|n2|s1_y|s2_a|y$3 py$13
+M$213 a|n3|s2_y|s3_a|y$3 a|n2|s1_y|s2_a|y$1 py$13
 + g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr4 pfet
 + L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $214 r0 *1 197.325,27.375 pfet
-M$214 a|n4|s3_y|s4_a|y$2 a|n3|s2_y|s3_a|y$2 py$14
+M$214 a|n4|s3_y|s4_a|y$2 a|n3|s2_y|s3_a|y$3 py$14
 + g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr4 pfet
 + L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $215 r0 *1 205.5,27.375 pfet
@@ -1409,15 +1410,15 @@ M$215 a|g_a|rn4|ro|s4_y|y a|n4|s3_y|s4_a|y$2 py$15
 * device instance $216 r0 *1 209.955,3.74 pfet
 M$216 a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y$3
 + en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $217 r0 *1 211.245,3.74 pfet
 M$217
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y$3
 + a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y$3
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $218 r0 *1 214.76,27.165 pfet
 M$218 a|b|d|invb_a|mn12_g1|mp24_g0|ro4|ro4_esc|sr4_d_stub|tg_d_a|y
@@ -1427,54 +1428,54 @@ M$218 a|b|d|invb_a|mn12_g1|mp24_g0|ro4|ro4_esc|sr4_d_stub|tg_d_a|y
 * device instance $219 r0 *1 234.755,3.74 pfet
 M$219 a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y$4
 + en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $220 r0 *1 236.045,3.74 pfet
 M$220
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2$4
 + a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y$4
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $221 r0 *1 265.615,3.74 pfet
 M$221 a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y$4
 + en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $222 r0 *1 266.905,3.74 pfet
 M$222
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y$4
 + a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y$4
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $223 r0 *1 290.415,3.74 pfet
 M$223 a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y$5
 + en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $224 r0 *1 291.705,3.74 pfet
 M$224
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2$5
 + a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y$5
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $225 r0 *1 321.275,3.74 pfet
 M$225 a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y$5
 + en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $226 r0 *1 322.565,3.74 pfet
 M$226
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y$5
 + a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y$5
-+ inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
++ a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
 + pfet L=0.15U W=0.84U AS=0.3948P AD=0.3948P PS=2.62U PD=2.62U
 * device instance $227 r0 *1 3.61,27.375 pfet
 M$227 mpa_py|mpb_py|mph_py|py

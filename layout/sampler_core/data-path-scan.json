@@ -15,11 +15,14 @@
     "channel_carries_only_this_increments_legs": true,
     "exactly_one_net_joins_ro1_to_a_sampler_d": true,
     "exactly_one_net_joins_ro4_to_a_sampler_d": true,
-    "four_sampler_d_pins_remain_unconnected": true,
+    "three_sampler_d_pins_remain_unconnected": true,
     "stub_labels_land_in_their_own_instance_column": true,
+    "sv_d_ties_directly_to_the_vdd_rail": true,
     "whole_device_population_present": true,
     "array_and_sampler_vss_are_one_net_via_the_substrate": true,
-    "array_and_sampler_vdd_are_still_two_nets": true
+    "array_and_sampler_vdd_are_still_two_nets": true,
+    "ro2_has_no_viable_rung_over_its_own_run": true,
+    "ro3_has_no_viable_rung_over_its_own_run": true
   },
   "d_columns": {
     "sb": {
@@ -283,6 +286,26 @@
       "tap_clears_south_edge": true
     }
   },
+  "rung_feasibility": {
+    "ro2": {
+      "run_x_um": [
+        20.5,
+        105.8
+      ],
+      "min_via_window_um": 0.5,
+      "viable_columns_um": [],
+      "has_viable_rung": false
+    },
+    "ro3": {
+      "run_x_um": [
+        28.47,
+        161.1
+      ],
+      "min_via_window_um": 0.5,
+      "viable_columns_um": [],
+      "has_viable_rung": false
+    }
+  },
   "channel": {
     "bbox_um": [
       -2.19,
@@ -325,7 +348,7 @@
   },
   "electrical": {
     "device_count": 264,
-    "net_count": 157,
+    "net_count": 156,
     "ro1_net": [
       "a|d|inva_a|mn12_g0|mp13_g0|ro1|ro1_esc|sr1_d_stub|tg_d_a|y"
     ],
@@ -333,7 +356,6 @@
       "a|b|d|invb_a|mn12_g1|mp24_g0|ro4|ro4_esc|sr4_d_stub|tg_d_a|y"
     ],
     "unconnected_d_nets": [
-      "a|d|tg_d_a",
       "a|d|tg_d_a",
       "a|d|tg_d_a",
       "a|d|tg_d_a"
@@ -360,6 +382,17 @@
         "in_expected_column": true
       }
     },
+    "sv_d_vdd_tie": {
+      "probed_x_um": 62.325,
+      "polygon_bbox_um": [
+        -1.33,
+        0.99,
+        327.54,
+        7.085
+      ],
+      "reaches_li1_via_pad": true,
+      "reaches_vdd_rail": true
+    },
     "shared_vss_nets": [
       "g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3"
     ],
@@ -367,7 +400,7 @@
       "vdd|vdd_b1|vdd_b2|vdd_b3|vdd_b4|vdd_x1|vdd_x2|vdd_x3"
     ],
     "sampler_vdd_nets": [
-      "inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      "a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
     ]
   }
 }

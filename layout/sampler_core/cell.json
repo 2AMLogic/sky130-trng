@@ -1448,7 +1448,22 @@
         "only two of the four ro nets that have ANY column, over their own",
         "drawn metal, that reaches the array's own south edge without crossing",
         "another net's met1. ro2 and ro3 have none -- see the README -- which",
-        "is why this increment routes two of the five data nets, not five."
+        "is why this increment routes two of the five data nets, not five.",
+        "",
+        "Issue #105 adds a fifth entry here, net 'vdd': sv's own d input is",
+        "tied to vdd in design/sampler_core.spice (sv samples raw_valid off a",
+        "fixed rail, not a ring tap), not hauled to the array. Ports 'sv_d'",
+        "(li1, sv's own d pad, x = 55.66 + 6.665 = 62.325) and 'sv_d_vdd'",
+        "(met1, same x, y=7.0) reuse Group A's own 'every_d_column_reachable",
+        "_from_above' clearance (met1 clear from the pad up to y=6.9, the",
+        "same fact every d-column stub above already relies on) one step",
+        "further, landing directly on the shared vdd rail's own met1 (y",
+        "6.915..7.085) instead of stopping at a mid-channel stub -- the same",
+        "'declare the landing port's layer equal to the target net's own",
+        "already-drawn layer' technique route_supplies used for the vdd/vss",
+        "taps, so no via is drawn at that end. See layout/sampler_core/",
+        "README.md's \"sv's d, tied directly to vdd\" for the derivation and",
+        "the geometric + electrical confirmation."
       ],
       "blocks": [
         {
@@ -1544,6 +1559,28 @@
                 },
                 "width_um": 0.17,
                 "direction_deg": 270
+              },
+              {
+                "name": "sv_d",
+                "x_um": 62.325,
+                "y_um": 1.2,
+                "layer": {
+                  "layer": 67,
+                  "datatype": 20
+                },
+                "width_um": 0.17,
+                "direction_deg": 90
+              },
+              {
+                "name": "sv_d_vdd",
+                "x_um": 62.325,
+                "y_um": 7.0,
+                "layer": {
+                  "layer": 68,
+                  "datatype": 20
+                },
+                "width_um": 0.17,
+                "direction_deg": 90
               }
             ]
           }
@@ -1615,6 +1652,19 @@
             {
               "block": "core",
               "port": "ro4_esc_m1"
+            }
+          ]
+        },
+        {
+          "net": "vdd",
+          "pins": [
+            {
+              "block": "core",
+              "port": "sv_d"
+            },
+            {
+              "block": "core",
+              "port": "sv_d_vdd"
             }
           ]
         }
