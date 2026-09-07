@@ -329,11 +329,21 @@ DR-0003 surfaces and does not resolve on its own authority.
   (`klt extract` confirms both rails fully merged into one net each, and
   confirms the composed geometry's 22-device, 11 nfet/11 pfet split matches
   `design/sampler_core.spice`'s own subckt before any signal wiring exists).
-  `klt lvs` is not yet expected to match: `rst_n`/`clk`/`clkb` fan-out and
-  the six data-path nets (`m`/`mb`/`mc`/`s`/`q`/`qb`) remain open (#27), and
-  `clk`/`clkb` specifically need a routing-plane strategy distinct from
-  `vdd`/`vss`'s own attic/basement bus (see
-  `layout/sampler_dff/README.md`'s "What remains").
+  A following increment routed the **`rst_n` fan-out** to both
+  `sampler_nand2` instances — also DRC-clean (0 violations), and `klt
+  extract` confirms `nand_m`'s and `nand_s2`'s own `a` pins and `rst_n` are
+  one physically merged net, the first data/control net in this cell wired
+  end to end. It needed three stages rather than one because each `a` pin
+  sits *inside* its own leaf cell's internal `met1` via stack: an `li1`-only
+  stub east out of the congestion, a via up to `met1`, then a second via to
+  `met3` for the long `nand_m` → `nand_s2` haul on a plane no leaf cell in
+  this assembly draws on. `klt lvs` is still not expected to match:
+  `clk`/`clkb` fan-out and the six data-path nets
+  (`m`/`mb`/`mc`/`s`/`q`/`qb`) remain open (#27), and `clk`/`clkb`
+  specifically need a routing-plane strategy distinct from `vdd`/`vss`'s own
+  attic/basement bus — though the `met3` technique `rst_n` just proved is
+  the leading candidate (see `layout/sampler_dff/README.md`'s "What
+  remains").
 
   A prior increment wired the XOR combining tree's inputs:
   that directory's

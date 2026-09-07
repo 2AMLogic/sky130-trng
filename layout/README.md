@@ -8,9 +8,12 @@ for the PDK/tool pin.
 routed — DRC-clean and electrically merged across both `sampler_nand2`
 instances.** [`layout/sampler_dff/`](sampler_dff/README.md) adds three
 routing stages on top of the previous increment's placement + `vdd`/`vss`
-buses: `rst_n_stub` moves each `sampler_nand2` instance's `a` pin (the
-`rst_n` input) 0.32 µm clear of that leaf's own internal `met1` via stack on
-its native `li1` layer (no via needed); `rst_n_met1` vias each stub tip up
+buses: `rst_n_stub` walks each `sampler_nand2` instance's `a` pin (the
+`rst_n` input) east on its native `li1` layer (no via needed) until it is
+clear of that leaf's own internal `met1` via stack — 0.57 µm for `nand_m`
+and 0.61 µm for `nand_s2`, the same escape done twice but not the same
+length, since each stub tip is snapped to a round global x (`14.0`/`44.9`)
+rather than to a fixed offset; `rst_n_met1` vias each stub tip up
 to `met1`; the final stage vias again, `met1` to `met3`/`"metal3"` role, and
 buses the whole `nand_m` → `nand_s2` span on `met3` — a plane no leaf cell
 in this assembly draws on at all, clear of every leaf's own internal

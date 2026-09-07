@@ -19,8 +19,12 @@ on the pin (the first attempt) always shorts to that blob, on either
 approach side, exactly as `gen-compose`'s own diagnostic says
 (`"self-net's drawn metal overlaps block core's own drawn pad metal on the
 route layer"`). The fix, in three additional stages on top of
-`route_supplies`: `rst_n_stub` moves each pin 0.32 µm east on `li1`/`"metal"`
-role (no via, same layer as the pin, clear of the blob) to an `_ext` point;
+`route_supplies`: `rst_n_stub` walks each pin east on `li1`/`"metal"`
+role (no via, same layer as the pin) to an `_ext` point clear of the blob —
+0.57 µm for `nand_m_a` (`x=13.43` → `14.0`) and 0.61 µm for `nand_s2_a`
+(`x=44.29` → `44.9`), the two `route_length_um` values
+`rst_n_stub.compose.response.json` reports (see "Why the two stubs are not
+the same length" below);
 `rst_n_met1` vias each `_ext` point straight up to `met1` (zero lateral
 distance, a plain single-hop via-drop, the same mechanic every `vdd`/`vss`
 leg in `route_supplies` already uses); the final stage vias again, `met1` to
@@ -48,6 +52,26 @@ No `2AMLogic/klayout-tools` friction filed for this: `cross_block_layer_role`
 sitting inside congestion), and the multi-hop `from_stage` chaining pattern
 `layout/ro_array_core/cell.json` already established handled this case fine
 once derived by hand.
+
+**Why the two stubs are not the same length.** The two escapes are identical
+in *method* — same direction (east, `direction_deg 0`), same layer, same
+re-derived local pin coordinate (`4.90, 2.71`), both instances placed at
+orientation `"none"` — but they are 0.57 µm and 0.61 µm long, not one shared
+figure. Each `_ext` tip is snapped to a round *global* x (`14.0` for
+`nand_m_a_ext`, `44.9` for `nand_s2_a_ext` — also the final `met3` bus's own
+two endpoints, hence its `route_length_um` of exactly 30.9), while the pins
+themselves land wherever each instance's placement origin puts them
+(`8.53 + 4.90 = 13.43` and `39.39 + 4.90 = 44.29`). The origins are 30.86 µm
+apart and the tips 30.9 µm apart, so the stubs differ by 0.04 µm. Neither
+stub is length-critical: what actually has to clear the internal `met1` blob
+(whose east edge lands at global `x=13.575` / `44.435`) is not the wire but
+the 0.42 µm-wide landing pad the `rst_n_met1` via drops at the tip.
+Measured on the composed `sampler_dff.gds`, that pad spans `x=13.79..14.21`
+against a blob edge at `13.575` (0.215 µm of met1-to-met1 space) and
+`x=44.69..45.11` against `44.435` (0.255 µm) — both clear, and `klt drc`
+reports 0 violations. An earlier, shorter stub put that pad too close and
+drew the second `li1.space.1` violation noted above; `14.0`/`44.9` are just
+the first round global coordinates comfortably past that bound.
 
 **A previous increment (issue #22): nine-block placement and the `vdd`/`vss`
 supply buses, both DRC-clean.** `design/sampler_core.spice`'s `.subckt
@@ -95,7 +119,7 @@ python3 layout/bin/compose-cell.py layout/sampler_dff/cell.json --check   # veri
 
 | Stage | Verdict | Evidence |
 |---|---|---|
-| `klt gen-compose` (stage `rst_n_stub`, `metal`/`li1` role) | Both `sampler_nand2` `a` pins get a 0.32 µm li1-only stub east of that leaf's internal `met1` blob — **DRC-clean on its own** (`klt drc` against `rst_n_stub.gds` directly: 0 violations) | `rst_n_stub.compose.request.json`, `rst_n_stub.compose.response.json`, `rst_n_stub.gds` |
+| `klt gen-compose` (stage `rst_n_stub`, `metal`/`li1` role) | Both `sampler_nand2` `a` pins get an li1-only stub east of that leaf's internal `met1` blob — **0.57 µm** (`nand_m_a_stub`, `x=13.43`→`14.0`) and **0.61 µm** (`nand_s2_a_stub`, `x=44.29`→`44.9`) per the response JSON's own `route_length_um`; same escape method, different lengths because the tips are snapped to round global x (see "Why the two stubs are not the same length"). **DRC-clean on its own** (`klt drc` against `rst_n_stub.gds` directly: 0 violations) | `rst_n_stub.compose.request.json`, `rst_n_stub.compose.response.json`, `rst_n_stub.gds` |
 | `klt gen-compose` (stage `rst_n_met1`, `metal2`/`met1` role) | Each stub tip vias straight up to `met1`, zero lateral distance — **0 unrouted nets** | `rst_n_met1.compose.request.json`, `rst_n_met1.compose.response.json`, `rst_n_met1.gds` |
 | `klt gen-compose` (final stage, `metal3`/`met2` role) | `rst_n` bussed the full `nand_m` → `nand_s2` span (`x=14.0..44.9`) entirely on `met3`, clear of every leaf's own `met1` usage and of the `vdd`/`vss` buses — **0 unrouted nets** | `compose.request.json`, `compose.response.json` |
 | `klt drc --deck sky130` (whole `sampler_dff.gds`) | **clean, 0 violations** — the two `li1.space.1` violations hit mid-derivation (both an `a`-pin-to-strap near-miss and a stub-pad-to-neighbour-pad near-miss, see the narrative above) are both resolved in the committed `cell.json` | `drc.json` |
