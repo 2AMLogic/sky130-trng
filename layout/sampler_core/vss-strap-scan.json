@@ -1,0 +1,272 @@
+{
+  "all_claims_hold": true,
+  "claims": {
+    "riser_tap_x_is_on_a_declared_vss_leg": true,
+    "gap1_has_the_array_internal_met1_bar": true,
+    "gap1_bar_spans_the_whole_gap": true,
+    "gap1_window_too_narrow_for_a_via": true,
+    "gap4_has_no_array_internal_bar": true,
+    "gap4_met1_matches_expected": true,
+    "gap4_met2_matches_expected": true,
+    "vss_tap_lands_on_the_risers_own_metal": true,
+    "drc_clean": true,
+    "device_count_unchanged_at_264": true,
+    "net_count_unchanged_at_153": true,
+    "strap_is_part_of_the_merged_vss_net": true
+  },
+  "array_riser_port": {
+    "vss_legs": [
+      [
+        "vss",
+        [
+          [
+            36.515,
+            -3.0
+          ],
+          [
+            57.99,
+            -3.0
+          ]
+        ]
+      ],
+      [
+        "vss",
+        [
+          [
+            91.815,
+            -3.0
+          ],
+          [
+            113.29,
+            -3.0
+          ]
+        ]
+      ],
+      [
+        "vss",
+        [
+          [
+            147.115,
+            -3.0
+          ],
+          [
+            168.59,
+            -3.0
+          ]
+        ]
+      ],
+      [
+        "vss",
+        [
+          [
+            57.99,
+            -3.425
+          ],
+          [
+            57.99,
+            -3.0
+          ]
+        ]
+      ],
+      [
+        "vss",
+        [
+          [
+            214.5,
+            -3.0
+          ],
+          [
+            214.5,
+            10.8
+          ],
+          [
+            68.745,
+            10.8
+          ]
+        ]
+      ],
+      [
+        "vss",
+        [
+          [
+            66.0,
+            10.8
+          ],
+          [
+            66.0,
+            9.6
+          ],
+          [
+            39.775,
+            9.6
+          ]
+        ]
+      ],
+      [
+        "vss",
+        [
+          [
+            39.775,
+            9.6
+          ],
+          [
+            10.805,
+            9.6
+          ]
+        ]
+      ]
+    ],
+    "tap_x_um": 214.5,
+    "tap_is_on_a_declared_vss_leg": true,
+    "leg_waypoints_um": [
+      [
+        214.5,
+        -3.0
+      ],
+      [
+        214.5,
+        10.8
+      ],
+      [
+        68.745,
+        10.8
+      ]
+    ],
+    "array_origin_y_um": 23.635,
+    "composed_y_range_um": [
+      20.635,
+      34.435,
+      34.435
+    ]
+  },
+  "gap1_superseded_attempt": {
+    "x_um": 52.0,
+    "met1_spans": [
+      [
+        -3.585,
+        -3.415
+      ],
+      [
+        6.915,
+        7.085
+      ],
+      [
+        20.125,
+        20.295
+      ]
+    ],
+    "met2_spans": [
+      [
+        -1.785,
+        -1.615
+      ],
+      [
+        4.915,
+        5.085
+      ],
+      [
+        16.915,
+        17.085
+      ],
+      [
+        18.515,
+        18.685
+      ],
+      [
+        19.315,
+        19.485
+      ],
+      [
+        20.425,
+        20.845
+      ]
+    ],
+    "met1_matches_expected_plus_one_bar": true,
+    "met2_matches_expected": true,
+    "array_bar_present": true,
+    "array_bar_x_extent_um": [
+      47.01,
+      215.485
+    ],
+    "array_bar_spans_the_whole_gap": true,
+    "window_between_ro3_and_bar_um": 0.64,
+    "via_pad_plus_clearance_needed_um": 0.7,
+    "window_too_narrow_for_a_via": true
+  },
+  "gap4_chosen_column": {
+    "x_um": 218.0,
+    "met1_spans": [
+      [
+        -3.585,
+        -3.415
+      ],
+      [
+        6.915,
+        7.085
+      ]
+    ],
+    "met2_spans": [
+      [
+        -1.785,
+        -1.615
+      ],
+      [
+        4.915,
+        5.085
+      ],
+      [
+        13.515,
+        13.685
+      ],
+      [
+        14.915,
+        15.085
+      ]
+    ],
+    "met1_matches_expected": true,
+    "met2_matches_expected": true,
+    "no_array_bar_here": true,
+    "vss_tap_lands_on_the_risers_own_metal": true,
+    "riser_composed_y_extent_um": [
+      20.425,
+      34.645
+    ]
+  },
+  "strap_ports_composed_frame_um": {
+    "vss_tap": [
+      214.5,
+      25.0
+    ],
+    "vss_dip": [
+      218.0,
+      19.9
+    ],
+    "vss_pre_vdd": [
+      218.0,
+      7.65
+    ],
+    "vss_post_vdd": [
+      218.0,
+      6.35
+    ],
+    "vss_rail_tap": [
+      218.0,
+      -3.5
+    ]
+  },
+  "final_result": {
+    "drc_status": "clean",
+    "drc_violation_count": 0,
+    "device_count": 264,
+    "net_count": 153,
+    "strap_segments_on_the_merged_vss_net": [
+      "g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_link|vss_link_bridge|vss_link_dip|vss_link_m1|vss_x1|vss_x2|vss_x3"
+    ],
+    "sampler_vss_on_the_same_net_as_the_strap": [
+      "g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_link|vss_link_bridge|vss_link_dip|vss_link_m1|vss_x1|vss_x2|vss_x3"
+    ],
+    "array_vss_tap_on_the_same_net_as_the_strap": [
+      "g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_link|vss_link_bridge|vss_link_dip|vss_link_m1|vss_x1|vss_x2|vss_x3"
+    ]
+  }
+}
