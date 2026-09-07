@@ -4,7 +4,34 @@ Physical layout evidence for the sky130-trng entropy source, verified with
 `klayout-tools` (`klt`) against the sky130 open PDK. See `layout/pdk.json`
 for the PDK/tool pin.
 
-**Status (issue #22, this increment): `sampler_dff` assembly is started —
+**Status (issue #22, this increment): `sampler_dff`'s `rst_n` fan-out is
+routed — DRC-clean and electrically merged across both `sampler_nand2`
+instances.** [`layout/sampler_dff/`](sampler_dff/README.md) adds three
+routing stages on top of the previous increment's placement + `vdd`/`vss`
+buses: `rst_n_stub` walks each `sampler_nand2` instance's `a` pin (the
+`rst_n` input) east on its native `li1` layer (no via needed) until it is
+clear of that leaf's own internal `met1` via stack — 0.57 µm for `nand_m`
+and 0.61 µm for `nand_s2`, the same escape done twice but not the same
+length, since each stub tip is snapped to a round global x (`14.0`/`44.9`)
+rather than to a fixed offset; `rst_n_met1` vias each stub tip up
+to `met1`; the final stage vias again, `met1` to `met3`/`"metal3"` role, and
+buses the whole `nand_m` → `nand_s2` span on `met3` — a plane no leaf cell
+in this assembly draws on at all, clear of every leaf's own internal
+congestion *and* of the `vdd`/`vss` buses' own `met1` bus (which spans the
+entire cell width, ruling out a "climb over the obstruction" detour on
+`met1` itself). **`klt drc` clean, 0 violations**; **`klt extract` confirms
+`nand_m`'s and `nand_s2`'s own `a` pins and `rst_n` are one physically
+merged net** (`sampler_dff.spice`'s own `.SUBCKT` pin line lists them
+together as a single label group) — the first data/control net in this cell
+routed end to end, after the previous increment's supply rails. `klt lvs`
+is still not expected to match (`clk`/`clkb` fan-out and the six data-path
+nets `m`/`mb`/`mc`/`s`/`q`/`qb` remain unwired, and no top-level cell pins
+are promoted yet) — see `layout/sampler_dff/README.md`'s "What remains" and
+its own "Why `rst_n` needed three routing stages, not one" for the full
+derivation, including two `li1.space.1` DRC violations hit and fixed along
+the way.
+
+**A previous increment (issue #22): `sampler_dff` assembly is started —
 placement plus the `vdd`/`vss` supply buses are DRC-clean.**
 [`layout/sampler_dff/`](sampler_dff/README.md) places all nine of
 `sampler_dff`'s already-composed leaf-cell instances (3x
