@@ -72,6 +72,29 @@
   §8's first-named mechanism (shared supply impedance) still has no
   layout to be measured on at any scale.
 
+- [`decision-records/DR-0007-sampler-dff-post-layout-and-reset-contention.md`](decision-records/DR-0007-sampler-dff-post-layout-and-reset-contention.md)
+  — **Proposed**. Issue #22's first sampler_dff post-layout campaign
+  (intra-cell parasitics, leaf-cell composition with ideal inter-cell
+  wires): clk→q capture delay costs 1.314x−1.418x, inside DR-0005's own
+  1.378x−1.479x ring-scale intra-cell finding; the reset window carries no
+  contention current on this topology (DR-0014's methodology, re-derived
+  for sky130); setup time is 60−150 ps post-layout and the digitizer is not
+  the combining-gate bandwidth bottleneck at any grid point where both are
+  measured. Explicitly defers the whole-cell extraction (`m`/`mb` were
+  still unrouted) — discharged by DR-0008 below.
+
+- [`decision-records/DR-0008-sampler-dff-assembled-post-layout.md`](decision-records/DR-0008-sampler-dff-assembled-post-layout.md)
+  — **Proposed**. Issue #22's whole-cell (assembled) sampler_dff post-layout
+  campaign, re-running DR-0007's own named "whole-cell extraction" follow-up
+  now that `m`/`mb` are routed and `layout/sampler_dff/`'s own `klt lvs` is a
+  full match: clk→q capture delay costs 1.704x−2.013x against pre-layout
+  (1.268x−1.425x on top of DR-0007's own intra-cell figure at the same
+  grid points), the reset window still carries no contention current
+  (unchanged from DR-0007 to within a few significant figures), and the
+  post-layout assembly is functionally correct. Explicitly does **not**
+  re-derive DR-0007's own setup-time finding, and does not supersede
+  DR-0007.
+
 A record's status is meaningful: **Proposed** means drafted and not accepted
 by anyone. Ratification is an operator decision, so no record here declares
 itself Accepted. See the repo README for scope.

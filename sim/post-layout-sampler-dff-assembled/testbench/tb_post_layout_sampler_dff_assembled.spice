@@ -1,0 +1,185 @@
+* Post-layout sampler_dff, ASSEMBLED: capture timing, output levels and the
+* reset-window / idle / active supply currents of the raw-tap digitizer,
+* from ONE flat `klt extract --parasitics` of the cell's own composed,
+* DRC-clean and klt lvs-clean GDS (layout/sampler_dff/sampler_dff.gds) --
+* real intra-cell interconnect included, not the ideal inter-leaf-cell wires
+* sim/post-layout-sampler-dff/'s own leaf-cell composition
+* (layout/pex/sampler_dff_pex.spice: three separately-extracted leaf cells,
+* wired together by that deck itself) assumes between the three leaf shapes.
+*
+* Purpose. sim/post-layout-ro-ring5-assembled/'s own header makes the same
+* move for the ring: `layout/pex/`'s leaf-cell composition has NO inter-cell
+* interconnect at all (a lower bound, by construction), so once the whole
+* cell exists as one composed, DRC/LVS-clean GDS, extracting THAT GDS
+* directly -- rather than the leaf cells wired by ideal testbench nets --
+* includes the real wiring between the leaf cells for the first time.
+* spec/decision-records/DR-0007-*.md names this exact re-run in its own
+* "Follow-up required" list: "Once layout/sampler_dff/'s m/mb nets are
+* routed and its klt lvs matches, extract that GDS flat -- the sampler's
+* equivalent of layout/pex-ring/ -- and re-run [this] deck[]. Findings 1
+* and 3 will move; DR-0006's array-scale result suggests roughly another
+* 1.5x - 1.7x on top of intra-cell alone." Both nets are now routed (mb:
+* PR #95; m: PR #99) and layout/sampler_dff/'s own klt lvs is a full match
+* (22/22 devices, 14/14 nets, 0 mismatches) -- see
+* layout/sampler_dff/README.md and layout/pex-sampler-dff-assembled/README.md.
+*
+* This deck re-runs ONLY the capture-timing/reset-contention deck
+* (sim/post-layout-sampler-dff/tb_post_layout_sampler_dff.spice's own
+* scope), not its sibling setup-time-bracket deck
+* (tb_post_layout_sampler_setup.spice) -- matching
+* sim/post-layout-ro-ring5-assembled/'s own precedent of adding one deck per
+* "assembled" increment rather than replaying every existing deck at the new
+* extraction scope. The setup-time-bracket re-run (DR-0007 finding 3) is
+* left as follow-up.
+*
+* Why a same-deck comparison against the PRE-LAYOUT cell, not against the
+* leaf-cell composition. Same argument sim/post-layout-ro-ring5-assembled/'s
+* own header makes: the two campaigns are two separate extractions (this
+* one, plus layout/pex/sampler_dff_pex.spice), so a ratio between them
+* would not be a same-deck ratio in the sense every other ratio in this repo
+* is. A reader wanting "how much did the real inter-leaf-cell wiring cost
+* beyond the ideal-wire leaf composition" compares THIS record's own
+* pex-vs-pre ratio against sim/post-layout-sampler-dff/'s own matching
+* (temp, Vdd, corner) record directly -- both grids are identical.
+*
+* Topology, stimulus, waveform and PVT grid are otherwise UNCHANGED from
+* sim/post-layout-sampler-dff/tb_post_layout_sampler_dff.spice -- see that
+* file's own header for the full narrative (the reset-contention condition,
+* the four-(temp, Vdd)-point grid, the substrate-tie rationale). The only
+* difference is which post-layout library and subcircuit name the deck
+* instantiates: `sampler_dff_assembled_pex` (this cell's own composed
+* assembly, one flat-extracted circuit) in place of `sampler_dff_pex` (a
+* wrapper hand-assembling three separately-extracted leaf cells with ideal
+* wires), and `ro_buf_pex` (layout/pex-sampler-dff-assembled/pex.json's own
+* self-contained copy of the inverter, same GDS as
+* layout/pex/pex-sampler.json's `sampler_inv_pex`) as the post-layout output
+* load in place of `sampler_inv_pex`.
+*
+* This file is a TEMPLATE: sim/bin/corner-run.py substitutes @@PDK_LIB@@,
+* @@CORNER@@, @@RO_RING5@@ (pointed at design/sampler_core.spice, as in the
+* sibling deck), @@PEX_LIB@@ (pointed at
+* layout/pex-sampler-dff-assembled/sampler_dff_assembled_pex.spice),
+* @@TEMP@@, @@VDD@@ and @@TMAX@@. As committed it is not a runnable deck.
+
+.option scale=1u
+.lib "@@PDK_LIB@@" @@CORNER@@
+
+* pre-layout subcircuit library -- design/sampler_core.spice, which carries
+* both the flat `.subckt sampler_dff` under test and the `.subckt ro_buf`
+* used as its output load on the pre-layout side.
+.include "@@RO_RING5@@"
+* post-layout ASSEMBLED subcircuit library (sampler_dff_assembled_pex +
+* its own ro_buf_pex), generated from layout/sampler_dff/'s composed GDS
+.include "@@PEX_LIB@@"
+
+.temp @@TEMP@@
+
+* --- substrate return node: hard tie (see header) ----------------------
+Vsub vsubs 0 dc 0
+
+* --- shared stimulus, identical for both sides -------------------------
+* clk: low through reset and idle, then two rising edges at 50 ns and 80 ns.
+Vclk clk 0 PWL(0 0  50n 0  50.1n @@VDD@@  60n @@VDD@@  60.1n 0
++ 80n 0  80.1n @@VDD@@  90n @@VDD@@  90.1n 0)
+* rst_n: asserted (low) for the first 25 ns, released thereafter.
+Vrstn rst_n 0 PWL(0 0  25n 0  25.1n @@VDD@@)
+* d: high across reset (the contention condition -- see header), falling at
+* 70 ns while the master is transparent so the second edge captures a 0.
+Vd d 0 PWL(0 @@VDD@@  70n @@VDD@@  70.1n 0)
+
+* --- the two DFFs under test, one supply source each --------------------
+Vddp vddp 0 dc @@VDD@@
+xdp d clk rst_n qp vddp 0 sampler_dff_assembled_pex
+Vddq vddq 0 dc @@VDD@@
+xdq d clk rst_n qq vddq 0 sampler_dff
+
+* --- output load: one inverter per side, on its own supply --------------
+* design/sampler_core.spice taps q into the digital section; loading both
+* sides identically (post-layout inverter on the post-layout DFF,
+* pre-layout inverter on the pre-layout DFF) keeps the comparison fair
+* without letting the load's own current contaminate either DFF's supply.
+Vddl vddl 0 dc @@VDD@@
+xlp qp qpb vddl 0 ro_buf_pex
+xlq qq qqb vddl 0 ro_buf
+
+.tran @@TMAX@@ 100n
+
+.control
+run
+
+* --- capture timing: clk -> q, both directions -------------------------
+* First clk rising edge (50 ns) captures d = 1; second (80 ns) captures
+* d = 0. Measured at the 50% crossing on both signals.
+meas tran tcq_rise_pex TRIG v(clk) VAL='0.5*@@VDD@@' RISE=1
++ TARG v(qp) VAL='0.5*@@VDD@@' RISE=1
+meas tran tcq_rise_pre TRIG v(clk) VAL='0.5*@@VDD@@' RISE=1
++ TARG v(qq) VAL='0.5*@@VDD@@' RISE=1
+meas tran tcq_fall_pex TRIG v(clk) VAL='0.5*@@VDD@@' RISE=2
++ TARG v(qp) VAL='0.5*@@VDD@@' FALL=1
+meas tran tcq_fall_pre TRIG v(clk) VAL='0.5*@@VDD@@' RISE=2
++ TARG v(qq) VAL='0.5*@@VDD@@' FALL=1
+
+* The headline ratios: same cell, same corner, same stimulus, parasitics
+* on vs. off.
+let slowdown_tcq_rise = tcq_rise_pex / tcq_rise_pre
+let slowdown_tcq_fall = tcq_fall_pex / tcq_fall_pre
+
+* --- captured levels: is the post-layout cell functionally correct? -----
+* After the 50 ns edge q must be a solid 1 and hold it through the 70 ns
+* d transition (the slave is opaque then); after the 80 ns edge a solid 0.
+* Worst case within each hold window, so a droop or a glitch shows up.
+meas tran vq_hi_pex MIN v(qp) from=55n to=79n
+meas tran vq_hi_pre MIN v(qq) from=55n to=79n
+meas tran vq_lo_pex MAX v(qp) from=85n to=100n
+meas tran vq_lo_pre MAX v(qq) from=85n to=100n
+let vq_hi_frac_pex = vq_hi_pex / @@VDD@@
+let vq_hi_frac_pre = vq_hi_pre / @@VDD@@
+let vq_lo_frac_pex = vq_lo_pex / @@VDD@@
+let vq_lo_frac_pre = vq_lo_pre / @@VDD@@
+
+* Reset must hold q at 0 while d drives the opposite value.
+meas tran vq_rst_pex MAX v(qp) from=15n to=25n
+meas tran vq_rst_pre MAX v(qq) from=15n to=25n
+
+* --- supply current: reset window, idle, active ------------------------
+* i(Vsrc) is negative for current delivered by the source, so every printed
+* figure is sign-flipped to read as consumed current.
+* i_rst_*  : DR-0014's contention measurement, re-derived for sky130 on
+*            this repo's own storage-loop topology (see
+*            sim/post-layout-sampler-dff/'s own header), now at the
+*            ASSEMBLED extraction scope.
+* i_idle_* : quiescent current with the clock stopped low, reset released.
+* i_act_*  : average over the whole two-edge capture sequence.
+meas tran irstp AVG i(Vddp) from=15n to=25n
+meas tran irstq AVG i(Vddq) from=15n to=25n
+meas tran iidlp AVG i(Vddp) from=35n to=45n
+meas tran iidlq AVG i(Vddq) from=35n to=45n
+meas tran iactp AVG i(Vddp) from=45n to=100n
+meas tran iactq AVG i(Vddq) from=45n to=100n
+let i_rst_pex = -irstp
+let i_rst_pre = -irstq
+let i_idle_pex = -iidlp
+let i_idle_pre = -iidlq
+let i_act_pex = -iactp
+let i_act_pre = -iactq
+
+print tcq_rise_pex
+print tcq_rise_pre
+print tcq_fall_pex
+print tcq_fall_pre
+print slowdown_tcq_rise
+print slowdown_tcq_fall
+print vq_hi_frac_pex
+print vq_hi_frac_pre
+print vq_lo_frac_pex
+print vq_lo_frac_pre
+print vq_rst_pex
+print vq_rst_pre
+print i_rst_pex
+print i_rst_pre
+print i_idle_pex
+print i_idle_pre
+print i_act_pex
+print i_act_pre
+.endc
+.end

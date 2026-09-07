@@ -4,7 +4,51 @@ Physical layout evidence for the sky130-trng entropy source, verified with
 `klayout-tools` (`klt`) against the sky130 open PDK. See `layout/pdk.json`
 for the PDK/tool pin.
 
-**Status (issue #22, this increment): `sampler_dff` is DRC-clean and `klt
+**Status (issue #22, this increment): `sampler_dff`'s own composed assembly
+GDS is now extracted with real intra-cell parasitics and re-simulated,
+the sampler-side sibling of `layout/pex-ring/`.** Now that `m`/`mb` are
+both routed (`mb`: PR #95; `m`: PR #99, previous increment below) and
+`layout/sampler_dff/`'s own `klt lvs` is a full match (22/22 devices, 14/14
+nets, 0 mismatches), `layout/sampler_dff/sampler_dff.gds` is a valid
+extraction source for the first time — the whole-cell extraction
+`spec/decision-records/DR-0007-*.md`'s own "Follow-up required" list named
+explicitly. [`layout/pex-sampler-dff-assembled/`](pex-sampler-dff-assembled/README.md)
+runs `klt extract --parasitics` directly over that GDS (22 devices, 14
+nets, matching `layout/sampler_dff/extract.json` exactly; total series R
+14.3 kΩ, total C to substrate 61.4 fF — roughly 3-4x the sum of the three
+leaf cells' own totals in `layout/pex/README.md`, consistent with real
+inter-leaf-cell routing adding cost no leaf-only sum could include), and
+`sim/post-layout-sampler-dff-assembled/` re-runs the capture-timing/
+reset-contention deck (DR-0007's own `tb_post_layout_sampler_dff.spice`
+topology, unchanged) across the same four-(temp, Vdd)-point, `tt`/`ss`/`ff`
+grid (4 records, 12 corner runs, all `PASS`). Headline: clk→q capture
+delay now costs **1.704x - 2.013x** against pre-layout (up from the
+leaf-cell composition's own 1.314x - 1.418x), i.e. **1.268x - 1.425x on top
+of** the leaf-cell figure at matching PVT/corner points — smaller than the
+~1.5x - 1.7x DR-0007 borrowed from DR-0006's *array-scale* result as a
+placeholder (a different interconnect shape, not a wrong estimate); the
+reset window still carries no contention current, agreeing with the
+leaf-cell figure to 4-5 significant figures at every grid point; and the
+assembly is functionally correct (captured levels ≥ 0.9988x Vdd high /
+≤ 0.00195x Vdd low, reset holds `q` ≤ 0.386 mV). Along the way, a latent
+bug in `layout/bin/pex-netlist.py`'s own `main()` was found and fixed: its
+generated library's own provenance header hardcoded `f"layout/pex/{name}"`
+regardless of which directory the descriptor actually lived in, so every
+descriptor outside `layout/pex/` (`layout/pex-ring/pex.json`,
+`layout/pex-array/pex.json`, and now this directory's own `pex.json`) got a
+header whose quoted `--check` command named the wrong descriptor — caught
+because this increment's own new library would otherwise have opened with
+a banner naming `layout/pex/pex.json`, a file that has nothing to do with
+it. Fixed generically (`descriptor_path()`, unit-tested for every existing
+`layout/pex*/` directory plus this one), not by special-casing this
+directory's own name. See
+[`spec/decision-records/DR-0008-*.md`](../spec/decision-records/DR-0008-sampler-dff-assembled-post-layout.md)
+for the full re-evaluation, including what it explicitly does not
+re-measure (DR-0007's own setup-time bracket, and `sampler_core`'s
+six-instance fan-out — both left as follow-up, `sampler_core` still has no
+layout at all, tracked in #27).
+
+**A previous increment (issue #22): `sampler_dff` is DRC-clean and `klt
 lvs`-clean.** The sixth and last data-path net, `m` (`TG_D.b` ↔ `NAND_M.a`
 ↔ `TG_FBM.b`), is routed across four `gen-compose` stages
 (`m_stub`/`m_met1`/`m_met2`/final), completing every net the cell needs.

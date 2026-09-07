@@ -153,15 +153,19 @@ design's.
 
 `sim/post-layout-sampler-dff/`'s two decks rebuild `sampler_dff` from these
 three cells with **ideal inter-cell wires**, and both deck headers say so.
-`layout/sampler_dff/`'s own assembly GDS is *not* extracted here: its
-`m`/`mb` data-path nets are still unrouted and its `klt lvs` therefore does
-not match yet (15/22 devices, 7/14 nets as of PR #87's `sampler_nand2`
-pin-swap fix — the deck headers, written before that fix landed, still cite
-[#84](https://github.com/2AMLogic/sky130-trng/issues/84) as a second
-reason), so a flat extraction of it would be an extraction of an
-incomplete circuit. When `m`/`mb` close, the sampler's equivalent of
-`layout/pex-ring/` becomes possible and these numbers become the intra-cell
-control for it.
+`layout/sampler_dff/`'s own assembly GDS is *not* extracted here: this
+library's whole point is the leaf-cell-composition scope (intra-cell
+parasitics, ideal inter-cell wires), which is the control every assembled
+extraction is measured against.
+
+**Both data-path nets have since routed** (`mb`: PR #95; `m`: PR #99), and
+`layout/sampler_dff/`'s own `klt lvs` is now a full match (22/22 devices,
+14/14 nets, 0 mismatches). The sampler's equivalent of `layout/pex-ring/` is
+[`layout/pex-sampler-dff-assembled/`](../pex-sampler-dff-assembled/README.md)
+-- a flat extraction of the whole composed `sampler_dff` GDS, with real
+intra-cell routing included -- and these three cells' own totals above
+remain the intra-cell-only control that extraction is measured against (see
+that directory's own README for the comparison).
 
 ## When `--check` is red because the tool moved (issue #93)
 

@@ -1,0 +1,554 @@
+|* Post-layout sampler_dff, ASSEMBLED: capture timing, output levels and the
+|* reset-window / idle / active supply currents of the raw-tap digitizer,
+|* from ONE flat `klt extract --parasitics` of the cell's own composed,
+|* DRC-clean and klt lvs-clean GDS (layout/sampler_dff/sampler_dff.gds) --
+|* real intra-cell interconnect included, not the ideal inter-leaf-cell wires
+|* sim/post-layout-sampler-dff/'s own leaf-cell composition
+|* (layout/pex/sampler_dff_pex.spice: three separately-extracted leaf cells,
+|* wired together by that deck itself) assumes between the three leaf shapes.
+|*
+|* Purpose. sim/post-layout-ro-ring5-assembled/'s own header makes the same
+|* move for the ring: `layout/pex/`'s leaf-cell composition has NO inter-cell
+|* interconnect at all (a lower bound, by construction), so once the whole
+|* cell exists as one composed, DRC/LVS-clean GDS, extracting THAT GDS
+|* directly -- rather than the leaf cells wired by ideal testbench nets --
+|* includes the real wiring between the leaf cells for the first time.
+|* spec/decision-records/DR-0007-*.md names this exact re-run in its own
+|* "Follow-up required" list: "Once layout/sampler_dff/'s m/mb nets are
+|* routed and its klt lvs matches, extract that GDS flat -- the sampler's
+|* equivalent of layout/pex-ring/ -- and re-run [this] deck[]. Findings 1
+|* and 3 will move; DR-0006's array-scale result suggests roughly another
+|* 1.5x - 1.7x on top of intra-cell alone." Both nets are now routed (mb:
+|* PR #95; m: PR #99) and layout/sampler_dff/'s own klt lvs is a full match
+|* (22/22 devices, 14/14 nets, 0 mismatches) -- see
+|* layout/sampler_dff/README.md and layout/pex-sampler-dff-assembled/README.md.
+|*
+|* This deck re-runs ONLY the capture-timing/reset-contention deck
+|* (sim/post-layout-sampler-dff/tb_post_layout_sampler_dff.spice's own
+|* scope), not its sibling setup-time-bracket deck
+|* (tb_post_layout_sampler_setup.spice) -- matching
+|* sim/post-layout-ro-ring5-assembled/'s own precedent of adding one deck per
+|* "assembled" increment rather than replaying every existing deck at the new
+|* extraction scope. The setup-time-bracket re-run (DR-0007 finding 3) is
+|* left as follow-up.
+|*
+|* Why a same-deck comparison against the PRE-LAYOUT cell, not against the
+|* leaf-cell composition. Same argument sim/post-layout-ro-ring5-assembled/'s
+|* own header makes: the two campaigns are two separate extractions (this
+|* one, plus layout/pex/sampler_dff_pex.spice), so a ratio between them
+|* would not be a same-deck ratio in the sense every other ratio in this repo
+|* is. A reader wanting "how much did the real inter-leaf-cell wiring cost
+|* beyond the ideal-wire leaf composition" compares THIS record's own
+|* pex-vs-pre ratio against sim/post-layout-sampler-dff/'s own matching
+|* (temp, Vdd, corner) record directly -- both grids are identical.
+|*
+|* Topology, stimulus, waveform and PVT grid are otherwise UNCHANGED from
+|* sim/post-layout-sampler-dff/tb_post_layout_sampler_dff.spice -- see that
+|* file's own header for the full narrative (the reset-contention condition,
+|* the four-(temp, Vdd)-point grid, the substrate-tie rationale). The only
+|* difference is which post-layout library and subcircuit name the deck
+|* instantiates: `sampler_dff_assembled_pex` (this cell's own composed
+|* assembly, one flat-extracted circuit) in place of `sampler_dff_pex` (a
+|* wrapper hand-assembling three separately-extracted leaf cells with ideal
+|* wires), and `ro_buf_pex` (layout/pex-sampler-dff-assembled/pex.json's own
+|* self-contained copy of the inverter, same GDS as
+|* layout/pex/pex-sampler.json's `sampler_inv_pex`) as the post-layout output
+|* load in place of `sampler_inv_pex`.
+|*
+|* This file is a TEMPLATE: sim/bin/corner-run.py substitutes /home/ubuntu/.volare/volare/sky130/versions/c6d73a35f524070e85faff4a6a9eef49553ebc2b/sky130A/libs.tech/combined/sky130.lib.spice,
+|* ff, /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-22/design/sampler_core.spice (pointed at design/sampler_core.spice, as in the
+|* sibling deck), /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-22/layout/pex-sampler-dff-assembled/sampler_dff_assembled_pex.spice (pointed at
+|* layout/pex-sampler-dff-assembled/sampler_dff_assembled_pex.spice),
+|* 125.0, 1.98 and 5p. As committed it is not a runnable deck.
+|
+|.option scale=1u
+|.lib "/home/ubuntu/.volare/volare/sky130/versions/c6d73a35f524070e85faff4a6a9eef49553ebc2b/sky130A/libs.tech/combined/sky130.lib.spice" ff
+|
+|* pre-layout subcircuit library -- design/sampler_core.spice, which carries
+|* both the flat `.subckt sampler_dff` under test and the `.subckt ro_buf`
+|* used as its output load on the pre-layout side.
+|.include "/home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-22/design/sampler_core.spice"
+|* post-layout ASSEMBLED subcircuit library (sampler_dff_assembled_pex +
+|* its own ro_buf_pex), generated from layout/sampler_dff/'s composed GDS
+|.include "/home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-22/layout/pex-sampler-dff-assembled/sampler_dff_assembled_pex.spice"
+|
+|.temp 125.0
+|
+|* --- substrate return node: hard tie (see header) ----------------------
+|Vsub vsubs 0 dc 0
+|
+|* --- shared stimulus, identical for both sides -------------------------
+|* clk: low through reset and idle, then two rising edges at 50 ns and 80 ns.
+|Vclk clk 0 PWL(0 0  50n 0  50.1n 1.98  60n 1.98  60.1n 0
+|+ 80n 0  80.1n 1.98  90n 1.98  90.1n 0)
+|* rst_n: asserted (low) for the first 25 ns, released thereafter.
+|Vrstn rst_n 0 PWL(0 0  25n 0  25.1n 1.98)
+|* d: high across reset (the contention condition -- see header), falling at
+|* 70 ns while the master is transparent so the second edge captures a 0.
+|Vd d 0 PWL(0 1.98  70n 1.98  70.1n 0)
+|
+|* --- the two DFFs under test, one supply source each --------------------
+|Vddp vddp 0 dc 1.98
+|xdp d clk rst_n qp vddp 0 sampler_dff_assembled_pex
+|Vddq vddq 0 dc 1.98
+|xdq d clk rst_n qq vddq 0 sampler_dff
+|
+|* --- output load: one inverter per side, on its own supply --------------
+|* design/sampler_core.spice taps q into the digital section; loading both
+|* sides identically (post-layout inverter on the post-layout DFF,
+|* pre-layout inverter on the pre-layout DFF) keeps the comparison fair
+|* without letting the load's own current contaminate either DFF's supply.
+|Vddl vddl 0 dc 1.98
+|xlp qp qpb vddl 0 ro_buf_pex
+|xlq qq qqb vddl 0 ro_buf
+|
+|.tran 5p 100n
+|
+|.control
+|run
+|
+|* --- capture timing: clk -> q, both directions -------------------------
+|* First clk rising edge (50 ns) captures d = 1; second (80 ns) captures
+|* d = 0. Measured at the 50% crossing on both signals.
+|meas tran tcq_rise_pex TRIG v(clk) VAL='0.5*1.98' RISE=1
+|+ TARG v(qp) VAL='0.5*1.98' RISE=1
+|meas tran tcq_rise_pre TRIG v(clk) VAL='0.5*1.98' RISE=1
+|+ TARG v(qq) VAL='0.5*1.98' RISE=1
+|meas tran tcq_fall_pex TRIG v(clk) VAL='0.5*1.98' RISE=2
+|+ TARG v(qp) VAL='0.5*1.98' FALL=1
+|meas tran tcq_fall_pre TRIG v(clk) VAL='0.5*1.98' RISE=2
+|+ TARG v(qq) VAL='0.5*1.98' FALL=1
+|
+|* The headline ratios: same cell, same corner, same stimulus, parasitics
+|* on vs. off.
+|let slowdown_tcq_rise = tcq_rise_pex / tcq_rise_pre
+|let slowdown_tcq_fall = tcq_fall_pex / tcq_fall_pre
+|
+|* --- captured levels: is the post-layout cell functionally correct? -----
+|* After the 50 ns edge q must be a solid 1 and hold it through the 70 ns
+|* d transition (the slave is opaque then); after the 80 ns edge a solid 0.
+|* Worst case within each hold window, so a droop or a glitch shows up.
+|meas tran vq_hi_pex MIN v(qp) from=55n to=79n
+|meas tran vq_hi_pre MIN v(qq) from=55n to=79n
+|meas tran vq_lo_pex MAX v(qp) from=85n to=100n
+|meas tran vq_lo_pre MAX v(qq) from=85n to=100n
+|let vq_hi_frac_pex = vq_hi_pex / 1.98
+|let vq_hi_frac_pre = vq_hi_pre / 1.98
+|let vq_lo_frac_pex = vq_lo_pex / 1.98
+|let vq_lo_frac_pre = vq_lo_pre / 1.98
+|
+|* Reset must hold q at 0 while d drives the opposite value.
+|meas tran vq_rst_pex MAX v(qp) from=15n to=25n
+|meas tran vq_rst_pre MAX v(qq) from=15n to=25n
+|
+|* --- supply current: reset window, idle, active ------------------------
+|* i(Vsrc) is negative for current delivered by the source, so every printed
+|* figure is sign-flipped to read as consumed current.
+|* i_rst_*  : DR-0014's contention measurement, re-derived for sky130 on
+|*            this repo's own storage-loop topology (see
+|*            sim/post-layout-sampler-dff/'s own header), now at the
+|*            ASSEMBLED extraction scope.
+|* i_idle_* : quiescent current with the clock stopped low, reset released.
+|* i_act_*  : average over the whole two-edge capture sequence.
+|meas tran irstp AVG i(Vddp) from=15n to=25n
+|meas tran irstq AVG i(Vddq) from=15n to=25n
+|meas tran iidlp AVG i(Vddp) from=35n to=45n
+|meas tran iidlq AVG i(Vddq) from=35n to=45n
+|meas tran iactp AVG i(Vddp) from=45n to=100n
+|meas tran iactq AVG i(Vddq) from=45n to=100n
+|let i_rst_pex = -irstp
+|let i_rst_pre = -irstq
+|let i_idle_pex = -iidlp
+|let i_idle_pre = -iidlq
+|let i_act_pex = -iactp
+|let i_act_pre = -iactq
+|
+|print tcq_rise_pex
+|print tcq_rise_pre
+|print tcq_fall_pex
+|print tcq_fall_pre
+|print slowdown_tcq_rise
+|print slowdown_tcq_fall
+|print vq_hi_frac_pex
+|print vq_hi_frac_pre
+|print vq_lo_frac_pex
+|print vq_lo_frac_pre
+|print vq_rst_pex
+|print vq_rst_pre
+|print i_rst_pex
+|print i_rst_pre
+|print i_idle_pex
+|print i_idle_pre
+|print i_act_pex
+|print i_act_pre
+|.endc
+|.end
+|
+
+----- stdout -----
+
+Note: No compatibility mode selected!
+
+
+Circuit: * post-layout sampler_dff, assembled: capture timing, output levels and the
+
+Doing analysis at TEMP = 125.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+vsubs                                        0
+clk                                          0
+rst_n                                        0
+d                                         1.98
+vddp                                      1.98
+xdp.xpex.clkb__t3                         1.98
+xdp.xpex.clk__t3                             0
+xdp.xpex.vss__t0                   1.44667e-08
+xdp.xpex.vss__t5                   2.40072e-09
+xdp.xpex.d__t1                            1.98
+xdp.xpex.clkb__t5                         1.98
+xdp.xpex.m__t5                         1.97942
+xdp.xpex.vss__t6                   3.84211e-09
+xdp.xpex.mc__t3                    0.000678324
+xdp.xpex.mb__t0                           1.98
+xdp.xpex.vss__t4                   1.09186e-05
+xdp.xpex.vss__t7                    5.9688e-12
+xdp.xpex.mc__t2                    0.000740927
+xdp.xpex.clk__t5                             0
+xdp.xpex.m__t4                         1.97942
+xdp.xpex.vss__t8                   2.07932e-11
+xdp.xpex.mb__t1                           1.98
+xdp.xpex.clk__t4                             0
+xdp.xpex.s__t5                            1.98
+xdp.xpex.vss__t9                   1.07574e-09
+xdp.xpex.q__t3                     0.000350056
+xdp.xpex.s__t3                            1.98
+xdp.xpex.vss__t3                   1.46187e-05
+xdp.xpex.vss__t10                  8.43714e-12
+xdp.xpex.qb__t4                           1.98
+xdp.xpex.clkb__t4                         1.98
+xdp.xpex.s__t4                            1.98
+xdp.xpex.vss__t11                  4.95895e-09
+xdp.xpex.n6__t0                        1.66253
+xdp.xpex.rst_n__t0                           0
+xdp.xpex.vss__t1                   1.24378e-08
+xdp.xpex.vss__t12                   8.5161e-10
+xdp.xpex.mb__t2                           1.98
+xdp.xpex.m__t0                         1.97942
+xdp.xpex.n6__t1                        1.66253
+xdp.xpex.vss__t14                  2.51438e-09
+xdp.xpex.n7__t1                      0.0792685
+xdp.xpex.rst_n__t1                           0
+xdp.xpex.vss__t2                   2.12493e-09
+xdp.xpex.vss__t13                  8.98165e-10
+xdp.xpex.qb__t3                           1.98
+xdp.xpex.q__t0                     0.000386007
+xdp.xpex.n7__t0                      0.0792685
+xdp.xpex.vss__t15                  3.84977e-09
+xdp.xpex.clkb__t0                         1.98
+xdp.xpex.clk__t0                             0
+xdp.xpex.vdd__t11                         1.98
+xdp.xpex.vdd__t0                          1.98
+xdp.xpex.d__t0                         1.97997
+xdp.xpex.clk__t1                             0
+xdp.xpex.m__t1                         1.97946
+xdp.xpex.vdd__t1                          1.98
+xdp.xpex.mc__t0                    0.000772358
+xdp.xpex.mb__t3                           1.98
+xdp.xpex.vdd__t12                      1.97999
+xdp.xpex.vdd__t2                          1.98
+xdp.xpex.mc__t1                    0.000772036
+xdp.xpex.clkb__t1                         1.98
+xdp.xpex.m__t2                         1.97938
+xdp.xpex.vdd__t3                          1.98
+xdp.xpex.mb__t4                           1.98
+xdp.xpex.clkb__t2                         1.98
+xdp.xpex.s__t0                            1.98
+xdp.xpex.vdd__t4                          1.98
+xdp.xpex.q__t1                     0.000421587
+xdp.xpex.s__t2                            1.98
+xdp.xpex.vdd__t13                      1.97999
+xdp.xpex.vdd__t5                          1.98
+xdp.xpex.qb__t1                           1.98
+xdp.xpex.clk__t2                             0
+xdp.xpex.s__t1                            1.98
+xdp.xpex.vdd__t6                          1.98
+xdp.xpex.mb__t6                           1.98
+xdp.xpex.rst_n__t2                           0
+xdp.xpex.vdd__t14                         1.98
+xdp.xpex.vdd__t7                          1.98
+xdp.xpex.vdd__t16                         1.98
+xdp.xpex.m__t3                         1.97942
+xdp.xpex.mb__t5                           1.98
+xdp.xpex.vdd__t8                          1.98
+xdp.xpex.qb__t2                           1.98
+xdp.xpex.rst_n__t3                           0
+xdp.xpex.vdd__t15                         1.98
+xdp.xpex.vdd__t9                          1.98
+xdp.xpex.vdd__t17                         1.98
+xdp.xpex.q__t2                     0.000386007
+xdp.xpex.qb__t0                           1.98
+xdp.xpex.vdd__t10                         1.98
+xdp.xpex.n6                            1.66253
+xdp.xpex.n7                          0.0792685
+xdp.s                                     1.98
+xdp.m                                  1.97942
+xdp.mb                                    1.98
+xdp.mc                             0.000740911
+qp                                 0.000386007
+xdp.qb                                    1.98
+xdp.clkb                                  1.98
+vddq                                      1.98
+xdq.clkb                                  1.98
+xdq.m                                  1.97939
+xdq.mb                                    1.98
+xdq.mmid                               1.66014
+xdq.mc                             0.000803108
+xdq.s                                     1.98
+qq                                 0.000403696
+xdq.qb                                    1.98
+xdq.s2mid                            0.0700514
+vddl                                      1.98
+xlp.xpex.y__t0                            1.98
+xlp.xpex.a__t0                     0.000386007
+xlp.xpex.vss__t0                   7.06553e-09
+xlp.xpex.vss__t1                   1.16394e-09
+xlp.xpex.y__t1                            1.98
+xlp.xpex.a__t1                     0.000386007
+xlp.xpex.vdd__t0                          1.98
+xlp.xpex.vdd__t1                          1.98
+qpb                                       1.98
+qqb                                       1.98
+vddl#branch                       -1.69924e-10
+vddq#branch                        -2.9274e-07
+vddp#branch                       -2.92985e-07
+vd#branch                          -2.8961e-07
+vrstn#branch                                 0
+vclk#branch                                  0
+vsub#branch                                  0
+
+ Reference value :  0.00000e+00
+ Reference value :  9.11140e-09
+ Reference value :  1.78114e-08
+ Reference value :  2.61925e-08
+ Reference value :  3.36625e-08
+ Reference value :  4.26825e-08
+ Reference value :  5.14375e-08
+ Reference value :  5.94275e-08
+ Reference value :  6.83625e-08
+ Reference value :  7.53625e-08
+ Reference value :  8.21975e-08
+ Reference value :  8.92975e-08
+ Reference value :  9.72525e-08
+No. of Data Rows : 20044
+tcq_rise_pex        =  1.37231e-10 targ=  5.01872e-08 trig=  5.00500e-08
+tcq_rise_pre        =  8.04401e-11 targ=  5.01304e-08 trig=  5.00500e-08
+tcq_fall_pex        =  1.90966e-10 targ=  8.02410e-08 trig=  8.00500e-08
+tcq_fall_pre        =  1.05112e-10 targ=  8.01551e-08 trig=  8.00500e-08
+vq_hi_pex           =  1.97852e+00 at=  6.00325e-08
+vq_hi_pre           =  1.97673e+00 at=  6.00175e-08
+vq_lo_pex           =  3.86431e-03 at=  9.01225e-08
+vq_lo_pre           =  4.55215e-03 at=  9.00875e-08
+vq_rst_pex          =  3.86007e-04 at=  2.30464e-08
+vq_rst_pre          =  4.03696e-04 at=  1.95314e-08
+irstp               =  -2.92985e-07 from=  1.50000e-08 to=  2.50005e-08
+irstq               =  -2.92740e-07 from=  1.50000e-08 to=  2.50005e-08
+iidlp               =  -5.84502e-07 from=  3.50000e-08 to=  4.50025e-08
+iidlq               =  -5.84038e-07 from=  3.50000e-08 to=  4.50025e-08
+iactp               =  -2.63666e-06 from=  4.50000e-08 to=  1.00000e-07
+iactq               =  -1.51585e-06 from=  4.50000e-08 to=  1.00000e-07
+tcq_rise_pex = 1.372311e-10
+tcq_rise_pre = 8.044008e-11
+tcq_fall_pex = 1.909662e-10
+tcq_fall_pre = 1.051118e-10
+slowdown_tcq_rise = 1.706004e+00
+slowdown_tcq_fall = 1.816791e+00
+vq_hi_frac_pex = 9.992515e-01
+vq_hi_frac_pre = 9.983495e-01
+vq_lo_frac_pex = 1.951673e-03
+vq_lo_frac_pre = 2.299068e-03
+vq_rst_pex = 3.860066e-04
+vq_rst_pre = 4.036963e-04
+i_rst_pex = 2.929845e-07
+i_rst_pre = 2.927397e-07
+i_idle_pex = 5.845020e-07
+i_idle_pre = 5.840378e-07
+i_act_pex = 2.636663e-06
+i_act_pre = 1.515847e-06
+Note: Simulation executed from .control section 
+
+----- stderr -----
+
+Checking parameters for BSIM 4.5 model xlq.xmn:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model xlq.xmp:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xlp.xpex.xn2:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xlp.xpex.xn1:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model xdq.xmfsn:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model xdq.xmfsp:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xdq.xmis2nb:nshort_model.40
+Warning: Eta0 = -0.00908636 is negative.
+
+Checking parameters for BSIM 4.5 model xdq.xmis2na:nshort_model.40
+Warning: Eta0 = -0.00908636 is negative.
+
+Checking parameters for BSIM 4.5 model xdq.xmis2pb:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xdq.xmis2pa:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xdq.xmisn:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model xdq.xmisp:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xdq.xmtsn:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model xdq.xmtsp:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xdq.xmfmn:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model xdq.xmfmp:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xdq.xmim2n:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model xdq.xmim2p:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xdq.xmimnb:nshort_model.40
+Warning: Eta0 = -0.00908636 is negative.
+
+Checking parameters for BSIM 4.5 model xdq.xmimna:nshort_model.40
+Warning: Eta0 = -0.00908636 is negative.
+
+Checking parameters for BSIM 4.5 model xdq.xmimpb:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xdq.xmimpa:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xdq.xmtdn:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model xdq.xmtdp:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xdq.xmnc:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model xdq.xmpc:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xdp.xpex.xn22:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xdp.xpex.xn21:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xdp.xpex.xn20:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xdp.xpex.xn19:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xdp.xpex.xn18:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xdp.xpex.xn17:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xdp.xpex.xn16:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xdp.xpex.xn15:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xdp.xpex.xn14:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xdp.xpex.xn13:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xdp.xpex.xn12:pshort_model.40
+Warning: A2 = 1.0885 is larger than 1. A2 is set to 1 and A1 is set to 0.
+Warning: Pdibl1 = -0.00669442 is negative.
+
+Checking parameters for BSIM 4.5 model xdp.xpex.xn11:nshort_model.40
+Warning: Eta0 = -0.00908636 is negative.
+
+Checking parameters for BSIM 4.5 model xdp.xpex.xn10:nshort_model.40
+Warning: Eta0 = -0.00908636 is negative.
+
+Checking parameters for BSIM 4.5 model xdp.xpex.xn9:nshort_model.40
+Warning: Eta0 = -0.00908636 is negative.
+
+Checking parameters for BSIM 4.5 model xdp.xpex.xn8:nshort_model.40
+Warning: Eta0 = -0.00908636 is negative.
+
+Checking parameters for BSIM 4.5 model xdp.xpex.xn7:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model xdp.xpex.xn6:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model xdp.xpex.xn5:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model xdp.xpex.xn4:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model xdp.xpex.xn3:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model xdp.xpex.xn2:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
+Checking parameters for BSIM 4.5 model xdp.xpex.xn1:nshort_model.48
+Warning: Eta0 = -0.0261666 is negative.
+
