@@ -1,0 +1,126 @@
+* Post-layout sampler_core (whole composed cell), FLOATING substrate, rings
+* 2-4 PRESENT BUT STOPPED (en2/en3/en4 held at 0 for the whole run) -- the
+* sampler_core-scope sibling of
+* sim/post-layout-ro-array-core/testbench/tb_post_layout_ro_array_core_substrate_float_solo.spice,
+* now with all six sampler_dff instances present, loaded and clocked
+* identically to the sibling _float and _tied decks (the tied deck being
+* sim/post-layout-sampler-core/testbench/tb_post_layout_sampler_core.spice's
+* own post-layout half, already run and recorded).
+*
+* Purpose: separate LOADING (the floating node's own capacitance/impedance,
+* plus everything on it that is common to all three decks) from COUPLING
+* (ring 1's period moving because rings 2-4 are actually driving the same
+* shared node), the same three-way decomposition DR-0005 (ring scope) and
+* DR-0006 (array scope) used:
+*
+*   loading  = t(this deck)                              - t(tied)
+*   coupling = t(substrate_float, all 4 rings running)    - t(this deck)
+*
+* Holding the six samplers' own clk/rst_n stimulus IDENTICAL across
+* TIED/FLOAT/SOLO (rather than omitting them here) means their own
+* contribution to substrate loading is common to all three decks and
+* cancels out of BOTH differences above -- what changes between this deck
+* and the sibling _float deck is only whether rings 2-4 are switching,
+* isolating the ring-to-ring term DR-0003 section 8 actually asks about.
+*
+* Same sampler_core_pex extraction as the sibling _tied/_float decks in
+* this directory (real physical ring/buffer/xor2/sampler-bank proximity,
+* not leaf cells hand-tied to a shared node), so this is the strongest
+* available bound on the substrate mechanism this repo has produced at
+* sampler_core scope -- still not the physical answer (the extractor emits
+* no substrate or tap resistance at all; klayout-tools#1503), but bracketing
+* the terminals of a real, physically-placed layout's own shared node.
+*
+* With en2/en3/en4 held at 0, ro_nand2's own defined-output-on-disable state
+* (design/README.md; DR-0003) pins ring2/3/4's node ro_ring5 outputs high --
+* a defined, non-switching state, not a floating one -- so rn2/rn3/rn4 (and
+* therefore ro2/ro3/ro4 and the XOR tree downstream of them) settle and stay
+* put; only ring 1 free-runs. The six samplers still latch whatever settles
+* onto their own `d` pins at each clk edge -- a defined value, not floating
+* -- so this deck's own reset/capture behaviour is not separately measured
+* (that is the sibling _tied deck's own scope); only ring 1's period and the
+* substrate node's own swing are read here.
+*
+* TWO measurement windows, matching the sibling _float deck exactly (see
+* that deck's header for the full statement). `p_tr1` (rise=3 -> rise=13)
+* is the tied deck's own estimator verbatim and, at this design's
+* post-layout ring periods, falls entirely before `rst_n` releases at
+* 300 ns -- samplers loaded and placed, not switching. `p_tr1_clk` is a
+* ten-period average taken from the first rising edge past 400 ns, inside
+* the clocked window, with all six samplers actually latching; it is
+* time-gated (`TRIG`/`TARG ... TD=400n`) rather than rise-indexed because
+* the ring period varies 3.1x across this repo's PVT grid. Only the
+* `coupling` half of the decomposition can be computed on the clocked
+* estimator, since the already-minted tied records carry no counterpart to
+* it.
+*
+* Global substrate addressing, corrected from the start (see the sibling
+* _float deck's header for DR-0006's own documented `v(xarr.vsubs)` defect
+* this deck avoids): `vsubs` is `.global`, addressed as `v(vsubs)`.
+*
+* This file is a TEMPLATE: sim/bin/corner-run.py substitutes @@PDK_LIB@@,
+* @@CORNER@@, @@TEMP@@, @@VDD@@ and @@TMAX@@. As committed it is not a
+* runnable deck. Invoke with
+* `--pex-lib layout/pex-sampler-core/sampler_core_pex.spice`.
+
+.option scale=1u
+.lib "@@PDK_LIB@@" @@CORNER@@
+
+.include "@@PEX_LIB@@"
+
+.temp @@TEMP@@
+
+* --- substrate return node: FLOATING (see header) -- no Vsub source ----
+
+Vddrp1 pvddr1 0 dc @@VDD@@
+Vddrp2 pvddr2 0 dc @@VDD@@
+Vddrp3 pvddr3 0 dc @@VDD@@
+Vddrp4 pvddr4 0 dc @@VDD@@
+Vddp pvdd 0 dc @@VDD@@
+Venp1 pen1 0 PULSE(0 @@VDD@@ 5n 100p 100p 1u 2u)
+* rings 2-4: held at 0 for the whole run -- present, but never released.
+Venp2 pen2 0 dc 0
+Venp3 pen3 0 dc 0
+Venp4 pen4 0 dc 0
+Vrstnp prst_n 0 PULSE(0 @@VDD@@ 300n 100p 100p 10u 20u)
+Vclkp pclk 0 PULSE(0 @@VDD@@ 320n 100p 100p 49.8n 100n)
+xarr pen1 pen2 pen3 pen4 pvddr1 pvddr2 pvddr3 pvddr4 pvdd 0 pclk prst_n
++ praw_bit praw_valid pring_bit1 pring_bit2 pring_bit3 pring_bit4
++ sampler_core_pex
+
+.ic v(xarr.ro1)=0 v(xarr.ro2)=0 v(xarr.ro3)=0 v(xarr.ro4)=0
+
+.save v(xarr.ro1) v(vsubs)
+
+* tstop is 600 ns, not the tied deck's 800 ns -- see the sibling _float
+* deck's own note on the same line for why that truncation is provably
+* immaterial to every number either deck reports.
+.tran @@TMAX@@ 600n uic
+
+.control
+run
+
+* --- primary estimator: identical to the tied and _float decks ---------
+meas tran pt1a when v(xarr.ro1)=0.5*@@VDD@@ rise=3
+meas tran pt1b when v(xarr.ro1)=0.5*@@VDD@@ rise=13
+let p_tr1 = (pt1b - pt1a)/10
+
+* --- second estimator: clocked window, time-gated (see header) ---------
+meas tran pd1_clk TRIG v(xarr.ro1) VAL=0.5*@@VDD@@ RISE=1 TD=400n
++ TARG v(xarr.ro1) VAL=0.5*@@VDD@@ RISE=11 TD=400n
+let p_tr1_clk = pd1_clk/10
+
+* --- shared substrate node's own excursion, two windows ----------------
+meas tran vsub_rst_max MAX v(vsubs) from=100n to=300n
+meas tran vsub_rst_min MIN v(vsubs) from=100n to=300n
+let vsub_swing_rst = (vsub_rst_max - vsub_rst_min) / @@VDD@@
+meas tran vsub_clk_max MAX v(vsubs) from=400n to=600n
+meas tran vsub_clk_min MIN v(vsubs) from=400n to=600n
+let vsub_swing_clk = (vsub_clk_max - vsub_clk_min) / @@VDD@@
+
+print p_tr1
+print p_tr1_clk
+print vsub_swing_rst
+print vsub_swing_clk
+.endc
+.end

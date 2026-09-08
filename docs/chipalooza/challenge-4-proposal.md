@@ -63,7 +63,16 @@ one DRC/LVS-clean stream. `layout/README.md` is the current record.
 (`sim/post-layout-sampler-core/`, four PVT points x three process corners,
 twelve `PASS`) — ring period slows 2.161-2.504x post-layout, all 120
 captured-value snapshots land within 0.025% of a rail, and reset-held
-sampler outputs stay ≤ 0.403 mV while the rings free-run underneath. What
+sampler outputs stay ≤ 0.403 mV while the rings free-run underneath.
+**Updated again**: the same slug now also carries the tied/float/solo
+shared-substrate bracket at whole-chain scope (eight more records,
+twenty-four more corner runs, all `PASS`), which is the measurement
+DR-0003 §8's `wstv` inter-ring decorrelation gap had been waiting on since
+that record was written — see
+[`spec/decision-records/DR-0009-*.md`](../../spec/decision-records/DR-0009-sampler-core-substrate-bracket-and-wstv-decorrelation.md).
+It narrows §8 rather than closing it, and names the residue precisely:
+shared supply impedance, §8's first-named mechanism, still has no
+`vddr1`-`vddr4` distribution layout to be measured on. What
 the brief's full sign-off bar — post-layout PVT over a DRC/LVS-clean
 **block** GDS — still lacks is any layout at all for the DR-0004 digital
 section, not a missing entropy-source-plus-sampler measurement.
@@ -511,13 +520,21 @@ that lands this document):
   `design/sampler_core.spice`'s own `.subckt sampler_core` — the whole
   entropy-source-plus-sampler population in one verified stream, and this
   document's first DRC/LVS-clean layout at analog-block scale.
-  **Still open on this bullet**: the assembled `sampler_core` post-layout
-  PVT run (its parasitic extraction has no committed evidence yet) and any
-  layout at all for the DR-0004 digital section — so the brief's full
-  sign-off bar (post-layout PVT over a DRC/LVS-clean **block** GDS) is
-  closer but not met. Top-level pin promotion, previously listed here as
-  also open, is not required for the match and is struck rather than
-  carried forward. The snapshot follows.
+  **Since that snapshot**: the assembled `sampler_core` post-layout PVT run
+  landed (`sim/post-layout-sampler-core/`, twelve `PASS` corner runs), and
+  so did the whole-chain shared-substrate tied/float/solo bracket in the
+  same slug (eight more records, twenty-four more corner runs, all `PASS`)
+  — which discharges DR-0003 §8's `wstv` inter-ring decorrelation
+  re-evaluation at the last hierarchy level that lacked it
+  ([`DR-0009`](../../spec/decision-records/DR-0009-sampler-core-substrate-bracket-and-wstv-decorrelation.md)).
+  **Still open on this bullet**: any layout at all for the DR-0004 digital
+  section — so the brief's full sign-off bar (post-layout PVT over a
+  DRC/LVS-clean **block** GDS) is close but not met on the digital half —
+  and, for §8 specifically, a `vddr1`-`vddr4` supply-distribution layout,
+  without which §8's first-named coupling mechanism cannot be measured at
+  any scale. Top-level pin promotion, previously listed here as also open,
+  is not required for the match and is struck rather than carried forward.
+  The snapshot follows.
 
   `layout/` held fourteen composed **DRC-clean
   and LVS-clean cells** at the time of writing — which was **every leaf cell

@@ -179,7 +179,7 @@ otherwise unmeasured on sky130).
 | PMOS width | 0.84 µm | placeholder | 2:1 P:N ratio **carried over from gf180-trng**. Issue #10 measured the cell's trip point at 0.805–0.844 V against a 0.81–0.99 V mid-supply across the grid, i.e. the ratio is not grossly mismatched — but that is a by-product, not a P:N sizing sweep, and no sweep was run |
 | Series-stack widths | 2× the device they replace | placeholder | rule of thumb from the source cell, not a sky130 stage-delay match measurement |
 | Starve length `lstv` | 2 µm | placeholder | gf180-trng reached 2 µm by measuring an array power rollup against its own ratified power row. **No sky130 lstv sweep exists** — both campaigns measured jitter, swing and current at this fixed value, so this row is untouched |
-| Starve width `wstv` | 0.42–0.48 µm, four 0.02 µm steps | **measured (realized ratio), placeholder (decorrelation)** | The REALIZED frequency ratio across the ladder is measured on the assembled array (`sim/ro-array-core-combining/`, `skew_span` 1.12–1.19×, well clear of small rationals). What decorrelates two *sky130* rings — the coupling a real layout would have — is **still not measured**: the array as drawn has no shared supply impedance or substrate model, so a netlist-level check can only confirm the absence of a path the netlist does not contain. Extracted parasitics now exist for the leaf cells, and DR-0005 bounds ONE coupling path (the shared substrate return node) at ≤ 0.033% of the ring period — an upper bound, unresolved above the solver's own numerical floor. The ladder itself survives the parasitics (span 1.11–1.21×). §8's first-named mechanism, shared supply impedance, still has no layout to be measured on, so this row stays **placeholder** for decorrelation (DR-0003 §8, DR-0005 §3–4) |
+| Starve width `wstv` | 0.42–0.48 µm, four 0.02 µm steps | **measured (realized ratio), placeholder (decorrelation)** | The REALIZED frequency ratio across the ladder is measured on the assembled array (`sim/ro-array-core-combining/`, `skew_span` 1.12–1.19×) and re-measured post-layout at every scope up to the whole chain, always clear of the small rationals that mutually injection-lock: closest approach 9.3% (leaf, DR-0005), and **11.2% at whole-chain scope with the substrate deliberately floating** (DR-0009, span 1.096–1.184×). What decorrelates two *sky130* rings is **still not measured**, but the reason is now specific rather than "no layout exists". DR-0009 §3 audits DR-0003 §8's three named mechanisms separately: **proximity is closed** (real placement, extracted flat at ring, array and whole-chain scope); **substrate capacitive return is bracketed, not resolved** — loading −0.650% to −0.283% and coupling +0.361% to +0.584% of ring period at whole-chain scope, 12/12 consistent in sign, but the extractor emits no substrate resistance so `tied`/`float` bracket the *terminals* of an unmodelled range (klayout-tools#1503) — and, at whole-chain scope, the six-sampler digitizer bank turns out to be a comparable or dominant aggressor on that same node, which dissolves the ring-to-ring sign consistency once it is clocking (DR-0009 §2); **shared supply impedance**, §8's first-named mechanism, is **entirely unmeasured** because `vddr1`–`vddr4` still have no distribution layout to be measured on. That last item is the single named blocker, so this row stays **placeholder** for decorrelation (DR-0003 §8, DR-0005 §3–4, DR-0006 §2–3, DR-0009 §1–3) |
 | Per-stage gain | −14.3 nominal, −11.8 worst | **measured** | `sim/ro-stage-small-signal-gain/`, three headline points. ~12× the Barkhausen minimum at any stage count in play; retires DR-0001's gain risk |
 | Ring swing (`ro_ring5`, buffered output) | 0.999–1.033 × Vdd p-p | **measured** | `sim/ro-ring5-swing-and-current/`, 12 PVT points, under this cell's own output-buffer load. The internal ring node itself swings less (0.78–0.96 × Vdd), but the BUFFERED node — what the XOR tree and liveness taps see — reaches the rails at every point measured |
 | Ring stage count | 5 | **measured, chosen** | 12–48× better `Q_ring` than 11 stages at the same points (DR-0002 §4); own-count swing re-measured and confirmed above (this table's previous row cited it as an open objection — it is now retired). `ro_ring11` remains in `design/xschem/` as a standalone characterization cell, no longer part of this hierarchy |
@@ -235,7 +235,34 @@ DR-0003 surfaces and does not resolve on its own authority.
   (status **Proposed**) it lives in [`digital/`](../digital/README.md), not
   here, and none of it is or will be a `design/*.spice` netlist. `raw_bit`
   and `raw_valid` are the interface between the two directories.
-- **Layout and DRC/LVS.** **Latest (issue #22): `sampler_core`'s first
+- **Layout and DRC/LVS.** **Latest (issue #22): the shared-substrate
+  tied/float/solo bracket, run at whole-chain (`sampler_core`) scope — the
+  last hierarchy level that had no substrate-coupling measurement of its
+  own, and the deck DR-0003 §8 has been waiting for since it was written.**
+  Two new decks in [`sim/post-layout-sampler-core/`](../sim/post-layout-sampler-core/)
+  (eight records, twenty-four corner runs, all **PASS**, same four-point
+  PVT grid × `tt`/`ss`/`ff`) complete the bracket DR-0005 ran on leaf cells
+  and DR-0006 ran on the whole array. Loading **−0.650% to −0.283%** of
+  ring period and coupling **+0.361% to +0.584%**, positive at **12 of 12**
+  grid points — the array-scope sign signature reproduced at an independent,
+  larger scope, at 2–8× the magnitude, clearing DR-0005's ring-scale
+  numerical scatter floor by 15–24× at every point. A second period
+  estimator these decks add, taken inside the clocked window with all six
+  `sampler_dff` instances actually latching, then finds the sign consistency
+  **gone** (−0.486% to +0.589%, 8 of 12 positive) — because the digitizer
+  bank is itself a first-order substrate aggressor: one ring plus a clocking
+  sampler bank puts more peak-to-peak swing on the shared node than four
+  free-running rings with the bank static at **7 of 12** grid points. The `wstv` ladder still clears every mutual-injection-lock
+  rational by ≥ 11.2% at the pessimistic (floating) terminal. **DR-0003 §8
+  is narrowed, not closed**: proximity is now closed, substrate capacitive
+  return is bracketed at three scales with an unmodelled interior
+  (klayout-tools#1503), and §8's first-named mechanism — shared supply
+  impedance — remains entirely unmeasured for want of a `vddr1`–`vddr4`
+  distribution layout, which is now the single named blocker. Full
+  statement: [`spec/decision-records/DR-0009-*.md`](../spec/decision-records/DR-0009-sampler-core-substrate-bracket-and-wstv-decorrelation.md);
+  reduction: `python3 sim/post-layout-sampler-core/analysis/substrate-bracket.py`.
+
+  **A previous increment (issue #22): `sampler_core`'s first
   whole-cell post-layout PVT simulation campaign, against real extracted
   parasitics.** [`sim/post-layout-sampler-core/`](../sim/post-layout-sampler-core/)
   drives `layout/pex-sampler-core/sampler_core_pex.spice` (the whole
@@ -263,11 +290,10 @@ DR-0003 surfaces and does not resolve on its own authority.
   timed out on its `ff` corner under heavy host contention before this
   campaign's own clean re-run superseded it —
   `sim/post-layout-sampler-core/records/20260908-032156-ef0db50.md`, kept
-  per this directory's append-only convention rather than deleted. **Still
-  open**: DR-0003 §8's `wstv` inter-ring decorrelation re-evaluation — this
+  per this directory's append-only convention rather than deleted. That
   campaign is a functional/timing/current characterization, not a coupling
-  or injection-locking study, so it does not close that gap; tracked
-  against issue #22.
+  or injection-locking study, and said so — the substrate bracket above is
+  the deck it named as still owed.
 
   **A previous increment (issue #22): `sampler_core` is extracted
   with real post-layout parasitics for the first time.**
