@@ -122,6 +122,21 @@ See "Sampler post-layout, assembled" below —
 [`spec/decision-records/DR-0008-*.md`](../spec/decision-records/DR-0008-sampler-dff-assembled-post-layout.md)
 is the full re-evaluation.
 
+Once `sampler_core` itself — the array and all six samplers wired
+together — reached a full whole-cell `klt lvs` match and its own parasitic
+extraction landed (`layout/pex-sampler-core/`), that library became a valid
+extraction source for the whole chain at once, closing the gap every slug
+above leaves open (each measures the entropy source alone or one digitizer
+alone, never both together): `post-layout-sampler-core/` drives the
+composed cell with the array's own enable/reset stimulus extended to
+release and clock all six samplers:
+
+| Slug | Claim under test | Landed by |
+|---|---|---|
+| `post-layout-sampler-core/` | the whole composed cell's ring periods, combining-node edge retention, sampler-bank reset hold, captured-value fidelity (`raw_bit`/`raw_valid`/`ring_bit1`-`ring_bit4`), and reset-held/active supply current, with real inter-block routing and the six-sampler `d`-pin fan-out load included, against the pre-layout `design/sampler_core.spice` as a same-deck control | #22 |
+
+See "Sampler post-layout, whole composed cell" below.
+
 Two rules from the root `CLAUDE.md` govern everything under this directory:
 
 - **Verification is the product.** No claim without a testbench, and PVT
@@ -1037,6 +1052,92 @@ Four records, twelve corner runs, all `PASS`:
 See `spec/decision-records/DR-0008-*.md` for the full re-evaluation of
 DR-0007's own named follow-up item, and what this record does and does not
 close.
+
+## Sampler post-layout, whole composed cell: the first whole-chain post-layout deck (issue #22)
+
+`sim/post-layout-sampler-core/` closes the gap every post-layout deck above
+leaves open: each one measures either the entropy source alone
+(`post-layout-ro-array-core/` and its ring-level siblings) or one digitizer
+in isolation, driven by an ideal PWL `d` edge, never the array's own real,
+buffer-loaded, post-layout-slowed waveform
+(`post-layout-sampler-dff/`, `post-layout-sampler-dff-assembled/`). Once
+`layout/sampler_core/` reached a full whole-cell `klt lvs` match (264/264
+devices, 152/152 nets, 0 errors) and `layout/pex-sampler-core/` extracted
+it with real parasitics (264 devices, 152 nets, 169817.28 Ω total series R,
+869.19 fF total C), that library became a valid source for a single flat
+extraction covering the whole raw-tap-to-sampled-bit chain at once:
+`tb_post_layout_sampler_core.spice` drives it with the same
+enable-then-release ring start-up `post-layout-ro-array-core/` uses,
+extended to release `rst_n` and start clocking all six `sampler_dff`
+instances partway through the run, with `design/sampler_core.spice`'s own
+`.subckt sampler_core` as a same-deck, same-corner pre-layout control.
+
+Five records, fifteen corner runs (twelve `PASS`, three from one early,
+now-superseded attempt — see "One superseded record" below):
+
+- **Ring period slows more here than in any prior post-layout scope.**
+  **2.161x - 2.504x** against the pre-layout control across the four-point
+  PVT grid (`{-40, 27, 125} °C x {1.62, 1.8, 1.98} V` at the repo's usual
+  reduced four-point sampling) x three process corners. That is larger than
+  `sampler_dff`'s own whole-cell clk→q slowdown (1.704x - 2.013x,
+  DR-0008) because this deck's parasitic model carries the *array's* real
+  inter-block routing (ring-to-buffer, buffer-to-XOR, the five raw-tap
+  nets reaching all six samplers) on top of the six-instance `d`-pin fan-out
+  load `sampler_core_pex` now presents to each ring tap — a strictly larger
+  post-layout capacitive/resistive burden than either prior scope measured
+  alone.
+- **The combining node's edge retention is not systematically worse
+  post-layout.** `p_edge_retention` (post) is 0.479 - 0.649 against
+  `edge_retention` (pre, same deck) at 0.386 - 0.642 — the two ranges
+  overlap almost entirely, so the six-sampler bank's own added loading on
+  `xo` does not measurably cost edge fidelity beyond what
+  `sim/ro-array-core-combining/`'s own pre-layout figure (0.56 - 0.68 at
+  `N = 4`) already found; the ranges differ mainly because this deck's own
+  five-cycle window is a coarser edge-counting estimator than that
+  campaign's dedicated sweep, not because of a new post-layout effect.
+- **The whole assembled cell is functionally correct end to end.** All 120
+  captured-value snapshots this campaign takes (`raw_bit`, `raw_valid`,
+  `ring_bit1`-`ring_bit4`, five clock edges x twelve corner-runs) land
+  within **0.025% of a rail** — minimum high-side reading 0.99998 x Vdd,
+  maximum low-side reading 0.000244 x Vdd — never an intermediate voltage,
+  confirming clean rail-to-rail digital levels reach every sampler's own
+  `q` output through the real routed array, real combining tree, and real
+  six-instance `clk`/`rst_n` fan-out, not just an ideal-wire composition of
+  the two sides measured separately before now.
+- **Reset-held sampler outputs stay clean while the rings free-run
+  underneath.** All six outputs (`p_vrst_bit`, `p_vrst_valid`,
+  `p_vrst_r1`-`p_vrst_r4`) stay **≤ 0.403 mV** across every one of the
+  twelve `PASS` corner-runs during the 50-250 ns reset-held window, even
+  though the rings themselves are already oscillating (`en1`-`en4` release
+  at 5 ns, well before `rst_n` releases at 300 ns) — the same
+  leakage-limited, not contention-limited, reset signature
+  `post-layout-sampler-dff-assembled/` found at the single-digitizer scope,
+  now confirmed with the array's own real switching activity present on
+  the shared `vdd` rail throughout the reset-held window.
+- **Supply current costs more than either prior scope alone.** Active-window
+  total current (rings + block combined, now on one shared `vdd`) runs
+  **1.052x - 1.234x** the pre-layout figure; reset-held,
+  **1.048x - 1.280x** — both ranges below `sampler_dff`'s own whole-cell
+  current-cost ratios (1.739x - 2.300x active, DR-0008) because this
+  deck's ratio is diluted by the four rings' own current, which the
+  digitizer-only campaigns do not carry in their own denominator.
+- **`wstv` inter-ring decorrelation remains unmeasured.** This deck is a
+  functional/timing/current characterization at one flat extraction, not a
+  coupling or injection-locking study — it does not attempt to isolate the
+  shared-substrate or shared-supply coupling path DR-0003 §8 names as the
+  open question, and does not close it. That measurement, if attempted,
+  would need a deck built specifically to probe it (e.g. comparing two
+  rings' own phase relationship with and without the shared supply/
+  substrate nets tied together), not a byproduct of this one.
+
+**One superseded record.**
+`sim/post-layout-sampler-core/records/20260908-032156-ef0db50.md` ran the
+same deck at the same PVT point (-40 °C, 1.62 V) as
+`20260908-042911-ef0db50.md` above, but its `ff` corner timed out after
+900 s under heavy host contention (`tt`/`ss` on that record did complete
+and `PASS`). Kept rather than deleted, per this directory's append-only
+convention — a timeout is not corrupted evidence, and the identical PVT
+point was cleanly re-run in full afterward.
 
 ## Writing a new record
 

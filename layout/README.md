@@ -4,7 +4,26 @@ Physical layout evidence for the sky130-trng entropy source, verified with
 `klayout-tools` (`klt`) against the sky130 open PDK. See `layout/pdk.json`
 for the PDK/tool pin.
 
-**Status (issue #22, this increment): `sampler_core` is extracted with real
+**Status (issue #22, this increment): `sampler_core`'s first whole-cell
+post-layout PVT simulation campaign lands, closing the gap every prior
+post-layout deck in this repo left open.** `sim/post-layout-sampler-core/`
+drives `layout/pex-sampler-core/sampler_core_pex.spice` (below) with the
+array's own enable/reset stimulus, extended to release and clock all six
+`sampler_dff` instances — the first deck to exercise the whole raw-tap-to-
+sampled-bit chain post-layout in one flat extraction, rather than the
+entropy source and a digitizer measured separately. Four PVT points x
+three process corners, all twelve `PASS`: ring period slows 2.161x -
+2.504x against the pre-layout control (larger than either prior scope
+alone, since this parasitic model carries both the array's own inter-block
+routing and the six-sampler `d`-pin fan-out load together); all 120
+captured-value snapshots land within 0.025% of a rail; reset-held sampler
+outputs stay ≤ 0.403 mV while the rings free-run underneath. See
+`sim/README.md` § "Sampler post-layout, whole composed cell" for the full
+write-up. Still open: DR-0003 §8's `wstv` inter-ring decorrelation
+re-evaluation — this campaign is a functional/timing/current
+characterization, not a coupling study, and does not close that gap.
+
+**A previous increment (issue #22): `sampler_core` is extracted with real
 post-layout parasitics for the first time — the whole-cell sibling of
 `layout/pex-array/` (source alone) and `layout/pex-sampler-dff-assembled/`
 (one digitizer alone).** [`layout/pex-sampler-core/`](pex-sampler-core/README.md)
@@ -23,10 +42,7 @@ this required, its order-sensitivity, and an independent union-find
 verification (152 connected components over the generated library's own
 `R` elements, matching `net_count` exactly, confirming no two instances'
 outputs are shorted despite a confusing "dup" leg-naming pattern `klt`
-itself uses) are documented in full in that directory's own README. Not
-yet attempted: a post-layout PVT simulation campaign against this library
-and DR-0003 §8's `wstv` re-evaluation — both remain open, tracked against
-this issue.
+itself uses) are documented in full in that directory's own README.
 
 **A previous increment (issue #22): `sampler_core` is now DRC-clean *and*
 LVS-clean — the first whole-cell DRC/LVS-clean `sampler_core` assembly in

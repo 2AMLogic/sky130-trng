@@ -235,7 +235,41 @@ DR-0003 surfaces and does not resolve on its own authority.
   (status **Proposed**) it lives in [`digital/`](../digital/README.md), not
   here, and none of it is or will be a `design/*.spice` netlist. `raw_bit`
   and `raw_valid` are the interface between the two directories.
-- **Layout and DRC/LVS.** **Latest (issue #22): `sampler_core` is extracted
+- **Layout and DRC/LVS.** **Latest (issue #22): `sampler_core`'s first
+  whole-cell post-layout PVT simulation campaign, against real extracted
+  parasitics.** [`sim/post-layout-sampler-core/`](../sim/post-layout-sampler-core/)
+  drives `layout/pex-sampler-core/sampler_core_pex.spice` (the whole
+  composed cell — four rings, output buffers, the XOR combining tree, and
+  all six `sampler_dff` instances, one flat extraction) with the same
+  enable/reset/clock stimulus `sim/post-layout-ro-array-core/` uses for the
+  array alone, extended to release the six samplers from reset and clock
+  them — the first deck in this repository to exercise the whole raw-tap-
+  to-sampled-bit chain post-layout in one flat netlist. Four PVT points ×
+  three process corners (the repo's established grid), all twelve **PASS**:
+  ring period slows **2.161-2.504×** against the pre-layout
+  `design/sampler_core.spice` control (a larger multiplier than
+  `sampler_dff`'s own clk→q slowdown, DR-0008, because it also carries the
+  array's own real inter-block routing and the six-instance `d`-pin fan-out
+  load, not just one cell's intra-cell parasitics); the combining node's
+  edge retention is 0.479-0.649 post-layout (0.386-0.642 pre-layout, same
+  deck, same corner — post-layout loading does not systematically depress
+  it); reset-held sampler outputs stay ≤ 0.403 mV across all twelve runs
+  while the rings free-run underneath; and all 120 captured-value
+  snapshots (`raw_bit`/`raw_valid`/`ring_bit1`-`ring_bit4`, five clock
+  edges × twelve corner-runs) land within 0.025% of a rail — clean
+  digital levels end to end, never an intermediate voltage. Active-window
+  supply current runs 1.052-1.234× the pre-layout figure, reset-held
+  1.048-1.280×. One early run at this same PVT point (-40 °C, 1.62 V)
+  timed out on its `ff` corner under heavy host contention before this
+  campaign's own clean re-run superseded it —
+  `sim/post-layout-sampler-core/records/20260908-032156-ef0db50.md`, kept
+  per this directory's append-only convention rather than deleted. **Still
+  open**: DR-0003 §8's `wstv` inter-ring decorrelation re-evaluation — this
+  campaign is a functional/timing/current characterization, not a coupling
+  or injection-locking study, so it does not close that gap; tracked
+  against issue #22.
+
+  **A previous increment (issue #22): `sampler_core` is extracted
   with real post-layout parasitics for the first time.**
   [`layout/pex-sampler-core/`](../layout/pex-sampler-core/README.md) runs
   `klt extract --parasitics` over the DRC/LVS-clean
@@ -245,9 +279,7 @@ DR-0003 surfaces and does not resolve on its own authority.
   because the six `sampler_dff` instances' own `q` pins are never promoted
   to a GDS label and so need that map to tell `raw_bit`/`raw_valid`/
   `ring_bit1`-`ring_bit4` apart; see that directory's README for the full
-  derivation and its independent union-find cross-check. Not yet attempted:
-  a post-layout PVT simulation campaign against this library and DR-0003
-  §8's `wstv` re-evaluation, both still open, tracked against issue #22.
+  derivation and its independent union-find cross-check.
 
   **A previous increment (issue #22): `sampler_core` is now
   DRC-clean *and* LVS-clean — the first whole-cell DRC/LVS-clean
