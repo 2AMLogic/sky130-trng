@@ -57,12 +57,16 @@ entropy source `ro_array_core`
 (132/132 devices, 96/96 nets), and `sampler_core` itself: the entropy
 source and all six samplers wired together, **264/264 devices, 152/152
 nets, 0 errors** — the entire `.subckt sampler_core` device population in
-one DRC/LVS-clean stream. `layout/README.md` is the current record. What
-this does **not** yet include is a post-layout PVT campaign over the
-assembled `sampler_core` (the deepest post-layout campaigns to date stop at
-`ro_array_core` and at `sampler_dff` separately), so the brief's full
-sign-off bar — post-layout PVT over a DRC/LVS-clean **block** GDS — is
-still unmet, on both counts.
+one DRC/LVS-clean stream. `layout/README.md` is the current record.
+**Updated since this paragraph was first written**: the assembled
+`sampler_core`'s own post-layout PVT campaign now exists too
+(`sim/post-layout-sampler-core/`, four PVT points x three process corners,
+twelve `PASS`) — ring period slows 2.161-2.504x post-layout, all 120
+captured-value snapshots land within 0.025% of a rail, and reset-held
+sampler outputs stay ≤ 0.403 mV while the rings free-run underneath. What
+the brief's full sign-off bar — post-layout PVT over a DRC/LVS-clean
+**block** GDS — still lacks is any layout at all for the DR-0004 digital
+section, not a missing entropy-source-plus-sampler measurement.
 Every decision record cited below (DR-0001,
 DR-0002, DR-0003, DR-0004) carries status **Proposed** — drafted, not yet
 accepted by an operator.
@@ -106,9 +110,11 @@ of its own. That last clause is now superseded: `ro_array_core`'s own `vdd`
 distribution was routed and the array reached a full `klt lvs` match
 (132/132 devices, 96/96 nets), `sampler_dff` did the same (22/22, 14/14),
 and `sampler_core` — the array and all six samplers in one cell — now does
-too (264/264, 152/152, 0 errors). What keeps the whole-block bar unmet is
-the un-laid-out digital section plus the missing assembled-`sampler_core`
-post-layout PVT run, not a missing LVS-clean array or sampler.)
+too (264/264, 152/152, 0 errors), and its own assembled post-layout PVT
+campaign has since landed as well (`sim/post-layout-sampler-core/`, twelve
+`PASS` corner-runs). What keeps the whole-block bar unmet is the
+un-laid-out digital section alone, not a missing LVS-clean array/sampler
+or a missing entropy-source-plus-sampler post-layout measurement.)
 
 ---
 

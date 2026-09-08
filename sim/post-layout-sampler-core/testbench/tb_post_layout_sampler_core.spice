@@ -1,0 +1,418 @@
+* Post-layout sampler_core: the WHOLE composed cell -- four skewed rings,
+* four output buffers, the three-xor2 combining tree, AND all six
+* sampler_dff instances (raw_bit, raw_valid, ring_bit1-4) -- extracted FLAT
+* from ONE `klt extract --parasitics` run over the now DRC-clean, klt
+* lvs-MATCHING layout/sampler_core/sampler_core.gds (264/264 devices,
+* 152/152 nets against design/sampler_core.spice's own .subckt
+* sampler_core, PR #113; extracted as layout/pex-sampler-core/README.md
+* documents, PR #114).
+*
+* Purpose (issue #22's own DR-0008-named follow-up, "sampler_core scope"):
+* every prior sampler_dff-family post-layout deck in this repo
+* (sim/post-layout-sampler-dff/, sim/post-layout-sampler-dff-assembled/)
+* drives ONE isolated sampler_dff instance from an ideal PWL `d` source --
+* never the six-instance fan-out design/sampler_core.spice actually wires,
+* and never a real (not ideal-PWL) input edge. This deck is the first to
+* close both gaps at once: xarr below is the real assembled
+* array-plus-sampler-bank, so each sampler's own `d` pin sees the real,
+* buffer-loaded, post-layout-slowed ring/combining-tree waveform sim/
+* post-layout-ro-array-core/ characterizes -- not a synthetic edge -- and
+* clock-distribution skew across all six instances' own shared `clk` fan-out
+* is present for the first time too. DR-0008's own words: "the prerequisite
+* for any whole-chain raw-tap-to-sampled-bit post-layout claim."
+*
+* Topology, post-layout side (prefix p): xarr is ONE flat-extracted cell,
+* sourced from layout/pex-sampler-core/sampler_core_pex.spice via
+* layout/bin/pex-netlist.py (shared, unmodified). `ro1`-`ro4` and `xo` --
+* the array's own raw taps, each already an internal net of the wrapper
+* `sampler_core_pex` (promoted there so its own six sampler_dff instances
+* can reach them, per layout/pex-sampler-core/README.md's alias table) --
+* are reachable at ONE level of hierarchy (`v(xarr.ro1)`, ...,
+* `v(xarr.xo)`), confirmed by this deck's own development probe before
+* committing (a first attempt at `v(xarr.xpex.ro1)`, guessing the
+* extractor's own internal `__core` instance name `xpex` was needed, came
+* back "not available or has zero length" -- `ro1`/`xo` belong to
+* `sampler_core_pex`'s OWN local scope, one level shallower than that).
+* `xo`'s own two-ring partial sum `t1` is NOT reached by this deck --
+* unlike sim/post-layout-ro-array-core/, which promotes `t1` at the very
+* same one-hierarchy-level depth this deck's own probe found for `ro1`/
+* `xo`, `t1` is internal to the array block nested one level deeper inside
+* `sampler_core_pex` (the array's own combining tree is not itself promoted
+* to `sampler_core_pex`'s local scope, only its four raw taps and the
+* fully-combined `xo` are) -- reaching it would need a second, unverified
+* hierarchy guess this deck does not spend budget confirming. The N=4
+* (`xo`) edge-retention/value-fidelity figures below are this deck's own
+* combining-fidelity claim; the N=2 (`t1`) figure sim/
+* post-layout-ro-array-core/ also reports is not re-measured here.
+*
+* Topology, pre-layout side (prefix-free): xctl is
+* design/sampler_core.spice's own parameterized `.subckt sampler_core`,
+* same-deck same-corner control, `ro1`-`ro4`/`xo` reached the identical way
+* (`v(xctl.ro1)`, ..., `v(xctl.xo)` -- local nets of `.subckt sampler_core`
+* itself, per that file's own `xdut ... ro_array_core` instantiation line).
+*
+* The substrate tie. layout/pex-sampler-core/sampler_core_pex.spice
+* declares the extractor's substrate return node `vsubs` .global
+* (klayout-tools#1503, same as every other post-layout deck in this repo).
+* This deck ties it HARD to 0, the same physically-motivated choice
+* sim/post-layout-ro-array-core/ and its own siblings use -- every composed
+* cell's own psub guard ring is tied to vss, and vss is 0 here.
+*
+* START-UP: ENABLE + RESET RELEASE, NOT `.ic` ON INTERNAL NODES -- same
+* method sim/post-layout-ro-array-core/'s own header explains for the
+* rings (en=0 pins each ro_nand2's own output high, a defined state;
+* releasing it starts the ring), extended here to the six sampler_dff
+* instances the SAME way: rst_n=0 pins each instance's own `mb`/`s2mid`/
+* `qb` internal nodes to a defined reset state (design/sampler_core.spice's
+* own `.subckt sampler_dff`, `Mimpb`/`Mimnb`/`Mis2pb`/`Mis2nb` -- the same
+* four devices sim/post-layout-sampler-dff/'s own reset-contention deck
+* exercises with an explicit PWL pulse), so releasing rst_n from a defined
+* state is exactly as valid a start-up method as `.ic`, and reaches deeper
+* into this deck's own hierarchy (six instances inside two more levels of
+* subckt nesting than sim/raw-bit-min-entropy/'s own top-level sampler_dff
+* calls) with no per-instance `.ic` ladder needed at all. This deck can use
+* a REAL transient rst_n pulse -- unlike sim/raw-bit-min-entropy/, which
+* holds rst_n permanently released because its own trnoise() sources
+* cannot coexist with ANY control-signal breakpoint in this ngspice build
+* -- because this deck injects no noise at all (a deterministic functional/
+* timing/current characterization, not a min-entropy campaign).
+*
+* Timeline. `en1`-`en4` release together at 5 ns (matching
+* sim/post-layout-ro-array-core/ exactly, so the rings reach the same
+* steady oscillation this deck's own ring-period/combining measurements
+* below can cite directly). `rst_n` releases at 300 ns -- comfortably past
+* every ring's own start-up transient at the periods that deck measures
+* (2-4 ns), so the reset-held window below (50-250 ns) is a fair "rings
+* running, samplers held in reset" baseline, not a start-up artifact.
+* `clk` begins pulsing at 320 ns, Ts = 100 ns (the same disclosed,
+* measured compute-budget deviation from DR-0003's Ts = 20 us that
+* sim/raw-bit-min-entropy/'s own header justifies at length -- this deck's
+* own tstop of 800 ns gives five rising clk edges, 320-720 ns, comfortably
+* inside that window). No trnoise() source anywhere in this deck, so no
+* control-signal-breakpoint conflict of the kind that forces
+* sim/raw-bit-min-entropy/ to hold every control signal at `dc`.
+*
+* What "captured value" means here, and what it does NOT claim. With no
+* injected noise, `raw_bit`/`raw_valid`/`ring_bit1`-`ring_bit4` are fully
+* deterministic functions of the free-running rings' own phase at each
+* `clk` edge -- this deck reports FIVE discrete snapshots per side (one
+* per sample instant, at the 50 ns mark inside each `clk` low phase, where
+* every sampler's own slave stage is opaque and holding) to confirm the
+* whole assembled, post-layout cell produces clean rail-to-rail digital
+* levels end to end (not an intermediate voltage, not floating) when
+* driven by its own real ring taps through its own real routing -- NOT a
+* min-entropy or jitter claim (that remains sim/raw-bit-min-entropy/'s own
+* scope, at the pre-layout netlist level only). Pre- and post-layout
+* snapshots at the SAME nominal sample instant are NOT expected to agree
+* bit-for-bit: post-layout parasitics measurably slow the array (this
+* deck's own p_tr*/tr* ratio below quantifies exactly how much), so the
+* two sides' sampler_dff instances can legitimately latch different phases
+* of each ring's own free-running waveform at the same nominal clock edge.
+* That divergence is itself the mechanism this whole entropy source
+* depends on, not a defect in either side.
+*
+* Window / memory. Without an explicit `.save`, ngspice retains a
+* full-resolution trace for every internal parasitic-star leg node this
+* flat extraction introduces (264 devices' worth, on TOP of the samplers'
+* own leg nodes) -- confirmed to exhaust available process memory outright
+* during this deck's own development (`Error: memory required ... is more
+* than memory available`), the same failure
+* sim/post-layout-ro-array-core/'s own header names for the array alone.
+* `.save` below keeps only the traces every `.meas` statement actually
+* reads.
+*
+* This file is a TEMPLATE: sim/bin/corner-run.py substitutes @@PDK_LIB@@,
+* @@CORNER@@, @@TEMP@@, @@VDD@@ and @@TMAX@@. As committed it is not a
+* runnable deck. Invoke with `--ro-ring5 design/sampler_core.spice` and
+* `--pex-lib layout/pex-sampler-core/sampler_core_pex.spice`.
+
+.option scale=1u
+.lib "@@PDK_LIB@@" @@CORNER@@
+
+* pre-layout subcircuit library -- design/sampler_core.spice, which carries
+* the flat `.subckt sampler_core` under test (and, inside it, `.subckt
+* sampler_dff`/`ro_array_core`/etc unmodified).
+.include "@@RO_RING5@@"
+* post-layout WHOLE-CELL subcircuit library (sampler_core_pex), generated
+* from layout/sampler_core/'s composed, DRC-clean, klt lvs-matching GDS.
+.include "@@PEX_LIB@@"
+
+.temp @@TEMP@@
+
+* --- substrate return node: hard tie (see header) ----------------------
+Vsub vsubs 0 dc 0
+
+* --- post-layout WHOLE CELL, one flat-extracted circuit ----------------
+Vddrp1 pvddr1 0 dc @@VDD@@
+Vddrp2 pvddr2 0 dc @@VDD@@
+Vddrp3 pvddr3 0 dc @@VDD@@
+Vddrp4 pvddr4 0 dc @@VDD@@
+Vddp pvdd 0 dc @@VDD@@
+Venp1 pen1 0 PULSE(0 @@VDD@@ 5n 100p 100p 1u 2u)
+Venp2 pen2 0 PULSE(0 @@VDD@@ 5n 100p 100p 1u 2u)
+Venp3 pen3 0 PULSE(0 @@VDD@@ 5n 100p 100p 1u 2u)
+Venp4 pen4 0 PULSE(0 @@VDD@@ 5n 100p 100p 1u 2u)
+Vrstnp prst_n 0 PULSE(0 @@VDD@@ 300n 100p 100p 10u 20u)
+Vclkp pclk 0 PULSE(0 @@VDD@@ 320n 100p 100p 49.8n 100n)
+xarr pen1 pen2 pen3 pen4 pvddr1 pvddr2 pvddr3 pvddr4 pvdd 0 pclk prst_n
++ praw_bit praw_valid pring_bit1 pring_bit2 pring_bit3 pring_bit4
++ sampler_core_pex
+
+* --- pre-layout control, identical topology, single-call subckt --------
+Vddr1 vddr1 0 dc @@VDD@@
+Vddr2 vddr2 0 dc @@VDD@@
+Vddr3 vddr3 0 dc @@VDD@@
+Vddr4 vddr4 0 dc @@VDD@@
+Vdd vdd 0 dc @@VDD@@
+Ven1 en1 0 PULSE(0 @@VDD@@ 5n 100p 100p 1u 2u)
+Ven2 en2 0 PULSE(0 @@VDD@@ 5n 100p 100p 1u 2u)
+Ven3 en3 0 PULSE(0 @@VDD@@ 5n 100p 100p 1u 2u)
+Ven4 en4 0 PULSE(0 @@VDD@@ 5n 100p 100p 1u 2u)
+Vrstn rst_n 0 PULSE(0 @@VDD@@ 300n 100p 100p 10u 20u)
+Vclk clk 0 PULSE(0 @@VDD@@ 320n 100p 100p 49.8n 100n)
+xctl en1 en2 en3 en4 vddr1 vddr2 vddr3 vddr4 vdd 0 clk rst_n
++ raw_bit raw_valid ring_bit1 ring_bit2 ring_bit3 ring_bit4
++ sampler_core
+
+.ic v(xarr.ro1)=0 v(xarr.ro2)=0 v(xarr.ro3)=0 v(xarr.ro4)=0
+.ic v(xctl.ro1)=0 v(xctl.ro2)=0 v(xctl.ro3)=0 v(xctl.ro4)=0
+
+* Limit the saved transient trace set to exactly what the .meas statements
+* below need (see header -- this is a hard memory requirement here, not an
+* optimization).
+.save v(xarr.ro1) v(xarr.ro2) v(xarr.ro3) v(xarr.ro4) v(xarr.xo)
+.save v(xctl.ro1) v(xctl.ro2) v(xctl.ro3) v(xctl.ro4) v(xctl.xo)
+.save v(praw_bit) v(praw_valid) v(pring_bit1) v(pring_bit2) v(pring_bit3) v(pring_bit4)
+.save v(raw_bit) v(raw_valid) v(ring_bit1) v(ring_bit2) v(ring_bit3) v(ring_bit4)
+.save i(Vddrp1) i(Vddrp2) i(Vddrp3) i(Vddrp4) i(Vddp)
+.save i(Vddr1) i(Vddr2) i(Vddr3) i(Vddr4) i(Vdd)
+
+.tran @@TMAX@@ 800n uic
+
+.control
+run
+
+* ==========================================================================
+* POST-LAYOUT WHOLE CELL
+* ==========================================================================
+
+* --- per-ring periods, 10 whole periods each, first two rising edges
+* discarded as start-up (identical estimator to
+* sim/post-layout-ro-array-core/) ----------------------------------------
+meas tran pt1a when v(xarr.ro1)=0.5*@@VDD@@ rise=3
+meas tran pt1b when v(xarr.ro1)=0.5*@@VDD@@ rise=13
+let p_tr1 = (pt1b - pt1a)/10
+meas tran pt2a when v(xarr.ro2)=0.5*@@VDD@@ rise=3
+meas tran pt2b when v(xarr.ro2)=0.5*@@VDD@@ rise=13
+let p_tr2 = (pt2b - pt2a)/10
+meas tran pt3a when v(xarr.ro3)=0.5*@@VDD@@ rise=3
+meas tran pt3b when v(xarr.ro3)=0.5*@@VDD@@ rise=13
+let p_tr3 = (pt3b - pt3a)/10
+meas tran pt4a when v(xarr.ro4)=0.5*@@VDD@@ rise=3
+meas tran pt4b when v(xarr.ro4)=0.5*@@VDD@@ rise=13
+let p_tr4 = (pt4b - pt4a)/10
+let p_f_ideal = 1/p_tr1 + 1/p_tr2 + 1/p_tr3 + 1/p_tr4
+
+* --- combining node (N=4, xo): swing, realized edge rate, value bias, now
+* under the six-sampler bank's own real capacitive loading + clk-dependent
+* switching -----------------------------------------------------------
+meas tran pvxo_max MAX v(xarr.xo) from=100n to=800n
+meas tran pvxo_min MIN v(xarr.xo) from=100n to=800n
+let p_swing_frac_xo = (pvxo_max - pvxo_min) / @@VDD@@
+meas tran ptxo_a when v(xarr.xo)=0.5*@@VDD@@ rise=2
+meas tran ptxo_b when v(xarr.xo)=0.5*@@VDD@@ rise=50
+let p_f_xo = 48/(ptxo_b - ptxo_a)
+let p_edge_retention = p_f_xo / p_f_ideal
+meas tran pvxo_avg AVG v(xarr.xo) from=100n to=800n
+let p_bias_xo = pvxo_avg / @@VDD@@
+
+* --- reset-held check: all six sampler outputs must stay near 0 while
+* rst_n is still asserted (0-300n), regardless of the rings' own toggling
+* -------------------------------------------------------------------
+meas tran p_vrst_bit MAX v(praw_bit) from=50n to=250n
+meas tran p_vrst_valid MAX v(praw_valid) from=50n to=250n
+meas tran p_vrst_r1 MAX v(pring_bit1) from=50n to=250n
+meas tran p_vrst_r2 MAX v(pring_bit2) from=50n to=250n
+meas tran p_vrst_r3 MAX v(pring_bit3) from=50n to=250n
+meas tran p_vrst_r4 MAX v(pring_bit4) from=50n to=250n
+
+* --- captured-value snapshots, one per clk period, 50 ns into each low
+* (opaque/holding) phase -------------------------------------------------
+meas tran p_bit_400n find v(praw_bit) at=400n
+meas tran p_bit_500n find v(praw_bit) at=500n
+meas tran p_bit_600n find v(praw_bit) at=600n
+meas tran p_bit_700n find v(praw_bit) at=700n
+meas tran p_bit_800n find v(praw_bit) at=800n
+meas tran p_valid_400n find v(praw_valid) at=400n
+meas tran p_r1_400n find v(pring_bit1) at=400n
+meas tran p_r2_400n find v(pring_bit2) at=400n
+meas tran p_r3_400n find v(pring_bit3) at=400n
+meas tran p_r4_400n find v(pring_bit4) at=400n
+
+* --- supply current: reset-held window (50-250n) vs. active/sampling
+* window (400-800n), rings and block (buffers+xor tree+six samplers,
+* which now share `vdd` with the array) reported separately -----------
+meas tran pi1_rst AVG i(Vddrp1) from=50n to=250n
+meas tran pi2_rst AVG i(Vddrp2) from=50n to=250n
+meas tran pi3_rst AVG i(Vddrp3) from=50n to=250n
+meas tran pi4_rst AVG i(Vddrp4) from=50n to=250n
+meas tran pib_rst AVG i(Vddp) from=50n to=250n
+let p_i_rings_rst = -(pi1_rst + pi2_rst + pi3_rst + pi4_rst)
+let p_i_block_rst = -pib_rst
+let p_i_total_rst = p_i_rings_rst + p_i_block_rst
+
+meas tran pi1_act AVG i(Vddrp1) from=400n to=800n
+meas tran pi2_act AVG i(Vddrp2) from=400n to=800n
+meas tran pi3_act AVG i(Vddrp3) from=400n to=800n
+meas tran pi4_act AVG i(Vddrp4) from=400n to=800n
+meas tran pib_act AVG i(Vddp) from=400n to=800n
+let p_i_rings_act = -(pi1_act + pi2_act + pi3_act + pi4_act)
+let p_i_block_act = -pib_act
+let p_i_total_act = p_i_rings_act + p_i_block_act
+
+* ==========================================================================
+* PRE-LAYOUT CONTROL -- identical estimators, identical node names
+* ==========================================================================
+
+meas tran t1a when v(xctl.ro1)=0.5*@@VDD@@ rise=3
+meas tran t1b when v(xctl.ro1)=0.5*@@VDD@@ rise=13
+let tr1 = (t1b - t1a)/10
+meas tran t2a when v(xctl.ro2)=0.5*@@VDD@@ rise=3
+meas tran t2b when v(xctl.ro2)=0.5*@@VDD@@ rise=13
+let tr2 = (t2b - t2a)/10
+meas tran t3a when v(xctl.ro3)=0.5*@@VDD@@ rise=3
+meas tran t3b when v(xctl.ro3)=0.5*@@VDD@@ rise=13
+let tr3 = (t3b - t3a)/10
+meas tran t4a when v(xctl.ro4)=0.5*@@VDD@@ rise=3
+meas tran t4b when v(xctl.ro4)=0.5*@@VDD@@ rise=13
+let tr4 = (t4b - t4a)/10
+let f_ideal = 1/tr1 + 1/tr2 + 1/tr3 + 1/tr4
+
+meas tran vxo_max MAX v(xctl.xo) from=100n to=800n
+meas tran vxo_min MIN v(xctl.xo) from=100n to=800n
+let swing_frac_xo = (vxo_max - vxo_min) / @@VDD@@
+meas tran txo_a when v(xctl.xo)=0.5*@@VDD@@ rise=2
+meas tran txo_b when v(xctl.xo)=0.5*@@VDD@@ rise=50
+let f_xo = 48/(txo_b - txo_a)
+let edge_retention = f_xo / f_ideal
+meas tran vxo_avg AVG v(xctl.xo) from=100n to=800n
+let bias_xo = vxo_avg / @@VDD@@
+
+meas tran vrst_bit MAX v(raw_bit) from=50n to=250n
+meas tran vrst_valid MAX v(raw_valid) from=50n to=250n
+meas tran vrst_r1 MAX v(ring_bit1) from=50n to=250n
+meas tran vrst_r2 MAX v(ring_bit2) from=50n to=250n
+meas tran vrst_r3 MAX v(ring_bit3) from=50n to=250n
+meas tran vrst_r4 MAX v(ring_bit4) from=50n to=250n
+
+meas tran bit_400n find v(raw_bit) at=400n
+meas tran bit_500n find v(raw_bit) at=500n
+meas tran bit_600n find v(raw_bit) at=600n
+meas tran bit_700n find v(raw_bit) at=700n
+meas tran bit_800n find v(raw_bit) at=800n
+meas tran valid_400n find v(raw_valid) at=400n
+meas tran r1_400n find v(ring_bit1) at=400n
+meas tran r2_400n find v(ring_bit2) at=400n
+meas tran r3_400n find v(ring_bit3) at=400n
+meas tran r4_400n find v(ring_bit4) at=400n
+
+meas tran i1_rst AVG i(Vddr1) from=50n to=250n
+meas tran i2_rst AVG i(Vddr2) from=50n to=250n
+meas tran i3_rst AVG i(Vddr3) from=50n to=250n
+meas tran i4_rst AVG i(Vddr4) from=50n to=250n
+meas tran ib_rst AVG i(Vdd) from=50n to=250n
+let i_rings_rst = -(i1_rst + i2_rst + i3_rst + i4_rst)
+let i_block_rst = -ib_rst
+let i_total_rst = i_rings_rst + i_block_rst
+
+meas tran i1_act AVG i(Vddr1) from=400n to=800n
+meas tran i2_act AVG i(Vddr2) from=400n to=800n
+meas tran i3_act AVG i(Vddr3) from=400n to=800n
+meas tran i4_act AVG i(Vddr4) from=400n to=800n
+meas tran ib_act AVG i(Vdd) from=400n to=800n
+let i_rings_act = -(i1_act + i2_act + i3_act + i4_act)
+let i_block_act = -ib_act
+let i_total_act = i_rings_act + i_block_act
+
+* --- headline ratios: same block, same corner, real inter-block/intra-cell
+* wiring + real sampler loading vs. pre-layout (no interconnect, ideal
+* devices only) ----------------------------------------------------------
+let slowdown_r1 = p_tr1 / tr1
+let slowdown_r2 = p_tr2 / tr2
+let slowdown_r3 = p_tr3 / tr3
+let slowdown_r4 = p_tr4 / tr4
+let i_total_act_ratio = p_i_total_act / i_total_act
+let i_total_rst_ratio = p_i_total_rst / i_total_rst
+
+print p_tr1
+print p_tr2
+print p_tr3
+print p_tr4
+print p_f_ideal
+print p_f_xo
+print p_edge_retention
+print p_bias_xo
+print p_swing_frac_xo
+print p_vrst_bit
+print p_vrst_valid
+print p_vrst_r1
+print p_vrst_r2
+print p_vrst_r3
+print p_vrst_r4
+print p_bit_400n
+print p_bit_500n
+print p_bit_600n
+print p_bit_700n
+print p_bit_800n
+print p_valid_400n
+print p_r1_400n
+print p_r2_400n
+print p_r3_400n
+print p_r4_400n
+print p_i_rings_rst
+print p_i_block_rst
+print p_i_total_rst
+print p_i_rings_act
+print p_i_block_act
+print p_i_total_act
+
+print tr1
+print tr2
+print tr3
+print tr4
+print f_ideal
+print f_xo
+print edge_retention
+print bias_xo
+print swing_frac_xo
+print vrst_bit
+print vrst_valid
+print vrst_r1
+print vrst_r2
+print vrst_r3
+print vrst_r4
+print bit_400n
+print bit_500n
+print bit_600n
+print bit_700n
+print bit_800n
+print valid_400n
+print r1_400n
+print r2_400n
+print r3_400n
+print r4_400n
+print i_rings_rst
+print i_block_rst
+print i_total_rst
+print i_rings_act
+print i_block_act
+print i_total_act
+
+print slowdown_r1
+print slowdown_r2
+print slowdown_r3
+print slowdown_r4
+print i_total_act_ratio
+print i_total_rst_ratio
+.endc
+.end
