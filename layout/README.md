@@ -4,7 +4,30 @@ Physical layout evidence for the sky130-trng entropy source, verified with
 `klayout-tools` (`klt`) against the sky130 open PDK. See `layout/pdk.json`
 for the PDK/tool pin.
 
-**Status (issue #22, this increment): `sampler_core`'s first whole-cell
+**Status (issue #22, this increment): the shared-substrate tied/float/solo
+bracket, run at whole-chain (`sampler_core`) scope.** This is the deck
+DR-0003 §8 has been waiting for and the last hierarchy level DR-0006's own
+follow-up list named as having no substrate-coupling measurement of its own.
+Two new decks in `sim/post-layout-sampler-core/` (eight records,
+twenty-four corner runs, all `PASS`) give loading **-0.650% to -0.283%** of
+ring period and coupling **+0.361% to +0.584%**, positive at **12 of 12**
+grid points — the array-scope sign signature reproduced at a larger scope
+and 2-8x the magnitude. A second estimator taken inside the clocked window,
+with all six `sampler_dff` instances actually latching, then finds that
+consistency **gone** (-0.486% to +0.589%, 8 of 12 positive), because the
+digitizer bank is itself a first-order aggressor on the shared node: one
+ring plus a clocking sampler bank out-swings four free-running rings with
+the bank static at 7 of 12 grid points. The `wstv` ladder still
+clears every mutual-injection-lock rational by >= 11.2% at the floating
+terminal. **DR-0003 §8 is narrowed, not closed** — proximity is closed,
+substrate capacitive return is bracketed with an unmodelled interior
+(klayout-tools#1503), and §8's first-named mechanism (shared supply
+impedance) is still unmeasurable for want of a `vddr1`-`vddr4` distribution
+layout, which `layout/`'s own "Still open" list already names and which is
+now the single named blocker. Full statement:
+[`spec/decision-records/DR-0009-*.md`](../spec/decision-records/DR-0009-sampler-core-substrate-bracket-and-wstv-decorrelation.md).
+
+**A previous increment (issue #22): `sampler_core`'s first whole-cell
 post-layout PVT simulation campaign lands, closing the gap every prior
 post-layout deck in this repo left open.** `sim/post-layout-sampler-core/`
 drives `layout/pex-sampler-core/sampler_core_pex.spice` (below) with the
@@ -19,9 +42,9 @@ routing and the six-sampler `d`-pin fan-out load together); all 120
 captured-value snapshots land within 0.025% of a rail; reset-held sampler
 outputs stay ≤ 0.403 mV while the rings free-run underneath. See
 `sim/README.md` § "Sampler post-layout, whole composed cell" for the full
-write-up. Still open: DR-0003 §8's `wstv` inter-ring decorrelation
-re-evaluation — this campaign is a functional/timing/current
-characterization, not a coupling study, and does not close that gap.
+write-up. That campaign is a functional/timing/current characterization,
+not a coupling study, and said so — the substrate bracket above is the deck
+it named as still owed.
 
 **A previous increment (issue #22): `sampler_core` is extracted with real
 post-layout parasitics for the first time — the whole-cell sibling of

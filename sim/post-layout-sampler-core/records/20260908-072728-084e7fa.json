@@ -1,0 +1,146 @@
+{
+  "record_id": "20260908-072728-084e7fa",
+  "slug": "post-layout-sampler-core",
+  "claim": "post-layout sampler_core substrate bracket, FLOAT (vsubs untied, all four rings running, six samplers clocked), nominal PVT point (27 degC, 1.8 V) -- the sampler_core-scope sibling of DR-0006's array-scope inter-ring substrate-coupling bracket, DR-0003 section 8",
+  "level": "transistor",
+  "seed": "N/A (deterministic small-signal .noise analysis, not Monte Carlo)",
+  "pvt": {
+    "temp_c": 27.0,
+    "vdd_v": 1.8
+  },
+  "tran": {
+    "tmax": "5p",
+    "noise_amp": "2.0e-3"
+  },
+  "testbench": "sim/post-layout-sampler-core/testbench/tb_post_layout_sampler_core_substrate_float.spice",
+  "netlists": {
+    "RO_RING5": {
+      "path": "design/ro_ring5.spice",
+      "sha256": "19dccb82a3e9a1239d509a03e645954f79a857ab3b11e41a2a53faa105b58ea4"
+    },
+    "PEX_LIB": {
+      "path": "layout/pex-sampler-core/sampler_core_pex.spice",
+      "sha256": "2bad455e86e882ad47c42e4a62c44c7edb0ab5c78f02d00b0e2a75b995dad4f4"
+    }
+  },
+  "pdk": {
+    "variant": "sky130A",
+    "installed_commit": "c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+    "pin_commit": "c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+    "matches_pin": true,
+    "lib_file": "/Users/rwalters/.volare/volare/sky130/versions/c6d73a35f524070e85faff4a6a9eef49553ebc2b/sky130A/libs.tech/combined/sky130.lib.spice"
+  },
+  "tools": {
+    "ngspice": "** ngspice-46 : Circuit level simulation program",
+    "python": "3.14.7",
+    "os": "macOS-26.6.2-arm64-arm-64bit-Mach-O"
+  },
+  "repo_state": {
+    "sha": "084e7fa",
+    "branch": "feature/issue-22",
+    "dirty": true
+  },
+  "corners": [
+    {
+      "corner": "tt",
+      "ok": true,
+      "returncode": 0,
+      "measurements": {
+        "pt1a": 1.5059e-08,
+        "pt1b": 8.14379e-08,
+        "pt2a": 2.09961e-08,
+        "pt2b": 8.44093e-08,
+        "pt3a": 2.03606e-08,
+        "pt3b": 8.10718e-08,
+        "pt4a": 1.97413e-08,
+        "pt4b": 7.78754e-08,
+        "p_tr1": 6.637896e-09,
+        "p_tr2": 6.341321e-09,
+        "p_tr3": 6.071122e-09,
+        "p_tr4": 5.813406e-09,
+        "p_skew_span": 1.141826,
+        "p_tr1_clk": 6.618445e-09,
+        "p_tr2_clk": 6.302935e-09,
+        "p_tr3_clk": 6.070377e-09,
+        "p_tr4_clk": 5.823883e-09,
+        "p_skew_span_clk": 1.136432,
+        "vsub_swing_rst": 0.1509672,
+        "vsub_swing_clk": 0.1912343
+      },
+      "onoise_min": null,
+      "onoise_max": null,
+      "onoise_spread_ratio": null,
+      "problems": [],
+      "log": "corners/tt.log"
+    },
+    {
+      "corner": "ss",
+      "ok": true,
+      "returncode": 0,
+      "measurements": {
+        "pt1a": 1.7286e-08,
+        "pt1b": 9.84824e-08,
+        "pt2a": 1.67369e-08,
+        "pt2b": 9.42132e-08,
+        "pt3a": 1.63274e-08,
+        "pt3b": 9.03154e-08,
+        "pt4a": 1.58389e-08,
+        "pt4b": 8.66029e-08,
+        "p_tr1": 8.119639e-09,
+        "p_tr2": 7.747628e-09,
+        "p_tr3": 7.398798e-09,
+        "p_tr4": 7.076401e-09,
+        "p_skew_span": 1.147425,
+        "p_tr1_clk": 8.084006e-09,
+        "p_tr2_clk": 7.666206e-09,
+        "p_tr3_clk": 7.390765e-09,
+        "p_tr4_clk": 7.121293e-09,
+        "p_skew_span_clk": 1.135188,
+        "vsub_swing_rst": 0.1518677,
+        "vsub_swing_clk": 0.1277457
+      },
+      "onoise_min": null,
+      "onoise_max": null,
+      "onoise_spread_ratio": null,
+      "problems": [],
+      "log": "corners/ss.log"
+    },
+    {
+      "corner": "ff",
+      "ok": true,
+      "returncode": 0,
+      "measurements": {
+        "pt1a": 1.90676e-08,
+        "pt1b": 7.45673e-08,
+        "pt2a": 1.84589e-08,
+        "pt2b": 7.1703e-08,
+        "pt3a": 1.7941e-08,
+        "pt3b": 6.90318e-08,
+        "pt4a": 1.74638e-08,
+        "pt4b": 6.64536e-08,
+        "p_tr1": 5.549964e-09,
+        "p_tr2": 5.324409e-09,
+        "p_tr3": 5.109083e-09,
+        "p_tr4": 4.898978e-09,
+        "p_skew_span": 1.132882,
+        "p_tr1_clk": 5.534279e-09,
+        "p_tr2_clk": 5.317426e-09,
+        "p_tr3_clk": 5.110366e-09,
+        "p_tr4_clk": 4.909417e-09,
+        "p_skew_span_clk": 1.127278,
+        "vsub_swing_rst": 0.1443371,
+        "vsub_swing_clk": 0.1399868
+      },
+      "onoise_min": null,
+      "onoise_max": null,
+      "onoise_spread_ratio": null,
+      "problems": [],
+      "log": "corners/ff.log"
+    }
+  ],
+  "overall": "PASS",
+  "subset_reason": null,
+  "supersedes": "(none)",
+  "author": "ci@loom.test",
+  "timestamp_utc": "2026-09-08T07:56:15.312847+00:00"
+}

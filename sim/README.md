@@ -134,8 +134,10 @@ release and clock all six samplers:
 | Slug | Claim under test | Landed by |
 |---|---|---|
 | `post-layout-sampler-core/` | the whole composed cell's ring periods, combining-node edge retention, sampler-bank reset hold, captured-value fidelity (`raw_bit`/`raw_valid`/`ring_bit1`-`ring_bit4`), and reset-held/active supply current, with real inter-block routing and the six-sampler `d`-pin fan-out load included, against the pre-layout `design/sampler_core.spice` as a same-deck control | #22 |
+| `post-layout-sampler-core/` (two more decks, same slug) | the tied/float/solo **shared-substrate bracket** at whole-chain scope — the `sampler_core`-scope sibling of DR-0005's ring-scale and DR-0006's array-scale brackets, and the last hierarchy level DR-0006 named as having no substrate-coupling measurement of its own | #22 |
 
-See "Sampler post-layout, whole composed cell" below.
+See "Sampler post-layout, whole composed cell" below, and
+"Whole-chain substrate bracket" after it.
 
 Two rules from the root `CLAUDE.md` govern everything under this directory:
 
@@ -1138,6 +1140,108 @@ same deck at the same PVT point (-40 °C, 1.62 V) as
 and `PASS`). Kept rather than deleted, per this directory's append-only
 convention — a timeout is not corrupted evidence, and the identical PVT
 point was cleanly re-run in full afterward.
+
+## Whole-chain substrate bracket: DR-0003 §8, measured at the last remaining scope (issue #22)
+
+The section above closes with "**`wstv` inter-ring decorrelation remains
+unmeasured** … that measurement, if attempted, would need a deck built
+specifically to probe it". Two more decks in the same slug are that deck,
+completing the tied/float/solo bracket DR-0005 ran at ring scope and DR-0006
+ran at array scope, at the one hierarchy level DR-0006's own "Follow-up
+required" section named as still missing:
+
+| Testbench | What it holds fixed | What it answers |
+|---|---|---|
+| `tb_post_layout_sampler_core.spice` (already run, PR #115) | `vsubs` tied hard to 0 | the zero-coupling baseline — an ideal substrate cannot carry a signal |
+| `tb_post_layout_sampler_core_substrate_float.spice` | `vsubs` untied (the extractor's 1 TΩ dc tie); four rings running, six samplers clocked | the pessimistic coupling bound, now with the whole raw-tap-to-sampled-bit chain on one physically-placed substrate |
+| `tb_post_layout_sampler_core_substrate_float_solo.spice` | `vsubs` untied; rings 2-4 present but **stopped**, six samplers clocked | separates the floating node's capacitive *loading* from actual inter-ring *coupling* |
+
+Eight records, twenty-four corner runs, all `PASS`, over the same four
+(temp, Vdd) points × `tt`/`ss`/`ff` grid every post-layout campaign in this
+file uses. `python3 sim/post-layout-sampler-core/analysis/substrate-bracket.py`
+reduces them (no simulator, no PDK — pure arithmetic over the committed
+records) and reproduces every number below.
+[`spec/decision-records/DR-0009-*.md`](../spec/decision-records/DR-0009-sampler-core-substrate-bracket-and-wstv-decorrelation.md)
+states what this does and does not settle; headline results:
+
+- **The bracket widens monotonically with scope, and the array-scope sign
+  signature reproduces.** Loading **−0.650% to −0.283%** of ring period,
+  coupling **+0.361% to +0.584%**, with the coupling figure positive at
+  **12 of 12** grid points — the same sign consistency DR-0006 first saw at
+  array scope, now at 2-8× the magnitude and clearing DR-0005's ring-scale
+  numerical period-scatter floor (0.024% of `T_0`) by 15-24× at every point,
+  against 1 of 12 at ring scope. Across the three scopes the progression is
+  monotone in both columns:
+
+  | Scope | loading | coupling |
+  |---|---|---|
+  | leaf cells (DR-0005) | −0.151% to −0.057% | −0.033% to +0.018% (mixed sign) |
+  | whole array (DR-0006) | −0.353% to −0.192% | +0.044% to +0.293% (12/12 positive) |
+  | whole chain (DR-0009) | −0.650% to −0.283% | +0.361% to +0.584% (12/12 positive) |
+
+- **But the digitizer bank switching on the same node dissolves that
+  signature.** The float/solo decks carry a second period estimator DR-0006
+  had no equivalent of — ten periods taken from the first rising edge past
+  400 ns, i.e. inside the clocked window with all six `sampler_dff`
+  instances actually latching (the shared estimator's own thirteen edges all
+  land before `rst_n` releases at 300 ns, so finding 1 is measured with the
+  samplers loaded but static). In the clocked window the coupling figure is
+  **−0.486% to +0.589%, only 8 of 12 positive**: comparable magnitude, no
+  consistent direction.
+- **The reason, measured directly**: the shared substrate node's own
+  peak-to-peak swing, as a fraction of Vdd. This also discharges DR-0006's
+  own follow-up asking for a deck that captures that swing — its array-scope
+  decks addressed the `.global` node hierarchically (`v(xarr.vsubs)`) and
+  silently read nothing; these use `v(vsubs)`.
+
+  | Window | Four rings (float) | One ring (solo) |
+  |---|---|---|
+  | reset-held (100-300 ns), samplers static | 9.94% - 15.36% | 6.12% - 6.43% |
+  | clocked (400-600 ns), samplers latching | 11.66% - 19.12% | **6.55% - 16.87%** |
+
+  With only one ring running, releasing the samplers takes the node from a
+  tight 6.12-6.43% band to 6.55-16.87%. Compared per grid point rather than
+  by range — one ring plus a clocking sampler bank against four free-running
+  rings with the bank static, same corner — **the sampler bank wins at 7 of
+  12 points**. At whole-chain scope the bank is a comparable or dominant
+  aggressor, not a perturbation, which is why the ring-to-ring term stops
+  being separable in sign once it is switching.
+- **DR-0003 §8's own ladder criterion still holds at the pessimistic
+  terminal.** Measured on the float deck itself: realized ladder span
+  1.0964× - 1.1843× (reset-held) / 1.0792× - 1.1719× (clocked), and the
+  closest approach any ring pair makes to a mutual-injection-lock rational
+  (2/1, 3/2, 4/3) anywhere on the grid is **11.2%** — consistent with
+  DR-0005's 9.3% and DR-0006's own finding, now with the whole chain in the
+  netlist and the substrate deliberately floating.
+- **DR-0003 §8 is narrowed, not closed.** DR-0009's finding 3 audits §8's
+  three named mechanisms separately for the first time: *proximity* is
+  closed (real placement, extracted at every scale), *substrate capacitive
+  return* is bracketed at three scales but its interior is unmodelled
+  (klayout-tools#1503), and *shared supply impedance* — §8's first-named
+  mechanism — is still entirely unmeasured because `vddr1`-`vddr4` have no
+  distribution layout to be measured on. That last item is now the single
+  named blocker.
+
+**A deliberate deck difference, stated rather than left to be discovered.**
+These two decks stop at `tstop = 600 ns` where the tied deck runs to 800 ns.
+Every measurement they take completes by ~530 ns even at the slowest corner
+on the grid, and a transient is causal, so the truncation cannot move any
+number either deck reports — in particular the shared `p_tr1` estimator,
+measured before 100 ns, is the same quantity the tied deck's own 800 ns run
+measured. It buys back ~25% of a run that costs roughly an hour per corner.
+
+**A `PEX_LIB` provenance note, not a re-stamp.** All eight records name
+`layout/pex-sampler-core/sampler_core_pex.spice` by sha256, as measured.
+`python3 layout/bin/pex-netlist.py layout/pex-sampler-core/pex.json --check`
+is **red** on today's ambient `klt 0.4.0` against `layout/pdk.json`'s
+`0.3.0+gc6dbf66c53c6` pin. That was characterized during this campaign
+rather than assumed: all 19 differing nets have **identical** resistance,
+capacitance, RC model, per-terminal leg resistance and terminal-letter
+multiset, and the only difference is renumbered anonymous `$NNN` device
+ids — the same labelling-instability class `layout/pex-ring/`'s own
+issue-#96 analysis found (and klayout-tools#1065 / #1559 already track), not
+the value-moving class `layout/pex-array/` hit. Nothing here is superseded;
+the numbers stand against the committed library.
 
 ## Writing a new record
 
