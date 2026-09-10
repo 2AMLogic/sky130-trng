@@ -45,6 +45,45 @@ append-only record rules through `sim/bin/evidence_record.py`'s
 | `digital-section-behavioral/` | do the assembled section's health tests, start-up gate, latch-and-gate policy, raw-path invariant and mode-switch flush behave as DR-0004 specifies, over declared synthetic sources? | #20 |
 | `digital-rtl-equivalence/` | does `digital/rtl/trng_digital.v` match the normative behavioural model cycle for cycle? | #20 |
 
+Issue #117 then added this repository's first **`level: gate`** record:
+`digital-rtl-equivalence/`'s RTL is one implementation of the normative
+model, but nothing before #117 ever mapped it onto real standard cells.
+`digital/flow/{unconstrained,constrained-50khz}/` are committed `klt
+synthesize` requests against `sky130_fd_sc_hd` at `tt_025C_1v80`
+(`spec/porting-plan.md` §3.2's "gate-level record conventions… once/if a
+synthesis+STA flow exists" — this is that flow's first increment).
+`klt equiv` (the `"yosys-sequential"` register-correspondence engine — the
+default combinational engine is a hard scope error on a design with
+flip-flops) proves both mapped netlists sequentially equivalent to the
+source RTL, and `gate_cosim.py` re-runs `digital-rtl-equivalence/`'s own
+directed stimulus program against each mapped netlist via Icarus + the
+`sky130_fd_sc_hd` Verilog cell models:
+
+| Slug | Claim under test | Landed by |
+|---|---|---|
+| `digital-synthesis/` | cell count, area, Liberty-summed leakage and ABC's pre-layout critical-path estimate for `trng_digital.v` mapped onto `sky130_fd_sc_hd`, unconstrained and at the block's own 50 kHz sample clock; RTL↔gate equivalence; gate-level cosim against the same directed program `digital-rtl-equivalence/` uses | #117 |
+
+### The `level: gate` convention (issue #117)
+
+`level:` values used so far: `behavioral` (a bit-exact Python model or an
+RTL/testbench simulation — `digital-rtl-equivalence/` and everything above
+it in this section) and now `gate` (a **mapped, standard-cell netlist**
+produced by a synthesis engine, verified against RTL via formal
+equivalence, and re-simulated through the real cell models). A `level:
+gate` record differs from a `behavioral` one in exactly one structural way:
+it carries a `klt provenance` block (`klt_version`, the resolved PDK
+name/version, the Liberty deck's `content_hash`, and the source RTL's own
+`content_hash`) lifted directly from `klt synthesize`/`klt equiv`'s own
+JSON response, alongside the usual `mint_behavioral_record()` seed/tool/
+artifact fields — the same discipline `sim/pdk.json`'s commit pin gives an
+ngspice corner run, adapted for a digital tool that resolves its own PDK
+asset per invocation rather than reading a fixed `.lib.spice` path. A
+`level: gate` record is still **not** signoff timing/power: no
+place-and-route has run (a later `level: gate-simulation`/post-route
+record, DR-0021/DR-0022-style per `spec/porting-plan.md` §3.2, would be
+that), so `Fmax`/leakage claims at this level stay pre-layout estimates,
+stated as such.
+
 Issue #21 then closed the one gap every campaign above left open: none of
 them ever digitizes an actual noise-driven raw bit. It drives the same
 assembled `ro_array_core` + `sampler_dff` path from injected per-stage

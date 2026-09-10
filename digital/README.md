@@ -103,14 +103,55 @@ python3 sim/digital-health-test-parameters/analysis/health-test-cutoffs.py
 python3 sim/digital-conditioner-equivalence/harness/conditioner-equivalence.py
 python3 sim/digital-section-behavioral/harness/digital-section-campaign.py
 python3 sim/digital-rtl-equivalence/harness/rtl-cosim.py          # needs iverilog
+
+# synthesis against sky130_fd_sc_hd, klt-equiv proof, gate-level cosim
+python3 sim/digital-synthesis/harness/synthesize-and-verify.py --emit-record   # needs klt, iverilog
+```
+
+## Synthesis (issue #117)
+
+`digital/flow/{unconstrained,constrained-50khz}/synthesize-trng-digital*.json`
+are committed `klt synthesize` requests against `sky130_fd_sc_hd` at
+`tt_025C_1v80`: one unconstrained (`clock_period_ns: null`, the reproducible
+cell-count baseline), one at this block's own 50 kHz sample-clock period
+(`clock_period_ns: 20000`). Both map to 2320 instances (22203.80 µm² /
+22099.95 µm² respectively); `klt equiv` (`"yosys-sequential"` engine --
+this design has flip-flops, so the default combinational engine is a hard
+scope error) proves both mapped netlists sequentially equivalent to the
+source RTL, and the same directed stimulus program
+`sim/digital-rtl-equivalence/` uses reproduces the normative behavioural
+model's trace bit-for-bit through both mapped netlists. First `level: gate`
+record in this repository: `sim/digital-synthesis/records/`. See that
+record for cell count, area, ABC's pre-layout `critical_path_ps` estimate
+(not signoff STA -- no placement, no wire RCs) and Liberty-summed leakage
+for both configurations, and `sim/README.md`'s "`level: gate` records"
+section for the convention.
+
+**Cold-start reproduction** (pinned to `sim/pdk.json`'s open_pdks commit;
+`klt --version` at time of record mint is in the record's own `tools`
+block):
+
+```bash
+# either request document, run standalone --
+PDK=sky130A klt synthesize digital/flow/unconstrained/synthesize-trng-digital.json --format json
+PDK=sky130A klt synthesize digital/flow/constrained-50khz/synthesize-trng-digital-50khz.json --format json
+
+# -- or the full harness (both configs + klt equiv + gate-level cosim +
+#    record mint) in one command:
+python3 sim/digital-synthesis/harness/synthesize-and-verify.py --emit-record
 ```
 
 ## Deliberately not here
 
-- **Synthesis, gate-level timing, area and power.** No `sky130_fd_sc_hd`
-  mapping has been run, so this directory supports no `Fmax`, area or power
-  claim. That is the next increment, and it is what
-  `docs/chipalooza/challenge-4-proposal.md` row G still needs.
+- **Place-and-route, DRC/LVS, post-route/SDF simulation.** Synthesis
+  (issue #117) produces a mapped gate netlist and a pre-layout `Fmax`
+  estimate; there is no placed-and-routed geometry, so no signoff STA
+  (`klt sta` needs an already-routed DEF), no real parasitics, and no
+  leakage/power claim beyond a Liberty-cell-leakage sum at the mapped cell
+  list. That is a later `klt place-and-route` increment
+  (DR-0022-style records), and it is what
+  `docs/chipalooza/challenge-4-proposal.md` row G still needs for a
+  signoff-grade number.
 - **A host-clock domain crossing.** The register bus is in the 50 kHz sample
   clock domain. A real integration wants a CDC to a faster host bus; the
   synchroniser and FIFO handshake for that are not designed here.

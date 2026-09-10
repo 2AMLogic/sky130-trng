@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "engine": "yosys-sequential",
+  "engine_version": "0.69+post",
+  "status": "equivalent",
+  "gold": {
+    "top": "trng_digital",
+    "sources": [
+      "digital/rtl/trng_digital.v"
+    ],
+    "liberty": null
+  },
+  "gate": {
+    "top": "trng_digital",
+    "sources": [
+      "digital/flow/unconstrained/.klt/synthesize/trng_digital_synth.v"
+    ],
+    "liberty": "<external -- not recorded by absolute location; see this record's PDK name/version and deck content_hash instead>"
+  },
+  "port_map": null,
+  "timeout_s": 1800.0,
+  "elapsed_s": 376.655,
+  "induction_depth": 4,
+  "counterexample": null,
+  "diagnostics": [],
+  "artifacts": {
+    "script_path": "/var/folders/0h/l9gwswj97wb82mh27zyw305r0000gn/T/digital-synthesis-7sf_l8s_/unconstrained/.klt/equiv/equiv_seq_stage1.ys",
+    "netlist_path": "/var/folders/0h/l9gwswj97wb82mh27zyw305r0000gn/T/digital-synthesis-7sf_l8s_/unconstrained/.klt/equiv/equiv_seq_netlist.v",
+    "log_path": "/var/folders/0h/l9gwswj97wb82mh27zyw305r0000gn/T/digital-synthesis-7sf_l8s_/unconstrained/.klt/equiv/equiv_seq_stage1.log",
+    "stage2_script_path": null,
+    "stage2_log_path": null,
+    "stage1_blacklist_path": null
+  },
+  "provenance": {
+    "klt_version": "0.4.0",
+    "klayout_version": "0.30.12",
+    "pdk": null,
+    "deck": null,
+    "input": {
+      "content_hash": "sha256:4beb9fc8d06b1bde100b295f1e5e90521818e7eaaa4fcb22873b6e76f18ee43e"
+    }
+  }
+}

@@ -20,6 +20,12 @@ design/xschem/*.sch.bak
 design/xschem/*.sym.bak
 # synthesis / P&R scratch
 flow/build/
+# klt scratch working directories (klt synthesize / klt equiv / klt
+# place-and-route all write here) -- never committed; deliberate evidence
+# lands under sim/*/runs/ + sim/*/records/ via mint_behavioral_record(),
+# mirroring sky130-modexp's identical .gitignore convention.
+.klt/
+**/.klt/
 # local klt install, created by the setup script
 .venv/
 # >>> loom-managed (do not edit) >>>

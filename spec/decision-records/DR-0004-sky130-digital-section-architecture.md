@@ -19,6 +19,18 @@ related: "#20 (this record), #21 (the raw-bitstream min-entropy simulation every
   `digital/` its numbers. It does not ratify DR-0001, DR-0002 or DR-0003,
   it does not move any README target row, and it does not authorise
   silicon.
+- 2026-09-09: **Follow-up discharged (issue #117).** "Synthesis against
+  `sky130_fd_sc_hd`" — named above as "the single largest gap this record
+  leaves" — has landed: `digital/flow/{unconstrained,constrained-50khz}/`
+  (`klt synthesize` requests), `klt equiv` (`"yosys-sequential"` engine)
+  proving RTL↔gate equivalence for both, and a gate-level re-run of
+  `sim/digital-rtl-equivalence/`'s directed stimulus program, bit-for-bit
+  matching. First `level: gate` record in this repository:
+  `sim/digital-synthesis/records/`. Still open from the list below: the
+  `H`-conditional cutoff re-evaluation, the per-ring liveness monitor
+  question, the host-clock CDC, and FIFO depth vs. a measured area figure
+  — none of those are touched by this addendum, and this entry does not
+  edit the decision text above it.
 
 ## Context
 
