@@ -1,0 +1,342 @@
+{
+  "record_id": "20260910-001436-a4c3194",
+  "slug": "digital-synthesis",
+  "level": "gate",
+  "claim": "digital/rtl/trng_digital.v synthesizes cleanly against sky130_fd_sc_hd at tt_025C_1v80, both unconstrained and at the block's own 50 kHz sample-clock period; the mapped netlist is klt-equiv-proven sequentially equivalent to the source RTL and reproduces sim/digital-rtl-equivalence/'s directed stimulus program bit-for-bit",
+  "seeds": {
+    "cosim_stimulus_seed": 20260905
+  },
+  "supersedes": null,
+  "author": "loom-builder@sky130-trng",
+  "timestamp_utc": "2026-09-10T00:14:36.905880+00:00",
+  "repo_sha": "a4c3194",
+  "tools": {
+    "python": "3.14.7",
+    "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+    "klt": "0.4.0",
+    "yosys": "0.69+post",
+    "iverilog": "Icarus Verilog version 13.0 (stable) (v13_0)"
+  },
+  "artifacts": [
+    "sim/digital-synthesis/runs/20260910-001436-a4c3194/unconstrained-trng_digital_synth.v",
+    "sim/digital-synthesis/runs/20260910-001436-a4c3194/unconstrained-synthesize-output.json",
+    "sim/digital-synthesis/runs/20260910-001436-a4c3194/unconstrained-equiv-output.json",
+    "sim/digital-synthesis/runs/20260910-001436-a4c3194/unconstrained-gate-cosim-stimulus.txt",
+    "sim/digital-synthesis/runs/20260910-001436-a4c3194/unconstrained-gate-cosim-observations.txt",
+    "sim/digital-synthesis/runs/20260910-001436-a4c3194/50khz-constrained-trng_digital_synth.v",
+    "sim/digital-synthesis/runs/20260910-001436-a4c3194/50khz-constrained-synthesize-output.json",
+    "sim/digital-synthesis/runs/20260910-001436-a4c3194/50khz-constrained-equiv-output.json",
+    "sim/digital-synthesis/runs/20260910-001436-a4c3194/50khz-constrained-gate-cosim-stimulus.txt",
+    "sim/digital-synthesis/runs/20260910-001436-a4c3194/50khz-constrained-gate-cosim-observations.txt"
+  ],
+  "configs": [
+    {
+      "label": "unconstrained",
+      "clock_period_ns": null,
+      "instance_count": 2320,
+      "area_um2": 22203.7952,
+      "sequential_area_um2": 11450.9824,
+      "leakage_nw": 9.976930688000001,
+      "timing": {
+        "source": "abc_stime",
+        "wire_load": null,
+        "critical_path_ps": 4309.36,
+        "delay_target_ps": null
+      },
+      "engine_version": "0.69+post",
+      "netlist_content_hash_input": "sha256:219738aae7c5fd3bfede92ae20bebe38e843f7341690eed151d1545a93db90ef",
+      "deck_content_hash": "sha256:8e78e14442062dba34d414fca6490b2f6b96038d4510d1438ca44fee31487135",
+      "equivalence": {
+        "schema_version": 1,
+        "engine": "yosys-sequential",
+        "engine_version": "0.69+post",
+        "status": "equivalent",
+        "gold": {
+          "top": "trng_digital",
+          "sources": [
+            "digital/rtl/trng_digital.v"
+          ],
+          "liberty": null
+        },
+        "gate": {
+          "top": "trng_digital",
+          "sources": [
+            "digital/flow/unconstrained/.klt/synthesize/trng_digital_synth.v"
+          ],
+          "liberty": "<external -- not recorded by absolute location; see this record's PDK name/version and deck content_hash instead>"
+        },
+        "port_map": null,
+        "timeout_s": 1800.0,
+        "elapsed_s": 376.655,
+        "induction_depth": 4,
+        "counterexample": null,
+        "diagnostics": [],
+        "artifacts": {
+          "script_path": "/var/folders/0h/l9gwswj97wb82mh27zyw305r0000gn/T/digital-synthesis-7sf_l8s_/unconstrained/.klt/equiv/equiv_seq_stage1.ys",
+          "netlist_path": "/var/folders/0h/l9gwswj97wb82mh27zyw305r0000gn/T/digital-synthesis-7sf_l8s_/unconstrained/.klt/equiv/equiv_seq_netlist.v",
+          "log_path": "/var/folders/0h/l9gwswj97wb82mh27zyw305r0000gn/T/digital-synthesis-7sf_l8s_/unconstrained/.klt/equiv/equiv_seq_stage1.log",
+          "stage2_script_path": null,
+          "stage2_log_path": null,
+          "stage1_blacklist_path": null
+        },
+        "provenance": {
+          "klt_version": "0.4.0",
+          "klayout_version": "0.30.12",
+          "pdk": null,
+          "deck": null,
+          "input": {
+            "content_hash": "sha256:4beb9fc8d06b1bde100b295f1e5e90521818e7eaaa4fcb22873b6e76f18ee43e"
+          }
+        }
+      },
+      "gate_cosim": {
+        "ok": true,
+        "cycles": 4239,
+        "mismatches": 0,
+        "length_ok": true,
+        "expected_len": 4239,
+        "actual_len": 4239,
+        "first_diffs": [],
+        "phases": [
+          {
+            "name": "post-reset idle + ID/parameter reads",
+            "start": 0,
+            "end": 20
+          },
+          {
+            "name": "sampling disabled: raw_valid high but CTRL.EN low",
+            "start": 20,
+            "end": 86
+          },
+          {
+            "name": "enable, run the start-up window with interleaved STATUS reads",
+            "start": 86,
+            "end": 1175
+          },
+          {
+            "name": "drain the raw FIFO through RAW_DATA (pop-on-read)",
+            "start": 1175,
+            "end": 1187
+          },
+          {
+            "name": "raw streaming port: out_ready pops while sampling",
+            "start": 1187,
+            "end": 1443
+          },
+          {
+            "name": "simultaneous register pop and stream pop (register wins)",
+            "start": 1443,
+            "end": 1579
+          },
+          {
+            "name": "OUT_MODE switch to conditioned (flushes both paths)",
+            "start": 1579,
+            "end": 2614
+          },
+          {
+            "name": "induce an RCT trip with a stuck source",
+            "start": 2614,
+            "end": 2702
+          },
+          {
+            "name": "gated: DATA blocked, RAW_DATA still readable",
+            "start": 2702,
+            "end": 2810
+          },
+          {
+            "name": "write-1-to-clear, then re-run the start-up test",
+            "start": 2810,
+            "end": 4105
+          },
+          {
+            "name": "SOFT_RST, then resume sampling",
+            "start": 4105,
+            "end": 4239
+          }
+        ],
+        "sim_stdout": "tb_trng_digital: 4239 cycles transcribed\n/Users/rwalters/GitHub/sky130-trng/.loom/worktrees/issue-117/digital/tb/tb_trng_digital.v:87: $finish called at 42400000 (1ps)",
+        "iverilog_version": "Icarus Verilog version 13.0 (stable) (v13_0)",
+        "seed": 20260905
+      },
+      "klt_provenance": {
+        "klt_version": "0.4.0",
+        "klayout_version": "0.30.12",
+        "pdk": {
+          "name": "sky130A",
+          "source": "search root: ~/.volare",
+          "version": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b"
+        },
+        "deck": {
+          "name": "sky130_fd_sc_hd__tt_025C_1v80",
+          "content_hash": "sha256:8e78e14442062dba34d414fca6490b2f6b96038d4510d1438ca44fee31487135",
+          "released": false
+        },
+        "input": {
+          "content_hash": "sha256:219738aae7c5fd3bfede92ae20bebe38e843f7341690eed151d1545a93db90ef"
+        }
+      }
+    },
+    {
+      "label": "50khz-constrained",
+      "clock_period_ns": 20000.0,
+      "instance_count": 2320,
+      "area_um2": 22099.9456,
+      "sequential_area_um2": 11450.9824,
+      "leakage_nw": 9.902344642000003,
+      "timing": {
+        "source": "abc_stime",
+        "wire_load": null,
+        "critical_path_ps": 5587.62,
+        "delay_target_ps": 20000000
+      },
+      "engine_version": "0.69+post",
+      "netlist_content_hash_input": "sha256:219738aae7c5fd3bfede92ae20bebe38e843f7341690eed151d1545a93db90ef",
+      "deck_content_hash": "sha256:8e78e14442062dba34d414fca6490b2f6b96038d4510d1438ca44fee31487135",
+      "equivalence": {
+        "schema_version": 1,
+        "engine": "yosys-sequential",
+        "engine_version": "0.69+post",
+        "status": "equivalent",
+        "gold": {
+          "top": "trng_digital",
+          "sources": [
+            "digital/rtl/trng_digital.v"
+          ],
+          "liberty": null
+        },
+        "gate": {
+          "top": "trng_digital",
+          "sources": [
+            "digital/flow/constrained-50khz/.klt/synthesize/trng_digital_synth.v"
+          ],
+          "liberty": "<external -- not recorded by absolute location; see this record's PDK name/version and deck content_hash instead>"
+        },
+        "port_map": null,
+        "timeout_s": 1800.0,
+        "elapsed_s": 230.58,
+        "induction_depth": 4,
+        "counterexample": null,
+        "diagnostics": [],
+        "artifacts": {
+          "script_path": "/var/folders/0h/l9gwswj97wb82mh27zyw305r0000gn/T/digital-synthesis-7sf_l8s_/50khz-constrained/.klt/equiv/equiv_seq_stage1.ys",
+          "netlist_path": "/var/folders/0h/l9gwswj97wb82mh27zyw305r0000gn/T/digital-synthesis-7sf_l8s_/50khz-constrained/.klt/equiv/equiv_seq_netlist.v",
+          "log_path": "/var/folders/0h/l9gwswj97wb82mh27zyw305r0000gn/T/digital-synthesis-7sf_l8s_/50khz-constrained/.klt/equiv/equiv_seq_stage1.log",
+          "stage2_script_path": null,
+          "stage2_log_path": null,
+          "stage1_blacklist_path": null
+        },
+        "provenance": {
+          "klt_version": "0.4.0",
+          "klayout_version": "0.30.12",
+          "pdk": null,
+          "deck": null,
+          "input": {
+            "content_hash": "sha256:d89d8aec35d731b87f775c3ef096011fc70a38af05a7b6eeaeeb4281518a7795"
+          }
+        }
+      },
+      "gate_cosim": {
+        "ok": true,
+        "cycles": 4239,
+        "mismatches": 0,
+        "length_ok": true,
+        "expected_len": 4239,
+        "actual_len": 4239,
+        "first_diffs": [],
+        "phases": [
+          {
+            "name": "post-reset idle + ID/parameter reads",
+            "start": 0,
+            "end": 20
+          },
+          {
+            "name": "sampling disabled: raw_valid high but CTRL.EN low",
+            "start": 20,
+            "end": 86
+          },
+          {
+            "name": "enable, run the start-up window with interleaved STATUS reads",
+            "start": 86,
+            "end": 1175
+          },
+          {
+            "name": "drain the raw FIFO through RAW_DATA (pop-on-read)",
+            "start": 1175,
+            "end": 1187
+          },
+          {
+            "name": "raw streaming port: out_ready pops while sampling",
+            "start": 1187,
+            "end": 1443
+          },
+          {
+            "name": "simultaneous register pop and stream pop (register wins)",
+            "start": 1443,
+            "end": 1579
+          },
+          {
+            "name": "OUT_MODE switch to conditioned (flushes both paths)",
+            "start": 1579,
+            "end": 2614
+          },
+          {
+            "name": "induce an RCT trip with a stuck source",
+            "start": 2614,
+            "end": 2702
+          },
+          {
+            "name": "gated: DATA blocked, RAW_DATA still readable",
+            "start": 2702,
+            "end": 2810
+          },
+          {
+            "name": "write-1-to-clear, then re-run the start-up test",
+            "start": 2810,
+            "end": 4105
+          },
+          {
+            "name": "SOFT_RST, then resume sampling",
+            "start": 4105,
+            "end": 4239
+          }
+        ],
+        "sim_stdout": "tb_trng_digital: 4239 cycles transcribed\n/Users/rwalters/GitHub/sky130-trng/.loom/worktrees/issue-117/digital/tb/tb_trng_digital.v:87: $finish called at 42400000 (1ps)",
+        "iverilog_version": "Icarus Verilog version 13.0 (stable) (v13_0)",
+        "seed": 20260905
+      },
+      "klt_provenance": {
+        "klt_version": "0.4.0",
+        "klayout_version": "0.30.12",
+        "pdk": {
+          "name": "sky130A",
+          "source": "search root: ~/.volare",
+          "version": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b"
+        },
+        "deck": {
+          "name": "sky130_fd_sc_hd__tt_025C_1v80",
+          "content_hash": "sha256:8e78e14442062dba34d414fca6490b2f6b96038d4510d1438ca44fee31487135",
+          "released": false
+        },
+        "input": {
+          "content_hash": "sha256:219738aae7c5fd3bfede92ae20bebe38e843f7341690eed151d1545a93db90ef"
+        }
+      }
+    }
+  ],
+  "pdk": {
+    "schema_version": 1,
+    "root": "<external -- not recorded by absolute location; see this record's PDK name/version and deck content_hash instead>",
+    "variant": "sky130A",
+    "version": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+    "resolved_via": "search root: ~/.volare",
+    "assets": {
+      "ngspice": "<external -- not recorded by absolute location; see this record's PDK name/version and deck content_hash instead>",
+      "xschem": "<external -- not recorded by absolute location; see this record's PDK name/version and deck content_hash instead>",
+      "klayout": "<external -- not recorded by absolute location; see this record's PDK name/version and deck content_hash instead>",
+      "magic": "<external -- not recorded by absolute location; see this record's PDK name/version and deck content_hash instead>",
+      "netgen": "<external -- not recorded by absolute location; see this record's PDK name/version and deck content_hash instead>",
+      "libs_ref": "<external -- not recorded by absolute location; see this record's PDK name/version and deck content_hash instead>"
+    },
+    "broken_symlinks": []
+  }
+}
