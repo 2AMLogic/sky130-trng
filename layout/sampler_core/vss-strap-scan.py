@@ -41,7 +41,7 @@ HERE = pathlib.Path(__file__).resolve().parent
 ARRAY_CELL_JSON = HERE.parent / "ro_array_core" / "cell.json"
 
 sys.path.insert(0, str(HERE))
-from _geom_common import merged  # noqa: E402
+from _geom_common import merge_spans, merged  # noqa: E402
 
 MET1 = (68, 20)
 MET2 = (69, 20)
@@ -84,13 +84,7 @@ def column_spans(region: db.Region, dbu: float, x: float, y0: float, y1: float) 
     spans = sorted(
         (round(p.bbox().bottom * dbu, 4), round(p.bbox().top * dbu, 4)) for p in hit.each()
     )
-    out: list[list[float]] = []
-    for lo, hi in spans:
-        if out and lo <= out[-1][1] + 1e-9:
-            out[-1][1] = max(out[-1][1], hi)
-        else:
-            out.append([lo, hi])
-    return out
+    return merge_spans(spans)
 
 
 def touches(region: db.Region, dbu: float, x: float, y: float) -> bool:

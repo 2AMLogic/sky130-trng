@@ -10,6 +10,11 @@ shared plumbing lives here once instead of as a copy per script.
 Not ``layout/ro_array_core/vss-tap-scan.py``'s own ``merged()`` -- that one
 is a different implementation (``cell.begin_shapes_rec`` instead of
 ``db.RecursiveShapeIterator``) and out of scope for this extraction.
+
+``merge_spans()`` was a second byte-identical hand-rolled interval-merge
+loop, duplicated in ``column_spans`` (``vss-strap-scan.py``) and
+``occupied``/``lane_occupied`` (``data-path-scan.py``). Extracted per
+issue #129, same discipline.
 """
 
 from __future__ import annotations
@@ -23,3 +28,14 @@ def merged(layout: db.Layout, cell: db.Cell, key: tuple[int, int]) -> db.Region:
     region = db.Region(db.RecursiveShapeIterator(layout, cell, index))
     region.merge()
     return region
+
+
+def merge_spans(spans: list[tuple[float, float]]) -> list[list[float]]:
+    """Merge a sorted list of ``(lo, hi)`` intervals, coalescing touching ones."""
+    out: list[list[float]] = []
+    for lo, hi in spans:
+        if out and lo <= out[-1][1] + 1e-9:
+            out[-1][1] = max(out[-1][1], hi)
+        else:
+            out.append([lo, hi])
+    return out
