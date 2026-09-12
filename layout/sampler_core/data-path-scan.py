@@ -78,11 +78,15 @@ from __future__ import annotations
 import json
 import pathlib
 import re
+import sys
 
 import klayout.db as db
 
 HERE = pathlib.Path(__file__).resolve().parent
 ARRAY_GDS = HERE.parent / "ro_array_core" / "ro_array_core.gds"
+
+sys.path.insert(0, str(HERE))
+from _geom_common import merged  # noqa: E402
 
 LI1 = (67, 20)
 MET1 = (68, 20)
@@ -157,14 +161,6 @@ VIA_PAD_UM = 0.42
 #: The east margin's own fence: the array's east vdd/vss riser (met2) and
 #: ``ro4``'s own met1 escape leg, measured at ``ro3``'s own run height.
 EAST_FENCE_Y_UM = 32.635
-
-
-def merged(layout: db.Layout, cell: db.Cell, key: tuple[int, int]) -> db.Region:
-    """Every shape on ``key``, flattened out of the hierarchy and merged."""
-    index = layout.layer(*key)
-    region = db.Region(db.RecursiveShapeIterator(layout, cell, index))
-    region.merge()
-    return region
 
 
 def occupied(region: db.Region, dbu: float, x: float, y0: float, y1: float) -> list:

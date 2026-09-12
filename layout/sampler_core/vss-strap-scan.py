@@ -33,11 +33,15 @@ from __future__ import annotations
 
 import json
 import pathlib
+import sys
 
 import klayout.db as db
 
 HERE = pathlib.Path(__file__).resolve().parent
 ARRAY_CELL_JSON = HERE.parent / "ro_array_core" / "cell.json"
+
+sys.path.insert(0, str(HERE))
+from _geom_common import merged  # noqa: E402
 
 MET1 = (68, 20)
 MET2 = (69, 20)
@@ -71,13 +75,6 @@ VSS_DIP_UM = (218.0, 19.9)
 VSS_PRE_VDD_UM = (218.0, 7.65)
 VSS_POST_VDD_UM = (218.0, 6.35)
 VSS_RAIL_TAP_UM = (218.0, -3.5)
-
-
-def merged(layout: db.Layout, cell: db.Cell, key: tuple[int, int]) -> db.Region:
-    index = layout.layer(*key)
-    region = db.Region(db.RecursiveShapeIterator(layout, cell, index))
-    region.merge()
-    return region
 
 
 def column_spans(region: db.Region, dbu: float, x: float, y0: float, y1: float) -> list:
