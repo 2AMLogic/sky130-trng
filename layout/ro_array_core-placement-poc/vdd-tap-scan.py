@@ -43,10 +43,15 @@ from __future__ import annotations
 
 import json
 import pathlib
+import sys
 
 import klayout.db as db
 
 HERE = pathlib.Path(__file__).resolve().parent
+
+sys.path.insert(0, str(HERE.parent / "ro_array_core"))
+from _geom_common import dbox_region, merged  # noqa: E402
+
 GDS = HERE / "ro_array_core_signal7_poc.gds"
 CELL = "ro_array_core_signal7_poc"
 OUT = HERE / "vdd-tap-scan.json"
@@ -85,23 +90,6 @@ TAPS = {
 #: leaf cells (``ro_buf`` has no ``vdd`` label of its own -- its tap rail is
 #: the nwell tap column the array request has always tapped by coordinate).
 EXPECTED_AREA_UM2 = {"xa1": 17.07285, "xa2": 17.07285, "xa3": 17.07285}
-
-
-def merged(layout: db.Layout, cell: db.Cell, spec: tuple[int, int]) -> db.Region:
-    region = db.Region(cell.begin_shapes_rec(layout.layer(*spec)))
-    region.merge()
-    return region
-
-
-def dbox_region(box: db.DBox, dbu: float) -> db.Region:
-    return db.Region(
-        db.Box(
-            int(round(box.left / dbu)),
-            int(round(box.bottom / dbu)),
-            int(round(box.right / dbu)),
-            int(round(box.top / dbu)),
-        )
-    )
 
 
 def main() -> int:

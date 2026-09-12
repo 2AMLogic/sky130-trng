@@ -56,10 +56,15 @@ from __future__ import annotations
 
 import json
 import pathlib
+import sys
 
 import klayout.db as db
 
 HERE = pathlib.Path(__file__).resolve().parent
+
+sys.path.insert(0, str(HERE))
+from _geom_common import dbox_region, merged  # noqa: E402
+
 GDS = HERE / "vddbus.gds"
 CELL = "vddbus"
 OUT = HERE / "vss-tap-scan.json"
@@ -101,23 +106,6 @@ RING_VSS_MET2_AREA_UM2 = 10.66
 #: below ``ring2``'s own west rail pad.
 BUF_BUS_TAP = (57.99, -3.425)
 BUF_VSS_MET1_AREA_UM2 = 31.6915
-
-
-def merged(layout: db.Layout, cell: db.Cell, spec: tuple[int, int]) -> db.Region:
-    region = db.Region(cell.begin_shapes_rec(layout.layer(*spec)))
-    region.merge()
-    return region
-
-
-def dbox_region(box: db.DBox, dbu: float) -> db.Region:
-    return db.Region(
-        db.Box(
-            int(round(box.left / dbu)),
-            int(round(box.bottom / dbu)),
-            int(round(box.right / dbu)),
-            int(round(box.top / dbu)),
-        )
-    )
 
 
 def owner_of(region: db.Region, x: float, y: float, dbu: float):
