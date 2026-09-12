@@ -38,10 +38,14 @@ from __future__ import annotations
 
 import json
 import pathlib
+import sys
 
 import klayout.db as db
 
 HERE = pathlib.Path(__file__).resolve().parent
+
+sys.path.insert(0, str(HERE))
+from _geom_common import merged  # noqa: E402
 
 MET1 = (68, 20)
 MET2 = (69, 20)
@@ -71,13 +75,6 @@ VDD_TAP_UM = (212.995, 29.6)
 VDD_PRE_DIP_UM = (STRAP_X_UM, 25.9)
 VDD_POST_DIP_UM = (STRAP_X_UM, 24.8)
 VDD_RAIL_TAP_UM = (STRAP_X_UM, 7.0)
-
-
-def merged(layout: db.Layout, cell: db.Cell, key: tuple[int, int]) -> db.Region:
-    index = layout.layer(*key)
-    region = db.Region(db.RecursiveShapeIterator(layout, cell, index))
-    region.merge()
-    return region
 
 
 def box_clear(region: db.Region, dbu: float, x0: float, y0: float, x1: float, y1: float) -> dict:
