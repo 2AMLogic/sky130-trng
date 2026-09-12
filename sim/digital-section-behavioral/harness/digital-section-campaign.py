@@ -311,8 +311,9 @@ def build_report(res: dict, seed: int, long_run: int) -> str:
       f"({res['B']['detection_latency_ms']:.2f} ms at 50 kbps) |")
     a(f"| C | strongly biased source (`p` = {res['C']['bias']}, RCT runs suppressed) trips the **APT**, on a window boundary | "
       f"{'**PASS**' if res['C']['ok'] else '**FAIL**'} -- tripped at sample {res['C']['trip_at']}, ALARM = 0x{res['C']['alarm_word']:x} (APT bit only) |")
+    d_trip_desc = "no trip" if not res["D"]["tripped"] else f"tripped at {res['D']['trip_at']}"
     a(f"| D | moderately biased source (`p` = {res['D']['bias']}, `H` = {res['D']['h_of_source']:.3f}) does not trip over {res['D']['windows']} windows | "
-      f"{'**PASS**' if res['D']['ok'] else '**FAIL**'} -- {'no trip' if not res['D']['tripped'] else f'tripped at {res[chr(39)+chr(39)]}'} |")
+      f"{'**PASS**' if res['D']['ok'] else '**FAIL**'} -- {d_trip_desc} |")
     a(f"| E | {res['E']['samples']:,} healthy samples ({res['E']['windows']} APT windows, "
       f"{res['E']['wall_clock_equivalent_s']:.1f} s of real time at 50 kbps) raise no alarm | "
       f"{'**PASS**' if res['E']['ok'] else '**FAIL**'} -- {res['E']['alarms']} alarms |")
