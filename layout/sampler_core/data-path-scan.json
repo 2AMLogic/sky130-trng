@@ -12,7 +12,7 @@
     "ro1_and_ro4_have_south_escapes": true,
     "ro2_and_ro3_have_none": true,
     "chosen_taps_are_free_columns": true,
-    "channel_carries_only_the_data_path_legs": true,
+    "channel_carries_only_the_data_path_and_vdd_strap_legs": true,
     "exactly_one_net_joins_ro1_to_a_sampler_d": true,
     "exactly_one_net_joins_ro4_to_a_sampler_d": true,
     "each_data_net_joins_exactly_one_sampler_d": true,
@@ -25,7 +25,7 @@
     "the_t2_riser_is_what_the_xo_dip_steps_around": true,
     "whole_device_population_present": true,
     "array_and_sampler_vss_are_one_net_via_the_substrate": true,
-    "array_and_sampler_vdd_are_still_two_nets": true
+    "array_and_sampler_vdd_are_one_net_via_the_strap": true
   },
   "d_columns": {
     "sb": {
@@ -372,9 +372,21 @@
     "li1_shapes_in_channel": [],
     "met1_shapes_in_channel": [
       [
+        213.615,
+        7.2,
+        213.785,
+        19.8
+      ],
+      [
         215.19,
         14.79,
         215.61,
+        19.8
+      ],
+      [
+        217.79,
+        7.44,
+        218.21,
         19.8
       ],
       [
@@ -385,6 +397,12 @@
       ]
     ],
     "met2_shapes_in_channel": [
+      [
+        217.79,
+        7.2,
+        218.21,
+        7.86
+      ],
       [
         215.19,
         7.2,
@@ -410,6 +428,12 @@
         19.8
       ],
       [
+        217.79,
+        19.69,
+        218.21,
+        19.8
+      ],
+      [
         -1.585,
         7.2,
         6.75,
@@ -417,12 +441,12 @@
       ]
     ],
     "li1_channel_empty": true,
-    "met1_leg_count": 2,
-    "met2_leg_count": 5
+    "met1_leg_count": 4,
+    "met2_leg_count": 7
   },
   "electrical": {
     "device_count": 264,
-    "net_count": 153,
+    "net_count": 152,
     "data_nets": {
       "ro1": [
         "a|d|inva_a|mn12_g0|mp13_g0|ro1|ro1_esc|sr1_d_stub|tg_d_a|y"
@@ -448,7 +472,7 @@
     ],
     "unconnected_d_nets": [],
     "sv_d_on_the_sampler_vdd_net": [
-      "a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_d_vdd_tie|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      "a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_d_vdd_tie|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd|vdd_b1|vdd_b2|vdd_b3|vdd_b4|vdd_link|vdd_link_dip|vdd_x1|vdd_x2|vdd_x3"
     ],
     "sv_tie_label_positions_um": [
       [
@@ -511,13 +535,13 @@
       }
     },
     "shared_vss_nets": [
-      "g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_x1|vss_x2|vss_x3"
+      "g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_link|vss_link_bridge|vss_link_dip|vss_link_m1|vss_x1|vss_x2|vss_x3"
     ],
     "array_vdd_nets": [
-      "vdd|vdd_b1|vdd_b2|vdd_b3|vdd_b4|vdd_x1|vdd_x2|vdd_x3"
+      "a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_d_vdd_tie|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd|vdd_b1|vdd_b2|vdd_b3|vdd_b4|vdd_link|vdd_link_dip|vdd_x1|vdd_x2|vdd_x3"
     ],
     "sampler_vdd_nets": [
-      "a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_d_vdd_tie|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd"
+      "a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_d_vdd_tie|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd|vdd_b1|vdd_b2|vdd_b3|vdd_b4|vdd_link|vdd_link_dip|vdd_x1|vdd_x2|vdd_x3"
     ]
   }
 }

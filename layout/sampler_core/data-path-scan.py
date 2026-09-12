@@ -531,10 +531,12 @@ def main() -> int:
             escapes[net]["tap_in_a_free_column"] and escapes[net]["tap_clears_south_edge"]
             for net in CHOSEN_TAPS
         ),
-        "channel_carries_only_the_data_path_legs": (
+        # Was met1=2 / met2=5 before the vdd strap (PR #113); the strap's routing
+        # crosses this same channel band and adds two legs on each layer.
+        "channel_carries_only_the_data_path_and_vdd_strap_legs": (
             channel["li1_channel_empty"]
-            and channel["met1_leg_count"] == 2
-            and channel["met2_leg_count"] == 5
+            and channel["met1_leg_count"] == 4
+            and channel["met2_leg_count"] == 7
         ),
         "exactly_one_net_joins_ro1_to_a_sampler_d": len(electrical["ro1_net"]) == 1,
         "exactly_one_net_joins_ro4_to_a_sampler_d": len(electrical["ro4_net"]) == 1,
@@ -572,10 +574,13 @@ def main() -> int:
         "array_and_sampler_vss_are_one_net_via_the_substrate": (
             len(electrical["shared_vss_nets"]) == 1
         ),
-        "array_and_sampler_vdd_are_still_two_nets": (
+        # Two separate nets until the vdd strap (PR #113) tied them together on
+        # purpose. Keep asserting it as a real claim, inverted: a regression that
+        # un-merges them again must still trip.
+        "array_and_sampler_vdd_are_one_net_via_the_strap": (
             len(electrical["array_vdd_nets"]) == 1
             and len(electrical["sampler_vdd_nets"]) == 1
-            and electrical["array_vdd_nets"] != electrical["sampler_vdd_nets"]
+            and electrical["array_vdd_nets"] == electrical["sampler_vdd_nets"]
         ),
     }
 

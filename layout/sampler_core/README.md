@@ -468,7 +468,9 @@ which sky130's extraction deck models as a real conductor. This is not `klt`
 merging two same-named nets: `vdd` is labelled `vdd` on both sides too, has
 no shared body, and stays two separate nets — `data-path-scan.py` asserts
 both halves of that (`array_and_sampler_vss_are_one_net_via_the_substrate`,
-`array_and_sampler_vdd_are_still_two_nets`). It is worth stating plainly
+and, at the time, `array_and_sampler_vdd_are_still_two_nets`; the vdd strap
+below later merged them on purpose, so that claim is now inverted and named
+`array_and_sampler_vdd_are_one_net_via_the_strap`). It is worth stating plainly
 because it is easy to misread as "the supplies are already connected": they
 are not. A metal `vss` strap between the two blocks is still owed, and so is
 every bit of `vdd`.
