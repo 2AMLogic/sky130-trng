@@ -248,7 +248,9 @@ def main() -> int:
         "vss_tap_lands_on_the_risers_own_metal": gap4["vss_tap_lands_on_the_risers_own_metal"],
         "drc_clean": final["drc_status"] == "clean" and final["drc_violation_count"] == 0,
         "device_count_unchanged_at_264": final["device_count"] == 264,
-        "net_count_unchanged_at_153": final["net_count"] == 153,
+        # 153 until the vdd strap (PR #113) merged the array's and the sampler's
+        # `vdd` into one net; 152 is the current intentional baseline.
+        "net_count_is_152_after_the_vdd_strap": final["net_count"] == 152,
         "strap_is_part_of_the_merged_vss_net": (
             len(final["strap_segments_on_the_merged_vss_net"]) == 1
             and final["strap_segments_on_the_merged_vss_net"]
