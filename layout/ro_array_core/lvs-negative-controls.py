@@ -50,13 +50,17 @@ discriminating), so it is usable as a check, not only as a report.
 from __future__ import annotations
 
 import json
+import os
 import pathlib
 import shutil
-import subprocess
 import sys
 import tempfile
 
 HERE = pathlib.Path(__file__).resolve().parent
+
+sys.path.insert(0, str(HERE.parent / "bin"))
+from _klt_common import BuildError, run_klt  # noqa: E402
+
 REFERENCE = HERE / "ro_array_core.ref.spice"
 LAYOUT_NETLIST = HERE / "ro_array_core.spice"
 BASELINE = HERE / "lvs.json"
@@ -116,16 +120,7 @@ def run_lvs(workdir: pathlib.Path, reference_name: str) -> dict:
     }
     request_path = workdir / "lvs.request.json"
     request_path.write_text(json.dumps(request, indent=2) + "\n")
-    completed = subprocess.run(
-        ["klt", "lvs", request_path.name, "--format", "json"],
-        cwd=workdir,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    if not completed.stdout.strip():
-        raise SystemExit(f"klt lvs produced no output: {completed.stderr[:400]}")
-    return json.loads(completed.stdout)
+    return run_klt(["lvs", request_path.name], env=os.environ, cwd=workdir)
 
 
 def main() -> int:
@@ -140,7 +135,10 @@ def main() -> int:
         for name, (perturb, description) in CONTROLS.items():
             reference_name = f"{name}.ref.spice"
             (workdir / reference_name).write_text(perturb(source))
-            report = run_lvs(workdir, reference_name)
+            try:
+                report = run_lvs(workdir, reference_name)
+            except BuildError as exc:
+                raise SystemExit(str(exc)) from exc
             detected = report.get("status") == "mismatch"
             ok = ok and detected
             results[name] = {
