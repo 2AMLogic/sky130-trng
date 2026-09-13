@@ -45,7 +45,6 @@ import argparse
 import json
 import os
 import shutil
-import subprocess
 import sys
 import tempfile
 from pathlib import Path
@@ -54,9 +53,11 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 HOME = Path.home().resolve()
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
+sys.path.insert(0, str(REPO_ROOT / "layout" / "bin"))
 
 import gate_cosim  # noqa: E402
 import liberty_leakage as ll  # noqa: E402
+from _klt_common import BuildError, run_klt  # noqa: E402
 from evidence_record import mint_behavioral_record  # noqa: E402
 
 DEFAULT_SEED = 20260905
@@ -127,23 +128,13 @@ CONFIGS = [
 RTL = REPO_ROOT / "digital" / "rtl" / "trng_digital.v"
 
 
-def run_klt(args: list[str], pdk: str) -> dict:
-    env = dict(os.environ)
-    env["PDK"] = pdk
-    proc = subprocess.run(args, capture_output=True, text=True, env=env)
-    if proc.returncode != 0:
-        raise SystemExit(
-            f"error: `{' '.join(args)}` failed (exit {proc.returncode})\n"
-            f"stdout:\n{proc.stdout}\nstderr:\n{proc.stderr}")
-    return json.loads(proc.stdout)
+def synthesize(klt: str, pdk: str, request: Path, env: dict[str, str]) -> dict:
+    return run_klt(["synthesize", str(request), "--pdk", pdk],
+                   env=env, klt=klt)
 
 
-def synthesize(klt: str, pdk: str, request: Path) -> dict:
-    return run_klt([klt, "synthesize", str(request), "--pdk", pdk, "--format", "json"], pdk)
-
-
-def equiv(klt: str, pdk: str, gold: Path, gate_netlist: Path, liberty: Path,
-         timeout_s: float, workdir: Path) -> dict:
+def equiv(klt: str, gold: Path, gate_netlist: Path, liberty: Path,
+         timeout_s: float, workdir: Path, env: dict[str, str]) -> dict:
     req = {
         "gold": {"sources": [str(gold)], "top": "trng_digital"},
         "gate": {"sources": [str(gate_netlist)], "top": "trng_digital",
@@ -154,7 +145,12 @@ def equiv(klt: str, pdk: str, gold: Path, gate_netlist: Path, liberty: Path,
     }
     req_path = workdir / "equiv-request.json"
     req_path.write_text(json.dumps(req, indent=2))
-    return run_klt([klt, "equiv", str(req_path), "--format", "json"], pdk)
+    # `klt equiv` exits 3 on a proven counterexample and 4 on an
+    # inconclusive (timed-out) proof, both with a complete report on stdout;
+    # the shared helper deliberately does not treat those as fatal, so the
+    # caller below can fold a non-"equivalent" status into `all_ok` and still
+    # print/record the verdict it actually got.
+    return run_klt(["equiv", str(req_path)], env=env, klt=klt)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -186,8 +182,13 @@ def main(argv: list[str] | None = None) -> int:
               "or drop --emit-record)", file=sys.stderr)
         return 2
 
-    pdk_info = run_klt([args.klt, "pdk", "find", "--pdk", args.pdk, "--format", "json"],
-                       args.pdk)
+    # Same `{**os.environ, "PDK": variant}` shape layout/bin/compose-cell.py
+    # passes the shared helper -- built once here and threaded through, rather
+    # than rebuilt per call.
+    env = {**os.environ, "PDK": args.pdk}
+
+    pdk_info = run_klt(["pdk", "find", "--pdk", args.pdk],
+                       env=env, klt=args.klt)
     libs_ref = Path(pdk_info["assets"]["libs_ref"])
 
     tmp = Path(tempfile.mkdtemp(prefix="digital-synthesis-"))
@@ -201,7 +202,7 @@ def main(argv: list[str] | None = None) -> int:
         cfg_dir = workdir / label
         cfg_dir.mkdir(parents=True, exist_ok=True)
 
-        synth = synthesize(args.klt, args.pdk, cfg["request"])
+        synth = synthesize(args.klt, args.pdk, cfg["request"], env)
         netlist_path = Path(synth["netlist_path"])
         deck = synth["provenance"]["deck"]
         liberty_path = libs_ref / "sky130_fd_sc_hd" / "lib" / f"{deck['name']}.lib"
@@ -218,8 +219,8 @@ def main(argv: list[str] | None = None) -> int:
 
         equiv_result = None
         if not args.skip_equiv:
-            equiv_result = equiv(args.klt, args.pdk, RTL, netlist_path, liberty_path,
-                                 args.equiv_timeout_s, cfg_dir)
+            equiv_result = equiv(args.klt, RTL, netlist_path, liberty_path,
+                                 args.equiv_timeout_s, cfg_dir, env)
             if equiv_result["status"] != "equivalent":
                 all_ok = False
 
@@ -398,4 +399,14 @@ def main(argv: list[str] | None = None) -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    # Same `BuildError` -> "error: ..." on stderr, exit 1 spelling
+    # layout/bin/compose-cell.py and layout/bin/pex-netlist.py use for the
+    # shared helper's two fatal cases (no JSON response, or an `error`
+    # object), so a klt failure stays a one-line diagnostic rather than a
+    # traceback. Raised out of `main()` rather than swallowed inside it, so
+    # an importing caller can still handle it itself.
+    try:
+        raise SystemExit(main())
+    except BuildError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        raise SystemExit(1)
