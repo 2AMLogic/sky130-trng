@@ -42,13 +42,17 @@ discriminating), so it is usable as a check, not only as a report.
 from __future__ import annotations
 
 import json
+import os
 import pathlib
 import shutil
-import subprocess
 import sys
 import tempfile
 
 HERE = pathlib.Path(__file__).resolve().parent
+
+sys.path.insert(0, str(HERE.parent / "bin"))
+from _klt_common import run_klt  # noqa: E402
+
 REFERENCE = HERE / "ro_array_core.ref.spice"
 LAYOUT_NETLIST = HERE / "ro_array_core_signal9_poc.spice"
 BASELINE = HERE / "lvs.json"
@@ -108,16 +112,7 @@ def run_lvs(workdir: pathlib.Path, reference_name: str) -> dict:
     }
     request_path = workdir / "lvs.request.json"
     request_path.write_text(json.dumps(request, indent=2) + "\n")
-    completed = subprocess.run(
-        ["klt", "lvs", request_path.name, "--format", "json"],
-        cwd=workdir,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    if not completed.stdout.strip():
-        raise SystemExit(f"klt lvs produced no output: {completed.stderr[:400]}")
-    return json.loads(completed.stdout)
+    return run_klt(["lvs", request_path.name], env=os.environ, cwd=workdir)
 
 
 def main() -> int:
