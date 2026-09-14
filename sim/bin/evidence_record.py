@@ -35,7 +35,7 @@ convenient for ``sim/*/harness/`` scripts: it derives the record id
 internally, embeds ``seeds``/``artifacts``/``tools``/``level`` fields, and
 appends the "Provisional, simulation-derived" CLAUDE.md disclaimer block.
 That convenience API now lives here as ``mint_behavioral_record``, built on
-top of the same :func:`git_short_sha` this module already had, rather than
+top of the same :func:`new_record_id` this module already had, rather than
 as a second, independent reimplementation of it.
 """
 
@@ -151,7 +151,7 @@ def mint_behavioral_record(
     """Write one append-only behavioural record. Returns its record id.
 
     The single-call counterpart to :func:`mint_record` above: it derives its
-    own ``rid`` (via :func:`git_short_sha`, same ``<YYYYMMDD>-<HHMMSS>-
+    own ``rid`` (via :func:`new_record_id`, same ``<YYYYMMDD>-<HHMMSS>-
     <shortsha>`` scheme), assembles its own markdown header/footer -- with a
     ``Level``/``Seeds``/``Supersedes`` preamble, an optional copied-artifacts
     section, and the "Provisional, simulation-derived" CLAUDE.md disclaimer
@@ -172,9 +172,7 @@ def mint_behavioral_record(
     * append-only: a correction mints a new record and names the one it
       supersedes.
     """
-    now = _dt.datetime.now(_dt.timezone.utc)
-    sha = git_short_sha(repo_root)
-    rid = f"{now:%Y%m%d-%H%M%S}-{sha}"
+    now, sha, rid = new_record_id(repo_root)
     records_dir = repo_root / "sim" / slug / "records"
     runs_dir = repo_root / "sim" / slug / "runs" / rid
     md_path = records_dir / f"{rid}.md"
