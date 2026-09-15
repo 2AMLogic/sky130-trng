@@ -66,10 +66,12 @@ byte-for-byte, down to the `ad`/`as`/`pd`/`ps`/`nrd`/`nrs` geometry terms, just
 renamed to this cell's own port names (`a`/`b`/`ctrl`/`ctrlb`/`vdd`/`vss`).
 The 2/2 device, 6/6 net match against it is real evidence that this GDS's
 own two devices are wired the way the schematic's own TG devices are —
-but the *authoritative* LVS check for the transmission-gate shape happens
-once `sampler_dff` itself is assembled from four instances of this cell and
-checked against `design/sampler_core.spice`'s real `.subckt sampler_dff`
-(not yet attempted — see "What this does NOT establish").
+and the *authoritative* LVS check for the transmission-gate shape, once
+`sampler_dff` itself was assembled from four instances of this cell and
+checked against `design/sampler_core.spice`'s real `.subckt sampler_dff`,
+has since been done: **match — 22/22 devices, 14/14 nets, 0 mismatches**.
+See [`layout/sampler_dff/README.md`](../sampler_dff/README.md) and "What
+this does NOT establish" below.
 
 ## Floorplan
 
@@ -137,18 +139,30 @@ compose response carries, for the same deliberate 0.10 µm well-merge reason.
 
 ## What this does NOT establish
 
-- **Not `sampler_dff`.** This is one of the three distinct leaf shapes
-  `sampler_dff`'s 22 devices reduce to (3× plain inverter — already `ro_buf`,
-  reusable as-is per `layout/xor2/`'s own precedent of placing `ro_buf` as an
-  already-composed `blocks[].cell` — plus 4× this transmission gate, plus 2×
-  a plain rst_n-gated NAND2 not yet composed). Assembling `sampler_dff` from
-  these, and LVS-checking the *whole* 22-device cell against
-  `design/sampler_core.spice`'s real `.subckt sampler_dff`, is the
-  authoritative check and remains open — see issue #27.
-- **No `sampler_nand2` yet.** `design/sampler_core.spice`'s `sampler_dff`
-  subckt's `NANDM`/`NANDS2` gates (a plain 2-input NAND2, rst_n-gated, no
-  starve devices — structurally `ro_nand2` minus its two starve transistors)
-  are the other missing leaf shape.
+- **This cell's own match does not, by itself, verify `sampler_dff`.** The
+  2/2-device, 6/6-net match above is evidence for this cell's own
+  two-device shape only. `sampler_dff`'s 22 devices reduce to three distinct
+  leaf shapes (3× plain inverter — already `ro_buf`, reusable as-is per
+  `layout/xor2/`'s own precedent of placing `ro_buf` as an already-composed
+  `blocks[].cell` — plus 4× this transmission gate, plus 2× `sampler_nand2`,
+  see the next bullet), and it is a separate composed cell in its own right.
+  Assembling `sampler_dff` from these leaf shapes, and LVS-checking the
+  *whole* 22-device cell against `design/sampler_core.spice`'s real
+  `.subckt sampler_dff`, was the authoritative check this section once
+  called open (issue #27, now closed) — it has since been done: **match —
+  22/22 devices, 14/14 nets, 0 mismatches**. See
+  [`layout/sampler_dff/README.md`](../sampler_dff/README.md). `sampler_core`
+  itself — the six-`sampler_dff` array wired to the entropy source — is also
+  now fully composed and DRC/LVS-clean (264/264 devices, 152/152 nets, 0
+  errors), with its own post-layout PVT simulation campaign complete; see
+  [`layout/sampler_core/README.md`](../sampler_core/README.md) and
+  `layout/README.md`.
+- **`sampler_nand2` is a separate composed cell, not covered by this
+  recipe.** `design/sampler_core.spice`'s `sampler_dff` subckt's
+  `NANDM`/`NANDS2` gates (a plain 2-input NAND2, rst_n-gated, no starve
+  devices — structurally `ro_nand2` minus its two starve transistors) were
+  once a missing leaf shape; they are now composed and DRC/LVS-clean. See
+  [`layout/sampler_nand2/README.md`](../sampler_nand2/README.md).
 - **No parasitics, no post-layout simulation.** `klt extract` was run without
   `--parasitics`.
 - **The DRC verdict is against `klt`'s curated sky130 deck**, the same scope
