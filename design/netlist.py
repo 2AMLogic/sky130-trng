@@ -40,7 +40,9 @@ re-wrapping) is reused unchanged in substance. What is adapted for sky130:
   ``sim/bin/corner-run.py`` via ``design/_pdk_search.py`` (issue #25);
   ``find_pdk()`` below supplies only this tool's validator predicate
   (``libs.tech/xschem``) and config source (``design/pdk.json`` /
-  ``design/pdk.local.json``).
+  ``design/pdk.local.json``). ``sim/`` has its own independent resolver by
+  design (see ``sim/pdk.json`` and ``sim/bin/corner-run.py``), so the two
+  intentionally don't share a config source.
 * sky130's xschem symbol library lives at ``libs.tech/xschem`` and is
   addressed by sub-library path (``sky130_fd_pr/nfet_01v8.sym``), where
   gf180mcu's lives at ``libs.tech/xschem/symbols`` and is addressed by bare
