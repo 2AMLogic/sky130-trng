@@ -121,13 +121,21 @@ is_recognized_top() {
 # top-level dir" means.
 PATH_RE='[A-Za-z0-9_.-]+(/[A-Za-z0-9_.-]+)+(:[0-9]+(-[0-9]+)?)?'
 
-FULL_TREE_CACHE=""
-full_tree() {
-    if [[ -z "$FULL_TREE_CACHE" ]]; then
-        FULL_TREE_CACHE="$(git -C "$WORKSPACE" ls-tree -r origin/main --name-only)"
-    fi
-    printf '%s' "$FULL_TREE_CACHE"
-}
+# Computed ONCE via command substitution (not a pipe) before the loop below,
+# so there is no long-lived producer process for a `grep -q` consumer to
+# SIGPIPE. Previously this was a function whose body was invoked as the left
+# side of `full_tree | grep -qFx "$path"`: `grep -q` exits (and closes its
+# stdin) as soon as it finds a match, which can send SIGPIPE to the upstream
+# `git ls-tree` before it finishes writing, so it sometimes exits 141
+# (128+SIGPIPE). Under `set -o pipefail` that made the whole pipeline report
+# failure even though `grep` had genuinely found the path — a false
+# "MISSING FILE". The would-be `FULL_TREE_CACHE` memoization also never took
+# effect the old way: the assignment happened on the read side of a pipe,
+# which bash runs in a subshell, so it never propagated back to the parent
+# shell and `git ls-tree -r` was re-run for every candidate path. Assigning
+# via command substitution here runs once, in the current shell, with no pipe
+# involved at all.
+FULL_TREE="$(git -C "$WORKSPACE" ls-tree -r origin/main --name-only)"
 
 mapfile -t CANDIDATES < <(grep -oE "$PATH_RE" "$BODY_FILE" | sort -u)
 
@@ -150,7 +158,7 @@ for raw_candidate in "${CANDIDATES[@]}"; do
     is_recognized_top "$path" || continue
     CHECKED_PATHS=$((CHECKED_PATHS + 1))
 
-    if ! full_tree | grep -qFx "$path"; then
+    if ! grep -qFx "$path" <<<"$FULL_TREE"; then
         MISSES+=("MISSING FILE: \`$path\` does not exist on origin/main")
         continue
     fi
