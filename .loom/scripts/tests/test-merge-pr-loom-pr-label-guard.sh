@@ -284,6 +284,73 @@ run_guard
 assert_eq "1" "$LAST_RC" "Empty label array -> merge hard-blocked (exit 1)"
 assert_contains "$LAST_OUT" "<none>" "Empty label array -> message uses <none> placeholder, not a blank line"
 
+# T10/T11: regression for #145 — `_check_champion_hold_state_staleness` must
+# survive REAL `set -euo pipefail`, not just the `set +e`-wrapped run_guard
+# helper above (which disables errexit before invoking the guard and so
+# cannot reproduce this bug: `local comments hold_head` declares hold_head,
+# but the assignment on the next statement is a bare, non-`local` one, so a
+# `grep -o` no-match's exit status is NOT masked and propagates straight
+# through a real `set -e`). Each case below sources the extracted function
+# into a FRESH bash subprocess that explicitly re-establishes
+# `set -euo pipefail` (a child process gets its own shell option state, not
+# the test runner's already-`set +e` one), so this is the actual execution
+# context merge-pr.sh runs under.
+echo ""
+echo "Testing _check_champion_hold_state_staleness survives real set -euo pipefail (#145)..."
+
+PIPEFAIL_TEST_SCRIPT="$(mktemp)"
+trap 'rm -f "$FUNCS_FILE" "$COMMENT_POST_LOG" "$PIPEFAIL_TEST_SCRIPT" 2>/dev/null || true' EXIT
+cat > "$PIPEFAIL_TEST_SCRIPT" <<'EOS'
+set -euo pipefail
+# shellcheck disable=SC1090
+source "$1"
+REPO_NWO="owner/repo"
+PR_NUMBER="999"
+PR_HEAD_SHA="deadbeef"
+warning() { echo "WARN: $*"; }
+forge_get_pr_comments() { printf '%s' "$FAKE_COMMENTS"; }
+_check_champion_hold_state_staleness
+echo "REACHED-AFTER-CALL"
+EOS
+
+# T10: real (non-empty) comment text with NO champion:hold-state marker —
+# the ordinary case for any PR Judge approved without Champion's hold
+# mechanism ever touching it. Pre-fix, this is exactly the shape that hung
+# `merge-pr.sh --auto` on PR #144 with zero output.
+export FAKE_COMMENTS='## Judge Verdict
+
+Approved — looks good, ship it. Nice test coverage on the edge cases.
+
+Just a completely ordinary review thread; no champion hold markers appear
+anywhere in this history.'
+set +e
+PIPEFAIL_OUT="$(bash "$PIPEFAIL_TEST_SCRIPT" "$FUNCS_FILE" 2>&1)"
+PIPEFAIL_RC=$?
+set -e
+unset FAKE_COMMENTS
+assert_eq "0" "$PIPEFAIL_RC" \
+  "Comments present, no hold-state marker -> function returns 0 under real set -euo pipefail (no crash)"
+assert_contains "$PIPEFAIL_OUT" "REACHED-AFTER-CALL" \
+  "Comments present, no hold-state marker -> caller keeps executing after the call (script did not abort)"
+assert_not_contains "$PIPEFAIL_OUT" "WARN:" \
+  "Comments present, no hold-state marker -> no staleness warning emitted"
+
+# T11: a champion:hold-state marker IS present and stale — existing warning
+# behavior must be preserved under the same real set -euo pipefail context.
+export FAKE_COMMENTS='<!-- champion:hold-state head=abc1234 -->
+Held pending merge-risk review.'
+set +e
+PIPEFAIL_OUT="$(bash "$PIPEFAIL_TEST_SCRIPT" "$FUNCS_FILE" 2>&1)"
+PIPEFAIL_RC=$?
+set -e
+unset FAKE_COMMENTS
+assert_eq "0" "$PIPEFAIL_RC" \
+  "Stale hold-state marker -> function still returns 0 under real set -euo pipefail"
+assert_contains "$PIPEFAIL_OUT" "REACHED-AFTER-CALL" \
+  "Stale hold-state marker -> caller keeps executing after the call"
+assert_contains "$PIPEFAIL_OUT" "champion:hold-state marker recorded head=abc1234" \
+  "Stale hold-state marker -> staleness warning still emitted (existing behavior preserved)"
+
 # --- Source-contains guards (fail if a refactor drops the key behavior) ---
 echo ""
 echo "Testing merge-pr.sh source guards..."
