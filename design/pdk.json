@@ -11,8 +11,10 @@
     "spec/porting-plan.md cites and the one the sibling sky130-bandgap repo",
     "uses in its own sim/pdk.json.",
     "This file deliberately does NOT describe the simulation harness (corner",
-    "lists, ngspice library paths). sim/ is empty; when a harness lands it",
-    "brings its own sim/pdk.json and netlist.py should be repointed at it."
+    "lists, ngspice library paths). sim/ has its own harness and its own",
+    "sim/pdk.json, kept deliberately separate from this file rather than",
+    "merged or repointed -- see sim/pdk.json's own comment block for the",
+    "rationale."
   ],
   "variant": "sky130A",
   "open_pdks_commit": "c6d73a35f524070e85faff4a6a9eef49553ebc2b",
