@@ -86,7 +86,7 @@ HERE = pathlib.Path(__file__).resolve().parent
 ARRAY_GDS = HERE.parent / "ro_array_core" / "ro_array_core.gds"
 
 sys.path.insert(0, str(HERE))
-from _geom_common import merge_spans, merged  # noqa: E402
+from _geom_common import carrying, merge_spans, merged  # noqa: E402
 
 LI1 = (67, 20)
 MET1 = (68, 20)
@@ -425,13 +425,6 @@ def scan_electrical() -> dict:
     extract = json.loads((HERE / "extract.json").read_text())
     nets = [n if isinstance(n, str) else n.get("name") for n in extract["nets"]]
 
-    def carrying(*tokens: str) -> list[str]:
-        return [
-            n
-            for n in nets
-            if all(token in n.split("|") for token in tokens)
-        ]
-
     layout = db.Layout()
     layout.read(str(HERE / "sampler_core.gds"))
     cell = layout.top_cell()
@@ -470,11 +463,11 @@ def scan_electrical() -> dict:
     return {
         "device_count": extract["device_count"],
         "net_count": extract["net_count"],
-        "data_nets": {net: carrying(*tokens) for net, tokens in data_net_tokens.items()},
-        "ro1_net": carrying("ro1", "ro1_esc", "sr1_d_stub", "tg_d_a"),
-        "ro4_net": carrying("ro4", "ro4_esc", "sr4_d_stub", "tg_d_a"),
+        "data_nets": {net: carrying(nets, *tokens) for net, tokens in data_net_tokens.items()},
+        "ro1_net": carrying(nets, "ro1", "ro1_esc", "sr1_d_stub", "tg_d_a"),
+        "ro4_net": carrying(nets, "ro4", "ro4_esc", "sr4_d_stub", "tg_d_a"),
         "unconnected_d_nets": [n for n in nets if re.fullmatch(r"a\|d\|tg_d_a(\$\d+)?", n)],
-        "sv_d_on_the_sampler_vdd_net": carrying("sv_d_vdd_tie", "tg_d_vdd", "tg_d_a", "vdd"),
+        "sv_d_on_the_sampler_vdd_net": carrying(nets, "sv_d_vdd_tie", "tg_d_vdd", "tg_d_a", "vdd"),
         "sv_tie_label_positions_um": sv_tie,
         "sv_tie_expected_column_x_um": sv_expected,
         "sv_tie_in_expected_column": bool(sv_tie)
@@ -487,9 +480,9 @@ def scan_electrical() -> dict:
         # p-substrate, which sky130's extraction deck models as a real
         # conductor. vdd, which has no such shared body, stays two nets --
         # so this is a substrate path, not klt merging same-named nets.
-        "shared_vss_nets": carrying("tg_d_vss", "vss_x1"),
-        "array_vdd_nets": carrying("vdd_x1"),
-        "sampler_vdd_nets": carrying("tg_d_vdd"),
+        "shared_vss_nets": carrying(nets, "tg_d_vss", "vss_x1"),
+        "array_vdd_nets": carrying(nets, "vdd_x1"),
+        "sampler_vdd_nets": carrying(nets, "tg_d_vdd"),
     }
 
 

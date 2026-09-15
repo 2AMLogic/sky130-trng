@@ -45,7 +45,7 @@ import klayout.db as db
 HERE = pathlib.Path(__file__).resolve().parent
 
 sys.path.insert(0, str(HERE))
-from _geom_common import merged  # noqa: E402
+from _geom_common import carrying, merged  # noqa: E402
 
 MET1 = (68, 20)
 MET2 = (69, 20)
@@ -181,9 +181,6 @@ def scan_final() -> dict:
     lvs = json.loads((HERE / "lvs.json").read_text())
     nets = [n if isinstance(n, str) else n.get("name") for n in extract["nets"]]
 
-    def carrying(*tokens: str) -> list[str]:
-        return [n for n in nets if all(token in n.split("|") for token in tokens)]
-
     return {
         "drc_status": drc["status"],
         "drc_violation_count": len(drc.get("violations", [])),
@@ -192,9 +189,9 @@ def scan_final() -> dict:
         "lvs_status": lvs["status"],
         "lvs_error_count": lvs["error_count"],
         "lvs_counts": lvs["counts"],
-        "strap_segments_on_the_merged_vdd_net": carrying("vdd_link"),
-        "sampler_vdd_on_the_same_net_as_the_strap": carrying("vdd_link", "sb_vdd"),
-        "array_vdd_tap_on_the_same_net_as_the_strap": carrying("vdd_link", "vdd_x3"),
+        "strap_segments_on_the_merged_vdd_net": carrying(nets, "vdd_link"),
+        "sampler_vdd_on_the_same_net_as_the_strap": carrying(nets, "vdd_link", "sb_vdd"),
+        "array_vdd_tap_on_the_same_net_as_the_strap": carrying(nets, "vdd_link", "vdd_x3"),
     }
 
 

@@ -15,6 +15,13 @@ is a different implementation (``cell.begin_shapes_rec`` instead of
 loop, duplicated in ``column_spans`` (``vss-strap-scan.py``) and
 ``occupied``/``lane_occupied`` (``data-path-scan.py``). Extracted per
 issue #129, same discipline.
+
+``carrying()`` was a third byte-identical nested helper (a closure over a
+local ``nets`` list, reformatted across multiple lines in
+``data-path-scan.py`` but otherwise identical), duplicated in
+``vss-strap-scan.py``, ``vdd-strap-scan.py``, and ``data-path-scan.py``.
+Extracted per issue #141, same discipline; ``nets`` becomes an explicit
+leading parameter since the extracted function can no longer close over it.
 """
 
 from __future__ import annotations
@@ -39,3 +46,8 @@ def merge_spans(spans: list[tuple[float, float]]) -> list[list[float]]:
         else:
             out.append([lo, hi])
     return out
+
+
+def carrying(nets: list[str], *tokens: str) -> list[str]:
+    """Every net in ``nets`` whose ``|``-joined label carries all ``tokens``."""
+    return [n for n in nets if all(token in n.split("|") for token in tokens)]
