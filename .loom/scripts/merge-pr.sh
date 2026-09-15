@@ -721,18 +721,10 @@ _check_champion_hold_state_staleness() {
 
   # Mirrors champion-pr-merge.md's own extraction (same marker, same capture
   # group); "last" match wins in case of multiple hold episodes on one PR.
-  #
-  # `grep -o` with no match exits 1; under `set -o pipefail` that becomes the
-  # whole pipeline's exit status even though the absence of a hold-state
-  # marker is the ordinary, expected case (most PRs are never held by
-  # Champion). Because this is a bare (non-`local`) assignment, that exit
-  # status is NOT masked the way `local hold_head=$(...)` would mask it, so
-  # without `|| true` here `set -e` would kill the whole script with no
-  # error message (see #145).
   hold_head="$(printf '%s\n' "$comments" \
     | grep -o 'champion:hold-state head=[0-9a-f]*' \
     | tail -1 \
-    | sed -n 's/.*head=\([0-9a-f]*\)/\1/p')" || true
+    | sed -n 's/.*head=\([0-9a-f]*\)/\1/p')"
   [[ -n "$hold_head" ]] || return 0
 
   if [[ "$hold_head" != "$PR_HEAD_SHA" ]]; then
