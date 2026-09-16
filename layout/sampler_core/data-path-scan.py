@@ -104,8 +104,6 @@ INSTANCES = {
     "sr3": 222.64,
     "sr4": 278.3,
 }
-#: The met1 landing point each ``<i>_d_stub`` climbs to, under the vdd rail.
-D_M1_Y_UM = 6.0
 
 #: Half-width of the clearance window a 0.17 um wire needs: half the wire
 #: plus sky130's met1/met2 minimum space (0.14 um), rounded up to 0.31 um.
@@ -141,14 +139,12 @@ CHOSEN_TAPS = {"ro1": -0.5, "ro4": 215.4}
 ARRAY_FULL_HEIGHT_UM = (19.4, 50.0)
 #: The three met2 columns this increment descends on, per net.
 WEST_MARGIN_COLUMNS = {"ro2": 0.3, "ro3": 1.3, "xo": -1.5}
-#: Where each net turns east out of its column, and the sampler it feeds.
+#: Where each net turns east out of its column.
 CHANNEL_TURNS_UM = {"ro2": 18.6, "ro3": 19.4, "xo": 13.0}
-DATA_TARGETS = {"ro1": "sr1", "ro2": "sr2", "ro3": "sr3", "ro4": "sr4", "xo": "sb"}
-#: ``xa3``'s own ``y`` output (the ``xo`` label) and the met1 point the
-#: ``xo_stub`` leg promotes it to -- the same 1.4 um straight-north promotion
+#: ``xa3``'s own ``y`` output (the ``xo`` label) -- the pad the ``xo_stub``
+#: leg promotes straight north from, the same 1.4 um promotion
 #: ``ro_array_core``'s own ``core`` stage already declares for ``xa2``.
 XO_PAD_UM = (66.375, 49.22)
-XO_M1_UM = (66.375, 50.62)
 #: The met1 dip that steps around ``xa2``'s own ``t2`` riser, and the two
 #: met2 lanes on either side of it.
 XO_DIP_Y_UM = 52.5
