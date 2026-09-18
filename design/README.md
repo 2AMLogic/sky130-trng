@@ -110,7 +110,7 @@ array's internal combining node `xo`, which never becomes a pin.
 python3 design/netlist.py            # (re-)export every top cell
 python3 design/netlist.py --check    # fail if a committed netlist is stale, or fails ERC
 python3 design/netlist.py --lint     # brace guard only; no xschem, no PDK
-python3 design/netlist.py --pdk      # show the resolved PDK + open_pdks pin
+python3 design/netlist.py --pdk      # show the resolved xschem + PDK against their pins
 python3 design/test_netlist_erc.py   # regression fixture for the --check ERC wiring itself
 python3 design/test_pdk_search.py    # unit test for the shared PDK-search fallback order
 ```
@@ -162,6 +162,53 @@ supplies only its own validator predicate (`libs.tech/xschem` here,
 re-wraps SPICE continuation lines at a width it owns, so the output is
 byte-identical across machines and across xschem releases that differ only in
 line wrapping.
+
+### xschem 3.4.7 is a hard minimum — 3.4.4 produces an unsimulable netlist
+
+`design/pdk.json` carries an `xschem_version_min` field (currently `3.4.7`),
+and `netlist.py` **refuses to netlist at all** below it, with exit `3`
+(environment) and its own message. Unlike `open_pdks_commit` in the same
+file — a provenance note that is reported, never enforced — this one is a
+gate, because below it the tool does not produce a differently-formatted
+netlist, it produces a broken one.
+
+sky130's device symbols carry their device-area parameters as `expr()`
+templates over the symbol's own `@W`/`@nf` attributes:
+
+```
+ad=expr('int((@nf + 2)/2) * @W / @nf * 0.29')
+```
+
+xschem 3.4.7 is the first release that *evaluates* those at netlist time (its
+Changelog: "evaluate infix expressions with `expr(...)` in attributes"). Every
+earlier release — including the **3.4.4** that `apt-get install xschem`
+resolves on Debian/Ubuntu — copies the template through verbatim,
+`@`-attributes and all. Since every `design/*.spice` here is `.include`d by
+ngspice testbenches under `sim/`, that difference is fatal, not cosmetic:
+
+```
+Error in netlist line no. 2396 ...
+Undefined parameter [ad]
+Cannot compute substitute
+ERROR: fatal error in ngspice, exit(1)
+```
+
+(measured 2026-09-18 with ngspice-46 against the pinned `open_pdks_commit`'s
+own `sky130.lib.spice`; the committed evaluated form solves the same deck's
+operating point without complaint.)
+
+`--check` cannot catch this on its own — it verifies staleness and ERC, never
+simulability — so an export by a too-old xschem would diff clean against
+itself and report green. That is why the guard sits in `netlist.py` ahead of
+the export rather than in CI alone, and why `.github/workflows/pdk-nightly.yml`
+builds xschem from source at this tag instead of installing the distro
+package (issue #151; see that file's header comment for the full decision
+record, including the earlier policy it reverses).
+
+The floor is a **minimum, not an equality pin**. A *newer* xschem whose output
+formatting moves is still meant to turn `--check` red, loudly, and the remedy
+for that direction is unchanged: `python3 design/netlist.py`, commit the diff,
+note the version bump.
 
 ## Provisional, not sized
 

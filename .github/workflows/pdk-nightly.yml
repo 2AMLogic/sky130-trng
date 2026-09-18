@@ -30,12 +30,48 @@ name: PDK nightly
 # matches design/pdk.json's pin, distinguishing "the schematic changed" from
 # "the PDK moved out from under the pin".
 #
-# xschem itself comes from the runner's distro package rather than a pin,
-# because it is a netlister, not a numerical tool, and its output formatting
-# is an input to the staleness comparison: a distro version bump is meant to
-# turn this job red (loud) rather than drift unnoticed. The fix in that case
-# is `python3 design/netlist.py` (regenerate) and commit the diff, noting
-# the xschem version bump -- the step below prints the version it used.
+# xschem provisioning: built from source at the tag design/pdk.json's
+# `xschem_version_min` names, NOT `apt-get install xschem`. This reverses an
+# earlier decision in this file, so the reasoning is recorded rather than
+# just the outcome (issue #151).
+#
+# The superseded policy said xschem "comes from the runner's distro package
+# rather than a pin, because it is a netlister, not a numerical tool" -- so a
+# distro version bump turning this job red was intended, with "regenerate and
+# commit the diff" as the standing remedy. The premise turned out to be false
+# for sky130 specifically: sky130's device symbols carry their device-area
+# parameters as expr() templates over the symbol's own @W/@nf attributes
+# (ad=expr('int((@nf + 2)/2) * @W / @nf * 0.29')), and evaluating those IS a
+# numerical job. xschem 3.4.7 is the first release that does it; earlier
+# releases copy the template through verbatim. ubuntu-noble packages 3.4.4,
+# so this job never once netlisted this design correctly -- every scheduled
+# run since the job landed (2026-08-25) was red, reporting the same four
+# cells STALE, and nobody was paged because a nightly is not a PR check.
+#
+# Following the superseded remedy here would have been actively harmful, not
+# merely wrong: every design/*.spice is `.include`d by ngspice testbenches
+# under sim/, and the unevaluated form is not a differently-formatted netlist
+# but an unrunnable one -- ngspice rejects it with "Undefined parameter [ad]"
+# / "Cannot compute substitute" / "ERROR: fatal error in ngspice, exit(1)"
+# (measured 2026-09-18, ngspice-46, against the pinned open_pdks commit's own
+# sky130.lib.spice). `design/netlist.py --check` verifies staleness and ERC,
+# never simulability, so "regenerate + commit" would have gone green while
+# silently replacing the whole simulable netlist library with an unsimulable
+# one.
+#
+# What survives of the old policy is the part that was right: this is a
+# MINIMUM, not an equality pin. design/netlist.py enforces the floor itself
+# (hard failure, exit 3 = environment, with its own message) so a developer
+# machine cannot quietly produce the broken form either -- the "Resolved PDK"
+# step below prints the resolved xschem version against that floor. A *newer*
+# xschem whose formatting moves is still meant to turn --check red, loudly,
+# and for that direction the remedy is still `python3 design/netlist.py`
+# (regenerate) + commit the diff, noting the version bump.
+#
+# Built from source rather than cached: the build is ~1 minute against a job
+# that already downloads a ~1 GB PDK, and a cache key is one more thing that
+# can silently serve a stale artifact -- exactly the failure class this job
+# exists to catch.
 #
 # Runs on a schedule, on manual dispatch, and opt-in on a pull request via
 # the `run-pdk-check` label (e.g. to validate a schematic edit before merge
@@ -51,6 +87,16 @@ name: PDK nightly
 # klayout-tools#1491 once did, see `layout/README.md`) turns a scheduled run
 # red instead of being found by hand. It runs on the exact same trigger
 # surface as netlist-check, for the same reason -- see issue #36.
+#
+# report-failure (below) closes this workflow's silent-failure gap. Neither
+# job here is a PR check, so a red run only ever appeared in the Actions tab
+# -- which is how netlist-check stayed red for three weeks (issue #151)
+# without anyone noticing. The job files (or comments on) a `loom:triage`
+# issue whenever a scheduled or manually-dispatched run fails, putting the
+# failure in the queue the fleet's roles already read instead of one nobody
+# polls. It deliberately reuses a single open issue rather than filing one
+# per night, so three weeks of red is one issue with a comment thread, not
+# twenty-one duplicates.
 #
 # Note: GitHub disables scheduled workflows in a repository with no activity
 # for 60 days. If this stops running, re-enable it from the Actions tab.
@@ -90,18 +136,43 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install xschem (the schematic netlister)
+      - name: Put ~/.local/bin on PATH
+        run: echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      # Read from design/pdk.json at run time, never hardcoded here, so the
+      # workflow and the file netlist.py itself enforces can never silently
+      # disagree -- the same discipline the open_pdks pin already uses below.
+      - name: Resolve the required xschem version from design/pdk.json
+        id: xschem
+        run: |
+          set -euo pipefail
+          version="$(python3 -c "import json; print(json.load(open('design/pdk.json'))['xschem_version_min'])")"
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+          echo "Required xschem version (design/pdk.json xschem_version_min): ${version}"
+
+      # See this file's header comment for why this is a source build and
+      # not `apt-get install xschem`: ubuntu-noble packages 3.4.4, which is
+      # below the floor and emits sky130's device-area expr() templates
+      # unevaluated. Deps are xschem's own INSTALL list (tcl/tk, Xlib, Xpm,
+      # bison, flex, plus the optional cairo/xcb/xrender renderers).
+      - name: Build + install xschem at the required version
         run: |
           set -euo pipefail
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends xschem
+          sudo apt-get install -y --no-install-recommends \
+            build-essential bison flex gawk \
+            tcl-dev tk-dev \
+            libx11-dev libxpm-dev libxrender-dev libxcb1-dev libcairo2-dev
+          git clone --depth 1 --branch "${{ steps.xschem.outputs.version }}" \
+            https://github.com/StefanSchippers/xschem.git "$RUNNER_TEMP/xschem-src"
+          cd "$RUNNER_TEMP/xschem-src"
+          ./configure --prefix="$HOME/.local"
+          make -j"$(nproc)"
+          make install
           xschem --version 2>&1 | head -n 2
 
       - name: Install volare (the sky130 PDK version manager)
         run: pip install --user volare
-
-      - name: Put ~/.local/bin on PATH
-        run: echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
       - name: Resolve the pinned open_pdks commit from design/pdk.json
         id: pin
@@ -117,11 +188,17 @@ jobs:
           volare fetch --pdk sky130 "${{ steps.pin.outputs.commit }}"
           volare enable --pdk sky130 "${{ steps.pin.outputs.commit }}"
 
-      # Prints the resolved install path, source, and open_pdks commit, and
-      # whether that commit matches design/pdk.json's pin -- so a --check
-      # failure below is attributable to a schematic edit rather than to a
-      # PDK bump before anyone has to read a diff to find out.
-      - name: Resolved PDK
+      # Prints the resolved xschem version against design/pdk.json's
+      # xschem_version_min, then the resolved PDK install path, source, and
+      # open_pdks commit and whether that commit matches design/pdk.json's
+      # pin -- so a --check failure below is attributable to a schematic edit
+      # rather than to a PDK bump or a netlister bump, before anyone has to
+      # read a diff to find out. Issue #151 is exactly the failure this step
+      # was meant to make legible and could not: it reported the PDK pin as
+      # matching (it was) while the netlister silently emitted a different,
+      # unsimulable netlist, so the only visible symptom was four STALE
+      # diffs. The xschem line closes that gap.
+      - name: Resolved xschem + PDK
         run: python3 design/netlist.py --pdk
 
       # Writes nothing: --check exports every TOP_CELLS entry into a temp
@@ -242,3 +319,73 @@ jobs:
             echo "DRIFT detected in: ${failures[*]}" >&2
             exit 1
           fi
+
+  report-failure:
+    name: Surface a red nightly as a loom:triage issue
+    needs: [netlist-check, layout-check]
+    # `failure()` is required: the default `success()` status check would
+    # skip this job precisely when it is needed. Restricted to schedule /
+    # workflow_dispatch because a pull_request run is already visible to
+    # whoever opted it in with the run-pdk-check label -- filing an issue
+    # for that would be noise, not signal.
+    if: >-
+      failure() &&
+      (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - name: File or update the nightly-failure issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // One long-lived issue per failure episode, found by a marker in
+            // the body rather than by title match, so re-wording the title
+            // later cannot orphan the thread and start filing duplicates.
+            const MARKER = '<!-- pdk-nightly-failure-tracker -->';
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}` +
+                           `/actions/runs/${context.runId}`;
+            const jobs = await github.paginate(
+              github.rest.actions.listJobsForWorkflowRun,
+              { ...context.repo, run_id: context.runId, per_page: 100 },
+            );
+            const failed = jobs
+              .filter((j) => j.conclusion === 'failure')
+              .map((j) => `- \`${j.name}\``)
+              .join('\n') || '- (no job reported a failure conclusion)';
+
+            const body = [
+              `\`pdk-nightly\` run [${context.runId}](${runUrl}) failed on ` +
+                `\`${context.ref}\` (${context.eventName}, commit ${context.sha.slice(0, 7)}).`,
+              '',
+              'Failing job(s):',
+              failed,
+              '',
+              'This workflow is not a PR check, so nothing else reports it. See the ' +
+                'run log for the specific `STALE` / `ERC` / `DRIFT` lines; ' +
+                '`design/netlist.py --pdk` output near the top of the netlist-check ' +
+                'job attributes the failure to the netlister version, the PDK pin, ' +
+                'or neither.',
+            ].join('\n');
+
+            const existing = await github.paginate(github.rest.issues.listForRepo, {
+              ...context.repo, state: 'open', labels: 'loom:triage', per_page: 100,
+            });
+            const tracker = existing.find((i) => (i.body || '').includes(MARKER));
+
+            if (tracker) {
+              await github.rest.issues.createComment({
+                ...context.repo, issue_number: tracker.number, body,
+              });
+              core.notice(`pdk-nightly still red; commented on #${tracker.number}`);
+            } else {
+              const created = await github.rest.issues.create({
+                ...context.repo,
+                title: 'pdk-nightly is red',
+                body: `${MARKER}\n\n${body}`,
+                labels: ['loom:triage', 'tier:maintenance'],
+              });
+              core.notice(`pdk-nightly went red; filed #${created.data.number}`);
+            }
