@@ -1351,6 +1351,37 @@ the verdict-bearing fields against what is committed). All `klt` invocations
 run from the cell directory with relative paths, so no absolute home path
 leaks into the committed provenance.
 
+**`--check` is now an automated regression guard, not just a manual
+command** (issue #36): `.github/workflows/pdk-nightly.yml`'s `layout-check`
+job runs `compose-cell.py --check` over every committed `layout/*/cell.json`
+(nineteen as of 2026-09-17 — re-globbed at run time, not hardcoded, so it
+keeps up automatically as more cells land per issue #27), on the same
+trigger surface as the `netlist-check` job it sits beside in that file:
+`schedule`, `workflow_dispatch`, and opt-in on a PR via the `run-pdk-check`
+label, so it never adds the PDK/`klt` download cost to every PR by default.
+This is the automated version of what
+[klayout-tools#1491](https://github.com/2AMLogic/klayout-tools/issues/1491)
+proved could otherwise silently invalidate already-committed evidence between
+sessions.
+
+That job installs `klt` from PyPI, pinned to the latest *tagged* release
+(`klayout-tools==0.5.0`, released 2026-09-15) rather than to
+`layout/pdk.json`'s committed `klt_version_pin` (a dev snapshot with no PyPI
+artifact of its own) — see `layout/pdk.json`'s `ci_klt_install` comment for
+the full rationale, including why the mid-session churn documented above in
+"Correcting the curation note" does not apply to CI's one-shot,
+explicitly-versioned install. The pin is **0.5.0, not 0.4.0**: 0.4.0 predates
+`connectivity[].legs[]` (klayout-tools #1529/#1536), so
+`layout/sampler_dff/cell.json` fails against it with `error: clkb_seg2: nets
+left unrouted by gen-compose: ['clkb_mid']` — the `layout/sampler_dff`
+exception `layout/pdk.json` already documents (issue #106), not drift, and
+enough on its own to keep this job permanently red. Verified 2026-09-17 in a
+clean venv against the `open_pdks` commit `layout/pdk.json` pins: `klt 0.5.0`
+from PyPI reproduces all nineteen currently-committed `layout/*/cell.json`
+cells' evidence exactly — `sampler_dff` included, and including `ro_ring5`'s
+`blocks[].cell` hierarchical composition, the exact request shape `v0.2.0`
+lacks.
+
 The three constraints that decide a cell's floorplan, all learned building
 `ro_buf` (see [`layout/ro_buf/README.md`](ro_buf/README.md) for each one's
 evidence):
