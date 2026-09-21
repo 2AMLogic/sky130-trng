@@ -49,6 +49,31 @@ name: CI
 #     simulates cleanly and reports wrong numbers. Same PR-blocking path as
 #     the two checks above, for the same reason: it needs nothing installed.
 #
+# signoff-check (issue #155) -- the gap-to-T1 tier report staleness gate.
+#     `klt signoff --manifest signoff/block-manifest.json` re-renders this
+#     block's graded T1 item table from the committed evidence envelopes
+#     and the output is byte-diffed against the committed
+#     signoff/t1-report.json. Grading is a pure JSON+markdown transform --
+#     no xschem, no KLayout-adjacent runs, no PDK install, no GDS read --
+#     so it belongs on the PR-blocking path: a manifest citation whose
+#     backing envelope changed (regenerated DRC/LVS, a revised checklist
+#     doc, a manifest edit without regenerating the report) turns THIS
+#     run red the same day instead of rotting until a human re-reads the
+#     tracker by hand -- the exact staleness mode issue #155 filed against.
+#     Exit code contract: klt signoff's tier mode exits 0 only for a block
+#     at tier T1 and 3 for "ran successfully, at least one item unmet" --
+#     the documented mid-ladder state, not a failure -- so the job treats
+#     0 and 3 as render successes and 1/2 as failures, then byte-compares.
+#     The `klayout-tools==0.5.0` pin matches the PDK nightly's install
+#     exactly; the wheel bundles a 10-item copy of the tiers checklist,
+#     which is why the invocation passes --tiers-doc pointing at the
+#     vendored 11-item copy under signoff/ (added upstream 2026-09-17,
+#     klayout-tools#2025) -- never the bundled default. The
+#     envelope-vs-artifact staleness axis (GDS changed, envelope NOT
+#     regenerated) is outside this gate on the 0.5.0 grading build and is
+#     covered by the PDK nightly's compose-cell --check reproductions
+#     instead; see signoff/README.md's freshness section.
+#
 # design/netlist.py --check (schematic-vs-netlist staleness guard) is
 # DELIBERATELY NOT here. It shells out to xschem and resolves the sky130
 # xschem symbol library through a real PDK install (design/pdk.json pins
@@ -68,6 +93,13 @@ on:
       - "layout/bin/**"
       - "layout/test_pex_netlist.py"
       - "layout/test_compose_cell.py"
+      # signoff-check inputs: the manifest + vendored checklist doc + the
+      # committed report + the two envelopes it cites (an envelope
+      # regenerated in a PR must re-grade, not slide through on the old
+      # report bytes).
+      - "signoff/**"
+      - "layout/sampler_core/drc.json"
+      - "layout/sampler_core/lvs.json"
       - ".github/workflows/ci.yml"
   workflow_dispatch: {}
 
@@ -103,3 +135,54 @@ jobs:
 
       - name: layout/test_compose_cell.py (LVS reference rewrite unit test)
         run: python3 layout/test_compose_cell.py
+
+  signoff-check:
+    name: Signoff tier-report staleness gate (klt signoff --manifest)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # Same pin as the PDK nightly's install step, deliberately: the
+      # committed signoff/t1-report.json is byte-compared against this
+      # build's output, so a klt release that changes grading or report
+      # shape must turn THIS job red until the report is regenerated and
+      # the pin consciously moved -- the same contract layout/pdk.json's
+      # klt_version_pin documents for the nightly's --check runs.
+      - name: Install klt (klayout-tools, the signoff grading build)
+        run: |
+          pip install --user "klayout-tools==0.5.0"
+          klt --version
+
+      # Verbatim the command documented in signoff/README.md -- the report
+      # embeds the --tiers-doc label and the evidence paths relative to
+      # the repo root, so any other invocation produces different bytes
+      # and the diff below would be meaningless.
+      - name: Re-render the committed tier report and byte-diff
+        shell: bash
+        run: |
+          set +e
+          klt signoff --manifest signoff/block-manifest.json \
+            --tiers-doc signoff/design-evidence-tiers.md --format json \
+            > /tmp/t1-report-fresh.json
+          rc=$?
+          set -e
+          # klt signoff --manifest exit contract: 0 = tier T1, 3 = tier
+          # null (ran successfully, at least one item unmet -- this
+          # block's expected state while the gap is open), 1 = input/doc
+          # error, 2 = usage error. Only 1 and 2 are failures here.
+          if [ "$rc" -ne 0 ] && [ "$rc" -ne 3 ]; then
+            echo "klt signoff --manifest failed (exit $rc): manifest, tiers doc, or a cited evidence envelope is unreadable/malformed" >&2
+            exit 1
+          fi
+          echo "klt signoff rendered (exit $rc; 3 = tier null, gaps open)"
+          if cmp signoff/t1-report.json /tmp/t1-report-fresh.json; then
+            echo "signoff/t1-report.json matches the freshly graded report"
+          else
+            echo "signoff/t1-report.json is STALE -- it no longer matches a fresh grading of signoff/block-manifest.json against the current evidence." >&2
+            echo "Regenerate it with the command in signoff/README.md and commit the diff." >&2
+            exit 1
+          fi
