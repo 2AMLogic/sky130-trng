@@ -135,13 +135,20 @@ in this directory (`extract.json`, `lvs.json`).
 
 **Tracker seam.** The repo's machine-graded T1 tracker-of-record
 (`signoff/block-manifest.json` + `signoff/t1-report.json`, issue #155 /
-PR #157, in flight while this increment was built) already carries item 11
-in its scope and names this issue as its companion: its `_comment`
-records "11: no `klt erc` supply spec/report exists yet — tracked on
-issue #154". These two artifacts are that missing evidence; once both
-sides have merged, the manifest gains an `11.analog` citation pointing
-at `erc.json`, re-rendered through the same command its README pins.
-Until then, this section is the block-side record of the eleventh row.
+PR #157) landed while this increment was being built and already carries
+item 11 in scope, naming this issue as its companion. The evidence below
+exists now, and this same PR updates the manifest's `_comment` to record
+it — but the mechanical `11.analog` citation is **deliberately
+withheld**, because neither available grading route can honestly record
+it yet: the CI-pinned grader (`klayout-tools==0.5.0`) has no `erc`
+envelope kind and renders any erc citation `unrecognized_envelope`, and
+the post-0.5.0 dev grading path renders the documented no-`ties[]`
+workaround (klayout-tools#2169, the FRICTION F-034 shape this spec
+follows) as `supply_spec_incomplete`. Filed upstream as
+[2AMLogic/klayout-tools#2247](https://github.com/2AMLogic/klayout-tools/issues/2247):
+add the compound `11.analog` citation once an erc-grading build reaches
+a tagged release and the CI pin bumps. This section remains the
+block-side record of the eleventh row until then.
 
 ## Result (this increment: the `vdd` inter-block supply strap and a whole-cell `klt lvs` match, issue #22 / #27 step 5, second half)
 
