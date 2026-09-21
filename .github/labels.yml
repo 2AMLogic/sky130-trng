@@ -239,3 +239,10 @@
   description: "Non-collaborator submission; needs maintainer approval before curation. Applied by: humans only."
   color: "E5E7EB"  # gray-200 - external/hold marker
 # END LOOM LABELS
+
+# Repo-local labels (outside the Loom-managed block — see header above).
+# These are NOT touched by Loom's install/upgrade sync.
+
+- name: run-pdk-check
+  description: "Opt-in: run PDK-gated netlist/layout checks on this PR (pdk-nightly.yml)."
+  color: "1D76DB"  # blue - CI opt-in signal, distinct from the loom: palette
