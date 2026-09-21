@@ -16,6 +16,133 @@ real metal, and `klt lvs` against `design/sampler_core.spice`'s own
 152/152 nets, 0 errors.** This is the first whole-cell DRC/LVS-clean
 `sampler_core` assembly in this repo.
 
+**As of this increment, the cell also carries its T1 item-11 (power
+delivery, structural) supply read (issue #154): a committed `klt erc`
+supply spec + report find every declared supply — all four per-ring
+`vddr1`-`vddr4` pins plus `vdd` and `vss` — resolves to exactly one
+electrical island, with zero `erc.unconnected_net` and zero
+`erc.supply_short`.** See the `klt erc` section below.
+
+## Result (this increment: the T1 item-11 structural supply read (`klt erc`), issue #154)
+
+`klt erc`'s supply read is the evidence artifact T1 item 11 (power
+delivery, structural — `klayout-tools`
+`docs/design-evidence-tiers.md`, approved as klayout-tools#2025) grades
+for the *structural* question: is the supply actually connected to what it
+powers. The two committed artifacts here are:
+
+| Artifact | What it is |
+| --- | --- |
+| `erc-supply-spec.json` | the spec: stackup/li1/met1/met2 + vias + the block's six declared supplies, every entry justified inline in its `_comment` block (including each `stackup` entry, each `label_layer`, and why `active_layer` is set) |
+| `erc.json` | the committed `klt erc --format json` report against `sampler_core.gds`: `erc_status: "clean"`, `erc_finding_count: 0`, input content-hash `sha256:a00f655067731fc4ee189e98b57a0e22f3160752923badc556c9ceff8811396f` matching the committed GDS byte for byte |
+
+**The verdict.** Every supply `design/sampler_core.spice`'s own
+`.subckt sampler_core` declares — `vddr1 vddr2 vddr3 vddr4 vdd vss` —
+resolves to exactly **one** electrical island in the flat
+poly/li1/met1/met2 connectivity model: zero `erc.unconnected_net` (which
+fires on zero islands *or* on a split rail), zero `erc.supply_short`
+between any pair. The four `vddrN` supplies are four physically separate
+rails by design (`layout/ro_array_core/README.md`: "the four `vddr`
+rails … stay separate, exactly as intended"), each carrying its own
+promoted pin label — which is why the spec declares the per-pin names
+rather than the bare ring-local text label `vddr`: that label repeats
+inside every ring, and resolving it as a single supply name reads the
+intended four-rail topology as a "split rail" finding. This was measured,
+not assumed — the first draft of the spec declared `vddr` and the run
+correctly reported it as four islands, which is what sent the declaration
+back to the netlist's own `.iopin` list as the authority on what this
+block's supplies are.
+
+**The `erc.missing_tie` half is explicitly NOT computed, by recorded gap,
+not oversight.** The spec deliberately declares no `ties[]`:
+
+- klayout-tools#2169 (reproduced four ways in `gf180-drone-fc`'s
+  FRICTION F-034) documents that on the **released** `klt` builds —
+  including `layout/pdk.json`'s own `ci_klt_install` pin, `0.5.0`, the
+  newest PyPI tag — a `ties[]` entry joins its well/tap regions into the
+  single unified connectivity graph, collapsing a routed design into one
+  island and reporting a **false** `erc.supply_short`. The fix
+  (klayout-tools#2186) is merged upstream but unreleased at the time of
+  this increment, so the same reasoning and the same evidence as
+  gf180-drone-fc's committed supply spec applies here: omit `ties[]`,
+  and say so.
+- Per `klt erc`'s own contract, omitted `ties[]` means `erc.missing_tie`
+  is never computed. The committed report records this mechanically:
+  `erc_coverage.inapplicable` carries
+  `{"id": "erc.missing_tie:[]", "reason": "no_ties_declared"}`. An
+  absence of evidence, not evidence of absence.
+- The well-tie evidence that stands in for the un-computed verdict, all
+  from already-committed artifacts:
+  1. `lvs.json` is a `match` — 152/152 nets, 264/264 devices — against a
+     SPICE reference whose every device carries explicit bulk
+     connections to the supply nets (pfet bulk = the powering rail,
+     nfet bulk = `vss`). The device-aware extraction models the
+     well/tap path; an untied well would surface as a floating bulk net
+     and a topology mismatch, not a match. All six supplies appear in
+     `net_correspondence` paired to reference-side nets, so the
+     supplies were part of the compare — exactly item 11's
+     analog-column LVS requirement.
+  2. That same `lvs.json`'s `VDD` correspondence row includes
+     `nwell_vdd` in its layout-side alias set: the well-tie pad labels
+     drawn on the nwell tap pads are part of the verified `vdd` net.
+  3. The merged GDS draws sky130's dedicated `tap.drawing` layer
+     (`65/44`, 177 shapes — `klt layers sampler_core.gds`), the PDK's
+     own tub-contact marker, landed on by `licon1` cuts and covered by
+     the supply rails' li1 pads — the geometry `erc.missing_tie` would
+     grade if released `klt` builds could grade it safely.
+
+**Reproducing the report.** Regenerate `erc.json` with:
+
+```bash
+klt erc layout/sampler_core/sampler_core.gds layout/sampler_core/erc-supply-spec.json --format json
+```
+
+…against a `klt` that has the three `klt erc` capabilities this read
+needs, none of which the released `0.5.0` tag carries yet:
+`stackup[0].active_layer` (klayout-tools#2001 — the spec sets it so the
+antenna denominator is poly ∩ diff, keeping the rings' real poly
+interconnect out of every gate's denominator), the
+`status`/`provenance` envelope (klayout-tools#1984/#1968 — the committed
+report's `provenance.input.content_hash` is the freshness pin a future
+signoff staleness gate reads), and the `erc_coverage` block
+(klayout-tools#2179) that records the `missing_tie` inapplicability
+mechanically. The exact build that produced the committed report:
+
+```bash
+python3 -m venv /tmp/klt-venv-erc-154
+/tmp/klt-venv-erc-154/bin/pip install \
+  "git+https://github.com/2AMLogic/klayout-tools@b15edf5e3a2e56467a3406c98a2555eb1a5ae45c"
+/tmp/klt-venv-erc-154/bin/klt --version   # klt 0.5.0+gb15edf5e3a2e
+PATH=/tmp/klt-venv-erc-154/bin:$PATH klt erc \
+  layout/sampler_core/sampler_core.gds layout/sampler_core/erc-supply-spec.json --format json
+```
+
+This is the same full-SHA scratch-venv workaround
+`layout/sampler_dff/README.md` already documents for `legs[]`
+(klayout-tools#1529/#1536); the shared `layout/pdk.json` pin is
+deliberately left unmoved, exactly as that precedent requires. Re-running
+the same spec on the released `0.5.0` build produces the same supply
+verdicts (the islands and the zero-findings result do not depend on the
+newer features) but an envelope without `status`/`provenance` and gate
+areas computed from raw poly — one more reason the dev-build recipe
+above, not the ambient tool, is the one to reproduce with.
+
+**CI note.** Nothing in the existing `pdk-nightly` `layout-check` job
+re-runs this report (it re-derives `cell.json` evidence only), so this
+artifact's drift protection is the committed content-hash plus this
+recipe, not CI — the same posture as the other non-`cell.json` evidence
+in this directory (`extract.json`, `lvs.json`).
+
+**Tracker seam.** The repo's machine-graded T1 tracker-of-record
+(`signoff/block-manifest.json` + `signoff/t1-report.json`, issue #155 /
+PR #157, in flight while this increment was built) already carries item 11
+in its scope and names this issue as its companion: its `_comment`
+records "11: no `klt erc` supply spec/report exists yet — tracked on
+issue #154". These two artifacts are that missing evidence; once both
+sides have merged, the manifest gains an `11.analog` citation pointing
+at `erc.json`, re-rendered through the same command its README pins.
+Until then, this section is the block-side record of the eleventh row.
+
 ## Result (this increment: the `vdd` inter-block supply strap and a whole-cell `klt lvs` match, issue #22 / #27 step 5, second half)
 
 Three new stages on top of the twelve below (all unchanged): `vdd_strap1`
@@ -789,5 +916,7 @@ reference-generation limitation it recorded was this repo's own
 | `compose.request.json` / `compose.response.json` | the final stage (`route_data2`)'s own |
 | `sampler_core.gds` | the composed cell |
 | `drc.json`, `extract.json`, `sampler_core.spice` | sign-off + extracted netlist |
+| `erc-supply-spec.json` | the T1 item-11 `klt erc` supply spec (issue #154) |
+| `erc.json` | the committed `klt erc --format json` supply report (issue #154) |
 | `lvs.request.json`, `sampler_core.ref.spice`, `lvs.json` | the LVS run and its generated reference |
 | `data-path-scan.py` / `.json` | the 19 geometric and electrical claims behind this cell's own data-path routing (13 before this increment), re-derivable and self-checking (exits non-zero if any stops holding) |
