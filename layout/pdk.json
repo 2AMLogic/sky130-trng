@@ -94,7 +94,16 @@
     "                    exactly the klayout-tools#1491 failure mode), not a",
     "                    config bug to silence. Bumping it is a deliberate,",
     "                    re-verified edit, the same contract klt_version_pin",
-    "                    above carries."
+    "                    above carries. Deliberately still 0.5.0 -- not",
+    "                    0.6.0 -- since 2026-09-23 (issue #160): ci.yml's",
+    "                    signoff-check grader pin moved to 0.6.0 alone (the",
+    "                    grader is a pure JSON transform), while this pin",
+    "                    gates the nineteen committed cells' compose-cell",
+    "                    --check reproductions and 0.6.0 changed",
+    "                    gen-compose's via-drop/tap-role handling",
+    "                    (klayout-tools#2312), so bumping it requires a",
+    "                    full --check re-verification first. The divergence",
+    "                    between the two pins is deliberate."
   ],
   "variant": "sky130A",
   "open_pdks_commit": "c6d73a35f524070e85faff4a6a9eef49553ebc2b",

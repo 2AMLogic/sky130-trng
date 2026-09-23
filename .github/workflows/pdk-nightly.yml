@@ -257,6 +257,15 @@ jobs:
       # exception layout/pdk.json already documents (issue #106), not drift,
       # and it alone would keep this job permanently red. All nineteen
       # committed cells were re-verified against 0.5.0 on 2026-09-17.
+      #
+      # DELIBERATELY still 0.5.0, not 0.6.0, since 2026-09-23 (issue #160):
+      # ci.yml's signoff-check grader pin moved to 0.6.0 alone -- the
+      # grader is a pure JSON transform -- but THIS pin gates the nineteen
+      # committed cells' compose-cell --check reproductions, and 0.6.0
+      # changed gen-compose's via-drop/tap-role handling
+      # (klayout-tools#2312), so bumping it here requires re-running every
+      # cell's --check against 0.6.0 and recording the result first. The
+      # two pins are no longer identical; that divergence is deliberate.
       - name: Install klt (klayout-tools, the layout composition/verification CLI)
         run: |
           set -euo pipefail

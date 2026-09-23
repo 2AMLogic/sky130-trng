@@ -1382,6 +1382,16 @@ cells' evidence exactly — `sampler_dff` included, and including `ro_ring5`'s
 `blocks[].cell` hierarchical composition, the exact request shape `v0.2.0`
 lacks.
 
+This nightly pin is **deliberately diverged** from `ci.yml`'s
+`signoff-check` grader pin since 2026-09-23 (issue #160): the grader
+moved to `klayout-tools==0.6.0` alone — it is a pure JSON transform with
+no PDK — while this pin stays at 0.5.0, because it gates the nineteen
+committed cells' `compose-cell --check` reproductions and 0.6.0 changed
+`gen-compose`'s via-drop/tap-role handling (klayout-tools #2312).
+Bumping this pin requires re-running every committed cell's `--check`
+against 0.6.0 and recording the result first; until then the two pins
+are intentionally not identical.
+
 The three constraints that decide a cell's floorplan, all learned building
 `ro_buf` (see [`layout/ro_buf/README.md`](ro_buf/README.md) for each one's
 evidence):
