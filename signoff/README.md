@@ -24,9 +24,12 @@ At `origin/main`, re-rendered on the tagged grader `klayout-tools==0.6.0`
 (11 checklist items × 2 partitions), 2 met — item 3 (DRC clean) and
 item 4 (LVS clean), analog partition only — so this block is 2/22 of the
 way to T1**, with item 11 (power delivery, structural) counted and
-`unmet` (`no_evidence`) — the `11.analog` citation still withheld (see
-the manifest's `_comment` and #161). `tier` is `null` until every
-rendered item is `met`. The 0.6.0 build changed the report's *shape*,
+`unmet` (`lvs_supply_unproven`) — the `11.analog` citation is now IN
+(issue #161): the ERC half grades fully clean (see the item-11 claim
+section below), and the one surviving reason is the LVS half's supply
+pairing, which is structurally unsatisfiable against this block's
+committed `lvs.json` (klayout-tools#2405; local follow-up #164) — not a
+missing artifact. `tier` is `null` until every rendered item is `met`. The 0.6.0 build changed the report's *shape*,
 not its verdict: rows now carry a per-item `graded_by_build` flag, the
 report records its `build` identity (`v0.6.0`, `grading_ruleset_id`) and
 pins the governing checklist by `source_doc_content_hash`
@@ -162,6 +165,47 @@ shape. Regenerating `lvs.json` under a newer `klt` that records
 "verify a citation's input against the artifact" grading,
 klayout-tools#2212, landing) closes this gap and should be done together
 with the next layout/evidence regeneration pass, then the pin added here.
+
+**Item 11, `unmet` (analog) — the compound citation
+`[erc.json, lvs.json]` (issue #161).** The ERC half is fully graded and
+clean: `layout/sampler_core/erc-supply-spec.json` now declares `ties[]`
+for every distinct well/substrate tie the layout draws — one entry per
+supply group, with the well regions asserted as boxes derived from the
+drawn nwell polygons (70 merged regions whose taps reach `vdd`, five
+each reaching `vddr1`–`vddr4` — the ring-local rails do tie their own
+wells — and the substrate, in the native-substrate
+`well_layer: null` + `well_boxes` form, to `vss`). All six taps are
+sky130's dedicated `tap.drawing` (65/44) layer, so no tie is degenerate.
+The regenerated `erc.json` (tagged `klt` 0.6.0,
+`provenance.klt_version` reads `0.6.0`, not a `+g…` dev build) records
+`erc_status: clean`, zero `erc.missing_tie` / `erc.unconnected_net` /
+`erc.supply_short`, all six ties in `erc_coverage.checked` and in
+`checked_by_well_assertion`, nothing in `skipped`. The erc citation is
+pinned to the envelope's `provenance.input.content_hash` — the committed
+GDS's sha, the same pin value item 3 carries.
+
+*Why the row is still unmet — the LVS half, and it is not this repo's
+artifacts.* The grader's no-PDN (analog/full-custom) branch requires
+every supply declared in the erc spec to appear in the cited `lvs.json`'s
+`net_correspondence` as a row whose **entire** layout-side string equals
+that supply name. `klt lvs` writes a label-merged net's row as every
+alias joined with `|`, so this block's six supply rows read
+`G_VDDR_M1|…|VDDR|VDDR1` etc. and can never equal `vddr1` — verified:
+zero single-name supply rows exist in the 152 committed rows, and no
+spec-side name can satisfy both halves at once (the ERC half needs real
+label names; the LVS half needs exact alias-string equality). The
+supplies demonstrably *were* part of the compare — each row pairs its
+alias set to a reference-side net with `pin: true` against the SPICE
+reference — which is exactly why this is a grader gap, not a design one:
+filed upstream as klayout-tools#2405 (friction protocol), with local
+re-grade follow-up #164. When a tagged grader release carrying the fix
+lands, the expected one-command re-render moves this row to `met` and
+the headline to 3/22.
+
+**Item 4's freshness caveat applies to this citation's lvs part
+unchanged** — it is the same file, cited unpinned for the same
+no-envelope-hash reason (a pin with no envelope hash to match renders
+`unverifiable_provenance`, per klayout-tools#2182's part-level rule).
 
 ## Block kind and the partition boundary (the mixed-signal claim)
 

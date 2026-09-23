@@ -17,11 +17,13 @@ real metal, and `klt lvs` against `design/sampler_core.spice`'s own
 `sampler_core` assembly in this repo.
 
 **As of this increment, the cell also carries its T1 item-11 (power
-delivery, structural) supply read (issue #154): a committed `klt erc`
-supply spec + report find every declared supply — all four per-ring
-`vddr1`-`vddr4` pins plus `vdd` and `vss` — resolves to exactly one
-electrical island, with zero `erc.unconnected_net` and zero
-`erc.supply_short`.** See the `klt erc` section below.
+delivery, structural) supply read (issue #154, ties[] added by issue
+#161): a committed `klt erc` supply spec + report find every declared
+supply — all four per-ring `vddr1`-`vddr4` pins plus `vdd` and `vss` —
+resolves to exactly one electrical island, with zero
+`erc.unconnected_net` and zero `erc.supply_short`, and every declared
+well/substrate tie checked with zero `erc.missing_tie`.** See the
+`klt erc` section below.
 
 ## Result (this increment: the T1 item-11 structural supply read (`klt erc`), issue #154)
 
@@ -33,8 +35,8 @@ powers. The two committed artifacts here are:
 
 | Artifact | What it is |
 | --- | --- |
-| `erc-supply-spec.json` | the spec: stackup/li1/met1/met2 + vias + the block's six declared supplies, every entry justified inline in its `_comment` block (including each `stackup` entry, each `label_layer`, and why `active_layer` is set) |
-| `erc.json` | the committed `klt erc --format json` report against `sampler_core.gds`: `erc_status: "clean"`, `erc_finding_count: 0`, input content-hash `sha256:a00f655067731fc4ee189e98b57a0e22f3160752923badc556c9ceff8811396f` matching the committed GDS byte for byte |
+| `erc-supply-spec.json` | the spec: stackup/li1/met1/met2 + vias + the block's six declared supplies + the six `ties[]` well/substrate tie declarations (issue #161), every entry justified inline in its `_comment` block (including each `stackup` entry, each `label_layer`, why `active_layer` is set, and how every `well_boxes` coordinate was derived) |
+| `erc.json` | the committed `klt erc --format json` report against `sampler_core.gds`, regenerated on **tagged** klayout-tools 0.6.0 (issue #161): `erc_status: "clean"`, `erc_finding_count: 0`, `provenance.klt_version: "0.6.0"`, input content-hash `sha256:a00f655067731fc4ee189e98b57a0e22f3160752923badc556c9ceff8811396f` matching the committed GDS byte for byte |
 
 **The verdict.** Every supply `design/sampler_core.spice`'s own
 `.subckt sampler_core` declares — `vddr1 vddr2 vddr3 vddr4 vdd vss` —
@@ -53,43 +55,53 @@ correctly reported it as four islands, which is what sent the declaration
 back to the netlist's own `.iopin` list as the authority on what this
 block's supplies are.
 
-**The `erc.missing_tie` half is explicitly NOT computed, by recorded gap,
-not oversight.** The spec deliberately declares no `ties[]`:
+**The `erc.missing_tie` half is now computed and clean (issue #161).**
+The #154 increment deliberately declared no `ties[]` — on the then-pinned
+released builds a tie joined its well/tap regions into the single unified
+connectivity graph and collapsed a routed design into one island with a
+false `erc.supply_short` (klayout-tools#2169, gf180-drone-fc's FRICTION
+F-034). klayout-tools 0.6.0 — the first tagged release carrying the fix
+(#2186: ties are evaluated in their own second extraction and cannot
+touch `gates[]` or the `nets[]` findings) — is both the CI grader pin
+(since issue #160) and the build the committed report now records, so
+the spec declares its ties:
 
-- klayout-tools#2169 (reproduced four ways in `gf180-drone-fc`'s
-  FRICTION F-034) documents that on the **released** `klt` builds —
-  including `layout/pdk.json`'s own `ci_klt_install` pin, `0.5.0`, the
-  newest PyPI tag — a `ties[]` entry joins its well/tap regions into the
-  single unified connectivity graph, collapsing a routed design into one
-  island and reporting a **false** `erc.supply_short`. The fix
-  (klayout-tools#2186) is merged upstream but unreleased at the time of
-  this increment, so the same reasoning and the same evidence as
-  gf180-drone-fc's committed supply spec applies here: omit `ties[]`,
-  and say so.
-- Per `klt erc`'s own contract, omitted `ties[]` means `erc.missing_tie`
-  is never computed. The committed report records this mechanically:
-  `erc_coverage.inapplicable` carries
-  `{"id": "erc.missing_tie:[]", "reason": "no_ties_declared"}`. An
-  absence of evidence, not evidence of absence.
-- The well-tie evidence that stands in for the un-computed verdict, all
-  from already-committed artifacts:
-  1. `lvs.json` is a `match` — 152/152 nets, 264/264 devices — against a
-     SPICE reference whose every device carries explicit bulk
-     connections to the supply nets (pfet bulk = the powering rail,
-     nfet bulk = `vss`). The device-aware extraction models the
-     well/tap path; an untied well would surface as a floating bulk net
-     and a topology mismatch, not a match. All six supplies appear in
-     `net_correspondence` paired to reference-side nets, so the
-     supplies were part of the compare — exactly item 11's
-     analog-column LVS requirement.
-  2. That same `lvs.json`'s `VDD` correspondence row includes
-     `nwell_vdd` in its layout-side alias set: the well-tie pad labels
-     drawn on the nwell tap pads are part of the verified `vdd` net.
-  3. The merged GDS draws sky130's dedicated `tap.drawing` layer
-     (`65/44`, 177 shapes — `klt layers sampler_core.gds`), the PDK's
-     own tub-contact marker, landed on by `licon1` cuts and covered by
-     the supply rails' li1 pads — the geometry `erc.missing_tie` would
-     grade if released `klt` builds could grade it safely.
+- **Six entries, one per distinct well/substrate-to-supply tie.** The
+  measured partition of the 90 merged nwell regions (klayout.db
+  extraction against the committed GDS): 70 polygons whose taps reach
+  the `vdd` island (the sampler bank, the XOR tree, the array's
+  `nwell_vdd` well-tie pads), five each reaching `vddr1`–`vddr4` —
+  **the ring-local rails tie their own wells**, answering this issue's
+  "determine from the layout" question — and the substrate: all 87
+  substrate-side tap polygons (65/44 outside any nwell) reach `vss`.
+- **`tap_layer` 65/44 with `tap_is_dedicated: true`**: sky130's
+  `tap.drawing` is a tap-only tub-contact marker — the very layer
+  klayout-tools' erc docs name as the `tap_is_dedicated` exemplar — so
+  no `tap_requires` narrowing is needed and no tie renders degenerate
+  (`erc_coverage.skipped[]` is empty; a degenerate declaration would
+  read `clean_partial` and item 11 would refuse it).
+- **`well_layer: null` + `well_boxes` everywhere.** 0.6.0 resolves a
+  tie's well region as the *whole* drawn well layer, checking every
+  merged polygon of it against that one entry's single `net` — which
+  cannot express wells tied to five different supplies. Each entry
+  instead asserts its group's regions directly: every well box is the
+  bounding rectangle of one merged 64/20 polygon whose tap reaches that
+  entry's net (derived from the GDS, not invented; the box unions are
+  pairwise disjoint across groups; together they cover ~7% of the
+  top-cell extent, far from the whole-die shape klt refuses as a
+  degenerate well assertion). The substrate entry is the designed-for
+  native-substrate form (klayout-tools#2273/#2255): sky130's p-substrate
+  has no drawn layer, and its 64 boxes are per-cluster bounds of the
+  vss-reaching taps (2 µm proximity clustering). The cost is stated in
+  the verdict of record: all six ties grade
+  `erc_coverage.checked_by_well_assertion` — the weaker provenance
+  #2255 defines — beside ordinary `checked` work.
+- **Falsifiability, per klt erc's contract:** every merged asserted
+  polygon must contain tap geometry *and* at least one tap electrically
+  wired to that entry's declared net, so an untied region (a well whose
+  taps reach a different rail, a substrate patch with no tap) would
+  render an `erc.missing_tie` finding naming its bbox. The committed
+  report is the recorded verdict: zero.
 
 **Reproducing the report.** Regenerate `erc.json` with:
 
@@ -97,35 +109,37 @@ not oversight.** The spec deliberately declares no `ties[]`:
 klt erc layout/sampler_core/sampler_core.gds layout/sampler_core/erc-supply-spec.json --format json
 ```
 
-…against a `klt` that has the three `klt erc` capabilities this read
-needs, none of which the released `0.5.0` tag carries yet:
-`stackup[0].active_layer` (klayout-tools#2001 — the spec sets it so the
-antenna denominator is poly ∩ diff, keeping the rings' real poly
-interconnect out of every gate's denominator), the
-`status`/`provenance` envelope (klayout-tools#1984/#1968 — the committed
-report's `provenance.input.content_hash` is the freshness pin a future
-signoff staleness gate reads), and the `erc_coverage` block
-(klayout-tools#2179) that records the `missing_tie` inapplicability
-mechanically. The exact build that produced the committed report:
+…against a `klt` that has the `klt erc` capabilities this read needs.
+Since issue #161 the committed report is generated on the **tagged**
+`0.6.0` release (the first tag carrying `stackup[0].active_layer`
+(klayout-tools#2001 — the spec sets it so the antenna denominator is
+poly ∩ diff, keeping the rings' real poly interconnect out of every
+gate's denominator), the `status`/`provenance` envelope
+(klayout-tools#1984/#1968 — the committed report's
+`provenance.input.content_hash` is the freshness pin the signoff
+staleness gate reads), the `erc_coverage` block (klayout-tools#2179),
+and the isolated tie extraction (klayout-tools#2186) the `ties[]` half
+requires). The exact build that produced the committed report:
 
 ```bash
-python3 -m venv /tmp/klt-venv-erc-154
-/tmp/klt-venv-erc-154/bin/pip install \
-  "git+https://github.com/2AMLogic/klayout-tools@b15edf5e3a2e56467a3406c98a2555eb1a5ae45c"
-/tmp/klt-venv-erc-154/bin/klt --version   # klt 0.5.0+gb15edf5e3a2e
-PATH=/tmp/klt-venv-erc-154/bin:$PATH klt erc \
+python3 -m venv /tmp/klt-venv-erc-161
+/tmp/klt-venv-erc-161/bin/pip install klayout-tools==0.6.0
+/tmp/klt-venv-erc-161/bin/klt version    # klt 0.6.0 (git_tag v0.6.0)
+PATH=/tmp/klt-venv-erc-161/bin:$PATH klt erc \
   layout/sampler_core/sampler_core.gds layout/sampler_core/erc-supply-spec.json --format json
 ```
 
-This is the same full-SHA scratch-venv workaround
-`layout/sampler_dff/README.md` already documents for `legs[]`
-(klayout-tools#1529/#1536); the shared `layout/pdk.json` pin is
-deliberately left unmoved, exactly as that precedent requires. Re-running
-the same spec on the released `0.5.0` build produces the same supply
-verdicts (the islands and the zero-findings result do not depend on the
-newer features) but an envelope without `status`/`provenance` and gate
-areas computed from raw poly — one more reason the dev-build recipe
-above, not the ambient tool, is the one to reproduce with.
+This retires the #154 increment's documented-exception full-SHA dev-build
+recipe (`0.5.0+gb15edf5e3a2e`): a tagged release now carries every
+capability the spec uses. The shared `layout/pdk.json` `ci_klt_install`
+pin (0.5.0) is deliberately still unrelated to this report — it gates
+the nineteen committed cells' compose-cell `--check` reproductions in
+the PDK nightly (0.6.0 changed gen-compose's via-drop/tap-role handling,
+klayout-tools#2312, so that bump needs its own full `--check`
+re-verification first), while nothing in CI re-runs `klt erc` itself;
+this report's committed-verdict gate is `ci.yml`'s `signoff-check`, which
+re-renders `signoff/t1-report.json` from the committed envelope on the
+grader pin.
 
 **CI note.** Nothing in the existing `pdk-nightly` `layout-check` job
 re-runs this report (it re-derives `cell.json` evidence only), so this
@@ -133,22 +147,21 @@ artifact's drift protection is the committed content-hash plus this
 recipe, not CI — the same posture as the other non-`cell.json` evidence
 in this directory (`extract.json`, `lvs.json`).
 
-**Tracker seam.** The repo's machine-graded T1 tracker-of-record
-(`signoff/block-manifest.json` + `signoff/t1-report.json`, issue #155 /
-PR #157) landed while this increment was being built and already carries
-item 11 in scope, naming this issue as its companion. The evidence below
-exists now, and this same PR updates the manifest's `_comment` to record
-it — but the mechanical `11.analog` citation is **deliberately
-withheld**, because neither available grading route can honestly record
-it yet: the CI-pinned grader (`klayout-tools==0.5.0`) has no `erc`
-envelope kind and renders any erc citation `unrecognized_envelope`, and
-the post-0.5.0 dev grading path renders the documented no-`ties[]`
-workaround (klayout-tools#2169, the FRICTION F-034 shape this spec
-follows) as `supply_spec_incomplete`. Filed upstream as
-[2AMLogic/klayout-tools#2247](https://github.com/2AMLogic/klayout-tools/issues/2247):
-add the compound `11.analog` citation once an erc-grading build reaches
-a tagged release and the CI pin bumps. This section remains the
-block-side record of the eleventh row until then.
+**Tracker seam, resolved by issue #161.** The #154 increment left the
+mechanical `11.analog` citation deliberately withheld (the 0.5.0 grader
+had no `erc` envelope kind; the no-`ties[]` workaround graded
+`supply_spec_incomplete` — filed as klayout-tools#2247). The citation is
+now in place: `signoff/block-manifest.json` carries `11.analog` as the
+compound `[erc.json, lvs.json]` entry, and `signoff/t1-report.json`
+renders the row from the clean 0.6.0-graded ERC half. The row reads
+`unmet` / `lvs_supply_unproven` for a reason that lives entirely in the
+LVS half's supply-pairing rule (it requires a correspondence row whose
+entire layout-side string equals the supply name, but `klt lvs`
+alias-joins label-merged supply nets with `|`) — filed upstream as
+[2AMLogic/klayout-tools#2405](https://github.com/2AMLogic/klayout-tools/issues/2405),
+local re-grade follow-up #164. See `signoff/README.md`'s item-11 section
+for the full claim and its limits; this section remains the block-side
+record of the eleventh row's evidence.
 
 ## Result (this increment: the `vdd` inter-block supply strap and a whole-cell `klt lvs` match, issue #22 / #27 step 5, second half)
 
