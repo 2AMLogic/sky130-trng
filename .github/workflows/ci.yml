@@ -64,13 +64,24 @@ name: CI
 #     at tier T1 and 3 for "ran successfully, at least one item unmet" --
 #     the documented mid-ladder state, not a failure -- so the job treats
 #     0 and 3 as render successes and 1/2 as failures, then byte-compares.
-#     The `klayout-tools==0.5.0` pin matches the PDK nightly's install
-#     exactly; the wheel bundles a 10-item copy of the tiers checklist,
-#     which is why the invocation passes --tiers-doc pointing at the
-#     vendored 11-item copy under signoff/ (added upstream 2026-09-17,
-#     klayout-tools#2025) -- never the bundled default. The
+#     The `klayout-tools==0.6.0` pin deliberately DIVERGES from the PDK
+#     nightly's 0.5.0 install (since 2026-09-23, issue #160): this job is
+#     a pure JSON+markdown transform with no PDK, so it follows the
+#     grader release -- 0.6.0 is the first tagged build with `erc`-kind
+#     grading (klayout-tools#2247) -- while the nightly's pin gates the
+#     nineteen committed cells' compose-cell --check reproductions and
+#     moves only with a full --check re-verification against the new
+#     build (0.6.0 changed gen-compose's via-drop/tap-role handling,
+#     klayout-tools#2312). The invocation still passes --tiers-doc
+#     pointing at the vendored copy under signoff/ even though the 0.6.0
+#     wheel's bundled copy is currently byte-identical to it: 0.6.0 pins
+#     the governing checklist into the report by content hash
+#     (source_doc_content_hash, klayout-tools#2191), so grading against
+#     the wheel's bundled default would silently follow whatever doc a
+#     future wheel bundles instead of the copy this repo reviews and
+#     re-vendors deliberately. The
 #     envelope-vs-artifact staleness axis (GDS changed, envelope NOT
-#     regenerated) is outside this gate on the 0.5.0 grading build and is
+#     regenerated) is outside this gate and is
 #     covered by the PDK nightly's compose-cell --check reproductions
 #     instead; see signoff/README.md's freshness section.
 #
@@ -146,15 +157,22 @@ jobs:
         with:
           python-version: "3.11"
 
-      # Same pin as the PDK nightly's install step, deliberately: the
+      # Deliberately NOT the same pin as the PDK nightly's install step
+      # (0.5.0 there, 0.6.0 here, since 2026-09-23 -- issue #160): the
       # committed signoff/t1-report.json is byte-compared against this
       # build's output, so a klt release that changes grading or report
       # shape must turn THIS job red until the report is regenerated and
       # the pin consciously moved -- the same contract layout/pdk.json's
-      # klt_version_pin documents for the nightly's --check runs.
+      # klt_version_pin documents for the nightly's --check runs. The
+      # grader is a pure JSON transform, so it follows the grader release
+      # (0.6.0: first tagged erc-kind grading build, klayout-tools#2247)
+      # alone; the nightly's pin gates the nineteen committed cells'
+      # compose-cell --check reproductions and moves only with a full
+      # --check re-verification (0.6.0 changed gen-compose's
+      # via-drop/tap-role handling, klayout-tools#2312).
       - name: Install klt (klayout-tools, the signoff grading build)
         run: |
-          pip install --user "klayout-tools==0.5.0"
+          pip install --user "klayout-tools==0.6.0"
           klt --version
 
       # Verbatim the command documented in signoff/README.md -- the report

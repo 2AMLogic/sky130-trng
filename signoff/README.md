@@ -19,13 +19,22 @@ on 2AMLogic/2am#956, which consumes this block manifest.
 | `design-evidence-tiers.md` | byte-identical vendored copy of `2AMLogic/klayout-tools`'s `docs/design-evidence-tiers.md` — the tier ladder + T1 checklist the report is graded against. Provenance and why it is vendored: below. |
 | `t1-report.json` | the committed `klt signoff --manifest` output — the evidence record for this block's current state. CI re-runs the exact command and diffs, so this file cannot rot. |
 
-At `origin/main` at the time this landed, the report reads:
-**22 T1 rows rendered (11 checklist items × 2 partitions), 2 met —
-item 3 (DRC clean) and item 4 (LVS clean), analog partition only —
-so this block is 2/22 of the way to T1**, with item 11 (power delivery,
-structural) counted and `unmet` from the day it was added. `tier` is
-`null` until every rendered item is `met`. Read the *report*, not this
-summary — it is the mechanical ground truth.
+At `origin/main`, re-rendered on the tagged grader `klayout-tools==0.6.0`
+(2026-09-23, issue #160), the report reads: **22 T1 rows rendered
+(11 checklist items × 2 partitions), 2 met — item 3 (DRC clean) and
+item 4 (LVS clean), analog partition only — so this block is 2/22 of the
+way to T1**, with item 11 (power delivery, structural) counted and
+`unmet` (`no_evidence`) — the `11.analog` citation still withheld (see
+the manifest's `_comment` and #161). `tier` is `null` until every
+rendered item is `met`. The 0.6.0 build changed the report's *shape*,
+not its verdict: rows now carry a per-item `graded_by_build` flag, the
+report records its `build` identity (`v0.6.0`, `grading_ruleset_id`) and
+pins the governing checklist by `source_doc_content_hash`
+(klayout-tools#2191/#2222), and — as on 0.5.0 — three placeholder rows
+for T2/T3/T4 render `tier_not_supported` after the 22 T1 rows (25 rows
+total in the file). Same manifest + evidence on 0.5.0 produced the same
+22-row/2-met verdict, so nothing regressed in the bump. Read the
+*report*, not this summary — it is the mechanical ground truth.
 
 ## Regenerating the report (CI runs exactly this)
 
@@ -43,23 +52,33 @@ other invocation (different cwd, absolute tiers-doc path) produces a
 report that no longer matches the committed one byte for byte. The output
 is deterministic: same manifest + same evidence + same tiers doc + same
 `klt` build ⇒ byte-identical report, which is what makes the CI
-diff a valid staleness gate rather than a flaky one.
+diff a valid staleness gate rather than a flaky one. 0.6.0 also carries a
+`--check REPORT` verb (klayout-tools#2258) that re-renders and compares a
+committed report in one step — on this tree it prints `status: match`
+(exit 0); CI keeps the explicit render-and-`cmp` form above so the job's
+failure mode stays a plain byte diff.
 
 ## Why the tiers doc is vendored
 
 The grade target is an upstream document that moves independently of this
 repo — the checklist gained an **eleventh item on 2026-09-17**
 (`klt erc` supply evidence, klayout-tools#2025), which instantly
-invalidated every prior hand-read in the fleet. The `klt` PyPI release
-this repo's CI pins (`klayout-tools==0.5.0`) bundles a **10-item** copy
-of that doc, so rendering with the wheel's default would silently grade
-against a checklist that no longer exists. This vendored copy is
-byte-identical to upstream:
+invalidated every prior hand-read in the fleet. On the 0.5.0 grader the
+wheel bundled a **10-item** copy of that doc, so rendering with the
+wheel's default silently graded against a checklist that no longer
+existed; the 0.6.0 grader (pinned since 2026-09-23, issue #160) bundles
+a copy currently byte-identical to this one, but the vendored copy stays
+authoritative anyway: 0.6.0 records the governing checklist's
+`source_doc_content_hash` in the report (#2191), and grading against the
+wheel's default would follow whatever doc a *future* wheel bundles
+instead of the copy this repo reviews and re-vendors deliberately. This
+vendored copy is byte-identical to upstream:
 
 - repo: `2AMLogic/klayout-tools`, file `docs/design-evidence-tiers.md`
-- blob git-hash: `143fdacaa5b099ea59d38807e5d7d14546c33db6`
-- upstream commit that last touched it: `31a3e3c41c08bbd58719e0b99a3d6d19beb9be63` (2026-09-21)
-- sha256: `c7a1e7e10627fae396007e0ff951734f37d95028b8f49f2e21e802e9f552f318`
+- upstream tag: `v0.6.0` (commit `c622e8a`, 2026-09-22)
+- blob git-hash: `ecf02fd148c34902952b6f221a8117500529ddf7`
+- upstream commit that last touched it: `0882541638acaec9ceb43c4df77b47d5a1a179db` (2026-09-22)
+- sha256: `63eeec72e3d849761cf32dcf091af5728b069b1515e32bb3138e9454303671e5`
 
 When upstream revises the checklist, refresh this copy (and the report)
 in the same change, recording the new provenance here — the same
@@ -182,8 +201,13 @@ go green.
 
 ## CI
 
-`.github/workflows/ci.yml`'s `signoff-check` job installs the same pinned
-`klayout-tools==0.5.0` as the PDK nightly, runs the regeneration command
+`.github/workflows/ci.yml`'s `signoff-check` job installs the pinned
+`klayout-tools==0.6.0` (since 2026-09-23, issue #160 — deliberately
+**diverged** from the PDK nightly's 0.5.0: the grader is a pure JSON
+transform with no PDK, so it follows the grader release, while the
+nightly's pin gates the nineteen committed cells' compose-cell `--check`
+reproductions and moves only with a full `--check` re-verification
+against a new build), runs the regeneration command
 above, and fails if its output differs from the committed
 `t1-report.json` — so a manifest citing an artifact that has since
 changed goes red instead of rotting. The PR path needs no PDK and no
