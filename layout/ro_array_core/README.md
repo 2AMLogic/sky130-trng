@@ -277,6 +277,7 @@ and LVS-matching its own schematic subckt, reproducible from `cell.json` by
 | `drc.json`, `extract.json`, `ro_array_core.spice` | sign-off + extracted netlist |
 | `lvs.request.json`, `ro_array_core.ref.spice`, `lvs.json` | the LVS run and its generated reference |
 | `lvs-negative-controls.py` / `.json` | proof the match is discriminating |
+| `_lvs_negative_controls.py` | the two controls' shared implementation, also used by the PoC directory's `lvs-negative-controls.py` |
 | `vss-tap-scan.py` / `.json` | the pre-draw clearance measurement for all 12 `vss` taps |
 
 No `gen/` directory: every block in this cell is either an already-composed
