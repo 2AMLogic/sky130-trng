@@ -62,6 +62,7 @@ directed stimulus program against each mapped netlist via Icarus + the
 | Slug | Claim under test | Landed by |
 |---|---|---|
 | `digital-synthesis/` | cell count, area, Liberty-summed leakage and ABC's pre-layout critical-path estimate for `trng_digital.v` mapped onto `sky130_fd_sc_hd`, unconstrained and at the block's own 50 kHz sample clock; RTL↔gate equivalence; gate-level cosim against the same directed program `digital-rtl-equivalence/` uses | #117 |
+| `digital-pnr/` | placed-and-routed `trng_digital` (sky130_fd_sc_hd, 50 kHz-constrained netlist): klt-deck DRC, cell-level LVS, 16-corner post-route STA on routed DEF + extracted SPEF, routed-netlist functional cosim vs the normative model, negative controls; geometry under `layout/trng_digital/` | #166 |
 
 ### The `level: gate` convention (issue #117)
 
