@@ -141,17 +141,56 @@ PDK=sky130A klt synthesize digital/flow/constrained-50khz/synthesize-trng-digita
 python3 sim/digital-synthesis/harness/synthesize-and-verify.py --emit-record
 ```
 
+## Place and route (issue #166)
+
+`digital/flow/place-and-route/pnr-trng-digital-50khz.json` is a committed
+`klt place-and-route` request (sky130hd, 40 % target utilisation, met3/met2
+I/O, PDN/tap/filler from the `sky130hd` power preset, `clk` at 20000 ns,
+input/output delay 4000 ns, no timing exceptions, seed 20260905) over the
+klt-equiv-proven 50 kHz-constrained netlist from #117. Tool pins (klt,
+OpenROAD image digest, KLayout, open_pdks, input hashes) are in
+`digital/flow/place-and-route/tool-pins.json`; the harness refuses to run on
+drift unless `--allow-tool-drift` (which marks the record).
+
+```bash
+# place + route + SPEF/SDF, DRC, LVS, 16-corner post-route STA, routed
+# co-sim, negative controls, record mint -- one command (~30 min)
+python3 sim/digital-pnr/harness/pnr-and-verify.py --emit-record
+```
+
+Committed outputs: `layout/trng_digital/` (routed GDS/DEF, as-built Verilog,
+SPEF/SDF gzipped, abstract layout SPICE, klt JSON reports) and the
+append-only record under `sim/digital-pnr/records/` (versions, input
+hashes, area, per-corner timing, negative controls).
+
+What it establishes (see the record for numbers): the section routes with 0
+route-DRC and 0 antenna violations; `klt drc --deck sky130` is clean on the
+routed GDS; cell-level LVS matches the as-built netlist; `klt sta` on the
+routed DEF plus extracted SPEF meets setup and hold at all 16 shipped
+`sky130_fd_sc_hd` Liberty corners at 20000 ns; the routed netlist
+reproduces the normative model over the existing directed program (gate
+co-sim); and four negative controls (LVS pin swap, LVS deleted instance, a
+1 ns clock, an xor-to-and mutant in co-sim) are detected.
+
+What it does **not** establish: the DRC deck is klt's curated `sky130` deck,
+not the foundry deck, with no metal-fill/density coverage; LVS compares
+cells as black boxes against a signal-pin-only Verilog reference (no
+intra-cell devices; supply connectivity only by klt's own
+`power_connectivity` check; filler/tap cells pruned, not matched); the SPEF
+is first-order lumped RC at the `nom` interconnect corner; no
+unconstrained-endpoint list is reported by klt; the in-flow max-slew/cap
+check flags library-limit violations at four low-voltage ss corners (not
+repaired, disclosed in the record); the co-sim is FUNCTIONAL/UNIT_DELAY, not
+SDF timing simulation. Simulation-derived, provisional until silicon.
+Analog/digital composition and whole-block sign-off remain on #18.
+
 ## Deliberately not here
 
-- **Place-and-route, DRC/LVS, post-route/SDF simulation.** Synthesis
-  (issue #117) produces a mapped gate netlist and a pre-layout `Fmax`
-  estimate; there is no placed-and-routed geometry, so no signoff STA
-  (`klt sta` needs an already-routed DEF), no real parasitics, and no
-  leakage/power claim beyond a Liberty-cell-leakage sum at the mapped cell
-  list. That is a later `klt place-and-route` increment
-  (DR-0022-style records), and it is what
-  `docs/chipalooza/challenge-4-proposal.md` row G still needs for a
-  signoff-grade number.
+- **Whole-block physical sign-off.** Place-and-route of this section
+  alone is done (next section); analog/digital top-level composition, the
+  1.8 V supply distribution across the whole block, IR drop, dynamic power,
+  foundry-signoff DRC, coupling-aware signoff extraction and SDF-annotated
+  simulation remain open on issue #18.
 - **A host-clock domain crossing.** The register bus is in the 50 kHz sample
   clock domain. A real integration wants a CDC to a faster host bus; the
   synchroniser and FIFO handshake for that are not designed here.

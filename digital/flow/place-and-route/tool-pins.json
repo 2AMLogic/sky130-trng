@@ -1,0 +1,16 @@
+{
+  "_comment": [
+    "Pins for sim/digital-pnr/harness/pnr-and-verify.py (issue #166). The harness refuses to run (or to mint a record) when the live tools/PDK/input differ, unless --allow-tool-drift is given, in which case the drift is written into the record.",
+    "klt: the build reported by `klt --version` on the loom workers (provisioned from 2AMLogic/2am infra/aws/loom-worker/); klt place-and-route/sta/lvs/extract/drc contracts used here are the 0.6.0 ones.",
+    "openroad: `openroad -version` of the digest-pinned openroad/orfs container wrapper installed at ~/.local/bin/openroad (image digest recorded below). klt runs it as a subprocess.",
+    "The input netlist is the committed, klt-equiv-proven 50 kHz-constrained synthesis output of sim/digital-synthesis/records/20260910-001436-a4c3194 (its klt content_hash is that record's netlist_content_hash_input)."
+  ],
+  "klt_version": "0.6.0+g10f3da34c088",
+  "openroad": "26Q3-1510-g6cb3f2b704",
+  "openroad_image": "openroad/orfs@sha256:bb7f31697fb8466ab61852fc796376cc16d9df38f762ccb733218b8a5e55824b",
+  "klayout": "0.30.12",
+  "open_pdks": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+  "input_netlist_sha256": "sha256:9d2b8aed1cd057bd7985ca77e7394921a005846934a4b9c01921c56dade83126",
+  "input_netlist_klt_content_hash": "sha256:219738aae7c5fd3bfede92ae20bebe38e843f7341690eed151d1545a93db90ef",
+  "input_netlist_synthesis_record": "sim/digital-synthesis/records/20260910-001436-a4c3194.json"
+}
