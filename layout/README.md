@@ -2238,7 +2238,7 @@ in `digital/flow/place-and-route/tool-pins.json`).
 | Check | Result | File |
 |---|---|---|
 | Die / utilisation / wirelength | 60049.5 um2 / 42.6 % / 66327 um | `trng_digital/pnr.json` |
-| `klt drc --deck sky130` (curated deck, no fill/density) | clean, 0 violations (re-run on the committed GDS 2026-10-04, klt 0.6.0+ge2ba44fa31ce) | `trng_digital/drc.json` |
+| `klt drc --deck sky130` (curated deck, no fill/density) | clean, 0 violations (pinned-tool result; a 2026-10-04 re-run with the unpinned host klt 0.6.0+ge2ba44fa31ce agreed, confirmatory only and not recorded) | `trng_digital/drc.json` |
 | LVS, cell-level vs signal-pin-only netlist | match, `power_connectivity` match | `trng_digital/lvs.json` |
 | Post-route STA, 16 Liberty corners | 0 setup/hold violations | `trng_digital/sta.json` |
 
