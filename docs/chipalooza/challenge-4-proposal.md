@@ -32,8 +32,8 @@ public, Apache-2.0.
 
 ## Status of this repository — read this before anything below
 
-**Pre-synthesis; laid out at analog-block scale, not at whole-block
-scale.** The entropy source (an `N = 4`, five-stage,
+**Analog chain and digital section each laid out and verified separately;
+not composed into one block.** The entropy source (an `N = 4`, five-stage,
 free-running ring-oscillator array, XOR-combined) and its sampler are drawn
 as SPICE schematics and characterized across PVT at the transistor level
 (`sim/`). Everything downstream of the raw tap — health tests, conditioner,
@@ -41,10 +41,11 @@ register/streaming interface — now exists as a normative behavioural model
 plus RTL under `digital/`, per
 [DR-0004](../../spec/decision-records/DR-0004-sky130-digital-section-architecture.md)
 (status Proposed, issue #20), verified behaviourally under `sim/digital-*/`.
-**No synthesis against `sky130_fd_sc_hd` has been run**, so that section
-contributes no `Fmax`, area, power or leakage figure to §4, and **no
-whole-block GDS exists** — the DR-0004 digital section has no layout at
-all. The analog side is further along than this paragraph's first revision
+That section has since been synthesized (issue #117,
+`sim/digital-synthesis/`) and placed and routed on its own (issue #166, PR
+\#167: `layout/trng_digital/`, `sim/digital-pnr/` — see the scorecard
+below), but **no whole-block GDS exists**: the analog `sampler_core` and the
+digital `trng_digital` are separate, never-composed layouts. The analog side is further along than this paragraph's first revision
 allowed: `layout/` now holds **nineteen composed cells, every one of them
 `klt drc`-clean (0 violations) and `klt lvs`-matching** its own
 `design/*.spice` subckt — the nine leaf gates (`ro_buf`, plus
@@ -74,8 +75,9 @@ It narrows §8 rather than closing it, and names the residue precisely:
 shared supply impedance, §8's first-named mechanism, still has no
 `vddr1`-`vddr4` distribution layout to be measured on. What
 the brief's full sign-off bar — post-layout PVT over a DRC/LVS-clean
-**block** GDS — still lacks is any layout at all for the DR-0004 digital
-section, not a missing entropy-source-plus-sampler measurement.
+**block** GDS — still lacks is the analog/digital top-level composition and
+a whole-block post-layout PVT run over it (see the scorecard below); each
+half now has its own layout and its own post-layout/post-route evidence.
 Every decision record cited below (DR-0001,
 DR-0002, DR-0003, DR-0004) carries status **Proposed** — drafted, not yet
 accepted by an operator.
@@ -125,13 +127,49 @@ campaign has since landed as well (`sim/post-layout-sampler-core/`, twelve
 
 ---
 
+## Sign-off scorecard — issue #18 (updated 2026-10-04, after #166)
+
+Issue #18's four acceptance criteria, graded explicitly. No row of §4 and
+no part of the ratified spec was relaxed to produce any verdict here.
+
+| AC | Requirement | Verdict | Evidence / remaining gap |
+|---|---|---|---|
+| 1 | This document: block type, I/O vs slot budget, functional description, re-derived spec table, bench test plan | **Met (provisional)** | §1-§5 below; every §4 row cites `sim/` or a DR. Slot budget remains an *assumed* structure (AC4). §2 still describes the pre-DR-0004 pin set (§5.3 open item). |
+| 2 | Every spec row states met/unmet; none relaxed | **Met** | §4 verdict column. Honest tally: **no row is Met against its README target.** B (rate) Unmet, C (min-entropy) Unmet vs `H0 = 0.5`, D (power) Unmet/TBD, I (area) Unmet as floorplanned (digital die alone 0.0600 mm² vs `< 0.05 mm²`); A, E, J are measured/supplementary with no target; F, G, H are derived/supplementary. |
+| 3 | Sign-off bar: post-layout PVT simulation **and** DRC/LVS-clean GDS in-repo for the block | **UNMET** | See breakdown below. Each half is separately evidenced; the *block* is not. |
+| 4 | If `rules-4.html` published, verify slot-budget assumptions and note deltas | **N/A, re-checked** | `https://opencircuitdesign.com/chipalooza/rules-4.html` returned HTTP 404 on 2026-10-04: still unpublished, so there is no delta to note. The 2026-vs-2027 launch-date discrepancy recorded above is unchanged. |
+
+### AC3 breakdown (what exists, what does not)
+
+| Sub-item | Status | Citation |
+|---|---|---|
+| Analog entropy source + sampler (`sampler_core`) DRC-clean | Met (klt curated `sky130` deck, not foundry signoff) | `layout/sampler_core/` |
+| Analog `sampler_core` LVS match | Met: 264/264 devices, 152/152 nets | `layout/sampler_core/` |
+| Analog post-layout PVT | Met for the analog chain: 4 PVT points x `tt`/`ss`/`ff` | `sim/post-layout-sampler-core/`, `sim/post-layout-ro-array-core/` |
+| Digital `trng_digital` placed and routed | Met (issue #166): die 60049.5 µm², 66327 µm wirelength, 0 route-DRC, 0 antenna violations | `layout/trng_digital/pnr.json`, `sim/digital-pnr/records/20261003-212010-fa76b17.md` |
+| Digital DRC | Clean, 0 violations (klt `sky130` curated deck; **no fill/density coverage**), as recorded in the committed `drc.json` from the pinned-tool flow. A 2026-10-04 re-run on the committed GDS with the unpinned host klt 0.6.0+ge2ba44fa31ce also reported `clean`, 0 violations; that re-run is confirmatory only and not recorded (no committed artifact) | `layout/trng_digital/drc.json`, `layout/trng_digital/trng_digital.gds` |
+| Digital LVS | Match + `power_connectivity` match, but **cell-level against a signal-pin-only reference** (cell internals and power-net defects not compared) | `layout/trng_digital/lvs.json` |
+| Digital post-route timing | 0 setup/hold violations at all 16 Liberty corners (routed DEF + first-order lumped-RC SPEF, `nom`); worst setup slack 15945.3 ns (`ss_n40C_1v28`), worst hold slack 0.275 ns (`ff_n40C_1v95`) at a 20000 ns clock. A constraint-met check, not an `Fmax` search; in-flow max-slew/cap library-limit violations at four low-voltage `ss` corners are unrepaired and disclosed | `layout/trng_digital/sta.json`, `sim/digital-pnr/records/20261003-212010-fa76b17.md` |
+| Digital routed-netlist behaviour | 4239 cycles, 0 mismatches vs the normative model (FUNCTIONAL/UNIT_DELAY, **not** SDF timing); four negative controls all detected | `sim/digital-pnr/runs/20261003-212010-fa76b17/` |
+| **Analog + digital composed into one top-level GDS** | **DOES NOT EXIST** | no `layout/` top cell; `design/trng_top.spice` has no layout counterpart |
+| **Block-level DRC/LVS over the composed GDS** | **UNMET** (nothing to run it on) | — |
+| **Block-level post-layout PVT** (analog + digital + supply distribution) | **UNMET** | digital-only STA and analog-only transient campaigns are not a whole-block post-layout simulation and are not claimed as one |
+| `vddr1`-`vddr4` supply-distribution layout | **UNMET** | DR-0003 §8 / DR-0009 residue |
+| Digital dynamic power / IR drop (`klt power`) | **UNMET** | not run in #166 |
+
+Everything in this table that is simulation-derived is provisional until
+measured on silicon. The remaining whole-block integration work is tracked
+in #170; #18 stays open for it.
+
+---
+
 ## 1. Type of IP block
 
 A digital true-random-number-generator **entropy source** (not a DRBG): a
 four-ring, XOR-combined, free-running ring-oscillator array feeding a
 fixed-external-clock sampler, followed by SP 800-90B health tests, a
 non-vetted CRC-32 conditioner, and a two-path register/streaming interface
-(DR-0004, unsynthesized) — see §3.
+(DR-0004; synthesized and placed-and-routed as a standalone digital block, not yet composed with the analog half) — see §3.
 
 ---
 
@@ -279,7 +317,7 @@ DR-0003), deliberately decoupled from the rings' own free-running
 frequency.
 
 **Health tests, conditioner, interface: designed as RTL and a behavioural
-model, not yet synthesized.** As of
+model, then synthesized and placed-and-routed standalone.** As of
 [DR-0004](../../spec/decision-records/DR-0004-sky130-digital-section-architecture.md)
 (status Proposed, issue #20) this repository has continuous SP 800-90B
 RCT/APT health tests with a 1024-sample start-up test and a latch-and-gate
@@ -291,9 +329,14 @@ normative description is a bit-exact, cycle-accurate Python model
 (`digital/model/`); `digital/rtl/trng_digital.v` implements it and is
 checked against it cycle-for-cycle (`sim/digital-rtl-equivalence/`).
 
-Two things are still genuinely absent, and rows D/G below depend on them:
-**no synthesis against `sky130_fd_sc_hd` has been run** (so no `Fmax`,
-gate count, area or leakage figure exists for this section), and **no
+Since then the section has been **synthesized against `sky130_fd_sc_hd`**
+(issue #117, `sim/digital-synthesis/`: cell count, area, Liberty-summed
+leakage, `klt equiv` RTL-to-gate equivalence) and **placed and routed**
+(issue #166, `sim/digital-pnr/`, `layout/trng_digital/`: die area, post-route
+STA at 16 corners, cell-level DRC/LVS) — see rows D, G and I below. What
+synthesis and P&R did not supply: no signoff `Fmax` search, no dynamic power,
+and no composition with the analog half (all still open; see the sign-off
+scorecard). One thing is still genuinely absent from the design itself: **no
 per-ring liveness monitor** consumes the `ring_bit1..4` taps —
 `spec/porting-plan.md` §5 leaves open whether this port adopts one at all,
 so DR-0004 declines to half-design it. The health-test cutoffs are a
@@ -315,12 +358,12 @@ without a sky130-specific citation.
 | A | Combining-node (`xo`) toggle frequency, assembled `N = 4` array | 530.2 MHz | 944.0 MHz | 1516.7 MHz | not itself a ratified row (feeds row B) | min: `ss`/−40 °C/1.62 V; typ: `tt`/27 °C/1.8 V; max: `ff`/−40 °C/1.98 V | `sim/ro-array-core-combining/records/20260825-{094545,094718,094856}-53f1f7a.md` | Measured, supplementary |
 | B | Raw sample rate, sustained at the raw tap | — | 50 kbps (chosen operating point) | — | Draft: **> 1 Mbps** (stretch: > 4 Mbps) | architectural ceiling ~78 kbps at any array size, binding at `ff`/−40 °C/1.98 V (fastest loaded corner, not the entropy-binding one) | [DR-0003](../../spec/decision-records/DR-0003-sky130-trng-operating-point.md) §1–3 (status Proposed); `sim/xor-combining-bandwidth/`, `sim/ro-array-operating-point/` | **Unmet** — DR-0003 retires the README's draft `> 1 Mbps` row as *architecturally unreachable at this topology*, not merely expensive: the XOR combining gate's own bandwidth caps any array size at ~78 kbps, roughly two orders of magnitude below the draft target. The 50 kbps operating point drawn here sits below even that ceiling for margin. DR-0003 is Proposed, not ratified — the README's rate row has not moved yet. |
 | C | Raw min-entropy per bit | 0.1898 bit/sample (`ss`) | 0.3053 bit/sample (`tt`/`ff`) | 0.3053 bit/sample (`tt`/`ff`) | Design target: `H0 = 0.5` bit/sample (a sizing input, per DR-0002/DR-0003, not a claim) | `ss`/27 °C/1.8 V (lowest `H_hat` of the three corners run) | `sim/raw-bit-min-entropy/` (noise-injected transient digitization + MCV-style SP 800-90B §6.3.1 reduction, issue #21) | **First raw-bitstream evidence in this repository, but still Unmet against `H0` and NOT at DR-0003's operating point.** 24 raw bits per corner, one seed each, at `Ts` = 100 ns (a disclosed compute-budget deviation from DR-0003's `Ts` = 20 µs — see the testbench's own header) all clear a non-degenerate go/no-go bar (mixed 0/1, `ro1_swing_frac` ≈ 1.06 confirming real oscillation) but fall short of `H0 = 0.5`. This is explicitly a **Tier 2 design estimate** (gf180-trng's own DR-0004 three-tier claim discipline, cited by `spec/porting-plan.md`), not a Tier 3 SP 800-90B validation, and it is provisional until measured on silicon per the root `CLAUDE.md`. Sample-count-limited (`n` = 23-24), single seed per corner (not independent trials — `se_naive` ≈ 0.10 is therefore an UNDER-estimate of the true uncertainty), and measured at 200× DR-0003's sample rate, so `H_hat` should not be rescaled to the literal 20 µs operating point without re-running at that `Ts`. See the record's own caveats for the full disclosure. |
-| D | Active power, array only (rings + buffers + XOR; excludes sampler and any digital section) | 81.0 µW | — | 431.6 µW | < 500 µW | min: `ss`/−40 °C/1.62 V; max: `ff`/−40 °C/1.98 V | [DR-0003](../../spec/decision-records/DR-0003-sky130-trng-operating-point.md) §7; `sim/ro-array-core-combining/` | **Unmet/TBD as a whole-block claim.** The array term alone (431.6 µW worst-measured) already consumes 86.3% of the 500 µW budget, with the 6× `sampler_dff` instances (unsimulated — DR-0003's own "Follow-up required" lists this gap) and the digital section still to add. gf180-trng's own experience is a direct warning here: its synthesized digital section alone cost 712.4 µW, more than this entire budget row by itself — sky130's own digital section does **not** repeat that: `sim/digital-synthesis/` (issue #117) gives its first measured figure, ≈9.98 nW static leakage at `tt_025C_1v80` (Liberty-summed over the mapped `sky130_fd_sc_hd` cell list, unconstrained config; ≈9.90 nW at the 50 kHz-constrained config) — five orders of magnitude below the array term, not a meaningful addition to this row on its own. That is **leakage only, not active/switching power** (no activity factor, no vectors, no P&R) — the digital section's dynamic power, and the sampler's power, both remain unmeasured, so this row should still not be read as "passing": it is an array-only partial measurement against a whole-block target, now with one more (negligible) term's static floor known. |
+| D | Active power, array only (rings + buffers + XOR; excludes sampler and any digital section) | 81.0 µW | — | 431.6 µW | < 500 µW | min: `ss`/−40 °C/1.62 V; max: `ff`/−40 °C/1.98 V | [DR-0003](../../spec/decision-records/DR-0003-sky130-trng-operating-point.md) §7; `sim/ro-array-core-combining/` | **Unmet/TBD as a whole-block claim.** The array term alone (431.6 µW worst-measured) already consumes 86.3% of the 500 µW budget, with the 6× `sampler_dff` instances (unsimulated — DR-0003's own "Follow-up required" lists this gap) and the digital section still to add. gf180-trng's own experience is a direct warning here: its synthesized digital section alone cost 712.4 µW, more than this entire budget row by itself — sky130's own digital section does **not** repeat that: `sim/digital-synthesis/` (issue #117) gives its first measured figure, ≈9.98 nW static leakage at `tt_025C_1v80` (Liberty-summed over the mapped `sky130_fd_sc_hd` cell list, unconstrained config; ≈9.90 nW at the 50 kHz-constrained config) — five orders of magnitude below the array term, not a meaningful addition to this row on its own. That is **leakage only, not active/switching power** (no activity factor, no vectors, no P&R) — the digital section's dynamic power, and the sampler's power, both remain unmeasured. **Issue #166 added no dynamic-power figure** (`klt power`/IR drop were not run on the routed digital block), so this remains true after place-and-route, and this row should still not be read as "passing": it is an array-only partial measurement against a whole-block target, now with one more (negligible) term's static floor known. |
 | E | Idle current, per ring (stopped) | 0.6 nA | — | 255 nA | not yet set — `spec/porting-plan.md` §2.5's leakage survey has not run | min: cold; max: `ff`/125 °C | `sim/ro-ring5-swing-and-current/` | No target exists to grade against. Reported because it exists now and did not before; excludes sampler/digital-section idle current, all unmeasured. |
 | F | Time-to-first-valid | 0.64 ms (first **raw** word) | — | 25.60 ms (first **conditioned** word) | not stated | n/a (sample-count derived; the 50 kHz clock is fixed and external) | [DR-0004](../../spec/decision-records/DR-0004-sky130-digital-section-architecture.md) §6 (status Proposed); `sim/digital-health-test-parameters/`, `sim/digital-section-behavioral/` experiment A | **Derived, no target to grade against.** The raw path is never gated, so its first 32-bit word lands 32 samples after `raw_valid` (0.64 ms at 50 kHz). The conditioned path waits for the mandatory 1024-sample start-up health test (20.48 ms) plus one 256-bit conditioner block (5.12 ms). Both figures are sample counts at DR-0003's clock, verified in the behavioural campaign — not silicon, and not PVT-dependent (nothing here is a timing-closure claim). |
 | G | Digital section max clean sample-clock frequency (`Fmax`) | — | — | — | supplementary, informative only | n/a (`tt_025C_1v80`, single corner — no PVT sweep run) | [DR-0004](../../spec/decision-records/DR-0004-sky130-digital-section-architecture.md) 2026-09-09 addendum; `sim/digital-synthesis/` (issue #117) | **No longer N/A, but still not signoff `Fmax`.** `klt synthesize` maps `digital/rtl/trng_digital.v` onto `sky130_fd_sc_hd` at `tt_025C_1v80` to 2320 instances / 22203.80 µm² unconstrained and 2320 instances / 22099.95 µm² at this block's own 50 kHz sample-clock period (`clock_period_ns: 20000`) — `klt equiv` (`"yosys-sequential"`) proves both mapped netlists sequentially equivalent to the source RTL, and a gate-level re-run of `sim/digital-rtl-equivalence/`'s directed stimulus program matches the normative model bit-for-bit through both. The only delay figure available is ABC's own pre-layout `stime -p` estimate — wire-free, no placement, confined to the largest *combinational* cone (not a register-to-register signoff path): 4309.36 ps unconstrained, 5587.62 ps at the 50 kHz constraint (the constrained run trades ~104 µm² less area for a ~1278 ps longer combinational path, since the design's own 20 µs period gives ABC enormous slack to pick smaller/slower cells). Read as a period, that is ≈232 MHz / ≈179 MHz — thousands of times the 50 kHz this section actually runs at, consistent with the "expected to be enormously in excess" prediction this row previously only asserted — but neither figure is signoff STA: `klt sta` needs an already-routed DEF, and place-and-route is out of scope for issue #117. **Update, issue #166 (`sim/digital-pnr/`, `layout/trng_digital/`):** the section is now placed and routed (die 60049.5 µm², 42.6 % utilisation, 66327 µm wirelength, 0 route-DRC) and `klt sta` on the routed DEF with extracted SPEF meets the 20000 ns clock at all 16 shipped Liberty corners (worst setup slack 15945.3 ns at ss_n40C_1v28; worst hold slack 0.275 ns at ff_n40C_1v95). That is post-route STA with real (first-order lumped RC, `nom`) parasitics, not signoff `Fmax`: it is a constraint-met check at 50 kHz, not a maximum-frequency search; DRC is klt's curated `sky130` deck (no fill/density coverage), LVS is cell-level against a signal-pin-only netlist, and routed co-sim is FUNCTIONAL/UNIT_DELAY (no SDF timing sim). The in-flow max-slew/cap check flags library-limit violations at four low-voltage ss corners (disclosed, unrepaired). Analog/digital composition and whole-block sign-off remain on #18. Leakage at the same corner (Liberty `cell_leakage_power` summed over the mapped cell list — `klt synthesize` itself reports no leakage field, see `sim/digital-synthesis/`'s cited friction issue) is ≈9.98 nW unconstrained / ≈9.90 nW constrained — negligible against any budget row at this scale. Full numbers, klt provenance and both `klt equiv` verdicts: `sim/digital-synthesis/records/`. |
 | H | Health-test cutoffs (RCT / APT) | — | `C_RCT` = 81, `C_APT` = 824 at `H` = 0.5, `α` = 2⁻⁴⁰, `W` = 1024 | — | formula-derived once `H` is measured | n/a (a formula evaluation, not a corner-dependent measurement) | [DR-0004](../../spec/decision-records/DR-0004-sky130-digital-section-architecture.md) §2 (status Proposed); `sim/digital-health-test-parameters/` (cutoff table over an `H` grid, exact APT degeneracy floor, false-alarm intervals at 50 kbps) | **Derived and implemented, but PROVISIONAL — conditional on row C.** The cutoffs are the SP 800-90B formulas evaluated at the README's `H` = 0.5 *design target*, because sky130 has no measured `H` (row C). They are deliberately evaluated at the design floor rather than at DR-0003's model-derived `H` = 0.5415, so the false-alarm guarantee stays valid across the whole claimed range. The evidence record tabulates the cutoff at every `H` from the exact APT degeneracy floor (`H` = 0.0390625) upward, so closing row C moves this row by lookup. The values coincide with gf180-trng's own because the formulas, `α`, `W` and the `H` target all coincide — recomputed here, not copied. |
-| I | Area, array only (rings + buffers + XOR; device-count estimate, not derived from the real layout's own measured bbox) | 0.0026 mm² | — | 0.0088 mm² | < 0.05 mm² | n/a (not PVT-dependent) | [DR-0003](../../spec/decision-records/DR-0003-sky130-trng-operating-point.md) §7 | Array-only estimate sits at 5–18% of budget — but excludes the sampler and any digital section. **Not a whole-block claim; not a layout measurement** — a composed, DRC-clean, LVS-matching `ro_array_core` layout now exists (`layout/ro_array_core/`, see §5.3) with a measured `bbox_um` in its own committed evidence, but this row has not been re-derived from it. |
+| I | Area, array only (rings + buffers + XOR; device-count estimate, not derived from the real layout's own measured bbox) | 0.0026 mm² | — | 0.0088 mm² | < 0.05 mm² | n/a (not PVT-dependent) | [DR-0003](../../spec/decision-records/DR-0003-sky130-trng-operating-point.md) §7 | Array-only estimate sits at 5–18% of budget — but excludes the sampler and any digital section. **Not a whole-block claim.** **Update, issue #18:** the digital section's placed-and-routed die is 60049.5 µm² (0.0600 mm², core 54877.6 µm², 42.6 % utilisation — `layout/trng_digital/pnr.json`, `sim/digital-pnr/records/20261003-212010-fa76b17.md`) — by itself **above** the README's `< 0.05 mm²` whole-block row, so as floorplanned (40 % utilisation request, `digital/flow/place-and-route/pnr-trng-digital-50khz.json`) the whole-block area row is **Unmet**, with no analog area yet added. Synthesized cell area is 22099.95 µm² (`sim/digital-synthesis/`), so a tighter floorplan utilisation could change this; that is a flow knob nobody has re-run, not a result, and the row is not relaxed. Not a layout measurement of the array — a composed, DRC-clean, LVS-matching `ro_array_core` layout now exists (`layout/ro_array_core/`, see §5.3) with a measured `bbox_um` in its own committed evidence, but this row has not been re-derived from it. |
 | J | Architectural raw-rate ceiling (XOR combining-gate bandwidth), any array size | — | — | ~78 kbps | informative only — the hard constraint row B's operating point is chosen against | `ff`/−40 °C/1.98 V | [DR-0003](../../spec/decision-records/DR-0003-sky130-trng-operating-point.md) §1–2; `sim/xor-combining-bandwidth/` | Measured. This is the figure that forces row B's verdict — no amount of array resizing raises it; only redesigning the combining gate (wider devices, a different tree) would (DR-0003's own "Follow-up required"). |
 
 ### Rail-routing note (mirrors gf180-trng's own VDDA gap, opposite direction)
@@ -430,12 +473,12 @@ that lands this document):
   now exist for both an unconstrained and a 50 kHz-constrained mapping,
   `klt equiv` proves RTL↔gate equivalence, and a gate-level cosim
   reproduces `sim/digital-rtl-equivalence/`'s stimulus program bit-for-bit
-  (row G above). Still open: **signoff STA** (`klt sta` needs an
-  already-routed DEF — place-and-route is a later increment, DR-0022-style
-  records) and the digital section's **dynamic/switching power** (no
-  activity factor, no vectors) — row D's digital term is leakage-only so
-  far, and row I's digital half (area) is still unaddressed by this
-  document's own table.
+  (row G above). **Place-and-route landed afterwards (issue #166,
+  `sim/digital-pnr/`, `layout/trng_digital/`)**: post-route STA at 16
+  corners and the placed die area now exist (rows G and I). Still open: the
+  digital section's **dynamic/switching power** (no activity factor, no
+  vectors, no `klt power`/IR-drop run) — row D's digital term is
+  leakage-only so far.
 - **Re-map the §2 pin budget onto DR-0004's interface** — a health-test
   alarm, status bits and a conditioned-stream tap now exist to claim the
   spare test-output slots, and the §2 tables still describe the pre-DR-0004
@@ -495,8 +538,10 @@ that lands this document):
   (264 devices, 152 nets, 169817.28 Ω total series R, 869.19 fF total C),
   making a post-layout `vdd`/`vddr` current measurement tool-ready — but
   the measurement itself has not been run. Still missing for row D: that
-  post-layout power measurement, and the digital section's own synthesized
-  area/power — so the whole-block figure remains Unmet/TBD.
+  post-layout analog (`sampler_core`) power measurement, and the digital
+  section's **dynamic/switching** power (its synthesized area and static
+  leakage now exist, issue #117, `sim/digital-synthesis/`; no activity-based
+  `klt power` run exists) — so the whole-block figure remains Unmet/TBD.
 - **Ratify DR-0001, DR-0002, and DR-0003.** Every quantitative row in §4
   ultimately traces to at least one of these three Proposed records; none
   is yet an operator-accepted decision.
@@ -535,10 +580,12 @@ that lands this document):
   — which discharges DR-0003 §8's `wstv` inter-ring decorrelation
   re-evaluation at the last hierarchy level that lacked it
   ([`DR-0009`](../../spec/decision-records/DR-0009-sampler-core-substrate-bracket-and-wstv-decorrelation.md)).
-  **Still open on this bullet**: any layout at all for the DR-0004 digital
-  section — so the brief's full sign-off bar (post-layout PVT over a
-  DRC/LVS-clean **block** GDS) is close but not met on the digital half —
-  and, for §8 specifically, a `vddr1`-`vddr4` supply-distribution layout,
+  **Still open on this bullet** (updated for issue #18, 2026-10-04): the
+  DR-0004 digital section now has its own placed-and-routed, klt-deck
+  DRC-clean, cell-level-LVS-matching layout (`layout/trng_digital/`,
+  issue #166), so the open part is the analog/digital top-level
+  composition and a whole-block post-layout PVT run — and, for §8
+  specifically, a `vddr1`-`vddr4` supply-distribution layout,
   without which §8's first-named coupling mechanism cannot be measured at
   any scale. Top-level pin promotion, previously listed here as also open,
   is not required for the match and is struck rather than carried forward.
@@ -787,10 +834,10 @@ that lands this document):
   (ngspice 46, as run in `sim/`) against the sky130 open PDK, resolved via
   the search chain `design/netlist.py`/`sim/bin/corner-run.py` document
   (`SKY130_PDK_PATH` → `PDK_ROOT`/`PDK` → local/committed `pdk.json` →
-  `volare`/built-in search roots). Layout would use klayout-tools (`klt`)
-  per this repository's `CLAUDE.md`, once layout work starts — no layout
-  has been attempted yet, so no klayout-tools friction has been filed
-  against this design.
+  `volare`/built-in search roots). Layout uses klayout-tools (`klt`)
+  per this repository's `CLAUDE.md`; klayout-tools friction encountered
+  along the way is filed generically at `2AMLogic/klayout-tools` (for the
+  digital place-and-route increment: `klayout-tools#2734`).
 - **Disclosure.** This repository is public (per
   [2AMLogic/2am#542](https://github.com/2AMLogic/2am/issues/542)'s Phase 4
   visibility note, this repo was already public before Phase 4A). Nothing

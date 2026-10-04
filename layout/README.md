@@ -2224,3 +2224,29 @@ unit-suffix stripping, device-card swap) applies here too, since
 `layout/bin/pex-netlist.py` itself did not change. See [`layout/pex-array/README.md`](pex-array/README.md) for
 the array-scale net-aliasing technique and what the parasitic model does and
 does not contain.
+
+## `layout/trng_digital/` and whole-block integration status (issue #18)
+
+`layout/trng_digital/` is the placed-and-routed DR-0004 digital section
+(issue #166, PR #167), produced by `klt place-and-route` from the
+50 kHz-constrained `sky130_fd_sc_hd` netlist. It is **not** a composed cell
+recipe like the analog cells above and is not `compose-cell.py --check`
+reproducible; it is reproduced by
+`python3 sim/digital-pnr/harness/pnr-and-verify.py --emit-record` (tool pins
+in `digital/flow/place-and-route/tool-pins.json`).
+
+| Check | Result | File |
+|---|---|---|
+| Die / utilisation / wirelength | 60049.5 um2 / 42.6 % / 66327 um | `trng_digital/pnr.json` |
+| `klt drc --deck sky130` (curated deck, no fill/density) | clean, 0 violations (pinned-tool result; a 2026-10-04 re-run with the unpinned host klt 0.6.0+ge2ba44fa31ce agreed, confirmatory only and not recorded) | `trng_digital/drc.json` |
+| LVS, cell-level vs signal-pin-only netlist | match, `power_connectivity` match | `trng_digital/lvs.json` |
+| Post-route STA, 16 Liberty corners | 0 setup/hold violations | `trng_digital/sta.json` |
+
+**Whole-block status: not integrated.** No layout composes `sampler_core`
+(analog) with `trng_digital` (digital) into one top-level GDS, so there is no
+block-level DRC/LVS and no block-level post-layout PVT run. The two halves'
+separate DRC/LVS results are not a block result and must not be cited as one.
+Remaining: top-level floorplan and cell recipe, inter-domain supply and
+`vddr1`-`vddr4` distribution, block-level DRC/LVS, block-level post-layout
+PVT, digital dynamic power / IR drop. Graded in
+`docs/chipalooza/challenge-4-proposal.md` ("Sign-off scorecard").
