@@ -390,10 +390,15 @@ jobs:
                 'or neither.',
             ].join('\n');
 
+            // Discovery must not depend on loom:triage: Loom removes that intake
+            // label as a tracker advances. The body marker is the identity; PRs
+            // returned by the issues endpoint are never trackers.
             const existing = await github.paginate(github.rest.issues.listForRepo, {
-              ...context.repo, state: 'open', labels: 'loom:triage', per_page: 100,
+              ...context.repo, state: 'open', per_page: 100,
             });
-            const tracker = existing.find((i) => (i.body || '').includes(MARKER));
+            const tracker = existing.find(
+              (i) => !i.pull_request && (i.body || '').includes(MARKER),
+            );
 
             if (tracker) {
               await github.rest.issues.createComment({
