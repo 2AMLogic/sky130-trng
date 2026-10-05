@@ -1,0 +1,2867 @@
+{
+  "schema_version": 1,
+  "top_cell": "trng_whole",
+  "analog_trng_top_pins": [
+    {
+      "name": "en1",
+      "direction": "input"
+    },
+    {
+      "name": "en2",
+      "direction": "input"
+    },
+    {
+      "name": "en3",
+      "direction": "input"
+    },
+    {
+      "name": "en4",
+      "direction": "input"
+    },
+    {
+      "name": "vddr1",
+      "direction": "inout"
+    },
+    {
+      "name": "vddr2",
+      "direction": "inout"
+    },
+    {
+      "name": "vddr3",
+      "direction": "inout"
+    },
+    {
+      "name": "vddr4",
+      "direction": "inout"
+    },
+    {
+      "name": "vdd",
+      "direction": "inout"
+    },
+    {
+      "name": "vss",
+      "direction": "inout"
+    },
+    {
+      "name": "clk",
+      "direction": "input"
+    },
+    {
+      "name": "rst_n",
+      "direction": "input"
+    },
+    {
+      "name": "raw_bit",
+      "direction": "output"
+    },
+    {
+      "name": "raw_valid",
+      "direction": "output"
+    },
+    {
+      "name": "ring_bit1",
+      "direction": "output"
+    },
+    {
+      "name": "ring_bit2",
+      "direction": "output"
+    },
+    {
+      "name": "ring_bit3",
+      "direction": "output"
+    },
+    {
+      "name": "ring_bit4",
+      "direction": "output"
+    }
+  ],
+  "whole_block_nets": [
+    {
+      "whole_block_pin": "raw_bit",
+      "class": "inter_macro",
+      "direction": "analog_to_digital",
+      "analog_pin": "raw_bit",
+      "analog_port_local_um": {
+        "x": 44.9,
+        "y": 2.71
+      },
+      "analog_port_composed_um": {
+        "x": 283.87,
+        "y": 271.35
+      },
+      "analog_port_layer": [
+        69,
+        20
+      ],
+      "digital_pin": "raw_bit",
+      "digital_port_composed_um": {
+        "x": 199.6,
+        "y": 69.7
+      },
+      "digital_port_layer": [
+        70,
+        20
+      ],
+      "boundary_pad": null
+    },
+    {
+      "whole_block_pin": "raw_valid",
+      "class": "inter_macro",
+      "direction": "analog_to_digital",
+      "analog_pin": "raw_valid",
+      "analog_port_local_um": {
+        "x": 100.56,
+        "y": 2.71
+      },
+      "analog_port_composed_um": {
+        "x": 228.21,
+        "y": 271.35
+      },
+      "analog_port_layer": [
+        69,
+        20
+      ],
+      "digital_pin": "raw_valid",
+      "digital_port_composed_um": {
+        "x": 199.6,
+        "y": 95.54
+      },
+      "digital_port_layer": [
+        70,
+        20
+      ],
+      "boundary_pad": null
+    },
+    {
+      "whole_block_pin": "clk",
+      "class": "shared_input",
+      "direction": "external_to_both",
+      "analog_pin": "clk",
+      "analog_port_local_um": {
+        "x": 108.0,
+        "y": -1.7
+      },
+      "analog_port_composed_um": {
+        "x": 220.77,
+        "y": 266.94
+      },
+      "analog_port_layer": [
+        69,
+        20
+      ],
+      "digital_pin": "clk",
+      "digital_port_composed_um": {
+        "x": 199.6,
+        "y": 122.74
+      },
+      "digital_port_layer": [
+        70,
+        20
+      ],
+      "boundary_pad": {
+        "kind": "met5 pad (klt draw)",
+        "x_um": 220.77,
+        "y_um": 332.0,
+        "size_um": 3.0,
+        "layer": [
+          72,
+          20
+        ]
+      }
+    },
+    {
+      "whole_block_pin": "rst_n",
+      "class": "shared_input",
+      "direction": "external_to_both",
+      "analog_pin": "rst_n",
+      "analog_port_local_um": {
+        "x": 124.0,
+        "y": 5.0
+      },
+      "analog_port_composed_um": {
+        "x": 204.77,
+        "y": 273.64
+      },
+      "analog_port_layer": [
+        69,
+        20
+      ],
+      "digital_pin": "rst_n",
+      "digital_port_composed_um": {
+        "x": 199.6,
+        "y": 155.38
+      },
+      "digital_port_layer": [
+        70,
+        20
+      ],
+      "boundary_pad": {
+        "kind": "met5 pad (klt draw)",
+        "x_um": 204.77,
+        "y_um": 332.0,
+        "size_um": 3.0,
+        "layer": [
+          72,
+          20
+        ]
+      }
+    },
+    {
+      "whole_block_pin": "en1",
+      "class": "analog_external",
+      "direction": "external_to_analog",
+      "analog_pin": "en1",
+      "analog_port_local_um": {
+        "x": 5.875,
+        "y": 25.61
+      },
+      "analog_port_composed_um": {
+        "x": 322.895,
+        "y": 294.25
+      },
+      "analog_port_layer": [
+        67,
+        20
+      ],
+      "digital_pin": null,
+      "boundary_pad": {
+        "kind": "met5 pad (klt draw)",
+        "x_um": 322.895,
+        "y_um": 332.0,
+        "size_um": 3.0,
+        "layer": [
+          72,
+          20
+        ]
+      }
+    },
+    {
+      "whole_block_pin": "en2",
+      "class": "analog_external",
+      "direction": "external_to_analog",
+      "analog_pin": "en2",
+      "analog_port_local_um": {
+        "x": 61.175,
+        "y": 25.61
+      },
+      "analog_port_composed_um": {
+        "x": 267.595,
+        "y": 294.25
+      },
+      "analog_port_layer": [
+        67,
+        20
+      ],
+      "digital_pin": null,
+      "boundary_pad": {
+        "kind": "met5 pad (klt draw)",
+        "x_um": 267.595,
+        "y_um": 332.0,
+        "size_um": 3.0,
+        "layer": [
+          72,
+          20
+        ]
+      }
+    },
+    {
+      "whole_block_pin": "en3",
+      "class": "analog_external",
+      "direction": "external_to_analog",
+      "analog_pin": "en3",
+      "analog_port_local_um": {
+        "x": 116.475,
+        "y": 25.61
+      },
+      "analog_port_composed_um": {
+        "x": 212.295,
+        "y": 294.25
+      },
+      "analog_port_layer": [
+        67,
+        20
+      ],
+      "digital_pin": null,
+      "boundary_pad": {
+        "kind": "met5 pad (klt draw)",
+        "x_um": 212.295,
+        "y_um": 332.0,
+        "size_um": 3.0,
+        "layer": [
+          72,
+          20
+        ]
+      }
+    },
+    {
+      "whole_block_pin": "en4",
+      "class": "analog_external",
+      "direction": "external_to_analog",
+      "analog_pin": "en4",
+      "analog_port_local_um": {
+        "x": 171.775,
+        "y": 25.61
+      },
+      "analog_port_composed_um": {
+        "x": 156.995,
+        "y": 294.25
+      },
+      "analog_port_layer": [
+        67,
+        20
+      ],
+      "digital_pin": null,
+      "boundary_pad": {
+        "kind": "met5 pad (klt draw)",
+        "x_um": 156.995,
+        "y_um": 332.0,
+        "size_um": 3.0,
+        "layer": [
+          72,
+          20
+        ]
+      }
+    },
+    {
+      "whole_block_pin": "vddr1",
+      "class": "ring_supply",
+      "direction": "external_to_analog",
+      "analog_pin": "vddr1",
+      "analog_port_local_um": {
+        "x": 15.0,
+        "y": 29.635
+      },
+      "analog_port_composed_um": {
+        "x": 313.77,
+        "y": 298.275
+      },
+      "analog_port_layer": [
+        69,
+        20
+      ],
+      "digital_pin": null,
+      "boundary_pad": {
+        "kind": "met5 pad (klt draw)",
+        "x_um": 313.77,
+        "y_um": 332.0,
+        "size_um": 3.0,
+        "layer": [
+          72,
+          20
+        ]
+      }
+    },
+    {
+      "whole_block_pin": "vddr2",
+      "class": "ring_supply",
+      "direction": "external_to_analog",
+      "analog_pin": "vddr2",
+      "analog_port_local_um": {
+        "x": 70.0,
+        "y": 29.635
+      },
+      "analog_port_composed_um": {
+        "x": 258.77,
+        "y": 298.275
+      },
+      "analog_port_layer": [
+        69,
+        20
+      ],
+      "digital_pin": null,
+      "boundary_pad": {
+        "kind": "met5 pad (klt draw)",
+        "x_um": 258.77,
+        "y_um": 332.0,
+        "size_um": 3.0,
+        "layer": [
+          72,
+          20
+        ]
+      }
+    },
+    {
+      "whole_block_pin": "vddr3",
+      "class": "ring_supply",
+      "direction": "external_to_analog",
+      "analog_pin": "vddr3",
+      "analog_port_local_um": {
+        "x": 132.0,
+        "y": 29.635
+      },
+      "analog_port_composed_um": {
+        "x": 196.77,
+        "y": 298.275
+      },
+      "analog_port_layer": [
+        69,
+        20
+      ],
+      "digital_pin": null,
+      "boundary_pad": {
+        "kind": "met5 pad (klt draw)",
+        "x_um": 196.77,
+        "y_um": 332.0,
+        "size_um": 3.0,
+        "layer": [
+          72,
+          20
+        ]
+      }
+    },
+    {
+      "whole_block_pin": "vddr4",
+      "class": "ring_supply",
+      "direction": "external_to_analog",
+      "analog_pin": "vddr4",
+      "analog_port_local_um": {
+        "x": 180.0,
+        "y": 29.635
+      },
+      "analog_port_composed_um": {
+        "x": 148.77,
+        "y": 298.275
+      },
+      "analog_port_layer": [
+        69,
+        20
+      ],
+      "digital_pin": null,
+      "boundary_pad": {
+        "kind": "met5 pad (klt draw)",
+        "x_um": 148.77,
+        "y_um": 332.0,
+        "size_um": 3.0,
+        "layer": [
+          72,
+          20
+        ]
+      }
+    },
+    {
+      "whole_block_pin": "ring_bit1",
+      "class": "analog_external",
+      "direction": "analog_to_external",
+      "analog_pin": "ring_bit1",
+      "analog_port_local_um": {
+        "x": 156.22,
+        "y": 2.71
+      },
+      "analog_port_composed_um": {
+        "x": 172.55,
+        "y": 271.35
+      },
+      "analog_port_layer": [
+        69,
+        20
+      ],
+      "digital_pin": null,
+      "boundary_pad": {
+        "kind": "met5 pad (klt draw)",
+        "x_um": 172.55,
+        "y_um": 332.0,
+        "size_um": 3.0,
+        "layer": [
+          72,
+          20
+        ]
+      }
+    },
+    {
+      "whole_block_pin": "ring_bit2",
+      "class": "analog_external",
+      "direction": "analog_to_external",
+      "analog_pin": "ring_bit2",
+      "analog_port_local_um": {
+        "x": 211.88,
+        "y": 2.71
+      },
+      "analog_port_composed_um": {
+        "x": 116.89,
+        "y": 271.35
+      },
+      "analog_port_layer": [
+        69,
+        20
+      ],
+      "digital_pin": null,
+      "boundary_pad": {
+        "kind": "met5 pad (klt draw)",
+        "x_um": 116.89,
+        "y_um": 332.0,
+        "size_um": 3.0,
+        "layer": [
+          72,
+          20
+        ]
+      }
+    },
+    {
+      "whole_block_pin": "ring_bit3",
+      "class": "analog_external",
+      "direction": "analog_to_external",
+      "analog_pin": "ring_bit3",
+      "analog_port_local_um": {
+        "x": 267.54,
+        "y": 2.71
+      },
+      "analog_port_composed_um": {
+        "x": 61.23,
+        "y": 271.35
+      },
+      "analog_port_layer": [
+        69,
+        20
+      ],
+      "digital_pin": null,
+      "boundary_pad": {
+        "kind": "met5 pad (klt draw)",
+        "x_um": 61.23,
+        "y_um": 332.0,
+        "size_um": 3.0,
+        "layer": [
+          72,
+          20
+        ]
+      }
+    },
+    {
+      "whole_block_pin": "ring_bit4",
+      "class": "analog_external",
+      "direction": "analog_to_external",
+      "analog_pin": "ring_bit4",
+      "analog_port_local_um": {
+        "x": 323.2,
+        "y": 2.71
+      },
+      "analog_port_composed_um": {
+        "x": 5.57,
+        "y": 271.35
+      },
+      "analog_port_layer": [
+        69,
+        20
+      ],
+      "digital_pin": null,
+      "boundary_pad": {
+        "kind": "met5 pad (klt draw)",
+        "x_um": 5.57,
+        "y_um": 332.0,
+        "size_um": 3.0,
+        "layer": [
+          72,
+          20
+        ]
+      }
+    },
+    {
+      "whole_block_pin": "vdd",
+      "class": "logic_supply",
+      "direction": "external_to_both",
+      "analog_pin": "vdd",
+      "analog_port_local_um": {
+        "x": 190.0,
+        "y": 31.135
+      },
+      "analog_port_composed_um": {
+        "x": 138.77,
+        "y": 299.775
+      },
+      "analog_port_layer": [
+        69,
+        20
+      ],
+      "digital_pin": "VPWR",
+      "digital_port_composed_um": {
+        "x": -37.5,
+        "y": 223.04
+      },
+      "digital_port_layer": [
+        72,
+        20
+      ],
+      "boundary_pad": {
+        "kind": "met5 pad (klt draw)",
+        "x_um": 138.77,
+        "y_um": 332.0,
+        "size_um": 3.0,
+        "layer": [
+          72,
+          20
+        ]
+      }
+    },
+    {
+      "whole_block_pin": "vss",
+      "class": "logic_ground",
+      "direction": "external_to_both",
+      "analog_pin": "vss",
+      "analog_port_local_um": {
+        "x": 144.0,
+        "y": 34.435
+      },
+      "analog_port_composed_um": {
+        "x": 184.77,
+        "y": 303.075
+      },
+      "analog_port_layer": [
+        69,
+        20
+      ],
+      "digital_pin": "VGND",
+      "digital_port_composed_um": {
+        "x": 184.77,
+        "y": 236.64
+      },
+      "digital_port_layer": [
+        72,
+        20
+      ],
+      "boundary_pad": {
+        "kind": "met5 pad (klt draw)",
+        "x_um": 184.77,
+        "y_um": 332.0,
+        "size_um": 3.0,
+        "layer": [
+          72,
+          20
+        ]
+      }
+    }
+  ],
+  "digital_pins": [
+    {
+      "pin": "clk",
+      "bus_base": "clk",
+      "bus_index": null,
+      "direction": "input",
+      "def_net": "clk",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 122.74
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 122.74
+      },
+      "disposition": "shared net with analog macro"
+    },
+    {
+      "pin": "rst_n",
+      "bus_base": "rst_n",
+      "bus_index": null,
+      "direction": "input",
+      "def_net": "rst_n",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 155.38
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 155.38
+      },
+      "disposition": "shared net with analog macro"
+    },
+    {
+      "pin": "raw_bit",
+      "bus_base": "raw_bit",
+      "bus_index": null,
+      "direction": "input",
+      "def_net": "raw_bit",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 69.7
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 69.7
+      },
+      "disposition": "shared net with analog macro"
+    },
+    {
+      "pin": "raw_valid",
+      "bus_base": "raw_valid",
+      "bus_index": null,
+      "direction": "input",
+      "def_net": "raw_valid",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 95.54
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 95.54
+      },
+      "disposition": "shared net with analog macro"
+    },
+    {
+      "pin": "bus_addr[0]",
+      "bus_base": "bus_addr",
+      "bus_index": 0,
+      "direction": "input",
+      "def_net": "bus_addr[0]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 79.22
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 79.22
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_addr[1]",
+      "bus_base": "bus_addr",
+      "bus_index": 1,
+      "direction": "input",
+      "def_net": "bus_addr[1]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 94.18
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 94.18
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_addr[2]",
+      "bus_base": "bus_addr",
+      "bus_index": 2,
+      "direction": "input",
+      "def_net": "bus_addr[2]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 121.38
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 121.38
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_addr[3]",
+      "bus_base": "bus_addr",
+      "bus_index": 3,
+      "direction": "input",
+      "def_net": "bus_addr[3]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 113.22
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 113.22
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_we",
+      "bus_base": "bus_we",
+      "bus_index": null,
+      "direction": "input",
+      "def_net": "bus_we",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 99.62
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 99.62
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_re",
+      "bus_base": "bus_re",
+      "bus_index": null,
+      "direction": "input",
+      "def_net": "bus_re",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 159.46
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 159.46
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_wdata[0]",
+      "bus_base": "bus_wdata",
+      "bus_index": 0,
+      "direction": "input",
+      "def_net": "bus_wdata[0]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 160.82
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 160.82
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_wdata[1]",
+      "bus_base": "bus_wdata",
+      "bus_index": 1,
+      "direction": "input",
+      "def_net": "bus_wdata[1]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 109.14
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 109.14
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_wdata[2]",
+      "bus_base": "bus_wdata",
+      "bus_index": 2,
+      "direction": "input",
+      "def_net": "bus_wdata[2]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 84.66
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 84.66
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_wdata[3]",
+      "bus_base": "bus_wdata",
+      "bus_index": 3,
+      "direction": "input",
+      "def_net": "bus_wdata[3]",
+      "layer": [
+        69,
+        20
+      ],
+      "macro_local_um": {
+        "x": 22.31,
+        "y": 0.2425
+      },
+      "composed_um": {
+        "x": 177.69,
+        "y": 0.2425
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_wdata[4]",
+      "bus_base": "bus_wdata",
+      "bus_index": 4,
+      "direction": "input",
+      "def_net": "bus_wdata[4]",
+      "layer": [
+        69,
+        20
+      ],
+      "macro_local_um": {
+        "x": 23.23,
+        "y": 0.2425
+      },
+      "composed_um": {
+        "x": 176.77,
+        "y": 0.2425
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_wdata[5]",
+      "bus_base": "bus_wdata",
+      "bus_index": 5,
+      "direction": "input",
+      "def_net": "bus_wdata[5]",
+      "layer": [
+        69,
+        20
+      ],
+      "macro_local_um": {
+        "x": 24.15,
+        "y": 0.2425
+      },
+      "composed_um": {
+        "x": 175.85,
+        "y": 0.2425
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_wdata[6]",
+      "bus_base": "bus_wdata",
+      "bus_index": 6,
+      "direction": "input",
+      "def_net": "bus_wdata[6]",
+      "layer": [
+        69,
+        20
+      ],
+      "macro_local_um": {
+        "x": 25.07,
+        "y": 0.2425
+      },
+      "composed_um": {
+        "x": 174.93,
+        "y": 0.2425
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_wdata[7]",
+      "bus_base": "bus_wdata",
+      "bus_index": 7,
+      "direction": "input",
+      "def_net": "bus_wdata[7]",
+      "layer": [
+        69,
+        20
+      ],
+      "macro_local_um": {
+        "x": 25.99,
+        "y": 0.2425
+      },
+      "composed_um": {
+        "x": 174.01,
+        "y": 0.2425
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_wdata[8]",
+      "bus_base": "bus_wdata",
+      "bus_index": 8,
+      "direction": "input",
+      "def_net": "bus_wdata[8]",
+      "layer": [
+        69,
+        20
+      ],
+      "macro_local_um": {
+        "x": 26.91,
+        "y": 0.2425
+      },
+      "composed_um": {
+        "x": 173.09,
+        "y": 0.2425
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_wdata[9]",
+      "bus_base": "bus_wdata",
+      "bus_index": 9,
+      "direction": "input",
+      "def_net": "bus_wdata[9]",
+      "layer": [
+        69,
+        20
+      ],
+      "macro_local_um": {
+        "x": 27.83,
+        "y": 0.2425
+      },
+      "composed_um": {
+        "x": 172.17,
+        "y": 0.2425
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_wdata[10]",
+      "bus_base": "bus_wdata",
+      "bus_index": 10,
+      "direction": "input",
+      "def_net": "bus_wdata[10]",
+      "layer": [
+        69,
+        20
+      ],
+      "macro_local_um": {
+        "x": 2.07,
+        "y": 0.2425
+      },
+      "composed_um": {
+        "x": 197.93,
+        "y": 0.2425
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_wdata[11]",
+      "bus_base": "bus_wdata",
+      "bus_index": 11,
+      "direction": "input",
+      "def_net": "bus_wdata[11]",
+      "layer": [
+        69,
+        20
+      ],
+      "macro_local_um": {
+        "x": 2.99,
+        "y": 0.2425
+      },
+      "composed_um": {
+        "x": 197.01,
+        "y": 0.2425
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_wdata[12]",
+      "bus_base": "bus_wdata",
+      "bus_index": 12,
+      "direction": "input",
+      "def_net": "bus_wdata[12]",
+      "layer": [
+        69,
+        20
+      ],
+      "macro_local_um": {
+        "x": 3.91,
+        "y": 0.2425
+      },
+      "composed_um": {
+        "x": 196.09,
+        "y": 0.2425
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_wdata[13]",
+      "bus_base": "bus_wdata",
+      "bus_index": 13,
+      "direction": "input",
+      "def_net": "bus_wdata[13]",
+      "layer": [
+        69,
+        20
+      ],
+      "macro_local_um": {
+        "x": 4.83,
+        "y": 0.2425
+      },
+      "composed_um": {
+        "x": 195.17,
+        "y": 0.2425
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_wdata[14]",
+      "bus_base": "bus_wdata",
+      "bus_index": 14,
+      "direction": "input",
+      "def_net": "bus_wdata[14]",
+      "layer": [
+        69,
+        20
+      ],
+      "macro_local_um": {
+        "x": 5.75,
+        "y": 0.2425
+      },
+      "composed_um": {
+        "x": 194.25,
+        "y": 0.2425
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_wdata[15]",
+      "bus_base": "bus_wdata",
+      "bus_index": 15,
+      "direction": "input",
+      "def_net": "bus_wdata[15]",
+      "layer": [
+        69,
+        20
+      ],
+      "macro_local_um": {
+        "x": 6.67,
+        "y": 0.2425
+      },
+      "composed_um": {
+        "x": 193.33,
+        "y": 0.2425
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_wdata[16]",
+      "bus_base": "bus_wdata",
+      "bus_index": 16,
+      "direction": "input",
+      "def_net": "bus_wdata[16]",
+      "layer": [
+        69,
+        20
+      ],
+      "macro_local_um": {
+        "x": 7.59,
+        "y": 0.2425
+      },
+      "composed_um": {
+        "x": 192.41,
+        "y": 0.2425
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_wdata[17]",
+      "bus_base": "bus_wdata",
+      "bus_index": 17,
+      "direction": "input",
+      "def_net": "bus_wdata[17]",
+      "layer": [
+        69,
+        20
+      ],
+      "macro_local_um": {
+        "x": 8.51,
+        "y": 0.2425
+      },
+      "composed_um": {
+        "x": 191.49,
+        "y": 0.2425
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_wdata[18]",
+      "bus_base": "bus_wdata",
+      "bus_index": 18,
+      "direction": "input",
+      "def_net": "bus_wdata[18]",
+      "layer": [
+        69,
+        20
+      ],
+      "macro_local_um": {
+        "x": 9.43,
+        "y": 0.2425
+      },
+      "composed_um": {
+        "x": 190.57,
+        "y": 0.2425
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_wdata[19]",
+      "bus_base": "bus_wdata",
+      "bus_index": 19,
+      "direction": "input",
+      "def_net": "bus_wdata[19]",
+      "layer": [
+        69,
+        20
+      ],
+      "macro_local_um": {
+        "x": 10.35,
+        "y": 0.2425
+      },
+      "composed_um": {
+        "x": 189.65,
+        "y": 0.2425
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_wdata[20]",
+      "bus_base": "bus_wdata",
+      "bus_index": 20,
+      "direction": "input",
+      "def_net": "bus_wdata[20]",
+      "layer": [
+        69,
+        20
+      ],
+      "macro_local_um": {
+        "x": 11.27,
+        "y": 0.2425
+      },
+      "composed_um": {
+        "x": 188.73,
+        "y": 0.2425
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_wdata[21]",
+      "bus_base": "bus_wdata",
+      "bus_index": 21,
+      "direction": "input",
+      "def_net": "bus_wdata[21]",
+      "layer": [
+        69,
+        20
+      ],
+      "macro_local_um": {
+        "x": 12.19,
+        "y": 0.2425
+      },
+      "composed_um": {
+        "x": 187.81,
+        "y": 0.2425
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_wdata[22]",
+      "bus_base": "bus_wdata",
+      "bus_index": 22,
+      "direction": "input",
+      "def_net": "bus_wdata[22]",
+      "layer": [
+        69,
+        20
+      ],
+      "macro_local_um": {
+        "x": 13.11,
+        "y": 0.2425
+      },
+      "composed_um": {
+        "x": 186.89,
+        "y": 0.2425
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_wdata[23]",
+      "bus_base": "bus_wdata",
+      "bus_index": 23,
+      "direction": "input",
+      "def_net": "bus_wdata[23]",
+      "layer": [
+        69,
+        20
+      ],
+      "macro_local_um": {
+        "x": 14.03,
+        "y": 0.2425
+      },
+      "composed_um": {
+        "x": 185.97,
+        "y": 0.2425
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_wdata[24]",
+      "bus_base": "bus_wdata",
+      "bus_index": 24,
+      "direction": "input",
+      "def_net": "bus_wdata[24]",
+      "layer": [
+        69,
+        20
+      ],
+      "macro_local_um": {
+        "x": 14.95,
+        "y": 0.2425
+      },
+      "composed_um": {
+        "x": 185.05,
+        "y": 0.2425
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_wdata[25]",
+      "bus_base": "bus_wdata",
+      "bus_index": 25,
+      "direction": "input",
+      "def_net": "bus_wdata[25]",
+      "layer": [
+        69,
+        20
+      ],
+      "macro_local_um": {
+        "x": 15.87,
+        "y": 0.2425
+      },
+      "composed_um": {
+        "x": 184.13,
+        "y": 0.2425
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_wdata[26]",
+      "bus_base": "bus_wdata",
+      "bus_index": 26,
+      "direction": "input",
+      "def_net": "bus_wdata[26]",
+      "layer": [
+        69,
+        20
+      ],
+      "macro_local_um": {
+        "x": 16.79,
+        "y": 0.2425
+      },
+      "composed_um": {
+        "x": 183.21,
+        "y": 0.2425
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_wdata[27]",
+      "bus_base": "bus_wdata",
+      "bus_index": 27,
+      "direction": "input",
+      "def_net": "bus_wdata[27]",
+      "layer": [
+        69,
+        20
+      ],
+      "macro_local_um": {
+        "x": 17.71,
+        "y": 0.2425
+      },
+      "composed_um": {
+        "x": 182.29,
+        "y": 0.2425
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_wdata[28]",
+      "bus_base": "bus_wdata",
+      "bus_index": 28,
+      "direction": "input",
+      "def_net": "bus_wdata[28]",
+      "layer": [
+        69,
+        20
+      ],
+      "macro_local_um": {
+        "x": 18.63,
+        "y": 0.2425
+      },
+      "composed_um": {
+        "x": 181.37,
+        "y": 0.2425
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_wdata[29]",
+      "bus_base": "bus_wdata",
+      "bus_index": 29,
+      "direction": "input",
+      "def_net": "bus_wdata[29]",
+      "layer": [
+        69,
+        20
+      ],
+      "macro_local_um": {
+        "x": 19.55,
+        "y": 0.2425
+      },
+      "composed_um": {
+        "x": 180.45,
+        "y": 0.2425
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_wdata[30]",
+      "bus_base": "bus_wdata",
+      "bus_index": 30,
+      "direction": "input",
+      "def_net": "bus_wdata[30]",
+      "layer": [
+        69,
+        20
+      ],
+      "macro_local_um": {
+        "x": 20.47,
+        "y": 0.2425
+      },
+      "composed_um": {
+        "x": 179.53,
+        "y": 0.2425
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_wdata[31]",
+      "bus_base": "bus_wdata",
+      "bus_index": 31,
+      "direction": "input",
+      "def_net": "bus_wdata[31]",
+      "layer": [
+        69,
+        20
+      ],
+      "macro_local_um": {
+        "x": 21.39,
+        "y": 0.2425
+      },
+      "composed_um": {
+        "x": 178.61,
+        "y": 0.2425
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_rdata[0]",
+      "bus_base": "bus_rdata",
+      "bus_index": 0,
+      "direction": "output",
+      "def_net": "bus_rdata_r[0]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 126.82
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 126.82
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_rdata[1]",
+      "bus_base": "bus_rdata",
+      "bus_index": 1,
+      "direction": "output",
+      "def_net": "bus_rdata_r[1]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 137.7
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 137.7
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_rdata[2]",
+      "bus_base": "bus_rdata",
+      "bus_index": 2,
+      "direction": "output",
+      "def_net": "bus_rdata_r[2]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 71.06
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 71.06
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_rdata[3]",
+      "bus_base": "bus_rdata",
+      "bus_index": 3,
+      "direction": "output",
+      "def_net": "bus_rdata_r[3]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 103.7
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 103.7
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_rdata[4]",
+      "bus_base": "bus_rdata",
+      "bus_index": 4,
+      "direction": "output",
+      "def_net": "bus_rdata_r[4]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 111.86
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 111.86
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_rdata[5]",
+      "bus_base": "bus_rdata",
+      "bus_index": 5,
+      "direction": "output",
+      "def_net": "bus_rdata_r[5]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 154.02
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 154.02
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_rdata[6]",
+      "bus_base": "bus_rdata",
+      "bus_index": 6,
+      "direction": "output",
+      "def_net": "bus_rdata_r[6]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 86.02
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 86.02
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_rdata[7]",
+      "bus_base": "bus_rdata",
+      "bus_index": 7,
+      "direction": "output",
+      "def_net": "bus_rdata_r[7]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 105.06
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 105.06
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_rdata[8]",
+      "bus_base": "bus_rdata",
+      "bus_index": 8,
+      "direction": "output",
+      "def_net": "bus_rdata_r[8]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 110.5
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 110.5
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_rdata[9]",
+      "bus_base": "bus_rdata",
+      "bus_index": 9,
+      "direction": "output",
+      "def_net": "bus_rdata_r[9]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 134.98
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 134.98
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_rdata[10]",
+      "bus_base": "bus_rdata",
+      "bus_index": 10,
+      "direction": "output",
+      "def_net": "bus_rdata_r[10]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 128.18
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 128.18
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_rdata[11]",
+      "bus_base": "bus_rdata",
+      "bus_index": 11,
+      "direction": "output",
+      "def_net": "bus_rdata_r[11]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 92.82
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 92.82
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_rdata[12]",
+      "bus_base": "bus_rdata",
+      "bus_index": 12,
+      "direction": "output",
+      "def_net": "bus_rdata_r[12]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 129.54
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 129.54
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_rdata[13]",
+      "bus_base": "bus_rdata",
+      "bus_index": 13,
+      "direction": "output",
+      "def_net": "bus_rdata_r[13]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 130.9
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 130.9
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_rdata[14]",
+      "bus_base": "bus_rdata",
+      "bus_index": 14,
+      "direction": "output",
+      "def_net": "bus_rdata_r[14]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 132.26
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 132.26
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_rdata[15]",
+      "bus_base": "bus_rdata",
+      "bus_index": 15,
+      "direction": "output",
+      "def_net": "bus_rdata_r[15]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 118.66
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 118.66
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_rdata[16]",
+      "bus_base": "bus_rdata",
+      "bus_index": 16,
+      "direction": "output",
+      "def_net": "bus_rdata_r[16]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 91.46
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 91.46
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_rdata[17]",
+      "bus_base": "bus_rdata",
+      "bus_index": 17,
+      "direction": "output",
+      "def_net": "bus_rdata_r[17]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 77.86
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 77.86
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_rdata[18]",
+      "bus_base": "bus_rdata",
+      "bus_index": 18,
+      "direction": "output",
+      "def_net": "bus_rdata_r[18]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 136.34
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 136.34
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_rdata[19]",
+      "bus_base": "bus_rdata",
+      "bus_index": 19,
+      "direction": "output",
+      "def_net": "bus_rdata_r[19]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 87.38
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 87.38
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_rdata[20]",
+      "bus_base": "bus_rdata",
+      "bus_index": 20,
+      "direction": "output",
+      "def_net": "bus_rdata_r[20]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 90.1
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 90.1
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_rdata[21]",
+      "bus_base": "bus_rdata",
+      "bus_index": 21,
+      "direction": "output",
+      "def_net": "bus_rdata_r[21]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 140.42
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 140.42
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_rdata[22]",
+      "bus_base": "bus_rdata",
+      "bus_index": 22,
+      "direction": "output",
+      "def_net": "bus_rdata_r[22]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 115.94
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 115.94
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_rdata[23]",
+      "bus_base": "bus_rdata",
+      "bus_index": 23,
+      "direction": "output",
+      "def_net": "bus_rdata_r[23]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 141.78
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 141.78
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_rdata[24]",
+      "bus_base": "bus_rdata",
+      "bus_index": 24,
+      "direction": "output",
+      "def_net": "bus_rdata_r[24]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 143.14
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 143.14
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_rdata[25]",
+      "bus_base": "bus_rdata",
+      "bus_index": 25,
+      "direction": "output",
+      "def_net": "bus_rdata_r[25]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 88.74
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 88.74
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_rdata[26]",
+      "bus_base": "bus_rdata",
+      "bus_index": 26,
+      "direction": "output",
+      "def_net": "bus_rdata_r[26]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 114.58
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 114.58
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_rdata[27]",
+      "bus_base": "bus_rdata",
+      "bus_index": 27,
+      "direction": "output",
+      "def_net": "bus_rdata_r[27]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 145.86
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 145.86
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_rdata[28]",
+      "bus_base": "bus_rdata",
+      "bus_index": 28,
+      "direction": "output",
+      "def_net": "bus_rdata_r[28]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 147.22
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 147.22
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_rdata[29]",
+      "bus_base": "bus_rdata",
+      "bus_index": 29,
+      "direction": "output",
+      "def_net": "bus_rdata_r[29]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 148.58
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 148.58
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_rdata[30]",
+      "bus_base": "bus_rdata",
+      "bus_index": 30,
+      "direction": "output",
+      "def_net": "bus_rdata_r[30]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 76.5
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 76.5
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "bus_rdata[31]",
+      "bus_base": "bus_rdata",
+      "bus_index": 31,
+      "direction": "output",
+      "def_net": "bus_rdata_r[31]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 151.3
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 151.3
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "out_data[0]",
+      "bus_base": "out_data",
+      "bus_index": 0,
+      "direction": "output",
+      "def_net": "out_data[0]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 75.14
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 75.14
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "out_data[1]",
+      "bus_base": "out_data",
+      "bus_index": 1,
+      "direction": "output",
+      "def_net": "out_data[1]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 73.78
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 73.78
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "out_data[2]",
+      "bus_base": "out_data",
+      "bus_index": 2,
+      "direction": "output",
+      "def_net": "out_data[2]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 158.1
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 158.1
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "out_data[3]",
+      "bus_base": "out_data",
+      "bus_index": 3,
+      "direction": "output",
+      "def_net": "out_data[3]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 164.9
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 164.9
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "out_data[4]",
+      "bus_base": "out_data",
+      "bus_index": 4,
+      "direction": "output",
+      "def_net": "out_data[4]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 171.7
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 171.7
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "out_data[5]",
+      "bus_base": "out_data",
+      "bus_index": 5,
+      "direction": "output",
+      "def_net": "out_data[5]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 98.26
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 98.26
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "out_data[6]",
+      "bus_base": "out_data",
+      "bus_index": 6,
+      "direction": "output",
+      "def_net": "out_data[6]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 80.58
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 80.58
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "out_data[7]",
+      "bus_base": "out_data",
+      "bus_index": 7,
+      "direction": "output",
+      "def_net": "out_data[7]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 125.46
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 125.46
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "out_data[8]",
+      "bus_base": "out_data",
+      "bus_index": 8,
+      "direction": "output",
+      "def_net": "out_data[8]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 175.78
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 175.78
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "out_data[9]",
+      "bus_base": "out_data",
+      "bus_index": 9,
+      "direction": "output",
+      "def_net": "out_data[9]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 96.9
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 96.9
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "out_data[10]",
+      "bus_base": "out_data",
+      "bus_index": 10,
+      "direction": "output",
+      "def_net": "out_data[10]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 144.5
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 144.5
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "out_data[11]",
+      "bus_base": "out_data",
+      "bus_index": 11,
+      "direction": "output",
+      "def_net": "out_data[11]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 152.66
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 152.66
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "out_data[12]",
+      "bus_base": "out_data",
+      "bus_index": 12,
+      "direction": "output",
+      "def_net": "out_data[12]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 106.42
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 106.42
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "out_data[13]",
+      "bus_base": "out_data",
+      "bus_index": 13,
+      "direction": "output",
+      "def_net": "out_data[13]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 139.06
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 139.06
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "out_data[14]",
+      "bus_base": "out_data",
+      "bus_index": 14,
+      "direction": "output",
+      "def_net": "out_data[14]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 156.74
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 156.74
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "out_data[15]",
+      "bus_base": "out_data",
+      "bus_index": 15,
+      "direction": "output",
+      "def_net": "out_data[15]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 133.62
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 133.62
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "out_data[16]",
+      "bus_base": "out_data",
+      "bus_index": 16,
+      "direction": "output",
+      "def_net": "out_data[16]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 83.3
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 83.3
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "out_data[17]",
+      "bus_base": "out_data",
+      "bus_index": 17,
+      "direction": "output",
+      "def_net": "out_data[17]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 166.26
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 166.26
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "out_data[18]",
+      "bus_base": "out_data",
+      "bus_index": 18,
+      "direction": "output",
+      "def_net": "out_data[18]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 163.54
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 163.54
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "out_data[19]",
+      "bus_base": "out_data",
+      "bus_index": 19,
+      "direction": "output",
+      "def_net": "out_data[19]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 124.1
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 124.1
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "out_data[20]",
+      "bus_base": "out_data",
+      "bus_index": 20,
+      "direction": "output",
+      "def_net": "out_data[20]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 167.62
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 167.62
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "out_data[21]",
+      "bus_base": "out_data",
+      "bus_index": 21,
+      "direction": "output",
+      "def_net": "out_data[21]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 168.98
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 168.98
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "out_data[22]",
+      "bus_base": "out_data",
+      "bus_index": 22,
+      "direction": "output",
+      "def_net": "out_data[22]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 170.34
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 170.34
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "out_data[23]",
+      "bus_base": "out_data",
+      "bus_index": 23,
+      "direction": "output",
+      "def_net": "out_data[23]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 102.34
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 102.34
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "out_data[24]",
+      "bus_base": "out_data",
+      "bus_index": 24,
+      "direction": "output",
+      "def_net": "out_data[24]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 120.02
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 120.02
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "out_data[25]",
+      "bus_base": "out_data",
+      "bus_index": 25,
+      "direction": "output",
+      "def_net": "out_data[25]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 173.06
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 173.06
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "out_data[26]",
+      "bus_base": "out_data",
+      "bus_index": 26,
+      "direction": "output",
+      "def_net": "out_data[26]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 117.3
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 117.3
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "out_data[27]",
+      "bus_base": "out_data",
+      "bus_index": 27,
+      "direction": "output",
+      "def_net": "out_data[27]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 100.98
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 100.98
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "out_data[28]",
+      "bus_base": "out_data",
+      "bus_index": 28,
+      "direction": "output",
+      "def_net": "out_data[28]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 81.94
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 81.94
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "out_data[29]",
+      "bus_base": "out_data",
+      "bus_index": 29,
+      "direction": "output",
+      "def_net": "out_data[29]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 149.94
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 149.94
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "out_data[30]",
+      "bus_base": "out_data",
+      "bus_index": 30,
+      "direction": "output",
+      "def_net": "out_data[30]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 68.34
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 68.34
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "out_data[31]",
+      "bus_base": "out_data",
+      "bus_index": 31,
+      "direction": "output",
+      "def_net": "out_data[31]",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 174.42
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 174.42
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "out_valid",
+      "bus_base": "out_valid",
+      "bus_index": null,
+      "direction": "output",
+      "def_net": "out_valid",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 177.14
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 177.14
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "out_ready",
+      "bus_base": "out_ready",
+      "bus_index": null,
+      "direction": "input",
+      "def_net": "out_ready",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 162.18
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 162.18
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "alarm",
+      "bus_base": "alarm",
+      "bus_index": null,
+      "direction": "output",
+      "def_net": "alarm",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 66.98
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 66.98
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "gated",
+      "bus_base": "gated",
+      "bus_index": null,
+      "direction": "output",
+      "def_net": "gated",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 107.78
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 107.78
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    },
+    {
+      "pin": "startup_done",
+      "bus_base": "startup_done",
+      "bus_index": null,
+      "direction": "output",
+      "def_net": "startup_done_r",
+      "layer": [
+        70,
+        20
+      ],
+      "macro_local_um": {
+        "x": 0.4,
+        "y": 72.42
+      },
+      "composed_um": {
+        "x": 199.6,
+        "y": 72.42
+      },
+      "disposition": "whole-block external pin (label-only promotion)"
+    }
+  ],
+  "supply_aliases": {
+    "VPWR": "vdd",
+    "VGND": "vss",
+    "VPB": "VPWR (tap cells inside trng_digital)",
+    "VNB": "VGND (tap cells inside trng_digital)"
+  },
+  "analog_macro_has_pin_shapes": false,
+  "notes": [
+    "sampler_core.gds carries no top-level pin shapes or labels; each analog boundary connection is a declared port on existing conductor (analog_port_*), audited against an extraction of the analog GDS.",
+    "Whole-block external pins: the 16 boundary pads (pad shapes, label on the routed net) and the 107 digital pins (label on the digital macro's own pin shape).",
+    "raw_bit and raw_valid are macro-to-macro nets with no boundary pin.",
+    "Bus bit order: bus_addr[3:0], bus_wdata/bus_rdata/out_data[31:0]; names are the GDS pin labels (bus index in brackets, bit 0 = LSB)."
+  ]
+}
