@@ -1,0 +1,2599 @@
+{
+  "pdk": {
+    "variant": "sky130A"
+  },
+  "blocks": [
+    {
+      "id": "dig",
+      "orientation": "mirror_x",
+      "cell": {
+        "gds_path": "../trng_digital/trng_digital.gds",
+        "cell_name": "trng_digital",
+        "ports": [
+          {
+            "name": "clk",
+            "x_um": 0.4,
+            "y_um": 122.74,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "raw_bit",
+            "x_um": 0.4,
+            "y_um": 69.7,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "raw_valid",
+            "x_um": 0.4,
+            "y_um": 95.54,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "rst_n",
+            "x_um": 0.4,
+            "y_um": 155.38,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "bus_addr[0]",
+            "x_um": 0.4,
+            "y_um": 79.22,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "bus_addr[1]",
+            "x_um": 0.4,
+            "y_um": 94.18,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "bus_addr[2]",
+            "x_um": 0.4,
+            "y_um": 121.38,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "bus_addr[3]",
+            "x_um": 0.4,
+            "y_um": 113.22,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "bus_we",
+            "x_um": 0.4,
+            "y_um": 99.62,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "bus_re",
+            "x_um": 0.4,
+            "y_um": 159.46,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "bus_wdata[0]",
+            "x_um": 0.4,
+            "y_um": 160.82,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "bus_wdata[1]",
+            "x_um": 0.4,
+            "y_um": 109.14,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "bus_wdata[2]",
+            "x_um": 0.4,
+            "y_um": 84.66,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "bus_wdata[3]",
+            "x_um": 22.31,
+            "y_um": 0.2425,
+            "layer": {
+              "layer": 69,
+              "datatype": 20
+            },
+            "width_um": 0.14,
+            "direction_deg": 270
+          },
+          {
+            "name": "bus_wdata[4]",
+            "x_um": 23.23,
+            "y_um": 0.2425,
+            "layer": {
+              "layer": 69,
+              "datatype": 20
+            },
+            "width_um": 0.14,
+            "direction_deg": 270
+          },
+          {
+            "name": "bus_wdata[5]",
+            "x_um": 24.15,
+            "y_um": 0.2425,
+            "layer": {
+              "layer": 69,
+              "datatype": 20
+            },
+            "width_um": 0.14,
+            "direction_deg": 270
+          },
+          {
+            "name": "bus_wdata[6]",
+            "x_um": 25.07,
+            "y_um": 0.2425,
+            "layer": {
+              "layer": 69,
+              "datatype": 20
+            },
+            "width_um": 0.14,
+            "direction_deg": 270
+          },
+          {
+            "name": "bus_wdata[7]",
+            "x_um": 25.99,
+            "y_um": 0.2425,
+            "layer": {
+              "layer": 69,
+              "datatype": 20
+            },
+            "width_um": 0.14,
+            "direction_deg": 270
+          },
+          {
+            "name": "bus_wdata[8]",
+            "x_um": 26.91,
+            "y_um": 0.2425,
+            "layer": {
+              "layer": 69,
+              "datatype": 20
+            },
+            "width_um": 0.14,
+            "direction_deg": 270
+          },
+          {
+            "name": "bus_wdata[9]",
+            "x_um": 27.83,
+            "y_um": 0.2425,
+            "layer": {
+              "layer": 69,
+              "datatype": 20
+            },
+            "width_um": 0.14,
+            "direction_deg": 270
+          },
+          {
+            "name": "bus_wdata[10]",
+            "x_um": 2.07,
+            "y_um": 0.2425,
+            "layer": {
+              "layer": 69,
+              "datatype": 20
+            },
+            "width_um": 0.14,
+            "direction_deg": 270
+          },
+          {
+            "name": "bus_wdata[11]",
+            "x_um": 2.99,
+            "y_um": 0.2425,
+            "layer": {
+              "layer": 69,
+              "datatype": 20
+            },
+            "width_um": 0.14,
+            "direction_deg": 270
+          },
+          {
+            "name": "bus_wdata[12]",
+            "x_um": 3.91,
+            "y_um": 0.2425,
+            "layer": {
+              "layer": 69,
+              "datatype": 20
+            },
+            "width_um": 0.14,
+            "direction_deg": 270
+          },
+          {
+            "name": "bus_wdata[13]",
+            "x_um": 4.83,
+            "y_um": 0.2425,
+            "layer": {
+              "layer": 69,
+              "datatype": 20
+            },
+            "width_um": 0.14,
+            "direction_deg": 270
+          },
+          {
+            "name": "bus_wdata[14]",
+            "x_um": 5.75,
+            "y_um": 0.2425,
+            "layer": {
+              "layer": 69,
+              "datatype": 20
+            },
+            "width_um": 0.14,
+            "direction_deg": 270
+          },
+          {
+            "name": "bus_wdata[15]",
+            "x_um": 6.67,
+            "y_um": 0.2425,
+            "layer": {
+              "layer": 69,
+              "datatype": 20
+            },
+            "width_um": 0.14,
+            "direction_deg": 270
+          },
+          {
+            "name": "bus_wdata[16]",
+            "x_um": 7.59,
+            "y_um": 0.2425,
+            "layer": {
+              "layer": 69,
+              "datatype": 20
+            },
+            "width_um": 0.14,
+            "direction_deg": 270
+          },
+          {
+            "name": "bus_wdata[17]",
+            "x_um": 8.51,
+            "y_um": 0.2425,
+            "layer": {
+              "layer": 69,
+              "datatype": 20
+            },
+            "width_um": 0.14,
+            "direction_deg": 270
+          },
+          {
+            "name": "bus_wdata[18]",
+            "x_um": 9.43,
+            "y_um": 0.2425,
+            "layer": {
+              "layer": 69,
+              "datatype": 20
+            },
+            "width_um": 0.14,
+            "direction_deg": 270
+          },
+          {
+            "name": "bus_wdata[19]",
+            "x_um": 10.35,
+            "y_um": 0.2425,
+            "layer": {
+              "layer": 69,
+              "datatype": 20
+            },
+            "width_um": 0.14,
+            "direction_deg": 270
+          },
+          {
+            "name": "bus_wdata[20]",
+            "x_um": 11.27,
+            "y_um": 0.2425,
+            "layer": {
+              "layer": 69,
+              "datatype": 20
+            },
+            "width_um": 0.14,
+            "direction_deg": 270
+          },
+          {
+            "name": "bus_wdata[21]",
+            "x_um": 12.19,
+            "y_um": 0.2425,
+            "layer": {
+              "layer": 69,
+              "datatype": 20
+            },
+            "width_um": 0.14,
+            "direction_deg": 270
+          },
+          {
+            "name": "bus_wdata[22]",
+            "x_um": 13.11,
+            "y_um": 0.2425,
+            "layer": {
+              "layer": 69,
+              "datatype": 20
+            },
+            "width_um": 0.14,
+            "direction_deg": 270
+          },
+          {
+            "name": "bus_wdata[23]",
+            "x_um": 14.03,
+            "y_um": 0.2425,
+            "layer": {
+              "layer": 69,
+              "datatype": 20
+            },
+            "width_um": 0.14,
+            "direction_deg": 270
+          },
+          {
+            "name": "bus_wdata[24]",
+            "x_um": 14.95,
+            "y_um": 0.2425,
+            "layer": {
+              "layer": 69,
+              "datatype": 20
+            },
+            "width_um": 0.14,
+            "direction_deg": 270
+          },
+          {
+            "name": "bus_wdata[25]",
+            "x_um": 15.87,
+            "y_um": 0.2425,
+            "layer": {
+              "layer": 69,
+              "datatype": 20
+            },
+            "width_um": 0.14,
+            "direction_deg": 270
+          },
+          {
+            "name": "bus_wdata[26]",
+            "x_um": 16.79,
+            "y_um": 0.2425,
+            "layer": {
+              "layer": 69,
+              "datatype": 20
+            },
+            "width_um": 0.14,
+            "direction_deg": 270
+          },
+          {
+            "name": "bus_wdata[27]",
+            "x_um": 17.71,
+            "y_um": 0.2425,
+            "layer": {
+              "layer": 69,
+              "datatype": 20
+            },
+            "width_um": 0.14,
+            "direction_deg": 270
+          },
+          {
+            "name": "bus_wdata[28]",
+            "x_um": 18.63,
+            "y_um": 0.2425,
+            "layer": {
+              "layer": 69,
+              "datatype": 20
+            },
+            "width_um": 0.14,
+            "direction_deg": 270
+          },
+          {
+            "name": "bus_wdata[29]",
+            "x_um": 19.55,
+            "y_um": 0.2425,
+            "layer": {
+              "layer": 69,
+              "datatype": 20
+            },
+            "width_um": 0.14,
+            "direction_deg": 270
+          },
+          {
+            "name": "bus_wdata[30]",
+            "x_um": 20.47,
+            "y_um": 0.2425,
+            "layer": {
+              "layer": 69,
+              "datatype": 20
+            },
+            "width_um": 0.14,
+            "direction_deg": 270
+          },
+          {
+            "name": "bus_wdata[31]",
+            "x_um": 21.39,
+            "y_um": 0.2425,
+            "layer": {
+              "layer": 69,
+              "datatype": 20
+            },
+            "width_um": 0.14,
+            "direction_deg": 270
+          },
+          {
+            "name": "bus_rdata[0]",
+            "x_um": 0.4,
+            "y_um": 126.82,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "bus_rdata[1]",
+            "x_um": 0.4,
+            "y_um": 137.7,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "bus_rdata[2]",
+            "x_um": 0.4,
+            "y_um": 71.06,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "bus_rdata[3]",
+            "x_um": 0.4,
+            "y_um": 103.7,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "bus_rdata[4]",
+            "x_um": 0.4,
+            "y_um": 111.86,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "bus_rdata[5]",
+            "x_um": 0.4,
+            "y_um": 154.02,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "bus_rdata[6]",
+            "x_um": 0.4,
+            "y_um": 86.02,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "bus_rdata[7]",
+            "x_um": 0.4,
+            "y_um": 105.06,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "bus_rdata[8]",
+            "x_um": 0.4,
+            "y_um": 110.5,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "bus_rdata[9]",
+            "x_um": 0.4,
+            "y_um": 134.98,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "bus_rdata[10]",
+            "x_um": 0.4,
+            "y_um": 128.18,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "bus_rdata[11]",
+            "x_um": 0.4,
+            "y_um": 92.82,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "bus_rdata[12]",
+            "x_um": 0.4,
+            "y_um": 129.54,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "bus_rdata[13]",
+            "x_um": 0.4,
+            "y_um": 130.9,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "bus_rdata[14]",
+            "x_um": 0.4,
+            "y_um": 132.26,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "bus_rdata[15]",
+            "x_um": 0.4,
+            "y_um": 118.66,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "bus_rdata[16]",
+            "x_um": 0.4,
+            "y_um": 91.46,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "bus_rdata[17]",
+            "x_um": 0.4,
+            "y_um": 77.86,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "bus_rdata[18]",
+            "x_um": 0.4,
+            "y_um": 136.34,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "bus_rdata[19]",
+            "x_um": 0.4,
+            "y_um": 87.38,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "bus_rdata[20]",
+            "x_um": 0.4,
+            "y_um": 90.1,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "bus_rdata[21]",
+            "x_um": 0.4,
+            "y_um": 140.42,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "bus_rdata[22]",
+            "x_um": 0.4,
+            "y_um": 115.94,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "bus_rdata[23]",
+            "x_um": 0.4,
+            "y_um": 141.78,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "bus_rdata[24]",
+            "x_um": 0.4,
+            "y_um": 143.14,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "bus_rdata[25]",
+            "x_um": 0.4,
+            "y_um": 88.74,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "bus_rdata[26]",
+            "x_um": 0.4,
+            "y_um": 114.58,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "bus_rdata[27]",
+            "x_um": 0.4,
+            "y_um": 145.86,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "bus_rdata[28]",
+            "x_um": 0.4,
+            "y_um": 147.22,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "bus_rdata[29]",
+            "x_um": 0.4,
+            "y_um": 148.58,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "bus_rdata[30]",
+            "x_um": 0.4,
+            "y_um": 76.5,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "bus_rdata[31]",
+            "x_um": 0.4,
+            "y_um": 151.3,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "out_data[0]",
+            "x_um": 0.4,
+            "y_um": 75.14,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "out_data[1]",
+            "x_um": 0.4,
+            "y_um": 73.78,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "out_data[2]",
+            "x_um": 0.4,
+            "y_um": 158.1,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "out_data[3]",
+            "x_um": 0.4,
+            "y_um": 164.9,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "out_data[4]",
+            "x_um": 0.4,
+            "y_um": 171.7,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "out_data[5]",
+            "x_um": 0.4,
+            "y_um": 98.26,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "out_data[6]",
+            "x_um": 0.4,
+            "y_um": 80.58,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "out_data[7]",
+            "x_um": 0.4,
+            "y_um": 125.46,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "out_data[8]",
+            "x_um": 0.4,
+            "y_um": 175.78,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "out_data[9]",
+            "x_um": 0.4,
+            "y_um": 96.9,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "out_data[10]",
+            "x_um": 0.4,
+            "y_um": 144.5,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "out_data[11]",
+            "x_um": 0.4,
+            "y_um": 152.66,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "out_data[12]",
+            "x_um": 0.4,
+            "y_um": 106.42,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "out_data[13]",
+            "x_um": 0.4,
+            "y_um": 139.06,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "out_data[14]",
+            "x_um": 0.4,
+            "y_um": 156.74,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "out_data[15]",
+            "x_um": 0.4,
+            "y_um": 133.62,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "out_data[16]",
+            "x_um": 0.4,
+            "y_um": 83.3,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "out_data[17]",
+            "x_um": 0.4,
+            "y_um": 166.26,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "out_data[18]",
+            "x_um": 0.4,
+            "y_um": 163.54,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "out_data[19]",
+            "x_um": 0.4,
+            "y_um": 124.1,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "out_data[20]",
+            "x_um": 0.4,
+            "y_um": 167.62,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "out_data[21]",
+            "x_um": 0.4,
+            "y_um": 168.98,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "out_data[22]",
+            "x_um": 0.4,
+            "y_um": 170.34,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "out_data[23]",
+            "x_um": 0.4,
+            "y_um": 102.34,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "out_data[24]",
+            "x_um": 0.4,
+            "y_um": 120.02,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "out_data[25]",
+            "x_um": 0.4,
+            "y_um": 173.06,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "out_data[26]",
+            "x_um": 0.4,
+            "y_um": 117.3,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "out_data[27]",
+            "x_um": 0.4,
+            "y_um": 100.98,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "out_data[28]",
+            "x_um": 0.4,
+            "y_um": 81.94,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "out_data[29]",
+            "x_um": 0.4,
+            "y_um": 149.94,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "out_data[30]",
+            "x_um": 0.4,
+            "y_um": 68.34,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "out_data[31]",
+            "x_um": 0.4,
+            "y_um": 174.42,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "out_valid",
+            "x_um": 0.4,
+            "y_um": 177.14,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "out_ready",
+            "x_um": 0.4,
+            "y_um": 162.18,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "alarm",
+            "x_um": 0.4,
+            "y_um": 66.98,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "gated",
+            "x_um": 0.4,
+            "y_um": 107.78,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "startup_done",
+            "x_um": 0.4,
+            "y_um": 72.42,
+            "layer": {
+              "layer": 70,
+              "datatype": 20
+            },
+            "width_um": 0.3,
+            "direction_deg": 180
+          },
+          {
+            "name": "VGND",
+            "x_um": 15.23,
+            "y_um": 236.64,
+            "layer": {
+              "layer": 72,
+              "datatype": 20
+            },
+            "width_um": 1.6,
+            "direction_deg": 90
+          },
+          {
+            "name": "VPWR",
+            "x_um": 237.5,
+            "y_um": 223.04,
+            "layer": {
+              "layer": 72,
+              "datatype": 20
+            },
+            "width_um": 1.6,
+            "direction_deg": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "ana",
+      "orientation": "mirror_x",
+      "cell": {
+        "gds_path": "../sampler_core/sampler_core.gds",
+        "cell_name": "sampler_core",
+        "ports": [
+          {
+            "name": "en1",
+            "x_um": 5.875,
+            "y_um": 25.61,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 90
+          },
+          {
+            "name": "en2",
+            "x_um": 61.175,
+            "y_um": 25.61,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 90
+          },
+          {
+            "name": "en3",
+            "x_um": 116.475,
+            "y_um": 25.61,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 90
+          },
+          {
+            "name": "en4",
+            "x_um": 171.775,
+            "y_um": 25.61,
+            "layer": {
+              "layer": 67,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 90
+          },
+          {
+            "name": "vddr1",
+            "x_um": 15.0,
+            "y_um": 29.635,
+            "layer": {
+              "layer": 69,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 90
+          },
+          {
+            "name": "vddr2",
+            "x_um": 70.0,
+            "y_um": 29.635,
+            "layer": {
+              "layer": 69,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 90
+          },
+          {
+            "name": "vddr3",
+            "x_um": 132.0,
+            "y_um": 29.635,
+            "layer": {
+              "layer": 69,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 90
+          },
+          {
+            "name": "vddr4",
+            "x_um": 180.0,
+            "y_um": 29.635,
+            "layer": {
+              "layer": 69,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 90
+          },
+          {
+            "name": "vdd",
+            "x_um": 190.0,
+            "y_um": 31.135,
+            "layer": {
+              "layer": 69,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 90
+          },
+          {
+            "name": "vss",
+            "x_um": 144.0,
+            "y_um": 34.435,
+            "layer": {
+              "layer": 69,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 90
+          },
+          {
+            "name": "clk",
+            "x_um": 108.0,
+            "y_um": -1.7,
+            "layer": {
+              "layer": 69,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 90
+          },
+          {
+            "name": "rst_n",
+            "x_um": 124.0,
+            "y_um": 5.0,
+            "layer": {
+              "layer": 69,
+              "datatype": 20
+            },
+            "width_um": 0.17,
+            "direction_deg": 90
+          },
+          {
+            "name": "raw_bit",
+            "x_um": 44.9,
+            "y_um": 2.71,
+            "layer": {
+              "layer": 69,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 90
+          },
+          {
+            "name": "raw_valid",
+            "x_um": 100.56,
+            "y_um": 2.71,
+            "layer": {
+              "layer": 69,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 90
+          },
+          {
+            "name": "ring_bit1",
+            "x_um": 156.22,
+            "y_um": 2.71,
+            "layer": {
+              "layer": 69,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 90
+          },
+          {
+            "name": "ring_bit2",
+            "x_um": 211.88,
+            "y_um": 2.71,
+            "layer": {
+              "layer": 69,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 90
+          },
+          {
+            "name": "ring_bit3",
+            "x_um": 267.54,
+            "y_um": 2.71,
+            "layer": {
+              "layer": 69,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 90
+          },
+          {
+            "name": "ring_bit4",
+            "x_um": 323.2,
+            "y_um": 2.71,
+            "layer": {
+              "layer": 69,
+              "datatype": 20
+            },
+            "width_um": 0.42,
+            "direction_deg": 90
+          }
+        ]
+      }
+    },
+    {
+      "id": "pads",
+      "orientation": "none",
+      "cell": {
+        "gds_path": "trng_whole_pins.gds",
+        "cell_name": "trng_whole_pins",
+        "ports": [
+          {
+            "name": "pad_clk",
+            "x_um": 220.77,
+            "y_um": 332.0,
+            "layer": {
+              "layer": 72,
+              "datatype": 20
+            },
+            "width_um": 3.0,
+            "direction_deg": 270
+          },
+          {
+            "name": "pad_rst_n",
+            "x_um": 204.77,
+            "y_um": 332.0,
+            "layer": {
+              "layer": 72,
+              "datatype": 20
+            },
+            "width_um": 3.0,
+            "direction_deg": 270
+          },
+          {
+            "name": "pad_en1",
+            "x_um": 322.895,
+            "y_um": 332.0,
+            "layer": {
+              "layer": 72,
+              "datatype": 20
+            },
+            "width_um": 3.0,
+            "direction_deg": 270
+          },
+          {
+            "name": "pad_en2",
+            "x_um": 267.595,
+            "y_um": 332.0,
+            "layer": {
+              "layer": 72,
+              "datatype": 20
+            },
+            "width_um": 3.0,
+            "direction_deg": 270
+          },
+          {
+            "name": "pad_en3",
+            "x_um": 212.295,
+            "y_um": 332.0,
+            "layer": {
+              "layer": 72,
+              "datatype": 20
+            },
+            "width_um": 3.0,
+            "direction_deg": 270
+          },
+          {
+            "name": "pad_en4",
+            "x_um": 156.995,
+            "y_um": 332.0,
+            "layer": {
+              "layer": 72,
+              "datatype": 20
+            },
+            "width_um": 3.0,
+            "direction_deg": 270
+          },
+          {
+            "name": "pad_vddr1",
+            "x_um": 313.77,
+            "y_um": 332.0,
+            "layer": {
+              "layer": 72,
+              "datatype": 20
+            },
+            "width_um": 3.0,
+            "direction_deg": 270
+          },
+          {
+            "name": "pad_vddr2",
+            "x_um": 258.77,
+            "y_um": 332.0,
+            "layer": {
+              "layer": 72,
+              "datatype": 20
+            },
+            "width_um": 3.0,
+            "direction_deg": 270
+          },
+          {
+            "name": "pad_vddr3",
+            "x_um": 196.77,
+            "y_um": 332.0,
+            "layer": {
+              "layer": 72,
+              "datatype": 20
+            },
+            "width_um": 3.0,
+            "direction_deg": 270
+          },
+          {
+            "name": "pad_vddr4",
+            "x_um": 148.77,
+            "y_um": 332.0,
+            "layer": {
+              "layer": 72,
+              "datatype": 20
+            },
+            "width_um": 3.0,
+            "direction_deg": 270
+          },
+          {
+            "name": "pad_ring_bit1",
+            "x_um": 172.55,
+            "y_um": 332.0,
+            "layer": {
+              "layer": 72,
+              "datatype": 20
+            },
+            "width_um": 3.0,
+            "direction_deg": 270
+          },
+          {
+            "name": "pad_ring_bit2",
+            "x_um": 116.89,
+            "y_um": 332.0,
+            "layer": {
+              "layer": 72,
+              "datatype": 20
+            },
+            "width_um": 3.0,
+            "direction_deg": 270
+          },
+          {
+            "name": "pad_ring_bit3",
+            "x_um": 61.23,
+            "y_um": 332.0,
+            "layer": {
+              "layer": 72,
+              "datatype": 20
+            },
+            "width_um": 3.0,
+            "direction_deg": 270
+          },
+          {
+            "name": "pad_ring_bit4",
+            "x_um": 5.57,
+            "y_um": 332.0,
+            "layer": {
+              "layer": 72,
+              "datatype": 20
+            },
+            "width_um": 3.0,
+            "direction_deg": 270
+          },
+          {
+            "name": "pad_vdd",
+            "x_um": 138.77,
+            "y_um": 332.0,
+            "layer": {
+              "layer": 72,
+              "datatype": 20
+            },
+            "width_um": 3.0,
+            "direction_deg": 270
+          },
+          {
+            "name": "pad_vss",
+            "x_um": 184.77,
+            "y_um": 332.0,
+            "layer": {
+              "layer": 72,
+              "datatype": 20
+            },
+            "width_um": 3.0,
+            "direction_deg": 270
+          }
+        ]
+      }
+    }
+  ],
+  "placement": {
+    "strategy": "explicit",
+    "order": [
+      "dig",
+      "ana",
+      "pads"
+    ],
+    "origins_um": {
+      "dig": {
+        "x": 200.0,
+        "y": 0.0
+      },
+      "ana": {
+        "x": 328.77,
+        "y": 268.64
+      },
+      "pads": {
+        "x": 0.0,
+        "y": 0.0
+      }
+    }
+  },
+  "routing": {
+    "layer_role": "top_metal",
+    "width_um": 1.6
+  },
+  "connectivity": [
+    {
+      "net": "raw_bit",
+      "pins": [
+        {
+          "block": "dig",
+          "port": "raw_bit"
+        },
+        {
+          "block": "ana",
+          "port": "raw_bit"
+        }
+      ],
+      "waypoints_um": [
+        [
+          283.87,
+          69.7
+        ]
+      ]
+    },
+    {
+      "net": "raw_valid",
+      "pins": [
+        {
+          "block": "dig",
+          "port": "raw_valid"
+        },
+        {
+          "block": "ana",
+          "port": "raw_valid"
+        }
+      ],
+      "waypoints_um": [
+        [
+          228.21,
+          95.54
+        ]
+      ]
+    },
+    {
+      "net": "clk",
+      "pins": [
+        {
+          "block": "dig",
+          "port": "clk"
+        },
+        {
+          "block": "ana",
+          "port": "clk"
+        },
+        {
+          "block": "pads",
+          "port": "pad_clk"
+        }
+      ],
+      "legs": [
+        {
+          "from_pin": {
+            "block": "dig",
+            "port": "clk"
+          },
+          "to_pin": {
+            "block": "ana",
+            "port": "clk"
+          },
+          "waypoints_um": [
+            [
+              220.77,
+              122.74
+            ]
+          ]
+        },
+        {
+          "from_pin": {
+            "block": "ana",
+            "port": "clk"
+          },
+          "to_pin": {
+            "block": "pads",
+            "port": "pad_clk"
+          }
+        }
+      ]
+    },
+    {
+      "net": "rst_n",
+      "pins": [
+        {
+          "block": "dig",
+          "port": "rst_n"
+        },
+        {
+          "block": "ana",
+          "port": "rst_n"
+        },
+        {
+          "block": "pads",
+          "port": "pad_rst_n"
+        }
+      ],
+      "legs": [
+        {
+          "from_pin": {
+            "block": "dig",
+            "port": "rst_n"
+          },
+          "to_pin": {
+            "block": "ana",
+            "port": "rst_n"
+          },
+          "waypoints_um": [
+            [
+              204.77,
+              155.38
+            ]
+          ]
+        },
+        {
+          "from_pin": {
+            "block": "ana",
+            "port": "rst_n"
+          },
+          "to_pin": {
+            "block": "pads",
+            "port": "pad_rst_n"
+          }
+        }
+      ]
+    },
+    {
+      "net": "en1",
+      "pins": [
+        {
+          "block": "ana",
+          "port": "en1"
+        },
+        {
+          "block": "pads",
+          "port": "pad_en1"
+        }
+      ]
+    },
+    {
+      "net": "en2",
+      "pins": [
+        {
+          "block": "ana",
+          "port": "en2"
+        },
+        {
+          "block": "pads",
+          "port": "pad_en2"
+        }
+      ]
+    },
+    {
+      "net": "en3",
+      "pins": [
+        {
+          "block": "ana",
+          "port": "en3"
+        },
+        {
+          "block": "pads",
+          "port": "pad_en3"
+        }
+      ]
+    },
+    {
+      "net": "en4",
+      "pins": [
+        {
+          "block": "ana",
+          "port": "en4"
+        },
+        {
+          "block": "pads",
+          "port": "pad_en4"
+        }
+      ]
+    },
+    {
+      "net": "vddr1",
+      "pins": [
+        {
+          "block": "ana",
+          "port": "vddr1"
+        },
+        {
+          "block": "pads",
+          "port": "pad_vddr1"
+        }
+      ]
+    },
+    {
+      "net": "vddr2",
+      "pins": [
+        {
+          "block": "ana",
+          "port": "vddr2"
+        },
+        {
+          "block": "pads",
+          "port": "pad_vddr2"
+        }
+      ]
+    },
+    {
+      "net": "vddr3",
+      "pins": [
+        {
+          "block": "ana",
+          "port": "vddr3"
+        },
+        {
+          "block": "pads",
+          "port": "pad_vddr3"
+        }
+      ]
+    },
+    {
+      "net": "vddr4",
+      "pins": [
+        {
+          "block": "ana",
+          "port": "vddr4"
+        },
+        {
+          "block": "pads",
+          "port": "pad_vddr4"
+        }
+      ]
+    },
+    {
+      "net": "ring_bit1",
+      "pins": [
+        {
+          "block": "ana",
+          "port": "ring_bit1"
+        },
+        {
+          "block": "pads",
+          "port": "pad_ring_bit1"
+        }
+      ]
+    },
+    {
+      "net": "ring_bit2",
+      "pins": [
+        {
+          "block": "ana",
+          "port": "ring_bit2"
+        },
+        {
+          "block": "pads",
+          "port": "pad_ring_bit2"
+        }
+      ]
+    },
+    {
+      "net": "ring_bit3",
+      "pins": [
+        {
+          "block": "ana",
+          "port": "ring_bit3"
+        },
+        {
+          "block": "pads",
+          "port": "pad_ring_bit3"
+        }
+      ]
+    },
+    {
+      "net": "ring_bit4",
+      "pins": [
+        {
+          "block": "ana",
+          "port": "ring_bit4"
+        },
+        {
+          "block": "pads",
+          "port": "pad_ring_bit4"
+        }
+      ]
+    },
+    {
+      "net": "vdd",
+      "pins": [
+        {
+          "block": "dig",
+          "port": "VPWR"
+        },
+        {
+          "block": "ana",
+          "port": "vdd"
+        },
+        {
+          "block": "pads",
+          "port": "pad_vdd"
+        }
+      ],
+      "legs": [
+        {
+          "from_pin": {
+            "block": "dig",
+            "port": "VPWR"
+          },
+          "to_pin": {
+            "block": "ana",
+            "port": "vdd"
+          },
+          "waypoints_um": [
+            [
+              -46.4,
+              223.04
+            ],
+            [
+              -46.4,
+              257.0
+            ],
+            [
+              138.77,
+              257.0
+            ]
+          ]
+        },
+        {
+          "from_pin": {
+            "block": "ana",
+            "port": "vdd"
+          },
+          "to_pin": {
+            "block": "pads",
+            "port": "pad_vdd"
+          }
+        }
+      ]
+    },
+    {
+      "net": "vss",
+      "pins": [
+        {
+          "block": "dig",
+          "port": "VGND"
+        },
+        {
+          "block": "ana",
+          "port": "vss"
+        },
+        {
+          "block": "pads",
+          "port": "pad_vss"
+        }
+      ],
+      "legs": [
+        {
+          "from_pin": {
+            "block": "dig",
+            "port": "VGND"
+          },
+          "to_pin": {
+            "block": "ana",
+            "port": "vss"
+          }
+        },
+        {
+          "from_pin": {
+            "block": "ana",
+            "port": "vss"
+          },
+          "to_pin": {
+            "block": "pads",
+            "port": "pad_vss"
+          }
+        }
+      ]
+    }
+  ],
+  "pins": [
+    {
+      "net": "bus_addr[0]",
+      "block": "dig",
+      "port": "bus_addr[0]"
+    },
+    {
+      "net": "bus_addr[1]",
+      "block": "dig",
+      "port": "bus_addr[1]"
+    },
+    {
+      "net": "bus_addr[2]",
+      "block": "dig",
+      "port": "bus_addr[2]"
+    },
+    {
+      "net": "bus_addr[3]",
+      "block": "dig",
+      "port": "bus_addr[3]"
+    },
+    {
+      "net": "bus_we",
+      "block": "dig",
+      "port": "bus_we"
+    },
+    {
+      "net": "bus_re",
+      "block": "dig",
+      "port": "bus_re"
+    },
+    {
+      "net": "bus_wdata[0]",
+      "block": "dig",
+      "port": "bus_wdata[0]"
+    },
+    {
+      "net": "bus_wdata[1]",
+      "block": "dig",
+      "port": "bus_wdata[1]"
+    },
+    {
+      "net": "bus_wdata[2]",
+      "block": "dig",
+      "port": "bus_wdata[2]"
+    },
+    {
+      "net": "bus_wdata[3]",
+      "block": "dig",
+      "port": "bus_wdata[3]"
+    },
+    {
+      "net": "bus_wdata[4]",
+      "block": "dig",
+      "port": "bus_wdata[4]"
+    },
+    {
+      "net": "bus_wdata[5]",
+      "block": "dig",
+      "port": "bus_wdata[5]"
+    },
+    {
+      "net": "bus_wdata[6]",
+      "block": "dig",
+      "port": "bus_wdata[6]"
+    },
+    {
+      "net": "bus_wdata[7]",
+      "block": "dig",
+      "port": "bus_wdata[7]"
+    },
+    {
+      "net": "bus_wdata[8]",
+      "block": "dig",
+      "port": "bus_wdata[8]"
+    },
+    {
+      "net": "bus_wdata[9]",
+      "block": "dig",
+      "port": "bus_wdata[9]"
+    },
+    {
+      "net": "bus_wdata[10]",
+      "block": "dig",
+      "port": "bus_wdata[10]"
+    },
+    {
+      "net": "bus_wdata[11]",
+      "block": "dig",
+      "port": "bus_wdata[11]"
+    },
+    {
+      "net": "bus_wdata[12]",
+      "block": "dig",
+      "port": "bus_wdata[12]"
+    },
+    {
+      "net": "bus_wdata[13]",
+      "block": "dig",
+      "port": "bus_wdata[13]"
+    },
+    {
+      "net": "bus_wdata[14]",
+      "block": "dig",
+      "port": "bus_wdata[14]"
+    },
+    {
+      "net": "bus_wdata[15]",
+      "block": "dig",
+      "port": "bus_wdata[15]"
+    },
+    {
+      "net": "bus_wdata[16]",
+      "block": "dig",
+      "port": "bus_wdata[16]"
+    },
+    {
+      "net": "bus_wdata[17]",
+      "block": "dig",
+      "port": "bus_wdata[17]"
+    },
+    {
+      "net": "bus_wdata[18]",
+      "block": "dig",
+      "port": "bus_wdata[18]"
+    },
+    {
+      "net": "bus_wdata[19]",
+      "block": "dig",
+      "port": "bus_wdata[19]"
+    },
+    {
+      "net": "bus_wdata[20]",
+      "block": "dig",
+      "port": "bus_wdata[20]"
+    },
+    {
+      "net": "bus_wdata[21]",
+      "block": "dig",
+      "port": "bus_wdata[21]"
+    },
+    {
+      "net": "bus_wdata[22]",
+      "block": "dig",
+      "port": "bus_wdata[22]"
+    },
+    {
+      "net": "bus_wdata[23]",
+      "block": "dig",
+      "port": "bus_wdata[23]"
+    },
+    {
+      "net": "bus_wdata[24]",
+      "block": "dig",
+      "port": "bus_wdata[24]"
+    },
+    {
+      "net": "bus_wdata[25]",
+      "block": "dig",
+      "port": "bus_wdata[25]"
+    },
+    {
+      "net": "bus_wdata[26]",
+      "block": "dig",
+      "port": "bus_wdata[26]"
+    },
+    {
+      "net": "bus_wdata[27]",
+      "block": "dig",
+      "port": "bus_wdata[27]"
+    },
+    {
+      "net": "bus_wdata[28]",
+      "block": "dig",
+      "port": "bus_wdata[28]"
+    },
+    {
+      "net": "bus_wdata[29]",
+      "block": "dig",
+      "port": "bus_wdata[29]"
+    },
+    {
+      "net": "bus_wdata[30]",
+      "block": "dig",
+      "port": "bus_wdata[30]"
+    },
+    {
+      "net": "bus_wdata[31]",
+      "block": "dig",
+      "port": "bus_wdata[31]"
+    },
+    {
+      "net": "bus_rdata[0]",
+      "block": "dig",
+      "port": "bus_rdata[0]"
+    },
+    {
+      "net": "bus_rdata[1]",
+      "block": "dig",
+      "port": "bus_rdata[1]"
+    },
+    {
+      "net": "bus_rdata[2]",
+      "block": "dig",
+      "port": "bus_rdata[2]"
+    },
+    {
+      "net": "bus_rdata[3]",
+      "block": "dig",
+      "port": "bus_rdata[3]"
+    },
+    {
+      "net": "bus_rdata[4]",
+      "block": "dig",
+      "port": "bus_rdata[4]"
+    },
+    {
+      "net": "bus_rdata[5]",
+      "block": "dig",
+      "port": "bus_rdata[5]"
+    },
+    {
+      "net": "bus_rdata[6]",
+      "block": "dig",
+      "port": "bus_rdata[6]"
+    },
+    {
+      "net": "bus_rdata[7]",
+      "block": "dig",
+      "port": "bus_rdata[7]"
+    },
+    {
+      "net": "bus_rdata[8]",
+      "block": "dig",
+      "port": "bus_rdata[8]"
+    },
+    {
+      "net": "bus_rdata[9]",
+      "block": "dig",
+      "port": "bus_rdata[9]"
+    },
+    {
+      "net": "bus_rdata[10]",
+      "block": "dig",
+      "port": "bus_rdata[10]"
+    },
+    {
+      "net": "bus_rdata[11]",
+      "block": "dig",
+      "port": "bus_rdata[11]"
+    },
+    {
+      "net": "bus_rdata[12]",
+      "block": "dig",
+      "port": "bus_rdata[12]"
+    },
+    {
+      "net": "bus_rdata[13]",
+      "block": "dig",
+      "port": "bus_rdata[13]"
+    },
+    {
+      "net": "bus_rdata[14]",
+      "block": "dig",
+      "port": "bus_rdata[14]"
+    },
+    {
+      "net": "bus_rdata[15]",
+      "block": "dig",
+      "port": "bus_rdata[15]"
+    },
+    {
+      "net": "bus_rdata[16]",
+      "block": "dig",
+      "port": "bus_rdata[16]"
+    },
+    {
+      "net": "bus_rdata[17]",
+      "block": "dig",
+      "port": "bus_rdata[17]"
+    },
+    {
+      "net": "bus_rdata[18]",
+      "block": "dig",
+      "port": "bus_rdata[18]"
+    },
+    {
+      "net": "bus_rdata[19]",
+      "block": "dig",
+      "port": "bus_rdata[19]"
+    },
+    {
+      "net": "bus_rdata[20]",
+      "block": "dig",
+      "port": "bus_rdata[20]"
+    },
+    {
+      "net": "bus_rdata[21]",
+      "block": "dig",
+      "port": "bus_rdata[21]"
+    },
+    {
+      "net": "bus_rdata[22]",
+      "block": "dig",
+      "port": "bus_rdata[22]"
+    },
+    {
+      "net": "bus_rdata[23]",
+      "block": "dig",
+      "port": "bus_rdata[23]"
+    },
+    {
+      "net": "bus_rdata[24]",
+      "block": "dig",
+      "port": "bus_rdata[24]"
+    },
+    {
+      "net": "bus_rdata[25]",
+      "block": "dig",
+      "port": "bus_rdata[25]"
+    },
+    {
+      "net": "bus_rdata[26]",
+      "block": "dig",
+      "port": "bus_rdata[26]"
+    },
+    {
+      "net": "bus_rdata[27]",
+      "block": "dig",
+      "port": "bus_rdata[27]"
+    },
+    {
+      "net": "bus_rdata[28]",
+      "block": "dig",
+      "port": "bus_rdata[28]"
+    },
+    {
+      "net": "bus_rdata[29]",
+      "block": "dig",
+      "port": "bus_rdata[29]"
+    },
+    {
+      "net": "bus_rdata[30]",
+      "block": "dig",
+      "port": "bus_rdata[30]"
+    },
+    {
+      "net": "bus_rdata[31]",
+      "block": "dig",
+      "port": "bus_rdata[31]"
+    },
+    {
+      "net": "out_data[0]",
+      "block": "dig",
+      "port": "out_data[0]"
+    },
+    {
+      "net": "out_data[1]",
+      "block": "dig",
+      "port": "out_data[1]"
+    },
+    {
+      "net": "out_data[2]",
+      "block": "dig",
+      "port": "out_data[2]"
+    },
+    {
+      "net": "out_data[3]",
+      "block": "dig",
+      "port": "out_data[3]"
+    },
+    {
+      "net": "out_data[4]",
+      "block": "dig",
+      "port": "out_data[4]"
+    },
+    {
+      "net": "out_data[5]",
+      "block": "dig",
+      "port": "out_data[5]"
+    },
+    {
+      "net": "out_data[6]",
+      "block": "dig",
+      "port": "out_data[6]"
+    },
+    {
+      "net": "out_data[7]",
+      "block": "dig",
+      "port": "out_data[7]"
+    },
+    {
+      "net": "out_data[8]",
+      "block": "dig",
+      "port": "out_data[8]"
+    },
+    {
+      "net": "out_data[9]",
+      "block": "dig",
+      "port": "out_data[9]"
+    },
+    {
+      "net": "out_data[10]",
+      "block": "dig",
+      "port": "out_data[10]"
+    },
+    {
+      "net": "out_data[11]",
+      "block": "dig",
+      "port": "out_data[11]"
+    },
+    {
+      "net": "out_data[12]",
+      "block": "dig",
+      "port": "out_data[12]"
+    },
+    {
+      "net": "out_data[13]",
+      "block": "dig",
+      "port": "out_data[13]"
+    },
+    {
+      "net": "out_data[14]",
+      "block": "dig",
+      "port": "out_data[14]"
+    },
+    {
+      "net": "out_data[15]",
+      "block": "dig",
+      "port": "out_data[15]"
+    },
+    {
+      "net": "out_data[16]",
+      "block": "dig",
+      "port": "out_data[16]"
+    },
+    {
+      "net": "out_data[17]",
+      "block": "dig",
+      "port": "out_data[17]"
+    },
+    {
+      "net": "out_data[18]",
+      "block": "dig",
+      "port": "out_data[18]"
+    },
+    {
+      "net": "out_data[19]",
+      "block": "dig",
+      "port": "out_data[19]"
+    },
+    {
+      "net": "out_data[20]",
+      "block": "dig",
+      "port": "out_data[20]"
+    },
+    {
+      "net": "out_data[21]",
+      "block": "dig",
+      "port": "out_data[21]"
+    },
+    {
+      "net": "out_data[22]",
+      "block": "dig",
+      "port": "out_data[22]"
+    },
+    {
+      "net": "out_data[23]",
+      "block": "dig",
+      "port": "out_data[23]"
+    },
+    {
+      "net": "out_data[24]",
+      "block": "dig",
+      "port": "out_data[24]"
+    },
+    {
+      "net": "out_data[25]",
+      "block": "dig",
+      "port": "out_data[25]"
+    },
+    {
+      "net": "out_data[26]",
+      "block": "dig",
+      "port": "out_data[26]"
+    },
+    {
+      "net": "out_data[27]",
+      "block": "dig",
+      "port": "out_data[27]"
+    },
+    {
+      "net": "out_data[28]",
+      "block": "dig",
+      "port": "out_data[28]"
+    },
+    {
+      "net": "out_data[29]",
+      "block": "dig",
+      "port": "out_data[29]"
+    },
+    {
+      "net": "out_data[30]",
+      "block": "dig",
+      "port": "out_data[30]"
+    },
+    {
+      "net": "out_data[31]",
+      "block": "dig",
+      "port": "out_data[31]"
+    },
+    {
+      "net": "out_valid",
+      "block": "dig",
+      "port": "out_valid"
+    },
+    {
+      "net": "out_ready",
+      "block": "dig",
+      "port": "out_ready"
+    },
+    {
+      "net": "alarm",
+      "block": "dig",
+      "port": "alarm"
+    },
+    {
+      "net": "gated",
+      "block": "dig",
+      "port": "gated"
+    },
+    {
+      "net": "startup_done",
+      "block": "dig",
+      "port": "startup_done"
+    }
+  ],
+  "options": {
+    "cell_name": "trng_whole",
+    "output": "trng_whole.gds"
+  }
+}

@@ -40,6 +40,18 @@ name: CI
 #     --check cannot catch it because --check re-runs the same rewrite. Same
 #     PR-blocking path, same reason: it needs nothing installed.
 #
+# layout/test_compose_whole.py (whole-block composition contract, issue #172)
+#     Pure Python over layout/bin/compose-whole.py and the committed
+#     layout/trng_whole/ evidence -- no klt, no PDK, no GDS read (the geometry
+#     checks that need python klayout skip themselves where it is absent). A
+#     whole-block composition can fail while still producing a plausible GDS
+#     and a parseable tool response: run_klt deliberately accepts a partial
+#     composition (klt gen-compose exit 3), a swapped or duplicated boundary pin
+#     composes and routes fine, and an unreviewed edit to a macro input would
+#     silently stale the committed evidence. This pins the verdict check, the
+#     port-coverage/alias audit and the recorded input hashes. Same
+#     PR-blocking path, same reason: it needs nothing installed.
+#
 # layout/test_pex_netlist.py (post-layout netlist rewrite unit test, issue #22)
 #     Pure Python over layout/bin/pex-netlist.py's rewrite functions -- no klt,
 #     no KLayout, no PDK, no GDS. That script turns `klt extract --parasitics`
@@ -104,6 +116,13 @@ on:
       - "layout/bin/**"
       - "layout/test_pex_netlist.py"
       - "layout/test_compose_cell.py"
+      - "layout/test_compose_whole.py"
+      # the whole-block composition's committed evidence and every input whose
+      # hash it records (layout/test_compose_whole.py re-hashes them)
+      - "layout/trng_whole/**"
+      - "layout/sampler_core/**"
+      - "layout/trng_digital/**"
+      - "digital/rtl/**"
       # signoff-check inputs: the manifest + vendored checklist doc + the
       # committed report + the two envelopes it cites (an envelope
       # regenerated in a PR must re-grade, not slide through on the old
@@ -146,6 +165,9 @@ jobs:
 
       - name: layout/test_compose_cell.py (LVS reference rewrite unit test)
         run: python3 layout/test_compose_cell.py
+
+      - name: layout/test_compose_whole.py (whole-block composition contract)
+        run: python3 layout/test_compose_whole.py
 
   signoff-check:
     name: Signoff tier-report staleness gate (klt signoff --manifest)

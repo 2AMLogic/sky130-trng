@@ -4,6 +4,30 @@ Physical layout evidence for the sky130-trng entropy source, verified with
 `klayout-tools` (`klt`) against the sky130 open PDK. See `layout/pdk.json`
 for the PDK/tool pin.
 
+**Status (issue #172, the current increment, written on top of the entries
+below): whole-block composition.** `layout/trng_whole/` composes the
+verified `sampler_core` and `trng_digital` macros into one routed top cell
+`trng_whole`: **18 whole-block nets (22 legs) routed, `unrouted_nets: []`, the
+four `vddr1`-`vddr4` rails drawn as four distinct dedicated routes to their own
+boundary pads (never merged with each other or with `vdd`/`vss`), common
+`vdd`/`vss` and `clk`/`rst_n` between the macros and the boundary, 107 digital
+pins promoted label-only**, plus a combined LVS reference
+(`trng_whole.ref.spice`), an interface table (`interface.md`/`interface.json`)
+and provenance (`report.json`). It is a *composition* increment with its own
+narrow entry point, `layout/bin/compose-whole.py`; `compose-cell.py` and every
+`layout/*/cell.json` check are unchanged, and the verdict is explicitly
+**`composed; physical sign-off pending (#173 DRC/LVS, #174 characterization)`**.
+**Area: 378.16 x 333.5 um = 0.126116 mm2 against the unchanged `< 0.05 mm2`
+target: Unmet** (2.52x; `trng_digital` alone is 0.060 mm2). Whole-block
+DRC/LVS (#173), post-layout characterization (#174), #170, #18 AC3 and
+DR-0003 section 8 / DR-0009's measurement obligations are **not** closed --
+supply distribution geometry now exists, coupling/IR/period scatter are still
+unmeasured. The routing uses `met5` (`top_metal`), the only sky130 routing role
+above met2 (klayout-tools#2738). `sampler_core.gds` has no top-level pin
+shapes; each analog boundary connection is a declared, audited port on
+existing conductor. See `layout/trng_whole/README.md` for the handoff
+(exact paths, hashes, mapping, pending verification).
+
 **Status (issue #22, this increment): the shared-substrate tied/float/solo
 bracket, run at whole-chain (`sampler_core`) scope.** This is the deck
 DR-0003 §8 has been waiting for and the last hierarchy level DR-0006's own
@@ -22,9 +46,9 @@ clears every mutual-injection-lock rational by >= 11.2% at the floating
 terminal. **DR-0003 §8 is narrowed, not closed** — proximity is closed,
 substrate capacitive return is bracketed with an unmodelled interior
 (klayout-tools#1503), and §8's first-named mechanism (shared supply
-impedance) is still unmeasurable for want of a `vddr1`-`vddr4` distribution
-layout, which `layout/`'s own "Still open" list already names and which is
-now the single named blocker. Full statement:
+impedance) was unmeasurable for want of a `vddr1`-`vddr4` distribution
+layout, which issue #172 has since drawn (`layout/trng_whole/`; geometry only --
+the measurement itself is still open, tracked in #174). Full statement:
 [`spec/decision-records/DR-0009-*.md`](../spec/decision-records/DR-0009-sampler-core-substrate-bracket-and-wstv-decorrelation.md).
 
 **A previous increment (issue #22): `sampler_core`'s first whole-cell

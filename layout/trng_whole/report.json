@@ -1,0 +1,327 @@
+{
+  "schema_version": 1,
+  "top_cell": "trng_whole",
+  "status": "composed; physical sign-off pending (#173 DRC/LVS, #174 characterization)",
+  "provisional": "geometry/connectivity composition evidence only; provisional until silicon",
+  "verification_not_claimed": [
+    "whole-block DRC (#173)",
+    "whole-block LVS / mixed-level reference comparison (#173)",
+    "post-layout PVT characterization, supply coupling, IR, period scatter (#174)"
+  ],
+  "inputs_sha256": {
+    "layout/trng_whole/floorplan.json": "sha256:f3d85b1752fe4e9212ce224bf44f7be70840c96c8f3ba99ce28bd904b694342d",
+    "layout/trng_digital/trng_digital.gds": "sha256:c65e15818ebb0bf3fb2f59cab63563e88c1acebe32f0e83040c43c9ad87fa750",
+    "layout/trng_digital/trng_digital.def": "sha256:55b59c05ed2807a5b023efe4b45dfd9d9d4c68e136907c57c84e39179ef214fa",
+    "digital/rtl/trng_digital.v": "sha256:219738aae7c5fd3bfede92ae20bebe38e843f7341690eed151d1545a93db90ef",
+    "layout/trng_digital/trng_digital.routed.v": "sha256:9f3956848e6e75223f75bd154df905fecbb4e988593e78d1a92e347969fbf37f",
+    "layout/trng_digital/trng_digital.layout.abstract.spice": "sha256:93fdea0485c580a02ea38c30d35bd0b7b68127b563fe405830df33a1681c591e",
+    "layout/sampler_core/sampler_core.gds": "sha256:a00f655067731fc4ee189e98b57a0e22f3160752923badc556c9ceff8811396f",
+    "layout/sampler_core/compose.response.json": "sha256:b78b398f41d046b2751fd141781061e65620da7b292cc15a99c660ae61de5c78",
+    "layout/sampler_core/cell.json": "sha256:0e03f051830385203d047bc9ceed84f1e17ff32020335f62ac9ad8601fbc100a",
+    "design/trng_top.spice": "sha256:3d1ecc97b757f961c5f9fa7b63555132723bc87be373e9e5c3cbd1f18bde6a3b",
+    "design/xschem/trng_top.sch": "sha256:78aaa0bfeeed5299b564d823cdb7d3f21411f39805e48285dac9c01d294c568c",
+    "digital/flow/place-and-route/tool-pins.json": "sha256:a8d0a3b5e427452b82d7cfc4099b8ca4ebb77009acaed0de139951ec58374841",
+    "layout/pdk.json": "sha256:011fdb3e1431a61c0ca9f5c72f1ec3dbd4044ddcf0329f81fb05577fba98221c"
+  },
+  "tool": {
+    "klt": "0.6.0+g84a103b1a2d6",
+    "klt_git_commit": "84a103b1a2d610b5e4105ae93feb975f5131b907",
+    "klt_is_release": false,
+    "klayout_via_klt": "0.30.12",
+    "python_klayout_db": "0.30.10",
+    "open_pdks_commit": "c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+    "pdk_variant": "sky130A",
+    "macro_tool_pins": {
+      "trng_digital": {
+        "klt": "0.6.0+g10f3da34c088",
+        "openroad": "26Q3-1510-g6cb3f2b704",
+        "klayout": "0.30.12",
+        "source": "digital/flow/place-and-route/tool-pins.json"
+      },
+      "sampler_core": {
+        "klt": "committed layout/sampler_core/* evidence: 0.3.0+gc6dbf66c53c6 (layout/pdk.json klt_version_pin); drc.json 0.4.0; erc.json 0.6.0",
+        "source": "layout/pdk.json + layout/sampler_core/*.json provenance"
+      }
+    },
+    "reconciliation": "the two macros were produced by different klt builds; this composition only places and wires their committed GDS and re-extracts metal connectivity, so it pins the composing klt rather than assuming the macro environments are identical."
+  },
+  "request_sha256": "sha256:aee79c9fa2058c89f7ffe2ce9290112579e5c0c7a97f465bc0fed0e14a7a0705",
+  "macros": {
+    "dig": {
+      "cell": "trng_digital",
+      "orientation": "mirror_x",
+      "offset_um": {
+        "x": 200.0,
+        "y": 0.0
+      },
+      "bbox_um": {
+        "x0": -45.05000000000001,
+        "y0": 0.0,
+        "x1": 200.0,
+        "y1": 245.05
+      },
+      "source_digest": "sha256:fc2580f44fbf908878d21e8ee9854250eee4e5ad1886891d60d0c0b9ac73bbda"
+    },
+    "ana": {
+      "cell": "sampler_core",
+      "orientation": "mirror_x",
+      "offset_um": {
+        "x": 328.77,
+        "y": 268.64
+      },
+      "bbox_um": {
+        "x0": 0.0,
+        "y0": 265.055,
+        "x1": 330.96,
+        "y1": 323.36
+      },
+      "source_digest": "sha256:42ef6e083b68033e9eb43530042b194fa3d5c9097f552c6eff321f5282310bb1"
+    }
+  },
+  "routing": {
+    "layer_role": "top_metal",
+    "layer": [
+      72,
+      20
+    ],
+    "width_um": 1.6,
+    "tool_verdict": {
+      "nets": 18,
+      "legs": 22,
+      "pins_promoted": 107,
+      "warnings": []
+    },
+    "nets": [
+      {
+        "net": "raw_bit",
+        "status": "routed",
+        "route_length_um": 285.92,
+        "legs": 1,
+        "landed_on_block": true
+      },
+      {
+        "net": "raw_valid",
+        "status": "routed",
+        "route_length_um": 204.42,
+        "legs": 1,
+        "landed_on_block": true
+      },
+      {
+        "net": "clk",
+        "status": "routed",
+        "route_length_um": 230.43,
+        "legs": 2,
+        "landed_on_block": true
+      },
+      {
+        "net": "rst_n",
+        "status": "routed",
+        "route_length_um": 181.79,
+        "legs": 2,
+        "landed_on_block": true
+      },
+      {
+        "net": "en1",
+        "status": "routed",
+        "route_length_um": 37.75,
+        "legs": 1,
+        "landed_on_block": true
+      },
+      {
+        "net": "en2",
+        "status": "routed",
+        "route_length_um": 37.75,
+        "legs": 1,
+        "landed_on_block": true
+      },
+      {
+        "net": "en3",
+        "status": "routed",
+        "route_length_um": 37.75,
+        "legs": 1,
+        "landed_on_block": true
+      },
+      {
+        "net": "en4",
+        "status": "routed",
+        "route_length_um": 37.75,
+        "legs": 1,
+        "landed_on_block": true
+      },
+      {
+        "net": "vddr1",
+        "status": "routed",
+        "route_length_um": 33.725,
+        "legs": 1,
+        "landed_on_block": true
+      },
+      {
+        "net": "vddr2",
+        "status": "routed",
+        "route_length_um": 33.725,
+        "legs": 1,
+        "landed_on_block": true
+      },
+      {
+        "net": "vddr3",
+        "status": "routed",
+        "route_length_um": 33.725,
+        "legs": 1,
+        "landed_on_block": true
+      },
+      {
+        "net": "vddr4",
+        "status": "routed",
+        "route_length_um": 33.725,
+        "legs": 1,
+        "landed_on_block": true
+      },
+      {
+        "net": "ring_bit1",
+        "status": "routed",
+        "route_length_um": 60.65,
+        "legs": 1,
+        "landed_on_block": true
+      },
+      {
+        "net": "ring_bit2",
+        "status": "routed",
+        "route_length_um": 60.65,
+        "legs": 1,
+        "landed_on_block": true
+      },
+      {
+        "net": "ring_bit3",
+        "status": "routed",
+        "route_length_um": 60.65,
+        "legs": 1,
+        "landed_on_block": true
+      },
+      {
+        "net": "ring_bit4",
+        "status": "routed",
+        "route_length_um": 60.65,
+        "legs": 1,
+        "landed_on_block": true
+      },
+      {
+        "net": "vdd",
+        "status": "routed",
+        "route_length_um": 303.03,
+        "legs": 2,
+        "landed_on_block": true
+      },
+      {
+        "net": "vss",
+        "status": "routed",
+        "route_length_um": 95.36,
+        "legs": 2,
+        "landed_on_block": true
+      }
+    ]
+  },
+  "audits": {
+    "interface": {
+      "digital_physical_pins": 113,
+      "digital_signal_bits": 111,
+      "digital_shared_pins": [
+        "clk",
+        "raw_bit",
+        "raw_valid",
+        "rst_n"
+      ],
+      "digital_external_pins": 107,
+      "analog_pins": 18,
+      "whole_block_nets": 18,
+      "errors": 0
+    },
+    "digital_geometry": {
+      "def_pins_with_matching_gds_label": 113
+    },
+    "analog_ports": {
+      "ports_checked": 18,
+      "distinct_extracted_nets": 18
+    },
+    "composed_connectivity": {
+      "nets_checked": 18,
+      "distinct_clusters": 18,
+      "digital_external_pins_isolated": 107,
+      "vddr_rails_distinct": true,
+      "vdd_alias": [
+        "VPWR",
+        "vdd"
+      ],
+      "vss_alias": [
+        "VGND",
+        "vss"
+      ],
+      "scope": "metal-stack (li1..met5) terminal connectivity and label identity only; no device/well/substrate model -- not LVS"
+    },
+    "reference_structure": {
+      "subckts": [
+        "ro_array_core",
+        "ro_buf",
+        "ro_nand2",
+        "ro_ring5",
+        "ro_stage",
+        "sampler_core",
+        "sampler_dff",
+        "trng_digital",
+        "trng_top",
+        "trng_whole",
+        "xor2"
+      ],
+      "top_ports": 123,
+      "internal_nets": [
+        "raw_bit",
+        "raw_valid"
+      ],
+      "digital_blackbox_devices": 0
+    }
+  },
+  "outputs": {
+    "trng_whole.gds": {
+      "sha256": "sha256:a8e9865adf84f14a98b036d13d6e9f53ea3c86ba6575616e1bcc29e57558424e",
+      "canonical_geometry_sha256": "sha256:73063d4e199bec975f2f2fadd80d7e5e1e405380b6c667f2eab20e619fb8a955",
+      "canonical_counts": {
+        "polygons": 240257,
+        "labels": 57908,
+        "layers": 39
+      }
+    },
+    "trng_whole_pins.gds": {
+      "sha256": "sha256:c957f712dbd108f079df2909a1b5e2b978e47f402c4b26d8df35a445794d4b41"
+    },
+    "trng_whole.ref.spice": {
+      "sha256": "sha256:983d3d2237ec19fd86612254de638a74b8f3fb32ab16af8dbfd6e3e30d56d38f"
+    },
+    "interface.json": {
+      "sha256": "sha256:ffee0519b72088f917c67e94e565c4f3953b7969c534ef1aebc7e694b064309d"
+    },
+    "interface.md": {
+      "sha256": "sha256:284570087bfa3377ab5e1e41f23ce61028a3b5529d41d5c716ebc8e2d4874b03"
+    }
+  },
+  "area": {
+    "basis": "axis-aligned bounding box of all drawn (non-text) geometry of the composed top cell, routing and pads included, no keep-out/halo/seal ring, vs the README 'Area < 0.05 mm2' target (unchanged)",
+    "bbox_um": {
+      "x0": -47.2,
+      "y0": 0.0,
+      "x1": 330.96,
+      "y1": 333.5
+    },
+    "width_um": 378.16,
+    "height_um": 333.5,
+    "area_um2": 126116.36,
+    "area_mm2": 0.126116,
+    "target_mm2": 0.05,
+    "ratio_to_target": 2.522,
+    "result": "Unmet",
+    "macro_bbox_mm2": {
+      "trng_digital": 0.06005,
+      "sampler_core": 0.019297,
+      "sum": 0.079347
+    },
+    "note": "trng_digital alone is already 0.06005 mm2 (target 0.05 mm2): no placement of these two unchanged macros can meet the target."
+  }
+}
