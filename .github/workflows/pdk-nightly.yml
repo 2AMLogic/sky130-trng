@@ -182,7 +182,15 @@ jobs:
           echo "commit=${commit}" >> "$GITHUB_OUTPUT"
           echo "Pinned open_pdks commit (design/pdk.json): ${commit}"
 
+      # volare downloads the PDK from GitHub release assets; unauthenticated
+      # requests hit GitHub's shared-runner rate limit and fail with "no
+      # oauth token found for github.com" / 403 (issue #175). volare reads
+      # GITHUB_TOKEN, so the job's own read-only Actions token is passed
+      # here, scoped to this step only -- checkout's credential does not
+      # reach volare, and no personal token is needed. Never echo it.
       - name: Fetch + enable the pinned sky130 PDK
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           volare fetch --pdk sky130 "${{ steps.pin.outputs.commit }}"
@@ -285,7 +293,10 @@ jobs:
           echo "commit=${commit}" >> "$GITHUB_OUTPUT"
           echo "Pinned open_pdks commit (layout/pdk.json): ${commit}"
 
+      # Authenticated for the same reason as netlist-check's step (#175).
       - name: Fetch + enable the pinned sky130 PDK
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           volare fetch --pdk sky130 "${{ steps.pin.outputs.commit }}"
