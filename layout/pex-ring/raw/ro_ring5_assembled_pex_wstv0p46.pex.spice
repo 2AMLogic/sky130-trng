@@ -4,6 +4,7 @@
 * - coupling: vertical overlap (crossover) unconditionally -- where one net's conductor on an adjacent metal level sits directly over another *distinct* net's conductor, that overlap area is charged between the two nets instead of to ground (issue #760) -- plus lateral (same-layer, sidewall) coupling, but only for a net pair naming one of the caller's declared `--critical-net` nets (issue #976): facing-edge length within that layer's own minimum-spacing lookback is charged between the two nets, *additively* (not deducted from either net's substrate fringe term, unlike the vertical case -- a known simplification). Any same-layer pair with neither side named `--critical-net`, and fringe shielding in general, are still not modelled
 * - resistance: single lumped series resistance per net, distributed as a star across that net's device terminals (issue #592) -- not a per-segment, distributed RC ladder, *unless* `--distributed-rc` names this net via `--critical-net` (issue #977, Epic #709 Phase 2b): then the net's terminals are ordered along their approximate physical spread and its total R/C is broken into a chain of per-segment resistors (segment length proportional to inter-terminal distance) with a ground capacitor at each terminal node (proportional to its adjacent segment length/2), instead of one star hub -- still an approximation (terminal position is a device-placement proxy, not true per-segment routing geometry), but a strictly finer-grained one than the single-hub star
 * - frequency: quasi-static -- one frequency-independent R and C per net; no skin effect, no distributed transmission-line behavior
+.GLOBAL vsubs
 
 * cell ro_ring5_wstv0p46
 * pin a,g_a,ro,s4_y,y
@@ -30,392 +31,364 @@
 + g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss
 + mpa_py|mpb_py|mph_py|py ny ny$1 ny$2 ny$3 ny$4 py py$1 py$2 py$3
 * device instance $1 r0 *1 13.085,0.21 nfet
-X$1 a\x7cn2\x7cs1_y\x7cs2_a\x7cy__t0
-+ a\x7cg_y\x7cmnab_y\x7cmpa_y\x7cmpb_y\x7cn1\x7cs1_a\x7cy__t0 ny__t02
-+ g_vss_m1\x7cmph_g\x7cs1_vss_m1\x7cs2_vss_m1\x7cs3_vss_m1\x7cs4_vss_m1\x7cvss__t10
+X$1 a|n2|s1_y|s2_a|y__t0 a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y__t0 ny__t02
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t10
 + sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
 * device instance $2 r0 *1 21.26,0.21 nfet
-X$2 a\x7cn3\x7cs2_y\x7cs3_a\x7cy__t0 a\x7cn2\x7cs1_y\x7cs2_a\x7cy__t3 ny__t03
-+ g_vss_m1\x7cmph_g\x7cs1_vss_m1\x7cs2_vss_m1\x7cs3_vss_m1\x7cs4_vss_m1\x7cvss__t11
+X$2 a|n3|s2_y|s3_a|y__t0 a|n2|s1_y|s2_a|y__t3 ny__t03
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t11
 + sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
 * device instance $3 r0 *1 29.435,0.21 nfet
-X$3 a\x7cn4\x7cs3_y\x7cs4_a\x7cy__t0 a\x7cn3\x7cs2_y\x7cs3_a\x7cy__t3 ny__t04
-+ g_vss_m1\x7cmph_g\x7cs1_vss_m1\x7cs2_vss_m1\x7cs3_vss_m1\x7cs4_vss_m1\x7cvss__t12
+X$3 a|n4|s3_y|s4_a|y__t0 a|n3|s2_y|s3_a|y__t3 ny__t04
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t12
 + sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
 * device instance $4 r0 *1 37.61,0.21 nfet
-X$4 a\x7cg_a\x7cro\x7cs4_y\x7cy__t1 a\x7cn4\x7cs3_y\x7cs4_a\x7cy__t3 ny__t05
-+ g_vss_m1\x7cmph_g\x7cs1_vss_m1\x7cs2_vss_m1\x7cs3_vss_m1\x7cs4_vss_m1\x7cvss__t13
+X$4 a|g_a|ro|s4_y|y__t1 a|n4|s3_y|s4_a|y__t3 ny__t05
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t13
 + sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
 * device instance $5 r0 *1 1.42,0.21 nfet
-X$5 ny__t0
-+ g_vddr_m1\x7cmnt_g\x7cs1_vddr_m1\x7cs2_vddr_m1\x7cs3_vddr_m1\x7cs4_vddr_m1\x7cvddr__t0
-+ g_vss_m1\x7cmph_g\x7cs1_vss_m1\x7cs2_vss_m1\x7cs3_vss_m1\x7cs4_vss_m1\x7cvss__t0
-+ g_vss_m1\x7cmph_g\x7cs1_vss_m1\x7cs2_vss_m1\x7cs3_vss_m1\x7cs4_vss_m1\x7cvss__t14
+X$5 ny__t0 g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr__t0
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t0
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t14
 + sky130_fd_pr__nfet_01v8 L=2 W=0.46 AS=0.1932 AD=0.1932 PS=1.76 PD=1.76
 * device instance $6 r0 *1 10.72,0.21 nfet
 X$6 ny__t12
-+ g_vddr_m1\x7cmnt_g\x7cs1_vddr_m1\x7cs2_vddr_m1\x7cs3_vddr_m1\x7cs4_vddr_m1\x7cvddr__t20
-+ g_vss_m1\x7cmph_g\x7cs1_vss_m1\x7cs2_vss_m1\x7cs3_vss_m1\x7cs4_vss_m1\x7cvss__t9
-+ g_vss_m1\x7cmph_g\x7cs1_vss_m1\x7cs2_vss_m1\x7cs3_vss_m1\x7cs4_vss_m1\x7cvss__t15
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr__t20
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t9
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t15
 + sky130_fd_pr__nfet_01v8 L=2 W=0.46 AS=0.1932 AD=0.1932 PS=1.76 PD=1.76
 * device instance $7 r0 *1 18.895,0.21 nfet
 X$7 ny__t13
-+ g_vddr_m1\x7cmnt_g\x7cs1_vddr_m1\x7cs2_vddr_m1\x7cs3_vddr_m1\x7cs4_vddr_m1\x7cvddr__t19
-+ g_vss_m1\x7cmph_g\x7cs1_vss_m1\x7cs2_vss_m1\x7cs3_vss_m1\x7cs4_vss_m1\x7cvss__t8
-+ g_vss_m1\x7cmph_g\x7cs1_vss_m1\x7cs2_vss_m1\x7cs3_vss_m1\x7cs4_vss_m1\x7cvss__t16
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr__t19
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t8
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t16
 + sky130_fd_pr__nfet_01v8 L=2 W=0.46 AS=0.1932 AD=0.1932 PS=1.76 PD=1.76
 * device instance $8 r0 *1 27.07,0.21 nfet
 X$8 ny__t14
-+ g_vddr_m1\x7cmnt_g\x7cs1_vddr_m1\x7cs2_vddr_m1\x7cs3_vddr_m1\x7cs4_vddr_m1\x7cvddr__t18
-+ g_vss_m1\x7cmph_g\x7cs1_vss_m1\x7cs2_vss_m1\x7cs3_vss_m1\x7cs4_vss_m1\x7cvss__t7
-+ g_vss_m1\x7cmph_g\x7cs1_vss_m1\x7cs2_vss_m1\x7cs3_vss_m1\x7cs4_vss_m1\x7cvss__t17
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr__t18
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t7
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t17
 + sky130_fd_pr__nfet_01v8 L=2 W=0.46 AS=0.1932 AD=0.1932 PS=1.76 PD=1.76
 * device instance $9 r0 *1 35.245,0.21 nfet
 X$9 ny__t15
-+ g_vddr_m1\x7cmnt_g\x7cs1_vddr_m1\x7cs2_vddr_m1\x7cs3_vddr_m1\x7cs4_vddr_m1\x7cvddr__t17
-+ g_vss_m1\x7cmph_g\x7cs1_vss_m1\x7cs2_vss_m1\x7cs3_vss_m1\x7cs4_vss_m1\x7cvss__t6
-+ g_vss_m1\x7cmph_g\x7cs1_vss_m1\x7cs2_vss_m1\x7cs3_vss_m1\x7cs4_vss_m1\x7cvss__t18
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr__t17
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t6
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t18
 + sky130_fd_pr__nfet_01v8 L=2 W=0.46 AS=0.1932 AD=0.1932 PS=1.76 PD=1.76
 * device instance $10 r0 *1 3.785,0.21 nfet
-X$10 \$3__t0 en\x7cg_en__t0 ny__t1
-+ g_vss_m1\x7cmph_g\x7cs1_vss_m1\x7cs2_vss_m1\x7cs3_vss_m1\x7cs4_vss_m1\x7cvss__t19
+X$10 \$5__t0 en|g_en__t0 ny__t1
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t19
 + sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.2184 PS=2.62 PD=1.36
 * device instance $11 r0 *1 4.455,0.21 nfet
-X$11 a\x7cg_y\x7cmnab_y\x7cmpa_y\x7cmpb_y\x7cn1\x7cs1_a\x7cy__t1
-+ a\x7cg_a\x7cro\x7cs4_y\x7cy__t0 \$3__t1
-+ g_vss_m1\x7cmph_g\x7cs1_vss_m1\x7cs2_vss_m1\x7cs3_vss_m1\x7cs4_vss_m1\x7cvss__t20
+X$11 a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y__t1 a|g_a|ro|s4_y|y__t0 \$5__t1
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t20
 + sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.2184 AD=0.3948 PS=1.36 PD=2.62
 * device instance $12 r0 *1 1.42,3.74 pfet
-X$12 mpa_py\x7cmpb_py\x7cmph_py\x7cpy__t0
-+ g_vss_m1\x7cmph_g\x7cs1_vss_m1\x7cs2_vss_m1\x7cs3_vss_m1\x7cs4_vss_m1\x7cvss__t1
-+ g_vddr_m1\x7cmnt_g\x7cs1_vddr_m1\x7cs2_vddr_m1\x7cs3_vddr_m1\x7cs4_vddr_m1\x7cvddr__t1
-+ g_vddr_m1\x7cmnt_g\x7cs1_vddr_m1\x7cs2_vddr_m1\x7cs3_vddr_m1\x7cs4_vddr_m1\x7cvddr__t2
+X$12 mpa_py|mpb_py|mph_py|py__t0
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t1
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr__t1
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr__t2
 + sky130_fd_pr__pfet_01v8 L=2 W=0.46 AS=0.1932 AD=0.1932 PS=1.76 PD=1.76
 * device instance $13 r0 *1 10.72,3.74 pfet
-X$13 py__t0
-+ g_vss_m1\x7cmph_g\x7cs1_vss_m1\x7cs2_vss_m1\x7cs3_vss_m1\x7cs4_vss_m1\x7cvss__t2
-+ g_vddr_m1\x7cmnt_g\x7cs1_vddr_m1\x7cs2_vddr_m1\x7cs3_vddr_m1\x7cs4_vddr_m1\x7cvddr__t13
-+ g_vddr_m1\x7cmnt_g\x7cs1_vddr_m1\x7cs2_vddr_m1\x7cs3_vddr_m1\x7cs4_vddr_m1\x7cvddr__t9
+X$13 py__t0 g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t2
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr__t13
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr__t9
 + sky130_fd_pr__pfet_01v8 L=2 W=0.46 AS=0.1932 AD=0.1932 PS=1.76 PD=1.76
 * device instance $14 r0 *1 18.895,3.74 pfet
-X$14 py__t02
-+ g_vss_m1\x7cmph_g\x7cs1_vss_m1\x7cs2_vss_m1\x7cs3_vss_m1\x7cs4_vss_m1\x7cvss__t3
-+ g_vddr_m1\x7cmnt_g\x7cs1_vddr_m1\x7cs2_vddr_m1\x7cs3_vddr_m1\x7cs4_vddr_m1\x7cvddr__t14
-+ g_vddr_m1\x7cmnt_g\x7cs1_vddr_m1\x7cs2_vddr_m1\x7cs3_vddr_m1\x7cs4_vddr_m1\x7cvddr__t10
+X$14 py__t02 g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t3
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr__t14
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr__t10
 + sky130_fd_pr__pfet_01v8 L=2 W=0.46 AS=0.1932 AD=0.1932 PS=1.76 PD=1.76
 * device instance $15 r0 *1 27.07,3.74 pfet
-X$15 py__t03
-+ g_vss_m1\x7cmph_g\x7cs1_vss_m1\x7cs2_vss_m1\x7cs3_vss_m1\x7cs4_vss_m1\x7cvss__t4
-+ g_vddr_m1\x7cmnt_g\x7cs1_vddr_m1\x7cs2_vddr_m1\x7cs3_vddr_m1\x7cs4_vddr_m1\x7cvddr__t15
-+ g_vddr_m1\x7cmnt_g\x7cs1_vddr_m1\x7cs2_vddr_m1\x7cs3_vddr_m1\x7cs4_vddr_m1\x7cvddr__t11
+X$15 py__t03 g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t4
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr__t15
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr__t11
 + sky130_fd_pr__pfet_01v8 L=2 W=0.46 AS=0.1932 AD=0.1932 PS=1.76 PD=1.76
 * device instance $16 r0 *1 35.245,3.74 pfet
-X$16 py__t04
-+ g_vss_m1\x7cmph_g\x7cs1_vss_m1\x7cs2_vss_m1\x7cs3_vss_m1\x7cs4_vss_m1\x7cvss__t5
-+ g_vddr_m1\x7cmnt_g\x7cs1_vddr_m1\x7cs2_vddr_m1\x7cs3_vddr_m1\x7cs4_vddr_m1\x7cvddr__t16
-+ g_vddr_m1\x7cmnt_g\x7cs1_vddr_m1\x7cs2_vddr_m1\x7cs3_vddr_m1\x7cs4_vddr_m1\x7cvddr__t12
+X$16 py__t04 g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t5
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr__t16
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr__t12
 + sky130_fd_pr__pfet_01v8 L=2 W=0.46 AS=0.1932 AD=0.1932 PS=1.76 PD=1.76
 * device instance $17 r0 *1 3.585,3.74 pfet
-X$17 a\x7cg_y\x7cmnab_y\x7cmpa_y\x7cmpb_y\x7cn1\x7cs1_a\x7cy__t2 en\x7cg_en__t1
-+ mpa_py\x7cmpb_py\x7cmph_py\x7cpy__t1
-+ g_vddr_m1\x7cmnt_g\x7cs1_vddr_m1\x7cs2_vddr_m1\x7cs3_vddr_m1\x7cs4_vddr_m1\x7cvddr__t3
+X$17 a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y__t2 en|g_en__t1
++ mpa_py|mpb_py|mph_py|py__t1
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr__t3
 + sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
 * device instance $18 r0 *1 4.875,3.74 pfet
-X$18 mpa_py\x7cmpb_py\x7cmph_py\x7cpy__t2 a\x7cg_a\x7cro\x7cs4_y\x7cy__t2
-+ a\x7cg_y\x7cmnab_y\x7cmpa_y\x7cmpb_y\x7cn1\x7cs1_a\x7cy__t3
-+ g_vddr_m1\x7cmnt_g\x7cs1_vddr_m1\x7cs2_vddr_m1\x7cs3_vddr_m1\x7cs4_vddr_m1\x7cvddr__t8
+X$18 mpa_py|mpb_py|mph_py|py__t2 a|g_a|ro|s4_y|y__t2
++ a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y__t3
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr__t8
 + sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
 * device instance $19 r0 *1 12.885,3.74 pfet
-X$19 a\x7cn2\x7cs1_y\x7cs2_a\x7cy__t2
-+ a\x7cg_y\x7cmnab_y\x7cmpa_y\x7cmpb_y\x7cn1\x7cs1_a\x7cy__t4 py__t1
-+ g_vddr_m1\x7cmnt_g\x7cs1_vddr_m1\x7cs2_vddr_m1\x7cs3_vddr_m1\x7cs4_vddr_m1\x7cvddr__t7
+X$19 a|n2|s1_y|s2_a|y__t2 a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y__t4 py__t1
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr__t7
 + sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
 * device instance $20 r0 *1 21.06,3.74 pfet
-X$20 a\x7cn3\x7cs2_y\x7cs3_a\x7cy__t2 a\x7cn2\x7cs1_y\x7cs2_a\x7cy__t1 py__t12
-+ g_vddr_m1\x7cmnt_g\x7cs1_vddr_m1\x7cs2_vddr_m1\x7cs3_vddr_m1\x7cs4_vddr_m1\x7cvddr__t6
+X$20 a|n3|s2_y|s3_a|y__t2 a|n2|s1_y|s2_a|y__t1 py__t12
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr__t6
 + sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
 * device instance $21 r0 *1 29.235,3.74 pfet
-X$21 a\x7cn4\x7cs3_y\x7cs4_a\x7cy__t2 a\x7cn3\x7cs2_y\x7cs3_a\x7cy__t1 py__t13
-+ g_vddr_m1\x7cmnt_g\x7cs1_vddr_m1\x7cs2_vddr_m1\x7cs3_vddr_m1\x7cs4_vddr_m1\x7cvddr__t5
+X$21 a|n4|s3_y|s4_a|y__t2 a|n3|s2_y|s3_a|y__t1 py__t13
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr__t5
 + sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
 * device instance $22 r0 *1 37.41,3.74 pfet
-X$22 a\x7cg_a\x7cro\x7cs4_y\x7cy__t3 a\x7cn4\x7cs3_y\x7cs4_a\x7cy__t1 py__t14
-+ g_vddr_m1\x7cmnt_g\x7cs1_vddr_m1\x7cs2_vddr_m1\x7cs3_vddr_m1\x7cs4_vddr_m1\x7cvddr__t4
+X$22 a|g_a|ro|s4_y|y__t3 a|n4|s3_y|s4_a|y__t1 py__t14
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr__t4
 + sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
-* device instance _3_t0 r0 *1 0,0 
-R_3_t0 \$3__t0 \$3 12.8
-* device instance _3_t1 r0 *1 0,0 
-R_3_t1 \$3__t1 \$3 12.8
-* device instance _3 r0 *1 0,0 
-C_3 \$3 vsubs 1.15618e-16
+* device instance _5_t0 r0 *1 0,0 
+R_5_t0 \$5__t0 \$5 12.8
+* device instance _5_t1 r0 *1 0,0 
+R_5_t1 \$5__t1 \$5 12.8
+* device instance _5 r0 *1 0,0 
+C_5 \$5 vsubs 1.15618e-16
 * device instance a_g_a_ro_s4_y_y_t0 r0 *1 0,0 
-Ra_g_a_ro_s4_y_y_t0 a\x7cg_a\x7cro\x7cs4_y\x7cy__t0 a|g_a|ro|s4_y|y
-+ 241.768094006
+Ra_g_a_ro_s4_y_y_t0 a|g_a|ro|s4_y|y__t0 a|g_a|ro|s4_y|y 199.905310752
 * device instance a_g_a_ro_s4_y_y_t1 r0 *1 0,0 
-Ra_g_a_ro_s4_y_y_t1 a\x7cg_a\x7cro\x7cs4_y\x7cy__t1 a|g_a|ro|s4_y|y
-+ 240.187010484
+Ra_g_a_ro_s4_y_y_t1 a|g_a|ro|s4_y|y__t1 a|g_a|ro|s4_y|y 198.597996013
 * device instance a_g_a_ro_s4_y_y_t2 r0 *1 0,0 
-Ra_g_a_ro_s4_y_y_t2 a\x7cg_a\x7cro\x7cs4_y\x7cy__t2 a|g_a|ro|s4_y|y
-+ 235.731876409
+Ra_g_a_ro_s4_y_y_t2 a|g_a|ro|s4_y|y__t2 a|g_a|ro|s4_y|y 194.914280155
 * device instance a_g_a_ro_s4_y_y_t3 r0 *1 0,0 
-Ra_g_a_ro_s4_y_y_t3 a\x7cg_a\x7cro\x7cs4_y\x7cy__t3 a|g_a|ro|s4_y|y 237.3126191
+Ra_g_a_ro_s4_y_y_t3 a|g_a|ro|s4_y|y__t3 a|g_a|ro|s4_y|y 196.22131308
 * device instance a_g_a_ro_s4_y_y r0 *1 0,0 
 Ca_g_a_ro_s4_y_y a|g_a|ro|s4_y|y vsubs 4.73908e-15
 * device instance a_g_y_mnab_y_mpa_y_mpb_y_n1_s1_a_y_t0 r0 *1 0,0 
-Ra_g_y_mnab_y_mpa_y_mpb_y_n1_s1_a_y_t0
-+ a\x7cg_y\x7cmnab_y\x7cmpa_y\x7cmpb_y\x7cn1\x7cs1_a\x7cy__t0
-+ a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y 165.838297843
+Ra_g_y_mnab_y_mpa_y_mpb_y_n1_s1_a_y_t0 a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y__t0
++ a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y 107.491339147
 * device instance a_g_y_mnab_y_mpa_y_mpb_y_n1_s1_a_y_t1 r0 *1 0,0 
-Ra_g_y_mnab_y_mpa_y_mpb_y_n1_s1_a_y_t1
-+ a\x7cg_y\x7cmnab_y\x7cmpa_y\x7cmpb_y\x7cn1\x7cs1_a\x7cy__t1
-+ a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y 114.324644013
+Ra_g_y_mnab_y_mpa_y_mpb_y_n1_s1_a_y_t1 a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y__t1
++ a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y 74.101756002
 * device instance a_g_y_mnab_y_mpa_y_mpb_y_n1_s1_a_y_t2 r0 *1 0,0 
-Ra_g_y_mnab_y_mpa_y_mpb_y_n1_s1_a_y_t2
-+ a\x7cg_y\x7cmnab_y\x7cmpa_y\x7cmpb_y\x7cn1\x7cs1_a\x7cy__t2
-+ a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y 128.359871717
+Ra_g_y_mnab_y_mpa_y_mpb_y_n1_s1_a_y_t2 a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y__t2
++ a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y 83.1989635875
 * device instance a_g_y_mnab_y_mpa_y_mpb_y_n1_s1_a_y_t3 r0 *1 0,0 
-Ra_g_y_mnab_y_mpa_y_mpb_y_n1_s1_a_y_t3
-+ a\x7cg_y\x7cmnab_y\x7cmpa_y\x7cmpb_y\x7cn1\x7cs1_a\x7cy__t3
-+ a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y 93.6501322123
+Ra_g_y_mnab_y_mpa_y_mpb_y_n1_s1_a_y_t3 a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y__t3
++ a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y 60.7011664601
 * device instance a_g_y_mnab_y_mpa_y_mpb_y_n1_s1_a_y_t4 r0 *1 0,0 
-Ra_g_y_mnab_y_mpa_y_mpb_y_n1_s1_a_y_t4
-+ a\x7cg_y\x7cmnab_y\x7cmpa_y\x7cmpb_y\x7cn1\x7cs1_a\x7cy__t4
-+ a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y 153.784254215
+Ra_g_y_mnab_y_mpa_y_mpb_y_n1_s1_a_y_t4 a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y__t4
++ a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y 99.6782748034
 * device instance a_g_y_mnab_y_mpa_y_mpb_y_n1_s1_a_y r0 *1 0,0 
 Ca_g_y_mnab_y_mpa_y_mpb_y_n1_s1_a_y a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y vsubs
 + 2.632209e-15
 * device instance a_n2_s1_y_s2_a_y_t0 r0 *1 0,0 
-Ra_n2_s1_y_s2_a_y_t0 a\x7cn2\x7cs1_y\x7cs2_a\x7cy__t0 a|n2|s1_y|s2_a|y
-+ 225.155136025
+Ra_n2_s1_y_s2_a_y_t0 a|n2|s1_y|s2_a|y__t0 a|n2|s1_y|s2_a|y 184.787796322
 * device instance a_n2_s1_y_s2_a_y_t1 r0 *1 0,0 
-Ra_n2_s1_y_s2_a_y_t1 a\x7cn2\x7cs1_y\x7cs2_a\x7cy__t1 a|n2|s1_y|s2_a|y
-+ 225.155136025
+Ra_n2_s1_y_s2_a_y_t1 a|n2|s1_y|s2_a|y__t1 a|n2|s1_y|s2_a|y 184.787796322
 * device instance a_n2_s1_y_s2_a_y_t2 r0 *1 0,0 
-Ra_n2_s1_y_s2_a_y_t2 a\x7cn2\x7cs1_y\x7cs2_a\x7cy__t2 a|n2|s1_y|s2_a|y
-+ 234.635313975
+Ra_n2_s1_y_s2_a_y_t2 a|n2|s1_y|s2_a|y__t2 a|n2|s1_y|s2_a|y 192.568303678
 * device instance a_n2_s1_y_s2_a_y_t3 r0 *1 0,0 
-Ra_n2_s1_y_s2_a_y_t3 a\x7cn2\x7cs1_y\x7cs2_a\x7cy__t3 a|n2|s1_y|s2_a|y
-+ 234.635313975
+Ra_n2_s1_y_s2_a_y_t3 a|n2|s1_y|s2_a|y__t3 a|n2|s1_y|s2_a|y 192.568303678
 * device instance a_n2_s1_y_s2_a_y r0 *1 0,0 
 Ca_n2_s1_y_s2_a_y a|n2|s1_y|s2_a|y vsubs 2.529995e-15
 * device instance a_n3_s2_y_s3_a_y_t0 r0 *1 0,0 
-Ra_n3_s2_y_s3_a_y_t0 a\x7cn3\x7cs2_y\x7cs3_a\x7cy__t0 a|n3|s2_y|s3_a|y
-+ 225.155136025
+Ra_n3_s2_y_s3_a_y_t0 a|n3|s2_y|s3_a|y__t0 a|n3|s2_y|s3_a|y 184.787796322
 * device instance a_n3_s2_y_s3_a_y_t1 r0 *1 0,0 
-Ra_n3_s2_y_s3_a_y_t1 a\x7cn3\x7cs2_y\x7cs3_a\x7cy__t1 a|n3|s2_y|s3_a|y
-+ 225.155136025
+Ra_n3_s2_y_s3_a_y_t1 a|n3|s2_y|s3_a|y__t1 a|n3|s2_y|s3_a|y 184.787796322
 * device instance a_n3_s2_y_s3_a_y_t2 r0 *1 0,0 
-Ra_n3_s2_y_s3_a_y_t2 a\x7cn3\x7cs2_y\x7cs3_a\x7cy__t2 a|n3|s2_y|s3_a|y
-+ 234.635313975
+Ra_n3_s2_y_s3_a_y_t2 a|n3|s2_y|s3_a|y__t2 a|n3|s2_y|s3_a|y 192.568303678
 * device instance a_n3_s2_y_s3_a_y_t3 r0 *1 0,0 
-Ra_n3_s2_y_s3_a_y_t3 a\x7cn3\x7cs2_y\x7cs3_a\x7cy__t3 a|n3|s2_y|s3_a|y
-+ 234.635313975
+Ra_n3_s2_y_s3_a_y_t3 a|n3|s2_y|s3_a|y__t3 a|n3|s2_y|s3_a|y 192.568303678
 * device instance a_n3_s2_y_s3_a_y r0 *1 0,0 
 Ca_n3_s2_y_s3_a_y a|n3|s2_y|s3_a|y vsubs 2.529995e-15
 * device instance a_n4_s3_y_s4_a_y_t0 r0 *1 0,0 
-Ra_n4_s3_y_s4_a_y_t0 a\x7cn4\x7cs3_y\x7cs4_a\x7cy__t0 a|n4|s3_y|s4_a|y
-+ 225.155136025
+Ra_n4_s3_y_s4_a_y_t0 a|n4|s3_y|s4_a|y__t0 a|n4|s3_y|s4_a|y 184.787796322
 * device instance a_n4_s3_y_s4_a_y_t1 r0 *1 0,0 
-Ra_n4_s3_y_s4_a_y_t1 a\x7cn4\x7cs3_y\x7cs4_a\x7cy__t1 a|n4|s3_y|s4_a|y
-+ 225.155136025
+Ra_n4_s3_y_s4_a_y_t1 a|n4|s3_y|s4_a|y__t1 a|n4|s3_y|s4_a|y 184.787796322
 * device instance a_n4_s3_y_s4_a_y_t2 r0 *1 0,0 
-Ra_n4_s3_y_s4_a_y_t2 a\x7cn4\x7cs3_y\x7cs4_a\x7cy__t2 a|n4|s3_y|s4_a|y
-+ 234.635313975
+Ra_n4_s3_y_s4_a_y_t2 a|n4|s3_y|s4_a|y__t2 a|n4|s3_y|s4_a|y 192.568303678
 * device instance a_n4_s3_y_s4_a_y_t3 r0 *1 0,0 
-Ra_n4_s3_y_s4_a_y_t3 a\x7cn4\x7cs3_y\x7cs4_a\x7cy__t3 a|n4|s3_y|s4_a|y
-+ 234.635313975
+Ra_n4_s3_y_s4_a_y_t3 a|n4|s3_y|s4_a|y__t3 a|n4|s3_y|s4_a|y 192.568303678
 * device instance a_n4_s3_y_s4_a_y r0 *1 0,0 
 Ca_n4_s3_y_s4_a_y a|n4|s3_y|s4_a|y vsubs 2.529995e-15
 * device instance en_g_en_t0 r0 *1 0,0 
-Ren_g_en_t0 en\x7cg_en__t0 en|g_en 236.31895
+Ren_g_en_t0 en|g_en__t0 en|g_en 166.9848
 * device instance en_g_en_t1 r0 *1 0,0 
-Ren_g_en_t1 en\x7cg_en__t1 en|g_en 236.31895
+Ren_g_en_t1 en|g_en__t1 en|g_en 166.9848
 * device instance en_g_en r0 *1 0,0 
 Cen_g_en en|g_en vsubs 5.93421e-16
 * device instance g_vddr_m1_mnt_g_s1_vddr_m1_s2_vddr_m1_s3_vddr_m1_s4_vddr_m1_vddr_t0 r0 *1 0,0 
 Rg_vddr_m1_mnt_g_s1_vddr_m1_s2_vddr_m1_s3_vddr_m1_s4_vddr_m1_vddr_t0
-+ g_vddr_m1\x7cmnt_g\x7cs1_vddr_m1\x7cs2_vddr_m1\x7cs3_vddr_m1\x7cs4_vddr_m1\x7cvddr__t0
-+ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr 177.166308742
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr__t0
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr 118.736924229
 * device instance g_vddr_m1_mnt_g_s1_vddr_m1_s2_vddr_m1_s3_vddr_m1_s4_vddr_m1_vddr_t1 r0 *1 0,0 
 Rg_vddr_m1_mnt_g_s1_vddr_m1_s2_vddr_m1_s3_vddr_m1_s4_vddr_m1_vddr_t1
-+ g_vddr_m1\x7cmnt_g\x7cs1_vddr_m1\x7cs2_vddr_m1\x7cs3_vddr_m1\x7cs4_vddr_m1\x7cvddr__t1
-+ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr 175.227984085
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr__t1
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr 117.437858342
 * device instance g_vddr_m1_mnt_g_s1_vddr_m1_s2_vddr_m1_s3_vddr_m1_s4_vddr_m1_vddr_t2 r0 *1 0,0 
 Rg_vddr_m1_mnt_g_s1_vddr_m1_s2_vddr_m1_s3_vddr_m1_s4_vddr_m1_vddr_t2
-+ g_vddr_m1\x7cmnt_g\x7cs1_vddr_m1\x7cs2_vddr_m1\x7cs3_vddr_m1\x7cs4_vddr_m1\x7cvddr__t2
-+ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr 175.227984085
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr__t2
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr 117.437858342
 * device instance g_vddr_m1_mnt_g_s1_vddr_m1_s2_vddr_m1_s3_vddr_m1_s4_vddr_m1_vddr_t3 r0 *1 0,0 
 Rg_vddr_m1_mnt_g_s1_vddr_m1_s2_vddr_m1_s3_vddr_m1_s4_vddr_m1_vddr_t3
-+ g_vddr_m1\x7cmnt_g\x7cs1_vddr_m1\x7cs2_vddr_m1\x7cs3_vddr_m1\x7cs4_vddr_m1\x7cvddr__t3
-+ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr 153.111043665
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr__t3
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr 102.615076869
 * device instance g_vddr_m1_mnt_g_s1_vddr_m1_s2_vddr_m1_s3_vddr_m1_s4_vddr_m1_vddr_t4 r0 *1 0,0 
 Rg_vddr_m1_mnt_g_s1_vddr_m1_s2_vddr_m1_s3_vddr_m1_s4_vddr_m1_vddr_t4
-+ g_vddr_m1\x7cmnt_g\x7cs1_vddr_m1\x7cs2_vddr_m1\x7cs3_vddr_m1\x7cs4_vddr_m1\x7cvddr__t4
-+ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr 193.344125621
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr__t4
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr 129.579302955
 * device instance g_vddr_m1_mnt_g_s1_vddr_m1_s2_vddr_m1_s3_vddr_m1_s4_vddr_m1_vddr_t5 r0 *1 0,0 
 Rg_vddr_m1_mnt_g_s1_vddr_m1_s2_vddr_m1_s3_vddr_m1_s4_vddr_m1_vddr_t5
-+ g_vddr_m1\x7cmnt_g\x7cs1_vddr_m1\x7cs2_vddr_m1\x7cs3_vddr_m1\x7cs4_vddr_m1\x7cvddr__t5
-+ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr 109.861365928
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr__t5
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr 73.6291271993
 * device instance g_vddr_m1_mnt_g_s1_vddr_m1_s2_vddr_m1_s3_vddr_m1_s4_vddr_m1_vddr_t6 r0 *1 0,0 
 Rg_vddr_m1_mnt_g_s1_vddr_m1_s2_vddr_m1_s3_vddr_m1_s4_vddr_m1_vddr_t6
-+ g_vddr_m1\x7cmnt_g\x7cs1_vddr_m1\x7cs2_vddr_m1\x7cs3_vddr_m1\x7cs4_vddr_m1\x7cvddr__t6
-+ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr 27.2859717928
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr__t6
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr 18.2870681693
 * device instance g_vddr_m1_mnt_g_s1_vddr_m1_s2_vddr_m1_s3_vddr_m1_s4_vddr_m1_vddr_t7 r0 *1 0,0 
 Rg_vddr_m1_mnt_g_s1_vddr_m1_s2_vddr_m1_s3_vddr_m1_s4_vddr_m1_vddr_t7
-+ g_vddr_m1\x7cmnt_g\x7cs1_vddr_m1\x7cs2_vddr_m1\x7cs3_vddr_m1\x7cs4_vddr_m1\x7cvddr__t7
-+ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr 58.3692085936
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr__t7
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr 39.119064721
 * device instance g_vddr_m1_mnt_g_s1_vddr_m1_s2_vddr_m1_s3_vddr_m1_s4_vddr_m1_vddr_t8 r0 *1 0,0 
 Rg_vddr_m1_mnt_g_s1_vddr_m1_s2_vddr_m1_s3_vddr_m1_s4_vddr_m1_vddr_t8
-+ g_vddr_m1\x7cmnt_g\x7cs1_vddr_m1\x7cs2_vddr_m1\x7cs3_vddr_m1\x7cs4_vddr_m1\x7cvddr__t8
-+ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr 139.937412406
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr__t8
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr 93.7861044322
 * device instance g_vddr_m1_mnt_g_s1_vddr_m1_s2_vddr_m1_s3_vddr_m1_s4_vddr_m1_vddr_t9 r0 *1 0,0 
 Rg_vddr_m1_mnt_g_s1_vddr_m1_s2_vddr_m1_s3_vddr_m1_s4_vddr_m1_vddr_t9
-+ g_vddr_m1\x7cmnt_g\x7cs1_vddr_m1\x7cs2_vddr_m1\x7cs3_vddr_m1\x7cs4_vddr_m1\x7cvddr__t9
-+ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr 80.341352221
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr__t9
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr 53.844803331
 * device instance g_vddr_m1_mnt_g_s1_vddr_m1_s2_vddr_m1_s3_vddr_m1_s4_vddr_m1_vddr_t10 r0 *1 0,0 
 Rg_vddr_m1_mnt_g_s1_vddr_m1_s2_vddr_m1_s3_vddr_m1_s4_vddr_m1_vddr_t10
-+ g_vddr_m1\x7cmnt_g\x7cs1_vddr_m1\x7cs2_vddr_m1\x7cs3_vddr_m1\x7cs4_vddr_m1\x7cvddr__t10
-+ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr 9.37948730032
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr__t10
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr 6.28613578275
 * device instance g_vddr_m1_mnt_g_s1_vddr_m1_s2_vddr_m1_s3_vddr_m1_s4_vddr_m1_vddr_t11 r0 *1 0,0 
 Rg_vddr_m1_mnt_g_s1_vddr_m1_s2_vddr_m1_s3_vddr_m1_s4_vddr_m1_vddr_t11
-+ g_vddr_m1\x7cmnt_g\x7cs1_vddr_m1\x7cs2_vddr_m1\x7cs3_vddr_m1\x7cs4_vddr_m1\x7cvddr__t11
-+ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr 87.7989317094
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr__t11
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr 58.8428758027
 * device instance g_vddr_m1_mnt_g_s1_vddr_m1_s2_vddr_m1_s3_vddr_m1_s4_vddr_m1_vddr_t12 r0 *1 0,0 
 Rg_vddr_m1_mnt_g_s1_vddr_m1_s2_vddr_m1_s3_vddr_m1_s4_vddr_m1_vddr_t12
-+ g_vddr_m1\x7cmnt_g\x7cs1_vddr_m1\x7cs2_vddr_m1\x7cs3_vddr_m1\x7cs4_vddr_m1\x7cvddr__t12
-+ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr 171.221393986
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr__t12
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr 114.752640208
 * device instance g_vddr_m1_mnt_g_s1_vddr_m1_s2_vddr_m1_s3_vddr_m1_s4_vddr_m1_vddr_t13 r0 *1 0,0 
 Rg_vddr_m1_mnt_g_s1_vddr_m1_s2_vddr_m1_s3_vddr_m1_s4_vddr_m1_vddr_t13
-+ g_vddr_m1\x7cmnt_g\x7cs1_vddr_m1\x7cs2_vddr_m1\x7cs3_vddr_m1\x7cs4_vddr_m1\x7cvddr__t13
-+ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr 80.341352221
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr__t13
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr 53.844803331
 * device instance g_vddr_m1_mnt_g_s1_vddr_m1_s2_vddr_m1_s3_vddr_m1_s4_vddr_m1_vddr_t14 r0 *1 0,0 
 Rg_vddr_m1_mnt_g_s1_vddr_m1_s2_vddr_m1_s3_vddr_m1_s4_vddr_m1_vddr_t14
-+ g_vddr_m1\x7cmnt_g\x7cs1_vddr_m1\x7cs2_vddr_m1\x7cs3_vddr_m1\x7cs4_vddr_m1\x7cvddr__t14
-+ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr 9.37948730032
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr__t14
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr 6.28613578275
 * device instance g_vddr_m1_mnt_g_s1_vddr_m1_s2_vddr_m1_s3_vddr_m1_s4_vddr_m1_vddr_t15 r0 *1 0,0 
 Rg_vddr_m1_mnt_g_s1_vddr_m1_s2_vddr_m1_s3_vddr_m1_s4_vddr_m1_vddr_t15
-+ g_vddr_m1\x7cmnt_g\x7cs1_vddr_m1\x7cs2_vddr_m1\x7cs3_vddr_m1\x7cs4_vddr_m1\x7cvddr__t15
-+ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr 87.7989317094
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr__t15
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr 58.8428758027
 * device instance g_vddr_m1_mnt_g_s1_vddr_m1_s2_vddr_m1_s3_vddr_m1_s4_vddr_m1_vddr_t16 r0 *1 0,0 
 Rg_vddr_m1_mnt_g_s1_vddr_m1_s2_vddr_m1_s3_vddr_m1_s4_vddr_m1_vddr_t16
-+ g_vddr_m1\x7cmnt_g\x7cs1_vddr_m1\x7cs2_vddr_m1\x7cs3_vddr_m1\x7cs4_vddr_m1\x7cvddr__t16
-+ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr 171.221393986
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr__t16
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr 114.752640208
 * device instance g_vddr_m1_mnt_g_s1_vddr_m1_s2_vddr_m1_s3_vddr_m1_s4_vddr_m1_vddr_t17 r0 *1 0,0 
 Rg_vddr_m1_mnt_g_s1_vddr_m1_s2_vddr_m1_s3_vddr_m1_s4_vddr_m1_vddr_t17
-+ g_vddr_m1\x7cmnt_g\x7cs1_vddr_m1\x7cs2_vddr_m1\x7cs3_vddr_m1\x7cs4_vddr_m1\x7cvddr__t17
-+ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr 173.204562023
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr__t17
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr 116.081760144
 * device instance g_vddr_m1_mnt_g_s1_vddr_m1_s2_vddr_m1_s3_vddr_m1_s4_vddr_m1_vddr_t18 r0 *1 0,0 
 Rg_vddr_m1_mnt_g_s1_vddr_m1_s2_vddr_m1_s3_vddr_m1_s4_vddr_m1_vddr_t18
-+ g_vddr_m1\x7cmnt_g\x7cs1_vddr_m1\x7cs2_vddr_m1\x7cs3_vddr_m1\x7cs4_vddr_m1\x7cvddr__t18
-+ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr 91.606260464
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr__t18
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr 61.3945489118
 * device instance g_vddr_m1_mnt_g_s1_vddr_m1_s2_vddr_m1_s3_vddr_m1_s4_vddr_m1_vddr_t19 r0 *1 0,0 
 Rg_vddr_m1_mnt_g_s1_vddr_m1_s2_vddr_m1_s3_vddr_m1_s4_vddr_m1_vddr_t19
-+ g_vddr_m1\x7cmnt_g\x7cs1_vddr_m1\x7cs2_vddr_m1\x7cs3_vddr_m1\x7cs4_vddr_m1\x7cvddr__t19
-+ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr 27.7674148762
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr__t19
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr 18.609731498
 * device instance g_vddr_m1_mnt_g_s1_vddr_m1_s2_vddr_m1_s3_vddr_m1_s4_vddr_m1_vddr_t20 r0 *1 0,0 
 Rg_vddr_m1_mnt_g_s1_vddr_m1_s2_vddr_m1_s3_vddr_m1_s4_vddr_m1_vddr_t20
-+ g_vddr_m1\x7cmnt_g\x7cs1_vddr_m1\x7cs2_vddr_m1\x7cs3_vddr_m1\x7cs4_vddr_m1\x7cvddr__t20
-+ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr 84.4854272854
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr__t20
++ g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr 56.6221639387
 * device instance g_vddr_m1_mnt_g_s1_vddr_m1_s2_vddr_m1_s3_vddr_m1_s4_vddr_m1_vddr r0 *1 0,0 
 Cg_vddr_m1_mnt_g_s1_vddr_m1_s2_vddr_m1_s3_vddr_m1_s4_vddr_m1_vddr
 + g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr vsubs
 + 1.2373945e-14
 * device instance g_vss_m1_mph_g_s1_vss_m1_s2_vss_m1_s3_vss_m1_s4_vss_m1_vss_t0 r0 *1 0,0 
 Rg_vss_m1_mph_g_s1_vss_m1_s2_vss_m1_s3_vss_m1_s4_vss_m1_vss_t0
-+ g_vss_m1\x7cmph_g\x7cs1_vss_m1\x7cs2_vss_m1\x7cs3_vss_m1\x7cs4_vss_m1\x7cvss__t0
-+ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss 176.745666834
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t0
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss 118.945396257
 * device instance g_vss_m1_mph_g_s1_vss_m1_s2_vss_m1_s3_vss_m1_s4_vss_m1_vss_t1 r0 *1 0,0 
 Rg_vss_m1_mph_g_s1_vss_m1_s2_vss_m1_s3_vss_m1_s4_vss_m1_vss_t1
-+ g_vss_m1\x7cmph_g\x7cs1_vss_m1\x7cs2_vss_m1\x7cs3_vss_m1\x7cs4_vss_m1\x7cvss__t1
-+ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss 178.694531876
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t1
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss 120.2569335
 * device instance g_vss_m1_mph_g_s1_vss_m1_s2_vss_m1_s3_vss_m1_s4_vss_m1_vss_t2 r0 *1 0,0 
 Rg_vss_m1_mph_g_s1_vss_m1_s2_vss_m1_s3_vss_m1_s4_vss_m1_vss_t2
-+ g_vss_m1\x7cmph_g\x7cs1_vss_m1\x7cs2_vss_m1\x7cs3_vss_m1\x7cs4_vss_m1\x7cvss__t2
-+ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss 85.3492196334
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t2
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss 57.4378819653
 * device instance g_vss_m1_mph_g_s1_vss_m1_s2_vss_m1_s3_vss_m1_s4_vss_m1_vss_t3 r0 *1 0,0 
 Rg_vss_m1_mph_g_s1_vss_m1_s2_vss_m1_s3_vss_m1_s4_vss_m1_vss_t3
-+ g_vss_m1\x7cmph_g\x7cs1_vss_m1\x7cs2_vss_m1\x7cs3_vss_m1\x7cs4_vss_m1\x7cvss__t3
-+ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss 27.9258940341
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t3
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss 18.7934255544
 * device instance g_vss_m1_mph_g_s1_vss_m1_s2_vss_m1_s3_vss_m1_s4_vss_m1_vss_t4 r0 *1 0,0 
 Rg_vss_m1_mph_g_s1_vss_m1_s2_vss_m1_s3_vss_m1_s4_vss_m1_vss_t4
-+ g_vss_m1\x7cmph_g\x7cs1_vss_m1\x7cs2_vss_m1\x7cs3_vss_m1\x7cs4_vss_m1\x7cvss__t4
-+ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss 91.9797634021
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t4
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss 61.9000714497
 * device instance g_vss_m1_mph_g_s1_vss_m1_s2_vss_m1_s3_vss_m1_s4_vss_m1_vss_t5 r0 *1 0,0 
 Rg_vss_m1_mph_g_s1_vss_m1_s2_vss_m1_s3_vss_m1_s4_vss_m1_vss_t5
-+ g_vss_m1\x7cmph_g\x7cs1_vss_m1\x7cs2_vss_m1\x7cs3_vss_m1\x7cs4_vss_m1\x7cvss__t5
-+ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss 174.142910409
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t5
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss 117.19380653
 * device instance g_vss_m1_mph_g_s1_vss_m1_s2_vss_m1_s3_vss_m1_s4_vss_m1_vss_t6 r0 *1 0,0 
 Rg_vss_m1_mph_g_s1_vss_m1_s2_vss_m1_s3_vss_m1_s4_vss_m1_vss_t6
-+ g_vss_m1\x7cmph_g\x7cs1_vss_m1\x7cs2_vss_m1\x7cs3_vss_m1\x7cs4_vss_m1\x7cvss__t6
-+ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss 172.142523125
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t6
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss 115.847596111
 * device instance g_vss_m1_mph_g_s1_vss_m1_s2_vss_m1_s3_vss_m1_s4_vss_m1_vss_t7 r0 *1 0,0 
 Rg_vss_m1_mph_g_s1_vss_m1_s2_vss_m1_s3_vss_m1_s4_vss_m1_vss_t7
-+ g_vss_m1\x7cmph_g\x7cs1_vss_m1\x7cs2_vss_m1\x7cs3_vss_m1\x7cs4_vss_m1\x7cvss__t7
-+ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss 88.1338294737
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t7
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss 59.3118544751
 * device instance g_vss_m1_mph_g_s1_vss_m1_s2_vss_m1_s3_vss_m1_s4_vss_m1_vss_t8 r0 *1 0,0 
 Rg_vss_m1_mph_g_s1_vss_m1_s2_vss_m1_s3_vss_m1_s4_vss_m1_vss_t8
-+ g_vss_m1\x7cmph_g\x7cs1_vss_m1\x7cs2_vss_m1\x7cs3_vss_m1\x7cs4_vss_m1\x7cvss__t8
-+ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss 9.33544748754
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t8
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss 6.28252177566
 * device instance g_vss_m1_mph_g_s1_vss_m1_s2_vss_m1_s3_vss_m1_s4_vss_m1_vss_t9 r0 *1 0,0 
 Rg_vss_m1_mph_g_s1_vss_m1_s2_vss_m1_s3_vss_m1_s4_vss_m1_vss_t9
-+ g_vss_m1\x7cmph_g\x7cs1_vss_m1\x7cs2_vss_m1\x7cs3_vss_m1\x7cs4_vss_m1\x7cvss__t9
-+ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss 81.1898042504
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t9
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss 54.6386998422
 * device instance g_vss_m1_mph_g_s1_vss_m1_s2_vss_m1_s3_vss_m1_s4_vss_m1_vss_t10 r0 *1 0,0 
 Rg_vss_m1_mph_g_s1_vss_m1_s2_vss_m1_s3_vss_m1_s4_vss_m1_vss_t10
-+ g_vss_m1\x7cmph_g\x7cs1_vss_m1\x7cs2_vss_m1\x7cs3_vss_m1\x7cs4_vss_m1\x7cvss__t10
-+ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss 57.0242314353
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t10
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss 38.3758760585
 * device instance g_vss_m1_mph_g_s1_vss_m1_s2_vss_m1_s3_vss_m1_s4_vss_m1_vss_t11 r0 *1 0,0 
 Rg_vss_m1_mph_g_s1_vss_m1_s2_vss_m1_s3_vss_m1_s4_vss_m1_vss_t11
-+ g_vss_m1\x7cmph_g\x7cs1_vss_m1\x7cs2_vss_m1\x7cs3_vss_m1\x7cs4_vss_m1\x7cvss__t11
-+ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss 29.1687837541
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t11
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss 19.629859131
 * device instance g_vss_m1_mph_g_s1_vss_m1_s2_vss_m1_s3_vss_m1_s4_vss_m1_vss_t12 r0 *1 0,0 
 Rg_vss_m1_mph_g_s1_vss_m1_s2_vss_m1_s3_vss_m1_s4_vss_m1_vss_t12
-+ g_vss_m1\x7cmph_g\x7cs1_vss_m1\x7cs2_vss_m1\x7cs3_vss_m1\x7cs4_vss_m1\x7cvss__t12
-+ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss 112.405195489
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t12
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss 75.6458744265
 * device instance g_vss_m1_mph_g_s1_vss_m1_s2_vss_m1_s3_vss_m1_s4_vss_m1_vss_t13 r0 *1 0,0 
 Rg_vss_m1_mph_g_s1_vss_m1_s2_vss_m1_s3_vss_m1_s4_vss_m1_vss_t13
-+ g_vss_m1\x7cmph_g\x7cs1_vss_m1\x7cs2_vss_m1\x7cs3_vss_m1\x7cs4_vss_m1\x7cvss__t13
-+ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss 196.479243312
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t13
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss 132.225597779
 * device instance g_vss_m1_mph_g_s1_vss_m1_s2_vss_m1_s3_vss_m1_s4_vss_m1_vss_t14 r0 *1 0,0 
 Rg_vss_m1_mph_g_s1_vss_m1_s2_vss_m1_s3_vss_m1_s4_vss_m1_vss_t14
-+ g_vss_m1\x7cmph_g\x7cs1_vss_m1\x7cs2_vss_m1\x7cs3_vss_m1\x7cs4_vss_m1\x7cvss__t14
-+ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss 176.745666834
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t14
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss 118.945396257
 * device instance g_vss_m1_mph_g_s1_vss_m1_s2_vss_m1_s3_vss_m1_s4_vss_m1_vss_t15 r0 *1 0,0 
 Rg_vss_m1_mph_g_s1_vss_m1_s2_vss_m1_s3_vss_m1_s4_vss_m1_vss_t15
-+ g_vss_m1\x7cmph_g\x7cs1_vss_m1\x7cs2_vss_m1\x7cs3_vss_m1\x7cs4_vss_m1\x7cvss__t15
-+ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss 81.1898042504
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t15
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss 54.6386998422
 * device instance g_vss_m1_mph_g_s1_vss_m1_s2_vss_m1_s3_vss_m1_s4_vss_m1_vss_t16 r0 *1 0,0 
 Rg_vss_m1_mph_g_s1_vss_m1_s2_vss_m1_s3_vss_m1_s4_vss_m1_vss_t16
-+ g_vss_m1\x7cmph_g\x7cs1_vss_m1\x7cs2_vss_m1\x7cs3_vss_m1\x7cs4_vss_m1\x7cvss__t16
-+ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss 9.33544748754
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t16
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss 6.28252177566
 * device instance g_vss_m1_mph_g_s1_vss_m1_s2_vss_m1_s3_vss_m1_s4_vss_m1_vss_t17 r0 *1 0,0 
 Rg_vss_m1_mph_g_s1_vss_m1_s2_vss_m1_s3_vss_m1_s4_vss_m1_vss_t17
-+ g_vss_m1\x7cmph_g\x7cs1_vss_m1\x7cs2_vss_m1\x7cs3_vss_m1\x7cs4_vss_m1\x7cvss__t17
-+ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss 88.1338294737
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t17
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss 59.3118544751
 * device instance g_vss_m1_mph_g_s1_vss_m1_s2_vss_m1_s3_vss_m1_s4_vss_m1_vss_t18 r0 *1 0,0 
 Rg_vss_m1_mph_g_s1_vss_m1_s2_vss_m1_s3_vss_m1_s4_vss_m1_vss_t18
-+ g_vss_m1\x7cmph_g\x7cs1_vss_m1\x7cs2_vss_m1\x7cs3_vss_m1\x7cs4_vss_m1\x7cvss__t18
-+ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss 172.142523125
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t18
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss 115.847596111
 * device instance g_vss_m1_mph_g_s1_vss_m1_s2_vss_m1_s3_vss_m1_s4_vss_m1_vss_t19 r0 *1 0,0 
 Rg_vss_m1_mph_g_s1_vss_m1_s2_vss_m1_s3_vss_m1_s4_vss_m1_vss_t19
-+ g_vss_m1\x7cmph_g\x7cs1_vss_m1\x7cs2_vss_m1\x7cs3_vss_m1\x7cs4_vss_m1\x7cvss__t19
-+ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss 152.415855107
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t19
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss 102.572043808
 * device instance g_vss_m1_mph_g_s1_vss_m1_s2_vss_m1_s3_vss_m1_s4_vss_m1_vss_t20 r0 *1 0,0 
 Rg_vss_m1_mph_g_s1_vss_m1_s2_vss_m1_s3_vss_m1_s4_vss_m1_vss_t20
-+ g_vss_m1\x7cmph_g\x7cs1_vss_m1\x7cs2_vss_m1\x7cs3_vss_m1\x7cs4_vss_m1\x7cvss__t20
-+ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss 145.525329205
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss__t20
++ g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss 97.9348928759
 * device instance g_vss_m1_mph_g_s1_vss_m1_s2_vss_m1_s3_vss_m1_s4_vss_m1_vss r0 *1 0,0 
 Cg_vss_m1_mph_g_s1_vss_m1_s2_vss_m1_s3_vss_m1_s4_vss_m1_vss
 + g_vss_m1|mph_g|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|vss vsubs 1.1764024e-14
 * device instance mpa_py_mpb_py_mph_py_py_t0 r0 *1 0,0 
-Rmpa_py_mpb_py_mph_py_py_t0 mpa_py\x7cmpb_py\x7cmph_py\x7cpy__t0
-+ mpa_py|mpb_py|mph_py|py 70.5682
+Rmpa_py_mpb_py_mph_py_py_t0 mpa_py|mpb_py|mph_py|py__t0 mpa_py|mpb_py|mph_py|py
++ 34.25785
 * device instance mpa_py_mpb_py_mph_py_py_t1 r0 *1 0,0 
-Rmpa_py_mpb_py_mph_py_py_t1 mpa_py\x7cmpb_py\x7cmph_py\x7cpy__t1
-+ mpa_py|mpb_py|mph_py|py 10.9870418149
+Rmpa_py_mpb_py_mph_py_py_t1 mpa_py|mpb_py|mph_py|py__t1 mpa_py|mpb_py|mph_py|py
++ 5.3337399911
 * device instance mpa_py_mpb_py_mph_py_py_t2 r0 *1 0,0 
-Rmpa_py_mpb_py_mph_py_py_t2 mpa_py\x7cmpb_py\x7cmph_py\x7cpy__t2
-+ mpa_py|mpb_py|mph_py|py 59.5811581851
+Rmpa_py_mpb_py_mph_py_py_t2 mpa_py|mpb_py|mph_py|py__t2 mpa_py|mpb_py|mph_py|py
++ 28.9241100089
 * device instance mpa_py_mpb_py_mph_py_py r0 *1 0,0 
 Cmpa_py_mpb_py_mph_py_py mpa_py|mpb_py|mph_py|py vsubs 7.9788e-16
 * device instance ny_t0 r0 *1 0,0 

@@ -1,21 +1,47 @@
 # layout/pex
 
-> **Superseded by the issue #181 regeneration (2026-10-07). This library
-> describes the pre-regeneration geometry.** Every cell it was extracted
-> from was regenerated on klayout-tools `0.6.0+g5edb557f91d0` (the
-> cut-size/grid fix: sky130-fixed 0.17 um `licon1`/`mcon` and 0.15 um `via`
-> cuts, `licon1` centres on the 0.005 um grid, all other layers
-> unchanged; see `layout/README.md`, "Regeneration on the cut-size/grid fix
-> (issue #181)"). The library, raw output and reports here were **not**
-> re-extracted. They still cite the old source GDS hashes below, and every
-> number in this README describes that old geometry, not the committed
-> streams. Running `pex-netlist.py --check` against the regenerated GDS now
-> reports drift (61 differing fields for `pex.json`, 17 for `pex-sampler.json`). The drift mixes the cut changes with a newer
-> klt PEX envelope, so it is expected and is not a regression of this
-> library. The `sim/` records that `.include` this library
-> (`sim/post-layout-ro-ring5/` (12 records), `sim/post-layout-sampler-dff/` (8 records), and `sim/post-layout-parasitic-impact/`, derived from the former) remain valid measurements **of the pre-#181 geometry
-> only**. They are preserved unchanged (append-only). A re-extraction plus
-> any fresh post-layout campaign goes in new records under #184.
+> **Re-extracted for issue #184 (2026-10-07) on the issue #181 geometry.**
+> `pex.json` (ring leaf cells) and `pex-sampler.json` (sampler leaf cells) are both regenerated on the klt build pinned in `layout/pdk.json`
+> (`0.6.0+g5edb557f91d0`, KLayout 0.30.12, open_pdks `c6d73a35f524...`; a throwaway
+> venv, not the host `klt`) and `python3 layout/bin/pex-netlist.py <descriptor> --check`
+> passes against the committed post-#181 GDS. Provenance in `reports/*.json` now cites the
+> post-#181 GDS hashes in the table below (old hash -> new hash).
+>
+> **What changed, and what did not.** Device count, net count, R/C element counts, total
+> ground C and total coupling C are **bit-identical** old vs new for every report. Only total
+> series R changed. Controlled comparison (`old` = committed pre-#181 output, klt build per the hash table below;
+> `geometry control` = the **pinned** klt re-run on the **pre-#181 GDS**
+> from commit `3588d77^`; `new` = pinned klt on the post-#181 GDS):
+> **geometry contribution = geometry-control minus new = 0.0000 ohm in every report** (the sorted
+> multiset of R/C/device-card values in each library is also identical between those two; only
+> auto-numbered internal node names and report hashes differ), and the **entire** R delta
+> (old to geometry-control) is the **extractor/deck version**. The reverse control (historical
+> extractor on the new GDS) was not run: the old build is not reproducible here and is not
+> needed, since the geometry-control already isolates the extractor on fixed geometry. The old
+> and new tool runs also differ in the curated sky130 deck content hash, so "extractor version"
+> means extractor plus deck together; those two are unseparated.
+>
+> The leaf-cell composition (`ro_ring5_pex.spice`) is NOT re-measured: `sim/post-layout-ro-ring5/`, `sim/post-layout-parasitic-impact/` and `sim/post-layout-sampler-dff/` are **kept as pre-#181 results**. Total series R fell 11-25 % per cell (extractor effect), C is bit-identical. The only bounding evidence is the assembled-ring re-measurement in `sim/post-layout-ro-ring5-assembled-181/` (ring-level period/swing/current moved <= 0.36 % with a 25 % series-R drop), which is a different library and is NOT a re-measurement of these decks.
+>
+> Consumers: `sim/post-layout-ro-ring5/` (12 records), `sim/post-layout-parasitic-impact/` (derived), `sim/post-layout-sampler-dff/` (8 records). The remainder of this README (body text and figures) was written against the
+> pre-#181 output and is kept as history; the table below supersedes any R figure quoted later in it.
+>
+> | Report | devices / nets | elements | R old (ohm) | R geometry-control | R new | C total (fF, old = new) | Cc total (fF, old = new) |
+> |---|---|---|---|---|---|---|---|
+> | `ro_buf_pex` | 2 / 4 | 8 R / 4 C / 0 Cc | 1261.24 | 1122.57 | 1122.57 | 2.4937 | 0.0000 |
+> | `ro_nand2_pex_wstv0p42` | 6 / 8 | 24 R / 8 C / 1 Cc | 2020.96 | 1545.18 | 1545.18 | 6.2514 | 0.0160 |
+> | `ro_nand2_pex_wstv0p44` | 6 / 8 | 24 R / 8 C / 1 Cc | 2022.91 | 1547.36 | 1547.36 | 6.2575 | 0.0160 |
+> | `ro_nand2_pex_wstv0p46` | 6 / 8 | 24 R / 8 C / 1 Cc | 2024.88 | 1549.56 | 1549.56 | 6.2635 | 0.0160 |
+> | `ro_nand2_pex_wstv0p48` | 6 / 8 | 24 R / 8 C / 1 Cc | 2026.86 | 1551.76 | 1551.76 | 6.2696 | 0.0160 |
+> | `ro_stage_pex_wstv0p42` | 4 / 6 | 16 R / 6 C / 1 Cc | 1712.59 | 1517.80 | 1517.80 | 4.7199 | 0.0031 |
+> | `ro_stage_pex_wstv0p44` | 4 / 6 | 16 R / 6 C / 1 Cc | 1714.31 | 1519.54 | 1519.54 | 4.7258 | 0.0033 |
+> | `ro_stage_pex_wstv0p46` | 4 / 6 | 16 R / 6 C / 1 Cc | 1716.06 | 1521.31 | 1521.31 | 4.7318 | 0.0034 |
+> | `ro_stage_pex_wstv0p48` | 4 / 6 | 16 R / 6 C / 1 Cc | 1717.84 | 1523.09 | 1523.09 | 4.7378 | 0.0036 |
+> | `sampler_inv_pex` | 2 / 4 | 8 R / 4 C / 0 Cc | 1261.24 | 1122.57 | 1122.57 | 2.4937 | 0.0000 |
+> | `sampler_nand2_pex` | 4 / 6 | 16 R / 6 C / 1 Cc | 1599.23 | 1198.02 | 1198.02 | 4.1288 | 0.0160 |
+> | `sampler_tg_pex` | 2 / 6 | 8 R / 6 C / 0 Cc | 1262.17 | 1262.17 | 1262.17 | 2.7292 | 0.0000 |
+>
+> Source GDS hashes (pre-#181 -> post-#181):
 >
 > | Report | Source GDS | Hash this library was extracted from | Committed GDS hash since #181 |
 > |---|---|---|---|

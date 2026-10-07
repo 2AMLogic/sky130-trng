@@ -148,6 +148,7 @@ directly, via the sibling library `layout/pex-ring/ro_ring5_assembled_pex.spice`
 | `post-layout-ro-ring5/` | the five-stage ring's period, swing and supply current with extracted **intra-cell-only** parasitics (ideal inter-gate wires), at all four `wstv` widths, with the pre-layout netlist as a same-deck control — plus the shared-substrate-node coupling bound and its loading control | #22 |
 | `post-layout-parasitic-impact/` | reduction of the above: what the parasitics cost, whether the `wstv` frequency ladder survives them, and how large the inter-ring coupling actually is | #22 |
 | `post-layout-ro-ring5-assembled/` | the same period/swing/supply-current measurement, from extracting each **whole assembled ring's own GDS** directly — real inter-gate wiring included, not just intra-cell parasitics — with the pre-layout netlist as a same-deck control | #22 |
+| `post-layout-ro-ring5-assembled-181/` | issue #184 re-measurement of the row above on the regenerated #181 geometry and re-extracted `layout/pex-ring/` library, run as `klt sim` batch requests, compared per corner with the pre-#181 records | #184 |
 
 See "The post-layout campaign (issue #22)" below for what those decks are,
 why the third leaf-level deck exists, and the one deck defect it caught; see
@@ -479,8 +480,32 @@ corner and seed as the grid:
 > source hashes. These records stay valid for the geometry they cite
 > (each records its `PEX_LIB` sha256). They are **not** measurements of
 > the regenerated streams and must not be quoted as such. They are kept
-> unchanged (append-only). Re-extraction and any fresh campaign go in new
-> records under #184.
+> unchanged (append-only).
+>
+> **Issue #184 disposition (2026-10-07).** The `layout/pex*/` libraries
+> were re-extracted on the pinned klt (`layout/pex*/README.md` has the
+> per-library old/new device counts and R/C totals). Device count, net count
+> and total C are unchanged; total series R fell 11-25 %. A pre-#181-GDS
+> control with the pinned extractor shows the geometry contributed 0.0 ohm, so
+> the whole R change is the extractor/deck version. Per campaign:
+>
+> | Slug | Disposition |
+> |---|---|
+> | `post-layout-ro-ring5-assembled` | **Re-measured** in the new `post-layout-ro-ring5-assembled-181/` (4 records, `klt sim` batch): all PASS, every metric within 0.36 % of the pre-#181 record. Conclusion unchanged. |
+> | `post-layout-ro-ring5`, `post-layout-parasitic-impact` | **Kept as pre-#181 results, not re-measured.** Leaf-cell library, series R down 11-25 % per cell, C identical. The assembled-ring result is supporting context only. |
+> | `post-layout-ro-array-core` | **Kept as pre-#181, not re-measured** (series R -19.5 %, C identical). Decks need porting from `corner-run.py` to `klt sim`. |
+> | `post-layout-sampler-dff` | **Kept as pre-#181, not re-measured** (leaf-cell library). |
+> | `post-layout-sampler-dff-assembled` | **Kept as pre-#181, not re-measured** (series R -22 %). |
+> | `post-layout-sampler-core` | **Kept as pre-#181, not re-measured** (series R -21 %, including the shared-substrate brackets). |
+>
+> "Not re-measured" means the old conclusion is retained for the old library
+> and has no fresh evidence on the new one. It is not a claim that the number
+> is unchanged. The expected direction (less series R, identical C) is toward
+> less delay, but that is not measured outside the assembled ring. The
+> remaining re-runs are blocked only on porting each deck to a `klt sim`
+> request, since hand-launched local grids are not permitted on the dispatch
+> host. Nothing here is a whole-block sign-off (#18) and all of it is
+> simulation-derived and provisional until silicon.
 
 `sim/post-layout-ro-ring5/` is this repo's first campaign driven from a
 *layout*-derived netlist rather than from a schematic export. Its input is

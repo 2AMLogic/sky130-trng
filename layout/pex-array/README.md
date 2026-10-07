@@ -1,23 +1,36 @@
 # layout/pex-array
 
-> **Superseded by the issue #181 regeneration (2026-10-07). This library
-> describes the pre-regeneration geometry.** Every cell it was extracted
-> from was regenerated on klayout-tools `0.6.0+g5edb557f91d0` (the
-> cut-size/grid fix: sky130-fixed 0.17 um `licon1`/`mcon` and 0.15 um `via`
-> cuts, `licon1` centres on the 0.005 um grid, all other layers
-> unchanged; see `layout/README.md`, "Regeneration on the cut-size/grid fix
-> (issue #181)"). The library, raw output and reports here were **not**
-> re-extracted. They still cite the old source GDS hashes below, and every
-> number in this README describes that old geometry, not the committed
-> streams. Running `pex-netlist.py --check` against the regenerated GDS now
-> reports drift (42 differing fields). This `--check` was already
-> expected to exit 1 before #181; see "The array evidence is not
-> reproducible" below. The drift mixes the cut changes with a newer
-> klt PEX envelope, so it is expected and is not a regression of this
-> library. The `sim/` records that `.include` this library
-> (`sim/post-layout-ro-array-core/`, 25 records) remain valid measurements **of the pre-#181 geometry
-> only**. They are preserved unchanged (append-only). A re-extraction plus
-> any fresh post-layout campaign goes in new records under #184.
+> **Re-extracted for issue #184 (2026-10-07) on the issue #181 geometry.**
+> `pex.json` is regenerated on the klt build pinned in `layout/pdk.json`
+> (`0.6.0+g5edb557f91d0`, KLayout 0.30.12, open_pdks `c6d73a35f524...`; a throwaway
+> venv, not the host `klt`) and `python3 layout/bin/pex-netlist.py <descriptor> --check`
+> passes against the committed post-#181 GDS. Provenance in `reports/*.json` now cites the
+> post-#181 GDS hashes in the table below (old hash -> new hash).
+>
+> **What changed, and what did not.** Device count, net count, R/C element counts, total
+> ground C and total coupling C are **bit-identical** old vs new for every report. Only total
+> series R changed. Controlled comparison (`old` = committed pre-#181 output, klt build per the hash table below;
+> `geometry control` = the **pinned** klt re-run on the **pre-#181 GDS**
+> from commit `3588d77^`; `new` = pinned klt on the post-#181 GDS):
+> **geometry contribution = geometry-control minus new = 0.0000 ohm in every report** (the sorted
+> multiset of R/C/device-card values in each library is also identical between those two; only
+> auto-numbered internal node names and report hashes differ), and the **entire** R delta
+> (old to geometry-control) is the **extractor/deck version**. The reverse control (historical
+> extractor on the new GDS) was not run: the old build is not reproducible here and is not
+> needed, since the geometry-control already isolates the extractor on fixed geometry. The old
+> and new tool runs also differ in the curated sky130 deck content hash, so "extractor version"
+> means extractor plus deck together; those two are unseparated.
+>
+> NOT re-measured: `sim/post-layout-ro-array-core/` is **kept as a pre-#181 result**. Its deck set (primary, substrate-float, substrate-float-solo) is driven by the repo's local `sim/bin/corner-run.py`, which host policy forbids re-launching as a hand-run grid, and it has not been ported to `klt sim`. Total series R fell 19.5 %, C and coupling are bit-identical.
+>
+> Consumers: `sim/post-layout-ro-array-core/` (25 records). The remainder of this README (body text and figures) was written against the
+> pre-#181 output and is kept as history; the table below supersedes any R figure quoted later in it.
+>
+> | Report | devices / nets | elements | R old (ohm) | R geometry-control | R new | C total (fF, old = new) | Cc total (fF, old = new) |
+> |---|---|---|---|---|---|---|---|
+> | `ro_array_core_pex` | 132 / 96 | 528 R / 96 C / 47 Cc | 81935.47 | 65932.69 | 65932.69 | 392.4405 | 0.7003 |
+>
+> Source GDS hashes (pre-#181 -> post-#181):
 >
 > | Report | Source GDS | Hash this library was extracted from | Committed GDS hash since #181 |
 > |---|---|---|---|
