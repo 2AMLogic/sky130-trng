@@ -5,7 +5,7 @@
   "top": "ro_buf",
   "dbu_um": 0.001,
   "netlist_path": "raw/ro_buf_pex.pex.spice",
-  "netlist_sha256": "005a0a8a173546db78e5d1d0aa7ae0e218b6d6ee873e0484ff9c2ab5df13ebca",
+  "netlist_sha256": "cd78c6cac963f24b2a71dc728f190245e4fc60841d9f724ce6ef3df0af1b29ae",
   "status": "extracted",
   "device_count": 2,
   "net_count": 4,
@@ -42,7 +42,17 @@
         "ad_um2": 0.1974,
         "ps_um": 1.78,
         "pd_um": 1.78
-      }
+      },
+      "instance_path": [
+        {
+          "cell": "mn__nfet_w0p42_l0p15",
+          "array_index": null
+        },
+        {
+          "cell": "mos_array",
+          "array_index": null
+        }
+      ]
     },
     {
       "name": "$2",
@@ -60,29 +70,85 @@
         "ad_um2": 0.3948,
         "ps_um": 2.62,
         "pd_um": 2.62
-      }
+      },
+      "instance_path": [
+        {
+          "cell": "mp__pfet_w0p84_l0p15",
+          "array_index": null
+        },
+        {
+          "cell": "mos_array$1",
+          "array_index": null
+        }
+      ]
     }
   ],
   "nets": [
     {
       "name": "a",
       "pin": true,
-      "device_count": 2
+      "device_count": 2,
+      "net_id": 2,
+      "pin_index": 0,
+      "label_positions_um": [
+        {
+          "text": "a",
+          "x_um": 0.545,
+          "y_um": 1.765
+        }
+      ]
     },
     {
       "name": "vdd",
       "pin": true,
-      "device_count": 2
+      "device_count": 2,
+      "net_id": 4,
+      "pin_index": 1,
+      "label_positions_um": [
+        {
+          "text": "vdd",
+          "x_um": -1.12,
+          "y_um": 4.24
+        },
+        {
+          "text": "vdd",
+          "x_um": -0.1,
+          "y_um": 3.53
+        }
+      ]
     },
     {
       "name": "vss",
       "pin": true,
-      "device_count": 2
+      "device_count": 2,
+      "net_id": 5,
+      "pin_index": 2,
+      "label_positions_um": [
+        {
+          "text": "vss",
+          "x_um": -1.22,
+          "y_um": 0.92
+        },
+        {
+          "text": "vss",
+          "x_um": -0.15,
+          "y_um": 0.21
+        }
+      ]
     },
     {
       "name": "y",
       "pin": true,
-      "device_count": 2
+      "device_count": 2,
+      "net_id": 1,
+      "pin_index": 3,
+      "label_positions_um": [
+        {
+          "text": "y",
+          "x_um": 1.9,
+          "y_um": 1.87
+        }
+      ]
     }
   ],
   "warnings": [],
@@ -95,6 +161,8 @@
   "single_terminal_nets": [],
   "dead_metal": [],
   "matched_device_groups": [],
+  "def_pin_promotion": null,
+  "label_layers": null,
   "pdk": {
     "variant": "sky130A",
     "root": {
@@ -104,7 +172,7 @@
     "version": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b"
   },
   "provenance": {
-    "klt_version": "0.4.0",
+    "klt_version": "0.6.0+g5edb557f91d0",
     "klayout_version": "0.30.12",
     "pdk": {
       "name": "sky130A",
@@ -113,11 +181,12 @@
     },
     "deck": {
       "name": "sky130",
-      "content_hash": "sha256:5afac7ab8561545859f5e2e74f4621c6ffc052756dc8fe344ea263398e96b240",
-      "released": true
+      "content_hash": "sha256:2bcbd625a0e36a4d1f9893b3c5d9b94963179c962b10ba01ffc4f378938c8197",
+      "released": false
     },
     "input": {
-      "content_hash": "sha256:3df80e13d497a7e227e1964404b667adcd7223e47b53f774a63d1d72217f9877"
+      "content_hash": "sha256:f058d84d15d307fb7bab4bc1a4680b0ff013e85e5962bcb228af3067889b99a3",
+      "role": "layout"
     }
   },
   "parasitics": {
@@ -125,7 +194,7 @@
     "c_count": 4,
     "cc_count": 0,
     "l_count": 0,
-    "total_resistance_ohm": 1261.2402,
+    "total_resistance_ohm": 1122.5719,
     "total_capacitance_ff": 2.493682,
     "total_coupling_capacitance_ff": 0.0,
     "total_inductance_nh": 0.0,
@@ -133,8 +202,22 @@
       {
         "net": "a",
         "net_id": 2,
-        "resistance_ohm": 457.9158,
+        "resistance_ohm": 319.2475,
         "capacitance_ff": 0.575883,
+        "by_layer": [
+          {
+            "layer": "poly",
+            "resistance_ohm": 188.2095,
+            "capacitance_ff": 0.347841
+          },
+          {
+            "layer": "metal0",
+            "resistance_ohm": 131.038,
+            "capacitance_ff": 0.228042
+          }
+        ],
+        "resistance_ohm_top_cell": null,
+        "capacitance_ff_top_cell": null,
         "inductance_nh": 0.0,
         "hub_net": "a",
         "rc_model": "lumped",
@@ -143,13 +226,13 @@
             "device": "$1",
             "terminal": "G",
             "leg_net": "a__t0",
-            "resistance_ohm": 228.9579
+            "resistance_ohm": 159.6238
           },
           {
             "device": "$2",
             "terminal": "G",
             "leg_net": "a__t1",
-            "resistance_ohm": 228.9579
+            "resistance_ohm": 159.6238
           }
         ],
         "segments": [],
@@ -160,6 +243,15 @@
         "net_id": 4,
         "resistance_ohm": 197.867,
         "capacitance_ff": 0.669937,
+        "by_layer": [
+          {
+            "layer": "metal0",
+            "resistance_ohm": 197.867,
+            "capacitance_ff": 0.669937
+          }
+        ],
+        "resistance_ohm_top_cell": null,
+        "capacitance_ff_top_cell": null,
         "inductance_nh": 0.0,
         "hub_net": "vdd",
         "rc_model": "lumped",
@@ -185,6 +277,15 @@
         "net_id": 5,
         "resistance_ohm": 190.1661,
         "capacitance_ff": 0.637991,
+        "by_layer": [
+          {
+            "layer": "metal0",
+            "resistance_ohm": 190.1661,
+            "capacitance_ff": 0.637991
+          }
+        ],
+        "resistance_ohm_top_cell": null,
+        "capacitance_ff_top_cell": null,
         "inductance_nh": 0.0,
         "hub_net": "vss",
         "rc_model": "lumped",
@@ -210,6 +311,15 @@
         "net_id": 1,
         "resistance_ohm": 415.2913,
         "capacitance_ff": 0.609871,
+        "by_layer": [
+          {
+            "layer": "metal0",
+            "resistance_ohm": 415.2913,
+            "capacitance_ff": 0.609871
+          }
+        ],
+        "resistance_ohm_top_cell": null,
+        "capacitance_ff_top_cell": null,
         "inductance_nh": 0.0,
         "hub_net": "y",
         "rc_model": "lumped",
@@ -244,7 +354,9 @@
     "metals_without_coefficient": [],
     "overlap_pairs_without_coefficient": [],
     "critical_nets": [],
+    "parasitics_nets": [],
     "distributed_rc": false,
+    "top_cell_only": false,
     "model": {
       "capacitance": "net-to-ground for every net's own (non-coupled) area/perimeter, plus net-to-net for the vertical-overlap coupling `coupling` describes below -- a coupled net pair gets a direct capacitor between their two hub nodes, not just capacitors to the deck's ground/substrate net",
       "coupling": "vertical overlap (crossover) unconditionally -- where one net's conductor on an adjacent metal level sits directly over another *distinct* net's conductor, that overlap area is charged between the two nets instead of to ground (issue #760) -- plus lateral (same-layer, sidewall) coupling, but only for a net pair naming one of the caller's declared `--critical-net` nets (issue #976): facing-edge length within that layer's own minimum-spacing lookback is charged between the two nets, *additively* (not deducted from either net's substrate fringe term, unlike the vertical case -- a known simplification). Any same-layer pair with neither side named `--critical-net`, and fringe shielding in general, are still not modelled",
@@ -252,7 +364,22 @@
       "frequency": "quasi-static -- one frequency-independent R and C per net; no skin effect, no distributed transmission-line behavior"
     },
     "mom_crosscheck": null,
+    "substrate_spreading": null,
     "mom_rlc_override": null
   },
-  "spef_path": null
+  "spef_path": null,
+  "subcircuit": null,
+  "metrics": {
+    "extract__device__count": 2,
+    "extract__net__count": 4,
+    "extract__pin__count": 4,
+    "extract__resistor__count": 8,
+    "extract__capacitor__count": 4,
+    "extract__coupling__capacitor__count": 0,
+    "extract__inductor__count": 0,
+    "extract__resistance__ohm": 1122.5719,
+    "extract__capacitance__ff": 2.493682,
+    "extract__coupling__capacitance__ff": 0.0,
+    "extract__inductance__nh": 0.0
+  }
 }
