@@ -1416,6 +1416,16 @@ Bumping this pin requires re-running every committed cell's `--check`
 against 0.6.0 and recording the result first; until then the two pins
 are intentionally not identical.
 
+**Superseded by issue #181 (2026-10-07).** The nightly now installs
+klayout-tools source commit `5edb557f91d0` from git, the same build that
+regenerated all nineteen cells. See "Regeneration on the cut-size/grid fix
+(issue #181)" at the end of this file. All nineteen cells were `--check`ed
+against it, and none drifted. The 0.5.0 pin could not stay: `--check` diffs
+verdict fields only, and on 2026-10-07 0.5.0 rebuilt the old off-grid,
+0.22 um-cut geometry and graded it clean on its own older deck. That would
+have been a silent pass, not drift. The grader pin is unchanged
+(`klayout-tools==0.6.0`), and the two pins still differ on purpose.
+
 The three constraints that decide a cell's floorplan, all learned building
 `ro_buf` (see [`layout/ro_buf/README.md`](ro_buf/README.md) for each one's
 evidence):
@@ -2276,10 +2286,10 @@ results are **not** a block result and must not be cited as one.
 | Whole-block check | Status | Evidence / tracker |
 |---|---|---|
 | Composition: 18/18 nets, 22/22 legs routed, `unrouted_nets: []`, 18 distinct extracted clusters, `vddr1`-`vddr4` distinct | done (composition only) | `trng_whole/report.json`, `trng_whole/README.md` |
-| `compose-whole.py --check` isolated rebuild | matches committed evidence (re-run 2026-10-07, host klt `0.6.0+g1eb3e4bfd0f5`) | `trng_whole/` |
+| `compose-whole.py --check` isolated rebuild | matches committed evidence (re-run 2026-10-07 after the #181 regeneration, klt `0.6.0+g5edb557f91d0`) | `trng_whole/` |
 | `layout/test_compose_whole.py` | PASS (re-run 2026-10-07) | `layout/test_compose_whole.py` |
-| Block DRC | **not signed off.** The informational run gives 5664 `licon1.ongrid.1`, all inside `sampler_core` and 0 from the composition | `trng_whole/drc-informational.json`; #173, #181 |
-| `sampler_core` macro DRC on the current deck | **regressed.** The committed `sampler_core/drc.json` is clean on klt 0.4.0, but a 2026-10-07 re-run on klt `0.6.0+g1eb3e4bfd0f5` gives 5664 `licon1.ongrid.1` (`guard_ring` cells, klayout-tools#2648, fixed upstream after this GDS was generated). Confirmatory, not committed | #181 |
+| Block DRC | **not signed off.** The informational run on the recomposed stream (issue #181, klt `0.6.0+g5edb557f91d0`, deck `sha256:2bcbd625…`) is clean, 0 violations. Before #181 it gave 5664 `licon1.ongrid.1`, all inside `sampler_core`. Informational only: #173 owns the sign-off verdict and its deck choice | `trng_whole/drc-informational.json`; #173 |
+| `sampler_core` macro DRC on the current deck | **clean, 0 violations (regenerated, issue #181).** All nineteen `layout/*/cell.json` cells were rebuilt on klt `0.6.0+g5edb557f91d0` (klayout-tools#2778, the #2648 fix). On the same build and deck, the pre-#181 GDS (`sha256:a00f6550…`) gives 5664 `licon1.ongrid.1` + 198 `via.width.1`; the regenerated GDS (`sha256:e3ff54a9…`) gives 0. LVS is still 264/264 devices, 152/152 nets. See "Regeneration on the cut-size/grid fix (issue #181)" below | `sampler_core/drc.json`, `sampler_core/lvs.json` |
 | `trng_digital` macro DRC on the current deck | clean, 0 violations (re-run 2026-10-07, host klt `0.6.0+g1eb3e4bfd0f5`, confirmatory, not committed) | `trng_digital/drc.json` |
 | Block LVS (mixed transistor/cell-level) | **not run**; comparison boundary undefined | #173 |
 | Block post-layout PVT, dynamic power, IR, `vddr` coupling | **not run** | #174 (`sim/README.md`, "Whole-block post-layout verification") |
@@ -2292,7 +2302,115 @@ python3 layout/test_compose_whole.py                                          # 
 python3 layout/bin/compose-whole.py layout/trng_whole/floorplan.json --check  # isolated rebuild + diff
 python3 layout/bin/compose-whole.py layout/trng_whole/floorplan.json --informational-drc
 klt drc layout/trng_digital/trng_digital.gds --deck sky130 --format json      # digital macro re-check
-klt drc layout/sampler_core/sampler_core.gds --deck sky130 --format json      # shows the #181 regression
+klt drc layout/sampler_core/sampler_core.gds --deck sky130 --format json      # clean since #181
 ```
 
 Graded in `docs/chipalooza/challenge-4-proposal.md` ("Sign-off scorecard").
+
+## Regeneration on the cut-size/grid fix (issue #181)
+
+**What was wrong.** On the current curated `sky130` deck, the committed
+`sampler_core.gds` gave 5664 `licon1.ongrid.1` findings. The committed
+`drc.json` still read clean only because it was graded on klt 0.4.0's
+older deck. Older `klt gen`/`gen-compose` builds drew every contact and
+via cut at a PDK-generic 0.22 um square: 2180 `licon1`, 717 `mcon` and
+253 `via` cuts in `sampler_core`. 1416 of the `licon1` cuts (all in
+`guard_ring` tap cells) were centred 2 nm off the 0.005 um grid, which
+gives 4 off-grid edges each: 1416 × 4 = 5664. The current deck also
+enforces `via.width.1`'s maximum half (via1 is a fixed 0.15 um square). It
+reports the 0.22 um via cuts as a second finding (198 on `sampler_core`).
+The issue text did not mention that one because it was not in the deck
+build the reporter used.
+
+**Tool.** All of the following come from klayout-tools source commit
+`5edb557f91d0116368c386617802ec727b4bdc90`. That is klayout-tools#2778
+(the #2648 fix), installed into a private venv:
+
+- version `0.6.0+g5edb557f91d0`, `is_release: false`
+- KLayout 0.30.12
+- open_pdks `c6d73a35f524070e85faff4a6a9eef49553ebc2b`
+- curated `sky130` deck `content_hash sha256:2bcbd625a0e36a4d1f9893b3c5d9b94963179c962b10ba01ffc4f378938c8197`
+  (`licon1.ongrid.1` and `via.width.1` are both in `rules_checked`)
+
+No tagged release contains the fix: `v0.6.0` is 490 commits behind it.
+`layout/pdk.json`'s `klt_version_pin`/`ci_klt_install` and
+`.github/workflows/pdk-nightly.yml` now all name this commit.
+
+```bash
+python3 -m venv .klt-venv
+.klt-venv/bin/pip install \
+  "klayout-tools @ git+https://github.com/2AMLogic/klayout-tools@5edb557f91d0116368c386617802ec727b4bdc90"
+.klt-venv/bin/klt version --format json      # git_commit 5edb557f91d0...
+```
+
+**Before/after, same build and deck.** The "before" column is the untouched
+pre-#181 GDS from git. The "after" column is the committed regenerated GDS.
+The LVS column is the regenerated cell's `lvs.json`. Every count equals its
+pre-#181 value.
+
+| Cell | Before (pre-#181 GDS) | After | LVS (unchanged) |
+|---|---|---|---|
+| `ro_buf` | 64 `licon1.ongrid.1` | 0 | 2/2 devices, 4/4 nets |
+| `ro_stage` | 64 `licon1.ongrid.1` | 0 | 4/4 devices, 6/6 nets |
+| `ro_stage_wstv0p44` | 64 `licon1.ongrid.1` | 0 | 4/4 devices, 6/6 nets |
+| `ro_stage_wstv0p46` | 64 `licon1.ongrid.1` | 0 | 4/4 devices, 6/6 nets |
+| `ro_stage_wstv0p48` | 64 `licon1.ongrid.1` | 0 | 4/4 devices, 6/6 nets |
+| `ro_nand2` | 64 `licon1.ongrid.1` | 0 | 6/6 devices, 8/8 nets |
+| `ro_nand2_wstv0p44` | 64 `licon1.ongrid.1` | 0 | 6/6 devices, 8/8 nets |
+| `ro_nand2_wstv0p46` | 64 `licon1.ongrid.1` | 0 | 6/6 devices, 8/8 nets |
+| `ro_nand2_wstv0p48` | 64 `licon1.ongrid.1` | 0 | 6/6 devices, 8/8 nets |
+| `sampler_nand2` | 64 `licon1.ongrid.1` | 0 | 4/4 devices, 6/6 nets |
+| `sampler_tg` | 64 `licon1.ongrid.1` | 0 | 2/2 devices, 6/6 nets |
+| `ro_ring5` | 320 `licon1.ongrid.1`, 10 `via.width.1` | 0 | 22/22 devices, 19/19 nets |
+| `ro_ring5_wstv0p44` | 320 `licon1.ongrid.1`, 10 `via.width.1` | 0 | 22/22 devices, 19/19 nets |
+| `ro_ring5_wstv0p46` | 320 `licon1.ongrid.1`, 10 `via.width.1` | 0 | 22/22 devices, 19/19 nets |
+| `ro_ring5_wstv0p48` | 320 `licon1.ongrid.1`, 10 `via.width.1` | 0 | 22/22 devices, 19/19 nets |
+| `xor2` | 224 `licon1.ongrid.1` | 0 | 12/12 devices, 10/10 nets |
+| `ro_array_core` | 2208 `licon1.ongrid.1`, 53 `via.width.1` | 0 | 132/132 devices, 96/96 nets |
+| `sampler_dff` | 576 `licon1.ongrid.1`, 21 `via.width.1` | 0 | 22/22 devices, 14/14 nets |
+| `sampler_core` | 5664 `licon1.ongrid.1`, 198 `via.width.1` | 0 | 264/264 devices, 152/152 nets |
+
+No rule was waived, downgraded or deck-pinned around to reach these results.
+
+**What changed in the geometry: only the cuts.** A per-layer XOR of the
+old and new `sampler_core.gds` finds differences on `licon1` (66/44),
+`mcon` (67/44) and `via` (68/44) only. Every other drawn layer is
+identical. Cut counts are unchanged (2180/717/253). Cut sizes are now
+sky130's fixed values: 0.17 um `licon1`/`mcon`, 0.15 um `via`. All
+`mcon`/`via` centres are unchanged. The 1416 off-grid `licon1` centres
+moved by at most 2 nm onto the grid. None of the 19 recipes'
+`compose.response.json` stages changed `bbox_um`, and no recipe,
+schematic, device parameter or routing was edited. The extracted
+`*.spice` diffs are only anonymous internal net-number reordering. The
+sampler_core and ro_array_core measurement scripts reproduce their
+committed outputs byte for byte against the regenerated streams:
+`vdd-strap-scan.py`, `vss-strap-scan.py`, `data-path-scan.py`,
+`vss-tap-scan.py` and `lvs-negative-controls.py`.
+
+**Order.** The cells were regenerated bottom-up, with each parent built
+only after its `blocks[].cell.gds_path` children were rebuilt:
+
+1. `ro_buf`, the four `ro_stage*`, the four `ro_nand2*`, `sampler_nand2`
+   and `sampler_tg`
+2. the four `ro_ring5*` and `xor2`
+3. `ro_array_core` and `sampler_dff`
+4. `sampler_core`
+
+Each was then `--check`ed. The rebuild is deterministic: a second
+`sampler_core` build reproduces `sha256:e3ff54a9…` byte for byte.
+
+**Downstream evidence:**
+
+- `sampler_core/erc.json`: re-run (not just re-pinned) on the tagged
+  `klayout-tools==0.6.0` the README's recipe names. The result is still
+  `clean` with 0 findings and the same 73 gates. Only the gate list order
+  and the input hash differ.
+- `trng_whole/`: recomposed and `--check`ed. Routing, area, canonical
+  counts and connectivity audit are unchanged. Its informational DRC is
+  now 0 violations.
+- `signoff/`: block-manifest pins moved to the new hashes and the report
+  was re-rendered on the 0.6.0 grader. Every row verdict is unchanged
+  (2/22 met).
+- `layout/pex*/` and `sim/post-layout-*`: **not refreshed**. Each pex
+  README's "Superseded by the issue #181 regeneration" note lists exactly
+  what they cite. Re-extraction is tracked in #184.

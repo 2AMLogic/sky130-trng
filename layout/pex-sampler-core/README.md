@@ -1,5 +1,26 @@
 # layout/pex-sampler-core
 
+> **Superseded by the issue #181 regeneration (2026-10-07). This library
+> describes the pre-regeneration geometry.** Every cell it was extracted
+> from was regenerated on klayout-tools `0.6.0+g5edb557f91d0` (the
+> cut-size/grid fix: sky130-fixed 0.17 um `licon1`/`mcon` and 0.15 um `via`
+> cuts, `licon1` centres on the 0.005 um grid, all other layers
+> unchanged; see `layout/README.md`, "Regeneration on the cut-size/grid fix
+> (issue #181)"). The library, raw output and reports here were **not**
+> re-extracted. They still cite the old source GDS hashes below, and every
+> number in this README describes that old geometry, not the committed
+> streams. Running `pex-netlist.py --check` against the regenerated GDS now
+> reports drift (15 nets' parasitics differ). The drift mixes the cut changes with a newer
+> klt PEX envelope, so it is expected and is not a regression of this
+> library. The `sim/` records that `.include` this library
+> (`sim/post-layout-sampler-core/`, 13 records) remain valid measurements **of the pre-#181 geometry
+> only**. They are preserved unchanged (append-only). A re-extraction plus
+> any fresh post-layout campaign goes in new records under #184.
+>
+> | Report | Source GDS | Hash this library was extracted from | Committed GDS hash since #181 |
+> |---|---|---|---|
+> | `reports/sampler_core_pex.extract.json` | `layout/sampler_core/sampler_core.gds` | `sha256:a00f655067731fc4…` (klt 0.3.0) | `sha256:e3ff54a9bb151222…` |
+
 The post-layout (parasitic-annotated) netlist library for the **whole
 composed `sampler_core` cell** -- one hierarchy level up from
 `layout/pex-array/` (the entropy source alone) and

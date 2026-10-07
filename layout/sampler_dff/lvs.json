@@ -12,9 +12,41 @@
     "flatten_layout": false,
     "flatten_reference": false,
     "netgen_setup": null,
-    "parameter_tolerance": null
+    "parameter_tolerance": null,
+    "compare_parameters": null,
+    "power_connectivity": null,
+    "anchor_top_level_pins": null,
+    "supply_nets": [
+      "GND",
+      "VCC",
+      "VDD",
+      "VGND",
+      "VPWR",
+      "VSS"
+    ]
   },
+  "hints_applied": null,
   "status": "match",
+  "power_connectivity": {
+    "status": "unchecked",
+    "reason": "reference.form is 'subckt-call', whose reference netlist carries its own power/ground pins and nets -- they take part in the ordinary compare, so this check (which exists to cover the signal-only 'gate-level-verilog' form) does not apply",
+    "power_pins": [],
+    "power_pins_derivation": null,
+    "instance_count": 0,
+    "expected_nets": null,
+    "unchecked_expected_pins": [],
+    "findings": [],
+    "finding_count": 0
+  },
+  "body_verification": {
+    "status": "unchecked",
+    "reason": "no request.layout.deck was given (the pre-extracted request.layout.netlist form), so nothing establishes this layout's substrate/well-tap convention and no synthesized body net can be told apart from a real one -- this run verified nothing about the device bodies either way",
+    "device_classes": [],
+    "device_count": 0,
+    "findings": [],
+    "finding_count": 0
+  },
+  "device_parameter_coverage": [],
   "mismatch_count": 0,
   "error_count": 0,
   "category_counts": {},
@@ -40,16 +72,21 @@
   "environment": {
     "engine": "klayout",
     "engine_version": "0.30.12",
-    "layout_sha256": "8edea38d1fc2c99cf4e98b9003c86692ac7255168219ca718251a51a99c03de8",
+    "netgen_binary": null,
+    "layout_sha256": "85709d8b81166720cbfafd9632e1fe10fdc8518c81c631d99f5a4a552b124f5e",
     "reference_sha256": "66009a496f55fac466075bbac7c9a2216dfc2e18e1eb02eda823233534918e2c",
     "extracted_netlist": null
   },
   "provenance": {
-    "klt_version": "0.4.0",
+    "klt_version": "0.6.0+g5edb557f91d0",
     "klayout_version": "0.30.12",
     "pdk": null,
     "deck": null,
-    "input": null
+    "input": {
+      "content_hash": "sha256:85709d8b81166720cbfafd9632e1fe10fdc8518c81c631d99f5a4a552b124f5e",
+      "role": "netlist"
+    },
+    "klayout_version_mismatch": false
   },
   "mismatches": [],
   "net_correspondence": [
@@ -84,7 +121,7 @@
       "pin": true
     },
     {
-      "layout": "\\$6",
+      "layout": "\\$7",
       "reference": "MMID",
       "pin": false
     },
@@ -109,7 +146,7 @@
       "pin": true
     },
     {
-      "layout": "\\$7",
+      "layout": "\\$11",
       "reference": "S2MID",
       "pin": false
     },

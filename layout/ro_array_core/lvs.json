@@ -8,12 +8,45 @@
   "parameter_tolerance": null,
   "options": {
     "combine_devices": false,
+    "combine_devices_per_circuit": null,
     "flatten_layout": true,
     "flatten_reference": true,
     "netgen_setup": null,
-    "parameter_tolerance": null
+    "parameter_tolerance": null,
+    "compare_parameters": null,
+    "power_connectivity": null,
+    "anchor_top_level_pins": null,
+    "supply_nets": [
+      "GND",
+      "VCC",
+      "VDD",
+      "VGND",
+      "VPWR",
+      "VSS"
+    ]
   },
+  "hints_applied": null,
   "status": "match",
+  "power_connectivity": {
+    "status": "unchecked",
+    "reason": "reference.form is 'subckt-call', whose reference netlist carries its own power/ground pins and nets -- they take part in the ordinary compare, so this check (which exists to cover the signal-only 'gate-level-verilog' form) does not apply",
+    "power_pins": [],
+    "power_pins_derivation": null,
+    "instance_count": 0,
+    "expected_nets": null,
+    "unchecked_expected_pins": [],
+    "findings": [],
+    "finding_count": 0
+  },
+  "body_verification": {
+    "status": "unchecked",
+    "reason": "no request.layout.deck was given (the pre-extracted request.layout.netlist form), so nothing establishes this layout's substrate/well-tap convention and no synthesized body net can be told apart from a real one -- this run verified nothing about the device bodies either way",
+    "device_classes": [],
+    "device_count": 0,
+    "findings": [],
+    "finding_count": 0
+  },
+  "device_parameter_coverage": [],
   "mismatch_count": 1,
   "error_count": 0,
   "category_counts": {
@@ -41,16 +74,21 @@
   "environment": {
     "engine": "klayout",
     "engine_version": "0.30.12",
-    "layout_sha256": "e079e618305798aee63ec81c9414fe68219071c2318cd785021c5417c7e8bf5f",
+    "netgen_binary": null,
+    "layout_sha256": "f9468404812ed7b32958d78798614526aa2cfe6333e4b199385011cd534137a1",
     "reference_sha256": "11e1ad4b1f801e605a966c9c8e8be0c6124c1e77fbe725af2a33f312b043c9b0",
     "extracted_netlist": null
   },
   "provenance": {
-    "klt_version": "0.3.0",
+    "klt_version": "0.6.0+g5edb557f91d0",
     "klayout_version": "0.30.12",
     "pdk": null,
     "deck": null,
-    "input": null
+    "input": {
+      "content_hash": "sha256:f9468404812ed7b32958d78798614526aa2cfe6333e4b199385011cd534137a1",
+      "role": "netlist"
+    },
+    "klayout_version_mismatch": false
   },
   "mismatches": [
     {
@@ -70,77 +108,77 @@
   "net_correspondence": [
     {
       "layout": "AN|INVA_Y|MN34_G0|MP13_G1|Y",
-      "reference": "A1.AN",
+      "reference": "A1_AN",
       "pin": true
     },
     {
       "layout": "BN|INVB_Y|MN34_G1|MP24_G1|Y",
-      "reference": "A1.BN",
+      "reference": "A1_BN",
       "pin": true
     },
     {
       "layout": "MID",
-      "reference": "A1.MID",
+      "reference": "A1_MID",
       "pin": true
     },
     {
       "layout": "\\$81",
-      "reference": "A1.S1",
+      "reference": "A1_S1",
       "pin": false
     },
     {
       "layout": "\\$79",
-      "reference": "A1.S2",
-      "pin": false
-    },
-    {
-      "layout": "AN|INVA_Y|MN34_G0|MP13_G1|Y$1",
-      "reference": "A2.AN",
-      "pin": true
-    },
-    {
-      "layout": "BN|INVB_Y|MN34_G1|MP24_G1|Y$1",
-      "reference": "A2.BN",
-      "pin": true
-    },
-    {
-      "layout": "MID$1",
-      "reference": "A2.MID",
-      "pin": true
-    },
-    {
-      "layout": "\\$84",
-      "reference": "A2.S1",
-      "pin": false
-    },
-    {
-      "layout": "\\$82",
-      "reference": "A2.S2",
+      "reference": "A1_S2",
       "pin": false
     },
     {
       "layout": "AN|INVA_Y|MN34_G0|MP13_G1|Y$2",
-      "reference": "A3.AN",
+      "reference": "A2_AN",
+      "pin": true
+    },
+    {
+      "layout": "BN|INVB_Y|MN34_G1|MP24_G1|Y$1",
+      "reference": "A2_BN",
+      "pin": true
+    },
+    {
+      "layout": "MID$1",
+      "reference": "A2_MID",
+      "pin": true
+    },
+    {
+      "layout": "\\$84",
+      "reference": "A2_S1",
+      "pin": false
+    },
+    {
+      "layout": "\\$82",
+      "reference": "A2_S2",
+      "pin": false
+    },
+    {
+      "layout": "AN|INVA_Y|MN34_G0|MP13_G1|Y$1",
+      "reference": "A3_AN",
       "pin": true
     },
     {
       "layout": "BN|INVB_Y|MN34_G1|MP24_G1|Y$2",
-      "reference": "A3.BN",
+      "reference": "A3_BN",
       "pin": true
     },
     {
       "layout": "MID$2",
-      "reference": "A3.MID",
+      "reference": "A3_MID",
       "pin": true
     },
     {
       "layout": "\\$89",
-      "reference": "A3.S1",
+      "reference": "A3_S1",
       "pin": false
     },
     {
-      "layout": "\\$87",
-      "reference": "A3.S2",
+      "layout": "\\$86",
+      "reference": "A3_S2",
       "pin": false
     },
     {
@@ -165,302 +203,302 @@
     },
     {
       "layout": "NY$1",
-      "reference": "R1.1.NY",
+      "reference": "R1_1_NY",
       "pin": true
     },
     {
       "layout": "PY",
-      "reference": "R1.1.PY",
+      "reference": "R1_1_PY",
       "pin": true
     },
     {
       "layout": "NY$2",
-      "reference": "R1.2.NY",
+      "reference": "R1_2_NY",
       "pin": true
     },
     {
       "layout": "PY$1",
-      "reference": "R1.2.PY",
+      "reference": "R1_2_PY",
       "pin": true
     },
     {
       "layout": "NY$3",
-      "reference": "R1.3.NY",
+      "reference": "R1_3_NY",
       "pin": true
     },
     {
       "layout": "PY$2",
-      "reference": "R1.3.PY",
+      "reference": "R1_3_PY",
       "pin": true
     },
     {
       "layout": "NY$4",
-      "reference": "R1.4.NY",
+      "reference": "R1_4_NY",
       "pin": true
     },
     {
       "layout": "PY$3",
-      "reference": "R1.4.PY",
+      "reference": "R1_4_PY",
       "pin": true
     },
     {
-      "layout": "\\$12",
-      "reference": "R1.G.NM",
+      "layout": "\\$5",
+      "reference": "R1_G_NM",
       "pin": false
     },
     {
       "layout": "NY",
-      "reference": "R1.G.NY",
+      "reference": "R1_G_NY",
       "pin": true
     },
     {
       "layout": "MPA_PY|MPB_PY|MPH_PY|PY",
-      "reference": "R1.G.PY",
+      "reference": "R1_G_PY",
       "pin": true
     },
     {
       "layout": "A|G_Y|MNAB_Y|MPA_Y|MPB_Y|N1|S1_A|Y",
-      "reference": "R1.N1",
+      "reference": "R1_N1",
       "pin": true
     },
     {
       "layout": "A|N2|S1_Y|S2_A|Y",
-      "reference": "R1.N2",
-      "pin": true
-    },
-    {
-      "layout": "A|N3|S2_Y|S3_A|Y$1",
-      "reference": "R1.N3",
-      "pin": true
-    },
-    {
-      "layout": "A|N4|S3_Y|S4_A|Y$2",
-      "reference": "R1.N4",
-      "pin": true
-    },
-    {
-      "layout": "NY$6",
-      "reference": "R2.1.NY",
-      "pin": true
-    },
-    {
-      "layout": "PY$4",
-      "reference": "R2.1.PY",
-      "pin": true
-    },
-    {
-      "layout": "NY$7",
-      "reference": "R2.2.NY",
-      "pin": true
-    },
-    {
-      "layout": "PY$5",
-      "reference": "R2.2.PY",
-      "pin": true
-    },
-    {
-      "layout": "NY$8",
-      "reference": "R2.3.NY",
-      "pin": true
-    },
-    {
-      "layout": "PY$6",
-      "reference": "R2.3.PY",
-      "pin": true
-    },
-    {
-      "layout": "NY$9",
-      "reference": "R2.4.NY",
-      "pin": true
-    },
-    {
-      "layout": "PY$7",
-      "reference": "R2.4.PY",
-      "pin": true
-    },
-    {
-      "layout": "\\$22",
-      "reference": "R2.G.NM",
-      "pin": false
-    },
-    {
-      "layout": "NY$5",
-      "reference": "R2.G.NY",
-      "pin": true
-    },
-    {
-      "layout": "MPA_PY|MPB_PY|MPH_PY|PY$1",
-      "reference": "R2.G.PY",
-      "pin": true
-    },
-    {
-      "layout": "A|G_Y|MNAB_Y|MPA_Y|MPB_Y|N1|S1_A|Y$1",
-      "reference": "R2.N1",
-      "pin": true
-    },
-    {
-      "layout": "A|N2|S1_Y|S2_A|Y$1",
-      "reference": "R2.N2",
+      "reference": "R1_N2",
       "pin": true
     },
     {
       "layout": "A|N3|S2_Y|S3_A|Y",
-      "reference": "R2.N3",
+      "reference": "R1_N3",
       "pin": true
     },
     {
       "layout": "A|N4|S3_Y|S4_A|Y",
-      "reference": "R2.N4",
+      "reference": "R1_N4",
       "pin": true
     },
     {
-      "layout": "NY$11",
-      "reference": "R3.1.NY",
+      "layout": "NY$6",
+      "reference": "R2_1_NY",
       "pin": true
     },
     {
-      "layout": "PY$8",
-      "reference": "R3.1.PY",
+      "layout": "PY$4",
+      "reference": "R2_1_PY",
       "pin": true
     },
     {
-      "layout": "NY$12",
-      "reference": "R3.2.NY",
+      "layout": "NY$7",
+      "reference": "R2_2_NY",
       "pin": true
     },
     {
-      "layout": "PY$9",
-      "reference": "R3.2.PY",
+      "layout": "PY$5",
+      "reference": "R2_2_PY",
       "pin": true
     },
     {
-      "layout": "NY$13",
-      "reference": "R3.3.NY",
+      "layout": "NY$8",
+      "reference": "R2_3_NY",
       "pin": true
     },
     {
-      "layout": "PY$10",
-      "reference": "R3.3.PY",
+      "layout": "PY$6",
+      "reference": "R2_3_PY",
       "pin": true
     },
     {
-      "layout": "NY$14",
-      "reference": "R3.4.NY",
+      "layout": "NY$9",
+      "reference": "R2_4_NY",
       "pin": true
     },
     {
-      "layout": "PY$11",
-      "reference": "R3.4.PY",
+      "layout": "PY$7",
+      "reference": "R2_4_PY",
       "pin": true
     },
     {
-      "layout": "\\$30",
-      "reference": "R3.G.NM",
+      "layout": "\\$12",
+      "reference": "R2_G_NM",
       "pin": false
     },
     {
-      "layout": "NY$10",
-      "reference": "R3.G.NY",
+      "layout": "NY$5",
+      "reference": "R2_G_NY",
       "pin": true
     },
     {
-      "layout": "MPA_PY|MPB_PY|MPH_PY|PY$2",
-      "reference": "R3.G.PY",
+      "layout": "MPA_PY|MPB_PY|MPH_PY|PY$1",
+      "reference": "R2_G_PY",
       "pin": true
     },
     {
-      "layout": "A|G_Y|MNAB_Y|MPA_Y|MPB_Y|N1|S1_A|Y$2",
-      "reference": "R3.N1",
+      "layout": "A|G_Y|MNAB_Y|MPA_Y|MPB_Y|N1|S1_A|Y$1",
+      "reference": "R2_N1",
       "pin": true
     },
     {
-      "layout": "A|N2|S1_Y|S2_A|Y$2",
-      "reference": "R3.N2",
+      "layout": "A|N2|S1_Y|S2_A|Y$1",
+      "reference": "R2_N2",
       "pin": true
     },
     {
-      "layout": "A|N3|S2_Y|S3_A|Y$2",
-      "reference": "R3.N3",
+      "layout": "A|N3|S2_Y|S3_A|Y$1",
+      "reference": "R2_N3",
       "pin": true
     },
     {
       "layout": "A|N4|S3_Y|S4_A|Y$1",
-      "reference": "R3.N4",
+      "reference": "R2_N4",
+      "pin": true
+    },
+    {
+      "layout": "NY$11",
+      "reference": "R3_1_NY",
+      "pin": true
+    },
+    {
+      "layout": "PY$8",
+      "reference": "R3_1_PY",
+      "pin": true
+    },
+    {
+      "layout": "NY$12",
+      "reference": "R3_2_NY",
+      "pin": true
+    },
+    {
+      "layout": "PY$9",
+      "reference": "R3_2_PY",
+      "pin": true
+    },
+    {
+      "layout": "NY$13",
+      "reference": "R3_3_NY",
+      "pin": true
+    },
+    {
+      "layout": "PY$10",
+      "reference": "R3_3_PY",
+      "pin": true
+    },
+    {
+      "layout": "NY$14",
+      "reference": "R3_4_NY",
+      "pin": true
+    },
+    {
+      "layout": "PY$11",
+      "reference": "R3_4_PY",
+      "pin": true
+    },
+    {
+      "layout": "\\$19",
+      "reference": "R3_G_NM",
+      "pin": false
+    },
+    {
+      "layout": "NY$10",
+      "reference": "R3_G_NY",
+      "pin": true
+    },
+    {
+      "layout": "MPA_PY|MPB_PY|MPH_PY|PY$2",
+      "reference": "R3_G_PY",
+      "pin": true
+    },
+    {
+      "layout": "A|G_Y|MNAB_Y|MPA_Y|MPB_Y|N1|S1_A|Y$2",
+      "reference": "R3_N1",
+      "pin": true
+    },
+    {
+      "layout": "A|N2|S1_Y|S2_A|Y$2",
+      "reference": "R3_N2",
+      "pin": true
+    },
+    {
+      "layout": "A|N3|S2_Y|S3_A|Y$2",
+      "reference": "R3_N3",
+      "pin": true
+    },
+    {
+      "layout": "A|N4|S3_Y|S4_A|Y$2",
+      "reference": "R3_N4",
       "pin": true
     },
     {
       "layout": "NY$16",
-      "reference": "R4.1.NY",
+      "reference": "R4_1_NY",
       "pin": true
     },
     {
       "layout": "PY$12",
-      "reference": "R4.1.PY",
+      "reference": "R4_1_PY",
       "pin": true
     },
     {
       "layout": "NY$17",
-      "reference": "R4.2.NY",
+      "reference": "R4_2_NY",
       "pin": true
     },
     {
       "layout": "PY$13",
-      "reference": "R4.2.PY",
+      "reference": "R4_2_PY",
       "pin": true
     },
     {
       "layout": "NY$18",
-      "reference": "R4.3.NY",
+      "reference": "R4_3_NY",
       "pin": true
     },
     {
       "layout": "PY$14",
-      "reference": "R4.3.PY",
+      "reference": "R4_3_PY",
       "pin": true
     },
     {
       "layout": "NY$19",
-      "reference": "R4.4.NY",
+      "reference": "R4_4_NY",
       "pin": true
     },
     {
       "layout": "PY$15",
-      "reference": "R4.4.PY",
+      "reference": "R4_4_PY",
       "pin": true
     },
     {
-      "layout": "\\$39",
-      "reference": "R4.G.NM",
+      "layout": "\\$27",
+      "reference": "R4_G_NM",
       "pin": false
     },
     {
       "layout": "NY$15",
-      "reference": "R4.G.NY",
+      "reference": "R4_G_NY",
       "pin": true
     },
     {
       "layout": "MPA_PY|MPB_PY|MPH_PY|PY$3",
-      "reference": "R4.G.PY",
+      "reference": "R4_G_PY",
       "pin": true
     },
     {
       "layout": "A|G_Y|MNAB_Y|MPA_Y|MPB_Y|N1|S1_A|Y$3",
-      "reference": "R4.N1",
+      "reference": "R4_N1",
       "pin": true
     },
     {
       "layout": "A|N2|S1_Y|S2_A|Y$3",
-      "reference": "R4.N2",
+      "reference": "R4_N2",
       "pin": true
     },
     {
       "layout": "A|N3|S2_Y|S3_A|Y$3",
-      "reference": "R4.N3",
+      "reference": "R4_N3",
       "pin": true
     },
     {
       "layout": "A|N4|S3_Y|S4_A|Y$3",
-      "reference": "R4.N4",
+      "reference": "R4_N4",
       "pin": true
     },
     {

@@ -1,5 +1,27 @@
 # layout/pex-sampler-dff-assembled
 
+> **Superseded by the issue #181 regeneration (2026-10-07). This library
+> describes the pre-regeneration geometry.** Every cell it was extracted
+> from was regenerated on klayout-tools `0.6.0+g5edb557f91d0` (the
+> cut-size/grid fix: sky130-fixed 0.17 um `licon1`/`mcon` and 0.15 um `via`
+> cuts, `licon1` centres on the 0.005 um grid, all other layers
+> unchanged; see `layout/README.md`, "Regeneration on the cut-size/grid fix
+> (issue #181)"). The library, raw output and reports here were **not**
+> re-extracted. They still cite the old source GDS hashes below, and every
+> number in this README describes that old geometry, not the committed
+> streams. Running `pex-netlist.py --check` against the regenerated GDS now
+> reports drift (19 differing fields). The drift mixes the cut changes with a newer
+> klt PEX envelope, so it is expected and is not a regression of this
+> library. The `sim/` records that `.include` this library
+> (`sim/post-layout-sampler-dff-assembled/`, 4 records) remain valid measurements **of the pre-#181 geometry
+> only**. They are preserved unchanged (append-only). A re-extraction plus
+> any fresh post-layout campaign goes in new records under #184.
+>
+> | Report | Source GDS | Hash this library was extracted from | Committed GDS hash since #181 |
+> |---|---|---|---|
+> | `reports/ro_buf_pex.extract.json` | `layout/ro_buf/ro_buf.gds` | `sha256:3df80e13d497a7e2…` (klt 0.4.0) | `sha256:f058d84d15d307fb…` |
+> | `reports/sampler_dff_assembled_pex.extract.json` | `layout/sampler_dff/sampler_dff.gds` | `sha256:e83941ef03d667c7…` (klt 0.4.0) | `sha256:f118bbcb5209385c…` |
+
 The post-layout (parasitic-annotated) netlist library for the **assembled**
 `sampler_dff` cell -- the sampler-side sibling of `layout/pex-ring/` (which
 extracts the *assembled* `ro_ring5` cells, real inter-gate metal routing

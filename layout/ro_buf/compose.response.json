@@ -8,6 +8,7 @@
     "variant": "sky130A",
     "version": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b"
   },
+  "dbu_um": 0.001,
   "bbox_um": {
     "x0": -2.19,
     "y0": -0.71,
@@ -52,6 +53,8 @@
       "source": "generator_report",
       "generator": "guard_ring",
       "cell_name": "psub_tap",
+      "source_path": "gen/psub_tap.gds",
+      "source_digest": "sha256:8d690ae9ef0edc8789c498803a1f81fc529b589db89bd3cf8c3fd909369fe6fd",
       "offset_um": {
         "x": -2.14,
         "y": -0.71
@@ -62,13 +65,16 @@
         "x1": -0.30000000000000004,
         "y1": 1.1300000000000001
       },
-      "orientation": "none"
+      "orientation": "none",
+      "abuts": []
     },
     {
       "id": "mn",
       "source": "generator_report",
       "generator": "mos_array",
       "cell_name": "nfet_w0p42_l0p15",
+      "source_path": "gen/mn.gds",
+      "source_digest": "sha256:1eb6718ecc59546120a5853e4a04ffea95b0b50a23a9a4b8db37891b0c3503ff",
       "offset_um": {
         "x": 0.0,
         "y": 0.0
@@ -79,13 +85,16 @@
         "x1": 1.09,
         "y1": 1.24
       },
-      "orientation": "none"
+      "orientation": "none",
+      "abuts": []
     },
     {
       "id": "nwell_tap",
       "source": "generator_report",
       "generator": "guard_ring",
       "cell_name": "nwell_tap",
+      "source_path": "gen/nwell_tap.gds",
+      "source_digest": "sha256:917b4852d8b992ea5749af4a0121fc3295cec7dc043ccedaf495c8e71ca9bb31",
       "offset_um": {
         "x": -2.04,
         "y": 2.61
@@ -96,13 +105,16 @@
         "x1": -0.050000000000000044,
         "y1": 4.6
       },
-      "orientation": "none"
+      "orientation": "none",
+      "abuts": []
     },
     {
       "id": "mp",
       "source": "generator_report",
       "generator": "mos_array",
       "cell_name": "pfet_w0p84_l0p15",
+      "source_path": "gen/mp.gds",
+      "source_digest": "sha256:1907db22f7788dec9d3e6ea945b6016c0ea19dc80d6dd10a68908204baf933af",
       "offset_um": {
         "x": 0.0,
         "y": 3.95
@@ -113,7 +125,8 @@
         "x1": 1.24,
         "y1": 4.1000000000000005
       },
-      "orientation": "mirror_y"
+      "orientation": "mirror_y",
+      "abuts": []
     }
   ],
   "nets": [
@@ -132,6 +145,7 @@
       "routed": true,
       "route_length_um": 1.47,
       "status": "routed",
+      "landed_on_block": true,
       "legs": [
         {
           "pins": [
@@ -146,7 +160,9 @@
           ],
           "routed": true,
           "route_length_um": 1.47,
-          "reason": null
+          "reason": null,
+          "channel_track": 0,
+          "landed_on_block": true
         }
       ]
     },
@@ -165,6 +181,7 @@
       "routed": true,
       "route_length_um": 5.359999999999999,
       "status": "routed",
+      "landed_on_block": true,
       "legs": [
         {
           "pins": [
@@ -179,7 +196,9 @@
           ],
           "routed": true,
           "route_length_um": 5.359999999999999,
-          "reason": null
+          "reason": null,
+          "channel_track": 0,
+          "landed_on_block": true
         }
       ]
     },
@@ -198,6 +217,7 @@
       "routed": true,
       "route_length_um": 0.6200000000000006,
       "status": "routed",
+      "landed_on_block": true,
       "legs": [
         {
           "pins": [
@@ -212,7 +232,9 @@
           ],
           "routed": true,
           "route_length_um": 0.6200000000000006,
-          "reason": null
+          "reason": null,
+          "channel_track": 0,
+          "landed_on_block": true
         }
       ]
     },
@@ -231,6 +253,7 @@
       "routed": true,
       "route_length_um": 0.7200000000000002,
       "status": "routed",
+      "landed_on_block": true,
       "legs": [
         {
           "pins": [
@@ -245,7 +268,9 @@
           ],
           "routed": true,
           "route_length_um": 0.7200000000000002,
-          "reason": null
+          "reason": null,
+          "channel_track": 0,
+          "landed_on_block": true
         }
       ]
     }
@@ -284,5 +309,16 @@
     "block 'psub_tap' is placed 0.30um from block 'mn' (strategy: explicit), closer than mn's own declared drc_hints.min_spacing_um of 0.40um",
     "block 'mp' is placed 0.00um from block 'nwell_tap' (strategy: explicit), closer than nwell_tap's own declared drc_hints.min_spacing_um of 0.40um",
     "block 'nwell_tap' is placed 0.00um from block 'mp' (strategy: explicit), closer than mp's own declared drc_hints.min_spacing_um of 0.40um"
-  ]
+  ],
+  "provenance": {
+    "klt_version": "0.6.0+g5edb557f91d0",
+    "klayout_version": "0.30.12",
+    "pdk": {
+      "name": "sky130A",
+      "source": "search root: ~/.volare",
+      "version": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b"
+    },
+    "deck": null,
+    "input": null
+  }
 }

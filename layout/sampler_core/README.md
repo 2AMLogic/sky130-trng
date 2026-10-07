@@ -1,5 +1,21 @@
 # layout/sampler_core
 
+> **Regenerated, issue #181 (2026-10-07).** `sampler_core.gds` and every
+> child cell it places were rebuilt bottom-up on klayout-tools
+> `0.6.0+g5edb557f91d0` (klayout-tools#2778, the cut-size/grid fix). The
+> previous GDS `sha256:a00f6550…` was clean only on klt 0.4.0's deck. On
+> the current curated `sky130` deck it gives 5664 `licon1.ongrid.1` +
+> 198 `via.width.1`. The regenerated `sha256:e3ff54a9…` is **clean, 0
+> violations** on that same deck (`drc.json`). `klt lvs` still matches
+> 264/264 devices and 152/152 nets (`lvs.json`). Only `licon1`/`mcon`/`via`
+> cut geometry changed (fixed sky130 sizes, on-grid centres). Every other
+> layer, every stage bbox and every scan in this directory is unchanged.
+> `erc.json` was re-run against the new GDS and is still clean. Details:
+> `layout/README.md`, "Regeneration on the cut-size/grid fix (issue
+> #181)". The PEX library `layout/pex-sampler-core/` still describes the
+> old GDS (#184). The klt versions named in the increment sections below
+> are each section's historical record.
+
 `sampler_core` is `design/sampler_core.spice`'s top-level subckt: one
 `ro_array_core` instance (`xdut`) plus six `sampler_dff` instances (`xsb`,
 `xsv`, `xsr1`-`xsr4`), wired together (`design/README.md`'s own line:
@@ -36,7 +52,7 @@ powers. The two committed artifacts here are:
 | Artifact | What it is |
 | --- | --- |
 | `erc-supply-spec.json` | the spec: stackup/li1/met1/met2 + vias + the block's six declared supplies + the six `ties[]` well/substrate tie declarations (issue #161), every entry justified inline in its `_comment` block (including each `stackup` entry, each `label_layer`, why `active_layer` is set, and how every `well_boxes` coordinate was derived) |
-| `erc.json` | the committed `klt erc --format json` report against `sampler_core.gds`, regenerated on **tagged** klayout-tools 0.6.0 (issue #161): `erc_status: "clean"`, `erc_finding_count: 0`, `provenance.klt_version: "0.6.0"`, input content-hash `sha256:a00f655067731fc4ee189e98b57a0e22f3160752923badc556c9ceff8811396f` matching the committed GDS byte for byte |
+| `erc.json` | the committed `klt erc --format json` report against `sampler_core.gds`, regenerated on **tagged** klayout-tools 0.6.0 (issue #161) and re-run on the same tagged build against the regenerated GDS (issue #181): `erc_status: "clean"`, `erc_finding_count: 0`, `provenance.klt_version: "0.6.0"`, input content-hash `sha256:e3ff54a9bb15122298f0d5df817612ed1caacb3b045533f9ba86d009036c2004` matching the committed GDS byte for byte. The #181 re-run finds the same 73 gates with identical per-gate data; only the gate order and the input hash changed. Note: post-0.6.0 dev builds, including the `0.6.0+g5edb557f91d0` build that regenerated the GDS, reject this spec's `_comment` keys, so this report stays on the tagged build (filed as klayout-tools#2822). Run it with `uvx --isolated --from "klayout-tools==0.6.0"` or a fresh venv. A non-isolated `uvx` can silently reuse an installed `0.6.0+g…` dev build, because that version satisfies `==0.6.0` (klayout-tools#2823) |
 
 **The verdict.** Every supply `design/sampler_core.spice`'s own
 `.subckt sampler_core` declares — `vddr1 vddr2 vddr3 vddr4 vdd vss` —

@@ -1483,6 +1483,27 @@ def klt_version(env: dict[str, str]) -> dict:
     return run_klt(["version"], env=env)
 
 
+#: The analog macro's committed evidence files whose provenance names the klt
+#: build that produced them (compose/DRC/extract/LVS come from one
+#: compose-cell.py run; erc.json is a separate `klt erc` read).
+ANALOG_EVIDENCE = ("compose.response.json", "drc.json", "extract.json", "lvs.json", "erc.json")
+
+
+def analog_macro_klt() -> str:
+    """Per-artifact klt builds recorded in layout/sampler_core/*.json.
+
+    Read from each committed file's own ``provenance.klt_version`` rather
+    than hardcoded, so regenerating the macro (issue #181) can never leave
+    this report describing an older build than the one that produced it.
+    """
+    macro_dir = REPO_ROOT / "layout/sampler_core"
+    parts = []
+    for name in ANALOG_EVIDENCE:
+        provenance = load_json(require_file(macro_dir / name)).get("provenance") or {}
+        parts.append(f"{name} {provenance.get('klt_version', 'unrecorded')}")
+    return "committed layout/sampler_core/* evidence: " + "; ".join(parts)
+
+
 def input_hashes(model: Model) -> dict[str, str]:
     paths = {
         "floorplan": model.spec_dir / "floorplan.json",
@@ -1580,9 +1601,8 @@ def compose_whole(fp: dict, spec_dir: Path, out_dir: Path, *, runner=run_klt) ->
                 "trng_digital": {"klt": digital_pins["klt_version"], "openroad": digital_pins["openroad"],
                                  "klayout": digital_pins["klayout"],
                                  "source": "digital/flow/place-and-route/tool-pins.json"},
-                "sampler_core": {"klt": "committed layout/sampler_core/* evidence: 0.3.0+gc6dbf66c53c6 "
-                                        "(layout/pdk.json klt_version_pin); drc.json 0.4.0; erc.json 0.6.0",
-                                 "source": "layout/pdk.json + layout/sampler_core/*.json provenance"},
+                "sampler_core": {"klt": analog_macro_klt(),
+                                 "source": "layout/sampler_core/*.json provenance.klt_version"},
             },
             "reconciliation": "the two macros were produced by different klt builds; this composition "
                               "only places and wires their committed GDS and re-extracts metal "

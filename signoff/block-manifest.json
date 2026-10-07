@@ -101,19 +101,21 @@
     "Freshness pinning (`content_hash`): pinned wherever the cited",
     "envelope's own shape records one. `layout/sampler_core/drc.json`",
     "records provenance.input.content_hash, so item 3 is pinned to it;",
-    "that value is sha256 of the committed sampler_core.gds (verified",
-    "2026-09-21), so a regenerated DRC against a changed GDS no longer",
-    "matches the pin and renders the item stale -- the manifest rots",
-    "loudly, not silently. `layout/sampler_core/lvs.json` is a klt 0.4.0",
-    "envelope whose provenance carries no input.content_hash (its",
-    "freshness is recorded as environment.layout_sha256/reference_sha256",
-    "inside the envelope instead), and a manifest pin with no envelope",
-    "hash to match renders the citation stale_evidence -- so item 4 is",
-    "file-backed with NO pin, the one citation that cannot be pinned",
-    "today. signoff/README.md states the freshness verification that was",
-    "performed by hand for that row and why it cannot be mechanical yet",
-    "(the upstream fix is klayout-tools#2212, `verify a citation's",
-    "input against the artifact, not just the envelope`).",
+    "that value is sha256 of the committed sampler_core.gds, so a",
+    "regenerated DRC against a changed GDS no longer matches the pin and",
+    "renders the item stale -- the manifest rots loudly, not silently.",
+    "Issue #181 regenerated sampler_core (sky130-fixed cut sizes, licon",
+    "cuts on the 0.005 um grid) and moved the GDS pin from a00f6550... to",
+    "e3ff54a9...; drc.json and erc.json were both re-run against the new",
+    "GDS, not just re-pinned. The same regeneration rewrote",
+    "`layout/sampler_core/lvs.json` on a klt build whose envelope records",
+    "provenance.input.content_hash (the sha256 of the extracted",
+    "sampler_core.spice it compared, role `netlist`), so item 4 and",
+    "item 11's lvs half are now pinned too -- before #181 the 0.4.0",
+    "envelope carried no input hash and item 4 was file-backed with no",
+    "pin. The LVS pin is the netlist's hash, not the GDS's: the GDS ->",
+    "netlist link is extract.json's own provenance.input.content_hash",
+    "(the GDS pin above).",
     "",
     "Regenerate the committed report (signoff/t1-report.json) with the",
     "exact command in signoff/README.md -- the report embeds the",
@@ -127,18 +129,20 @@
   "evidence": {
     "3.analog": {
       "file": "layout/sampler_core/drc.json",
-      "content_hash": "sha256:a00f655067731fc4ee189e98b57a0e22f3160752923badc556c9ceff8811396f"
+      "content_hash": "sha256:e3ff54a9bb15122298f0d5df817612ed1caacb3b045533f9ba86d009036c2004"
     },
     "4.analog": {
-      "file": "layout/sampler_core/lvs.json"
+      "file": "layout/sampler_core/lvs.json",
+      "content_hash": "sha256:bb9c7902922861cf8a246b12a37aef63f6c0ca33ff3cdb063eddac081e57999c"
     },
     "11.analog": [
       {
         "file": "layout/sampler_core/erc.json",
-        "content_hash": "sha256:a00f655067731fc4ee189e98b57a0e22f3160752923badc556c9ceff8811396f"
+        "content_hash": "sha256:e3ff54a9bb15122298f0d5df817612ed1caacb3b045533f9ba86d009036c2004"
       },
       {
-        "file": "layout/sampler_core/lvs.json"
+        "file": "layout/sampler_core/lvs.json",
+        "content_hash": "sha256:bb9c7902922861cf8a246b12a37aef63f6c0ca33ff3cdb063eddac081e57999c"
       }
     ]
   }

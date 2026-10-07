@@ -22,6 +22,8 @@
       "source": "cell",
       "generator": null,
       "cell_name": "clkb_bridge1",
+      "source_path": "/home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-181/layout/sampler_dff/clkb_bridge1.gds",
+      "source_digest": "sha256:eace4526d14511b6dc41da0856a8a330ed98926c45d3677b4206d493bfee8b74",
       "offset_um": {
         "x": 0.0,
         "y": 0.0
@@ -32,7 +34,8 @@
         "x1": 50.47,
         "y1": 7.085
       },
-      "orientation": "none"
+      "orientation": "none",
+      "abuts": []
     }
   ],
   "nets": [
@@ -59,6 +62,7 @@
       "routed": true,
       "route_length_um": 34.38999999999999,
       "status": "routed",
+      "landed_on_block": false,
       "legs": [
         {
           "pins": [
@@ -73,7 +77,9 @@
           ],
           "routed": true,
           "route_length_um": 13.899999999999997,
-          "reason": null
+          "reason": null,
+          "channel_track": 0,
+          "landed_on_block": true
         },
         {
           "pins": [
@@ -88,7 +94,9 @@
           ],
           "routed": true,
           "route_length_um": 5.479999999999997,
-          "reason": null
+          "reason": null,
+          "channel_track": 0,
+          "landed_on_block": true
         },
         {
           "pins": [
@@ -103,7 +111,9 @@
           ],
           "routed": true,
           "route_length_um": 15.01,
-          "reason": null
+          "reason": null,
+          "channel_track": 0,
+          "landed_on_block": false
         }
       ]
     }
@@ -115,5 +125,16 @@
     "matched_groups": [],
     "notes": []
   },
-  "warnings": []
+  "warnings": [],
+  "provenance": {
+    "klt_version": "0.6.0+g5edb557f91d0",
+    "klayout_version": "0.30.12",
+    "pdk": {
+      "name": "sky130A",
+      "source": "search root: ~/.volare",
+      "version": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b"
+    },
+    "deck": null,
+    "input": null
+  }
 }

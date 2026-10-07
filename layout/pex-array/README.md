@@ -1,5 +1,28 @@
 # layout/pex-array
 
+> **Superseded by the issue #181 regeneration (2026-10-07). This library
+> describes the pre-regeneration geometry.** Every cell it was extracted
+> from was regenerated on klayout-tools `0.6.0+g5edb557f91d0` (the
+> cut-size/grid fix: sky130-fixed 0.17 um `licon1`/`mcon` and 0.15 um `via`
+> cuts, `licon1` centres on the 0.005 um grid, all other layers
+> unchanged; see `layout/README.md`, "Regeneration on the cut-size/grid fix
+> (issue #181)"). The library, raw output and reports here were **not**
+> re-extracted. They still cite the old source GDS hashes below, and every
+> number in this README describes that old geometry, not the committed
+> streams. Running `pex-netlist.py --check` against the regenerated GDS now
+> reports drift (42 differing fields). This `--check` was already
+> expected to exit 1 before #181; see "The array evidence is not
+> reproducible" below. The drift mixes the cut changes with a newer
+> klt PEX envelope, so it is expected and is not a regression of this
+> library. The `sim/` records that `.include` this library
+> (`sim/post-layout-ro-array-core/`, 25 records) remain valid measurements **of the pre-#181 geometry
+> only**. They are preserved unchanged (append-only). A re-extraction plus
+> any fresh post-layout campaign goes in new records under #184.
+>
+> | Report | Source GDS | Hash this library was extracted from | Committed GDS hash since #181 |
+> |---|---|---|---|
+> | `reports/ro_array_core_pex.extract.json` | `layout/ro_array_core/ro_array_core.gds` | `sha256:97c472adc85dafa7…` (klt 0.4.0) | `sha256:2426d4add4b725af…` |
+
 The post-layout (parasitic-annotated) netlist library for the **whole
 entropy source** -- `layout/pex/`'s and `layout/pex-ring/`'s sibling one more
 hierarchy level up: four non-identical `ro_ring5` rings, four `ro_buf`

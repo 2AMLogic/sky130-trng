@@ -77,7 +77,8 @@ name: CI
 #     the documented mid-ladder state, not a failure -- so the job treats
 #     0 and 3 as render successes and 1/2 as failures, then byte-compares.
 #     The `klayout-tools==0.6.0` pin deliberately DIVERGES from the PDK
-#     nightly's 0.5.0 install (since 2026-09-23, issue #160): this job is
+#     nightly's install (0.5.0 from 2026-09-23, issue #160; klayout-tools
+#     source commit 5edb557f91d0 since issue #181): this job is
 #     a pure JSON+markdown transform with no PDK, so it follows the
 #     grader release -- 0.6.0 is the first tagged build with `erc`-kind
 #     grading (klayout-tools#2247) -- while the nightly's pin gates the
@@ -180,7 +181,8 @@ jobs:
           python-version: "3.11"
 
       # Deliberately NOT the same pin as the PDK nightly's install step
-      # (0.5.0 there, 0.6.0 here, since 2026-09-23 -- issue #160): the
+      # (0.5.0 there from 2026-09-23 -- issue #160 -- and source commit
+      # 5edb557f91d0 since issue #181; 0.6.0 here): the
       # committed signoff/t1-report.json is byte-compared against this
       # build's output, so a klt release that changes grading or report
       # shape must turn THIS job red until the report is regenerated and

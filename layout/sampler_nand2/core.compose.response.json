@@ -8,6 +8,7 @@
     "variant": "sky130A",
     "version": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b"
   },
+  "dbu_um": 0.001,
   "bbox_um": {
     "x0": 0.85,
     "y0": -0.71,
@@ -112,6 +113,8 @@
       "source": "generator_report",
       "generator": "guard_ring",
       "cell_name": "nwell_tap",
+      "source_path": "gen/nwell_tap.gds",
+      "source_digest": "sha256:917b4852d8b992ea5749af4a0121fc3295cec7dc043ccedaf495c8e71ca9bb31",
       "offset_um": {
         "x": 1.0,
         "y": 2.82
@@ -122,13 +125,16 @@
         "x1": 2.99,
         "y1": 4.81
       },
-      "orientation": "none"
+      "orientation": "none",
+      "abuts": []
     },
     {
       "id": "mpa",
       "source": "generator_report",
       "generator": "mos_array",
       "cell_name": "mpa",
+      "source_path": "gen/mpa.gds",
+      "source_digest": "sha256:b96065d557e49b4416ed0242e1a6da702c8846a1d545d606dff98bf689997ced",
       "offset_um": {
         "x": 3.04,
         "y": 4.16
@@ -139,13 +145,16 @@
         "x1": 4.28,
         "y1": 4.3100000000000005
       },
-      "orientation": "mirror_y"
+      "orientation": "mirror_y",
+      "abuts": []
     },
     {
       "id": "mpb",
       "source": "generator_report",
       "generator": "mos_array",
       "cell_name": "mpb",
+      "source_path": "gen/mpb.gds",
+      "source_digest": "sha256:35757a41919c196e6751182459b175b43caa22fefc263e76e117049062203834",
       "offset_um": {
         "x": 5.42,
         "y": 4.16
@@ -156,13 +165,16 @@
         "x1": 5.57,
         "y1": 4.3100000000000005
       },
-      "orientation": "rotate_180"
+      "orientation": "rotate_180",
+      "abuts": []
     },
     {
       "id": "psub_tap",
       "source": "generator_report",
       "generator": "guard_ring",
       "cell_name": "psub_tap",
+      "source_path": "gen/psub_tap.gds",
+      "source_digest": "sha256:8d690ae9ef0edc8789c498803a1f81fc529b589db89bd3cf8c3fd909369fe6fd",
       "offset_um": {
         "x": 1.02,
         "y": -0.71
@@ -173,13 +185,16 @@
         "x1": 2.8600000000000003,
         "y1": 1.1300000000000001
       },
-      "orientation": "none"
+      "orientation": "none",
+      "abuts": []
     },
     {
       "id": "mnab",
       "source": "generator_report",
       "generator": "mos_array",
       "cell_name": "mnab",
+      "source_path": "gen/mnab.gds",
+      "source_digest": "sha256:fd8a9028b26526359d526a2db48341e052f6c70af9094640d921abeb8e725a23",
       "offset_um": {
         "x": 3.24,
         "y": -0.21
@@ -190,7 +205,8 @@
         "x1": 5.0,
         "y1": 1.4500000000000002
       },
-      "orientation": "none"
+      "orientation": "none",
+      "abuts": []
     }
   ],
   "nets": [
@@ -209,6 +225,7 @@
       "routed": true,
       "route_length_um": 1.6700000000000002,
       "status": "routed",
+      "landed_on_block": true,
       "legs": [
         {
           "pins": [
@@ -223,7 +240,9 @@
           ],
           "routed": true,
           "route_length_um": 1.6700000000000002,
-          "reason": null
+          "reason": null,
+          "channel_track": 0,
+          "landed_on_block": true
         }
       ]
     },
@@ -242,6 +261,7 @@
       "routed": true,
       "route_length_um": 1.89,
       "status": "routed",
+      "landed_on_block": true,
       "legs": [
         {
           "pins": [
@@ -256,7 +276,9 @@
           ],
           "routed": true,
           "route_length_um": 1.89,
-          "reason": null
+          "reason": null,
+          "channel_track": 0,
+          "landed_on_block": true
         }
       ]
     },
@@ -275,6 +297,7 @@
       "routed": true,
       "route_length_um": 0.8000000000000003,
       "status": "routed",
+      "landed_on_block": true,
       "legs": [
         {
           "pins": [
@@ -289,7 +312,9 @@
           ],
           "routed": true,
           "route_length_um": 0.8000000000000003,
-          "reason": null
+          "reason": null,
+          "channel_track": 0,
+          "landed_on_block": true
         }
       ]
     }
@@ -355,5 +380,16 @@
     "block 'mpa' is placed 0.00um from block 'mpb' (strategy: explicit), closer than mpb's own declared drc_hints.min_spacing_um of 0.40um",
     "block 'mnab' is placed 0.38um from block 'psub_tap' (strategy: explicit), closer than psub_tap's own declared drc_hints.min_spacing_um of 0.40um",
     "block 'psub_tap' is placed 0.38um from block 'mnab' (strategy: explicit), closer than mnab's own declared drc_hints.min_spacing_um of 0.40um"
-  ]
+  ],
+  "provenance": {
+    "klt_version": "0.6.0+g5edb557f91d0",
+    "klayout_version": "0.30.12",
+    "pdk": {
+      "name": "sky130A",
+      "source": "search root: ~/.volare",
+      "version": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b"
+    },
+    "deck": null,
+    "input": null
+  }
 }

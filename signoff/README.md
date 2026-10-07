@@ -39,6 +39,16 @@ total in the file). Same manifest + evidence on 0.5.0 produced the same
 22-row/2-met verdict, so nothing regressed in the bump. Read the
 *report*, not this summary — it is the mechanical ground truth.
 
+**Re-rendered after the issue #181 regeneration (2026-10-07)** on the same
+`klayout-tools==0.6.0` grader. The `sampler_core` macro was rebuilt on the
+klayout-tools cut-size/grid fix, and DRC, LVS and ERC were all re-run
+against the new GDS. The manifest pins moved together with that evidence:
+`3.analog` and the ERC half of `11.analog` went from `sha256:a00f6550…` to
+`sha256:e3ff54a9…`. `4.analog` and the LVS half of `11.analog` are newly
+pinned to the extracted netlist `sha256:bb9c7902…`. Every row's verdict is
+unchanged: 2/22 met, and item 11 is still `lvs_supply_unproven`. #164's
+grading decision is untouched.
+
 ## Regenerating the report (CI runs exactly this)
 
 ```bash
@@ -96,12 +106,19 @@ claimant-enforced item rules.
 **Item 3, `met` (analog) — `layout/sampler_core/drc.json`.**
 `klt drc` against `layout/sampler_core/sampler_core.gds`:
 `status: clean`, 0 violations, deck `sky130`
-(deck `content_hash sha256:5afac7ab…`), on klt 0.4.0 / KLayout 0.30.12.
-The manifest pins this citation to `provenance.input.content_hash`
-`sha256:a00f6550…`, which is the sha256 of the committed
-`sampler_core.gds` today, so the row is fresh against current sources —
-and a DRC regenerated against a changed GDS stops matching the pin and
+(deck `content_hash sha256:2bcbd625…`), on klt `0.6.0+g5edb557f91d0` /
+KLayout 0.30.12 (issue #181, which regenerated the macro on the
+klayout-tools cut-size/grid fix). The manifest pins this citation to
+`provenance.input.content_hash` `sha256:e3ff54a9…`, which is the sha256 of
+the committed `sampler_core.gds` today, so the row is fresh against current
+sources. A DRC regenerated against a changed GDS stops matching the pin and
 renders `stale_evidence` instead of quietly passing.
+*History:* before #181 this row cited a klt 0.4.0 run (deck
+`sha256:5afac7ab…`) on GDS `sha256:a00f6550…`. That GDS was clean on the
+0.4.0 deck but gives 5664 `licon1.ongrid.1` + 198 `via.width.1` on the
+current deck. The regenerated GDS is clean on the current deck with no
+rule waived. The row's `met` verdict is the same, but it now holds on the
+current deck rather than only on the pinned old one.
 
 *Coverage, quoted from the envelope's `coverage` block (item 3's
 disclosure is these fields, not prose from memory):*
@@ -110,11 +127,13 @@ disclosure is these fields, not prose from memory):*
   `cap2m, capm, ct, difftap, li, licon, m1, m2, m3, m4, m5, nwell, poly,
   via, via2, via3, via4` only.
 - `layers_in_stream_without_rules` — drawn in this stream with no deck
-  rule for them: `65/44`, `67/5`, `68/5`, `69/5`.
-- `rules_skipped` — 28 rules the deck carries but this run did not
-  evaluate: the `capm.*`/`capm2.*` families, met2–met5
-  `enclosing`/`space`/`width` rules (e.g. `met3.space.1`,
-  `met4.width.1`), and `via2`/`via3`/`via4` `space`/`width`.
+  rule for them: `67/5`, `68/5`, `69/5` (the current deck now has rules
+  for `65/44`, `tap.drawing`).
+- `rules_skipped` — 89 rules the deck carries but this run did not
+  evaluate (47 checked), because their layers are not drawn in this stream.
+  They include the `capm.*`/`capm2.*` families, every met3–met5 rule,
+  `via2`/`via3`/`via4`, and the implant/marker-layer `angle`/`ongrid`
+  rules. The full list is in the envelope's `coverage.rules_skipped`.
 
 A clean verdict inside that scope is exactly what this row claims — no
 more.
@@ -132,7 +151,7 @@ key is `3.analog`, not `3`.
 **Item 4, `met` (analog) — `layout/sampler_core/lvs.json`.**
 `klt lvs` comparing the extracted netlist of that same GDS (`klt
 extract`, 264 devices / 152 nets, `provenance.input.content_hash`
-matching `sha256:a00f6550…`) against the compose-cell.py-generated
+matching `sha256:e3ff54a9…`, the #181-regenerated GDS) against the compose-cell.py-generated
 reference for `.subckt sampler_core`: `status: match` — 264/264 devices,
 152/152 nets — engine `klayout` 0.30.12.
 
@@ -142,29 +161,32 @@ category `topology.flattened` — `options.flatten_reference` collapsed
 comparing (topology verified after hierarchy removal on the reference
 side), `error_count: 0`.
 
-*Power/ground connectivity:* this klt 0.4.0 envelope shape carries **no
-`power_connectivity` block at all** — the pin-to-net question was never
-asked, which item 4's own text reads as "does not apply here", **never as
-"verified"**. Nothing in this row claims power connectivity was checked;
+*Power/ground connectivity:* the regenerated envelope (#181,
+`0.6.0+g5edb557f91d0`) carries a `power_connectivity` block with
+`status: unchecked`. Its reason: the `subckt-call` reference form carries
+its own power/ground pins and nets, which take part in the ordinary compare,
+so the check (built for the signal-only gate-level form) does not apply.
+Item 4's own text reads that as "does not apply here", **never as
+"verified"**. (The pre-#181 klt 0.4.0 envelope carried no
+`power_connectivity` block at all.) Nothing in this row claims power connectivity was checked;
 the structural power question this block still owes is item 11 (see
 #154).
 
-*Freshness, and why this citation is the one without a pin:* klt 0.4.0's
-lvs envelope records no `provenance.input.content_hash` (its provenance
-`input` is `null`; the in-envelope hashes are
-`environment.layout_sha256 6ed6f71b…`, verified equal to the sha256 of
-the committed `layout/sampler_core/sampler_core.spice`, and
-`environment.reference_sha256 18aa2d10…`, verified equal to the committed
-`layout/sampler_core/sampler_core.ref.spice` — both re-verified by hand
-against the committed artifacts when this manifest landed). A manifest
-`content_hash` pin with no envelope hash to match against renders the
-citation `stale_evidence`, so the entry is file-backed with no pin — the
-one citation whose freshness gate cannot be *mechanical* on this envelope
-shape. Regenerating `lvs.json` under a newer `klt` that records
-`provenance.input.content_hash` (or the upstream
-"verify a citation's input against the artifact" grading,
-klayout-tools#2212, landing) closes this gap and should be done together
-with the next layout/evidence regeneration pass, then the pin added here.
+*Freshness (pinned since #181):* the regenerated `lvs.json`
+(`0.6.0+g5edb557f91d0`) records `provenance.input.content_hash`
+`sha256:bb9c7902…`, role `netlist`. That is the sha256 of the committed
+extracted `layout/sampler_core/sampler_core.spice` it compared, and it
+equals the envelope's `environment.layout_sha256`.
+`environment.reference_sha256 18aa2d10…` still equals the committed
+`sampler_core.ref.spice`, which the regeneration left unchanged. The
+manifest now pins `4.analog` (and item 11's LVS half) to that netlist hash,
+and the grader reports `input_verified: true`. The GDS-to-netlist link is
+`extract.json`'s own `provenance.input.content_hash`, which is the GDS pin
+item 3 carries. Before #181 the klt 0.4.0 envelope recorded no input hash,
+so this citation was file-backed with no pin, and its freshness was
+verified by hand (`environment.layout_sha256 6ed6f71b…`). That gap is now
+closed. Mechanical artifact-side verification upstream
+(klayout-tools#2212) would still strengthen it.
 
 **Item 11, `unmet` (analog) — the compound citation
 `[erc.json, lvs.json]` (issue #161).** The ERC half is fully graded and
@@ -177,7 +199,9 @@ wells — and the substrate, in the native-substrate
 `well_layer: null` + `well_boxes` form, to `vss`). All six taps are
 sky130's dedicated `tap.drawing` (65/44) layer, so no tie is degenerate.
 The regenerated `erc.json` (tagged `klt` 0.6.0,
-`provenance.klt_version` reads `0.6.0`, not a `+g…` dev build) records
+`provenance.klt_version` reads `0.6.0`, not a `+g…` dev build; re-run
+against the #181-regenerated GDS, with the same 73 gates and the same
+clean verdict) records
 `erc_status: clean`, zero `erc.missing_tie` / `erc.unconnected_net` /
 `erc.supply_short`, all six ties in `erc_coverage.checked` and in
 `checked_by_well_assertion`, nothing in `skipped`. The erc citation is
