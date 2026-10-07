@@ -64,18 +64,28 @@ directed stimulus program against each mapped netlist via Icarus + the
 | `digital-synthesis/` | cell count, area, Liberty-summed leakage and ABC's pre-layout critical-path estimate for `trng_digital.v` mapped onto `sky130_fd_sc_hd`, unconstrained and at the block's own 50 kHz sample clock; RTL↔gate equivalence; gate-level cosim against the same directed program `digital-rtl-equivalence/` uses | #117 |
 | `digital-pnr/` | placed-and-routed `trng_digital` (sky130_fd_sc_hd, 50 kHz-constrained netlist): klt-deck DRC, cell-level LVS, 16-corner post-route STA on routed DEF + extracted SPEF, routed-netlist functional cosim vs the normative model, negative controls; geometry under `layout/trng_digital/` | #166 |
 
-**Whole-block post-layout verification (issue #18): none recorded yet.**
-The post-layout slugs (`post-layout-*`) cover the analog chain only;
-`digital-pnr/` covers the digital section only (post-route STA, not a
-transient simulation). No record exists for a composed analog+digital block,
-because no composed block layout exists (`layout/README.md`, "Whole-block
-status"). When it does, its record belongs in a new append-only slug and
-must carry the PVT corner grid. Reproduction of what exists today:
+**Whole-block post-layout verification (issue #18): none recorded yet
+(re-checked 2026-10-07).** The post-layout slugs (`post-layout-*`) cover the
+analog chain only. `digital-pnr/` covers the digital section only, and it is
+post-route STA, not a transient simulation. A composed analog+digital layout
+now exists (`layout/trng_whole/`, issue #172), but it has no block-level
+DRC/LVS (#173) and no extracted whole-block netlist, so no whole-block
+post-layout record exists in any slug. Separate analog and digital evidence
+must not be cited as one.
+
+When the whole-block campaign lands (#174, blocked on #173), it belongs in a
+new append-only slug. It must carry the full `tt`/`ss`/`ff` x four-point PVT
+grid (see "PVT grid") and be submitted as a `klt sim` corners request, which
+goes to the batch backend; it is never a hand-launched local ngspice grid.
+Each record must be tied to the `trng_whole.gds` hash and to the extracted
+netlist's hash. Reproduction of what exists today:
 
 ```bash
 python3 sim/tests/test_digital_section.py                       # 31 unit tests
 python3 sim/digital-pnr/harness/pnr-and-verify.py --emit-record # full P&R + verify (pinned tools)
 klt drc layout/trng_digital/trng_digital.gds --deck sky130      # DRC re-check of the committed GDS
+python3 layout/test_compose_whole.py                            # whole-block composition contract (no klt)
+python3 layout/bin/compose-whole.py layout/trng_whole/floorplan.json --check  # isolated rebuild + diff
 ```
 
 ### The `level: gate` convention (issue #117)

@@ -27,13 +27,27 @@ discrepancy is itself a delta worth flagging upstream (in the epic, not in
 this document) before anyone schedules follow-up work against the
 assumption that Challenge #4 opens in November 2026.
 
+**Re-verified 2026-10-07 (issue #18, whole-block reconciliation pass).**
+`rules-4.html` still returns HTTP 404. `challenge-4.html` is unchanged
+(`Last-Modified: 2026-08-23`, "Expected launch: November 9, 2027
+(estimate)"). `chipalooza/index.html` has been re-published
+(`Last-Modified: 2026-09-29`) and its schedule row for Challenge #4 still
+reads `Nov 9, 2026` / `Nov 23, 2026`, "Upcoming". The site is still
+self-inconsistent about the launch year, no rules exist, and AC4 remains
+N/A: there is no slot budget to reconcile against yet.
+
 **Repository:** [`2AMLogic/sky130-trng`](https://github.com/2AMLogic/sky130-trng) —
 public, Apache-2.0.
 
 ## Status of this repository — read this before anything below
 
-**Analog chain and digital section each laid out and verified separately;
-not composed into one block.** The entropy source (an `N = 4`, five-stage,
+**Analog chain and digital section each laid out and verified separately,
+then composed into one routed top-level GDS (`layout/trng_whole/`, issue
+\#172) that has no whole-block DRC sign-off, no whole-block LVS and no
+whole-block post-layout PVT.** The composition is geometry and an
+extraction-based connectivity audit only. Its own verdict is `composed;
+physical sign-off pending (#173 DRC/LVS, #174 characterization)`. The
+entropy source (an `N = 4`, five-stage,
 free-running ring-oscillator array, XOR-combined) and its sampler are drawn
 as SPICE schematics and characterized across PVT at the transistor level
 (`sim/`). Everything downstream of the raw tap — health tests, conditioner,
@@ -44,8 +58,9 @@ plus RTL under `digital/`, per
 That section has since been synthesized (issue #117,
 `sim/digital-synthesis/`) and placed and routed on its own (issue #166, PR
 \#167: `layout/trng_digital/`, `sim/digital-pnr/` — see the scorecard
-below), but **no whole-block GDS exists**: the analog `sampler_core` and the
-digital `trng_digital` are separate, never-composed layouts. The analog side is further along than this paragraph's first revision
+below). Issue #172 (PR #176) then placed both unchanged macros in one top cell
+`trng_whole` and routed all 18 whole-block nets. **That composed GDS has not
+been physically verified** (see the scorecard). The analog side is further along than this paragraph's first revision
 allowed: `layout/` now holds **nineteen composed cells, every one of them
 `klt drc`-clean (0 violations) and `klt lvs`-matching** its own
 `design/*.spice` subckt — the nine leaf gates (`ro_buf`, plus
@@ -72,12 +87,16 @@ DR-0003 §8's `wstv` inter-ring decorrelation gap had been waiting on since
 that record was written — see
 [`spec/decision-records/DR-0009-*.md`](../../spec/decision-records/DR-0009-sampler-core-substrate-bracket-and-wstv-decorrelation.md).
 It narrows §8 rather than closing it, and names the residue precisely:
-shared supply impedance, §8's first-named mechanism, still has no
-`vddr1`-`vddr4` distribution layout to be measured on. What
+shared supply impedance, §8's first-named mechanism, had no
+`vddr1`-`vddr4` distribution layout to be measured on at the time. That
+geometry now exists in `layout/trng_whole/` (four dedicated met5 routes), but
+nobody has measured anything on it yet (#174). What
 the brief's full sign-off bar — post-layout PVT over a DRC/LVS-clean
-**block** GDS — still lacks is the analog/digital top-level composition and
-a whole-block post-layout PVT run over it (see the scorecard below); each
-half now has its own layout and its own post-layout/post-route evidence.
+**block** GDS — still lacks is DRC/LVS sign-off of the composed
+`trng_whole` stream and a whole-block post-layout PVT run over it (see the
+scorecard below). Each half has its own layout and its own
+post-layout/post-route evidence, and the two are now composed, but neither
+half's evidence is a block result.
 Every decision record cited below (DR-0001,
 DR-0002, DR-0003, DR-0004) carries status **Proposed** — drafted, not yet
 accepted by an operator.
@@ -86,7 +105,7 @@ This is still an earlier maturity point than the sibling
 [`gf180-trng`](https://github.com/2AMLogic/gf180-trng) repository's own
 Challenge #3 proposal: the register interface, health tests and conditioner
 now exist here too, but that sibling's were synthesized and power/area-
-characterized, and neither repository has composed a whole-block GDS. **This document is not a submission-ready
+characterized. This repository has since composed a whole-block GDS (`layout/trng_whole/`, issue #172), but that GDS has no block-level DRC/LVS sign-off and no post-layout PVT. **This document is not a submission-ready
 package the way that sibling document was written to be.** It is this
 issue's own deliverable: an honest, `sim/`-cited snapshot of where this
 design stands against the Challenge #4 brief's assumed structure, naming
@@ -123,11 +142,11 @@ distribution was routed and the array reached a full `klt lvs` match
 and `sampler_core` — the array and all six samplers in one cell — now does
 too (264/264, 152/152, 0 errors), and its own assembled post-layout PVT
 campaign has since landed as well (`sim/post-layout-sampler-core/`, twelve
-`PASS` corner-runs). The digital section has since been placed and routed on its own (issue #166, `layout/trng_digital/`, `sim/digital-pnr/`: klt-deck DRC clean, cell-level LVS match, 16-corner post-route STA with extracted SPEF, routed-netlist functional co-sim); what keeps the whole-block bar unmet is now analog/digital top-level composition and whole-block reconciliation on #18, not a missing digital layout.)
+`PASS` corner-runs). The digital section has since been placed and routed on its own (issue #166, `layout/trng_digital/`, `sim/digital-pnr/`: klt-deck DRC clean, cell-level LVS match, 16-corner post-route STA with extracted SPEF, routed-netlist functional co-sim); the two macros have since been composed into one routed top cell (issue #172, `layout/trng_whole/`). What keeps the whole-block bar unmet is now block-level DRC/LVS over that composed stream (#173), whole-block post-layout characterization (#174) and a macro-internal DRC regression on the current klt deck (#181). Neither a missing digital layout nor a missing composition is the blocker any more.)
 
 ---
 
-## Sign-off scorecard — issue #18 (updated 2026-10-04, after #166)
+## Sign-off scorecard — issue #18 (updated 2026-10-07, after #166 and #172)
 
 Issue #18's four acceptance criteria, graded explicitly. No row of §4 and
 no part of the ratified spec was relaxed to produce any verdict here.
@@ -135,15 +154,15 @@ no part of the ratified spec was relaxed to produce any verdict here.
 | AC | Requirement | Verdict | Evidence / remaining gap |
 |---|---|---|---|
 | 1 | This document: block type, I/O vs slot budget, functional description, re-derived spec table, bench test plan | **Met (provisional)** | §1-§5 below; every §4 row cites `sim/` or a DR. Slot budget remains an *assumed* structure (AC4). §2 still describes the pre-DR-0004 pin set (§5.3 open item). |
-| 2 | Every spec row states met/unmet; none relaxed | **Met** | §4 verdict column. Honest tally: **no row is Met against its README target.** B (rate) Unmet, C (min-entropy) Unmet vs `H0 = 0.5`, D (power) Unmet/TBD, I (area) Unmet as floorplanned (digital die alone 0.0600 mm² vs `< 0.05 mm²`); A, E, J are measured/supplementary with no target; F, G, H are derived/supplementary. |
-| 3 | Sign-off bar: post-layout PVT simulation **and** DRC/LVS-clean GDS in-repo for the block | **UNMET** | See breakdown below. Each half is separately evidenced; the *block* is not. |
-| 4 | If `rules-4.html` published, verify slot-budget assumptions and note deltas | **N/A, re-checked** | `https://opencircuitdesign.com/chipalooza/rules-4.html` returned HTTP 404 on 2026-10-04: still unpublished, so there is no delta to note. The 2026-vs-2027 launch-date discrepancy recorded above is unchanged. |
+| 2 | Every spec row states met/unmet; none relaxed | **Met** | §4 verdict column. Honest tally: **no row is Met against its README target.** B (rate) Unmet, C (min-entropy) Unmet vs `H0 = 0.5`, D (power) Unmet/TBD, I (area) Unmet: the composed `trng_whole` bbox is 0.126116 mm², 2.52x the `< 0.05 mm²` target, and the digital die alone is 0.0600 mm² (`layout/trng_whole/report.json` `area`); A, E, J are measured/supplementary with no target; F, G, H are derived/supplementary. |
+| 3 | Sign-off bar: post-layout PVT simulation **and** DRC/LVS-clean GDS in-repo for the block | **UNMET** | See breakdown below. Each half is separately evidenced and the two are now composed into one routed GDS. The *composed block* has no DRC sign-off, no LVS and no post-layout PVT. |
+| 4 | If `rules-4.html` published, verify slot-budget assumptions and note deltas | **N/A, re-checked** | `https://opencircuitdesign.com/chipalooza/rules-4.html` returned HTTP 404 on 2026-10-04 and again on 2026-10-07: still unpublished, so there is no delta to note. The 2026-vs-2027 launch-date discrepancy recorded above is unchanged (`index.html` re-published 2026-09-29, still `Nov 9, 2026`; `challenge-4.html` still says 2027). |
 
 ### AC3 breakdown (what exists, what does not)
 
 | Sub-item | Status | Citation |
 |---|---|---|
-| Analog entropy source + sampler (`sampler_core`) DRC-clean | Met (klt curated `sky130` deck, not foundry signoff) | `layout/sampler_core/` |
+| Analog entropy source + sampler (`sampler_core`) DRC-clean | **Met only on its pinned klt 0.4.0 curated deck; not clean on the current deck.** The committed `drc.json` is clean, 0 violations. A 2026-10-07 re-run of the committed GDS on host klt `0.6.0+g1eb3e4bfd0f5` (`klt drc layout/sampler_core/sampler_core.gds --deck sky130`) reports **5664 `licon1.ongrid.1`** violations, all in `klt gen` `guard_ring` cells (generator bug klayout-tools#2648, fixed upstream 2026-10-06, but the committed GDS predates the fix). That re-run is confirmatory only, so no artifact is committed. The same 5664 appear in `layout/trng_whole/drc-informational.json`. Regeneration is tracked in #181. Not foundry signoff in either case | `layout/sampler_core/drc.json`, `layout/trng_whole/drc-informational.json` |
 | Analog `sampler_core` LVS match | Met: 264/264 devices, 152/152 nets | `layout/sampler_core/` |
 | Analog post-layout PVT | Met for the analog chain: 4 PVT points x `tt`/`ss`/`ff` | `sim/post-layout-sampler-core/`, `sim/post-layout-ro-array-core/` |
 | Digital `trng_digital` placed and routed | Met (issue #166): die 60049.5 µm², 66327 µm wirelength, 0 route-DRC, 0 antenna violations | `layout/trng_digital/pnr.json`, `sim/digital-pnr/records/20261003-212010-fa76b17.md` |
@@ -151,15 +170,18 @@ no part of the ratified spec was relaxed to produce any verdict here.
 | Digital LVS | Match + `power_connectivity` match, but **cell-level against a signal-pin-only reference** (cell internals and power-net defects not compared) | `layout/trng_digital/lvs.json` |
 | Digital post-route timing | 0 setup/hold violations at all 16 Liberty corners (routed DEF + first-order lumped-RC SPEF, `nom`); worst setup slack 15945.3 ns (`ss_n40C_1v28`), worst hold slack 0.275 ns (`ff_n40C_1v95`) at a 20000 ns clock. A constraint-met check, not an `Fmax` search; in-flow max-slew/cap library-limit violations at four low-voltage `ss` corners are unrepaired and disclosed | `layout/trng_digital/sta.json`, `sim/digital-pnr/records/20261003-212010-fa76b17.md` |
 | Digital routed-netlist behaviour | 4239 cycles, 0 mismatches vs the normative model (FUNCTIONAL/UNIT_DELAY, **not** SDF timing); four negative controls all detected | `sim/digital-pnr/runs/20261003-212010-fa76b17/` |
-| **Analog + digital composed into one top-level GDS** | **DOES NOT EXIST** | no `layout/` top cell; `design/trng_top.spice` has no layout counterpart |
-| **Block-level DRC/LVS over the composed GDS** | **UNMET** (nothing to run it on) | — |
-| **Block-level post-layout PVT** (analog + digital + supply distribution) | **UNMET** | digital-only STA and analog-only transient campaigns are not a whole-block post-layout simulation and are not claimed as one |
-| `vddr1`-`vddr4` supply-distribution layout | **UNMET** | DR-0003 §8 / DR-0009 residue |
-| Digital dynamic power / IR drop (`klt power`) | **UNMET** | not run in #166 |
+| Analog + digital composed into one top-level GDS | **Exists (composition only, issue #172).** `trng_whole`: 18/18 nets and 22/22 legs routed (`unrouted_nets: []`). An independent re-extraction finds 18 nets in 18 distinct clusters, with `vddr1`-`vddr4` distinct from each other and from `vdd`/`vss`. A combined reference `trng_whole.ref.spice` (digital black box) and an interface table exist. On 2026-10-07 `compose-whole.py --check` rebuilt it to match the committed evidence (host klt `0.6.0+g1eb3e4bfd0f5`), and `layout/test_compose_whole.py` PASSed. Its own verdict is `composed; physical sign-off pending` | `layout/trng_whole/README.md`, `layout/trng_whole/report.json`, `layout/trng_whole/trng_whole.gds` |
+| **Block-level DRC over the composed GDS** | **UNMET** | The only run is informational, not sign-off: 5664 `licon1.ongrid.1`, all `sampler_core`-internal, and 0 from the routing, pads or digital macro. It cannot be clean on the current deck until #181 lands, and sign-off DRC is #173 | `layout/trng_whole/drc-informational.json` |
+| **Block-level LVS over the composed GDS** | **UNMET**, never run | The mixed transistor/cell-level comparison boundary has not been defined. The digital macro's abstract netlist has 0 devices, and the analog reference still needs `compose-cell.py`'s parameter rewrite. Tracked in #173 (currently `loom:operator-only`/`loom:operator-decision`) | `layout/trng_whole/README.md` "Items for #173" |
+| **Block-level post-layout PVT** (analog + digital + supply distribution) | **UNMET**, no record exists | No `sim/` slug simulates the composed block. Digital-only STA (`sim/digital-pnr/`) and analog-only transient campaigns (`sim/post-layout-sampler-core/`) are not a whole-block post-layout simulation and are not claimed as one. Tracked in #174, which is blocked on #173 |
+| `vddr1`-`vddr4` supply-distribution layout | **Geometry exists; measurement UNMET.** Four dedicated met5 routes of 33.73 µm each run to their own boundary pads, audited `vddr_rails_distinct: true`. Shared-supply-impedance coupling, IR and period scatter remain unmeasured, so DR-0003 §8 / DR-0009 stay open (#174) | `layout/trng_whole/report.json` `audits.composed_connectivity` |
+| Digital dynamic power / IR drop (`klt power`) | **UNMET** | not run in #166 or #172; tracked in #174 |
+| Whole-block area vs `< 0.05 mm²` | **Unmet**: 0.126116 mm² (378.16 x 333.5 µm), 2.52x. The target is unchanged | `layout/trng_whole/report.json` `area` |
 
 Everything in this table that is simulation-derived is provisional until
 measured on silicon. The remaining whole-block integration work is tracked
-in #170; #18 stays open for it.
+in #170 (children #173 DRC/LVS, #174 characterization, plus #181 for the
+`sampler_core` deck regression); #18 stays open for it.
 
 ---
 
@@ -169,7 +191,7 @@ A digital true-random-number-generator **entropy source** (not a DRBG): a
 four-ring, XOR-combined, free-running ring-oscillator array feeding a
 fixed-external-clock sampler, followed by SP 800-90B health tests, a
 non-vetted CRC-32 conditioner, and a two-path register/streaming interface
-(DR-0004; synthesized and placed-and-routed as a standalone digital block, not yet composed with the analog half) — see §3.
+(DR-0004; synthesized and placed-and-routed as a standalone digital block, then composed with the analog half into `layout/trng_whole/` with no block-level DRC/LVS or PVT yet) — see §3.
 
 ---
 
@@ -335,8 +357,8 @@ leakage, `klt equiv` RTL-to-gate equivalence) and **placed and routed**
 (issue #166, `sim/digital-pnr/`, `layout/trng_digital/`: die area, post-route
 STA at 16 corners, cell-level DRC/LVS) — see rows D, G and I below. What
 synthesis and P&R did not supply: no signoff `Fmax` search, no dynamic power,
-and no composition with the analog half (all still open; see the sign-off
-scorecard). One thing is still genuinely absent from the design itself: **no
+and no verified composition with the analog half (issue #172 composed the
+two, but block DRC/LVS and PVT are still open; see the sign-off scorecard). One thing is still genuinely absent from the design itself: **no
 per-ring liveness monitor** consumes the `ring_bit1..4` taps —
 `spec/porting-plan.md` §5 leaves open whether this port adopts one at all,
 so DR-0004 declines to half-design it. The health-test cutoffs are a
@@ -363,7 +385,7 @@ without a sky130-specific citation.
 | F | Time-to-first-valid | 0.64 ms (first **raw** word) | — | 25.60 ms (first **conditioned** word) | not stated | n/a (sample-count derived; the 50 kHz clock is fixed and external) | [DR-0004](../../spec/decision-records/DR-0004-sky130-digital-section-architecture.md) §6 (status Proposed); `sim/digital-health-test-parameters/`, `sim/digital-section-behavioral/` experiment A | **Derived, no target to grade against.** The raw path is never gated, so its first 32-bit word lands 32 samples after `raw_valid` (0.64 ms at 50 kHz). The conditioned path waits for the mandatory 1024-sample start-up health test (20.48 ms) plus one 256-bit conditioner block (5.12 ms). Both figures are sample counts at DR-0003's clock, verified in the behavioural campaign — not silicon, and not PVT-dependent (nothing here is a timing-closure claim). |
 | G | Digital section max clean sample-clock frequency (`Fmax`) | — | — | — | supplementary, informative only | n/a (`tt_025C_1v80`, single corner — no PVT sweep run) | [DR-0004](../../spec/decision-records/DR-0004-sky130-digital-section-architecture.md) 2026-09-09 addendum; `sim/digital-synthesis/` (issue #117) | **No longer N/A, but still not signoff `Fmax`.** `klt synthesize` maps `digital/rtl/trng_digital.v` onto `sky130_fd_sc_hd` at `tt_025C_1v80` to 2320 instances / 22203.80 µm² unconstrained and 2320 instances / 22099.95 µm² at this block's own 50 kHz sample-clock period (`clock_period_ns: 20000`) — `klt equiv` (`"yosys-sequential"`) proves both mapped netlists sequentially equivalent to the source RTL, and a gate-level re-run of `sim/digital-rtl-equivalence/`'s directed stimulus program matches the normative model bit-for-bit through both. The only delay figure available is ABC's own pre-layout `stime -p` estimate — wire-free, no placement, confined to the largest *combinational* cone (not a register-to-register signoff path): 4309.36 ps unconstrained, 5587.62 ps at the 50 kHz constraint (the constrained run trades ~104 µm² less area for a ~1278 ps longer combinational path, since the design's own 20 µs period gives ABC enormous slack to pick smaller/slower cells). Read as a period, that is ≈232 MHz / ≈179 MHz — thousands of times the 50 kHz this section actually runs at, consistent with the "expected to be enormously in excess" prediction this row previously only asserted — but neither figure is signoff STA: `klt sta` needs an already-routed DEF, and place-and-route is out of scope for issue #117. **Update, issue #166 (`sim/digital-pnr/`, `layout/trng_digital/`):** the section is now placed and routed (die 60049.5 µm², 42.6 % utilisation, 66327 µm wirelength, 0 route-DRC) and `klt sta` on the routed DEF with extracted SPEF meets the 20000 ns clock at all 16 shipped Liberty corners (worst setup slack 15945.3 ns at ss_n40C_1v28; worst hold slack 0.275 ns at ff_n40C_1v95). That is post-route STA with real (first-order lumped RC, `nom`) parasitics, not signoff `Fmax`: it is a constraint-met check at 50 kHz, not a maximum-frequency search; DRC is klt's curated `sky130` deck (no fill/density coverage), LVS is cell-level against a signal-pin-only netlist, and routed co-sim is FUNCTIONAL/UNIT_DELAY (no SDF timing sim). The in-flow max-slew/cap check flags library-limit violations at four low-voltage ss corners (disclosed, unrepaired). Analog/digital composition and whole-block sign-off remain on #18. Leakage at the same corner (Liberty `cell_leakage_power` summed over the mapped cell list — `klt synthesize` itself reports no leakage field, see `sim/digital-synthesis/`'s cited friction issue) is ≈9.98 nW unconstrained / ≈9.90 nW constrained — negligible against any budget row at this scale. Full numbers, klt provenance and both `klt equiv` verdicts: `sim/digital-synthesis/records/`. |
 | H | Health-test cutoffs (RCT / APT) | — | `C_RCT` = 81, `C_APT` = 824 at `H` = 0.5, `α` = 2⁻⁴⁰, `W` = 1024 | — | formula-derived once `H` is measured | n/a (a formula evaluation, not a corner-dependent measurement) | [DR-0004](../../spec/decision-records/DR-0004-sky130-digital-section-architecture.md) §2 (status Proposed); `sim/digital-health-test-parameters/` (cutoff table over an `H` grid, exact APT degeneracy floor, false-alarm intervals at 50 kbps) | **Derived and implemented, but PROVISIONAL — conditional on row C.** The cutoffs are the SP 800-90B formulas evaluated at the README's `H` = 0.5 *design target*, because sky130 has no measured `H` (row C). They are deliberately evaluated at the design floor rather than at DR-0003's model-derived `H` = 0.5415, so the false-alarm guarantee stays valid across the whole claimed range. The evidence record tabulates the cutoff at every `H` from the exact APT degeneracy floor (`H` = 0.0390625) upward, so closing row C moves this row by lookup. The values coincide with gf180-trng's own because the formulas, `α`, `W` and the `H` target all coincide — recomputed here, not copied. |
-| I | Area, array only (rings + buffers + XOR; device-count estimate, not derived from the real layout's own measured bbox) | 0.0026 mm² | — | 0.0088 mm² | < 0.05 mm² | n/a (not PVT-dependent) | [DR-0003](../../spec/decision-records/DR-0003-sky130-trng-operating-point.md) §7 | Array-only estimate sits at 5–18% of budget — but excludes the sampler and any digital section. **Not a whole-block claim.** **Update, issue #18:** the digital section's placed-and-routed die is 60049.5 µm² (0.0600 mm², core 54877.6 µm², 42.6 % utilisation — `layout/trng_digital/pnr.json`, `sim/digital-pnr/records/20261003-212010-fa76b17.md`) — by itself **above** the README's `< 0.05 mm²` whole-block row, so as floorplanned (40 % utilisation request, `digital/flow/place-and-route/pnr-trng-digital-50khz.json`) the whole-block area row is **Unmet**, with no analog area yet added. Synthesized cell area is 22099.95 µm² (`sim/digital-synthesis/`), so a tighter floorplan utilisation could change this; that is a flow knob nobody has re-run, not a result, and the row is not relaxed. Not a layout measurement of the array — a composed, DRC-clean, LVS-matching `ro_array_core` layout now exists (`layout/ro_array_core/`, see §5.3) with a measured `bbox_um` in its own committed evidence, but this row has not been re-derived from it. |
+| I | Area, array only (rings + buffers + XOR; device-count estimate, not derived from the real layout's own measured bbox) | 0.0026 mm² | — | 0.0088 mm² | < 0.05 mm² | n/a (not PVT-dependent) | [DR-0003](../../spec/decision-records/DR-0003-sky130-trng-operating-point.md) §7 | Array-only estimate sits at 5–18% of budget — but excludes the sampler and any digital section. **Not a whole-block claim.** **Update, issue #18:** the digital section's placed-and-routed die is 60049.5 µm² (0.0600 mm², core 54877.6 µm², 42.6 % utilisation — `layout/trng_digital/pnr.json`, `sim/digital-pnr/records/20261003-212010-fa76b17.md`) — by itself **above** the README's `< 0.05 mm²` whole-block row, so as floorplanned (40 % utilisation request, `digital/flow/place-and-route/pnr-trng-digital-50khz.json`) the whole-block area row is **Unmet**, with no analog area yet added. Synthesized cell area is 22099.95 µm² (`sim/digital-synthesis/`), so a tighter floorplan utilisation could change this; that is a flow knob nobody has re-run, not a result, and the row is not relaxed. Not a layout measurement of the array — a composed, DRC-clean, LVS-matching `ro_array_core` layout now exists (`layout/ro_array_core/`, see §5.3) with a measured `bbox_um` in its own committed evidence, but this row has not been re-derived from it. **Update, issue #18 (2026-10-07), after #172:** the composed whole block `trng_whole` (both macros unchanged, plus routing and pads) has a drawn bbox of 378.16 x 333.5 µm = **0.126116 mm², 2.52x the unchanged `< 0.05 mm²` target: Unmet** (`layout/trng_whole/report.json` `area`; macro bboxes `trng_digital` 0.06005 mm² + `sampler_core` 0.019297 mm²). That is a layout measurement of the whole block, not an estimate, and since `trng_digital` alone exceeds the target, no placement of these two macros can meet it. |
 | J | Architectural raw-rate ceiling (XOR combining-gate bandwidth), any array size | — | — | ~78 kbps | informative only — the hard constraint row B's operating point is chosen against | `ff`/−40 °C/1.98 V | [DR-0003](../../spec/decision-records/DR-0003-sky130-trng-operating-point.md) §1–2; `sim/xor-combining-bandwidth/` | Measured. This is the figure that forces row B's verdict — no amount of array resizing raises it; only redesigning the combining gate (wider devices, a different tree) would (DR-0003's own "Follow-up required"). |
 
 ### Rail-routing note (mirrors gf180-trng's own VDDA gap, opposite direction)
@@ -580,6 +602,13 @@ that lands this document):
   — which discharges DR-0003 §8's `wstv` inter-ring decorrelation
   re-evaluation at the last hierarchy level that lacked it
   ([`DR-0009`](../../spec/decision-records/DR-0009-sampler-core-substrate-bracket-and-wstv-decorrelation.md)).
+  **Update, issue #18 (2026-10-07):** issue #172 composed the two macros
+  into `layout/trng_whole/` (routed, connectivity-audited, `vddr1`-`vddr4`
+  drawn as four distinct rails, area Unmet at 0.126116 mm²). The open part
+  of this bullet is therefore block-level DRC/LVS over that stream (#173),
+  whole-block post-layout PVT/power/IR (#174) and regenerating
+  `sampler_core` clear of the 5664 `licon1.ongrid.1` findings the current
+  klt deck reports (#181). The 2026-10-04 text below is kept as written.
   **Still open on this bullet** (updated for issue #18, 2026-10-04): the
   DR-0004 digital section now has its own placed-and-routed, klt-deck
   DRC-clean, cell-level-LVS-matching layout (`layout/trng_digital/`,
@@ -815,7 +844,7 @@ that lands this document):
   written against the assumed `rules-2.html`/`rules-3.html` structure
   because the real Challenge #4 brief was not yet published as of this
   document's date, and remained unpublished at the 2026-09-05 re-check
-  above. Note that the assumed launch date itself is now unsettled: the
+  above and at the 2026-10-07 re-check. Note that the assumed launch date itself is now unsettled: the
   epic's tracking table and this document have both been assuming
   `2026-11-09`, but the site's own Challenge #4 page states an estimated
   `2027-11-09` while its schedule index still says `2026-11-09` — resolve
