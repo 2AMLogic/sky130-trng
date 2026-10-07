@@ -2266,11 +2266,33 @@ in `digital/flow/place-and-route/tool-pins.json`).
 | LVS, cell-level vs signal-pin-only netlist | match, `power_connectivity` match | `trng_digital/lvs.json` |
 | Post-route STA, 16 Liberty corners | 0 setup/hold violations | `trng_digital/sta.json` |
 
-**Whole-block status: not integrated.** No layout composes `sampler_core`
-(analog) with `trng_digital` (digital) into one top-level GDS, so there is no
-block-level DRC/LVS and no block-level post-layout PVT run. The two halves'
-separate DRC/LVS results are not a block result and must not be cited as one.
-Remaining: top-level floorplan and cell recipe, inter-domain supply and
-`vddr1`-`vddr4` distribution, block-level DRC/LVS, block-level post-layout
-PVT, digital dynamic power / IR drop. Graded in
-`docs/chipalooza/challenge-4-proposal.md` ("Sign-off scorecard").
+**Whole-block status (updated 2026-10-07, issue #18): composed, not
+physically verified.** `layout/trng_whole/` (issue #172, PR #176) composes
+`sampler_core` and `trng_digital` into one routed top cell `trng_whole`. It is
+geometry plus an extraction-based connectivity audit, and its own verdict is
+`composed; physical sign-off pending`. The two halves' separate DRC/LVS
+results are **not** a block result and must not be cited as one.
+
+| Whole-block check | Status | Evidence / tracker |
+|---|---|---|
+| Composition: 18/18 nets, 22/22 legs routed, `unrouted_nets: []`, 18 distinct extracted clusters, `vddr1`-`vddr4` distinct | done (composition only) | `trng_whole/report.json`, `trng_whole/README.md` |
+| `compose-whole.py --check` isolated rebuild | matches committed evidence (re-run 2026-10-07, host klt `0.6.0+g1eb3e4bfd0f5`) | `trng_whole/` |
+| `layout/test_compose_whole.py` | PASS (re-run 2026-10-07) | `layout/test_compose_whole.py` |
+| Block DRC | **not signed off.** The informational run gives 5664 `licon1.ongrid.1`, all inside `sampler_core` and 0 from the composition | `trng_whole/drc-informational.json`; #173, #181 |
+| `sampler_core` macro DRC on the current deck | **regressed.** The committed `sampler_core/drc.json` is clean on klt 0.4.0, but a 2026-10-07 re-run on klt `0.6.0+g1eb3e4bfd0f5` gives 5664 `licon1.ongrid.1` (`guard_ring` cells, klayout-tools#2648, fixed upstream after this GDS was generated). Confirmatory, not committed | #181 |
+| `trng_digital` macro DRC on the current deck | clean, 0 violations (re-run 2026-10-07, host klt `0.6.0+g1eb3e4bfd0f5`, confirmatory, not committed) | `trng_digital/drc.json` |
+| Block LVS (mixed transistor/cell-level) | **not run**; comparison boundary undefined | #173 |
+| Block post-layout PVT, dynamic power, IR, `vddr` coupling | **not run** | #174 (`sim/README.md`, "Whole-block post-layout verification") |
+| Area vs `< 0.05 mm2` | **Unmet**: 0.126116 mm2 (2.52x) | `trng_whole/report.json` `area` |
+
+Reproduction of what exists (pins as in `trng_whole/README.md`; no SPICE):
+
+```bash
+python3 layout/test_compose_whole.py                                          # contract tests, no klt
+python3 layout/bin/compose-whole.py layout/trng_whole/floorplan.json --check  # isolated rebuild + diff
+python3 layout/bin/compose-whole.py layout/trng_whole/floorplan.json --informational-drc
+klt drc layout/trng_digital/trng_digital.gds --deck sky130 --format json      # digital macro re-check
+klt drc layout/sampler_core/sampler_core.gds --deck sky130 --format json      # shows the #181 regression
+```
+
+Graded in `docs/chipalooza/challenge-4-proposal.md` ("Sign-off scorecard").
