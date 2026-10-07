@@ -4,6 +4,7 @@ Chronological record of recently merged pull requests and closed issues.
 
 ### 2026-10-07
 
+- **PR #182**: docs: reconcile Challenge #4 scorecard against whole-block composition (Part of #18)
 - **Issue #175** (closed): pdk-nightly is red
 
 ### 2026-10-05

@@ -6,9 +6,13 @@ open PDK — designed by AI agents driving
 [klayout-tools](https://github.com/2AMLogic/klayout-tools) and the
 open-source xschem + ngspice flow.
 
-**Status: just opened.** Nothing is designed yet. Unlike some sibling
-canaries, nothing is blocked either: sky130 is fully supported by the
-toolchain, so work can start at the spec.
+**Status: whole-block composition complete; physical sign-off pending.**
+The analog chain has transistor-level PVT and post-layout evidence, and the
+digital section has been synthesized, placed and routed. Both sections are
+composed into [`layout/trng_whole/`](layout/trng_whole/). Whole-block DRC/LVS
+(#173) and post-layout characterization (#174) remain open; analog-cell
+regeneration (#181) must clear the current deck's off-grid contact violations.
+Entropy claims remain provisional until silicon.
 
 **Built agent-native.** Every specification, decision record, testbench, and
 line of documentation here is produced by AI agents working from a ratified
@@ -65,7 +69,9 @@ seed source.
 
 Maturity ladder: spec ratified → schematic simulated across PVT → layout
 DRC/LVS-clean → post-layout re-verification → shuttle seat → measured
-silicon. **Current position: pre-spec.**
+silicon. **Current position: composed layout with section-level evidence;
+whole-block verification pending.** The specification and decision-record
+status is documented in [`spec/`](spec/).
 
 ## Repo layout
 
@@ -84,8 +90,9 @@ measurements/  silicon characterization (empty until tape-out)
 [`docs/chipalooza/challenge-4-proposal.md`](docs/chipalooza/challenge-4-proposal.md)
 tracks this block's status against Open Circuit Design's Chipalooza
 Challenge #4 (Sky130) brief — I/O mapped to the slot budget, every spec row
-re-derived from `sim/` and marked met/unmet, and the design gaps (digital
-section, layout, DRC/LVS) still open before it is submission-ready.
+re-derived from recorded evidence and marked met/unmet, and the remaining
+whole-block DRC/LVS, characterization and specification gaps before it is
+submission-ready.
 
 ## License
 
