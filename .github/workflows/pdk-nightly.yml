@@ -274,10 +274,23 @@ jobs:
       # (klayout-tools#2312), so bumping it here requires re-running every
       # cell's --check against 0.6.0 and recording the result first. The
       # two pins are no longer identical; that divergence is deliberate.
+      #
+      # SUPERSEDED for this job by issue #181 (2026-10-07): the nineteen
+      # cells were regenerated on klayout-tools source commit 5edb557f91d0
+      # (PR #2778, the fix for #2648 -- sky130 cuts drawn at their fixed
+      # sizes and centred on the 0.005 um grid). No tagged release contains
+      # that commit (v0.6.0 is 490 commits behind it), so this job installs
+      # the exact commit from git, matching layout/pdk.json's
+      # `ci_klt_install`. Staying on 0.5.0 would NOT have turned this job
+      # red: --check diffs verdict fields only, and 0.5.0 both rebuilds the
+      # old off-grid/0.22 um-cut geometry and grades it clean on its own
+      # older deck (verified 2026-10-07) -- a silent pass on the defect
+      # #181 removed. The grader pin in ci.yml (klayout-tools==0.6.0) is a
+      # separate contract and is unchanged.
       - name: Install klt (klayout-tools, the layout composition/verification CLI)
         run: |
           set -euo pipefail
-          pip install --user "klayout-tools==0.5.0"
+          pip install --user "klayout-tools @ git+https://github.com/2AMLogic/klayout-tools@5edb557f91d0116368c386617802ec727b4bdc90"
 
       - name: Install volare (the sky130 PDK version manager)
         run: pip install --user volare

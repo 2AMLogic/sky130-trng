@@ -15,20 +15,20 @@
     "digital/rtl/trng_digital.v": "sha256:219738aae7c5fd3bfede92ae20bebe38e843f7341690eed151d1545a93db90ef",
     "layout/trng_digital/trng_digital.routed.v": "sha256:9f3956848e6e75223f75bd154df905fecbb4e988593e78d1a92e347969fbf37f",
     "layout/trng_digital/trng_digital.layout.abstract.spice": "sha256:93fdea0485c580a02ea38c30d35bd0b7b68127b563fe405830df33a1681c591e",
-    "layout/sampler_core/sampler_core.gds": "sha256:a00f655067731fc4ee189e98b57a0e22f3160752923badc556c9ceff8811396f",
-    "layout/sampler_core/compose.response.json": "sha256:b78b398f41d046b2751fd141781061e65620da7b292cc15a99c660ae61de5c78",
+    "layout/sampler_core/sampler_core.gds": "sha256:e3ff54a9bb15122298f0d5df817612ed1caacb3b045533f9ba86d009036c2004",
+    "layout/sampler_core/compose.response.json": "sha256:4680ef55fc00cb6c0efd7df124cec78814e736cfd00c40861e4bb88f5c91cec1",
     "layout/sampler_core/cell.json": "sha256:0e03f051830385203d047bc9ceed84f1e17ff32020335f62ac9ad8601fbc100a",
     "design/trng_top.spice": "sha256:3d1ecc97b757f961c5f9fa7b63555132723bc87be373e9e5c3cbd1f18bde6a3b",
     "design/xschem/trng_top.sch": "sha256:78aaa0bfeeed5299b564d823cdb7d3f21411f39805e48285dac9c01d294c568c",
     "digital/flow/place-and-route/tool-pins.json": "sha256:a8d0a3b5e427452b82d7cfc4099b8ca4ebb77009acaed0de139951ec58374841",
-    "layout/pdk.json": "sha256:011fdb3e1431a61c0ca9f5c72f1ec3dbd4044ddcf0329f81fb05577fba98221c"
+    "layout/pdk.json": "sha256:fe36111d6767f93757e50b9cc4f46ebeb16d6f2dee2e9a154c3facd9f9d43c78"
   },
   "tool": {
-    "klt": "0.6.0+g84a103b1a2d6",
-    "klt_git_commit": "84a103b1a2d610b5e4105ae93feb975f5131b907",
+    "klt": "0.6.0+g5edb557f91d0",
+    "klt_git_commit": "5edb557f91d0116368c386617802ec727b4bdc90",
     "klt_is_release": false,
     "klayout_via_klt": "0.30.12",
-    "python_klayout_db": "0.30.10",
+    "python_klayout_db": "0.30.12",
     "open_pdks_commit": "c6d73a35f524070e85faff4a6a9eef49553ebc2b",
     "pdk_variant": "sky130A",
     "macro_tool_pins": {
@@ -39,8 +39,8 @@
         "source": "digital/flow/place-and-route/tool-pins.json"
       },
       "sampler_core": {
-        "klt": "committed layout/sampler_core/* evidence: 0.3.0+gc6dbf66c53c6 (layout/pdk.json klt_version_pin); drc.json 0.4.0; erc.json 0.6.0",
-        "source": "layout/pdk.json + layout/sampler_core/*.json provenance"
+        "klt": "committed layout/sampler_core/* evidence: compose.response.json 0.6.0+g5edb557f91d0; drc.json 0.6.0+g5edb557f91d0; extract.json 0.6.0+g5edb557f91d0; lvs.json 0.6.0+g5edb557f91d0; erc.json 0.6.0",
+        "source": "layout/sampler_core/*.json provenance.klt_version"
       }
     },
     "reconciliation": "the two macros were produced by different klt builds; this composition only places and wires their committed GDS and re-extracts metal connectivity, so it pins the composing klt rather than assuming the macro environments are identical."
@@ -75,7 +75,7 @@
         "x1": 330.96,
         "y1": 323.36
       },
-      "source_digest": "sha256:42ef6e083b68033e9eb43530042b194fa3d5c9097f552c6eff321f5282310bb1"
+      "source_digest": "sha256:2c79478ffb8d4508e08062bf3cd33b144c38a96478c32dd319b9e0612c58f912"
     }
   },
   "routing": {
@@ -281,8 +281,8 @@
   },
   "outputs": {
     "trng_whole.gds": {
-      "sha256": "sha256:a8e9865adf84f14a98b036d13d6e9f53ea3c86ba6575616e1bcc29e57558424e",
-      "canonical_geometry_sha256": "sha256:73063d4e199bec975f2f2fadd80d7e5e1e405380b6c667f2eab20e619fb8a955",
+      "sha256": "sha256:af2f8dfe2800599e97d769bdedd14924c9fa3f24fc7e1c4f43ccd72ac5572ddd",
+      "canonical_geometry_sha256": "sha256:628377a12cc05c69807e3cb7f8eb6040226ac6241b31e99c4210407a7ae0fe51",
       "canonical_counts": {
         "polygons": 240257,
         "labels": 57908,

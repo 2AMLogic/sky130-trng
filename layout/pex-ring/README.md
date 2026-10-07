@@ -1,5 +1,30 @@
 # layout/pex-ring
 
+> **Superseded by the issue #181 regeneration (2026-10-07). This library
+> describes the pre-regeneration geometry.** Every cell it was extracted
+> from was regenerated on klayout-tools `0.6.0+g5edb557f91d0` (the
+> cut-size/grid fix: sky130-fixed 0.17 um `licon1`/`mcon` and 0.15 um `via`
+> cuts, `licon1` centres on the 0.005 um grid, all other layers
+> unchanged; see `layout/README.md`, "Regeneration on the cut-size/grid fix
+> (issue #181)"). The library, raw output and reports here were **not**
+> re-extracted. They still cite the old source GDS hashes below, and every
+> number in this README describes that old geometry, not the committed
+> streams. Running `pex-netlist.py --check` against the regenerated GDS now
+> reports drift (53 differing fields). The drift mixes the cut changes with a newer
+> klt PEX envelope, so it is expected and is not a regression of this
+> library. The `sim/` records that `.include` this library
+> (`sim/post-layout-ro-ring5-assembled/`, 4 records) remain valid measurements **of the pre-#181 geometry
+> only**. They are preserved unchanged (append-only). A re-extraction plus
+> any fresh post-layout campaign goes in new records under #184.
+>
+> | Report | Source GDS | Hash this library was extracted from | Committed GDS hash since #181 |
+> |---|---|---|---|
+> | `reports/ro_buf_pex.extract.json` | `layout/ro_buf/ro_buf.gds` | `sha256:3df80e13d497a7e2…` (klt 0.3.0) | `sha256:f058d84d15d307fb…` |
+> | `reports/ro_ring5_assembled_pex_wstv0p42.extract.json` | `layout/ro_ring5/ro_ring5.gds` | `sha256:002de654bb9691cd…` (klt 0.3.0) | `sha256:62cef8ce030aad12…` |
+> | `reports/ro_ring5_assembled_pex_wstv0p44.extract.json` | `layout/ro_ring5_wstv0p44/ro_ring5_wstv0p44.gds` | `sha256:b0c13c8fda447a9e…` (klt 0.3.0) | `sha256:88118656cefd4170…` |
+> | `reports/ro_ring5_assembled_pex_wstv0p46.extract.json` | `layout/ro_ring5_wstv0p46/ro_ring5_wstv0p46.gds` | `sha256:93f31a2647fe7c47…` (klt 0.3.0) | `sha256:4797c72c9db1dd3c…` |
+> | `reports/ro_ring5_assembled_pex_wstv0p48.extract.json` | `layout/ro_ring5_wstv0p48/ro_ring5_wstv0p48.gds` | `sha256:4ff687c4f3228fb8…` (klt 0.3.0) | `sha256:0ac8aaea8cce5c82…` |
+
 The post-layout (parasitic-annotated) netlist library for the **assembled**
 `ro_ring5` cells -- the ring-level sibling of `layout/pex/` (which extracts
 the nine *leaf* gates and relies on the testbench to wire them with ideal

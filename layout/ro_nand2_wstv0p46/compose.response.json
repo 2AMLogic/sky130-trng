@@ -8,6 +8,7 @@
     "variant": "sky130A",
     "version": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b"
   },
+  "dbu_um": 0.001,
   "bbox_um": {
     "x0": -2.19,
     "y0": -0.71,
@@ -21,6 +22,8 @@
       "source": "generator_report",
       "generator": "gen-compose",
       "cell_name": "core",
+      "source_path": "core.gds",
+      "source_digest": "sha256:3f6e7b00c7faba4e991b20b602c6a61470974e3c1bcecaf35bd9a44474c77077",
       "offset_um": {
         "x": 0.0,
         "y": 0.0
@@ -31,7 +34,8 @@
         "x1": 5.57,
         "y1": 4.81
       },
-      "orientation": "none"
+      "orientation": "none",
+      "abuts": []
     }
   ],
   "nets": [
@@ -50,6 +54,7 @@
       "routed": true,
       "route_length_um": 0.6200000000000001,
       "status": "routed",
+      "landed_on_block": true,
       "legs": [
         {
           "pins": [
@@ -64,7 +69,9 @@
           ],
           "routed": true,
           "route_length_um": 0.6200000000000001,
-          "reason": null
+          "reason": null,
+          "channel_track": 0,
+          "landed_on_block": true
         }
       ]
     },
@@ -83,6 +90,7 @@
       "routed": true,
       "route_length_um": 3.8199999999999994,
       "status": "routed",
+      "landed_on_block": true,
       "legs": [
         {
           "pins": [
@@ -97,7 +105,9 @@
           ],
           "routed": true,
           "route_length_um": 3.8199999999999994,
-          "reason": null
+          "reason": null,
+          "channel_track": 0,
+          "landed_on_block": true
         }
       ]
     },
@@ -116,6 +126,7 @@
       "routed": true,
       "route_length_um": 0.6200000000000001,
       "status": "routed",
+      "landed_on_block": true,
       "legs": [
         {
           "pins": [
@@ -130,7 +141,9 @@
           ],
           "routed": true,
           "route_length_um": 0.6200000000000001,
-          "reason": null
+          "reason": null,
+          "channel_track": 0,
+          "landed_on_block": true
         }
       ]
     },
@@ -149,6 +162,7 @@
       "routed": true,
       "route_length_um": 4.120000000000001,
       "status": "routed",
+      "landed_on_block": true,
       "legs": [
         {
           "pins": [
@@ -163,7 +177,9 @@
           ],
           "routed": true,
           "route_length_um": 4.120000000000001,
-          "reason": null
+          "reason": null,
+          "channel_track": 0,
+          "landed_on_block": true
         }
       ]
     },
@@ -182,6 +198,7 @@
       "routed": true,
       "route_length_um": 4.620000000000001,
       "status": "routed",
+      "landed_on_block": true,
       "legs": [
         {
           "pins": [
@@ -196,7 +213,9 @@
           ],
           "routed": true,
           "route_length_um": 4.620000000000001,
-          "reason": null
+          "reason": null,
+          "channel_track": 0,
+          "landed_on_block": true
         }
       ]
     },
@@ -215,6 +234,7 @@
       "routed": true,
       "route_length_um": 8.760000000000002,
       "status": "routed",
+      "landed_on_block": true,
       "legs": [
         {
           "pins": [
@@ -229,7 +249,9 @@
           ],
           "routed": true,
           "route_length_um": 8.760000000000002,
-          "reason": null
+          "reason": null,
+          "channel_track": 0,
+          "landed_on_block": true
         }
       ]
     }
@@ -241,5 +263,16 @@
     "matched_groups": [],
     "notes": []
   },
-  "warnings": []
+  "warnings": [],
+  "provenance": {
+    "klt_version": "0.6.0+g5edb557f91d0",
+    "klayout_version": "0.30.12",
+    "pdk": {
+      "name": "sky130A",
+      "source": "search root: ~/.volare",
+      "version": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b"
+    },
+    "deck": null,
+    "input": null
+  }
 }

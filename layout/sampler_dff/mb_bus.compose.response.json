@@ -37,6 +37,8 @@
       "source": "cell",
       "generator": null,
       "cell_name": "s_bus",
+      "source_path": "/home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-181/layout/sampler_dff/s_bus.gds",
+      "source_digest": "sha256:ed2c0d337a2033580c1702eca56f8f18f4facecb6f4945a24bc27a6bffdda1dd",
       "offset_um": {
         "x": 0.0,
         "y": 0.0
@@ -47,7 +49,8 @@
         "x1": 50.47,
         "y1": 7.085
       },
-      "orientation": "none"
+      "orientation": "none",
+      "abuts": []
     }
   ],
   "nets": [
@@ -70,6 +73,7 @@
       "routed": true,
       "route_length_um": 23.105000000000004,
       "status": "routed",
+      "landed_on_block": true,
       "legs": [
         {
           "pins": [
@@ -84,7 +88,9 @@
           ],
           "routed": true,
           "route_length_um": 8.005,
-          "reason": null
+          "reason": null,
+          "channel_track": 0,
+          "landed_on_block": true
         },
         {
           "pins": [
@@ -99,7 +105,9 @@
           ],
           "routed": true,
           "route_length_um": 15.100000000000001,
-          "reason": null
+          "reason": null,
+          "channel_track": 0,
+          "landed_on_block": true
         }
       ]
     }
@@ -118,5 +126,16 @@
     "matched_groups": [],
     "notes": []
   },
-  "warnings": []
+  "warnings": [],
+  "provenance": {
+    "klt_version": "0.6.0+g5edb557f91d0",
+    "klayout_version": "0.30.12",
+    "pdk": {
+      "name": "sky130A",
+      "source": "search root: ~/.volare",
+      "version": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b"
+    },
+    "deck": null,
+    "input": null
+  }
 }

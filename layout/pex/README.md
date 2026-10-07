@@ -1,5 +1,37 @@
 # layout/pex
 
+> **Superseded by the issue #181 regeneration (2026-10-07). This library
+> describes the pre-regeneration geometry.** Every cell it was extracted
+> from was regenerated on klayout-tools `0.6.0+g5edb557f91d0` (the
+> cut-size/grid fix: sky130-fixed 0.17 um `licon1`/`mcon` and 0.15 um `via`
+> cuts, `licon1` centres on the 0.005 um grid, all other layers
+> unchanged; see `layout/README.md`, "Regeneration on the cut-size/grid fix
+> (issue #181)"). The library, raw output and reports here were **not**
+> re-extracted. They still cite the old source GDS hashes below, and every
+> number in this README describes that old geometry, not the committed
+> streams. Running `pex-netlist.py --check` against the regenerated GDS now
+> reports drift (61 differing fields for `pex.json`, 17 for `pex-sampler.json`). The drift mixes the cut changes with a newer
+> klt PEX envelope, so it is expected and is not a regression of this
+> library. The `sim/` records that `.include` this library
+> (`sim/post-layout-ro-ring5/` (12 records), `sim/post-layout-sampler-dff/` (8 records), and `sim/post-layout-parasitic-impact/`, derived from the former) remain valid measurements **of the pre-#181 geometry
+> only**. They are preserved unchanged (append-only). A re-extraction plus
+> any fresh post-layout campaign goes in new records under #184.
+>
+> | Report | Source GDS | Hash this library was extracted from | Committed GDS hash since #181 |
+> |---|---|---|---|
+> | `reports/ro_buf_pex.extract.json` | `layout/ro_buf/ro_buf.gds` | `sha256:3df80e13d497a7e2…` (klt 0.3.0) | `sha256:f058d84d15d307fb…` |
+> | `reports/ro_nand2_pex_wstv0p42.extract.json` | `layout/ro_nand2/ro_nand2.gds` | `sha256:3f3c18d959093b27…` (klt 0.3.0) | `sha256:cb0b416ee877946f…` |
+> | `reports/ro_nand2_pex_wstv0p44.extract.json` | `layout/ro_nand2_wstv0p44/ro_nand2_wstv0p44.gds` | `sha256:9a355c0e65d8b624…` (klt 0.3.0) | `sha256:4423dbc59d63cca2…` |
+> | `reports/ro_nand2_pex_wstv0p46.extract.json` | `layout/ro_nand2_wstv0p46/ro_nand2_wstv0p46.gds` | `sha256:add2ffb72d5d15e8…` (klt 0.3.0) | `sha256:bac728153fe99c7a…` |
+> | `reports/ro_nand2_pex_wstv0p48.extract.json` | `layout/ro_nand2_wstv0p48/ro_nand2_wstv0p48.gds` | `sha256:f0f7d7c4012585b8…` (klt 0.3.0) | `sha256:9beec481d498652b…` |
+> | `reports/ro_stage_pex_wstv0p42.extract.json` | `layout/ro_stage/ro_stage.gds` | `sha256:17cafd248b05d982…` (klt 0.3.0) | `sha256:c998df06b6ee3061…` |
+> | `reports/ro_stage_pex_wstv0p44.extract.json` | `layout/ro_stage_wstv0p44/ro_stage_wstv0p44.gds` | `sha256:46a8c1e72f664223…` (klt 0.3.0) | `sha256:115da1fd9d479db2…` |
+> | `reports/ro_stage_pex_wstv0p46.extract.json` | `layout/ro_stage_wstv0p46/ro_stage_wstv0p46.gds` | `sha256:362ce1c66428c584…` (klt 0.3.0) | `sha256:43a01f51aed7b737…` |
+> | `reports/ro_stage_pex_wstv0p48.extract.json` | `layout/ro_stage_wstv0p48/ro_stage_wstv0p48.gds` | `sha256:2a382002f2440576…` (klt 0.3.0) | `sha256:5fa65dace7c0c60a…` |
+> | `reports/sampler_inv_pex.extract.json` | `layout/ro_buf/ro_buf.gds` | `sha256:3df80e13d497a7e2…` (klt 0.3.0) | `sha256:f058d84d15d307fb…` |
+> | `reports/sampler_nand2_pex.extract.json` | `layout/sampler_nand2/sampler_nand2.gds` | `sha256:237f4c50bc2b50dd…` (klt 0.3.0) | `sha256:a4ce717bba9e6bad…` |
+> | `reports/sampler_tg_pex.extract.json` | `layout/sampler_tg/sampler_tg.gds` | `sha256:1a7f64e132f457f4…` (klt 0.3.0) | `sha256:9e6ec2149da43d3f…` |
+
 The post-layout (parasitic-annotated) netlist library, and the evidence that
 produced it.
 

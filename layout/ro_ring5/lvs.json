@@ -8,12 +8,45 @@
   "parameter_tolerance": null,
   "options": {
     "combine_devices": false,
+    "combine_devices_per_circuit": null,
     "flatten_layout": false,
     "flatten_reference": true,
     "netgen_setup": null,
-    "parameter_tolerance": null
+    "parameter_tolerance": null,
+    "compare_parameters": null,
+    "power_connectivity": null,
+    "anchor_top_level_pins": null,
+    "supply_nets": [
+      "GND",
+      "VCC",
+      "VDD",
+      "VGND",
+      "VPWR",
+      "VSS"
+    ]
   },
+  "hints_applied": null,
   "status": "match",
+  "power_connectivity": {
+    "status": "unchecked",
+    "reason": "reference.form is 'subckt-call', whose reference netlist carries its own power/ground pins and nets -- they take part in the ordinary compare, so this check (which exists to cover the signal-only 'gate-level-verilog' form) does not apply",
+    "power_pins": [],
+    "power_pins_derivation": null,
+    "instance_count": 0,
+    "expected_nets": null,
+    "unchecked_expected_pins": [],
+    "findings": [],
+    "finding_count": 0
+  },
+  "body_verification": {
+    "status": "unchecked",
+    "reason": "no request.layout.deck was given (the pre-extracted request.layout.netlist form), so nothing establishes this layout's substrate/well-tap convention and no synthesized body net can be told apart from a real one -- this run verified nothing about the device bodies either way",
+    "device_classes": [],
+    "device_count": 0,
+    "findings": [],
+    "finding_count": 0
+  },
+  "device_parameter_coverage": [],
   "mismatch_count": 1,
   "error_count": 0,
   "category_counts": {
@@ -41,16 +74,21 @@
   "environment": {
     "engine": "klayout",
     "engine_version": "0.30.12",
-    "layout_sha256": "325121fb0fa786ea4db85e2d86dad2f95b11f50de867e4e0c9a66f587d9d2a10",
+    "netgen_binary": null,
+    "layout_sha256": "ff9de338003bd2c8a34d862673c2a9c10826363c1a2910220ff824b60e5b7574",
     "reference_sha256": "f23a902ee809ad068b9e5cafe308116d0cdc200e9b066b67b4bce4a1fca97683",
     "extracted_netlist": null
   },
   "provenance": {
-    "klt_version": "0.3.0",
+    "klt_version": "0.6.0+g5edb557f91d0",
     "klayout_version": "0.30.12",
     "pdk": null,
     "deck": null,
-    "input": null
+    "input": {
+      "content_hash": "sha256:ff9de338003bd2c8a34d862673c2a9c10826363c1a2910220ff824b60e5b7574",
+      "role": "netlist"
+    },
+    "klayout_version_mismatch": false
   },
   "mismatches": [
     {
@@ -70,42 +108,42 @@
   "net_correspondence": [
     {
       "layout": "NY$1",
-      "reference": "1.NY",
+      "reference": "1_NY",
       "pin": true
     },
     {
       "layout": "PY",
-      "reference": "1.PY",
+      "reference": "1_PY",
       "pin": true
     },
     {
       "layout": "NY$2",
-      "reference": "2.NY",
+      "reference": "2_NY",
       "pin": true
     },
     {
       "layout": "PY$1",
-      "reference": "2.PY",
+      "reference": "2_PY",
       "pin": true
     },
     {
       "layout": "NY$3",
-      "reference": "3.NY",
+      "reference": "3_NY",
       "pin": true
     },
     {
       "layout": "PY$2",
-      "reference": "3.PY",
+      "reference": "3_PY",
       "pin": true
     },
     {
       "layout": "NY$4",
-      "reference": "4.NY",
+      "reference": "4_NY",
       "pin": true
     },
     {
       "layout": "PY$3",
-      "reference": "4.PY",
+      "reference": "4_PY",
       "pin": true
     },
     {
@@ -114,18 +152,18 @@
       "pin": true
     },
     {
-      "layout": "\\$4",
-      "reference": "G.NM",
+      "layout": "\\$6",
+      "reference": "G_NM",
       "pin": false
     },
     {
       "layout": "NY",
-      "reference": "G.NY",
+      "reference": "G_NY",
       "pin": true
     },
     {
       "layout": "MPA_PY|MPB_PY|MPH_PY|PY",
-      "reference": "G.PY",
+      "reference": "G_PY",
       "pin": true
     },
     {

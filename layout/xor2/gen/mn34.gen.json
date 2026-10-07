@@ -8,6 +8,7 @@
     "variant": "sky130A",
     "version": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b"
   },
+  "dbu_um": 0.001,
   "bbox_um": {
     "x0": 0.0,
     "y0": 0.0,
@@ -82,16 +83,30 @@
       "direction_deg": 90
     }
   ],
+  "navigable_regions": [],
   "drc_hints": {
     "min_spacing_um": 0.4,
     "matched_group_id": "mos_array:1x1:common_centroid",
     "snapped_to_grid": false,
     "notes": [
       "gate length below 0.28um (this generator's own default): the S/D local-metal pads are automatically padded clear of the gate (issue #1187), so no S/D metal minimum-spacing violation results from this alone -- but params.l_um itself may still violate the target PDK's own poly minimum-width rule (e.g. sky130's poly.width.1 floor is 0.15um), which this generator does not check",
-      "params.finger_topology is 'series', so each unit device's 2 fingers are drawn unstrapped -- they extract as 2 transistors chained source-to-drain, not one parallel device of width 2 x 0.84um (reported as U<i>_S<j>/U<i>_D<j>/U<i>_G<j> ports, one per finger)"
+      "params.finger_topology is 'series', so each unit device's 2 fingers are drawn unstrapped -- they extract as 2 transistors chained source-to-drain, not one parallel device of width 2 x 0.84um (reported as U<i>_S<j>/U<i>_D<j>/U<i>_G<j> ports, one per finger)",
+      "family 'sky130' declares no S/D implant role ('nplus') for flavor 'nfet' -- no implant mask was drawn"
     ],
     "voltage_flavor": null,
-    "voltage_flavor_mark_present": false
+    "voltage_flavor_mark_present": false,
+    "sd_implant_present": false
   },
-  "warnings": []
+  "warnings": [],
+  "provenance": {
+    "klt_version": "0.6.0+g5edb557f91d0",
+    "klayout_version": "0.30.12",
+    "pdk": {
+      "name": "sky130A",
+      "source": "search root: ~/.volare",
+      "version": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b"
+    },
+    "deck": null,
+    "input": null
+  }
 }

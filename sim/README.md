@@ -460,6 +460,28 @@ corner and seed as the grid:
 
 ## The post-layout campaign (issue #22)
 
+> **Pre-#181 geometry (2026-10-07).** Every `sim/post-layout-*` record
+> below was measured on a `layout/pex*/` library extracted from the
+> pre-#181 GDS:
+>
+> - `post-layout-ro-ring5` (12 records) and its derived
+>   `post-layout-parasitic-impact`
+> - `post-layout-ro-ring5-assembled` (4)
+> - `post-layout-ro-array-core` (25)
+> - `post-layout-sampler-dff` (8)
+> - `post-layout-sampler-dff-assembled` (4)
+> - `post-layout-sampler-core` (13)
+>
+> Issue #181 then regenerated every `layout/*/cell.json` cell on the
+> klayout-tools cut-size/grid fix. Only contact/via cut sizes and
+> sub-2 nm `licon1` centre positions changed. The libraries were not
+> re-extracted. Each `layout/pex*/README.md` lists the exact old and new
+> source hashes. These records stay valid for the geometry they cite
+> (each records its `PEX_LIB` sha256). They are **not** measurements of
+> the regenerated streams and must not be quoted as such. They are kept
+> unchanged (append-only). Re-extraction and any fresh campaign go in new
+> records under #184.
+
 `sim/post-layout-ro-ring5/` is this repo's first campaign driven from a
 *layout*-derived netlist rather than from a schematic export. Its input is
 `layout/pex/ro_ring5_pex.spice` -- `klt extract --parasitics` over the nine
