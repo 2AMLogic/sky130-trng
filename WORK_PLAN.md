@@ -19,7 +19,7 @@ Issues the operator starred (`loom:operator-priority`); land these first.
 
 Human-approved issues ready for implementation (`loom:issue`).
 
-- **#18**: [Epic #542] 4B — Chipalooza Challenge #4 (Sky130) brief document + sign-off
+- **#184**: Re-extract post-layout netlist libraries (layout/pex*) on the regenerated #181 geometry
 
 ## In Progress
 
@@ -44,6 +44,7 @@ _None._
 Issues carrying `loom:curated`.
 
 - **#173**: Whole-block physical verification: DRC/LVS and interface/supply negative controls *(curated)*
+- **#184**: Re-extract post-layout netlist libraries (layout/pex*) on the regenerated #181 geometry *(curated)*
 
 ## Proposed (Architect / Hermit)
 
@@ -64,7 +65,7 @@ _None._
 | In Progress (`loom:building`) | 0 |
 | PRs awaiting review | 0 |
 | Approved PRs awaiting merge | 0 |
-| Curated | 1 |
+| Curated | 2 |
 | Architect / Hermit proposals | 0 |
 | Active epics | 2 |
 <!-- guide:plan-body:end -->
