@@ -1502,6 +1502,11 @@ def main(argv: list[str] | None = None) -> int:
     REUSE = args.reuse_extract
     if args.reuse_extract and (not args.workdir or args.command != "run" or not args.no_publish):
         ap.error("--reuse-extract needs --workdir and only applies to `run --no-publish`")
+    if args.only and args.command in ("controls", "all") and not args.no_publish:
+        # a filtered run is a partial campaign: publishing it would replace the
+        # canonical full fault-control evidence with a subset
+        ap.error("--only runs a partial fault-control campaign and would overwrite the canonical full-campaign "
+                 "evidence in layout/trng_whole/verify/controls/; add --no-publish for debugging runs")
     try:
         if args.command == "check":
             return check(args)
@@ -1519,7 +1524,10 @@ def main(argv: list[str] | None = None) -> int:
                       f"{b['coverage']['ports_clean']}/{b['coverage']['ports']} ports clean")
             if args.command in ("controls", "all"):
                 summary = run_controls(args, b)
-                publish_controls(summary, b["pdk_root"])
+                if args.no_publish:
+                    print("controls: --no-publish, canonical controls evidence left untouched")
+                else:
+                    publish_controls(summary, b["pdk_root"])
                 print(f"controls: all_detected={summary['all_detected']} baseline_rerun={summary['baseline_rerun_after_controls']['status']}")
                 if not summary["all_detected"] or summary["baseline_rerun_after_controls"]["status"] != "match":
                     return 1

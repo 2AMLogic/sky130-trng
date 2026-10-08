@@ -254,6 +254,108 @@ def check_committed_controls() -> None:
     _check("the untouched baseline still matches after the controls", rr["status"] == "match" and rr["error_count"] == 0 and rr["stable_fields_equal_to_first_baseline"] is True, rr)
 
 
+# --------------------------------------------------------------------------
+# dispatcher: publication guards for `controls` / `all`
+# --------------------------------------------------------------------------
+
+
+def _load_verify_whole():
+    spec = importlib.util.spec_from_file_location("verify_whole_entry", _HERE / "bin" / "verify-whole.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def _fake_control(cid: str) -> dict:
+    return {
+        "id": cid, "kind": "swap_labels", "reached_lvs_comparison": True, "detected": True,
+        "lvs": {"status": "mismatch", "error_count": 1, "error_categories": {"net": 1},
+                "evidence": {"errors_naming_them": 1, "named_nets": [cid]}},
+    }
+
+
+def check_dispatcher_publication() -> None:
+    """``controls``/``all`` must honour --no-publish and must never let a
+    partial ``--only`` campaign replace the canonical full-campaign evidence.
+    The expensive stages are stubbed and every evidence directory is redirected
+    to a temporary directory, so no repository evidence is read or written."""
+    import contextlib  # noqa: PLC0415
+    import io  # noqa: PLC0415
+    import tempfile  # noqa: PLC0415
+
+    try:
+        vw = _load_verify_whole()
+    except Exception as exc:  # noqa: BLE001 -- optional deps of the entry point
+        print(f"skip   dispatcher publication guards (cannot import verify-whole.py: {exc})")
+        return
+
+    def snapshot(d: Path) -> dict:
+        return {str(f.relative_to(d)): sha(f) for f in sorted(d.rglob("*")) if f.is_file()} if d.is_dir() else {}
+
+    repo_controls_before = snapshot(VERIFY / "controls")
+    repo_verify_before = snapshot(VERIFY)
+
+    def run(argv: list[str], tmp: Path) -> tuple[int, list[str], list[str]]:
+        calls: dict[str, list[str]] = {"baseline": [], "controls": []}
+        vw.VERIFY_DIR = tmp / "verify"
+        vw.CONTROLS_DIR = tmp / "verify" / "controls"
+        vw.build_baseline = lambda args, workdir: {
+            "pdk_root": "/nonexistent-pdk",
+            "drc": {"status": "clean", "violation_count": 0},
+            "run": {"lvs": {"status": "match", "error_count": 0}},
+            "coverage": {"ports": 1, "ports_clean": 1},
+        }
+        vw.publish_baseline = lambda b: calls["baseline"].append("published")
+
+        def fake_run_controls(args, b):
+            ids = args.only or ["control-a", "control-b"]
+            return {"controls": [_fake_control(i) for i in ids], "all_detected": True,
+                    "baseline_rerun_after_controls": {"status": "match", "error_count": 0,
+                                                      "stable_fields_equal_to_first_baseline": True}}
+
+        vw.run_controls = fake_run_controls
+        real_publish = vw.publish_controls
+
+        def recording_publish(summary, pdk_root):
+            calls["controls"].append(",".join(r["id"] for r in summary["controls"]))
+            real_publish(summary, pdk_root)
+
+        vw.publish_controls = recording_publish
+        out = io.StringIO()
+        try:
+            with contextlib.redirect_stdout(out), contextlib.redirect_stderr(out):
+                rc = vw.main(argv)
+        except SystemExit as exc:
+            rc = exc.code if isinstance(exc.code, int) else 1
+        return rc, calls["baseline"], calls["controls"]
+
+    for cmd in ("controls", "all"):
+        with tempfile.TemporaryDirectory(prefix="test-verify-whole-") as t:
+            tmp = Path(t)
+            rc, base, ctl = run([cmd, "--no-publish", "--only", "swap-analog-ring-bits"], tmp)
+            _check(f"{cmd} --no-publish --only: runs (exit 0)", rc == 0, rc)
+            _check(f"{cmd} --no-publish --only: publishes nothing", not base and not ctl and not (tmp / "verify").exists(), (base, ctl))
+        with tempfile.TemporaryDirectory(prefix="test-verify-whole-") as t:
+            tmp = Path(t)
+            rc, base, ctl = run([cmd, "--no-publish"], tmp)
+            _check(f"{cmd} --no-publish: publishes nothing", rc == 0 and not base and not ctl and not (tmp / "verify").exists(), (rc, base, ctl))
+        with tempfile.TemporaryDirectory(prefix="test-verify-whole-") as t:
+            tmp = Path(t)
+            rc, base, ctl = run([cmd, "--only", "swap-analog-ring-bits"], tmp)
+            _check(f"{cmd} --only without --no-publish: refused before any stage runs",
+                   rc != 0 and not base and not ctl and not (tmp / "verify").exists(), (rc, base, ctl))
+        with tempfile.TemporaryDirectory(prefix="test-verify-whole-") as t:
+            tmp = Path(t)
+            rc, base, ctl = run([cmd], tmp)
+            published = json.loads((tmp / "verify" / "controls" / "controls.json").read_text()) if (tmp / "verify" / "controls" / "controls.json").is_file() else None
+            _check(f"{cmd}: full campaign publishes the controls evidence",
+                   rc == 0 and ctl == ["control-a,control-b"] and published is not None and len(published["controls"]) == 2
+                   and (tmp / "verify" / "controls" / "controls.md").is_file(), (rc, ctl))
+            _check(f"{cmd}: baseline published only for `all`", base == (["published"] if cmd == "all" else []), base)
+    _check("dispatcher tests left the committed controls evidence untouched", snapshot(VERIFY / "controls") == repo_controls_before)
+    _check("dispatcher tests left the committed verify evidence untouched", snapshot(VERIFY) == repo_verify_before)
+
+
 def main() -> int:
     check_flatten()
     check_canonicalise()
@@ -261,6 +363,7 @@ def main() -> int:
     check_build_reference()
     check_committed_evidence()
     check_committed_controls()
+    check_dispatcher_publication()
     return _checker.summary("layout/test_verify_whole.py")
 
 
