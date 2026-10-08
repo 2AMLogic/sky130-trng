@@ -49,14 +49,14 @@ python3 sim/raw-bit-volume-campaign/behavioral_raw_bit.py --set hot --emit-recor
 python3 sim/raw-bit-volume-campaign/behavioral_raw_bit.py --regenerate-check sim/raw-bit-volume-campaign/records/<hot id>.json
 ```
 
-**Status: blocked on sim evidence.** The three combining batch submissions were
-refused by the fleet (runner klt 0.5.0 vs client 0.6.0,
-`batch_runner_version_mismatch`; plus transient `batch_no_capacity` / the
-8-instance cap; tool gap filed as 2AMLogic/klayout-tools#2851). No local
-fallback was run, and no combining records or hot volume record exist yet.
-`PVT_POINTS` therefore still equals the #188 set; the hot points join it
-automatically once the three combining records are committed, and the
-hot-dependent tests skip (visibly) until then.
+**Status: evidence produced.** The first submission attempt was refused by the
+fleet (runner klt 0.5.0 vs client 0.6.0, `batch_runner_version_mismatch`;
+tool gap 2AMLogic/klayout-tools#2851); after the runner matched, the three
+combining requests ran on the batch fleet (all pass; jobs
+`klt-sim-b56cd6e8d900` 1.62 V, `klt-sim-7ad46dacd155` 1.8 V,
+`klt-sim-1f559388f909` 1.98 V) and were committed as combining records
+`20261008-135355-847b454`, `-135356-`, `-135357-`. No local fallback was run.
+The hot volume record is `records/20261008-135454-847b454`.
 
 `--set hot` mints a record with ONLY the 18 hot streams (3 process x 3 supplies
 x 2 Ts, 131072 bits each) and runs the jitter cross-check over all six PVT
