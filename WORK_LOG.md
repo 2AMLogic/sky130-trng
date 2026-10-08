@@ -2,8 +2,29 @@
 
 Chronological record of recently merged pull requests and closed issues.
 
+### 2026-10-08
+
+- **PR #204**: Whole-block DRC, mixed-level LVS and fault controls for trng_whole (#173)
+- **PR #203**: Re-derive and empirically validate RCT/APT cutoffs against estimated H (#196)
+- **PR #202**: Add 125 C combining evidence and hot volume record (#197)
+- **PR #199**: Hot-corner (125 C) calibration plumbing for the raw-bit volume campaign (#197, partial: batch fleet refused jobs)
+- **PR #198**: Run SP 800-22 battery and 90B estimators on the #188 volume streams
+- **PR #194**: Raw-bit volume campaign: >=1e5 behavioral bits per PVT corner (#188)
+- **PR #193**: ci: run sim/tests unit tests in the lint job
+- **PR #192**: feat(sim): SP 800-22-style battery + non-MCV SP 800-90B estimators (#189)
+- **Issue #170** (closed): Whole-block integration: compose analog+digital GDS, block DRC/LVS and post-layout PVT (remaining #18 AC3)
+- **Issue #173** (closed): Whole-block physical verification: DRC/LVS and interface/supply negative controls
+- **Issue #196** (closed): Re-derive and empirically validate RCT/APT health-test cutoffs against estimated H
+- **Issue #197** (closed): Extend raw-bit volume campaign calibration to the 125 C corner of the operating envelope
+- **Issue #195** (closed): Run the SP 800-22 battery and 90B estimators on the #188 volume streams
+- **Issue #188** (closed): Raw-bit volume campaign: >=1e5 bits per PVT corner for statistical evidence (current record has 24)
+- **Issue #190** (closed): CI: run sim/tests unit tests (test_raw_bit_entropy, test_digital_section) in the lint job
+- **Issue #189** (closed): Add SP 800-22-style battery and non-MCV SP 800-90B estimators to the raw-bit analysis
+
 ### 2026-10-07
 
+- **PR #187**: Re-extract layout/pex* on #181 geometry; re-measure assembled ring via klt sim (#184)
+- **Issue #184** (closed): Re-extract post-layout netlist libraries (layout/pex*) on the regenerated #181 geometry
 - **PR #185**: fix(layout): regenerate the analog cell chain on the klt cut-size/grid fix
 - **Issue #181** (closed): Regenerate sampler_core analog cells to clear 5664 licon1.ongrid.1 violations on the current klt sky130 deck
 - **PR #182**: docs: reconcile Challenge #4 scorecard against whole-block composition (Part of #18)

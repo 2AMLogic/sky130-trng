@@ -19,13 +19,13 @@ Issues the operator starred (`loom:operator-priority`); land these first.
 
 Human-approved issues ready for implementation (`loom:issue`).
 
-- **#184**: Re-extract post-layout netlist libraries (layout/pex*) on the regenerated #181 geometry
+_None._
 
 ## In Progress
 
 Issues currently being built (`loom:building`).
 
-_None._
+- **#200**: Supply-ripple and injection-lock robustness campaign for the RO array (transistor level)
 
 ## PRs Awaiting Review
 
@@ -43,17 +43,15 @@ _None._
 
 Issues carrying `loom:curated`.
 
-- **#173**: Whole-block physical verification: DRC/LVS and interface/supply negative controls *(curated)*
-- **#184**: Re-extract post-layout netlist libraries (layout/pex*) on the regenerated #181 geometry *(curated)*
+- **#162**: README: embed the fleet burndown chart (one line) *(curated)*
 
 ## Proposed (Architect / Hermit)
 
-_None._
+- **#201**: Gated-off analog block idle/leakage across the full PVT envelope incl. +125 C, with combined digital standby estimate *(architect)*
 
 ## Epics
 
 - **#3**: Track the gap to T1 sim-validated / bronze (klayout-tools design-evidence tiers)
-- **#170**: Whole-block integration: compose analog+digital GDS, block DRC/LVS and post-layout PVT (remaining #18 AC3)
 
 ## Backlog Balance
 
@@ -61,11 +59,11 @@ _None._
 |------|-------|
 | Operator merge-risk holds | 0 |
 | Operator priority | 1 |
-| Ready (`loom:issue`) | 1 |
-| In Progress (`loom:building`) | 0 |
+| Ready (`loom:issue`) | 0 |
+| In Progress (`loom:building`) | 1 |
 | PRs awaiting review | 0 |
 | Approved PRs awaiting merge | 0 |
-| Curated | 2 |
-| Architect / Hermit proposals | 0 |
-| Active epics | 2 |
+| Curated | 1 |
+| Architect / Hermit proposals | 1 |
+| Active epics | 1 |
 <!-- guide:plan-body:end -->
