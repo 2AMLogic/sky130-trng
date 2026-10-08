@@ -12,10 +12,15 @@ input at alpha = 0.01; short input must be INSUFFICIENT, never PASS.
 
 from __future__ import annotations
 
+import hashlib
 import importlib.util
+import io
+import json
 import random
 import sys
+import tempfile
 import unittest
+from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -200,6 +205,187 @@ class TestRecordCaveat(unittest.TestCase):
         self.assertIn("provisional until measured on silicon", body)
         for c in summary["per_corner"]:
             self.assertEqual(c["battery"]["verdict"], "INSUFFICIENT")
+
+
+def pack(bits):
+    return "".join(f"{int(''.join(map(str, bits[i:i + 8])), 2):02x}"
+                   for i in range(0, len(bits), 8))
+
+
+class TestVolumeAdapter(unittest.TestCase):
+    N = 5120  # 10 segments of 512 (SEGMENT_LEN patched below)
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self._tmp.cleanup)
+        self.root = Path(self._tmp.name)
+        self._saved = (B.SEGMENT_LEN, B.SEGMENT_COUNT, B.REPO_ROOT,
+                       B.RECORDS_DIR)
+        B.SEGMENT_LEN, B.SEGMENT_COUNT = 512, 10
+        B.REPO_ROOT = self.root
+        B.RECORDS_DIR = self.root / "sim" / "raw-bit-min-entropy" / "records"
+        self.addCleanup(self._restore)
+        base = self.root / "sim" / B.VOLUME_SLUG
+        self.rid = "20260101-000000-abc1234"
+        (base / "records").mkdir(parents=True)
+        self.runs = base / "runs" / self.rid
+        self.runs.mkdir(parents=True)
+        self.src = base / "records" / f"{self.rid}.json"
+        self.streams = []
+        for i, ts in enumerate(("Ts20us", "Ts100ns")):
+            bits = ideal(self.N, seed=10 + i)
+            text = pack(bits)
+            name = f"bits_tt_{ts}.hex.txt"
+            (self.runs / name).write_text(text + "\n")
+            self.streams.append({
+                "corner": "tt", "temp_c": 27.0, "vdd_v": 1.8,
+                "ts_s": 2e-5 if i == 0 else 1e-7, "ts_name": ts,
+                "seed": 100 + i, "file": name, "n": self.N,
+                "sha256_hex": hashlib.sha256(text.encode()).hexdigest()})
+        self.write_source()
+        self.src.with_suffix(".md").write_text(
+            "# x\n\n" + B.VOLUME_CAVEATS_HEADING + "\n\n"
+            "- **Behavioral model, not transistor-level.** Provisional.\n"
+            "- **Not an SP 800-90B assessment.**\n\n---\n\n## Provenance\n")
+
+    def _restore(self):
+        (B.SEGMENT_LEN, B.SEGMENT_COUNT, B.REPO_ROOT, B.RECORDS_DIR) = self._saved
+
+    def write_source(self):
+        self.src.write_text(json.dumps({
+            "record_id": self.rid, "slug": B.VOLUME_SLUG,
+            "level": "behavioral", "streams": self.streams}))
+
+    def mint(self):
+        args = ["--volume-record", str(self.src), "--emit-record"]
+        with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+            self.assertEqual(B.main(args), 0)
+        recs = sorted(B.RECORDS_DIR.glob("*.json"))
+        self.assertEqual(len(recs), 1)
+        return recs[0]
+
+    def check(self, rec):
+        out, err = io.StringIO(), io.StringIO()
+        with redirect_stdout(out), redirect_stderr(err):
+            rc = B.main(["--check", str(rec)])
+        return rc, err.getvalue()
+
+    def test_msb_first(self):
+        self.assertEqual(B.decode_packed_hex("80"), [1, 0, 0, 0, 0, 0, 0, 0])
+        self.assertEqual(B.decode_packed_hex("01a5"),
+                         [0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1])
+
+    def test_malformed_hex_rejected(self):
+        for bad in ("abc", "zz", "AB", "a b"):
+            with self.assertRaises(B.VolumeInputError):
+                B.decode_packed_hex(bad)
+
+    def test_trailing_newline_and_hash(self):
+        row = self.streams[0]
+        bits = B.load_stream(self.runs / row["file"], row["n"], row["sha256_hex"])
+        self.assertEqual(len(bits), self.N)
+        self.assertEqual(pack(bits) + "\n", (self.runs / row["file"]).read_text())
+        # same text without the newline hashes identically (newline excluded)
+        f = self.runs / "nonl.txt"
+        f.write_text(pack(bits))
+        self.assertEqual(B.load_stream(f, row["n"], row["sha256_hex"]), bits)
+
+    def test_rejections(self):
+        row = self.streams[0]
+        f = self.runs / row["file"]
+        with self.assertRaises(B.VolumeInputError):   # absent
+            B.load_stream(self.runs / "nope.txt", row["n"], row["sha256_hex"])
+        with self.assertRaises(B.VolumeInputError):   # length mismatch
+            B.load_stream(f, row["n"] + 8, row["sha256_hex"])
+        with self.assertRaises(B.VolumeInputError):   # hash mismatch
+            B.load_stream(f, row["n"], "0" * 64)
+        trunc = self.runs / "trunc.txt"
+        trunc.write_text(f.read_text()[:-5])
+        with self.assertRaises(B.VolumeInputError):   # truncated
+            B.load_stream(trunc, row["n"], row["sha256_hex"])
+        bad = "zz" + f.read_text()[2:-1]
+        g = self.runs / "bad.txt"
+        g.write_text(bad)
+        with self.assertRaises(B.VolumeInputError):   # malformed, hash matches
+            B.load_stream(g, row["n"], hashlib.sha256(bad.encode()).hexdigest())
+
+    def test_source_missing_stream_aborts(self):
+        (self.runs / self.streams[1]["file"]).unlink()
+        with self.assertRaises(B.VolumeInputError):
+            B.load_volume_source(self.src)
+
+    def test_source_wrong_slug_or_path_traversal(self):
+        self.streams[0]["file"] = "../x.txt"
+        self.write_source()
+        with self.assertRaises(B.VolumeInputError):
+            B.load_volume_source(self.src)
+
+    def test_payload_provenance_and_min_h(self):
+        pl = B.volume_payload(self.src)
+        self.assertEqual(pl["segment_policy"]["len"], 512)
+        for row, src in zip(pl["per_stream"], self.streams):
+            for k in ("corner", "temp_c", "vdd_v", "ts_s", "seed"):
+                self.assertEqual(row[k], src[k])
+            self.assertEqual(row["source_file"], src["file"])
+            self.assertEqual(row["source_sha256_hex"], src["sha256_hex"])
+            e = row["estimators"]
+            hs = [v["h_bits"] for v in e["estimators"].values()
+                  if v["status"] == "OK"]
+            self.assertEqual(e["h_min_bits"], min(hs))
+            self.assertIn(e["binding_estimator"], e["binding_ties"])
+            for t in e["binding_ties"]:
+                self.assertEqual(e["estimators"][t]["h_bits"], min(hs))
+            self.assertEqual(row["segmented"]["segments"], 10)
+            self.assertEqual(row["single_sequence"]["segments"], 1)
+
+    def test_binding_with_zero_estimate_and_ties(self):
+        a = B.analyse_stream([1] * 13000)
+        self.assertEqual(a["estimators"]["h_min_bits"], 0.0)
+        self.assertIn(a["estimators"]["binding_estimator"],
+                      a["estimators"]["binding_ties"])
+        self.assertGreater(len(a["estimators"]["binding_ties"]), 1)
+
+    def test_failures_visible_and_ts_separate_and_caveats(self):
+        pl = B.volume_payload(self.src)
+        pl["per_stream"][1]["single_sequence"]["tests"]["serial_1"]["status"] = "FAIL"
+        body = B.render_volume(pl, B.source_caveats(self.src))
+        self.assertIn("serial_1", body)
+        self.assertLess(body.index("## Ts20us"), body.index("## Ts100ns"))
+        self.assertIn("- **Behavioral model, not transistor-level.** Provisional.",
+                      body)
+        self.assertIn("provisional until measured on silicon", body)
+        self.assertIn("no formal NIST assessment", body)
+
+    def test_check_roundtrip_and_failures(self):
+        rec = self.mint()
+        committed = json.loads(rec.read_text())
+        self.assertEqual(committed["level"], "behavioral (derived)")
+        self.assertEqual(len(committed["ts20us_min_entropy"]), 1)
+        before = {p: p.read_bytes() for p in B.RECORDS_DIR.iterdir()}
+        rc, _ = self.check(rec)
+        self.assertEqual(rc, 0)
+        self.assertEqual(before, {p: p.read_bytes() for p in B.RECORDS_DIR.iterdir()})
+        # altered expected result
+        bad = json.loads(rec.read_text())
+        bad["analysis_payload"]["per_stream"][0]["estimators"]["h_min_bits"] = 0.5
+        rec.write_text(json.dumps(bad))
+        rc, err = self.check(rec)
+        self.assertNotEqual(rc, 0)
+        self.assertIn("CHECK FAILED", err)
+        rec.write_text(json.dumps(committed))
+        # altered markdown table
+        md = rec.with_suffix(".md")
+        good_md = md.read_text()
+        md.write_text(good_md.replace("| PASS |", "| FAIL |", 1)
+                      if "| PASS |" in good_md else good_md + "x")
+        self.assertNotEqual(self.check(rec)[0], 0)
+        md.write_text(good_md)
+        self.assertEqual(self.check(rec)[0], 0)
+        # altered input stream (hash no longer matches)
+        f = self.runs / self.streams[0]["file"]
+        f.write_text(("00" + f.read_text()[2:]))
+        self.assertNotEqual(self.check(rec)[0], 0)
+        self.assertEqual(len(list(B.RECORDS_DIR.glob("*.json"))), 1)
 
 
 if __name__ == "__main__":

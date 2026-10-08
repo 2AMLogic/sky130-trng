@@ -44,13 +44,37 @@ Usage
 -----
     python3 sim/raw-bit-min-entropy/analysis/raw-bit-battery.py
     python3 sim/raw-bit-min-entropy/analysis/raw-bit-battery.py --emit-record
+
+Volume-record input (issue #195)
+--------------------------------
+`--volume-record SOURCE.json` selects an explicit `raw-bit-volume-campaign`
+record instead of the legacy transistor campaign records.  Every manifest
+stream is read from the source's `runs/<record_id>/` directory, decoded MSB
+first, and checked against its declared `n` and `sha256_hex` (SHA-256 of the
+hex text without its trailing newline) before analysis; any missing,
+malformed, truncated or mismatched stream aborts the run.  Each stream gets a
+full-stream single-sequence battery, a segmented pass-proportion battery
+(`SEGMENT_COUNT` x `SEGMENT_LEN` non-overlapping segments, covering the whole
+stream), and the six 90B estimators on the full stream.  Segments and PVT
+streams are NOT independent silicon trials.
+
+    python3 .../raw-bit-battery.py --volume-record sim/raw-bit-volume-campaign/records/<id>.json
+    python3 .../raw-bit-battery.py --volume-record <src.json> --emit-record
+    python3 .../raw-bit-battery.py --check sim/raw-bit-min-entropy/records/<rid>.json
+
+`--check` recomputes the analysis from the input streams and compares it, and
+the rendered tables, with the committed record; it exits nonzero on any
+difference and never mints or writes anything.
 """
 
 from __future__ import annotations
 
 import argparse
+import hashlib
 import importlib.util
+import json
 import math
+import re
 import sys
 from collections import Counter
 from pathlib import Path
@@ -92,6 +116,10 @@ ESTIMATOR_MIN_N = {
     "lrs": 1000,
 }
 SOURCE_NOTE = "provisional until measured on silicon"
+SEGMENT_COUNT = 16  # volume adapter: 16 non-overlapping segments ...
+SEGMENT_LEN = 8192  # ... of 8192 bits (covers 131072 samples exactly)
+VOLUME_SLUG = "raw-bit-volume-campaign"
+VOLUME_CAVEATS_HEADING = "## Caveats that bound how this record may be cited"
 
 
 # ---------------------------------------------------------------- special fns
@@ -533,12 +561,318 @@ def analyse_record(rec: dict) -> tuple[str, dict]:
     ]
     return "\n".join(lines), {"per_corner": out}
 
+# --------------------------------------------------- volume-record adapter
+
+class VolumeInputError(ValueError):
+    """A volume-record stream is missing, malformed, truncated or mismatched."""
+
+
+_HEX_RE = re.compile(r"[0-9a-f]*")
+
+
+def decode_packed_hex(text: str) -> list[int]:
+    """Decode packed lowercase hex, MSB of each byte first (as `pack_hex`)."""
+    if len(text) % 2 or not _HEX_RE.fullmatch(text):
+        raise VolumeInputError("not an even-length lowercase hex string")
+    return [int(c) for byte in bytes.fromhex(text) for c in f"{byte:08b}"]
+
+
+def load_stream(path: Path, n: int, sha256_hex: str) -> list[int]:
+    """Read one packed-hex stream file and verify declared n and hash.
+
+    The source hashes the hex characters without the writer's single
+    trailing newline (not the decoded bytes).
+    """
+    try:
+        raw = path.read_text()
+    except OSError as exc:
+        raise VolumeInputError(f"cannot read {path}: {exc}") from exc
+    text = raw[:-1] if raw.endswith("\n") else raw
+    digest = hashlib.sha256(text.encode()).hexdigest()
+    if digest != sha256_hex:
+        raise VolumeInputError(
+            f"{path.name}: sha256 mismatch (declared {sha256_hex}, got {digest})")
+    try:
+        bits = decode_packed_hex(text)
+    except VolumeInputError as exc:
+        raise VolumeInputError(f"{path.name}: {exc}") from exc
+    if len(bits) != n:
+        raise VolumeInputError(
+            f"{path.name}: length mismatch (declared n={n}, decoded {len(bits)})")
+    return bits
+
+
+def load_volume_source(source_json: Path) -> tuple[dict, list[tuple[dict, list[int]]], str]:
+    """Return (source record, [(manifest row, bits)], sha256 of source JSON)."""
+    source_json = Path(source_json)
+    try:
+        raw = source_json.read_bytes()
+        rec = json.loads(raw)
+    except (OSError, ValueError) as exc:
+        raise VolumeInputError(f"cannot read source record {source_json}: {exc}") from exc
+    for key in ("record_id", "slug", "level", "streams"):
+        if key not in rec:
+            raise VolumeInputError(f"source record lacks `{key}`")
+    if rec["slug"] != VOLUME_SLUG:
+        raise VolumeInputError(f"source slug {rec['slug']!r} is not {VOLUME_SLUG!r}")
+    if source_json.stem != rec["record_id"]:
+        raise VolumeInputError("source file name does not match its record_id")
+    if not rec["streams"]:
+        raise VolumeInputError("source record has an empty stream manifest")
+    runs_dir = source_json.parent.parent / "runs" / rec["record_id"]
+    streams = []
+    for row in rec["streams"]:
+        for key in ("corner", "temp_c", "vdd_v", "ts_s", "ts_name", "seed",
+                    "file", "n", "sha256_hex"):
+            if key not in row:
+                raise VolumeInputError(f"manifest row lacks `{key}`: {row.get('file')}")
+        if Path(row["file"]).name != row["file"]:
+            raise VolumeInputError(f"manifest file {row['file']!r} is not a bare name")
+        streams.append((row, load_stream(runs_dir / row["file"], row["n"],
+                                         row["sha256_hex"])))
+    return rec, streams, hashlib.sha256(raw).hexdigest()
+
+
+def source_caveats(source_json: Path) -> list[str]:
+    """Verbatim bullet lines of the source .md caveats section."""
+    md = Path(source_json).with_suffix(".md")
+    try:
+        lines = md.read_text().splitlines()
+    except OSError as exc:
+        raise VolumeInputError(f"cannot read source markdown {md}: {exc}") from exc
+    if VOLUME_CAVEATS_HEADING not in lines:
+        raise VolumeInputError(f"{md.name} lacks the caveats section")
+    out = []
+    for ln in lines[lines.index(VOLUME_CAVEATS_HEADING) + 1:]:
+        if ln.startswith("---") or ln.startswith("## "):
+            break
+        if ln.strip():
+            out.append(ln)
+    if not out:
+        raise VolumeInputError(f"{md.name} caveats section is empty")
+    return out
+
+
+def analyse_stream(bits: list[int]) -> dict:
+    """Full-stream battery + estimators and the segmented battery."""
+    est = entropy_estimates(bits)
+    h = est["h_min_bits"]
+    ties = [k for k, v in est["estimators"].items()
+            if v["status"] == "OK" and v["h_bits"] == h]
+    est["binding_ties"] = ties
+    return {"n": len(bits),
+            "single_sequence": run_battery(bits),
+            "segmented": run_battery(bits, segment_len=SEGMENT_LEN),
+            "estimators": est}
+
+
+def volume_payload(source_json: Path) -> dict:
+    """Deterministic, mint-time-field-free analysis payload."""
+    rec, streams, src_sha = load_volume_source(source_json)
+    rows = []
+    for row, bits in streams:
+        a = analyse_stream(bits)
+        rows.append({"corner": row["corner"], "temp_c": row["temp_c"],
+                     "vdd_v": row["vdd_v"], "ts_s": row["ts_s"],
+                     "ts_name": row["ts_name"], "seed": row["seed"],
+                     "source_file": row["file"],
+                     "source_sha256_hex": row["sha256_hex"], **a})
+    return {"source_record": rec["record_id"],
+            "source_level": rec["level"],
+            "source_json_sha256": src_sha,
+            "segment_policy": {"count": SEGMENT_COUNT, "len": SEGMENT_LEN,
+                               "non_overlapping": True,
+                               "covers_bits": SEGMENT_COUNT * SEGMENT_LEN},
+            "alpha": ALPHA,
+            "per_stream": rows}
+
+
+def _failed(block: dict) -> str:
+    f = [k for k, v in block["tests"].items() if v["status"] == "FAIL"]
+    return ", ".join(f) if f else "-"
+
+
+def render_volume(payload: dict, caveats: list[str]) -> str:
+    """Stable markdown body, streams grouped by Ts (design point first)."""
+    rows = payload["per_stream"]
+    ts_groups = sorted({(r["ts_s"], r["ts_name"]) for r in rows}, reverse=True)
+    pol = payload["segment_policy"]
+    out = [f"Source record: `{payload['source_record']}` "
+           f"(level `{payload['source_level']}`; source JSON sha256 "
+           f"`{payload['source_json_sha256']}`).", "",
+           f"Segment policy: {pol['count']} non-overlapping segments of "
+           f"{pol['len']} bits ({pol['covers_bits']} bits). Segments and PVT "
+           "streams are not independent silicon trials. Single-sequence "
+           "verdict = full stream, each test PASS iff p >= alpha "
+           f"({payload['alpha']}); segmented verdict = SP 800-22 "
+           "pass-proportion over the segments. A FAIL in either is reported "
+           "as found; no row is excluded.", ""]
+    for ts_s, ts_name in ts_groups:
+        grp = [r for r in rows if r["ts_name"] == ts_name]
+        tag = ("DR-0003 design point" if ts_name == "Ts20us"
+               else "cross-check only")
+        out += [f"## {ts_name} (Ts = {ts_s:g} s) -- {tag}", "",
+                "### Verdicts and min-over-estimators H", "",
+                "| corner | T (C) | Vdd (V) | seed | n | single-seq | "
+                "single-seq FAIL | segmented | segmented FAIL | min H (bit/sample) | "
+                "binding | source file | source sha256 |",
+                "|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
+        for r in grp:
+            e = r["estimators"]
+            h = e["h_min_bits"]
+            bind = e["binding_estimator"] or "-"
+            if len(e["binding_ties"]) > 1:
+                bind += " (tie: " + ", ".join(e["binding_ties"]) + ")"
+            out.append(
+                f"| {r['corner']} | {r['temp_c']:g} | {r['vdd_v']:g} | "
+                f"{r['seed']} | {r['n']} | {r['single_sequence']['verdict']} | "
+                f"{_failed(r['single_sequence'])} | {r['segmented']['verdict']} | "
+                f"{_failed(r['segmented'])} | "
+                f"{'-' if h is None else f'{h:.4f}'} | {bind} | "
+                f"`{r['source_file']}` | `{r['source_sha256_hex']}` |")
+        out += ["", "### 90B estimators (bit/sample, full stream)", "",
+                "| corner | T (C) | Vdd (V) | " + " | ".join(ESTIMATOR_MIN_N) + " |",
+                "|---|---|---|" + "---|" * len(ESTIMATOR_MIN_N)]
+        for r in grp:
+            ev = r["estimators"]["estimators"]
+            cells = [f"{ev[k]['h_bits']:.4f}" if ev[k]["status"] == "OK"
+                     else "INSUFFICIENT" for k in ESTIMATOR_MIN_N]
+            out.append(f"| {r['corner']} | {r['temp_c']:g} | {r['vdd_v']:g} | "
+                       + " | ".join(cells) + " |")
+        out += ["", "### Single-sequence p-values (full stream)", "",
+                "| corner | T (C) | Vdd (V) | " + " | ".join(BATTERY) + " |",
+                "|---|---|---|" + "---|" * len(BATTERY)]
+        for r in grp:
+            t = r["single_sequence"]["tests"]
+            cells = [("%.4g%s" % (t[k]["p_values"][0],
+                                  "" if t[k]["status"] == "PASS" else " F"))
+                     if "p_values" in t[k] else "INSUFFICIENT" for k in BATTERY]
+            out.append(f"| {r['corner']} | {r['temp_c']:g} | {r['vdd_v']:g} | "
+                       + " | ".join(cells) + " |")
+        out += ["", "### Segmented pass proportions "
+                f"(passing segments / {pol['count']}; F = below criterion)", "",
+                "| corner | T (C) | Vdd (V) | " + " | ".join(BATTERY) + " |",
+                "|---|---|---|" + "---|" * len(BATTERY)]
+        for r in grp:
+            t = r["segmented"]["tests"]
+            cells = [("%.4f%s" % (t[k]["proportion"],
+                                  "" if t[k]["status"] == "PASS" else " F"))
+                     if "proportion" in t[k] else "INSUFFICIENT" for k in BATTERY]
+            out.append(f"| {r['corner']} | {r['temp_c']:g} | {r['vdd_v']:g} | "
+                       + " | ".join(cells) + " |")
+        out.append("")
+    out += ["`INSUFFICIENT` would mean n or the segment count/length is below a "
+            "test's or estimator's floor (battery floors 100-256 bits, "
+            "estimator floors 1000-12000 bits, segmented criterion >= "
+            f"{MIN_SEGMENTS} segments). Ts groups are reported separately and "
+            "are not averaged. The Ts = 100 ns streams are a cross-check, and "
+            "their serial structure (source H_ctx 0.4-0.75) is expected to "
+            "fail serial tests; whatever the battery found is shown above, "
+            "not excluded.", "",
+            "## Caveats that bound how this result may be cited", "",
+            "Carried verbatim from the source record:", ""]
+    out += caveats
+    out += ["",
+            "Added by this derived record:", "",
+            "- **Behavioral level.** Derived from behavioral-model streams; "
+            "not transistor-level and not silicon. The Ts = 20 us streams are "
+            "the model's DR-0003 design point; Ts = 100 ns is cross-check only.",
+            "- **Reduced, approximate battery and estimators.** Reduced "
+            "SP 800-22-style battery (no rank, DFT, templates, Maurer, random "
+            "excursions, or p-value uniformity check); the 90B Markov "
+            "interval is a conservative Hoeffding variant and the t-tuple/LRS "
+            "window is capped at "
+            f"{TUPLE_CAP}. This is no formal NIST assessment and no silicon "
+            "entropy certification.",
+            "- **Simulation-derived entropy claims are provisional until "
+            "measured on silicon** (root `CLAUDE.md`). No spec value or "
+            "decision record is changed by this record.",
+            ""]
+    return "\n".join(out)
+
+
+def volume_header(rid: str, payload: dict, source_json: Path) -> list[str]:
+    rel = Path(source_json).resolve().relative_to(REPO_ROOT).as_posix()
+    return [
+        f"# {rid} -- raw-bit-min-entropy (battery + 90B estimators, volume streams)",
+        "",
+        "**Claim**: reduced SP 800-22-style battery (single-sequence and "
+        "segmented) and SP 800-90B non-IID estimators (min across estimators) "
+        f"over the {len(payload['per_stream'])} behavioral raw-bit streams of "
+        f"`{payload['source_record']}`, reported per stream and grouped by Ts.",
+        "",
+        "**Level**: behavioral (derived -- arithmetic over the cited "
+        "behavioral streams)",
+        "**Seed**: N/A (deterministic reduction; per-stream source seeds are "
+        "in the tables)",
+        "**Analysis**: `sim/raw-bit-min-entropy/analysis/raw-bit-battery.py`",
+        "",
+        "## Source record and replay",
+        "",
+        f"- `{payload['source_record']}` (`{rel}`)",
+        "- Input: `python3 sim/raw-bit-min-entropy/analysis/raw-bit-battery.py "
+        f"--volume-record {rel}`",
+        "- Replay (no minting, nonzero exit on any change in results or input "
+        "hashes): `python3 sim/raw-bit-min-entropy/analysis/raw-bit-battery.py "
+        f"--check sim/raw-bit-min-entropy/records/{rid}.json`",
+        "",
+        "---",
+        "",
+    ]
+
+
+def check_volume_record(record_json: Path) -> int:
+    """Recompute and compare against a committed record; never writes."""
+    record_json = Path(record_json)
+    try:
+        committed = json.loads(record_json.read_text())
+        md_text = record_json.with_suffix(".md").read_text()
+        src = REPO_ROOT / committed["source_json"]
+        want = committed["analysis_payload"]
+        payload = volume_payload(src)
+        caveats = source_caveats(src)
+    except (OSError, ValueError, KeyError) as exc:
+        print(f"CHECK FAILED: {exc}", file=sys.stderr)
+        return 1
+    got = json.loads(json.dumps(payload))
+    rc = 0
+    if got != want:
+        rc = 1
+        diffs = [r["source_file"] for r, w in zip(got["per_stream"],
+                 want.get("per_stream", [])) if r != w]
+        print("CHECK FAILED: analysis payload differs"
+              + (f" (streams: {', '.join(diffs)})" if diffs else ""),
+              file=sys.stderr)
+    if render_volume(want, caveats) not in md_text:
+        rc = 1
+        print("CHECK FAILED: committed markdown tables differ from the "
+              "committed payload or source caveats", file=sys.stderr)
+    if render_volume(payload, caveats) not in md_text:
+        rc = 1
+        print("CHECK FAILED: recomputed tables differ from committed markdown",
+              file=sys.stderr)
+    if rc == 0:
+        print(f"CHECK OK: {record_json.name} reproduces byte-for-byte "
+              f"({len(got['per_stream'])} streams)")
+    return rc
+
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--emit-record", action="store_true")
     ap.add_argument("--author", default="loom-builder@sky130-trng")
+    ap.add_argument("--volume-record", type=Path, metavar="SOURCE.json",
+                    help="analyse the streams of this raw-bit-volume-campaign "
+                    "record (explicit; never auto-selected)")
+    ap.add_argument("--check", type=Path, metavar="RECORD.json",
+                    help="recompute and compare a committed volume-derived "
+                    "record; exit nonzero on difference; writes nothing")
     args = ap.parse_args(argv)
+
+    if args.check:
+        return check_volume_record(args.check)
+    if args.volume_record:
+        return main_volume(args)
 
     records = raw_bit_entropy.campaign_records(RECORDS_DIR)
     if not records:
@@ -577,6 +911,40 @@ def main(argv: list[str] | None = None) -> int:
            "timestamp_utc": now.isoformat(), "repo_sha": sha,
            "caveat": SOURCE_NOTE, **summary}
     result = mint_record(RECORDS_DIR, REPO_ROOT, rid, header, body, out,
+                         author=args.author, now=now, sha=sha)
+    return 0 if result is not None else 1
+
+
+def main_volume(args) -> int:
+    src = args.volume_record.resolve()
+    try:
+        payload = json.loads(json.dumps(volume_payload(src)))
+        caveats = source_caveats(src)
+    except VolumeInputError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 1
+    body = render_volume(payload, caveats)
+    print(body)
+    if not args.emit_record:
+        return 0
+    now, sha, rid = new_record_id(REPO_ROOT)
+    rel = src.relative_to(REPO_ROOT).as_posix()
+    out = {"record_id": rid, "slug": "raw-bit-min-entropy",
+           "level": "behavioral (derived)",
+           "analysis": "sim/raw-bit-min-entropy/analysis/raw-bit-battery.py",
+           "source_record": payload["source_record"], "source_json": rel,
+           "author": args.author, "timestamp_utc": now.isoformat(),
+           "repo_sha": sha, "caveat": SOURCE_NOTE,
+           "ts20us_min_entropy": [
+               {"corner": r["corner"], "temp_c": r["temp_c"],
+                "vdd_v": r["vdd_v"], "seed": r["seed"],
+                "h_min_bits": r["estimators"]["h_min_bits"],
+                "binding_estimator": r["estimators"]["binding_estimator"],
+                "binding_ties": r["estimators"]["binding_ties"]}
+               for r in payload["per_stream"] if r["ts_name"] == "Ts20us"],
+           "analysis_payload": payload}
+    result = mint_record(RECORDS_DIR, REPO_ROOT, rid,
+                         volume_header(rid, payload, src), body, out,
                          author=args.author, now=now, sha=sha)
     return 0 if result is not None else 1
 

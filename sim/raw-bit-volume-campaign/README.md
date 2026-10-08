@@ -30,3 +30,27 @@ and an `ro-ring-jitter-accumulation` (ring5) record: 27 C/1.8 V, -40 C/1.62 V,
 -40 C/1.98 V. Streams are provisional, simulation-derived, and not an SP 800-90B
 or SP 800-22 result (the battery is a separate issue). Records are append-only:
 a correction mints a new record naming the one it supersedes.
+
+## Battery and 90B analysis of these streams (issue #195)
+
+`sim/raw-bit-min-entropy/analysis/raw-bit-battery.py` has an explicit
+volume-record input. It reads the source JSON's `streams` manifest, resolves
+each file under `runs/<record_id>/`, decodes packed hex MSB first, and aborts
+on any missing, malformed, truncated, wrong-length or wrong-hash stream (the
+hash is of the hex text without its trailing newline). Per stream it runs the
+single-sequence battery, a segmented pass-proportion battery (16 x 8192-bit
+non-overlapping segments), and the 90B estimators (min H and binding
+estimator), grouped by Ts. Failures are reported, never filtered.
+
+```bash
+python3 sim/raw-bit-min-entropy/analysis/raw-bit-battery.py \
+    --volume-record sim/raw-bit-volume-campaign/records/<id>.json            # print only
+python3 sim/raw-bit-min-entropy/analysis/raw-bit-battery.py \
+    --volume-record sim/raw-bit-volume-campaign/records/<id>.json --emit-record
+python3 sim/raw-bit-min-entropy/analysis/raw-bit-battery.py \
+    --check sim/raw-bit-min-entropy/records/<derived-id>.json                # replay, writes nothing
+```
+
+The derived append-only record lands in `sim/raw-bit-min-entropy/records/`
+(`level: behavioral (derived)`); `--check` exits nonzero if results, input
+hashes or rendered tables change. Runtime is about one minute (pure Python).
