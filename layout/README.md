@@ -4,8 +4,34 @@ Physical layout evidence for the sky130-trng entropy source, verified with
 `klayout-tools` (`klt`) against the sky130 open PDK. See `layout/pdk.json`
 for the PDK/tool pin.
 
-**Status (issue #172, the current increment, written on top of the entries
-below): whole-block composition.** `layout/trng_whole/` composes the
+**Status (issue #173, the current increment, written on top of the entries
+below): whole-block physical verification.** `layout/trng_whole/verify/`
+runs DRC, extraction and a **mixed-level LVS** over the composed
+`trng_whole.gds` (an immutable #172 input, `sha256:af2f8dfe...`): **`klt drc`
+clean, 0 violations** (curated sky130 deck, 91 rules, `licon1.ongrid.1` still
+enforced), **`klt lvs` match, 0 error mismatches** with the analog macro at
+transistor level (264 MOSFETs) and the digital macro at standard-cell level
+(8605 placed cells as pin-only black boxes, fill/tap compared not pruned,
+hierarchy flattened), all **123 top-level ports** clean on a four-way coverage
+matrix (unique pin, not joined, LVS-paired by name, comparer-independent
+endpoint multisets equal), and **five isolated fault controls** (two swapped
+boundary-signal identities, a swapped analog-to-digital interface on the
+reference, a cut `raw_bit` route, a `vddr4`-to-`vdd` supply short) that each
+reach LVS and fail naming their nets, followed by an untouched baseline that
+still matches. The 5664 `licon1.ongrid.1` findings #172 reported were fixed
+upstream (klayout-tools#2648) and already absorbed by the #181 regeneration;
+no further regeneration was needed and no rule was waived. **This is
+whole-block project verification on klt's curated decks, not foundry
+sign-off.** Named limitations (digital cell internals and substrate/`VNB`
+unchecked, device bodies unchecked, `power_connectivity` not applicable to this
+reference form, 29 unloaded input pins have vacuous endpoint audits, partial
+DRC rule coverage, ...) are in `trng_whole/verify/coverage.md` and are carried
+into #174 and #170. #170, #18 AC3, DR-0003 section 8 / DR-0009 and the Unmet
+area target are **not** closed. Entry point: `layout/bin/verify-whole.py`
+(`run` / `controls` / `check`); evidence contract tests:
+`layout/test_verify_whole.py`. Handoff for #174: `trng_whole/verify/README.md`.
+
+**Status (issue #172, the previous increment): whole-block composition.** `layout/trng_whole/` composes the
 verified `sampler_core` and `trng_digital` macros into one routed top cell
 `trng_whole`: **18 whole-block nets (22 legs) routed, `unrouted_nets: []`, the
 four `vddr1`-`vddr4` rails drawn as four distinct dedicated routes to their own
@@ -18,8 +44,9 @@ narrow entry point, `layout/bin/compose-whole.py`; `compose-cell.py` and every
 `layout/*/cell.json` check are unchanged, and the verdict is explicitly
 **`composed; physical sign-off pending (#173 DRC/LVS, #174 characterization)`**.
 **Area: 378.16 x 333.5 um = 0.126116 mm2 against the unchanged `< 0.05 mm2`
-target: Unmet** (2.52x; `trng_digital` alone is 0.060 mm2). Whole-block
-DRC/LVS (#173), post-layout characterization (#174), #170, #18 AC3 and
+target: Unmet** (2.52x; `trng_digital` alone is 0.060 mm2). (Whole-block
+DRC/LVS were pending when this was written; they are now the issue #173 entry
+above.) Post-layout characterization (#174), #170, #18 AC3 and
 DR-0003 section 8 / DR-0009's measurement obligations are **not** closed --
 supply distribution geometry now exists, coupling/IR/period scatter are still
 unmeasured. The routing uses `met5` (`top_metal`), the only sky130 routing role
@@ -2276,22 +2303,24 @@ in `digital/flow/place-and-route/tool-pins.json`).
 | LVS, cell-level vs signal-pin-only netlist | match, `power_connectivity` match | `trng_digital/lvs.json` |
 | Post-route STA, 16 Liberty corners | 0 setup/hold violations | `trng_digital/sta.json` |
 
-**Whole-block status (updated 2026-10-07, issue #18): composed, not
-physically verified.** `layout/trng_whole/` (issue #172, PR #176) composes
-`sampler_core` and `trng_digital` into one routed top cell `trng_whole`. It is
-geometry plus an extraction-based connectivity audit, and its own verdict is
-`composed; physical sign-off pending`. The two halves' separate DRC/LVS
-results are **not** a block result and must not be cited as one.
+**Whole-block status (updated 2026-10-08, issues #18 / #173): composed and
+verified within the stated coverage; not signed off.** `layout/trng_whole/` (issue #172, PR #176) composes
+`sampler_core` and `trng_digital` into one routed top cell `trng_whole`; its own
+recorded verdict (`report.json`) is the composition-time `composed; physical
+sign-off pending`. Issue #173 then added whole-block DRC, extraction, LVS and
+fault controls under `trng_whole/verify/` (below). The two halves' separate
+DRC/LVS results are **not** a block result and must not be cited as one.
 
 | Whole-block check | Status | Evidence / tracker |
 |---|---|---|
 | Composition: 18/18 nets, 22/22 legs routed, `unrouted_nets: []`, 18 distinct extracted clusters, `vddr1`-`vddr4` distinct | done (composition only) | `trng_whole/report.json`, `trng_whole/README.md` |
 | `compose-whole.py --check` isolated rebuild | matches committed evidence (re-run 2026-10-07 after the #181 regeneration, klt `0.6.0+g5edb557f91d0`) | `trng_whole/` |
 | `layout/test_compose_whole.py` | PASS (re-run 2026-10-07) | `layout/test_compose_whole.py` |
-| Block DRC | **not signed off.** The informational run on the recomposed stream (issue #181, klt `0.6.0+g5edb557f91d0`, deck `sha256:2bcbd625…`) is clean, 0 violations. Before #181 it gave 5664 `licon1.ongrid.1`, all inside `sampler_core`. Informational only: #173 owns the sign-off verdict and its deck choice | `trng_whole/drc-informational.json`; #173 |
+| Block DRC | **clean, 0 violations (issue #173)** on the composed stream, klt `0.6.0+g5edb557f91d0`, curated sky130 deck `sha256:2bcbd625...`, 91 rules / 20 layers (45 deck rules skipped, 19 stream layers without rules: **not** foundry DRC; no antenna/density/seal-ring/latch-up). Before the #181 regeneration the stream gave 5664 `licon1.ongrid.1`, all inside `sampler_core` | `trng_whole/verify/drc.json` (request: `drc.request.json`); informational predecessor `trng_whole/drc-informational.json` |
 | `sampler_core` macro DRC on the current deck | **clean, 0 violations (regenerated, issue #181).** All nineteen `layout/*/cell.json` cells were rebuilt on klt `0.6.0+g5edb557f91d0` (klayout-tools#2778, the #2648 fix). On the same build and deck, the pre-#181 GDS (`sha256:a00f6550…`) gives 5664 `licon1.ongrid.1` + 198 `via.width.1`; the regenerated GDS (`sha256:e3ff54a9…`) gives 0. LVS is still 264/264 devices, 152/152 nets. See "Regeneration on the cut-size/grid fix (issue #181)" below | `sampler_core/drc.json`, `sampler_core/lvs.json` |
 | `trng_digital` macro DRC on the current deck | clean, 0 violations (re-run 2026-10-07, host klt `0.6.0+g1eb3e4bfd0f5`, confirmatory, not committed) | `trng_digital/drc.json` |
-| Block LVS (mixed transistor/cell-level) | **not run**; comparison boundary undefined | #173 |
+| Block LVS (mixed transistor/cell-level) | **match, 0 error mismatches (issue #173)**: analog transistor level (264/264 devices), digital standard-cell level (8605 black-box instances), 2511/2511 nets, 123/123 anchored pins. Coverage matrix, boundary and limitations stated in `trng_whole/verify/README.md`; digital cell internals, substrate/`VNB` and device bodies are **not** checked | `trng_whole/verify/lvs.json`, `lvs.request.json`, `lvs.ref.spice`, `coverage.md` |
+| Whole-block fault controls (swapped signal x3, disconnected interface, distinct-supply short) | **5/5 detected** (reach LVS, fail naming the nets); baseline re-run afterwards matches with identical stable fields | `trng_whole/verify/controls/` |
 | Block post-layout PVT, dynamic power, IR, `vddr` coupling | **not run** | #174 (`sim/README.md`, "Whole-block post-layout verification") |
 | Area vs `< 0.05 mm2` | **Unmet**: 0.126116 mm2 (2.52x) | `trng_whole/report.json` `area` |
 
@@ -2301,6 +2330,9 @@ Reproduction of what exists (pins as in `trng_whole/README.md`; no SPICE):
 python3 layout/test_compose_whole.py                                          # contract tests, no klt
 python3 layout/bin/compose-whole.py layout/trng_whole/floorplan.json --check  # isolated rebuild + diff
 python3 layout/bin/compose-whole.py layout/trng_whole/floorplan.json --informational-drc
+python3 layout/test_verify_whole.py                                           # whole-block verification evidence contract, no klt
+python layout/bin/verify-whole.py check   # (venv python) isolated DRC+extract+LVS re-run, diff vs committed (~8 min)
+python layout/bin/verify-whole.py controls   # (venv python) five fault controls + baseline re-run (~45 min)
 klt drc layout/trng_digital/trng_digital.gds --deck sky130 --format json      # digital macro re-check
 klt drc layout/sampler_core/sampler_core.gds --deck sky130 --format json      # clean since #181
 ```

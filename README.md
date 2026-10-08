@@ -6,13 +6,16 @@ open PDK — designed by AI agents driving
 [klayout-tools](https://github.com/2AMLogic/klayout-tools) and the
 open-source xschem + ngspice flow.
 
-**Status: whole-block composition complete; physical sign-off pending.**
+**Status: whole-block composed and verified within stated coverage; foundry sign-off not claimed.**
 The analog chain has transistor-level PVT and post-layout evidence, and the
 digital section has been synthesized, placed and routed. Both sections are
-composed into [`layout/trng_whole/`](layout/trng_whole/). Whole-block DRC/LVS
-(#173) and post-layout characterization (#174) remain open; analog-cell
-regeneration (#181) must clear the current deck's off-grid contact violations.
-Entropy claims remain provisional until silicon.
+composed into [`layout/trng_whole/`](layout/trng_whole/). Whole-block DRC and
+mixed-level LVS now pass within their stated coverage, with isolated fault
+controls ([`layout/trng_whole/verify/`](layout/trng_whole/verify/README.md),
+issue #173; curated-deck project verification, not foundry sign-off), and the
+analog cells were regenerated clean on the current deck (#181). Post-layout
+characterization (#174) remains open. Entropy claims remain provisional until
+silicon.
 
 **Built agent-native.** Every specification, decision record, testbench, and
 line of documentation here is produced by AI agents working from a ratified

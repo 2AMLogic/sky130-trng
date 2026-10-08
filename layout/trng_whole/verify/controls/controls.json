@@ -1,0 +1,1767 @@
+{
+  "schema_version": 1,
+  "issue": 173,
+  "not_signoff": "Whole-block project verification on klt's curated sky130 decks and the open_pdks install pinned in layout/pdk.json. NOT foundry sign-off: no foundry DRC/LVS/antenna/density runset, no parasitic extraction, no electrical or entropy characterisation. Provisional until silicon.",
+  "golden_gds_sha256": "af2f8dfe2800599e97d769bdedd14924c9fa3f24fc7e1c4f43ccd72ac5572ddd",
+  "golden_gds_unchanged": true,
+  "reference_sha256": "5b96d0a18d46ae7977d33868e07446c1f3e2e2f1536200b64030e4c6e0a83845",
+  "all_detected": true,
+  "controls": [
+    {
+      "id": "swap-analog-ring-bits",
+      "kind": "swap_labels",
+      "intent": "swapped signal: the identities of two distinct analog boundary outputs (ring_bit1, ring_bit2) are exchanged on a copy of the composed GDS (every label of both nets, all cells)",
+      "detected": true,
+      "reached_lvs_comparison": true,
+      "defect": {
+        "edit": {
+          "ring_bit1": 1,
+          "ring_bit2": 1
+        },
+        "pre_verification_proof": {
+          "baseline_labels_at_terminals": {
+            "ring_bit1": {
+              "analog_port": [
+                "a",
+                "inv_q_y",
+                "inv_q_y_via",
+                "inv_q_y_via2",
+                "nand_s2_a",
+                "nand_s2_a_stub",
+                "nand_s2_a_via",
+                "nand_s2_a_via2",
+                "q",
+                "ring_bit1",
+                "y"
+              ],
+              "pad": [
+                "a",
+                "inv_q_y",
+                "inv_q_y_via",
+                "inv_q_y_via2",
+                "nand_s2_a",
+                "nand_s2_a_stub",
+                "nand_s2_a_via",
+                "nand_s2_a_via2",
+                "q",
+                "ring_bit1",
+                "y"
+              ]
+            },
+            "ring_bit2": {
+              "analog_port": [
+                "a",
+                "inv_q_y",
+                "inv_q_y_via",
+                "inv_q_y_via2",
+                "nand_s2_a",
+                "nand_s2_a_stub",
+                "nand_s2_a_via",
+                "nand_s2_a_via2",
+                "q",
+                "ring_bit2",
+                "y"
+              ],
+              "pad": [
+                "a",
+                "inv_q_y",
+                "inv_q_y_via",
+                "inv_q_y_via2",
+                "nand_s2_a",
+                "nand_s2_a_stub",
+                "nand_s2_a_via",
+                "nand_s2_a_via2",
+                "q",
+                "ring_bit2",
+                "y"
+              ]
+            }
+          },
+          "variant_labels_at_terminals": {
+            "ring_bit1": {
+              "analog_port": [
+                "a",
+                "inv_q_y",
+                "inv_q_y_via",
+                "inv_q_y_via2",
+                "nand_s2_a",
+                "nand_s2_a_stub",
+                "nand_s2_a_via",
+                "nand_s2_a_via2",
+                "q",
+                "ring_bit2",
+                "y"
+              ],
+              "pad": [
+                "a",
+                "inv_q_y",
+                "inv_q_y_via",
+                "inv_q_y_via2",
+                "nand_s2_a",
+                "nand_s2_a_stub",
+                "nand_s2_a_via",
+                "nand_s2_a_via2",
+                "q",
+                "ring_bit2",
+                "y"
+              ]
+            },
+            "ring_bit2": {
+              "analog_port": [
+                "a",
+                "inv_q_y",
+                "inv_q_y_via",
+                "inv_q_y_via2",
+                "nand_s2_a",
+                "nand_s2_a_stub",
+                "nand_s2_a_via",
+                "nand_s2_a_via2",
+                "q",
+                "ring_bit1",
+                "y"
+              ],
+              "pad": [
+                "a",
+                "inv_q_y",
+                "inv_q_y_via",
+                "inv_q_y_via2",
+                "nand_s2_a",
+                "nand_s2_a_stub",
+                "nand_s2_a_via",
+                "nand_s2_a_via2",
+                "q",
+                "ring_bit1",
+                "y"
+              ]
+            }
+          }
+        }
+      },
+      "variant_gds_sha256": "68f23c3ce3a5595fe0edeaf6a32352b96c161b88ad1f92e4bb6f37550f5000d3",
+      "variant_reference_sha256": "5b96d0a18d46ae7977d33868e07446c1f3e2e2f1536200b64030e4c6e0a83845",
+      "lvs": {
+        "status": "mismatch",
+        "mismatch_count": 15,
+        "error_count": 14,
+        "error_categories": {
+          "device.unmatched": 10,
+          "net.unmatched": 4
+        },
+        "category_counts": {
+          "device.unmatched": 10,
+          "net.unmatched": 4,
+          "topology.top_level_pins_anchored": 1
+        },
+        "counts": {
+          "nets": {
+            "layout": 2511,
+            "reference": 2511,
+            "matched": 2981
+          },
+          "devices": {
+            "layout": 264,
+            "reference": 264,
+            "matched": 254
+          },
+          "pins": {
+            "layout": 123,
+            "reference": 123,
+            "matched": 595
+          }
+        },
+        "evidence": {
+          "named_nets": [
+            "ring_bit1",
+            "ring_bit2"
+          ],
+          "errors_naming_them": 10,
+          "reference_cards_attached": [
+            "A_SR1_MIS2NA",
+            "A_SR1_MIS2PA",
+            "A_SR1_MISN",
+            "A_SR1_MISP",
+            "A_SR2_MIS2NA",
+            "A_SR2_MIS2PA",
+            "A_SR2_MISN",
+            "A_SR2_MISP"
+          ],
+          "examples": [
+            {
+              "matched_via": "device/instance attached to the net in the reference",
+              "category": "device.unmatched",
+              "description": "device has no counterpart on the other side",
+              "net": null,
+              "instance": null,
+              "device": {
+                "layout": "\\$10",
+                "reference": "A_SR1_MIS2NB",
+                "class": "NFET"
+              },
+              "property": null
+            },
+            {
+              "matched_via": "device/instance attached to the net in the reference",
+              "category": "device.unmatched",
+              "description": "device has no counterpart on the other side",
+              "net": null,
+              "instance": null,
+              "device": {
+                "layout": "\\$13",
+                "reference": "A_SR2_MIS2NA",
+                "class": "NFET"
+              },
+              "property": null
+            },
+            {
+              "matched_via": "device/instance attached to the net in the reference",
+              "category": "device.unmatched",
+              "description": "device has no counterpart on the other side",
+              "net": null,
+              "instance": null,
+              "device": {
+                "layout": "\\$14",
+                "reference": "A_SR2_MIS2NB",
+                "class": "NFET"
+              },
+              "property": null
+            },
+            {
+              "matched_via": "device/instance attached to the net in the reference",
+              "category": "device.unmatched",
+              "description": "device has no counterpart on the other side",
+              "net": null,
+              "instance": null,
+              "device": {
+                "layout": "\\$148",
+                "reference": "A_SR1_MISP",
+                "class": "PFET"
+              },
+              "property": null
+            }
+          ]
+        },
+        "error_sample": [
+          {
+            "category": "device.unmatched",
+            "description": "device has no counterpart on the other side",
+            "side": "reference",
+            "net": null,
+            "device": {
+              "layout": "\\$10",
+              "reference": "A_SR1_MIS2NB",
+              "class": "NFET"
+            },
+            "property": null,
+            "instance": null,
+            "subcircuit": null,
+            "details": null
+          },
+          {
+            "category": "device.unmatched",
+            "description": "device has no counterpart on the other side",
+            "side": "reference",
+            "net": null,
+            "device": {
+              "layout": "\\$13",
+              "reference": "A_SR2_MIS2NA",
+              "class": "NFET"
+            },
+            "property": null,
+            "instance": null,
+            "subcircuit": null,
+            "details": null
+          },
+          {
+            "category": "device.unmatched",
+            "description": "device has no counterpart on the other side",
+            "side": "reference",
+            "net": null,
+            "device": {
+              "layout": "\\$14",
+              "reference": "A_SR2_MIS2NB",
+              "class": "NFET"
+            },
+            "property": null,
+            "instance": null,
+            "subcircuit": null,
+            "details": null
+          },
+          {
+            "category": "device.unmatched",
+            "description": "device has no counterpart on the other side",
+            "side": "reference",
+            "net": null,
+            "device": {
+              "layout": "\\$148",
+              "reference": "A_SR1_MISP",
+              "class": "PFET"
+            },
+            "property": null,
+            "instance": null,
+            "subcircuit": null,
+            "details": null
+          },
+          {
+            "category": "device.unmatched",
+            "description": "device has no counterpart on the other side",
+            "side": "reference",
+            "net": null,
+            "device": {
+              "layout": "\\$155",
+              "reference": "A_SR1_MIS2PA",
+              "class": "PFET"
+            },
+            "property": null,
+            "instance": null,
+            "subcircuit": null,
+            "details": null
+          },
+          {
+            "category": "device.unmatched",
+            "description": "device has no counterpart on the other side",
+            "side": "reference",
+            "net": null,
+            "device": {
+              "layout": "\\$184",
+              "reference": "A_SR2_MISP",
+              "class": "PFET"
+            },
+            "property": null,
+            "instance": null,
+            "subcircuit": null,
+            "details": null
+          },
+          {
+            "category": "device.unmatched",
+            "description": "device has no counterpart on the other side",
+            "side": "reference",
+            "net": null,
+            "device": {
+              "layout": "\\$195",
+              "reference": "A_SR2_MIS2PA",
+              "class": "PFET"
+            },
+            "property": null,
+            "instance": null,
+            "subcircuit": null,
+            "details": null
+          },
+          {
+            "category": "device.unmatched",
+            "description": "device has no counterpart on the other side",
+            "side": "reference",
+            "net": null,
+            "device": {
+              "layout": "\\$40",
+              "reference": "A_SR1_MISN",
+              "class": "NFET"
+            },
+            "property": null,
+            "instance": null,
+            "subcircuit": null,
+            "details": null
+          },
+          {
+            "category": "device.unmatched",
+            "description": "device has no counterpart on the other side",
+            "side": "reference",
+            "net": null,
+            "device": {
+              "layout": "\\$47",
+              "reference": "A_SR2_MISN",
+              "class": "NFET"
+            },
+            "property": null,
+            "instance": null,
+            "subcircuit": null,
+            "details": null
+          },
+          {
+            "category": "device.unmatched",
+            "description": "device has no counterpart on the other side",
+            "side": "reference",
+            "net": null,
+            "device": {
+              "layout": "\\$9",
+              "reference": "A_SR1_MIS2NA",
+              "class": "NFET"
+            },
+            "property": null,
+            "instance": null,
+            "subcircuit": null,
+            "details": null
+          },
+          {
+            "category": "net.unmatched",
+            "description": "layout net has no reference counterpart",
+            "side": "layout",
+            "net": {
+              "layout": "\\$8032",
+              "reference": null
+            },
+            "device": null,
+            "property": null,
+            "instance": null,
+            "subcircuit": null,
+            "details": null
+          },
+          {
+            "category": "net.unmatched",
+            "description": "layout net has no reference counterpart",
+            "side": "layout",
+            "net": {
+              "layout": "\\$8039",
+              "reference": null
+            },
+            "device": null,
+            "property": null,
+            "instance": null,
+            "subcircuit": null,
+            "details": null
+          }
+        ],
+        "expected_categories_any_of": null
+      },
+      "pin_canonicalisation": {
+        "pins_after": 123,
+        "renamed": 123,
+        "ports_missing": [],
+        "ports_duplicated": [],
+        "joined_pins": {}
+      },
+      "pin_evidence": {
+        "ports_missing": [],
+        "joined_pins": {}
+      },
+      "endpoint_audit": {
+        "mismatched_ports": [],
+        "expected_ports_flagged": [],
+        "detail": []
+      },
+      "golden_unchanged": true
+    },
+    {
+      "id": "swap-digital-bus-bits",
+      "kind": "swap_labels",
+      "intent": "swapped signal: the identities of two distinct digital boundary inputs (bus_wdata[0], bus_wdata[1]) are exchanged on a copy of the composed GDS (macro pin labels and top promotions)",
+      "detected": true,
+      "reached_lvs_comparison": true,
+      "defect": {
+        "edit": {
+          "bus_wdata[0]": 2,
+          "bus_wdata[1]": 2
+        },
+        "pre_verification_proof": {
+          "baseline_labels_at_terminals": {
+            "bus_wdata[0]": {
+              "digital_port": [
+                "A",
+                "A0",
+                "bus_wdata[0]"
+              ]
+            },
+            "bus_wdata[1]": {
+              "digital_port": [
+                "A",
+                "A0",
+                "B",
+                "bus_wdata[1]"
+              ]
+            }
+          },
+          "variant_labels_at_terminals": {
+            "bus_wdata[0]": {
+              "digital_port": [
+                "A",
+                "A0",
+                "bus_wdata[1]"
+              ]
+            },
+            "bus_wdata[1]": {
+              "digital_port": [
+                "A",
+                "A0",
+                "B",
+                "bus_wdata[0]"
+              ]
+            }
+          }
+        }
+      },
+      "variant_gds_sha256": "59c3bb3253445318697cad9f95542b358e287c41d64bff66be487b64017ff5b7",
+      "variant_reference_sha256": "5b96d0a18d46ae7977d33868e07446c1f3e2e2f1536200b64030e4c6e0a83845",
+      "lvs": {
+        "status": "mismatch",
+        "mismatch_count": 8,
+        "error_count": 7,
+        "error_categories": {
+          "hints.rejected": 2,
+          "topology": 5
+        },
+        "category_counts": {
+          "hints.rejected": 2,
+          "topology": 5,
+          "topology.top_level_pins_anchored": 1
+        },
+        "counts": {
+          "nets": {
+            "layout": 2511,
+            "reference": 2511,
+            "matched": 2981
+          },
+          "devices": {
+            "layout": 264,
+            "reference": 264,
+            "matched": 264
+          },
+          "pins": {
+            "layout": 123,
+            "reference": 123,
+            "matched": 595
+          }
+        },
+        "evidence": {
+          "named_nets": [
+            "bus_wdata[0]",
+            "bus_wdata[1]"
+          ],
+          "errors_naming_them": 7,
+          "reference_cards_attached": [
+            "_1768_",
+            "_1770_",
+            "_2080_",
+            "_2353_",
+            "_2357_"
+          ],
+          "examples": [
+            {
+              "matched_via": "net name",
+              "category": "hints.rejected",
+              "description": "top-level pin 'BUS_WDATA[0]' is declared on both sides, so options.anchor_top_level_pins asserted that its layout net and its reference net are the same node -- and the comparer did not confirm that pairing. The two sides disagree about what this boundary pin is wired to (a permuted bus on a black-box macro is the ordinary cause: every bit wired straight through is topologically interchangeable with its neighbours, so only the pin names can tell them apart). Set options.anchor_top_level_pins: false to compare on topology alone (see docs/cli/lvs.md, \"Top-level pin anchoring\")",
+              "net": {
+                "layout": "BUS_WDATA[0]",
+                "reference": "BUS_WDATA[0]"
+              },
+              "instance": null,
+              "device": null,
+              "property": null
+            },
+            {
+              "matched_via": "net name",
+              "category": "hints.rejected",
+              "description": "top-level pin 'BUS_WDATA[1]' is declared on both sides, so options.anchor_top_level_pins asserted that its layout net and its reference net are the same node -- and the comparer did not confirm that pairing. The two sides disagree about what this boundary pin is wired to (a permuted bus on a black-box macro is the ordinary cause: every bit wired straight through is topologically interchangeable with its neighbours, so only the pin names can tell them apart). Set options.anchor_top_level_pins: false to compare on topology alone (see docs/cli/lvs.md, \"Top-level pin anchoring\")",
+              "net": {
+                "layout": "BUS_WDATA[1]",
+                "reference": "BUS_WDATA[1]"
+              },
+              "instance": null,
+              "device": null,
+              "property": null
+            },
+            {
+              "matched_via": "device/instance attached to the net in the reference",
+              "category": "topology",
+              "description": "subcircuit instance could not be matched to a counterpart",
+              "net": null,
+              "instance": {
+                "layout": "SKY130_FD_SC_HD__NOR2_1_271",
+                "reference": "_2357_"
+              },
+              "device": null,
+              "property": null
+            },
+            {
+              "matched_via": "device/instance attached to the net in the reference",
+              "category": "topology",
+              "description": "subcircuit instance could not be matched to a counterpart",
+              "net": null,
+              "instance": {
+                "layout": "SKY130_FD_SC_HD__NOR2_1_273",
+                "reference": "_2353_"
+              },
+              "device": null,
+              "property": null
+            }
+          ]
+        },
+        "error_sample": [
+          {
+            "category": "hints.rejected",
+            "description": "top-level pin 'BUS_WDATA[0]' is declared on both sides, so options.anchor_top_level_pins asserted that its layout net and its reference net are the same node -- and the comparer did not confirm that pairing. The two sides disagree about what this boundary pin is wired to (a permuted bus on a black-box macro is the ordinary cause: every bit wired straight through is topologically interchangeable with its neighbours, so only the pin names can tell them apart). Set options.anchor_top_level_pins: false to compare on topology alone (see docs/cli/lvs.md, \"Top-level pin anchoring\")",
+            "side": "both",
+            "net": {
+              "layout": "BUS_WDATA[0]",
+              "reference": "BUS_WDATA[0]"
+            },
+            "device": null,
+            "property": null,
+            "instance": null,
+            "subcircuit": null,
+            "details": {
+              "anchored_top_level_pin": "BUS_WDATA[0]"
+            }
+          },
+          {
+            "category": "hints.rejected",
+            "description": "top-level pin 'BUS_WDATA[1]' is declared on both sides, so options.anchor_top_level_pins asserted that its layout net and its reference net are the same node -- and the comparer did not confirm that pairing. The two sides disagree about what this boundary pin is wired to (a permuted bus on a black-box macro is the ordinary cause: every bit wired straight through is topologically interchangeable with its neighbours, so only the pin names can tell them apart). Set options.anchor_top_level_pins: false to compare on topology alone (see docs/cli/lvs.md, \"Top-level pin anchoring\")",
+            "side": "both",
+            "net": {
+              "layout": "BUS_WDATA[1]",
+              "reference": "BUS_WDATA[1]"
+            },
+            "device": null,
+            "property": null,
+            "instance": null,
+            "subcircuit": null,
+            "details": {
+              "anchored_top_level_pin": "BUS_WDATA[1]"
+            }
+          },
+          {
+            "category": "topology",
+            "description": "subcircuit instance could not be matched to a counterpart",
+            "side": "both",
+            "net": null,
+            "device": null,
+            "property": null,
+            "instance": {
+              "layout": "SKY130_FD_SC_HD__NOR2_1_271",
+              "reference": "_2357_"
+            },
+            "subcircuit": {
+              "layout": "SKY130_FD_SC_HD__NOR2_1",
+              "reference": "SKY130_FD_SC_HD__NOR2_1"
+            },
+            "details": null
+          },
+          {
+            "category": "topology",
+            "description": "subcircuit instance could not be matched to a counterpart",
+            "side": "both",
+            "net": null,
+            "device": null,
+            "property": null,
+            "instance": {
+              "layout": "SKY130_FD_SC_HD__NOR2_1_273",
+              "reference": "_2353_"
+            },
+            "subcircuit": {
+              "layout": "SKY130_FD_SC_HD__NOR2_1",
+              "reference": "SKY130_FD_SC_HD__NOR2_1"
+            },
+            "details": null
+          },
+          {
+            "category": "topology",
+            "description": "subcircuit instance could not be matched to a counterpart",
+            "side": "both",
+            "net": null,
+            "device": null,
+            "property": null,
+            "instance": {
+              "layout": "SKY130_FD_SC_HD__XOR2_1_17",
+              "reference": "_2080_"
+            },
+            "subcircuit": {
+              "layout": "SKY130_FD_SC_HD__XOR2_1",
+              "reference": "SKY130_FD_SC_HD__XOR2_1"
+            },
+            "details": null
+          },
+          {
+            "category": "topology",
+            "description": "subcircuit instance could not be matched to a counterpart",
+            "side": "both",
+            "net": null,
+            "device": null,
+            "property": null,
+            "instance": {
+              "layout": "SKY130_FD_SC_HD__MUX2I_1_129",
+              "reference": "_1768_"
+            },
+            "subcircuit": {
+              "layout": "SKY130_FD_SC_HD__MUX2I_1",
+              "reference": "SKY130_FD_SC_HD__MUX2I_1"
+            },
+            "details": null
+          },
+          {
+            "category": "topology",
+            "description": "subcircuit instance could not be matched to a counterpart",
+            "side": "both",
+            "net": null,
+            "device": null,
+            "property": null,
+            "instance": {
+              "layout": "SKY130_FD_SC_HD__MUX2_2_4",
+              "reference": "_1770_"
+            },
+            "subcircuit": {
+              "layout": "SKY130_FD_SC_HD__MUX2_2",
+              "reference": "SKY130_FD_SC_HD__MUX2_2"
+            },
+            "details": null
+          }
+        ],
+        "expected_categories_any_of": null
+      },
+      "pin_canonicalisation": {
+        "pins_after": 123,
+        "renamed": 123,
+        "ports_missing": [],
+        "ports_duplicated": [],
+        "joined_pins": {}
+      },
+      "pin_evidence": {
+        "ports_missing": [],
+        "joined_pins": {}
+      },
+      "endpoint_audit": {
+        "mismatched_ports": [
+          "bus_wdata[0]",
+          "bus_wdata[1]"
+        ],
+        "expected_ports_flagged": [
+          "bus_wdata[0]",
+          "bus_wdata[1]"
+        ],
+        "detail": [
+          {
+            "unloaded": false,
+            "port": "bus_wdata[0]",
+            "class": "digital_external",
+            "direction": "input",
+            "layout_endpoints": 3,
+            "reference_endpoints": 2,
+            "endpoint_multiset_equal": false,
+            "top_endpoints": [
+              [
+                "sky130_fd_sc_hd__mux2i_1.A0",
+                1
+              ],
+              [
+                "sky130_fd_sc_hd__nor2_1.A",
+                1
+              ],
+              [
+                "sky130_fd_sc_hd__xor2_1.B",
+                1
+              ]
+            ],
+            "layout_only": [
+              [
+                "sky130_fd_sc_hd__mux2i_1.A0",
+                1
+              ],
+              [
+                "sky130_fd_sc_hd__xor2_1.B",
+                1
+              ]
+            ],
+            "reference_only": [
+              [
+                "sky130_fd_sc_hd__mux2_2.A0",
+                1
+              ]
+            ]
+          },
+          {
+            "unloaded": false,
+            "port": "bus_wdata[1]",
+            "class": "digital_external",
+            "direction": "input",
+            "layout_endpoints": 2,
+            "reference_endpoints": 3,
+            "endpoint_multiset_equal": false,
+            "top_endpoints": [
+              [
+                "sky130_fd_sc_hd__mux2_2.A0",
+                1
+              ],
+              [
+                "sky130_fd_sc_hd__nor2_1.A",
+                1
+              ]
+            ],
+            "layout_only": [
+              [
+                "sky130_fd_sc_hd__mux2_2.A0",
+                1
+              ]
+            ],
+            "reference_only": [
+              [
+                "sky130_fd_sc_hd__mux2i_1.A0",
+                1
+              ],
+              [
+                "sky130_fd_sc_hd__xor2_1.B",
+                1
+              ]
+            ]
+          }
+        ]
+      },
+      "golden_unchanged": true
+    },
+    {
+      "id": "swap-interface-reference",
+      "kind": "swap_reference",
+      "intent": "swapped signal at the analog-to-digital interface: raw_bit and raw_valid are exchanged on the digital standard-cell pins of a copy of the reference (the composed GDS is unchanged), so the digital black boxes' own pins must expose it",
+      "detected": true,
+      "reached_lvs_comparison": true,
+      "defect": {
+        "edit": {
+          "reference_cards_changed": 4,
+          "net_pins_exchanged": 4,
+          "analog_cards_changed": 0
+        },
+        "pre_verification_proof": {
+          "reference_sha256_before": "5b96d0a18d46ae7977d33868e07446c1f3e2e2f1536200b64030e4c6e0a83845",
+          "reference_sha256_after": "4d9b87add2515d558e6dd946ac9faf4a554ed8a134790090bf9b988d51174d93"
+        }
+      },
+      "variant_gds_sha256": "af2f8dfe2800599e97d769bdedd14924c9fa3f24fc7e1c4f43ccd72ac5572ddd",
+      "variant_reference_sha256": "4d9b87add2515d558e6dd946ac9faf4a554ed8a134790090bf9b988d51174d93",
+      "lvs": {
+        "status": "mismatch",
+        "mismatch_count": 7,
+        "error_count": 6,
+        "error_categories": {
+          "topology": 6
+        },
+        "category_counts": {
+          "topology": 6,
+          "topology.top_level_pins_anchored": 1
+        },
+        "counts": {
+          "nets": {
+            "layout": 2511,
+            "reference": 2511,
+            "matched": 2981
+          },
+          "devices": {
+            "layout": 264,
+            "reference": 264,
+            "matched": 264
+          },
+          "pins": {
+            "layout": 123,
+            "reference": 123,
+            "matched": 595
+          }
+        },
+        "evidence": {
+          "named_nets": [
+            "raw_bit",
+            "raw_valid"
+          ],
+          "errors_naming_them": 6,
+          "reference_cards_attached": [
+            "A_SB_MIS2NA",
+            "A_SB_MIS2PA",
+            "A_SB_MISN",
+            "A_SB_MISP",
+            "A_SV_MIS2NA",
+            "A_SV_MIS2PA",
+            "A_SV_MISN",
+            "A_SV_MISP",
+            "_1434_",
+            "_1460_",
+            "_1797_",
+            "_3281_"
+          ],
+          "examples": [
+            {
+              "matched_via": "device/instance attached to the net in the reference",
+              "category": "topology",
+              "description": "subcircuit instance could not be matched to a counterpart",
+              "net": null,
+              "instance": {
+                "layout": "SKY130_FD_SC_HD__CLKBUF_1_0",
+                "reference": "_1460_"
+              },
+              "device": null,
+              "property": null
+            },
+            {
+              "matched_via": "device/instance attached to the net in the reference",
+              "category": "topology",
+              "description": "subcircuit instance could not be matched to a counterpart",
+              "net": null,
+              "instance": {
+                "layout": "SKY130_FD_SC_HD__AND2_1_11",
+                "reference": "_1797_"
+              },
+              "device": null,
+              "property": null
+            },
+            {
+              "matched_via": "device/instance attached to the net in the reference",
+              "category": "topology",
+              "description": "subcircuit instance could not be matched to a counterpart",
+              "net": null,
+              "instance": {
+                "layout": "SKY130_FD_SC_HD__NAND2_1_101",
+                "reference": "_1434_"
+              },
+              "device": null,
+              "property": null
+            },
+            {
+              "matched_via": "device/instance attached to the net in the reference",
+              "category": "topology",
+              "description": "subcircuit instance could not be matched to a counterpart",
+              "net": null,
+              "instance": {
+                "layout": "SKY130_FD_SC_HD__A22O_1_1",
+                "reference": "_3281_"
+              },
+              "device": null,
+              "property": null
+            }
+          ]
+        },
+        "error_sample": [
+          {
+            "category": "topology",
+            "description": "subcircuit instance could not be matched to a counterpart",
+            "side": "both",
+            "net": null,
+            "device": null,
+            "property": null,
+            "instance": {
+              "layout": "SKY130_FD_SC_HD__CLKBUF_1_0",
+              "reference": "_1460_"
+            },
+            "subcircuit": {
+              "layout": "SKY130_FD_SC_HD__CLKBUF_1",
+              "reference": "SKY130_FD_SC_HD__CLKBUF_1"
+            },
+            "details": null
+          },
+          {
+            "category": "topology",
+            "description": "subcircuit instance could not be matched to a counterpart",
+            "side": "both",
+            "net": null,
+            "device": null,
+            "property": null,
+            "instance": {
+              "layout": "SKY130_FD_SC_HD__AND2_1_11",
+              "reference": "_1797_"
+            },
+            "subcircuit": {
+              "layout": "SKY130_FD_SC_HD__AND2_1",
+              "reference": "SKY130_FD_SC_HD__AND2_1"
+            },
+            "details": null
+          },
+          {
+            "category": "topology",
+            "description": "subcircuit instance could not be matched to a counterpart",
+            "side": "both",
+            "net": null,
+            "device": null,
+            "property": null,
+            "instance": {
+              "layout": "SKY130_FD_SC_HD__NAND2_1_101",
+              "reference": "_1434_"
+            },
+            "subcircuit": {
+              "layout": "SKY130_FD_SC_HD__NAND2_1",
+              "reference": "SKY130_FD_SC_HD__NAND2_1"
+            },
+            "details": null
+          },
+          {
+            "category": "topology",
+            "description": "subcircuit instance could not be matched to a counterpart",
+            "side": "both",
+            "net": null,
+            "device": null,
+            "property": null,
+            "instance": {
+              "layout": "SKY130_FD_SC_HD__A22O_1_1",
+              "reference": "_3281_"
+            },
+            "subcircuit": {
+              "layout": "SKY130_FD_SC_HD__A22O_1",
+              "reference": "SKY130_FD_SC_HD__A22O_1"
+            },
+            "details": null
+          },
+          {
+            "category": "topology",
+            "description": "nets were paired despite a name/identity conflict",
+            "side": "both",
+            "net": {
+              "layout": "A|INV_Q_Y|INV_Q_Y_VIA|INV_Q_Y_VIA2|NAND_S2_A|NAND_S2_A_STUB|NAND_S2_A_VIA|NAND_S2_A_VIA2|Q|RAW_BIT|Y",
+              "reference": "RAW_BIT"
+            },
+            "device": null,
+            "property": null,
+            "instance": null,
+            "subcircuit": null,
+            "details": null
+          },
+          {
+            "category": "topology",
+            "description": "nets were paired despite a name/identity conflict",
+            "side": "both",
+            "net": {
+              "layout": "A|INV_Q_Y|INV_Q_Y_VIA|INV_Q_Y_VIA2|NAND_S2_A|NAND_S2_A_STUB|NAND_S2_A_VIA|NAND_S2_A_VIA2|Q|RAW_VALID|Y",
+              "reference": "RAW_VALID"
+            },
+            "device": null,
+            "property": null,
+            "instance": null,
+            "subcircuit": null,
+            "details": null
+          }
+        ],
+        "expected_categories_any_of": [
+          "topology"
+        ]
+      },
+      "pin_canonicalisation": {
+        "pins_after": 123,
+        "renamed": 123,
+        "ports_missing": [],
+        "ports_duplicated": [],
+        "joined_pins": {}
+      },
+      "pin_evidence": {
+        "ports_missing": [],
+        "joined_pins": {}
+      },
+      "endpoint_audit": {
+        "mismatched_ports": [],
+        "expected_ports_flagged": [],
+        "detail": []
+      },
+      "golden_unchanged": true
+    },
+    {
+      "id": "disconnect-raw-bit",
+      "kind": "disconnect",
+      "intent": "disconnected interface: a gap is cut in the met5 route that carries raw_bit from the analog sampler output to the digital input (copy of the composed GDS)",
+      "detected": true,
+      "reached_lvs_comparison": true,
+      "defect": {
+        "edit": {
+          "route_pieces_after_cut": 2,
+          "cut_um": {
+            "x": 240.0,
+            "y": 69.7,
+            "half_width": 4.0
+          }
+        },
+        "pre_verification_proof": {
+          "terminals": {
+            "analog_port": [
+              283.87,
+              271.35,
+              "m2"
+            ],
+            "digital_port": [
+              199.6,
+              69.7,
+              "m3"
+            ]
+          },
+          "baseline_distinct_clusters": 1,
+          "variant_distinct_clusters": 2
+        }
+      },
+      "variant_gds_sha256": "5572c10ae71fb9a4bca09a163f8f78e2b4cb61bd3dbf6163278b223331f0a3f5",
+      "variant_reference_sha256": "5b96d0a18d46ae7977d33868e07446c1f3e2e2f1536200b64030e4c6e0a83845",
+      "lvs": {
+        "status": "mismatch",
+        "mismatch_count": 6,
+        "error_count": 5,
+        "error_categories": {
+          "device.unmatched": 4,
+          "net.unmatched": 1
+        },
+        "category_counts": {
+          "device.unmatched": 4,
+          "net.unmatched": 1,
+          "topology.top_level_pins_anchored": 1
+        },
+        "counts": {
+          "nets": {
+            "layout": 2512,
+            "reference": 2511,
+            "matched": 2982
+          },
+          "devices": {
+            "layout": 264,
+            "reference": 264,
+            "matched": 260
+          },
+          "pins": {
+            "layout": 123,
+            "reference": 123,
+            "matched": 595
+          }
+        },
+        "evidence": {
+          "named_nets": [
+            "raw_bit"
+          ],
+          "errors_naming_them": 5,
+          "reference_cards_attached": [
+            "A_SB_MIS2NA",
+            "A_SB_MIS2PA",
+            "A_SB_MISN",
+            "A_SB_MISP",
+            "_1460_"
+          ],
+          "examples": [
+            {
+              "matched_via": "device/instance attached to the net in the reference",
+              "category": "device.unmatched",
+              "description": "device has no counterpart on the other side",
+              "net": null,
+              "instance": null,
+              "device": {
+                "layout": "\\$169",
+                "reference": "A_SB_MISP",
+                "class": "PFET"
+              },
+              "property": null
+            },
+            {
+              "matched_via": "device/instance attached to the net in the reference",
+              "category": "device.unmatched",
+              "description": "device has no counterpart on the other side",
+              "net": null,
+              "instance": null,
+              "device": {
+                "layout": "\\$21",
+                "reference": "A_SB_MIS2NA",
+                "class": "NFET"
+              },
+              "property": null
+            },
+            {
+              "matched_via": "device/instance attached to the net in the reference",
+              "category": "device.unmatched",
+              "description": "device has no counterpart on the other side",
+              "net": null,
+              "instance": null,
+              "device": {
+                "layout": "\\$217",
+                "reference": "A_SB_MIS2PA",
+                "class": "PFET"
+              },
+              "property": null
+            },
+            {
+              "matched_via": "device/instance attached to the net in the reference",
+              "category": "device.unmatched",
+              "description": "device has no counterpart on the other side",
+              "net": null,
+              "instance": null,
+              "device": {
+                "layout": "\\$61",
+                "reference": "A_SB_MISN",
+                "class": "NFET"
+              },
+              "property": null
+            }
+          ]
+        },
+        "error_sample": [
+          {
+            "category": "device.unmatched",
+            "description": "device has no counterpart on the other side",
+            "side": "reference",
+            "net": null,
+            "device": {
+              "layout": "\\$169",
+              "reference": "A_SB_MISP",
+              "class": "PFET"
+            },
+            "property": null,
+            "instance": null,
+            "subcircuit": null,
+            "details": null
+          },
+          {
+            "category": "device.unmatched",
+            "description": "device has no counterpart on the other side",
+            "side": "reference",
+            "net": null,
+            "device": {
+              "layout": "\\$21",
+              "reference": "A_SB_MIS2NA",
+              "class": "NFET"
+            },
+            "property": null,
+            "instance": null,
+            "subcircuit": null,
+            "details": null
+          },
+          {
+            "category": "device.unmatched",
+            "description": "device has no counterpart on the other side",
+            "side": "reference",
+            "net": null,
+            "device": {
+              "layout": "\\$217",
+              "reference": "A_SB_MIS2PA",
+              "class": "PFET"
+            },
+            "property": null,
+            "instance": null,
+            "subcircuit": null,
+            "details": null
+          },
+          {
+            "category": "device.unmatched",
+            "description": "device has no counterpart on the other side",
+            "side": "reference",
+            "net": null,
+            "device": {
+              "layout": "\\$61",
+              "reference": "A_SB_MISN",
+              "class": "NFET"
+            },
+            "property": null,
+            "instance": null,
+            "subcircuit": null,
+            "details": null
+          },
+          {
+            "category": "net.unmatched",
+            "description": "layout net has no reference counterpart",
+            "side": "layout",
+            "net": {
+              "layout": "A|INV_Q_Y|INV_Q_Y_VIA|INV_Q_Y_VIA2|NAND_S2_A|NAND_S2_A_STUB|NAND_S2_A_VIA|NAND_S2_A_VIA2|Q|RAW_BIT|Y",
+              "reference": null
+            },
+            "device": null,
+            "property": null,
+            "instance": null,
+            "subcircuit": null,
+            "details": null
+          }
+        ],
+        "expected_categories_any_of": null
+      },
+      "pin_canonicalisation": {
+        "pins_after": 123,
+        "renamed": 123,
+        "ports_missing": [],
+        "ports_duplicated": [],
+        "joined_pins": {}
+      },
+      "pin_evidence": {
+        "ports_missing": [],
+        "joined_pins": {}
+      },
+      "endpoint_audit": {
+        "mismatched_ports": [],
+        "expected_ports_flagged": [],
+        "detail": []
+      },
+      "golden_unchanged": true
+    },
+    {
+      "id": "short-ring-supply-to-logic-supply",
+      "kind": "supply_short",
+      "intent": "distinct-supply short: the interface contract declares vddr4 (ring 4 supply) and vdd (logic supply) distinct nets; a met5 bridge joins their boundary pads on a copy of the composed GDS (every pad-to-pad row between vddr1..vddr3 and their neighbours crosses a third net's route, so this adjacent pair is the one a single rectangle can short without touching anything else)",
+      "detected": true,
+      "reached_lvs_comparison": true,
+      "defect": {
+        "edit": {
+          "bridge_y_um": 332.0,
+          "bridge_x_um": [
+            138.77,
+            148.77
+          ],
+          "layer": "72/20 (met5)"
+        },
+        "pre_verification_proof": {
+          "baseline_clusters_distinct": true,
+          "variant_cluster_shared": true,
+          "variant_labels_on_shared_net": [
+            "VPWR",
+            "a",
+            "d",
+            "g_vddr_m1",
+            "inv_clk_vdd",
+            "inv_mc_vdd",
+            "inv_q_vdd",
+            "mnt_g",
+            "mpa_py",
+            "mpb_py",
+            "nand_m_vdd",
+            "nand_s2_vdd",
+            "nwell_vdd",
+            "s1_vddr_m1",
+            "s2_vddr_m1",
+            "s3_vddr_m1",
+            "s4_vddr_m1",
+            "sb_vdd",
+            "sr1_vdd",
+            "sr2_vdd",
+            "sr3_vdd",
+            "sr4_vdd",
+            "sv_d_vdd_tie",
+            "sv_vdd",
+            "tg_d_a",
+            "tg_d_vdd",
+            "tg_fbm_vdd",
+            "tg_fbs_vdd",
+            "tg_s_vdd",
+            "vdd",
+            "vdd_b1",
+            "vdd_b2",
+            "vdd_b3",
+            "vdd_b4",
+            "vdd_link",
+            "vdd_link_dip",
+            "vdd_x1",
+            "vdd_x2",
+            "vdd_x3",
+            "vddr",
+            "vddr4"
+          ]
+        }
+      },
+      "variant_gds_sha256": "d1ecbe9122accbd594107906abc839dc806c7b1249e8b47bb373d92c2b224d94",
+      "variant_reference_sha256": "5b96d0a18d46ae7977d33868e07446c1f3e2e2f1536200b64030e4c6e0a83845",
+      "lvs": {
+        "status": "mismatch",
+        "mismatch_count": 38,
+        "error_count": 37,
+        "error_categories": {
+          "device.unmatched": 19,
+          "hints.rejected": 1,
+          "net.merged": 9,
+          "net.split": 8
+        },
+        "category_counts": {
+          "device.unmatched": 19,
+          "hints.rejected": 1,
+          "net.merged": 9,
+          "net.split": 8,
+          "topology.top_level_pins_anchored": 1
+        },
+        "counts": {
+          "nets": {
+            "layout": 2510,
+            "reference": 2511,
+            "matched": 2971
+          },
+          "devices": {
+            "layout": 264,
+            "reference": 264,
+            "matched": 245
+          },
+          "pins": {
+            "layout": 122,
+            "reference": 123,
+            "matched": 595
+          }
+        },
+        "evidence": {
+          "named_nets": [
+            "vddr4",
+            "vdd"
+          ],
+          "errors_naming_them": 20,
+          "reference_cards_attached": [
+            "ANTENNA_1",
+            "A_DUT_A1_MP1",
+            "A_DUT_A1_MP2",
+            "A_DUT_A1_MP3",
+            "A_DUT_A1_MP4",
+            "A_DUT_A1_MPIA",
+            "A_DUT_A1_MPIB",
+            "A_DUT_A2_MP1",
+            "A_DUT_A2_MP2",
+            "A_DUT_A2_MP3",
+            "A_DUT_A2_MP4",
+            "A_DUT_A2_MPIA"
+          ],
+          "examples": [
+            {
+              "matched_via": "device/instance attached to the net in the reference",
+              "category": "device.unmatched",
+              "description": "device has no counterpart on the other side",
+              "net": null,
+              "instance": null,
+              "device": {
+                "layout": "\\$186",
+                "reference": "A_DUT_R4_4_MP",
+                "class": "PFET"
+              },
+              "property": null
+            },
+            {
+              "matched_via": "device/instance attached to the net in the reference",
+              "category": "device.unmatched",
+              "description": "device has no counterpart on the other side",
+              "net": null,
+              "instance": null,
+              "device": {
+                "layout": "\\$187",
+                "reference": "A_DUT_R4_3_MP",
+                "class": "PFET"
+              },
+              "property": null
+            },
+            {
+              "matched_via": "device/instance attached to the net in the reference",
+              "category": "device.unmatched",
+              "description": "device has no counterpart on the other side",
+              "net": null,
+              "instance": null,
+              "device": {
+                "layout": "\\$188",
+                "reference": "A_DUT_R4_2_MP",
+                "class": "PFET"
+              },
+              "property": null
+            },
+            {
+              "matched_via": "device/instance attached to the net in the reference",
+              "category": "device.unmatched",
+              "description": "device has no counterpart on the other side",
+              "net": null,
+              "instance": null,
+              "device": {
+                "layout": "\\$189",
+                "reference": "A_DUT_R4_1_MP",
+                "class": "PFET"
+              },
+              "property": null
+            }
+          ]
+        },
+        "error_sample": [
+          {
+            "category": "device.unmatched",
+            "description": "device has no counterpart on the other side",
+            "side": "reference",
+            "net": null,
+            "device": {
+              "layout": "\\$186",
+              "reference": "A_DUT_R4_4_MP",
+              "class": "PFET"
+            },
+            "property": null,
+            "instance": null,
+            "subcircuit": null,
+            "details": null
+          },
+          {
+            "category": "device.unmatched",
+            "description": "device has no counterpart on the other side",
+            "side": "reference",
+            "net": null,
+            "device": {
+              "layout": "\\$187",
+              "reference": "A_DUT_R4_3_MP",
+              "class": "PFET"
+            },
+            "property": null,
+            "instance": null,
+            "subcircuit": null,
+            "details": null
+          },
+          {
+            "category": "device.unmatched",
+            "description": "device has no counterpart on the other side",
+            "side": "reference",
+            "net": null,
+            "device": {
+              "layout": "\\$188",
+              "reference": "A_DUT_R4_2_MP",
+              "class": "PFET"
+            },
+            "property": null,
+            "instance": null,
+            "subcircuit": null,
+            "details": null
+          },
+          {
+            "category": "device.unmatched",
+            "description": "device has no counterpart on the other side",
+            "side": "reference",
+            "net": null,
+            "device": {
+              "layout": "\\$189",
+              "reference": "A_DUT_R4_1_MP",
+              "class": "PFET"
+            },
+            "property": null,
+            "instance": null,
+            "subcircuit": null,
+            "details": null
+          },
+          {
+            "category": "device.unmatched",
+            "description": "device has no counterpart on the other side",
+            "side": "reference",
+            "net": null,
+            "device": {
+              "layout": "\\$192",
+              "reference": "A_DUT_R4_G_MPA",
+              "class": "PFET"
+            },
+            "property": null,
+            "instance": null,
+            "subcircuit": null,
+            "details": null
+          },
+          {
+            "category": "device.unmatched",
+            "description": "device has no counterpart on the other side",
+            "side": "reference",
+            "net": null,
+            "device": {
+              "layout": "\\$193",
+              "reference": "A_DUT_R4_G_MPB",
+              "class": "PFET"
+            },
+            "property": null,
+            "instance": null,
+            "subcircuit": null,
+            "details": null
+          },
+          {
+            "category": "device.unmatched",
+            "description": "device has no counterpart on the other side",
+            "side": "reference",
+            "net": null,
+            "device": {
+              "layout": "\\$227",
+              "reference": "A_DUT_R4_1_MPH",
+              "class": "PFET"
+            },
+            "property": null,
+            "instance": null,
+            "subcircuit": null,
+            "details": null
+          },
+          {
+            "category": "device.unmatched",
+            "description": "device has no counterpart on the other side",
+            "side": "reference",
+            "net": null,
+            "device": {
+              "layout": "\\$228",
+              "reference": "A_DUT_R4_G_MPH",
+              "class": "PFET"
+            },
+            "property": null,
+            "instance": null,
+            "subcircuit": null,
+            "details": null
+          },
+          {
+            "category": "device.unmatched",
+            "description": "device has no counterpart on the other side",
+            "side": "reference",
+            "net": null,
+            "device": {
+              "layout": "\\$229",
+              "reference": "A_DUT_R4_3_MPH",
+              "class": "PFET"
+            },
+            "property": null,
+            "instance": null,
+            "subcircuit": null,
+            "details": null
+          },
+          {
+            "category": "device.unmatched",
+            "description": "device has no counterpart on the other side",
+            "side": "reference",
+            "net": null,
+            "device": {
+              "layout": "\\$230",
+              "reference": "A_DUT_R4_2_MPH",
+              "class": "PFET"
+            },
+            "property": null,
+            "instance": null,
+            "subcircuit": null,
+            "details": null
+          },
+          {
+            "category": "device.unmatched",
+            "description": "device has no counterpart on the other side",
+            "side": "reference",
+            "net": null,
+            "device": {
+              "layout": "\\$231",
+              "reference": "A_DUT_R4_4_MPH",
+              "class": "PFET"
+            },
+            "property": null,
+            "instance": null,
+            "subcircuit": null,
+            "details": null
+          },
+          {
+            "category": "device.unmatched",
+            "description": "device has no counterpart on the other side",
+            "side": "reference",
+            "net": null,
+            "device": {
+              "layout": "\\$69",
+              "reference": "A_DUT_R4_4_MNT",
+              "class": "NFET"
+            },
+            "property": null,
+            "instance": null,
+            "subcircuit": null,
+            "details": null
+          }
+        ],
+        "expected_categories_any_of": null
+      },
+      "pin_canonicalisation": {
+        "pins_after": 122,
+        "renamed": 121,
+        "ports_missing": [
+          "vdd",
+          "vddr4"
+        ],
+        "ports_duplicated": [],
+        "joined_pins": {
+          "VPWR|a|d|g_vddr_m1|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mnt_g|mpa_py|mpb_py|nand_m_v": [
+            "vdd",
+            "vddr4"
+          ]
+        }
+      },
+      "pin_evidence": {
+        "ports_missing": [
+          "vddr4",
+          "vdd"
+        ],
+        "joined_pins": {
+          "VPWR|a|d|g_vddr_m1|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mnt_g|mpa_py|mpb_py|nand_m_v": [
+            "vdd",
+            "vddr4"
+          ]
+        }
+      },
+      "endpoint_audit": {
+        "mismatched_ports": [
+          "vdd",
+          "vddr4"
+        ],
+        "expected_ports_flagged": [
+          "vdd",
+          "vddr4"
+        ],
+        "detail": [
+          {
+            "unloaded": false,
+            "port": "vdd",
+            "class": "logic_supply",
+            "direction": "external_to_both",
+            "layout_endpoints": 0,
+            "reference_endpoints": 16654,
+            "endpoint_multiset_equal": false,
+            "top_endpoints": [],
+            "layout_only": [],
+            "reference_only": [
+              [
+                "sky130_fd_sc_hd__fill_8.VPB",
+                2268
+              ],
+              [
+                "sky130_fd_sc_hd__fill_8.VPWR",
+                2268
+              ],
+              [
+                "sky130_fd_sc_hd__fill_1.VPB",
+                1329
+              ],
+              [
+                "sky130_fd_sc_hd__fill_1.VPWR",
+                1329
+              ],
+              [
+                "sky130_fd_sc_hd__fill_2.VPB",
+                1122
+              ],
+              [
+                "sky130_fd_sc_hd__fill_2.VPWR",
+                1122
+              ]
+            ]
+          },
+          {
+            "unloaded": false,
+            "port": "vddr4",
+            "class": "ring_supply",
+            "direction": "external_to_analog",
+            "layout_endpoints": 0,
+            "reference_endpoints": 21,
+            "endpoint_multiset_equal": false,
+            "top_endpoints": [],
+            "layout_only": [],
+            "reference_only": [
+              [
+                "pfet.b",
+                11
+              ],
+              [
+                "nfet.g",
+                5
+              ],
+              [
+                "pfet.ds",
+                5
+              ]
+            ]
+          }
+        ]
+      },
+      "golden_unchanged": true
+    }
+  ],
+  "baseline_rerun_after_controls": {
+    "status": "match",
+    "error_count": 0,
+    "stable_fields_equal_to_first_baseline": true,
+    "stable_view": {
+      "status": "match",
+      "mismatch_count": 1,
+      "error_count": 0,
+      "category_counts": {
+        "topology.top_level_pins_anchored": 1
+      },
+      "counts": {
+        "nets": {
+          "layout": 2511,
+          "reference": 2511,
+          "matched": 2983
+        },
+        "devices": {
+          "layout": 264,
+          "reference": 264,
+          "matched": 264
+        },
+        "pins": {
+          "layout": 123,
+          "reference": 123,
+          "matched": 595
+        }
+      },
+      "layout_sha256": "383c5374047d6f9a3093aa83d4b3cdff5f3333d3b9e60f23be98a9e61455e622",
+      "reference_sha256": "5b96d0a18d46ae7977d33868e07446c1f3e2e2f1536200b64030e4c6e0a83845"
+    },
+    "pin_canonicalisation_clean": true
+  }
+}

@@ -68,12 +68,16 @@ directed stimulus program against each mapped netlist via Icarus + the
 (re-checked 2026-10-07).** The post-layout slugs (`post-layout-*`) cover the
 analog chain only. `digital-pnr/` covers the digital section only, and it is
 post-route STA, not a transient simulation. A composed analog+digital layout
-now exists (`layout/trng_whole/`, issue #172), but it has no block-level
-DRC/LVS (#173) and no extracted whole-block netlist, so no whole-block
-post-layout record exists in any slug. Separate analog and digital evidence
-must not be cited as one.
+now exists (`layout/trng_whole/`, issue #172) and, since issue #173, has
+whole-block DRC, LVS and fault-control evidence (`layout/trng_whole/verify/`,
+within its stated coverage; not foundry sign-off) and an extracted
+connectivity netlist (`layout/trng_whole/verify/trng_whole.layout.spice`;
+connectivity only, no parasitics). No whole-block *post-layout simulation*
+record exists in any slug. Separate analog and digital evidence must not be
+cited as one.
 
-When the whole-block campaign lands (#174, blocked on #173), it belongs in a
+When the whole-block campaign lands (#174, whose #173 prerequisite is now
+delivered), it belongs in a
 new append-only slug. It must carry the full `tt`/`ss`/`ff` x four-point PVT
 grid (see "PVT grid") and be submitted as a `klt sim` corners request, which
 goes to the batch backend; it is never a hand-launched local ngspice grid.
