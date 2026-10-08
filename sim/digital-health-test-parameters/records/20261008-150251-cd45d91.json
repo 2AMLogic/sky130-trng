@@ -1,0 +1,867 @@
+{
+  "record_id": "20261008-150251-cd45d91",
+  "slug": "digital-health-test-parameters",
+  "level": "behavioral (derived -- no simulator)",
+  "claim": "the ratified RCT/APT cutoffs (81/824, H = 0.5) re-derived at the estimated Ts = 20 us min-entropy, replayed over the volume streams, and checked by deterministic failure injection (detection latency per test); simulation-derived H, provisional until silicon",
+  "seeds": {},
+  "supersedes": null,
+  "author": "loom-builder@sky130-trng",
+  "timestamp_utc": "2026-10-08T15:02:51.897012+00:00",
+  "repo_sha": "cd45d91",
+  "tools": {
+    "python": "3.12.3",
+    "platform": "Linux-7.0.0-1013-aws-x86_64-with-glibc2.39"
+  },
+  "artifacts": [],
+  "ts_name": "Ts20us",
+  "raw_rate_bps": 50000.0,
+  "c_rct_ratified": 81,
+  "c_apt_ratified": 824,
+  "h_design": 0.5,
+  "sources": [
+    {
+      "volume_record": "20261008-061809-56e0fb7",
+      "min_entropy_record": "20261008-124312-5d44390"
+    },
+    {
+      "volume_record": "20261008-135454-847b454",
+      "min_entropy_record": "20261008-150026-cd45d91"
+    }
+  ],
+  "worst_case": {
+    "stream": "ss -40 C 1.62 V",
+    "h": 0.6485812646602823,
+    "c_rct": 63,
+    "c_apt": 760
+  },
+  "rederive": [
+    {
+      "stream": "ss -40 C 1.62 V",
+      "h": 0.6485812646602823,
+      "c_rct": 63,
+      "c_apt": 760,
+      "d_rct": -18,
+      "d_apt": -64,
+      "log2_fa_rct": -51.886501172822584,
+      "log2_fa_apt": -102.1852798282043,
+      "verdict": "conservative"
+    },
+    {
+      "stream": "ss 27 C 1.8 V",
+      "h": 0.6715216121223239,
+      "c_rct": 61,
+      "c_apt": 750,
+      "d_rct": -20,
+      "d_apt": -74,
+      "log2_fa_rct": -53.72172896978591,
+      "log2_fa_apt": -113.22276244180303,
+      "verdict": "conservative"
+    },
+    {
+      "stream": "tt 125 C 1.98 V",
+      "h": 0.7240379133062232,
+      "c_rct": 57,
+      "c_apt": 729,
+      "d_rct": -24,
+      "d_apt": -95,
+      "log2_fa_rct": -57.92303306449786,
+      "log2_fa_apt": -139.6864491623764,
+      "verdict": "conservative"
+    },
+    {
+      "stream": "ss 125 C 1.62 V",
+      "h": 0.7240739106266373,
+      "c_rct": 57,
+      "c_apt": 729,
+      "d_rct": -24,
+      "d_apt": -95,
+      "log2_fa_rct": -57.925912850130985,
+      "log2_fa_apt": -139.70511917193033,
+      "verdict": "conservative"
+    },
+    {
+      "stream": "tt 125 C 1.8 V",
+      "h": 0.7343893505306073,
+      "c_rct": 56,
+      "c_apt": 725,
+      "d_rct": -25,
+      "d_apt": -99,
+      "log2_fa_rct": -58.751148042448584,
+      "log2_fa_apt": -145.08342437125353,
+      "verdict": "conservative"
+    },
+    {
+      "stream": "ss -40 C 1.98 V",
+      "h": 0.7418356497457393,
+      "c_rct": 55,
+      "c_apt": 722,
+      "d_rct": -26,
+      "d_apt": -102,
+      "log2_fa_rct": -59.34685197965915,
+      "log2_fa_apt": -149.0001705232072,
+      "verdict": "conservative"
+    },
+    {
+      "stream": "ss 125 C 1.98 V",
+      "h": 0.7481736056509075,
+      "c_rct": 55,
+      "c_apt": 719,
+      "d_rct": -26,
+      "d_apt": -105,
+      "log2_fa_rct": -59.8538884520726,
+      "log2_fa_apt": -152.35613381524695,
+      "verdict": "conservative"
+    },
+    {
+      "stream": "tt -40 C 1.98 V",
+      "h": 0.7507154834985424,
+      "c_rct": 55,
+      "c_apt": 718,
+      "d_rct": -26,
+      "d_apt": -106,
+      "log2_fa_rct": -60.0572386798834,
+      "log2_fa_apt": -153.70771682882256,
+      "verdict": "conservative"
+    },
+    {
+      "stream": "ff 125 C 1.8 V",
+      "h": 0.7512742440505845,
+      "c_rct": 55,
+      "c_apt": 718,
+      "d_rct": -26,
+      "d_apt": -106,
+      "log2_fa_rct": -60.10193952404676,
+      "log2_fa_apt": -154.0052546254994,
+      "verdict": "conservative"
+    },
+    {
+      "stream": "ff 125 C 1.62 V",
+      "h": 0.7566235275506433,
+      "c_rct": 54,
+      "c_apt": 716,
+      "d_rct": -27,
+      "d_apt": -108,
+      "log2_fa_rct": -60.52988220405147,
+      "log2_fa_apt": -156.86151493067223,
+      "verdict": "conservative"
+    },
+    {
+      "stream": "tt 27 C 1.8 V",
+      "h": 0.7701137306856425,
+      "c_rct": 53,
+      "c_apt": 711,
+      "d_rct": -28,
+      "d_apt": -113,
+      "log2_fa_rct": -61.6090984548514,
+      "log2_fa_apt": -164.1261917292986,
+      "verdict": "conservative"
+    },
+    {
+      "stream": "ff 125 C 1.98 V",
+      "h": 0.7735652669172399,
+      "c_rct": 53,
+      "c_apt": 709,
+      "d_rct": -28,
+      "d_apt": -115,
+      "log2_fa_rct": -61.885221353379194,
+      "log2_fa_apt": -165.9987818574865,
+      "verdict": "conservative"
+    },
+    {
+      "stream": "tt -40 C 1.62 V",
+      "h": 0.7765546797914663,
+      "c_rct": 53,
+      "c_apt": 708,
+      "d_rct": -28,
+      "d_apt": -116,
+      "log2_fa_rct": -62.1243743833173,
+      "log2_fa_apt": -167.62514524752817,
+      "verdict": "conservative"
+    },
+    {
+      "stream": "ff -40 C 1.98 V",
+      "h": 0.7799377425413144,
+      "c_rct": 53,
+      "c_apt": 707,
+      "d_rct": -28,
+      "d_apt": -117,
+      "log2_fa_rct": -62.395019403305156,
+      "log2_fa_apt": -169.47065777587306,
+      "verdict": "conservative"
+    },
+    {
+      "stream": "ff -40 C 1.62 V",
+      "h": 0.7853201114743757,
+      "c_rct": 52,
+      "c_apt": 705,
+      "d_rct": -29,
+      "d_apt": -119,
+      "log2_fa_rct": -62.82560891795006,
+      "log2_fa_apt": -172.41762614019433,
+      "verdict": "conservative"
+    },
+    {
+      "stream": "ss 125 C 1.8 V",
+      "h": 0.795191768096093,
+      "c_rct": 52,
+      "c_apt": 701,
+      "d_rct": -29,
+      "d_apt": -123,
+      "log2_fa_rct": -63.61534144768744,
+      "log2_fa_apt": -177.85651373851215,
+      "verdict": "conservative"
+    },
+    {
+      "stream": "ff 27 C 1.8 V",
+      "h": 0.81278619203816,
+      "c_rct": 51,
+      "c_apt": 694,
+      "d_rct": -30,
+      "d_apt": -130,
+      "log2_fa_rct": -65.02289536305281,
+      "log2_fa_apt": -187.65622917978305,
+      "verdict": "conservative"
+    },
+    {
+      "stream": "tt 125 C 1.62 V",
+      "h": 0.8192557504209094,
+      "c_rct": 50,
+      "c_apt": 692,
+      "d_rct": -31,
+      "d_apt": -132,
+      "log2_fa_rct": -65.54046003367274,
+      "log2_fa_apt": -191.29278351764412,
+      "verdict": "conservative"
+    }
+  ],
+  "replay": [
+    {
+      "stream": "ss -40 C 1.62 V",
+      "n": 131072,
+      "longest_run": 21,
+      "max_apt_matches": 566,
+      "rct_trips": 0,
+      "apt_trips": 0,
+      "monitor": {
+        "raised": 0,
+        "alarm_rct": false,
+        "alarm_apt": false,
+        "alarm_startup": false
+      },
+      "rct_trips_own_h": 0,
+      "apt_trips_own_h": 0,
+      "battery_fails": [
+        "runs",
+        "longest_run",
+        "serial_1",
+        "serial_2",
+        "approximate_entropy"
+      ]
+    },
+    {
+      "stream": "ss 27 C 1.8 V",
+      "n": 131072,
+      "longest_run": 20,
+      "max_apt_matches": 562,
+      "rct_trips": 0,
+      "apt_trips": 0,
+      "monitor": {
+        "raised": 0,
+        "alarm_rct": false,
+        "alarm_apt": false,
+        "alarm_startup": false
+      },
+      "rct_trips_own_h": 0,
+      "apt_trips_own_h": 0,
+      "battery_fails": [
+        "runs",
+        "longest_run",
+        "serial_1",
+        "serial_2",
+        "approximate_entropy"
+      ]
+    },
+    {
+      "stream": "tt 125 C 1.98 V",
+      "n": 131072,
+      "longest_run": 19,
+      "max_apt_matches": 547,
+      "rct_trips": 0,
+      "apt_trips": 0,
+      "monitor": {
+        "raised": 0,
+        "alarm_rct": false,
+        "alarm_apt": false,
+        "alarm_startup": false
+      },
+      "rct_trips_own_h": 0,
+      "apt_trips_own_h": 0,
+      "battery_fails": []
+    },
+    {
+      "stream": "ss 125 C 1.62 V",
+      "n": 131072,
+      "longest_run": 14,
+      "max_apt_matches": 548,
+      "rct_trips": 0,
+      "apt_trips": 0,
+      "monitor": {
+        "raised": 0,
+        "alarm_rct": false,
+        "alarm_apt": false,
+        "alarm_startup": false
+      },
+      "rct_trips_own_h": 0,
+      "apt_trips_own_h": 0,
+      "battery_fails": [
+        "longest_run",
+        "serial_1",
+        "serial_2",
+        "approximate_entropy"
+      ]
+    },
+    {
+      "stream": "tt 125 C 1.8 V",
+      "n": 131072,
+      "longest_run": 19,
+      "max_apt_matches": 557,
+      "rct_trips": 0,
+      "apt_trips": 0,
+      "monitor": {
+        "raised": 0,
+        "alarm_rct": false,
+        "alarm_apt": false,
+        "alarm_startup": false
+      },
+      "rct_trips_own_h": 0,
+      "apt_trips_own_h": 0,
+      "battery_fails": []
+    },
+    {
+      "stream": "ss -40 C 1.98 V",
+      "n": 131072,
+      "longest_run": 15,
+      "max_apt_matches": 550,
+      "rct_trips": 0,
+      "apt_trips": 0,
+      "monitor": {
+        "raised": 0,
+        "alarm_rct": false,
+        "alarm_apt": false,
+        "alarm_startup": false
+      },
+      "rct_trips_own_h": 0,
+      "apt_trips_own_h": 0,
+      "battery_fails": [
+        "runs",
+        "serial_1",
+        "approximate_entropy"
+      ]
+    },
+    {
+      "stream": "ss 125 C 1.98 V",
+      "n": 131072,
+      "longest_run": 18,
+      "max_apt_matches": 554,
+      "rct_trips": 0,
+      "apt_trips": 0,
+      "monitor": {
+        "raised": 0,
+        "alarm_rct": false,
+        "alarm_apt": false,
+        "alarm_startup": false
+      },
+      "rct_trips_own_h": 0,
+      "apt_trips_own_h": 0,
+      "battery_fails": [
+        "runs",
+        "serial_1"
+      ]
+    },
+    {
+      "stream": "tt -40 C 1.98 V",
+      "n": 131072,
+      "longest_run": 17,
+      "max_apt_matches": 560,
+      "rct_trips": 0,
+      "apt_trips": 0,
+      "monitor": {
+        "raised": 0,
+        "alarm_rct": false,
+        "alarm_apt": false,
+        "alarm_startup": false
+      },
+      "rct_trips_own_h": 0,
+      "apt_trips_own_h": 0,
+      "battery_fails": [
+        "serial_1",
+        "serial_2"
+      ]
+    },
+    {
+      "stream": "ff 125 C 1.8 V",
+      "n": 131072,
+      "longest_run": 17,
+      "max_apt_matches": 553,
+      "rct_trips": 0,
+      "apt_trips": 0,
+      "monitor": {
+        "raised": 0,
+        "alarm_rct": false,
+        "alarm_apt": false,
+        "alarm_startup": false
+      },
+      "rct_trips_own_h": 0,
+      "apt_trips_own_h": 0,
+      "battery_fails": []
+    },
+    {
+      "stream": "ff 125 C 1.62 V",
+      "n": 131072,
+      "longest_run": 16,
+      "max_apt_matches": 558,
+      "rct_trips": 0,
+      "apt_trips": 0,
+      "monitor": {
+        "raised": 0,
+        "alarm_rct": false,
+        "alarm_apt": false,
+        "alarm_startup": false
+      },
+      "rct_trips_own_h": 0,
+      "apt_trips_own_h": 0,
+      "battery_fails": [
+        "runs",
+        "serial_1",
+        "approximate_entropy"
+      ]
+    },
+    {
+      "stream": "tt 27 C 1.8 V",
+      "n": 131072,
+      "longest_run": 17,
+      "max_apt_matches": 549,
+      "rct_trips": 0,
+      "apt_trips": 0,
+      "monitor": {
+        "raised": 0,
+        "alarm_rct": false,
+        "alarm_apt": false,
+        "alarm_startup": false
+      },
+      "rct_trips_own_h": 0,
+      "apt_trips_own_h": 0,
+      "battery_fails": [
+        "longest_run",
+        "serial_1",
+        "approximate_entropy"
+      ]
+    },
+    {
+      "stream": "ff 125 C 1.98 V",
+      "n": 131072,
+      "longest_run": 17,
+      "max_apt_matches": 560,
+      "rct_trips": 0,
+      "apt_trips": 0,
+      "monitor": {
+        "raised": 0,
+        "alarm_rct": false,
+        "alarm_apt": false,
+        "alarm_startup": false
+      },
+      "rct_trips_own_h": 0,
+      "apt_trips_own_h": 0,
+      "battery_fails": []
+    },
+    {
+      "stream": "tt -40 C 1.62 V",
+      "n": 131072,
+      "longest_run": 19,
+      "max_apt_matches": 564,
+      "rct_trips": 0,
+      "apt_trips": 0,
+      "monitor": {
+        "raised": 0,
+        "alarm_rct": false,
+        "alarm_apt": false,
+        "alarm_startup": false
+      },
+      "rct_trips_own_h": 0,
+      "apt_trips_own_h": 0,
+      "battery_fails": [
+        "longest_run",
+        "serial_1",
+        "serial_2",
+        "approximate_entropy"
+      ]
+    },
+    {
+      "stream": "ff -40 C 1.98 V",
+      "n": 131072,
+      "longest_run": 15,
+      "max_apt_matches": 568,
+      "rct_trips": 0,
+      "apt_trips": 0,
+      "monitor": {
+        "raised": 0,
+        "alarm_rct": false,
+        "alarm_apt": false,
+        "alarm_startup": false
+      },
+      "rct_trips_own_h": 0,
+      "apt_trips_own_h": 0,
+      "battery_fails": []
+    },
+    {
+      "stream": "ff -40 C 1.62 V",
+      "n": 131072,
+      "longest_run": 15,
+      "max_apt_matches": 556,
+      "rct_trips": 0,
+      "apt_trips": 0,
+      "monitor": {
+        "raised": 0,
+        "alarm_rct": false,
+        "alarm_apt": false,
+        "alarm_startup": false
+      },
+      "rct_trips_own_h": 0,
+      "apt_trips_own_h": 0,
+      "battery_fails": [
+        "runs",
+        "serial_1",
+        "serial_2",
+        "approximate_entropy"
+      ]
+    },
+    {
+      "stream": "ss 125 C 1.8 V",
+      "n": 131072,
+      "longest_run": 15,
+      "max_apt_matches": 558,
+      "rct_trips": 0,
+      "apt_trips": 0,
+      "monitor": {
+        "raised": 0,
+        "alarm_rct": false,
+        "alarm_apt": false,
+        "alarm_startup": false
+      },
+      "rct_trips_own_h": 0,
+      "apt_trips_own_h": 0,
+      "battery_fails": [
+        "runs",
+        "longest_run",
+        "serial_1",
+        "serial_2",
+        "approximate_entropy"
+      ]
+    },
+    {
+      "stream": "ff 27 C 1.8 V",
+      "n": 131072,
+      "longest_run": 19,
+      "max_apt_matches": 553,
+      "rct_trips": 0,
+      "apt_trips": 0,
+      "monitor": {
+        "raised": 0,
+        "alarm_rct": false,
+        "alarm_apt": false,
+        "alarm_startup": false
+      },
+      "rct_trips_own_h": 0,
+      "apt_trips_own_h": 0,
+      "battery_fails": [
+        "runs",
+        "serial_1"
+      ]
+    },
+    {
+      "stream": "tt 125 C 1.62 V",
+      "n": 131072,
+      "longest_run": 16,
+      "max_apt_matches": 558,
+      "rct_trips": 0,
+      "apt_trips": 0,
+      "monitor": {
+        "raised": 0,
+        "alarm_rct": false,
+        "alarm_apt": false,
+        "alarm_startup": false
+      },
+      "rct_trips_own_h": 0,
+      "apt_trips_own_h": 0,
+      "battery_fails": [
+        "longest_run",
+        "serial_1",
+        "approximate_entropy"
+      ]
+    }
+  ],
+  "replay_total_alarms": 0,
+  "injection": {
+    "onsets": [
+      2000,
+      3333,
+      5117,
+      7001,
+      9500,
+      11777
+    ],
+    "horizon": 16384,
+    "runs_per_scenario": 108,
+    "pre_onset_trips": 0,
+    "scenarios": [
+      {
+        "name": "stuck-at-0",
+        "runs": 108,
+        "pre_onset_trips": 0,
+        "rct": {
+          "detected": 108,
+          "runs": 108,
+          "min": 73,
+          "median": 80.5,
+          "max": 81
+        },
+        "apt": {
+          "detected": 108,
+          "runs": 108,
+          "min": 740,
+          "median": 1191.0,
+          "max": 1787
+        }
+      },
+      {
+        "name": "stuck-at-1",
+        "runs": 108,
+        "pre_onset_trips": 0,
+        "rct": {
+          "detected": 108,
+          "runs": 108,
+          "min": 74,
+          "median": 80.5,
+          "max": 81
+        },
+        "apt": {
+          "detected": 108,
+          "runs": 108,
+          "min": 740,
+          "median": 1072.0,
+          "max": 1787
+        }
+      },
+      {
+        "name": "toggle 01 (period 2)",
+        "runs": 108,
+        "pre_onset_trips": 0,
+        "rct": {
+          "detected": 0,
+          "runs": 108,
+          "min": null,
+          "median": null,
+          "max": null
+        },
+        "apt": {
+          "detected": 0,
+          "runs": 108,
+          "min": null,
+          "median": null,
+          "max": null
+        }
+      },
+      {
+        "name": "toggle 001 (period 3)",
+        "runs": 108,
+        "pre_onset_trips": 0,
+        "rct": {
+          "detected": 0,
+          "runs": 108,
+          "min": null,
+          "median": null,
+          "max": null
+        },
+        "apt": {
+          "detected": 0,
+          "runs": 108,
+          "min": null,
+          "median": null,
+          "max": null
+        }
+      },
+      {
+        "name": "toggle 0011 (period 4)",
+        "runs": 108,
+        "pre_onset_trips": 0,
+        "rct": {
+          "detected": 0,
+          "runs": 108,
+          "min": null,
+          "median": null,
+          "max": null
+        },
+        "apt": {
+          "detected": 0,
+          "runs": 108,
+          "min": null,
+          "median": null,
+          "max": null
+        }
+      },
+      {
+        "name": "toggle 0001 (period 4)",
+        "runs": 108,
+        "pre_onset_trips": 0,
+        "rct": {
+          "detected": 0,
+          "runs": 108,
+          "min": null,
+          "median": null,
+          "max": null
+        },
+        "apt": {
+          "detected": 0,
+          "runs": 108,
+          "min": null,
+          "median": null,
+          "max": null
+        }
+      },
+      {
+        "name": "bias step to p=0.7",
+        "runs": 108,
+        "pre_onset_trips": 0,
+        "rct": {
+          "detected": 0,
+          "runs": 108,
+          "min": null,
+          "median": null,
+          "max": null
+        },
+        "apt": {
+          "detected": 0,
+          "runs": 108,
+          "min": null,
+          "median": null,
+          "max": null
+        }
+      },
+      {
+        "name": "bias step to p=0.8",
+        "runs": 108,
+        "pre_onset_trips": 0,
+        "rct": {
+          "detected": 0,
+          "runs": 108,
+          "min": null,
+          "median": null,
+          "max": null
+        },
+        "apt": {
+          "detected": 108,
+          "runs": 108,
+          "min": 1027,
+          "median": 2788.0,
+          "max": 10751
+        }
+      },
+      {
+        "name": "bias step to p=0.85",
+        "runs": 108,
+        "pre_onset_trips": 0,
+        "rct": {
+          "detected": 1,
+          "runs": 108,
+          "min": 11648,
+          "median": 11648,
+          "max": 11648
+        },
+        "apt": {
+          "detected": 108,
+          "runs": 108,
+          "min": 1027,
+          "median": 1535.0,
+          "max": 3835
+        }
+      },
+      {
+        "name": "bias step to p=0.9",
+        "runs": 108,
+        "pre_onset_trips": 0,
+        "rct": {
+          "detected": 32,
+          "runs": 108,
+          "min": 344,
+          "median": 7724.0,
+          "max": 15263
+        },
+        "apt": {
+          "detected": 108,
+          "runs": 108,
+          "min": 740,
+          "median": 1535.0,
+          "max": 3583
+        }
+      },
+      {
+        "name": "bias step to p=0.95",
+        "runs": 108,
+        "pre_onset_trips": 0,
+        "rct": {
+          "detected": 108,
+          "runs": 108,
+          "min": 81,
+          "median": 910.0,
+          "max": 5276
+        },
+        "apt": {
+          "detected": 108,
+          "runs": 108,
+          "min": 740,
+          "median": 1131.5,
+          "max": 2811
+        }
+      },
+      {
+        "name": "bias ramp 0.5->0.7 over 8192, then held",
+        "runs": 108,
+        "pre_onset_trips": 0,
+        "rct": {
+          "detected": 0,
+          "runs": 108,
+          "min": null,
+          "median": null,
+          "max": null
+        },
+        "apt": {
+          "detected": 0,
+          "runs": 108,
+          "min": null,
+          "median": null,
+          "max": null
+        }
+      },
+      {
+        "name": "bias ramp 0.5->0.9 over 8192, then held",
+        "runs": 108,
+        "pre_onset_trips": 0,
+        "rct": {
+          "detected": 18,
+          "runs": 108,
+          "min": 8212,
+          "median": 10779.5,
+          "max": 13604
+        },
+        "apt": {
+          "detected": 108,
+          "runs": 108,
+          "min": 6311,
+          "median": 7335.0,
+          "max": 8955
+        }
+      }
+    ]
+  },
+  "caveat": "simulation-derived H, behavioural model; provisional until measured on silicon"
+}

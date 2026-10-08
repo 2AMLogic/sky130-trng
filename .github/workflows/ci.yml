@@ -129,6 +129,7 @@ on:
       - "sim/bin/**"
       - "sim/raw-bit-min-entropy/**"
       - "digital/model/**"
+      - "sim/digital-health-test-parameters/analysis/**"
       - "layout/test_pex_netlist.py"
       - "layout/test_compose_cell.py"
       - "layout/test_compose_whole.py"
@@ -192,6 +193,9 @@ jobs:
 
       - name: sim/tests/test_digital_section.py (digital section reference-model test)
         run: python3 sim/tests/test_digital_section.py
+
+      - name: sim/tests/test_health_failure_injection.py (RCT/APT failure-injector unit test)
+        run: python3 sim/tests/test_health_failure_injection.py
 
   signoff-check:
     name: Signoff tier-report staleness gate (klt signoff --manifest)
