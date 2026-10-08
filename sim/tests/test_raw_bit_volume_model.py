@@ -78,7 +78,7 @@ class ModelTests(unittest.TestCase):
             self.assertEqual(m.PVT_POINTS, m.PVT_POINTS_BASE)
 
     @HOT
-    def test_all_18_hot_pairs_resolve_from_combining_plus_jitter(self):
+    def test_all_9_hot_pairs_resolve_from_combining_plus_jitter(self):
         n = 0
         for t, v in m.PVT_POINTS_HOT:
             for corner in m.CORNERS:
@@ -88,7 +88,7 @@ class ModelTests(unittest.TestCase):
                 self.assertTrue(cal["combining_job_id"], "hot combining record must carry its batch job id")
                 self.assertTrue(all(T > 0 for T in cal["periods_s"]))
                 n += 1
-        self.assertEqual(n, 18)
+        self.assertEqual(n, 9)   # 3 process x 3 supplies; x 2 Ts = the 18 hot streams
 
     def test_missing_calibration_fails_loudly(self):
         with self.assertRaises(SystemExit):
