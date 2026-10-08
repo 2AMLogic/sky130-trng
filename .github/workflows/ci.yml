@@ -95,7 +95,7 @@ name: CI
 #     at tier T1 and 3 for "ran successfully, at least one item unmet" --
 #     the documented mid-ladder state, not a failure -- so the job treats
 #     0 and 3 as render successes and 1/2 as failures, then byte-compares.
-#     The `klayout-tools==0.6.0` pin deliberately DIVERGES from the PDK
+#     The `klayout-tools==0.7.0` pin (0.6.0 until issue #164) deliberately DIVERGES from the PDK
 #     nightly's install (0.5.0 from 2026-09-23, issue #160; klayout-tools
 #     source commit 5edb557f91d0 since issue #181): this job is
 #     a pure JSON+markdown transform with no PDK, so it follows the
@@ -230,14 +230,15 @@ jobs:
       # the pin consciously moved -- the same contract layout/pdk.json's
       # klt_version_pin documents for the nightly's --check runs. The
       # grader is a pure JSON transform, so it follows the grader release
-      # (0.6.0: first tagged erc-kind grading build, klayout-tools#2247)
+      # (0.6.0: first tagged erc-kind grading build, klayout-tools#2247;
+      # 0.7.0: LVS supply-pairing fix, klayout-tools#2405/#2431, issue #164)
       # alone; the nightly's pin gates the nineteen committed cells'
       # compose-cell --check reproductions and moves only with a full
       # --check re-verification (0.6.0 changed gen-compose's
       # via-drop/tap-role handling, klayout-tools#2312).
       - name: Install klt (klayout-tools, the signoff grading build)
         run: |
-          pip install --user "klayout-tools==0.6.0"
+          pip install --user "klayout-tools==0.7.0"
           klt --version
 
       # Verbatim the command documented in signoff/README.md -- the report

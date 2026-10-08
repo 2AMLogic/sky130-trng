@@ -19,35 +19,33 @@ on 2AMLogic/2am#956, which consumes this block manifest.
 | `design-evidence-tiers.md` | byte-identical vendored copy of `2AMLogic/klayout-tools`'s `docs/design-evidence-tiers.md` — the tier ladder + T1 checklist the report is graded against. Provenance and why it is vendored: below. |
 | `t1-report.json` | the committed `klt signoff --manifest` output — the evidence record for this block's current state. CI re-runs the exact command and diffs, so this file cannot rot. |
 
-At `origin/main`, re-rendered on the tagged grader `klayout-tools==0.6.0`
-(2026-09-23, issue #160), the report reads: **22 T1 rows rendered
-(11 checklist items × 2 partitions), 2 met — item 3 (DRC clean) and
-item 4 (LVS clean), analog partition only — so this block is 2/22 of the
-way to T1**, with item 11 (power delivery, structural) counted and
-`unmet` (`lvs_supply_unproven`) — the `11.analog` citation is now IN
-(issue #161): the ERC half grades fully clean (see the item-11 claim
-section below), and the one surviving reason is the LVS half's supply
-pairing, which is structurally unsatisfiable against this block's
-committed `lvs.json` (klayout-tools#2405; local follow-up #164) — not a
-missing artifact. `tier` is `null` until every rendered item is `met`. The 0.6.0 build changed the report's *shape*,
-not its verdict: rows now carry a per-item `graded_by_build` flag, the
-report records its `build` identity (`v0.6.0`, `grading_ruleset_id`) and
-pins the governing checklist by `source_doc_content_hash`
-(klayout-tools#2191/#2222), and — as on 0.5.0 — three placeholder rows
-for T2/T3/T4 render `tier_not_supported` after the 22 T1 rows (25 rows
-total in the file). Same manifest + evidence on 0.5.0 produced the same
-22-row/2-met verdict, so nothing regressed in the bump. Read the
+At `origin/main`, re-rendered on the tagged grader `klayout-tools==0.7.0`
+(2026-10-08, issue #164), the report reads: **22 T1 rows rendered
+(11 checklist items × 2 partitions), 3 met — item 3 (DRC clean), item 4
+(LVS clean) and item 11 (power delivery, structural), analog partition
+only — so this block is 3/22 of the way to T1.** Issue #164 is closed by
+this change: klayout-tools 0.7.0 carries the LVS supply-pairing fix
+(klayout-tools#2405/#2431), and `11.analog` now renders `met` with
+`power_delivery` populated (`supply_nets` vddr1..vddr4, vdd, vss;
+`ties_checked_by_well_assertion` naming all six ties). Against the 0.6.0
+report only item 11 changed verdict; every other row is byte-identical,
+and the vendored checklist is unchanged (`doc_drift: false`). `tier` is
+`null` until every rendered item is `met`. The report records its `build`
+identity (`v0.7.0`, `is_release: true`) and pins the governing checklist
+by `source_doc_content_hash`; three placeholder rows for T2/T3/T4 render
+`tier_not_supported` after the 22 T1 rows (25 rows total). Read the
 *report*, not this summary — it is the mechanical ground truth.
 
-**Re-rendered after the issue #181 regeneration (2026-10-07)** on the same
-`klayout-tools==0.6.0` grader. The `sampler_core` macro was rebuilt on the
+*History:* on `klayout-tools==0.6.0` (2026-09-23, issues #160/#161) the
+report read 2/22 with item 11 `unmet` (`lvs_supply_unproven`).
+
+**Re-rendered after the issue #181 regeneration (2026-10-07)** on the `klayout-tools==0.6.0` grader (superseded by the 0.7.0 re-render above). The `sampler_core` macro was rebuilt on the
 klayout-tools cut-size/grid fix, and DRC, LVS and ERC were all re-run
 against the new GDS. The manifest pins moved together with that evidence:
 `3.analog` and the ERC half of `11.analog` went from `sha256:a00f6550…` to
 `sha256:e3ff54a9…`. `4.analog` and the LVS half of `11.analog` are newly
-pinned to the extracted netlist `sha256:bb9c7902…`. Every row's verdict is
-unchanged: 2/22 met, and item 11 is still `lvs_supply_unproven`. #164's
-grading decision is untouched.
+pinned to the extracted netlist `sha256:bb9c7902…`. Every row's verdict was
+unchanged at that time: 2/22 met, item 11 `lvs_supply_unproven`.
 
 ## Regenerating the report (CI runs exactly this)
 
@@ -65,7 +63,7 @@ other invocation (different cwd, absolute tiers-doc path) produces a
 report that no longer matches the committed one byte for byte. The output
 is deterministic: same manifest + same evidence + same tiers doc + same
 `klt` build ⇒ byte-identical report, which is what makes the CI
-diff a valid staleness gate rather than a flaky one. 0.6.0 also carries a
+diff a valid staleness gate rather than a flaky one. 0.6.0 and later carry a
 `--check REPORT` verb (klayout-tools#2258) that re-renders and compares a
 committed report in one step — on this tree it prints `status: match`
 (exit 0); CI keeps the explicit render-and-`cmp` form above so the job's
@@ -188,7 +186,7 @@ verified by hand (`environment.layout_sha256 6ed6f71b…`). That gap is now
 closed. Mechanical artifact-side verification upstream
 (klayout-tools#2212) would still strengthen it.
 
-**Item 11, `unmet` (analog) — the compound citation
+**Item 11, `met` (analog) — the compound citation
 `[erc.json, lvs.json]` (issue #161).** The ERC half is fully graded and
 clean: `layout/sampler_core/erc-supply-spec.json` now declares `ties[]`
 for every distinct well/substrate tie the layout draws — one entry per
@@ -208,23 +206,18 @@ clean verdict) records
 pinned to the envelope's `provenance.input.content_hash` — the committed
 GDS's sha, the same pin value item 3 carries.
 
-*Why the row is still unmet — the LVS half, and it is not this repo's
-artifacts.* The grader's no-PDN (analog/full-custom) branch requires
-every supply declared in the erc spec to appear in the cited `lvs.json`'s
-`net_correspondence` as a row whose **entire** layout-side string equals
-that supply name. `klt lvs` writes a label-merged net's row as every
-alias joined with `|`, so this block's six supply rows read
-`G_VDDR_M1|…|VDDR|VDDR1` etc. and can never equal `vddr1` — verified:
-zero single-name supply rows exist in the 152 committed rows, and no
-spec-side name can satisfy both halves at once (the ERC half needs real
-label names; the LVS half needs exact alias-string equality). The
-supplies demonstrably *were* part of the compare — each row pairs its
-alias set to a reference-side net with `pin: true` against the SPICE
-reference — which is exactly why this is a grader gap, not a design one:
-filed upstream as klayout-tools#2405 (friction protocol), with local
-re-grade follow-up #164. When a tagged grader release carrying the fix
-lands, the expected one-command re-render moves this row to `met` and
-the headline to 3/22.
+*How the LVS half is now graded (issue #164).* The grader's no-PDN
+(analog/full-custom) branch requires every supply declared in the erc spec
+to be paired in the cited `lvs.json`'s `net_correspondence`. On 0.6.0 that
+required the entire layout-side string to equal the supply name, which
+`klt lvs`'s alias-joined rows (`G_VDDR_M1|…|VDDR|VDDR1`) can never satisfy
+(klayout-tools#2405, filed under the friction protocol). klayout-tools
+0.7.0 (#2431) fixes the pairing, and the unchanged committed artifacts now
+grade `met`: `power_delivery.supply_nets` is `vddr1`–`vddr4`, `vdd`, `vss`,
+`pdn: false`, `power_connectivity_status: unchecked` (the LVS reference
+form does not apply that check, as item 4 states), and
+`ties_checked_by_well_assertion` names all six ties
+(`nwell_vdd`, `nwell_vddr1`–`nwell_vddr4`, `substrate_vss`).
 
 **Item 4's freshness caveat applies to this citation's lvs part
 unchanged** — it is the same file, cited unpinned for the same
@@ -270,7 +263,7 @@ go green.
 ## CI
 
 `.github/workflows/ci.yml`'s `signoff-check` job installs the pinned
-`klayout-tools==0.6.0` (since 2026-09-23, issue #160 — deliberately
+`klayout-tools==0.7.0` (since 2026-10-08, issue #164; 0.6.0 from 2026-09-23, issue #160 — deliberately
 **diverged** from the PDK nightly's 0.5.0: the grader is a pure JSON
 transform with no PDK, so it follows the grader release, while the
 nightly's pin gates the nineteen committed cells' compose-cell `--check`
