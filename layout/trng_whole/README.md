@@ -18,6 +18,15 @@ it. **Not claimed here:** whole-block DRC, whole-block LVS, PVT/coupling/IR
 characterization, closure of #170 / #18 AC3 or of DR-0003 section 8 / DR-0009
 (distribution geometry now exists; every measurement obligation is still open).
 
+**Update (issue #173): whole-block DRC, extraction, mixed-level LVS and fault controls now exist in
+[`verify/`](verify/README.md)** (clean DRC, 0 violations; LVS match on a declared mixed-level boundary;
+coverage matrix with named limitations; isolated negative controls). Nothing in *this* directory was
+changed by that work: `trng_whole.gds`, `trng_whole.ref.spice`, `interface.*` and `report.json` are its
+immutable inputs, and `report.json`'s own verdict (`composed; physical sign-off pending ...`) is the
+composition-time statement, left as recorded. The verification verdict lives in
+`verify/verify.json`. Still **not** foundry sign-off, and #170, #18 AC3, DR-0003 section 8 and DR-0009 stay
+open (characterization is #174).
+
 ## Result
 
 | Step | Verdict | Evidence |

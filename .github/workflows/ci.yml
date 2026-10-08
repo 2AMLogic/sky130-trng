@@ -52,6 +52,16 @@ name: CI
 #     port-coverage/alias audit and the recorded input hashes. Same
 #     PR-blocking path, same reason: it needs nothing installed.
 #
+# layout/test_verify_whole.py (whole-block verification evidence contract, issue #173)
+#     Pure Python over layout/bin/verify_whole_lib.py (synthetic SPICE, no klt)
+#     and the committed layout/trng_whole/verify/ evidence. A "match" verdict
+#     over a black-boxed digital macro proves nothing unless the pin
+#     canonicaliser refuses to repair shorted ports, the endpoint audit sees a
+#     moved cell pin, and every fault control reached the LVS comparison and
+#     failed naming its nets; this pins those, plus that the committed reports
+#     still describe the committed inputs. Same PR-blocking path, same reason:
+#     it needs nothing installed.
+#
 # layout/test_pex_netlist.py (post-layout netlist rewrite unit test, issue #22)
 #     Pure Python over layout/bin/pex-netlist.py's rewrite functions -- no klt,
 #     no KLayout, no PDK, no GDS. That script turns `klt extract --parasitics`
@@ -133,6 +143,7 @@ on:
       - "layout/test_pex_netlist.py"
       - "layout/test_compose_cell.py"
       - "layout/test_compose_whole.py"
+      - "layout/test_verify_whole.py"
       # the whole-block composition's committed evidence and every input whose
       # hash it records (layout/test_compose_whole.py re-hashes them)
       - "layout/trng_whole/**"
@@ -184,6 +195,9 @@ jobs:
 
       - name: layout/test_compose_whole.py (whole-block composition contract)
         run: python3 layout/test_compose_whole.py
+
+      - name: layout/test_verify_whole.py (whole-block verification evidence contract)
+        run: python3 layout/test_verify_whole.py
 
       - name: sim/tests/test_raw_bit_entropy.py (raw-bit entropy estimator unit test)
         run: python3 sim/tests/test_raw_bit_entropy.py

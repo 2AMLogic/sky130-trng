@@ -1,0 +1,2647 @@
+{
+  "schema_version": 1,
+  "not_signoff": "Whole-block project verification on klt's curated sky130 decks and the open_pdks install pinned in layout/pdk.json. NOT foundry sign-off: no foundry DRC/LVS/antenna/density runset, no parasitic extraction, no electrical or entropy characterisation. Provisional until silicon.",
+  "ports": 123,
+  "ports_clean": 123,
+  "rows": [
+    {
+      "port": "vdd",
+      "class": "logic_supply",
+      "direction": "external_to_both",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 16654,
+      "endpoints_reference": 16654,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__fill_8.VPB",
+          2268
+        ],
+        [
+          "sky130_fd_sc_hd__fill_8.VPWR",
+          2268
+        ],
+        [
+          "sky130_fd_sc_hd__fill_1.VPB",
+          1329
+        ],
+        [
+          "sky130_fd_sc_hd__fill_1.VPWR",
+          1329
+        ],
+        [
+          "sky130_fd_sc_hd__fill_2.VPB",
+          1122
+        ],
+        [
+          "sky130_fd_sc_hd__fill_2.VPWR",
+          1122
+        ]
+      ],
+      "supply_note": "digital VPWR + VPB of every placed cell + analog vdd; tap/fill VPWR"
+    },
+    {
+      "port": "vss",
+      "class": "logic_ground",
+      "direction": "external_to_both",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 8823,
+      "endpoints_reference": 8823,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__fill_8.VGND",
+          2268
+        ],
+        [
+          "sky130_fd_sc_hd__fill_1.VGND",
+          1329
+        ],
+        [
+          "sky130_fd_sc_hd__fill_2.VGND",
+          1122
+        ],
+        [
+          "sky130_fd_sc_hd__fill_4.VGND",
+          861
+        ],
+        [
+          "sky130_fd_sc_hd__tapvpwrvgnd_1.VGND",
+          704
+        ],
+        [
+          "sky130_fd_sc_hd__dfrtp_1.VGND",
+          424
+        ]
+      ],
+      "supply_note": "digital VGND of every placed cell + analog vss; tap/fill VGND"
+    },
+    {
+      "port": "clk",
+      "class": "shared_input",
+      "direction": "external_to_both",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 38,
+      "endpoints_reference": 38,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "nfet.g",
+          18
+        ],
+        [
+          "pfet.g",
+          18
+        ],
+        [
+          "sky130_fd_sc_hd__buf_4.A",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__diode_2.DIODE",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "rst_n",
+      "class": "shared_input",
+      "direction": "external_to_both",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 480,
+      "endpoints_reference": 480,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__dfrtp_1.RESET_B",
+          424
+        ],
+        [
+          "sky130_fd_sc_hd__dfstp_1.SET_B",
+          32
+        ],
+        [
+          "nfet.g",
+          12
+        ],
+        [
+          "pfet.g",
+          12
+        ]
+      ]
+    },
+    {
+      "port": "en1",
+      "class": "analog_external",
+      "direction": "external_to_analog",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 2,
+      "endpoints_reference": 2,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "nfet.g",
+          1
+        ],
+        [
+          "pfet.g",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "en2",
+      "class": "analog_external",
+      "direction": "external_to_analog",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 2,
+      "endpoints_reference": 2,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "nfet.g",
+          1
+        ],
+        [
+          "pfet.g",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "en3",
+      "class": "analog_external",
+      "direction": "external_to_analog",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 2,
+      "endpoints_reference": 2,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "nfet.g",
+          1
+        ],
+        [
+          "pfet.g",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "en4",
+      "class": "analog_external",
+      "direction": "external_to_analog",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 2,
+      "endpoints_reference": 2,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "nfet.g",
+          1
+        ],
+        [
+          "pfet.g",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "vddr1",
+      "class": "ring_supply",
+      "direction": "external_to_analog",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 21,
+      "endpoints_reference": 21,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "pfet.b",
+          11
+        ],
+        [
+          "nfet.g",
+          5
+        ],
+        [
+          "pfet.ds",
+          5
+        ]
+      ],
+      "supply_note": "ring 1 supply only (analog); never merged with vdd/vss or another vddr"
+    },
+    {
+      "port": "vddr2",
+      "class": "ring_supply",
+      "direction": "external_to_analog",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 21,
+      "endpoints_reference": 21,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "pfet.b",
+          11
+        ],
+        [
+          "nfet.g",
+          5
+        ],
+        [
+          "pfet.ds",
+          5
+        ]
+      ],
+      "supply_note": "ring 2 supply only (analog)"
+    },
+    {
+      "port": "vddr3",
+      "class": "ring_supply",
+      "direction": "external_to_analog",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 21,
+      "endpoints_reference": 21,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "pfet.b",
+          11
+        ],
+        [
+          "nfet.g",
+          5
+        ],
+        [
+          "pfet.ds",
+          5
+        ]
+      ],
+      "supply_note": "ring 3 supply only (analog)"
+    },
+    {
+      "port": "vddr4",
+      "class": "ring_supply",
+      "direction": "external_to_analog",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 21,
+      "endpoints_reference": 21,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "pfet.b",
+          11
+        ],
+        [
+          "nfet.g",
+          5
+        ],
+        [
+          "pfet.ds",
+          5
+        ]
+      ],
+      "supply_note": "ring 4 supply only (analog)"
+    },
+    {
+      "port": "ring_bit1",
+      "class": "analog_external",
+      "direction": "analog_to_external",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 4,
+      "endpoints_reference": 4,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "nfet.ds",
+          1
+        ],
+        [
+          "nfet.g",
+          1
+        ],
+        [
+          "pfet.ds",
+          1
+        ],
+        [
+          "pfet.g",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "ring_bit2",
+      "class": "analog_external",
+      "direction": "analog_to_external",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 4,
+      "endpoints_reference": 4,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "nfet.ds",
+          1
+        ],
+        [
+          "nfet.g",
+          1
+        ],
+        [
+          "pfet.ds",
+          1
+        ],
+        [
+          "pfet.g",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "ring_bit3",
+      "class": "analog_external",
+      "direction": "analog_to_external",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 4,
+      "endpoints_reference": 4,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "nfet.ds",
+          1
+        ],
+        [
+          "nfet.g",
+          1
+        ],
+        [
+          "pfet.ds",
+          1
+        ],
+        [
+          "pfet.g",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "ring_bit4",
+      "class": "analog_external",
+      "direction": "analog_to_external",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 4,
+      "endpoints_reference": 4,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "nfet.ds",
+          1
+        ],
+        [
+          "nfet.g",
+          1
+        ],
+        [
+          "pfet.ds",
+          1
+        ],
+        [
+          "pfet.g",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "bus_addr[0]",
+      "class": "digital_external",
+      "direction": "input",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 7,
+      "endpoints_reference": 7,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__nand2_1.A",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__nand2b_1.A_N",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__nand2b_1.B",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__nor4_1.A",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__nor4b_1.A",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__o22ai_1.B2",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "bus_addr[1]",
+      "class": "digital_external",
+      "direction": "input",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 6,
+      "endpoints_reference": 6,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__nand2_1.B",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__nand2b_1.A_N",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__nand2b_1.B",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__nor4_1.B",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__nor4b_1.B",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__or3_1.B",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "bus_addr[2]",
+      "class": "digital_external",
+      "direction": "input",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 9,
+      "endpoints_reference": 9,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__nor3_1.B",
+          3
+        ],
+        [
+          "sky130_fd_sc_hd__nand2b_1.A_N",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__nand2b_1.B",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__nor2_1.A",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__nor4_1.D",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__o21ai_0.A1",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "bus_addr[3]",
+      "class": "digital_external",
+      "direction": "input",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 8,
+      "endpoints_reference": 8,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__nor3_1.A",
+          3
+        ],
+        [
+          "sky130_fd_sc_hd__nand2b_1.A_N",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__nand2b_1.B",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__nor4_1.C",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__nor4b_1.C",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__or3_1.A",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "bus_we",
+      "class": "digital_external",
+      "direction": "input",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 3,
+      "endpoints_reference": 3,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__nand2_1.A",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__nand3_1.A",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__nor4b_1.D_N",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "bus_re",
+      "class": "digital_external",
+      "direction": "input",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 1,
+      "endpoints_reference": 1,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__clkbuf_1.A",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "bus_wdata[0]",
+      "class": "digital_external",
+      "direction": "input",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 2,
+      "endpoints_reference": 2,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__mux2_2.A0",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__nor2_1.A",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "bus_wdata[1]",
+      "class": "digital_external",
+      "direction": "input",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 3,
+      "endpoints_reference": 3,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__mux2i_1.A0",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__nor2_1.A",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__xor2_1.B",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "bus_wdata[2]",
+      "class": "digital_external",
+      "direction": "input",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 4,
+      "endpoints_reference": 4,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__nand2_1.A",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__nand3_1.B",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__nor2_1.A",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__o21ai_0.A2",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "bus_wdata[3]",
+      "class": "digital_external",
+      "direction": "input",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 0,
+      "endpoints_reference": 0,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": true,
+      "top_endpoints": []
+    },
+    {
+      "port": "bus_wdata[4]",
+      "class": "digital_external",
+      "direction": "input",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 0,
+      "endpoints_reference": 0,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": true,
+      "top_endpoints": []
+    },
+    {
+      "port": "bus_wdata[5]",
+      "class": "digital_external",
+      "direction": "input",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 0,
+      "endpoints_reference": 0,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": true,
+      "top_endpoints": []
+    },
+    {
+      "port": "bus_wdata[6]",
+      "class": "digital_external",
+      "direction": "input",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 0,
+      "endpoints_reference": 0,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": true,
+      "top_endpoints": []
+    },
+    {
+      "port": "bus_wdata[7]",
+      "class": "digital_external",
+      "direction": "input",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 0,
+      "endpoints_reference": 0,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": true,
+      "top_endpoints": []
+    },
+    {
+      "port": "bus_wdata[8]",
+      "class": "digital_external",
+      "direction": "input",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 0,
+      "endpoints_reference": 0,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": true,
+      "top_endpoints": []
+    },
+    {
+      "port": "bus_wdata[9]",
+      "class": "digital_external",
+      "direction": "input",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 0,
+      "endpoints_reference": 0,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": true,
+      "top_endpoints": []
+    },
+    {
+      "port": "bus_wdata[10]",
+      "class": "digital_external",
+      "direction": "input",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 0,
+      "endpoints_reference": 0,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": true,
+      "top_endpoints": []
+    },
+    {
+      "port": "bus_wdata[11]",
+      "class": "digital_external",
+      "direction": "input",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 0,
+      "endpoints_reference": 0,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": true,
+      "top_endpoints": []
+    },
+    {
+      "port": "bus_wdata[12]",
+      "class": "digital_external",
+      "direction": "input",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 0,
+      "endpoints_reference": 0,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": true,
+      "top_endpoints": []
+    },
+    {
+      "port": "bus_wdata[13]",
+      "class": "digital_external",
+      "direction": "input",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 0,
+      "endpoints_reference": 0,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": true,
+      "top_endpoints": []
+    },
+    {
+      "port": "bus_wdata[14]",
+      "class": "digital_external",
+      "direction": "input",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 0,
+      "endpoints_reference": 0,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": true,
+      "top_endpoints": []
+    },
+    {
+      "port": "bus_wdata[15]",
+      "class": "digital_external",
+      "direction": "input",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 0,
+      "endpoints_reference": 0,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": true,
+      "top_endpoints": []
+    },
+    {
+      "port": "bus_wdata[16]",
+      "class": "digital_external",
+      "direction": "input",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 0,
+      "endpoints_reference": 0,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": true,
+      "top_endpoints": []
+    },
+    {
+      "port": "bus_wdata[17]",
+      "class": "digital_external",
+      "direction": "input",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 0,
+      "endpoints_reference": 0,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": true,
+      "top_endpoints": []
+    },
+    {
+      "port": "bus_wdata[18]",
+      "class": "digital_external",
+      "direction": "input",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 0,
+      "endpoints_reference": 0,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": true,
+      "top_endpoints": []
+    },
+    {
+      "port": "bus_wdata[19]",
+      "class": "digital_external",
+      "direction": "input",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 0,
+      "endpoints_reference": 0,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": true,
+      "top_endpoints": []
+    },
+    {
+      "port": "bus_wdata[20]",
+      "class": "digital_external",
+      "direction": "input",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 0,
+      "endpoints_reference": 0,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": true,
+      "top_endpoints": []
+    },
+    {
+      "port": "bus_wdata[21]",
+      "class": "digital_external",
+      "direction": "input",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 0,
+      "endpoints_reference": 0,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": true,
+      "top_endpoints": []
+    },
+    {
+      "port": "bus_wdata[22]",
+      "class": "digital_external",
+      "direction": "input",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 0,
+      "endpoints_reference": 0,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": true,
+      "top_endpoints": []
+    },
+    {
+      "port": "bus_wdata[23]",
+      "class": "digital_external",
+      "direction": "input",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 0,
+      "endpoints_reference": 0,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": true,
+      "top_endpoints": []
+    },
+    {
+      "port": "bus_wdata[24]",
+      "class": "digital_external",
+      "direction": "input",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 0,
+      "endpoints_reference": 0,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": true,
+      "top_endpoints": []
+    },
+    {
+      "port": "bus_wdata[25]",
+      "class": "digital_external",
+      "direction": "input",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 0,
+      "endpoints_reference": 0,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": true,
+      "top_endpoints": []
+    },
+    {
+      "port": "bus_wdata[26]",
+      "class": "digital_external",
+      "direction": "input",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 0,
+      "endpoints_reference": 0,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": true,
+      "top_endpoints": []
+    },
+    {
+      "port": "bus_wdata[27]",
+      "class": "digital_external",
+      "direction": "input",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 0,
+      "endpoints_reference": 0,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": true,
+      "top_endpoints": []
+    },
+    {
+      "port": "bus_wdata[28]",
+      "class": "digital_external",
+      "direction": "input",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 0,
+      "endpoints_reference": 0,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": true,
+      "top_endpoints": []
+    },
+    {
+      "port": "bus_wdata[29]",
+      "class": "digital_external",
+      "direction": "input",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 0,
+      "endpoints_reference": 0,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": true,
+      "top_endpoints": []
+    },
+    {
+      "port": "bus_wdata[30]",
+      "class": "digital_external",
+      "direction": "input",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 0,
+      "endpoints_reference": 0,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": true,
+      "top_endpoints": []
+    },
+    {
+      "port": "bus_wdata[31]",
+      "class": "digital_external",
+      "direction": "input",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 0,
+      "endpoints_reference": 0,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": true,
+      "top_endpoints": []
+    },
+    {
+      "port": "bus_rdata[0]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 2,
+      "endpoints_reference": 2,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__a22o_1.A1",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__dfrtp_1.Q",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "bus_rdata[1]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 2,
+      "endpoints_reference": 2,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__a22oi_1.A1",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__dfrtp_1.Q",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "bus_rdata[2]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 2,
+      "endpoints_reference": 2,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__a22oi_1.A1",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__dfrtp_1.Q",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "bus_rdata[3]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 2,
+      "endpoints_reference": 2,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__a22oi_1.A1",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__dfrtp_1.Q",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "bus_rdata[4]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 2,
+      "endpoints_reference": 2,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__a22oi_1.A1",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__dfrtp_1.Q",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "bus_rdata[5]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 2,
+      "endpoints_reference": 2,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__a22oi_1.A1",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__dfrtp_1.Q",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "bus_rdata[6]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 2,
+      "endpoints_reference": 2,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__a22o_1.A1",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__dfrtp_1.Q",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "bus_rdata[7]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 2,
+      "endpoints_reference": 2,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__dfrtp_1.Q",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__nand2_1.A",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "bus_rdata[8]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 2,
+      "endpoints_reference": 2,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__a21oi_1.A1",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__dfrtp_1.Q",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "bus_rdata[9]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 2,
+      "endpoints_reference": 2,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__a22o_1.A1",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__dfrtp_1.Q",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "bus_rdata[10]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 2,
+      "endpoints_reference": 2,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__a22o_1.A1",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__dfrtp_1.Q",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "bus_rdata[11]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 2,
+      "endpoints_reference": 2,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__a22o_1.A1",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__dfrtp_1.Q",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "bus_rdata[12]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 2,
+      "endpoints_reference": 2,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__a221oi_1.B2",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__dfrtp_1.Q",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "bus_rdata[13]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 2,
+      "endpoints_reference": 2,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__a21oi_1.A1",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__dfrtp_1.Q",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "bus_rdata[14]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 2,
+      "endpoints_reference": 2,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__a22oi_1.A1",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__dfrtp_1.Q",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "bus_rdata[15]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 2,
+      "endpoints_reference": 2,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__dfrtp_1.Q",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__nand2_1.A",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "bus_rdata[16]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 2,
+      "endpoints_reference": 2,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__a221o_1.A1",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__dfrtp_1.Q",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "bus_rdata[17]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 2,
+      "endpoints_reference": 2,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__dfrtp_1.Q",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__nand2_1.A",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "bus_rdata[18]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 2,
+      "endpoints_reference": 2,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__dfrtp_1.Q",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__nand2_1.A",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "bus_rdata[19]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 2,
+      "endpoints_reference": 2,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__dfrtp_1.Q",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__nand2_1.A",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "bus_rdata[20]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 2,
+      "endpoints_reference": 2,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__a22o_1.A1",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__dfrtp_1.Q",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "bus_rdata[21]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 2,
+      "endpoints_reference": 2,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__dfrtp_1.Q",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__nand2_1.A",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "bus_rdata[22]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 2,
+      "endpoints_reference": 2,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__a22o_1.A1",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__dfrtp_1.Q",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "bus_rdata[23]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 2,
+      "endpoints_reference": 2,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__dfrtp_1.Q",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__nand2_1.A",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "bus_rdata[24]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 2,
+      "endpoints_reference": 2,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__dfrtp_1.Q",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__nand2_1.A",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "bus_rdata[25]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 2,
+      "endpoints_reference": 2,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__dfrtp_1.Q",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__nand2_1.A",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "bus_rdata[26]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 2,
+      "endpoints_reference": 2,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__a22o_1.A1",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__dfrtp_1.Q",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "bus_rdata[27]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 2,
+      "endpoints_reference": 2,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__dfrtp_1.Q",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__nand2_1.A",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "bus_rdata[28]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 2,
+      "endpoints_reference": 2,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__a22o_1.A1",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__dfrtp_1.Q",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "bus_rdata[29]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 2,
+      "endpoints_reference": 2,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__dfrtp_1.Q",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__nand2_1.A",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "bus_rdata[30]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 2,
+      "endpoints_reference": 2,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__a22o_1.A1",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__dfrtp_1.Q",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "bus_rdata[31]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 2,
+      "endpoints_reference": 2,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__dfrtp_1.Q",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__nand2_1.A",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "out_data[0]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 1,
+      "endpoints_reference": 1,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__nor2_1.Y",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "out_data[1]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 1,
+      "endpoints_reference": 1,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__nor2_1.Y",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "out_data[2]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 1,
+      "endpoints_reference": 1,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__nor2_1.Y",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "out_data[3]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 1,
+      "endpoints_reference": 1,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__nor2_1.Y",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "out_data[4]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 1,
+      "endpoints_reference": 1,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__nor2_1.Y",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "out_data[5]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 1,
+      "endpoints_reference": 1,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__nor2_1.Y",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "out_data[6]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 1,
+      "endpoints_reference": 1,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__nor2_1.Y",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "out_data[7]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 1,
+      "endpoints_reference": 1,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__nor2_1.Y",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "out_data[8]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 1,
+      "endpoints_reference": 1,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__nor2_1.Y",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "out_data[9]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 1,
+      "endpoints_reference": 1,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__nor2_1.Y",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "out_data[10]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 1,
+      "endpoints_reference": 1,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__nor2_1.Y",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "out_data[11]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 1,
+      "endpoints_reference": 1,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__nor2_1.Y",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "out_data[12]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 1,
+      "endpoints_reference": 1,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__nor2_1.Y",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "out_data[13]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 1,
+      "endpoints_reference": 1,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__nor2_1.Y",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "out_data[14]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 1,
+      "endpoints_reference": 1,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__nor2_1.Y",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "out_data[15]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 1,
+      "endpoints_reference": 1,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__nor2_1.Y",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "out_data[16]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 1,
+      "endpoints_reference": 1,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__nor2_1.Y",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "out_data[17]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 1,
+      "endpoints_reference": 1,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__nor2_1.Y",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "out_data[18]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 1,
+      "endpoints_reference": 1,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__nor2_1.Y",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "out_data[19]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 1,
+      "endpoints_reference": 1,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__nor2_1.Y",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "out_data[20]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 1,
+      "endpoints_reference": 1,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__nor2_1.Y",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "out_data[21]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 1,
+      "endpoints_reference": 1,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__nor2_1.Y",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "out_data[22]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 1,
+      "endpoints_reference": 1,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__nor2_1.Y",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "out_data[23]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 1,
+      "endpoints_reference": 1,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__nor2_1.Y",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "out_data[24]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 1,
+      "endpoints_reference": 1,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__nor2_1.Y",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "out_data[25]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 1,
+      "endpoints_reference": 1,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__nor2_1.Y",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "out_data[26]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 1,
+      "endpoints_reference": 1,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__nor2_1.Y",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "out_data[27]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 1,
+      "endpoints_reference": 1,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__nor2_1.Y",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "out_data[28]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 1,
+      "endpoints_reference": 1,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__nor2_1.Y",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "out_data[29]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 1,
+      "endpoints_reference": 1,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__nor2_1.Y",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "out_data[30]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 1,
+      "endpoints_reference": 1,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__nor2_1.Y",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "out_data[31]",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 1,
+      "endpoints_reference": 1,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__nor2_1.Y",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "out_valid",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 1,
+      "endpoints_reference": 1,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__inv_1.Y",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "out_ready",
+      "class": "digital_external",
+      "direction": "input",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 2,
+      "endpoints_reference": 2,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__nand3_1.A",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__o41ai_1.B1",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "alarm",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 1,
+      "endpoints_reference": 1,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__inv_1.Y",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "gated",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 8,
+      "endpoints_reference": 8,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__nand2_1.B",
+          3
+        ],
+        [
+          "sky130_fd_sc_hd__o21ai_0.A1",
+          3
+        ],
+        [
+          "sky130_fd_sc_hd__clkinv_1.Y",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__nor2_1.B",
+          1
+        ]
+      ]
+    },
+    {
+      "port": "startup_done",
+      "class": "digital_external",
+      "direction": "output",
+      "extracted_pin_unique": true,
+      "joined_with_other_port": false,
+      "lvs_paired_by_name": true,
+      "endpoints_layout": 18,
+      "endpoints_reference": 18,
+      "endpoint_multiset_equal": true,
+      "no_cell_or_device_loads": false,
+      "top_endpoints": [
+        [
+          "sky130_fd_sc_hd__o21ai_0.A1",
+          5
+        ],
+        [
+          "sky130_fd_sc_hd__nand2_1.A",
+          4
+        ],
+        [
+          "sky130_fd_sc_hd__nor2_1.A",
+          3
+        ],
+        [
+          "sky130_fd_sc_hd__a21oi_1.A1",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__a21oi_1.A2",
+          1
+        ],
+        [
+          "sky130_fd_sc_hd__and2_1.A",
+          1
+        ]
+      ]
+    }
+  ],
+  "stub_pin_differences": {},
+  "stub_pin_order_only_differences": [
+    "sky130_fd_sc_hd__dfrtp_1",
+    "sky130_fd_sc_hd__dfstp_1"
+  ],
+  "unloaded_ports": [
+    "bus_wdata[3]",
+    "bus_wdata[4]",
+    "bus_wdata[5]",
+    "bus_wdata[6]",
+    "bus_wdata[7]",
+    "bus_wdata[8]",
+    "bus_wdata[9]",
+    "bus_wdata[10]",
+    "bus_wdata[11]",
+    "bus_wdata[12]",
+    "bus_wdata[13]",
+    "bus_wdata[14]",
+    "bus_wdata[15]",
+    "bus_wdata[16]",
+    "bus_wdata[17]",
+    "bus_wdata[18]",
+    "bus_wdata[19]",
+    "bus_wdata[20]",
+    "bus_wdata[21]",
+    "bus_wdata[22]",
+    "bus_wdata[23]",
+    "bus_wdata[24]",
+    "bus_wdata[25]",
+    "bus_wdata[26]",
+    "bus_wdata[27]",
+    "bus_wdata[28]",
+    "bus_wdata[29]",
+    "bus_wdata[30]",
+    "bus_wdata[31]"
+  ],
+  "limitations": [
+    {
+      "id": "L1",
+      "item": "digital standard-cell internals",
+      "status": "not checked",
+      "detail": "Every sky130_fd_sc_hd cell is an opaque pin-only black box on both sides (klt extract --abstract-cells). Transistor-level LVS of the cell internals is not done; the cells are the PDK's own, and the macro-level digital LVS (layout/trng_digital/lvs.json) is cell level too. What IS checked: every cell's signal and power pin lands on the same net as in the as-built netlist."
+    },
+    {
+      "id": "L2",
+      "item": "digital substrate / VNB and well-body ties",
+      "status": "not checked",
+      "detail": "klt extract drops VNB from every abstracted stub (substrate-only; deck global net 'vsubs'), so the reference omits it and nothing here verifies digital substrate or p-well connectivity. VPB (n-well) IS carried as a stub pin and tied to vdd on the reference; the endpoint audit proves every VPB sits on the same net as VPWR."
+    },
+    {
+      "id": "L3",
+      "item": "analog device bodies and well/substrate-tap convention",
+      "status": "not checked",
+      "detail": "lvs.json body_verification.status is 'unchecked': the pre-extracted-netlist request form gives klt no layout.deck to establish a tap convention. The four MOSFET terminals (including bulk) are compared topologically against the reference, nothing more."
+    },
+    {
+      "id": "L4",
+      "item": "device parameters",
+      "status": "klt default only",
+      "detail": "lvs.json device_parameter_coverage is [] (same as layout/sampler_core/lvs.json); the comparer's own parameter handling applies and no tolerance or compare_parameters option was set. No claim beyond 'klt lvs reports no device.property mismatch'."
+    },
+    {
+      "id": "L5",
+      "item": "filler / tap / diode cells",
+      "status": "compared as power-only / signal cells, not pruned",
+      "detail": "6284 fill/tap instances (from the routed DEF) are carried as power-pin-only stubs and compared, not pruned (the subckt-call form has no power-only pruning). The one antenna diode (sky130_fd_sc_hd__diode_2) is a signal cell from the as-built Verilog. Fill/tap counts come from the DEF, not from the layout extraction, so a missing tap would mismatch."
+    },
+    {
+      "id": "L6",
+      "item": "power connectivity check (klt power_connectivity)",
+      "status": "not applicable to this form",
+      "detail": "power_connectivity.status is 'unchecked' for reference.form 'subckt-call'. Power is instead part of the ordinary compare: every cell's VPWR/VPB/VGND pin is an explicit stub pin on both sides, tied to vdd/vss in the reference, and the endpoint audit compares the vdd/vss endpoint multisets in full."
+    },
+    {
+      "id": "L7",
+      "item": "hierarchy",
+      "status": "flattened",
+      "detail": "Reference and layout are flat: sampler_core's subcircuit hierarchy is expanded in the reference, the digital module boundary does not exist in the comparison. Which macro a net lives in is not part of the verdict."
+    },
+    {
+      "id": "L8",
+      "item": "pin names",
+      "status": "canonicalised",
+      "detail": "klt names an extracted net by all its labels joined with '|'. Each top pin whose label set contains exactly one whole-block port name is renamed to that port name (verify-whole.py; 123 of 123); pins with zero or several port names are never repaired (they stay composite and fail the compare). Pin identity is then anchored by name through options.anchor_top_level_pins."
+    },
+    {
+      "id": "L9",
+      "item": "curated DRC deck",
+      "status": "partial rule coverage",
+      "detail": "klt's curated sky130 deck checks 91 rules on 20 layers; 19 layer/datatype pairs in the stream have no rules and 45 deck rules are skipped (see drc.json coverage). Clean here is not foundry DRC clean: no antenna, density, seal-ring, latch-up or foundry-only rules."
+    },
+    {
+      "id": "L10",
+      "item": "analog-origin DRC history",
+      "status": "resolved upstream, re-verified",
+      "detail": "The 5664 licon1.ongrid.1 findings #172 reported on sampler_core came from klayout-tools#2648 (cut centres off the 0.005 um grid). Issue #181 regenerated sampler_core on the fixed generator (klt 0.6.0+g5edb557f91d0) with new provenance; this run re-verifies the composed stream on that build with the rule still enabled (licon1.ongrid.1 is in rules_checked) and finds 0 violations. No rule was waived, relaxed or removed."
+    },
+    {
+      "id": "L11",
+      "item": "extraction is not parasitic / electrical",
+      "status": "out of scope",
+      "detail": "Schematic-equivalent connectivity only. Coupling between the vdd/vddr routes, IR drop, period scatter and every DR-0003 section 8 / DR-0009 measurement obligation stay open for #174 and #170."
+    },
+    {
+      "id": "L13",
+      "item": "unloaded boundary pins",
+      "status": "endpoint audit vacuous for these ports",
+      "detail": "29 digital input ports (bus_wdata[3] .. bus_wdata[31]) have no standard-cell load in the as-built netlist (the RTL does not use bus_wdata[31:3]), so their endpoint multisets are empty on both sides and prove nothing. Their identity is covered only by: exactly one extracted pin carries the name, it is not joined with another port, and options.anchor_top_level_pins pairs it by name with the reference pin. A short from one of them to a loaded net is still caught (joined pin / net mismatch). Exchanging the names of two UNLOADED pins is electrically a no-op and is undetectable by construction (a trial swap of bus_wdata[3]/[4] compared 'match'); the digital swap control therefore uses two loaded bits."
+    },
+    {
+      "id": "L14",
+      "item": "stub pin order",
+      "status": "differs, compared by name",
+      "detail": "klt extract lists an abstracted stub's pins alphabetically, the reference uses the PDK's pin order (sky130_fd_sc_hd__dfrtp_1, sky130_fd_sc_hd__dfstp_1); the pin sets are identical and each file's X cards follow its own order, so the endpoint audit (by pin name) is unaffected."
+    },
+    {
+      "id": "L15",
+      "item": "extraction warnings (reviewed, none hidden)",
+      "status": "reviewed",
+      "detail": "159 klt extract warnings, all classified: 91 'net merges N distinct labels' (the analog macro labels its internal nodes; harmless to connectivity, and the reason pin names need canonicalising, L8); 63 '--abstract-cells ... resolve only through the deck's global net vsubs' (VNB dropped from those stubs, L2); one 'abstract-cells instances resolved VPB and VPWR onto the same net' (7901 instances: this is the documented VPB=VPWR well tie, confirmed rather than hidden); one 'promoted nets from labels below the top cell' (three analog internal nodes, demoted by the declared pin set - the extracted top has exactly 123 pins); one 'kept N nets internal: not in the declared pin set'; one dead-metal notice (see verify.json extract.dead_metal: all li1/mcon/met1 inside the digital macro's hidden cell artwork, none on met2..met5 or in the analog macro or the composition routing); one 'layers outside the deck's connectivity graph' (16 layer/datatype pairs listed in extract.json.gz ignored_layers[]: geometry the curated deck does not treat as conductors; it is invisible to extraction and therefore NOT examined by this verification)."
+    },
+    {
+      "id": "L12",
+      "item": "area target",
+      "status": "Unmet (unchanged)",
+      "detail": "0.126116 mm2 against the unchanged < 0.05 mm2 target (layout/trng_whole/README.md). Not touched by this increment."
+    }
+  ]
+}

@@ -1,0 +1,154 @@
+{
+  "schema_version": 1,
+  "issue": 173,
+  "parent": 170,
+  "provisional": true,
+  "not_signoff": "Whole-block project verification on klt's curated sky130 decks and the open_pdks install pinned in layout/pdk.json. NOT foundry sign-off: no foundry DRC/LVS/antenna/density runset, no parasitic extraction, no electrical or entropy characterisation. Provisional until silicon.",
+  "verdict": "DRC clean (0 violations) and LVS match (0 errors) on the declared mixed-level coverage; named limitations in coverage.md; no foundry sign-off",
+  "inputs_sha256": {
+    "layout/trng_whole/trng_whole.gds": "af2f8dfe2800599e97d769bdedd14924c9fa3f24fc7e1c4f43ccd72ac5572ddd",
+    "layout/trng_whole/trng_whole.ref.spice": "983d3d2237ec19fd86612254de638a74b8f3fb32ab16af8dbfd6e3e30d56d38f",
+    "layout/trng_whole/interface.json": "ffee0519b72088f917c67e94e565c4f3953b7969c534ef1aebc7e694b064309d",
+    "layout/trng_whole/report.json": "d98e25c9e601f09e9d9c39cbdecbde9fafa3ca03f38e45d9426cf53733dc0ae8",
+    "layout/sampler_core/sampler_core.ref.spice": "18aa2d10f86fbd1d298b5030c1911e3e680f0fa8bfacf64e484ba0fcfbc2288c",
+    "layout/trng_digital/trng_digital.routed.v": "9f3956848e6e75223f75bd154df905fecbb4e988593e78d1a92e347969fbf37f",
+    "layout/trng_digital/trng_digital.def": "55b59c05ed2807a5b023efe4b45dfd9d9d4c68e136907c57c84e39179ef214fa",
+    "layout/sampler_core/sampler_core.gds": "e3ff54a9bb15122298f0d5df817612ed1caacb3b045533f9ba86d009036c2004",
+    "layout/trng_digital/trng_digital.gds": "c65e15818ebb0bf3fb2f59cab63563e88c1acebe32f0e83040c43c9ad87fa750",
+    "layout/pdk.json": "fe36111d6767f93757e50b9cc4f46ebeb16d6f2dee2e9a154c3facd9f9d43c78"
+  },
+  "reference": {
+    "path": "layout/trng_whole/verify/lvs.ref.spice",
+    "sha256": "5b96d0a18d46ae7977d33868e07446c1f3e2e2f1536200b64030e4c6e0a83845",
+    "facts": {
+      "analog_devices": 264,
+      "digital_cell_instances": 8605,
+      "verilog_instances": 2321,
+      "power_only_instances": 6284,
+      "power_only_cells": {
+        "sky130_fd_sc_hd__fill_1": 1329,
+        "sky130_fd_sc_hd__fill_2": 1122,
+        "sky130_fd_sc_hd__fill_4": 861,
+        "sky130_fd_sc_hd__fill_8": 2268,
+        "sky130_fd_sc_hd__tapvpwrvgnd_1": 704
+      },
+      "signal_pin_connections": 8359,
+      "internal_digital_nets": 2196,
+      "stub_cell_types": 69,
+      "whole_ports": 123
+    },
+    "generator": "layout/bin/verify-whole.py (build_reference_text) + layout/bin/verify_whole_lib.py"
+  },
+  "tool_pins": {
+    "klt_version": "0.6.0+g5edb557f91d0",
+    "klt_pin_expected": "0.6.0+g5edb557f91d0",
+    "klt_pin_source": "pip install \"klayout-tools @ git+https://github.com/2AMLogic/klayout-tools@5edb557f91d0116368c386617802ec727b4bdc90\"",
+    "open_pdks_commit_expected": "c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+    "pdk_variant": "sky130A",
+    "deck": "sky130",
+    "std_cell_lef_sha256": "3a3ea4e9d0973402702764d897659e52fe3d413eb48c306cd811de40a75264fa",
+    "std_cell_spice_sha256": "6dec6626decd1ee15afacafab9925b1a336ab344b7b5e1bec9d7483f2a6badc3",
+    "python_klayout": "0.30.12"
+  },
+  "drc": {
+    "request": "layout/trng_whole/verify/drc.request.json",
+    "report": "layout/trng_whole/verify/drc.json",
+    "status": "clean",
+    "violation_count": 0,
+    "deck": {
+      "name": "sky130",
+      "content_hash": "sha256:2bcbd625a0e36a4d1f9893b3c5d9b94963179c962b10ba01ffc4f378938c8197",
+      "released": false
+    },
+    "input_content_hash": "sha256:af2f8dfe2800599e97d769bdedd14924c9fa3f24fc7e1c4f43ccd72ac5572ddd",
+    "rules_checked": 91
+  },
+  "extract": {
+    "request": "layout/trng_whole/verify/extract.request.json",
+    "report": "layout/trng_whole/verify/extract.json.gz",
+    "status": "extracted",
+    "device_count": 264,
+    "device_counts": {
+      "nfet": 132,
+      "pfet": 132
+    },
+    "net_count": 2511,
+    "pin_count_raw": 123,
+    "dead_metal": {
+      "clusters": 11116,
+      "by_layer": {
+        "67/20": 7468,
+        "67/44": 2736,
+        "68/20": 912
+      },
+      "inside_digital_macro_bbox": 11116,
+      "reading": "all inside the digital macro and all li1/mcon/met1: standard-cell internal artwork hidden by the abstraction (L1); none on met2..met5 and none in the analog macro or the composition routing"
+    },
+    "abstracted_cell_types": 69,
+    "abstracted_instances": 8605,
+    "warning_count": 159,
+    "raw_netlist_sha256": "0beeaec5bf29197f7a0c3d5a2918c8fc2192695eb0a9927f71b837d8ea739610",
+    "raw_netlist_note": "anonymous $N net numbering is not a stable cross-host contract (klt extract --help); the canonical netlist hash below is what the LVS report pins",
+    "deck": {
+      "name": "sky130",
+      "content_hash": "sha256:2bcbd625a0e36a4d1f9893b3c5d9b94963179c962b10ba01ffc4f378938c8197",
+      "released": false
+    }
+  },
+  "pin_canonicalisation": {
+    "pins_before": 123,
+    "pins_after": 123,
+    "renamed": 123,
+    "ports_missing": [],
+    "ports_duplicated": [],
+    "joined_pins": {},
+    "unnamed_pins": []
+  },
+  "lvs": {
+    "request": "layout/trng_whole/verify/lvs.request.json",
+    "report": "layout/trng_whole/verify/lvs.json",
+    "layout_netlist": "layout/trng_whole/verify/trng_whole.layout.spice",
+    "layout_netlist_sha256": "383c5374047d6f9a3093aa83d4b3cdff5f3333d3b9e60f23be98a9e61455e622",
+    "reference_sha256": "5b96d0a18d46ae7977d33868e07446c1f3e2e2f1536200b64030e4c6e0a83845",
+    "status": "match",
+    "mismatch_count": 1,
+    "error_count": 0,
+    "counts": {
+      "nets": {
+        "layout": 2511,
+        "reference": 2511,
+        "matched": 2983
+      },
+      "devices": {
+        "layout": 264,
+        "reference": 264,
+        "matched": 264
+      },
+      "pins": {
+        "layout": 123,
+        "reference": 123,
+        "matched": 595
+      }
+    },
+    "warnings_reviewed": [
+      {
+        "category": "topology.top_level_pins_anchored",
+        "count": 1,
+        "error_count": 0,
+        "explanation": "intended: options.anchor_top_level_pins asserts each of the 123 top pins by name; reported as a warning-severity disclosure, not a defect."
+      }
+    ],
+    "power_connectivity": "unchecked",
+    "body_verification": "unchecked"
+  },
+  "endpoint_audit": {
+    "ports": 123,
+    "mismatched_ports": [],
+    "stub_pin_differences": {}
+  },
+  "coverage": {
+    "matrix": "layout/trng_whole/verify/coverage.json",
+    "ports_clean": 123,
+    "ports": 123
+  }
+}
