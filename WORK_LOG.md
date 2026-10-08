@@ -4,6 +4,8 @@ Chronological record of recently merged pull requests and closed issues.
 
 ### 2026-10-07
 
+- **PR #187**: Re-extract layout/pex* on #181 geometry; re-measure assembled ring via klt sim (#184)
+- **Issue #184** (closed): Re-extract post-layout netlist libraries (layout/pex*) on the regenerated #181 geometry
 - **PR #185**: fix(layout): regenerate the analog cell chain on the klt cut-size/grid fix
 - **Issue #181** (closed): Regenerate sampler_core analog cells to clear 5664 licon1.ongrid.1 violations on the current klt sky130 deck
 - **PR #182**: docs: reconcile Challenge #4 scorecard against whole-block composition (Part of #18)
