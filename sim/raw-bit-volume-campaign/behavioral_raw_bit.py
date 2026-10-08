@@ -74,7 +74,22 @@ TS_TRANSISTOR_LEVEL = 100e-9        # #21 testbench Ts
 TS_DR0003 = 20e-6                   # DR-0003 literal 50 kHz sample clock
 CORNERS = ("tt", "ss", "ff")
 # PVT points for which BOTH calibration inputs exist in the repo.
-PVT_POINTS = ((27.0, 1.8), (-40.0, 1.62), (-40.0, 1.98))
+PVT_POINTS_BASE = ((27.0, 1.8), (-40.0, 1.62), (-40.0, 1.98))      # issue #188 record
+# Issue #197: the 125 C end of the README operating envelope. The ring5 jitter
+# records at these points already existed (20260825-0611/0619/0622-54f5715); the
+# combining records were minted under #197 from `klt sim` batch jobs.
+PVT_POINTS_HOT = ((125.0, 1.62), (125.0, 1.8), (125.0, 1.98))
+def _hot_combining_present() -> bool:
+    d = REPO_ROOT / "sim/ro-array-core-combining/records"
+    return all(any(json.loads(p.read_text()).get("pvt") == {"temp_c": t, "vdd_v": v} for p in d.glob("*.json"))
+               for t, v in PVT_POINTS_HOT)
+
+
+# The explicit calibration/cross-check set. The hot points join it only once their combining
+# records are committed, so the tree never declares a PVT point it cannot calibrate (the hot
+# `klt sim` batch jobs for #197 were refused by the fleet: see the PR / klayout-tools#2851).
+PVT_POINTS = PVT_POINTS_BASE + (PVT_POINTS_HOT if _hot_combining_present() else ())
+PVT_SETS = {"base": PVT_POINTS_BASE, "hot": PVT_POINTS_HOT}
 XCHECK_PVT = (27.0, 1.8)            # PVT of the transistor-level cross-check
 PERIOD_REL_UNC = 0.01               # declared 1-sigma relative period uncertainty
 ENSEMBLE = 2000
@@ -98,14 +113,21 @@ def calibration(temp: float, vdd: float, corner: str) -> dict:
                   lambda r: r.get("pvt") == pvt and "ring5" in r.get("testbench", ""))
     if comb is None or jit is None:
         raise SystemExit(f"error: no calibration records for {pvt}")
-    cm = next(c for c in comb["corners"] if c["corner"] == corner)["measurements"]
-    jm = next(c for c in jit["corners"] if c["corner"] == corner)["measurements"]
+    cc = next((c for c in comb["corners"] if c["corner"] == corner), None)
+    jc = next((c for c in jit["corners"] if c["corner"] == corner), None)
+    for what, rec_, c in (("combining", comb, cc), ("jitter", jit, jc)):
+        if c is None or not c.get("ok", False):
+            raise SystemExit(f"error: {what} record {rec_['record_id']} has no passing {corner} corner at {pvt}")
+    cm, jm = cc["measurements"], jc["measurements"]
     return {
         "temp_c": temp, "vdd_v": vdd, "corner": corner,
         "periods_s": [cm[f"tr{i}"] for i in (1, 2, 3, 4)],
         "sigma": {k: jm[f"sigma_{k}"] for k in (1, 2, 4, 8)},
         "tbar_ring5_s": jm["tbar"],
         "combining_record": comb["record_id"], "jitter_record": jit["record_id"],
+        # batch job ids (None for records that predate `klt sim` batch runs)
+        "combining_job_id": (comb.get("klt_sim") or {}).get("job_id"),
+        "jitter_job_id": (jit.get("klt_sim") or {}).get("job_id"),
         "edge_retention": cm.get("edge_retention"),
     }
 
@@ -281,9 +303,9 @@ def cross_checks() -> dict:
 
 
 # -------------------------------------------------------------------- campaign
-def run_campaign(outdir: Path) -> list[dict]:
+def run_campaign(outdir: Path, points=PVT_POINTS_BASE) -> list[dict]:
     rows = []
-    for (temp, vdd) in PVT_POINTS:
+    for (temp, vdd) in points:
         for corner in CORNERS:
             cal = calibration(temp, vdd, corner)
             for ts_name, ts in (("Ts100ns", TS_TRANSISTOR_LEVEL), ("Ts20us", TS_DR0003)):
@@ -296,7 +318,7 @@ def run_campaign(outdir: Path) -> list[dict]:
                 rows.append({"corner": corner, "temp_c": temp, "vdd_v": vdd, "ts_s": ts,
                              "ts_name": ts_name, "seed_label": label, "seed": sub_seed(label),
                              "file": fname, "sha256_hex": hashlib.sha256(hx.encode()).hexdigest(),
-                             "calibration": {k: cal[k] for k in ("periods_s", "sigma", "combining_record", "jitter_record")},
+                             "calibration": {k: cal[k] for k in ("periods_s", "sigma", "combining_record", "jitter_record", "combining_job_id", "jitter_job_id")},
                              **st})
     return rows
 
@@ -321,8 +343,51 @@ def fmt_band(b):
     return f"[{b[0]:.3f}, {b[1]:.3f}]"
 
 
-def build_body(rows, xc, rob) -> tuple[str, dict]:
+BASE_RECORD = "20261008-061809-56e0fb7"   # the #188 record the hot set extends (never modified)
+
+
+def findings(xc) -> list[str]:
+    """Every failing cross-check row, listed explicitly (never filtered out)."""
+    out = []
+    for row in xc["jitter"]:
+        for k, v in row["ratios"].items():
+            if not v["inside"]:
+                out.append(f"jitter sigma_{k}/sigma_1 at {row['temp_c']:g} C / {row['vdd_v']:g} V / "
+                           f"{row['corner']}: record {v['record']:.2f} outside model 99% band {fmt_band(v['band99'])}")
+    for r in xc["phat"]:
+        if r["inside_all"] is False:
+            out.append(f"p_hat (24-sample, Ts = 100 ns) {r['corner']}: transistor "
+                       f"{', '.join(f'{x:.3f}' for x in r['transistor_phat'])} outside model 99% band {fmt_band(r['model_band99'])}")
+    for r in xc["hamming"]:
+        if r["inside"] is False:
+            out.append(f"seed-to-seed Hamming {r['corner']}: transistor {r['transistor_mean_pairwise_hamming']:.4f} "
+                       f"outside model 99% band {fmt_band(r['model_band99'])}")
+    return out
+
+
+def build_body(rows, xc, rob, point_set="base") -> tuple[str, dict]:
     L = []
+    if point_set == "hot":
+        L.append("## Scope of this record (issue #197)")
+        L.append("")
+        L.append(f"Extends `{BASE_RECORD}` (issue #188; unmodified, not superseded) to the 125 degC end of the "
+                 "README operating envelope. This record contains ONLY the 18 hot streams (3 process x 3 "
+                 "supplies x 2 Ts). Calibration pairs, per (process, supply): the new `ro-array-core-combining` "
+                 "125 degC records (transistor level, `klt sim` batch jobs listed below) with the pre-existing "
+                 "125 degC `ro-ring-jitter-accumulation` ring5 records. The jitter cross-check below covers "
+                 "ALL six PVT points (the three #188 points are recomputed and expected to match that record).")
+        L.append("")
+        L.append("| T (C) | Vdd | combining record | combining batch job | jitter record (local run, no batch job) |")
+        L.append("|---|---|---|---|---|")
+        seen = set()
+        for r in rows:
+            c = r["calibration"]
+            key = (r["temp_c"], r["vdd_v"])
+            if key in seen:
+                continue
+            seen.add(key)
+            L.append(f"| {r['temp_c']:g} | {r['vdd_v']:g} | `{c['combining_record']}` | `{c['combining_job_id']}` | `{c['jitter_record']}` |")
+        L.append("")
     L.append("## What this is")
     L.append("")
     L.append(f"{len(rows)} behavioral raw-bit streams of {NBITS} bits each (>= 1e5), one per "
@@ -420,6 +485,14 @@ def build_body(rows, xc, rob) -> tuple[str, dict]:
                  f"{'n/a' if th is None else f'{th:.4f}'} | {r['model_median']:.4f} | "
                  f"{fmt_band(r['model_band99'])} | {r['inside']} |")
     L.append("")
+    fnd = findings(xc)
+    L.append("### Findings (every failing cross-check row; none suppressed, no threshold relaxed)")
+    L.append("")
+    if fnd:
+        L += [f"- {f}" for f in fnd]
+    else:
+        L.append("- none: all rows of (1)-(3) fall inside their declared bands.")
+    L.append("")
     L.append("Transistor-level batch jobs (`klt sim`, backend `batch`, request generator "
              "`sim/raw-bit-volume-campaign/make-requests.py`):")
     L.append("")
@@ -430,7 +503,8 @@ def build_body(rows, xc, rob) -> tuple[str, dict]:
         L.append("- **none available**: the transistor leg is absent from this record; only the #21 "
                  "single-seed sequences were used. See the PR for the submit error.")
     L.append("")
-    L.append("Transistor leg size: ONE new batch seed (101; tt/ss/ff, 24 samples each, Ts = 100 ns) plus the "
+    nj = len(xc["transistor_jobs"])
+    L.append(f"Transistor leg size: {nj} batch seed file(s) (tt/ss/ff, 24 samples each, Ts = 100 ns) plus the "
              "#21 record's seed-1 sequences (ss: 23 usable samples; all ss sequences compared over their last "
              "23 samples, the first sample being the start-up invalid one). That is 2 sequences per corner, so "
              "checks (2) and (3) are weak (wide bands) -- they rule out gross disagreement only. No "
@@ -470,11 +544,21 @@ def build_body(rows, xc, rob) -> tuple[str, dict]:
              "entropy rate in either direction. At Ts = 20 us the context predictor beats its shuffled "
              "null only slightly (see table); the battery issue should quantify this.")
     L.append("- **Not an SP 800-90B assessment and not the SP 800-22 battery.** Provisional until silicon.")
-    L.append("- **Calibration PVT coverage:** only the three PVT points that have both combining and "
-             "ring5-jitter records (27 C/1.8 V, -40 C/1.62 V, -40 C/1.98 V). 125 C points have no "
-             "combining record and are not run.")
+    if point_set == "hot":
+        L.append("- **Calibration PVT coverage:** the six PVT points that have both combining and ring5-jitter "
+                 "records: the three #188 points plus 125 C at 1.62/1.8/1.98 V. The transistor-level p_hat and "
+                 "Hamming cross-checks (2)-(3) exist ONLY at 27 C/1.8 V; there is no transistor-level "
+                 "raw-bit run at 125 C, so the hot streams are validated only through the jitter-accumulation "
+                 "check and the calibration provenance. The sensitivity table is the #188 27 C/1.8 V one, "
+                 "unchanged; it was not re-derived for the hot points.")
+    else:
+        L.append("- **Calibration PVT coverage:** only the three PVT points that have both combining and "
+                 "ring5-jitter records (27 C/1.8 V, -40 C/1.62 V, -40 C/1.98 V). 125 C points have no "
+                 "combining record and are not run (extended by issue #197, see its own record).")
     summary = {"streams": rows, "cross_checks": xc, "robustness": rob,
-               "jitter_ratios_inside": [n_in, n_tot]}
+               "jitter_ratios_inside": [n_in, n_tot], "findings": fnd, "point_set": point_set,
+               "calibration_jobs": sorted({(r["temp_c"], r["vdd_v"], r["calibration"]["combining_record"],
+                                            r["calibration"]["combining_job_id"]) for r in rows})}
     return "\n".join(L), summary
 
 
@@ -482,6 +566,8 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--emit-record", action="store_true")
     ap.add_argument("--regenerate-check", metavar="RECORD_JSON")
+    ap.add_argument("--set", choices=sorted(PVT_SETS), default="base", dest="point_set",
+                    help="PVT points whose streams are generated: base (#188 record) or hot (125 C, #197)")
     ap.add_argument("--author", default="loom-builder@sky130-trng")
     args = ap.parse_args(argv)
 
@@ -498,18 +584,22 @@ def main(argv=None) -> int:
 
     with tempfile.TemporaryDirectory() as td:
         tmp = Path(td)
-        rows = run_campaign(tmp)
+        rows = run_campaign(tmp, PVT_SETS[args.point_set])
         xc = cross_checks()
         rob = robustness(rows)
-        body, summary = build_body(rows, xc, rob)
+        body, summary = build_body(rows, xc, rob, args.point_set)
         print(body)
         if not args.emit_record:
             return 0
         rid = mint_behavioral_record(
             REPO_ROOT, SLUG,
-            "behavioral (calibrated, cross-checked) raw-bit streams of >= 1e5 bits per tt/ss/ff corner at "
-            "three PVT points, at DR-0003's literal Ts = 20 us and at the #21 testbench's Ts = 100 ns; "
-            "issue #188",
+            ("behavioral (calibrated, cross-checked) raw-bit streams of >= 1e5 bits per tt/ss/ff corner at "
+             "125 degC x 1.62/1.8/1.98 V, at DR-0003's literal Ts = 20 us and at the #21 testbench's Ts = "
+             "100 ns; extends the #188 record to the hot end of the envelope; issue #197")
+            if args.point_set == "hot" else
+            ("behavioral (calibrated, cross-checked) raw-bit streams of >= 1e5 bits per tt/ss/ff corner at "
+             "three PVT points, at DR-0003's literal Ts = 20 us and at the #21 testbench's Ts = 100 ns; "
+             "issue #188"),
             body, summary, level="behavioral",
             seeds={"master": MASTER_SEED, "policy": "per-stream seed = sha256(master:label)[:8]"},
             artifacts=[tmp / r["file"] for r in rows],
