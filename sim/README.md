@@ -119,7 +119,7 @@ assembled `ro_array_core` + `sampler_dff` path from injected per-stage
 
 | Slug | Claim under test | Landed by |
 |---|---|---|
-| `raw-bit-min-entropy/` | a real, noise-driven raw bit sequence from the assembled array + sampler, and its MCV-style min-entropy point estimate, per PVT corner | #21 |
+| `raw-bit-min-entropy/` | a real, noise-driven raw bit sequence from the assembled array + sampler, and its MCV-style min-entropy point estimate, per PVT corner; plus `analysis/raw-bit-battery.py` (reduced SP 800-22 battery + non-MCV SP 800-90B estimators, INSUFFICIENT below minimum length) | #21 |
 
 `sim/tests/test_raw_bit_entropy.py` is the fast, always-runnable unit-test
 suite behind that record's reduction step (standard library only, no
