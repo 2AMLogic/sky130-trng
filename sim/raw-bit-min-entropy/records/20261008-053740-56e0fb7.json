@@ -1,0 +1,295 @@
+{
+  "record_id": "20261008-053740-56e0fb7",
+  "slug": "raw-bit-min-entropy",
+  "level": "transistor (derived)",
+  "analysis": "sim/raw-bit-min-entropy/analysis/raw-bit-battery.py",
+  "source_record": "20260905-231908-6b86c9c",
+  "author": "loom-builder@sky130-trng",
+  "timestamp_utc": "2026-10-08T05:37:40.626346+00:00",
+  "repo_sha": "56e0fb7",
+  "caveat": "provisional until measured on silicon",
+  "per_corner": [
+    {
+      "corner": "tt",
+      "temp_c": 27.0,
+      "vdd_v": 1.8,
+      "n": 24,
+      "battery": {
+        "n": 24,
+        "segments": 1,
+        "segment_len": 24,
+        "alpha": 0.01,
+        "mode": "single-sequence",
+        "tests": {
+          "monobit": {
+            "min_n": 100,
+            "status": "INSUFFICIENT"
+          },
+          "block_frequency": {
+            "min_n": 100,
+            "status": "INSUFFICIENT"
+          },
+          "runs": {
+            "min_n": 100,
+            "status": "INSUFFICIENT"
+          },
+          "longest_run": {
+            "min_n": 128,
+            "status": "INSUFFICIENT"
+          },
+          "cusum_forward": {
+            "min_n": 100,
+            "status": "INSUFFICIENT"
+          },
+          "cusum_backward": {
+            "min_n": 100,
+            "status": "INSUFFICIENT"
+          },
+          "serial_1": {
+            "min_n": 128,
+            "status": "INSUFFICIENT"
+          },
+          "serial_2": {
+            "min_n": 128,
+            "status": "INSUFFICIENT"
+          },
+          "approximate_entropy": {
+            "min_n": 256,
+            "status": "INSUFFICIENT"
+          }
+        },
+        "verdict": "INSUFFICIENT",
+        "caveat": "provisional until measured on silicon"
+      },
+      "estimators": {
+        "n": 24,
+        "estimators": {
+          "mcv": {
+            "min_n": 1000,
+            "status": "INSUFFICIENT"
+          },
+          "collision": {
+            "min_n": 1000,
+            "status": "INSUFFICIENT"
+          },
+          "markov": {
+            "min_n": 1000,
+            "status": "INSUFFICIENT"
+          },
+          "compression": {
+            "min_n": 12000,
+            "status": "INSUFFICIENT"
+          },
+          "t_tuple": {
+            "min_n": 1000,
+            "status": "INSUFFICIENT"
+          },
+          "lrs": {
+            "min_n": 1000,
+            "status": "INSUFFICIENT"
+          }
+        },
+        "h_min_bits": null,
+        "binding_estimator": null,
+        "verdict": "INSUFFICIENT",
+        "insufficient": [
+          "mcv",
+          "collision",
+          "markov",
+          "compression",
+          "t_tuple",
+          "lrs"
+        ],
+        "caveat": "provisional until measured on silicon"
+      }
+    },
+    {
+      "corner": "ss",
+      "temp_c": 27.0,
+      "vdd_v": 1.8,
+      "n": 23,
+      "battery": {
+        "n": 23,
+        "segments": 1,
+        "segment_len": 23,
+        "alpha": 0.01,
+        "mode": "single-sequence",
+        "tests": {
+          "monobit": {
+            "min_n": 100,
+            "status": "INSUFFICIENT"
+          },
+          "block_frequency": {
+            "min_n": 100,
+            "status": "INSUFFICIENT"
+          },
+          "runs": {
+            "min_n": 100,
+            "status": "INSUFFICIENT"
+          },
+          "longest_run": {
+            "min_n": 128,
+            "status": "INSUFFICIENT"
+          },
+          "cusum_forward": {
+            "min_n": 100,
+            "status": "INSUFFICIENT"
+          },
+          "cusum_backward": {
+            "min_n": 100,
+            "status": "INSUFFICIENT"
+          },
+          "serial_1": {
+            "min_n": 128,
+            "status": "INSUFFICIENT"
+          },
+          "serial_2": {
+            "min_n": 128,
+            "status": "INSUFFICIENT"
+          },
+          "approximate_entropy": {
+            "min_n": 256,
+            "status": "INSUFFICIENT"
+          }
+        },
+        "verdict": "INSUFFICIENT",
+        "caveat": "provisional until measured on silicon"
+      },
+      "estimators": {
+        "n": 23,
+        "estimators": {
+          "mcv": {
+            "min_n": 1000,
+            "status": "INSUFFICIENT"
+          },
+          "collision": {
+            "min_n": 1000,
+            "status": "INSUFFICIENT"
+          },
+          "markov": {
+            "min_n": 1000,
+            "status": "INSUFFICIENT"
+          },
+          "compression": {
+            "min_n": 12000,
+            "status": "INSUFFICIENT"
+          },
+          "t_tuple": {
+            "min_n": 1000,
+            "status": "INSUFFICIENT"
+          },
+          "lrs": {
+            "min_n": 1000,
+            "status": "INSUFFICIENT"
+          }
+        },
+        "h_min_bits": null,
+        "binding_estimator": null,
+        "verdict": "INSUFFICIENT",
+        "insufficient": [
+          "mcv",
+          "collision",
+          "markov",
+          "compression",
+          "t_tuple",
+          "lrs"
+        ],
+        "caveat": "provisional until measured on silicon"
+      }
+    },
+    {
+      "corner": "ff",
+      "temp_c": 27.0,
+      "vdd_v": 1.8,
+      "n": 24,
+      "battery": {
+        "n": 24,
+        "segments": 1,
+        "segment_len": 24,
+        "alpha": 0.01,
+        "mode": "single-sequence",
+        "tests": {
+          "monobit": {
+            "min_n": 100,
+            "status": "INSUFFICIENT"
+          },
+          "block_frequency": {
+            "min_n": 100,
+            "status": "INSUFFICIENT"
+          },
+          "runs": {
+            "min_n": 100,
+            "status": "INSUFFICIENT"
+          },
+          "longest_run": {
+            "min_n": 128,
+            "status": "INSUFFICIENT"
+          },
+          "cusum_forward": {
+            "min_n": 100,
+            "status": "INSUFFICIENT"
+          },
+          "cusum_backward": {
+            "min_n": 100,
+            "status": "INSUFFICIENT"
+          },
+          "serial_1": {
+            "min_n": 128,
+            "status": "INSUFFICIENT"
+          },
+          "serial_2": {
+            "min_n": 128,
+            "status": "INSUFFICIENT"
+          },
+          "approximate_entropy": {
+            "min_n": 256,
+            "status": "INSUFFICIENT"
+          }
+        },
+        "verdict": "INSUFFICIENT",
+        "caveat": "provisional until measured on silicon"
+      },
+      "estimators": {
+        "n": 24,
+        "estimators": {
+          "mcv": {
+            "min_n": 1000,
+            "status": "INSUFFICIENT"
+          },
+          "collision": {
+            "min_n": 1000,
+            "status": "INSUFFICIENT"
+          },
+          "markov": {
+            "min_n": 1000,
+            "status": "INSUFFICIENT"
+          },
+          "compression": {
+            "min_n": 12000,
+            "status": "INSUFFICIENT"
+          },
+          "t_tuple": {
+            "min_n": 1000,
+            "status": "INSUFFICIENT"
+          },
+          "lrs": {
+            "min_n": 1000,
+            "status": "INSUFFICIENT"
+          }
+        },
+        "h_min_bits": null,
+        "binding_estimator": null,
+        "verdict": "INSUFFICIENT",
+        "insufficient": [
+          "mcv",
+          "collision",
+          "markov",
+          "compression",
+          "t_tuple",
+          "lrs"
+        ],
+        "caveat": "provisional until measured on silicon"
+      }
+    }
+  ]
+}
