@@ -1,0 +1,18 @@
+{
+  "schema": "klt.functional_verification.request/1",
+  "engine": "icarus",
+  "sources": [
+    "./digital/tb/cocotb/sky130_fd_sc_hd_sim_defines.v",
+    "$PDK_LIBS_REF/sky130_fd_sc_hd/verilog/primitives.v",
+    "$PDK_LIBS_REF/sky130_fd_sc_hd/verilog/sky130_fd_sc_hd.v",
+    "./layout/trng_digital/trng_digital.routed.v"
+  ],
+  "hdl_toplevel": "trng_digital",
+  "testbench": {
+    "module": "test_trng_digital_fv",
+    "search_path": "./digital/tb/cocotb"
+  },
+  "options": {
+    "random_seed": 1
+  }
+}

@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "engine": "icarus",
+  "hdl_toplevel": "trng_digital",
+  "testbench": "test_trng_digital_fv",
+  "status": "fail",
+  "test_count": 13,
+  "passed_count": 1,
+  "failed_count": 12,
+  "skipped_count": 0,
+  "tests": [
+    {
+      "name": "test_00_drive_program",
+      "status": "passed",
+      "sim_time_ns": 42400.0,
+      "real_time_s": 1.6600849628448486
+    },
+    {
+      "name": "test_phase_01_post_reset_idle_id_parameter_reads",
+      "status": "failed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 0.0005359649658203125,
+      "error_type": "AssertionError",
+      "error_message": "phase 'post-reset idle + ID/parameter reads': 11/20 cycles differ from the model, first at cycle 1: dut='00000000 1 00000000 0 1 0' model='00000000 0 00000000 0 1 0'"
+    },
+    {
+      "name": "test_phase_02_sampling_disabled_raw_valid_high_but_ctrl_en_low",
+      "status": "failed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 0.0003509521484375,
+      "error_type": "AssertionError",
+      "error_message": "phase 'sampling disabled: raw_valid high but CTRL.EN low': 33/66 cycles differ from the model, first at cycle 21: dut='00000000 1 00000000 0 1 0' model='00000000 0 00000000 0 1 0'"
+    },
+    {
+      "name": "test_phase_03_enable_run_the_start_up_window_with_interleaved_",
+      "status": "failed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 0.0003044605255126953,
+      "error_type": "AssertionError",
+      "error_message": "phase 'enable, run the start-up window with interleaved STATUS reads': 1089/1089 cycles differ from the model, first at cycle 86: dut='0000461a 0 00000000 0 1 0' model='00000002 0 00000000 0 1 0'"
+    },
+    {
+      "name": "test_phase_04_drain_the_raw_fifo_through_raw_data_pop_on_read",
+      "status": "failed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 0.00016880035400390625,
+      "error_type": "AssertionError",
+      "error_message": "phase 'drain the raw FIFO through RAW_DATA (pop-on-read)': 12/12 cycles differ from the model, first at cycle 1175: dut='0000671e 1 83019368 0 1 0' model='0001040d 1 bd70d1a4 0 0 1'"
+    },
+    {
+      "name": "test_phase_05_raw_streaming_port_out_ready_pops_while_sampling",
+      "status": "failed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 0.00022602081298828125,
+      "error_type": "AssertionError",
+      "error_message": "phase 'raw streaming port: out_ready pops while sampling': 256/256 cycles differ from the model, first at cycle 1187: dut='00000000 1 83019368 0 1 0' model='00000000 0 00000000 0 0 1'"
+    },
+    {
+      "name": "test_phase_06_simultaneous_register_pop_and_stream_pop_registe",
+      "status": "failed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 0.00016832351684570312,
+      "error_type": "AssertionError",
+      "error_message": "phase 'simultaneous register pop and stream pop (register wins)': 136/136 cycles differ from the model, first at cycle 1443: dut='00000000 1 9e008e1d 0 1 0' model='00000000 0 00000000 0 0 1'"
+    },
+    {
+      "name": "test_phase_07_out_mode_switch_to_conditioned_flushes_both_path",
+      "status": "failed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 0.0002827644348144531,
+      "error_type": "AssertionError",
+      "error_message": "phase 'OUT_MODE switch to conditioned (flushes both paths)': 997/1035 cycles differ from the model, first at cycle 1579: dut='d801c83c 1 d801c83c 0 1 0' model='00000000 1 77f083da 0 0 1'"
+    },
+    {
+      "name": "test_phase_08_induce_an_rct_trip_with_a_stuck_source",
+      "status": "failed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 0.0004868507385253906,
+      "error_type": "AssertionError",
+      "error_message": "phase 'induce an RCT trip with a stuck source': 88/88 cycles differ from the model, first at cycle 2614: dut='00000000 1 00000000 0 0 1' model='00000000 0 00000000 0 0 1'"
+    },
+    {
+      "name": "test_phase_09_gated_data_blocked_raw_data_still_readable",
+      "status": "failed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 0.0001926422119140625,
+      "error_type": "AssertionError",
+      "error_message": "phase 'gated: DATA blocked, RAW_DATA still readable': 108/108 cycles differ from the model, first at cycle 2702: dut='00011011 1 00000000 0 0 1' model='0001042a 0 00000000 1 1 0'"
+    },
+    {
+      "name": "test_phase_10_write_1_to_clear_then_re_run_the_start_up_test",
+      "status": "failed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 0.0002589225769042969,
+      "error_type": "AssertionError",
+      "error_message": "phase 'write-1-to-clear, then re-run the start-up test': 1167/1295 cycles differ from the model, first at cycle 2810: dut='8101819b 0 00000000 0 0 1' model='6ddd177c 0 00000000 1 1 0'"
+    },
+    {
+      "name": "test_phase_11_soft_rst_then_resume_sampling",
+      "status": "failed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 0.00017070770263671875,
+      "error_type": "AssertionError",
+      "error_message": "phase 'SOFT_RST, then resume sampling': 133/134 cycles differ from the model, first at cycle 4105: dut='00010709 1 00000000 0 0 1' model='00010409 0 00000000 0 0 1'"
+    },
+    {
+      "name": "test_zz_trace_length_exact",
+      "status": "failed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 0.00020575523376464844,
+      "error_type": "AssertionError",
+      "error_message": "full trace differs from the model"
+    }
+  ],
+  "coverage": null,
+  "trace": null,
+  "environment": {
+    "engine": "icarus",
+    "engine_version": "13.0",
+    "cocotb_version": "2.0.1",
+    "results_xml": "<work>/xor-to-and-all/.klt/functional-verification/results_icarus.xml",
+    "random_seed": 1,
+    "sdf": null
+  }
+}

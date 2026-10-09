@@ -1,0 +1,42 @@
+<testsuites name="results">
+  <testsuite name="all" package="all">
+    <property name="random_seed" value="1" />
+    <testcase name="test_00_drive_program" classname="test_trng_digital_fv" file="./digital/tb/cocotb/test_trng_digital_fv.py" lineno="142" time="1.6600849628448486" sim_time_ns="42400.0" ratio_time="25540.861431176458" />
+    <testcase name="test_phase_01_post_reset_idle_id_parameter_reads" classname="test_trng_digital_fv" file="./digital/tb/cocotb/test_trng_digital_fv.py" lineno="153" time="0.0005359649658203125" sim_time_ns="0.0" ratio_time="0.0">
+      <failure error_type="AssertionError" error_msg="phase 'post-reset idle + ID/parameter reads': 11/20 cycles differ from the model, first at cycle 1: dut='00000000 1 00000000 0 1 0' model='00000000 0 00000000 0 1 0'" />
+    </testcase>
+    <testcase name="test_phase_02_sampling_disabled_raw_valid_high_but_ctrl_en_low" classname="test_trng_digital_fv" file="./digital/tb/cocotb/test_trng_digital_fv.py" lineno="153" time="0.0003509521484375" sim_time_ns="0.0" ratio_time="0.0">
+      <failure error_type="AssertionError" error_msg="phase 'sampling disabled: raw_valid high but CTRL.EN low': 33/66 cycles differ from the model, first at cycle 21: dut='00000000 1 00000000 0 1 0' model='00000000 0 00000000 0 1 0'" />
+    </testcase>
+    <testcase name="test_phase_03_enable_run_the_start_up_window_with_interleaved_" classname="test_trng_digital_fv" file="./digital/tb/cocotb/test_trng_digital_fv.py" lineno="153" time="0.0003044605255126953" sim_time_ns="0.0" ratio_time="0.0">
+      <failure error_type="AssertionError" error_msg="phase 'enable, run the start-up window with interleaved STATUS reads': 1089/1089 cycles differ from the model, first at cycle 86: dut='0000461a 0 00000000 0 1 0' model='00000002 0 00000000 0 1 0'" />
+    </testcase>
+    <testcase name="test_phase_04_drain_the_raw_fifo_through_raw_data_pop_on_read" classname="test_trng_digital_fv" file="./digital/tb/cocotb/test_trng_digital_fv.py" lineno="153" time="0.00016880035400390625" sim_time_ns="0.0" ratio_time="0.0">
+      <failure error_type="AssertionError" error_msg="phase 'drain the raw FIFO through RAW_DATA (pop-on-read)': 12/12 cycles differ from the model, first at cycle 1175: dut='0000671e 1 83019368 0 1 0' model='0001040d 1 bd70d1a4 0 0 1'" />
+    </testcase>
+    <testcase name="test_phase_05_raw_streaming_port_out_ready_pops_while_sampling" classname="test_trng_digital_fv" file="./digital/tb/cocotb/test_trng_digital_fv.py" lineno="153" time="0.00022602081298828125" sim_time_ns="0.0" ratio_time="0.0">
+      <failure error_type="AssertionError" error_msg="phase 'raw streaming port: out_ready pops while sampling': 256/256 cycles differ from the model, first at cycle 1187: dut='00000000 1 83019368 0 1 0' model='00000000 0 00000000 0 0 1'" />
+    </testcase>
+    <testcase name="test_phase_06_simultaneous_register_pop_and_stream_pop_registe" classname="test_trng_digital_fv" file="./digital/tb/cocotb/test_trng_digital_fv.py" lineno="153" time="0.00016832351684570312" sim_time_ns="0.0" ratio_time="0.0">
+      <failure error_type="AssertionError" error_msg="phase 'simultaneous register pop and stream pop (register wins)': 136/136 cycles differ from the model, first at cycle 1443: dut='00000000 1 9e008e1d 0 1 0' model='00000000 0 00000000 0 0 1'" />
+    </testcase>
+    <testcase name="test_phase_07_out_mode_switch_to_conditioned_flushes_both_path" classname="test_trng_digital_fv" file="./digital/tb/cocotb/test_trng_digital_fv.py" lineno="153" time="0.0002827644348144531" sim_time_ns="0.0" ratio_time="0.0">
+      <failure error_type="AssertionError" error_msg="phase 'OUT_MODE switch to conditioned (flushes both paths)': 997/1035 cycles differ from the model, first at cycle 1579: dut='d801c83c 1 d801c83c 0 1 0' model='00000000 1 77f083da 0 0 1'" />
+    </testcase>
+    <testcase name="test_phase_08_induce_an_rct_trip_with_a_stuck_source" classname="test_trng_digital_fv" file="./digital/tb/cocotb/test_trng_digital_fv.py" lineno="153" time="0.0004868507385253906" sim_time_ns="0.0" ratio_time="0.0">
+      <failure error_type="AssertionError" error_msg="phase 'induce an RCT trip with a stuck source': 88/88 cycles differ from the model, first at cycle 2614: dut='00000000 1 00000000 0 0 1' model='00000000 0 00000000 0 0 1'" />
+    </testcase>
+    <testcase name="test_phase_09_gated_data_blocked_raw_data_still_readable" classname="test_trng_digital_fv" file="./digital/tb/cocotb/test_trng_digital_fv.py" lineno="153" time="0.0001926422119140625" sim_time_ns="0.0" ratio_time="0.0">
+      <failure error_type="AssertionError" error_msg="phase 'gated: DATA blocked, RAW_DATA still readable': 108/108 cycles differ from the model, first at cycle 2702: dut='00011011 1 00000000 0 0 1' model='0001042a 0 00000000 1 1 0'" />
+    </testcase>
+    <testcase name="test_phase_10_write_1_to_clear_then_re_run_the_start_up_test" classname="test_trng_digital_fv" file="./digital/tb/cocotb/test_trng_digital_fv.py" lineno="153" time="0.0002589225769042969" sim_time_ns="0.0" ratio_time="0.0">
+      <failure error_type="AssertionError" error_msg="phase 'write-1-to-clear, then re-run the start-up test': 1167/1295 cycles differ from the model, first at cycle 2810: dut='8101819b 0 00000000 0 0 1' model='6ddd177c 0 00000000 1 1 0'" />
+    </testcase>
+    <testcase name="test_phase_11_soft_rst_then_resume_sampling" classname="test_trng_digital_fv" file="./digital/tb/cocotb/test_trng_digital_fv.py" lineno="153" time="0.00017070770263671875" sim_time_ns="0.0" ratio_time="0.0">
+      <failure error_type="AssertionError" error_msg="phase 'SOFT_RST, then resume sampling': 133/134 cycles differ from the model, first at cycle 4105: dut='00010709 1 00000000 0 0 1' model='00010409 0 00000000 0 0 1'" />
+    </testcase>
+    <testcase name="test_zz_trace_length_exact" classname="test_trng_digital_fv" file="./digital/tb/cocotb/test_trng_digital_fv.py" lineno="177" time="0.00020575523376464844" sim_time_ns="0.0" ratio_time="0.0">
+      <failure error_type="AssertionError" error_msg="full trace differs from the model" />
+    </testcase>
+  </testsuite>
+</testsuites>
