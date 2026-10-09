@@ -80,6 +80,14 @@ name: CI
 #     reports as an explicit skip (not a silent pass). Previously they could
 #     regress silently because nothing ran them.
 #
+# sim/tests/test_raw_bit_volume_model.py, test_ripple_reduction.py (issue #217)
+#     -- the same stdlib-only, no-ngspice/no-PDK kind of test, over the
+#     raw-bit volume-campaign behavioural model and the supply-ripple
+#     reduction analysis (the evidence behind #188/#200). They were left out
+#     of #190's list, so both could regress with no PR going red. The
+#     `paths:` filter above also lists the campaign/record directories they
+#     load.
+#
 # signoff-check (issue #155) -- the gap-to-T1 tier report staleness gate.
 #     `klt signoff --manifest signoff/block-manifest.json` re-renders this
 #     block's graded T1 item table from the committed evidence envelopes
@@ -138,6 +146,10 @@ on:
       - "sim/tests/**"
       - "sim/bin/**"
       - "sim/raw-bit-min-entropy/**"
+      - "sim/raw-bit-volume-campaign/**"
+      - "sim/ro-array-core-combining/**"
+      - "sim/ro-ring-jitter-accumulation/**"
+      - "sim/ro-array-supply-perturbation/**"
       - "digital/model/**"
       - "sim/digital-health-test-parameters/analysis/**"
       - "layout/test_pex_netlist.py"
@@ -210,6 +222,12 @@ jobs:
 
       - name: sim/tests/test_health_failure_injection.py (RCT/APT failure-injector unit test)
         run: python3 sim/tests/test_health_failure_injection.py
+
+      - name: sim/tests/test_raw_bit_volume_model.py (volume-campaign behavioural model unit test)
+        run: python3 sim/tests/test_raw_bit_volume_model.py
+
+      - name: sim/tests/test_ripple_reduction.py (supply-ripple reduction analysis unit test)
+        run: python3 sim/tests/test_ripple_reduction.py
 
   signoff-check:
     name: Signoff tier-report staleness gate (klt signoff --manifest)
