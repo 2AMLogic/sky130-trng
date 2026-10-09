@@ -225,6 +225,13 @@ Two rules from the root `CLAUDE.md` govern everything under this directory:
   deleted after it is written; a correction mints a new record and names the
   one it supersedes via its `Supersedes` field.
 
+  This rule is enforced in CI (issue #232): the `sim-records-append-only`
+  job runs `sim/bin/check_records_append_only.py` on every PR and fails if any
+  existing `sim/*/records/*` file is modified, deleted or renamed (added
+  files pass). A sanctioned exception must be listed in
+  `sim/records-append-only-allowlist.txt` (empty by default), which makes it
+  a visible, reviewed diff.
+
 ## Quick start
 
 ```bash
