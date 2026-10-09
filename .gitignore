@@ -8,6 +8,9 @@ __pycache__/
 # sim/ harness: per-corner ngspice logs under corners/ are committed evidence
 # (append-only record trail), so they escape the *.log rule.
 !sim/*/corners/**/*.log
+# issue #226: per-run harness stderr and retained OpenROAD stage logs are
+# committed evidence too (a failed or congested route is diagnosable only from them).
+!sim/digital-floorplan-compaction/runs/**/*.log
 sim/build/
 # ngspice's BSIM4 model-parameter checker dumps this next to the process's
 # cwd on every run that elaborates a BSIM4 card -- scratch, never evidence.

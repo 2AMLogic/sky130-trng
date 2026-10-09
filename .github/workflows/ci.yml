@@ -211,6 +211,9 @@ jobs:
       - name: sim/tests/test_health_failure_injection.py (RCT/APT failure-injector unit test)
         run: python3 sim/tests/test_health_failure_injection.py
 
+      - name: sim/tests/test_floorplan_compaction.py (issue #226 study guard + area-model contract)
+        run: python3 sim/tests/test_floorplan_compaction.py
+
   signoff-check:
     name: Signoff tier-report staleness gate (klt signoff --manifest)
     runs-on: ubuntu-latest

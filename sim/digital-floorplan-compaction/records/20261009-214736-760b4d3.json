@@ -1,0 +1,754 @@
+{
+  "record_id": "20261009-214736-760b4d3",
+  "timestamp_utc": "2026-10-09T21:47:36.873516+00:00",
+  "repo_sha": "760b4d3",
+  "issue": 226,
+  "run": "20261009-202126-760b4d3",
+  "target_mm2": 0.05,
+  "target_status": "unchanged: unmet",
+  "baseline": {
+    "die_area_um2": 60049.5,
+    "core_area_um2": 54877.6,
+    "utilization_pct": 42.6334,
+    "wirelength_um": 66327,
+    "die_w_um": 245.05,
+    "die_h_um": 245.05,
+    "drc": {
+      "status": "clean",
+      "violation_count": 0
+    },
+    "lvs": {
+      "status": "match",
+      "error_count": 0,
+      "power_connectivity": "match"
+    },
+    "sta": {
+      "corners": 16,
+      "setup_violations": 0,
+      "hold_violations": 0,
+      "worst_setup_slack_ns": 15945.3,
+      "worst_hold_slack_ns": 0.27529
+    },
+    "libmax_by_corner": {
+      "ff_100C_1v65": [
+        0,
+        0
+      ],
+      "ff_100C_1v95": [
+        0,
+        0
+      ],
+      "ff_n40C_1v56": [
+        0,
+        0
+      ],
+      "ff_n40C_1v65": [
+        0,
+        0
+      ],
+      "ff_n40C_1v76": [
+        0,
+        0
+      ],
+      "ff_n40C_1v95": [
+        0,
+        0
+      ],
+      "ss_100C_1v40": [
+        0,
+        0
+      ],
+      "ss_100C_1v60": [
+        193,
+        7
+      ],
+      "ss_n40C_1v28": [
+        297,
+        10
+      ],
+      "ss_n40C_1v35": [
+        0,
+        0
+      ],
+      "ss_n40C_1v40": [
+        0,
+        0
+      ],
+      "ss_n40C_1v44": [
+        0,
+        0
+      ],
+      "ss_n40C_1v60": [
+        536,
+        18
+      ],
+      "ss_n40C_1v76": [
+        104,
+        2
+      ],
+      "tt_025C_1v80": [
+        0,
+        0
+      ],
+      "tt_100C_1v80": [
+        0,
+        0
+      ]
+    },
+    "klt_version": "0.6.0+g10f3da34c088",
+    "geometry_sha256": {
+      "trng_digital.gds": "sha256:c65e15818ebb0bf3fb2f59cab63563e88c1acebe32f0e83040c43c9ad87fa750",
+      "trng_digital.def": "sha256:55b59c05ed2807a5b023efe4b45dfd9d9d4c68e136907c57c84e39179ef214fa",
+      "trng_digital.v": "sha256:9f3956848e6e75223f75bd154df905fecbb4e988593e78d1a92e347969fbf37f"
+    },
+    "controls_detected": 4,
+    "cosim_ok": true,
+    "area": {
+      "digital_bbox_mm2": 0.060049502500000004,
+      "analog_bbox_mm2": 0.0192966228,
+      "lower_bound_macros_only_mm2": 0.0793461253,
+      "estimate_additive_overhead_mm2": 0.12611635999999998,
+      "estimate_restacked_same_topology_mm2": 0.12611635999999998,
+      "restacked_bbox_um": [
+        378.16,
+        333.5
+      ],
+      "baseline_overhead_mm2": 0.04677023469999999,
+      "composition_constants_um": {
+        "west_escape": 2.15,
+        "gap": 20.005,
+        "top_pad_margin": 10.14,
+        "digital_east_edge_x": 200.0,
+        "analog_w": 330.96,
+        "analog_h": 58.305
+      }
+    }
+  },
+  "baseline_reproduction": {
+    "geometry_byte_identical": true,
+    "die_area_equal": true,
+    "utilization_equal": true,
+    "libmax_equal": true,
+    "lvs_power_connectivity_equal": true
+  },
+  "drift_control": {
+    "run": "20261009-193521-760b4d3",
+    "klt_version": "0.6.0",
+    "geometry_byte_identical_to_baseline": true,
+    "lvs": {
+      "status": "match",
+      "error_count": 0,
+      "power_connectivity": "mismatch",
+      "power_findings": [
+        "power.inconsistent_pin_net:VPB"
+      ]
+    },
+    "verdict": {
+      "drc": true,
+      "lvs": true,
+      "sta": true,
+      "cosim": true,
+      "negative_controls": true
+    },
+    "tool_drift": [
+      "klt '0.6.0' != pinned '0.6.0+g10f3da34c088'"
+    ]
+  },
+  "runs": {
+    "util40": {
+      "dir": "sim/digital-floorplan-compaction/runs/20261009-202126-760b4d3/util40",
+      "exit": 0,
+      "stderr_tail": [
+        "verdict: {'drc': True, 'lvs': True, 'sta': True, 'cosim': True, 'negative_controls': True}"
+      ],
+      "completed": true,
+      "pnr": {
+        "status": "ok",
+        "stage_reached": "route",
+        "die_area_um2": 60049.5,
+        "core_area_um2": 54877.6,
+        "utilization_pct": 42.6334,
+        "wirelength_um": 66327,
+        "route_drc_violation_count": 0,
+        "antenna_violation_count": 0,
+        "worst_setup_slack_ns_inflow": 15947.6,
+        "worst_hold_slack_ns_inflow": 0.28546,
+        "max_transition_violation_count": 541,
+        "max_capacitance_violation_count": 18,
+        "estimated_power_mw": 0.002,
+        "klt_version": "0.6.0+g10f3da34c088",
+        "openroad": "26Q3-1510-g6cb3f2b704"
+      },
+      "libmax_by_corner": {
+        "ff_100C_1v65": [
+          0,
+          0
+        ],
+        "ff_100C_1v95": [
+          0,
+          0
+        ],
+        "ff_n40C_1v56": [
+          0,
+          0
+        ],
+        "ff_n40C_1v65": [
+          0,
+          0
+        ],
+        "ff_n40C_1v76": [
+          0,
+          0
+        ],
+        "ff_n40C_1v95": [
+          0,
+          0
+        ],
+        "ss_100C_1v40": [
+          0,
+          0
+        ],
+        "ss_100C_1v60": [
+          193,
+          7
+        ],
+        "ss_n40C_1v28": [
+          297,
+          10
+        ],
+        "ss_n40C_1v35": [
+          0,
+          0
+        ],
+        "ss_n40C_1v40": [
+          0,
+          0
+        ],
+        "ss_n40C_1v44": [
+          0,
+          0
+        ],
+        "ss_n40C_1v60": [
+          536,
+          18
+        ],
+        "ss_n40C_1v76": [
+          104,
+          2
+        ],
+        "tt_025C_1v80": [
+          0,
+          0
+        ],
+        "tt_100C_1v80": [
+          0,
+          0
+        ]
+      },
+      "die_w_um": 245.05,
+      "die_h_um": 245.05,
+      "geometry_sha256": {
+        "trng_digital.gds": "sha256:c65e15818ebb0bf3fb2f59cab63563e88c1acebe32f0e83040c43c9ad87fa750",
+        "trng_digital.def": "sha256:55b59c05ed2807a5b023efe4b45dfd9d9d4c68e136907c57c84e39179ef214fa",
+        "trng_digital.v": "sha256:9f3956848e6e75223f75bd154df905fecbb4e988593e78d1a92e347969fbf37f"
+      },
+      "congestion": {
+        "gpl_final_weighted_congestion": 0.8317,
+        "gpl_routing_overflow_last": 0.3582,
+        "gpl_overflowed_tiles_last": 4.0,
+        "grt_total_overflow": null,
+        "global_route__wirelength": 101795,
+        "route_pass:0__route__drc_errors__iter:0": 1852,
+        "route__drc_errors": 0,
+        "design__instance__area__stdcell": 23396.2,
+        "detailed_route_pass0_iterations": 7,
+        "unrouted_net_count": null,
+        "global_route_overflow": null,
+        "available": true
+      },
+      "drc": {
+        "status": "clean",
+        "violation_count": 0
+      },
+      "lvs": {
+        "status": "match",
+        "error_count": 0,
+        "power_connectivity": "match",
+        "power_findings": []
+      },
+      "sta": {
+        "corners": 16,
+        "all_constrained": true,
+        "worst_setup_slack_ns": 15945.3,
+        "worst_hold_slack_ns": 0.27529,
+        "setup_violations": 0,
+        "hold_violations": 0
+      },
+      "controls_detected": 4,
+      "cosim": {
+        "ok": true,
+        "cycles": 4239,
+        "mismatches": 0
+      },
+      "verdict": {
+        "drc": true,
+        "lvs": true,
+        "sta": true,
+        "cosim": true,
+        "negative_controls": true
+      },
+      "tool_drift": [],
+      "request": {
+        "path": "sim/digital-floorplan-compaction/runs/20261009-202126-760b4d3/util40/util40.json",
+        "sha256": "sha256:1c02e931fc2ab40d6b888c278fdc5c7da47b8c1d9b51d7ff2ad89f9f81836566",
+        "utilization_pct": 40
+      },
+      "coverage": {
+        "checks": {
+          "completed": true,
+          "route_reached": true,
+          "route_drc_0": true,
+          "antenna_0": true,
+          "drc_clean": true,
+          "lvs_match": true,
+          "lvs_power_connectivity_match": true,
+          "sta_16_corners_clean": true,
+          "cosim_pass": true,
+          "controls_all_detected": true,
+          "libmax_not_worse_per_corner": true
+        },
+        "at_least_baseline": true,
+        "libmax_total": 1167,
+        "baseline_libmax_total": 1167
+      },
+      "area": {
+        "digital_bbox_mm2": 0.060049502500000004,
+        "analog_bbox_mm2": 0.0192966228,
+        "lower_bound_macros_only_mm2": 0.0793461253,
+        "estimate_additive_overhead_mm2": 0.12611635999999998,
+        "estimate_restacked_same_topology_mm2": 0.12611635999999998,
+        "restacked_bbox_um": [
+          378.16,
+          333.5
+        ],
+        "baseline_overhead_mm2": 0.04677023469999999,
+        "composition_constants_um": {
+          "west_escape": 2.15,
+          "gap": 20.005,
+          "top_pad_margin": 10.14,
+          "digital_east_edge_x": 200.0,
+          "analog_w": 330.96,
+          "analog_h": 58.305
+        }
+      }
+    },
+    "util55": {
+      "dir": "sim/digital-floorplan-compaction/runs/20261009-202126-760b4d3/util55",
+      "exit": 0,
+      "stderr_tail": [
+        "verdict: {'drc': True, 'lvs': True, 'sta': True, 'cosim': True, 'negative_controls': True}"
+      ],
+      "completed": true,
+      "pnr": {
+        "status": "ok",
+        "stage_reached": "route",
+        "die_area_um2": 44291.3,
+        "core_area_um2": 39731.9,
+        "utilization_pct": 58.3625,
+        "wirelength_um": 64298,
+        "route_drc_violation_count": 0,
+        "antenna_violation_count": 0,
+        "worst_setup_slack_ns_inflow": 15951.6,
+        "worst_hold_slack_ns_inflow": 0.28453,
+        "max_transition_violation_count": 585,
+        "max_capacitance_violation_count": 17,
+        "estimated_power_mw": 0.002,
+        "klt_version": "0.6.0+g10f3da34c088",
+        "openroad": "26Q3-1510-g6cb3f2b704"
+      },
+      "libmax_by_corner": {
+        "ff_100C_1v65": [
+          0,
+          0
+        ],
+        "ff_100C_1v95": [
+          0,
+          0
+        ],
+        "ff_n40C_1v56": [
+          0,
+          0
+        ],
+        "ff_n40C_1v65": [
+          0,
+          0
+        ],
+        "ff_n40C_1v76": [
+          0,
+          0
+        ],
+        "ff_n40C_1v95": [
+          0,
+          0
+        ],
+        "ss_100C_1v40": [
+          0,
+          0
+        ],
+        "ss_100C_1v60": [
+          131,
+          4
+        ],
+        "ss_n40C_1v28": [
+          315,
+          9
+        ],
+        "ss_n40C_1v35": [
+          0,
+          0
+        ],
+        "ss_n40C_1v40": [
+          0,
+          0
+        ],
+        "ss_n40C_1v44": [
+          0,
+          0
+        ],
+        "ss_n40C_1v60": [
+          581,
+          16
+        ],
+        "ss_n40C_1v76": [
+          107,
+          2
+        ],
+        "tt_025C_1v80": [
+          0,
+          0
+        ],
+        "tt_100C_1v80": [
+          0,
+          0
+        ]
+      },
+      "die_w_um": 210.455,
+      "die_h_um": 210.455,
+      "geometry_sha256": {
+        "trng_digital.gds": "sha256:83a021972f53ee3ae24928c7b29f3a17c7afba25a8d5b9d9ded757b30e88034b",
+        "trng_digital.def": "sha256:859ad99de8dec1189d499e21d294986f04d5c67675f01f7f1709bc8de46bf3a4",
+        "trng_digital.v": "sha256:4aa421b728e881502e170545c5efc41f204ddf3e43921c1f93f6dbd0db566a5d"
+      },
+      "congestion": {
+        "gpl_final_weighted_congestion": 0.8586,
+        "gpl_routing_overflow_last": 0.0502,
+        "gpl_overflowed_tiles_last": 1.0,
+        "grt_total_overflow": null,
+        "global_route__wirelength": 98946,
+        "route_pass:0__route__drc_errors__iter:0": 1884,
+        "route__drc_errors": 0,
+        "design__instance__area__stdcell": 23188.5,
+        "detailed_route_pass0_iterations": 5,
+        "unrouted_net_count": null,
+        "global_route_overflow": null,
+        "available": true
+      },
+      "drc": {
+        "status": "clean",
+        "violation_count": 0
+      },
+      "lvs": {
+        "status": "match",
+        "error_count": 0,
+        "power_connectivity": "match",
+        "power_findings": []
+      },
+      "sta": {
+        "corners": 16,
+        "all_constrained": true,
+        "worst_setup_slack_ns": 15949.8,
+        "worst_hold_slack_ns": 0.27503,
+        "setup_violations": 0,
+        "hold_violations": 0
+      },
+      "controls_detected": 4,
+      "cosim": {
+        "ok": true,
+        "cycles": 4239,
+        "mismatches": 0
+      },
+      "verdict": {
+        "drc": true,
+        "lvs": true,
+        "sta": true,
+        "cosim": true,
+        "negative_controls": true
+      },
+      "tool_drift": [],
+      "request": {
+        "path": "sim/digital-floorplan-compaction/runs/20261009-202126-760b4d3/util55/util55.json",
+        "sha256": "sha256:3d24cf0d31624ccecfdeee0c2f2d77522317be0b40f276febc307e54cf733a95",
+        "utilization_pct": 55
+      },
+      "coverage": {
+        "checks": {
+          "completed": true,
+          "route_reached": true,
+          "route_drc_0": true,
+          "antenna_0": true,
+          "drc_clean": true,
+          "lvs_match": true,
+          "lvs_power_connectivity_match": true,
+          "sta_16_corners_clean": true,
+          "cosim_pass": true,
+          "controls_all_detected": true,
+          "libmax_not_worse_per_corner": false
+        },
+        "at_least_baseline": false,
+        "libmax_total": 1165,
+        "baseline_libmax_total": 1167
+      },
+      "area": {
+        "digital_bbox_mm2": 0.044291307025000004,
+        "analog_bbox_mm2": 0.0192966228,
+        "lower_bound_macros_only_mm2": 0.063587929825,
+        "estimate_additive_overhead_mm2": 0.11035816452499998,
+        "estimate_restacked_same_topology_mm2": 0.10269329632499999,
+        "restacked_bbox_um": [
+          343.565,
+          298.905
+        ],
+        "baseline_overhead_mm2": 0.04677023469999999,
+        "composition_constants_um": {
+          "west_escape": 2.15,
+          "gap": 20.005,
+          "top_pad_margin": 10.14,
+          "digital_east_edge_x": 200.0,
+          "analog_w": 330.96,
+          "analog_h": 58.305
+        }
+      }
+    },
+    "util65": {
+      "dir": "sim/digital-floorplan-compaction/runs/20261009-202126-760b4d3/util65",
+      "exit": 0,
+      "stderr_tail": [
+        "verdict: {'drc': True, 'lvs': True, 'sta': True, 'cosim': True, 'negative_controls': True}"
+      ],
+      "completed": true,
+      "pnr": {
+        "status": "ok",
+        "stage_reached": "route",
+        "die_area_um2": 37787.5,
+        "core_area_um2": 33532.2,
+        "utilization_pct": 68.7463,
+        "wirelength_um": 61214,
+        "route_drc_violation_count": 0,
+        "antenna_violation_count": 0,
+        "worst_setup_slack_ns_inflow": 15948.3,
+        "worst_hold_slack_ns_inflow": 0.28477,
+        "max_transition_violation_count": 550,
+        "max_capacitance_violation_count": 18,
+        "estimated_power_mw": 0.002,
+        "klt_version": "0.6.0+g10f3da34c088",
+        "openroad": "26Q3-1510-g6cb3f2b704"
+      },
+      "libmax_by_corner": {
+        "ff_100C_1v65": [
+          0,
+          0
+        ],
+        "ff_100C_1v95": [
+          0,
+          0
+        ],
+        "ff_n40C_1v56": [
+          0,
+          0
+        ],
+        "ff_n40C_1v65": [
+          0,
+          0
+        ],
+        "ff_n40C_1v76": [
+          0,
+          0
+        ],
+        "ff_n40C_1v95": [
+          0,
+          0
+        ],
+        "ss_100C_1v40": [
+          0,
+          0
+        ],
+        "ss_100C_1v60": [
+          213,
+          7
+        ],
+        "ss_n40C_1v28": [
+          331,
+          11
+        ],
+        "ss_n40C_1v35": [
+          0,
+          0
+        ],
+        "ss_n40C_1v40": [
+          0,
+          0
+        ],
+        "ss_n40C_1v44": [
+          0,
+          0
+        ],
+        "ss_n40C_1v60": [
+          545,
+          16
+        ],
+        "ss_n40C_1v76": [
+          144,
+          4
+        ],
+        "tt_025C_1v80": [
+          0,
+          0
+        ],
+        "tt_100C_1v80": [
+          0,
+          0
+        ]
+      },
+      "die_w_um": 194.39,
+      "die_h_um": 194.39,
+      "geometry_sha256": {
+        "trng_digital.gds": "sha256:a0c173be443ceadd091a9d5736646b62c467a98c5ed07fb0e9965bfeec18d35a",
+        "trng_digital.def": "sha256:63f50c12979f6daafe7fbaa304fbf94940f942ab7f43ad26486292ed4b34aedd",
+        "trng_digital.v": "sha256:14bd1987cb7a947306c687aa4764477a70b6960f14ec307edb2b516f8eea46e4"
+      },
+      "congestion": {
+        "gpl_final_weighted_congestion": 0.8023,
+        "gpl_routing_overflow_last": 0.0,
+        "gpl_overflowed_tiles_last": 0.0,
+        "grt_total_overflow": null,
+        "global_route__wirelength": 96041,
+        "route_pass:0__route__drc_errors__iter:0": 2082,
+        "route__drc_errors": 0,
+        "design__instance__area__stdcell": 23052.1,
+        "detailed_route_pass0_iterations": 8,
+        "unrouted_net_count": null,
+        "global_route_overflow": null,
+        "available": true
+      },
+      "drc": {
+        "status": "clean",
+        "violation_count": 0
+      },
+      "lvs": {
+        "status": "match",
+        "error_count": 0,
+        "power_connectivity": "match",
+        "power_findings": []
+      },
+      "sta": {
+        "corners": 16,
+        "all_constrained": true,
+        "worst_setup_slack_ns": 15946.9,
+        "worst_hold_slack_ns": 0.27627,
+        "setup_violations": 0,
+        "hold_violations": 0
+      },
+      "controls_detected": 4,
+      "cosim": {
+        "ok": true,
+        "cycles": 4239,
+        "mismatches": 0
+      },
+      "verdict": {
+        "drc": true,
+        "lvs": true,
+        "sta": true,
+        "cosim": true,
+        "negative_controls": true
+      },
+      "tool_drift": [],
+      "request": {
+        "path": "sim/digital-floorplan-compaction/runs/20261009-202126-760b4d3/util65/util65.json",
+        "sha256": "sha256:b7f46f53d8b5122a2b230aaef56a18e1ba47ea1ad556cbcf4e745a1479c8ad3e",
+        "utilization_pct": 65
+      },
+      "coverage": {
+        "checks": {
+          "completed": true,
+          "route_reached": true,
+          "route_drc_0": true,
+          "antenna_0": true,
+          "drc_clean": true,
+          "lvs_match": true,
+          "lvs_power_connectivity_match": true,
+          "sta_16_corners_clean": true,
+          "cosim_pass": true,
+          "controls_all_detected": true,
+          "libmax_not_worse_per_corner": false
+        },
+        "at_least_baseline": false,
+        "libmax_total": 1271,
+        "baseline_libmax_total": 1167
+      },
+      "area": {
+        "digital_bbox_mm2": 0.03778747209999999,
+        "analog_bbox_mm2": 0.0192966228,
+        "lower_bound_macros_only_mm2": 0.05708409489999999,
+        "estimate_additive_overhead_mm2": 0.10385432959999999,
+        "estimate_restacked_same_topology_mm2": 0.09360872639999998,
+        "restacked_bbox_um": [
+          330.96,
+          282.84
+        ],
+        "baseline_overhead_mm2": 0.04677023469999999,
+        "composition_constants_um": {
+          "west_escape": 2.15,
+          "gap": 20.005,
+          "top_pad_margin": 10.14,
+          "digital_east_edge_x": 200.0,
+          "analog_w": 330.96,
+          "analog_h": 58.305
+        }
+      }
+    }
+  },
+  "floors": {
+    "stdcell_instance_area_um2": 23052.1,
+    "stdcell_instance_area_um2_by_run": {
+      "util40": 23396.2,
+      "util55": 23188.5,
+      "util65": 23052.1
+    },
+    "estimate_B_limit_square_100pct_no_margin_mm2": 0.07952279752236593,
+    "share_of_baseline_gap_closed": {
+      "util40": {
+        "estimate_B": 0.0,
+        "estimate_A": 0.0
+      },
+      "util55": {
+        "estimate_B": 0.30772705992509364,
+        "estimate_A": 0.20702770698703937
+      },
+      "util65": {
+        "estimate_B": 0.42707814193952537,
+        "estimate_A": 0.2924736600646694
+      }
+    },
+    "absolute_floor_cells_plus_analog_mm2": 0.0423487228,
+    "analog_share_of_target": 0.385932456,
+    "analog_row_full_width_stack_mm2": 0.029273412,
+    "digital_area_budget_if_full_width_stacked_mm2": 0.020726588000000004,
+    "digital_area_budget_additive_overhead_mm2": -0.016066857499999986,
+    "digital_area_budget_zero_overhead_mm2": 0.030703377200000003
+  },
+  "selectable": [],
+  "selected": null,
+  "preferred_if_later_verified": null,
+  "estimate_b_closes_target": [],
+  "recommendation": "floorplan compaction alone cannot close the area target; keep the 40 % baseline geometry; pursue analog-footprint / digital-logic-area changes as separate proposals"
+}
