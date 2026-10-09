@@ -71,6 +71,25 @@ name: CI
 #     simulates cleanly and reports wrong numbers. Same PR-blocking path as
 #     the two checks above, for the same reason: it needs nothing installed.
 #
+# design/test_ci_test_coverage.py (CI test-wiring guard, issue #230)
+#     Stdlib-only. Every tracked test_*.py must be executed by a real
+#     `python3 <path>` command in this file's PR-blocking lint job (and be
+#     matched by the `paths:` filter above), or in pdk-nightly.yml's
+#     scheduled/manual jobs, or carry an exact, justified exemption inside
+#     the guard. Tests here are wired by hand, one step per file, and that
+#     list has silently missed files twice (#190, #217); the guard turns the
+#     next omission into a red PR naming the file. It is the lint job's last
+#     step so a wiring defect never hides the other tests' own results. Both
+#     workflow files are in the `paths:` filter so a wiring edit re-runs it.
+#
+# sim/tests/test_mismatch_reduction.py, test_wakeup_reduction.py (issue #230)
+#     -- stdlib-only unit tests over the local-mismatch Monte Carlo reducer
+#     (#215) and the wake-up transient reducer (#216). No ngspice, no PDK.
+#     Found unwired by the guard above; the `paths:` filter lists the
+#     reducer directories they load (the wake-up reducer also reads the
+#     volume-campaign model and core-combining records that #217's
+#     test_raw_bit_volume_model.py / test_ripple_reduction.py wiring lists).
+#
 # sim/tests/test_raw_bit_entropy.py, test_raw_bit_battery.py, test_digital_section.py
 #     (issue #190) -- stdlib-only unit tests over the raw-bit entropy
 #     estimator, the statistical battery, and the digital section's
@@ -140,10 +159,12 @@ on:
       - "sim/raw-bit-min-entropy/**"
       - "digital/model/**"
       - "sim/digital-health-test-parameters/analysis/**"
-      - "layout/test_pex_netlist.py"
-      - "layout/test_compose_cell.py"
-      - "layout/test_compose_whole.py"
-      - "layout/test_verify_whole.py"
+      # reducers loaded by test_mismatch_reduction.py / test_wakeup_reduction.py
+      - "sim/local-mismatch-monte-carlo/**"
+      - "sim/wake-up-transient/**"
+      # every top-level layout unit test, present and future (a per-file list
+      # here meant a new sibling would not even trigger this workflow)
+      - "layout/test_*.py"
       # the whole-block composition's committed evidence and every input whose
       # hash it records (layout/test_compose_whole.py re-hashes them)
       - "layout/trng_whole/**"
@@ -158,6 +179,8 @@ on:
       - "layout/sampler_core/drc.json"
       - "layout/sampler_core/lvs.json"
       - ".github/workflows/ci.yml"
+      # read by design/test_ci_test_coverage.py (nightly-covered tests)
+      - ".github/workflows/pdk-nightly.yml"
   workflow_dispatch: {}
 
 permissions:
@@ -208,8 +231,17 @@ jobs:
       - name: sim/tests/test_digital_section.py (digital section reference-model test)
         run: python3 sim/tests/test_digital_section.py
 
+      - name: sim/tests/test_mismatch_reduction.py (local-mismatch Monte Carlo reducer unit test)
+        run: python3 sim/tests/test_mismatch_reduction.py
+
+      - name: sim/tests/test_wakeup_reduction.py (wake-up transient reducer unit test)
+        run: python3 sim/tests/test_wakeup_reduction.py
+
       - name: sim/tests/test_health_failure_injection.py (RCT/APT failure-injector unit test)
         run: python3 sim/tests/test_health_failure_injection.py
+
+      - name: design/test_ci_test_coverage.py (every tracked test_*.py is wired into CI)
+        run: python3 design/test_ci_test_coverage.py
 
   signoff-check:
     name: Signoff tier-report staleness gate (klt signoff --manifest)
