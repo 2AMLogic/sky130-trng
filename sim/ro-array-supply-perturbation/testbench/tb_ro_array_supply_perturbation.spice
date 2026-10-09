@@ -1,0 +1,73 @@
+* ro_array_core under supply ripple -- injection-lock / period-modulation / bias deck
+*
+* Issue #200. Drives the COMMITTED pre-layout design/ro_array_core.spice, with a
+* sinusoid superimposed on the supply, and records the rising-edge times of all
+* four buffered ring outputs plus the combining-node (xo) bias, so the
+* reduction (analysis/reduce.py) can derive, per run: per-ring period
+* modulation, mean-period shift, ring-vs-tone and ring-vs-ring injection-lock
+* closeness, and the xo duty/bias shift.
+*
+* This is a circuit-body TEMPLATE for make-requests.py (it carries no .lib, .temp,
+* .tran, .control or .end card -- `klt sim` owns those). make-requests.py appends
+* the `.meas` cards (rising-edge times of ro1..ro4, xo bias/swing/edge rate, the
+* supply min/max that proves the ripple is actually on the rail) and substitutes:
+*
+*   @@VNOM@@     nominal supply of this PVT point (V)
+*   @@RO_ARRAY@@ absolute path of design/ro_array_core.spice
+*
+* Swept through klt sim `corners.supply_v`, zipped by index. That mechanism is an
+* ngspice `alter <source>=<value>` of a DC voltage source -- it cannot reach into a
+* SIN() source's parameters, and `alter` of a `.param` does not re-evaluate an
+* already-parsed source (probed: the rail stayed flat at VNOM). So the ripple is
+* a behavioural source whose offset, amplitude and frequency are READ from four
+* DC "knob" sources that `alter` can set:
+*
+*   Vdv  DC offset added to every supply rail (V). The quasi-static family: a
+*        ripple far below the ring frequency is just the ring tracking the
+*        instantaneous supply, so the supply is stepped to the sine's
+*        Gauss-Chebyshev nodes instead of integrating a 20 us (50 kbps) period.
+*   Vra  ripple amplitude, peak volts, COMMON to vdd and vddr1..vddr4 (the shared
+*        rail -- the first-named inter-ring coupling mechanism of DR-0006).
+*   Vrf  ripple frequency, carried as a "voltage" numerically equal to Hz.
+*   Vri  NEGATIVE-CONTROL injection: peak amplitude, in mA numerically, of a
+*        sinusoidal CURRENT forced into ring 2's internal node xr2.n2 at the same
+*        frequency Vrf. A deliberately locking stimulus (a tone injected at a
+*        ring's own frequency) that the lock detector must flag. It is a current
+*        into a ring node, not a supply tone, because a supply tone is a weak
+*        injector (probed: a 0.3 V supply-local tone at a ring's own frequency
+*        did not lock it; 10 uA into the ring node does).
+*
+* Phase is 2*pi*f*time from t = 0 (sine, zero phase). The rings are held in reset
+* (en = 0) until 5 ns exactly as in sim/ro-array-core-combining/, so the ripple is
+* already on the rail when oscillation starts. Start-up is by enable release.
+* At the DC operating point time = 0, so the rails sit at VNOM + dv.
+*
+* Simulation-derived; provisional until silicon.
+
+.option scale=1u
+
+.include "@@RO_ARRAY@@"
+
+.param vnom=@@VNOM@@
+Vdv dvn 0 dc 0
+Vra ran 0 dc 0
+Vrf rfn 0 dc 1e6
+Vri rin 0 dc 0
+
+* Per-ring supplies (so currents stay separable) and the block supply, all
+* carrying the common ripple.
+Bvddr1 vddr1 0 V = {vnom} + v(dvn) + v(ran)*sin(6.283185307179586*v(rfn)*time)
+Bvddr2 vddr2 0 V = {vnom} + v(dvn) + v(ran)*sin(6.283185307179586*v(rfn)*time)
+Bvddr3 vddr3 0 V = {vnom} + v(dvn) + v(ran)*sin(6.283185307179586*v(rfn)*time)
+Bvddr4 vddr4 0 V = {vnom} + v(dvn) + v(ran)*sin(6.283185307179586*v(rfn)*time)
+Bvdd   vdd   0 V = {vnom} + v(dvn) +  v(ran)                 *sin(6.283185307179586*v(rfn)*time)
+
+Ven1 en1 0 PULSE(0 {vnom} 5n 100p 100p 1u 2u)
+Ven2 en2 0 PULSE(0 {vnom} 5n 100p 100p 1u 2u)
+Ven3 en3 0 PULSE(0 {vnom} 5n 100p 100p 1u 2u)
+Ven4 en4 0 PULSE(0 {vnom} 5n 100p 100p 1u 2u)
+
+xdut en1 en2 en3 en4 vddr1 vddr2 vddr3 vddr4 vdd 0 xo ro1 ro2 ro3 ro4 ro_array_core
+
+* negative-control current injection (zero unless Vri is altered)
+Binj xdut.xr2.n2 0 I = v(rin)*1e-3*sin(6.283185307179586*v(rfn)*time)

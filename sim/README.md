@@ -122,6 +122,12 @@ assembled `ro_array_core` + `sampler_dff` path from injected per-stage
 | `raw-bit-min-entropy/` | a real, noise-driven raw bit sequence from the assembled array + sampler, and its MCV-style min-entropy point estimate, per PVT corner; plus `analysis/raw-bit-battery.py` (reduced SP 800-22 battery + non-MCV SP 800-90B estimators, INSUFFICIENT below minimum length) | #21 |
 | `raw-bit-volume-campaign/` | >= 1e5 raw bits per tt/ss/ff corner (`level: behavioral`, calibrated on and cross-checked against the transistor records, at DR-0003's Ts = 20 us and the #21 Ts = 100 ns), plus an independent-seed transistor-level cross-check run as `klt sim` batch requests | #188 |
 
+Issue #200 then perturbed the supply, which every record above holds ideal and quiet:
+
+| Slug | Claim under test | Landed by |
+|---|---|---|
+| `ro-array-supply-perturbation/` | supply-ripple and injection-lock robustness of the committed pre-layout `ro_array_core` at the ss/-40 C/1.62 V binding corner and the ff/-40 C/1.98 V fast corner: ripple 10-200 mV pk across the ring ladder, sub-harmonics, 10 MHz and the quasi-static (50 kbps) limit; ripple tolerance under DR-0003's margins; ring-local negative control (`klt sim` batch requests) | #200 |
+
 `sim/tests/test_raw_bit_entropy.py` is the fast, always-runnable unit-test
 suite behind that record's reduction step (standard library only, no
 simulator, no PDK).
