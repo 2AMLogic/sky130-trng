@@ -95,6 +95,14 @@
   re-derive DR-0007's own setup-time finding, and does not supersede
   DR-0007.
 
+- [`decision-records/DR-0009-sampler-core-substrate-bracket-and-wstv-decorrelation.md`](decision-records/DR-0009-sampler-core-substrate-bracket-and-wstv-decorrelation.md)
+  — **Proposed**. Issue #22's `sampler_core`-scope substrate bracket, and
+  an audit of which of DR-0003 §8's three named inter-ring coupling
+  mechanisms are now measured and which are not. Narrows the gap rather than
+  closing it, and does not supersede DR-0003 §8, DR-0005 or DR-0006. Whole-block
+  composition (`layout/trng_whole/`) gives distribution geometry, but its
+  measurement obligations remain open (#174).
+
 A record's status is meaningful: **Proposed** means drafted and not accepted
 by anyone. Ratification is an operator decision, so no record here declares
 itself Accepted. See the repo README for scope.

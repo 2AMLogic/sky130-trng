@@ -151,8 +151,14 @@ def apt_degeneracy_floor(w: int = W_APT, alpha_log2: int = ALPHA_LOG2) -> float:
 #: *design target* row (``H0 = 0.5`` bit/sample), deliberately NOT the
 #: model-derived ``H = 0.5415`` DR-0003 §3 reports for the chosen operating
 #: point -- see DR-0004 §2.3 for why the floor, not the model value, sets the
-#: cutoffs. **Provisional**: no sky130 raw bitstream has been simulated yet
-#: (issue #21), so no measured ``H`` exists for this process.
+#: cutoffs. **Provisional**: behavioural-model sky130 raw streams now exist
+#: (volume campaigns and min-entropy records under ``sim/``) and
+#: ``sim/digital-health-test-parameters/records/20261008-150251-cd45d91.md``
+#: replays these cutoffs over them (18 corner streams, estimated ``H`` 0.649
+#: to 0.819, 0 alarms, so the cutoffs are conservative there). That ``H`` is a
+#: simulated-model number with independent noise increments, not a measurement,
+#: so no silicon-measured ``H`` exists for this process. The constants are
+#: unchanged and ratification is an operator decision.
 H_DESIGN = 0.5
 
 #: Repetition Count Test cutoff at ``H_DESIGN``. Asserted against

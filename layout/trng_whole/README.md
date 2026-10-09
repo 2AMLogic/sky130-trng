@@ -14,9 +14,17 @@ metal-level cluster, distinct nets stay distinct and the four `vddr` rails stay
 four rails. **Area: 378.16 x 333.5 um = 0.126116 mm2 against the unchanged
 `< 0.05 mm2` target -- Unmet (2.52x)**, and `trng_digital` alone (0.060 mm2) is
 already over the target, so no placement of these two unchanged macros can meet
-it. **Not claimed here:** whole-block DRC, whole-block LVS, PVT/coupling/IR
-characterization, closure of #170 / #18 AC3 or of DR-0003 section 8 / DR-0009
+it. **Not claimed here (at composition time; whole-block DRC and mixed-level LVS were
+since added by #173, see the update below):** whole-block DRC, whole-block LVS,
+PVT/coupling/IR characterization, closure of #170 / #18 AC3 or of DR-0003 section 8 / DR-0009
 (distribution geometry now exists; every measurement obligation is still open).
+
+**Current status:** composed, with curated-deck DRC clean and mixed-level LVS
+matching ([`verify/README.md`](verify/README.md), authoritative for coverage and
+limitations); post-layout characterization (#174) open; area unmet; not foundry
+sign-off. Health-test cutoffs have a simulated-stream replay in
+[`sim/digital-health-test-parameters/records/20261008-150251-cd45d91.md`](../../sim/digital-health-test-parameters/records/20261008-150251-cd45d91.md)
+(provisional until silicon).
 
 **Update (issue #173): whole-block DRC, extraction, mixed-level LVS and fault controls now exist in
 [`verify/`](verify/README.md)** (clean DRC, 0 violations; LVS match on a declared mixed-level boundary;

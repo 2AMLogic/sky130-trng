@@ -13,9 +13,20 @@ composed into [`layout/trng_whole/`](layout/trng_whole/). Whole-block DRC and
 mixed-level LVS now pass within their stated coverage, with isolated fault
 controls ([`layout/trng_whole/verify/`](layout/trng_whole/verify/README.md),
 issue #173; curated-deck project verification, not foundry sign-off), and the
-analog cells were regenerated clean on the current deck (#181). Post-layout
-characterization (#174) remains open. Entropy claims remain provisional until
-silicon.
+analog cells were regenerated clean on the current deck (#181). That coverage
+is the curated sky130 DRC deck (clean, 0 violations; some deck rules skipped, no
+antenna/density/seal-ring/latch-up) and an LVS at a declared mixed-level
+boundary (analog at transistor level, digital at standard-cell level with
+cell internals not compared); see the
+[verification coverage and limitations](layout/trng_whole/verify/README.md).
+The remaining gap is whole-block post-layout characterization (PVT, dynamic
+power, IR drop; #174, open), and the composed block is 0.126 mm² against the
+< 0.05 mm² area target (unmet; the raw-rate target is likewise unmet at the
+50 kbps operating point). Entropy claims remain provisional until silicon: the
+health-test cutoffs have been replayed over simulated raw streams from a
+behavioural model ([record](sim/digital-health-test-parameters/records/20261008-150251-cd45d91.md)),
+which is not a measurement. Spec and decision-record ratification is an
+operator decision; every decision record is still Proposed.
 
 **Built agent-native.** Every specification, decision record, testbench, and
 line of documentation here is produced by AI agents working from a ratified
@@ -72,8 +83,9 @@ seed source.
 
 Maturity ladder: spec ratified → schematic simulated across PVT → layout
 DRC/LVS-clean → post-layout re-verification → shuttle seat → measured
-silicon. **Current position: composed layout with section-level evidence;
-whole-block verification pending.** The specification and decision-record
+silicon. **Current position: composed layout with section-level evidence and
+whole-block curated-deck DRC and mixed-level LVS; whole-block post-layout
+characterization (#174) pending, not foundry sign-off.** The specification and decision-record
 status is documented in [`spec/`](spec/).
 
 ## Repo layout
@@ -94,7 +106,7 @@ measurements/  silicon characterization (empty until tape-out)
 tracks this block's status against Open Circuit Design's Chipalooza
 Challenge #4 (Sky130) brief — I/O mapped to the slot budget, every spec row
 re-derived from recorded evidence and marked met/unmet, and the remaining
-whole-block DRC/LVS, characterization and specification gaps before it is
+whole-block characterization and specification gaps before it is
 submission-ready.
 
 ## License
