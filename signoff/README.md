@@ -19,6 +19,13 @@ on 2AMLogic/2am#956, which consumes this block manifest.
 | `design-evidence-tiers.md` | byte-identical vendored copy of `2AMLogic/klayout-tools`'s `docs/design-evidence-tiers.md` — the tier ladder + T1 checklist the report is graded against. Provenance and why it is vendored: below. |
 | `t1-report.json` | the committed `klt signoff --manifest` output — the evidence record for this block's current state. CI re-runs the exact command and diffs, so this file cannot rot. |
 
+**Update 2026-10-09 (issue #211): 5/22 met.** The digital partition's
+delivered physical evidence (`layout/trng_digital/`, issue #166) is now
+cited: **item 3 digital** (`drc.json`) and **item 4 digital** (`lvs.json`)
+render `met` on the pinned `klayout-tools==0.7.0` grader. Item 11 analog,
+item 3 analog and item 4 analog are unchanged. The paragraph below is the
+0.7.0 re-render (issue #164) and is superseded for the totals by this one.
+
 At `origin/main`, re-rendered on the tagged grader `klayout-tools==0.7.0`
 (2026-10-08, issue #164), the report reads: **22 T1 rows rendered
 (11 checklist items × 2 partitions), 3 met — item 3 (DRC clean), item 4
@@ -95,7 +102,7 @@ When upstream revises the checklist, refresh this copy (and the report)
 in the same change, recording the new provenance here — the same
 provenance-pin contract `layout/pdk.json` uses for `open_pdks_commit`.
 
-## The claim the two `met` rows rest on (and its limits)
+## The claim the analog `met` rows rest on (and its limits)
 
 `klt signoff` grades mechanically; it does not check topical relevance or
 disclosure. This section is the claim, stated per the checklist's own
@@ -223,6 +230,58 @@ form does not apply that check, as item 4 states), and
 unchanged** — it is the same file, cited unpinned for the same
 no-envelope-hash reason (a pin with no envelope hash to match renders
 `unverifiable_provenance`, per klayout-tools#2182's part-level rule).
+
+## Digital-partition citations (issue #211) and what stays omitted
+
+Audit of the `layout/trng_digital/` envelopes against the 0.7.0 grader and
+the vendored item rules (no new simulation; existing artifacts only):
+
+| Row | Decision | Why |
+|---|---|---|
+| `3.digital` | **cited** `drc.json`, pin `sha256:c65e1581…` | `klt drc` `status: clean`, 0 violations, deck `sky130` (`sha256:ef7800eb…`). The pin is `provenance.input.content_hash`, the sha256 of the committed `trng_digital.gds`. |
+| `4.digital` | **cited** `lvs.json`, pin `sha256:93fdea04…` | `status: match`, engine `klayout` 0.30.12, `power_connectivity.status: match`. The pin is the sha256 of the extracted `trng_digital.layout.abstract.spice` that was compared (`environment.layout_sha256`). |
+| `5.digital` | **not cited** | `sta.json` (16 Liberty corners, all `constrained`, non-negative setup/hold, SPEF-annotated) would grade `met` on its own, but item 5's digital rule is multi-corner STA *plus* a bit-exact functional suite. No `klt functional-verification` envelope exists, so a lone STA citation would paint half a rule green. The row stays `unmet`/`no_evidence` until one lands. |
+| `7.digital` | not cited | Needs an SDF-annotated `klt functional-verification` run. The committed co-simulation is functional/unit-delay, not timed; `klt sta` is item 5 evidence (`wrong_kind`). `trng_digital.sdf.gz`/`.spef.gz` are inputs, not the required envelope. |
+| `11.digital` | not cited | Needs a `klt erc` supply envelope for `trng_digital`; none is committed. `pnr.json` (PDN) and the `power_connectivity: match` in `lvs.json` exist but cannot satisfy the item alone. |
+| `pnr.json` | not a citation | No T1 row grades a `place-and-route` envelope by itself; it is the PDN provenance for 11.digital and the layout provenance for item 2. |
+| `1, 2, 6, 8, 9, 10` | unchanged | No klt verb / no aggregated artifact, as before. |
+
+**Disclosures that travel with the two new `met` rows (quoted from the
+envelopes, not re-derived):**
+
+- *Item 3 digital.* Curated deck, not the foundry DRC: it transcribes
+  `cap2m, capm, ct, difftap, li, licon, m1, m2, m3, m4, m5, nwell, poly,
+  via, via2, via3, via4` (plus `x`); 91 rules checked, 45 rules skipped
+  (`coverage.rules_skipped`, e.g. the `capm.*`/`capm2.*` families, implant
+  and marker `angle`/`ongrid` rules); drawn layers with no deck rule:
+  `64/5, 64/16, 64/59, 67/5, 67/16, 68/5, 68/16, 69/5, 69/16, 70/5, 70/16,
+  72/5, 72/16, 81/4, 81/23, 83/44, 122/16, 235/4, 236/0`. No fill/density,
+  antenna, seal-ring or latch-up checks. The run was on a pinned dev build
+  (`0.6.0+g10f3da34c088`); the deck is marked `released: false`.
+- *Item 4 digital.* The reference is the signal-pin-only routed gate-level
+  Verilog, compared at standard-cell (black-box) level: `devices` counts are
+  0, 2365 layout nets vs 2354 reference nets, cell internals are not
+  compared. Warnings-only mismatches (35, `error_count: 0`):
+  `topology.power_only_pruned` (1; fill cells removed),
+  `topology.reference_port_alias_joined` (33) and
+  `topology.top_level_pins_anchored` (1). `body_verification` is
+  `unchecked` (pre-extracted netlist form: substrate/well taps and device
+  bodies were not verified). `power_connectivity: match` is per-instance
+  pin-to-net correctness only, not rail/grid continuity or IR drop.
+- *Both rows* describe the digital macro `trng_digital` alone. They are not
+  a whole-block result; whole-block characterization stays on #174. Low-voltage
+  Liberty-limit behavior is recorded in `pnr.json` (541 max-transition and 18
+  max-capacitance library-limit violations in the corner sweep) and is not
+  something either cited row asserts away.
+- `input_verified` is `null` for both: the grader compares the manifest pin to
+  the envelope's own recorded input hash; it does not re-hash the artifact.
+  Freshness is therefore as strong as regenerating the envelope on change.
+
+**Staleness check performed:** with the `3.digital` pin altered by one digit,
+`klt signoff` renders `3.digital` as `unmet`/`stale_evidence` (and the
+met count drops from 5 to 4); `5.digital`, `7.digital` and `11.digital`
+remain `unmet`/`no_evidence`. `klt signoff --check` on the committed report
+prints `status: match`.
 
 ## Block kind and the partition boundary (the mixed-signal claim)
 
