@@ -1,0 +1,692 @@
+{
+  "netlist": "netlist.cir",
+  "engine": "ngspice",
+  "backend": "batch",
+  "netlist_source": "extracted",
+  "models": {
+    "pdk": "sky130A",
+    "lib": "libs.tech/combined/sky130.lib.spice"
+  },
+  "corners": {
+    "process": [
+      "ss"
+    ],
+    "temperature_c": [
+      -40.0
+    ]
+  },
+  "monte_carlo": {
+    "n": 1,
+    "seed": 216000,
+    "vary": "mismatch"
+  },
+  "analysis": {
+    "kind": "tran",
+    "args": "40p 2.4337e-06 uic"
+  },
+  "measurements": [
+    {
+      "name": "bit0",
+      "spice": ".meas tran bit0 find v(raw_bit) at=9.5e-08"
+    },
+    {
+      "name": "valid0",
+      "spice": ".meas tran valid0 find v(raw_valid) at=9.5e-08"
+    },
+    {
+      "name": "rb1_0",
+      "spice": ".meas tran rb1_0 find v(ring_bit1) at=9.5e-08"
+    },
+    {
+      "name": "rb2_0",
+      "spice": ".meas tran rb2_0 find v(ring_bit2) at=9.5e-08"
+    },
+    {
+      "name": "rb3_0",
+      "spice": ".meas tran rb3_0 find v(ring_bit3) at=9.5e-08"
+    },
+    {
+      "name": "rb4_0",
+      "spice": ".meas tran rb4_0 find v(ring_bit4) at=9.5e-08"
+    },
+    {
+      "name": "bit1",
+      "spice": ".meas tran bit1 find v(raw_bit) at=1.95e-07"
+    },
+    {
+      "name": "valid1",
+      "spice": ".meas tran valid1 find v(raw_valid) at=1.95e-07"
+    },
+    {
+      "name": "rb1_1",
+      "spice": ".meas tran rb1_1 find v(ring_bit1) at=1.95e-07"
+    },
+    {
+      "name": "rb2_1",
+      "spice": ".meas tran rb2_1 find v(ring_bit2) at=1.95e-07"
+    },
+    {
+      "name": "rb3_1",
+      "spice": ".meas tran rb3_1 find v(ring_bit3) at=1.95e-07"
+    },
+    {
+      "name": "rb4_1",
+      "spice": ".meas tran rb4_1 find v(ring_bit4) at=1.95e-07"
+    },
+    {
+      "name": "bit2",
+      "spice": ".meas tran bit2 find v(raw_bit) at=2.95e-07"
+    },
+    {
+      "name": "valid2",
+      "spice": ".meas tran valid2 find v(raw_valid) at=2.95e-07"
+    },
+    {
+      "name": "rb1_2",
+      "spice": ".meas tran rb1_2 find v(ring_bit1) at=2.95e-07"
+    },
+    {
+      "name": "rb2_2",
+      "spice": ".meas tran rb2_2 find v(ring_bit2) at=2.95e-07"
+    },
+    {
+      "name": "rb3_2",
+      "spice": ".meas tran rb3_2 find v(ring_bit3) at=2.95e-07"
+    },
+    {
+      "name": "rb4_2",
+      "spice": ".meas tran rb4_2 find v(ring_bit4) at=2.95e-07"
+    },
+    {
+      "name": "bit3",
+      "spice": ".meas tran bit3 find v(raw_bit) at=3.95e-07"
+    },
+    {
+      "name": "valid3",
+      "spice": ".meas tran valid3 find v(raw_valid) at=3.95e-07"
+    },
+    {
+      "name": "rb1_3",
+      "spice": ".meas tran rb1_3 find v(ring_bit1) at=3.95e-07"
+    },
+    {
+      "name": "rb2_3",
+      "spice": ".meas tran rb2_3 find v(ring_bit2) at=3.95e-07"
+    },
+    {
+      "name": "rb3_3",
+      "spice": ".meas tran rb3_3 find v(ring_bit3) at=3.95e-07"
+    },
+    {
+      "name": "rb4_3",
+      "spice": ".meas tran rb4_3 find v(ring_bit4) at=3.95e-07"
+    },
+    {
+      "name": "bit4",
+      "spice": ".meas tran bit4 find v(raw_bit) at=4.95e-07"
+    },
+    {
+      "name": "valid4",
+      "spice": ".meas tran valid4 find v(raw_valid) at=4.95e-07"
+    },
+    {
+      "name": "rb1_4",
+      "spice": ".meas tran rb1_4 find v(ring_bit1) at=4.95e-07"
+    },
+    {
+      "name": "rb2_4",
+      "spice": ".meas tran rb2_4 find v(ring_bit2) at=4.95e-07"
+    },
+    {
+      "name": "rb3_4",
+      "spice": ".meas tran rb3_4 find v(ring_bit3) at=4.95e-07"
+    },
+    {
+      "name": "rb4_4",
+      "spice": ".meas tran rb4_4 find v(ring_bit4) at=4.95e-07"
+    },
+    {
+      "name": "bit5",
+      "spice": ".meas tran bit5 find v(raw_bit) at=5.95e-07"
+    },
+    {
+      "name": "valid5",
+      "spice": ".meas tran valid5 find v(raw_valid) at=5.95e-07"
+    },
+    {
+      "name": "rb1_5",
+      "spice": ".meas tran rb1_5 find v(ring_bit1) at=5.95e-07"
+    },
+    {
+      "name": "rb2_5",
+      "spice": ".meas tran rb2_5 find v(ring_bit2) at=5.95e-07"
+    },
+    {
+      "name": "rb3_5",
+      "spice": ".meas tran rb3_5 find v(ring_bit3) at=5.95e-07"
+    },
+    {
+      "name": "rb4_5",
+      "spice": ".meas tran rb4_5 find v(ring_bit4) at=5.95e-07"
+    },
+    {
+      "name": "bit6",
+      "spice": ".meas tran bit6 find v(raw_bit) at=6.95e-07"
+    },
+    {
+      "name": "valid6",
+      "spice": ".meas tran valid6 find v(raw_valid) at=6.95e-07"
+    },
+    {
+      "name": "rb1_6",
+      "spice": ".meas tran rb1_6 find v(ring_bit1) at=6.95e-07"
+    },
+    {
+      "name": "rb2_6",
+      "spice": ".meas tran rb2_6 find v(ring_bit2) at=6.95e-07"
+    },
+    {
+      "name": "rb3_6",
+      "spice": ".meas tran rb3_6 find v(ring_bit3) at=6.95e-07"
+    },
+    {
+      "name": "rb4_6",
+      "spice": ".meas tran rb4_6 find v(ring_bit4) at=6.95e-07"
+    },
+    {
+      "name": "bit7",
+      "spice": ".meas tran bit7 find v(raw_bit) at=7.95e-07"
+    },
+    {
+      "name": "valid7",
+      "spice": ".meas tran valid7 find v(raw_valid) at=7.95e-07"
+    },
+    {
+      "name": "rb1_7",
+      "spice": ".meas tran rb1_7 find v(ring_bit1) at=7.95e-07"
+    },
+    {
+      "name": "rb2_7",
+      "spice": ".meas tran rb2_7 find v(ring_bit2) at=7.95e-07"
+    },
+    {
+      "name": "rb3_7",
+      "spice": ".meas tran rb3_7 find v(ring_bit3) at=7.95e-07"
+    },
+    {
+      "name": "rb4_7",
+      "spice": ".meas tran rb4_7 find v(ring_bit4) at=7.95e-07"
+    },
+    {
+      "name": "bit8",
+      "spice": ".meas tran bit8 find v(raw_bit) at=8.95e-07"
+    },
+    {
+      "name": "valid8",
+      "spice": ".meas tran valid8 find v(raw_valid) at=8.95e-07"
+    },
+    {
+      "name": "rb1_8",
+      "spice": ".meas tran rb1_8 find v(ring_bit1) at=8.95e-07"
+    },
+    {
+      "name": "rb2_8",
+      "spice": ".meas tran rb2_8 find v(ring_bit2) at=8.95e-07"
+    },
+    {
+      "name": "rb3_8",
+      "spice": ".meas tran rb3_8 find v(ring_bit3) at=8.95e-07"
+    },
+    {
+      "name": "rb4_8",
+      "spice": ".meas tran rb4_8 find v(ring_bit4) at=8.95e-07"
+    },
+    {
+      "name": "bit9",
+      "spice": ".meas tran bit9 find v(raw_bit) at=9.95e-07"
+    },
+    {
+      "name": "valid9",
+      "spice": ".meas tran valid9 find v(raw_valid) at=9.95e-07"
+    },
+    {
+      "name": "rb1_9",
+      "spice": ".meas tran rb1_9 find v(ring_bit1) at=9.95e-07"
+    },
+    {
+      "name": "rb2_9",
+      "spice": ".meas tran rb2_9 find v(ring_bit2) at=9.95e-07"
+    },
+    {
+      "name": "rb3_9",
+      "spice": ".meas tran rb3_9 find v(ring_bit3) at=9.95e-07"
+    },
+    {
+      "name": "rb4_9",
+      "spice": ".meas tran rb4_9 find v(ring_bit4) at=9.95e-07"
+    },
+    {
+      "name": "bit10",
+      "spice": ".meas tran bit10 find v(raw_bit) at=1.095e-06"
+    },
+    {
+      "name": "valid10",
+      "spice": ".meas tran valid10 find v(raw_valid) at=1.095e-06"
+    },
+    {
+      "name": "rb1_10",
+      "spice": ".meas tran rb1_10 find v(ring_bit1) at=1.095e-06"
+    },
+    {
+      "name": "rb2_10",
+      "spice": ".meas tran rb2_10 find v(ring_bit2) at=1.095e-06"
+    },
+    {
+      "name": "rb3_10",
+      "spice": ".meas tran rb3_10 find v(ring_bit3) at=1.095e-06"
+    },
+    {
+      "name": "rb4_10",
+      "spice": ".meas tran rb4_10 find v(ring_bit4) at=1.095e-06"
+    },
+    {
+      "name": "bit11",
+      "spice": ".meas tran bit11 find v(raw_bit) at=1.195e-06"
+    },
+    {
+      "name": "valid11",
+      "spice": ".meas tran valid11 find v(raw_valid) at=1.195e-06"
+    },
+    {
+      "name": "rb1_11",
+      "spice": ".meas tran rb1_11 find v(ring_bit1) at=1.195e-06"
+    },
+    {
+      "name": "rb2_11",
+      "spice": ".meas tran rb2_11 find v(ring_bit2) at=1.195e-06"
+    },
+    {
+      "name": "rb3_11",
+      "spice": ".meas tran rb3_11 find v(ring_bit3) at=1.195e-06"
+    },
+    {
+      "name": "rb4_11",
+      "spice": ".meas tran rb4_11 find v(ring_bit4) at=1.195e-06"
+    },
+    {
+      "name": "bit12",
+      "spice": ".meas tran bit12 find v(raw_bit) at=1.295e-06"
+    },
+    {
+      "name": "valid12",
+      "spice": ".meas tran valid12 find v(raw_valid) at=1.295e-06"
+    },
+    {
+      "name": "rb1_12",
+      "spice": ".meas tran rb1_12 find v(ring_bit1) at=1.295e-06"
+    },
+    {
+      "name": "rb2_12",
+      "spice": ".meas tran rb2_12 find v(ring_bit2) at=1.295e-06"
+    },
+    {
+      "name": "rb3_12",
+      "spice": ".meas tran rb3_12 find v(ring_bit3) at=1.295e-06"
+    },
+    {
+      "name": "rb4_12",
+      "spice": ".meas tran rb4_12 find v(ring_bit4) at=1.295e-06"
+    },
+    {
+      "name": "bit13",
+      "spice": ".meas tran bit13 find v(raw_bit) at=1.395e-06"
+    },
+    {
+      "name": "valid13",
+      "spice": ".meas tran valid13 find v(raw_valid) at=1.395e-06"
+    },
+    {
+      "name": "rb1_13",
+      "spice": ".meas tran rb1_13 find v(ring_bit1) at=1.395e-06"
+    },
+    {
+      "name": "rb2_13",
+      "spice": ".meas tran rb2_13 find v(ring_bit2) at=1.395e-06"
+    },
+    {
+      "name": "rb3_13",
+      "spice": ".meas tran rb3_13 find v(ring_bit3) at=1.395e-06"
+    },
+    {
+      "name": "rb4_13",
+      "spice": ".meas tran rb4_13 find v(ring_bit4) at=1.395e-06"
+    },
+    {
+      "name": "bit14",
+      "spice": ".meas tran bit14 find v(raw_bit) at=1.495e-06"
+    },
+    {
+      "name": "valid14",
+      "spice": ".meas tran valid14 find v(raw_valid) at=1.495e-06"
+    },
+    {
+      "name": "rb1_14",
+      "spice": ".meas tran rb1_14 find v(ring_bit1) at=1.495e-06"
+    },
+    {
+      "name": "rb2_14",
+      "spice": ".meas tran rb2_14 find v(ring_bit2) at=1.495e-06"
+    },
+    {
+      "name": "rb3_14",
+      "spice": ".meas tran rb3_14 find v(ring_bit3) at=1.495e-06"
+    },
+    {
+      "name": "rb4_14",
+      "spice": ".meas tran rb4_14 find v(ring_bit4) at=1.495e-06"
+    },
+    {
+      "name": "bit15",
+      "spice": ".meas tran bit15 find v(raw_bit) at=1.595e-06"
+    },
+    {
+      "name": "valid15",
+      "spice": ".meas tran valid15 find v(raw_valid) at=1.595e-06"
+    },
+    {
+      "name": "rb1_15",
+      "spice": ".meas tran rb1_15 find v(ring_bit1) at=1.595e-06"
+    },
+    {
+      "name": "rb2_15",
+      "spice": ".meas tran rb2_15 find v(ring_bit2) at=1.595e-06"
+    },
+    {
+      "name": "rb3_15",
+      "spice": ".meas tran rb3_15 find v(ring_bit3) at=1.595e-06"
+    },
+    {
+      "name": "rb4_15",
+      "spice": ".meas tran rb4_15 find v(ring_bit4) at=1.595e-06"
+    },
+    {
+      "name": "bit16",
+      "spice": ".meas tran bit16 find v(raw_bit) at=1.695e-06"
+    },
+    {
+      "name": "valid16",
+      "spice": ".meas tran valid16 find v(raw_valid) at=1.695e-06"
+    },
+    {
+      "name": "rb1_16",
+      "spice": ".meas tran rb1_16 find v(ring_bit1) at=1.695e-06"
+    },
+    {
+      "name": "rb2_16",
+      "spice": ".meas tran rb2_16 find v(ring_bit2) at=1.695e-06"
+    },
+    {
+      "name": "rb3_16",
+      "spice": ".meas tran rb3_16 find v(ring_bit3) at=1.695e-06"
+    },
+    {
+      "name": "rb4_16",
+      "spice": ".meas tran rb4_16 find v(ring_bit4) at=1.695e-06"
+    },
+    {
+      "name": "bit17",
+      "spice": ".meas tran bit17 find v(raw_bit) at=1.795e-06"
+    },
+    {
+      "name": "valid17",
+      "spice": ".meas tran valid17 find v(raw_valid) at=1.795e-06"
+    },
+    {
+      "name": "rb1_17",
+      "spice": ".meas tran rb1_17 find v(ring_bit1) at=1.795e-06"
+    },
+    {
+      "name": "rb2_17",
+      "spice": ".meas tran rb2_17 find v(ring_bit2) at=1.795e-06"
+    },
+    {
+      "name": "rb3_17",
+      "spice": ".meas tran rb3_17 find v(ring_bit3) at=1.795e-06"
+    },
+    {
+      "name": "rb4_17",
+      "spice": ".meas tran rb4_17 find v(ring_bit4) at=1.795e-06"
+    },
+    {
+      "name": "bit18",
+      "spice": ".meas tran bit18 find v(raw_bit) at=1.895e-06"
+    },
+    {
+      "name": "valid18",
+      "spice": ".meas tran valid18 find v(raw_valid) at=1.895e-06"
+    },
+    {
+      "name": "rb1_18",
+      "spice": ".meas tran rb1_18 find v(ring_bit1) at=1.895e-06"
+    },
+    {
+      "name": "rb2_18",
+      "spice": ".meas tran rb2_18 find v(ring_bit2) at=1.895e-06"
+    },
+    {
+      "name": "rb3_18",
+      "spice": ".meas tran rb3_18 find v(ring_bit3) at=1.895e-06"
+    },
+    {
+      "name": "rb4_18",
+      "spice": ".meas tran rb4_18 find v(ring_bit4) at=1.895e-06"
+    },
+    {
+      "name": "bit19",
+      "spice": ".meas tran bit19 find v(raw_bit) at=1.995e-06"
+    },
+    {
+      "name": "valid19",
+      "spice": ".meas tran valid19 find v(raw_valid) at=1.995e-06"
+    },
+    {
+      "name": "rb1_19",
+      "spice": ".meas tran rb1_19 find v(ring_bit1) at=1.995e-06"
+    },
+    {
+      "name": "rb2_19",
+      "spice": ".meas tran rb2_19 find v(ring_bit2) at=1.995e-06"
+    },
+    {
+      "name": "rb3_19",
+      "spice": ".meas tran rb3_19 find v(ring_bit3) at=1.995e-06"
+    },
+    {
+      "name": "rb4_19",
+      "spice": ".meas tran rb4_19 find v(ring_bit4) at=1.995e-06"
+    },
+    {
+      "name": "bit20",
+      "spice": ".meas tran bit20 find v(raw_bit) at=2.095e-06"
+    },
+    {
+      "name": "valid20",
+      "spice": ".meas tran valid20 find v(raw_valid) at=2.095e-06"
+    },
+    {
+      "name": "rb1_20",
+      "spice": ".meas tran rb1_20 find v(ring_bit1) at=2.095e-06"
+    },
+    {
+      "name": "rb2_20",
+      "spice": ".meas tran rb2_20 find v(ring_bit2) at=2.095e-06"
+    },
+    {
+      "name": "rb3_20",
+      "spice": ".meas tran rb3_20 find v(ring_bit3) at=2.095e-06"
+    },
+    {
+      "name": "rb4_20",
+      "spice": ".meas tran rb4_20 find v(ring_bit4) at=2.095e-06"
+    },
+    {
+      "name": "bit21",
+      "spice": ".meas tran bit21 find v(raw_bit) at=2.195e-06"
+    },
+    {
+      "name": "valid21",
+      "spice": ".meas tran valid21 find v(raw_valid) at=2.195e-06"
+    },
+    {
+      "name": "rb1_21",
+      "spice": ".meas tran rb1_21 find v(ring_bit1) at=2.195e-06"
+    },
+    {
+      "name": "rb2_21",
+      "spice": ".meas tran rb2_21 find v(ring_bit2) at=2.195e-06"
+    },
+    {
+      "name": "rb3_21",
+      "spice": ".meas tran rb3_21 find v(ring_bit3) at=2.195e-06"
+    },
+    {
+      "name": "rb4_21",
+      "spice": ".meas tran rb4_21 find v(ring_bit4) at=2.195e-06"
+    },
+    {
+      "name": "bit22",
+      "spice": ".meas tran bit22 find v(raw_bit) at=2.295e-06"
+    },
+    {
+      "name": "valid22",
+      "spice": ".meas tran valid22 find v(raw_valid) at=2.295e-06"
+    },
+    {
+      "name": "rb1_22",
+      "spice": ".meas tran rb1_22 find v(ring_bit1) at=2.295e-06"
+    },
+    {
+      "name": "rb2_22",
+      "spice": ".meas tran rb2_22 find v(ring_bit2) at=2.295e-06"
+    },
+    {
+      "name": "rb3_22",
+      "spice": ".meas tran rb3_22 find v(ring_bit3) at=2.295e-06"
+    },
+    {
+      "name": "rb4_22",
+      "spice": ".meas tran rb4_22 find v(ring_bit4) at=2.295e-06"
+    },
+    {
+      "name": "bit23",
+      "spice": ".meas tran bit23 find v(raw_bit) at=2.395e-06"
+    },
+    {
+      "name": "valid23",
+      "spice": ".meas tran valid23 find v(raw_valid) at=2.395e-06"
+    },
+    {
+      "name": "rb1_23",
+      "spice": ".meas tran rb1_23 find v(ring_bit1) at=2.395e-06"
+    },
+    {
+      "name": "rb2_23",
+      "spice": ".meas tran rb2_23 find v(ring_bit2) at=2.395e-06"
+    },
+    {
+      "name": "rb3_23",
+      "spice": ".meas tran rb3_23 find v(ring_bit3) at=2.395e-06"
+    },
+    {
+      "name": "rb4_23",
+      "spice": ".meas tran rb4_23 find v(ring_bit4) at=2.395e-06"
+    },
+    {
+      "name": "tf1",
+      "spice": ".meas tran tf1 when v(ro1)=v(half) rise=1 td=2e-08"
+    },
+    {
+      "name": "ro1_max",
+      "spice": ".meas tran ro1_max MAX v(ro1) from=2.22e-06 to=2.42e-06"
+    },
+    {
+      "name": "ro1_min",
+      "spice": ".meas tran ro1_min MIN v(ro1) from=2.22e-06 to=2.42e-06"
+    },
+    {
+      "name": "ro1_pre",
+      "spice": ".meas tran ro1_pre MAX v(ro1) from=1e-9 to=1.9e-08"
+    },
+    {
+      "name": "ro1_prelo",
+      "spice": ".meas tran ro1_prelo MIN v(ro1) from=1e-9 to=1.9e-08"
+    },
+    {
+      "name": "tf2",
+      "spice": ".meas tran tf2 when v(ro2)=v(half) rise=1 td=2e-08"
+    },
+    {
+      "name": "ro2_max",
+      "spice": ".meas tran ro2_max MAX v(ro2) from=2.22e-06 to=2.42e-06"
+    },
+    {
+      "name": "ro2_min",
+      "spice": ".meas tran ro2_min MIN v(ro2) from=2.22e-06 to=2.42e-06"
+    },
+    {
+      "name": "ro2_pre",
+      "spice": ".meas tran ro2_pre MAX v(ro2) from=1e-9 to=1.9e-08"
+    },
+    {
+      "name": "ro2_prelo",
+      "spice": ".meas tran ro2_prelo MIN v(ro2) from=1e-9 to=1.9e-08"
+    },
+    {
+      "name": "tf3",
+      "spice": ".meas tran tf3 when v(ro3)=v(half) rise=1 td=2e-08"
+    },
+    {
+      "name": "ro3_max",
+      "spice": ".meas tran ro3_max MAX v(ro3) from=2.22e-06 to=2.42e-06"
+    },
+    {
+      "name": "ro3_min",
+      "spice": ".meas tran ro3_min MIN v(ro3) from=2.22e-06 to=2.42e-06"
+    },
+    {
+      "name": "ro3_pre",
+      "spice": ".meas tran ro3_pre MAX v(ro3) from=1e-9 to=1.9e-08"
+    },
+    {
+      "name": "ro3_prelo",
+      "spice": ".meas tran ro3_prelo MIN v(ro3) from=1e-9 to=1.9e-08"
+    },
+    {
+      "name": "tf4",
+      "spice": ".meas tran tf4 when v(ro4)=v(half) rise=1 td=2e-08"
+    },
+    {
+      "name": "ro4_max",
+      "spice": ".meas tran ro4_max MAX v(ro4) from=2.22e-06 to=2.42e-06"
+    },
+    {
+      "name": "ro4_min",
+      "spice": ".meas tran ro4_min MIN v(ro4) from=2.22e-06 to=2.42e-06"
+    },
+    {
+      "name": "ro4_pre",
+      "spice": ".meas tran ro4_pre MAX v(ro4) from=1e-9 to=1.9e-08"
+    },
+    {
+      "name": "ro4_prelo",
+      "spice": ".meas tran ro4_prelo MIN v(ro4) from=1e-9 to=1.9e-08"
+    }
+  ],
+  "options": {
+    "timeout_s": 6000,
+    "keep_artifacts": false
+  },
+  "batch": {
+    "capacity_wait_s": 3600
+  }
+}
