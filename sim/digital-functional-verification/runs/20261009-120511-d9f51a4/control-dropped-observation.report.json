@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "engine": "icarus",
+  "hdl_toplevel": "trng_digital",
+  "testbench": "test_trng_digital_fv",
+  "status": "fail",
+  "test_count": 13,
+  "passed_count": 5,
+  "failed_count": 8,
+  "skipped_count": 0,
+  "tests": [
+    {
+      "name": "test_00_drive_program",
+      "status": "failed",
+      "sim_time_ns": 42400.0,
+      "real_time_s": 1.37125825881958,
+      "error_type": "AssertionError",
+      "error_message": "observed 4238 cycles, stimulus has 4239: 1 observation(s) missing"
+    },
+    {
+      "name": "test_phase_01_post_reset_idle_id_parameter_reads",
+      "status": "passed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 2.9087066650390625e-05
+    },
+    {
+      "name": "test_phase_02_sampling_disabled_raw_valid_high_but_ctrl_en_low",
+      "status": "passed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 1.6689300537109375e-05
+    },
+    {
+      "name": "test_phase_03_enable_run_the_start_up_window_with_interleaved_",
+      "status": "passed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 7.82012939453125e-05
+    },
+    {
+      "name": "test_phase_04_drain_the_raw_fifo_through_raw_data_pop_on_read",
+      "status": "passed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 9.298324584960938e-06
+    },
+    {
+      "name": "test_phase_05_raw_streaming_port_out_ready_pops_while_sampling",
+      "status": "passed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 2.3365020751953125e-05
+    },
+    {
+      "name": "test_phase_06_simultaneous_register_pop_and_stream_pop_registe",
+      "status": "failed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 0.00034618377685546875,
+      "error_type": "AssertionError",
+      "error_message": "phase 'simultaneous register pop and stream pop (register wins)': 10/136 cycles differ from the model, first at cycle 1476: dut='00000000 1 389fbcb2 0 0 1' model='00000000 0 00000000 0 0 1'"
+    },
+    {
+      "name": "test_phase_07_out_mode_switch_to_conditioned_flushes_both_path",
+      "status": "failed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 0.00024175643920898438,
+      "error_type": "AssertionError",
+      "error_message": "phase 'OUT_MODE switch to conditioned (flushes both paths)': 7/1035 cycles differ from the model, first at cycle 1579: dut='00000000 0 00000000 0 0 1' model='00000000 1 77f083da 0 0 1'"
+    },
+    {
+      "name": "test_phase_08_induce_an_rct_trip_with_a_stuck_source",
+      "status": "failed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 0.0001709461212158203,
+      "error_type": "AssertionError",
+      "error_message": "phase 'induce an RCT trip with a stuck source': 3/88 cycles differ from the model, first at cycle 2694: dut='00000000 0 00000000 1 1 0' model='00000000 0 00000000 0 0 1'"
+    },
+    {
+      "name": "test_phase_09_gated_data_blocked_raw_data_still_readable",
+      "status": "failed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 0.0001857280731201172,
+      "error_type": "AssertionError",
+      "error_message": "phase 'gated: DATA blocked, RAW_DATA still readable': 8/108 cycles differ from the model, first at cycle 2798: dut='00000000 0 00000000 1 1 0' model='0001042a 0 00000000 1 1 0'"
+    },
+    {
+      "name": "test_phase_10_write_1_to_clear_then_re_run_the_start_up_test",
+      "status": "failed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 0.0006105899810791016,
+      "error_type": "AssertionError",
+      "error_message": "phase 'write-1-to-clear, then re-run the start-up test': 6/1295 cycles differ from the model, first at cycle 2810: dut='6ddd177c 0 00000000 0 1 0' model='6ddd177c 0 00000000 1 1 0'"
+    },
+    {
+      "name": "test_phase_11_soft_rst_then_resume_sampling",
+      "status": "failed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 0.0002498626708984375,
+      "error_type": "AssertionError",
+      "error_message": "phase 'SOFT_RST, then resume sampling': 133 observations for 134 cycles"
+    },
+    {
+      "name": "test_zz_trace_length_exact",
+      "status": "failed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 0.00016498565673828125,
+      "error_type": "AssertionError",
+      "error_message": "trace lengths differ: observed 4238, model 4239, stimulus 4239"
+    }
+  ],
+  "coverage": null,
+  "trace": null,
+  "environment": {
+    "engine": "icarus",
+    "engine_version": "13.0",
+    "cocotb_version": "2.0.1",
+    "results_xml": "<work>/dropped-observation/.klt/functional-verification/results_icarus.xml",
+    "random_seed": 1,
+    "sdf": null
+  }
+}

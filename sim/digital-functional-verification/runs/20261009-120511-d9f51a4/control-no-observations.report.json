@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "engine": "icarus",
+  "hdl_toplevel": "trng_digital",
+  "testbench": "test_trng_digital_fv",
+  "status": "fail",
+  "test_count": 13,
+  "passed_count": 0,
+  "failed_count": 13,
+  "skipped_count": 0,
+  "tests": [
+    {
+      "name": "test_00_drive_program",
+      "status": "failed",
+      "sim_time_ns": 42400.0,
+      "real_time_s": 0.8732359409332275,
+      "error_type": "AssertionError",
+      "error_message": "observed 0 cycles, stimulus has 4239: 4239 observation(s) missing"
+    },
+    {
+      "name": "test_phase_01_post_reset_idle_id_parameter_reads",
+      "status": "failed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 0.0003414154052734375,
+      "error_type": "AssertionError",
+      "error_message": "program was not driven"
+    },
+    {
+      "name": "test_phase_02_sampling_disabled_raw_valid_high_but_ctrl_en_low",
+      "status": "failed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 0.0001652240753173828,
+      "error_type": "AssertionError",
+      "error_message": "program was not driven"
+    },
+    {
+      "name": "test_phase_03_enable_run_the_start_up_window_with_interleaved_",
+      "status": "failed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 0.00016307830810546875,
+      "error_type": "AssertionError",
+      "error_message": "program was not driven"
+    },
+    {
+      "name": "test_phase_04_drain_the_raw_fifo_through_raw_data_pop_on_read",
+      "status": "failed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 0.00015091896057128906,
+      "error_type": "AssertionError",
+      "error_message": "program was not driven"
+    },
+    {
+      "name": "test_phase_05_raw_streaming_port_out_ready_pops_while_sampling",
+      "status": "failed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 0.00013256072998046875,
+      "error_type": "AssertionError",
+      "error_message": "program was not driven"
+    },
+    {
+      "name": "test_phase_06_simultaneous_register_pop_and_stream_pop_registe",
+      "status": "failed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 0.00012540817260742188,
+      "error_type": "AssertionError",
+      "error_message": "program was not driven"
+    },
+    {
+      "name": "test_phase_07_out_mode_switch_to_conditioned_flushes_both_path",
+      "status": "failed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 0.00012874603271484375,
+      "error_type": "AssertionError",
+      "error_message": "program was not driven"
+    },
+    {
+      "name": "test_phase_08_induce_an_rct_trip_with_a_stuck_source",
+      "status": "failed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 0.0003635883331298828,
+      "error_type": "AssertionError",
+      "error_message": "program was not driven"
+    },
+    {
+      "name": "test_phase_09_gated_data_blocked_raw_data_still_readable",
+      "status": "failed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 0.0001506805419921875,
+      "error_type": "AssertionError",
+      "error_message": "program was not driven"
+    },
+    {
+      "name": "test_phase_10_write_1_to_clear_then_re_run_the_start_up_test",
+      "status": "failed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 0.00014972686767578125,
+      "error_type": "AssertionError",
+      "error_message": "program was not driven"
+    },
+    {
+      "name": "test_phase_11_soft_rst_then_resume_sampling",
+      "status": "failed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 0.00014209747314453125,
+      "error_type": "AssertionError",
+      "error_message": "program was not driven"
+    },
+    {
+      "name": "test_zz_trace_length_exact",
+      "status": "failed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 0.00018548965454101562,
+      "error_type": "AssertionError",
+      "error_message": "trace lengths differ: observed 0, model 4239, stimulus 4239"
+    }
+  ],
+  "coverage": null,
+  "trace": null,
+  "environment": {
+    "engine": "icarus",
+    "engine_version": "13.0",
+    "cocotb_version": "2.0.1",
+    "results_xml": "<work>/no-observations/.klt/functional-verification/results_icarus.xml",
+    "random_seed": 1,
+    "sdf": null
+  }
+}

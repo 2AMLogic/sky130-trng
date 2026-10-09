@@ -1,0 +1,130 @@
+{
+  "schema_version": 1,
+  "engine": "icarus",
+  "hdl_toplevel": "trng_digital",
+  "testbench": "test_trng_digital_fv",
+  "status": "pass",
+  "test_count": 13,
+  "passed_count": 13,
+  "failed_count": 0,
+  "skipped_count": 0,
+  "tests": [
+    {
+      "name": "test_00_drive_program",
+      "status": "passed",
+      "sim_time_ns": 42400.0,
+      "real_time_s": 0.4334592819213867
+    },
+    {
+      "name": "test_phase_01_post_reset_idle_id_parameter_reads",
+      "status": "passed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 2.1219253540039062e-05
+    },
+    {
+      "name": "test_phase_02_sampling_disabled_raw_valid_high_but_ctrl_en_low",
+      "status": "passed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 1.4781951904296875e-05
+    },
+    {
+      "name": "test_phase_03_enable_run_the_start_up_window_with_interleaved_",
+      "status": "passed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 7.2479248046875e-05
+    },
+    {
+      "name": "test_phase_04_drain_the_raw_fifo_through_raw_data_pop_on_read",
+      "status": "passed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 7.867813110351562e-06
+    },
+    {
+      "name": "test_phase_05_raw_streaming_port_out_ready_pops_while_sampling",
+      "status": "passed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 1.8835067749023438e-05
+    },
+    {
+      "name": "test_phase_06_simultaneous_register_pop_and_stream_pop_registe",
+      "status": "passed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 1.3828277587890625e-05
+    },
+    {
+      "name": "test_phase_07_out_mode_switch_to_conditioned_flushes_both_path",
+      "status": "passed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 6.604194641113281e-05
+    },
+    {
+      "name": "test_phase_08_induce_an_rct_trip_with_a_stuck_source",
+      "status": "passed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 1.0967254638671875e-05
+    },
+    {
+      "name": "test_phase_09_gated_data_blocked_raw_data_still_readable",
+      "status": "passed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 1.1205673217773438e-05
+    },
+    {
+      "name": "test_phase_10_write_1_to_clear_then_re_run_the_start_up_test",
+      "status": "passed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 8.058547973632812e-05
+    },
+    {
+      "name": "test_phase_11_soft_rst_then_resume_sampling",
+      "status": "passed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 1.2636184692382812e-05
+    },
+    {
+      "name": "test_zz_trace_length_exact",
+      "status": "passed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 4.76837158203125e-05
+    }
+  ],
+  "coverage": null,
+  "trace": null,
+  "environment": {
+    "engine": "icarus",
+    "engine_version": "13.0",
+    "cocotb_version": "2.0.1",
+    "results_xml": "<work>/mut-rtl/.klt/functional-verification/results_icarus.xml",
+    "random_seed": 1,
+    "sdf": null
+  },
+  "mutation_testing": {
+    "schema_version": 1,
+    "proposal_count": 2,
+    "valid_count": 2,
+    "rejected_count": 0,
+    "killed_count": 2,
+    "survived_count": 0,
+    "mutation_score": 1.0,
+    "results": [
+      {
+        "index": 1,
+        "category": "operator_change",
+        "file": "./digital/rtl/trng_digital.v",
+        "line": 130,
+        "status": "killed",
+        "first_killing_test": "test_phase_07_out_mode_switch_to_conditioned_flushes_both_path",
+        "log_path": "<work>/mut-rtl/.klt/functional-verification/mutants/mutant_1.log"
+      },
+      {
+        "index": 2,
+        "category": "operator_change",
+        "file": "./digital/rtl/trng_digital.v",
+        "line": 289,
+        "status": "killed",
+        "first_killing_test": "test_phase_07_out_mode_switch_to_conditioned_flushes_both_path",
+        "log_path": "<work>/mut-rtl/.klt/functional-verification/mutants/mutant_2.log"
+      }
+    ]
+  }
+}
