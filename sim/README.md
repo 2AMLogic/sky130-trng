@@ -63,6 +63,7 @@ directed stimulus program against each mapped netlist via Icarus + the
 |---|---|---|
 | `digital-synthesis/` | cell count, area, Liberty-summed leakage and ABC's pre-layout critical-path estimate for `trng_digital.v` mapped onto `sky130_fd_sc_hd`, unconstrained and at the block's own 50 kHz sample clock; RTL↔gate equivalence; gate-level cosim against the same directed program `digital-rtl-equivalence/` uses | #117 |
 | `digital-pnr/` | placed-and-routed `trng_digital` (sky130_fd_sc_hd, 50 kHz-constrained netlist): klt-deck DRC, cell-level LVS, 16-corner post-route STA on routed DEF + extracted SPEF, routed-netlist functional cosim vs the normative model, negative controls; geometry under `layout/trng_digital/` | #166 |
+| `digital-floorplan-compaction/` | area feasibility only: the same netlist re-placed-and-routed at 40/55/65 % target utilisation through the `digital-pnr/` chain (DRC, LVS, 16-corner STA, cosim, controls); combined-area lower bounds and labelled estimates vs the unchanged 0.05 mm2 target. Study geometry is NOT promoted; `layout/trng_digital/` stays the 40 % baseline | #226 |
 
 **Whole-block post-layout verification (issue #18): none recorded yet
 (re-checked 2026-10-07).** The post-layout slugs (`post-layout-*`) cover the

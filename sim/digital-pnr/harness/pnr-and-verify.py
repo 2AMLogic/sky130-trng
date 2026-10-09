@@ -145,7 +145,35 @@ def main(argv=None) -> int:
                          "(fast iteration; --emit-record then records that the flow was reused)")
     ap.add_argument("--allow-tool-drift", action="store_true")
     ap.add_argument("--emit-record", action="store_true")
+    ap.add_argument("--request", type=Path, default=None,
+                    help="alternate klt place-and-route request (study runs, e.g. "
+                         "sim/digital-floorplan-compaction/); klt writes its outputs under "
+                         "<request dir>/.klt/place-and-route. Default: the committed request. "
+                         "--emit-record is refused with a non-default request so production "
+                         "geometry under layout/trng_digital/ is never replaced by a study run")
+    ap.add_argument("--out-dir", type=Path, default=None,
+                    help="write this run's report, klt responses, negative controls, verdict "
+                         "and a gzipped copy of the routed artifacts here (kept even when a "
+                         "step fails); default: nothing extra is written")
     args = ap.parse_args(argv)
+
+    global REQUEST, KLT_OUT
+    if args.request is not None:
+        req = args.request.resolve()
+        if req != REQUEST.resolve():
+            if args.emit_record:
+                print("error: --emit-record is refused with a non-default --request "
+                      "(study runs must not replace committed geometry)", file=sys.stderr)
+                return 2
+            REQUEST = req
+            KLT_OUT = req.parent / ".klt" / "place-and-route"
+    out_dir = args.out_dir.resolve() if args.out_dir else None
+    if out_dir:
+        out_dir.mkdir(parents=True, exist_ok=True)
+
+    def save(name, obj):
+        if out_dir:
+            write_json(out_dir / name, _sanitize(obj))
 
     for tool in (args.klt, "iverilog", "openroad"):
         if shutil.which(tool) is None:
@@ -188,6 +216,18 @@ def main(argv=None) -> int:
             shutil.rmtree(KLT_OUT)
         pnr = run_klt_cwd(args.klt, ["place-and-route", str(REQUEST.relative_to(REPO_ROOT))], env)
         resp_saved.write_text(json.dumps(pnr))
+    save("pnr-output.json", pnr)
+    if out_dir and KLT_OUT.exists():
+        # keep the per-stage OpenROAD logs/metrics/scripts with the run: the
+        # scratch dir is wiped by the next run, and a congested or failed
+        # route is only diagnosable from these.
+        eng = out_dir / "pnr-engine"
+        for src in sorted(KLT_OUT.rglob("*")):
+            if src.is_file() and (src.suffix in (".tcl", ".log") or src.name.endswith(
+                    "_metrics.json") or src.name == "invocation.json"):
+                dst = eng / src.relative_to(KLT_OUT)
+                dst.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(src, dst)
     prov = pnr["provenance"]
     if not prov["klt_version"] == pins["klt_version"]:
         drift.append(f"klt {prov['klt_version']!r} != pinned {pins['klt_version']!r}")
@@ -200,9 +240,12 @@ def main(argv=None) -> int:
     if drift and not args.allow_tool_drift:
         print("error: tool/PDK/input drift vs tool-pins.json (use --allow-tool-drift "
               "to proceed and mark the record):\n  " + "\n  ".join(drift), file=sys.stderr)
+        save("verdict.json", {"error": "tool drift", "drift": drift})
         return 2
     if pnr["status"] != "ok" or pnr["stage_reached"] != "route":
         print(f"error: P&R did not reach route: {pnr['status']}", file=sys.stderr)
+        save("verdict.json", {"error": "P&R did not reach route", "status": pnr["status"],
+                              "stage_reached": pnr.get("stage_reached"), "drift": drift})
         return 1
 
     gds = Path(pnr["gds_path"])
@@ -339,8 +382,8 @@ def main(argv=None) -> int:
         pc = pnr_by.get(r["corner"], {})
         a(f"| {r['corner']} | {r['worst_slack_ns']} | {r['worst_hold_slack_ns']} | "
           f"{r['setup_violation_count']} | {r['hold_violation_count']} | {r.get('clock_skew_ns')} | "
-          f"{pc.get('max_transition_violation_count_vs_library')} | "
-          f"{pc.get('max_capacitance_violation_count_vs_library')} |")
+          f"{pc.get('max_transition_violation_count_vs_library', pc.get('max_transition_violation_count'))} | "
+          f"{pc.get('max_capacitance_violation_count_vs_library', pc.get('max_capacitance_violation_count'))} |")
     a("")
     a("(slew/cap columns are the in-flow `klt place-and-route` sweep's, estimated from global-route "
       "parasitics; setup/hold are from `klt sta` with the extracted SPEF.)")
@@ -360,6 +403,18 @@ def main(argv=None) -> int:
     verdict = {"drc": drc_ok, "lvs": lvs_ok, "sta": sta_ok,
                "cosim": cosim["ok"], "negative_controls": controls_ok}
     print("\nverdict:", verdict, file=sys.stderr)
+    if out_dir:
+        (out_dir / "report.md").write_text(body + "\n")
+        for k, v in (("drc", drc), ("extract", ext), ("lvs", lvs), ("sta", sta)):
+            save(f"{k}-output.json", v)
+        save("negative-controls.json", controls)
+        save("verdict.json", {"verdict": verdict, "tool_drift": drift, "notes": notes,
+                              "request_sha256": sha256(REQUEST), "netlist_sha256": sha256(netlist_in),
+                              "pdk": pdk_info, "gate_cosim": {k: v for k, v in cosim.items()
+                                                              if k not in ("stimulus_path", "observations_path")}})
+        shutil.copy2(REQUEST, out_dir / REQUEST.name)
+        for src in (gds, deff, routed_v, spef, sdf):
+            gz_copy(src, out_dir / (Path(src).name + ".gz"))
 
     if not args.emit_record:
         return 0 if all_ok else 1
