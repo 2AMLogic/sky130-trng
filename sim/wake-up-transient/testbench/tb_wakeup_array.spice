@@ -1,0 +1,72 @@
+* ro_array_core wake-up transient -- deterministic (no injected noise)
+*
+* Issue #216. Drives the COMMITTED pre-layout design/ro_array_core.spice from a
+* cold, non-oscillating state and records the rising-edge times of all four
+* BUFFERED ring outputs (ro1..ro4), so the reduction (wakeup.py) can derive per
+* ring: whether it started, when its first edge came, and the time after which
+* every period stays within a tolerance of the ring's own final period
+* (time-to-steady-oscillation).
+*
+* This is a circuit-body TEMPLATE for make-requests.py (no .lib, .temp, .tran,
+* .control or .end card -- `klt sim` owns those). make-requests.py appends the
+* `.meas` cards and substitutes:
+*
+*   @@RO_ARRAY@@  absolute path of design/ro_array_core.spice
+*   @@TEN@@       enable-release instant (s), mode 0
+*   @@TRAMP@@     supply ramp duration 0 -> VDD (s), mode 1
+*
+* Two DC "knob" sources, swept per unit through klt sim `corners.supply_v`
+* (zipped by index; klt sim applies them as `alter <source>=<value>`). The rails
+* are behavioural sources that READ the knobs, because `alter` cannot reach a
+* PWL/PULSE source's parameters (2AMLogic/klayout-tools#2867):
+*
+*   Vk   the supply voltage of this unit (V): 1.62 / 1.8 / 1.98.
+*   Vm   wake-up mode:
+*          0  ENABLE-GATED wake: the supply is already at Vk (DC operating point
+*             solved with en1..en4 = 0, i.e. the rings are held in their static
+*             stopped state), and en1..en4 rise 0 -> Vk over 100 ps at @@TEN@@.
+*             This is the block's normal power-up-then-enable sequence.
+*          1  SUPPLY-RAMP wake WITHOUT enable gating: vdd and vddr1..4 ramp
+*             linearly 0 -> Vk over @@TRAMP@@ from t = 0 with en1..en4 tied to the
+*             (ramping) supply, so the rings come up with the rail. The DC
+*             operating point at t = 0 is the all-zero, unpowered state.
+*
+* No `.ic` and no `uic`: both modes start from a solved DC operating point
+* (the stopped ring in mode 0, the unpowered circuit in mode 1). That is the
+* "cold start" -- nothing in the deck kicks the rings into oscillation except
+* the enable or the supply itself.
+*
+* The edge threshold is the node `half` = 0.5 x Vk (the FINAL supply in both
+* modes), so `.meas ... when v(roN)=v(half)` cards are the same text for every
+* supply point of the request. Edge times are also re-expressed relative to the
+* anchor through `.meas ... param=` cards (dN_k): ngspice prints a measurement to
+* 6 significant digits, which at t ~ 1.2 us is a 10 ps quantum, while a param
+* measurement is computed from the stored double.
+*
+* Simulation-derived; provisional until silicon.
+
+.option scale=1u
+
+.include "@@RO_ARRAY@@"
+
+Vk vkn 0 dc 1.8
+Vm vmn 0 dc 0
+
+Bhalf half 0 V = 0.5*v(vkn)
+* supply scale s(t): 1 in mode 0, linear 0 -> 1 over TRAMP in mode 1
+Bsup sup 0 V = v(vmn) > 0.5 ? min(max(time/@@TRAMP@@, 0), 1) : 1
+* enable scale e(t): 0 -> 1 over 100 ps at TEN in mode 0, = s(t) in mode 1
+Bens ens 0 V = v(vmn) > 0.5 ? v(sup) : min(max((time-@@TEN@@)/100e-12, 0), 1)
+
+Bvddr1 vddr1 0 V = v(vkn)*v(sup)
+Bvddr2 vddr2 0 V = v(vkn)*v(sup)
+Bvddr3 vddr3 0 V = v(vkn)*v(sup)
+Bvddr4 vddr4 0 V = v(vkn)*v(sup)
+Bvdd   vdd   0 V = v(vkn)*v(sup)
+
+Ben1 en1 0 V = v(vkn)*v(ens)
+Ben2 en2 0 V = v(vkn)*v(ens)
+Ben3 en3 0 V = v(vkn)*v(ens)
+Ben4 en4 0 V = v(vkn)*v(ens)
+
+xdut en1 en2 en3 en4 vddr1 vddr2 vddr3 vddr4 vdd 0 xo ro1 ro2 ro3 ro4 ro_array_core

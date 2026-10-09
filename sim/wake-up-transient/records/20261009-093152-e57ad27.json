@@ -1,0 +1,284 @@
+{
+  "record_id": "20261009-093152-e57ad27",
+  "slug": "wake-up-transient",
+  "leg": "det",
+  "claim": "Analog wake-up of the committed pre-layout ro_array_core (issue #216): per-ring first edge, time-to-steady-oscillation (every later period within 1 % / 0.5 % of the final period) and late-window swing, after an enable release from the stopped state and after a 0 -> Vdd supply ramp with the enables tied to the rail; deterministic, no injected noise",
+  "level": "transistor",
+  "status": "simulation-derived; provisional until silicon",
+  "seed": "N/A (deterministic transient, no injected noise)",
+  "pvt": {
+    "temp_c": -40.0,
+    "vdd_v": 1.62
+  },
+  "process_corners": [
+    "ss"
+  ],
+  "testbench": "sim/wake-up-transient/testbench/tb_wakeup_array.spice (mode ramp: tb_wakeup_array_ramp.spice) (via sim/wake-up-transient/make-requests.py)",
+  "criteria": {
+    "settle_tolerances": [
+      0.01,
+      0.005
+    ],
+    "nref_periods": 10,
+    "swing_min": 0.9
+  },
+  "requests_without_response": [],
+  "klt_sim": {
+    "jobs": [
+      null,
+      null
+    ],
+    "backend": "local (single-unit debug probe)",
+    "remote": [
+      null,
+      null
+    ],
+    "engine_version": "46",
+    "models_lib_sha256": "48de7c677e2c6e7d09b2559279de9f818be71010a4aa933d728eb4db3b133c84",
+    "submitter_klt": "0.7.0+g5c94de0ebbfe",
+    "responses": "sim/wake-up-transient/corners/20261009-093152-e57ad27/*.klt-sim.json.gz"
+  },
+  "corners_dir": "20261009-093152-e57ad27",
+  "supersedes": "(none)",
+  "summary": {
+    "units": 2,
+    "units_ok": 2,
+    "failed_units": [],
+    "t_settle_max_1pct_en_s": 2.61045e-09,
+    "t_settle_max_1pct_ramp_s": 3.98626e-09,
+    "t_settle_max_0.5pct_en_s": 7.20034e-09,
+    "t_settle_max_0.5pct_ramp_s": 3.98626e-09,
+    "t_first_edge_max_en_s": 2.61045e-09,
+    "vdd_at_first_edge_ramp_v": [
+      1.22144922,
+      1.2225978
+    ],
+    "committed_combining_record": "20260825-094545-53f1f7a"
+  },
+  "rows": [
+    {
+      "process": "ss",
+      "temp_c": -40.0,
+      "vdd_v": 1.62,
+      "mode": "en",
+      "status": "pass",
+      "corner_id": "ss/Vk=1.620_Vm=0.000V/-40C",
+      "rings": [
+        {
+          "ring": 1,
+          "edges_recorded": 41,
+          "t_first_abs": 7.61045e-09,
+          "late_swing_frac": 1.0546598765432098,
+          "started": true,
+          "t_first_edge": 2.61045e-09,
+          "settle_0.01": {
+            "t_settle": 2.61045e-09,
+            "k_settle": 0,
+            "p_ref": 5.431000000000002e-09,
+            "first_period_err": 0.002342110108635387
+          },
+          "settle_0.005": {
+            "t_settle": 2.61045e-09,
+            "k_settle": 0,
+            "p_ref": 5.431000000000002e-09,
+            "first_period_err": 0.002342110108635387
+          },
+          "p_ref": 5.431000000000002e-09,
+          "late_floor_pct": 0.2393665991534788,
+          "ok": true
+        },
+        {
+          "ring": 2,
+          "edges_recorded": 41,
+          "t_first_abs": 7.51513e-09,
+          "late_swing_frac": 1.0205187037037036,
+          "started": true,
+          "t_first_edge": 2.51513e-09,
+          "settle_0.01": {
+            "t_settle": 2.51513e-09,
+            "k_settle": 0,
+            "p_ref": 5.216299999999999e-09,
+            "first_period_err": 0.004878937177693166
+          },
+          "settle_0.005": {
+            "t_settle": 2.51513e-09,
+            "k_settle": 0,
+            "p_ref": 5.216299999999999e-09,
+            "first_period_err": 0.004878937177693166
+          },
+          "p_ref": 5.216299999999999e-09,
+          "late_floor_pct": 0.06326323255955169,
+          "ok": true
+        },
+        {
+          "ring": 3,
+          "edges_recorded": 41,
+          "t_first_abs": 7.42835e-09,
+          "late_swing_frac": 1.0422138888888888,
+          "started": true,
+          "t_first_edge": 2.42835e-09,
+          "settle_0.01": {
+            "t_settle": 2.42835e-09,
+            "k_settle": 0,
+            "p_ref": 5.022800000000002e-09,
+            "first_period_err": 0.0030540734251807145
+          },
+          "settle_0.005": {
+            "t_settle": 2.42835e-09,
+            "k_settle": 0,
+            "p_ref": 5.022800000000002e-09,
+            "first_period_err": 0.0030540734251807145
+          },
+          "p_ref": 5.022800000000002e-09,
+          "late_floor_pct": 0.23492872501416073,
+          "ok": true
+        },
+        {
+          "ring": 4,
+          "edges_recorded": 41,
+          "t_first_abs": 7.34369e-09,
+          "late_swing_frac": 1.025393888888889,
+          "started": true,
+          "t_first_edge": 2.34369e-09,
+          "settle_0.01": {
+            "t_settle": 2.34369e-09,
+            "k_settle": 0,
+            "p_ref": 4.830900000000002e-09,
+            "first_period_err": 0.00533026972199746
+          },
+          "settle_0.005": {
+            "t_settle": 7.20034e-09,
+            "k_settle": 1,
+            "p_ref": 4.830900000000002e-09,
+            "first_period_err": 0.00533026972199746
+          },
+          "p_ref": 4.830900000000002e-09,
+          "late_floor_pct": 0.08073029870225845,
+          "ok": true
+        }
+      ],
+      "ok": true,
+      "t_settle_max_1pct": 2.61045e-09,
+      "t_settle_max_0.5pct": 7.20034e-09,
+      "request": "det-en-ss",
+      "p_ref_vs_committed_pct": [
+        0.07156655579134696,
+        0.0012461095023397206,
+        0.08001938318131785,
+        0.0008280099196067425
+      ]
+    },
+    {
+      "process": "ss",
+      "temp_c": -40.0,
+      "vdd_v": 1.62,
+      "mode": "ramp",
+      "status": "pass",
+      "corner_id": "ss/Vk=1.620_Vm=1.000V/-40C",
+      "rings": [
+        {
+          "ring": 1,
+          "edges_recorded": 41,
+          "t_first_abs": 7.53981e-07,
+          "vdd_at_first_edge": 1.22144922,
+          "late_swing_frac": 1.034472962962963,
+          "started": true,
+          "t_first_edge": 2.2452e-09,
+          "settle_0.01": {
+            "t_settle": 2.2452e-09,
+            "k_settle": 0,
+            "p_ref": 5.4248e-09,
+            "first_period_err": 9.401268249531469e-05
+          },
+          "settle_0.005": {
+            "t_settle": 2.2452e-09,
+            "k_settle": 0,
+            "p_ref": 5.4248e-09,
+            "first_period_err": 9.401268249531469e-05
+          },
+          "p_ref": 5.4248e-09,
+          "late_floor_pct": 0.16959150567752435,
+          "ok": true
+        },
+        {
+          "ring": 2,
+          "edges_recorded": 41,
+          "t_first_abs": 7.54441e-07,
+          "vdd_at_first_edge": 1.2221944200000001,
+          "late_swing_frac": 1.0248425308641973,
+          "started": true,
+          "t_first_edge": 3.1585e-09,
+          "settle_0.01": {
+            "t_settle": 3.1585e-09,
+            "k_settle": 0,
+            "p_ref": 5.2163000000000015e-09,
+            "first_period_err": -0.0005444472135425205
+          },
+          "settle_0.005": {
+            "t_settle": 3.1585e-09,
+            "k_settle": 0,
+            "p_ref": 5.2163000000000015e-09,
+            "first_period_err": -0.0005444472135425205
+          },
+          "p_ref": 5.2163000000000015e-09,
+          "late_floor_pct": 0.06326323255934074,
+          "ok": true
+        },
+        {
+          "ring": 3,
+          "edges_recorded": 41,
+          "t_first_abs": 7.54217e-07,
+          "vdd_at_first_edge": 1.2218315400000002,
+          "late_swing_frac": 1.0351072839506172,
+          "started": true,
+          "t_first_edge": 3.98626e-09,
+          "settle_0.01": {
+            "t_settle": 3.98626e-09,
+            "k_settle": 0,
+            "p_ref": 5.0164e-09,
+            "first_period_err": 0.00029901921696828815
+          },
+          "settle_0.005": {
+            "t_settle": 3.98626e-09,
+            "k_settle": 0,
+            "p_ref": 5.0164e-09,
+            "first_period_err": 0.00029901921696828815
+          },
+          "p_ref": 5.0164e-09,
+          "late_floor_pct": 0.2312415277887947,
+          "ok": true
+        },
+        {
+          "ring": 4,
+          "edges_recorded": 41,
+          "t_first_abs": 7.5469e-07,
+          "vdd_at_first_edge": 1.2225978,
+          "late_swing_frac": 1.0257906172839506,
+          "started": true,
+          "t_first_edge": 6.22274e-11,
+          "settle_0.01": {
+            "t_settle": 6.22274e-11,
+            "k_settle": 0,
+            "p_ref": 4.831100000000002e-09,
+            "first_period_err": -7.190908902765525e-05
+          },
+          "settle_0.005": {
+            "t_settle": 6.22274e-11,
+            "k_settle": 0,
+            "p_ref": 4.831100000000002e-09,
+            "first_period_err": -7.190908902765525e-05
+          },
+          "p_ref": 4.831100000000002e-09,
+          "late_floor_pct": 0.0807269565937796,
+          "ok": true
+        }
+      ],
+      "ok": true,
+      "t_settle_max_1pct": 3.98626e-09,
+      "t_settle_max_0.5pct": 3.98626e-09,
+      "request": "det-ramp-ss"
+    }
+  ],
+  "timestamp_utc": "2026-10-09T09:31:52.332993+00:00",
+  "repo_sha": "e57ad27"
+}
