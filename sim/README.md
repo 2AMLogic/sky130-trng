@@ -131,6 +131,7 @@ Issue #200 then perturbed the supply, which every record above holds ideal and q
 | Slug | Claim under test | Landed by |
 |---|---|---|
 | `ro-array-supply-perturbation/` | supply-ripple and injection-lock robustness of the committed pre-layout `ro_array_core` at the ss/-40 C/1.62 V binding corner and the ff/-40 C/1.98 V fast corner: ripple 10-200 mV pk across the ring ladder, sub-harmonics, 10 MHz and the quasi-static (50 kbps) limit; ripple tolerance under DR-0003's margins; ring-local negative control (`klt sim` batch requests) | #200 |
+| `local-mismatch-monte-carlo/` | local device-mismatch Monte Carlo (`klt sim` `monte_carlo`, `*_mm` sections) of the committed pre-layout `ro_array_core` (30 draws/corner: per-ring period spread, ring-pair proximity, `Q` ratio, combining-node bias) and of the `sampler_dff` decision offset (60 draws/corner), propagated to raw-bit bias and an `H_bias` min-entropy bound against DR-0004's H = 0.5 floor, at tt/27 C/1.8 V, ss/-40 C/1.62 V and ff/-40 C/1.98 V | #215 |
 
 `sim/tests/test_raw_bit_entropy.py` is the fast, always-runnable unit-test
 suite behind that record's reduction step (standard library only, no
