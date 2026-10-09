@@ -1,0 +1,52 @@
+* ro_array_core under local device mismatch (Monte Carlo) -- per-ring edge times + xo duty
+*
+* Issue #215. Drives the COMMITTED pre-layout design/ro_array_core.spice with the
+* process section's mismatch variant (`tt_mm`, `ss_mm`, `ff_mm`: MC_MM_SWITCH=1)
+* and a klt `monte_carlo` block (vary = mismatch), so each unit draws a different
+* local-mismatch realisation of every device in the array. No injected noise, no
+* ripple: a deterministic transient per sample, i.e. this measures the
+* STATIC ring-to-ring frequency spread and the combining-node duty, not entropy.
+*
+* Circuit-body template for make-requests.py (no .lib/.temp/.tran/.control/.end:
+* `klt sim` owns those). make-requests.py appends the `.meas` cards and substitutes:
+*   @@VNOM@@     nominal supply of this PVT point (V)
+*   @@RO_ARRAY@@ absolute path of design/ro_array_core.spice
+*
+* Start-up is by enable release at 5 ns exactly as in sim/ro-array-core-combining/
+* and sim/ro-array-supply-perturbation/ (no trnoise source, so the breakpoint
+* is safe).
+*
+* DUTY PROBES.  The sampler resolves xo at ITS OWN decision threshold, which
+* mismatch moves.  Nine behavioural comparators, thr = f * vnom for
+* f = 0.30, 0.35, ..., 0.70, give duty(f) = time fraction with v(xo) > thr;
+* reduce.py interpolates duty at each sampler's measured trip point.
+*
+* Simulation-derived; provisional until silicon.
+
+.option scale=1u
+
+.include "@@RO_ARRAY@@"
+
+.param vnom=@@VNOM@@
+Vdd vdd 0 dc {vnom}
+Vdr1 vddr1 0 dc {vnom}
+Vdr2 vddr2 0 dc {vnom}
+Vdr3 vddr3 0 dc {vnom}
+Vdr4 vddr4 0 dc {vnom}
+
+Ven1 en1 0 PULSE(0 {vnom} 5n 100p 100p 1u 2u)
+Ven2 en2 0 PULSE(0 {vnom} 5n 100p 100p 1u 2u)
+Ven3 en3 0 PULSE(0 {vnom} 5n 100p 100p 1u 2u)
+Ven4 en4 0 PULSE(0 {vnom} 5n 100p 100p 1u 2u)
+
+xdut en1 en2 en3 en4 vddr1 vddr2 vddr3 vddr4 vdd 0 xo ro1 ro2 ro3 ro4 ro_array_core
+
+Bd30 d30 0 V = v(xo) > 0.30*vnom ? 1 : 0
+Bd35 d35 0 V = v(xo) > 0.35*vnom ? 1 : 0
+Bd40 d40 0 V = v(xo) > 0.40*vnom ? 1 : 0
+Bd45 d45 0 V = v(xo) > 0.45*vnom ? 1 : 0
+Bd50 d50 0 V = v(xo) > 0.50*vnom ? 1 : 0
+Bd55 d55 0 V = v(xo) > 0.55*vnom ? 1 : 0
+Bd60 d60 0 V = v(xo) > 0.60*vnom ? 1 : 0
+Bd65 d65 0 V = v(xo) > 0.65*vnom ? 1 : 0
+Bd70 d70 0 V = v(xo) > 0.70*vnom ? 1 : 0

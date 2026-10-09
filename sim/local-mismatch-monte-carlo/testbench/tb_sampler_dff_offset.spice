@@ -1,0 +1,28 @@
+* sampler_dff decision offset under local device mismatch (Monte Carlo)
+*
+* Issue #215. One committed `sampler_dff` (design/sampler_core.spice -- the
+* cell that digitises the combining node `xo` into `raw_bit`) with its D input
+* driven by a slow triangle (vlo -> vhi -> vlo) while a 10 ns clock samples it.
+* The D value at which Q first flips on the way up (`vtrip_up`) and on the way
+* down (`vtrip_dn`) is the cell's decision threshold for that mismatch draw;
+* the input-referred offset is that threshold minus the same cell's
+* mismatch-free threshold (a plain-section nominal request, see make-requests.py).
+* Resolution is slope x clock period: (0.5 vnom / 1.5 us) x 10 ns = ~3 mV.
+*
+* Circuit-body template (no .lib/.temp/.tran/.end). Substitutions:
+*   @@VNOM@@  supply (V)      @@SAMPLER@@  absolute path of design/sampler_core.spice
+*   @@VLO@@ @@VHI@@  triangle limits (V)
+*
+* Simulation-derived; provisional until silicon.
+
+.option scale=1u
+
+.include "@@SAMPLER@@"
+
+.param vnom=@@VNOM@@
+Vdd vdd 0 dc {vnom}
+Vrst rst_n 0 dc {vnom}
+Vclk clk 0 PULSE(0 {vnom} 5n 100p 100p 4.9n 10n)
+Vd d 0 PWL(0 @@VLO@@ 20n @@VLO@@ 1.52u @@VHI@@ 3.02u @@VLO@@)
+
+xs d clk rst_n q vdd 0 sampler_dff
