@@ -2,7 +2,27 @@
 
 Chronological record of recently merged pull requests and closed issues.
 
+### 2026-10-09
+
+- **PR #225**: feat(layout): native supply ERC for routed trng_digital; cite item 11.digital
+- **PR #224**: feat(sim): native klt functional-verification evidence for the digital suite
+- **PR #220**: Local-mismatch Monte Carlo of RO array spread and sampler offset/bias
+- **PR #219**: Wake-up transient campaign vs DR-0004 start-up window (partial, #216)
+- **PR #214**: Cite delivered digital DRC/LVS evidence in T1 manifest (#211)
+- **PR #213**: Refresh current sign-off status and simulated-stream documentation
+- **PR #209**: Supply-ripple and injection-lock robustness campaign for the RO array (#200)
+- **Issue #223** (closed): Verify routed digital supplies and well ties with native ERC evidence
+- **Issue #222** (closed): Record native digital functional-verification evidence alongside routed STA
+- **Issue #207** (closed): Guard telemetry: retain shared-stash creation protection
+- **Issue #215** (closed): Local-mismatch Monte Carlo of RO array frequency spread and sampler decision offset/bias
+- **Issue #211** (closed): Refresh T1 manifest with eligible delivered digital physical evidence
+- **Issue #212** (closed): Refresh current sign-off status and simulated-stream documentation
+- **Issue #200** (closed): Supply-ripple and injection-lock robustness campaign for the RO array (transistor level)
+
 ### 2026-10-08
+
+- **PR #206**: chore(signoff): klayout-tools 0.7.0 grader; 11.analog met (3/22)
+- **Issue #164** (closed): Re-grade T1 item 11 (11.analog) once klayout-tools#2405 (alias-joined LVS supply pairing) lands
 
 - **PR #204**: Whole-block DRC, mixed-level LVS and fault controls for trng_whole (#173)
 - **PR #203**: Re-derive and empirically validate RCT/APT cutoffs against estimated H (#196)
