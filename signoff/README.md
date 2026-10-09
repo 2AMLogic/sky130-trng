@@ -19,6 +19,8 @@ on 2AMLogic/2am#956, which consumes this block manifest.
 | `design-evidence-tiers.md` | byte-identical vendored copy of `2AMLogic/klayout-tools`'s `docs/design-evidence-tiers.md` — the tier ladder + T1 checklist the report is graded against. Provenance and why it is vendored: below. |
 | `t1-report.json` | the committed `klt signoff --manifest` output — the evidence record for this block's current state. CI re-runs the exact command and diffs, so this file cannot rot. |
 
+**Update 2026-10-09 (issue #227): 7.digital cited, 7/22 met** (see the digital-partition table below). The line that follows is the issue #211 state.
+
 **Update 2026-10-09 (issue #211): 5/22 met.** The digital partition's
 delivered physical evidence (`layout/trng_digital/`, issue #166) is now
 cited: **item 3 digital** (`drc.json`) and **item 4 digital** (`lvs.json`)
@@ -241,7 +243,7 @@ the vendored item rules (no new simulation; existing artifacts only):
 | `3.digital` | **cited** `drc.json`, pin `sha256:c65e1581…` | `klt drc` `status: clean`, 0 violations, deck `sky130` (`sha256:ef7800eb…`). The pin is `provenance.input.content_hash`, the sha256 of the committed `trng_digital.gds`. |
 | `4.digital` | **cited** `lvs.json`, pin `sha256:93fdea04…` | `status: match`, engine `klayout` 0.30.12, `power_connectivity.status: match`. The pin is the sha256 of the extracted `trng_digital.layout.abstract.spice` that was compared (`environment.layout_sha256`). |
 | `5.digital` | **not cited** | `sta.json` (16 Liberty corners, all `constrained`, non-negative setup/hold, SPEF-annotated) would grade `met` on its own, but item 5's digital rule is multi-corner STA *plus* a bit-exact functional suite. Native `klt functional-verification` reports now exist (issue #222, `sim/digital-functional-verification/records/20261009-120511-d9f51a4`; functional/unit-delay on the RTL and the routed netlist, not SDF-timed), so both halves of the evidence are present. The row is **still not cited**: item 5's note requires a ratified specification and DR-0004 (the digital section) is `Proposed`; that condition is unmet and stays explicitly unmet. |
-| `7.digital` | not cited | Needs an SDF-annotated `klt functional-verification` run. The committed co-simulation is functional/unit-delay, not timed; `klt sta` is item 5 evidence (`wrong_kind`). `trng_digital.sdf.gz`/`.spef.gz` are inputs, not the required envelope. |
+| `7.digital` | **cited** `sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/timed-declared.report.json`, unpinned | Issue #227: native `klt functional-verification` run of the routed netlist with the post-route SDF back-annotated (`environment.sdf.annotated: true`, 13/13 tests, byte-identical to the independent oracle). Renders `met` on the 0.7.0 grader, which checks only the envelope kind and an annotated `sdf` object. **Disclosures that travel with the citation (the grader does not grade them):** `sdf.partial: true` -- Icarus 13.0 drops all 455 SDF `TIMINGCHECK` sections, so setup/hold are *not* simulated; 39 zero-delay bit-selected-input `INTERCONNECT` entries were removed before annotation (the tool cannot resolve them under Icarus); one SDF corner only (`tt_025C_1v80`), **not a PVT sweep**; the SDF carries zero wire delay; DR-0004 is `Proposed`, so the result is provisional; the 16-corner STA (item 5 evidence) is neither replaced nor superseded. Cited unpinned because a pin renders `unverifiable_provenance` (the envelope records no input hash); every input is hashed in the record's `input-hashes.json`. Annotation/timing controls (mistargeted SDF, SDF removed, exact +137 ps arc shift, +15000 ns shift, 5 ns clock) are in the same record. |
 | `11.digital` | **cited** `[erc.json, pnr.json, lvs.json]`, pins `sha256:c65e1581…` (GDS) / `9d2b8aed…` (P&R input netlist) / `93fdea04…` | Native `klt erc --findings-only` (klt 0.7.0) on the committed routed GDS: VPWR and VGND one island each, zero findings, stackup covers every PDN strap layer (met1/met4/met5) and DEF special-net layer (met1–met5), drawn-nwell tie (43 wells, 704 tapcells) and a 704-box native-substrate tie both `checked`, nothing `skipped`; `pnr.json` `power.pdn` true with tapcell `sky130_fd_sc_hd__tapvpwrvgnd_1`; `lvs.json` `power_connectivity: match`. Five isolated negative controls plus a clean baseline (disconnection, short, missing well tie, missing substrate tie, wrong-net tie) are all detected. Spec, generator, controls, reproduction and limits: `layout/trng_digital/ERC.md`. |
 | `pnr.json` | not a citation | No T1 row grades a `place-and-route` envelope by itself; it is the PDN provenance for 11.digital and the layout provenance for item 2. |
 | `1, 2, 6, 8, 9, 10` | unchanged | No klt verb / no aggregated artifact, as before. |
@@ -288,8 +290,8 @@ envelopes, not re-derived):**
 
 **Staleness check performed:** with the `3.digital` pin altered by one digit,
 `klt signoff` renders `3.digital` as `unmet`/`stale_evidence` (and the
-met count drops by one); `5.digital` and `7.digital`
-remain `unmet`/`no_evidence`. `klt signoff --check` on the committed report
+met count drops by one); `5.digital`
+remains `unmet`/`no_evidence`. `klt signoff --check` on the committed report
 prints `status: match`.
 
 ## Block kind and the partition boundary (the mixed-signal claim)

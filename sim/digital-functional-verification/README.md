@@ -11,6 +11,7 @@ Records are append-only (`records/`, raw artifacts in `runs/<id>/`).
   four negative controls (xor2->and2 routed netlist, truncated, dropped and
   missing observations) and `--mutations` single-point mutants; refuses to
   mint on any pin mismatch, unclean baseline or undetected control.
+* SDF-timed counterpart: `sim/digital-sdf-timed-verification` (#227).
 * Scope: functional / unit-delay only (`FUNCTIONAL` + `UNIT_DELAY #1`, no
   `options.sdf`). It is NOT SDF-timed T1 item 7 evidence. T1 item 5 is not
   claimed: the digital section (DR-0004) is still `Proposed`.

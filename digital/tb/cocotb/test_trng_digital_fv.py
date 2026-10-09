@@ -35,7 +35,7 @@ K cycles; `drop:I` omits cycle I's observation. Unset in every real run.
 
 Environment (inherited from the `klt` process): `TRNG_FV_SEED` (stimulus seed),
 `TRNG_FV_OBS_OUT` (directory for the observed/model/stimulus traces),
-`TRNG_FV_FAULT` (above).
+`TRNG_FV_FAULT` (above), `TRNG_FV_CLK_NS` (clock period, default 10).
 
 This is functional / unit-delay coverage (no SDF); see the sim record's
 coverage section. It is not item-7 timed evidence.
@@ -50,6 +50,7 @@ from pathlib import Path
 import cocotb
 from cocotb.clock import Clock
 from cocotb.triggers import FallingEdge, RisingEdge
+from cocotb.utils import get_sim_time
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO_ROOT / "digital"))
@@ -63,9 +64,22 @@ _spec.loader.exec_module(rtl_cosim)
 SEED = int(os.environ.get("TRNG_FV_SEED", rtl_cosim.DEFAULT_SEED))
 FAULT = os.environ.get("TRNG_FV_FAULT", "")
 OBS_OUT = os.environ.get("TRNG_FV_OBS_OUT")
+# Clock period in ns. Default 10 reproduces the #222 functional/unit-delay
+# runs byte-for-byte; the SDF-timed campaign (#227) sets it from the declared
+# timing (inputs change at the falling edge, outputs are sampled one half
+# period later, i.e. input/output delay = period/2).
+CLK_NS = int(os.environ.get("TRNG_FV_CLK_NS", "10"))
 
 CYCLES, PHASES = rtl_cosim.build_program(SEED)
 EXPECTED = rtl_cosim.model_trace(CYCLES)     # independent oracle
+
+# Output-latency probe (SDF campaign, #227). When set, every output change is
+# logged with its latency in ps from the launching event: the preceding rising
+# clock edge for clk->out, or the preceding input drive (falling edge) for
+# in->out. A back-annotated SDF makes these non-zero and SDF-shaped; a
+# zero-delay or unannotated run makes them 0. Pure observation: it never drives.
+TIMING_OUT = os.environ.get("TRNG_FV_TIMING_OUT")
+PROBE: dict = {}
 
 OBSERVED: list = []      # one entry per recorded cycle
 
@@ -97,6 +111,25 @@ def _fault_skips(i: int) -> bool:
     return False
 
 
+_OUTPUTS = ("bus_rdata", "out_valid", "out_data", "alarm", "gated", "startup_done")
+
+
+async def _watch(sig, name):
+    half_ps = CLK_NS * 500
+    period_ps = CLK_NS * 1000
+    while True:
+        await sig.value_change
+        t = int(get_sim_time("ps"))
+        if t < half_ps:
+            continue                      # reset / X->0 initialisation
+        ph = (t - half_ps) % period_ps    # 0 == rising edge
+        rec = PROBE.setdefault(name, {"clk_to_out_ps": [], "in_to_out_ps": []})
+        if ph < half_ps:
+            rec["clk_to_out_ps"].append(ph)
+        else:
+            rec["in_to_out_ps"].append(ph - half_ps)
+
+
 async def _drive_program(dut):
     # Match tb_trng_digital.v: clk low at t=0, rising at t=5; async reset is
     # applied by the first posedge; released at the first falling edge.
@@ -104,7 +137,11 @@ async def _drive_program(dut):
     for sig in (dut.raw_bit, dut.raw_valid, dut.bus_addr, dut.bus_we,
                 dut.bus_re, dut.bus_wdata, dut.out_ready):
         sig.value = 0
-    cocotb.start_soon(Clock(dut.clk, 10, unit="ns").start(start_high=False))
+    if TIMING_OUT:
+        PROBE.clear()
+        for _n in _OUTPUTS:
+            cocotb.start_soon(_watch(getattr(dut, _n), _n))
+    cocotb.start_soon(Clock(dut.clk, CLK_NS, unit="ns").start(start_high=False))
     # The X->0 clock initialisation is itself a FallingEdge in cocotb, so wait
     # for the first real rising edge (t=5, which applies the reset) first.
     await RisingEdge(dut.clk)
@@ -128,6 +165,11 @@ async def _drive_program(dut):
 
 
 def _flush_traces():
+    if TIMING_OUT:
+        import json
+        Path(TIMING_OUT).parent.mkdir(parents=True, exist_ok=True)
+        Path(TIMING_OUT).write_text(json.dumps(
+            {"clock_period_ns": CLK_NS, "probe": PROBE}, sort_keys=True) + "\n")
     if not OBS_OUT:
         return
     out = Path(OBS_OUT)
