@@ -7,13 +7,13 @@ This roadmap is generated from the current GitHub label state.
 
 Judge-approved PRs stuck under a `loom:operator` merge-risk hold — implementation work is done, only a human merge decision is missing.
 
-_None._
+- **#218**: ci: run volume-model and ripple-reduction tests in PR-blocking job
 
 ## Operator Priority
 
 Issues the operator starred (`loom:operator-priority`); land these first.
 
-- **#164**: Re-grade T1 item 11 (11.analog) once klayout-tools#2405 (alias-joined LVS supply pairing) lands
+_None._
 
 ## Ready
 
@@ -25,7 +25,7 @@ _None._
 
 Issues currently being built (`loom:building`).
 
-- **#200**: Supply-ripple and injection-lock robustness campaign for the RO array (transistor level)
+_None._
 
 ## PRs Awaiting Review
 
@@ -37,33 +37,37 @@ _None._
 
 PRs that passed review and are queued for Champion auto-merge (`loom:pr`).
 
-_None._
+- **#218**: ci: run volume-model and ripple-reduction tests in PR-blocking job
 
 ## Proposed
 
 Issues carrying `loom:curated`.
 
 - **#162**: README: embed the fleet burndown chart (one line) *(curated)*
+- **#174**: Whole-block characterization: post-layout PVT, dynamic power and IR evidence *(curated)*
 
 ## Proposed (Architect / Hermit)
 
 - **#201**: Gated-off analog block idle/leakage across the full PVT envelope incl. +125 C, with combined digital standby estimate *(architect)*
+- **#226**: Measure digital floorplan compaction feasibility against the unchanged area target *(architect)*
+- **#227**: Add SDF-annotated routed digital verification with annotation controls *(architect)*
 
 ## Epics
 
 - **#3**: Track the gap to T1 sim-validated / bronze (klayout-tools design-evidence tiers)
+- **#170**: Whole-block integration: compose analog+digital GDS, block DRC/LVS and post-layout PVT (remaining #18 AC3)
 
 ## Backlog Balance
 
 | Tier | Count |
 |------|-------|
-| Operator merge-risk holds | 0 |
-| Operator priority | 1 |
+| Operator merge-risk holds | 1 |
+| Operator priority | 0 |
 | Ready (`loom:issue`) | 0 |
-| In Progress (`loom:building`) | 1 |
+| In Progress (`loom:building`) | 0 |
 | PRs awaiting review | 0 |
-| Approved PRs awaiting merge | 0 |
-| Curated | 1 |
-| Architect / Hermit proposals | 1 |
-| Active epics | 1 |
+| Approved PRs awaiting merge | 1 |
+| Curated | 2 |
+| Architect / Hermit proposals | 3 |
+| Active epics | 2 |
 <!-- guide:plan-body:end -->
