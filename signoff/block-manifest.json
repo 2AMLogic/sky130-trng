@@ -97,13 +97,30 @@
     "                    netlists via sim/bin harnesses, which item 7 by",
     "                    design does not accept (a clean DRC or",
     "                    pre-layout sim proves nothing post-layout).",
-    "  7.digital           trng_digital.routed.v, the SPEF and the SDF now",
-    "                    exist, but item 7 needs an SDF-annotated `klt",
-    "                    functional-verification` run; the committed",
-    "                    functional/unit-delay co-simulation is not timed",
-    "                    and `klt sta` is item 5 evidence (`wrong_kind`).",
-    "                    pnr.json is likewise not a citation for any row.",
-    "                    Stays unmet/no_evidence.",
+    "  7.digital          (issue #227) CITED: a native, SDF-annotated `klt",
+    "                    functional-verification` report",
+    "                    (sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/timed-declared.report.json):",
+    "                    environment.sdf.annotated true, 13/13 tests, routed",
+    "                    netlist vs the independent oracle. Disclosures that",
+    "                    travel with it: sdf.partial is true (Icarus 13.0",
+    "                    drops all 455 TIMINGCHECK sections, so setup/hold are",
+    "                    NOT simulated, and 33 zero-delay alias-port",
+    "                    INTERCONNECT entries); 39 zero-delay",
+    "                    bit-selected-input-source INTERCONNECT entries were",
+    "                    removed before annotation (Icarus cannot resolve",
+    "                    them); a SINGLE SDF corner (tt_025C_1v80), not a PVT",
+    "                    sweep; wire delay is zero in the SDF; DR-0004 is",
+    "                    `Proposed`, so the verdict is provisional. Negative",
+    "                    controls (mistargeted SDF, removed SDF, exact",
+    "                    +137 ps arc shift, +15000 ns shift, 5 ns clock) are in",
+    "                    the same record. The 16-corner STA (item 5) is not",
+    "                    replaced. Item 5.digital is unaffected and stays",
+    "                    unmet/no_evidence. Cited UNPINNED: a pin renders",
+    "                    `unverifiable_provenance` because the",
+    "                    functional-verification envelope records no input",
+    "                    hash, so freshness is as strong as regenerating the",
+    "                    record when the netlist or SDF changes (the",
+    "                    record's input-hashes.json pins every input).",
     "  8                  no aggregated, current characterization artifact",
     "                    exists yet; a hand-rolled `\"kind\": \"generic\"`",
     "                    wrapper asserting status pass would be a",
@@ -216,6 +233,9 @@
         "file": "layout/trng_digital/lvs.json",
         "content_hash": "sha256:93fdea0485c580a02ea38c30d35bd0b7b68127b563fe405830df33a1681c591e"
       }
-    ]
+    ],
+    "7.digital": {
+      "file": "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/timed-declared.report.json"
+    }
   }
 }
