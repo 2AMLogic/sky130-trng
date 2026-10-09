@@ -242,7 +242,7 @@ the vendored item rules (no new simulation; existing artifacts only):
 | `4.digital` | **cited** `lvs.json`, pin `sha256:93fdea04…` | `status: match`, engine `klayout` 0.30.12, `power_connectivity.status: match`. The pin is the sha256 of the extracted `trng_digital.layout.abstract.spice` that was compared (`environment.layout_sha256`). |
 | `5.digital` | **not cited** | `sta.json` (16 Liberty corners, all `constrained`, non-negative setup/hold, SPEF-annotated) would grade `met` on its own, but item 5's digital rule is multi-corner STA *plus* a bit-exact functional suite. Native `klt functional-verification` reports now exist (issue #222, `sim/digital-functional-verification/records/20261009-120511-d9f51a4`; functional/unit-delay on the RTL and the routed netlist, not SDF-timed), so both halves of the evidence are present. The row is **still not cited**: item 5's note requires a ratified specification and DR-0004 (the digital section) is `Proposed`; that condition is unmet and stays explicitly unmet. |
 | `7.digital` | not cited | Needs an SDF-annotated `klt functional-verification` run. The committed co-simulation is functional/unit-delay, not timed; `klt sta` is item 5 evidence (`wrong_kind`). `trng_digital.sdf.gz`/`.spef.gz` are inputs, not the required envelope. |
-| `11.digital` | not cited | Needs a `klt erc` supply envelope for `trng_digital`; none is committed. `pnr.json` (PDN) and the `power_connectivity: match` in `lvs.json` exist but cannot satisfy the item alone. |
+| `11.digital` | **cited** `[erc.json, pnr.json, lvs.json]`, pins `sha256:c65e1581…` (GDS) / `9d2b8aed…` (P&R input netlist) / `93fdea04…` | Native `klt erc --findings-only` (klt 0.7.0) on the committed routed GDS: VPWR and VGND one island each, zero findings, stackup covers every PDN strap layer (met1/met4/met5) and DEF special-net layer (met1–met5), drawn-nwell tie (43 wells, 704 tapcells) and a 704-box native-substrate tie both `checked`, nothing `skipped`; `pnr.json` `power.pdn` true with tapcell `sky130_fd_sc_hd__tapvpwrvgnd_1`; `lvs.json` `power_connectivity: match`. Five isolated negative controls plus a clean baseline (disconnection, short, missing well tie, missing substrate tie, wrong-net tie) are all detected. Spec, generator, controls, reproduction and limits: `layout/trng_digital/ERC.md`. |
 | `pnr.json` | not a citation | No T1 row grades a `place-and-route` envelope by itself; it is the PDN provenance for 11.digital and the layout provenance for item 2. |
 | `1, 2, 6, 8, 9, 10` | unchanged | No klt verb / no aggregated artifact, as before. |
 
@@ -268,6 +268,15 @@ envelopes, not re-derived):**
   `unchecked` (pre-extracted netlist form: substrate/well taps and device
   bodies were not verified). `power_connectivity: match` is per-instance
   pin-to-net correctness only, not rail/grid continuity or IR drop.
+- *Item 11 digital (issue #223).* The substrate tie is a caller-asserted
+  region (`checked_by_well_assertion`: sky130 has no drawn p-well; 704 boxes
+  derived from the GDS p-taps, each falsified by the run). The ERC is
+  `--findings-only`, so the antenna half did not run (`status: not_checked`)
+  and no gate-area claim is made. Supply matching is by labels on a flattened
+  layout; VPB/VNB, latch-up and tap-spacing rules, fill rails and cell-internal
+  rails are not modeled. `pnr.json` records no GDS hash (link is by identical
+  tapcell count/DEF layers and the shared input hash). Full list and
+  cold-start reproduction: `layout/trng_digital/ERC.md`.
 - *Both rows* describe the digital macro `trng_digital` alone. They are not
   a whole-block result; whole-block characterization stays on #174. Low-voltage
   Liberty-limit behavior is recorded in `pnr.json` (541 max-transition and 18
@@ -279,7 +288,7 @@ envelopes, not re-derived):**
 
 **Staleness check performed:** with the `3.digital` pin altered by one digit,
 `klt signoff` renders `3.digital` as `unmet`/`stale_evidence` (and the
-met count drops from 5 to 4); `5.digital`, `7.digital` and `11.digital`
+met count drops by one); `5.digital` and `7.digital`
 remain `unmet`/`no_evidence`. `klt signoff --check` on the committed report
 prints `status: match`.
 
