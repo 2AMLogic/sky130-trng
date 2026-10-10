@@ -86,6 +86,13 @@ name: CI
 #     segment policy, the raw-H x 256 vs 32-bit accounting flags, and that the
 #     committed record's first stream still reproduces. No ngspice, no PDK.
 #
+# sim/tests/test_restart_matrix.py (issue #267) -- stdlib-only unit test of the
+#     restart-matrix reduction (sim/wake-up-transient/restart_matrix.py) the C5
+#     silicon restart dataset will go through: IID known-answer PASS, a
+#     deterministic-column FAIL naming its index, the 1000 x 2048 boundary and
+#     fail-closed input checks, and a replay of one point of the committed
+#     behavioural record. No ngspice, no PDK.
+#
 # signoff-check (issue #155) -- the gap-to-T1 tier report staleness gate.
 #     `klt signoff --manifest signoff/block-manifest.json` re-renders this
 #     block's graded T1 item table from the committed evidence envelopes
@@ -175,6 +182,9 @@ on:
       - "sim/raw-bit-volume-campaign/runs/**"
       - "digital/model/**"
       - "sim/digital-health-test-parameters/analysis/**"
+      # issue #267 restart-matrix reducer, its phase model and the PVT-set source it re-counts
+      - "sim/wake-up-transient/**"
+      - "sim/raw-bit-volume-campaign/behavioral_raw_bit.py"
       - "layout/test_pex_netlist.py"
       - "layout/test_compose_cell.py"
       - "layout/test_compose_whole.py"
@@ -256,6 +266,9 @@ jobs:
         run: python3 sim/tests/test_electrical_reduction.py
       - name: sim/tests/test_electrical_final_route_gate.py (issue #250 final-route electrical verdict gates digital P&R; replays recorded sessions)
         run: python3 sim/tests/test_electrical_final_route_gate.py
+
+      - name: sim/tests/test_restart_matrix.py (issue #267 restart-matrix reduction known-answer + record replay)
+        run: python3 sim/tests/test_restart_matrix.py
 
   sim-records-append-only:
     name: sim/ + measurements/ append-only evidence rule (no edit/delete/rename of committed records or raw artifacts)

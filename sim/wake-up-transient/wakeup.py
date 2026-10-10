@@ -7,6 +7,11 @@ Standard library only; no simulator, no PDK.
     wakeup.py --emit-noisy REQDIR        # noisy leg: one transistor record per PVT point
     wakeup.py --emit-margin              # behavioural leg + margin statement (reads the records above)
     wakeup.py --check RECORD_JSON        # replay any of the three from committed inputs; writes nothing
+                                         # (a `restart-matrix` record is delegated to restart_matrix.py)
+
+The restart-matrix reduction and its behavioural known-answer record (issue #267) live in
+restart_matrix.py; they reuse this module's calibrated phase model (`calibration`, `wake_stream`) rather
+than carrying a second one.
 
 REQDIR is the make-requests.py output directory after the `klt sim` batch runs
 (`REQDIR/<name>/{plan.json,request.json,netlist.cir,resp.json}`).
@@ -943,6 +948,8 @@ def check(path):
         same = (json.loads(json.dumps(units, default=str)) == rec["units"]
                 and json.loads(json.dumps(xchk, default=str)) == rec["xcheck"]
                 and json.loads(json.dumps(summ, default=str)) == rec["summary"])
+    elif leg == "restart-matrix":
+        return _load("restart_matrix", HERE / "restart_matrix.py").check(path)
     elif leg == "margin":
         rows = margin_compute()
         same = json.loads(json.dumps(rows, default=str)) == rec["rows"]
