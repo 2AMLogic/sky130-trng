@@ -88,3 +88,31 @@ python3 sim/raw-bit-min-entropy/analysis/raw-bit-battery.py \
 The derived append-only record lands in `sim/raw-bit-min-entropy/records/`
 (`level: behavioral (derived)`); `--check` exits nonzero if results, input
 hashes or rendered tables change. Runtime is about one minute (pure Python).
+
+## Standards-sized streams, 2^20 bits (issue #253)
+
+SP 800-90B's non-IID estimators are specified for ~1e6 samples; at 2^17 the
+confidence penalty is wider. `behavioral_raw_bit.py` now takes `--nbits`
+(default 131072, so #188/#197 behaviour is unchanged) and `--set all`
+(base + hot = 36 streams). The model, calibration, master seed and per-stream
+seed labels are unchanged, so the first 2^17 bits of each new stream are
+bit-identical to the corresponding #188/#197 stream.
+
+```bash
+python3 sim/raw-bit-volume-campaign/behavioral_raw_bit.py --set all --nbits 1048576 --emit-record
+python3 sim/raw-bit-volume-campaign/behavioral_raw_bit.py --regenerate-check sim/raw-bit-volume-campaign/records/<id>.json
+```
+
+The record `20261010-095913-3966094` supersedes `20261008-061809-56e0fb7`
+and `20261008-135454-847b454` by name; both stay untouched and still replay
+(`--regenerate-check` reads each stream's declared `n`). The period-uncertainty
+sensitivity table stays at 2^17 samples per draw (not re-run). The battery
+adapter derives its segment count as `n // 8192` (16 at 2^17, 128 at 2^20). The
+derived battery/90B record and the min-H shift versus the 2^17 records are in
+`sim/raw-bit-min-entropy/records/` (see its "Shift versus the 2^17 records"
+section). Measured runtime at 2^20 in pure Python, single process: generation
++ stats for the 36 streams ~15 min; battery + 90B pass (and each `--check`
+replay) ~11 min for all 36 streams. No vectorisation or coverage reduction was
+needed. Replay the derived record with
+`raw-bit-battery.py --check sim/raw-bit-min-entropy/records/20261010-102516-3966094.json`.
+Its `--compare` option reports the min-H shift against earlier derived records.

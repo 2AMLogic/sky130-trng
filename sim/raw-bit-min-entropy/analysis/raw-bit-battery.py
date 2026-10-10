@@ -54,8 +54,8 @@ first, and checked against its declared `n` and `sha256_hex` (SHA-256 of the
 hex text without its trailing newline) before analysis; any missing,
 malformed, truncated or mismatched stream aborts the run.  Each stream gets a
 full-stream single-sequence battery, a segmented pass-proportion battery
-(`SEGMENT_COUNT` x `SEGMENT_LEN` non-overlapping segments, covering the whole
-stream), and the six 90B estimators on the full stream.  Segments and PVT
+(`n // SEGMENT_LEN` non-overlapping segments of `SEGMENT_LEN` bits, so the
+count follows the stream length), and the six 90B estimators on the full stream.  Segments and PVT
 streams are NOT independent silicon trials.
 
     python3 .../raw-bit-battery.py --volume-record sim/raw-bit-volume-campaign/records/<id>.json
@@ -116,8 +116,10 @@ ESTIMATOR_MIN_N = {
     "lrs": 1000,
 }
 SOURCE_NOTE = "provisional until measured on silicon"
-SEGMENT_COUNT = 16  # volume adapter: 16 non-overlapping segments ...
-SEGMENT_LEN = 8192  # ... of 8192 bits (covers 131072 samples exactly)
+SEGMENT_LEN = 8192  # volume adapter: non-overlapping segments of 8192 bits;
+# the segment count is derived per stream as n // SEGMENT_LEN (16 at 2^17,
+# 128 at 2^20), so any stream length works (a ragged tail is not segmented).
+H_DESIGN = 0.5  # DR-0004 design min-entropy the ratified C_RCT = 81 / C_APT = 824 are evaluated at
 VOLUME_SLUG = "raw-bit-volume-campaign"
 VOLUME_CAVEATS_HEADING = "## Caveats that bound how this record may be cited"
 
@@ -666,10 +668,49 @@ def analyse_stream(bits: list[int]) -> dict:
             "estimators": est}
 
 
-def volume_payload(source_json: Path) -> dict:
+def min_h_shift(rows: list[dict], compare_rels: list[str]) -> dict:
+    """Per-point min-H change versus earlier derived volume records.
+
+    Matches on (corner, T, Vdd, Ts name).  The cutoffs C_RCT/C_APT (DR-0004)
+    are evaluated at H_DESIGN; they stay conservative at a point iff the
+    measured min-H there is >= H_DESIGN (the cutoff for a larger true H would
+    only be smaller).  Nothing is relaxed here; this only reports.
+    """
+    old = {}
+    for rel in compare_rels:
+        prev = json.loads((REPO_ROOT / rel).read_text())
+        for r in prev["analysis_payload"]["per_stream"]:
+            old[(r["corner"], r["temp_c"], r["vdd_v"], r["ts_name"])] = (
+                prev["record_id"], r)
+    out = []
+    for r in rows:
+        key = (r["corner"], r["temp_c"], r["vdd_v"], r["ts_name"])
+        e = r["estimators"]
+        row = {"corner": r["corner"], "temp_c": r["temp_c"], "vdd_v": r["vdd_v"],
+               "ts_name": r["ts_name"], "n_new": r["n"],
+               "h_new": e["h_min_bits"], "binding_new": e["binding_estimator"],
+               "h_design_ok": (e["h_min_bits"] is not None
+                               and e["h_min_bits"] >= H_DESIGN)}
+        if key in old:
+            rid, o = old[key]
+            oe = o["estimators"]
+            row.update(old_record=rid, n_old=o["n"], h_old=oe["h_min_bits"],
+                       binding_old=oe["binding_estimator"],
+                       delta=(e["h_min_bits"] - oe["h_min_bits"]
+                              if e["h_min_bits"] is not None
+                              and oe["h_min_bits"] is not None else None))
+        out.append(row)
+    return {"compare_records": list(compare_rels), "h_design": H_DESIGN,
+            "rows": out}
+
+
+def volume_payload(source_json: Path, compare_rels: list[str] | None = None) -> dict:
     """Deterministic, mint-time-field-free analysis payload."""
     rec, streams, src_sha = load_volume_source(source_json)
     rows = []
+    # Segment count is derived from the stream length (smallest stream if the
+    # record mixes lengths; per-stream counts are in each row's `segmented`).
+    seg_count = min(len(bits) for _, bits in streams) // SEGMENT_LEN
     for row, bits in streams:
         a = analyse_stream(bits)
         rows.append({"corner": row["corner"], "temp_c": row["temp_c"],
@@ -677,12 +718,14 @@ def volume_payload(source_json: Path) -> dict:
                      "ts_name": row["ts_name"], "seed": row["seed"],
                      "source_file": row["file"],
                      "source_sha256_hex": row["sha256_hex"], **a})
-    return {"source_record": rec["record_id"],
+    extra = ({"min_h_shift": min_h_shift(rows, compare_rels)}
+             if compare_rels else {})
+    return {**extra, "source_record": rec["record_id"],
             "source_level": rec["level"],
             "source_json_sha256": src_sha,
-            "segment_policy": {"count": SEGMENT_COUNT, "len": SEGMENT_LEN,
+            "segment_policy": {"count": seg_count, "len": SEGMENT_LEN,
                                "non_overlapping": True,
-                               "covers_bits": SEGMENT_COUNT * SEGMENT_LEN},
+                               "covers_bits": seg_count * SEGMENT_LEN},
             "alpha": ALPHA,
             "per_stream": rows}
 
@@ -690,6 +733,55 @@ def volume_payload(source_json: Path) -> dict:
 def _failed(block: dict) -> str:
     f = [k for k, v in block["tests"].items() if v["status"] == "FAIL"]
     return ", ".join(f) if f else "-"
+
+
+def render_shift(sh: dict) -> list[str]:
+    rows = sh["rows"]
+    out = ["## Shift versus the 2^17 records (same generator, calibration and "
+           "seed labels; first 2^17 bits of each stream are identical)", "",
+           "Compared records: " + ", ".join(f"`{c}`" for c in sh["compare_records"])
+           + ". min H = minimum over the six 90B estimators on the full "
+           "stream; delta = new - old (positive = the larger sample tightened "
+           "the bound upward).", ""]
+    for ts_name in sorted({r["ts_name"] for r in rows}, reverse=True):
+        grp = [r for r in rows if r["ts_name"] == ts_name]
+        out += [f"### {ts_name}", "",
+                "| corner | T (C) | Vdd (V) | n old | n new | min H old | "
+                "min H new | delta | binding old | binding new | "
+                f"min H new >= {sh['h_design']:g} |",
+                "|---|---|---|---|---|---|---|---|---|---|---|"]
+        for r in grp:
+            def f(x):
+                return "-" if x is None else f"{x:.4f}"
+            d = r.get("delta")
+            out.append(
+                f"| {r['corner']} | {r['temp_c']:g} | {r['vdd_v']:g} | "
+                f"{r.get('n_old', '-')} | {r['n_new']} | {f(r.get('h_old'))} | "
+                f"{f(r['h_new'])} | {'-' if d is None else f'{d:+.4f}'} | "
+                f"{r.get('binding_old') or '-'} | {r['binding_new'] or '-'} | "
+                f"{'yes' if r['h_design_ok'] else 'NO'} |")
+        ds = [r["delta"] for r in grp if r.get("delta") is not None]
+        hn = [r["h_new"] for r in grp if r["h_new"] is not None]
+        if ds:
+            out += ["", f"{ts_name}: delta min {min(ds):+.4f}, mean "
+                    f"{sum(ds) / len(ds):+.4f}, max {max(ds):+.4f}; new min H "
+                    f"range [{min(hn):.4f}, {max(hn):.4f}]."]
+        out.append("")
+    ok20 = [r for r in rows if r["ts_name"] == "Ts20us"]
+    n_ok = sum(r["h_design_ok"] for r in ok20)
+    out += ["### DR-0004 cutoffs (C_RCT = 81, C_APT = 824, evaluated at "
+            f"H = {sh['h_design']:g})", "",
+            f"At the DR-0003 design point (Ts = 20 us), {n_ok} of {len(ok20)} "
+            f"PVT x corner points have min H >= {sh['h_design']:g}"
+            + (": the provisional cutoffs still hold at every point (a "
+               "measured H at or above the design H makes them conservative)."
+               if n_ok == len(ok20) else
+               "; the points marked NO are below the design H and the "
+               "cutoffs are NOT conservative there (reported, nothing "
+               "relaxed or changed).")
+            + " Ts = 100 ns is cross-check only and is not the design point. "
+            "The cutoffs are not modified by this record.", ""]
+    return out
 
 
 def render_volume(payload: dict, caveats: list[str]) -> str:
@@ -761,6 +853,8 @@ def render_volume(payload: dict, caveats: list[str]) -> str:
             out.append(f"| {r['corner']} | {r['temp_c']:g} | {r['vdd_v']:g} | "
                        + " | ".join(cells) + " |")
         out.append("")
+    if "min_h_shift" in payload:
+        out += render_shift(payload["min_h_shift"])
     out += ["`INSUFFICIENT` would mean n or the segment count/length is below a "
             "test's or estimator's floor (battery floors 100-256 bits, "
             "estimator floors 1000-12000 bits, segmented criterion >= "
@@ -829,7 +923,7 @@ def check_volume_record(record_json: Path) -> int:
         md_text = record_json.with_suffix(".md").read_text()
         src = REPO_ROOT / committed["source_json"]
         want = committed["analysis_payload"]
-        payload = volume_payload(src)
+        payload = volume_payload(src, committed.get("compare_records") or None)
         caveats = source_caveats(src)
     except (OSError, ValueError, KeyError) as exc:
         print(f"CHECK FAILED: {exc}", file=sys.stderr)
@@ -864,6 +958,10 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--volume-record", type=Path, metavar="SOURCE.json",
                     help="analyse the streams of this raw-bit-volume-campaign "
                     "record (explicit; never auto-selected)")
+    ap.add_argument("--compare", type=Path, action="append", default=[],
+                    metavar="DERIVED.json",
+                    help="earlier derived volume record(s) to report the min-H "
+                    "shift against (repeatable; matched on corner/T/Vdd/Ts)")
     ap.add_argument("--check", type=Path, metavar="RECORD.json",
                     help="recompute and compare a committed volume-derived "
                     "record; exit nonzero on difference; writes nothing")
@@ -918,7 +1016,9 @@ def main(argv: list[str] | None = None) -> int:
 def main_volume(args) -> int:
     src = args.volume_record.resolve()
     try:
-        payload = json.loads(json.dumps(volume_payload(src)))
+        rels = [c.resolve().relative_to(REPO_ROOT).as_posix()
+                for c in args.compare]
+        payload = json.loads(json.dumps(volume_payload(src, rels or None)))
         caveats = source_caveats(src)
     except VolumeInputError as exc:
         print(f"error: {exc}", file=sys.stderr)
@@ -935,6 +1035,7 @@ def main_volume(args) -> int:
            "source_record": payload["source_record"], "source_json": rel,
            "author": args.author, "timestamp_utc": now.isoformat(),
            "repo_sha": sha, "caveat": SOURCE_NOTE,
+           "compare_records": rels,
            "ts20us_min_entropy": [
                {"corner": r["corner"], "temp_c": r["temp_c"],
                 "vdd_v": r["vdd_v"], "seed": r["seed"],

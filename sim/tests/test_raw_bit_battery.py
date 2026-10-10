@@ -219,9 +219,9 @@ class TestVolumeAdapter(unittest.TestCase):
         self._tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self._tmp.cleanup)
         self.root = Path(self._tmp.name)
-        self._saved = (B.SEGMENT_LEN, B.SEGMENT_COUNT, B.REPO_ROOT,
+        self._saved = (B.SEGMENT_LEN, B.REPO_ROOT,
                        B.RECORDS_DIR)
-        B.SEGMENT_LEN, B.SEGMENT_COUNT = 512, 10
+        B.SEGMENT_LEN = 512
         B.REPO_ROOT = self.root
         B.RECORDS_DIR = self.root / "sim" / "raw-bit-min-entropy" / "records"
         self.addCleanup(self._restore)
@@ -249,7 +249,7 @@ class TestVolumeAdapter(unittest.TestCase):
             "- **Not an SP 800-90B assessment.**\n\n---\n\n## Provenance\n")
 
     def _restore(self):
-        (B.SEGMENT_LEN, B.SEGMENT_COUNT, B.REPO_ROOT, B.RECORDS_DIR) = self._saved
+        (B.SEGMENT_LEN, B.REPO_ROOT, B.RECORDS_DIR) = self._saved
 
     def write_source(self):
         self.src.write_text(json.dumps({
@@ -337,6 +337,33 @@ class TestVolumeAdapter(unittest.TestCase):
                 self.assertEqual(e["estimators"][t]["h_bits"], min(hs))
             self.assertEqual(row["segmented"]["segments"], 10)
             self.assertEqual(row["single_sequence"]["segments"], 1)
+
+    def test_min_h_shift_against_earlier_record_and_check(self):
+        old = self.mint()
+        rel = old.relative_to(self.root).as_posix()
+        # a second, distinct record id so the new record does not collide
+        import time
+        time.sleep(1.1)
+        args = ["--volume-record", str(self.src), "--emit-record",
+                "--compare", str(old)]
+        with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+            self.assertEqual(B.main(args), 0)
+        new = [p for p in sorted(B.RECORDS_DIR.glob("*.json")) if p != old][0]
+        d = json.loads(new.read_text())
+        self.assertEqual(d["compare_records"], [rel])
+        rows = d["analysis_payload"]["min_h_shift"]["rows"]
+        self.assertEqual(len(rows), 2)
+        for r in rows:
+            self.assertEqual(r["delta"], 0.0)   # same streams -> zero shift
+        self.assertIn("Shift versus the 2^17 records", new.with_suffix(".md").read_text())
+        self.assertEqual(self.check(new)[0], 0)
+        self.assertEqual(self.check(old)[0], 0)   # old record still replays
+
+    def test_segment_count_follows_stream_length(self):
+        bits = ideal(512 * 12 + 100, seed=3)   # ragged tail is not segmented
+        a = B.analyse_stream(bits)
+        self.assertEqual(a["segmented"]["segments"], 12)
+        self.assertEqual(a["n"], 512 * 12 + 100)
 
     def test_binding_with_zero_estimate_and_ties(self):
         a = B.analyse_stream([1] * 13000)
