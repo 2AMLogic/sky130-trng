@@ -227,8 +227,12 @@ jobs:
 
   layout-check:
     name: Layout composition drift guard (compose-cell.py --check)
+    # 45 min (was 30, issue #264): measured baseline for the two whole-block
+    # reproductions below is ~8 s (compose-whole --check) + ~380 s
+    # (verify-whole check) on a 16-core host; hosted 4-vCPU runners are
+    # slower, so the allowance is generous but still bounded.
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     if: >-
       github.event_name == 'schedule' ||
       github.event_name == 'workflow_dispatch' ||
@@ -352,6 +356,37 @@ jobs:
             echo "DRIFT detected in: ${failures[*]}" >&2
             exit 1
           fi
+
+      # Whole-block reproduction (issue #264). Read-only: both commands
+      # rebuild into temp dirs and diff against the committed evidence; the
+      # final step asserts no tracked file changed. They run AFTER the cell
+      # checks. Same klt + PDK as above; verify-whole.py takes the PDK via
+      # `klt pdk find` and refuses tool drift vs layout/pdk.json's
+      # klt_version_pin. Curated-deck and mixed-level coverage caveats are
+      # unchanged (layout/trng_whole/verify/README.md); this is not a
+      # foundry sign-off claim. A failure here fails the job, so
+      # report-failure (needs: layout-check) files/updates the tracker.
+      - name: Whole-block toolchain imports (klayout, klayout_tools)
+        run: |
+          set -euo pipefail
+          python3 -c "import klayout.db as db, klayout_tools; print('klayout', db.__version__); print('klayout_tools', klayout_tools.__file__)"
+          klt --version
+
+      - name: compose-whole.py --check (composed whole-block geometry)
+        run: |
+          set -euo pipefail
+          python3 layout/bin/compose-whole.py layout/trng_whole/floorplan.json --check
+
+      - name: verify-whole.py check (baseline DRC / extraction / LVS reproduction)
+        run: |
+          set -euo pipefail
+          python3 layout/bin/verify-whole.py check --klt "$(command -v klt)"
+
+      - name: Committed artifacts unchanged
+        run: |
+          set -euo pipefail
+          git status --porcelain --untracked-files=no
+          git diff --exit-code
 
   report-failure:
     name: Surface a red nightly as a loom:triage issue
