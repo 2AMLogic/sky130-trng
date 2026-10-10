@@ -131,6 +131,16 @@
   and the `measurements/` layout contract. Claims no measured result; no
   silicon exists. DR-0013 is held by the open #221 proposal.
 
+### Open requests for an operator decision record (no record yet)
+
+- **End-of-life Vth-drift envelope** — issue [#262](https://github.com/2AMLogic/sky130-trng/issues/262), from
+  issue #254's bounded gate-offset sensitivity campaign
+  ([`../sim/ro-vth-drift-sensitivity/`](../sim/ro-vth-drift-sensitivity/)). The campaign shows how far a
+  0-60 mV common-mode threshold shift moves the ring periods, `Q_ring`, the frequency ladder and the
+  model-derived `H` bound against DR-0003's `Q` margin and DR-0004's `H = 0.5` evaluation floor. It is a
+  sensitivity bound, not a lifetime prediction, and **changes no ratified or proposed decision**; whether to
+  adopt a lifetime, a guard band or a re-sizing is left to the operator via that request.
+
 A record's status is meaningful: **Proposed** means drafted and not accepted
 by anyone. Ratification is an operator decision, so no record here declares
 itself Accepted. See the repo README for scope.

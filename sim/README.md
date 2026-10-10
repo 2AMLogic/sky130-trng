@@ -1379,6 +1379,38 @@ issue-#96 analysis found (and klayout-tools#1065 / #1559 already track), not
 the value-moving class `layout/pex-array/` hit. Nothing here is superseded;
 the numbers stand against the committed library.
 
+## Threshold-shift (BTI/HCI-like) sensitivity of the RO array (issue #254)
+
+`ro-vth-drift-sensitivity/` is a bounded **sensitivity** campaign: a repository-owned gate-offset
+wrapper shifts the effective Vth of every NMOS (`dVtn`) and PMOS (`d|Vtp|`) of the committed
+`design/ro_ring5.spice` and `design/ro_array_core.spice`, and the ring jitter / period / `Q_ring`
+and the array ladder / fidelity / current / closest small-rational approach are re-measured across
+PVT against the matched zero-shift rows. Common-mode 0/20/40/60 mV over the full tt/ss/ff x
+-40/27/125 C x 1.62/1.8/1.98 V grid for both decks, plus asymmetric (60, 0) and (0, 60) mV for the
+array at the three headline PVT points. **This is a sensitivity bound, not a lifetime prediction**:
+20 mV is a finite-difference resolution, 60 mV an outer stress point, and neither maps to any time,
+stress voltage, duty cycle or temperature. It is a first-order electrical model (gate offset only) and
+makes no spec change; DR-0003/DR-0004 are only *evaluated against* the envelope, and any guard band or
+lifetime is an operator decision (`spec/README.md`).
+
+| Item | Where |
+|---|---|
+| wrapper + deterministic aged-netlist generator | `ro-vth-drift-sensitivity/aging.py` |
+| grid, coverage manifest (fails on a missing/duplicate key), request derivation | `campaign.py`, `coverage-manifest.json`, `make-requests.py` |
+| controls (DC gate-offset to 1 uV, zero-shift equivalence, tt/27 C/1.8 V pilot) | `analysis/sensitivity.py --emit-controls` |
+| reduction, records, versioned calibration artifact, replay | `analysis/sensitivity.py`, `records/` |
+| matched-seed behavioral replay through the raw-bit min-entropy reduction (model output) | `analysis/behavioral_replay.py` |
+| tests | `tests/test_vth_drift.py` |
+
+The behavioral generator `raw-bit-volume-campaign/behavioral_raw_bit.py` consumes the shifted calibration only
+through an explicit artifact (`calibration(..., artifact=, shift_mv=)`); a missing shift key, schema mismatch,
+source-row hash mismatch, or an artifact without a shift (or a shift without an artifact) is a hard error, never
+a silent fallback to the historical time-zero calibration. All existing records remain unchanged.
+
+Batch note: the fleet runner is klt 0.5.0 and refuses a 0.7.0 client (`batch_runner_version_mismatch`); the grid was
+submitted with a throwaway `uvx --from "klayout-tools==0.6.0" klt sim` client (no host tool was changed). The jobs'
+ids and the submitting client version are in the records. See the open `2AMLogic/klayout-tools` issues #2948 and #2851.
+
 ## Writing a new record
 
 1. Author a deck template under `sim/<slug>/testbench/`, using the `@@...@@`

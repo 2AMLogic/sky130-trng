@@ -1,0 +1,5573 @@
+{
+  "record_id": "20261010-175419-7e279ab",
+  "slug": "ro-vth-drift-sensitivity",
+  "level": "behavioral",
+  "claim": "matched-seed behavioral replay of the zero-shift and Vth-shifted calibration through the existing raw-bit min-entropy reduction (model output, not silicon evidence). This is a sensitivity bound, not a lifetime prediction.",
+  "seeds": {
+    "master": 188,
+    "policy": "per-stream seed = sha256(master:label)[:8]; label carries no shift (matched)"
+  },
+  "supersedes": null,
+  "author": "loom-builder@sky130-trng",
+  "timestamp_utc": "2026-10-10T17:54:19.473818+00:00",
+  "repo_sha": "7e279ab",
+  "tools": {
+    "python": "3.12.3",
+    "platform": "Linux-7.0.0-1014-aws-x86_64-with-glibc2.39",
+    "model": "sim/raw-bit-volume-campaign/behavioral_raw_bit.py",
+    "replay": "sim/ro-vth-drift-sensitivity/analysis/behavioral_replay.py"
+  },
+  "artifacts": [],
+  "kind": "behavioral-replay",
+  "streams": [
+    {
+      "corner": "tt",
+      "temp_c": -40.0,
+      "vdd_v": 1.62,
+      "shift_mv": [
+        0,
+        0
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:tt:-40C:1.62V:Ts20us",
+      "seed": 8207237799247400690,
+      "sha256_hex": "bed13d370ed33ebc41aa8b81479d9f092ad5ff88f058892bf435742f17420dca",
+      "calibration": {
+        "periods_s": [
+          4.272230000000001e-09,
+          4.09437e-09,
+          3.9325100000000005e-09,
+          3.7772000000000006e-09
+        ],
+        "sigma": {
+          "1": 2.8178783906014216e-12
+        },
+        "q_ring": 0.00015247135859536236,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-e117fb428f7c",
+        "jitter_job_id": "klt-sim-62942afa0395"
+      },
+      "p_hat": 0.502593994140625,
+      "p_u_99": 0.5061513550859917,
+      "h_hat_bits": 0.9823592345120479,
+      "z_monobit": 1.8782523875267667,
+      "autocorr": {
+        "1": 0.0005452288342809322,
+        "2": 0.03059876447541461,
+        "3": -0.0011180541010480894,
+        "4": 0.0005681301960664394,
+        "8": 0.037863748958606426
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5367072575230422,
+      "best_context_acc_shuffled_null": 0.5173655618629067,
+      "h_context_min_bits": 0.8977926980718763,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.0,
+        "p_hat": 0.0,
+        "h_context_min_bits": 0.0,
+        "p_hat_z": 0.0,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "tt",
+      "temp_c": -40.0,
+      "vdd_v": 1.62,
+      "shift_mv": [
+        20,
+        20
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:tt:-40C:1.62V:Ts20us",
+      "seed": 8207237799247400690,
+      "sha256_hex": "17240aa8c7e2945f3c0b9a5557799e92497b8e616ba139f82d8a1d65cf869fb0",
+      "calibration": {
+        "periods_s": [
+          4.65054e-09,
+          4.4618000000000005e-09,
+          4.28949e-09,
+          4.1249e-09
+        ],
+        "sigma": {
+          "1": 2.52352081592777e-12
+        },
+        "q_ring": 9.367949961824767e-05,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-e117fb428f7c",
+        "jitter_job_id": "klt-sim-62942afa0395"
+      },
+      "p_hat": 0.5011978149414062,
+      "p_u_99": 0.504755213553245,
+      "h_hat_bits": 0.9863441878376623,
+      "z_monobit": 0.8673106612991246,
+      "autocorr": {
+        "1": 0.2689110883114231,
+        "2": 0.029596896564790746,
+        "3": -0.004179174174511653,
+        "4": 0.004465211315915148,
+        "8": 0.052671117504151876
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.6344686565342122,
+      "best_context_acc_shuffled_null": 0.5186778978209119,
+      "h_context_min_bits": 0.656379199819522,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.003984953325614438,
+        "p_hat": -0.00139617919921875,
+        "h_context_min_bits": -0.24141349825235436,
+        "p_hat_z": -0.71484375,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "tt",
+      "temp_c": -40.0,
+      "vdd_v": 1.62,
+      "shift_mv": [
+        40,
+        40
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:tt:-40C:1.62V:Ts20us",
+      "seed": 8207237799247400690,
+      "sha256_hex": "027f32249875db1bfc3d86517158dd8f24f0c4d0ce3fc18bb33559125f31442d",
+      "calibration": {
+        "periods_s": [
+          5.0724300000000004e-09,
+          4.87175e-09,
+          4.688220000000001e-09,
+          4.513579999999999e-09
+        ],
+        "sigma": {
+          "1": 3.938308405635896e-12
+        },
+        "q_ring": 0.00017398645618257988,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-e117fb428f7c",
+        "jitter_job_id": "klt-sim-62942afa0395"
+      },
+      "p_hat": 0.5015029907226562,
+      "p_u_99": 0.5050603834702949,
+      "h_hat_bits": 0.9854722125173032,
+      "z_monobit": 1.0882815304199207,
+      "autocorr": {
+        "1": -0.061998945655362944,
+        "2": -0.011514488622703368,
+        "3": -0.019426557120061,
+        "4": 0.014182106840735965,
+        "8": 0.040399067745597116
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5513871085881706,
+      "best_context_acc_shuffled_null": 0.5164041994750657,
+      "h_context_min_bits": 0.8588625573059059,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.00311297800525534,
+        "p_hat": -0.00109100341796875,
+        "h_context_min_bits": -0.038930140765970456,
+        "p_hat_z": -0.55859375,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "tt",
+      "temp_c": -40.0,
+      "vdd_v": 1.62,
+      "shift_mv": [
+        60,
+        60
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:tt:-40C:1.62V:Ts20us",
+      "seed": 8207237799247400690,
+      "sha256_hex": "f20fedcfdbfae8c896c7645c688465f9fb01f809f148983a9a665cc7aedd888e",
+      "calibration": {
+        "periods_s": [
+          5.5431e-09,
+          5.329619999999999e-09,
+          5.13391e-09,
+          4.948480000000001e-09
+        ],
+        "sigma": {
+          "1": 3.5715346388959833e-12
+        },
+        "q_ring": 0.00010855934715412308,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-e117fb428f7c",
+        "jitter_job_id": "klt-sim-62942afa0395"
+      },
+      "p_hat": 0.50018310546875,
+      "p_u_99": 0.5037405140501208,
+      "h_hat_bits": 0.9892473284163901,
+      "z_monobit": -0.13258252147247765,
+      "autocorr": {
+        "1": -0.05307823835055829,
+        "2": -0.0014649948250767919,
+        "3": -0.01631977914663275,
+        "4": 0.05710001594487514,
+        "8": 0.007324555020705165
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5454281877556003,
+      "best_context_acc_shuffled_null": 0.5195400720258805,
+      "h_context_min_bits": 0.8745388341567729,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.006888093904342196,
+        "p_hat": -0.002410888671875,
+        "h_context_min_bits": -0.023253863915103423,
+        "p_hat_z": -1.234375,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "tt",
+      "temp_c": -40.0,
+      "vdd_v": 1.8,
+      "shift_mv": [
+        0,
+        0
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:tt:-40C:1.8V:Ts20us",
+      "seed": 12993572896250489035,
+      "sha256_hex": "603b7dd83ea78c32d23f88fbd610e4c289ce55c1608e431a416c10ebaf201be5",
+      "calibration": {
+        "periods_s": [
+          2.71064e-09,
+          2.5865e-09,
+          2.47426e-09,
+          2.36498e-09
+        ],
+        "sigma": {
+          "1": 1.9271633620973355e-12
+        },
+        "q_ring": 0.0002936581058210556,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-8b1daf0a5308",
+        "jitter_job_id": "klt-sim-015cfd00a8b5"
+      },
+      "p_hat": 0.5008316040039062,
+      "p_u_99": 0.5043890079034561,
+      "h_hat_bits": 0.9873912593797746,
+      "z_monobit": 0.6021456183541694,
+      "autocorr": {
+        "1": 0.0009051156979482428,
+        "2": -0.08113521021119077,
+        "3": 0.014546862237650284,
+        "4": -0.014880606342224028,
+        "8": 0.0013553268898533362
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5425212110114143,
+      "best_context_acc_shuffled_null": 0.5179378013794788,
+      "h_context_min_bits": 0.8822485510209992,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.0,
+        "p_hat": 0.0,
+        "h_context_min_bits": 0.0,
+        "p_hat_z": 0.0,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "tt",
+      "temp_c": -40.0,
+      "vdd_v": 1.8,
+      "shift_mv": [
+        20,
+        20
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:tt:-40C:1.8V:Ts20us",
+      "seed": 12993572896250489035,
+      "sha256_hex": "b5e1a821403d75d5f8074abea04910812cdcecf69a21541da15b7d794a68908a",
+      "calibration": {
+        "periods_s": [
+          2.89825e-09,
+          2.7680100000000002e-09,
+          2.64998e-09,
+          2.5351900000000002e-09
+        ],
+        "sigma": {
+          "1": 2.2266223400625896e-12
+        },
+        "q_ring": 0.00031744084887215003,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-8b1daf0a5308",
+        "jitter_job_id": "klt-sim-015cfd00a8b5"
+      },
+      "p_hat": 0.5009841918945312,
+      "p_u_99": 0.5045415938227862,
+      "h_hat_bits": 0.9869548865501099,
+      "z_monobit": 0.7126310529145674,
+      "autocorr": {
+        "1": 0.0038947608109520917,
+        "2": 0.05335707158236797,
+        "3": -0.004848699949879949,
+        "4": -0.012577609479866145,
+        "8": -0.0003548799898809678
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5299090520661661,
+      "best_context_acc_shuffled_null": 0.5168696209485443,
+      "h_context_min_bits": 0.9161833227440359,
+      "delta_vs_zero": {
+        "h_hat_bits": -0.0004363728296646885,
+        "p_hat": 0.000152587890625,
+        "h_context_min_bits": 0.033934771723036716,
+        "p_hat_z": 0.078125,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "tt",
+      "temp_c": -40.0,
+      "vdd_v": 1.8,
+      "shift_mv": [
+        40,
+        40
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:tt:-40C:1.8V:Ts20us",
+      "seed": 12993572896250489035,
+      "sha256_hex": "7a147fa5615d2e283413110efb215af47c66bf31051680283a878d9c7ce56c40",
+      "calibration": {
+        "periods_s": [
+          3.1041799999999995e-09,
+          2.9673699999999994e-09,
+          2.84313e-09,
+          2.7223799999999994e-09
+        ],
+        "sigma": {
+          "1": 1.5816944421807033e-12
+        },
+        "q_ring": 0.00012878392542734661,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-8b1daf0a5308",
+        "jitter_job_id": "klt-sim-015cfd00a8b5"
+      },
+      "p_hat": 0.5016098022460938,
+      "p_u_99": 0.505167192628171,
+      "h_hat_bits": 0.9851671465171082,
+      "z_monobit": 1.1656213346121993,
+      "autocorr": {
+        "1": 0.418309234366906,
+        "2": 0.17756071221068123,
+        "3": 0.03663483409067688,
+        "4": -0.046841553958136335,
+        "8": -0.024838140615784633
+      },
+      "best_context_len": 7,
+      "best_context_acc": 0.7091672071109755,
+      "best_context_acc_shuffled_null": 0.5137374585129516,
+      "h_context_min_bits": 0.495802269356061,
+      "delta_vs_zero": {
+        "h_hat_bits": -0.0022241128626663276,
+        "p_hat": 0.0007781982421875,
+        "h_context_min_bits": -0.3864462816649382,
+        "p_hat_z": 0.3984375,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "tt",
+      "temp_c": -40.0,
+      "vdd_v": 1.8,
+      "shift_mv": [
+        60,
+        60
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:tt:-40C:1.8V:Ts20us",
+      "seed": 12993572896250489035,
+      "sha256_hex": "cfb47c7c06dab496b7795e285ec629fd2bcaaaea90ca82020b78d975a00b05dc",
+      "calibration": {
+        "periods_s": [
+          3.33042e-09,
+          3.18641e-09,
+          3.05542e-09,
+          2.9283e-09
+        ],
+        "sigma": {
+          "1": 2.388423768491174e-12
+        },
+        "q_ring": 0.00023527922562794511,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-8b1daf0a5308",
+        "jitter_job_id": "klt-sim-015cfd00a8b5"
+      },
+      "p_hat": 0.500732421875,
+      "p_u_99": 0.504289826878226,
+      "h_hat_bits": 0.9876749730233584,
+      "z_monobit": 0.5303300858899106,
+      "autocorr": {
+        "1": 0.00021910879964380015,
+        "2": -0.027834639146843986,
+        "3": 0.0013788314631047113,
+        "4": 0.0708925484383122,
+        "8": -0.0013601523015330215
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5419413416346213,
+      "best_context_acc_shuffled_null": 0.517502899346884,
+      "h_context_min_bits": 0.8837913885342912,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.0002837136435838161,
+        "p_hat": -9.918212890625e-05,
+        "h_context_min_bits": 0.0015428375132919836,
+        "p_hat_z": -0.05078125,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "tt",
+      "temp_c": -40.0,
+      "vdd_v": 1.98,
+      "shift_mv": [
+        0,
+        0
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:tt:-40C:1.98V:Ts20us",
+      "seed": 7770836260127804520,
+      "sha256_hex": "6f34a67fdf491c6899001db7ee54caa7487850ff106fa303b6dcf392875825cc",
+      "calibration": {
+        "periods_s": [
+          1.924474e-09,
+          1.831135e-09,
+          1.746897e-09,
+          1.664824e-09
+        ],
+        "sigma": {
+          "1": 1.6045247510844502e-12
+        },
+        "q_ring": 0.0005940392435487145,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-1e212605771c",
+        "jitter_job_id": "klt-sim-12bef3920bb9"
+      },
+      "p_hat": 0.5032577514648438,
+      "p_u_99": 0.5068150847747905,
+      "h_hat_bits": 0.98046862959193,
+      "z_monobit": 2.3588640278644983,
+      "autocorr": {
+        "1": 0.012996834044082353,
+        "2": -0.00147676440333483,
+        "3": -0.015294512327348544,
+        "4": -0.004055711116081114,
+        "8": -0.002636522511534576
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5189602026490875,
+      "best_context_acc_shuffled_null": 0.5178080937557223,
+      "h_context_min_bits": 0.9463041875994787,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.0,
+        "p_hat": 0.0,
+        "h_context_min_bits": 0.0,
+        "p_hat_z": 0.0,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "tt",
+      "temp_c": -40.0,
+      "vdd_v": 1.98,
+      "shift_mv": [
+        20,
+        20
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:tt:-40C:1.98V:Ts20us",
+      "seed": 7770836260127804520,
+      "sha256_hex": "95cbd70c3e1954fd843719bc575d46d8bf9d6f44f0d9978949e6eac88a1cd11a",
+      "calibration": {
+        "periods_s": [
+          2.03058e-09,
+          1.9337899999999998e-09,
+          1.846197e-09,
+          1.760744e-09
+        ],
+        "sigma": {
+          "1": 1.6056326652728738e-12
+        },
+        "q_ring": 0.0005009858607357393,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-1e212605771c",
+        "jitter_job_id": "klt-sim-12bef3920bb9"
+      },
+      "p_hat": 0.5000686645507812,
+      "p_u_99": 0.5036260733371498,
+      "h_hat_bits": 0.989575119812008,
+      "z_monobit": -0.04971844555217912,
+      "autocorr": {
+        "1": 0.05509226041031307,
+        "2": -0.0031586364520434598,
+        "3": 0.002174406295433967,
+        "4": 0.009002941604774937,
+        "8": -0.0027315109678064187
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5303821033998657,
+      "best_context_acc_shuffled_null": 0.5173197827015809,
+      "h_context_min_bits": 0.9148959992480731,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.009106490220077923,
+        "p_hat": -0.0031890869140625,
+        "h_context_min_bits": -0.031408188351405575,
+        "p_hat_z": -1.6328125,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "tt",
+      "temp_c": -40.0,
+      "vdd_v": 1.98,
+      "shift_mv": [
+        40,
+        40
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:tt:-40C:1.98V:Ts20us",
+      "seed": 7770836260127804520,
+      "sha256_hex": "9091be5608f0b4a586cdbe66e3f24503d4c0db65036e0a43e4a569b991eeef2d",
+      "calibration": {
+        "periods_s": [
+          2.14568e-09,
+          2.04511e-09,
+          1.95393e-09,
+          1.864869e-09
+        ],
+        "sigma": {
+          "1": 1.4002313504337294e-12
+        },
+        "q_ring": 0.0003194936965334325,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-1e212605771c",
+        "jitter_job_id": "klt-sim-12bef3920bb9"
+      },
+      "p_hat": 0.50140380859375,
+      "p_u_99": 0.5049612033926174,
+      "h_hat_bits": 0.9857555462767819,
+      "z_monobit": 1.016465997955662,
+      "autocorr": {
+        "1": 0.02433784986387986,
+        "2": -0.010170514550788722,
+        "3": 0.0029753019192008605,
+        "4": 0.0010144520265265766,
+        "8": 0.0003124443852543245
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.52255386681316,
+      "best_context_acc_shuffled_null": 0.5179606909601416,
+      "h_context_min_bits": 0.9363483316104293,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.005286916684851817,
+        "p_hat": -0.00185394287109375,
+        "h_context_min_bits": -0.009955855989049356,
+        "p_hat_z": -0.94921875,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "tt",
+      "temp_c": -40.0,
+      "vdd_v": 1.98,
+      "shift_mv": [
+        60,
+        60
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:tt:-40C:1.98V:Ts20us",
+      "seed": 7770836260127804520,
+      "sha256_hex": "5ae56eac7db88fc4cf7aa84dc37c73b1b061a2c19e9f4ce1b9488e8bb77adbb2",
+      "calibration": {
+        "periods_s": [
+          2.27061e-09,
+          2.1659099999999996e-09,
+          2.07086e-09,
+          1.9779800000000006e-09
+        ],
+        "sigma": {
+          "1": 1.6339367033419958e-12
+        },
+        "q_ring": 0.0003633956000392799,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-1e212605771c",
+        "jitter_job_id": "klt-sim-12bef3920bb9"
+      },
+      "p_hat": 0.5001602172851562,
+      "p_u_99": 0.5037176259224355,
+      "h_hat_bits": 0.9893128806949459,
+      "z_monobit": 0.11600970628841795,
+      "autocorr": {
+        "1": -0.013618682107453432,
+        "2": -0.05125516249524433,
+        "3": 0.08046897149125207,
+        "4": 0.0018004895593740368,
+        "8": -0.0026552943203840755
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.543535982420802,
+      "best_context_acc_shuffled_null": 0.5186778978209119,
+      "h_context_min_bits": 0.8795525491624315,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.008844251103015899,
+        "p_hat": -0.0030975341796875,
+        "h_context_min_bits": -0.06675163843704712,
+        "p_hat_z": -1.5859375,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "tt",
+      "temp_c": 27.0,
+      "vdd_v": 1.62,
+      "shift_mv": [
+        0,
+        0
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:tt:27C:1.62V:Ts20us",
+      "seed": 10392306301207134057,
+      "sha256_hex": "662edc98fd7e98155fb13b213b178bd5e7a757254dbc00b865ff27ddbfbd77ed",
+      "calibration": {
+        "periods_s": [
+          4.15334e-09,
+          3.929200000000001e-09,
+          3.73327e-09,
+          3.5476799999999995e-09
+        ],
+        "sigma": {
+          "1": 3.523800197902224e-12
+        },
+        "q_ring": 0.0002750767620039351,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-0faa71e89478",
+        "jitter_job_id": "klt-sim-d9dbc725a212"
+      },
+      "p_hat": 0.5011825561523438,
+      "p_u_99": 0.5047399550226047,
+      "h_hat_bits": 0.9863878005406707,
+      "z_monobit": -0.8562621178430848,
+      "autocorr": {
+        "1": 0.017855054898085972,
+        "2": -0.02203970874121119,
+        "3": -0.006147359392334556,
+        "4": 0.056438740972625974,
+        "8": -2.0746002719285843e-05
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5358069340169688,
+      "best_context_acc_shuffled_null": 0.5192653970579258,
+      "h_context_min_bits": 0.900214843294297,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.0,
+        "p_hat": 0.0,
+        "h_context_min_bits": 0.0,
+        "p_hat_z": 0.0,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "tt",
+      "temp_c": 27.0,
+      "vdd_v": 1.62,
+      "shift_mv": [
+        20,
+        20
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:tt:27C:1.62V:Ts20us",
+      "seed": 10392306301207134057,
+      "sha256_hex": "b187a68cc21ac1a4c6d9b77c29096331490479efed322bd5773d6f6243251815",
+      "calibration": {
+        "periods_s": [
+          4.45159e-09,
+          4.21536e-09,
+          4.008770000000001e-09,
+          3.814040000000001e-09
+        ],
+        "sigma": {
+          "1": 4.223079874240057e-12
+        },
+        "q_ring": 0.0003162668757694476,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-0faa71e89478",
+        "jitter_job_id": "klt-sim-d9dbc725a212"
+      },
+      "p_hat": 0.5016708374023438,
+      "p_u_99": 0.5052282263597825,
+      "h_hat_bits": 0.9849928522549309,
+      "z_monobit": -1.2098155084363587,
+      "autocorr": {
+        "1": -0.005618877469146758,
+        "2": 0.09154393551015004,
+        "3": -0.0048560489347220705,
+        "4": 0.0025217949918420464,
+        "8": -0.00040802742761050965
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5460156869926143,
+      "best_context_acc_shuffled_null": 0.5178767624977111,
+      "h_context_min_bits": 0.8729856946188892,
+      "delta_vs_zero": {
+        "h_hat_bits": -0.0013949482857397166,
+        "p_hat": 0.00048828125,
+        "h_context_min_bits": -0.02722914867540782,
+        "p_hat_z": 0.25,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "tt",
+      "temp_c": 27.0,
+      "vdd_v": 1.62,
+      "shift_mv": [
+        40,
+        40
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:tt:27C:1.62V:Ts20us",
+      "seed": 10392306301207134057,
+      "sha256_hex": "ed41e8aa998dfa57a9cbd921237d4cc963055ede599519d69570c8d341656cf3",
+      "calibration": {
+        "periods_s": [
+          4.7817800000000004e-09,
+          4.532499999999999e-09,
+          4.3147699999999996e-09,
+          4.10969e-09
+        ],
+        "sigma": {
+          "1": 3.7590073847956585e-12
+        },
+        "q_ring": 0.00019918173285687825,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-0faa71e89478",
+        "jitter_job_id": "klt-sim-d9dbc725a212"
+      },
+      "p_hat": 0.5007400512695312,
+      "p_u_99": 0.5042974561928287,
+      "h_hat_bits": 0.987653146901757,
+      "z_monobit": -0.5358543576179305,
+      "autocorr": {
+        "1": -0.013941231432860333,
+        "2": -0.09306716920090934,
+        "3": 0.0008752115667145897,
+        "4": -0.009630779089837296,
+        "8": -0.01195055567116034
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5546603186229628,
+      "best_context_acc_shuffled_null": 0.5190059818104132,
+      "h_context_min_bits": 0.8503235786788914,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.001265346361086328,
+        "p_hat": -0.0004425048828125,
+        "h_context_min_bits": -0.049891264615405606,
+        "p_hat_z": -0.2265625,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "tt",
+      "temp_c": 27.0,
+      "vdd_v": 1.62,
+      "shift_mv": [
+        60,
+        60
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:tt:27C:1.62V:Ts20us",
+      "seed": 10392306301207134057,
+      "sha256_hex": "df245b7365c61194209a323415a7f79d7cce255e2a2747527e25ffc945723afc",
+      "calibration": {
+        "periods_s": [
+          5.1481799999999995e-09,
+          4.8845800000000005e-09,
+          4.65469e-09,
+          4.43808e-09
+        ],
+        "sigma": {
+          "1": 4.46869337349661e-12
+        },
+        "q_ring": 0.00022311947242931534,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-0faa71e89478",
+        "jitter_job_id": "klt-sim-cccac2681a3b"
+      },
+      "p_hat": 0.5000839233398438,
+      "p_u_99": 0.5036413321096469,
+      "h_hat_bits": 0.9895314099584095,
+      "z_monobit": -0.060766989008218926,
+      "autocorr": {
+        "1": -0.011299245437093989,
+        "2": 0.019333153114410122,
+        "3": -0.007301526063925608,
+        "4": -0.044908013572113444,
+        "8": -0.01200942594078158
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5353338826832692,
+      "best_context_acc_shuffled_null": 0.5183345541109687,
+      "h_context_min_bits": 0.9014891273976444,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.003143609417738835,
+        "p_hat": -0.0010986328125,
+        "h_context_min_bits": 0.0012742841033474006,
+        "p_hat_z": -0.5625,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "tt",
+      "temp_c": 27.0,
+      "vdd_v": 1.8,
+      "shift_mv": [
+        0,
+        0
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:tt:27C:1.8V:Ts20us",
+      "seed": 7246167256115141297,
+      "sha256_hex": "1b6684a01173b45ac3c7876dcbd70f4f883fb7fc35b092e9b068f9f5661cfa12",
+      "calibration": {
+        "periods_s": [
+          2.88339e-09,
+          2.71791e-09,
+          2.57284e-09,
+          2.43465e-09
+        ],
+        "sigma": {
+          "1": 3.2192440585366467e-12
+        },
+        "q_ring": 0.0007252970490005065,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-6e18b37af648",
+        "jitter_job_id": "klt-sim-07c311eaeae1"
+      },
+      "p_hat": 0.5022811889648438,
+      "p_u_99": 0.5058385607603124,
+      "h_hat_bits": 0.9832510750922361,
+      "z_monobit": -1.6517572466779507,
+      "autocorr": {
+        "1": 0.002275697033853091,
+        "2": 0.02332590349240656,
+        "3": -0.0025615160936404524,
+        "4": -0.006506065633697423,
+        "8": -0.00037186876479065547
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5200665323811268,
+      "best_context_acc_shuffled_null": 0.5170145882927425,
+      "h_context_min_bits": 0.9432318951023191,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.0,
+        "p_hat": 0.0,
+        "h_context_min_bits": 0.0,
+        "p_hat_z": 0.0,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "tt",
+      "temp_c": 27.0,
+      "vdd_v": 1.8,
+      "shift_mv": [
+        20,
+        20
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:tt:27C:1.8V:Ts20us",
+      "seed": 7246167256115141297,
+      "sha256_hex": "da7843b31a9790d696397fee6a5591b113c9eeb23a39a0a02fcde1327739d7f9",
+      "calibration": {
+        "periods_s": [
+          3.0456e-09,
+          2.87362e-09,
+          2.72287e-09,
+          2.57913e-09
+        ],
+        "sigma": {
+          "1": 2.798368828066962e-12
+        },
+        "q_ring": 0.00045929701042012175,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-6e18b37af648",
+        "jitter_job_id": "klt-sim-07c311eaeae1"
+      },
+      "p_hat": 0.5007476806640625,
+      "p_u_99": 0.5043050855066032,
+      "h_hat_bits": 0.9876313211127211,
+      "z_monobit": -0.5413786293459504,
+      "autocorr": {
+        "1": -0.02614842914803806,
+        "2": 0.0008827662524723995,
+        "3": 0.03014225893757155,
+        "4": -0.004961527944435774,
+        "8": -0.0019250110962820768
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5240645791369102,
+      "best_context_acc_shuffled_null": 0.5172358542391503,
+      "h_context_min_bits": 0.9321834925523041,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.004380246020485035,
+        "p_hat": -0.00153350830078125,
+        "h_context_min_bits": -0.011048402550014935,
+        "p_hat_z": -0.78515625,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "tt",
+      "temp_c": 27.0,
+      "vdd_v": 1.8,
+      "shift_mv": [
+        40,
+        40
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:tt:27C:1.8V:Ts20us",
+      "seed": 7246167256115141297,
+      "sha256_hex": "30592694d13e813f92ccf49769ba2cafd55aedcfd6357c1e29a407c3f3450c56",
+      "calibration": {
+        "periods_s": [
+          3.2226800000000003e-09,
+          3.04356e-09,
+          2.88665e-09,
+          2.73694e-09
+        ],
+        "sigma": {
+          "1": 2.50089782678133e-12
+        },
+        "q_ring": 0.0003052383570462736,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-6e18b37af648",
+        "jitter_job_id": "klt-sim-07c311eaeae1"
+      },
+      "p_hat": 0.5007171630859375,
+      "p_u_99": 0.5042745682465357,
+      "h_hat_bits": 0.9877186262642985,
+      "z_monobit": -0.5192815424338708,
+      "autocorr": {
+        "1": 0.0022028590506376023,
+        "2": -0.10120007688489284,
+        "3": 0.0027827629685452378,
+        "4": -0.00041403626010910456,
+        "8": 0.013701199601491035
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5554080449246169,
+      "best_context_acc_shuffled_null": 0.5185253006164927,
+      "h_context_min_bits": 0.8483800205595712,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.004467551172062434,
+        "p_hat": -0.00156402587890625,
+        "h_context_min_bits": -0.0948518745427479,
+        "p_hat_z": -0.80078125,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "tt",
+      "temp_c": 27.0,
+      "vdd_v": 1.8,
+      "shift_mv": [
+        60,
+        60
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:tt:27C:1.8V:Ts20us",
+      "seed": 7246167256115141297,
+      "sha256_hex": "217e2d5ffc4d776028ff73417443c16ce963c05f4fadea973db5ced3ed954b01",
+      "calibration": {
+        "periods_s": [
+          3.41628e-09,
+          3.2293100000000003e-09,
+          3.0656900000000004e-09,
+          2.9095400000000003e-09
+        ],
+        "sigma": {
+          "1": 2.5549594070315416e-12
+        },
+        "q_ring": 0.0002638996857094085,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-6e18b37af648",
+        "jitter_job_id": "klt-sim-07c311eaeae1"
+      },
+      "p_hat": 0.5019378662109375,
+      "p_u_99": 0.5054952483122951,
+      "h_hat_bits": 0.984230564121105,
+      "z_monobit": 1.4031650189170553,
+      "autocorr": {
+        "1": 0.0038836280165096626,
+        "2": -0.056733776645200684,
+        "3": -0.025124370630267092,
+        "4": -0.005127008711024518,
+        "8": -0.013123379268017439
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5331822621009583,
+      "best_context_acc_shuffled_null": 0.5173731917231277,
+      "h_context_min_bits": 0.9072993092178818,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.0009794890288689073,
+        "p_hat": -0.00034332275390625,
+        "h_context_min_bits": -0.03593258588443726,
+        "p_hat_z": -0.17578125,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "tt",
+      "temp_c": 27.0,
+      "vdd_v": 1.98,
+      "shift_mv": [
+        0,
+        0
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:tt:27C:1.98V:Ts20us",
+      "seed": 16943965637895896380,
+      "sha256_hex": "11ce325b9b380bee4d9478cd0fe5e3ae2f923e1b30a1639c7b504298025323f5",
+      "calibration": {
+        "periods_s": [
+          2.1717999999999995e-09,
+          2.040726e-09,
+          1.925446e-09,
+          1.816249e-09
+        ],
+        "sigma": {
+          "1": 2.85848606286268e-12
+        },
+        "q_ring": 0.0014142458227748434,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-3d0373040ec0",
+        "jitter_job_id": "klt-sim-910763892111"
+      },
+      "p_hat": 0.5018844604492188,
+      "p_u_99": 0.505441844002965,
+      "h_hat_bits": 0.9843829892974882,
+      "z_monobit": -1.3644951168209158,
+      "autocorr": {
+        "1": 0.005822409070069791,
+        "2": 0.008775173573579497,
+        "3": -0.0014562146710883014,
+        "4": 0.0011149950570991936,
+        "8": 0.0031599752651588603
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5165644265397058,
+      "best_context_acc_shuffled_null": 0.517502899346884,
+      "h_context_min_bits": 0.9529797999058172,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.0,
+        "p_hat": 0.0,
+        "h_context_min_bits": 0.0,
+        "p_hat_z": 0.0,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "tt",
+      "temp_c": 27.0,
+      "vdd_v": 1.98,
+      "shift_mv": [
+        20,
+        20
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:tt:27C:1.98V:Ts20us",
+      "seed": 16943965637895896380,
+      "sha256_hex": "5d8f7461c38ed32c1b5dedc3c326e3182b43c7a34d92597cdea0671b76d71233",
+      "calibration": {
+        "periods_s": [
+          2.2704730000000005e-09,
+          2.135416e-09,
+          2.016651e-09,
+          1.904167e-09
+        ],
+        "sigma": {
+          "1": 2.7858294508947042e-12
+        },
+        "q_ring": 0.0011592612574799744,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-3d0373040ec0",
+        "jitter_job_id": "klt-sim-910763892111"
+      },
+      "p_hat": 0.5009918212890625,
+      "p_u_99": 0.5045492231100558,
+      "h_hat_bits": 0.9869330713978463,
+      "z_monobit": 0.7181553246425872,
+      "autocorr": {
+        "1": -0.000759253706655459,
+        "2": -0.002628527335467547,
+        "3": 0.0005224770410993697,
+        "4": -0.0026896350330289,
+        "8": 0.003185328518047743
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5167399133247879,
+      "best_context_acc_shuffled_null": 0.5179606909601416,
+      "h_context_min_bits": 0.9524897721235924,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.0025500821003580088,
+        "p_hat": -0.00089263916015625,
+        "h_context_min_bits": -0.0004900277822247334,
+        "p_hat_z": -0.45703125,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "tt",
+      "temp_c": 27.0,
+      "vdd_v": 1.98,
+      "shift_mv": [
+        40,
+        40
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:tt:27C:1.98V:Ts20us",
+      "seed": 16943965637895896380,
+      "sha256_hex": "7e77038883f3ebb112a3037250463ca0e5be145f06576b14e885e24683b81dcf",
+      "calibration": {
+        "periods_s": [
+          2.37668e-09,
+          2.2376639999999995e-09,
+          2.1153600000000004e-09,
+          1.999e-09
+        ],
+        "sigma": {
+          "1": 2.67460861731044e-12
+        },
+        "q_ring": 0.0009208565715000597,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-3d0373040ec0",
+        "jitter_job_id": "klt-sim-910763892111"
+      },
+      "p_hat": 0.5015869140625,
+      "p_u_99": 0.5051443049651501,
+      "h_hat_bits": 0.9852325123335365,
+      "z_monobit": 1.1490485194281397,
+      "autocorr": {
+        "1": -0.0481905528200519,
+        "2": -0.0011392041586378257,
+        "3": 0.0017218558973996591,
+        "4": -0.0006356612169433259,
+        "8": 0.00444590560225146
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5272843801501557,
+      "best_context_acc_shuffled_null": 0.5191509491546115,
+      "h_context_min_bits": 0.9233468347781533,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.0008495230360482386,
+        "p_hat": -0.00029754638671875,
+        "h_context_min_bits": -0.02963296512766389,
+        "p_hat_z": -0.15234375,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "tt",
+      "temp_c": 27.0,
+      "vdd_v": 1.98,
+      "shift_mv": [
+        60,
+        60
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:tt:27C:1.98V:Ts20us",
+      "seed": 16943965637895896380,
+      "sha256_hex": "da7633f1f236a3799d54d009973536bbb52209375cd7a599433e24f6b788e738",
+      "calibration": {
+        "periods_s": [
+          2.4917599999999997e-09,
+          2.34809e-09,
+          2.22204e-09,
+          2.10163e-09
+        ],
+        "sigma": {
+          "1": 3.142981059440446e-12
+        },
+        "q_ring": 0.0010895384615688616,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-3d0373040ec0",
+        "jitter_job_id": "klt-sim-910763892111"
+      },
+      "p_hat": 0.5033340454101562,
+      "p_u_99": 0.5068913751418825,
+      "h_hat_bits": 0.9802514784957674,
+      "z_monobit": 2.4141067451446974,
+      "autocorr": {
+        "1": 0.004022213037833647,
+        "2": -0.009108627051067372,
+        "3": 2.4303481751427766e-05,
+        "4": 0.00410643722613049,
+        "8": 0.0030995783785607097
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5191967283159372,
+      "best_context_acc_shuffled_null": 0.517899652078374,
+      "h_context_min_bits": 0.9456468025696565,
+      "delta_vs_zero": {
+        "h_hat_bits": -0.004131510801720806,
+        "p_hat": 0.0014495849609375,
+        "h_context_min_bits": -0.007332997336160663,
+        "p_hat_z": 0.7421875,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "tt",
+      "temp_c": 125.0,
+      "vdd_v": 1.62,
+      "shift_mv": [
+        0,
+        0
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:tt:125C:1.62V:Ts20us",
+      "seed": 7488399547965326356,
+      "sha256_hex": "37f385bf08de0d732f29ccb8872b82275f83e252b9a4fe9b70b50657ff9f0786",
+      "calibration": {
+        "periods_s": [
+          4.50218e-09,
+          4.20359e-09,
+          3.941800000000001e-09,
+          3.7021700000000003e-09
+        ],
+        "sigma": {
+          "1": 4.957007235164777e-12
+        },
+        "q_ring": 0.0004336527853811267,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-327a5af2ccce",
+        "jitter_job_id": "klt-sim-e3995617af25"
+      },
+      "p_hat": 0.5005340576171875,
+      "p_u_99": 0.5040914644078298,
+      "h_hat_bits": 0.9882425689486366,
+      "z_monobit": -0.38669902096139314,
+      "autocorr": {
+        "1": 0.002402155764151711,
+        "2": 0.030761098631582037,
+        "3": -0.010842771066418197,
+        "4": 0.005003900323074854,
+        "8": -0.0003521312804689199
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.522546236952939,
+      "best_context_acc_shuffled_null": 0.5177623145943966,
+      "h_context_min_bits": 0.9363693966958961,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.0,
+        "p_hat": 0.0,
+        "h_context_min_bits": 0.0,
+        "p_hat_z": 0.0,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "tt",
+      "temp_c": 125.0,
+      "vdd_v": 1.62,
+      "shift_mv": [
+        20,
+        20
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:tt:125C:1.62V:Ts20us",
+      "seed": 7488399547965326356,
+      "sha256_hex": "9c8dead020256b78260953c1f8e8bf5394ab4aabe344f0785ab3778c1b59a0b5",
+      "calibration": {
+        "periods_s": [
+          4.720170000000001e-09,
+          4.41038e-09,
+          4.13893e-09,
+          3.89071e-09
+        ],
+        "sigma": {
+          "1": 4.16797005911522e-12
+        },
+        "q_ring": 0.0002638487718954244,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-327a5af2ccce",
+        "jitter_job_id": "klt-sim-e3995617af25"
+      },
+      "p_hat": 0.5022048950195312,
+      "p_u_99": 0.5057622692501493,
+      "h_hat_bits": 0.9834686814450931,
+      "z_monobit": 1.5965145293977516,
+      "autocorr": {
+        "1": -0.0038419443673070163,
+        "2": -0.010060146170858332,
+        "3": 0.012012549733567891,
+        "4": 0.012310135198898451,
+        "8": 0.009395779726697345
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5212491607153757,
+      "best_context_acc_shuffled_null": 0.5180217298419093,
+      "h_context_min_bits": 0.9399549392705697,
+      "delta_vs_zero": {
+        "h_hat_bits": -0.004773887503543461,
+        "p_hat": 0.00167083740234375,
+        "h_context_min_bits": 0.0035855425746735836,
+        "p_hat_z": 0.85546875,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "tt",
+      "temp_c": 125.0,
+      "vdd_v": 1.62,
+      "shift_mv": [
+        40,
+        40
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:tt:125C:1.62V:Ts20us",
+      "seed": 7488399547965326356,
+      "sha256_hex": "f00f076a2e1dd97ee39a394e5b22ed35fa25fbda09c2b9001d2ef62491034de0",
+      "calibration": {
+        "periods_s": [
+          4.9573e-09,
+          4.63552e-09,
+          4.353760000000001e-09,
+          4.09637e-09
+        ],
+        "sigma": {
+          "1": 5.848945626350938e-12
+        },
+        "q_ring": 0.0004451200271692857,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-327a5af2ccce",
+        "jitter_job_id": "klt-sim-e3995617af25"
+      },
+      "p_hat": 0.5001602172851562,
+      "p_u_99": 0.5037176259224355,
+      "h_hat_bits": 0.9893128806949459,
+      "z_monobit": 0.11600970628841795,
+      "autocorr": {
+        "1": 0.01805880891893992,
+        "2": 0.004684417521826501,
+        "3": 0.01448845063611356,
+        "4": -0.01188705845643232,
+        "8": -0.0011751061752764296
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5197002990905206,
+      "best_context_acc_shuffled_null": 0.5176478666910822,
+      "h_context_min_bits": 0.9442482056019881,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.0010703117463093381,
+        "p_hat": -0.00037384033203125,
+        "h_context_min_bits": 0.007878808906091939,
+        "p_hat_z": -0.19140625,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "tt",
+      "temp_c": 125.0,
+      "vdd_v": 1.62,
+      "shift_mv": [
+        60,
+        60
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:tt:125C:1.62V:Ts20us",
+      "seed": 7488399547965326356,
+      "sha256_hex": "3b958709ef35e09b625acefe330e1195f7edbbe1d4c26fcda01cfc658054eb92",
+      "calibration": {
+        "periods_s": [
+          5.215690000000001e-09,
+          4.8810200000000006e-09,
+          4.5883399999999995e-09,
+          4.32107e-09
+        ],
+        "sigma": {
+          "1": 5.5136904675152756e-12
+        },
+        "q_ring": 0.000336922622618157,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-327a5af2ccce",
+        "jitter_job_id": "klt-sim-e3995617af25"
+      },
+      "p_hat": 0.5012664794921875,
+      "p_u_99": 0.5048238769001266,
+      "h_hat_bits": 0.9861479471050117,
+      "z_monobit": 0.9170291068513038,
+      "autocorr": {
+        "1": -0.1720135702566906,
+        "2": 0.0030605896596458074,
+        "3": 0.0006572832573553153,
+        "4": 0.027841863603047988,
+        "8": -0.001913932651503685
+      },
+      "best_context_len": 6,
+      "best_context_acc": 0.5860101017807822,
+      "best_context_acc_shuffled_null": 0.5076907817435491,
+      "h_context_min_bits": 0.7710025605070326,
+      "delta_vs_zero": {
+        "h_hat_bits": -0.0020946218436248554,
+        "p_hat": 0.000732421875,
+        "h_context_min_bits": -0.1653668361888635,
+        "p_hat_z": 0.375,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "tt",
+      "temp_c": 125.0,
+      "vdd_v": 1.8,
+      "shift_mv": [
+        0,
+        0
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:tt:125C:1.8V:Ts20us",
+      "seed": 7595488493981584371,
+      "sha256_hex": "a6c726f857524e2984b886679dbfc1506abe83eb8bf84e9dbf1c7983ec632495",
+      "calibration": {
+        "periods_s": [
+          3.4083300000000004e-09,
+          3.17168e-09,
+          2.96321e-09,
+          2.7711299999999997e-09
+        ],
+        "sigma": {
+          "1": 4.625188410728671e-12
+        },
+        "q_ring": 0.0009166975068627514,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-d3dd2f338521",
+        "jitter_job_id": "klt-sim-cde78a01da8b"
+      },
+      "p_hat": 0.5025863647460938,
+      "p_u_99": 0.5061437259726632,
+      "h_hat_bits": 0.9823809801160157,
+      "z_monobit": -1.8727281157987468,
+      "autocorr": {
+        "1": 0.00677134496403201,
+        "2": 0.015537939069110123,
+        "3": 0.002285062241380335,
+        "4": 0.004032310889801094,
+        "8": 0.0002175588202824287
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5195629616065434,
+      "best_context_acc_shuffled_null": 0.5176707562717451,
+      "h_context_min_bits": 0.9446295066942304,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.0,
+        "p_hat": 0.0,
+        "h_context_min_bits": 0.0,
+        "p_hat_z": 0.0,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "tt",
+      "temp_c": 125.0,
+      "vdd_v": 1.8,
+      "shift_mv": [
+        20,
+        20
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:tt:125C:1.8V:Ts20us",
+      "seed": 7595488493981584371,
+      "sha256_hex": "963d4dd4dcc0057fe52c3995f42fe97a98b4b70ba515f7226db25c4a73929a14",
+      "calibration": {
+        "periods_s": [
+          3.5422599999999997e-09,
+          3.2985800000000004e-09,
+          3.0840599999999998e-09,
+          2.8867599999999997e-09
+        ],
+        "sigma": {
+          "1": 4.660959997457383e-12
+        },
+        "q_ring": 0.0008241619678784087,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-d3dd2f338521",
+        "jitter_job_id": "klt-sim-cde78a01da8b"
+      },
+      "p_hat": 0.500396728515625,
+      "p_u_99": 0.5039541362157124,
+      "h_hat_bits": 0.9886356517672019,
+      "z_monobit": 0.2872621298570349,
+      "autocorr": {
+        "1": 0.008933453091102156,
+        "2": 0.002669700919422513,
+        "3": -0.00011506110522305679,
+        "4": 0.0006097651760504447,
+        "8": 0.003722792912415182
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5161218946468901,
+      "best_context_acc_shuffled_null": 0.5183421839711897,
+      "h_context_min_bits": 0.9542162617300554,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.0062546716511862055,
+        "p_hat": -0.00218963623046875,
+        "h_context_min_bits": 0.009586755035824956,
+        "p_hat_z": -1.12109375,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "tt",
+      "temp_c": 125.0,
+      "vdd_v": 1.8,
+      "shift_mv": [
+        40,
+        40
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:tt:125C:1.8V:Ts20us",
+      "seed": 7595488493981584371,
+      "sha256_hex": "6ec5337034eec4941e690fc5380173895d0e087c725a72c987a9d8a200fdb162",
+      "calibration": {
+        "periods_s": [
+          3.6861899999999997e-09,
+          3.4351000000000003e-09,
+          3.21424e-09,
+          3.01135e-09
+        ],
+        "sigma": {
+          "1": 3.3839085845249777e-12
+        },
+        "q_ring": 0.00038236903088721816,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-d3dd2f338521",
+        "jitter_job_id": "klt-sim-cde78a01da8b"
+      },
+      "p_hat": 0.50006103515625,
+      "p_u_99": 0.5036184439496589,
+      "h_hat_bits": 0.989596975238986,
+      "z_monobit": -0.044194173824159216,
+      "autocorr": {
+        "1": -0.00012971373723112947,
+        "2": -0.03968872772098433,
+        "3": 0.0035477366722866284,
+        "4": 0.0004882849822252408,
+        "8": 0.0018616747441929306
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5244002929866325,
+      "best_context_acc_shuffled_null": 0.5175715680888726,
+      "h_context_min_bits": 0.9312596032822263,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.007215995122970331,
+        "p_hat": -0.00252532958984375,
+        "h_context_min_bits": -0.013369903412004058,
+        "p_hat_z": -1.29296875,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "tt",
+      "temp_c": 125.0,
+      "vdd_v": 1.8,
+      "shift_mv": [
+        60,
+        60
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:tt:125C:1.8V:Ts20us",
+      "seed": 7595488493981584371,
+      "sha256_hex": "9da6ecac46d473a98d0e3eb672d614660ff1a4af6897dfe5b487715ebdd3e8cd",
+      "calibration": {
+        "periods_s": [
+          3.84093e-09,
+          3.5820399999999993e-09,
+          3.35455e-09,
+          3.1457399999999995e-09
+        ],
+        "sigma": {
+          "1": 4.051888408735197e-12
+        },
+        "q_ring": 0.0004808790621527217,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-d3dd2f338521",
+        "jitter_job_id": "klt-sim-cde78a01da8b"
+      },
+      "p_hat": 0.5014724731445312,
+      "p_u_99": 0.5050298665382263,
+      "h_hat_bits": 0.985559386166532,
+      "z_monobit": -1.0661844435078411,
+      "autocorr": {
+        "1": -0.0464037324583939,
+        "2": -0.012902568502245622,
+        "3": -0.003251178319744043,
+        "4": -0.0010462217583909095,
+        "8": 0.000891702411215329
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5265061344076176,
+      "best_context_acc_shuffled_null": 0.5181209180247818,
+      "h_context_min_bits": 0.9254777544665854,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.003178406050516336,
+        "p_hat": -0.0011138916015625,
+        "h_context_min_bits": -0.01915175222764498,
+        "p_hat_z": -0.5703125,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "tt",
+      "temp_c": 125.0,
+      "vdd_v": 1.98,
+      "shift_mv": [
+        0,
+        0
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:tt:125C:1.98V:Ts20us",
+      "seed": 9159166684654705089,
+      "sha256_hex": "72a971ed9062b5d3c77c1c95176baae78a9561278417fb66acd0fe8d8e08ee58",
+      "calibration": {
+        "periods_s": [
+          2.71412e-09,
+          2.51665e-09,
+          2.3427900000000003e-09,
+          2.18068e-09
+        ],
+        "sigma": {
+          "1": 5.598452365374077e-12
+        },
+        "q_ring": 0.002826508568709927,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-3ed5bcd140b0",
+        "jitter_job_id": "klt-sim-39fec4e5a3b1"
+      },
+      "p_hat": 0.501800537109375,
+      "p_u_99": 0.5053579228634455,
+      "h_hat_bits": 0.9846225473505418,
+      "z_monobit": 1.3037281278126969,
+      "autocorr": {
+        "1": -0.004247369282505974,
+        "2": -0.002362833195095733,
+        "3": 0.0009866279234788866,
+        "4": 0.0002923302579982483,
+        "8": -0.004239911911683822
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5159616675822499,
+      "best_context_acc_shuffled_null": 0.5187007874015748,
+      "h_context_min_bits": 0.95466420761717,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.0,
+        "p_hat": 0.0,
+        "h_context_min_bits": 0.0,
+        "p_hat_z": 0.0,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "tt",
+      "temp_c": 125.0,
+      "vdd_v": 1.98,
+      "shift_mv": [
+        20,
+        20
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:tt:125C:1.98V:Ts20us",
+      "seed": 9159166684654705089,
+      "sha256_hex": "811d56fa87527952ea7bee3f2afaf0053984b0ba5c114b96bf56ff400519b4b2",
+      "calibration": {
+        "periods_s": [
+          2.8031100000000003e-09,
+          2.6011e-09,
+          2.4232500000000003e-09,
+          2.25781e-09
+        ],
+        "sigma": {
+          "1": 5.024751022163954e-12
+        },
+        "q_ring": 0.0020475480922844216,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-3ed5bcd140b0",
+        "jitter_job_id": "klt-sim-39fec4e5a3b1"
+      },
+      "p_hat": 0.5012054443359375,
+      "p_u_99": 0.5047628428173228,
+      "h_hat_bits": 0.9863223819841042,
+      "z_monobit": 0.8728349330271445,
+      "autocorr": {
+        "1": -0.010664256722037253,
+        "2": -0.0030423756024692047,
+        "3": -0.001035773718856175,
+        "4": 0.005106104065273672,
+        "8": 0.001535464385079097
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5185634499175975,
+      "best_context_acc_shuffled_null": 0.5168619910883233,
+      "h_context_min_bits": 0.9474075710735123,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.0016998346335623804,
+        "p_hat": -0.0005950927734375,
+        "h_context_min_bits": -0.007256636543657713,
+        "p_hat_z": -0.3046875,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "tt",
+      "temp_c": 125.0,
+      "vdd_v": 1.98,
+      "shift_mv": [
+        40,
+        40
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:tt:125C:1.98V:Ts20us",
+      "seed": 9159166684654705089,
+      "sha256_hex": "950227cbf91b87113d62601e95e9d1c8a29474692b4002ad1184a93e4301edb0",
+      "calibration": {
+        "periods_s": [
+          2.89799e-09,
+          2.69125e-09,
+          2.5091899999999997e-09,
+          2.34025e-09
+        ],
+        "sigma": {
+          "1": 3.6017980441063417e-12
+        },
+        "q_ring": 0.000943620645303719,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-3ed5bcd140b0",
+        "jitter_job_id": "klt-sim-39fec4e5a3b1"
+      },
+      "p_hat": 0.5001296997070312,
+      "p_u_99": 0.5036871084072594,
+      "h_hat_bits": 0.9894002883997501,
+      "z_monobit": -0.09391261937633834,
+      "autocorr": {
+        "1": -0.015449706167706198,
+        "2": 0.0036773651507997526,
+        "3": -0.002128713271307797,
+        "4": 0.0006255661524297325,
+        "8": 0.0015564163768087517
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5176478666910822,
+      "best_context_acc_shuffled_null": 0.5163889397546237,
+      "h_context_min_bits": 0.9499570659554903,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.004777741049208362,
+        "p_hat": -0.00167083740234375,
+        "h_context_min_bits": -0.004707141661679626,
+        "p_hat_z": -0.85546875,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "tt",
+      "temp_c": 125.0,
+      "vdd_v": 1.98,
+      "shift_mv": [
+        60,
+        60
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:tt:125C:1.98V:Ts20us",
+      "seed": 9159166684654705089,
+      "sha256_hex": "51a83ae06f85956751f8d807b70684f56488b622b6267327a3ebb05d44ffbb3b",
+      "calibration": {
+        "periods_s": [
+          2.99922e-09,
+          2.78749e-09,
+          2.6009799999999994e-09,
+          2.42836e-09
+        ],
+        "sigma": {
+          "1": 3.880054895569408e-12
+        },
+        "q_ring": 0.000980688071831696,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-3ed5bcd140b0",
+        "jitter_job_id": "klt-sim-39fec4e5a3b1"
+      },
+      "p_hat": 0.501251220703125,
+      "p_u_99": 0.5048086183843954,
+      "h_hat_bits": 0.9861915538333634,
+      "z_monobit": -0.905980563395264,
+      "autocorr": {
+        "1": 0.07284783808823282,
+        "2": -0.0002961856749172182,
+        "3": -0.001310965220359886,
+        "4": -0.000784527685126803,
+        "8": -0.00275302989707413
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5372794970396142,
+      "best_context_acc_shuffled_null": 0.5182201062076542,
+      "h_context_min_bits": 0.8962553100410152,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.0015690064828216554,
+        "p_hat": -0.00054931640625,
+        "h_context_min_bits": -0.05840889757615475,
+        "p_hat_z": -0.28125,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ss",
+      "temp_c": -40.0,
+      "vdd_v": 1.62,
+      "shift_mv": [
+        0,
+        0
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ss:-40C:1.62V:Ts20us",
+      "seed": 8061544556048230732,
+      "sha256_hex": "a9ec14e7d9b3cd82ecd624c2c354a139cfb5ddd772f6b261786d449908c0e656",
+      "calibration": {
+        "periods_s": [
+          5.42711e-09,
+          5.216240000000001e-09,
+          5.01877e-09,
+          4.8308600000000004e-09
+        ],
+        "sigma": {
+          "1": 3.260391757699731e-12
+        },
+        "q_ring": 9.477061405690202e-05,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-e117fb428f7c",
+        "jitter_job_id": "klt-sim-62942afa0395"
+      },
+      "p_hat": 0.5013275146484375,
+      "p_u_99": 0.5048849109299205,
+      "h_hat_bits": 0.9859735334655988,
+      "z_monobit": -0.9612232806754629,
+      "autocorr": {
+        "1": 0.028184017770858164,
+        "2": 0.10651701434911125,
+        "3": 0.08568132672287836,
+        "4": -0.0006325619728246077,
+        "8": 0.03167251492160962
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5672877372886529,
+      "best_context_acc_shuffled_null": 0.518479521455167,
+      "h_context_min_bits": 0.8178474163959978,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.0,
+        "p_hat": 0.0,
+        "h_context_min_bits": 0.0,
+        "p_hat_z": 0.0,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ss",
+      "temp_c": -40.0,
+      "vdd_v": 1.62,
+      "shift_mv": [
+        20,
+        20
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ss:-40C:1.62V:Ts20us",
+      "seed": 8061544556048230732,
+      "sha256_hex": "c9f646ae116c55858026f26bae19581c20944df631775db6795b70758becefa6",
+      "calibration": {
+        "periods_s": [
+          5.904520000000001e-09,
+          5.67756e-09,
+          5.46541e-09,
+          5.2646400000000005e-09
+        ],
+        "sigma": {
+          "1": 3.287121512012565e-12
+        },
+        "q_ring": 7.41462571578205e-05,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-e117fb428f7c",
+        "jitter_job_id": "klt-sim-9394a7b54c87"
+      },
+      "p_hat": 0.5011215209960938,
+      "p_u_99": 0.504678920866912,
+      "h_hat_bits": 0.9865622646327403,
+      "z_monobit": -0.8120679440189256,
+      "autocorr": {
+        "1": 0.007220130982577921,
+        "2": 0.003092634067137,
+        "3": -0.0034916936867704757,
+        "4": -0.04361613257448867,
+        "8": -0.09809487147806144
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5665400109869987,
+      "best_context_acc_shuffled_null": 0.5179683208203626,
+      "h_context_min_bits": 0.8197502472014028,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.0005887311671415318,
+        "p_hat": -0.00020599365234375,
+        "h_context_min_bits": 0.001902830805404987,
+        "p_hat_z": -0.10546875,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ss",
+      "temp_c": -40.0,
+      "vdd_v": 1.62,
+      "shift_mv": [
+        40,
+        40
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ss:-40C:1.62V:Ts20us",
+      "seed": 8061544556048230732,
+      "sha256_hex": "755ca96069b47d84a48993de9132a6f1f9fadeb231072917f3670f78077733c5",
+      "calibration": {
+        "periods_s": [
+          6.433050000000001e-09,
+          6.1884899999999996e-09,
+          5.960360000000001e-09,
+          5.7456899999999994e-09
+        ],
+        "sigma": {
+          "1": 3.4520952360764124e-12
+        },
+        "q_ring": 6.268913145268097e-05,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-e117fb428f7c",
+        "jitter_job_id": "klt-sim-af28e08785a0"
+      },
+      "p_hat": 0.5016021728515625,
+      "p_u_99": 0.5051595634079923,
+      "h_hat_bits": 0.9851889347911535,
+      "z_monobit": 1.1600970628841794,
+      "autocorr": {
+        "1": -0.07205593006393052,
+        "2": 0.010533824145408129,
+        "3": -0.10413211671035019,
+        "4": -0.006342973198879011,
+        "8": 0.202167696181716
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.6164927058536288,
+      "best_context_acc_shuffled_null": 0.5178691326374901,
+      "h_context_min_bits": 0.6978442696689005,
+      "delta_vs_zero": {
+        "h_hat_bits": -0.0007845986744452471,
+        "p_hat": 0.000274658203125,
+        "h_context_min_bits": -0.12000314672709733,
+        "p_hat_z": 0.140625,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ss",
+      "temp_c": -40.0,
+      "vdd_v": 1.62,
+      "shift_mv": [
+        60,
+        60
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ss:-40C:1.62V:Ts20us",
+      "seed": 8061544556048230732,
+      "sha256_hex": "93f62225eb83e67877b4f1bd4be5818c8b7c0e78285badbaf6fc496051356c1e",
+      "calibration": {
+        "periods_s": [
+          7.019279999999999e-09,
+          6.75551e-09,
+          6.509999999999999e-09,
+          6.280389999999999e-09
+        ],
+        "sigma": {
+          "1": 3.2989719998476788e-12
+        },
+        "q_ring": 4.3721330592831787e-05,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-e117fb428f7c",
+        "jitter_job_id": "klt-sim-62942afa0395"
+      },
+      "p_hat": 0.5013427734375,
+      "p_u_99": 0.5049001694290861,
+      "h_hat_bits": 0.9859299333738417,
+      "z_monobit": -0.9722718241315028,
+      "autocorr": {
+        "1": -0.025299030563736686,
+        "2": 0.1909456057426039,
+        "3": -0.11775520258072936,
+        "4": 0.009377337671964907,
+        "8": -0.06748618355792911
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.633354696941952,
+      "best_context_acc_shuffled_null": 0.5170069584325215,
+      "h_context_min_bits": 0.6589144179769468,
+      "delta_vs_zero": {
+        "h_hat_bits": -4.360009175707891e-05,
+        "p_hat": 1.52587890625e-05,
+        "h_context_min_bits": -0.15893299841905095,
+        "p_hat_z": 0.0078125,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ss",
+      "temp_c": -40.0,
+      "vdd_v": 1.8,
+      "shift_mv": [
+        0,
+        0
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ss:-40C:1.8V:Ts20us",
+      "seed": 1255648311298571443,
+      "sha256_hex": "1ba780a3f5a71674a78262179b262a67b8414f80beca4200e734b4879fadde8e",
+      "calibration": {
+        "periods_s": [
+          3.3714700000000006e-09,
+          3.2388e-09,
+          3.11141e-09,
+          2.9863e-09
+        ],
+        "sigma": {
+          "1": 1.373602808982419e-12
+        },
+        "q_ring": 7.319283925937096e-05,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-8b1daf0a5308",
+        "jitter_job_id": "klt-sim-015cfd00a8b5"
+      },
+      "p_hat": 0.5021209716796875,
+      "p_u_99": 0.5056783484933016,
+      "h_hat_bits": 0.9837080866219977,
+      "z_monobit": 1.5357475403895329,
+      "autocorr": {
+        "1": 0.0011034903235352383,
+        "2": 0.010755003624985581,
+        "3": 0.006032297252549121,
+        "4": 0.1280093260227469,
+        "8": -0.13685456624794864
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.6037355795641823,
+      "best_context_acc_shuffled_null": 0.5179378013794788,
+      "h_context_min_bits": 0.7280112698038766,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.0,
+        "p_hat": 0.0,
+        "h_context_min_bits": 0.0,
+        "p_hat_z": 0.0,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ss",
+      "temp_c": -40.0,
+      "vdd_v": 1.8,
+      "shift_mv": [
+        20,
+        20
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ss:-40C:1.8V:Ts20us",
+      "seed": 1255648311298571443,
+      "sha256_hex": "7dbbd5c687944af9f56a6b32f2dbe28ca9ce5383933df306c564ebf0420ad3b4",
+      "calibration": {
+        "periods_s": [
+          3.6108299999999996e-09,
+          3.4701899999999996e-09,
+          3.33514e-09,
+          3.20291e-09
+        ],
+        "sigma": {
+          "1": 1.3459743850690376e-12
+        },
+        "q_ring": 5.677144083954023e-05,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-8b1daf0a5308",
+        "jitter_job_id": "klt-sim-015cfd00a8b5"
+      },
+      "p_hat": 0.5006484985351562,
+      "p_u_99": 0.5042059043629297,
+      "h_hat_bits": 0.9879150823131962,
+      "z_monobit": -0.4695630968816917,
+      "autocorr": {
+        "1": -0.00264910678395628,
+        "2": 8.989182076512595e-05,
+        "3": -0.00019242183105524528,
+        "4": -0.06224426729655815,
+        "8": -0.13401277276418844
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5805179149117988,
+      "best_context_acc_shuffled_null": 0.5182506256485381,
+      "h_context_min_bits": 0.7845875052201154,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.004206995691198534,
+        "p_hat": -0.00147247314453125,
+        "h_context_min_bits": 0.056576235416238796,
+        "p_hat_z": -0.75390625,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ss",
+      "temp_c": -40.0,
+      "vdd_v": 1.8,
+      "shift_mv": [
+        40,
+        40
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ss:-40C:1.8V:Ts20us",
+      "seed": 1255648311298571443,
+      "sha256_hex": "78e982450ba5bce58dc745d3afb70711a2377591de4df2797ed15dba3116c7df",
+      "calibration": {
+        "periods_s": [
+          3.87252e-09,
+          3.7229899999999998e-09,
+          3.5795600000000004e-09,
+          3.43959e-09
+        ],
+        "sigma": {
+          "1": 2.8066761936125397e-12
+        },
+        "q_ring": 0.00019837852048471783,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-8b1daf0a5308",
+        "jitter_job_id": "klt-sim-015cfd00a8b5"
+      },
+      "p_hat": 0.5012893676757812,
+      "p_u_99": 0.5048467646675114,
+      "h_hat_bits": 0.9860825395014838,
+      "z_monobit": -0.9336019220353635,
+      "autocorr": {
+        "1": -0.022307688677981764,
+        "2": 0.0174345278864182,
+        "3": 0.017976324516569518,
+        "4": 0.05797890327501083,
+        "8": 0.0017940869563482819
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.532838918391015,
+      "best_context_acc_shuffled_null": 0.5173350424220229,
+      "h_context_min_bits": 0.9082286346268855,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.002374452879486122,
+        "p_hat": -0.00083160400390625,
+        "h_context_min_bits": 0.18021736482300887,
+        "p_hat_z": -0.42578125,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ss",
+      "temp_c": -40.0,
+      "vdd_v": 1.8,
+      "shift_mv": [
+        60,
+        60
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ss:-40C:1.8V:Ts20us",
+      "seed": 1255648311298571443,
+      "sha256_hex": "b68436bafcce01a608ade5774df49216e8d9b098b7262a53de0e51f3f8666b20",
+      "calibration": {
+        "periods_s": [
+          4.15849e-09,
+          3.99914e-09,
+          3.84651e-09,
+          3.6981299999999995e-09
+        ],
+        "sigma": {
+          "1": 3.0714103468839363e-12
+        },
+        "q_ring": 0.00019016677871513564,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-8b1daf0a5308",
+        "jitter_job_id": "klt-sim-015cfd00a8b5"
+      },
+      "p_hat": 0.5016555786132812,
+      "p_u_99": 0.5052129679318493,
+      "h_hat_bits": 0.9850364238322517,
+      "z_monobit": 1.1987669649803188,
+      "autocorr": {
+        "1": 0.1777953814674733,
+        "2": -0.01531593097938291,
+        "3": -0.004581075890271736,
+        "4": 0.005757198031722325,
+        "8": 0.026327601031702386
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5892617347250199,
+      "best_context_acc_shuffled_null": 0.5163050112921931,
+      "h_context_min_bits": 0.7630195108883379,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.0013283372102539381,
+        "p_hat": -0.00046539306640625,
+        "h_context_min_bits": 0.03500824108446121,
+        "p_hat_z": -0.23828125,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ss",
+      "temp_c": -40.0,
+      "vdd_v": 1.98,
+      "shift_mv": [
+        0,
+        0
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ss:-40C:1.98V:Ts20us",
+      "seed": 17791802913102701342,
+      "sha256_hex": "b56f48c4cd0951b157060b976a58099eb21f704a4b0d6b987d46d7157bd1efc2",
+      "calibration": {
+        "periods_s": [
+          2.34107e-09,
+          2.2487999999999995e-09,
+          2.1583400000000002e-09,
+          2.068e-09
+        ],
+        "sigma": {
+          "1": 2.1760426280173553e-12
+        },
+        "q_ring": 0.0005698698561931979,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-1e212605771c",
+        "jitter_job_id": "klt-sim-12bef3920bb9"
+      },
+      "p_hat": 0.5010833740234375,
+      "p_u_99": 0.5046407744926851,
+      "h_hat_bits": 0.9866713154819496,
+      "z_monobit": -0.7844465853788261,
+      "autocorr": {
+        "1": 0.030566698824512007,
+        "2": -0.0009354335428320409,
+        "3": 0.01054711477579741,
+        "4": 0.0027725684212276686,
+        "8": -0.004048374973789929
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5232481840932675,
+      "best_context_acc_shuffled_null": 0.5173808215833486,
+      "h_context_min_bits": 0.9344326951988934,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.0,
+        "p_hat": 0.0,
+        "h_context_min_bits": 0.0,
+        "p_hat_z": 0.0,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ss",
+      "temp_c": -40.0,
+      "vdd_v": 1.98,
+      "shift_mv": [
+        20,
+        20
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ss:-40C:1.98V:Ts20us",
+      "seed": 17791802913102701342,
+      "sha256_hex": "dcf4491d7fff8dd0b55d03fbefac2f6a599996c7387655b626e2b74b9dec547e",
+      "calibration": {
+        "periods_s": [
+          2.4749600000000003e-09,
+          2.37882e-09,
+          2.2834990000000003e-09,
+          2.1900400000000004e-09
+        ],
+        "sigma": {
+          "1": 1.5610568090409025e-12
+        },
+        "q_ring": 0.0002459367605987411,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-1e212605771c",
+        "jitter_job_id": "klt-sim-12bef3920bb9"
+      },
+      "p_hat": 0.50006103515625,
+      "p_u_99": 0.5036184439496589,
+      "h_hat_bits": 0.989596975238986,
+      "z_monobit": 0.044194173824159216,
+      "autocorr": {
+        "1": -0.008827293715018598,
+        "2": -0.15951783404935488,
+        "3": 0.0005722027935503781,
+        "4": 0.0010070959256440898,
+        "8": -0.00030520931636669757
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5828679118598548,
+      "best_context_acc_shuffled_null": 0.517098516755173,
+      "h_context_min_bits": 0.7787591145414757,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.002925659757036403,
+        "p_hat": -0.0010223388671875,
+        "h_context_min_bits": -0.15567358065741765,
+        "p_hat_z": -0.5234375,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ss",
+      "temp_c": -40.0,
+      "vdd_v": 1.98,
+      "shift_mv": [
+        40,
+        40
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ss:-40C:1.98V:Ts20us",
+      "seed": 17791802913102701342,
+      "sha256_hex": "a7f4a3bdcf3e8ec4cbfb6aebbf3d249cbae0530b8d77f9d4efacd432e39537db",
+      "calibration": {
+        "periods_s": [
+          2.6200999999999997e-09,
+          2.519699e-09,
+          2.42076e-09,
+          2.3221899999999994e-09
+        ],
+        "sigma": {
+          "1": 2.052647441463909e-12
+        },
+        "q_ring": 0.0003555652677701746,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-1e212605771c",
+        "jitter_job_id": "klt-sim-12bef3920bb9"
+      },
+      "p_hat": 0.5015182495117188,
+      "p_u_99": 0.5050756419313596,
+      "h_hat_bits": 0.9854286276820777,
+      "z_monobit": 1.0993300738759606,
+      "autocorr": {
+        "1": -0.04339831834238017,
+        "2": 0.007437204317327816,
+        "3": -0.02429440971579088,
+        "4": 0.0013030870332549791,
+        "8": -0.001947270238633436
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5273377891717024,
+      "best_context_acc_shuffled_null": 0.5170756271745102,
+      "h_context_min_bits": 0.9232007105398593,
+      "delta_vs_zero": {
+        "h_hat_bits": -0.001242687799871911,
+        "p_hat": 0.00043487548828125,
+        "h_context_min_bits": -0.011231984659034078,
+        "p_hat_z": 0.22265625,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ss",
+      "temp_c": -40.0,
+      "vdd_v": 1.98,
+      "shift_mv": [
+        60,
+        60
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ss:-40C:1.98V:Ts20us",
+      "seed": 17791802913102701342,
+      "sha256_hex": "be40e493a644c9e4b4b5c71e3a3af14af9bbfabb9f32785114a52e764778d0a1",
+      "calibration": {
+        "periods_s": [
+          2.77747e-09,
+          2.67231e-09,
+          2.5685700000000004e-09,
+          2.46531e-09
+        ],
+        "sigma": {
+          "1": 1.273611397809309e-12
+        },
+        "q_ring": 0.00011389129730652662,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-1e212605771c",
+        "jitter_job_id": "klt-sim-12bef3920bb9"
+      },
+      "p_hat": 0.5027008056640625,
+      "p_u_99": 0.5062581625856187,
+      "h_hat_bits": 0.9820548307151187,
+      "z_monobit": -1.9555921917190453,
+      "autocorr": {
+        "1": 0.03420525703464279,
+        "2": 0.036471548649969675,
+        "3": 0.015940057021001184,
+        "4": -0.003187855505395376,
+        "8": 0.017916773037789362
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5541262284074956,
+      "best_context_acc_shuffled_null": 0.5196621497894158,
+      "h_context_min_bits": 0.8517134392736098,
+      "delta_vs_zero": {
+        "h_hat_bits": -0.004616484766830964,
+        "p_hat": 0.001617431640625,
+        "h_context_min_bits": -0.08271925592528362,
+        "p_hat_z": 0.828125,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ss",
+      "temp_c": 27.0,
+      "vdd_v": 1.62,
+      "shift_mv": [
+        0,
+        0
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ss:27C:1.62V:Ts20us",
+      "seed": 12718029650245485370,
+      "sha256_hex": "2ac52c600e57bd92c95786763914385030cba73cdbd7abc2c8e1390b0e134bd1",
+      "calibration": {
+        "periods_s": [
+          5.29632e-09,
+          5.00517e-09,
+          4.75375e-09,
+          4.5214100000000004e-09
+        ],
+        "sigma": {
+          "1": 3.4890902815256983e-12
+        },
+        "q_ring": 0.0001224878538629556,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-0faa71e89478",
+        "jitter_job_id": "klt-sim-d9dbc725a212"
+      },
+      "p_hat": 0.5017242431640625,
+      "p_u_99": 0.5052816308314574,
+      "h_hat_bits": 0.9848403621709003,
+      "z_monobit": -1.2484854105324978,
+      "autocorr": {
+        "1": -0.00769484265546036,
+        "2": -0.005764612229034878,
+        "3": -0.03651981532023204,
+        "4": 0.03165148982021871,
+        "8": 0.015125929047099883
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5528291521699322,
+      "best_context_acc_shuffled_null": 0.5174800097662211,
+      "h_context_min_bits": 0.8550943999606387,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.0,
+        "p_hat": 0.0,
+        "h_context_min_bits": 0.0,
+        "p_hat_z": 0.0,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ss",
+      "temp_c": 27.0,
+      "vdd_v": 1.62,
+      "shift_mv": [
+        20,
+        20
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ss:27C:1.62V:Ts20us",
+      "seed": 12718029650245485370,
+      "sha256_hex": "0d1cc670076b91f9831a6c6171e5215d47f198f3cb7c8fd1ddfdb926c3ef7fbe",
+      "calibration": {
+        "periods_s": [
+          5.69847e-09,
+          5.3878399999999995e-09,
+          5.120169999999999e-09,
+          4.87341e-09
+        ],
+        "sigma": {
+          "1": 3.756726135318221e-12
+        },
+        "q_ring": 0.00011279067288142996,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-0faa71e89478",
+        "jitter_job_id": "klt-sim-d479948d36cc"
+      },
+      "p_hat": 0.5007400512695312,
+      "p_u_99": 0.5042974561928287,
+      "h_hat_bits": 0.987653146901757,
+      "z_monobit": -0.5358543576179305,
+      "autocorr": {
+        "1": -0.03634135374763357,
+        "2": 0.003980422664581608,
+        "3": 0.008733662430137764,
+        "4": -0.0029930564933106545,
+        "8": 0.0022410154293515095
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.537126899835195,
+      "best_context_acc_shuffled_null": 0.517098516755173,
+      "h_context_min_bits": 0.8966651200201624,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.0028127847308566656,
+        "p_hat": -0.00098419189453125,
+        "h_context_min_bits": 0.04157072005952367,
+        "p_hat_z": -0.50390625,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ss",
+      "temp_c": 27.0,
+      "vdd_v": 1.62,
+      "shift_mv": [
+        40,
+        40
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ss:27C:1.62V:Ts20us",
+      "seed": 12718029650245485370,
+      "sha256_hex": "3087ecb9f95ba2da0d54b0ded5eb59291ab51a670879224fdeb8b47fb13c381c",
+      "calibration": {
+        "periods_s": [
+          6.14262e-09,
+          5.81029e-09,
+          5.5246799999999996e-09,
+          5.26186e-09
+        ],
+        "sigma": {
+          "1": 3.228748403914358e-12
+        },
+        "q_ring": 6.585915911862483e-05,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-0faa71e89478",
+        "jitter_job_id": "klt-sim-d9dbc725a212"
+      },
+      "p_hat": 0.5003128051757812,
+      "p_u_99": 0.5038702132995307,
+      "h_hat_bits": 0.9888759221582285,
+      "z_monobit": -0.226495140848816,
+      "autocorr": {
+        "1": 0.09905284183501568,
+        "2": -0.0022129313489887277,
+        "3": 0.024391379377956875,
+        "4": 0.00018273880887210157,
+        "8": -0.12014020795017391
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5766877250808765,
+      "best_context_acc_shuffled_null": 0.5178538729170482,
+      "h_context_min_bits": 0.7941377802319077,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.0040355599873281855,
+        "p_hat": -0.00141143798828125,
+        "h_context_min_bits": -0.06095661972873101,
+        "p_hat_z": -0.72265625,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ss",
+      "temp_c": 27.0,
+      "vdd_v": 1.62,
+      "shift_mv": [
+        60,
+        60
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ss:27C:1.62V:Ts20us",
+      "seed": 12718029650245485370,
+      "sha256_hex": "5729ac869e44dec47293bcef8f3409c86cfdb44a5790b924d6c161bba959924e",
+      "calibration": {
+        "periods_s": [
+          6.63312e-09,
+          6.276720000000001e-09,
+          5.97124e-09,
+          5.6907199999999996e-09
+        ],
+        "sigma": {
+          "1": 3.3542892325776725e-12
+        },
+        "q_ring": 5.5847149276377266e-05,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-0faa71e89478",
+        "jitter_job_id": "klt-sim-d9dbc725a212"
+      },
+      "p_hat": 0.5001678466796875,
+      "p_u_99": 0.5037252552991589,
+      "h_hat_bits": 0.9892910296021062,
+      "z_monobit": -0.12153397801643785,
+      "autocorr": {
+        "1": -0.0722434036995018,
+        "2": 0.00090017994458043,
+        "3": 0.10204539654041293,
+        "4": -0.10769993452955193,
+        "8": -0.12725092044112168
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.6208798754806812,
+      "best_context_acc_shuffled_null": 0.516533907098822,
+      "h_context_min_bits": 0.6876139243676973,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.0044506674312059236,
+        "p_hat": -0.001556396484375,
+        "h_context_min_bits": -0.16748047559294144,
+        "p_hat_z": -0.796875,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ss",
+      "temp_c": 27.0,
+      "vdd_v": 1.8,
+      "shift_mv": [
+        0,
+        0
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ss:27C:1.8V:Ts20us",
+      "seed": 1613511026129707792,
+      "sha256_hex": "5c7d917c1b67c07733bd9df0df8d88e79daab9263ec56116a6c96d521d638cfa",
+      "calibration": {
+        "periods_s": [
+          3.5812500000000002e-09,
+          3.3800499999999997e-09,
+          3.20504e-09,
+          3.03979e-09
+        ],
+        "sigma": {
+          "1": 2.4265918688345866e-12
+        },
+        "q_ring": 0.0002023219275464953,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-6e18b37af648",
+        "jitter_job_id": "klt-sim-07c311eaeae1"
+      },
+      "p_hat": 0.501312255859375,
+      "p_u_99": 0.5048696524274418,
+      "h_hat_bits": 0.9860171348845138,
+      "z_monobit": -0.9501747372194231,
+      "autocorr": {
+        "1": 0.05578768398504986,
+        "2": -0.002478906941582747,
+        "3": -0.009841550906822654,
+        "4": 0.005761069395190907,
+        "8": 0.0035790499059819496
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5337545016175304,
+      "best_context_acc_shuffled_null": 0.5176173472501984,
+      "h_context_min_bits": 0.9057517625965759,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.0,
+        "p_hat": 0.0,
+        "h_context_min_bits": 0.0,
+        "p_hat_z": 0.0,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ss",
+      "temp_c": 27.0,
+      "vdd_v": 1.8,
+      "shift_mv": [
+        20,
+        20
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ss:27C:1.8V:Ts20us",
+      "seed": 1613511026129707792,
+      "sha256_hex": "b9178206dc081e57523f2ee5c75c5ee9b8e5656b42301f886966591511f3e909",
+      "calibration": {
+        "periods_s": [
+          3.79822e-09,
+          3.5868500000000003e-09,
+          3.40322e-09,
+          3.2301299999999995e-09
+        ],
+        "sigma": {
+          "1": 3.286824326081511e-12
+        },
+        "q_ring": 0.0003075392658719463,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-6e18b37af648",
+        "jitter_job_id": "klt-sim-07c311eaeae1"
+      },
+      "p_hat": 0.5003662109375,
+      "p_u_99": 0.5039236188032421,
+      "h_hat_bits": 0.9887230181554884,
+      "z_monobit": 0.2651650429449553,
+      "autocorr": {
+        "1": 0.010139011679604015,
+        "2": 0.0007166379554051557,
+        "3": -0.004555391697525525,
+        "4": 0.008529380323299621,
+        "8": -0.00442588016278108
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5216764328877495,
+      "best_context_acc_shuffled_null": 0.5180675090032351,
+      "h_context_min_bits": 0.9387728348472787,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.0027058832709745406,
+        "p_hat": -0.000946044921875,
+        "h_context_min_bits": 0.03302107225070283,
+        "p_hat_z": -0.484375,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ss",
+      "temp_c": 27.0,
+      "vdd_v": 1.8,
+      "shift_mv": [
+        40,
+        40
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ss:27C:1.8V:Ts20us",
+      "seed": 1613511026129707792,
+      "sha256_hex": "a9421e768453aae0593db70951709cbd52b7dc1841822817dcba1b8973be706f",
+      "calibration": {
+        "periods_s": [
+          4.03482e-09,
+          3.8123e-09,
+          3.61908e-09,
+          3.43746e-09
+        ],
+        "sigma": {
+          "1": 3.721646981617912e-12
+        },
+        "q_ring": 0.0003252088789127116,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-6e18b37af648",
+        "jitter_job_id": "klt-sim-07c311eaeae1"
+      },
+      "p_hat": 0.5001068115234375,
+      "p_u_99": 0.5036642202621804,
+      "h_hat_bits": 0.9894658476787555,
+      "z_monobit": -0.07733980419227864,
+      "autocorr": {
+        "1": 0.002769449094920527,
+        "2": 0.03193708865102962,
+        "3": 0.0015182386948770262,
+        "4": 0.01284824743813053,
+        "8": -0.0014192029660688786
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5247894158579015,
+      "best_context_acc_shuffled_null": 0.5179530610999207,
+      "h_context_min_bits": 0.930189471431554,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.0034487127942416373,
+        "p_hat": -0.0012054443359375,
+        "h_context_min_bits": 0.02443770883497809,
+        "p_hat_z": -0.6171875,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ss",
+      "temp_c": 27.0,
+      "vdd_v": 1.8,
+      "shift_mv": [
+        60,
+        60
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ss:27C:1.8V:Ts20us",
+      "seed": 1613511026129707792,
+      "sha256_hex": "c7169a3eec651d6f4c48b0a46a8f02ff90b3e6f0ae0fbe4785c721d542d63f44",
+      "calibration": {
+        "periods_s": [
+          4.29298e-09,
+          4.05822e-09,
+          3.85442e-09,
+          3.66352e-09
+        ],
+        "sigma": {
+          "1": 2.7857569023424982e-12
+        },
+        "q_ring": 0.00014937832814792602,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-6e18b37af648",
+        "jitter_job_id": "klt-sim-07c311eaeae1"
+      },
+      "p_hat": 0.5008544921875,
+      "p_u_99": 0.5044118958124767,
+      "h_hat_bits": 0.9873257949799622,
+      "z_monobit": 0.6187184335382291,
+      "autocorr": {
+        "1": 0.002491891574265763,
+        "2": 0.08750777328358549,
+        "3": -0.006312671124997039,
+        "4": -0.10994625053867722,
+        "8": 0.0013551198571223764
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5708203625709577,
+      "best_context_acc_shuffled_null": 0.5166407251419154,
+      "h_context_min_bits": 0.8088912946634556,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.0013086600954483885,
+        "p_hat": -0.000457763671875,
+        "h_context_min_bits": -0.09686046793312031,
+        "p_hat_z": -0.234375,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ss",
+      "temp_c": 27.0,
+      "vdd_v": 1.98,
+      "shift_mv": [
+        0,
+        0
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ss:27C:1.98V:Ts20us",
+      "seed": 10775904579805269126,
+      "sha256_hex": "a38253a27db42b7033bb2a81739b9530cb72683a9dd1343b436207c752ab4798",
+      "calibration": {
+        "periods_s": [
+          2.6382700000000002e-09,
+          2.4871000000000006e-09,
+          2.35453e-09,
+          2.2281199999999995e-09
+        ],
+        "sigma": {
+          "1": 3.235650986806751e-12
+        },
+        "q_ring": 0.0009504466227968642,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-3d0373040ec0",
+        "jitter_job_id": "klt-sim-910763892111"
+      },
+      "p_hat": 0.5025177001953125,
+      "p_u_99": 0.5060750639154327,
+      "h_hat_bits": 0.9825767054090162,
+      "z_monobit": -1.8230096702465677,
+      "autocorr": {
+        "1": -0.0025812877608861157,
+        "2": -0.021007043777840104,
+        "3": 0.0011419197812156967,
+        "4": -0.005915732801411288,
+        "8": 0.003301344410368182
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5202496490264298,
+      "best_context_acc_shuffled_null": 0.5175257889275469,
+      "h_context_min_bits": 0.942724008204984,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.0,
+        "p_hat": 0.0,
+        "h_context_min_bits": 0.0,
+        "p_hat_z": 0.0,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ss",
+      "temp_c": 27.0,
+      "vdd_v": 1.98,
+      "shift_mv": [
+        20,
+        20
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ss:27C:1.98V:Ts20us",
+      "seed": 10775904579805269126,
+      "sha256_hex": "d774787d03d3f51f4db434b6637514e8c3e9beb0fb28469006b04827025b1251",
+      "calibration": {
+        "periods_s": [
+          2.7682999999999996e-09,
+          2.61156e-09,
+          2.47416e-09,
+          2.34307e-09
+        ],
+        "sigma": {
+          "1": 2.9278026056914453e-12
+        },
+        "q_ring": 0.0006645816931134992,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-3d0373040ec0",
+        "jitter_job_id": "klt-sim-910763892111"
+      },
+      "p_hat": 0.5009002685546875,
+      "p_u_99": 0.5044576716081544,
+      "h_hat_bits": 0.9871948751552497,
+      "z_monobit": 0.6518640639063484,
+      "autocorr": {
+        "1": 0.0003095665825573489,
+        "2": -0.014804513793434945,
+        "3": 0.0017744807589720076,
+        "4": -0.003131372029896593,
+        "8": 0.0019194337173231693
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5185329304767137,
+      "best_context_acc_shuffled_null": 0.5194561435634499,
+      "h_context_min_bits": 0.9474924816890711,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.004618169746233525,
+        "p_hat": -0.001617431640625,
+        "h_context_min_bits": 0.0047684734840870435,
+        "p_hat_z": -0.828125,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ss",
+      "temp_c": 27.0,
+      "vdd_v": 1.98,
+      "shift_mv": [
+        40,
+        40
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ss:27C:1.98V:Ts20us",
+      "seed": 10775904579805269126,
+      "sha256_hex": "a60577c2c5a03f1e80ace1f086ae0ff592a95f33973f19a061672891254f507f",
+      "calibration": {
+        "periods_s": [
+          2.9085e-09,
+          2.74565e-09,
+          2.60294e-09,
+          2.46688e-09
+        ],
+        "sigma": {
+          "1": 2.3780674801179982e-12
+        },
+        "q_ring": 0.0003730010928595006,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-3d0373040ec0",
+        "jitter_job_id": "klt-sim-910763892111"
+      },
+      "p_hat": 0.5011138916015625,
+      "p_u_99": 0.5046712915937233,
+      "h_hat_bits": 0.986584074138419,
+      "z_monobit": 0.8065436722909057,
+      "autocorr": {
+        "1": -0.002560842470921554,
+        "2": -0.0011493955161845943,
+        "3": 0.0016964390965487205,
+        "4": -0.03623061388212547,
+        "8": -0.0015919144598364491
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5236449368247573,
+      "best_context_acc_shuffled_null": 0.516709393883904,
+      "h_context_min_bits": 0.9333391867706762,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.0040073687294027716,
+        "p_hat": -0.00140380859375,
+        "h_context_min_bits": -0.009384821434307855,
+        "p_hat_z": -0.71875,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ss",
+      "temp_c": 27.0,
+      "vdd_v": 1.98,
+      "shift_mv": [
+        60,
+        60
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ss:27C:1.98V:Ts20us",
+      "seed": 10775904579805269126,
+      "sha256_hex": "c5d015fc631951860d2e8bd56e837b77f6dda77e3ceaaaa06395bea47307d1c8",
+      "calibration": {
+        "periods_s": [
+          3.0598200000000003e-09,
+          2.8902900000000004e-09,
+          2.74185e-09,
+          2.6003799999999997e-09
+        ],
+        "sigma": {
+          "1": 2.0265925363575885e-12
+        },
+        "q_ring": 0.0002298256957803432,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-3d0373040ec0",
+        "jitter_job_id": "klt-sim-910763892111"
+      },
+      "p_hat": 0.5019912719726562,
+      "p_u_99": 0.5055486525810388,
+      "h_hat_bits": 0.9840781551630323,
+      "z_monobit": 1.4418349210131944,
+      "autocorr": {
+        "1": -0.0055930795606735475,
+        "2": 0.024551614287809206,
+        "3": -0.08980968524608873,
+        "4": 0.00019777107874755878,
+        "8": -0.0009618589706089378
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5462064334981384,
+      "best_context_acc_shuffled_null": 0.5179912104010255,
+      "h_context_min_bits": 0.8724817878855948,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.0015014497540161154,
+        "p_hat": -0.00052642822265625,
+        "h_context_min_bits": -0.0702422203193892,
+        "p_hat_z": -0.26953125,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ss",
+      "temp_c": 125.0,
+      "vdd_v": 1.62,
+      "shift_mv": [
+        0,
+        0
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ss:125C:1.62V:Ts20us",
+      "seed": 18011738953726680112,
+      "sha256_hex": "22cd295a1022082a8af2b66a4343c08ad8bc32b505041c0983c34a94ebad460e",
+      "calibration": {
+        "periods_s": [
+          5.5161399999999995e-09,
+          5.11849e-09,
+          4.78263e-09,
+          4.48408e-09
+        ],
+        "sigma": {
+          "1": 5.083540176833312e-12
+        },
+        "q_ring": 0.00024259097192105006,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-327a5af2ccce",
+        "jitter_job_id": "klt-sim-e3995617af25"
+      },
+      "p_hat": 0.5000839233398438,
+      "p_u_99": 0.5036413321096469,
+      "h_hat_bits": 0.9895314099584095,
+      "z_monobit": 0.060766989008218926,
+      "autocorr": {
+        "1": 0.0004043328336391215,
+        "2": -0.050980421766476734,
+        "3": 0.004860004955717557,
+        "4": -0.017990692578385963,
+        "8": -0.003982823007374971
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5336476835744369,
+      "best_context_acc_shuffled_null": 0.5176326069706403,
+      "h_context_min_bits": 0.9060405119802677,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.0,
+        "p_hat": 0.0,
+        "h_context_min_bits": 0.0,
+        "p_hat_z": 0.0,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ss",
+      "temp_c": 125.0,
+      "vdd_v": 1.62,
+      "shift_mv": [
+        20,
+        20
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ss:125C:1.62V:Ts20us",
+      "seed": 18011738953726680112,
+      "sha256_hex": "0a25f21e223ffacd20462ea1562668584c9d80f307430bc5e43b69cea694093e",
+      "calibration": {
+        "periods_s": [
+          5.8107599999999995e-09,
+          5.395999999999999e-09,
+          5.046009999999999e-09,
+          4.7352399999999995e-09
+        ],
+        "sigma": {
+          "1": 5.154800184293835e-12
+        },
+        "q_ring": 0.0002117231965007945,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-327a5af2ccce",
+        "jitter_job_id": "klt-sim-e3995617af25"
+      },
+      "p_hat": 0.5001144409179688,
+      "p_u_99": 0.5036718496447016,
+      "h_hat_bits": 0.9894439942523621,
+      "z_monobit": -0.08286407592029853,
+      "autocorr": {
+        "1": -0.12520700785245553,
+        "2": -0.011169660494532125,
+        "3": -0.037316280589617765,
+        "4": 0.023682312203924256,
+        "8": 0.0030213793978367065
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5630989440273454,
+      "best_context_acc_shuffled_null": 0.5181132881645608,
+      "h_context_min_bits": 0.8285396494634828,
+      "delta_vs_zero": {
+        "h_hat_bits": -8.741570604742233e-05,
+        "p_hat": 3.0517578125e-05,
+        "h_context_min_bits": -0.0775008625167849,
+        "p_hat_z": 0.015625,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ss",
+      "temp_c": 125.0,
+      "vdd_v": 1.62,
+      "shift_mv": [
+        40,
+        40
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ss:125C:1.62V:Ts20us",
+      "seed": 18011738953726680112,
+      "sha256_hex": "934fca2eed2b3e8defd5aeeb4536c50c4d449e6adda4033a534e95d1aa943f7f",
+      "calibration": {
+        "periods_s": [
+          6.133629999999999e-09,
+          5.70008e-09,
+          5.3345799999999996e-09,
+          5.01042e-09
+        ],
+        "sigma": {
+          "1": 3.70390909332043e-12
+        },
+        "q_ring": 9.1967164298741e-05,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-327a5af2ccce",
+        "jitter_job_id": "klt-sim-e3995617af25"
+      },
+      "p_hat": 0.50238037109375,
+      "p_u_99": 0.5059377395996936,
+      "h_hat_bits": 0.9829682362470413,
+      "z_monobit": -1.7235727791422095,
+      "autocorr": {
+        "1": 0.0023348888039221543,
+        "2": -0.0027694247116183445,
+        "3": -0.0528586301476527,
+        "4": 0.016259399915134077,
+        "8": 0.009209744817721644
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5526536653848502,
+      "best_context_acc_shuffled_null": 0.5174876396264421,
+      "h_context_min_bits": 0.8555524331614912,
+      "delta_vs_zero": {
+        "h_hat_bits": -0.006563173711368164,
+        "p_hat": 0.00229644775390625,
+        "h_context_min_bits": -0.05048807881877648,
+        "p_hat_z": 1.17578125,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ss",
+      "temp_c": 125.0,
+      "vdd_v": 1.62,
+      "shift_mv": [
+        60,
+        60
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ss:125C:1.62V:Ts20us",
+      "seed": 18011738953726680112,
+      "sha256_hex": "937c22811f68677e4892ea9fb376d46c79bc9aa60a7b1c35e9304fd2bddc0507",
+      "calibration": {
+        "periods_s": [
+          6.48755e-09,
+          6.0332500000000004e-09,
+          5.65079e-09,
+          5.3118899999999995e-09
+        ],
+        "sigma": {
+          "1": 5.705985287215486e-12
+        },
+        "q_ring": 0.000182516367319716,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-327a5af2ccce",
+        "jitter_job_id": "klt-sim-e3995617af25"
+      },
+      "p_hat": 0.5014266967773438,
+      "p_u_99": 0.504984091115275,
+      "h_hat_bits": 0.9856901565885274,
+      "z_monobit": -1.0330388131397217,
+      "autocorr": {
+        "1": -0.036393254861931186,
+        "2": -0.012306970413559862,
+        "3": 0.13093921932331268,
+        "4": -0.015771124442949043,
+        "8": -0.004723391380449823
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5659525117499847,
+      "best_context_acc_shuffled_null": 0.5172129646584874,
+      "h_context_min_bits": 0.8212470911889482,
+      "delta_vs_zero": {
+        "h_hat_bits": -0.0038412533698820583,
+        "p_hat": 0.0013427734375,
+        "h_context_min_bits": -0.08479342079131946,
+        "p_hat_z": 0.6875,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ss",
+      "temp_c": 125.0,
+      "vdd_v": 1.8,
+      "shift_mv": [
+        0,
+        0
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ss:125C:1.8V:Ts20us",
+      "seed": 512308118462848609,
+      "sha256_hex": "d08a970fe4d86364306d35459834b977564750bb34b7364028fc2d8fbc774008",
+      "calibration": {
+        "periods_s": [
+          4.10018e-09,
+          3.79637e-09,
+          3.53797e-09,
+          3.3057099999999993e-09
+        ],
+        "sigma": {
+          "1": 4.244323694561658e-12
+        },
+        "q_ring": 0.0004373529024557187,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-d3dd2f338521",
+        "jitter_job_id": "klt-sim-cde78a01da8b"
+      },
+      "p_hat": 0.50054931640625,
+      "p_u_99": 0.5041067230792774,
+      "h_hat_bits": 0.9881988997377555,
+      "z_monobit": 0.397747564417433,
+      "autocorr": {
+        "1": 0.020972183881314103,
+        "2": -0.0014202977815755474,
+        "3": -0.04270395717134354,
+        "4": -0.0021527813484980654,
+        "8": -0.002198643068448824
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5265366538485015,
+      "best_context_acc_shuffled_null": 0.5173579320026858,
+      "h_context_min_bits": 0.9253941296670669,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.0,
+        "p_hat": 0.0,
+        "h_context_min_bits": 0.0,
+        "p_hat_z": 0.0,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ss",
+      "temp_c": 125.0,
+      "vdd_v": 1.8,
+      "shift_mv": [
+        20,
+        20
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ss:125C:1.8V:Ts20us",
+      "seed": 512308118462848609,
+      "sha256_hex": "852578af98938a130de1bb137a238e6a8cd5d759a9e0b3d813875c6f4ecdad1c",
+      "calibration": {
+        "periods_s": [
+          4.27728e-09,
+          3.963229999999999e-09,
+          3.6966000000000002e-09,
+          3.4573299999999997e-09
+        ],
+        "sigma": {
+          "1": 5.2354111529088574e-12
+        },
+        "q_ring": 0.0005813815558574539,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-d3dd2f338521",
+        "jitter_job_id": "klt-sim-cde78a01da8b"
+      },
+      "p_hat": 0.5015869140625,
+      "p_u_99": 0.5051443049651501,
+      "h_hat_bits": 0.9852325123335365,
+      "z_monobit": 1.1490485194281397,
+      "autocorr": {
+        "1": 0.020292104806875943,
+        "2": 0.007131269019377722,
+        "3": 0.010694319608764285,
+        "4": -0.0017953762590553475,
+        "8": 0.0007530160561469948
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5201809802844412,
+      "best_context_acc_shuffled_null": 0.5179301715192578,
+      "h_context_min_bits": 0.9429144448393622,
+      "delta_vs_zero": {
+        "h_hat_bits": -0.002966387404219062,
+        "p_hat": 0.00103759765625,
+        "h_context_min_bits": 0.017520315172295242,
+        "p_hat_z": 0.53125,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ss",
+      "temp_c": 125.0,
+      "vdd_v": 1.8,
+      "shift_mv": [
+        40,
+        40
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ss:125C:1.8V:Ts20us",
+      "seed": 512308118462848609,
+      "sha256_hex": "357c49a4890de4269c8d6a49070a5074055d33925d01ac70205d3c414ac7c3fe",
+      "calibration": {
+        "periods_s": [
+          4.46833e-09,
+          4.14345e-09,
+          3.86785e-09,
+          3.6210099999999997e-09
+        ],
+        "sigma": {
+          "1": 4.298815680601964e-12
+        },
+        "q_ring": 0.00033990119501485576,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-d3dd2f338521",
+        "jitter_job_id": "klt-sim-cde78a01da8b"
+      },
+      "p_hat": 0.5007247924804688,
+      "p_u_99": 0.504282197562795,
+      "h_hat_bits": 0.9876967994775354,
+      "z_monobit": -0.5248058141618908,
+      "autocorr": {
+        "1": -0.035288372280394706,
+        "2": 0.009046561872061194,
+        "3": 0.01987299014290052,
+        "4": -0.002855565941626295,
+        "8": -0.005831282774626482
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5245605200512726,
+      "best_context_acc_shuffled_null": 0.5163584203137399,
+      "h_context_min_bits": 0.930818864618785,
+      "delta_vs_zero": {
+        "h_hat_bits": -0.0005021002602201285,
+        "p_hat": 0.00017547607421875,
+        "h_context_min_bits": 0.005424734951718135,
+        "p_hat_z": 0.08984375,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ss",
+      "temp_c": 125.0,
+      "vdd_v": 1.8,
+      "shift_mv": [
+        60,
+        60
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ss:125C:1.8V:Ts20us",
+      "seed": 512308118462848609,
+      "sha256_hex": "b4bb627747bde267d524d6939931f2e81013f76d1cf0979c1e9b349194687ca3",
+      "calibration": {
+        "periods_s": [
+          4.674819999999999e-09,
+          4.33833e-09,
+          4.05308e-09,
+          3.7979800000000006e-09
+        ],
+        "sigma": {
+          "1": 4.775661480001993e-12
+        },
+        "q_ring": 0.0003627903184829369,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-d3dd2f338521",
+        "jitter_job_id": "klt-sim-cde78a01da8b"
+      },
+      "p_hat": 0.5003128051757812,
+      "p_u_99": 0.5038702132995307,
+      "h_hat_bits": 0.9888759221582285,
+      "z_monobit": 0.226495140848816,
+      "autocorr": {
+        "1": -0.012703444723419232,
+        "2": -0.08560354729115324,
+        "3": 0.0002513749281031727,
+        "4": -0.007568984724660616,
+        "8": 0.00268533950597503
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5456265641213452,
+      "best_context_acc_shuffled_null": 0.5169382896905329,
+      "h_context_min_bits": 0.8740142104350922,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.0006770224204729614,
+        "p_hat": -0.00023651123046875,
+        "h_context_min_bits": -0.05137991923197471,
+        "p_hat_z": -0.12109375,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ss",
+      "temp_c": 125.0,
+      "vdd_v": 1.98,
+      "shift_mv": [
+        0,
+        0
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ss:125C:1.98V:Ts20us",
+      "seed": 11448643857641272141,
+      "sha256_hex": "5a822abfce2a850454b7d3539f9b3118ca34f104713ebd2d0e287f540b50f2b5",
+      "calibration": {
+        "periods_s": [
+          3.21669e-09,
+          2.9717700000000004e-09,
+          2.7613700000000004e-09,
+          2.5705300000000002e-09
+        ],
+        "sigma": {
+          "1": 5.32628207378047e-12
+        },
+        "q_ring": 0.0015298245634156474,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-3ed5bcd140b0",
+        "jitter_job_id": "klt-sim-39fec4e5a3b1"
+      },
+      "p_hat": 0.5018997192382812,
+      "p_u_99": 0.5054571023812008,
+      "h_hat_bits": 0.9843394375919629,
+      "z_monobit": 1.3755436602769557,
+      "autocorr": {
+        "1": 0.010628746076854679,
+        "2": -0.005217837963375292,
+        "3": -0.0029670645133956703,
+        "4": 0.00462444358373193,
+        "8": 0.0040295045693100615
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5183879631325155,
+      "best_context_acc_shuffled_null": 0.5201657205639992,
+      "h_context_min_bits": 0.9478958753736177,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.0,
+        "p_hat": 0.0,
+        "h_context_min_bits": 0.0,
+        "p_hat_z": 0.0,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ss",
+      "temp_c": 125.0,
+      "vdd_v": 1.98,
+      "shift_mv": [
+        20,
+        20
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ss:125C:1.98V:Ts20us",
+      "seed": 11448643857641272141,
+      "sha256_hex": "ee55f738cf3043da4ffcc587080982f956828f371b1427cab9ae81a42c8414cb",
+      "calibration": {
+        "periods_s": [
+          3.3328000000000007e-09,
+          3.0815399999999997e-09,
+          2.8660899999999996e-09,
+          2.67089e-09
+        ],
+        "sigma": {
+          "1": 5.244248523056361e-12
+        },
+        "q_ring": 0.0013161406181101294,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-3ed5bcd140b0",
+        "jitter_job_id": "klt-sim-39fec4e5a3b1"
+      },
+      "p_hat": 0.5019607543945312,
+      "p_u_99": 0.5055181358610121,
+      "h_hat_bits": 0.9841652440105016,
+      "z_monobit": 1.4197378341011149,
+      "autocorr": {
+        "1": 0.0027388960924467818,
+        "2": -0.0011750225960258014,
+        "3": 0.0012435789388389623,
+        "4": -0.00349454298997774,
+        "8": 0.0015106151662586408
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5191280595739486,
+      "best_context_acc_shuffled_null": 0.5169535494109748,
+      "h_context_min_bits": 0.94583762543131,
+      "delta_vs_zero": {
+        "h_hat_bits": -0.00017419358146120167,
+        "p_hat": 6.103515625e-05,
+        "h_context_min_bits": -0.002058249942307744,
+        "p_hat_z": 0.03125,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ss",
+      "temp_c": 125.0,
+      "vdd_v": 1.98,
+      "shift_mv": [
+        40,
+        40
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ss:125C:1.98V:Ts20us",
+      "seed": 11448643857641272141,
+      "sha256_hex": "d38c1d94a5427ae7a2b7f206eb03e3acc6980e79e3d0a408e070ad95e8275d21",
+      "calibration": {
+        "periods_s": [
+          3.4568799999999998e-09,
+          3.1988500000000004e-09,
+          2.9779899999999996e-09,
+          2.77812e-09
+        ],
+        "sigma": {
+          "1": 4.682494773987598e-12
+        },
+        "q_ring": 0.0009286318342587471,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-3ed5bcd140b0",
+        "jitter_job_id": "klt-sim-39fec4e5a3b1"
+      },
+      "p_hat": 0.502593994140625,
+      "p_u_99": 0.5061513550859917,
+      "h_hat_bits": 0.9823592345120479,
+      "z_monobit": 1.8782523875267667,
+      "autocorr": {
+        "1": -0.002552333186445097,
+        "2": -0.006420619030911328,
+        "3": 0.0005453159096505207,
+        "4": -0.0012630296585681414,
+        "8": 0.00011050111723372412
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.519227247756821,
+      "best_context_acc_shuffled_null": 0.5179454312396997,
+      "h_context_min_bits": 0.9455620005099178,
+      "delta_vs_zero": {
+        "h_hat_bits": -0.0019802030799149772,
+        "p_hat": 0.00069427490234375,
+        "h_context_min_bits": -0.0023338748636999584,
+        "p_hat_z": 0.35546875,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ss",
+      "temp_c": 125.0,
+      "vdd_v": 1.98,
+      "shift_mv": [
+        60,
+        60
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ss:125C:1.98V:Ts20us",
+      "seed": 11448643857641272141,
+      "sha256_hex": "c21b3e443e6b9eebccb6adee178debc618446379de0d5efbe735e2f48f7463fa",
+      "calibration": {
+        "periods_s": [
+          3.58954e-09,
+          3.3241899999999995e-09,
+          3.0975999999999997e-09,
+          2.89277e-09
+        ],
+        "sigma": {
+          "1": 4.299119456108479e-12
+        },
+        "q_ring": 0.0006909873509894338,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-3ed5bcd140b0",
+        "jitter_job_id": "klt-sim-39fec4e5a3b1"
+      },
+      "p_hat": 0.5002670288085938,
+      "p_u_99": 0.5038244371211897,
+      "h_hat_bits": 0.989006995724018,
+      "z_monobit": 0.19334951048069657,
+      "autocorr": {
+        "1": -0.0011675999731665906,
+        "2": 0.006057531896066309,
+        "3": 0.0037610689893579027,
+        "4": -0.004944317777549897,
+        "8": -0.0010227275615154643
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.518479521455167,
+      "best_context_acc_shuffled_null": 0.5165796862601477,
+      "h_context_min_bits": 0.9476410872925018,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.004667558132055105,
+        "p_hat": -0.0016326904296875,
+        "h_context_min_bits": -0.00025478808111589757,
+        "p_hat_z": -0.8359375,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ff",
+      "temp_c": -40.0,
+      "vdd_v": 1.62,
+      "shift_mv": [
+        0,
+        0
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ff:-40C:1.62V:Ts20us",
+      "seed": 10675826470956371436,
+      "sha256_hex": "fbbbe33672bede7d192d60515c12615b7c34c60e9be4a86862df1e40e6725974",
+      "calibration": {
+        "periods_s": [
+          3.3949999999999995e-09,
+          3.24617e-09,
+          3.11231e-09,
+          2.98232e-09
+        ],
+        "sigma": {
+          "1": 1.618848418832983e-12
+        },
+        "q_ring": 0.00010583840932954538,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-e117fb428f7c",
+        "jitter_job_id": "klt-sim-62942afa0395"
+      },
+      "p_hat": 0.5013351440429688,
+      "p_u_99": 0.5048925401799175,
+      "h_hat_bits": 0.9859517332538305,
+      "z_monobit": -0.9667475524034829,
+      "autocorr": {
+        "1": 0.07489174100593406,
+        "2": -0.014961038047608177,
+        "3": -0.023010405104919626,
+        "4": 0.0033194103280521606,
+        "8": -0.006568857937793418
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5943432216321797,
+      "best_context_acc_shuffled_null": 0.517098516755173,
+      "h_context_min_bits": 0.7506317949298099,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.0,
+        "p_hat": 0.0,
+        "h_context_min_bits": 0.0,
+        "p_hat_z": 0.0,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ff",
+      "temp_c": -40.0,
+      "vdd_v": 1.62,
+      "shift_mv": [
+        20,
+        20
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ff:-40C:1.62V:Ts20us",
+      "seed": 10675826470956371436,
+      "sha256_hex": "b2e184ade459d96d8a7b9b40e90548dde2d6272cdce92090cf11b404794a9a5a",
+      "calibration": {
+        "periods_s": [
+          3.6890900000000005e-09,
+          3.5324500000000006e-09,
+          3.39121e-09,
+          3.25438e-09
+        ],
+        "sigma": {
+          "1": 3.0978068121269665e-12
+        },
+        "q_ring": 0.0002980898628472203,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-e117fb428f7c",
+        "jitter_job_id": "klt-sim-62942afa0395"
+      },
+      "p_hat": 0.50177001953125,
+      "p_u_99": 0.5053274060605897,
+      "h_hat_bits": 0.9847096693041257,
+      "z_monobit": 1.2816310409006173,
+      "autocorr": {
+        "1": -0.04024319470227569,
+        "2": -0.005032813533623479,
+        "3": 0.006999129318396769,
+        "4": -0.003415443268317387,
+        "8": -0.00048564484617476977
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5262238295794421,
+      "best_context_acc_shuffled_null": 0.5178538729170482,
+      "h_context_min_bits": 0.9262515137388077,
+      "delta_vs_zero": {
+        "h_hat_bits": -0.0012420639497047192,
+        "p_hat": 0.00043487548828125,
+        "h_context_min_bits": 0.17561971880899774,
+        "p_hat_z": 0.22265625,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ff",
+      "temp_c": -40.0,
+      "vdd_v": 1.62,
+      "shift_mv": [
+        40,
+        40
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ff:-40C:1.62V:Ts20us",
+      "seed": 10675826470956371436,
+      "sha256_hex": "f025713de19841ad7167c18e5130eaae0656cfd159bef78dbdde69057c89f68d",
+      "calibration": {
+        "periods_s": [
+          4.01937e-09,
+          3.85464e-09,
+          3.70416e-09,
+          3.56109e-09
+        ],
+        "sigma": {
+          "1": 2.853284246729246e-12
+        },
+        "q_ring": 0.00019286580185155726,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-e117fb428f7c",
+        "jitter_job_id": "klt-sim-62942afa0395"
+      },
+      "p_hat": 0.50189208984375,
+      "p_u_99": 0.505449473192497,
+      "h_hat_bits": 0.9843612132792026,
+      "z_monobit": -1.3700193885489358,
+      "autocorr": {
+        "1": -0.0004949828451566386,
+        "2": 0.030366826996842063,
+        "3": 0.0022364342560112663,
+        "4": 0.015657100192128175,
+        "8": 0.003342749110332095
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5292071049258378,
+      "best_context_acc_shuffled_null": 0.5175181590673259,
+      "h_context_min_bits": 0.9180956640862226,
+      "delta_vs_zero": {
+        "h_hat_bits": -0.0015905199746278909,
+        "p_hat": 0.00055694580078125,
+        "h_context_min_bits": 0.16746386915641265,
+        "p_hat_z": 0.28515625,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ff",
+      "temp_c": -40.0,
+      "vdd_v": 1.62,
+      "shift_mv": [
+        60,
+        60
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ff:-40C:1.62V:Ts20us",
+      "seed": 10675826470956371436,
+      "sha256_hex": "2c63bb28a4309cb645675dead79567ebbcc5388587e5250984bb0d210034642d",
+      "calibration": {
+        "periods_s": [
+          4.39102e-09,
+          4.21734e-09,
+          4.05928e-09,
+          3.907189999999999e-09
+        ],
+        "sigma": {
+          "1": 3.4455746511784126e-12
+        },
+        "q_ring": 0.00021294891358605224,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-e117fb428f7c",
+        "jitter_job_id": "klt-sim-62942afa0395"
+      },
+      "p_hat": 0.5005340576171875,
+      "p_u_99": 0.5040914644078298,
+      "h_hat_bits": 0.9882425689486366,
+      "z_monobit": -0.38669902096139314,
+      "autocorr": {
+        "1": -0.0008174932633269846,
+        "2": -0.14206278054000726,
+        "3": 0.004477453878730499,
+        "4": -0.03558573099021543,
+        "8": -0.020739075853173135
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5739562351217725,
+      "best_context_acc_shuffled_null": 0.5180217298419093,
+      "h_context_min_bits": 0.8009873610873586,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.002290835694806148,
+        "p_hat": -0.00080108642578125,
+        "h_context_min_bits": 0.05035556615754866,
+        "p_hat_z": -0.41015625,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ff",
+      "temp_c": -40.0,
+      "vdd_v": 1.8,
+      "shift_mv": [
+        0,
+        0
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ff:-40C:1.8V:Ts20us",
+      "seed": 7878193698877065532,
+      "sha256_hex": "0addbfb06543cfaaa6b5f11616a183ab906790284b9830e42e997dcafa6725f6",
+      "calibration": {
+        "periods_s": [
+          2.20306e-09,
+          2.09428e-09,
+          1.9973399999999996e-09,
+          1.903285e-09
+        ],
+        "sigma": {
+          "1": 1.5873154075859243e-12
+        },
+        "q_ring": 0.00039568610647409085,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-8b1daf0a5308",
+        "jitter_job_id": "klt-sim-015cfd00a8b5"
+      },
+      "p_hat": 0.50079345703125,
+      "p_u_99": 0.5043508613718563,
+      "h_hat_bits": 0.9875003733618203,
+      "z_monobit": 0.5745242597140698,
+      "autocorr": {
+        "1": 0.006917388505388579,
+        "2": 0.015866880142217245,
+        "3": 0.050665553744212555,
+        "4": -0.0023219794478108132,
+        "8": 0.0007603724698096385
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5298861624855032,
+      "best_context_acc_shuffled_null": 0.5172816334004761,
+      "h_context_min_bits": 0.916245641735596,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.0,
+        "p_hat": 0.0,
+        "h_context_min_bits": 0.0,
+        "p_hat_z": 0.0,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ff",
+      "temp_c": -40.0,
+      "vdd_v": 1.8,
+      "shift_mv": [
+        20,
+        20
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ff:-40C:1.8V:Ts20us",
+      "seed": 7878193698877065532,
+      "sha256_hex": "9956f4cc9ebd7a90dbe47df1e9cc8e52e2a5fe07a4c3294cf58eb69e8c772f5b",
+      "calibration": {
+        "periods_s": [
+          2.34803e-09,
+          2.2348e-09,
+          2.13354e-09,
+          2.0350900000000003e-09
+        ],
+        "sigma": {
+          "1": 2.106331168793823e-12
+        },
+        "q_ring": 0.0005665376111596793,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-8b1daf0a5308",
+        "jitter_job_id": "klt-sim-015cfd00a8b5"
+      },
+      "p_hat": 0.5010604858398438,
+      "p_u_99": 0.5046178866582095,
+      "h_hat_bits": 0.9867367499767353,
+      "z_monobit": -0.7678737701947664,
+      "autocorr": {
+        "1": 0.017138991179637984,
+        "2": 0.009196797645448562,
+        "3": 0.0014375934037533088,
+        "4": -0.004811088587352839,
+        "8": -0.0010268078624560467
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5184413721540622,
+      "best_context_acc_shuffled_null": 0.5167780626258927,
+      "h_context_min_bits": 0.9477472435246336,
+      "delta_vs_zero": {
+        "h_hat_bits": -0.000763623385084955,
+        "p_hat": 0.00026702880859375,
+        "h_context_min_bits": 0.0315016017890376,
+        "p_hat_z": 0.13671875,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ff",
+      "temp_c": -40.0,
+      "vdd_v": 1.8,
+      "shift_mv": [
+        40,
+        40
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ff:-40C:1.8V:Ts20us",
+      "seed": 7878193698877065532,
+      "sha256_hex": "3e0d5e61a7d8fea9844cdb98053305010f194c67612a2ff808e42c82b5eb7348",
+      "calibration": {
+        "periods_s": [
+          2.50803e-09,
+          2.3897800000000004e-09,
+          2.2838899999999996e-09,
+          2.1808099999999996e-09
+        ],
+        "sigma": {
+          "1": 2.176308666913953e-12
+        },
+        "q_ring": 0.0004893463481194329,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-8b1daf0a5308",
+        "jitter_job_id": "klt-sim-015cfd00a8b5"
+      },
+      "p_hat": 0.5002899169921875,
+      "p_u_99": 0.5038473252140875,
+      "h_hat_bits": 0.988941457441893,
+      "z_monobit": 0.20992232566475627,
+      "autocorr": {
+        "1": -0.14531857139626064,
+        "2": 0.004760471366865926,
+        "3": -0.008934573558764203,
+        "4": 0.02455180405213415,
+        "8": -0.0028844155336735394
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5727354574864189,
+      "best_context_acc_shuffled_null": 0.5182353659280962,
+      "h_context_min_bits": 0.8040591728346422,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.0014410840800727076,
+        "p_hat": -0.0005035400390625,
+        "h_context_min_bits": -0.11218646890095374,
+        "p_hat_z": -0.2578125,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ff",
+      "temp_c": -40.0,
+      "vdd_v": 1.8,
+      "shift_mv": [
+        60,
+        60
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ff:-40C:1.8V:Ts20us",
+      "seed": 7878193698877065532,
+      "sha256_hex": "c6040807bf5d36f5801b73658e81450cf6e49892c3232fcdb2bff6de93d7b1fb",
+      "calibration": {
+        "periods_s": [
+          2.68466e-09,
+          2.56093e-09,
+          2.44997e-09,
+          2.3420199999999997e-09
+        ],
+        "sigma": {
+          "1": 1.7252994989428943e-12
+        },
+        "q_ring": 0.00024728706802520944,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-8b1daf0a5308",
+        "jitter_job_id": "klt-sim-015cfd00a8b5"
+      },
+      "p_hat": 0.5000686645507812,
+      "p_u_99": 0.5036260733371498,
+      "h_hat_bits": 0.989575119812008,
+      "z_monobit": -0.04971844555217912,
+      "autocorr": {
+        "1": 0.00470735356938944,
+        "2": 0.0016937326026181996,
+        "3": 0.03554614451842117,
+        "4": -0.06639303957312995,
+        "8": -0.00672955360778267
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.53732527620094,
+      "best_context_acc_shuffled_null": 0.5178462430568272,
+      "h_context_min_bits": 0.8961323897437947,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.002074746450187681,
+        "p_hat": -0.00072479248046875,
+        "h_context_min_bits": -0.02011325199180125,
+        "p_hat_z": -0.37109375,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ff",
+      "temp_c": -40.0,
+      "vdd_v": 1.98,
+      "shift_mv": [
+        0,
+        0
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ff:-40C:1.98V:Ts20us",
+      "seed": 3137008728236844550,
+      "sha256_hex": "e2fcdd95a61f73fd5b63f0cf28aa45c244f1662d85c9a2372a6dd6e6b7b323cb",
+      "calibration": {
+        "periods_s": [
+          1.597094e-09,
+          1.51209e-09,
+          1.4375340000000001e-09,
+          1.365108e-09
+        ],
+        "sigma": {
+          "1": 1.4614316855669584e-12
+        },
+        "q_ring": 0.0009264573004849719,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-1e212605771c",
+        "jitter_job_id": "klt-sim-12bef3920bb9"
+      },
+      "p_hat": 0.5014190673828125,
+      "p_u_99": 0.5049764618752174,
+      "h_hat_bits": 0.9857119528196069,
+      "z_monobit": -1.0275145414117017,
+      "autocorr": {
+        "1": 0.0053707523108447305,
+        "2": 0.006370223903098144,
+        "3": -0.0061957291791544964,
+        "4": -0.007424199720906822,
+        "8": -0.0001607411097618192
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5172205945187084,
+      "best_context_acc_shuffled_null": 0.5176326069706403,
+      "h_context_min_bits": 0.951148373841131,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.0,
+        "p_hat": 0.0,
+        "h_context_min_bits": 0.0,
+        "p_hat_z": 0.0,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ff",
+      "temp_c": -40.0,
+      "vdd_v": 1.98,
+      "shift_mv": [
+        20,
+        20
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ff:-40C:1.98V:Ts20us",
+      "seed": 3137008728236844550,
+      "sha256_hex": "7a71e9ee420aad26b4cd55a53e41db4963b1fca5d6c3e70c0ae60f1942cef25d",
+      "calibration": {
+        "periods_s": [
+          1.679575e-09,
+          1.5916850000000002e-09,
+          1.5142640000000003e-09,
+          1.439202e-09
+        ],
+        "sigma": {
+          "1": 1.297869384799314e-12
+        },
+        "q_ring": 0.000619074893795883,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-1e212605771c",
+        "jitter_job_id": "klt-sim-12bef3920bb9"
+      },
+      "p_hat": 0.5021133422851562,
+      "p_u_99": 0.5056707193286184,
+      "h_hat_bits": 0.9837298527132614,
+      "z_monobit": -1.530223268661513,
+      "autocorr": {
+        "1": -0.0010935730132553428,
+        "2": -0.035312613909706886,
+        "3": 0.00420142561769211,
+        "4": -0.0027187381153265487,
+        "8": -0.0016201021346379926
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5231032167490691,
+      "best_context_acc_shuffled_null": 0.5176249771104193,
+      "h_context_min_bits": 0.9348324531955579,
+      "delta_vs_zero": {
+        "h_hat_bits": -0.0019821001063454746,
+        "p_hat": 0.00069427490234375,
+        "h_context_min_bits": -0.01631592064557319,
+        "p_hat_z": 0.35546875,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ff",
+      "temp_c": -40.0,
+      "vdd_v": 1.98,
+      "shift_mv": [
+        40,
+        40
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ff:-40C:1.98V:Ts20us",
+      "seed": 3137008728236844550,
+      "sha256_hex": "085665e5217cf0b0f582534adf19c6c46a8111f708815df2ec90bef4c10fb081",
+      "calibration": {
+        "periods_s": [
+          1.7691860000000001e-09,
+          1.6782169999999999e-09,
+          1.5978199999999998e-09,
+          1.519922e-09
+        ],
+        "sigma": {
+          "1": 1.4269472173321964e-12
+        },
+        "q_ring": 0.0006322555838113707,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-1e212605771c",
+        "jitter_job_id": "klt-sim-12bef3920bb9"
+      },
+      "p_hat": 0.50018310546875,
+      "p_u_99": 0.5037405140501208,
+      "h_hat_bits": 0.9892473284163901,
+      "z_monobit": 0.13258252147247765,
+      "autocorr": {
+        "1": -0.09334650089724693,
+        "2": -0.0036165227890740865,
+        "3": 0.006980922599404818,
+        "4": 9.142142205211295e-05,
+        "8": 0.0020751881315830916
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5471983153268632,
+      "best_context_acc_shuffled_null": 0.5175868278093145,
+      "h_context_min_bits": 0.8698643063180129,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.0035353755967831857,
+        "p_hat": -0.0012359619140625,
+        "h_context_min_bits": -0.08128406752311812,
+        "p_hat_z": -0.6328125,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ff",
+      "temp_c": -40.0,
+      "vdd_v": 1.98,
+      "shift_mv": [
+        60,
+        60
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ff:-40C:1.98V:Ts20us",
+      "seed": 3137008728236844550,
+      "sha256_hex": "e2b8ffd9d01fd24519f7944499ca485d5a28ddfd2a4deb8dd8658c727a2d7a5f",
+      "calibration": {
+        "periods_s": [
+          1.866642e-09,
+          1.7725009999999997e-09,
+          1.6889659999999998e-09,
+          1.6080020000000003e-09
+        ],
+        "sigma": {
+          "1": 1.6620294167387152e-12
+        },
+        "q_ring": 0.0007200508024557711,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-1e212605771c",
+        "jitter_job_id": "klt-sim-12bef3920bb9"
+      },
+      "p_hat": 0.5006484985351562,
+      "p_u_99": 0.5042059043629297,
+      "h_hat_bits": 0.9879150823131962,
+      "z_monobit": 0.4695630968816917,
+      "autocorr": {
+        "1": -0.044382303262625426,
+        "2": -0.022005248635940902,
+        "3": 6.696416560635719e-05,
+        "4": 0.0007460026418029716,
+        "8": -0.0010851837590719708
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5254913629982298,
+      "best_context_acc_shuffled_null": 0.5177775743148385,
+      "h_context_min_bits": 0.9282610427113693,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.002203129493589362,
+        "p_hat": -0.00077056884765625,
+        "h_context_min_bits": -0.022887331129761712,
+        "p_hat_z": -0.39453125,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ff",
+      "temp_c": 27.0,
+      "vdd_v": 1.62,
+      "shift_mv": [
+        0,
+        0
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ff:27C:1.62V:Ts20us",
+      "seed": 7622914330232269100,
+      "sha256_hex": "9d4f8efb58f1fd4dae5c1e0c221979cac8347eff40845b3f9ef9197b3252db14",
+      "calibration": {
+        "periods_s": [
+          3.39823e-09,
+          3.21586e-09,
+          3.0544700000000005e-09,
+          2.8991199999999994e-09
+        ],
+        "sigma": {
+          "1": 2.50278722374902e-12
+        },
+        "q_ring": 0.0002661868543276831,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-0faa71e89478",
+        "jitter_job_id": "klt-sim-d9dbc725a212"
+      },
+      "p_hat": 0.5022048950195312,
+      "p_u_99": 0.5057622692501493,
+      "h_hat_bits": 0.9834686814450931,
+      "z_monobit": 1.5965145293977516,
+      "autocorr": {
+        "1": 0.011478294654488163,
+        "2": -0.010914668014317182,
+        "3": 0.0046575020369515755,
+        "4": -0.0055282131886623806,
+        "8": 0.0024374810610311307
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5191585790148324,
+      "best_context_acc_shuffled_null": 0.5177928340352804,
+      "h_context_min_bits": 0.9457528121545326,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.0,
+        "p_hat": 0.0,
+        "h_context_min_bits": 0.0,
+        "p_hat_z": 0.0,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ff",
+      "temp_c": 27.0,
+      "vdd_v": 1.62,
+      "shift_mv": [
+        20,
+        20
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ff:27C:1.62V:Ts20us",
+      "seed": 7622914330232269100,
+      "sha256_hex": "b0185c1bcb59b1753bdfbc2004608f9301ee2cb110da087382a87457efda1082",
+      "calibration": {
+        "periods_s": [
+          3.62227e-09,
+          3.43151e-09,
+          3.26272e-09,
+          3.10076e-09
+        ],
+        "sigma": {
+          "1": 2.984591913036729e-12
+        },
+        "q_ring": 0.00030839946146577293,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-0faa71e89478",
+        "jitter_job_id": "klt-sim-d9dbc725a212"
+      },
+      "p_hat": 0.500335693359375,
+      "p_u_99": 0.5038931013775195,
+      "h_hat_bits": 0.9888103898727509,
+      "z_monobit": -0.2430679560328757,
+      "autocorr": {
+        "1": 0.062233023280079985,
+        "2": 0.0024104655276327063,
+        "3": -0.039071512541500236,
+        "4": -0.03099202137534275,
+        "8": -0.0008855354902967116
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5370963803943112,
+      "best_context_acc_shuffled_null": 0.5177852041750595,
+      "h_context_min_bits": 0.8967470959870512,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.005341708427657799,
+        "p_hat": -0.00186920166015625,
+        "h_context_min_bits": -0.049005716167481395,
+        "p_hat_z": -0.95703125,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ff",
+      "temp_c": 27.0,
+      "vdd_v": 1.62,
+      "shift_mv": [
+        40,
+        40
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ff:27C:1.62V:Ts20us",
+      "seed": 7622914330232269100,
+      "sha256_hex": "eb754f0f8ef643995d767657de07ac27356da1264b77df63407ae427952a5002",
+      "calibration": {
+        "periods_s": [
+          3.87078e-09,
+          3.6710000000000002e-09,
+          3.49406e-09,
+          3.3251600000000005e-09
+        ],
+        "sigma": {
+          "1": 3.2955736571146252e-12
+        },
+        "q_ring": 0.00030391405827530403,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-0faa71e89478",
+        "jitter_job_id": "klt-sim-d9dbc725a212"
+      },
+      "p_hat": 0.5009689331054688,
+      "p_u_99": 0.5045263352457622,
+      "h_hat_bits": 0.9869985178513753,
+      "z_monobit": -0.7015825094585276,
+      "autocorr": {
+        "1": -0.0009879289264077436,
+        "2": -0.023990998385727352,
+        "3": -0.0015220159053447974,
+        "4": 0.04166945518756858,
+        "8": -0.00642809265822551
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5308780443142281,
+      "best_context_acc_shuffled_null": 0.5180598791430141,
+      "h_context_min_bits": 0.9135476181723318,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.0035298364062821275,
+        "p_hat": -0.0012359619140625,
+        "h_context_min_bits": -0.032205193982200786,
+        "p_hat_z": -0.6328125,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ff",
+      "temp_c": 27.0,
+      "vdd_v": 1.62,
+      "shift_mv": [
+        60,
+        60
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ff:27C:1.62V:Ts20us",
+      "seed": 7622914330232269100,
+      "sha256_hex": "e0ad2a0296a9933f97a4a4730bb99195e9bd2f8d4ce5be4973c9ce36d6d6c5fe",
+      "calibration": {
+        "periods_s": [
+          4.14689e-09,
+          3.93747e-09,
+          3.75211e-09,
+          3.5752399999999997e-09
+        ],
+        "sigma": {
+          "1": 2.4716466795281926e-12
+        },
+        "q_ring": 0.00013725629181738752,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-0faa71e89478",
+        "jitter_job_id": "klt-sim-d9dbc725a212"
+      },
+      "p_hat": 0.5008544921875,
+      "p_u_99": 0.5044118958124767,
+      "h_hat_bits": 0.9873257949799622,
+      "z_monobit": 0.6187184335382291,
+      "autocorr": {
+        "1": 0.0919856596620996,
+        "2": -0.006350666296252772,
+        "3": -0.023936896966163017,
+        "4": -0.05075529814611219,
+        "8": 0.00040917089870142544
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5551867789782091,
+      "best_context_acc_shuffled_null": 0.5174876396264421,
+      "h_context_min_bits": 0.8489548823920836,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.003857113534869061,
+        "p_hat": -0.00135040283203125,
+        "h_context_min_bits": -0.09679792976244894,
+        "p_hat_z": -0.69140625,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ff",
+      "temp_c": 27.0,
+      "vdd_v": 1.8,
+      "shift_mv": [
+        0,
+        0
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ff:27C:1.8V:Ts20us",
+      "seed": 14201299096983362867,
+      "sha256_hex": "507eb50c1fe83240f7479814e6fcee9da163e415897c8afc8c8cb64cfee59328",
+      "calibration": {
+        "periods_s": [
+          2.412957e-09,
+          2.2728230000000006e-09,
+          2.1487570000000002e-09,
+          2.0301499999999997e-09
+        ],
+        "sigma": {
+          "1": 2.637612445694244e-12
+        },
+        "q_ring": 0.0008688199337560805,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-6e18b37af648",
+        "jitter_job_id": "klt-sim-07c311eaeae1"
+      },
+      "p_hat": 0.5035018920898438,
+      "p_u_99": 0.5070592136579127,
+      "h_hat_bits": 0.9797738619341062,
+      "z_monobit": 2.535640723161135,
+      "autocorr": {
+        "1": 0.025670983811539302,
+        "2": 0.0016904500571247511,
+        "3": 0.0020643298083185217,
+        "4": 0.002896015363243572,
+        "8": -0.0005683448583113654
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5203030580479766,
+      "best_context_acc_shuffled_null": 0.5177546847341756,
+      "h_context_min_bits": 0.942575908199923,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.0,
+        "p_hat": 0.0,
+        "h_context_min_bits": 0.0,
+        "p_hat_z": 0.0,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ff",
+      "temp_c": 27.0,
+      "vdd_v": 1.8,
+      "shift_mv": [
+        20,
+        20
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ff:27C:1.8V:Ts20us",
+      "seed": 14201299096983362867,
+      "sha256_hex": "e718c2f5a225512d4d6b805d4442ada14235596c0a84e330604cf38e0ff61119",
+      "calibration": {
+        "periods_s": [
+          2.536302e-09,
+          2.3912470000000003e-09,
+          2.2627180000000004e-09,
+          2.1401880000000004e-09
+        ],
+        "sigma": {
+          "1": 2.5252187905211178e-12
+        },
+        "q_ring": 0.0006774051961799299,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-6e18b37af648",
+        "jitter_job_id": "klt-sim-07c311eaeae1"
+      },
+      "p_hat": 0.5012969970703125,
+      "p_u_99": 0.5048543939216499,
+      "h_hat_bits": 0.9860607376306673,
+      "z_monobit": -0.9391261937633834,
+      "autocorr": {
+        "1": -0.09021035565361649,
+        "2": -0.01891278440140807,
+        "3": 0.010773885020212043,
+        "4": 0.004357446959173274,
+        "8": 0.002785778375168221
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5457715314655436,
+      "best_context_acc_shuffled_null": 0.5166636147225783,
+      "h_context_min_bits": 0.8736309521709603,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.006286875696561056,
+        "p_hat": -0.00220489501953125,
+        "h_context_min_bits": -0.06894495602896267,
+        "p_hat_z": -1.12890625,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ff",
+      "temp_c": 27.0,
+      "vdd_v": 1.8,
+      "shift_mv": [
+        40,
+        40
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ff:27C:1.8V:Ts20us",
+      "seed": 14201299096983362867,
+      "sha256_hex": "480629df03a48ced4df7b21336d5d1be3c52aaec4fdd2006f95ecf28a8511833",
+      "calibration": {
+        "periods_s": [
+          2.670743e-09,
+          2.520429e-09,
+          2.3871079999999994e-09,
+          2.2604189999999996e-09
+        ],
+        "sigma": {
+          "1": 3.1956384244769753e-12
+        },
+        "q_ring": 0.0009203065976023995,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-6e18b37af648",
+        "jitter_job_id": "klt-sim-07c311eaeae1"
+      },
+      "p_hat": 0.5021896362304688,
+      "p_u_99": 0.5057470109381772,
+      "h_hat_bits": 0.9835122066829676,
+      "z_monobit": -1.585465985941712,
+      "autocorr": {
+        "1": 0.03142239903858534,
+        "2": 0.0010642323519795297,
+        "3": -0.0026819499759396024,
+        "4": -0.0009805978767175381,
+        "8": 0.0015220137588841725
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5217069523286333,
+      "best_context_acc_shuffled_null": 0.5186778978209119,
+      "h_context_min_bits": 0.9386884358686286,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.0037383447488613664,
+        "p_hat": -0.001312255859375,
+        "h_context_min_bits": -0.0038874723312943837,
+        "p_hat_z": -0.671875,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ff",
+      "temp_c": 27.0,
+      "vdd_v": 1.8,
+      "shift_mv": [
+        60,
+        60
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ff:27C:1.8V:Ts20us",
+      "seed": 14201299096983362867,
+      "sha256_hex": "3be704e26468177236e5fce11e2b5f8d9fd5d0592fcf77524dfe7f3c0bd6fad3",
+      "calibration": {
+        "periods_s": [
+          2.8176139999999998e-09,
+          2.6617289999999998e-09,
+          2.5233049999999997e-09,
+          2.3921279999999995e-09
+        ],
+        "sigma": {
+          "1": 2.8211577864052002e-12
+        },
+        "q_ring": 0.0006034972998328388,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-6e18b37af648",
+        "jitter_job_id": "klt-sim-07c311eaeae1"
+      },
+      "p_hat": 0.5016555786132812,
+      "p_u_99": 0.5052129679318493,
+      "h_hat_bits": 0.9850364238322517,
+      "z_monobit": 1.1987669649803188,
+      "autocorr": {
+        "1": 0.0006070283977287163,
+        "2": 0.0062910809204790915,
+        "3": 0.0013852620795683115,
+        "4": 0.0033461082969209067,
+        "8": 0.001759181757902734
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5181819569065494,
+      "best_context_acc_shuffled_null": 0.517693645852408,
+      "h_context_min_bits": 0.9484693131297415,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.005262561898145446,
+        "p_hat": -0.0018463134765625,
+        "h_context_min_bits": 0.005893404929818491,
+        "p_hat_z": -0.9453125,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ff",
+      "temp_c": 27.0,
+      "vdd_v": 1.98,
+      "shift_mv": [
+        0,
+        0
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ff:27C:1.98V:Ts20us",
+      "seed": 14801588282518281686,
+      "sha256_hex": "69f47b35a87579f0d576f11c69fdb066c6ba2deabd7274a02aa258f853c9d303",
+      "calibration": {
+        "periods_s": [
+          1.8483859999999996e-09,
+          1.7350569999999999e-09,
+          1.6343210000000003e-09,
+          1.53857e-09
+        ],
+        "sigma": {
+          "1": 2.1556387362104537e-12
+        },
+        "q_ring": 0.0013499515726341762,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-3d0373040ec0",
+        "jitter_job_id": "klt-sim-910763892111"
+      },
+      "p_hat": 0.5011749267578125,
+      "p_u_99": 0.5047323257560421,
+      "h_hat_bits": 0.986409607390141,
+      "z_monobit": 0.850737846115065,
+      "autocorr": {
+        "1": 0.003603229146265521,
+        "2": -0.007848738430682472,
+        "3": -0.00010477875542431683,
+        "4": -0.001195822335276062,
+        "8": 0.003199036471644738
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5188915339070989,
+      "best_context_acc_shuffled_null": 0.5183040346700848,
+      "h_context_min_bits": 0.9464950974379193,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.0,
+        "p_hat": 0.0,
+        "h_context_min_bits": 0.0,
+        "p_hat_z": 0.0,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ff",
+      "temp_c": 27.0,
+      "vdd_v": 1.98,
+      "shift_mv": [
+        20,
+        20
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ff:27C:1.98V:Ts20us",
+      "seed": 14801588282518281686,
+      "sha256_hex": "fa61fae411c152643d536862530f13a5c4ea3efb53265d6270f82535361625e5",
+      "calibration": {
+        "periods_s": [
+          1.92456e-09,
+          1.8081549999999997e-09,
+          1.7047399999999998e-09,
+          1.606275e-09
+        ],
+        "sigma": {
+          "1": 1.8993820166739674e-12
+        },
+        "q_ring": 0.0009206601191389657,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-3d0373040ec0",
+        "jitter_job_id": "klt-sim-910763892111"
+      },
+      "p_hat": 0.5007476806640625,
+      "p_u_99": 0.5043050855066032,
+      "h_hat_bits": 0.9876313211127211,
+      "z_monobit": 0.5413786293459504,
+      "autocorr": {
+        "1": 0.07492678675778343,
+        "2": -0.029467473348643282,
+        "3": -0.018915957631267636,
+        "4": -0.004976764415144697,
+        "8": 5.880263477617072e-05
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5399041689556248,
+      "best_context_acc_shuffled_null": 0.5170374778734054,
+      "h_context_min_bits": 0.8892247380587324,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.0012217137225800645,
+        "p_hat": -0.00042724609375,
+        "h_context_min_bits": -0.0572703593791869,
+        "p_hat_z": -0.21875,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ff",
+      "temp_c": 27.0,
+      "vdd_v": 1.98,
+      "shift_mv": [
+        40,
+        40
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ff:27C:1.98V:Ts20us",
+      "seed": 14801588282518281686,
+      "sha256_hex": "fdaff4a894ab594c1b387bd29d46c7fbb6816a3a45d7b751d336fc53337c6c4d",
+      "calibration": {
+        "periods_s": [
+          2.0065500000000003e-09,
+          1.886899e-09,
+          1.78061e-09,
+          1.679303e-09
+        ],
+        "sigma": {
+          "1": 3.0078836226433584e-12
+        },
+        "q_ring": 0.002013555618803136,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-3d0373040ec0",
+        "jitter_job_id": "klt-sim-910763892111"
+      },
+      "p_hat": 0.5007858276367188,
+      "p_u_99": 0.5043432320630514,
+      "h_hat_bits": 0.9875221971556741,
+      "z_monobit": -0.5689999879860499,
+      "autocorr": {
+        "1": -0.006174688674488826,
+        "2": -0.0023980945731521494,
+        "3": -5.5805389010236206e-05,
+        "4": -0.0020013656184531773,
+        "8": -0.0007349387984276216
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5176326069706403,
+      "best_context_acc_shuffled_null": 0.5177165354330708,
+      "h_context_min_bits": 0.9499995957308867,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.0011125897655330785,
+        "p_hat": -0.00038909912109375,
+        "h_context_min_bits": 0.003504498292967395,
+        "p_hat_z": -0.19921875,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ff",
+      "temp_c": 27.0,
+      "vdd_v": 1.98,
+      "shift_mv": [
+        60,
+        60
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ff:27C:1.98V:Ts20us",
+      "seed": 14801588282518281686,
+      "sha256_hex": "a02485786dabff56ad411a3241f6443e939b1a2ea59def3116b03f7bc3d4ada2",
+      "calibration": {
+        "periods_s": [
+          2.09489e-09,
+          1.97179e-09,
+          1.8624919999999997e-09,
+          1.7582540000000002e-09
+        ],
+        "sigma": {
+          "1": 2.143014770929121e-12
+        },
+        "q_ring": 0.0008889140668261066,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-3d0373040ec0",
+        "jitter_job_id": "klt-sim-910763892111"
+      },
+      "p_hat": 0.5015945434570312,
+      "p_u_99": 0.5051519341869853,
+      "h_hat_bits": 0.9852107233966261,
+      "z_monobit": -1.1545727911561596,
+      "autocorr": {
+        "1": -0.03901991046811249,
+        "2": -0.011012037368692627,
+        "3": -0.0008570129708174117,
+        "4": -0.0024515792612454204,
+        "8": -0.00019319279788737354
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5245147408899469,
+      "best_context_acc_shuffled_null": 0.5186778978209119,
+      "h_context_min_bits": 0.9309447762125889,
+      "delta_vs_zero": {
+        "h_hat_bits": -0.0011988839935149764,
+        "p_hat": 0.00041961669921875,
+        "h_context_min_bits": -0.015550321225330399,
+        "p_hat_z": 0.21484375,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ff",
+      "temp_c": 125.0,
+      "vdd_v": 1.62,
+      "shift_mv": [
+        0,
+        0
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ff:125C:1.62V:Ts20us",
+      "seed": 2369978534563250561,
+      "sha256_hex": "49d8338779fb0fb738e00782a752e9ae7f1d80129b7e293ceb3f8cc0d04027a5",
+      "calibration": {
+        "periods_s": [
+          3.84961e-09,
+          3.61682e-09,
+          3.40827e-09,
+          3.2134400000000004e-09
+        ],
+        "sigma": {
+          "1": 4.1204968329715035e-12
+        },
+        "q_ring": 0.0004773634618576166,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-327a5af2ccce",
+        "jitter_job_id": "klt-sim-e3995617af25"
+      },
+      "p_hat": 0.50103759765625,
+      "p_u_99": 0.5045949988162794,
+      "h_hat_bits": 0.9868021874607985,
+      "z_monobit": 0.7513009550107067,
+      "autocorr": {
+        "1": 0.010425168623509794,
+        "2": -0.00755761828317148,
+        "3": -0.00014930075537526667,
+        "4": -0.005512953065965672,
+        "8": -0.0002484635583681004
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5186397485198071,
+      "best_context_acc_shuffled_null": 0.517106146615394,
+      "h_context_min_bits": 0.9471953163959353,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.0,
+        "p_hat": 0.0,
+        "h_context_min_bits": 0.0,
+        "p_hat_z": 0.0,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ff",
+      "temp_c": 125.0,
+      "vdd_v": 1.62,
+      "shift_mv": [
+        20,
+        20
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ff:125C:1.62V:Ts20us",
+      "seed": 2369978534563250561,
+      "sha256_hex": "6026f59b55a869daf00f01c23cddefeb9a0838eeff554366990137f5df231a6f",
+      "calibration": {
+        "periods_s": [
+          4.0195399999999995e-09,
+          3.77821e-09,
+          3.56213e-09,
+          3.3603699999999996e-09
+        ],
+        "sigma": {
+          "1": 3.5683629510645387e-12
+        },
+        "q_ring": 0.0003130213007681662,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-327a5af2ccce",
+        "jitter_job_id": "klt-sim-e3995617af25"
+      },
+      "p_hat": 0.5002593994140625,
+      "p_u_99": 0.5038168077552339,
+      "h_hat_bits": 0.9890288424844317,
+      "z_monobit": -0.18782523875267668,
+      "autocorr": {
+        "1": 0.007728368548743172,
+        "2": 0.013137752228672788,
+        "3": -0.033578012067510404,
+        "4": -0.011231083678690431,
+        "8": -0.00277755488654652
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5282838918391015,
+      "best_context_acc_shuffled_null": 0.5176707562717451,
+      "h_context_min_bits": 0.9206146742420986,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.002226655023633173,
+        "p_hat": -0.0007781982421875,
+        "h_context_min_bits": -0.02658064215383671,
+        "p_hat_z": -0.3984375,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ff",
+      "temp_c": 125.0,
+      "vdd_v": 1.62,
+      "shift_mv": [
+        40,
+        40
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ff:125C:1.62V:Ts20us",
+      "seed": 2369978534563250561,
+      "sha256_hex": "fe405844499d39db600960afaee43bdb72948cc28875acdc91ab11c26c1878ac",
+      "calibration": {
+        "periods_s": [
+          4.20368e-09,
+          3.95331e-09,
+          3.7292299999999995e-09,
+          3.52016e-09
+        ],
+        "sigma": {
+          "1": 3.442930314502803e-12
+        },
+        "q_ring": 0.00025379237045983194,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-327a5af2ccce",
+        "jitter_job_id": "klt-sim-e3995617af25"
+      },
+      "p_hat": 0.5005722045898438,
+      "p_u_99": 0.5041296110802367,
+      "h_hat_bits": 0.9881333984175457,
+      "z_monobit": -0.41432037960149265,
+      "autocorr": {
+        "1": 0.022482734437972093,
+        "2": -0.11127022564802497,
+        "3": -0.0056242746425003865,
+        "4": -0.00174083214669826,
+        "8": -0.005220106133290049
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5608252456814992,
+      "best_context_acc_shuffled_null": 0.5176707562717451,
+      "h_context_min_bits": 0.834376800817496,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.001331210956747153,
+        "p_hat": -0.00046539306640625,
+        "h_context_min_bits": -0.11281851557843936,
+        "p_hat_z": -0.23828125,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ff",
+      "temp_c": 125.0,
+      "vdd_v": 1.62,
+      "shift_mv": [
+        60,
+        60
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ff:125C:1.62V:Ts20us",
+      "seed": 2369978534563250561,
+      "sha256_hex": "2c0f787a0dff2986e6d2a2a25d3c9e5513f9c0cf828a15ca2441f8be2123b732",
+      "calibration": {
+        "periods_s": [
+          4.4035699999999995e-09,
+          4.143560000000001e-09,
+          3.9109899999999995e-09,
+          3.69417e-09
+        ],
+        "sigma": {
+          "1": 4.175355603260594e-12
+        },
+        "q_ring": 0.0003234855751870007,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-327a5af2ccce",
+        "jitter_job_id": "klt-sim-e3995617af25"
+      },
+      "p_hat": 0.50225830078125,
+      "p_u_99": 0.5058156733159607,
+      "h_hat_bits": 0.983316353527018,
+      "z_monobit": 1.635184431493891,
+      "autocorr": {
+        "1": 0.0010705646615669971,
+        "2": -0.10648490618236935,
+        "3": -0.0033090191920249405,
+        "4": -0.0008598842466937106,
+        "8": 0.002710798468142643
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5533174632240737,
+      "best_context_acc_shuffled_null": 0.516923029970091,
+      "h_context_min_bits": 0.8538206375638997,
+      "delta_vs_zero": {
+        "h_hat_bits": -0.0034858339337805466,
+        "p_hat": 0.001220703125,
+        "h_context_min_bits": -0.09337467883203565,
+        "p_hat_z": 0.625,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ff",
+      "temp_c": 125.0,
+      "vdd_v": 1.8,
+      "shift_mv": [
+        0,
+        0
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ff:125C:1.8V:Ts20us",
+      "seed": 8281506238538654609,
+      "sha256_hex": "ff6087b56fd20d5e5a39e772a4de25e6f68cee9f79d3830e4de88333e8ce845a",
+      "calibration": {
+        "periods_s": [
+          2.95334e-09,
+          2.7651900000000005e-09,
+          2.59629e-09,
+          2.4374499999999997e-09
+        ],
+        "sigma": {
+          "1": 2.9223018041841837e-12
+        },
+        "q_ring": 0.0005564137010994507,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-d3dd2f338521",
+        "jitter_job_id": "klt-sim-cde78a01da8b"
+      },
+      "p_hat": 0.5022506713867188,
+      "p_u_99": 0.5058080441661867,
+      "h_hat_bits": 0.983338113666396,
+      "z_monobit": 1.629660159765871,
+      "autocorr": {
+        "1": 7.892208879658113e-05,
+        "2": -0.06331603713374588,
+        "3": -0.014219316704028043,
+        "4": 0.00016271365600076105,
+        "8": 0.0011241685615984945
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5333882683269242,
+      "best_context_acc_shuffled_null": 0.5185863394982604,
+      "h_context_min_bits": 0.906742001180935,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.0,
+        "p_hat": 0.0,
+        "h_context_min_bits": 0.0,
+        "p_hat_z": 0.0,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ff",
+      "temp_c": 125.0,
+      "vdd_v": 1.8,
+      "shift_mv": [
+        20,
+        20
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ff:125C:1.8V:Ts20us",
+      "seed": 8281506238538654609,
+      "sha256_hex": "4d08cc36b0cc5d6d42cd5499c2a6d49440d6ca757f92dcbb4c83a806e5e69302",
+      "calibration": {
+        "periods_s": [
+          3.0584699999999997e-09,
+          2.86489e-09,
+          2.69103e-09,
+          2.5278500000000005e-09
+        ],
+        "sigma": {
+          "1": 3.6044324603265616e-12
+        },
+        "q_ring": 0.0007574978289368779,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-d3dd2f338521",
+        "jitter_job_id": "klt-sim-cde78a01da8b"
+      },
+      "p_hat": 0.5043792724609375,
+      "p_u_99": 0.5079365448300674,
+      "h_hat_bits": 0.977279818710927,
+      "z_monobit": -3.170931971883424,
+      "autocorr": {
+        "1": 0.014977345918850984,
+        "2": 0.0032042210600934195,
+        "3": 0.000815872910165635,
+        "4": 0.004440363240650198,
+        "8": -0.0001226436965206075
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5183116645303059,
+      "best_context_acc_shuffled_null": 0.5180675090032351,
+      "h_context_min_bits": 0.9481082331526621,
+      "delta_vs_zero": {
+        "h_hat_bits": -0.006058294955469057,
+        "p_hat": 0.00212860107421875,
+        "h_context_min_bits": 0.041366231971727174,
+        "p_hat_z": 1.08984375,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ff",
+      "temp_c": 125.0,
+      "vdd_v": 1.8,
+      "shift_mv": [
+        40,
+        40
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ff:125C:1.8V:Ts20us",
+      "seed": 8281506238538654609,
+      "sha256_hex": "041d129ad384388ba70879085755bae162320061eb1065834f44a6201546bc54",
+      "calibration": {
+        "periods_s": [
+          3.17126e-09,
+          2.9719100000000003e-09,
+          2.79288e-09,
+          2.62512e-09
+        ],
+        "sigma": {
+          "1": 4.960712538271663e-12
+        },
+        "q_ring": 0.0012849397158374491,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-d3dd2f338521",
+        "jitter_job_id": "klt-sim-cde78a01da8b"
+      },
+      "p_hat": 0.5013198852539062,
+      "p_u_99": 0.5048772816790953,
+      "h_hat_bits": 0.9859953340091565,
+      "z_monobit": 0.9556990089474431,
+      "autocorr": {
+        "1": -0.0034783937298687112,
+        "2": 0.0021140501741678764,
+        "3": 0.0009772122430539937,
+        "4": -0.0005716055030692633,
+        "8": -8.330870391616797e-05
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5169077702496491,
+      "best_context_acc_shuffled_null": 0.5175791979490936,
+      "h_context_min_bits": 0.9520212055915852,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.0026572203427605023,
+        "p_hat": -0.0009307861328125,
+        "h_context_min_bits": 0.04527920441065025,
+        "p_hat_z": -0.4765625,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ff",
+      "temp_c": 125.0,
+      "vdd_v": 1.8,
+      "shift_mv": [
+        60,
+        60
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ff:125C:1.8V:Ts20us",
+      "seed": 8281506238538654609,
+      "sha256_hex": "51f334c5cb37117c6255a39bcdb975812e0e19099bf0e5dbe37c0deca1291936",
+      "calibration": {
+        "periods_s": [
+          3.29233e-09,
+          3.0868600000000002e-09,
+          2.9024399999999998e-09,
+          2.72983e-09
+        ],
+        "sigma": {
+          "1": 4.057941329632617e-12
+        },
+        "q_ring": 0.0007633297319045099,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-d3dd2f338521",
+        "jitter_job_id": "klt-sim-cde78a01da8b"
+      },
+      "p_hat": 0.5011444091796875,
+      "p_u_99": 0.5047018086815089,
+      "h_hat_bits": 0.9864968381080311,
+      "z_monobit": -0.8286407592029853,
+      "autocorr": {
+        "1": -0.005048298551738061,
+        "2": 0.0316116550493725,
+        "3": -0.003247752984721017,
+        "4": -8.150078422110063e-05,
+        "8": 0.000895053939245012
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5226072758347067,
+      "best_context_acc_shuffled_null": 0.5173045229811389,
+      "h_context_min_bits": 0.9362008846236497,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.003158724441635119,
+        "p_hat": -0.00110626220703125,
+        "h_context_min_bits": 0.029458883442714745,
+        "p_hat_z": -0.56640625,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ff",
+      "temp_c": 125.0,
+      "vdd_v": 1.98,
+      "shift_mv": [
+        0,
+        0
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ff:125C:1.98V:Ts20us",
+      "seed": 16279379227390962454,
+      "sha256_hex": "b07315b54548906a87b59c80d19049834cb812580a0881225255353d2e8911ca",
+      "calibration": {
+        "periods_s": [
+          2.37943e-09,
+          2.2204700000000003e-09,
+          2.07668e-09,
+          1.94084e-09
+        ],
+        "sigma": {
+          "1": 5.18306469927208e-12
+        },
+        "q_ring": 0.0035070625726306044,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-3ed5bcd140b0",
+        "jitter_job_id": "klt-sim-39fec4e5a3b1"
+      },
+      "p_hat": 0.5000228881835938,
+      "p_u_99": 0.5035802969997802,
+      "h_hat_bits": 0.9897062573760734,
+      "z_monobit": 0.016572815184059706,
+      "autocorr": {
+        "1": 0.0010147151209527593,
+        "2": -0.0003204415560418451,
+        "3": -0.0020828744801330216,
+        "4": 0.0043183663057856925,
+        "8": -0.0015564949811383271
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5170527375938473,
+      "best_context_acc_shuffled_null": 0.5168314716474394,
+      "h_context_min_bits": 0.9516166569297175,
+      "delta_vs_zero": {
+        "h_hat_bits": 0.0,
+        "p_hat": 0.0,
+        "h_context_min_bits": 0.0,
+        "p_hat_z": 0.0,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ff",
+      "temp_c": 125.0,
+      "vdd_v": 1.98,
+      "shift_mv": [
+        20,
+        20
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ff:125C:1.98V:Ts20us",
+      "seed": 16279379227390962454,
+      "sha256_hex": "f6e7ddf2ae3666ef5520bbe4c330838c1472678513890b169c99489a6ad57e51",
+      "calibration": {
+        "periods_s": [
+          2.44941e-09,
+          2.28635e-09,
+          2.13965e-09,
+          2.00095e-09
+        ],
+        "sigma": {
+          "1": 4.401812239593047e-12
+        },
+        "q_ring": 0.0023140507474202865,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-3ed5bcd140b0",
+        "jitter_job_id": "klt-sim-39fec4e5a3b1"
+      },
+      "p_hat": 0.500091552734375,
+      "p_u_99": 0.503648961494653,
+      "h_hat_bits": 0.9895095555317692,
+      "z_monobit": -0.06629126073623882,
+      "autocorr": {
+        "1": 0.001869182455686921,
+        "2": 0.0019073442723998694,
+        "3": 0.0013961776736190338,
+        "4": 0.0010681143378121138,
+        "8": -0.0027773027452517064
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.515938778001587,
+      "best_context_acc_shuffled_null": 0.518479521455167,
+      "h_context_min_bits": 0.954728211242049,
+      "delta_vs_zero": {
+        "h_hat_bits": -0.00019670184430420345,
+        "p_hat": 6.866455078125e-05,
+        "h_context_min_bits": 0.003111554312331455,
+        "p_hat_z": 0.03515625,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ff",
+      "temp_c": 125.0,
+      "vdd_v": 1.98,
+      "shift_mv": [
+        40,
+        40
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ff:125C:1.98V:Ts20us",
+      "seed": 16279379227390962454,
+      "sha256_hex": "50b079ac7b497a08742d8979a7bd71c266f2eb9e620cddd48ea7a703f1ec28e2",
+      "calibration": {
+        "periods_s": [
+          2.5240400000000003e-09,
+          2.35714e-09,
+          2.2069499999999997e-09,
+          2.0652300000000003e-09
+        ],
+        "sigma": {
+          "1": 3.2800700719407664e-12
+        },
+        "q_ring": 0.0011693426682559667,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-3ed5bcd140b0",
+        "jitter_job_id": "klt-sim-39fec4e5a3b1"
+      },
+      "p_hat": 0.501678466796875,
+      "p_u_99": 0.5052358555725066,
+      "h_hat_bits": 0.9849710669632813,
+      "z_monobit": 1.2153397801643784,
+      "autocorr": {
+        "1": -0.004428772219040149,
+        "2": 0.0010874437074311436,
+        "3": -0.0011632963471875336,
+        "4": -0.00014855343336545704,
+        "8": -0.0057030566938435865
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5167933223463346,
+      "best_context_acc_shuffled_null": 0.5184261124336202,
+      "h_context_min_bits": 0.9523406662643257,
+      "delta_vs_zero": {
+        "h_hat_bits": -0.004735190412792134,
+        "p_hat": 0.00165557861328125,
+        "h_context_min_bits": 0.0007240093346081444,
+        "p_hat_z": 0.84765625,
+        "p_hat_se": 0.001953125
+      }
+    },
+    {
+      "corner": "ff",
+      "temp_c": 125.0,
+      "vdd_v": 1.98,
+      "shift_mv": [
+        60,
+        60
+      ],
+      "n": 131072,
+      "ts_s": 2e-05,
+      "seed_label": "vthdrift:stream:ff:125C:1.98V:Ts20us",
+      "seed": 16279379227390962454,
+      "sha256_hex": "1f049f359008494b3e29f622f78d7ffd02d792b35ebe4018ca1ee232935f62a3",
+      "calibration": {
+        "periods_s": [
+          2.6035899999999997e-09,
+          2.4326599999999997e-09,
+          2.27885e-09,
+          2.1339300000000003e-09
+        ],
+        "sigma": {
+          "1": 2.368807259939715e-12
+        },
+        "q_ring": 0.0005522688691458909,
+        "combining_record": "20261010-175052-7e279ab",
+        "combining_job_id": "klt-sim-3ed5bcd140b0",
+        "jitter_job_id": "klt-sim-39fec4e5a3b1"
+      },
+      "p_hat": 0.501068115234375,
+      "p_u_99": 0.5046255159371963,
+      "h_hat_bits": 0.9867149381463449,
+      "z_monobit": 0.7733980419227863,
+      "autocorr": {
+        "1": 0.02749973906965164,
+        "2": -0.0021866137296810747,
+        "3": -0.016858358892843244,
+        "4": 0.004847901370830617,
+        "8": -0.0009964178152936536
+      },
+      "best_context_len": 8,
+      "best_context_acc": 0.5216382835866447,
+      "best_context_acc_shuffled_null": 0.5188228651651102,
+      "h_context_min_bits": 0.9388783405143085,
+      "delta_vs_zero": {
+        "h_hat_bits": -0.0029913192297285063,
+        "p_hat": 0.00104522705078125,
+        "h_context_min_bits": -0.012738316415409012,
+        "p_hat_z": 0.53515625,
+        "p_hat_se": 0.001953125
+      }
+    }
+  ],
+  "summary": {
+    "context_excess_by_shift": {
+      "0": {
+        "n": 27,
+        "max_excess": 0.08579777818470358,
+        "mean_excess": 0.014676460016141394,
+        "n_gt_0p05": 2,
+        "min_h_ctx": 0.7280112698038766
+      },
+      "20": {
+        "n": 27,
+        "max_excess": 0.11579075871330036,
+        "mean_excess": 0.019340565310473137,
+        "n_gt_0p05": 3,
+        "min_h_ctx": 0.656379199819522
+      },
+      "40": {
+        "n": 27,
+        "max_excess": 0.19542974859802387,
+        "mean_excess": 0.02666206743503636,
+        "n_gt_0p05": 4,
+        "min_h_ctx": 0.495802269356061
+      },
+      "60": {
+        "n": 27,
+        "max_excess": 0.11634773850943048,
+        "mean_excess": 0.032465010976079504,
+        "n_gt_0p05": 6,
+        "min_h_ctx": 0.6589144179769468
+      }
+    },
+    "max_abs_z_p_hat": 1.6328125,
+    "min_h_mcv": 0.977279818710927,
+    "min_h_ctx": 0.495802269356061
+  },
+  "source_record": "20261010-175052-7e279ab",
+  "calibration_artifact": {
+    "path": "sim/ro-vth-drift-sensitivity/records/20261010-175052-7e279ab.calibration.json",
+    "file_sha256": "14d52a2bd5c3656f56d72695fe08953923ea2cb67bcbc5425beaa8f35b37f788",
+    "schema": "vth-drift-calibration/1"
+  }
+}
