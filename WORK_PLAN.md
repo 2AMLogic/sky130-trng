@@ -19,13 +19,14 @@ _None._
 
 Human-approved issues ready for implementation (`loom:issue`).
 
+- **#221**: Decision record request: local mismatch can cap tt raw-bit H below DR-0004's 0.5 floor; adjacent rings approach 1:1
 - **#230**: CI: guard that every test_*.py is wired into a CI workflow and path filter
 
 ## In Progress
 
 Issues currently being built (`loom:building`).
 
-- **#244**: Decision record: DR-0004 external interface vs the assumed Challenge #4 pin budget (brief §2 re-map)
+_None._
 
 ## PRs Awaiting Review
 
@@ -45,13 +46,15 @@ Issues carrying `loom:curated`.
 
 - **#162**: README: embed the fleet burndown chart (one line) *(curated)*
 - **#174**: Whole-block characterization: post-layout PVT, dynamic power and IR evidence *(curated)*
-- **#208**: Decision record needed: RO-array supply-quality requirement (droop/ripple) from #200 evidence *(curated)*
 - **#217**: CI: run test_raw_bit_volume_model and test_ripple_reduction in the PR-blocking lint job *(curated)*
+- **#221**: Decision record request: local mismatch can cap tt raw-bit H below DR-0004's 0.5 floor; adjacent rings approach 1:1 *(curated)*
 - **#230**: CI: guard that every test_*.py is wired into a CI workflow and path filter *(curated)*
+- **#254**: End-of-life drift: bounded Vth-shift (BTI/HCI) derate of the RO array across PVT *(curated)*
 
 ## Proposed (Architect / Hermit)
 
 - **#201**: Gated-off analog block idle/leakage across the full PVT envelope incl. +125 C, with combined digital standby estimate *(architect)*
+- **#254**: End-of-life drift: bounded Vth-shift (BTI/HCI) derate of the RO array across PVT *(architect)*
 
 ## Epics
 
@@ -64,11 +67,11 @@ Issues carrying `loom:curated`.
 |------|-------|
 | Operator merge-risk holds | 1 |
 | Operator priority | 0 |
-| Ready (`loom:issue`) | 1 |
-| In Progress (`loom:building`) | 1 |
+| Ready (`loom:issue`) | 2 |
+| In Progress (`loom:building`) | 0 |
 | PRs awaiting review | 0 |
 | Approved PRs awaiting merge | 1 |
-| Curated | 5 |
-| Architect / Hermit proposals | 1 |
+| Curated | 6 |
+| Architect / Hermit proposals | 2 |
 | Active epics | 2 |
 <!-- guide:plan-body:end -->
