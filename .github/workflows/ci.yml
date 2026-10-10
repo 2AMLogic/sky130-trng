@@ -144,6 +144,8 @@ on:
       # sim/tests unit tests and everything they import or read (issue #190)
       - "sim/tests/**"
       - "sim/bin/**"
+      # issue #236 electrical-limit reduction controls import this module
+      - "sim/digital-electrical-repair/analysis/**"
       # append-only record rule (issue #232): any change under a records dir
       - "sim/*/records/**"
       - "sim/records-append-only-allowlist.txt"
@@ -223,6 +225,9 @@ jobs:
 
       - name: sim/tests/test_floorplan_compaction.py (issue #226 study guard + area-model contract)
         run: python3 sim/tests/test_floorplan_compaction.py
+
+      - name: sim/tests/test_electrical_reduction.py (issue #236 missing-corner / injected-violation / no-data reduction controls)
+        run: python3 sim/tests/test_electrical_reduction.py
 
   sim-records-append-only:
     name: sim/ append-only record rule (no edit/delete/rename of committed records)

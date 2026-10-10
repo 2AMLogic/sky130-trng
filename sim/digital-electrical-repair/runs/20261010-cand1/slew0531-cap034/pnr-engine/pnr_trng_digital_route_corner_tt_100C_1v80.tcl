@@ -1,0 +1,28 @@
+read_db /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-236/sim/digital-electrical-repair/requests/.klt/place-and-route/trng_digital_route.odb
+define_corners tt_100C_1v80
+read_liberty -corner tt_100C_1v80 /home/ubuntu/.volare/sky130A/libs.ref/sky130_fd_sc_hd/lib/sky130_fd_sc_hd__tt_100C_1v80.lib
+create_clock -name clk -period 20000.0 [get_ports clk]
+set klt_clock_port [get_ports clk]
+set klt_non_clock_inputs [lsearch -inline -all -not -exact [all_inputs] $klt_clock_port]
+set_input_delay 4000.0 -clock clk $klt_non_clock_inputs
+set_output_delay 4000.0 -clock clk [all_outputs]
+set_wire_rc -layer met2
+estimate_parasitics -global_routing
+puts "===KLT_MAX_TRANSITION_LIBRARY_VIOLATIONS_BEGIN==="
+report_check_types -max_slew -violators
+puts "===KLT_MAX_TRANSITION_LIBRARY_VIOLATIONS_END==="
+puts "===KLT_MAX_CAPACITANCE_LIBRARY_VIOLATIONS_BEGIN==="
+report_check_types -max_capacitance -violators
+puts "===KLT_MAX_CAPACITANCE_LIBRARY_VIOLATIONS_END==="
+set_max_transition 0.531 [current_design]
+set_max_capacitance 0.034 [current_design]
+report_worst_slack_metric -setup
+report_worst_slack_metric -hold
+report_tns_metric -setup
+report_tns_metric -hold
+puts "===KLT_MAX_TRANSITION_VIOLATIONS_BEGIN==="
+report_check_types -max_slew -violators
+puts "===KLT_MAX_TRANSITION_VIOLATIONS_END==="
+puts "===KLT_MAX_CAPACITANCE_VIOLATIONS_BEGIN==="
+report_check_types -max_capacitance -violators
+puts "===KLT_MAX_CAPACITANCE_VIOLATIONS_END==="
