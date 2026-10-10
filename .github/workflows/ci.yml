@@ -152,6 +152,11 @@ on:
       - "sim/bin/**"
       # issue #236 electrical-limit reduction controls import this module
       - "sim/digital-electrical-repair/analysis/**"
+      # issue #250 final-route gate test replays these recorded runs and loads the harness
+      - "sim/digital-electrical-repair/runs/**"
+      - "sim/digital-electrical-repair/requests/**"
+      - "sim/digital-pnr/harness/**"
+      - "sim/digital-synthesis/harness/**"
       # append-only record rule (issue #232): any change under a records dir
       - "sim/*/records/**"
       - "sim/records-append-only-allowlist.txt"
@@ -241,6 +246,8 @@ jobs:
 
       - name: sim/tests/test_electrical_reduction.py (issue #236 missing-corner / injected-violation / no-data reduction controls)
         run: python3 sim/tests/test_electrical_reduction.py
+      - name: sim/tests/test_electrical_final_route_gate.py (issue #250 final-route electrical verdict gates digital P&R; replays recorded sessions)
+        run: python3 sim/tests/test_electrical_final_route_gate.py
 
   sim-records-append-only:
     name: sim/ append-only record rule (no edit/delete/rename of committed records)
