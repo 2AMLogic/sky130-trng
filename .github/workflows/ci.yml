@@ -159,6 +159,8 @@ on:
       - "sim/digital-synthesis/harness/**"
       # append-only record rule (issue #232): any change under a records dir
       - "sim/*/records/**"
+      - "sim/*/runs/**"
+      - "sim/*/corners/**"
       - "sim/records-append-only-allowlist.txt"
       - "sim/raw-bit-min-entropy/**"
       # issue #243 conditioned-output analysis + the committed streams it reads
