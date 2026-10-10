@@ -129,6 +129,7 @@ assembled `ro_array_core` + `sampler_dff` path from injected per-stage
 |---|---|---|
 | `raw-bit-min-entropy/` | a real, noise-driven raw bit sequence from the assembled array + sampler, and its MCV-style min-entropy point estimate, per PVT corner; plus `analysis/raw-bit-battery.py` (reduced SP 800-22 battery + non-MCV SP 800-90B estimators, INSUFFICIENT below minimum length) | #21 |
 | `raw-bit-volume-campaign/` | >= 1e5 raw bits per tt/ss/ff corner (`level: behavioral`, calibrated on and cross-checked against the transistor records, at DR-0003's Ts = 20 us and the #21 Ts = 100 ns), plus an independent-seed transistor-level cross-check run as `klt sim` batch requests | #188 |
+| `digital-conditioned-output/` | the CRC-32 conditioner model run over the volume-campaign raw streams (16384 DATA bits each, MSB-first words): reused SP 800-22-style battery + non-IID 90B estimators per corner, and a raw-H x 256 vs 32-bit accounting table; simulation-derived, no full-entropy claim | #243 |
 
 Issue #200 then perturbed the supply, which every record above holds ideal and quiet:
 

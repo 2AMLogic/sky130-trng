@@ -80,6 +80,12 @@ name: CI
 #     reports as an explicit skip (not a silent pass). Previously they could
 #     regress silently because nothing ran them.
 #
+# sim/tests/test_conditioned_output.py (issue #243) -- stdlib-only unit test
+#     for the conditioned-output (DATA) analysis: pins the MSB-first word
+#     serialization, block/partial-block handling, the 16 x 1024 conditioned
+#     segment policy, the raw-H x 256 vs 32-bit accounting flags, and that the
+#     committed record's first stream still reproduces. No ngspice, no PDK.
+#
 # signoff-check (issue #155) -- the gap-to-T1 tier report staleness gate.
 #     `klt signoff --manifest signoff/block-manifest.json` re-renders this
 #     block's graded T1 item table from the committed evidence envelopes
@@ -150,6 +156,10 @@ on:
       - "sim/*/records/**"
       - "sim/records-append-only-allowlist.txt"
       - "sim/raw-bit-min-entropy/**"
+      # issue #243 conditioned-output analysis + the committed streams it reads
+      - "sim/digital-conditioned-output/**"
+      - "sim/raw-bit-volume-campaign/records/**"
+      - "sim/raw-bit-volume-campaign/runs/**"
       - "digital/model/**"
       - "sim/digital-health-test-parameters/analysis/**"
       - "layout/test_pex_netlist.py"
@@ -225,6 +235,9 @@ jobs:
 
       - name: sim/tests/test_floorplan_compaction.py (issue #226 study guard + area-model contract)
         run: python3 sim/tests/test_floorplan_compaction.py
+
+      - name: sim/tests/test_conditioned_output.py (issue #243 conditioned DATA analysis unit test)
+        run: python3 sim/tests/test_conditioned_output.py
 
       - name: sim/tests/test_electrical_reduction.py (issue #236 missing-corner / injected-violation / no-data reduction controls)
         run: python3 sim/tests/test_electrical_reduction.py
