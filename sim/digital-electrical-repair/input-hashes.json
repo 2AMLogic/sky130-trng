@@ -1,0 +1,45 @@
+{
+  "_comment": "Issue #236 study inputs. Verify with: sha256sum <path>. control.json is the committed request with only the netlist path rebased; candidates add constraints.max_transition_ns / max_capacitance_pf only.",
+  "committed_request": {
+    "path": "digital/flow/place-and-route/pnr-trng-digital-50khz.json",
+    "sha256": "sha256:97b6cb9123e43cbacb09724dc448ec8e976a78cd46dc85a1580a66fc54232350"
+  },
+  "requests": {
+    "control": {
+      "path": "sim/digital-electrical-repair/requests/control.json",
+      "sha256": "sha256:1c02e931fc2ab40d6b888c278fdc5c7da47b8c1d9b51d7ff2ad89f9f81836566"
+    },
+    "slew0531-cap034": {
+      "path": "sim/digital-electrical-repair/requests/slew0531-cap034.json",
+      "sha256": "sha256:e46bf4d081c65c0afcd96716e0eebd859f2f4378951ccd6636a3567865e5310f"
+    },
+    "slew0531": {
+      "path": "sim/digital-electrical-repair/requests/slew0531.json",
+      "sha256": "sha256:6720f3f92a477c098a11976ac48d1df26468213c9c7bfc3f9f10f72f1fa2e6c1"
+    },
+    "slew0700": {
+      "path": "sim/digital-electrical-repair/requests/slew0700.json",
+      "sha256": "sha256:c1ac91990cc068199f25c89ca62c24b46d93754a5d7e102b95a4b44f8b387c65"
+    }
+  },
+  "netlist": {
+    "path": "sim/digital-synthesis/runs/20260910-001436-a4c3194/50khz-constrained-trng_digital_synth.v",
+    "sha256": "sha256:9d2b8aed1cd057bd7985ca77e7394921a005846934a4b9c01921c56dade83126"
+  },
+  "tool_pins": {
+    "path": "digital/flow/place-and-route/tool-pins.json",
+    "sha256": "sha256:a8d0a3b5e427452b82d7cfc4099b8ca4ebb77009acaed0de139951ec58374841"
+  },
+  "harness": {
+    "path": "sim/digital-pnr/harness/pnr-and-verify.py",
+    "sha256": "sha256:5449751ab0084be5278a7f3c3e5d800b1ede9fa5b71895bb7994361a35b3f42e"
+  },
+  "analysis": {
+    "derive_limits.py": "sha256:db84a3d2bff6b77b7acd85b9a9986df5c821482a2055e55241b4eb1a6fdc2097",
+    "diagnose.py": "sha256:eaaae8ea1cf5df7f3aa6ca1f31d6a164f974ea149813eb20cff827143d934679",
+    "electrical.py": "sha256:ce28c1f22a1551d328012cacdadfb8cef72ea46d7afe5f69627457b80d15680e",
+    "final_route_audit.py": "sha256:95fa4d181c96298f11fc13a776de1a36e8842d40e9ffacee84d01a9fa5455daf",
+    "record.py": "sha256:24094ab8b59cf5869372449fd76ade9d6792df48569c241c94f6c89af3c3971d",
+    "summarise_run.py": "sha256:c0d6d67a4834687cc39953aaf48175f62ce6b8ba60ba70d15cb90cc01769dba5"
+  }
+}

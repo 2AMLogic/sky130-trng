@@ -1,0 +1,39 @@
+{
+  "schema": "klt.place-and-route.request/1",
+  "engine": "openroad",
+  "netlist": "../../digital-synthesis/runs/20260910-001436-a4c3194/50khz-constrained-trng_digital_synth.v",
+  "hdl_toplevel": "trng_digital",
+  "pdk": {
+    "cell_library": "sky130_fd_sc_hd",
+    "corner": "tt_025C_1v80",
+    "interconnect_corner": "nom"
+  },
+  "floorplan": {
+    "method": "utilization",
+    "utilization_pct": 40,
+    "site": "unithd",
+    "core_margin_um": 5,
+    "aspect_ratio": 1.0
+  },
+  "io": {
+    "layer_h": "met3",
+    "layer_v": "met2"
+  },
+  "power": {
+    "preset": "sky130hd",
+    "power_net": "VPWR",
+    "ground_net": "VGND"
+  },
+  "constraints": {
+    "clock_port": "clk",
+    "clock_period_ns": 20000,
+    "input_delay_ns": 4000,
+    "output_delay_ns": 4000,
+    "max_transition_ns": 0.531,
+    "max_capacitance_pf": 0.034
+  },
+  "seed": 20260905,
+  "target_stage": "route",
+  "post_route_spef": true,
+  "post_route_sdf": true
+}
