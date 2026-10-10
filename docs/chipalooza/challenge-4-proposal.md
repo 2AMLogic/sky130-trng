@@ -43,8 +43,9 @@ public, Apache-2.0.
 
 **Analog chain and digital section each laid out and verified separately,
 then composed into one routed top-level GDS (`layout/trng_whole/`, issue
-\#172) that has no whole-block DRC sign-off, no whole-block LVS and no
-whole-block post-layout PVT.** The composition is geometry and an
+\#172) that has whole-block DRC and mixed-level LVS met within stated coverage
+(issue \#173, not foundry sign-off) but no whole-block post-layout PVT
+(\#174).** The composition is geometry and an
 extraction-based connectivity audit only. Its own verdict is `composed;
 physical sign-off pending (#173 DRC/LVS, #174 characterization)`. The
 entropy source (an `N = 4`, five-stage,
@@ -105,7 +106,7 @@ This is still an earlier maturity point than the sibling
 [`gf180-trng`](https://github.com/2AMLogic/gf180-trng) repository's own
 Challenge #3 proposal: the register interface, health tests and conditioner
 now exist here too, but that sibling's were synthesized and power/area-
-characterized. This repository has since composed a whole-block GDS (`layout/trng_whole/`, issue #172), but that GDS has no block-level DRC/LVS sign-off and no post-layout PVT. **This document is not a submission-ready
+characterized. This repository has since composed a whole-block GDS (`layout/trng_whole/`, issue #172), but that GDS has block-level DRC and mixed-level LVS met only within stated coverage (issue #173, not foundry sign-off) and no post-layout PVT (#174). **This document is not a submission-ready
 package the way that sibling document was written to be.** It is this
 issue's own deliverable: an honest, `sim/`-cited snapshot of where this
 design stands against the Challenge #4 brief's assumed structure, naming
@@ -155,7 +156,7 @@ no part of the ratified spec was relaxed to produce any verdict here.
 |---|---|---|---|
 | 1 | This document: block type, I/O vs slot budget, functional description, re-derived spec table, bench test plan | **Met (provisional)** | §1-§5 below; every §4 row cites `sim/` or a DR. Slot budget remains an *assumed* structure (AC4). §2 still describes the pre-DR-0004 pin set (§5.3 open item). |
 | 2 | Every spec row states met/unmet; none relaxed | **Met** | §4 verdict column. Honest tally: **no row is Met against its README target.** B (rate) Unmet, C (min-entropy) Unmet vs `H0 = 0.5`, D (power) Unmet/TBD, I (area) Unmet: the composed `trng_whole` bbox is 0.126116 mm², 2.52x the `< 0.05 mm²` target, and the digital die alone is 0.0600 mm² (`layout/trng_whole/report.json` `area`); A, E, J are measured/supplementary with no target; F, G, H are derived/supplementary. |
-| 3 | Sign-off bar: post-layout PVT simulation **and** DRC/LVS-clean GDS in-repo for the block | **UNMET** | See breakdown below. Each half is separately evidenced and the two are now composed into one routed GDS. The *composed block* has no DRC sign-off, no LVS and no post-layout PVT. |
+| 3 | Sign-off bar: post-layout PVT simulation **and** DRC/LVS-clean GDS in-repo for the block | **UNMET** | See breakdown below. Each half is separately evidenced and the two are now composed into one routed GDS. The *composed block* has DRC (clean on the curated `sky130` deck) and mixed-level LVS (analog transistor level + digital standard-cell level) **MET within their stated coverage, not foundry sign-off** (issue #173; `layout/trng_whole/verify/README.md`), but **no post-layout PVT** (unmet, #174). The bar needs all three, so the row stays UNMET. |
 | 4 | If `rules-4.html` published, verify slot-budget assumptions and note deltas | **N/A, re-checked** | `https://opencircuitdesign.com/chipalooza/rules-4.html` returned HTTP 404 on 2026-10-04 and again on 2026-10-07: still unpublished, so there is no delta to note. The 2026-vs-2027 launch-date discrepancy recorded above is unchanged (`index.html` re-published 2026-09-29, still `Nov 9, 2026`; `challenge-4.html` still says 2027). |
 
 ### AC3 breakdown (what exists, what does not)
