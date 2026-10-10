@@ -69,7 +69,8 @@ rbe = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(rbe)
 
 MASTER_SEED = 188
-NBITS = 131072                      # 2**17 >= 1e5 per stream
+NBITS = 131072                      # 2**17 >= 1e5 per stream (#188/#197 records; default)
+NBITS_STD = 1 << 20                 # 1048576 >= SP 800-90B conventional 1e6 samples (issue #253)
 TS_TRANSISTOR_LEVEL = 100e-9        # #21 testbench Ts
 TS_DR0003 = 20e-6                   # DR-0003 literal 50 kHz sample clock
 CORNERS = ("tt", "ss", "ff")
@@ -89,7 +90,8 @@ def _hot_combining_present() -> bool:
 # records are committed, so the tree never declares a PVT point it cannot calibrate (the hot
 # `klt sim` batch jobs for #197 were refused by the fleet: see the PR / klayout-tools#2851).
 PVT_POINTS = PVT_POINTS_BASE + (PVT_POINTS_HOT if _hot_combining_present() else ())
-PVT_SETS = {"base": PVT_POINTS_BASE, "hot": PVT_POINTS_HOT}
+PVT_SETS = {"base": PVT_POINTS_BASE, "hot": PVT_POINTS_HOT,
+            "all": PVT_POINTS_BASE + PVT_POINTS_HOT}
 XCHECK_PVT = (27.0, 1.8)            # PVT of the transistor-level cross-check
 PERIOD_REL_UNC = 0.01               # declared 1-sigma relative period uncertainty
 ENSEMBLE = 2000
@@ -303,14 +305,14 @@ def cross_checks() -> dict:
 
 
 # -------------------------------------------------------------------- campaign
-def run_campaign(outdir: Path, points=PVT_POINTS_BASE) -> list[dict]:
+def run_campaign(outdir: Path, points=PVT_POINTS_BASE, nbits: int = NBITS) -> list[dict]:
     rows = []
     for (temp, vdd) in points:
         for corner in CORNERS:
             cal = calibration(temp, vdd, corner)
             for ts_name, ts in (("Ts100ns", TS_TRANSISTOR_LEVEL), ("Ts20us", TS_DR0003)):
                 label = f"stream:{corner}:{temp:g}C:{vdd:g}V:{ts_name}"
-                bits = stream(cal["periods_s"], cal["sigma"][1], ts, NBITS, random.Random(sub_seed(label)))
+                bits = stream(cal["periods_s"], cal["sigma"][1], ts, nbits, random.Random(sub_seed(label)))
                 hx = pack_hex(bits)
                 fname = f"bits_{corner}_{temp:g}C_{vdd:g}V_{ts_name}.hex.txt"
                 (outdir / fname).write_text(hx + "\n")
@@ -323,7 +325,7 @@ def run_campaign(outdir: Path, points=PVT_POINTS_BASE) -> list[dict]:
     return rows
 
 
-def robustness(rows) -> list[dict]:
+def robustness(rows, nbits: int = NBITS) -> list[dict]:
     """Sensitivity of the DR-0003-Ts result to the (unknowable) exact periods."""
     out = []
     for corner in CORNERS:
@@ -331,7 +333,7 @@ def robustness(rows) -> list[dict]:
         for d in range(8):
             rng = random.Random(sub_seed(f"robust:{corner}:{d}"))
             per = [T * (1 + rng.gauss(0, PERIOD_REL_UNC)) for T in cal["periods_s"]]
-            bits = stream(per, cal["sigma"][1], TS_DR0003, NBITS, rng)
+            bits = stream(per, cal["sigma"][1], TS_DR0003, nbits, rng)
             st = stats(bits, f"robust:{corner}:{d}")
             out.append({"corner": corner, "draw": d, "p_hat": st["p_hat"], "h_hat_bits": st["h_hat_bits"],
                         "h_context_min_bits": st["h_context_min_bits"],
@@ -343,6 +345,7 @@ def fmt_band(b):
     return f"[{b[0]:.3f}, {b[1]:.3f}]"
 
 
+HOT_RECORD = "20261008-135454-847b454"      # the #197 record (never modified)
 BASE_RECORD = "20261008-061809-56e0fb7"   # the #188 record the hot set extends (never modified)
 
 
@@ -365,8 +368,32 @@ def findings(xc) -> list[str]:
     return out
 
 
-def build_body(rows, xc, rob, point_set="base") -> tuple[str, dict]:
+def build_body(rows, xc, rob, point_set="base", nbits: int = NBITS) -> tuple[str, dict]:
     L = []
+    if point_set == "all":
+        L.append("## Scope of this record (issue #253)")
+        L.append("")
+        L.append(f"Standards-sized re-mint of the #188 (`{BASE_RECORD}`) and #197 (`{HOT_RECORD}`) volume streams: "
+                 f"all 36 streams (3 process x 6 PVT points x 2 Ts) at {nbits} bits (2^20) each, so SP 800-90B "
+                 "non-IID estimators run at their conventional >= 1e6-sample size. Same generator, calibration, "
+                 "master seed and per-stream seed labels as #188/#197 (no model change), so the first 131072 "
+                 "bits of each stream equal the corresponding 2^17 stream. This record SUPERSEDES the two "
+                 "records by name for new citations; neither is edited and both still replay with "
+                 "`--regenerate-check`. Calibration pairs per (process, supply) are listed below; the jitter "
+                 "cross-check covers all six PVT points. The sensitivity table (period-uncertainty draws) is "
+                 "unchanged from #188: it stays at 2^17 samples per draw and was not re-run at 2^20.")
+        L.append("")
+        L.append("| T (C) | Vdd | combining record | combining batch job | jitter record (local run, no batch job) |")
+        L.append("|---|---|---|---|---|")
+        seen = set()
+        for r in rows:
+            c = r["calibration"]
+            key = (r["temp_c"], r["vdd_v"])
+            if key in seen:
+                continue
+            seen.add(key)
+            L.append(f"| {r['temp_c']:g} | {r['vdd_v']:g} | `{c['combining_record']}` | `{c['combining_job_id']}` | `{c['jitter_record']}` |")
+        L.append("")
     if point_set == "hot":
         L.append("## Scope of this record (issue #197)")
         L.append("")
@@ -390,7 +417,7 @@ def build_body(rows, xc, rob, point_set="base") -> tuple[str, dict]:
         L.append("")
     L.append("## What this is")
     L.append("")
-    L.append(f"{len(rows)} behavioral raw-bit streams of {NBITS} bits each (>= 1e5), one per "
+    L.append(f"{len(rows)} behavioral raw-bit streams of {nbits} bits each (>= 1e5), one per "
              "(process corner x PVT point x Ts), from `sim/raw-bit-volume-campaign/behavioral_raw_bit.py`. "
              "**`level: behavioral` -- not transistor-level.** The model replaces the 4-ring array + "
              "sampler by white-period-jitter phase diffusion of four rings XOR-ed and edge-sampled, "
@@ -544,7 +571,7 @@ def build_body(rows, xc, rob, point_set="base") -> tuple[str, dict]:
              "entropy rate in either direction. At Ts = 20 us the context predictor beats its shuffled "
              "null only slightly (see table); the battery issue should quantify this.")
     L.append("- **Not an SP 800-90B assessment and not the SP 800-22 battery.** Provisional until silicon.")
-    if point_set == "hot":
+    if point_set in ("hot", "all"):
         L.append("- **Calibration PVT coverage:** the six PVT points that have both combining and ring5-jitter "
                  "records: the three #188 points plus 125 C at 1.62/1.8/1.98 V. The transistor-level p_hat and "
                  "Hamming cross-checks (2)-(3) exist ONLY at 27 C/1.8 V; there is no transistor-level "
@@ -567,7 +594,10 @@ def main(argv=None) -> int:
     ap.add_argument("--emit-record", action="store_true")
     ap.add_argument("--regenerate-check", metavar="RECORD_JSON")
     ap.add_argument("--set", choices=sorted(PVT_SETS), default="base", dest="point_set",
-                    help="PVT points whose streams are generated: base (#188 record) or hot (125 C, #197)")
+                    help="PVT points whose streams are generated: base (#188 record), hot (125 C, #197), "
+                    "or all (both; issue #253)")
+    ap.add_argument("--nbits", type=int, default=NBITS,
+                    help=f"bits per stream (default {NBITS} = #188/#197; {NBITS_STD} for issue #253); multiple of 8")
     ap.add_argument("--author", default="loom-builder@sky130-trng")
     args = ap.parse_args(argv)
 
@@ -576,7 +606,7 @@ def main(argv=None) -> int:
         bad = 0
         for r in rec["streams"]:
             cal = calibration(r["temp_c"], r["vdd_v"], r["corner"])
-            bits = stream(cal["periods_s"], cal["sigma"][1], r["ts_s"], NBITS, random.Random(r["seed"]))
+            bits = stream(cal["periods_s"], cal["sigma"][1], r["ts_s"], r.get("n", NBITS), random.Random(r["seed"]))
             ok = hashlib.sha256(pack_hex(bits).encode()).hexdigest() == r["sha256_hex"]
             bad += not ok
             print(("OK  " if ok else "FAIL"), r["file"])
@@ -584,15 +614,22 @@ def main(argv=None) -> int:
 
     with tempfile.TemporaryDirectory() as td:
         tmp = Path(td)
-        rows = run_campaign(tmp, PVT_SETS[args.point_set])
+        if args.nbits % 8 or args.nbits < 1000:
+            ap.error("--nbits must be a multiple of 8 and >= 1000")
+        rows = run_campaign(tmp, PVT_SETS[args.point_set], args.nbits)
         xc = cross_checks()
-        rob = robustness(rows)
-        body, summary = build_body(rows, xc, rob, args.point_set)
+        rob = robustness(rows)      # always the #188 2^17-per-draw sensitivity (see body)
+        body, summary = build_body(rows, xc, rob, args.point_set, args.nbits)
         print(body)
         if not args.emit_record:
             return 0
         rid = mint_behavioral_record(
             REPO_ROOT, SLUG,
+            (f"behavioral (calibrated, cross-checked) raw-bit streams of {args.nbits} bits (>= 1e6, SP 800-90B "
+             "standard size) per tt/ss/ff corner at all six PVT points (27/-40/125 degC), at DR-0003's literal "
+             "Ts = 20 us and at the #21 testbench's Ts = 100 ns; supersedes the 2^17 records "
+             f"{BASE_RECORD} and {HOT_RECORD} by name; issue #253")
+            if args.point_set == "all" else
             ("behavioral (calibrated, cross-checked) raw-bit streams of >= 1e5 bits per tt/ss/ff corner at "
              "125 degC x 1.62/1.8/1.98 V, at DR-0003's literal Ts = 20 us and at the #21 testbench's Ts = "
              "100 ns; extends the #188 record to the hot end of the envelope; issue #197")
@@ -601,6 +638,7 @@ def main(argv=None) -> int:
              "three PVT points, at DR-0003's literal Ts = 20 us and at the #21 testbench's Ts = 100 ns; "
              "issue #188"),
             body, summary, level="behavioral",
+            supersedes=f"{BASE_RECORD}, {HOT_RECORD} (by name; neither edited)" if args.point_set == "all" else None,
             seeds={"master": MASTER_SEED, "policy": "per-stream seed = sha256(master:label)[:8]"},
             artifacts=[tmp / r["file"] for r in rows],
             tools={"model": "sim/raw-bit-volume-campaign/behavioral_raw_bit.py"},
