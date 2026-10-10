@@ -4,6 +4,19 @@ Chronological record of recently merged pull requests and closed issues.
 
 ### 2026-10-10
 
+- **Issue #244** (closed): Decision record: DR-0004 external interface vs the assumed Challenge #4 pin budget (brief §2 re-map)
+- **Issue #208** (closed): Decision record needed: RO-array supply-quality requirement (droop/ripple) from #200 evidence
+- **Issue #250** (closed): Gate digital P&R success on extracted final-route Liberty electrical limits
+- **Issue #253** (closed): Raw-bit statistical evidence at SP 800-90B standard sample size (>= 2^20 bits per stream)
+- **Issue #251** (closed): Measure repaired digital floorplan compaction with 16-corner electrical closure
+- **Issue #256** (closed): Silicon characterization plan: claim-to-measurement table, observability audit, measurements/ layout
+- **PR #247**: docs(spec): DR-0011 Proposed -- external interface vs assumed Challenge #4 pin budget
+- **PR #248**: docs(spec): DR-0012 Proposed -- RO-array supply-quality requirement (#208)
+- **PR #252**: Gate digital P&R on extracted final-route Liberty electrical limits
+- **PR #255**: feat(sim): 2^20-bit raw-bit streams and min-H shift vs 2^17 (#253)
+- **PR #257**: sim: repaired floorplan compaction with 16-corner electrical closure (#251)
+- **PR #260**: docs(spec): silicon characterization plan, DR-0014 Proposed, measurements/ layout contract (#256)
+
 - **PR #245**: feat(sim): conditioned-output (DATA) battery + estimator evidence (#243)
 - **PR #241**: docs: sync sim/README slug index and Challenge #4 sign-off row 3 (#240)
 - **PR #242**: docs(spec): DR-0010 target-table reconciliation packet (Proposed)
