@@ -186,8 +186,8 @@ and 75 / 806, which is the cross-check):
 ### What a sub-floor source does to the adopted cutoffs
 
 The cutoffs at the floor are set so that a source at or above 0.5 false-alarms
-no faster than 2^-40. A source below 0.5 breaks that in the **fail-safe**
-direction: it alarms *more*, not less. At the worst tt bias (max symbol
+no faster than 2^-40. Under the IID Bernoulli source model, a source below
+0.5 raises the alarm probability. At the worst tt bias (max symbol
 probability 1 - 0.2789392 = 0.7210608, `H` = 0.4718), with cutoffs left at
 81 / 824:
 
@@ -202,21 +202,32 @@ probability 1 - 0.2789392 = 0.7210608, `H` = 0.4718), with cutoffs left at
   2^-37.7, about 4.8x higher; DR-0004's 254.5-day interval becomes about
   **53 days** (an upper-bound reading using the min-entropy rate).
 
-So the health tests turn a sub-floor die into a nuisance-alarm die (`alarm`,
-and the gating that follows), not into an undetected weak-entropy die. The
-adverse direction would be the reverse (cutoffs derived at a higher `H` than
-the truth), which is why DR-0004 section 2.3 chose the floor over 0.5415 and
-why this record recommends against raising the cutoffs on the strength of the
-ss/ff margins. Separately, the conditioner in DR-0004 takes 256 raw bits per
-32-bit conditioned word (DR-0011's rate derivation); at `H` = 0.4718 that is
-about 121 bits of input entropy, 3.8x the 32 output bits. Whether this meets any
-particular full-entropy criterion is **not** evaluated here.
+Under that model a sub-floor die therefore alarms more often than the design
+rate, roughly every 1.6 years (APT) / 53 days (RCT) at 50 kbps. That is an
+availability cost, **not an entropy assurance**: between alarms the die keeps
+producing output, and the SP 800-90B-style tests are not designed to catch a
+modest shortfall below the floor. DR-0004's own behavioral evidence shows this
+(`sim/digital-section-behavioral/records/20260905-192548-2ecb0a3.md`
+experiment D: a `p` = 0.75, `H` = 0.415 source passes 16 windows without a
+trip, by design). Passing the health tests does not show that a die meets
+`H` = 0.5. Separately, re-deriving the cutoffs at the higher ss/ff `H_bias`
+values would *lower* them (64 / 762 at 0.6425, 60 / 747 at 0.6800). Per
+DR-0004 section 2.3, that would make them false-alarm faster than alpha
+promises for any die whose true `H` is below the value used, so this record
+recommends against it. The conditioner takes 256 raw bits per 32-bit word
+(DR-0011's rate derivation). At the `H_bias` bound that is *at most* about 121
+bits under an IID assumption. Because `H_bias` is an upper bound, and the
+joint entropy of correlated samples is not established, this gives no lower
+bound on conditioner input entropy. Whether any die meets a full-entropy
+criterion is **not** evaluated here.
 
 ### Options
 
 **(a1) Leave the floor and the cutoffs unchanged; record the exposure as an
 accepted, provisional risk (recommended).**
-- For: nothing is relaxed. The cutoffs are fail-safe for `H` below the floor. The
+- For: nothing is relaxed. A sub-floor source makes the unchanged cutoffs
+  alarm more often, not less (an availability cost, not an entropy guarantee;
+  see above). The
   evidence is a bound, from one array draw in 30, possibly partly a
   finite-window artifact (finding 3), and says nothing about jitter. Amending
   on this evidence would change a ratified-by-intent number on a statement that
@@ -225,7 +236,8 @@ accepted, provisional risk (recommended).**
 - Against: a die at the tail will not meet the README's min-entropy row and will
   alarm roughly every 1.6 years (APT) / 53 days (RCT) at 50 kbps even when
   working; the exposure is real if finding 3 does not dissolve it. Nothing in
-  the design detects or removes such a die before it is deployed.
+  the design detects or removes such a die before it is deployed, and the
+  health tests are not expected to flag it in operation (experiment D).
 
 **(a2) Amend: lower the floor (for example to 0.45) and re-derive the cutoffs.**
 - This is a relaxation of the README `H0` target and of DR-0004 section 2.3, and
@@ -235,10 +247,10 @@ accepted, provisional risk (recommended).**
   lowering a jitter-entropy floor in either direction. Not recommended without
   jitter-aware evidence.
 
-**(a3) Amend: raise the floor or cutoffs' safety margin (for example derive at
-the ss/ff bound).** Rejected: higher assumed `H` shrinks the cutoffs, which is
-the unsafe direction (section 2.3), and the ss/ff bounds are bounds, not
-measurements.
+**(a3) Amend: re-derive the cutoffs at a higher assumed `H` (for example the
+ss/ff bound), which would lower them.** Rejected: per DR-0004 section 2.3,
+cutoffs derived at an `H` above the true `H` false-alarm faster than alpha
+promises. The ss/ff figures are also bounds, not measurements.
 
 **(a4) Keep the floor but add a screening step (see "Trim and selection"
 below).** Compatible with (a1); costs test time rather than silicon.
@@ -469,7 +481,8 @@ sampler hysteresis.
 
 1. **(a1)** Leave the `H` = 0.5 floor and `C_RCT` = 81 / `C_APT` = 824 as they
    are. Record the sub-floor bias bound as an accepted, provisional risk,
-   with the fail-safe direction and the nuisance-alarm intervals stated above.
+   with the increased-alarm intervals stated above and the explicit statement
+   that the health tests do not assure the floor.
 2. **(b1)** Do not amend DR-0003's operating point. Reword the 1.036x margin as a
    population-mean figure; any margin change is the single amendment shared
    with DR-0012, sized as supply budget plus this record's mismatch spread and possible
