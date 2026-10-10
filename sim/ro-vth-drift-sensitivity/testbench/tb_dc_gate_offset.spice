@@ -1,0 +1,40 @@
+* DC gate-offset control for the Vth-shift wrappers -- issue #254, control 1.
+*
+* Circuit-body TEMPLATE for make-requests.py (no .lib/.temp/.tran/.end: `klt sim` owns
+* those). make-requests.py prepends the wrapper definitions from aging.py and appends
+* the `.meas` cards. The wrappers come from the SAME pinned corner library as the ring
+* and array decks (sky130_fd_pr__nfet_01v8 / pfet_01v8).
+*
+* One wrapped NMOS (Xn) and one wrapped PMOS (Xp), each biased in strong inversion at a
+* known gate voltage, plus one UNWRAPPED reference device of each polarity whose gate is
+* driven at exactly the requested shifted voltage:
+*
+*   offn = V(gn) - V(Xn.gd)      must equal dVtn   (NMOS: gate pulled DOWN by dVtn)
+*   offp = V(Xp.gd) - V(gp)      must equal d|Vtp| (PMOS: gate pushed UP by d|Vtp|)
+*
+* `Xn.gd` / `Xp.gd` is the wrapper's internal net that is the gate pin of the pinned
+* sky130 subcircuit, i.e. the net the transistor itself sees. The reference devices
+* prove the shift reaches the transistor and not only a net: the wrapped drain current
+* must equal the unwrapped current at the shifted gate voltage (ratio within 1e-6).
+* Vdvn / Vdvp are the knobs (volts), swept with klt sim `supply_v` alter.
+.option scale=1u
+Vdvn vth_dvn 0 dc 0
+Vdvp vth_dvp 0 dc 0
+Vsup vsup 0 dc 1.8
+Vgn gn 0 dc 0.9
+Vgp gp 0 dc 0.9
+* NMOS: drain at 0.9 V, source/body at 0.   PMOS: source/body at 1.8 V, drain at 0.9 V.
+Vdn dn 0 dc 0.9
+Vdp dp 0 dc 0.9
+Xn dn gn 0 0 vth_wrap_nfet L=0.15 W=0.84 nf=1 ad=0.2436 as=0.2436 pd=2.26 ps=2.26 nrd=0.345238095238095 nrs=0.345238095238095 sa=0 sb=0 sd=0 mult=1 m=1
+Xp dp gp vsup vsup vth_wrap_pfet L=0.15 W=0.84 nf=1 ad=0.2436 as=0.2436 pd=2.26 ps=2.26 nrd=0.345238095238095 nrs=0.345238095238095 sa=0 sb=0 sd=0 mult=1 m=1
+* unwrapped references, gate driven at the requested shifted voltage
+Vdnr dnr 0 dc 0.9
+Vdpr dpr 0 dc 0.9
+Bgnr gnr 0 V = 0.9 - v(vth_dvn)
+Bgpr gpr 0 V = 0.9 + v(vth_dvp)
+Xnr dnr gnr 0 0 sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 nf=1 ad=0.2436 as=0.2436 pd=2.26 ps=2.26 nrd=0.345238095238095 nrs=0.345238095238095 sa=0 sb=0 sd=0 mult=1 m=1
+Xpr dpr gpr vsup vsup sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 nf=1 ad=0.2436 as=0.2436 pd=2.26 ps=2.26 nrd=0.345238095238095 nrs=0.345238095238095 sa=0 sb=0 sd=0 mult=1 m=1
+* offset read-backs (behavioural nodes; no load on the circuit)
+Boffn offn 0 V = v(gn) - v(xn.gd)
+Boffp offp 0 V = v(xp.gd) - v(gp)

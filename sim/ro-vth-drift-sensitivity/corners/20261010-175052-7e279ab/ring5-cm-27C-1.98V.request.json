@@ -1,0 +1,144 @@
+{
+  "netlist": "netlist.cir",
+  "engine": "ngspice",
+  "backend": "batch",
+  "netlist_source": "extracted",
+  "models": {
+    "pdk": "sky130A",
+    "lib": "libs.tech/combined/sky130.lib.spice"
+  },
+  "corners": {
+    "process": [
+      "tt",
+      "ss",
+      "ff"
+    ],
+    "temperature_c": [
+      27.0
+    ],
+    "supply_v": {
+      "Vdvn": [
+        0.0,
+        0.02,
+        0.04,
+        0.06
+      ],
+      "Vdvp": [
+        0.0,
+        0.02,
+        0.04,
+        0.06
+      ]
+    }
+  },
+  "analysis": {
+    "kind": "tran",
+    "args": "20p 175n uic"
+  },
+  "measurements": [
+    {
+      "name": "vmax_ss",
+      "spice": ".meas tran vmax_ss MAX v(ro) from=20n to=115n"
+    },
+    {
+      "name": "vmin_ss",
+      "spice": ".meas tran vmin_ss MIN v(ro) from=20n to=115n"
+    },
+    {
+      "name": "tk2",
+      "spice": ".meas tran tk2 when v(ro)=0.99 rise=2"
+    },
+    {
+      "name": "tk3",
+      "spice": ".meas tran tk3 when v(ro)=0.99 rise=3"
+    },
+    {
+      "name": "tk4",
+      "spice": ".meas tran tk4 when v(ro)=0.99 rise=4"
+    },
+    {
+      "name": "tk5",
+      "spice": ".meas tran tk5 when v(ro)=0.99 rise=5"
+    },
+    {
+      "name": "tk6",
+      "spice": ".meas tran tk6 when v(ro)=0.99 rise=6"
+    },
+    {
+      "name": "tk7",
+      "spice": ".meas tran tk7 when v(ro)=0.99 rise=7"
+    },
+    {
+      "name": "tk8",
+      "spice": ".meas tran tk8 when v(ro)=0.99 rise=8"
+    },
+    {
+      "name": "tk9",
+      "spice": ".meas tran tk9 when v(ro)=0.99 rise=9"
+    },
+    {
+      "name": "tk10",
+      "spice": ".meas tran tk10 when v(ro)=0.99 rise=10"
+    },
+    {
+      "name": "tk11",
+      "spice": ".meas tran tk11 when v(ro)=0.99 rise=11"
+    },
+    {
+      "name": "tk12",
+      "spice": ".meas tran tk12 when v(ro)=0.99 rise=12"
+    },
+    {
+      "name": "tk13",
+      "spice": ".meas tran tk13 when v(ro)=0.99 rise=13"
+    },
+    {
+      "name": "tk14",
+      "spice": ".meas tran tk14 when v(ro)=0.99 rise=14"
+    },
+    {
+      "name": "tk15",
+      "spice": ".meas tran tk15 when v(ro)=0.99 rise=15"
+    },
+    {
+      "name": "tk16",
+      "spice": ".meas tran tk16 when v(ro)=0.99 rise=16"
+    },
+    {
+      "name": "tk17",
+      "spice": ".meas tran tk17 when v(ro)=0.99 rise=17"
+    },
+    {
+      "name": "tk18",
+      "spice": ".meas tran tk18 when v(ro)=0.99 rise=18"
+    },
+    {
+      "name": "tk19",
+      "spice": ".meas tran tk19 when v(ro)=0.99 rise=19"
+    },
+    {
+      "name": "tk20",
+      "spice": ".meas tran tk20 when v(ro)=0.99 rise=20"
+    },
+    {
+      "name": "tk21",
+      "spice": ".meas tran tk21 when v(ro)=0.99 rise=21"
+    },
+    {
+      "name": "tk22",
+      "spice": ".meas tran tk22 when v(ro)=0.99 rise=22"
+    },
+    {
+      "name": "dvn_rb",
+      "spice": ".meas tran dvn_rb find v(vth_dvn) at=1n"
+    },
+    {
+      "name": "dvp_rb",
+      "spice": ".meas tran dvp_rb find v(vth_dvp) at=1n"
+    }
+  ],
+  "options": {
+    "timeout_s": 3000,
+    "keep_artifacts": false
+  }
+}

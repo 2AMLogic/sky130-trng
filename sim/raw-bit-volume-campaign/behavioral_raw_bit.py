@@ -107,8 +107,65 @@ def _latest(glob_dir: Path, pred):
     return best
 
 
-def calibration(temp: float, vdd: float, corner: str) -> dict:
-    """Ring periods and sigma_k for one (PVT point, corner) from committed records."""
+VTH_DRIFT_SLUG = "ro-vth-drift-sensitivity"
+VTH_DRIFT_SCHEMA = "vth-drift-calibration/1"
+
+
+def _row_sha256(row) -> str:
+    return hashlib.sha256(json.dumps(row, sort_keys=True, default=str).encode()).hexdigest()
+
+
+def calibration_from_artifact(artifact, temp: float, vdd: float, corner: str, shift_mv) -> dict:
+    """Calibration for one (PVT point, corner, (dVtn, d|Vtp|) mV) from an EXPLICIT versioned artifact
+    (sim/ro-vth-drift-sensitivity/, issue #254). Never falls back to the historical time-zero records:
+    a missing artifact entry, a schema mismatch, or a source-record/row-hash mismatch is a hard error.
+    Returns the same shape as :func:`calibration`, plus ``shift_mv`` and ``q_ring``."""
+    path = Path(artifact)
+    if not path.is_file():
+        raise SystemExit(f"error: calibration artifact {path} not found (no fallback to historical calibration)")
+    art = json.loads(path.read_text())
+    if art.get("schema") != VTH_DRIFT_SCHEMA:
+        raise SystemExit(f"error: calibration artifact schema {art.get('schema')!r} != {VTH_DRIFT_SCHEMA!r}")
+    dvn, dvp = float(shift_mv[0]), float(shift_mv[1])
+    key = f"{corner}|{float(temp):g}C|{float(vdd):g}V|{dvn:g}|{dvp:g}"
+    ent = art.get("entries", {}).get(key)
+    if ent is None:
+        raise SystemExit(f"error: calibration artifact has no entry for shift key {key!r} "
+                         "(refusing to fall back to the historical time-zero calibration)")
+    rec_path = REPO_ROOT / "sim" / VTH_DRIFT_SLUG / "records" / f"{art['source_record']}.json"
+    if not rec_path.is_file():
+        raise SystemExit(f"error: calibration source record {art['source_record']} not found")
+    by_key = {r["key"]: r for r in json.loads(rec_path.read_text())["rows"]}
+    for deck in ("ring5", "array"):
+        src = ent["source_rows"][deck]
+        want_key = f"{deck}|{corner}|{float(temp):g}C|{float(vdd):g}V|{dvn:g}|{dvp:g}"
+        if src["key"] != want_key:
+            raise SystemExit(f"error: artifact entry {key!r} cites source row {src['key']!r}, expected {want_key!r}")
+        row = by_key.get(src["key"])
+        if row is None or _row_sha256(row) != src["row_sha256"]:
+            raise SystemExit(f"error: source-hash mismatch for {src['key']!r} in record {art['source_record']}")
+    return {
+        "temp_c": temp, "vdd_v": vdd, "corner": corner, "shift_mv": [dvn, dvp],
+        "periods_s": list(ent["array_periods_s"]),
+        "sigma": {1: ent["sigma_1_corrected"]},
+        "tbar_ring5_s": ent["T_0"], "q_ring": ent["q_ring"],
+        "combining_record": art["source_record"], "jitter_record": art["source_record"],
+        "combining_job_id": ent["source_rows"]["array"]["job_id"], "jitter_job_id": ent["source_rows"]["ring5"]["job_id"],
+        "edge_retention": by_key[ent["source_rows"]["array"]["key"]]["metrics"]["edge_retention"],
+    }
+
+
+def calibration(temp: float, vdd: float, corner: str, *, shift_mv=None, artifact=None) -> dict:
+    """Ring periods and sigma_k for one (PVT point, corner) from committed records.
+
+    With ``artifact`` (a vth-drift calibration artifact path) the shift key ``shift_mv`` = (dVtn, d|Vtp|)
+    in mV is REQUIRED and the historical records are not consulted; ``shift_mv`` without ``artifact`` is
+    rejected too, so a shifted request can never silently run on the time-zero calibration."""
+    if artifact is not None or shift_mv is not None:
+        if artifact is None or shift_mv is None:
+            raise SystemExit("error: a shifted calibration needs BOTH an explicit artifact and a shift key "
+                             "(no silent time-zero fallback)")
+        return calibration_from_artifact(artifact, temp, vdd, corner, shift_mv)
     pvt = {"temp_c": temp, "vdd_v": vdd}
     comb = _latest(REPO_ROOT / "sim/ro-array-core-combining/records", lambda r: r.get("pvt") == pvt)
     jit = _latest(REPO_ROOT / "sim/ro-ring-jitter-accumulation/records",

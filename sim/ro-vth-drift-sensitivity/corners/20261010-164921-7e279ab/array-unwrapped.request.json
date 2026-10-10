@@ -1,0 +1,112 @@
+{
+  "netlist": "netlist.cir",
+  "engine": "ngspice",
+  "backend": "local",
+  "netlist_source": "extracted",
+  "models": {
+    "pdk": "sky130A",
+    "lib": "libs.tech/combined/sky130.lib.spice"
+  },
+  "corners": {
+    "process": [
+      "tt"
+    ],
+    "temperature_c": [
+      27.0
+    ]
+  },
+  "analysis": {
+    "kind": "tran",
+    "args": "5p 300n uic"
+  },
+  "measurements": [
+    {
+      "name": "t1a",
+      "spice": ".meas tran t1a when v(ro1)=0.9 rise=3"
+    },
+    {
+      "name": "t1b",
+      "spice": ".meas tran t1b when v(ro1)=0.9 rise=13"
+    },
+    {
+      "name": "t2a",
+      "spice": ".meas tran t2a when v(ro2)=0.9 rise=3"
+    },
+    {
+      "name": "t2b",
+      "spice": ".meas tran t2b when v(ro2)=0.9 rise=13"
+    },
+    {
+      "name": "t3a",
+      "spice": ".meas tran t3a when v(ro3)=0.9 rise=3"
+    },
+    {
+      "name": "t3b",
+      "spice": ".meas tran t3b when v(ro3)=0.9 rise=13"
+    },
+    {
+      "name": "t4a",
+      "spice": ".meas tran t4a when v(ro4)=0.9 rise=3"
+    },
+    {
+      "name": "t4b",
+      "spice": ".meas tran t4b when v(ro4)=0.9 rise=13"
+    },
+    {
+      "name": "vxo_max",
+      "spice": ".meas tran vxo_max MAX v(xo) from=60n to=200n"
+    },
+    {
+      "name": "vxo_min",
+      "spice": ".meas tran vxo_min MIN v(xo) from=60n to=200n"
+    },
+    {
+      "name": "txo_a",
+      "spice": ".meas tran txo_a when v(xo)=0.9 rise=2"
+    },
+    {
+      "name": "txo_b",
+      "spice": ".meas tran txo_b when v(xo)=0.9 rise=50"
+    },
+    {
+      "name": "tt1a",
+      "spice": ".meas tran tt1a when v(xdut.t1)=0.9 rise=2"
+    },
+    {
+      "name": "tt1b",
+      "spice": ".meas tran tt1b when v(xdut.t1)=0.9 rise=50"
+    },
+    {
+      "name": "vxo_avg",
+      "spice": ".meas tran vxo_avg AVG v(xo) from=60n to=200n"
+    },
+    {
+      "name": "vt1_avg",
+      "spice": ".meas tran vt1_avg AVG v(xdut.t1) from=60n to=200n"
+    },
+    {
+      "name": "i1",
+      "spice": ".meas tran i1 AVG i(Vddr1) from=60n to=200n"
+    },
+    {
+      "name": "i2",
+      "spice": ".meas tran i2 AVG i(Vddr2) from=60n to=200n"
+    },
+    {
+      "name": "i3",
+      "spice": ".meas tran i3 AVG i(Vddr3) from=60n to=200n"
+    },
+    {
+      "name": "i4",
+      "spice": ".meas tran i4 AVG i(Vddr4) from=60n to=200n"
+    },
+    {
+      "name": "ib",
+      "spice": ".meas tran ib AVG i(Vdd) from=60n to=200n"
+    }
+  ],
+  "options": {
+    "timeout_s": 3000,
+    "keep_artifacts": false
+  }
+}
