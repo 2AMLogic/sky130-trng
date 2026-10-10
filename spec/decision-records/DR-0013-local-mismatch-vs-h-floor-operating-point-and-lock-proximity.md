@@ -188,11 +188,16 @@ and 75 / 806, which is the cross-check):
 The cutoffs at the floor are set so that a source at or above 0.5 false-alarms
 no faster than 2^-40. A source below 0.5 breaks that in the **fail-safe**
 direction: it alarms *more*, not less. At the worst tt bias (max symbol
-probability 0.721, `H` = 0.4718), with cutoffs left at 81 / 824:
+probability 1 - 0.2789392 = 0.7210608, `H` = 0.4718), with cutoffs left at
+81 / 824:
 
-- APT: exact binomial tail of `Binomial(1024, 0.721)` at 824 is 3.9e-10 per
-  window versus 2^-40 = 9.1e-13, about 430x higher; DR-0004's 713.6-year
-  interval becomes about **1.7 years**.
+- APT: the exact binomial tail of `Binomial(1024, 0.7210608)` at 824 is
+  4.04e-10 per window. Against the design rate alpha = 2^-40 = 9.1e-13 (the
+  basis of DR-0004's 713.6-year interval) that is about **444x**, and the
+  713.6-year interval becomes about **1.6 years**. (Against the true tail of
+  a source exactly at the floor, `H` = 0.5, which is 6.4e-13 at `C` = 824, the
+  ratio is about 630x; the 713.6 -> 1.6-year comparison uses the alpha basis.
+  Evaluating at the rounded 0.721 instead gives 3.93e-10, 432x, 1.65 years.)
 - RCT: the run-probability exponent goes from 2^-40 to about 2^(-0.4718 x 80) =
   2^-37.7, about 4.8x higher; DR-0004's 254.5-day interval becomes about
   **53 days** (an upper-bound reading using the min-entropy rate).
@@ -218,7 +223,7 @@ accepted, provisional risk (recommended).**
   cannot yet be tied to a measured `H`. Consistent with the project rule that
   agents do not relax the spec to make results pass.
 - Against: a die at the tail will not meet the README's min-entropy row and will
-  alarm roughly every 1.7 years (APT) / 53 days (RCT) at 50 kbps even when
+  alarm roughly every 1.6 years (APT) / 53 days (RCT) at 50 kbps even when
   working; the exposure is real if finding 3 does not dissolve it. Nothing in
   the design detects or removes such a die before it is deployed.
 
@@ -255,12 +260,24 @@ across the global-corner grid. Mismatch results: `Q_array` below the 0.9653 rati
 in 10 / 8 / 7 of 30 draws (tt/ss/ff), mean ratio 0.986-0.991, min 0.89-0.90;
 `xo` bias outside the band in 2 / 1 / 1 draws.
 
-Reading: mismatch is a **zero-mean spread around the margin** (the mean is above
-the margin, the min is 8-11 % below it), not a bias against it. The 1.036x margin
-therefore does not hold per die; it holds for the population mean. That is a
-fact about how the margin should be worded, not by itself evidence of `H` < 0.5:
-`Q` is a sizing proxy carrying DR-0002 section 6's 2-4x uncertainty band and,
-here, only the `T0^-3` term.
+Reading: mismatch is mainly a **spread around the nominal design point**, wide
+enough to cross the margin. The minimum `Q` ratios 0.890 / 0.890 / 0.898 are
+7.8 / 7.8 / 6.9 % below the 0.9653 margin (10-11 % below 1.0). The mean is above
+the margin but **below 1.0 at all three corners**: 0.9863 / 0.9906 / 0.9867, with
+sample SD 0.048 / 0.053 / 0.043 and standard error about 0.009 at n = 30, so
+about 1.0-1.7 SE low. The per-ring `mean_shift_pct` (period longer than
+nominal) is also positive for every ring at every corner, from +0.0 to
++1.2 %. The three corners share seeds (common random numbers), so they are not
+three independent confirmations. The data are therefore consistent with a
+zero-mean spread at n = 30, but the sample mean sits about 0.9-1.4 % below
+nominal at every corner, and a small systematic shift is **not excluded**.
+
+The 1.036x margin therefore does not hold per die. At best it holds for the
+population mean, and only if that mean shift is not real. That is a fact about
+how the margin should be worded, not by itself evidence of `H` < 0.5: `Q` is a
+sizing proxy carrying DR-0002 section 6's 2-4x uncertainty band and, here, only
+the `T0^-3` term. Any joint Q-margin amendment (below) should budget for a
+possible mean shift as well as the spread.
 
 ### Interaction with #208 (DR-0012) -- which record owns the Q-margin amendment
 
@@ -282,7 +299,7 @@ How the two fit:
   **any change to the Q-margin *value* or to `N` / nominal supply is owned by
   one amendment, to be written only if an operator ratifies a wider-margin
   option, and it must size the margin as supply budget (DR-0012's mV figure) plus
-  mismatch spread (this record's distribution).** Neither DR-0012 nor this
+  mismatch spread and possible mean shift (this record's distribution).** Neither DR-0012 nor this
   record proposes such a change. DR-0012 owns the supply-side requirement and
   the rail-conditioning item; this record owns the mismatch-side distribution
   and the statement that the margin is a population figure. DR-0012's
@@ -325,7 +342,7 @@ selection". Mismatch is the failure mode, so trimming is the matching remedy.
 **(b1).** Do not change the operating point. State in the ratified wording that
 1.036x is a population-mean margin that mismatch alone spends in 7-10/30 draws,
 and let the single Q-margin amendment (owned jointly as above) be sized from
-supply budget plus this spread when and if an operator chooses a wider margin.
+supply budget plus this spread and a possible mean shift when and if an operator chooses a wider margin.
 
 ## Question (c): does DR-0005's lock-proximity criterion need extending to 1:1 adjacent pairs?
 
@@ -341,24 +358,36 @@ post-layout ladder 1-3 % narrower), against a pooled per-ring period sigma of
 neighbours are expected rather than exceptional.
 
 To see how far a purely geometric fix could go, a Gaussian model (independent
-rings, `ln T` sigma = 3.04 %, geometric ladder, 200000 seeded draws, arithmetic
-only, not a `klt sim` run) of P(any adjacent pair < 1 %):
+rings, `ln T` sigma = 3.04 %, geometric ladder, 200000 seeded draws using
+`reduce.py`'s own `pair_closeness`, arithmetic only, not a `klt sim` run) of
+P(min pair closeness < 1 %), under two metrics. "1:1 only" counts only
+near-degenerate pairs. "All ratios" is the record's `extrapolation` "any"
+metric, which counts 1:1, 2/1, 3/2 and 4/3 together:
 
-| nominal step | span (slow/fast) | sigma 3.04 % | sigma 1.52 % (4x device area, if sigma ~ 1/sqrt(area)) |
-|---|---|---|---|
-| 5.6 % (as drawn) | 1.178 | 0.25 | 0.05 |
-| 8 % | 1.260 | 0.11 | 0.003 |
-| 10 % | 1.331 | 0.05 | 0.00 |
-| 12 % | 1.405 | 0.02 | 0.00 |
+| nominal step | span (slow/fast) | sigma 3.04 %, 1:1 only | sigma 3.04 %, all ratios | sigma 1.52 %, 1:1 only | sigma 1.52 %, all ratios |
+|---|---|---|---|---|---|
+| 5.6 % (as drawn) | 1.178 | 0.25 | 0.25 | 0.05 | 0.05 |
+| 8 % | 1.260 | 0.11 | 0.19 | 0.002 | 0.02 |
+| 10 % | 1.331 | 0.05 | 0.26 | 0.00 | 0.36 |
+| 12 % | 1.405 | 0.02 | 0.27 | 0.00 | 0.04 |
 
-The 5.6 % row reproduces the record's own tt extrapolation (0.250), which is a
-check on this model. A 10 % step already lands the fast/slow ratio on 1.33,
-i.e. on 4/3, the very rational DR-0005 keeps the ladder away from. So the
-ladder cannot be widened enough to remove 1:1 proximity without trading it for
-4/3 proximity; only reducing sigma (larger matching-critical devices, a
-design and area change whose dominant-device attribution has not been done) or
-screening/trim moves it. The sigma 1.52 % column is an assumption about
-area scaling, not a measurement.
+(sigma 1.52 % corresponds to 4x device area, if sigma ~ 1/sqrt(area).)
+
+The two metrics coincide only at the drawn 5.6 % step, where every other
+rational is far away. That 5.6 % row reproduces the record's own tt
+extrapolation (0.250), which is a check on this model. **The "1:1 only" columns
+are not a fix.** The 12 % row's 0.02 is the exact-1:1 figure alone: at span
+1.405 the fast/slow pair sits about 5 % from 4/3 and about 6 % from 3/2, so the
+all-ratio figure is 0.27, no better than the ladder as drawn. A 10 % step lands
+the span on 1.33, i.e. on 4/3 itself, the very rational DR-0005 keeps the ladder
+away from. At sigma 3.04 % the all-ratio figure is 0.19-0.27 for every step in
+the table, so the ladder cannot be widened out of the problem; widening only
+trades 1:1 proximity for 2/1, 3/2 or 4/3 proximity. Only reducing sigma
+(larger matching-critical devices, a design and area change whose
+dominant-device attribution has not been done) or screening/trim moves it, and
+even at sigma 1.52 % the ladder step must avoid the rationals (the 10 % row
+gets worse, 0.36). The sigma 1.52 % columns are an assumption about area
+scaling, not a measurement, and vary at the 0.001 level with seed and draw count.
 
 ### Options
 
@@ -443,7 +472,8 @@ sampler hysteresis.
    with the fail-safe direction and the nuisance-alarm intervals stated above.
 2. **(b1)** Do not amend DR-0003's operating point. Reword the 1.036x margin as a
    population-mean figure; any margin change is the single amendment shared
-   with DR-0012, sized as supply budget plus this record's mismatch spread.
+   with DR-0012, sized as supply budget plus this record's mismatch spread and possible
+   mean shift.
 3. **(c1) + (c4)** Add 1:1 adjacent-pair proximity to DR-0005's criterion as a
    *reported* statistic; defer its numeric limit to lock simulation / layout.
 4. **Screening (S)** is the cheap mitigation to prefer if the exposure turns out to
