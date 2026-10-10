@@ -97,7 +97,8 @@ digital/       everything downstream of the raw tap: behavioural model + RTL
 sim/           testbenches + PVT corner results (ngspice), plus behavioural records
 layout/        GDS + DRC/LVS reports (klayout-tools driven), plus layout/pex/,
                the extracted post-layout netlist sim/ simulates
-measurements/  silicon characterization (empty until tape-out)
+measurements/  silicon characterization (empty until tape-out; layout contract and
+               plan: measurements/README.md, spec/silicon-characterization-plan.md)
 ```
 
 ## Chipalooza
