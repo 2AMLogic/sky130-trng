@@ -237,6 +237,23 @@ Two rules from the root `CLAUDE.md` govern everything under this directory:
   `sim/records-append-only-allowlist.txt` (empty by default), which makes it
   a visible, reviewed diff.
 
+  Issue #265 extends the same rule to the raw artifacts of a record: every
+  existing file, at any depth and of any extension, under
+  `sim/<slug>/runs/<record-id>/` or `sim/<slug>/corners/<record-id>/` may not
+  be modified, deleted, renamed or type-changed when `<record-id>` names a
+  record in `sim/<slug>/records/` **of the PR's base tree** (a record is
+  `<id>.md`, `<id>.json` or an `<id>/` directory; counted once). Because
+  association uses the base tree, deleting or renaming the record in the same
+  PR does not unprotect its artifacts. New files and new directories pass, so
+  a superseding record gets a fresh `runs/<new-id>/` / `corners/<new-id>/`
+  directory. Matching is exact on the ID (no fuzzy matching). The following
+  historical directories have no record with the same ID and are therefore
+  not protected:
+  `digital-electrical-repair/runs/{20261010-cand1,20261010-cand2,20261010-control}`,
+  `digital-floorplan-compaction/runs/{20261009-193521-760b4d3,20261009-202126-760b4d3}`,
+  `digital-repaired-compaction/runs/20261010-092825-main`.
+  The allowlist honours artifact paths too.
+
 ## Quick start
 
 ```bash

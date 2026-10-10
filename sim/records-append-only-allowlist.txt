@@ -1,4 +1,5 @@
 # Reviewed exceptions to the sim/ append-only record rule (issue #232).
-# One repo-relative path per line (sim/<slug>/records/<file>); '#' starts a
+# One repo-relative path per line (a file under sim/<slug>/records/, or under a
+# record-associated sim/<slug>/{runs,corners}/<record-id>/ directory, #265); '#' starts a
 # comment. Empty by design: a correction mints a new record with `Supersedes`.
 # Adding a line here is a visible, reviewable diff -- not a bypass.
