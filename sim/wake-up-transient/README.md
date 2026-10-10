@@ -16,9 +16,12 @@ transistor records at all 18 calibrated PVT points.
 | `testbench/tb_wakeup_raw_bits.spice` | noisy deck: four rings held stopped until the enable, trnoise per stage, committed XOR tree + sampler, first 24 raw bits |
 | `make-requests.py` | writes the `klt sim` requests; `--probe` writes one single-unit request per leg |
 | `wakeup.py` | reduction (`--emit-det`, `--emit-noisy`, `--emit-margin`) and replay (`--check RECORD`) |
-| `records/<id>.{md,json}` | append-only records: `det` (settling), `noisy` (first-window raw bits), `margin` (behavioural) |
+| `restart_matrix.py` | issue #267: restart-matrix reduction (`reduce MATRIX`), behavioural known-answer record (`--emit-record`), replay (`--check RECORD`) |
+| `records/<id>.{md,json}` | append-only records: `det` (settling), `noisy` (first-window raw bits), `margin` (behavioural), `restart-matrix` (behavioural known-answer, #267) |
+| `runs/<id>/restart-matrix-values.json.gz` | full per-row / per-column / per-restart values and every seed of a `restart-matrix` record |
 | `corners/<id>/` | exactly what was submitted and the raw `klt sim` responses |
 | `../tests/test_wakeup_reduction.py` | unit tests on synthetic edge trains |
+| `../tests/test_restart_matrix.py` | restart-matrix known-answer fixtures, boundary/fail-closed tests, one-point record replay |
 
 ## What was and was not run
 
@@ -67,3 +70,40 @@ python3 sim/wake-up-transient/wakeup.py --check sim/wake-up-transient/records/<i
   path is never gated, so raw-path consumers should discard roughly the first 50 to 200 samples after a wake-up.
   This conclusion is provisional until silicon, and until the transistor noisy leg above is run to cross-check the
   behavioural mixing time.
+
+## Restart-matrix reduction (issue #267)
+
+`restart_matrix.py` is the analysis path for the silicon restart dataset of
+`spec/silicon-characterization-plan.md` C5, exercised before silicon on behavioural matrices.
+**Simulation-derived and provisional until silicon.**
+
+```bash
+python3 sim/wake-up-transient/restart_matrix.py reduce CAPTURE.txt[.gz] [--json OUT]   # exit 0 PASS, 1 FAIL, 2 refused
+python3 sim/wake-up-transient/restart_matrix.py --emit-record                           # new record; ~3 min single process
+python3 sim/wake-up-transient/restart_matrix.py --check sim/wake-up-transient/records/<id>.json [--entry ss:-40C:1.62V:deterministic]
+```
+
+- **Input**: R x N binary matrix, one restart per line of `0`/`1`, sample 0 = first sample after the restart.
+  R >= 1000 and N >= 2048 (a 1024-sample first window plus an equal 1024-sample baseline; the 2048 length is an
+  analysis choice above the plan's 1000+ minimum, not a new silicon requirement). Ragged, non-binary, empty or
+  undersized input is refused with the offending row/column named.
+- **Reduction**: H_MCV of every row and every column with `raw-bit-entropy.py:mcv_estimate`'s 99 % upper-confidence
+  convention; pooled first-window vs baseline one-fraction, two-sided two-proportion z test at alpha = 0.01 ("not
+  distinguishable" = p >= 0.01; pooling assumes independent samples, so it is a model diagnostic, not silicon
+  confidence evidence); `digital.model.health.HealthMonitor` from reset on each row's first 1024 samples (pass,
+  first trip index, alarm class).
+- **Matrix sanity verdict**: PASS only if every row and column has H_MCV >= 0.5 and every start-up test passes.
+- **Known answers** (`sim/tests/test_restart_matrix.py`, model-independent): a seeded IID matrix passes; the same
+  matrix with one deterministic column fails the column rule naming exactly that index.
+- **Behavioural record** `20261010-231748-f259cb7`: 1000 x 2048 at all 18 calibrated points (tt/ss/ff x
+  `behavioral_raw_bit.PVT_SETS["all"]`), deterministic-start and stationary-start arms separately, one derived seed
+  per restart, calibration provenance per entry. Stationary arm: PASS at 18/18 points. Deterministic arm: PASS at
+  7/18; the other 11 fail the column rule at sample indices 0..8 (rings restarted from a common phase have not yet
+  diffused), which the DR-0004 start-up test passes on every restart (18000/18000 in each arm) and is not designed
+  to see. No point shows a first-window vs baseline difference at alpha = 0.01.
+- **Model boundary**: the phase-diffusion model starts the rings from phase zero after their measured start delays
+  (deterministic arm) or uniform random phases (stationary arm) and advances them with independent white period
+  jitter calibrated from committed records. It does not model physical supply-ramp dynamics, enable settling,
+  sampler aperture/metastability, inter-ring coupling, 1/f noise or silicon process behaviour. The record validates
+  the matrix plumbing and diagnostic rules only: it is not transistor-level wake-up verification, not evidence of
+  physical C5 compliance and not an SP 800-90B validation. Analog wake-up/settling stays with #216.

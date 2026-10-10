@@ -1,0 +1,4575 @@
+{
+  "record_id": "20261010-231748-f259cb7",
+  "slug": "wake-up-transient",
+  "level": "behavioral (calibrated on transistor records)",
+  "claim": "Restart-matrix reduction (SP 800-90B restart-test shape; issue #267) exercised on behavioural known-answer matrices: 1000 restarts x 2048 samples at each of the 18 calibrated PVT points, deterministic-start and stationary-start arms reported separately; row/column 99 % MCV, first-window vs baseline two-proportion z test, DR-0004 start-up test per restart, matrix sanity verdict. Validates the analysis path only; simulation-derived, provisional until silicon",
+  "seeds": {
+    "master_seed": 267,
+    "rule": "int.from_bytes(sha256(f'267:{arm}:{corner}:{T:g}C:{V:g}V:{restart}').digest()[:8], 'big')",
+    "per_restart": "every seed listed in the values artifact"
+  },
+  "supersedes": null,
+  "author": "loom-builder@sky130-trng",
+  "timestamp_utc": "2026-10-10T23:17:48.792034+00:00",
+  "repo_sha": "f259cb7",
+  "tools": {
+    "python": "3.12.3",
+    "platform": "Linux-7.0.0-1014-aws-x86_64-with-glibc2.39",
+    "script": "sim/wake-up-transient/restart_matrix.py --emit-record"
+  },
+  "artifacts": [
+    "sim/wake-up-transient/runs/20261010-231748-f259cb7/restart-matrix-values.json.gz"
+  ],
+  "leg": "restart-matrix",
+  "status": "simulation-derived; provisional until silicon",
+  "model_boundary": "Behavioural model boundary: the phase-diffusion source of sim/wake-up-transient/wakeup.py starts the four rings from phase zero after their measured start delays (deterministic arm) or from uniform random phases (stationary reference arm) and advances them with independent white period-jitter increments calibrated from committed records. It does NOT model physical supply-ramp dynamics, enable settling, sampler aperture/metastability, inter-ring coupling, 1/f noise, or silicon process behaviour. This record is simulation-derived and provisional until silicon; it validates the restart-matrix plumbing and diagnostic rules only. It is not transistor-level wake-up verification, not evidence of physical C5 compliance, and not an SP 800-90B validation. Analog wake-up and settling work is issue #216.",
+  "contract": {
+    "rows": 1000,
+    "cols": 2048,
+    "first_window": 1024,
+    "min_rows": 1000,
+    "min_cols": 2048,
+    "h_floor": 0.5,
+    "alpha": 0.01,
+    "ts_s": 2e-05
+  },
+  "points": 18,
+  "arms": [
+    "deterministic",
+    "stationary"
+  ],
+  "seed_policy": {
+    "master_seed": 267,
+    "rule": "int.from_bytes(sha256(f'267:{arm}:{corner}:{T:g}C:{V:g}V:{restart}').digest()[:8], 'big')"
+  },
+  "values_artifact": "restart-matrix-values.json.gz",
+  "body_sha256": "876fee7d08c3e1e014179b5aa8571b76dbed71e24d2cdc7610ba37b0317703ce",
+  "generation_runtime_s": 167.2,
+  "entries": [
+    {
+      "key": "tt:27C:1.8V:deterministic",
+      "corner": "tt",
+      "temp_c": 27.0,
+      "vdd_v": 1.8,
+      "arm": "deterministic",
+      "start": "phase zero after the measured per-ring start delays, first sample Ts/2 after the enable",
+      "seed_policy": {
+        "master_seed": 267,
+        "rule": "int.from_bytes(sha256(f'267:{arm}:{corner}:{T:g}C:{V:g}V:{restart}').digest()[:8], 'big')",
+        "per_restart": true,
+        "first_seed": 6125035209051184427,
+        "last_seed": 12213866291887762685,
+        "seeds_sha256": "c06d7226a4fe65ab86edb9f03bc65c3e2ca78c9de4e0ee26f600c15bc0a5b347",
+        "full_list": "restart-matrix-values.json.gz[tt:27C:1.8V:deterministic].seeds"
+      },
+      "calibration": {
+        "sigma1": 2.927494e-12,
+        "periods_s": [
+          2.883392e-09,
+          2.71791e-09,
+          2.572842e-09,
+          2.434653e-09
+        ],
+        "delays_s": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "jitter_record": "20260825-053659-54f5715",
+        "combining_record": "20260825-094718-53f1f7a",
+        "det_record": null,
+        "period_source": "combining record 20260825-094718-53f1f7a (no det record at this point; start delay 0)"
+      },
+      "model_caveats": "Behavioural model boundary: the phase-diffusion source of sim/wake-up-transient/wakeup.py starts the four rings from phase zero after their measured start delays (deterministic arm) or from uniform random phases (stationary reference arm) and advances them with independent white period-jitter increments calibrated from committed records. It does NOT model physical supply-ramp dynamics, enable settling, sampler aperture/metastability, inter-ring coupling, 1/f noise, or silicon process behaviour. This record is simulation-derived and provisional until silicon; it validates the restart-matrix plumbing and diagnostic rules only. It is not transistor-level wake-up verification, not evidence of physical C5 compliance, and not an SP 800-90B validation. Analog wake-up and settling work is issue #216.",
+      "status": "simulation-derived; provisional until silicon",
+      "reduction": {
+        "shape": {
+          "restarts": 1000,
+          "samples": 2048,
+          "first_window": [
+            0,
+            1023
+          ],
+          "baseline_window": [
+            1024,
+            2047
+          ]
+        },
+        "estimator": "raw-bit-entropy.py:mcv_estimate (SP 800-90B 6.3.1, p_u_99, H = -log2 p_u_99)",
+        "rows": {
+          "count": 1000,
+          "h_mcv_min": 0.821168924986558,
+          "h_mcv_min_index": 687,
+          "h_mcv_dist": {
+            "min": 0.821168924986558,
+            "p01": 0.8449224723867493,
+            "p05": 0.8614180876401325,
+            "p25": 0.8845943170424904,
+            "median": 0.8989547254302133,
+            "mean": 0.8959387820814454,
+            "max": 0.9201171318548846
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one restart, all samples"
+        },
+        "columns": {
+          "count": 2048,
+          "h_mcv_min": 0.0399118862293994,
+          "h_mcv_min_index": 0,
+          "h_mcv_dist": {
+            "min": 0.0399118862293994,
+            "p01": 0.7818745539951208,
+            "p05": 0.8067469667430871,
+            "p25": 0.839799007616577,
+            "median": 0.8605575753846066,
+            "mean": 0.8541824959978319,
+            "max": 0.8869721606671933
+          },
+          "n_below_floor": 1,
+          "below_floor_indices": [
+            0
+          ],
+          "ok": false,
+          "what": "one sample index, all restarts"
+        },
+        "first_vs_baseline": {
+          "first_ones": 513054,
+          "first_n": 1024000,
+          "baseline_ones": 511439,
+          "baseline_n": 1024000,
+          "p_first": 0.501029296875,
+          "p_baseline": 0.4994521484375,
+          "difference": 0.0015771484374999534,
+          "z": 2.2570313763669865,
+          "p_value": 0.02400611425992382,
+          "alpha": 0.01,
+          "distinguishable": false,
+          "test": "two-sided two-proportion z, pooled variance",
+          "caveat": "Pooling samples within restarts assumes they are independent; the first-window vs baseline z test is a model diagnostic, not silicon confidence evidence."
+        },
+        "health": {
+          "monitor": "digital.model.health.HealthMonitor (from reset, first 1024 samples of every row)",
+          "pass_count": 1000,
+          "rows": 1000,
+          "failed_rows": [],
+          "first_trip_index_min": null,
+          "alarm_classes": {},
+          "ok": true
+        },
+        "verdict": {
+          "pass": false,
+          "row_mcv_ok": true,
+          "column_mcv_ok": false,
+          "startup_health_ok": true,
+          "failing_rows_mcv": [],
+          "failing_columns_mcv": [
+            0
+          ],
+          "failing_rows_health": [],
+          "rule": "PASS iff every row and column has H_MCV >= 0.5 (99 % upper-confidence MCV) and every row's start-up health test passes"
+        }
+      },
+      "values_sha256": "af2dabf9449f0df463fa6e95976581965c32bdf95646925c0a887e53bc2514f7"
+    },
+    {
+      "key": "tt:27C:1.8V:stationary",
+      "corner": "tt",
+      "temp_c": 27.0,
+      "vdd_v": 1.8,
+      "arm": "stationary",
+      "start": "uniform random ring phases (stationary reference)",
+      "seed_policy": {
+        "master_seed": 267,
+        "rule": "int.from_bytes(sha256(f'267:{arm}:{corner}:{T:g}C:{V:g}V:{restart}').digest()[:8], 'big')",
+        "per_restart": true,
+        "first_seed": 16832715368828889921,
+        "last_seed": 17348103144789864218,
+        "seeds_sha256": "6500c9a28c066fc34323f4adc38f078b3f83e412636e6fc51e34720aa9ed22c2",
+        "full_list": "restart-matrix-values.json.gz[tt:27C:1.8V:stationary].seeds"
+      },
+      "calibration": {
+        "sigma1": 2.927494e-12,
+        "periods_s": [
+          2.883392e-09,
+          2.71791e-09,
+          2.572842e-09,
+          2.434653e-09
+        ],
+        "delays_s": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "jitter_record": "20260825-053659-54f5715",
+        "combining_record": "20260825-094718-53f1f7a",
+        "det_record": null,
+        "period_source": "combining record 20260825-094718-53f1f7a (no det record at this point; start delay 0)"
+      },
+      "model_caveats": "Behavioural model boundary: the phase-diffusion source of sim/wake-up-transient/wakeup.py starts the four rings from phase zero after their measured start delays (deterministic arm) or from uniform random phases (stationary reference arm) and advances them with independent white period-jitter increments calibrated from committed records. It does NOT model physical supply-ramp dynamics, enable settling, sampler aperture/metastability, inter-ring coupling, 1/f noise, or silicon process behaviour. This record is simulation-derived and provisional until silicon; it validates the restart-matrix plumbing and diagnostic rules only. It is not transistor-level wake-up verification, not evidence of physical C5 compliance, and not an SP 800-90B validation. Analog wake-up and settling work is issue #216.",
+      "status": "simulation-derived; provisional until silicon",
+      "reduction": {
+        "shape": {
+          "restarts": 1000,
+          "samples": 2048,
+          "first_window": [
+            0,
+            1023
+          ],
+          "baseline_window": [
+            1024,
+            2047
+          ]
+        },
+        "estimator": "raw-bit-entropy.py:mcv_estimate (SP 800-90B 6.3.1, p_u_99, H = -log2 p_u_99)",
+        "rows": {
+          "count": 1000,
+          "h_mcv_min": 0.800263314989137,
+          "h_mcv_min_index": 357,
+          "h_mcv_dist": {
+            "min": 0.800263314989137,
+            "p01": 0.8411441194250694,
+            "p05": 0.857593564000761,
+            "p25": 0.8832963195057894,
+            "median": 0.8989547254302133,
+            "mean": 0.8950919456411333,
+            "max": 0.9201171318548846
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one restart, all samples"
+        },
+        "columns": {
+          "count": 2048,
+          "h_mcv_min": 0.7406425683531981,
+          "h_mcv_min_index": 1898,
+          "h_mcv_dist": {
+            "min": 0.7406425683531981,
+            "p01": 0.7868115778290135,
+            "p05": 0.8067469667430871,
+            "p25": 0.839799007616577,
+            "median": 0.8579448677483226,
+            "mean": 0.8540040361092077,
+            "max": 0.8869721606671933
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one sample index, all restarts"
+        },
+        "first_vs_baseline": {
+          "first_ones": 512301,
+          "first_n": 1024000,
+          "baseline_ones": 511097,
+          "baseline_n": 1024000,
+          "p_first": 0.5002939453125,
+          "p_baseline": 0.4991181640625,
+          "difference": 0.001175781250000063,
+          "z": 1.682641443842094,
+          "p_value": 0.09244452365301761,
+          "alpha": 0.01,
+          "distinguishable": false,
+          "test": "two-sided two-proportion z, pooled variance",
+          "caveat": "Pooling samples within restarts assumes they are independent; the first-window vs baseline z test is a model diagnostic, not silicon confidence evidence."
+        },
+        "health": {
+          "monitor": "digital.model.health.HealthMonitor (from reset, first 1024 samples of every row)",
+          "pass_count": 1000,
+          "rows": 1000,
+          "failed_rows": [],
+          "first_trip_index_min": null,
+          "alarm_classes": {},
+          "ok": true
+        },
+        "verdict": {
+          "pass": true,
+          "row_mcv_ok": true,
+          "column_mcv_ok": true,
+          "startup_health_ok": true,
+          "failing_rows_mcv": [],
+          "failing_columns_mcv": [],
+          "failing_rows_health": [],
+          "rule": "PASS iff every row and column has H_MCV >= 0.5 (99 % upper-confidence MCV) and every row's start-up health test passes"
+        }
+      },
+      "values_sha256": "adb812991f10a96d473eb4168cc8ebcaad1d628fd24880195b07dcfc8b21e3a4"
+    },
+    {
+      "key": "ss:27C:1.8V:deterministic",
+      "corner": "ss",
+      "temp_c": 27.0,
+      "vdd_v": 1.8,
+      "arm": "deterministic",
+      "start": "phase zero after the measured per-ring start delays, first sample Ts/2 after the enable",
+      "seed_policy": {
+        "master_seed": 267,
+        "rule": "int.from_bytes(sha256(f'267:{arm}:{corner}:{T:g}C:{V:g}V:{restart}').digest()[:8], 'big')",
+        "per_restart": true,
+        "first_seed": 7865045099973829387,
+        "last_seed": 17818727003566132489,
+        "seeds_sha256": "c0ece62aaefa41dca2aa5e68ab65ae14d9945324bffc5f9efe35f9d53b142a7c",
+        "full_list": "restart-matrix-values.json.gz[ss:27C:1.8V:deterministic].seeds"
+      },
+      "calibration": {
+        "sigma1": 3.199859e-12,
+        "periods_s": [
+          3.581246e-09,
+          3.380048e-09,
+          3.205052e-09,
+          3.039795e-09
+        ],
+        "delays_s": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "jitter_record": "20260825-053659-54f5715",
+        "combining_record": "20260825-094718-53f1f7a",
+        "det_record": null,
+        "period_source": "combining record 20260825-094718-53f1f7a (no det record at this point; start delay 0)"
+      },
+      "model_caveats": "Behavioural model boundary: the phase-diffusion source of sim/wake-up-transient/wakeup.py starts the four rings from phase zero after their measured start delays (deterministic arm) or from uniform random phases (stationary reference arm) and advances them with independent white period-jitter increments calibrated from committed records. It does NOT model physical supply-ramp dynamics, enable settling, sampler aperture/metastability, inter-ring coupling, 1/f noise, or silicon process behaviour. This record is simulation-derived and provisional until silicon; it validates the restart-matrix plumbing and diagnostic rules only. It is not transistor-level wake-up verification, not evidence of physical C5 compliance, and not an SP 800-90B validation. Analog wake-up and settling work is issue #216.",
+      "status": "simulation-derived; provisional until silicon",
+      "reduction": {
+        "shape": {
+          "restarts": 1000,
+          "samples": 2048,
+          "first_window": [
+            0,
+            1023
+          ],
+          "baseline_window": [
+            1024,
+            2047
+          ]
+        },
+        "estimator": "raw-bit-entropy.py:mcv_estimate (SP 800-90B 6.3.1, p_u_99, H = -log2 p_u_99)",
+        "rows": {
+          "count": 1000,
+          "h_mcv_min": 0.821168924986558,
+          "h_mcv_min_index": 605,
+          "h_mcv_dist": {
+            "min": 0.821168924986558,
+            "p01": 0.8373762691513481,
+            "p05": 0.8563211147750445,
+            "p25": 0.8832963195057894,
+            "median": 0.8989547254302133,
+            "mean": 0.8945522770596929,
+            "max": 0.9201171318548846
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one restart, all samples"
+        },
+        "columns": {
+          "count": 2048,
+          "h_mcv_min": 0.36634230042243854,
+          "h_mcv_min_index": 0,
+          "h_mcv_dist": {
+            "min": 0.36634230042243854,
+            "p01": 0.7769559955755353,
+            "p05": 0.8042384789982935,
+            "p25": 0.839799007616577,
+            "median": 0.8579448677483226,
+            "mean": 0.8534509918483688,
+            "max": 0.8869721606671933
+          },
+          "n_below_floor": 1,
+          "below_floor_indices": [
+            0
+          ],
+          "ok": false,
+          "what": "one sample index, all restarts"
+        },
+        "first_vs_baseline": {
+          "first_ones": 511209,
+          "first_n": 1024000,
+          "baseline_ones": 511313,
+          "baseline_n": 1024000,
+          "p_first": 0.4992275390625,
+          "p_baseline": 0.4993291015625,
+          "difference": -0.00010156249999998535,
+          "z": -0.14534456993471878,
+          "p_value": 0.8844388265926614,
+          "alpha": 0.01,
+          "distinguishable": false,
+          "test": "two-sided two-proportion z, pooled variance",
+          "caveat": "Pooling samples within restarts assumes they are independent; the first-window vs baseline z test is a model diagnostic, not silicon confidence evidence."
+        },
+        "health": {
+          "monitor": "digital.model.health.HealthMonitor (from reset, first 1024 samples of every row)",
+          "pass_count": 1000,
+          "rows": 1000,
+          "failed_rows": [],
+          "first_trip_index_min": null,
+          "alarm_classes": {},
+          "ok": true
+        },
+        "verdict": {
+          "pass": false,
+          "row_mcv_ok": true,
+          "column_mcv_ok": false,
+          "startup_health_ok": true,
+          "failing_rows_mcv": [],
+          "failing_columns_mcv": [
+            0
+          ],
+          "failing_rows_health": [],
+          "rule": "PASS iff every row and column has H_MCV >= 0.5 (99 % upper-confidence MCV) and every row's start-up health test passes"
+        }
+      },
+      "values_sha256": "e0bf215e43d9f26cb0f3627a810adb0782dcb1df1d4e512e1ec187d3b5b45c2e"
+    },
+    {
+      "key": "ss:27C:1.8V:stationary",
+      "corner": "ss",
+      "temp_c": 27.0,
+      "vdd_v": 1.8,
+      "arm": "stationary",
+      "start": "uniform random ring phases (stationary reference)",
+      "seed_policy": {
+        "master_seed": 267,
+        "rule": "int.from_bytes(sha256(f'267:{arm}:{corner}:{T:g}C:{V:g}V:{restart}').digest()[:8], 'big')",
+        "per_restart": true,
+        "first_seed": 4581684916421954162,
+        "last_seed": 14721285879619333182,
+        "seeds_sha256": "bc3aa05cc4f6ed586d4b84e0e4394f4c35b4b43558d2bf44da3e66907240094a",
+        "full_list": "restart-matrix-values.json.gz[ss:27C:1.8V:stationary].seeds"
+      },
+      "calibration": {
+        "sigma1": 3.199859e-12,
+        "periods_s": [
+          3.581246e-09,
+          3.380048e-09,
+          3.205052e-09,
+          3.039795e-09
+        ],
+        "delays_s": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "jitter_record": "20260825-053659-54f5715",
+        "combining_record": "20260825-094718-53f1f7a",
+        "det_record": null,
+        "period_source": "combining record 20260825-094718-53f1f7a (no det record at this point; start delay 0)"
+      },
+      "model_caveats": "Behavioural model boundary: the phase-diffusion source of sim/wake-up-transient/wakeup.py starts the four rings from phase zero after their measured start delays (deterministic arm) or from uniform random phases (stationary reference arm) and advances them with independent white period-jitter increments calibrated from committed records. It does NOT model physical supply-ramp dynamics, enable settling, sampler aperture/metastability, inter-ring coupling, 1/f noise, or silicon process behaviour. This record is simulation-derived and provisional until silicon; it validates the restart-matrix plumbing and diagnostic rules only. It is not transistor-level wake-up verification, not evidence of physical C5 compliance, and not an SP 800-90B validation. Analog wake-up and settling work is issue #216.",
+      "status": "simulation-derived; provisional until silicon",
+      "reduction": {
+        "shape": {
+          "restarts": 1000,
+          "samples": 2048,
+          "first_window": [
+            0,
+            1023
+          ],
+          "baseline_window": [
+            1024,
+            2047
+          ]
+        },
+        "estimator": "raw-bit-entropy.py:mcv_estimate (SP 800-90B 6.3.1, p_u_99, H = -log2 p_u_99)",
+        "rows": {
+          "count": 1000,
+          "h_mcv_min": 0.8186926133392607,
+          "h_mcv_min_index": 333,
+          "h_mcv_dist": {
+            "min": 0.8186926133392607,
+            "p01": 0.8411441194250694,
+            "p05": 0.8563211147750445,
+            "p25": 0.8819995609922195,
+            "median": 0.8976429459741261,
+            "mean": 0.8933754409119911,
+            "max": 0.9201171318548846
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one restart, all samples"
+        },
+        "columns": {
+          "count": 2048,
+          "h_mcv_min": 0.752635707000194,
+          "h_mcv_min_index": 75,
+          "h_mcv_dist": {
+            "min": 0.752635707000194,
+            "p01": 0.7818745539951208,
+            "p05": 0.809260238160335,
+            "p25": 0.839799007616577,
+            "median": 0.8605575753846066,
+            "mean": 0.854318467777048,
+            "max": 0.8869721606671933
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one sample index, all restarts"
+        },
+        "first_vs_baseline": {
+          "first_ones": 511631,
+          "first_n": 1024000,
+          "baseline_ones": 511195,
+          "baseline_n": 1024000,
+          "p_first": 0.4996396484375,
+          "p_baseline": 0.4992138671875,
+          "difference": 0.00042578124999997913,
+          "z": 0.6093289243278133,
+          "p_value": 0.5423064387609872,
+          "alpha": 0.01,
+          "distinguishable": false,
+          "test": "two-sided two-proportion z, pooled variance",
+          "caveat": "Pooling samples within restarts assumes they are independent; the first-window vs baseline z test is a model diagnostic, not silicon confidence evidence."
+        },
+        "health": {
+          "monitor": "digital.model.health.HealthMonitor (from reset, first 1024 samples of every row)",
+          "pass_count": 1000,
+          "rows": 1000,
+          "failed_rows": [],
+          "first_trip_index_min": null,
+          "alarm_classes": {},
+          "ok": true
+        },
+        "verdict": {
+          "pass": true,
+          "row_mcv_ok": true,
+          "column_mcv_ok": true,
+          "startup_health_ok": true,
+          "failing_rows_mcv": [],
+          "failing_columns_mcv": [],
+          "failing_rows_health": [],
+          "rule": "PASS iff every row and column has H_MCV >= 0.5 (99 % upper-confidence MCV) and every row's start-up health test passes"
+        }
+      },
+      "values_sha256": "fb90fdd392a14767726f62b3b09d877838f6799d8f68cd7e6781626d793fabf4"
+    },
+    {
+      "key": "ff:27C:1.8V:deterministic",
+      "corner": "ff",
+      "temp_c": 27.0,
+      "vdd_v": 1.8,
+      "arm": "deterministic",
+      "start": "phase zero after the measured per-ring start delays, first sample Ts/2 after the enable",
+      "seed_policy": {
+        "master_seed": 267,
+        "rule": "int.from_bytes(sha256(f'267:{arm}:{corner}:{T:g}C:{V:g}V:{restart}').digest()[:8], 'big')",
+        "per_restart": true,
+        "first_seed": 18445112648216754740,
+        "last_seed": 14997458707356029015,
+        "seeds_sha256": "8666963d0e0e876ff0145bc21c300498df4b777916c3d9db29bf634836d92b96",
+        "full_list": "restart-matrix-values.json.gz[ff:27C:1.8V:deterministic].seeds"
+      },
+      "calibration": {
+        "sigma1": 2.649846e-12,
+        "periods_s": [
+          2.412203e-09,
+          2.272679e-09,
+          2.148599e-09,
+          2.03005e-09
+        ],
+        "delays_s": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "jitter_record": "20260825-053659-54f5715",
+        "combining_record": "20260825-094718-53f1f7a",
+        "det_record": null,
+        "period_source": "combining record 20260825-094718-53f1f7a (no det record at this point; start delay 0)"
+      },
+      "model_caveats": "Behavioural model boundary: the phase-diffusion source of sim/wake-up-transient/wakeup.py starts the four rings from phase zero after their measured start delays (deterministic arm) or from uniform random phases (stationary reference arm) and advances them with independent white period-jitter increments calibrated from committed records. It does NOT model physical supply-ramp dynamics, enable settling, sampler aperture/metastability, inter-ring coupling, 1/f noise, or silicon process behaviour. This record is simulation-derived and provisional until silicon; it validates the restart-matrix plumbing and diagnostic rules only. It is not transistor-level wake-up verification, not evidence of physical C5 compliance, and not an SP 800-90B validation. Analog wake-up and settling work is issue #216.",
+      "status": "simulation-derived; provisional until silicon",
+      "reduction": {
+        "shape": {
+          "restarts": 1000,
+          "samples": 2048,
+          "first_window": [
+            0,
+            1023
+          ],
+          "baseline_window": [
+            1024,
+            2047
+          ]
+        },
+        "estimator": "raw-bit-entropy.py:mcv_estimate (SP 800-90B 6.3.1, p_u_99, H = -log2 p_u_99)",
+        "rows": {
+          "count": 1000,
+          "h_mcv_min": 0.8261351765055954,
+          "h_mcv_min_index": 124,
+          "h_mcv_dist": {
+            "min": 0.8261351765055954,
+            "p01": 0.8411441194250694,
+            "p05": 0.862695328075227,
+            "p25": 0.8858935558932919,
+            "median": 0.9002677718411423,
+            "mean": 0.8965533050023298,
+            "max": 0.9201171318548846
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one restart, all samples"
+        },
+        "columns": {
+          "count": 2048,
+          "h_mcv_min": 0.7311264961579206,
+          "h_mcv_min_index": 684,
+          "h_mcv_dist": {
+            "min": 0.7311264961579206,
+            "p01": 0.7794129747286398,
+            "p05": 0.8067469667430871,
+            "p25": 0.839799007616577,
+            "median": 0.8579448677483226,
+            "mean": 0.8539480340720758,
+            "max": 0.8869721606671933
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one sample index, all restarts"
+        },
+        "first_vs_baseline": {
+          "first_ones": 511868,
+          "first_n": 1024000,
+          "baseline_ones": 511275,
+          "baseline_n": 1024000,
+          "p_first": 0.49987109375,
+          "p_baseline": 0.4992919921875,
+          "difference": 0.0005791015625000173,
+          "z": 0.8287429843971489,
+          "p_value": 0.40724985709360767,
+          "alpha": 0.01,
+          "distinguishable": false,
+          "test": "two-sided two-proportion z, pooled variance",
+          "caveat": "Pooling samples within restarts assumes they are independent; the first-window vs baseline z test is a model diagnostic, not silicon confidence evidence."
+        },
+        "health": {
+          "monitor": "digital.model.health.HealthMonitor (from reset, first 1024 samples of every row)",
+          "pass_count": 1000,
+          "rows": 1000,
+          "failed_rows": [],
+          "first_trip_index_min": null,
+          "alarm_classes": {},
+          "ok": true
+        },
+        "verdict": {
+          "pass": true,
+          "row_mcv_ok": true,
+          "column_mcv_ok": true,
+          "startup_health_ok": true,
+          "failing_rows_mcv": [],
+          "failing_columns_mcv": [],
+          "failing_rows_health": [],
+          "rule": "PASS iff every row and column has H_MCV >= 0.5 (99 % upper-confidence MCV) and every row's start-up health test passes"
+        }
+      },
+      "values_sha256": "08296da1fdc5f27391dbfbd2ba124d2f93bd0aca5b2aaa057fc41afedacd9be7"
+    },
+    {
+      "key": "ff:27C:1.8V:stationary",
+      "corner": "ff",
+      "temp_c": 27.0,
+      "vdd_v": 1.8,
+      "arm": "stationary",
+      "start": "uniform random ring phases (stationary reference)",
+      "seed_policy": {
+        "master_seed": 267,
+        "rule": "int.from_bytes(sha256(f'267:{arm}:{corner}:{T:g}C:{V:g}V:{restart}').digest()[:8], 'big')",
+        "per_restart": true,
+        "first_seed": 17523140029629440733,
+        "last_seed": 5231004066516380035,
+        "seeds_sha256": "e331ca7073cf208f52f9739a82a3a61ebce39c63e1931cc5c0d6ad1424901b2d",
+        "full_list": "restart-matrix-values.json.gz[ff:27C:1.8V:stationary].seeds"
+      },
+      "calibration": {
+        "sigma1": 2.649846e-12,
+        "periods_s": [
+          2.412203e-09,
+          2.272679e-09,
+          2.148599e-09,
+          2.03005e-09
+        ],
+        "delays_s": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "jitter_record": "20260825-053659-54f5715",
+        "combining_record": "20260825-094718-53f1f7a",
+        "det_record": null,
+        "period_source": "combining record 20260825-094718-53f1f7a (no det record at this point; start delay 0)"
+      },
+      "model_caveats": "Behavioural model boundary: the phase-diffusion source of sim/wake-up-transient/wakeup.py starts the four rings from phase zero after their measured start delays (deterministic arm) or from uniform random phases (stationary reference arm) and advances them with independent white period-jitter increments calibrated from committed records. It does NOT model physical supply-ramp dynamics, enable settling, sampler aperture/metastability, inter-ring coupling, 1/f noise, or silicon process behaviour. This record is simulation-derived and provisional until silicon; it validates the restart-matrix plumbing and diagnostic rules only. It is not transistor-level wake-up verification, not evidence of physical C5 compliance, and not an SP 800-90B validation. Analog wake-up and settling work is issue #216.",
+      "status": "simulation-derived; provisional until silicon",
+      "reduction": {
+        "shape": {
+          "restarts": 1000,
+          "samples": 2048,
+          "first_window": [
+            0,
+            1023
+          ],
+          "baseline_window": [
+            1024,
+            2047
+          ]
+        },
+        "estimator": "raw-bit-entropy.py:mcv_estimate (SP 800-90B 6.3.1, p_u_99, H = -log2 p_u_99)",
+        "rows": {
+          "count": 1000,
+          "h_mcv_min": 0.8186926133392607,
+          "h_mcv_min_index": 693,
+          "h_mcv_dist": {
+            "min": 0.8186926133392607,
+            "p01": 0.8449224723867493,
+            "p05": 0.8614180876401325,
+            "p25": 0.8871940383557477,
+            "median": 0.9002677718411423,
+            "mean": 0.8971327764024253,
+            "max": 0.9201171318548846
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one restart, all samples"
+        },
+        "columns": {
+          "count": 2048,
+          "h_mcv_min": 0.7430324312368862,
+          "h_mcv_min_index": 1065,
+          "h_mcv_dist": {
+            "min": 0.7430324312368862,
+            "p01": 0.7868115778290135,
+            "p05": 0.8067469667430871,
+            "p25": 0.839799007616577,
+            "median": 0.8579448677483226,
+            "mean": 0.8541189678945109,
+            "max": 0.8869721606671933
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one sample index, all restarts"
+        },
+        "first_vs_baseline": {
+          "first_ones": 511885,
+          "first_n": 1024000,
+          "baseline_ones": 512836,
+          "baseline_n": 1024000,
+          "p_first": 0.4998876953125,
+          "p_baseline": 0.50081640625,
+          "difference": -0.0009287109375000213,
+          "z": -1.3290632335740455,
+          "p_value": 0.18382710887448817,
+          "alpha": 0.01,
+          "distinguishable": false,
+          "test": "two-sided two-proportion z, pooled variance",
+          "caveat": "Pooling samples within restarts assumes they are independent; the first-window vs baseline z test is a model diagnostic, not silicon confidence evidence."
+        },
+        "health": {
+          "monitor": "digital.model.health.HealthMonitor (from reset, first 1024 samples of every row)",
+          "pass_count": 1000,
+          "rows": 1000,
+          "failed_rows": [],
+          "first_trip_index_min": null,
+          "alarm_classes": {},
+          "ok": true
+        },
+        "verdict": {
+          "pass": true,
+          "row_mcv_ok": true,
+          "column_mcv_ok": true,
+          "startup_health_ok": true,
+          "failing_rows_mcv": [],
+          "failing_columns_mcv": [],
+          "failing_rows_health": [],
+          "rule": "PASS iff every row and column has H_MCV >= 0.5 (99 % upper-confidence MCV) and every row's start-up health test passes"
+        }
+      },
+      "values_sha256": "55795f69cc92f56d7d059d7754b316c742653bc7550f5b2d7ac322706098adb8"
+    },
+    {
+      "key": "tt:-40C:1.62V:deterministic",
+      "corner": "tt",
+      "temp_c": -40.0,
+      "vdd_v": 1.62,
+      "arm": "deterministic",
+      "start": "phase zero after the measured per-ring start delays, first sample Ts/2 after the enable",
+      "seed_policy": {
+        "master_seed": 267,
+        "rule": "int.from_bytes(sha256(f'267:{arm}:{corner}:{T:g}C:{V:g}V:{restart}').digest()[:8], 'big')",
+        "per_restart": true,
+        "first_seed": 4349071865567791481,
+        "last_seed": 8299021007037010175,
+        "seeds_sha256": "d3a00fced891b027193b74d1c3748fc8586e6b122da18a9d28d5c828d3e1e3f6",
+        "full_list": "restart-matrix-values.json.gz[tt:-40C:1.62V:deterministic].seeds"
+      },
+      "calibration": {
+        "sigma1": 2.554331e-12,
+        "periods_s": [
+          4.272235e-09,
+          4.094366e-09,
+          3.932505e-09,
+          3.777183e-09
+        ],
+        "delays_s": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "jitter_record": "20260825-060208-54f5715",
+        "combining_record": "20260825-094545-53f1f7a",
+        "det_record": null,
+        "period_source": "combining record 20260825-094545-53f1f7a (no det record at this point; start delay 0)"
+      },
+      "model_caveats": "Behavioural model boundary: the phase-diffusion source of sim/wake-up-transient/wakeup.py starts the four rings from phase zero after their measured start delays (deterministic arm) or from uniform random phases (stationary reference arm) and advances them with independent white period-jitter increments calibrated from committed records. It does NOT model physical supply-ramp dynamics, enable settling, sampler aperture/metastability, inter-ring coupling, 1/f noise, or silicon process behaviour. This record is simulation-derived and provisional until silicon; it validates the restart-matrix plumbing and diagnostic rules only. It is not transistor-level wake-up verification, not evidence of physical C5 compliance, and not an SP 800-90B validation. Analog wake-up and settling work is issue #216.",
+      "status": "simulation-derived; provisional until silicon",
+      "reduction": {
+        "shape": {
+          "restarts": 1000,
+          "samples": 2048,
+          "first_window": [
+            0,
+            1023
+          ],
+          "baseline_window": [
+            1024,
+            2047
+          ]
+        },
+        "estimator": "raw-bit-entropy.py:mcv_estimate (SP 800-90B 6.3.1, p_u_99, H = -log2 p_u_99)",
+        "rows": {
+          "count": 1000,
+          "h_mcv_min": 0.821168924986558,
+          "h_mcv_min_index": 187,
+          "h_mcv_dist": {
+            "min": 0.821168924986558,
+            "p01": 0.8386310557454038,
+            "p05": 0.857593564000761,
+            "p25": 0.8832963195057894,
+            "median": 0.8976429459741261,
+            "mean": 0.8946059830982067,
+            "max": 0.9201171318548846
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one restart, all samples"
+        },
+        "columns": {
+          "count": 2048,
+          "h_mcv_min": 0.1532429647776043,
+          "h_mcv_min_index": 3,
+          "h_mcv_dist": {
+            "min": 0.1532429647776043,
+            "p01": 0.7745036004099617,
+            "p05": 0.8042384789982935,
+            "p25": 0.839799007616577,
+            "median": 0.8579448677483226,
+            "mean": 0.8522780504481121,
+            "max": 0.8869721606671933
+          },
+          "n_below_floor": 4,
+          "below_floor_indices": [
+            0,
+            1,
+            3,
+            4
+          ],
+          "ok": false,
+          "what": "one sample index, all restarts"
+        },
+        "first_vs_baseline": {
+          "first_ones": 510834,
+          "first_n": 1024000,
+          "baseline_ones": 512006,
+          "baseline_n": 1024000,
+          "p_first": 0.498861328125,
+          "p_baseline": 0.500005859375,
+          "difference": -0.0011445312499999694,
+          "z": -1.637920844461448,
+          "p_value": 0.1014382070845901,
+          "alpha": 0.01,
+          "distinguishable": false,
+          "test": "two-sided two-proportion z, pooled variance",
+          "caveat": "Pooling samples within restarts assumes they are independent; the first-window vs baseline z test is a model diagnostic, not silicon confidence evidence."
+        },
+        "health": {
+          "monitor": "digital.model.health.HealthMonitor (from reset, first 1024 samples of every row)",
+          "pass_count": 1000,
+          "rows": 1000,
+          "failed_rows": [],
+          "first_trip_index_min": null,
+          "alarm_classes": {},
+          "ok": true
+        },
+        "verdict": {
+          "pass": false,
+          "row_mcv_ok": true,
+          "column_mcv_ok": false,
+          "startup_health_ok": true,
+          "failing_rows_mcv": [],
+          "failing_columns_mcv": [
+            0,
+            1,
+            3,
+            4
+          ],
+          "failing_rows_health": [],
+          "rule": "PASS iff every row and column has H_MCV >= 0.5 (99 % upper-confidence MCV) and every row's start-up health test passes"
+        }
+      },
+      "values_sha256": "418a3f9606662b872b82a525924bb1f3412aaffc21e9e2fd1e3e456d87c1e9bd"
+    },
+    {
+      "key": "tt:-40C:1.62V:stationary",
+      "corner": "tt",
+      "temp_c": -40.0,
+      "vdd_v": 1.62,
+      "arm": "stationary",
+      "start": "uniform random ring phases (stationary reference)",
+      "seed_policy": {
+        "master_seed": 267,
+        "rule": "int.from_bytes(sha256(f'267:{arm}:{corner}:{T:g}C:{V:g}V:{restart}').digest()[:8], 'big')",
+        "per_restart": true,
+        "first_seed": 11408312191072995904,
+        "last_seed": 4540822563445837202,
+        "seeds_sha256": "2d1429566db6b8ec0ac412ae1f99a3ca032ac99acad597e7667287d10a40cd69",
+        "full_list": "restart-matrix-values.json.gz[tt:-40C:1.62V:stationary].seeds"
+      },
+      "calibration": {
+        "sigma1": 2.554331e-12,
+        "periods_s": [
+          4.272235e-09,
+          4.094366e-09,
+          3.932505e-09,
+          3.777183e-09
+        ],
+        "delays_s": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "jitter_record": "20260825-060208-54f5715",
+        "combining_record": "20260825-094545-53f1f7a",
+        "det_record": null,
+        "period_source": "combining record 20260825-094545-53f1f7a (no det record at this point; start delay 0)"
+      },
+      "model_caveats": "Behavioural model boundary: the phase-diffusion source of sim/wake-up-transient/wakeup.py starts the four rings from phase zero after their measured start delays (deterministic arm) or from uniform random phases (stationary reference arm) and advances them with independent white period-jitter increments calibrated from committed records. It does NOT model physical supply-ramp dynamics, enable settling, sampler aperture/metastability, inter-ring coupling, 1/f noise, or silicon process behaviour. This record is simulation-derived and provisional until silicon; it validates the restart-matrix plumbing and diagnostic rules only. It is not transistor-level wake-up verification, not evidence of physical C5 compliance, and not an SP 800-90B validation. Analog wake-up and settling work is issue #216.",
+      "status": "simulation-derived; provisional until silicon",
+      "reduction": {
+        "shape": {
+          "restarts": 1000,
+          "samples": 2048,
+          "first_window": [
+            0,
+            1023
+          ],
+          "baseline_window": [
+            1024,
+            2047
+          ]
+        },
+        "estimator": "raw-bit-entropy.py:mcv_estimate (SP 800-90B 6.3.1, p_u_99, H = -log2 p_u_99)",
+        "rows": {
+          "count": 1000,
+          "h_mcv_min": 0.821168924986558,
+          "h_mcv_min_index": 101,
+          "h_mcv_dist": {
+            "min": 0.821168924986558,
+            "p01": 0.8373762691513481,
+            "p05": 0.858867207776332,
+            "p25": 0.8807040392173728,
+            "median": 0.8976429459741261,
+            "mean": 0.8938806340924248,
+            "max": 0.9201171318548846
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one restart, all samples"
+        },
+        "columns": {
+          "count": 2048,
+          "h_mcv_min": 0.7454266615904293,
+          "h_mcv_min_index": 476,
+          "h_mcv_dist": {
+            "min": 0.7454266615904293,
+            "p01": 0.7769559955755353,
+            "p05": 0.8067469667430871,
+            "p25": 0.839799007616577,
+            "median": 0.8605575753846066,
+            "mean": 0.8541903294890526,
+            "max": 0.8869721606671933
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one sample index, all restarts"
+        },
+        "first_vs_baseline": {
+          "first_ones": 511292,
+          "first_n": 1024000,
+          "baseline_ones": 511473,
+          "baseline_n": 1024000,
+          "p_first": 0.49930859375,
+          "p_baseline": 0.4994853515625,
+          "difference": -0.00017675781250003908,
+          "z": -0.2529553739251712,
+          "p_value": 0.8003026983237826,
+          "alpha": 0.01,
+          "distinguishable": false,
+          "test": "two-sided two-proportion z, pooled variance",
+          "caveat": "Pooling samples within restarts assumes they are independent; the first-window vs baseline z test is a model diagnostic, not silicon confidence evidence."
+        },
+        "health": {
+          "monitor": "digital.model.health.HealthMonitor (from reset, first 1024 samples of every row)",
+          "pass_count": 1000,
+          "rows": 1000,
+          "failed_rows": [],
+          "first_trip_index_min": null,
+          "alarm_classes": {},
+          "ok": true
+        },
+        "verdict": {
+          "pass": true,
+          "row_mcv_ok": true,
+          "column_mcv_ok": true,
+          "startup_health_ok": true,
+          "failing_rows_mcv": [],
+          "failing_columns_mcv": [],
+          "failing_rows_health": [],
+          "rule": "PASS iff every row and column has H_MCV >= 0.5 (99 % upper-confidence MCV) and every row's start-up health test passes"
+        }
+      },
+      "values_sha256": "aa87e24ff5a986088274ddfa66767544c5704f789e0f013f89cf1a2f0525e18c"
+    },
+    {
+      "key": "ss:-40C:1.62V:deterministic",
+      "corner": "ss",
+      "temp_c": -40.0,
+      "vdd_v": 1.62,
+      "arm": "deterministic",
+      "start": "phase zero after the measured per-ring start delays, first sample Ts/2 after the enable",
+      "seed_policy": {
+        "master_seed": 267,
+        "rule": "int.from_bytes(sha256(f'267:{arm}:{corner}:{T:g}C:{V:g}V:{restart}').digest()[:8], 'big')",
+        "per_restart": true,
+        "first_seed": 16475431715398083820,
+        "last_seed": 11396987155594961370,
+        "seeds_sha256": "0143eece80d1e85f6dfed0dd9abde0bc46dae1dfa204f49e1b5b337f89dffe33",
+        "full_list": "restart-matrix-values.json.gz[ss:-40C:1.62V:deterministic].seeds"
+      },
+      "calibration": {
+        "sigma1": 3.606166e-12,
+        "periods_s": [
+          5.431000000000002e-09,
+          5.216299999999999e-09,
+          5.022800000000002e-09,
+          4.830900000000002e-09
+        ],
+        "delays_s": [
+          2.61045e-09,
+          2.51513e-09,
+          2.42835e-09,
+          2.34369e-09
+        ],
+        "jitter_record": "20260825-060208-54f5715",
+        "combining_record": "20260825-094545-53f1f7a",
+        "det_record": "20261009-093152-e57ad27",
+        "period_source": "det record 20261009-093152-e57ad27"
+      },
+      "model_caveats": "Behavioural model boundary: the phase-diffusion source of sim/wake-up-transient/wakeup.py starts the four rings from phase zero after their measured start delays (deterministic arm) or from uniform random phases (stationary reference arm) and advances them with independent white period-jitter increments calibrated from committed records. It does NOT model physical supply-ramp dynamics, enable settling, sampler aperture/metastability, inter-ring coupling, 1/f noise, or silicon process behaviour. This record is simulation-derived and provisional until silicon; it validates the restart-matrix plumbing and diagnostic rules only. It is not transistor-level wake-up verification, not evidence of physical C5 compliance, and not an SP 800-90B validation. Analog wake-up and settling work is issue #216.",
+      "status": "simulation-derived; provisional until silicon",
+      "reduction": {
+        "shape": {
+          "restarts": 1000,
+          "samples": 2048,
+          "first_window": [
+            0,
+            1023
+          ],
+          "baseline_window": [
+            1024,
+            2047
+          ]
+        },
+        "estimator": "raw-bit-entropy.py:mcv_estimate (SP 800-90B 6.3.1, p_u_99, H = -log2 p_u_99)",
+        "rows": {
+          "count": 1000,
+          "h_mcv_min": 0.8323687095300688,
+          "h_mcv_min_index": 450,
+          "h_mcv_dist": {
+            "min": 0.8323687095300688,
+            "p01": 0.8499767115712004,
+            "p05": 0.8703841156295357,
+            "p25": 0.8924084505050598,
+            "median": 0.9042145365538183,
+            "mean": 0.9006764925638732,
+            "max": 0.9201171318548846
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one restart, all samples"
+        },
+        "columns": {
+          "count": 2048,
+          "h_mcv_min": 0.3824411779280188,
+          "h_mcv_min_index": 1,
+          "h_mcv_dist": {
+            "min": 0.3824411779280188,
+            "p01": 0.7745036004099617,
+            "p05": 0.8067469667430871,
+            "p25": 0.839799007616577,
+            "median": 0.8579448677483226,
+            "mean": 0.8526314396568792,
+            "max": 0.8869721606671933
+          },
+          "n_below_floor": 4,
+          "below_floor_indices": [
+            0,
+            1,
+            5,
+            8
+          ],
+          "ok": false,
+          "what": "one sample index, all restarts"
+        },
+        "first_vs_baseline": {
+          "first_ones": 511888,
+          "first_n": 1024000,
+          "baseline_ones": 511391,
+          "baseline_n": 1024000,
+          "p_first": 0.499890625,
+          "p_baseline": 0.4994052734375,
+          "difference": 0.00048535156249995826,
+          "z": 0.69457878768268,
+          "p_value": 0.4873193095887622,
+          "alpha": 0.01,
+          "distinguishable": false,
+          "test": "two-sided two-proportion z, pooled variance",
+          "caveat": "Pooling samples within restarts assumes they are independent; the first-window vs baseline z test is a model diagnostic, not silicon confidence evidence."
+        },
+        "health": {
+          "monitor": "digital.model.health.HealthMonitor (from reset, first 1024 samples of every row)",
+          "pass_count": 1000,
+          "rows": 1000,
+          "failed_rows": [],
+          "first_trip_index_min": null,
+          "alarm_classes": {},
+          "ok": true
+        },
+        "verdict": {
+          "pass": false,
+          "row_mcv_ok": true,
+          "column_mcv_ok": false,
+          "startup_health_ok": true,
+          "failing_rows_mcv": [],
+          "failing_columns_mcv": [
+            0,
+            1,
+            5,
+            8
+          ],
+          "failing_rows_health": [],
+          "rule": "PASS iff every row and column has H_MCV >= 0.5 (99 % upper-confidence MCV) and every row's start-up health test passes"
+        }
+      },
+      "values_sha256": "d1b144582d735c6c8a5362ddba9c5610f8380503008e8808282e835baa9aa3d2"
+    },
+    {
+      "key": "ss:-40C:1.62V:stationary",
+      "corner": "ss",
+      "temp_c": -40.0,
+      "vdd_v": 1.62,
+      "arm": "stationary",
+      "start": "uniform random ring phases (stationary reference)",
+      "seed_policy": {
+        "master_seed": 267,
+        "rule": "int.from_bytes(sha256(f'267:{arm}:{corner}:{T:g}C:{V:g}V:{restart}').digest()[:8], 'big')",
+        "per_restart": true,
+        "first_seed": 13671345754615829138,
+        "last_seed": 14114260606987141906,
+        "seeds_sha256": "5d97486139a65d680ba7ae02bb9b37956636dea8071d1cb51cc207933ccfb2e2",
+        "full_list": "restart-matrix-values.json.gz[ss:-40C:1.62V:stationary].seeds"
+      },
+      "calibration": {
+        "sigma1": 3.606166e-12,
+        "periods_s": [
+          5.431000000000002e-09,
+          5.216299999999999e-09,
+          5.022800000000002e-09,
+          4.830900000000002e-09
+        ],
+        "delays_s": [
+          2.61045e-09,
+          2.51513e-09,
+          2.42835e-09,
+          2.34369e-09
+        ],
+        "jitter_record": "20260825-060208-54f5715",
+        "combining_record": "20260825-094545-53f1f7a",
+        "det_record": "20261009-093152-e57ad27",
+        "period_source": "det record 20261009-093152-e57ad27"
+      },
+      "model_caveats": "Behavioural model boundary: the phase-diffusion source of sim/wake-up-transient/wakeup.py starts the four rings from phase zero after their measured start delays (deterministic arm) or from uniform random phases (stationary reference arm) and advances them with independent white period-jitter increments calibrated from committed records. It does NOT model physical supply-ramp dynamics, enable settling, sampler aperture/metastability, inter-ring coupling, 1/f noise, or silicon process behaviour. This record is simulation-derived and provisional until silicon; it validates the restart-matrix plumbing and diagnostic rules only. It is not transistor-level wake-up verification, not evidence of physical C5 compliance, and not an SP 800-90B validation. Analog wake-up and settling work is issue #216.",
+      "status": "simulation-derived; provisional until silicon",
+      "reduction": {
+        "shape": {
+          "restarts": 1000,
+          "samples": 2048,
+          "first_window": [
+            0,
+            1023
+          ],
+          "baseline_window": [
+            1024,
+            2047
+          ]
+        },
+        "estimator": "raw-bit-entropy.py:mcv_estimate (SP 800-90B 6.3.1, p_u_99, H = -log2 p_u_99)",
+        "rows": {
+          "count": 1000,
+          "h_mcv_min": 0.8336188655377994,
+          "h_mcv_min_index": 444,
+          "h_mcv_dist": {
+            "min": 0.8336188655377994,
+            "p01": 0.8512432202987272,
+            "p05": 0.8703841156295357,
+            "p25": 0.8924084505050598,
+            "median": 0.9028976750209623,
+            "mean": 0.9003164708281501,
+            "max": 0.9201171318548846
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one restart, all samples"
+        },
+        "columns": {
+          "count": 2048,
+          "h_mcv_min": 0.7406425683531981,
+          "h_mcv_min_index": 1889,
+          "h_mcv_dist": {
+            "min": 0.7406425683531981,
+            "p01": 0.7818745539951208,
+            "p05": 0.8042384789982935,
+            "p25": 0.8372269563727839,
+            "median": 0.8579448677483226,
+            "mean": 0.8534682949716467,
+            "max": 0.8869721606671933
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one sample index, all restarts"
+        },
+        "first_vs_baseline": {
+          "first_ones": 511844,
+          "first_n": 1024000,
+          "baseline_ones": 511564,
+          "baseline_n": 1024000,
+          "p_first": 0.49984765625,
+          "p_baseline": 0.49957421875,
+          "difference": 0.00027343749999997335,
+          "z": 0.39131196145623853,
+          "p_value": 0.6955666584147367,
+          "alpha": 0.01,
+          "distinguishable": false,
+          "test": "two-sided two-proportion z, pooled variance",
+          "caveat": "Pooling samples within restarts assumes they are independent; the first-window vs baseline z test is a model diagnostic, not silicon confidence evidence."
+        },
+        "health": {
+          "monitor": "digital.model.health.HealthMonitor (from reset, first 1024 samples of every row)",
+          "pass_count": 1000,
+          "rows": 1000,
+          "failed_rows": [],
+          "first_trip_index_min": null,
+          "alarm_classes": {},
+          "ok": true
+        },
+        "verdict": {
+          "pass": true,
+          "row_mcv_ok": true,
+          "column_mcv_ok": true,
+          "startup_health_ok": true,
+          "failing_rows_mcv": [],
+          "failing_columns_mcv": [],
+          "failing_rows_health": [],
+          "rule": "PASS iff every row and column has H_MCV >= 0.5 (99 % upper-confidence MCV) and every row's start-up health test passes"
+        }
+      },
+      "values_sha256": "605eddf5e208bbf3f6cd3f32b73115f1b6a0d8fa5f89a6d80aca13e42d089960"
+    },
+    {
+      "key": "ff:-40C:1.62V:deterministic",
+      "corner": "ff",
+      "temp_c": -40.0,
+      "vdd_v": 1.62,
+      "arm": "deterministic",
+      "start": "phase zero after the measured per-ring start delays, first sample Ts/2 after the enable",
+      "seed_policy": {
+        "master_seed": 267,
+        "rule": "int.from_bytes(sha256(f'267:{arm}:{corner}:{T:g}C:{V:g}V:{restart}').digest()[:8], 'big')",
+        "per_restart": true,
+        "first_seed": 17369707612089941405,
+        "last_seed": 13824143561248381717,
+        "seeds_sha256": "6aa86568b4241c6ec721778e063a3062599d4e11722b06f5aa5a0801f801d3d4",
+        "full_list": "restart-matrix-values.json.gz[ff:-40C:1.62V:deterministic].seeds"
+      },
+      "calibration": {
+        "sigma1": 3.269658e-12,
+        "periods_s": [
+          3.394982e-09,
+          3.246148e-09,
+          3.11229e-09,
+          2.982306e-09
+        ],
+        "delays_s": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "jitter_record": "20260825-060208-54f5715",
+        "combining_record": "20260825-094545-53f1f7a",
+        "det_record": null,
+        "period_source": "combining record 20260825-094545-53f1f7a (no det record at this point; start delay 0)"
+      },
+      "model_caveats": "Behavioural model boundary: the phase-diffusion source of sim/wake-up-transient/wakeup.py starts the four rings from phase zero after their measured start delays (deterministic arm) or from uniform random phases (stationary reference arm) and advances them with independent white period-jitter increments calibrated from committed records. It does NOT model physical supply-ramp dynamics, enable settling, sampler aperture/metastability, inter-ring coupling, 1/f noise, or silicon process behaviour. This record is simulation-derived and provisional until silicon; it validates the restart-matrix plumbing and diagnostic rules only. It is not transistor-level wake-up verification, not evidence of physical C5 compliance, and not an SP 800-90B validation. Analog wake-up and settling work is issue #216.",
+      "status": "simulation-derived; provisional until silicon",
+      "reduction": {
+        "shape": {
+          "restarts": 1000,
+          "samples": 2048,
+          "first_window": [
+            0,
+            1023
+          ],
+          "baseline_window": [
+            1024,
+            2047
+          ]
+        },
+        "estimator": "raw-bit-entropy.py:mcv_estimate (SP 800-90B 6.3.1, p_u_99, H = -log2 p_u_99)",
+        "rows": {
+          "count": 1000,
+          "h_mcv_min": 0.8273795902828674,
+          "h_mcv_min_index": 933,
+          "h_mcv_dist": {
+            "min": 0.8273795902828674,
+            "p01": 0.8449224723867493,
+            "p05": 0.8601420482660016,
+            "p25": 0.8845943170424904,
+            "median": 0.9002677718411423,
+            "mean": 0.8959461538243759,
+            "max": 0.9201171318548846
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one restart, all samples"
+        },
+        "columns": {
+          "count": 2048,
+          "h_mcv_min": 0.324446254768821,
+          "h_mcv_min_index": 1,
+          "h_mcv_dist": {
+            "min": 0.324446254768821,
+            "p01": 0.7745036004099617,
+            "p05": 0.8042384789982935,
+            "p25": 0.839799007616577,
+            "median": 0.8579448677483226,
+            "mean": 0.8528630543098193,
+            "max": 0.8869721606671933
+          },
+          "n_below_floor": 1,
+          "below_floor_indices": [
+            1
+          ],
+          "ok": false,
+          "what": "one sample index, all restarts"
+        },
+        "first_vs_baseline": {
+          "first_ones": 511014,
+          "first_n": 1024000,
+          "baseline_ones": 512323,
+          "baseline_n": 1024000,
+          "p_first": 0.499037109375,
+          "p_baseline": 0.5003154296875,
+          "difference": -0.0012783203124999698,
+          "z": -1.8293834975359757,
+          "p_value": 0.06734217802572302,
+          "alpha": 0.01,
+          "distinguishable": false,
+          "test": "two-sided two-proportion z, pooled variance",
+          "caveat": "Pooling samples within restarts assumes they are independent; the first-window vs baseline z test is a model diagnostic, not silicon confidence evidence."
+        },
+        "health": {
+          "monitor": "digital.model.health.HealthMonitor (from reset, first 1024 samples of every row)",
+          "pass_count": 1000,
+          "rows": 1000,
+          "failed_rows": [],
+          "first_trip_index_min": null,
+          "alarm_classes": {},
+          "ok": true
+        },
+        "verdict": {
+          "pass": false,
+          "row_mcv_ok": true,
+          "column_mcv_ok": false,
+          "startup_health_ok": true,
+          "failing_rows_mcv": [],
+          "failing_columns_mcv": [
+            1
+          ],
+          "failing_rows_health": [],
+          "rule": "PASS iff every row and column has H_MCV >= 0.5 (99 % upper-confidence MCV) and every row's start-up health test passes"
+        }
+      },
+      "values_sha256": "721e4f329dd207047062c29e91cd80b757f21a58fc07a07214b97421c58d7ef1"
+    },
+    {
+      "key": "ff:-40C:1.62V:stationary",
+      "corner": "ff",
+      "temp_c": -40.0,
+      "vdd_v": 1.62,
+      "arm": "stationary",
+      "start": "uniform random ring phases (stationary reference)",
+      "seed_policy": {
+        "master_seed": 267,
+        "rule": "int.from_bytes(sha256(f'267:{arm}:{corner}:{T:g}C:{V:g}V:{restart}').digest()[:8], 'big')",
+        "per_restart": true,
+        "first_seed": 5120325016876685400,
+        "last_seed": 1634825447300848214,
+        "seeds_sha256": "191e200f682de254ba730b2f8fabc87532653a312b2d2dccbd8d00c963be6262",
+        "full_list": "restart-matrix-values.json.gz[ff:-40C:1.62V:stationary].seeds"
+      },
+      "calibration": {
+        "sigma1": 3.269658e-12,
+        "periods_s": [
+          3.394982e-09,
+          3.246148e-09,
+          3.11229e-09,
+          2.982306e-09
+        ],
+        "delays_s": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "jitter_record": "20260825-060208-54f5715",
+        "combining_record": "20260825-094545-53f1f7a",
+        "det_record": null,
+        "period_source": "combining record 20260825-094545-53f1f7a (no det record at this point; start delay 0)"
+      },
+      "model_caveats": "Behavioural model boundary: the phase-diffusion source of sim/wake-up-transient/wakeup.py starts the four rings from phase zero after their measured start delays (deterministic arm) or from uniform random phases (stationary reference arm) and advances them with independent white period-jitter increments calibrated from committed records. It does NOT model physical supply-ramp dynamics, enable settling, sampler aperture/metastability, inter-ring coupling, 1/f noise, or silicon process behaviour. This record is simulation-derived and provisional until silicon; it validates the restart-matrix plumbing and diagnostic rules only. It is not transistor-level wake-up verification, not evidence of physical C5 compliance, and not an SP 800-90B validation. Analog wake-up and settling work is issue #216.",
+      "status": "simulation-derived; provisional until silicon",
+      "reduction": {
+        "shape": {
+          "restarts": 1000,
+          "samples": 2048,
+          "first_window": [
+            0,
+            1023
+          ],
+          "baseline_window": [
+            1024,
+            2047
+          ]
+        },
+        "estimator": "raw-bit-entropy.py:mcv_estimate (SP 800-90B 6.3.1, p_u_99, H = -log2 p_u_99)",
+        "rows": {
+          "count": 1000,
+          "h_mcv_min": 0.8224087813420714,
+          "h_mcv_min_index": 957,
+          "h_mcv_dist": {
+            "min": 0.8224087813420714,
+            "p01": 0.8461842670562091,
+            "p05": 0.8614180876401325,
+            "p25": 0.8871940383557477,
+            "median": 0.9015820875785501,
+            "mean": 0.897046591271559,
+            "max": 0.9201171318548846
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one restart, all samples"
+        },
+        "columns": {
+          "count": 2048,
+          "h_mcv_min": 0.7263942831814193,
+          "h_mcv_min_index": 1823,
+          "h_mcv_dist": {
+            "min": 0.7263942831814193,
+            "p01": 0.7769559955755353,
+            "p05": 0.8067469667430871,
+            "p25": 0.8372269563727839,
+            "median": 0.8579448677483226,
+            "mean": 0.8532199431905888,
+            "max": 0.8869721606671933
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one sample index, all restarts"
+        },
+        "first_vs_baseline": {
+          "first_ones": 512480,
+          "first_n": 1024000,
+          "baseline_ones": 511663,
+          "baseline_n": 1024000,
+          "p_first": 0.50046875,
+          "p_baseline": 0.4996708984375,
+          "difference": 0.0007978515625000071,
+          "z": 1.1417922221442771,
+          "p_value": 0.2535403961079645,
+          "alpha": 0.01,
+          "distinguishable": false,
+          "test": "two-sided two-proportion z, pooled variance",
+          "caveat": "Pooling samples within restarts assumes they are independent; the first-window vs baseline z test is a model diagnostic, not silicon confidence evidence."
+        },
+        "health": {
+          "monitor": "digital.model.health.HealthMonitor (from reset, first 1024 samples of every row)",
+          "pass_count": 1000,
+          "rows": 1000,
+          "failed_rows": [],
+          "first_trip_index_min": null,
+          "alarm_classes": {},
+          "ok": true
+        },
+        "verdict": {
+          "pass": true,
+          "row_mcv_ok": true,
+          "column_mcv_ok": true,
+          "startup_health_ok": true,
+          "failing_rows_mcv": [],
+          "failing_columns_mcv": [],
+          "failing_rows_health": [],
+          "rule": "PASS iff every row and column has H_MCV >= 0.5 (99 % upper-confidence MCV) and every row's start-up health test passes"
+        }
+      },
+      "values_sha256": "b1449a390b0b64b253eadae2b49904d4bf1f2e81c29f129cc5ef298c660ef8db"
+    },
+    {
+      "key": "tt:-40C:1.98V:deterministic",
+      "corner": "tt",
+      "temp_c": -40.0,
+      "vdd_v": 1.98,
+      "arm": "deterministic",
+      "start": "phase zero after the measured per-ring start delays, first sample Ts/2 after the enable",
+      "seed_policy": {
+        "master_seed": 267,
+        "rule": "int.from_bytes(sha256(f'267:{arm}:{corner}:{T:g}C:{V:g}V:{restart}').digest()[:8], 'big')",
+        "per_restart": true,
+        "first_seed": 15167251992467099585,
+        "last_seed": 6618847484189089809,
+        "seeds_sha256": "f71d692920195c36629260bd0eba4f471785a5648e099da0d479601e5c536e30",
+        "full_list": "restart-matrix-values.json.gz[tt:-40C:1.98V:deterministic].seeds"
+      },
+      "calibration": {
+        "sigma1": 1.547492e-12,
+        "periods_s": [
+          1.924481e-09,
+          1.831132e-09,
+          1.746896e-09,
+          1.664829e-09
+        ],
+        "delays_s": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "jitter_record": "20260825-060646-54f5715",
+        "combining_record": "20260825-094856-53f1f7a",
+        "det_record": null,
+        "period_source": "combining record 20260825-094856-53f1f7a (no det record at this point; start delay 0)"
+      },
+      "model_caveats": "Behavioural model boundary: the phase-diffusion source of sim/wake-up-transient/wakeup.py starts the four rings from phase zero after their measured start delays (deterministic arm) or from uniform random phases (stationary reference arm) and advances them with independent white period-jitter increments calibrated from committed records. It does NOT model physical supply-ramp dynamics, enable settling, sampler aperture/metastability, inter-ring coupling, 1/f noise, or silicon process behaviour. This record is simulation-derived and provisional until silicon; it validates the restart-matrix plumbing and diagnostic rules only. It is not transistor-level wake-up verification, not evidence of physical C5 compliance, and not an SP 800-90B validation. Analog wake-up and settling work is issue #216.",
+      "status": "simulation-derived; provisional until silicon",
+      "reduction": {
+        "shape": {
+          "restarts": 1000,
+          "samples": 2048,
+          "first_window": [
+            0,
+            1023
+          ],
+          "baseline_window": [
+            1024,
+            2047
+          ]
+        },
+        "estimator": "raw-bit-entropy.py:mcv_estimate (SP 800-90B 6.3.1, p_u_99, H = -log2 p_u_99)",
+        "rows": {
+          "count": 1000,
+          "h_mcv_min": 0.8051532992163412,
+          "h_mcv_min_index": 662,
+          "h_mcv_dist": {
+            "min": 0.8051532992163412,
+            "p01": 0.8424024006666401,
+            "p05": 0.862695328075227,
+            "p25": 0.8858935558932919,
+            "median": 0.8989547254302133,
+            "mean": 0.8962348420126821,
+            "max": 0.9201171318548846
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one restart, all samples"
+        },
+        "columns": {
+          "count": 2048,
+          "h_mcv_min": 0.3330527718265365,
+          "h_mcv_min_index": 0,
+          "h_mcv_dist": {
+            "min": 0.3330527718265365,
+            "p01": 0.784340749592178,
+            "p05": 0.8042384789982935,
+            "p25": 0.839799007616577,
+            "median": 0.8579448677483226,
+            "mean": 0.8529439852361497,
+            "max": 0.8869721606671933
+          },
+          "n_below_floor": 2,
+          "below_floor_indices": [
+            0,
+            1
+          ],
+          "ok": false,
+          "what": "one sample index, all restarts"
+        },
+        "first_vs_baseline": {
+          "first_ones": 513289,
+          "first_n": 1024000,
+          "baseline_ones": 512421,
+          "baseline_n": 1024000,
+          "p_first": 0.5012587890625,
+          "p_baseline": 0.5004111328125,
+          "difference": 0.0008476562499999396,
+          "z": 1.2130685691999312,
+          "p_value": 0.2251036056637895,
+          "alpha": 0.01,
+          "distinguishable": false,
+          "test": "two-sided two-proportion z, pooled variance",
+          "caveat": "Pooling samples within restarts assumes they are independent; the first-window vs baseline z test is a model diagnostic, not silicon confidence evidence."
+        },
+        "health": {
+          "monitor": "digital.model.health.HealthMonitor (from reset, first 1024 samples of every row)",
+          "pass_count": 1000,
+          "rows": 1000,
+          "failed_rows": [],
+          "first_trip_index_min": null,
+          "alarm_classes": {},
+          "ok": true
+        },
+        "verdict": {
+          "pass": false,
+          "row_mcv_ok": true,
+          "column_mcv_ok": false,
+          "startup_health_ok": true,
+          "failing_rows_mcv": [],
+          "failing_columns_mcv": [
+            0,
+            1
+          ],
+          "failing_rows_health": [],
+          "rule": "PASS iff every row and column has H_MCV >= 0.5 (99 % upper-confidence MCV) and every row's start-up health test passes"
+        }
+      },
+      "values_sha256": "cc570cee0c326db33ca373496fdb2ae6f151794b9eb4d3e9db4386590f2c9cad"
+    },
+    {
+      "key": "tt:-40C:1.98V:stationary",
+      "corner": "tt",
+      "temp_c": -40.0,
+      "vdd_v": 1.98,
+      "arm": "stationary",
+      "start": "uniform random ring phases (stationary reference)",
+      "seed_policy": {
+        "master_seed": 267,
+        "rule": "int.from_bytes(sha256(f'267:{arm}:{corner}:{T:g}C:{V:g}V:{restart}').digest()[:8], 'big')",
+        "per_restart": true,
+        "first_seed": 15796992845600390738,
+        "last_seed": 5842586075579449583,
+        "seeds_sha256": "d1309461ff79de7f400ca45d32fb75ddf828b47adc3ea995c19e0578ea8e24db",
+        "full_list": "restart-matrix-values.json.gz[tt:-40C:1.98V:stationary].seeds"
+      },
+      "calibration": {
+        "sigma1": 1.547492e-12,
+        "periods_s": [
+          1.924481e-09,
+          1.831132e-09,
+          1.746896e-09,
+          1.664829e-09
+        ],
+        "delays_s": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "jitter_record": "20260825-060646-54f5715",
+        "combining_record": "20260825-094856-53f1f7a",
+        "det_record": null,
+        "period_source": "combining record 20260825-094856-53f1f7a (no det record at this point; start delay 0)"
+      },
+      "model_caveats": "Behavioural model boundary: the phase-diffusion source of sim/wake-up-transient/wakeup.py starts the four rings from phase zero after their measured start delays (deterministic arm) or from uniform random phases (stationary reference arm) and advances them with independent white period-jitter increments calibrated from committed records. It does NOT model physical supply-ramp dynamics, enable settling, sampler aperture/metastability, inter-ring coupling, 1/f noise, or silicon process behaviour. This record is simulation-derived and provisional until silicon; it validates the restart-matrix plumbing and diagnostic rules only. It is not transistor-level wake-up verification, not evidence of physical C5 compliance, and not an SP 800-90B validation. Analog wake-up and settling work is issue #216.",
+      "status": "simulation-derived; provisional until silicon",
+      "reduction": {
+        "shape": {
+          "restarts": 1000,
+          "samples": 2048,
+          "first_window": [
+            0,
+            1023
+          ],
+          "baseline_window": [
+            1024,
+            2047
+          ]
+        },
+        "estimator": "raw-bit-entropy.py:mcv_estimate (SP 800-90B 6.3.1, p_u_99, H = -log2 p_u_99)",
+        "rows": {
+          "count": 1000,
+          "h_mcv_min": 0.7990435768102335,
+          "h_mcv_min_index": 848,
+          "h_mcv_dist": {
+            "min": 0.7990435768102335,
+            "p01": 0.8424024006666401,
+            "p05": 0.858867207776332,
+            "p25": 0.8858935558932919,
+            "median": 0.8989547254302133,
+            "mean": 0.8958095808478059,
+            "max": 0.9201171318548846
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one restart, all samples"
+        },
+        "columns": {
+          "count": 2048,
+          "h_mcv_min": 0.7311264961579206,
+          "h_mcv_min_index": 138,
+          "h_mcv_dist": {
+            "min": 0.7311264961579206,
+            "p01": 0.784340749592178,
+            "p05": 0.8067469667430871,
+            "p25": 0.839799007616577,
+            "median": 0.8579448677483226,
+            "mean": 0.8542163863695434,
+            "max": 0.8869721606671933
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one sample index, all restarts"
+        },
+        "first_vs_baseline": {
+          "first_ones": 511738,
+          "first_n": 1024000,
+          "baseline_ones": 511503,
+          "baseline_n": 1024000,
+          "p_first": 0.499744140625,
+          "p_baseline": 0.4995146484375,
+          "difference": 0.00022949218750001332,
+          "z": 0.32842257441195216,
+          "p_value": 0.7425921768100368,
+          "alpha": 0.01,
+          "distinguishable": false,
+          "test": "two-sided two-proportion z, pooled variance",
+          "caveat": "Pooling samples within restarts assumes they are independent; the first-window vs baseline z test is a model diagnostic, not silicon confidence evidence."
+        },
+        "health": {
+          "monitor": "digital.model.health.HealthMonitor (from reset, first 1024 samples of every row)",
+          "pass_count": 1000,
+          "rows": 1000,
+          "failed_rows": [],
+          "first_trip_index_min": null,
+          "alarm_classes": {},
+          "ok": true
+        },
+        "verdict": {
+          "pass": true,
+          "row_mcv_ok": true,
+          "column_mcv_ok": true,
+          "startup_health_ok": true,
+          "failing_rows_mcv": [],
+          "failing_columns_mcv": [],
+          "failing_rows_health": [],
+          "rule": "PASS iff every row and column has H_MCV >= 0.5 (99 % upper-confidence MCV) and every row's start-up health test passes"
+        }
+      },
+      "values_sha256": "6f8eb0aff3b856f4af30c06dd5183323c563df0bff1f18c414ef560b43dc394c"
+    },
+    {
+      "key": "ss:-40C:1.98V:deterministic",
+      "corner": "ss",
+      "temp_c": -40.0,
+      "vdd_v": 1.98,
+      "arm": "deterministic",
+      "start": "phase zero after the measured per-ring start delays, first sample Ts/2 after the enable",
+      "seed_policy": {
+        "master_seed": 267,
+        "rule": "int.from_bytes(sha256(f'267:{arm}:{corner}:{T:g}C:{V:g}V:{restart}').digest()[:8], 'big')",
+        "per_restart": true,
+        "first_seed": 11422873999400684756,
+        "last_seed": 3159593382357197802,
+        "seeds_sha256": "d8a6c337319281a847ffb7ede32e928fc45177ec1468a6d1eb8c697209cb4ad8",
+        "full_list": "restart-matrix-values.json.gz[ss:-40C:1.98V:deterministic].seeds"
+      },
+      "calibration": {
+        "sigma1": 1.949605e-12,
+        "periods_s": [
+          2.341082e-09,
+          2.248795e-09,
+          2.158348e-09,
+          2.068001e-09
+        ],
+        "delays_s": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "jitter_record": "20260825-060646-54f5715",
+        "combining_record": "20260825-094856-53f1f7a",
+        "det_record": null,
+        "period_source": "combining record 20260825-094856-53f1f7a (no det record at this point; start delay 0)"
+      },
+      "model_caveats": "Behavioural model boundary: the phase-diffusion source of sim/wake-up-transient/wakeup.py starts the four rings from phase zero after their measured start delays (deterministic arm) or from uniform random phases (stationary reference arm) and advances them with independent white period-jitter increments calibrated from committed records. It does NOT model physical supply-ramp dynamics, enable settling, sampler aperture/metastability, inter-ring coupling, 1/f noise, or silicon process behaviour. This record is simulation-derived and provisional until silicon; it validates the restart-matrix plumbing and diagnostic rules only. It is not transistor-level wake-up verification, not evidence of physical C5 compliance, and not an SP 800-90B validation. Analog wake-up and settling work is issue #216.",
+      "status": "simulation-derived; provisional until silicon",
+      "reduction": {
+        "shape": {
+          "restarts": 1000,
+          "samples": 2048,
+          "first_window": [
+            0,
+            1023
+          ],
+          "baseline_window": [
+            1024,
+            2047
+          ]
+        },
+        "estimator": "raw-bit-entropy.py:mcv_estimate (SP 800-90B 6.3.1, p_u_99, H = -log2 p_u_99)",
+        "rows": {
+          "count": 1000,
+          "h_mcv_min": 0.8386310557454038,
+          "h_mcv_min_index": 736,
+          "h_mcv_dist": {
+            "min": 0.8386310557454038,
+            "p01": 0.8525109128458834,
+            "p05": 0.865253420865154,
+            "p25": 0.8858935558932919,
+            "median": 0.9002677718411423,
+            "mean": 0.8969947398143473,
+            "max": 0.9201171318548846
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one restart, all samples"
+        },
+        "columns": {
+          "count": 2048,
+          "h_mcv_min": 0.4995045673875442,
+          "h_mcv_min_index": 0,
+          "h_mcv_dist": {
+            "min": 0.4995045673875442,
+            "p01": 0.7794129747286398,
+            "p05": 0.8067469667430871,
+            "p25": 0.839799007616577,
+            "median": 0.8579448677483226,
+            "mean": 0.8532111309962805,
+            "max": 0.8869721606671933
+          },
+          "n_below_floor": 1,
+          "below_floor_indices": [
+            0
+          ],
+          "ok": false,
+          "what": "one sample index, all restarts"
+        },
+        "first_vs_baseline": {
+          "first_ones": 511296,
+          "first_n": 1024000,
+          "baseline_ones": 512006,
+          "baseline_n": 1024000,
+          "p_first": 0.4993125,
+          "p_baseline": 0.500005859375,
+          "difference": -0.00069335937499998,
+          "z": -0.9922553955332977,
+          "p_value": 0.32107295596294283,
+          "alpha": 0.01,
+          "distinguishable": false,
+          "test": "two-sided two-proportion z, pooled variance",
+          "caveat": "Pooling samples within restarts assumes they are independent; the first-window vs baseline z test is a model diagnostic, not silicon confidence evidence."
+        },
+        "health": {
+          "monitor": "digital.model.health.HealthMonitor (from reset, first 1024 samples of every row)",
+          "pass_count": 1000,
+          "rows": 1000,
+          "failed_rows": [],
+          "first_trip_index_min": null,
+          "alarm_classes": {},
+          "ok": true
+        },
+        "verdict": {
+          "pass": false,
+          "row_mcv_ok": true,
+          "column_mcv_ok": false,
+          "startup_health_ok": true,
+          "failing_rows_mcv": [],
+          "failing_columns_mcv": [
+            0
+          ],
+          "failing_rows_health": [],
+          "rule": "PASS iff every row and column has H_MCV >= 0.5 (99 % upper-confidence MCV) and every row's start-up health test passes"
+        }
+      },
+      "values_sha256": "b097f6a35e33051ec991076461ad1690b0aac871a67897755ad2c318a4399cda"
+    },
+    {
+      "key": "ss:-40C:1.98V:stationary",
+      "corner": "ss",
+      "temp_c": -40.0,
+      "vdd_v": 1.98,
+      "arm": "stationary",
+      "start": "uniform random ring phases (stationary reference)",
+      "seed_policy": {
+        "master_seed": 267,
+        "rule": "int.from_bytes(sha256(f'267:{arm}:{corner}:{T:g}C:{V:g}V:{restart}').digest()[:8], 'big')",
+        "per_restart": true,
+        "first_seed": 2057601955519874495,
+        "last_seed": 11360744449142957545,
+        "seeds_sha256": "27b1c0f4bfa3bca514f858916aeae1d2cb04814e69765ebdb9a89685fe0252a6",
+        "full_list": "restart-matrix-values.json.gz[ss:-40C:1.98V:stationary].seeds"
+      },
+      "calibration": {
+        "sigma1": 1.949605e-12,
+        "periods_s": [
+          2.341082e-09,
+          2.248795e-09,
+          2.158348e-09,
+          2.068001e-09
+        ],
+        "delays_s": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "jitter_record": "20260825-060646-54f5715",
+        "combining_record": "20260825-094856-53f1f7a",
+        "det_record": null,
+        "period_source": "combining record 20260825-094856-53f1f7a (no det record at this point; start delay 0)"
+      },
+      "model_caveats": "Behavioural model boundary: the phase-diffusion source of sim/wake-up-transient/wakeup.py starts the four rings from phase zero after their measured start delays (deterministic arm) or from uniform random phases (stationary reference arm) and advances them with independent white period-jitter increments calibrated from committed records. It does NOT model physical supply-ramp dynamics, enable settling, sampler aperture/metastability, inter-ring coupling, 1/f noise, or silicon process behaviour. This record is simulation-derived and provisional until silicon; it validates the restart-matrix plumbing and diagnostic rules only. It is not transistor-level wake-up verification, not evidence of physical C5 compliance, and not an SP 800-90B validation. Analog wake-up and settling work is issue #216.",
+      "status": "simulation-derived; provisional until silicon",
+      "reduction": {
+        "shape": {
+          "restarts": 1000,
+          "samples": 2048,
+          "first_window": [
+            0,
+            1023
+          ],
+          "baseline_window": [
+            1024,
+            2047
+          ]
+        },
+        "estimator": "raw-bit-entropy.py:mcv_estimate (SP 800-90B 6.3.1, p_u_99, H = -log2 p_u_99)",
+        "rows": {
+          "count": 1000,
+          "h_mcv_min": 0.8174561540717875,
+          "h_mcv_min_index": 75,
+          "h_mcv_dist": {
+            "min": 0.8174561540717875,
+            "p01": 0.8449224723867493,
+            "p05": 0.858867207776332,
+            "p25": 0.8832963195057894,
+            "median": 0.8989547254302133,
+            "mean": 0.8952336444206176,
+            "max": 0.9201171318548846
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one restart, all samples"
+        },
+        "columns": {
+          "count": 2048,
+          "h_mcv_min": 0.7550475571800005,
+          "h_mcv_min_index": 1921,
+          "h_mcv_dist": {
+            "min": 0.7550475571800005,
+            "p01": 0.7818745539951208,
+            "p05": 0.8067469667430871,
+            "p25": 0.8372269563727839,
+            "median": 0.8579448677483226,
+            "mean": 0.854060065171393,
+            "max": 0.8869721606671933
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one sample index, all restarts"
+        },
+        "first_vs_baseline": {
+          "first_ones": 512280,
+          "first_n": 1024000,
+          "baseline_ones": 512552,
+          "baseline_n": 1024000,
+          "p_first": 0.5002734375,
+          "p_baseline": 0.5005390625,
+          "difference": -0.0002656250000000471,
+          "z": -0.38013168164820504,
+          "p_value": 0.7038476692883877,
+          "alpha": 0.01,
+          "distinguishable": false,
+          "test": "two-sided two-proportion z, pooled variance",
+          "caveat": "Pooling samples within restarts assumes they are independent; the first-window vs baseline z test is a model diagnostic, not silicon confidence evidence."
+        },
+        "health": {
+          "monitor": "digital.model.health.HealthMonitor (from reset, first 1024 samples of every row)",
+          "pass_count": 1000,
+          "rows": 1000,
+          "failed_rows": [],
+          "first_trip_index_min": null,
+          "alarm_classes": {},
+          "ok": true
+        },
+        "verdict": {
+          "pass": true,
+          "row_mcv_ok": true,
+          "column_mcv_ok": true,
+          "startup_health_ok": true,
+          "failing_rows_mcv": [],
+          "failing_columns_mcv": [],
+          "failing_rows_health": [],
+          "rule": "PASS iff every row and column has H_MCV >= 0.5 (99 % upper-confidence MCV) and every row's start-up health test passes"
+        }
+      },
+      "values_sha256": "9f872eabd5a56d3daaf93d9e3aa46f0a76ee0c2051f6f386cdce1174f4c4b9f2"
+    },
+    {
+      "key": "ff:-40C:1.98V:deterministic",
+      "corner": "ff",
+      "temp_c": -40.0,
+      "vdd_v": 1.98,
+      "arm": "deterministic",
+      "start": "phase zero after the measured per-ring start delays, first sample Ts/2 after the enable",
+      "seed_policy": {
+        "master_seed": 267,
+        "rule": "int.from_bytes(sha256(f'267:{arm}:{corner}:{T:g}C:{V:g}V:{restart}').digest()[:8], 'big')",
+        "per_restart": true,
+        "first_seed": 13895987317750727538,
+        "last_seed": 14366360780673955787,
+        "seeds_sha256": "d5df31d4e1bfe2841ee0259c2c439960ad3fda84cbe646c39f160e0c3466f363",
+        "full_list": "restart-matrix-values.json.gz[ff:-40C:1.98V:deterministic].seeds"
+      },
+      "calibration": {
+        "sigma1": 1.772931e-12,
+        "periods_s": [
+          1.5971e-09,
+          1.512093e-09,
+          1.437542e-09,
+          1.365115e-09
+        ],
+        "delays_s": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "jitter_record": "20260825-060646-54f5715",
+        "combining_record": "20260825-094856-53f1f7a",
+        "det_record": null,
+        "period_source": "combining record 20260825-094856-53f1f7a (no det record at this point; start delay 0)"
+      },
+      "model_caveats": "Behavioural model boundary: the phase-diffusion source of sim/wake-up-transient/wakeup.py starts the four rings from phase zero after their measured start delays (deterministic arm) or from uniform random phases (stationary reference arm) and advances them with independent white period-jitter increments calibrated from committed records. It does NOT model physical supply-ramp dynamics, enable settling, sampler aperture/metastability, inter-ring coupling, 1/f noise, or silicon process behaviour. This record is simulation-derived and provisional until silicon; it validates the restart-matrix plumbing and diagnostic rules only. It is not transistor-level wake-up verification, not evidence of physical C5 compliance, and not an SP 800-90B validation. Analog wake-up and settling work is issue #216.",
+      "status": "simulation-derived; provisional until silicon",
+      "reduction": {
+        "shape": {
+          "restarts": 1000,
+          "samples": 2048,
+          "first_window": [
+            0,
+            1023
+          ],
+          "baseline_window": [
+            1024,
+            2047
+          ]
+        },
+        "estimator": "raw-bit-entropy.py:mcv_estimate (SP 800-90B 6.3.1, p_u_99, H = -log2 p_u_99)",
+        "rows": {
+          "count": 1000,
+          "h_mcv_min": 0.8088324241124227,
+          "h_mcv_min_index": 485,
+          "h_mcv_dist": {
+            "min": 0.8088324241124227,
+            "p01": 0.8499767115712004,
+            "p05": 0.865253420865154,
+            "p25": 0.8871940383557477,
+            "median": 0.9002677718411423,
+            "mean": 0.897262147664962,
+            "max": 0.9201171318548846
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one restart, all samples"
+        },
+        "columns": {
+          "count": 2048,
+          "h_mcv_min": 0.37705090321314305,
+          "h_mcv_min_index": 0,
+          "h_mcv_dist": {
+            "min": 0.37705090321314305,
+            "p01": 0.784340749592178,
+            "p05": 0.809260238160335,
+            "p25": 0.839799007616577,
+            "median": 0.8605575753846066,
+            "mean": 0.8549208279244024,
+            "max": 0.8869721606671933
+          },
+          "n_below_floor": 1,
+          "below_floor_indices": [
+            0
+          ],
+          "ok": false,
+          "what": "one sample index, all restarts"
+        },
+        "first_vs_baseline": {
+          "first_ones": 511530,
+          "first_n": 1024000,
+          "baseline_ones": 512452,
+          "baseline_n": 1024000,
+          "p_first": 0.499541015625,
+          "p_baseline": 0.50044140625,
+          "difference": -0.0009003906250000249,
+          "z": -1.2885341722333619,
+          "p_value": 0.19756008139220482,
+          "alpha": 0.01,
+          "distinguishable": false,
+          "test": "two-sided two-proportion z, pooled variance",
+          "caveat": "Pooling samples within restarts assumes they are independent; the first-window vs baseline z test is a model diagnostic, not silicon confidence evidence."
+        },
+        "health": {
+          "monitor": "digital.model.health.HealthMonitor (from reset, first 1024 samples of every row)",
+          "pass_count": 1000,
+          "rows": 1000,
+          "failed_rows": [],
+          "first_trip_index_min": null,
+          "alarm_classes": {},
+          "ok": true
+        },
+        "verdict": {
+          "pass": false,
+          "row_mcv_ok": true,
+          "column_mcv_ok": false,
+          "startup_health_ok": true,
+          "failing_rows_mcv": [],
+          "failing_columns_mcv": [
+            0
+          ],
+          "failing_rows_health": [],
+          "rule": "PASS iff every row and column has H_MCV >= 0.5 (99 % upper-confidence MCV) and every row's start-up health test passes"
+        }
+      },
+      "values_sha256": "c4ac632d0408ec5acaa7990ff5794737ec7e9197a2067713dde1d155813a0407"
+    },
+    {
+      "key": "ff:-40C:1.98V:stationary",
+      "corner": "ff",
+      "temp_c": -40.0,
+      "vdd_v": 1.98,
+      "arm": "stationary",
+      "start": "uniform random ring phases (stationary reference)",
+      "seed_policy": {
+        "master_seed": 267,
+        "rule": "int.from_bytes(sha256(f'267:{arm}:{corner}:{T:g}C:{V:g}V:{restart}').digest()[:8], 'big')",
+        "per_restart": true,
+        "first_seed": 6701584061741984601,
+        "last_seed": 5971690514152274791,
+        "seeds_sha256": "e7084e2c58c75c01dfb117341768609db3d5ff5f3b29b0f60064711b72102b0e",
+        "full_list": "restart-matrix-values.json.gz[ff:-40C:1.98V:stationary].seeds"
+      },
+      "calibration": {
+        "sigma1": 1.772931e-12,
+        "periods_s": [
+          1.5971e-09,
+          1.512093e-09,
+          1.437542e-09,
+          1.365115e-09
+        ],
+        "delays_s": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "jitter_record": "20260825-060646-54f5715",
+        "combining_record": "20260825-094856-53f1f7a",
+        "det_record": null,
+        "period_source": "combining record 20260825-094856-53f1f7a (no det record at this point; start delay 0)"
+      },
+      "model_caveats": "Behavioural model boundary: the phase-diffusion source of sim/wake-up-transient/wakeup.py starts the four rings from phase zero after their measured start delays (deterministic arm) or from uniform random phases (stationary reference arm) and advances them with independent white period-jitter increments calibrated from committed records. It does NOT model physical supply-ramp dynamics, enable settling, sampler aperture/metastability, inter-ring coupling, 1/f noise, or silicon process behaviour. This record is simulation-derived and provisional until silicon; it validates the restart-matrix plumbing and diagnostic rules only. It is not transistor-level wake-up verification, not evidence of physical C5 compliance, and not an SP 800-90B validation. Analog wake-up and settling work is issue #216.",
+      "status": "simulation-derived; provisional until silicon",
+      "reduction": {
+        "shape": {
+          "restarts": 1000,
+          "samples": 2048,
+          "first_window": [
+            0,
+            1023
+          ],
+          "baseline_window": [
+            1024,
+            2047
+          ]
+        },
+        "estimator": "raw-bit-entropy.py:mcv_estimate (SP 800-90B 6.3.1, p_u_99, H = -log2 p_u_99)",
+        "rows": {
+          "count": 1000,
+          "h_mcv_min": 0.819930202982482,
+          "h_mcv_min_index": 145,
+          "h_mcv_dist": {
+            "min": 0.819930202982482,
+            "p01": 0.8449224723867493,
+            "p05": 0.8639737717539505,
+            "p25": 0.8858935558932919,
+            "median": 0.8989547254302133,
+            "mean": 0.8966788713223561,
+            "max": 0.9201171318548846
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one restart, all samples"
+        },
+        "columns": {
+          "count": 2048,
+          "h_mcv_min": 0.7216791317415102,
+          "h_mcv_min_index": 1360,
+          "h_mcv_dist": {
+            "min": 0.7216791317415102,
+            "p01": 0.7769559955755353,
+            "p05": 0.8067469667430871,
+            "p25": 0.839799007616577,
+            "median": 0.8579448677483226,
+            "mean": 0.8541758897782167,
+            "max": 0.8869721606671933
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one sample index, all restarts"
+        },
+        "first_vs_baseline": {
+          "first_ones": 511947,
+          "first_n": 1024000,
+          "baseline_ones": 513213,
+          "baseline_n": 1024000,
+          "p_first": 0.4999482421875,
+          "p_baseline": 0.5011845703125,
+          "difference": -0.0012363281249999636,
+          "z": -1.7692899224301937,
+          "p_value": 0.07684550432838522,
+          "alpha": 0.01,
+          "distinguishable": false,
+          "test": "two-sided two-proportion z, pooled variance",
+          "caveat": "Pooling samples within restarts assumes they are independent; the first-window vs baseline z test is a model diagnostic, not silicon confidence evidence."
+        },
+        "health": {
+          "monitor": "digital.model.health.HealthMonitor (from reset, first 1024 samples of every row)",
+          "pass_count": 1000,
+          "rows": 1000,
+          "failed_rows": [],
+          "first_trip_index_min": null,
+          "alarm_classes": {},
+          "ok": true
+        },
+        "verdict": {
+          "pass": true,
+          "row_mcv_ok": true,
+          "column_mcv_ok": true,
+          "startup_health_ok": true,
+          "failing_rows_mcv": [],
+          "failing_columns_mcv": [],
+          "failing_rows_health": [],
+          "rule": "PASS iff every row and column has H_MCV >= 0.5 (99 % upper-confidence MCV) and every row's start-up health test passes"
+        }
+      },
+      "values_sha256": "72e5ee54980a7cf6967616655146dba245ea9b5399319b3efca6a96c9ef02aa0"
+    },
+    {
+      "key": "tt:125C:1.62V:deterministic",
+      "corner": "tt",
+      "temp_c": 125.0,
+      "vdd_v": 1.62,
+      "arm": "deterministic",
+      "start": "phase zero after the measured per-ring start delays, first sample Ts/2 after the enable",
+      "seed_policy": {
+        "master_seed": 267,
+        "rule": "int.from_bytes(sha256(f'267:{arm}:{corner}:{T:g}C:{V:g}V:{restart}').digest()[:8], 'big')",
+        "per_restart": true,
+        "first_seed": 4833624894261402192,
+        "last_seed": 8150960420806774266,
+        "seeds_sha256": "66a58ecee9b7b7a6d4d77614ee9ea96772e1003ff55ed18b9af8ce984314aab3",
+        "full_list": "restart-matrix-values.json.gz[tt:125C:1.62V:deterministic].seeds"
+      },
+      "calibration": {
+        "sigma1": 4.45345e-12,
+        "periods_s": [
+          4.502169999999999e-09,
+          4.20359e-09,
+          3.941800000000001e-09,
+          3.7021599999999995e-09
+        ],
+        "delays_s": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "jitter_record": "20260825-061916-54f5715",
+        "combining_record": "20261008-135355-847b454",
+        "det_record": null,
+        "period_source": "combining record 20261008-135355-847b454 (no det record at this point; start delay 0)"
+      },
+      "model_caveats": "Behavioural model boundary: the phase-diffusion source of sim/wake-up-transient/wakeup.py starts the four rings from phase zero after their measured start delays (deterministic arm) or from uniform random phases (stationary reference arm) and advances them with independent white period-jitter increments calibrated from committed records. It does NOT model physical supply-ramp dynamics, enable settling, sampler aperture/metastability, inter-ring coupling, 1/f noise, or silicon process behaviour. This record is simulation-derived and provisional until silicon; it validates the restart-matrix plumbing and diagnostic rules only. It is not transistor-level wake-up verification, not evidence of physical C5 compliance, and not an SP 800-90B validation. Analog wake-up and settling work is issue #216.",
+      "status": "simulation-derived; provisional until silicon",
+      "reduction": {
+        "shape": {
+          "restarts": 1000,
+          "samples": 2048,
+          "first_window": [
+            0,
+            1023
+          ],
+          "baseline_window": [
+            1024,
+            2047
+          ]
+        },
+        "estimator": "raw-bit-entropy.py:mcv_estimate (SP 800-90B 6.3.1, p_u_99, H = -log2 p_u_99)",
+        "rows": {
+          "count": 1000,
+          "h_mcv_min": 0.8224087813420714,
+          "h_mcv_min_index": 752,
+          "h_mcv_dist": {
+            "min": 0.8224087813420714,
+            "p01": 0.8386310557454038,
+            "p05": 0.857593564000761,
+            "p25": 0.8858935558932919,
+            "median": 0.8989547254302133,
+            "mean": 0.8953357448127582,
+            "max": 0.9201171318548846
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one restart, all samples"
+        },
+        "columns": {
+          "count": 2048,
+          "h_mcv_min": 0.17091695198038356,
+          "h_mcv_min_index": 0,
+          "h_mcv_dist": {
+            "min": 0.17091695198038356,
+            "p01": 0.7818745539951208,
+            "p05": 0.8067469667430871,
+            "p25": 0.839799007616577,
+            "median": 0.8605575753846066,
+            "mean": 0.853681797823504,
+            "max": 0.8869721606671933
+          },
+          "n_below_floor": 1,
+          "below_floor_indices": [
+            0
+          ],
+          "ok": false,
+          "what": "one sample index, all restarts"
+        },
+        "first_vs_baseline": {
+          "first_ones": 511456,
+          "first_n": 1024000,
+          "baseline_ones": 511705,
+          "baseline_n": 1024000,
+          "p_first": 0.49946875,
+          "p_baseline": 0.4997119140625,
+          "difference": -0.00024316406249996758,
+          "z": -0.3479881958025957,
+          "p_value": 0.727849048520432,
+          "alpha": 0.01,
+          "distinguishable": false,
+          "test": "two-sided two-proportion z, pooled variance",
+          "caveat": "Pooling samples within restarts assumes they are independent; the first-window vs baseline z test is a model diagnostic, not silicon confidence evidence."
+        },
+        "health": {
+          "monitor": "digital.model.health.HealthMonitor (from reset, first 1024 samples of every row)",
+          "pass_count": 1000,
+          "rows": 1000,
+          "failed_rows": [],
+          "first_trip_index_min": null,
+          "alarm_classes": {},
+          "ok": true
+        },
+        "verdict": {
+          "pass": false,
+          "row_mcv_ok": true,
+          "column_mcv_ok": false,
+          "startup_health_ok": true,
+          "failing_rows_mcv": [],
+          "failing_columns_mcv": [
+            0
+          ],
+          "failing_rows_health": [],
+          "rule": "PASS iff every row and column has H_MCV >= 0.5 (99 % upper-confidence MCV) and every row's start-up health test passes"
+        }
+      },
+      "values_sha256": "908e98e220640fb98c301741d9b352626ecf5bc2116630dd6f2f451f6580b1a6"
+    },
+    {
+      "key": "tt:125C:1.62V:stationary",
+      "corner": "tt",
+      "temp_c": 125.0,
+      "vdd_v": 1.62,
+      "arm": "stationary",
+      "start": "uniform random ring phases (stationary reference)",
+      "seed_policy": {
+        "master_seed": 267,
+        "rule": "int.from_bytes(sha256(f'267:{arm}:{corner}:{T:g}C:{V:g}V:{restart}').digest()[:8], 'big')",
+        "per_restart": true,
+        "first_seed": 4570686199627105909,
+        "last_seed": 17476946898698927719,
+        "seeds_sha256": "88f8f3ca6f1f086efdc2f538af379c37e60f18a5193925c36ebc47269245b7f3",
+        "full_list": "restart-matrix-values.json.gz[tt:125C:1.62V:stationary].seeds"
+      },
+      "calibration": {
+        "sigma1": 4.45345e-12,
+        "periods_s": [
+          4.502169999999999e-09,
+          4.20359e-09,
+          3.941800000000001e-09,
+          3.7021599999999995e-09
+        ],
+        "delays_s": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "jitter_record": "20260825-061916-54f5715",
+        "combining_record": "20261008-135355-847b454",
+        "det_record": null,
+        "period_source": "combining record 20261008-135355-847b454 (no det record at this point; start delay 0)"
+      },
+      "model_caveats": "Behavioural model boundary: the phase-diffusion source of sim/wake-up-transient/wakeup.py starts the four rings from phase zero after their measured start delays (deterministic arm) or from uniform random phases (stationary reference arm) and advances them with independent white period-jitter increments calibrated from committed records. It does NOT model physical supply-ramp dynamics, enable settling, sampler aperture/metastability, inter-ring coupling, 1/f noise, or silicon process behaviour. This record is simulation-derived and provisional until silicon; it validates the restart-matrix plumbing and diagnostic rules only. It is not transistor-level wake-up verification, not evidence of physical C5 compliance, and not an SP 800-90B validation. Analog wake-up and settling work is issue #216.",
+      "status": "simulation-derived; provisional until silicon",
+      "reduction": {
+        "shape": {
+          "restarts": 1000,
+          "samples": 2048,
+          "first_window": [
+            0,
+            1023
+          ],
+          "baseline_window": [
+            1024,
+            2047
+          ]
+        },
+        "estimator": "raw-bit-entropy.py:mcv_estimate (SP 800-90B 6.3.1, p_u_99, H = -log2 p_u_99)",
+        "rows": {
+          "count": 1000,
+          "h_mcv_min": 0.8076049370378261,
+          "h_mcv_min_index": 475,
+          "h_mcv_dist": {
+            "min": 0.8076049370378261,
+            "p01": 0.8474472370690043,
+            "p05": 0.8639737717539505,
+            "p25": 0.8845943170424904,
+            "median": 0.8989547254302133,
+            "mean": 0.8963599332814285,
+            "max": 0.9201171318548846
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one restart, all samples"
+        },
+        "columns": {
+          "count": 2048,
+          "h_mcv_min": 0.752635707000194,
+          "h_mcv_min_index": 106,
+          "h_mcv_dist": {
+            "min": 0.752635707000194,
+            "p01": 0.7818745539951208,
+            "p05": 0.8042384789982935,
+            "p25": 0.839799007616577,
+            "median": 0.8605575753846066,
+            "mean": 0.8535416483118924,
+            "max": 0.8869721606671933
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one sample index, all restarts"
+        },
+        "first_vs_baseline": {
+          "first_ones": 511698,
+          "first_n": 1024000,
+          "baseline_ones": 511552,
+          "baseline_n": 1024000,
+          "p_first": 0.499705078125,
+          "p_baseline": 0.4995625,
+          "difference": 0.00014257812499995914,
+          "z": 0.20404125767493475,
+          "p_value": 0.8383212580824148,
+          "alpha": 0.01,
+          "distinguishable": false,
+          "test": "two-sided two-proportion z, pooled variance",
+          "caveat": "Pooling samples within restarts assumes they are independent; the first-window vs baseline z test is a model diagnostic, not silicon confidence evidence."
+        },
+        "health": {
+          "monitor": "digital.model.health.HealthMonitor (from reset, first 1024 samples of every row)",
+          "pass_count": 1000,
+          "rows": 1000,
+          "failed_rows": [],
+          "first_trip_index_min": null,
+          "alarm_classes": {},
+          "ok": true
+        },
+        "verdict": {
+          "pass": true,
+          "row_mcv_ok": true,
+          "column_mcv_ok": true,
+          "startup_health_ok": true,
+          "failing_rows_mcv": [],
+          "failing_columns_mcv": [],
+          "failing_rows_health": [],
+          "rule": "PASS iff every row and column has H_MCV >= 0.5 (99 % upper-confidence MCV) and every row's start-up health test passes"
+        }
+      },
+      "values_sha256": "e26e1605afae55f630b7a0943aa90c9d96b3f19398be78828bda00145239a590"
+    },
+    {
+      "key": "ss:125C:1.62V:deterministic",
+      "corner": "ss",
+      "temp_c": 125.0,
+      "vdd_v": 1.62,
+      "arm": "deterministic",
+      "start": "phase zero after the measured per-ring start delays, first sample Ts/2 after the enable",
+      "seed_policy": {
+        "master_seed": 267,
+        "rule": "int.from_bytes(sha256(f'267:{arm}:{corner}:{T:g}C:{V:g}V:{restart}').digest()[:8], 'big')",
+        "per_restart": true,
+        "first_seed": 1607407230702569910,
+        "last_seed": 16025334991522459700,
+        "seeds_sha256": "1fd2cbb41599776319e6e609a2d99497323b1abdc7fe9f710c72879af9eb9132",
+        "full_list": "restart-matrix-values.json.gz[ss:125C:1.62V:deterministic].seeds"
+      },
+      "calibration": {
+        "sigma1": 4.924983e-12,
+        "periods_s": [
+          5.5161300000000005e-09,
+          5.118479999999999e-09,
+          4.78263e-09,
+          4.48408e-09
+        ],
+        "delays_s": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "jitter_record": "20260825-061916-54f5715",
+        "combining_record": "20261008-135355-847b454",
+        "det_record": null,
+        "period_source": "combining record 20261008-135355-847b454 (no det record at this point; start delay 0)"
+      },
+      "model_caveats": "Behavioural model boundary: the phase-diffusion source of sim/wake-up-transient/wakeup.py starts the four rings from phase zero after their measured start delays (deterministic arm) or from uniform random phases (stationary reference arm) and advances them with independent white period-jitter increments calibrated from committed records. It does NOT model physical supply-ramp dynamics, enable settling, sampler aperture/metastability, inter-ring coupling, 1/f noise, or silicon process behaviour. This record is simulation-derived and provisional until silicon; it validates the restart-matrix plumbing and diagnostic rules only. It is not transistor-level wake-up verification, not evidence of physical C5 compliance, and not an SP 800-90B validation. Analog wake-up and settling work is issue #216.",
+      "status": "simulation-derived; provisional until silicon",
+      "reduction": {
+        "shape": {
+          "restarts": 1000,
+          "samples": 2048,
+          "first_window": [
+            0,
+            1023
+          ],
+          "baseline_window": [
+            1024,
+            2047
+          ]
+        },
+        "estimator": "raw-bit-entropy.py:mcv_estimate (SP 800-90B 6.3.1, p_u_99, H = -log2 p_u_99)",
+        "rows": {
+          "count": 1000,
+          "h_mcv_min": 0.8424024006666401,
+          "h_mcv_min_index": 165,
+          "h_mcv_dist": {
+            "min": 0.8424024006666401,
+            "p01": 0.8537797913466545,
+            "p05": 0.8690996227754053,
+            "p25": 0.8897987433389132,
+            "median": 0.9015820875785501,
+            "mean": 0.8989938998383826,
+            "max": 0.9201171318548846
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one restart, all samples"
+        },
+        "columns": {
+          "count": 2048,
+          "h_mcv_min": 0.036289464175854345,
+          "h_mcv_min_index": 0,
+          "h_mcv_dist": {
+            "min": 0.036289464175854345,
+            "p01": 0.7794129747286398,
+            "p05": 0.8042384789982935,
+            "p25": 0.839799007616577,
+            "median": 0.8579448677483226,
+            "mean": 0.8530395204497331,
+            "max": 0.8869721606671933
+          },
+          "n_below_floor": 2,
+          "below_floor_indices": [
+            0,
+            1
+          ],
+          "ok": false,
+          "what": "one sample index, all restarts"
+        },
+        "first_vs_baseline": {
+          "first_ones": 511859,
+          "first_n": 1024000,
+          "baseline_ones": 512204,
+          "baseline_n": 1024000,
+          "p_first": 0.4998623046875,
+          "p_baseline": 0.50019921875,
+          "difference": -0.00033691406249997113,
+          "z": -0.4821521585608559,
+          "p_value": 0.6296978596313604,
+          "alpha": 0.01,
+          "distinguishable": false,
+          "test": "two-sided two-proportion z, pooled variance",
+          "caveat": "Pooling samples within restarts assumes they are independent; the first-window vs baseline z test is a model diagnostic, not silicon confidence evidence."
+        },
+        "health": {
+          "monitor": "digital.model.health.HealthMonitor (from reset, first 1024 samples of every row)",
+          "pass_count": 1000,
+          "rows": 1000,
+          "failed_rows": [],
+          "first_trip_index_min": null,
+          "alarm_classes": {},
+          "ok": true
+        },
+        "verdict": {
+          "pass": false,
+          "row_mcv_ok": true,
+          "column_mcv_ok": false,
+          "startup_health_ok": true,
+          "failing_rows_mcv": [],
+          "failing_columns_mcv": [
+            0,
+            1
+          ],
+          "failing_rows_health": [],
+          "rule": "PASS iff every row and column has H_MCV >= 0.5 (99 % upper-confidence MCV) and every row's start-up health test passes"
+        }
+      },
+      "values_sha256": "de012fc467e54fe67f69883370e78b4eac3a00157f32c79c811803c810a0a569"
+    },
+    {
+      "key": "ss:125C:1.62V:stationary",
+      "corner": "ss",
+      "temp_c": 125.0,
+      "vdd_v": 1.62,
+      "arm": "stationary",
+      "start": "uniform random ring phases (stationary reference)",
+      "seed_policy": {
+        "master_seed": 267,
+        "rule": "int.from_bytes(sha256(f'267:{arm}:{corner}:{T:g}C:{V:g}V:{restart}').digest()[:8], 'big')",
+        "per_restart": true,
+        "first_seed": 737005505937145220,
+        "last_seed": 4248918065850919025,
+        "seeds_sha256": "250aa21062baa679fff0b3ddf1e0a984dce265fc1357bac5d2196abce9182b93",
+        "full_list": "restart-matrix-values.json.gz[ss:125C:1.62V:stationary].seeds"
+      },
+      "calibration": {
+        "sigma1": 4.924983e-12,
+        "periods_s": [
+          5.5161300000000005e-09,
+          5.118479999999999e-09,
+          4.78263e-09,
+          4.48408e-09
+        ],
+        "delays_s": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "jitter_record": "20260825-061916-54f5715",
+        "combining_record": "20261008-135355-847b454",
+        "det_record": null,
+        "period_source": "combining record 20261008-135355-847b454 (no det record at this point; start delay 0)"
+      },
+      "model_caveats": "Behavioural model boundary: the phase-diffusion source of sim/wake-up-transient/wakeup.py starts the four rings from phase zero after their measured start delays (deterministic arm) or from uniform random phases (stationary reference arm) and advances them with independent white period-jitter increments calibrated from committed records. It does NOT model physical supply-ramp dynamics, enable settling, sampler aperture/metastability, inter-ring coupling, 1/f noise, or silicon process behaviour. This record is simulation-derived and provisional until silicon; it validates the restart-matrix plumbing and diagnostic rules only. It is not transistor-level wake-up verification, not evidence of physical C5 compliance, and not an SP 800-90B validation. Analog wake-up and settling work is issue #216.",
+      "status": "simulation-derived; provisional until silicon",
+      "reduction": {
+        "shape": {
+          "restarts": 1000,
+          "samples": 2048,
+          "first_window": [
+            0,
+            1023
+          ],
+          "baseline_window": [
+            1024,
+            2047
+          ]
+        },
+        "estimator": "raw-bit-entropy.py:mcv_estimate (SP 800-90B 6.3.1, p_u_99, H = -log2 p_u_99)",
+        "rows": {
+          "count": 1000,
+          "h_mcv_min": 0.8236497740450989,
+          "h_mcv_min_index": 798,
+          "h_mcv_dist": {
+            "min": 0.8236497740450989,
+            "p01": 0.8550498579410338,
+            "p05": 0.8690996227754053,
+            "p25": 0.8897987433389132,
+            "median": 0.9028976750209623,
+            "mean": 0.899367712263981,
+            "max": 0.9201171318548846
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one restart, all samples"
+        },
+        "columns": {
+          "count": 2048,
+          "h_mcv_min": 0.7287582498141538,
+          "h_mcv_min_index": 1613,
+          "h_mcv_dist": {
+            "min": 0.7287582498141538,
+            "p01": 0.784340749592178,
+            "p05": 0.8067469667430871,
+            "p25": 0.8372269563727839,
+            "median": 0.8579448677483226,
+            "mean": 0.8533525893153259,
+            "max": 0.8869721606671933
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one sample index, all restarts"
+        },
+        "first_vs_baseline": {
+          "first_ones": 512497,
+          "first_n": 1024000,
+          "baseline_ones": 512170,
+          "baseline_n": 1024000,
+          "p_first": 0.5004853515625,
+          "p_baseline": 0.500166015625,
+          "difference": 0.0003193359374999982,
+          "z": 0.45699648984858277,
+          "p_value": 0.6476735684915882,
+          "alpha": 0.01,
+          "distinguishable": false,
+          "test": "two-sided two-proportion z, pooled variance",
+          "caveat": "Pooling samples within restarts assumes they are independent; the first-window vs baseline z test is a model diagnostic, not silicon confidence evidence."
+        },
+        "health": {
+          "monitor": "digital.model.health.HealthMonitor (from reset, first 1024 samples of every row)",
+          "pass_count": 1000,
+          "rows": 1000,
+          "failed_rows": [],
+          "first_trip_index_min": null,
+          "alarm_classes": {},
+          "ok": true
+        },
+        "verdict": {
+          "pass": true,
+          "row_mcv_ok": true,
+          "column_mcv_ok": true,
+          "startup_health_ok": true,
+          "failing_rows_mcv": [],
+          "failing_columns_mcv": [],
+          "failing_rows_health": [],
+          "rule": "PASS iff every row and column has H_MCV >= 0.5 (99 % upper-confidence MCV) and every row's start-up health test passes"
+        }
+      },
+      "values_sha256": "52b5120e59386c30db33ec88516a81809d264ec8ae4a0bdfc582e66afa035f3c"
+    },
+    {
+      "key": "ff:125C:1.62V:deterministic",
+      "corner": "ff",
+      "temp_c": 125.0,
+      "vdd_v": 1.62,
+      "arm": "deterministic",
+      "start": "phase zero after the measured per-ring start delays, first sample Ts/2 after the enable",
+      "seed_policy": {
+        "master_seed": 267,
+        "rule": "int.from_bytes(sha256(f'267:{arm}:{corner}:{T:g}C:{V:g}V:{restart}').digest()[:8], 'big')",
+        "per_restart": true,
+        "first_seed": 14398755778574874951,
+        "last_seed": 452822753649317703,
+        "seeds_sha256": "d95c3772b4af97ccd512e95106cfec7efacb549709044e3408f0832b0bf4f67f",
+        "full_list": "restart-matrix-values.json.gz[ff:125C:1.62V:deterministic].seeds"
+      },
+      "calibration": {
+        "sigma1": 3.662044e-12,
+        "periods_s": [
+          3.84961e-09,
+          3.61683e-09,
+          3.40827e-09,
+          3.2134300000000006e-09
+        ],
+        "delays_s": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "jitter_record": "20260825-061916-54f5715",
+        "combining_record": "20261008-135355-847b454",
+        "det_record": null,
+        "period_source": "combining record 20261008-135355-847b454 (no det record at this point; start delay 0)"
+      },
+      "model_caveats": "Behavioural model boundary: the phase-diffusion source of sim/wake-up-transient/wakeup.py starts the four rings from phase zero after their measured start delays (deterministic arm) or from uniform random phases (stationary reference arm) and advances them with independent white period-jitter increments calibrated from committed records. It does NOT model physical supply-ramp dynamics, enable settling, sampler aperture/metastability, inter-ring coupling, 1/f noise, or silicon process behaviour. This record is simulation-derived and provisional until silicon; it validates the restart-matrix plumbing and diagnostic rules only. It is not transistor-level wake-up verification, not evidence of physical C5 compliance, and not an SP 800-90B validation. Analog wake-up and settling work is issue #216.",
+      "status": "simulation-derived; provisional until silicon",
+      "reduction": {
+        "shape": {
+          "restarts": 1000,
+          "samples": 2048,
+          "first_window": [
+            0,
+            1023
+          ],
+          "baseline_window": [
+            1024,
+            2047
+          ]
+        },
+        "estimator": "raw-bit-entropy.py:mcv_estimate (SP 800-90B 6.3.1, p_u_99, H = -log2 p_u_99)",
+        "rows": {
+          "count": 1000,
+          "h_mcv_min": 0.8286251484472988,
+          "h_mcv_min_index": 721,
+          "h_mcv_dist": {
+            "min": 0.8286251484472988,
+            "p01": 0.8436618509563563,
+            "p05": 0.857593564000761,
+            "p25": 0.8845943170424904,
+            "median": 0.8989547254302133,
+            "mean": 0.8949461224131515,
+            "max": 0.9201171318548846
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one restart, all samples"
+        },
+        "columns": {
+          "count": 2048,
+          "h_mcv_min": 0.3108066136631304,
+          "h_mcv_min_index": 2,
+          "h_mcv_dist": {
+            "min": 0.3108066136631304,
+            "p01": 0.7794129747286398,
+            "p05": 0.8042384789982935,
+            "p25": 0.839799007616577,
+            "median": 0.8605575753846066,
+            "mean": 0.8536250964739849,
+            "max": 0.8869721606671933
+          },
+          "n_below_floor": 1,
+          "below_floor_indices": [
+            2
+          ],
+          "ok": false,
+          "what": "one sample index, all restarts"
+        },
+        "first_vs_baseline": {
+          "first_ones": 511415,
+          "first_n": 1024000,
+          "baseline_ones": 511864,
+          "baseline_n": 1024000,
+          "p_first": 0.4994287109375,
+          "p_baseline": 0.4998671875,
+          "difference": -0.0004384765624999565,
+          "z": -0.6274967317294149,
+          "p_value": 0.530333677857397,
+          "alpha": 0.01,
+          "distinguishable": false,
+          "test": "two-sided two-proportion z, pooled variance",
+          "caveat": "Pooling samples within restarts assumes they are independent; the first-window vs baseline z test is a model diagnostic, not silicon confidence evidence."
+        },
+        "health": {
+          "monitor": "digital.model.health.HealthMonitor (from reset, first 1024 samples of every row)",
+          "pass_count": 1000,
+          "rows": 1000,
+          "failed_rows": [],
+          "first_trip_index_min": null,
+          "alarm_classes": {},
+          "ok": true
+        },
+        "verdict": {
+          "pass": false,
+          "row_mcv_ok": true,
+          "column_mcv_ok": false,
+          "startup_health_ok": true,
+          "failing_rows_mcv": [],
+          "failing_columns_mcv": [
+            2
+          ],
+          "failing_rows_health": [],
+          "rule": "PASS iff every row and column has H_MCV >= 0.5 (99 % upper-confidence MCV) and every row's start-up health test passes"
+        }
+      },
+      "values_sha256": "d13b09c8443581938a89ae05db84660108af27bf73db419f6b7b7c5da6757517"
+    },
+    {
+      "key": "ff:125C:1.62V:stationary",
+      "corner": "ff",
+      "temp_c": 125.0,
+      "vdd_v": 1.62,
+      "arm": "stationary",
+      "start": "uniform random ring phases (stationary reference)",
+      "seed_policy": {
+        "master_seed": 267,
+        "rule": "int.from_bytes(sha256(f'267:{arm}:{corner}:{T:g}C:{V:g}V:{restart}').digest()[:8], 'big')",
+        "per_restart": true,
+        "first_seed": 14826684721997723956,
+        "last_seed": 12336138593047525165,
+        "seeds_sha256": "3e0b3cc8e8354a492bcf3ea991c924dc80a45e1a41903b17b1d65c27c91c06df",
+        "full_list": "restart-matrix-values.json.gz[ff:125C:1.62V:stationary].seeds"
+      },
+      "calibration": {
+        "sigma1": 3.662044e-12,
+        "periods_s": [
+          3.84961e-09,
+          3.61683e-09,
+          3.40827e-09,
+          3.2134300000000006e-09
+        ],
+        "delays_s": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "jitter_record": "20260825-061916-54f5715",
+        "combining_record": "20261008-135355-847b454",
+        "det_record": null,
+        "period_source": "combining record 20261008-135355-847b454 (no det record at this point; start delay 0)"
+      },
+      "model_caveats": "Behavioural model boundary: the phase-diffusion source of sim/wake-up-transient/wakeup.py starts the four rings from phase zero after their measured start delays (deterministic arm) or from uniform random phases (stationary reference arm) and advances them with independent white period-jitter increments calibrated from committed records. It does NOT model physical supply-ramp dynamics, enable settling, sampler aperture/metastability, inter-ring coupling, 1/f noise, or silicon process behaviour. This record is simulation-derived and provisional until silicon; it validates the restart-matrix plumbing and diagnostic rules only. It is not transistor-level wake-up verification, not evidence of physical C5 compliance, and not an SP 800-90B validation. Analog wake-up and settling work is issue #216.",
+      "status": "simulation-derived; provisional until silicon",
+      "reduction": {
+        "shape": {
+          "restarts": 1000,
+          "samples": 2048,
+          "first_window": [
+            0,
+            1023
+          ],
+          "baseline_window": [
+            1024,
+            2047
+          ]
+        },
+        "estimator": "raw-bit-entropy.py:mcv_estimate (SP 800-90B 6.3.1, p_u_99, H = -log2 p_u_99)",
+        "rows": {
+          "count": 1000,
+          "h_mcv_min": 0.8261351765055954,
+          "h_mcv_min_index": 908,
+          "h_mcv_dist": {
+            "min": 0.8261351765055954,
+            "p01": 0.8424024006666401,
+            "p05": 0.862695328075227,
+            "p25": 0.8845943170424904,
+            "median": 0.8976429459741261,
+            "mean": 0.8949988050872644,
+            "max": 0.9201171318548846
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one restart, all samples"
+        },
+        "columns": {
+          "count": 2048,
+          "h_mcv_min": 0.7430324312368862,
+          "h_mcv_min_index": 153,
+          "h_mcv_dist": {
+            "min": 0.7430324312368862,
+            "p01": 0.784340749592178,
+            "p05": 0.8042384789982935,
+            "p25": 0.8372269563727839,
+            "median": 0.8579448677483226,
+            "mean": 0.8534553672178073,
+            "max": 0.8869721606671933
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one sample index, all restarts"
+        },
+        "first_vs_baseline": {
+          "first_ones": 511330,
+          "first_n": 1024000,
+          "baseline_ones": 512696,
+          "baseline_n": 1024000,
+          "p_first": 0.499345703125,
+          "p_baseline": 0.5006796875,
+          "difference": -0.0013339843750000413,
+          "z": -1.9090430364058693,
+          "p_value": 0.05625654013688046,
+          "alpha": 0.01,
+          "distinguishable": false,
+          "test": "two-sided two-proportion z, pooled variance",
+          "caveat": "Pooling samples within restarts assumes they are independent; the first-window vs baseline z test is a model diagnostic, not silicon confidence evidence."
+        },
+        "health": {
+          "monitor": "digital.model.health.HealthMonitor (from reset, first 1024 samples of every row)",
+          "pass_count": 1000,
+          "rows": 1000,
+          "failed_rows": [],
+          "first_trip_index_min": null,
+          "alarm_classes": {},
+          "ok": true
+        },
+        "verdict": {
+          "pass": true,
+          "row_mcv_ok": true,
+          "column_mcv_ok": true,
+          "startup_health_ok": true,
+          "failing_rows_mcv": [],
+          "failing_columns_mcv": [],
+          "failing_rows_health": [],
+          "rule": "PASS iff every row and column has H_MCV >= 0.5 (99 % upper-confidence MCV) and every row's start-up health test passes"
+        }
+      },
+      "values_sha256": "bcaa52639e042dcd207c2bc21174673c9170ab0e9a853ea5b266a93d867a1e77"
+    },
+    {
+      "key": "tt:125C:1.8V:deterministic",
+      "corner": "tt",
+      "temp_c": 125.0,
+      "vdd_v": 1.8,
+      "arm": "deterministic",
+      "start": "phase zero after the measured per-ring start delays, first sample Ts/2 after the enable",
+      "seed_policy": {
+        "master_seed": 267,
+        "rule": "int.from_bytes(sha256(f'267:{arm}:{corner}:{T:g}C:{V:g}V:{restart}').digest()[:8], 'big')",
+        "per_restart": true,
+        "first_seed": 8621856420926414533,
+        "last_seed": 18165948167907066672,
+        "seeds_sha256": "2e9acbffa6a786f6946ce219943dd29dfa42f45cfe32ca12192c83528ca965c9",
+        "full_list": "restart-matrix-values.json.gz[tt:125C:1.8V:deterministic].seeds"
+      },
+      "calibration": {
+        "sigma1": 5.612531e-12,
+        "periods_s": [
+          3.40833e-09,
+          3.17168e-09,
+          2.96321e-09,
+          2.77112e-09
+        ],
+        "delays_s": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "jitter_record": "20260825-061114-54f5715",
+        "combining_record": "20261008-135356-847b454",
+        "det_record": null,
+        "period_source": "combining record 20261008-135356-847b454 (no det record at this point; start delay 0)"
+      },
+      "model_caveats": "Behavioural model boundary: the phase-diffusion source of sim/wake-up-transient/wakeup.py starts the four rings from phase zero after their measured start delays (deterministic arm) or from uniform random phases (stationary reference arm) and advances them with independent white period-jitter increments calibrated from committed records. It does NOT model physical supply-ramp dynamics, enable settling, sampler aperture/metastability, inter-ring coupling, 1/f noise, or silicon process behaviour. This record is simulation-derived and provisional until silicon; it validates the restart-matrix plumbing and diagnostic rules only. It is not transistor-level wake-up verification, not evidence of physical C5 compliance, and not an SP 800-90B validation. Analog wake-up and settling work is issue #216.",
+      "status": "simulation-derived; provisional until silicon",
+      "reduction": {
+        "shape": {
+          "restarts": 1000,
+          "samples": 2048,
+          "first_window": [
+            0,
+            1023
+          ],
+          "baseline_window": [
+            1024,
+            2047
+          ]
+        },
+        "estimator": "raw-bit-entropy.py:mcv_estimate (SP 800-90B 6.3.1, p_u_99, H = -log2 p_u_99)",
+        "rows": {
+          "count": 1000,
+          "h_mcv_min": 0.7929613382438427,
+          "h_mcv_min_index": 790,
+          "h_mcv_dist": {
+            "min": 0.7929613382438427,
+            "p01": 0.8386310557454038,
+            "p05": 0.8601420482660016,
+            "p25": 0.8845943170424904,
+            "median": 0.9002677718411423,
+            "mean": 0.8956559213969119,
+            "max": 0.9201171318548846
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one restart, all samples"
+        },
+        "columns": {
+          "count": 2048,
+          "h_mcv_min": 0.7334990366383369,
+          "h_mcv_min_index": 855,
+          "h_mcv_dist": {
+            "min": 0.7334990366383369,
+            "p01": 0.7818745539951208,
+            "p05": 0.8042384789982935,
+            "p25": 0.839799007616577,
+            "median": 0.8579448677483226,
+            "mean": 0.8537266494057429,
+            "max": 0.8869721606671933
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one sample index, all restarts"
+        },
+        "first_vs_baseline": {
+          "first_ones": 511743,
+          "first_n": 1024000,
+          "baseline_ones": 511500,
+          "baseline_n": 1024000,
+          "p_first": 0.4997490234375,
+          "p_baseline": 0.49951171875,
+          "difference": 0.00023730468749999512,
+          "z": 0.3396029168796421,
+          "p_value": 0.7341555812092657,
+          "alpha": 0.01,
+          "distinguishable": false,
+          "test": "two-sided two-proportion z, pooled variance",
+          "caveat": "Pooling samples within restarts assumes they are independent; the first-window vs baseline z test is a model diagnostic, not silicon confidence evidence."
+        },
+        "health": {
+          "monitor": "digital.model.health.HealthMonitor (from reset, first 1024 samples of every row)",
+          "pass_count": 1000,
+          "rows": 1000,
+          "failed_rows": [],
+          "first_trip_index_min": null,
+          "alarm_classes": {},
+          "ok": true
+        },
+        "verdict": {
+          "pass": true,
+          "row_mcv_ok": true,
+          "column_mcv_ok": true,
+          "startup_health_ok": true,
+          "failing_rows_mcv": [],
+          "failing_columns_mcv": [],
+          "failing_rows_health": [],
+          "rule": "PASS iff every row and column has H_MCV >= 0.5 (99 % upper-confidence MCV) and every row's start-up health test passes"
+        }
+      },
+      "values_sha256": "1b9ef275f3fda1dc9e59152df377b08a028b61e034a4ffbaa56bf10a171b9e6d"
+    },
+    {
+      "key": "tt:125C:1.8V:stationary",
+      "corner": "tt",
+      "temp_c": 125.0,
+      "vdd_v": 1.8,
+      "arm": "stationary",
+      "start": "uniform random ring phases (stationary reference)",
+      "seed_policy": {
+        "master_seed": 267,
+        "rule": "int.from_bytes(sha256(f'267:{arm}:{corner}:{T:g}C:{V:g}V:{restart}').digest()[:8], 'big')",
+        "per_restart": true,
+        "first_seed": 8426693849237426046,
+        "last_seed": 2784813104094945278,
+        "seeds_sha256": "31181ef6d2f062875400f30a673777cf8ddb89e768fe5ce4eb5651d7ebecdd67",
+        "full_list": "restart-matrix-values.json.gz[tt:125C:1.8V:stationary].seeds"
+      },
+      "calibration": {
+        "sigma1": 5.612531e-12,
+        "periods_s": [
+          3.40833e-09,
+          3.17168e-09,
+          2.96321e-09,
+          2.77112e-09
+        ],
+        "delays_s": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "jitter_record": "20260825-061114-54f5715",
+        "combining_record": "20261008-135356-847b454",
+        "det_record": null,
+        "period_source": "combining record 20261008-135356-847b454 (no det record at this point; start delay 0)"
+      },
+      "model_caveats": "Behavioural model boundary: the phase-diffusion source of sim/wake-up-transient/wakeup.py starts the four rings from phase zero after their measured start delays (deterministic arm) or from uniform random phases (stationary reference arm) and advances them with independent white period-jitter increments calibrated from committed records. It does NOT model physical supply-ramp dynamics, enable settling, sampler aperture/metastability, inter-ring coupling, 1/f noise, or silicon process behaviour. This record is simulation-derived and provisional until silicon; it validates the restart-matrix plumbing and diagnostic rules only. It is not transistor-level wake-up verification, not evidence of physical C5 compliance, and not an SP 800-90B validation. Analog wake-up and settling work is issue #216.",
+      "status": "simulation-derived; provisional until silicon",
+      "reduction": {
+        "shape": {
+          "restarts": 1000,
+          "samples": 2048,
+          "first_window": [
+            0,
+            1023
+          ],
+          "baseline_window": [
+            1024,
+            2047
+          ]
+        },
+        "estimator": "raw-bit-entropy.py:mcv_estimate (SP 800-90B 6.3.1, p_u_99, H = -log2 p_u_99)",
+        "rows": {
+          "count": 1000,
+          "h_mcv_min": 0.8076049370378261,
+          "h_mcv_min_index": 474,
+          "h_mcv_dist": {
+            "min": 0.8076049370378261,
+            "p01": 0.8461842670562091,
+            "p05": 0.862695328075227,
+            "p25": 0.8871940383557477,
+            "median": 0.9002677718411423,
+            "mean": 0.896497697754955,
+            "max": 0.9201171318548846
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one restart, all samples"
+        },
+        "columns": {
+          "count": 2048,
+          "h_mcv_min": 0.7454266615904293,
+          "h_mcv_min_index": 317,
+          "h_mcv_dist": {
+            "min": 0.7454266615904293,
+            "p01": 0.7868115778290135,
+            "p05": 0.8067469667430871,
+            "p25": 0.839799007616577,
+            "median": 0.8579448677483226,
+            "mean": 0.8541935417262174,
+            "max": 0.8869721606671933
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one sample index, all restarts"
+        },
+        "first_vs_baseline": {
+          "first_ones": 511761,
+          "first_n": 1024000,
+          "baseline_ones": 512085,
+          "baseline_n": 1024000,
+          "p_first": 0.4997666015625,
+          "p_baseline": 0.5000830078125,
+          "difference": -0.000316406250000012,
+          "z": -0.4528037705643331,
+          "p_value": 0.6506900482829898,
+          "alpha": 0.01,
+          "distinguishable": false,
+          "test": "two-sided two-proportion z, pooled variance",
+          "caveat": "Pooling samples within restarts assumes they are independent; the first-window vs baseline z test is a model diagnostic, not silicon confidence evidence."
+        },
+        "health": {
+          "monitor": "digital.model.health.HealthMonitor (from reset, first 1024 samples of every row)",
+          "pass_count": 1000,
+          "rows": 1000,
+          "failed_rows": [],
+          "first_trip_index_min": null,
+          "alarm_classes": {},
+          "ok": true
+        },
+        "verdict": {
+          "pass": true,
+          "row_mcv_ok": true,
+          "column_mcv_ok": true,
+          "startup_health_ok": true,
+          "failing_rows_mcv": [],
+          "failing_columns_mcv": [],
+          "failing_rows_health": [],
+          "rule": "PASS iff every row and column has H_MCV >= 0.5 (99 % upper-confidence MCV) and every row's start-up health test passes"
+        }
+      },
+      "values_sha256": "5acc28676d164437374e7fc0afebeebb835f7da000ce8e5358cebd6836cf7076"
+    },
+    {
+      "key": "ss:125C:1.8V:deterministic",
+      "corner": "ss",
+      "temp_c": 125.0,
+      "vdd_v": 1.8,
+      "arm": "deterministic",
+      "start": "phase zero after the measured per-ring start delays, first sample Ts/2 after the enable",
+      "seed_policy": {
+        "master_seed": 267,
+        "rule": "int.from_bytes(sha256(f'267:{arm}:{corner}:{T:g}C:{V:g}V:{restart}').digest()[:8], 'big')",
+        "per_restart": true,
+        "first_seed": 2136614455363926544,
+        "last_seed": 4679184069473952461,
+        "seeds_sha256": "3e72e223c6056786bccc9d1fbd26c4c9399a4a3b7be7be34b985f5b113f7ee2a",
+        "full_list": "restart-matrix-values.json.gz[ss:125C:1.8V:deterministic].seeds"
+      },
+      "calibration": {
+        "sigma1": 3.573831e-12,
+        "periods_s": [
+          4.10017e-09,
+          3.79636e-09,
+          3.53796e-09,
+          3.3057000000000003e-09
+        ],
+        "delays_s": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "jitter_record": "20260825-061114-54f5715",
+        "combining_record": "20261008-135356-847b454",
+        "det_record": null,
+        "period_source": "combining record 20261008-135356-847b454 (no det record at this point; start delay 0)"
+      },
+      "model_caveats": "Behavioural model boundary: the phase-diffusion source of sim/wake-up-transient/wakeup.py starts the four rings from phase zero after their measured start delays (deterministic arm) or from uniform random phases (stationary reference arm) and advances them with independent white period-jitter increments calibrated from committed records. It does NOT model physical supply-ramp dynamics, enable settling, sampler aperture/metastability, inter-ring coupling, 1/f noise, or silicon process behaviour. This record is simulation-derived and provisional until silicon; it validates the restart-matrix plumbing and diagnostic rules only. It is not transistor-level wake-up verification, not evidence of physical C5 compliance, and not an SP 800-90B validation. Analog wake-up and settling work is issue #216.",
+      "status": "simulation-derived; provisional until silicon",
+      "reduction": {
+        "shape": {
+          "restarts": 1000,
+          "samples": 2048,
+          "first_window": [
+            0,
+            1023
+          ],
+          "baseline_window": [
+            1024,
+            2047
+          ]
+        },
+        "estimator": "raw-bit-entropy.py:mcv_estimate (SP 800-90B 6.3.1, p_u_99, H = -log2 p_u_99)",
+        "rows": {
+          "count": 1000,
+          "h_mcv_min": 0.8186926133392607,
+          "h_mcv_min_index": 251,
+          "h_mcv_dist": {
+            "min": 0.8186926133392607,
+            "p01": 0.8474472370690043,
+            "p05": 0.8639737717539505,
+            "p25": 0.888495766734022,
+            "median": 0.9002677718411423,
+            "mean": 0.897895561096381,
+            "max": 0.9201171318548846
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one restart, all samples"
+        },
+        "columns": {
+          "count": 2048,
+          "h_mcv_min": 0.53565540087007,
+          "h_mcv_min_index": 1,
+          "h_mcv_dist": {
+            "min": 0.53565540087007,
+            "p01": 0.7868115778290135,
+            "p05": 0.809260238160335,
+            "p25": 0.839799007616577,
+            "median": 0.8579448677483226,
+            "mean": 0.8538098291818893,
+            "max": 0.8869721606671933
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one sample index, all restarts"
+        },
+        "first_vs_baseline": {
+          "first_ones": 511980,
+          "first_n": 1024000,
+          "baseline_ones": 511042,
+          "baseline_n": 1024000,
+          "p_first": 0.49998046875,
+          "p_baseline": 0.499064453125,
+          "difference": 0.000916015625000044,
+          "z": 1.3108954496919711,
+          "p_value": 0.1898930884029132,
+          "alpha": 0.01,
+          "distinguishable": false,
+          "test": "two-sided two-proportion z, pooled variance",
+          "caveat": "Pooling samples within restarts assumes they are independent; the first-window vs baseline z test is a model diagnostic, not silicon confidence evidence."
+        },
+        "health": {
+          "monitor": "digital.model.health.HealthMonitor (from reset, first 1024 samples of every row)",
+          "pass_count": 1000,
+          "rows": 1000,
+          "failed_rows": [],
+          "first_trip_index_min": null,
+          "alarm_classes": {},
+          "ok": true
+        },
+        "verdict": {
+          "pass": true,
+          "row_mcv_ok": true,
+          "column_mcv_ok": true,
+          "startup_health_ok": true,
+          "failing_rows_mcv": [],
+          "failing_columns_mcv": [],
+          "failing_rows_health": [],
+          "rule": "PASS iff every row and column has H_MCV >= 0.5 (99 % upper-confidence MCV) and every row's start-up health test passes"
+        }
+      },
+      "values_sha256": "634c77df9d1797a36cce833d670c736102ceba2b6f20c67ebc6c5e6aa4c4a0d3"
+    },
+    {
+      "key": "ss:125C:1.8V:stationary",
+      "corner": "ss",
+      "temp_c": 125.0,
+      "vdd_v": 1.8,
+      "arm": "stationary",
+      "start": "uniform random ring phases (stationary reference)",
+      "seed_policy": {
+        "master_seed": 267,
+        "rule": "int.from_bytes(sha256(f'267:{arm}:{corner}:{T:g}C:{V:g}V:{restart}').digest()[:8], 'big')",
+        "per_restart": true,
+        "first_seed": 1658390996125789692,
+        "last_seed": 16378126667807862386,
+        "seeds_sha256": "9e68d958db2092750796fad3a80923417af18506adb7fe7fe67e32341f6ff821",
+        "full_list": "restart-matrix-values.json.gz[ss:125C:1.8V:stationary].seeds"
+      },
+      "calibration": {
+        "sigma1": 3.573831e-12,
+        "periods_s": [
+          4.10017e-09,
+          3.79636e-09,
+          3.53796e-09,
+          3.3057000000000003e-09
+        ],
+        "delays_s": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "jitter_record": "20260825-061114-54f5715",
+        "combining_record": "20261008-135356-847b454",
+        "det_record": null,
+        "period_source": "combining record 20261008-135356-847b454 (no det record at this point; start delay 0)"
+      },
+      "model_caveats": "Behavioural model boundary: the phase-diffusion source of sim/wake-up-transient/wakeup.py starts the four rings from phase zero after their measured start delays (deterministic arm) or from uniform random phases (stationary reference arm) and advances them with independent white period-jitter increments calibrated from committed records. It does NOT model physical supply-ramp dynamics, enable settling, sampler aperture/metastability, inter-ring coupling, 1/f noise, or silicon process behaviour. This record is simulation-derived and provisional until silicon; it validates the restart-matrix plumbing and diagnostic rules only. It is not transistor-level wake-up verification, not evidence of physical C5 compliance, and not an SP 800-90B validation. Analog wake-up and settling work is issue #216.",
+      "status": "simulation-derived; provisional until silicon",
+      "reduction": {
+        "shape": {
+          "restarts": 1000,
+          "samples": 2048,
+          "first_window": [
+            0,
+            1023
+          ],
+          "baseline_window": [
+            1024,
+            2047
+          ]
+        },
+        "estimator": "raw-bit-entropy.py:mcv_estimate (SP 800-90B 6.3.1, p_u_99, H = -log2 p_u_99)",
+        "rows": {
+          "count": 1000,
+          "h_mcv_min": 0.8373762691513481,
+          "h_mcv_min_index": 353,
+          "h_mcv_dist": {
+            "min": 0.8373762691513481,
+            "p01": 0.8499767115712004,
+            "p05": 0.8665342776038958,
+            "p25": 0.8897987433389132,
+            "median": 0.9002677718411423,
+            "mean": 0.898057990236612,
+            "max": 0.9201171318548846
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one restart, all samples"
+        },
+        "columns": {
+          "count": 2048,
+          "h_mcv_min": 0.7406425683531981,
+          "h_mcv_min_index": 1182,
+          "h_mcv_dist": {
+            "min": 0.7406425683531981,
+            "p01": 0.7818745539951208,
+            "p05": 0.8067469667430871,
+            "p25": 0.839799007616577,
+            "median": 0.8579448677483226,
+            "mean": 0.8542470118859308,
+            "max": 0.8869721606671933
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one sample index, all restarts"
+        },
+        "first_vs_baseline": {
+          "first_ones": 511912,
+          "first_n": 1024000,
+          "baseline_ones": 511367,
+          "baseline_n": 1024000,
+          "p_first": 0.4999140625,
+          "p_baseline": 0.4993818359375,
+          "difference": 0.00053222656249996,
+          "z": 0.7616608436359451,
+          "p_value": 0.44626245095313954,
+          "alpha": 0.01,
+          "distinguishable": false,
+          "test": "two-sided two-proportion z, pooled variance",
+          "caveat": "Pooling samples within restarts assumes they are independent; the first-window vs baseline z test is a model diagnostic, not silicon confidence evidence."
+        },
+        "health": {
+          "monitor": "digital.model.health.HealthMonitor (from reset, first 1024 samples of every row)",
+          "pass_count": 1000,
+          "rows": 1000,
+          "failed_rows": [],
+          "first_trip_index_min": null,
+          "alarm_classes": {},
+          "ok": true
+        },
+        "verdict": {
+          "pass": true,
+          "row_mcv_ok": true,
+          "column_mcv_ok": true,
+          "startup_health_ok": true,
+          "failing_rows_mcv": [],
+          "failing_columns_mcv": [],
+          "failing_rows_health": [],
+          "rule": "PASS iff every row and column has H_MCV >= 0.5 (99 % upper-confidence MCV) and every row's start-up health test passes"
+        }
+      },
+      "values_sha256": "ea00a31402a52cc9cf63fe5d43354cdc550c9eefe355e54667211a56d520b3dc"
+    },
+    {
+      "key": "ff:125C:1.8V:deterministic",
+      "corner": "ff",
+      "temp_c": 125.0,
+      "vdd_v": 1.8,
+      "arm": "deterministic",
+      "start": "phase zero after the measured per-ring start delays, first sample Ts/2 after the enable",
+      "seed_policy": {
+        "master_seed": 267,
+        "rule": "int.from_bytes(sha256(f'267:{arm}:{corner}:{T:g}C:{V:g}V:{restart}').digest()[:8], 'big')",
+        "per_restart": true,
+        "first_seed": 14310203930910706793,
+        "last_seed": 7870557721662891200,
+        "seeds_sha256": "249585c0de0dac9d74b75b0813ab4cba9b6baff35e5fa40687c395db33f6159a",
+        "full_list": "restart-matrix-values.json.gz[ff:125C:1.8V:deterministic].seeds"
+      },
+      "calibration": {
+        "sigma1": 3.871622e-12,
+        "periods_s": [
+          2.95335e-09,
+          2.7651800000000006e-09,
+          2.59628e-09,
+          2.43744e-09
+        ],
+        "delays_s": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "jitter_record": "20260825-061114-54f5715",
+        "combining_record": "20261008-135356-847b454",
+        "det_record": null,
+        "period_source": "combining record 20261008-135356-847b454 (no det record at this point; start delay 0)"
+      },
+      "model_caveats": "Behavioural model boundary: the phase-diffusion source of sim/wake-up-transient/wakeup.py starts the four rings from phase zero after their measured start delays (deterministic arm) or from uniform random phases (stationary reference arm) and advances them with independent white period-jitter increments calibrated from committed records. It does NOT model physical supply-ramp dynamics, enable settling, sampler aperture/metastability, inter-ring coupling, 1/f noise, or silicon process behaviour. This record is simulation-derived and provisional until silicon; it validates the restart-matrix plumbing and diagnostic rules only. It is not transistor-level wake-up verification, not evidence of physical C5 compliance, and not an SP 800-90B validation. Analog wake-up and settling work is issue #216.",
+      "status": "simulation-derived; provisional until silicon",
+      "reduction": {
+        "shape": {
+          "restarts": 1000,
+          "samples": 2048,
+          "first_window": [
+            0,
+            1023
+          ],
+          "baseline_window": [
+            1024,
+            2047
+          ]
+        },
+        "estimator": "raw-bit-entropy.py:mcv_estimate (SP 800-90B 6.3.1, p_u_99, H = -log2 p_u_99)",
+        "rows": {
+          "count": 1000,
+          "h_mcv_min": 0.819930202982482,
+          "h_mcv_min_index": 155,
+          "h_mcv_dist": {
+            "min": 0.819930202982482,
+            "p01": 0.8424024006666401,
+            "p05": 0.8614180876401325,
+            "p25": 0.8858935558932919,
+            "median": 0.9002677718411423,
+            "mean": 0.896309370990245,
+            "max": 0.9201171318548846
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one restart, all samples"
+        },
+        "columns": {
+          "count": 2048,
+          "h_mcv_min": 0.7216791317415102,
+          "h_mcv_min_index": 774,
+          "h_mcv_dist": {
+            "min": 0.7216791317415102,
+            "p01": 0.7818745539951208,
+            "p05": 0.8042384789982935,
+            "p25": 0.839799007616577,
+            "median": 0.8579448677483226,
+            "mean": 0.8537059817760444,
+            "max": 0.8869721606671933
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one sample index, all restarts"
+        },
+        "first_vs_baseline": {
+          "first_ones": 512128,
+          "first_n": 1024000,
+          "baseline_ones": 511821,
+          "baseline_n": 1024000,
+          "p_first": 0.500125,
+          "p_baseline": 0.4998251953125,
+          "difference": 0.000299804687500016,
+          "z": 0.4290455437149203,
+          "p_value": 0.667890081044116,
+          "alpha": 0.01,
+          "distinguishable": false,
+          "test": "two-sided two-proportion z, pooled variance",
+          "caveat": "Pooling samples within restarts assumes they are independent; the first-window vs baseline z test is a model diagnostic, not silicon confidence evidence."
+        },
+        "health": {
+          "monitor": "digital.model.health.HealthMonitor (from reset, first 1024 samples of every row)",
+          "pass_count": 1000,
+          "rows": 1000,
+          "failed_rows": [],
+          "first_trip_index_min": null,
+          "alarm_classes": {},
+          "ok": true
+        },
+        "verdict": {
+          "pass": true,
+          "row_mcv_ok": true,
+          "column_mcv_ok": true,
+          "startup_health_ok": true,
+          "failing_rows_mcv": [],
+          "failing_columns_mcv": [],
+          "failing_rows_health": [],
+          "rule": "PASS iff every row and column has H_MCV >= 0.5 (99 % upper-confidence MCV) and every row's start-up health test passes"
+        }
+      },
+      "values_sha256": "eaffc32a2ef1c3f0907a81f8b1ee67f035da6ff4cbfe392d8e2dc454f775b358"
+    },
+    {
+      "key": "ff:125C:1.8V:stationary",
+      "corner": "ff",
+      "temp_c": 125.0,
+      "vdd_v": 1.8,
+      "arm": "stationary",
+      "start": "uniform random ring phases (stationary reference)",
+      "seed_policy": {
+        "master_seed": 267,
+        "rule": "int.from_bytes(sha256(f'267:{arm}:{corner}:{T:g}C:{V:g}V:{restart}').digest()[:8], 'big')",
+        "per_restart": true,
+        "first_seed": 4130789605921787103,
+        "last_seed": 11871180363963623376,
+        "seeds_sha256": "ef8f980b43be679566324eadb2127bb658c47d6bc5f56eba5c47d8161b629af1",
+        "full_list": "restart-matrix-values.json.gz[ff:125C:1.8V:stationary].seeds"
+      },
+      "calibration": {
+        "sigma1": 3.871622e-12,
+        "periods_s": [
+          2.95335e-09,
+          2.7651800000000006e-09,
+          2.59628e-09,
+          2.43744e-09
+        ],
+        "delays_s": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "jitter_record": "20260825-061114-54f5715",
+        "combining_record": "20261008-135356-847b454",
+        "det_record": null,
+        "period_source": "combining record 20261008-135356-847b454 (no det record at this point; start delay 0)"
+      },
+      "model_caveats": "Behavioural model boundary: the phase-diffusion source of sim/wake-up-transient/wakeup.py starts the four rings from phase zero after their measured start delays (deterministic arm) or from uniform random phases (stationary reference arm) and advances them with independent white period-jitter increments calibrated from committed records. It does NOT model physical supply-ramp dynamics, enable settling, sampler aperture/metastability, inter-ring coupling, 1/f noise, or silicon process behaviour. This record is simulation-derived and provisional until silicon; it validates the restart-matrix plumbing and diagnostic rules only. It is not transistor-level wake-up verification, not evidence of physical C5 compliance, and not an SP 800-90B validation. Analog wake-up and settling work is issue #216.",
+      "status": "simulation-derived; provisional until silicon",
+      "reduction": {
+        "shape": {
+          "restarts": 1000,
+          "samples": 2048,
+          "first_window": [
+            0,
+            1023
+          ],
+          "baseline_window": [
+            1024,
+            2047
+          ]
+        },
+        "estimator": "raw-bit-entropy.py:mcv_estimate (SP 800-90B 6.3.1, p_u_99, H = -log2 p_u_99)",
+        "rows": {
+          "count": 1000,
+          "h_mcv_min": 0.819930202982482,
+          "h_mcv_min_index": 340,
+          "h_mcv_dist": {
+            "min": 0.819930202982482,
+            "p01": 0.8461842670562091,
+            "p05": 0.862695328075227,
+            "p25": 0.8871940383557477,
+            "median": 0.9015820875785501,
+            "mean": 0.8972549691425756,
+            "max": 0.9201171318548846
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one restart, all samples"
+        },
+        "columns": {
+          "count": 2048,
+          "h_mcv_min": 0.7382570581102296,
+          "h_mcv_min_index": 785,
+          "h_mcv_dist": {
+            "min": 0.7382570581102296,
+            "p01": 0.7769559955755353,
+            "p05": 0.8067469667430871,
+            "p25": 0.839799007616577,
+            "median": 0.8579448677483226,
+            "mean": 0.8535791125510611,
+            "max": 0.8869721606671933
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one sample index, all restarts"
+        },
+        "first_vs_baseline": {
+          "first_ones": 511687,
+          "first_n": 1024000,
+          "baseline_ones": 512828,
+          "baseline_n": 1024000,
+          "p_first": 0.4996943359375,
+          "p_baseline": 0.50080859375,
+          "difference": -0.0011142578124999636,
+          "z": -1.594596178121698,
+          "p_value": 0.11080256781205132,
+          "alpha": 0.01,
+          "distinguishable": false,
+          "test": "two-sided two-proportion z, pooled variance",
+          "caveat": "Pooling samples within restarts assumes they are independent; the first-window vs baseline z test is a model diagnostic, not silicon confidence evidence."
+        },
+        "health": {
+          "monitor": "digital.model.health.HealthMonitor (from reset, first 1024 samples of every row)",
+          "pass_count": 1000,
+          "rows": 1000,
+          "failed_rows": [],
+          "first_trip_index_min": null,
+          "alarm_classes": {},
+          "ok": true
+        },
+        "verdict": {
+          "pass": true,
+          "row_mcv_ok": true,
+          "column_mcv_ok": true,
+          "startup_health_ok": true,
+          "failing_rows_mcv": [],
+          "failing_columns_mcv": [],
+          "failing_rows_health": [],
+          "rule": "PASS iff every row and column has H_MCV >= 0.5 (99 % upper-confidence MCV) and every row's start-up health test passes"
+        }
+      },
+      "values_sha256": "ccc7ac403c20d72590688574b9ab9a0e7380645de85f6e9de61cff059c373ee8"
+    },
+    {
+      "key": "tt:125C:1.98V:deterministic",
+      "corner": "tt",
+      "temp_c": 125.0,
+      "vdd_v": 1.98,
+      "arm": "deterministic",
+      "start": "phase zero after the measured per-ring start delays, first sample Ts/2 after the enable",
+      "seed_policy": {
+        "master_seed": 267,
+        "rule": "int.from_bytes(sha256(f'267:{arm}:{corner}:{T:g}C:{V:g}V:{restart}').digest()[:8], 'big')",
+        "per_restart": true,
+        "first_seed": 12191446513505698414,
+        "last_seed": 13214983970745142364,
+        "seeds_sha256": "390d9c0c23fc581e70c8ae08bb1555c9c1191c67d0250bdbd19904cffa50cec1",
+        "full_list": "restart-matrix-values.json.gz[tt:125C:1.98V:deterministic].seeds"
+      },
+      "calibration": {
+        "sigma1": 5.278943e-12,
+        "periods_s": [
+          2.71412e-09,
+          2.51665e-09,
+          2.3427800000000005e-09,
+          2.18068e-09
+        ],
+        "delays_s": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "jitter_record": "20260825-062221-54f5715",
+        "combining_record": "20261008-135357-847b454",
+        "det_record": null,
+        "period_source": "combining record 20261008-135357-847b454 (no det record at this point; start delay 0)"
+      },
+      "model_caveats": "Behavioural model boundary: the phase-diffusion source of sim/wake-up-transient/wakeup.py starts the four rings from phase zero after their measured start delays (deterministic arm) or from uniform random phases (stationary reference arm) and advances them with independent white period-jitter increments calibrated from committed records. It does NOT model physical supply-ramp dynamics, enable settling, sampler aperture/metastability, inter-ring coupling, 1/f noise, or silicon process behaviour. This record is simulation-derived and provisional until silicon; it validates the restart-matrix plumbing and diagnostic rules only. It is not transistor-level wake-up verification, not evidence of physical C5 compliance, and not an SP 800-90B validation. Analog wake-up and settling work is issue #216.",
+      "status": "simulation-derived; provisional until silicon",
+      "reduction": {
+        "shape": {
+          "restarts": 1000,
+          "samples": 2048,
+          "first_window": [
+            0,
+            1023
+          ],
+          "baseline_window": [
+            1024,
+            2047
+          ]
+        },
+        "estimator": "raw-bit-entropy.py:mcv_estimate (SP 800-90B 6.3.1, p_u_99, H = -log2 p_u_99)",
+        "rows": {
+          "count": 1000,
+          "h_mcv_min": 0.8248919050972321,
+          "h_mcv_min_index": 280,
+          "h_mcv_dist": {
+            "min": 0.8248919050972321,
+            "p01": 0.8461842670562091,
+            "p05": 0.862695328075227,
+            "p25": 0.8845943170424904,
+            "median": 0.8989547254302133,
+            "mean": 0.8957251592298667,
+            "max": 0.9201171318548846
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one restart, all samples"
+        },
+        "columns": {
+          "count": 2048,
+          "h_mcv_min": 0.7502282844359428,
+          "h_mcv_min_index": 401,
+          "h_mcv_dist": {
+            "min": 0.7502282844359428,
+            "p01": 0.784340749592178,
+            "p05": 0.8067469667430871,
+            "p25": 0.839799007616577,
+            "median": 0.8579448677483226,
+            "mean": 0.853999666507587,
+            "max": 0.8869721606671933
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one sample index, all restarts"
+        },
+        "first_vs_baseline": {
+          "first_ones": 511518,
+          "first_n": 1024000,
+          "baseline_ones": 512896,
+          "baseline_n": 1024000,
+          "p_first": 0.499529296875,
+          "p_baseline": 0.500875,
+          "difference": -0.0013457031249999862,
+          "z": -1.9258137030145475,
+          "p_value": 0.054127639823811566,
+          "alpha": 0.01,
+          "distinguishable": false,
+          "test": "two-sided two-proportion z, pooled variance",
+          "caveat": "Pooling samples within restarts assumes they are independent; the first-window vs baseline z test is a model diagnostic, not silicon confidence evidence."
+        },
+        "health": {
+          "monitor": "digital.model.health.HealthMonitor (from reset, first 1024 samples of every row)",
+          "pass_count": 1000,
+          "rows": 1000,
+          "failed_rows": [],
+          "first_trip_index_min": null,
+          "alarm_classes": {},
+          "ok": true
+        },
+        "verdict": {
+          "pass": true,
+          "row_mcv_ok": true,
+          "column_mcv_ok": true,
+          "startup_health_ok": true,
+          "failing_rows_mcv": [],
+          "failing_columns_mcv": [],
+          "failing_rows_health": [],
+          "rule": "PASS iff every row and column has H_MCV >= 0.5 (99 % upper-confidence MCV) and every row's start-up health test passes"
+        }
+      },
+      "values_sha256": "485fd72cd28f5d83c3436fd9791751c36529693b8a1a03a72ad54a482c0d4747"
+    },
+    {
+      "key": "tt:125C:1.98V:stationary",
+      "corner": "tt",
+      "temp_c": 125.0,
+      "vdd_v": 1.98,
+      "arm": "stationary",
+      "start": "uniform random ring phases (stationary reference)",
+      "seed_policy": {
+        "master_seed": 267,
+        "rule": "int.from_bytes(sha256(f'267:{arm}:{corner}:{T:g}C:{V:g}V:{restart}').digest()[:8], 'big')",
+        "per_restart": true,
+        "first_seed": 7258638703598457150,
+        "last_seed": 8103878255673835394,
+        "seeds_sha256": "76f009a6e894781488809d122e215f2abc5f17fc6c92fd229a1fb4700572a424",
+        "full_list": "restart-matrix-values.json.gz[tt:125C:1.98V:stationary].seeds"
+      },
+      "calibration": {
+        "sigma1": 5.278943e-12,
+        "periods_s": [
+          2.71412e-09,
+          2.51665e-09,
+          2.3427800000000005e-09,
+          2.18068e-09
+        ],
+        "delays_s": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "jitter_record": "20260825-062221-54f5715",
+        "combining_record": "20261008-135357-847b454",
+        "det_record": null,
+        "period_source": "combining record 20261008-135357-847b454 (no det record at this point; start delay 0)"
+      },
+      "model_caveats": "Behavioural model boundary: the phase-diffusion source of sim/wake-up-transient/wakeup.py starts the four rings from phase zero after their measured start delays (deterministic arm) or from uniform random phases (stationary reference arm) and advances them with independent white period-jitter increments calibrated from committed records. It does NOT model physical supply-ramp dynamics, enable settling, sampler aperture/metastability, inter-ring coupling, 1/f noise, or silicon process behaviour. This record is simulation-derived and provisional until silicon; it validates the restart-matrix plumbing and diagnostic rules only. It is not transistor-level wake-up verification, not evidence of physical C5 compliance, and not an SP 800-90B validation. Analog wake-up and settling work is issue #216.",
+      "status": "simulation-derived; provisional until silicon",
+      "reduction": {
+        "shape": {
+          "restarts": 1000,
+          "samples": 2048,
+          "first_window": [
+            0,
+            1023
+          ],
+          "baseline_window": [
+            1024,
+            2047
+          ]
+        },
+        "estimator": "raw-bit-entropy.py:mcv_estimate (SP 800-90B 6.3.1, p_u_99, H = -log2 p_u_99)",
+        "rows": {
+          "count": 1000,
+          "h_mcv_min": 0.83988700514495,
+          "h_mcv_min_index": 433,
+          "h_mcv_dist": {
+            "min": 0.83988700514495,
+            "p01": 0.8512432202987272,
+            "p05": 0.8614180876401325,
+            "p25": 0.8871940383557477,
+            "median": 0.9002677718411423,
+            "mean": 0.8967084731217895,
+            "max": 0.9201171318548846
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one restart, all samples"
+        },
+        "columns": {
+          "count": 2048,
+          "h_mcv_min": 0.752635707000194,
+          "h_mcv_min_index": 1403,
+          "h_mcv_dist": {
+            "min": 0.752635707000194,
+            "p01": 0.7818745539951208,
+            "p05": 0.8067469667430871,
+            "p25": 0.839799007616577,
+            "median": 0.8605575753846066,
+            "mean": 0.8545656190000456,
+            "max": 0.8869721606671933
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one sample index, all restarts"
+        },
+        "first_vs_baseline": {
+          "first_ones": 511252,
+          "first_n": 1024000,
+          "baseline_ones": 511711,
+          "baseline_n": 1024000,
+          "p_first": 0.49926953125,
+          "p_baseline": 0.4997177734375,
+          "difference": -0.0004482421875000031,
+          "z": -0.6414723299768909,
+          "p_value": 0.5212158527376949,
+          "alpha": 0.01,
+          "distinguishable": false,
+          "test": "two-sided two-proportion z, pooled variance",
+          "caveat": "Pooling samples within restarts assumes they are independent; the first-window vs baseline z test is a model diagnostic, not silicon confidence evidence."
+        },
+        "health": {
+          "monitor": "digital.model.health.HealthMonitor (from reset, first 1024 samples of every row)",
+          "pass_count": 1000,
+          "rows": 1000,
+          "failed_rows": [],
+          "first_trip_index_min": null,
+          "alarm_classes": {},
+          "ok": true
+        },
+        "verdict": {
+          "pass": true,
+          "row_mcv_ok": true,
+          "column_mcv_ok": true,
+          "startup_health_ok": true,
+          "failing_rows_mcv": [],
+          "failing_columns_mcv": [],
+          "failing_rows_health": [],
+          "rule": "PASS iff every row and column has H_MCV >= 0.5 (99 % upper-confidence MCV) and every row's start-up health test passes"
+        }
+      },
+      "values_sha256": "1a0d84a36e52c09dc86436882423aeeb288fe5ea6f6024b1b2fd625a49a423bf"
+    },
+    {
+      "key": "ss:125C:1.98V:deterministic",
+      "corner": "ss",
+      "temp_c": 125.0,
+      "vdd_v": 1.98,
+      "arm": "deterministic",
+      "start": "phase zero after the measured per-ring start delays, first sample Ts/2 after the enable",
+      "seed_policy": {
+        "master_seed": 267,
+        "rule": "int.from_bytes(sha256(f'267:{arm}:{corner}:{T:g}C:{V:g}V:{restart}').digest()[:8], 'big')",
+        "per_restart": true,
+        "first_seed": 2394387418538419389,
+        "last_seed": 14121168230607697153,
+        "seeds_sha256": "e791dfabc13f61ede539e4e6e389e76b294a878a6f602a2967a6f7189e5bdd74",
+        "full_list": "restart-matrix-values.json.gz[ss:125C:1.98V:deterministic].seeds"
+      },
+      "calibration": {
+        "sigma1": 4.643141e-12,
+        "periods_s": [
+          3.2166799999999997e-09,
+          2.97176e-09,
+          2.7613700000000004e-09,
+          2.5705300000000002e-09
+        ],
+        "delays_s": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "jitter_record": "20260825-062221-54f5715",
+        "combining_record": "20261008-135357-847b454",
+        "det_record": null,
+        "period_source": "combining record 20261008-135357-847b454 (no det record at this point; start delay 0)"
+      },
+      "model_caveats": "Behavioural model boundary: the phase-diffusion source of sim/wake-up-transient/wakeup.py starts the four rings from phase zero after their measured start delays (deterministic arm) or from uniform random phases (stationary reference arm) and advances them with independent white period-jitter increments calibrated from committed records. It does NOT model physical supply-ramp dynamics, enable settling, sampler aperture/metastability, inter-ring coupling, 1/f noise, or silicon process behaviour. This record is simulation-derived and provisional until silicon; it validates the restart-matrix plumbing and diagnostic rules only. It is not transistor-level wake-up verification, not evidence of physical C5 compliance, and not an SP 800-90B validation. Analog wake-up and settling work is issue #216.",
+      "status": "simulation-derived; provisional until silicon",
+      "reduction": {
+        "shape": {
+          "restarts": 1000,
+          "samples": 2048,
+          "first_window": [
+            0,
+            1023
+          ],
+          "baseline_window": [
+            1024,
+            2047
+          ]
+        },
+        "estimator": "raw-bit-entropy.py:mcv_estimate (SP 800-90B 6.3.1, p_u_99, H = -log2 p_u_99)",
+        "rows": {
+          "count": 1000,
+          "h_mcv_min": 0.8112907442727586,
+          "h_mcv_min_index": 668,
+          "h_mcv_dist": {
+            "min": 0.8112907442727586,
+            "p01": 0.8424024006666401,
+            "p05": 0.8601420482660016,
+            "p25": 0.8871940383557477,
+            "median": 0.9002677718411423,
+            "mean": 0.8966065026994758,
+            "max": 0.9201171318548846
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one restart, all samples"
+        },
+        "columns": {
+          "count": 2048,
+          "h_mcv_min": 0.7263942831814193,
+          "h_mcv_min_index": 7,
+          "h_mcv_dist": {
+            "min": 0.7263942831814193,
+            "p01": 0.7818745539951208,
+            "p05": 0.8042384789982935,
+            "p25": 0.839799007616577,
+            "median": 0.8579448677483226,
+            "mean": 0.8539103348480689,
+            "max": 0.8869721606671933
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one sample index, all restarts"
+        },
+        "first_vs_baseline": {
+          "first_ones": 512937,
+          "first_n": 1024000,
+          "baseline_ones": 511596,
+          "baseline_n": 1024000,
+          "p_first": 0.5009150390625,
+          "p_baseline": 0.49960546875,
+          "difference": 0.001309570312500008,
+          "z": 1.8741047275161216,
+          "p_value": 0.06091599186647688,
+          "alpha": 0.01,
+          "distinguishable": false,
+          "test": "two-sided two-proportion z, pooled variance",
+          "caveat": "Pooling samples within restarts assumes they are independent; the first-window vs baseline z test is a model diagnostic, not silicon confidence evidence."
+        },
+        "health": {
+          "monitor": "digital.model.health.HealthMonitor (from reset, first 1024 samples of every row)",
+          "pass_count": 1000,
+          "rows": 1000,
+          "failed_rows": [],
+          "first_trip_index_min": null,
+          "alarm_classes": {},
+          "ok": true
+        },
+        "verdict": {
+          "pass": true,
+          "row_mcv_ok": true,
+          "column_mcv_ok": true,
+          "startup_health_ok": true,
+          "failing_rows_mcv": [],
+          "failing_columns_mcv": [],
+          "failing_rows_health": [],
+          "rule": "PASS iff every row and column has H_MCV >= 0.5 (99 % upper-confidence MCV) and every row's start-up health test passes"
+        }
+      },
+      "values_sha256": "8017d797c5960404c4245bbe669b130bdbbf873b995301f1d7933f114b63a0f9"
+    },
+    {
+      "key": "ss:125C:1.98V:stationary",
+      "corner": "ss",
+      "temp_c": 125.0,
+      "vdd_v": 1.98,
+      "arm": "stationary",
+      "start": "uniform random ring phases (stationary reference)",
+      "seed_policy": {
+        "master_seed": 267,
+        "rule": "int.from_bytes(sha256(f'267:{arm}:{corner}:{T:g}C:{V:g}V:{restart}').digest()[:8], 'big')",
+        "per_restart": true,
+        "first_seed": 4704083806083878574,
+        "last_seed": 2383846901676578670,
+        "seeds_sha256": "d0b4001e4382e0a0ee8bb1ddbecb016e2cf86d0521db5ad5e374609bdf76d663",
+        "full_list": "restart-matrix-values.json.gz[ss:125C:1.98V:stationary].seeds"
+      },
+      "calibration": {
+        "sigma1": 4.643141e-12,
+        "periods_s": [
+          3.2166799999999997e-09,
+          2.97176e-09,
+          2.7613700000000004e-09,
+          2.5705300000000002e-09
+        ],
+        "delays_s": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "jitter_record": "20260825-062221-54f5715",
+        "combining_record": "20261008-135357-847b454",
+        "det_record": null,
+        "period_source": "combining record 20261008-135357-847b454 (no det record at this point; start delay 0)"
+      },
+      "model_caveats": "Behavioural model boundary: the phase-diffusion source of sim/wake-up-transient/wakeup.py starts the four rings from phase zero after their measured start delays (deterministic arm) or from uniform random phases (stationary reference arm) and advances them with independent white period-jitter increments calibrated from committed records. It does NOT model physical supply-ramp dynamics, enable settling, sampler aperture/metastability, inter-ring coupling, 1/f noise, or silicon process behaviour. This record is simulation-derived and provisional until silicon; it validates the restart-matrix plumbing and diagnostic rules only. It is not transistor-level wake-up verification, not evidence of physical C5 compliance, and not an SP 800-90B validation. Analog wake-up and settling work is issue #216.",
+      "status": "simulation-derived; provisional until silicon",
+      "reduction": {
+        "shape": {
+          "restarts": 1000,
+          "samples": 2048,
+          "first_window": [
+            0,
+            1023
+          ],
+          "baseline_window": [
+            1024,
+            2047
+          ]
+        },
+        "estimator": "raw-bit-entropy.py:mcv_estimate (SP 800-90B 6.3.1, p_u_99, H = -log2 p_u_99)",
+        "rows": {
+          "count": 1000,
+          "h_mcv_min": 0.8112907442727586,
+          "h_mcv_min_index": 58,
+          "h_mcv_dist": {
+            "min": 0.8112907442727586,
+            "p01": 0.8424024006666401,
+            "p05": 0.8614180876401325,
+            "p25": 0.8858935558932919,
+            "median": 0.9002677718411423,
+            "mean": 0.8964833126432814,
+            "max": 0.9201171318548846
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one restart, all samples"
+        },
+        "columns": {
+          "count": 2048,
+          "h_mcv_min": 0.7478252743253148,
+          "h_mcv_min_index": 1072,
+          "h_mcv_dist": {
+            "min": 0.7478252743253148,
+            "p01": 0.7794129747286398,
+            "p05": 0.8067469667430871,
+            "p25": 0.839799007616577,
+            "median": 0.8579448677483226,
+            "mean": 0.853834077204948,
+            "max": 0.8869721606671933
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one sample index, all restarts"
+        },
+        "first_vs_baseline": {
+          "first_ones": 512866,
+          "first_n": 1024000,
+          "baseline_ones": 511137,
+          "baseline_n": 1024000,
+          "p_first": 0.500845703125,
+          "p_baseline": 0.4991572265625,
+          "difference": 0.0016884765624999853,
+          "z": 2.416350958196059,
+          "p_value": 0.01567694277650032,
+          "alpha": 0.01,
+          "distinguishable": false,
+          "test": "two-sided two-proportion z, pooled variance",
+          "caveat": "Pooling samples within restarts assumes they are independent; the first-window vs baseline z test is a model diagnostic, not silicon confidence evidence."
+        },
+        "health": {
+          "monitor": "digital.model.health.HealthMonitor (from reset, first 1024 samples of every row)",
+          "pass_count": 1000,
+          "rows": 1000,
+          "failed_rows": [],
+          "first_trip_index_min": null,
+          "alarm_classes": {},
+          "ok": true
+        },
+        "verdict": {
+          "pass": true,
+          "row_mcv_ok": true,
+          "column_mcv_ok": true,
+          "startup_health_ok": true,
+          "failing_rows_mcv": [],
+          "failing_columns_mcv": [],
+          "failing_rows_health": [],
+          "rule": "PASS iff every row and column has H_MCV >= 0.5 (99 % upper-confidence MCV) and every row's start-up health test passes"
+        }
+      },
+      "values_sha256": "52e5e437030a99be39d85b73c59fea1d2f07a213e2df3427d7c900cbcc1199fe"
+    },
+    {
+      "key": "ff:125C:1.98V:deterministic",
+      "corner": "ff",
+      "temp_c": 125.0,
+      "vdd_v": 1.98,
+      "arm": "deterministic",
+      "start": "phase zero after the measured per-ring start delays, first sample Ts/2 after the enable",
+      "seed_policy": {
+        "master_seed": 267,
+        "rule": "int.from_bytes(sha256(f'267:{arm}:{corner}:{T:g}C:{V:g}V:{restart}').digest()[:8], 'big')",
+        "per_restart": true,
+        "first_seed": 5507578727938033956,
+        "last_seed": 14431763045218588539,
+        "seeds_sha256": "da34d2975a9dd4b0d74e4ba57fb9c75015a172393c29834ecea1e6d9cc9ec3c4",
+        "full_list": "restart-matrix-values.json.gz[ff:125C:1.98V:deterministic].seeds"
+      },
+      "calibration": {
+        "sigma1": 4.631617e-12,
+        "periods_s": [
+          2.37943e-09,
+          2.2204709999999998e-09,
+          2.07668e-09,
+          1.9408300000000002e-09
+        ],
+        "delays_s": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "jitter_record": "20260825-062221-54f5715",
+        "combining_record": "20261008-135357-847b454",
+        "det_record": null,
+        "period_source": "combining record 20261008-135357-847b454 (no det record at this point; start delay 0)"
+      },
+      "model_caveats": "Behavioural model boundary: the phase-diffusion source of sim/wake-up-transient/wakeup.py starts the four rings from phase zero after their measured start delays (deterministic arm) or from uniform random phases (stationary reference arm) and advances them with independent white period-jitter increments calibrated from committed records. It does NOT model physical supply-ramp dynamics, enable settling, sampler aperture/metastability, inter-ring coupling, 1/f noise, or silicon process behaviour. This record is simulation-derived and provisional until silicon; it validates the restart-matrix plumbing and diagnostic rules only. It is not transistor-level wake-up verification, not evidence of physical C5 compliance, and not an SP 800-90B validation. Analog wake-up and settling work is issue #216.",
+      "status": "simulation-derived; provisional until silicon",
+      "reduction": {
+        "shape": {
+          "restarts": 1000,
+          "samples": 2048,
+          "first_window": [
+            0,
+            1023
+          ],
+          "baseline_window": [
+            1024,
+            2047
+          ]
+        },
+        "estimator": "raw-bit-entropy.py:mcv_estimate (SP 800-90B 6.3.1, p_u_99, H = -log2 p_u_99)",
+        "rows": {
+          "count": 1000,
+          "h_mcv_min": 0.8174561540717875,
+          "h_mcv_min_index": 299,
+          "h_mcv_dist": {
+            "min": 0.8174561540717875,
+            "p01": 0.8487113845353043,
+            "p05": 0.862695328075227,
+            "p25": 0.8858935558932919,
+            "median": 0.9002677718411423,
+            "mean": 0.8969378116961181,
+            "max": 0.9201171318548846
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one restart, all samples"
+        },
+        "columns": {
+          "count": 2048,
+          "h_mcv_min": 0.7574638502219246,
+          "h_mcv_min_index": 918,
+          "h_mcv_dist": {
+            "min": 0.7574638502219246,
+            "p01": 0.7818745539951208,
+            "p05": 0.8067469667430871,
+            "p25": 0.8372269563727839,
+            "median": 0.8579448677483226,
+            "mean": 0.8533263926509775,
+            "max": 0.8869721606671933
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one sample index, all restarts"
+        },
+        "first_vs_baseline": {
+          "first_ones": 511087,
+          "first_n": 1024000,
+          "baseline_ones": 512122,
+          "baseline_n": 1024000,
+          "p_first": 0.4991083984375,
+          "p_baseline": 0.500119140625,
+          "difference": -0.001010742187499969,
+          "z": -1.4464569044926485,
+          "p_value": 0.1480490911236838,
+          "alpha": 0.01,
+          "distinguishable": false,
+          "test": "two-sided two-proportion z, pooled variance",
+          "caveat": "Pooling samples within restarts assumes they are independent; the first-window vs baseline z test is a model diagnostic, not silicon confidence evidence."
+        },
+        "health": {
+          "monitor": "digital.model.health.HealthMonitor (from reset, first 1024 samples of every row)",
+          "pass_count": 1000,
+          "rows": 1000,
+          "failed_rows": [],
+          "first_trip_index_min": null,
+          "alarm_classes": {},
+          "ok": true
+        },
+        "verdict": {
+          "pass": true,
+          "row_mcv_ok": true,
+          "column_mcv_ok": true,
+          "startup_health_ok": true,
+          "failing_rows_mcv": [],
+          "failing_columns_mcv": [],
+          "failing_rows_health": [],
+          "rule": "PASS iff every row and column has H_MCV >= 0.5 (99 % upper-confidence MCV) and every row's start-up health test passes"
+        }
+      },
+      "values_sha256": "98a022cd32536ee28aa8b43e59d3e6fc5797c1bc9f5cd5565ec52dfaf2ebef3d"
+    },
+    {
+      "key": "ff:125C:1.98V:stationary",
+      "corner": "ff",
+      "temp_c": 125.0,
+      "vdd_v": 1.98,
+      "arm": "stationary",
+      "start": "uniform random ring phases (stationary reference)",
+      "seed_policy": {
+        "master_seed": 267,
+        "rule": "int.from_bytes(sha256(f'267:{arm}:{corner}:{T:g}C:{V:g}V:{restart}').digest()[:8], 'big')",
+        "per_restart": true,
+        "first_seed": 18278194092840328373,
+        "last_seed": 1513584619214747481,
+        "seeds_sha256": "46679c91bcaa988db4ab2a41e6a568562ddb26d3cbb742feefff69ca2518c51b",
+        "full_list": "restart-matrix-values.json.gz[ff:125C:1.98V:stationary].seeds"
+      },
+      "calibration": {
+        "sigma1": 4.631617e-12,
+        "periods_s": [
+          2.37943e-09,
+          2.2204709999999998e-09,
+          2.07668e-09,
+          1.9408300000000002e-09
+        ],
+        "delays_s": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "jitter_record": "20260825-062221-54f5715",
+        "combining_record": "20261008-135357-847b454",
+        "det_record": null,
+        "period_source": "combining record 20261008-135357-847b454 (no det record at this point; start delay 0)"
+      },
+      "model_caveats": "Behavioural model boundary: the phase-diffusion source of sim/wake-up-transient/wakeup.py starts the four rings from phase zero after their measured start delays (deterministic arm) or from uniform random phases (stationary reference arm) and advances them with independent white period-jitter increments calibrated from committed records. It does NOT model physical supply-ramp dynamics, enable settling, sampler aperture/metastability, inter-ring coupling, 1/f noise, or silicon process behaviour. This record is simulation-derived and provisional until silicon; it validates the restart-matrix plumbing and diagnostic rules only. It is not transistor-level wake-up verification, not evidence of physical C5 compliance, and not an SP 800-90B validation. Analog wake-up and settling work is issue #216.",
+      "status": "simulation-derived; provisional until silicon",
+      "reduction": {
+        "shape": {
+          "restarts": 1000,
+          "samples": 2048,
+          "first_window": [
+            0,
+            1023
+          ],
+          "baseline_window": [
+            1024,
+            2047
+          ]
+        },
+        "estimator": "raw-bit-entropy.py:mcv_estimate (SP 800-90B 6.3.1, p_u_99, H = -log2 p_u_99)",
+        "rows": {
+          "count": 1000,
+          "h_mcv_min": 0.819930202982482,
+          "h_mcv_min_index": 19,
+          "h_mcv_dist": {
+            "min": 0.819930202982482,
+            "p01": 0.8411441194250694,
+            "p05": 0.862695328075227,
+            "p25": 0.8871940383557477,
+            "median": 0.9002677718411423,
+            "mean": 0.8969209292337071,
+            "max": 0.9201171318548846
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one restart, all samples"
+        },
+        "columns": {
+          "count": 2048,
+          "h_mcv_min": 0.7287582498141538,
+          "h_mcv_min_index": 1752,
+          "h_mcv_dist": {
+            "min": 0.7287582498141538,
+            "p01": 0.784340749592178,
+            "p05": 0.809260238160335,
+            "p25": 0.839799007616577,
+            "median": 0.8579448677483226,
+            "mean": 0.8544439839440244,
+            "max": 0.8869721606671933
+          },
+          "n_below_floor": 0,
+          "below_floor_indices": [],
+          "ok": true,
+          "what": "one sample index, all restarts"
+        },
+        "first_vs_baseline": {
+          "first_ones": 511228,
+          "first_n": 1024000,
+          "baseline_ones": 511678,
+          "baseline_n": 1024000,
+          "p_first": 0.49924609375,
+          "p_baseline": 0.499685546875,
+          "difference": -0.0004394531249999889,
+          "z": -0.6288944775793878,
+          "p_value": 0.5294181417073115,
+          "alpha": 0.01,
+          "distinguishable": false,
+          "test": "two-sided two-proportion z, pooled variance",
+          "caveat": "Pooling samples within restarts assumes they are independent; the first-window vs baseline z test is a model diagnostic, not silicon confidence evidence."
+        },
+        "health": {
+          "monitor": "digital.model.health.HealthMonitor (from reset, first 1024 samples of every row)",
+          "pass_count": 1000,
+          "rows": 1000,
+          "failed_rows": [],
+          "first_trip_index_min": null,
+          "alarm_classes": {},
+          "ok": true
+        },
+        "verdict": {
+          "pass": true,
+          "row_mcv_ok": true,
+          "column_mcv_ok": true,
+          "startup_health_ok": true,
+          "failing_rows_mcv": [],
+          "failing_columns_mcv": [],
+          "failing_rows_health": [],
+          "rule": "PASS iff every row and column has H_MCV >= 0.5 (99 % upper-confidence MCV) and every row's start-up health test passes"
+        }
+      },
+      "values_sha256": "b27815b1ec396183e9f9f08824a16b58f685c24b6c4fe214e288a8dfa8d0066e"
+    }
+  ],
+  "model": "sim/wake-up-transient/wakeup.py wake_stream/calibration (phase-diffusion model of sim/raw-bit-volume-campaign/)"
+}
