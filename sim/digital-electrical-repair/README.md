@@ -46,3 +46,26 @@ python3 sim/digital-electrical-repair/analysis/diagnose.py       --run-dir sim/d
 Runs are append-only evidence; the record cites them. `runs/20261010-control`,
 `runs/20261010-cand1` (`slew0531`, `slew0531-cap034`) and `runs/20261010-cand2`
 (`slew0700`, a deliberately too-loose budget, kept as a failed attempt).
+
+## Routine P&R now gates on this audit (issue #250)
+
+`sim/digital-pnr/harness/pnr-and-verify.py` calls `final_route_audit.audit()`
+on the current run's request and routed DEF + extracted SPEF (step 8) and
+reports a separately named verdict, `electrical_final_route`, in
+`verdict.json`, the report and the record summary. It is required for overall
+success and for `--emit-record`: a violation, a missing/unsupported corner,
+a failed session or an audit exception fails it (diagnostics, raw per-corner
+logs, input hashes and `electrical-audit.json` are kept under `--out-dir`
+first); the other checks' results are unchanged. The in-flow slew/cap columns
+stay labelled global-route estimates and gate nothing.
+
+**The unrepaired committed baseline fails this verdict on purpose** (1512 slew
+and 50 capacitance violations over 16 corners, see the record). Re-running the
+harness on the committed request will therefore refuse to mint until a
+separately reviewed geometry repair (e.g. the `slew0531` candidate) is
+adopted; the checks were not weakened to avoid that. Committed layouts and
+earlier records are untouched. Coverage: nominal interconnect corner, default
+(zero) port loading, Liberty limits, sibling OpenSTA session (klt has no native
+check), not a foundry sign-off. `sim/tests/test_electrical_final_route_gate.py`
+replays the recorded control and `slew0531` sessions through the real audit,
+reducer and harness verdict logic.

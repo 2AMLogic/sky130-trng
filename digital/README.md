@@ -158,6 +158,12 @@ drift unless `--allow-tool-drift` (which marks the record).
 python3 sim/digital-pnr/harness/pnr-and-verify.py --emit-record
 ```
 
+Since #250 the run also gates on `electrical_final_route` (Liberty max-slew /
+max-capacitance on the extracted final route, 16 corners; see
+`sim/digital-electrical-repair/README.md`). The committed unrepaired baseline
+fails it by design, so a new `--emit-record` needs a separately reviewed
+geometry repair first.
+
 Committed outputs: `layout/trng_digital/` (routed GDS/DEF, as-built Verilog,
 SPEF/SDF gzipped, abstract layout SPICE, klt JSON reports) and the
 append-only record under `sim/digital-pnr/records/` (versions, input
