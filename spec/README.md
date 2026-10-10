@@ -121,6 +121,16 @@
   change and an environmental assumption plus monitor, recommending rail
   conditioning conditionally. Changes no target and preserves DR-0003's
   combining ceiling; distinct from #221 (mismatch/entropy).
+- [`decision-records/DR-0013-local-mismatch-vs-h-floor-operating-point-and-lock-proximity.md`](decision-records/DR-0013-local-mismatch-vs-h-floor-operating-point-and-lock-proximity.md)
+  — **Proposed**. Issue #221's decision packet from the local-mismatch Monte
+  Carlo (`sim/local-mismatch-monte-carlo/`, pre-layout, simulation-derived,
+  provisional until silicon): separates the DR-0004 `H` = 0.5 floor and its
+  cutoffs, the DR-0003 operating point, and the DR-0005 lock-proximity
+  criterion. Re-derives the evidence (the 60/1800 sub-floor pairings at tt are
+  one array draw; `H_bias` is a static bound, not jitter entropy; lock is not
+  simulated), prices trim and screening options, and recommends leaving all
+  numeric values unchanged with follow-up simulations listed. States how it
+  shares the Q-margin with DR-0012 (#208). Changes no spec value.
 
 - [`decision-records/DR-0014-silicon-characterization-plan.md`](decision-records/DR-0014-silicon-characterization-plan.md)
   — **Proposed**. Issue #256's silicon characterization plan
