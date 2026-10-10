@@ -2,8 +2,22 @@
 
 Chronological record of recently merged pull requests and closed issues.
 
+### 2026-10-10
+
+- **PR #245**: feat(sim): conditioned-output (DATA) battery + estimator evidence (#243)
+- **PR #241**: docs: sync sim/README slug index and Challenge #4 sign-off row 3 (#240)
+- **PR #242**: docs(spec): DR-0010 target-table reconciliation packet (Proposed)
+- **PR #238**: feat(digital): constraint-driven electrical-limit repair study with 16-corner final-route audit (#236)
+- **Issue #243** (closed): Conditioned-output (DATA) statistical evidence: run the CRC-32 conditioner over the volume-campaign raw streams
+- **Issue #240** (closed): docs: sync sim/README slug index and Challenge #4 sign-off row 3 with delivered evidence
+- **Issue #239** (closed): Spec: DR-0010 target-table reconciliation packet (rate, area, power rows) for operator ratification
+- **Issue #236** (closed): Digital physical closure: repair and audit low-voltage Liberty slew/capacitance violations
+- **Issue #235** (closed): Auditor guard telemetry: worktree-write-confinement-unresolved-var
+
 ### 2026-10-09
 
+- **PR #237**: CI: enforce sim/ append-only record rule (#232)
+- **PR #234**: sim: digital floorplan-compaction feasibility study (#226)
 - **PR #229**: Add SDF-annotated routed digital verification with annotation controls (#227)
 - **PR #225**: feat(layout): native supply ERC for routed trng_digital; cite item 11.digital
 - **PR #224**: feat(sim): native klt functional-verification evidence for the digital suite
@@ -12,6 +26,8 @@ Chronological record of recently merged pull requests and closed issues.
 - **PR #214**: Cite delivered digital DRC/LVS evidence in T1 manifest (#211)
 - **PR #213**: Refresh current sign-off status and simulated-stream documentation
 - **PR #209**: Supply-ripple and injection-lock robustness campaign for the RO array (#200)
+- **Issue #232** (closed): CI: enforce the sim/ append-only record rule (fail PRs that modify, rename or delete committed records)
+- **Issue #226** (closed): Measure digital floorplan compaction feasibility against the unchanged area target
 - **Issue #223** (closed): Verify routed digital supplies and well ties with native ERC evidence
 - **Issue #227** (closed): Add SDF-annotated routed digital verification with annotation controls
 - **Issue #210** (closed): Guard telemetry: retain containment for unresolved scratch-write variables
