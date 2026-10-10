@@ -4,6 +4,7 @@ Chronological record of recently merged pull requests and closed issues.
 
 ### 2026-10-09
 
+- **PR #229**: Add SDF-annotated routed digital verification with annotation controls (#227)
 - **PR #225**: feat(layout): native supply ERC for routed trng_digital; cite item 11.digital
 - **PR #224**: feat(sim): native klt functional-verification evidence for the digital suite
 - **PR #220**: Local-mismatch Monte Carlo of RO array spread and sampler offset/bias
@@ -12,6 +13,8 @@ Chronological record of recently merged pull requests and closed issues.
 - **PR #213**: Refresh current sign-off status and simulated-stream documentation
 - **PR #209**: Supply-ripple and injection-lock robustness campaign for the RO array (#200)
 - **Issue #223** (closed): Verify routed digital supplies and well ties with native ERC evidence
+- **Issue #227** (closed): Add SDF-annotated routed digital verification with annotation controls
+- **Issue #210** (closed): Guard telemetry: retain containment for unresolved scratch-write variables
 - **Issue #222** (closed): Record native digital functional-verification evidence alongside routed STA
 - **Issue #207** (closed): Guard telemetry: retain shared-stash creation protection
 - **Issue #215** (closed): Local-mismatch Monte Carlo of RO array frequency spread and sampler decision offset/bias
