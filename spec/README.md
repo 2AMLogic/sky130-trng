@@ -112,6 +112,15 @@
   pre-deciding them (power pending #174/#201); routes min-entropy to #221.
   Does not edit the README table.
 
+- [`decision-records/DR-0012-ro-array-supply-quality-requirement.md`](decision-records/DR-0012-ro-array-supply-quality-requirement.md)
+  — **Proposed**. Issue #208's supply-quality requirement for the RO array
+  rail, from the #200 supply-perturbation evidence (pre-layout, ideal
+  sources, `sigma_1` not re-measured). Separates static droop, slow ripple,
+  sample-spanning ripple, RF lock and combining-node bias; separates measured
+  brackets from proposed limits; weighs rail conditioning, operating-point
+  change and an environmental assumption plus monitor, recommending rail
+  conditioning conditionally. Changes no target and preserves DR-0003's
+  combining ceiling; distinct from #221 (mismatch/entropy).
 - [`decision-records/DR-0013-local-mismatch-vs-h-floor-operating-point-and-lock-proximity.md`](decision-records/DR-0013-local-mismatch-vs-h-floor-operating-point-and-lock-proximity.md)
   — **Proposed**. Issue #221's decision packet from the local-mismatch Monte
   Carlo (`sim/local-mismatch-monte-carlo/`, pre-layout, simulation-derived,
