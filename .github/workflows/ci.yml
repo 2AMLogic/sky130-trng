@@ -123,10 +123,12 @@ name: CI
 #     covered by the PDK nightly's compose-cell --check reproductions
 #     instead; see signoff/README.md's freshness section.
 #
-# sim/bin/check_records_append_only.py (sim/ append-only record rule, issue #232)
-#     Pure Python + git. `sim/` results are append-only evidence (sim/README.md):
-#     the job diffs base...HEAD and fails if any existing sim/*/records/* file
-#     is Modified, Deleted or Renamed; Added files pass. Reviewed exceptions
+# sim/bin/check_records_append_only.py (sim/ + measurements/ append-only record rule, issues #232/#269)
+#     Pure Python + git. `sim/` results and `measurements/` silicon evidence are
+#     append-only (sim/README.md, measurements/README.md): the job diffs
+#     base...HEAD and fails if any existing {sim,measurements}/*/records/* file
+#     or record-associated runs/corners artifact is Modified, Deleted, Renamed
+#     or type-changed; Added files pass. Reviewed exceptions
 #     live in sim/records-append-only-allowlist.txt (empty at first). Needs
 #     full history (fetch-depth: 0) and nothing installed.
 #
@@ -162,6 +164,10 @@ on:
       - "sim/*/runs/**"
       - "sim/*/corners/**"
       - "sim/records-append-only-allowlist.txt"
+      # issue #269: measured silicon records and raw captures
+      - "measurements/*/records/**"
+      - "measurements/*/runs/**"
+      - "measurements/*/corners/**"
       - "sim/raw-bit-min-entropy/**"
       # issue #243 conditioned-output analysis + the committed streams it reads
       - "sim/digital-conditioned-output/**"
@@ -252,7 +258,7 @@ jobs:
         run: python3 sim/tests/test_electrical_final_route_gate.py
 
   sim-records-append-only:
-    name: sim/ append-only record rule (no edit/delete/rename of committed records)
+    name: sim/ + measurements/ append-only evidence rule (no edit/delete/rename of committed records or raw artifacts)
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
@@ -267,7 +273,7 @@ jobs:
       - name: sim/tests/test_check_records_append_only.py (checker unit test)
         run: python3 sim/tests/test_check_records_append_only.py
 
-      - name: Fail on modified/deleted/renamed sim/*/records/* files
+      - name: Fail on modified/deleted/renamed {sim,measurements}/*/{records,runs,corners} evidence
         run: python3 sim/bin/check_records_append_only.py "origin/${{ github.base_ref }}"
 
   signoff-check:

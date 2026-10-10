@@ -25,7 +25,7 @@ class Parse(unittest.TestCase):
 
 
 class Artifacts(unittest.TestCase):
-    ids = {("s", "r1")}
+    ids = {("sim", "s", "r1")}
 
     def v(self, z, **k):
         return chk.violations(z, record_ids=self.ids, **k)
@@ -33,7 +33,7 @@ class Artifacts(unittest.TestCase):
     def test_base_record_ids(self):
         ls = ("sim/s/records/r1.md\nsim/s/records/r1.json\nsim/s/records/d1/x.json\n"
               "sim/s/runs/u/a.txt\nsim/t/records/r2.md\n")
-        self.assertEqual(chk.base_record_ids(ls), {("s", "r1"), ("s", "d1"), ("t", "r2")})
+        self.assertEqual(chk.base_record_ids(ls), {("sim", "s", "r1"), ("sim", "s", "d1"), ("sim", "t", "r2")})
 
     def test_protected(self):
         z = ("M\0sim/s/runs/r1/a/b/c.json\0D\0sim/s/corners/r1/tt.log\0"
@@ -43,6 +43,14 @@ class Artifacts(unittest.TestCase):
         self.assertEqual([p for _, p in self.v(z)],
                          ["sim/s/runs/r1/a/b/c.json", "sim/s/corners/r1/tt.log",
                           "sim/s/runs/r1/x.txt"])
+
+    def test_roots_do_not_cross_associate(self):
+        z = "M\0measurements/s/runs/r1/a.txt\0M\0measurements/s/records/r1.md\0"
+        self.assertEqual([p for _, p in self.v(z)], ["measurements/s/records/r1.md"])
+        ids = {("measurements", "s", "r1")}
+        z = "M\0sim/s/runs/r1/a.txt\0M\0measurements/s/corners/r1/a.txt\0"
+        self.assertEqual([p for _, p in chk.violations(z, record_ids=ids)],
+                         ["measurements/s/corners/r1/a.txt"])
 
     def test_allow(self):
         self.assertEqual(self.v("M\0sim/s/runs/r1/a.txt\0", allow={"sim/s/runs/r1/a.txt"}), [])
@@ -135,6 +143,77 @@ class EndToEnd(unittest.TestCase):
             Path(d, "sim/records-append-only-allowlist.txt").write_text(
                 "sim/s/runs/r1/a/b.json\n")
         case(allowed, 0)
+
+    def test_measurements_and_collision(self):
+        def mk(d, roots):
+            self.git(d, "init", "-q", "-b", "main")
+            for root in roots:
+                for f in ("records/r1.json", "records/r1.md", "runs/r1/a/b.txt", "runs/old/x.txt"):
+                    p = Path(d, root, "s", f); p.parent.mkdir(parents=True, exist_ok=True)
+                    p.write_text("0\n")
+            self.git(d, "add", "-A"); self.git(d, "commit", "-qm", "base")
+            self.git(d, "branch", "base")
+
+        def case(roots, mutate, rc_expected, needle=None):
+            with tempfile.TemporaryDirectory() as d:
+                mk(d, roots)
+                mutate(d)
+                self.git(d, "add", "-A"); self.git(d, "commit", "-qm", "m")
+                rc, err = self.run_check(d)
+                self.assertEqual(rc, rc_expected, err)
+                if needle:
+                    self.assertIn(needle, err)
+        M = ("measurements",)
+        w = lambda d, f, t="1\n": Path(d, "measurements/s", f).write_text(t)
+        case(M, lambda d: w(d, "records/r1.json"), 1, "measurements/s/records/r1.json")
+        case(M, lambda d: w(d, "runs/r1/a/b.txt"), 1, "measurements/s/runs/r1/a/b.txt")
+        case(M, lambda d: Path(d, "measurements/s/runs/r1/a/b.txt").unlink(), 1, "b.txt")
+        case(M, lambda d: Path(d, "measurements/s/records/r1.md").unlink(), 1, "records/r1.md")
+        case(M, lambda d: self.git(d, "mv", "measurements/s/runs/r1", "measurements/s/runs/r9"),
+             1, "runs/r1/a/b.txt")
+        case(M, lambda d: self.git(d, "mv", "measurements/s/records/r1.json",
+                                   "measurements/s/records/r9.json"), 1, "records/r1.json")
+
+        def typechange(d):
+            p = Path(d, "measurements/s/runs/r1/a/b.txt"); p.unlink(); p.symlink_to("x")
+        case(M, typechange, 1, "b.txt")
+
+        def gone(d):  # record removed + capture mutated in the same change
+            self.git(d, "rm", "-q", "measurements/s/records/r1.json", "measurements/s/records/r1.md")
+            w(d, "runs/r1/a/b.txt")
+        case(M, gone, 1, "runs/r1/a/b.txt")
+
+        def fresh(d):
+            w(d, "records/r2.json")
+            Path(d, "measurements/s/runs/r2").mkdir(); w(d, "runs/r2/c.txt")
+            w(d, "runs/r1/extra.txt"); w(d, "runs/old/x.txt")
+            Path(d, "measurements/index.md").write_text("idx\n")
+            Path(d, "measurements/README.md").write_text("doc\n")
+        case(M, fresh, 0)
+
+        def allowed(d):
+            w(d, "runs/r1/a/b.txt")
+            Path(d, "sim").mkdir(exist_ok=True)
+            Path(d, "sim/records-append-only-allowlist.txt").write_text(
+                "measurements/s/runs/r1/a/b.txt\n")
+        case(M, allowed, 0)
+
+        # root collision: record r1 exists only under sim/ -> measurements scratch
+        # dir of the same slug/id is unassociated, and vice versa.
+        def scratch(d, root):
+            p = Path(d, root, "s/runs/r1/a/b.txt"); p.parent.mkdir(parents=True, exist_ok=True)
+            p.write_text("1\n")
+        for rec_root, scratch_root, rc in (("sim", "measurements", 0), ("measurements", "sim", 0)):
+            with tempfile.TemporaryDirectory() as d:
+                self.git(d, "init", "-q", "-b", "main")
+                for root, kind in ((rec_root, "records/r1.json"), (scratch_root, "runs/r1/a/b.txt")):
+                    p = Path(d, root, "s", kind); p.parent.mkdir(parents=True, exist_ok=True)
+                    p.write_text("0\n")
+                self.git(d, "add", "-A"); self.git(d, "commit", "-qm", "base")
+                self.git(d, "branch", "base")
+                scratch(d, scratch_root)
+                self.git(d, "add", "-A"); self.git(d, "commit", "-qm", "m")
+                self.assertEqual(self.run_check(d)[0], rc)
 
 
 if __name__ == "__main__":

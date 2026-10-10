@@ -93,10 +93,16 @@ mints a new record whose `supersedes` names the one it corrects. Reviewed
 exceptions, if ever needed, go in an allowlist beside the sim one, as a visible
 diff, not a bypass.
 
-Enforcement note: `sim/bin/check_records_append_only.py` currently matches only
-`sim/<slug>/records/...`. Extending it to `measurements/<slug>/records/...` is a
-named follow-up in DR-0014 and must land before the first record is added. Until
-then the rule is enforced by review.
+Enforcement note: `sim/bin/check_records_append_only.py` and its CI job
+(`sim-records-append-only`) protect both `sim/` and `measurements/`: every
+existing file under `measurements/<slug>/records/` and every existing file under
+`measurements/<slug>/runs/<rid>/` (or `corners/<rid>/`) where `<rid>` names a
+record of the PR's base tree is rejected if modified, deleted, renamed or
+type-changed. Association is keyed by root, slug and record id, so same-named
+`sim/` and `measurements/` entries never protect one another. New records and
+captures pass; this README and the derived `index.md` stay editable. Reviewed
+exceptions use `sim/records-append-only-allowlist.txt` with fully qualified
+paths (`sim/...` or `measurements/...`).
 
 ## How a measured record supersedes a provisional simulated record
 
