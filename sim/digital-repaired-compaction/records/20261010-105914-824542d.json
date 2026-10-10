@@ -1,0 +1,1021 @@
+{
+  "record_id": "20261010-105914-824542d",
+  "timestamp_utc": "2026-10-10T10:59:14.565496+00:00",
+  "repo_sha": "824542d",
+  "issue": 251,
+  "run": "20261010-092825-main",
+  "target_mm2": 0.05,
+  "target_status": "unchanged: unmet",
+  "control": {
+    "reference_run": "sim/digital-electrical-repair/runs/20261010-cand1/slew0531",
+    "geometry_byte_identical": true,
+    "request_byte_identical": true,
+    "die_area_equal": true,
+    "std_cell_area_equal": true,
+    "klt_version_equal": true,
+    "reproduced": true
+  },
+  "runs": {
+    "rep40-slew0531": {
+      "dir": "sim/digital-repaired-compaction/runs/20261010-092825-main/rep40-slew0531",
+      "exit": 0,
+      "completed": true,
+      "pnr": {
+        "status": "ok",
+        "stage_reached": "route",
+        "die_area_um2": 60049.5,
+        "core_area_um2": 54877.6,
+        "utilization_pct": 43.7346,
+        "wirelength_um": 67149,
+        "route_drc_violation_count": 0,
+        "antenna_violation_count": 0,
+        "worst_setup_slack_ns_inflow": 15958.4,
+        "worst_hold_slack_ns_inflow": 0.2838,
+        "max_transition_violation_count": 5104,
+        "max_capacitance_violation_count": 0,
+        "estimated_power_mw": 0.0021,
+        "klt_version": "0.6.0+g10f3da34c088",
+        "openroad": "26Q3-1510-g6cb3f2b704"
+      },
+      "libmax_by_corner": {
+        "ff_100C_1v65": [
+          0,
+          0
+        ],
+        "ff_100C_1v95": [
+          0,
+          0
+        ],
+        "ff_n40C_1v56": [
+          0,
+          0
+        ],
+        "ff_n40C_1v65": [
+          0,
+          0
+        ],
+        "ff_n40C_1v76": [
+          0,
+          0
+        ],
+        "ff_n40C_1v95": [
+          0,
+          0
+        ],
+        "ss_100C_1v40": [
+          0,
+          0
+        ],
+        "ss_100C_1v60": [
+          0,
+          0
+        ],
+        "ss_n40C_1v28": [
+          0,
+          0
+        ],
+        "ss_n40C_1v35": [
+          0,
+          0
+        ],
+        "ss_n40C_1v40": [
+          0,
+          0
+        ],
+        "ss_n40C_1v44": [
+          0,
+          0
+        ],
+        "ss_n40C_1v60": [
+          0,
+          0
+        ],
+        "ss_n40C_1v76": [
+          0,
+          0
+        ],
+        "tt_025C_1v80": [
+          0,
+          0
+        ],
+        "tt_100C_1v80": [
+          0,
+          0
+        ]
+      },
+      "die_w_um": 245.05,
+      "die_h_um": 245.05,
+      "geometry_sha256": {
+        "trng_digital.gds": "sha256:7b1899fff629a85487f876eea462e9dc7a5ac62f5b17846e04a39814a7537eb2",
+        "trng_digital.def": "sha256:a1e722b200fc1c0f6d6e9c380a2aa820eae042859ac5fe986cc92c9a08eed63f",
+        "trng_digital.v": "sha256:3304711f7151ae4b338239b62968a28667363ae06fa0a721ce71b4b8a5a4f8dd"
+      },
+      "congestion": {
+        "gpl_final_weighted_congestion": 0.8326,
+        "gpl_routing_overflow_last": 0.2254,
+        "gpl_overflowed_tiles_last": 1.0,
+        "grt_total_overflow": null,
+        "global_route__wirelength": 103479,
+        "route_pass:0__route__drc_errors__iter:0": 1684,
+        "route__drc_errors": 0,
+        "design__instance__area__stdcell": 24000.5,
+        "detailed_route_pass0_iterations": 5,
+        "unrouted_net_count": null,
+        "global_route_overflow": null,
+        "available": true
+      },
+      "drc": {
+        "status": "clean",
+        "violation_count": 0
+      },
+      "lvs": {
+        "status": "match",
+        "error_count": 0,
+        "power_connectivity": "match",
+        "power_findings": []
+      },
+      "sta": {
+        "corners": 16,
+        "all_constrained": true,
+        "worst_setup_slack_ns": 15956.9,
+        "worst_hold_slack_ns": 0.27637,
+        "setup_violations": 0,
+        "hold_violations": 0
+      },
+      "controls_detected": 4,
+      "cosim": {
+        "ok": true,
+        "cycles": 4239,
+        "mismatches": 0
+      },
+      "verdict": {
+        "drc": true,
+        "lvs": true,
+        "sta": true,
+        "cosim": true,
+        "negative_controls": true
+      },
+      "tool_drift": [],
+      "request": {
+        "path": "sim/digital-repaired-compaction/runs/20261010-092825-main/rep40-slew0531/rep40-slew0531.json",
+        "sha256": "sha256:6720f3f92a477c098a11976ac48d1df26468213c9c7bfc3f9f10f72f1fa2e6c1",
+        "max_transition_ns": 0.531,
+        "utilization_pct": 40
+      },
+      "checks": {
+        "completed": true,
+        "route_reached": true,
+        "route_drc_0": true,
+        "antenna_0": true,
+        "drc_clean": true,
+        "lvs_match": true,
+        "lvs_power_connectivity_match": true,
+        "sta_16_corners_clean": true,
+        "cosim_pass": true,
+        "controls_all_detected": true,
+        "final_route_audit_16_of_16": true,
+        "final_route_slew_cap_zero": true,
+        "estimate_slew_cap_zero": true,
+        "estimate_count_crosscheck": true
+      },
+      "selectable": true,
+      "area": {
+        "digital_bbox_mm2": 0.060049502500000004,
+        "analog_bbox_mm2": 0.0192966228,
+        "lower_bound_macros_only_mm2": 0.0793461253,
+        "estimate_additive_overhead_mm2": 0.12611635999999998,
+        "estimate_restacked_same_topology_mm2": 0.12611635999999998,
+        "restacked_bbox_um": [
+          378.16,
+          333.5
+        ],
+        "baseline_overhead_mm2": 0.04677023469999999,
+        "composition_constants_um": {
+          "west_escape": 2.15,
+          "gap": 20.005,
+          "top_pad_margin": 10.14,
+          "digital_east_edge_x": 200.0,
+          "analog_w": 330.96,
+          "analog_h": 58.305
+        }
+      },
+      "margins": {
+        "ff_100C_1v65": {
+          "slew_count": 0,
+          "cap_count": 0,
+          "slew_margin_ns": 1.0063,
+          "cap_margin_pf": 0.0355,
+          "slew_worst_excess_ns": 0.0,
+          "cap_worst_excess_pf": 0.0
+        },
+        "ff_100C_1v95": {
+          "slew_count": 0,
+          "cap_count": 0,
+          "slew_margin_ns": 1.1054,
+          "cap_margin_pf": 0.05,
+          "slew_worst_excess_ns": 0.0,
+          "cap_worst_excess_pf": 0.0
+        },
+        "ff_n40C_1v56": {
+          "slew_count": 0,
+          "cap_count": 0,
+          "slew_margin_ns": 0.8856,
+          "cap_margin_pf": 0.022,
+          "slew_worst_excess_ns": 0.0,
+          "cap_worst_excess_pf": 0.0
+        },
+        "ff_n40C_1v65": {
+          "slew_count": 0,
+          "cap_count": 0,
+          "slew_margin_ns": 0.9476,
+          "cap_margin_pf": 0.0274,
+          "slew_worst_excess_ns": 0.0,
+          "cap_worst_excess_pf": 0.0
+        },
+        "ff_n40C_1v76": {
+          "slew_count": 0,
+          "cap_count": 0,
+          "slew_margin_ns": 1.0152,
+          "cap_margin_pf": 0.0337,
+          "slew_worst_excess_ns": 0.0,
+          "cap_worst_excess_pf": 0.0
+        },
+        "ff_n40C_1v95": {
+          "slew_count": 0,
+          "cap_count": 0,
+          "slew_margin_ns": 1.0867,
+          "cap_margin_pf": 0.0446,
+          "slew_worst_excess_ns": 0.0,
+          "cap_worst_excess_pf": 0.0
+        },
+        "ss_100C_1v40": {
+          "slew_count": 0,
+          "cap_count": 0,
+          "slew_margin_ns": 8.549,
+          "cap_margin_pf": 0.0905,
+          "slew_worst_excess_ns": 0.0,
+          "cap_worst_excess_pf": 0.0
+        },
+        "ss_100C_1v60": {
+          "slew_count": 0,
+          "cap_count": 0,
+          "slew_margin_ns": 0.465,
+          "cap_margin_pf": 0.0087,
+          "slew_worst_excess_ns": 0.0,
+          "cap_worst_excess_pf": 0.0
+        },
+        "ss_n40C_1v28": {
+          "slew_count": 0,
+          "cap_count": 0,
+          "slew_margin_ns": 1.228,
+          "cap_margin_pf": 0.0041,
+          "slew_worst_excess_ns": 0.0,
+          "cap_worst_excess_pf": 0.0
+        },
+        "ss_n40C_1v35": {
+          "slew_count": 0,
+          "cap_count": 0,
+          "slew_margin_ns": 7.352,
+          "cap_margin_pf": 0.0312,
+          "slew_worst_excess_ns": 0.0,
+          "cap_worst_excess_pf": 0.0
+        },
+        "ss_n40C_1v40": {
+          "slew_count": 0,
+          "cap_count": 0,
+          "slew_margin_ns": 7.8154,
+          "cap_margin_pf": 0.0426,
+          "slew_worst_excess_ns": 0.0,
+          "cap_worst_excess_pf": 0.0
+        },
+        "ss_n40C_1v44": {
+          "slew_count": 0,
+          "cap_count": 0,
+          "slew_margin_ns": 3.1398,
+          "cap_margin_pf": 0.0212,
+          "slew_worst_excess_ns": 0.0,
+          "cap_worst_excess_pf": 0.0
+        },
+        "ss_n40C_1v60": {
+          "slew_count": 0,
+          "cap_count": 0,
+          "slew_margin_ns": 0.2987,
+          "cap_margin_pf": 0.0048,
+          "slew_worst_excess_ns": 0.0,
+          "cap_worst_excess_pf": 0.0
+        },
+        "ss_n40C_1v76": {
+          "slew_count": 0,
+          "cap_count": 0,
+          "slew_margin_ns": 0.6307,
+          "cap_margin_pf": 0.0119,
+          "slew_worst_excess_ns": 0.0,
+          "cap_worst_excess_pf": 0.0
+        },
+        "tt_025C_1v80": {
+          "slew_count": 0,
+          "cap_count": 0,
+          "slew_margin_ns": 0.9247,
+          "cap_margin_pf": 0.0273,
+          "slew_worst_excess_ns": 0.0,
+          "cap_worst_excess_pf": 0.0
+        },
+        "tt_100C_1v80": {
+          "slew_count": 0,
+          "cap_count": 0,
+          "slew_margin_ns": 0.9267,
+          "cap_margin_pf": 0.0299,
+          "slew_worst_excess_ns": 0.0,
+          "cap_worst_excess_pf": 0.0
+        }
+      },
+      "request_diff_vs_committed": [
+        "constraints.max_transition_ns: None -> 0.531",
+        "netlist: '../../../sim/digital-synthesis/runs/20260910-001436-a4c3194/50khz-constrained-trng_digital_synth.v' -> '../../digital-synthesis/runs/20260910-001436-a4c3194/50khz-constrained-trng_digital_synth.v'"
+      ],
+      "electrical_totals": {
+        "max_slew": 0,
+        "max_capacitance": 0
+      }
+    },
+    "rep55-slew0531": {
+      "dir": "sim/digital-repaired-compaction/runs/20261010-092825-main/rep55-slew0531",
+      "exit": 0,
+      "completed": true,
+      "pnr": {
+        "status": "ok",
+        "stage_reached": "route",
+        "die_area_um2": 44291.3,
+        "core_area_um2": 39731.9,
+        "utilization_pct": 59.6379,
+        "wirelength_um": 65474,
+        "route_drc_violation_count": 0,
+        "antenna_violation_count": 0,
+        "worst_setup_slack_ns_inflow": 15955.9,
+        "worst_hold_slack_ns_inflow": 0.28184,
+        "max_transition_violation_count": 5042,
+        "max_capacitance_violation_count": 0,
+        "estimated_power_mw": 0.0021,
+        "klt_version": "0.6.0+g10f3da34c088",
+        "openroad": "26Q3-1510-g6cb3f2b704"
+      },
+      "libmax_by_corner": {
+        "ff_100C_1v65": [
+          0,
+          0
+        ],
+        "ff_100C_1v95": [
+          0,
+          0
+        ],
+        "ff_n40C_1v56": [
+          0,
+          0
+        ],
+        "ff_n40C_1v65": [
+          0,
+          0
+        ],
+        "ff_n40C_1v76": [
+          0,
+          0
+        ],
+        "ff_n40C_1v95": [
+          0,
+          0
+        ],
+        "ss_100C_1v40": [
+          0,
+          0
+        ],
+        "ss_100C_1v60": [
+          0,
+          0
+        ],
+        "ss_n40C_1v28": [
+          0,
+          0
+        ],
+        "ss_n40C_1v35": [
+          0,
+          0
+        ],
+        "ss_n40C_1v40": [
+          0,
+          0
+        ],
+        "ss_n40C_1v44": [
+          0,
+          0
+        ],
+        "ss_n40C_1v60": [
+          0,
+          0
+        ],
+        "ss_n40C_1v76": [
+          0,
+          0
+        ],
+        "tt_025C_1v80": [
+          0,
+          0
+        ],
+        "tt_100C_1v80": [
+          0,
+          0
+        ]
+      },
+      "die_w_um": 210.455,
+      "die_h_um": 210.455,
+      "geometry_sha256": {
+        "trng_digital.gds": "sha256:acb95377d8d91d6fe260bb1ddb5d45eacb48bb9952c61777a5c10db500c0d294",
+        "trng_digital.def": "sha256:144338f92b2a9cfd41fc9a81d48d8f09b6696834e6c585b3db4e988aa93744b2",
+        "trng_digital.v": "sha256:48c51432099b2de631bbb6088f686d0ac4ba257dc7edc1a4bfab8543e97aee84"
+      },
+      "congestion": {
+        "gpl_final_weighted_congestion": 0.9001,
+        "gpl_routing_overflow_last": 0.2726,
+        "gpl_overflowed_tiles_last": 3.0,
+        "grt_total_overflow": null,
+        "global_route__wirelength": 101154,
+        "route_pass:0__route__drc_errors__iter:0": 1890,
+        "route__drc_errors": 0,
+        "design__instance__area__stdcell": 23695.2,
+        "detailed_route_pass0_iterations": 5,
+        "unrouted_net_count": null,
+        "global_route_overflow": null,
+        "available": true
+      },
+      "drc": {
+        "status": "clean",
+        "violation_count": 0
+      },
+      "lvs": {
+        "status": "match",
+        "error_count": 0,
+        "power_connectivity": "match",
+        "power_findings": []
+      },
+      "sta": {
+        "corners": 16,
+        "all_constrained": true,
+        "worst_setup_slack_ns": 15955.1,
+        "worst_hold_slack_ns": 0.27532,
+        "setup_violations": 0,
+        "hold_violations": 0
+      },
+      "controls_detected": 4,
+      "cosim": {
+        "ok": true,
+        "cycles": 4239,
+        "mismatches": 0
+      },
+      "verdict": {
+        "drc": true,
+        "lvs": true,
+        "sta": true,
+        "cosim": true,
+        "negative_controls": true
+      },
+      "tool_drift": [],
+      "request": {
+        "path": "sim/digital-repaired-compaction/runs/20261010-092825-main/rep55-slew0531/rep55-slew0531.json",
+        "sha256": "sha256:58ee00310720ddd335299c35c60216a46705c7e6267bc7979e440f0c8d224e8d",
+        "max_transition_ns": 0.531,
+        "utilization_pct": 55
+      },
+      "checks": {
+        "completed": true,
+        "route_reached": true,
+        "route_drc_0": true,
+        "antenna_0": true,
+        "drc_clean": true,
+        "lvs_match": true,
+        "lvs_power_connectivity_match": true,
+        "sta_16_corners_clean": true,
+        "cosim_pass": true,
+        "controls_all_detected": true,
+        "final_route_audit_16_of_16": true,
+        "final_route_slew_cap_zero": true,
+        "estimate_slew_cap_zero": true,
+        "estimate_count_crosscheck": true
+      },
+      "selectable": true,
+      "area": {
+        "digital_bbox_mm2": 0.044291307025000004,
+        "analog_bbox_mm2": 0.0192966228,
+        "lower_bound_macros_only_mm2": 0.063587929825,
+        "estimate_additive_overhead_mm2": 0.11035816452499998,
+        "estimate_restacked_same_topology_mm2": 0.10269329632499999,
+        "restacked_bbox_um": [
+          343.565,
+          298.905
+        ],
+        "baseline_overhead_mm2": 0.04677023469999999,
+        "composition_constants_um": {
+          "west_escape": 2.15,
+          "gap": 20.005,
+          "top_pad_margin": 10.14,
+          "digital_east_edge_x": 200.0,
+          "analog_w": 330.96,
+          "analog_h": 58.305
+        }
+      },
+      "margins": {
+        "ff_100C_1v65": {
+          "slew_count": 0,
+          "cap_count": 0,
+          "slew_margin_ns": 1.0376,
+          "cap_margin_pf": 0.0351,
+          "slew_worst_excess_ns": 0.0,
+          "cap_worst_excess_pf": 0.0
+        },
+        "ff_100C_1v95": {
+          "slew_count": 0,
+          "cap_count": 0,
+          "slew_margin_ns": 1.1304,
+          "cap_margin_pf": 0.0496,
+          "slew_worst_excess_ns": 0.0,
+          "cap_worst_excess_pf": 0.0
+        },
+        "ff_n40C_1v56": {
+          "slew_count": 0,
+          "cap_count": 0,
+          "slew_margin_ns": 0.8786,
+          "cap_margin_pf": 0.0216,
+          "slew_worst_excess_ns": 0.0,
+          "cap_worst_excess_pf": 0.0
+        },
+        "ff_n40C_1v65": {
+          "slew_count": 0,
+          "cap_count": 0,
+          "slew_margin_ns": 0.9626,
+          "cap_margin_pf": 0.027,
+          "slew_worst_excess_ns": 0.0,
+          "cap_worst_excess_pf": 0.0
+        },
+        "ff_n40C_1v76": {
+          "slew_count": 0,
+          "cap_count": 0,
+          "slew_margin_ns": 1.0378,
+          "cap_margin_pf": 0.0333,
+          "slew_worst_excess_ns": 0.0,
+          "cap_worst_excess_pf": 0.0
+        },
+        "ff_n40C_1v95": {
+          "slew_count": 0,
+          "cap_count": 0,
+          "slew_margin_ns": 1.1141,
+          "cap_margin_pf": 0.0442,
+          "slew_worst_excess_ns": 0.0,
+          "cap_worst_excess_pf": 0.0
+        },
+        "ss_100C_1v40": {
+          "slew_count": 0,
+          "cap_count": 0,
+          "slew_margin_ns": 8.6396,
+          "cap_margin_pf": 0.0901,
+          "slew_worst_excess_ns": 0.0,
+          "cap_worst_excess_pf": 0.0
+        },
+        "ss_100C_1v60": {
+          "slew_count": 0,
+          "cap_count": 0,
+          "slew_margin_ns": 0.5316,
+          "cap_margin_pf": 0.0101,
+          "slew_worst_excess_ns": 0.0,
+          "cap_worst_excess_pf": 0.0
+        },
+        "ss_n40C_1v28": {
+          "slew_count": 0,
+          "cap_count": 0,
+          "slew_margin_ns": 0.8393,
+          "cap_margin_pf": 0.0037,
+          "slew_worst_excess_ns": 0.0,
+          "cap_worst_excess_pf": 0.0
+        },
+        "ss_n40C_1v35": {
+          "slew_count": 0,
+          "cap_count": 0,
+          "slew_margin_ns": 7.2139,
+          "cap_margin_pf": 0.031,
+          "slew_worst_excess_ns": 0.0,
+          "cap_worst_excess_pf": 0.0
+        },
+        "ss_n40C_1v40": {
+          "slew_count": 0,
+          "cap_count": 0,
+          "slew_margin_ns": 7.7437,
+          "cap_margin_pf": 0.0424,
+          "slew_worst_excess_ns": 0.0,
+          "cap_worst_excess_pf": 0.0
+        },
+        "ss_n40C_1v44": {
+          "slew_count": 0,
+          "cap_count": 0,
+          "slew_margin_ns": 3.1058,
+          "cap_margin_pf": 0.021,
+          "slew_worst_excess_ns": 0.0,
+          "cap_worst_excess_pf": 0.0
+        },
+        "ss_n40C_1v60": {
+          "slew_count": 0,
+          "cap_count": 0,
+          "slew_margin_ns": 0.272,
+          "cap_margin_pf": 0.0045,
+          "slew_worst_excess_ns": 0.0,
+          "cap_worst_excess_pf": 0.0
+        },
+        "ss_n40C_1v76": {
+          "slew_count": 0,
+          "cap_count": 0,
+          "slew_margin_ns": 0.6129,
+          "cap_margin_pf": 0.0115,
+          "slew_worst_excess_ns": 0.0,
+          "cap_worst_excess_pf": 0.0
+        },
+        "tt_025C_1v80": {
+          "slew_count": 0,
+          "cap_count": 0,
+          "slew_margin_ns": 0.9433,
+          "cap_margin_pf": 0.0269,
+          "slew_worst_excess_ns": 0.0,
+          "cap_worst_excess_pf": 0.0
+        },
+        "tt_100C_1v80": {
+          "slew_count": 0,
+          "cap_count": 0,
+          "slew_margin_ns": 0.9638,
+          "cap_margin_pf": 0.0287,
+          "slew_worst_excess_ns": 0.0,
+          "cap_worst_excess_pf": 0.0
+        }
+      },
+      "request_diff_vs_committed": [
+        "constraints.max_transition_ns: None -> 0.531",
+        "floorplan.utilization_pct: 40 -> 55",
+        "netlist: '../../../sim/digital-synthesis/runs/20260910-001436-a4c3194/50khz-constrained-trng_digital_synth.v' -> '../../digital-synthesis/runs/20260910-001436-a4c3194/50khz-constrained-trng_digital_synth.v'"
+      ],
+      "electrical_totals": {
+        "max_slew": 0,
+        "max_capacitance": 0
+      }
+    },
+    "rep65-slew0531": {
+      "dir": "sim/digital-repaired-compaction/runs/20261010-092825-main/rep65-slew0531",
+      "exit": 0,
+      "completed": true,
+      "pnr": {
+        "status": "ok",
+        "stage_reached": "route",
+        "die_area_um2": 37787.5,
+        "core_area_um2": 33532.2,
+        "utilization_pct": 69.8769,
+        "wirelength_um": 62589,
+        "route_drc_violation_count": 0,
+        "antenna_violation_count": 0,
+        "worst_setup_slack_ns_inflow": 15955.6,
+        "worst_hold_slack_ns_inflow": 0.28478,
+        "max_transition_violation_count": 5143,
+        "max_capacitance_violation_count": 0,
+        "estimated_power_mw": 0.002,
+        "klt_version": "0.6.0+g10f3da34c088",
+        "openroad": "26Q3-1510-g6cb3f2b704"
+      },
+      "libmax_by_corner": {
+        "ff_100C_1v65": [
+          0,
+          0
+        ],
+        "ff_100C_1v95": [
+          0,
+          0
+        ],
+        "ff_n40C_1v56": [
+          0,
+          0
+        ],
+        "ff_n40C_1v65": [
+          0,
+          0
+        ],
+        "ff_n40C_1v76": [
+          0,
+          0
+        ],
+        "ff_n40C_1v95": [
+          0,
+          0
+        ],
+        "ss_100C_1v40": [
+          0,
+          0
+        ],
+        "ss_100C_1v60": [
+          0,
+          0
+        ],
+        "ss_n40C_1v28": [
+          0,
+          0
+        ],
+        "ss_n40C_1v35": [
+          0,
+          0
+        ],
+        "ss_n40C_1v40": [
+          0,
+          0
+        ],
+        "ss_n40C_1v44": [
+          0,
+          0
+        ],
+        "ss_n40C_1v60": [
+          0,
+          0
+        ],
+        "ss_n40C_1v76": [
+          0,
+          0
+        ],
+        "tt_025C_1v80": [
+          0,
+          0
+        ],
+        "tt_100C_1v80": [
+          0,
+          0
+        ]
+      },
+      "die_w_um": 194.39,
+      "die_h_um": 194.39,
+      "geometry_sha256": {
+        "trng_digital.gds": "sha256:858b9ab65f045982261570a78d5ad0bc6041b2b0a40664e3528df3f56142f3cb",
+        "trng_digital.def": "sha256:fc718414017b6dd3da0f9917537ac7d1c1d8649e4eea509674090c569e238bba",
+        "trng_digital.v": "sha256:d0e8c88573610d412e6ae4b6ebc3f76b89dfa51431db460fbe32b808cde6b04f"
+      },
+      "congestion": {
+        "gpl_final_weighted_congestion": 0.795,
+        "gpl_routing_overflow_last": 0.207,
+        "gpl_overflowed_tiles_last": 2.0,
+        "grt_total_overflow": null,
+        "global_route__wirelength": 97704,
+        "route_pass:0__route__drc_errors__iter:0": 2167,
+        "route__drc_errors": 0,
+        "design__instance__area__stdcell": 23431.2,
+        "detailed_route_pass0_iterations": 7,
+        "unrouted_net_count": null,
+        "global_route_overflow": null,
+        "available": true
+      },
+      "drc": {
+        "status": "clean",
+        "violation_count": 0
+      },
+      "lvs": {
+        "status": "match",
+        "error_count": 0,
+        "power_connectivity": "match",
+        "power_findings": []
+      },
+      "sta": {
+        "corners": 16,
+        "all_constrained": true,
+        "worst_setup_slack_ns": 15954,
+        "worst_hold_slack_ns": 0.27644,
+        "setup_violations": 0,
+        "hold_violations": 0
+      },
+      "controls_detected": 4,
+      "cosim": {
+        "ok": true,
+        "cycles": 4239,
+        "mismatches": 0
+      },
+      "verdict": {
+        "drc": true,
+        "lvs": true,
+        "sta": true,
+        "cosim": true,
+        "negative_controls": true
+      },
+      "tool_drift": [],
+      "request": {
+        "path": "sim/digital-repaired-compaction/runs/20261010-092825-main/rep65-slew0531/rep65-slew0531.json",
+        "sha256": "sha256:a6b675d583b2388e397a5b828d9d98111df672b1f0caf1bc8dcfed3097f4958a",
+        "max_transition_ns": 0.531,
+        "utilization_pct": 65
+      },
+      "checks": {
+        "completed": true,
+        "route_reached": true,
+        "route_drc_0": true,
+        "antenna_0": true,
+        "drc_clean": true,
+        "lvs_match": true,
+        "lvs_power_connectivity_match": true,
+        "sta_16_corners_clean": true,
+        "cosim_pass": true,
+        "controls_all_detected": true,
+        "final_route_audit_16_of_16": true,
+        "final_route_slew_cap_zero": true,
+        "estimate_slew_cap_zero": true,
+        "estimate_count_crosscheck": true
+      },
+      "selectable": true,
+      "area": {
+        "digital_bbox_mm2": 0.03778747209999999,
+        "analog_bbox_mm2": 0.0192966228,
+        "lower_bound_macros_only_mm2": 0.05708409489999999,
+        "estimate_additive_overhead_mm2": 0.10385432959999999,
+        "estimate_restacked_same_topology_mm2": 0.09360872639999998,
+        "restacked_bbox_um": [
+          330.96,
+          282.84
+        ],
+        "baseline_overhead_mm2": 0.04677023469999999,
+        "composition_constants_um": {
+          "west_escape": 2.15,
+          "gap": 20.005,
+          "top_pad_margin": 10.14,
+          "digital_east_edge_x": 200.0,
+          "analog_w": 330.96,
+          "analog_h": 58.305
+        }
+      },
+      "margins": {
+        "ff_100C_1v65": {
+          "slew_count": 0,
+          "cap_count": 0,
+          "slew_margin_ns": 1.0131,
+          "cap_margin_pf": 0.0359,
+          "slew_worst_excess_ns": 0.0,
+          "cap_worst_excess_pf": 0.0
+        },
+        "ff_100C_1v95": {
+          "slew_count": 0,
+          "cap_count": 0,
+          "slew_margin_ns": 1.1108,
+          "cap_margin_pf": 0.0504,
+          "slew_worst_excess_ns": 0.0,
+          "cap_worst_excess_pf": 0.0
+        },
+        "ff_n40C_1v56": {
+          "slew_count": 0,
+          "cap_count": 0,
+          "slew_margin_ns": 0.8456,
+          "cap_margin_pf": 0.0218,
+          "slew_worst_excess_ns": 0.0,
+          "cap_worst_excess_pf": 0.0
+        },
+        "ff_n40C_1v65": {
+          "slew_count": 0,
+          "cap_count": 0,
+          "slew_margin_ns": 0.9347,
+          "cap_margin_pf": 0.0273,
+          "slew_worst_excess_ns": 0.0,
+          "cap_worst_excess_pf": 0.0
+        },
+        "ff_n40C_1v76": {
+          "slew_count": 0,
+          "cap_count": 0,
+          "slew_margin_ns": 1.0042,
+          "cap_margin_pf": 0.0336,
+          "slew_worst_excess_ns": 0.0,
+          "cap_worst_excess_pf": 0.0
+        },
+        "ff_n40C_1v95": {
+          "slew_count": 0,
+          "cap_count": 0,
+          "slew_margin_ns": 1.0774,
+          "cap_margin_pf": 0.0444,
+          "slew_worst_excess_ns": 0.0,
+          "cap_worst_excess_pf": 0.0
+        },
+        "ss_100C_1v40": {
+          "slew_count": 0,
+          "cap_count": 0,
+          "slew_margin_ns": 8.6421,
+          "cap_margin_pf": 0.0909,
+          "slew_worst_excess_ns": 0.0,
+          "cap_worst_excess_pf": 0.0
+        },
+        "ss_100C_1v60": {
+          "slew_count": 0,
+          "cap_count": 0,
+          "slew_margin_ns": 0.5341,
+          "cap_margin_pf": 0.0116,
+          "slew_worst_excess_ns": 0.0,
+          "cap_worst_excess_pf": 0.0
+        },
+        "ss_n40C_1v28": {
+          "slew_count": 0,
+          "cap_count": 0,
+          "slew_margin_ns": 0.5854,
+          "cap_margin_pf": 0.0031,
+          "slew_worst_excess_ns": 0.0,
+          "cap_worst_excess_pf": 0.0
+        },
+        "ss_n40C_1v35": {
+          "slew_count": 0,
+          "cap_count": 0,
+          "slew_margin_ns": 7.0503,
+          "cap_margin_pf": 0.0305,
+          "slew_worst_excess_ns": 0.0,
+          "cap_worst_excess_pf": 0.0
+        },
+        "ss_n40C_1v40": {
+          "slew_count": 0,
+          "cap_count": 0,
+          "slew_margin_ns": 7.6172,
+          "cap_margin_pf": 0.0419,
+          "slew_worst_excess_ns": 0.0,
+          "cap_worst_excess_pf": 0.0
+        },
+        "ss_n40C_1v44": {
+          "slew_count": 0,
+          "cap_count": 0,
+          "slew_margin_ns": 2.9986,
+          "cap_margin_pf": 0.0205,
+          "slew_worst_excess_ns": 0.0,
+          "cap_worst_excess_pf": 0.0
+        },
+        "ss_n40C_1v60": {
+          "slew_count": 0,
+          "cap_count": 0,
+          "slew_margin_ns": 0.2097,
+          "cap_margin_pf": 0.0043,
+          "slew_worst_excess_ns": 0.0,
+          "cap_worst_excess_pf": 0.0
+        },
+        "ss_n40C_1v76": {
+          "slew_count": 0,
+          "cap_count": 0,
+          "slew_margin_ns": 0.5698,
+          "cap_margin_pf": 0.0118,
+          "slew_worst_excess_ns": 0.0,
+          "cap_worst_excess_pf": 0.0
+        },
+        "tt_025C_1v80": {
+          "slew_count": 0,
+          "cap_count": 0,
+          "slew_margin_ns": 0.9171,
+          "cap_margin_pf": 0.0271,
+          "slew_worst_excess_ns": 0.0,
+          "cap_worst_excess_pf": 0.0
+        },
+        "tt_100C_1v80": {
+          "slew_count": 0,
+          "cap_count": 0,
+          "slew_margin_ns": 0.9416,
+          "cap_margin_pf": 0.0298,
+          "slew_worst_excess_ns": 0.0,
+          "cap_worst_excess_pf": 0.0
+        }
+      },
+      "request_diff_vs_committed": [
+        "constraints.max_transition_ns: None -> 0.531",
+        "floorplan.utilization_pct: 40 -> 65",
+        "netlist: '../../../sim/digital-synthesis/runs/20260910-001436-a4c3194/50khz-constrained-trng_digital_synth.v' -> '../../digital-synthesis/runs/20260910-001436-a4c3194/50khz-constrained-trng_digital_synth.v'"
+      ],
+      "electrical_totals": {
+        "max_slew": 0,
+        "max_capacitance": 0
+      }
+    }
+  },
+  "unrepaired_final_route": {
+    "unrepaired-util55": {
+      "max_slew": 1242,
+      "max_capacitance": 38
+    },
+    "unrepaired-util65": {
+      "max_slew": 1522,
+      "max_capacitance": 48
+    }
+  },
+  "baseline_area": {
+    "digital_bbox_mm2": 0.060049502500000004,
+    "analog_bbox_mm2": 0.0192966228,
+    "lower_bound_macros_only_mm2": 0.0793461253,
+    "estimate_additive_overhead_mm2": 0.12611635999999998,
+    "estimate_restacked_same_topology_mm2": 0.12611635999999998,
+    "restacked_bbox_um": [
+      378.16,
+      333.5
+    ],
+    "baseline_overhead_mm2": 0.04677023469999999,
+    "composition_constants_um": {
+      "west_escape": 2.15,
+      "gap": 20.005,
+      "top_pad_margin": 10.14,
+      "digital_east_edge_x": 200.0,
+      "analog_w": 330.96,
+      "analog_h": 58.305
+    }
+  },
+  "selected": null,
+  "preferred_if_later_verified": "rep65-slew0531",
+  "recommendation": "rep65-slew0531 conditional on a composed and re-verified layout; not promoted"
+}
