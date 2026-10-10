@@ -108,6 +108,24 @@ class TestAnalysis(unittest.TestCase):
         self.assertLess(a["estimators"]["h_min_bits"], 0.1)
 
 
+class TestReplayDiff(unittest.TestCase):
+    def test_float_noise_tolerated(self):
+        a = {"p": 0.12345678990242483, "xs": [1.0, 2.5]}
+        b = {"p": 0.12345678990242344, "xs": [1.0, 2.5]}
+        self.assertEqual(C.replay_diff(a, b), [])
+
+    def test_real_float_change_caught(self):
+        self.assertNotEqual(C.replay_diff({"p": 0.5}, {"p": 0.5001}), [])
+
+    def test_exact_for_non_floats(self):
+        self.assertNotEqual(C.replay_diff({"n": 16384}, {"n": 16385}), [])
+        self.assertNotEqual(C.replay_diff({"v": "PASS"}, {"v": "FAIL"}), [])
+        self.assertNotEqual(C.replay_diff({"h": None}, {"h": 0.5}), [])
+        self.assertNotEqual(C.replay_diff({"n": 1}, {"n": 1.0}), [])
+        self.assertNotEqual(C.replay_diff([1, 2], [1, 2, 3]), [])
+        self.assertNotEqual(C.replay_diff({"a": 1}, {"b": 1}), [])
+
+
 class TestCommittedRecord(unittest.TestCase):
     def test_first_stream_reproduces(self):
         recs = sorted((REPO_ROOT / "sim" / "digital-conditioned-output"
@@ -122,7 +140,9 @@ class TestCommittedRecord(unittest.TestCase):
         self.assertEqual(want["source_file"], row["file"])
         got = json.loads(json.dumps(C.analyse_conditioned(
             C.condition_stream(raw))))
-        self.assertEqual(got, want["conditioned"])
+        # Float-tolerant replay: exact for ints/strings/verdicts/counts,
+        # math.isclose for floats (record minted on another Python/libm).
+        self.assertEqual(C.replay_diff(want["conditioned"], got), [])
         self.assertEqual(committed["analysis_payload"]["serialization"],
                          "MSB-first per 32-bit word, words in block order")
 

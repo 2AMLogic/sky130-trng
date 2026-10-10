@@ -39,6 +39,7 @@ from __future__ import annotations
 import argparse
 import importlib.util
 import json
+import math
 import sys
 from pathlib import Path
 
@@ -303,6 +304,47 @@ def header(rid: str, payload: dict, source_json: Path) -> list[str]:
     ]
 
 
+REPLAY_REL_TOL = 1e-9  # float noise across Python/libm versions is ~1e-15
+
+
+def replay_diff(want, got, path: str = "$") -> list[str]:
+    """Recursive replay comparison of a committed vs a recomputed payload.
+
+    Exact equality for everything that is not a float (ints, strings,
+    verdicts, statuses, word/ones counts, None, bools, keys, list lengths);
+    floats compare with math.isclose(rel_tol=REPLAY_REL_TOL), since trailing
+    digits differ across Python/libm versions. Returns mismatch paths
+    (empty list == reproduces).
+    """
+    if isinstance(want, float) or isinstance(got, float):
+        if (type(want) is float and type(got) is float
+                and math.isclose(want, got, rel_tol=REPLAY_REL_TOL,
+                                 abs_tol=0.0)):
+            return []
+        if (type(want) is float and type(got) is float
+                and math.isnan(want) and math.isnan(got)):
+            return []
+        return [f"{path}: {want!r} != {got!r}"]
+    if type(want) is not type(got):
+        return [f"{path}: type {type(want).__name__} != {type(got).__name__}"]
+    if isinstance(want, dict):
+        if want.keys() != got.keys():
+            return [f"{path}: keys differ "
+                    f"{sorted(set(want) ^ set(got))}"]
+        out: list[str] = []
+        for k in want:
+            out += replay_diff(want[k], got[k], f"{path}.{k}")
+        return out
+    if isinstance(want, list):
+        if len(want) != len(got):
+            return [f"{path}: length {len(want)} != {len(got)}"]
+        out = []
+        for i, (w, g) in enumerate(zip(want, got)):
+            out += replay_diff(w, g, f"{path}[{i}]")
+        return out
+    return [] if want == got else [f"{path}: {want!r} != {got!r}"]
+
+
 def check(record_json: Path) -> int:
     try:
         committed = json.loads(record_json.read_text())
@@ -314,10 +356,17 @@ def check(record_json: Path) -> int:
         print(f"CHECK FAILED: {exc}", file=sys.stderr)
         return 1
     rc = 0
-    if got != want:
+    diffs = replay_diff(want, got, "analysis_payload")
+    if diffs:
         rc = 1
-        print("CHECK FAILED: analysis payload differs", file=sys.stderr)
-    if render(want) not in md_text or render(got) not in md_text:
+        print(f"CHECK FAILED: analysis payload differs ({len(diffs)} "
+              "mismatches, first 10):", file=sys.stderr)
+        for d in diffs[:10]:
+            print(f"  {d}", file=sys.stderr)
+    # The markdown is rendered from the committed payload; the recomputed
+    # payload is tied to it by replay_diff above (float-tolerant), so the
+    # markdown is compared against render(want) only.
+    if render(want) not in md_text:
         rc = 1
         print("CHECK FAILED: committed markdown differs from payload",
               file=sys.stderr)
