@@ -122,6 +122,15 @@
   conditioning conditionally. Changes no target and preserves DR-0003's
   combining ceiling; distinct from #221 (mismatch/entropy).
 
+- [`decision-records/DR-0014-silicon-characterization-plan.md`](decision-records/DR-0014-silicon-characterization-plan.md)
+  — **Proposed**. Issue #256's silicon characterization plan
+  ([`silicon-characterization-plan.md`](silicon-characterization-plan.md)):
+  a claim-to-measurement table linking every simulated claim to its `sim/`
+  records, an observability audit against DR-0011 (no gap in the pin budget,
+  conditional on bonding `raw_bit`/`raw_valid`; ring period not observable),
+  and the `measurements/` layout contract. Claims no measured result; no
+  silicon exists. DR-0013 is held by the open #221 proposal.
+
 A record's status is meaningful: **Proposed** means drafted and not accepted
 by anyone. Ratification is an operator decision, so no record here declares
 itself Accepted. See the repo README for scope.
