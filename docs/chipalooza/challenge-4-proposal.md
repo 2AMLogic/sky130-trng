@@ -205,6 +205,16 @@ non-vetted CRC-32 conditioner, and a two-path register/streaming interface
 
 ## 2. I/O list
 
+> **Pin re-map status (issue #244): [DR-0011](../../spec/decision-records/DR-0011-external-interface-vs-assumed-challenge-4-pin-budget.md) is Proposed, NOT ratified.**
+> The tables below still describe the pre-DR-0004 pin set and have not been
+> rewritten. The record re-counts DR-0004's external demand from
+> `digital/rtl/trng_digital.v` and the routed netlist (111 digital signal bits;
+> 45 digital-class inputs and 72 outputs for the whole block if bonded
+> literally) against the *assumed* 24-input / 12-output budget (an assumption,
+> not a published rule), and recommends a serial register port wrapper (about 8
+> inputs / 11 outputs). This section is rewritten only after the operator
+> ratifies that record.
+
 `design/trng_top.spice`'s generated netlist (from
 [`design/xschem/trng_top.sch`](../../design/xschem/trng_top.sch)) has 16
 ports today: `en1..en4`, `vddr1..vddr4`, `vdd`, `vss`, `clk`, `rst_n`,
@@ -257,7 +267,7 @@ interface section (§3, §5.3) are unknown until that section is designed.
 | `ring_bit3` | 1 | `trng_top.ring_bit3` | Ring 3. |
 | `ring_bit4` | 1 | `trng_top.ring_bit4` | Ring 4. |
 
-**The pin mapping above predates DR-0004 and is not updated here.** A
+**The pin mapping above predates DR-0004 and is not updated here.** The re-map is analysed in [DR-0011](../../spec/decision-records/DR-0011-external-interface-vs-assumed-challenge-4-pin-budget.md) (status: Proposed, awaiting operator ratification); the edit to this section follows ratification. A
 health-test `alarm` output, a `gated`/`startup_done` status pair and a
 conditioned-stream tap now exist in RTL and are the obvious claimants for
 the spare slots; committing them to specific slots is work for the
@@ -513,6 +523,10 @@ that lands this document):
   alarm, status bits and a conditioned-stream tap now exist to claim the
   spare test-output slots, and the §2 tables still describe the pre-DR-0004
   block.
+  **Analysed in [DR-0011](../../spec/decision-records/DR-0011-external-interface-vs-assumed-challenge-4-pin-budget.md) (issue #244), status Proposed, not ratified:** the
+  literal DR-0004 interface needs far more than the assumed 12 outputs, so
+  claiming spare slots is not enough; the record recommends a serial
+  register-port wrapper. Open until ratified and the §2 rewrite lands.
 - ~~**Simulate an actual noise-driven raw bitstream** (row C) — even a
   preliminary, heavily-caveated point estimate, the way gf180-trng's own
   proposal had one, does not exist here yet.~~ **Landed (issue #21,
