@@ -47,7 +47,9 @@ then composed into one routed top-level GDS (`layout/trng_whole/`, issue
 (issue \#173, not foundry sign-off) but no whole-block post-layout PVT
 (\#174).** The composition is geometry and an
 extraction-based connectivity audit only. Its own verdict is `composed;
-physical sign-off pending (#173 DRC/LVS, #174 characterization)`. The
+physical sign-off pending (#173 DRC/LVS, #174 characterization)`, written
+before #173 delivered block DRC/LVS (`layout/trng_whole/verify/README.md`);
+#174 is the part still pending. The
 entropy source (an `N = 4`, five-stage,
 free-running ring-oscillator array, XOR-combined) and its sampler are drawn
 as SPICE schematics and characterized across PVT at the transistor level
@@ -60,8 +62,10 @@ That section has since been synthesized (issue #117,
 `sim/digital-synthesis/`) and placed and routed on its own (issue #166, PR
 \#167: `layout/trng_digital/`, `sim/digital-pnr/` — see the scorecard
 below). Issue #172 (PR #176) then placed both unchanged macros in one top cell
-`trng_whole` and routed all 18 whole-block nets. **That composed GDS has not
-been physically verified** (see the scorecard). The analog side is further along than this paragraph's first revision
+`trng_whole` and routed all 18 whole-block nets. Issue #173 then ran block
+DRC and mixed-level LVS over that composed GDS: **met within stated coverage,
+not foundry sign-off**, with no whole-block post-layout PVT yet (#174; see the
+scorecard). The analog side is further along than this paragraph's first revision
 allowed: `layout/` now holds **nineteen composed cells, every one of them
 `klt drc`-clean (0 violations) and `klt lvs`-matching** its own
 `design/*.spice` subckt — the nine leaf gates (`ro_buf`, plus
@@ -93,9 +97,10 @@ shared supply impedance, §8's first-named mechanism, had no
 geometry now exists in `layout/trng_whole/` (four dedicated met5 routes), but
 nobody has measured anything on it yet (#174). What
 the brief's full sign-off bar — post-layout PVT over a DRC/LVS-clean
-**block** GDS — still lacks is DRC/LVS sign-off of the composed
-`trng_whole` stream and a whole-block post-layout PVT run over it (see the
-scorecard below). Each half has its own layout and its own
+**block** GDS — still lacks is foundry-grade DRC/LVS sign-off of the
+composed `trng_whole` stream (#173's block DRC and mixed-level LVS are met
+only within the coverage stated in `layout/trng_whole/verify/README.md`) and a
+whole-block post-layout PVT run over it (#174; see the scorecard below). Each half has its own layout and its own
 post-layout/post-route evidence, and the two are now composed, but neither
 half's evidence is a block result.
 Every decision record cited below (DR-0001,
@@ -114,8 +119,9 @@ every gap between here and a submittable design rather than glossing over
 it — per this repository's `CLAUDE.md`: "no claim without a testbench" and
 "agents do not relax the ratified spec to make results pass." Layout,
 DRC/LVS-clean GDS, and post-layout PVT simulation — the brief's full
-sign-off bar — do not exist in this repository *for the whole block* and are
-**not** claimed here; they are named as explicit follow-up work at the end
+sign-off bar — are **not** claimed here *for the whole block*: the composed
+GDS has block DRC and mixed-level LVS only within stated coverage (#173, not
+foundry sign-off) and no post-layout PVT exists for it (#174); they are named as explicit follow-up work at the end
 of this document. (Updated since this document's first revision: nine leaf
 cells are DRC/LVS-clean and have been extracted with parasitics and
 simulated over the PVT grid — see §5.3 — all four `ro_ring5` rings are
@@ -143,7 +149,7 @@ distribution was routed and the array reached a full `klt lvs` match
 and `sampler_core` — the array and all six samplers in one cell — now does
 too (264/264, 152/152, 0 errors), and its own assembled post-layout PVT
 campaign has since landed as well (`sim/post-layout-sampler-core/`, twelve
-`PASS` corner-runs). The digital section has since been placed and routed on its own (issue #166, `layout/trng_digital/`, `sim/digital-pnr/`: klt-deck DRC clean, cell-level LVS match, 16-corner post-route STA with extracted SPEF, routed-netlist functional co-sim); the two macros have since been composed into one routed top cell (issue #172, `layout/trng_whole/`). What keeps the whole-block bar unmet is now block-level DRC/LVS over that composed stream (#173), whole-block post-layout characterization (#174) and a macro-internal DRC regression on the current klt deck (#181). Neither a missing digital layout nor a missing composition is the blocker any more.)
+`PASS` corner-runs). The digital section has since been placed and routed on its own (issue #166, `layout/trng_digital/`, `sim/digital-pnr/`: klt-deck DRC clean, cell-level LVS match, 16-corner post-route STA with extracted SPEF, routed-netlist functional co-sim); the two macros have since been composed into one routed top cell (issue #172, `layout/trng_whole/`). Block-level DRC and mixed-level LVS over that composed stream have since been delivered within stated coverage (#173, not foundry sign-off), and the macro-internal DRC regression on the current klt deck has been resolved (#181). What keeps the whole-block bar unmet is now whole-block post-layout characterization (#174). Neither a missing digital layout nor a missing composition is the blocker any more.)
 
 ---
 
@@ -181,8 +187,9 @@ no part of the ratified spec was relaxed to produce any verdict here.
 
 Everything in this table that is simulation-derived is provisional until
 measured on silicon. The remaining whole-block integration work is tracked
-in #170 (children #173 DRC/LVS, #174 characterization, plus #181 for the
-`sampler_core` deck regression); #18 stays open for it.
+in #170 (children #173 DRC/LVS and #181 for the `sampler_core` deck
+regression, both delivered; #174 characterization still open); #18 stays
+open for it.
 
 ---
 
@@ -192,7 +199,7 @@ A digital true-random-number-generator **entropy source** (not a DRBG): a
 four-ring, XOR-combined, free-running ring-oscillator array feeding a
 fixed-external-clock sampler, followed by SP 800-90B health tests, a
 non-vetted CRC-32 conditioner, and a two-path register/streaming interface
-(DR-0004; synthesized and placed-and-routed as a standalone digital block, then composed with the analog half into `layout/trng_whole/` with no block-level DRC/LVS or PVT yet) — see §3.
+(DR-0004; synthesized and placed-and-routed as a standalone digital block, then composed with the analog half into `layout/trng_whole/`, with block-level DRC and mixed-level LVS met within stated coverage (#173, not foundry sign-off) but no block-level PVT yet (#174)) — see §3.
 
 ---
 
@@ -359,7 +366,7 @@ leakage, `klt equiv` RTL-to-gate equivalence) and **placed and routed**
 STA at 16 corners, cell-level DRC/LVS) — see rows D, G and I below. What
 synthesis and P&R did not supply: no signoff `Fmax` search, no dynamic power,
 and no verified composition with the analog half (issue #172 composed the
-two, but block DRC/LVS and PVT are still open; see the sign-off scorecard). One thing is still genuinely absent from the design itself: **no
+two and #173 met block DRC and mixed-level LVS within stated coverage, not foundry sign-off, but block post-layout PVT is still open (#174); see the sign-off scorecard). One thing is still genuinely absent from the design itself: **no
 per-ring liveness monitor** consumes the `ring_bit1..4` taps —
 `spec/porting-plan.md` §5 leaves open whether this port adopts one at all,
 so DR-0004 declines to half-design it. The health-test cutoffs are a
