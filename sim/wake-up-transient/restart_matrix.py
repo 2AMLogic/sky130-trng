@@ -166,13 +166,15 @@ def load_matrix(path):
 
 # ================================================================= statistics
 def _dist(xs):
+    # mean uses math.fsum (correctly rounded) for cross-version determinism: built-in sum() over floats is
+    # compensated on Python >= 3.12 but naive on 3.11, which changes the last ULPs of a replay-compared value.
     s = sorted(xs)
     n = len(s)
 
     def q(p):                      # nearest-rank quantile
         return s[min(n - 1, max(0, math.ceil(p * n) - 1))]
     return {"min": s[0], "p01": q(0.01), "p05": q(0.05), "p25": q(0.25), "median": q(0.5),
-            "mean": sum(s) / n, "max": s[-1]}
+            "mean": math.fsum(s) / n, "max": s[-1]}
 
 
 def two_proportion(x1, n1, x2, n2, alpha=ALPHA):

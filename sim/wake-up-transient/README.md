@@ -93,6 +93,9 @@ python3 sim/wake-up-transient/restart_matrix.py --check sim/wake-up-transient/re
   confidence evidence); `digital.model.health.HealthMonitor` from reset on each row's first 1024 samples (pass,
   first trip index, alarm class).
 - **Matrix sanity verdict**: PASS only if every row and column has H_MCV >= 0.5 and every start-up test passes.
+  This verdict uses the DR-0004 0.5-bit floor; C5's silicon criterion (restart-matrix min-entropy >= the C1 value
+  within CI) is a separate comparison for which the reducer supplies the row/column H_MCV minima but which it does
+  not grade, and a silicon capture needs >= 2048 samples per restart for this reducer.
 - **Known answers** (`sim/tests/test_restart_matrix.py`, model-independent): a seeded IID matrix passes; the same
   matrix with one deterministic column fails the column rule naming exactly that index.
 - **Behavioural record** `20261010-231748-f259cb7`: 1000 x 2048 at all 18 calibrated points (tt/ss/ff x
