@@ -25,7 +25,7 @@ Human-approved issues ready for implementation (`loom:issue`).
 
 Issues currently being built (`loom:building`).
 
-- **#226**: Measure digital floorplan compaction feasibility against the unchanged area target
+- **#244**: Decision record: DR-0004 external interface vs the assumed Challenge #4 pin budget (brief §2 re-map)
 
 ## PRs Awaiting Review
 
@@ -45,13 +45,13 @@ Issues carrying `loom:curated`.
 
 - **#162**: README: embed the fleet burndown chart (one line) *(curated)*
 - **#174**: Whole-block characterization: post-layout PVT, dynamic power and IR evidence *(curated)*
-- **#226**: Measure digital floorplan compaction feasibility against the unchanged area target *(curated)*
+- **#208**: Decision record needed: RO-array supply-quality requirement (droop/ripple) from #200 evidence *(curated)*
+- **#217**: CI: run test_raw_bit_volume_model and test_ripple_reduction in the PR-blocking lint job *(curated)*
 - **#230**: CI: guard that every test_*.py is wired into a CI workflow and path filter *(curated)*
 
 ## Proposed (Architect / Hermit)
 
 - **#201**: Gated-off analog block idle/leakage across the full PVT envelope incl. +125 C, with combined digital standby estimate *(architect)*
-- **#232**: CI: enforce the sim/ append-only record rule (fail PRs that modify, rename or delete committed records) *(architect)*
 
 ## Epics
 
@@ -68,7 +68,7 @@ Issues carrying `loom:curated`.
 | In Progress (`loom:building`) | 1 |
 | PRs awaiting review | 0 |
 | Approved PRs awaiting merge | 1 |
-| Curated | 4 |
-| Architect / Hermit proposals | 2 |
+| Curated | 5 |
+| Architect / Hermit proposals | 1 |
 | Active epics | 2 |
 <!-- guide:plan-body:end -->
