@@ -103,6 +103,15 @@
   composition (`layout/trng_whole/`) gives distribution geometry, but its
   measurement obligations remain open (#174).
 
+- [`decision-records/DR-0010-target-table-reconciliation.md`](decision-records/DR-0010-target-table-reconciliation.md)
+  — **Proposed**. Issue #239's ratification packet for `README.md`'s
+  "Target specification (DRAFT)" table: every row, with the current README
+  value, the measured/derived sky130 value cited to a committed file, and a
+  proposed disposition. Carries DR-0003's 50 kbps / ~78 kbps rate amendment
+  with its cost stated; presents area and power as operator options without
+  pre-deciding them (power pending #174/#201); routes min-entropy to #221.
+  Does not edit the README table.
+
 A record's status is meaningful: **Proposed** means drafted and not accepted
 by anyone. Ratification is an operator decision, so no record here declares
 itself Accepted. See the repo README for scope.
