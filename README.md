@@ -108,6 +108,13 @@ measurements/  silicon characterization (empty until tape-out; layout contract a
 campaigns, digital flow) the command, tool versions and pinned PDK revision.
 A CI check keeps it consistent with the tree.
 
+## Tool friction
+
+[`docs/friction-ledger.md`](docs/friction-ledger.md) indexes every
+`2AMLogic/klayout-tools` issue this port cites (the canary's friction output):
+the generic tool gap, where it bit, upstream state, and any workaround. A CI
+check fails if the tree cites an issue the ledger lacks.
+
 ## Chipalooza
 
 [`docs/chipalooza/challenge-4-proposal.md`](docs/chipalooza/challenge-4-proposal.md)
