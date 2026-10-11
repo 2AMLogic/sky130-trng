@@ -31,6 +31,15 @@ Components and gate nets that do not meet that bar are excluded and counted,
 never guessed (label strings are deliberately shared between sibling nets in
 this block -- e.g. `vddr`, `vddr3`, `vddr4` -- so an intersection rule would
 silently mis-attribute them).
+
+Why density is computed here rather than with `klt stats` / `klt economy`
+(both were checked first): `stats --per-layer` reports the plain sum of
+polygon areas without a boolean merge, so overlapping drawing geometry is
+double-counted, and neither command provides foundry-density-style windowed
+per-layer reporting. Filed as klayout-tools#3107; until it moves, this module
+merges regions and tiles windows itself through klayout.db (the unioned
+semantics are part of the artifact's definition, and `klt stats`'s unmerged
+per-layer sums will NOT reproduce these numbers by design).
 """
 
 from __future__ import annotations
@@ -235,21 +244,26 @@ def match_gate_components(component_tokens: list[set[str]],
 def gate_areas_from_extract(extract: dict) -> dict:
     """Pure gate-side inputs from the committed extraction: gate W*L per gate
     net (label-set string), plus the counts the coverage section reports.
-    Devices without usable w/l params are counted, never silently dropped."""
+    analog_devices counts only devices with usable w/l (the gate-W*L-known
+    denominator); a device without params is counted in
+    devices_missing_params and still registers its gate net with zero known
+    area -- a net is never silently dropped because one device lacked params."""
     areas: dict[str, float] = {}
     devices_per_net: dict[str, int] = {}
     missing = 0
+    analog = 0
     for dev in extract.get("devices") or []:
         params = dev.get("params") or {}
+        g = dev["nets"]["g"].replace("\\", "")
+        devices_per_net[g] = devices_per_net.get(g, 0) + 1
         w, l = params.get("w_um"), params.get("l_um")
         if w is None or l is None:
             missing += 1
+            areas.setdefault(g, 0.0)
             continue
-        g = dev["nets"]["g"].replace("\\", "")
+        analog += 1
         areas[g] = areas.get(g, 0.0) + float(w) * float(l)
-        devices_per_net[g] = devices_per_net.get(g, 0) + 1
     abstracted = extract.get("abstracted_cells") or []
-    analog = sum(devices_per_net.values())
     instances = sum(int(c.get("instance_count", 0)) for c in abstracted)
     return {
         "gate_area_um2": areas,
@@ -318,6 +332,7 @@ def build_document(*, gds_rel: str, gds_sha256: str, geometry_sha256: str, geome
                       "worst_net": rated[0][1] if rated else None})
 
     attributed = {lvl: sum(e["area_um2"][lvl] for e in nets) for lvl in LEVELS}
+    zero_area_listed = [e["net"] for e in nets if not e["cumulative_ratio"]]
     drawn = density["drawn_area_um2_by_level"]
     denom = gate["analog_devices"] + gate["abstracted_instances"]
     return {
@@ -335,8 +350,10 @@ def build_document(*, gds_rel: str, gds_sha256: str, geometry_sha256: str, geome
             "gate_source_sha256": extract_sha256,
             "gate_source_matches_gds": extract_matches_gds,
             "layer_map": {name: f"{ld[0]}/{ld[1]}" for name, ld in layer_map.items()},
-            "layer_map_source": "klayout_tools.decks sky130 layer table, pinned by the deck module hash below",
-            "layer_table_deck_hash": layer_table_hash,
+            "layer_map_source": "klayout_tools.decks sky130 layer table; the resolved mapping above is "
+                                "drift-compared key by key (the deck module hash that produced it is "
+                                "recorded under provenance, because the installed klt build churns "
+                                "between sessions while the mapping itself stays stable)",
             "top": density["top"],
         },
         "density": {
@@ -358,7 +375,8 @@ def build_document(*, gds_rel: str, gds_sha256: str, geometry_sha256: str, geome
                 "analog_devices": gate["analog_devices"],
                 "devices_missing_params": gate["devices_missing_params"],
                 "distinct_gate_nets": len(gate["gate_area_um2"]),
-                "gate_nets_rated": len(nets),
+                "gate_nets_rated": len(nets) - len(zero_area_listed),
+                "gate_nets_listed_zero_known_area": len(zero_area_listed),
                 "gate_nets_without_conductor_geometry": len(unmatched_gate_nets),
                 "known_gate_area_um2": round(sum(gate["gate_area_um2"].values()), 9),
                 "digital_exclusion": {
@@ -391,8 +409,10 @@ def build_document(*, gds_rel: str, gds_sha256: str, geometry_sha256: str, geome
         },
         "provenance": {
             "klayout_version": klayout_version,
+            "deck_layer_table_module_sha256": layer_table_hash,
             "note": "informational; excluded from the drift comparison by design (a tool change that moves "
-                    "the numbers shows up as drift in the values themselves)",
+                    "the numbers shows up as drift in the values themselves; the resolved layer map in "
+                    "inputs IS compared)",
         },
     }
 
@@ -538,9 +558,10 @@ def markdown(doc: dict) -> str:
         f"- Digital exclusion: all gates inside {de['abstracted_instances']} abstracted standard-cell "
         f"instances ({de['abstracted_cell_types']} cell types) are excluded -- "
         f"{de['known_gate_area_fraction_of_instances']} of {de['device_bearing_instances']} placed "
-        "device-bearing instances have known gate area. Gate-net side: "
-        f"{ga['gate_nets_rated']} rated, {ga['gate_nets_without_conductor_geometry']} with no attributable "
-        "conductor geometry (listed in the JSON).",
+        f"device-bearing instances have known gate area. Gate-net side: {ga['gate_nets_rated']} rated, "
+        f"{ga['gate_nets_listed_zero_known_area']} listed with zero known gate area (never rated, never "
+        f"infinite), {ga['gate_nets_without_conductor_geometry']} with no attributable conductor geometry "
+        "(listed in the JSON).",
         f"- Conductor side: {cc['flat_nets_total']} flat components, {cc['labeled']} labeled, "
         f"{cc['matched_to_gate_nets']} attributed to a gate net, {cc['ambiguous']} ambiguous (label set "
         f"shared between gate nets), {cc['labeled_matching_no_gate_net']} labeled but matching no gate net, "

@@ -73,7 +73,7 @@ Worst nets by cumulative met5 ratio (of 33 rated):
 ## Coverage and exclusions
 
 - Gate W*L known for 264 analog devices over 37 gate net(s), 61.452 um2 total; 0 device(s) lacked params and are counted, not dropped.
-- Digital exclusion: all gates inside 8605 abstracted standard-cell instances (69 cell types) are excluded -- 0.029767 of 8869 placed device-bearing instances have known gate area. Gate-net side: 33 rated, 4 with no attributable conductor geometry (listed in the JSON).
+- Digital exclusion: all gates inside 8605 abstracted standard-cell instances (69 cell types) are excluded -- 0.029767 of 8869 placed device-bearing instances have known gate area. Gate-net side: 33 rated, 0 listed with zero known gate area (never rated, never infinite), 4 with no attributable conductor geometry (listed in the JSON).
 - Conductor side: 8155 flat components, 2489 labeled, 69 attributed to a gate net, 0 ambiguous (label set shared between gate nets), 2420 labeled but matching no gate net, 5666 unlabeled. Attributed-area fraction per level: li1=0.223118, met1=0.335954, met2=0.100211, met3=0.117381, met4=0.495146, met5=0.474992.
 
 ## Regeneration

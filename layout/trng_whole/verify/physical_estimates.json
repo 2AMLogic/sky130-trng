@@ -62,8 +62,7 @@
       "met4": "71/20",
       "met5": "72/20"
     },
-    "layer_map_source": "klayout_tools.decks sky130 layer table, pinned by the deck module hash below",
-    "layer_table_deck_hash": "sha256:ebb014dd923c74f9f08f9efa970852516faf4bcac9d9f4665b7ac4f1754b5f50",
+    "layer_map_source": "klayout_tools.decks sky130 layer table; the resolved mapping above is drift-compared key by key (the deck module hash that produced it is recorded under provenance, because the installed klt build churns between sessions while the mapping itself stays stable)",
     "top": "trng_whole"
   },
   "density": {
@@ -1068,6 +1067,7 @@
       "devices_missing_params": 0,
       "distinct_gate_nets": 37,
       "gate_nets_rated": 33,
+      "gate_nets_listed_zero_known_area": 0,
       "gate_nets_without_conductor_geometry": 4,
       "known_gate_area_um2": 61.452,
       "digital_exclusion": {
@@ -1098,6 +1098,7 @@
   },
   "provenance": {
     "klayout_version": "0.30.10",
-    "note": "informational; excluded from the drift comparison by design (a tool change that moves the numbers shows up as drift in the values themselves)"
+    "deck_layer_table_module_sha256": "sha256:ebb014dd923c74f9f08f9efa970852516faf4bcac9d9f4665b7ac4f1754b5f50",
+    "note": "informational; excluded from the drift comparison by design (a tool change that moves the numbers shows up as drift in the values themselves; the resolved layer map in inputs IS compared)"
   }
 }

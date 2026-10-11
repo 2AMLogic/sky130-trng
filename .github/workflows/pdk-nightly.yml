@@ -377,7 +377,18 @@ jobs:
           set -euo pipefail
           python3 layout/bin/compose-whole.py layout/trng_whole/floorplan.json --check
 
-      - name: verify-whole.py check (baseline DRC / extraction / LVS reproduction)
+      # Informational density + naive antenna estimates (issue #283): the
+      # full `check` below already covers their drift gate; this step runs
+      # the calculator's real-geometry controls (union, hierarchy, clipping,
+      # empty layer, invalid grids, cumulative ratios, zero-gate/ambiguous
+      # accounting) on synthetic GDS fixtures, which need klayout and do not
+      # run on the nothing-installed PR path.
+      - name: verify-whole.py estimates-controls (estimate calculator controls)
+        run: |
+          set -euo pipefail
+          python3 layout/bin/verify-whole.py estimates-controls
+
+      - name: verify-whole.py check (audit + estimates drift; baseline DRC / extraction / LVS reproduction)
         run: |
           set -euo pipefail
           python3 layout/bin/verify-whole.py check --klt "$(command -v klt)"
