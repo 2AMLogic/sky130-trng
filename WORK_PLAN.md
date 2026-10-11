@@ -49,12 +49,11 @@ Issues carrying `loom:curated`.
 - **#217**: CI: run test_raw_bit_volume_model and test_ripple_reduction in the PR-blocking lint job *(curated)*
 - **#221**: Decision record request: local mismatch can cap tt raw-bit H below DR-0004's 0.5 floor; adjacent rings approach 1:1 *(curated)*
 - **#230**: CI: guard that every test_*.py is wired into a CI workflow and path filter *(curated)*
-- **#254**: End-of-life drift: bounded Vth-shift (BTI/HCI) derate of the RO array across PVT *(curated)*
 
 ## Proposed (Architect / Hermit)
 
 - **#201**: Gated-off analog block idle/leakage across the full PVT envelope incl. +125 C, with combined digital standby estimate *(architect)*
-- **#254**: End-of-life drift: bounded Vth-shift (BTI/HCI) derate of the RO array across PVT *(architect)*
+- **#273**: Reject colliding artifact basenames before minting behavioral evidence *(architect)*
 
 ## Epics
 
@@ -71,7 +70,7 @@ Issues carrying `loom:curated`.
 | In Progress (`loom:building`) | 0 |
 | PRs awaiting review | 0 |
 | Approved PRs awaiting merge | 1 |
-| Curated | 6 |
+| Curated | 5 |
 | Architect / Hermit proposals | 2 |
 | Active epics | 2 |
 <!-- guide:plan-body:end -->
