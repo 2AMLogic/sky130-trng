@@ -1,0 +1,75 @@
+control fair	h_true=1.0000	alarm=False	first=None	catchers=
+markov sym stay=0.5	h_true=1.0000	alarm=False	first=None	catchers=
+markov sym stay=0.6	h_true=0.7370	alarm=False	first=None	catchers=collision
+markov sym stay=0.7	h_true=0.5146	alarm=False	first=None	catchers=collision,compression
+markov sym stay=0.8	h_true=0.3219	alarm=False	first=None	catchers=collision,compression,markov,t_tuple
+markov sym stay=0.9	h_true=0.1520	alarm=True	first=49931	catchers=collision,compression,t_tuple,markov,lrs
+markov sym stay=0.95	h_true=0.0740	alarm=True	first=137	catchers=collision,compression,markov,t_tuple,lrs
+markov sym stay=0.98	h_true=0.0291	alarm=True	first=131	catchers=collision,compression,markov,t_tuple,lrs
+markov sym stay=0.99	h_true=0.0145	alarm=True	first=81	catchers=collision,compression,markov,t_tuple,lrs
+markov asym a=0.7 b=0.5	h_true=0.5146	alarm=False	first=None	catchers=compression,collision,t_tuple
+markov asym a=0.8 b=0.5	h_true=0.3219	alarm=False	first=None	catchers=compression,collision,markov,t_tuple
+markov asym a=0.9 b=0.6	h_true=0.1520	alarm=True	first=1024	catchers=collision,compression,markov,t_tuple,lrs
+markov asym a=0.9 b=0.3	h_true=0.1520	alarm=True	first=1024	catchers=compression,collision,markov,t_tuple,lrs
+markov asym a=0.95 b=0.5	h_true=0.0740	alarm=True	first=1024	catchers=compression,collision,markov,t_tuple,lrs
+markov asym a=0.98 b=0.6	h_true=0.0291	alarm=True	first=81	catchers=markov,collision,compression,t_tuple,lrs
+periodic k=2 eps=0.0	h_true=0.0000	alarm=False	first=None	catchers=compression,markov,t_tuple,lrs
+periodic k=2 eps=0.01	h_true=0.0145	alarm=False	first=None	catchers=compression,t_tuple,markov,lrs
+periodic k=2 eps=0.05	h_true=0.0740	alarm=False	first=None	catchers=compression,t_tuple,markov,lrs
+periodic k=2 eps=0.1	h_true=0.1520	alarm=False	first=None	catchers=compression,t_tuple,markov,lrs
+periodic k=2 eps=0.2	h_true=0.3219	alarm=False	first=None	catchers=compression,t_tuple,lrs
+periodic k=2 eps=0.3	h_true=0.5146	alarm=False	first=None	catchers=compression
+periodic k=4 eps=0.0	h_true=0.0000	alarm=False	first=None	catchers=collision,compression,t_tuple,lrs
+periodic k=4 eps=0.01	h_true=0.0145	alarm=False	first=None	catchers=compression,markov,t_tuple,lrs
+periodic k=4 eps=0.05	h_true=0.0740	alarm=False	first=None	catchers=compression,t_tuple,collision,lrs
+periodic k=4 eps=0.1	h_true=0.1520	alarm=False	first=None	catchers=compression,t_tuple,collision,lrs
+periodic k=4 eps=0.2	h_true=0.3219	alarm=False	first=None	catchers=compression,t_tuple
+periodic k=4 eps=0.3	h_true=0.5146	alarm=False	first=None	catchers=
+periodic k=8 eps=0.0	h_true=0.0000	alarm=False	first=None	catchers=t_tuple,lrs,compression
+periodic k=8 eps=0.01	h_true=0.0145	alarm=False	first=None	catchers=collision,compression,t_tuple,lrs
+periodic k=8 eps=0.05	h_true=0.0740	alarm=False	first=None	catchers=t_tuple,compression,lrs
+periodic k=8 eps=0.1	h_true=0.1520	alarm=False	first=None	catchers=t_tuple,compression,lrs
+periodic k=8 eps=0.2	h_true=0.3219	alarm=False	first=None	catchers=compression,t_tuple
+periodic k=8 eps=0.3	h_true=0.5146	alarm=False	first=None	catchers=compression
+periodic k=16 eps=0.0	h_true=0.0000	alarm=False	first=None	catchers=t_tuple,lrs,compression,collision
+periodic k=16 eps=0.01	h_true=0.0145	alarm=False	first=None	catchers=t_tuple,lrs,compression,collision
+periodic k=16 eps=0.05	h_true=0.0740	alarm=False	first=None	catchers=t_tuple,lrs,compression
+periodic k=16 eps=0.1	h_true=0.1520	alarm=False	first=None	catchers=t_tuple,compression,lrs
+periodic k=16 eps=0.2	h_true=0.3219	alarm=False	first=None	catchers=t_tuple,compression
+periodic k=16 eps=0.3	h_true=0.5146	alarm=False	first=None	catchers=
+periodic k=64 eps=0.0	h_true=0.0000	alarm=False	first=None	catchers=t_tuple,lrs,compression
+periodic k=64 eps=0.01	h_true=0.0145	alarm=False	first=None	catchers=t_tuple,lrs,compression,collision
+periodic k=64 eps=0.05	h_true=0.0740	alarm=False	first=None	catchers=t_tuple,lrs
+periodic k=64 eps=0.1	h_true=0.1520	alarm=False	first=None	catchers=t_tuple,lrs,compression
+periodic k=64 eps=0.2	h_true=0.3219	alarm=False	first=None	catchers=
+periodic k=64 eps=0.3	h_true=0.5146	alarm=False	first=None	catchers=
+periodic k=256 eps=0.0	h_true=0.0000	alarm=False	first=None	catchers=t_tuple,lrs,collision
+periodic k=256 eps=0.01	h_true=0.0145	alarm=False	first=None	catchers=t_tuple,lrs
+periodic k=256 eps=0.05	h_true=0.0740	alarm=False	first=None	catchers=t_tuple,lrs
+periodic k=256 eps=0.1	h_true=0.1520	alarm=False	first=None	catchers=lrs,t_tuple
+periodic k=256 eps=0.2	h_true=0.3219	alarm=False	first=None	catchers=
+periodic k=256 eps=0.3	h_true=0.5146	alarm=False	first=None	catchers=
+lockmix L=256 f=0.1 eps=0.0	h_true=0.9000	alarm=False	first=None	catchers=t_tuple,compression
+lockmix L=256 f=0.25 eps=0.0	h_true=0.7500	alarm=False	first=None	catchers=t_tuple,lrs,compression
+lockmix L=256 f=0.5 eps=0.0	h_true=0.5000	alarm=False	first=None	catchers=t_tuple,lrs,compression,markov
+lockmix L=256 f=0.75 eps=0.0	h_true=0.2500	alarm=False	first=None	catchers=t_tuple,lrs,compression,markov
+lockmix L=256 f=0.9 eps=0.0	h_true=0.1000	alarm=False	first=None	catchers=t_tuple,compression,lrs,markov
+lockmix L=256 f=1.0 eps=0.0	h_true=0.0000	alarm=False	first=None	catchers=compression,markov,t_tuple,lrs
+lockmix L=256 f=0.1 eps=0.05	h_true=0.9074	alarm=False	first=None	catchers=t_tuple,compression
+lockmix L=256 f=0.25 eps=0.05	h_true=0.7685	alarm=False	first=None	catchers=t_tuple,compression,lrs
+lockmix L=256 f=0.5 eps=0.05	h_true=0.5370	alarm=False	first=None	catchers=t_tuple,compression,lrs
+lockmix L=256 f=0.75 eps=0.05	h_true=0.3055	alarm=False	first=None	catchers=t_tuple,compression,lrs,markov
+lockmix L=256 f=0.9 eps=0.05	h_true=0.1666	alarm=False	first=None	catchers=compression,t_tuple,lrs,markov
+lockmix L=256 f=1.0 eps=0.05	h_true=0.0740	alarm=False	first=None	catchers=compression,t_tuple,markov,lrs
+lockmix L=4096 f=0.1 eps=0.0	h_true=0.9000	alarm=False	first=None	catchers=t_tuple,lrs,compression
+lockmix L=4096 f=0.25 eps=0.0	h_true=0.7500	alarm=False	first=None	catchers=t_tuple,lrs,compression
+lockmix L=4096 f=0.5 eps=0.0	h_true=0.5000	alarm=False	first=None	catchers=t_tuple,lrs,compression,markov
+lockmix L=4096 f=0.75 eps=0.0	h_true=0.2500	alarm=False	first=None	catchers=t_tuple,lrs,compression,markov
+lockmix L=4096 f=0.9 eps=0.0	h_true=0.1000	alarm=False	first=None	catchers=t_tuple,compression,lrs,markov
+lockmix L=4096 f=1.0 eps=0.0	h_true=0.0000	alarm=False	first=None	catchers=compression,markov,t_tuple,lrs
+lockmix L=4096 f=0.1 eps=0.05	h_true=0.9074	alarm=False	first=None	catchers=t_tuple,lrs,compression
+lockmix L=4096 f=0.25 eps=0.05	h_true=0.7685	alarm=False	first=None	catchers=t_tuple,lrs,compression
+lockmix L=4096 f=0.5 eps=0.05	h_true=0.5370	alarm=False	first=None	catchers=t_tuple,compression,lrs
+lockmix L=4096 f=0.75 eps=0.05	h_true=0.3055	alarm=False	first=None	catchers=t_tuple,compression,lrs,markov
+lockmix L=4096 f=0.9 eps=0.05	h_true=0.1666	alarm=False	first=None	catchers=compression,t_tuple,lrs,markov
+lockmix L=4096 f=1.0 eps=0.05	h_true=0.0740	alarm=False	first=None	catchers=compression,t_tuple,markov,lrs

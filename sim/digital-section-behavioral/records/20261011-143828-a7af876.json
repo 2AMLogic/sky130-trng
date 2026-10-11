@@ -1,0 +1,2444 @@
+{
+  "record_id": "20261011-143828-a7af876",
+  "slug": "digital-section-behavioral",
+  "level": "behavioral",
+  "claim": "experiment I: detection coverage of the DR-0004 RCT/APT health tests, and of the non-MCV 90B estimators, against serially-correlated, periodic and lock-mixture SYNTHETIC logic stimuli of known analytic min-entropy (no silicon entropy claim)",
+  "seeds": {
+    "python_random": 20261011
+  },
+  "supersedes": null,
+  "author": "loom-builder@sky130-trng",
+  "timestamp_utc": "2026-10-11T14:38:28.700457+00:00",
+  "repo_sha": "a7af876",
+  "tools": {
+    "python": "3.12.3",
+    "platform": "Linux-7.0.0-1013-aws-x86_64-with-glibc2.39"
+  },
+  "artifacts": [
+    "sim/digital-section-behavioral/runs/20261011-143828-a7af876/health-detection-coverage-rows.txt"
+  ],
+  "ok": true,
+  "seed": 20261011,
+  "n": 65536,
+  "experiment": "I",
+  "h_design": 0.5,
+  "rows": [
+    {
+      "label": "control fair",
+      "family": "control",
+      "params": {},
+      "n": 65536,
+      "h_true": 1.0,
+      "mean_bit": 0.5001068115234375,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9852511866328648,
+        "collision": 0.7748693447366426,
+        "markov": 0.974644985031583,
+        "compression": 0.7699947507031278,
+        "t_tuple": 0.9175943869489247,
+        "lrs": 0.9850303493044653
+      },
+      "nonmcv_min": 0.7699947507031278,
+      "nonmcv_binding": "compression",
+      "estimator_catchers": [],
+      "below_target": false
+    },
+    {
+      "label": "markov sym stay=0.5",
+      "family": "markov",
+      "params": {
+        "a": 0.5,
+        "b": 0.5
+      },
+      "n": 65536,
+      "h_true": 1.0,
+      "mean_bit": 0.4991912841796875,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9832479279013486,
+        "collision": 0.7965142488769766,
+        "markov": 0.9813435140014887,
+        "compression": 0.7685220113630614,
+        "t_tuple": 0.9175943869489247,
+        "lrs": 0.9848559985814334
+      },
+      "nonmcv_min": 0.7685220113630614,
+      "nonmcv_binding": "compression",
+      "estimator_catchers": [],
+      "below_target": false
+    },
+    {
+      "label": "markov sym stay=0.6",
+      "family": "markov",
+      "params": {
+        "a": 0.6,
+        "b": 0.6
+      },
+      "n": 65536,
+      "h_true": 0.7369655941662062,
+      "mean_bit": 0.5029296875,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9772116208947685,
+        "collision": 0.4540040611982741,
+        "markov": 0.7200635951612273,
+        "compression": 0.5291683449419792,
+        "t_tuple": 0.7027134089879977,
+        "lrs": 0.929787921994224
+      },
+      "nonmcv_min": 0.4540040611982741,
+      "nonmcv_binding": "collision",
+      "estimator_catchers": [
+        "collision"
+      ],
+      "below_target": false
+    },
+    {
+      "label": "markov sym stay=0.7",
+      "family": "markov",
+      "params": {
+        "a": 0.7,
+        "b": 0.7
+      },
+      "n": 65536,
+      "h_true": 0.5145731728297583,
+      "mean_bit": 0.4969024658203125,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9767350152013868,
+        "collision": 0.28258947445231347,
+        "markov": 0.5019687208577347,
+        "compression": 0.3373262199402362,
+        "t_tuple": 0.5383424628055219,
+        "lrs": 0.7840157560617407
+      },
+      "nonmcv_min": 0.28258947445231347,
+      "nonmcv_binding": "collision",
+      "estimator_catchers": [
+        "collision",
+        "compression"
+      ],
+      "below_target": false
+    },
+    {
+      "label": "markov sym stay=0.8",
+      "family": "markov",
+      "params": {
+        "a": 0.8,
+        "b": 0.8
+      },
+      "n": 65536,
+      "h_true": 0.3219280948873623,
+      "mean_bit": 0.5047454833984375,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9720640419007192,
+        "collision": 0.16959807786048456,
+        "markov": 0.3195705175820934,
+        "compression": 0.2126329764018313,
+        "t_tuple": 0.3552207735987026,
+        "lrs": 0.5365828017596082
+      },
+      "nonmcv_min": 0.16959807786048456,
+      "nonmcv_binding": "collision",
+      "estimator_catchers": [
+        "collision",
+        "compression",
+        "markov",
+        "t_tuple"
+      ],
+      "below_target": true
+    },
+    {
+      "label": "markov sym stay=0.9",
+      "family": "markov",
+      "params": {
+        "a": 0.9,
+        "b": 0.9
+      },
+      "n": 65536,
+      "h_true": 0.15200309344504995,
+      "mean_bit": 0.4972991943359375,
+      "alarm": true,
+      "first_alarm_at": 49931,
+      "latency_ms": 998.62,
+      "alarm_kind": "RCT",
+      "alarm_events": 1,
+      "estimates": {
+        "mcv": 0.9778617941922951,
+        "collision": 0.07529055224442999,
+        "markov": 0.15060594468915003,
+        "compression": 0.10366406263610445,
+        "t_tuple": 0.14781151520819882,
+        "lrs": 0.2768310893845911
+      },
+      "nonmcv_min": 0.07529055224442999,
+      "nonmcv_binding": "collision",
+      "estimator_catchers": [
+        "collision",
+        "compression",
+        "t_tuple",
+        "markov",
+        "lrs"
+      ],
+      "below_target": true
+    },
+    {
+      "label": "markov sym stay=0.95",
+      "family": "markov",
+      "params": {
+        "a": 0.95,
+        "b": 0.95
+      },
+      "n": 65536,
+      "h_true": 0.07400058144377693,
+      "mean_bit": 0.507415771484375,
+      "alarm": true,
+      "first_alarm_at": 137,
+      "latency_ms": 2.7399999999999998,
+      "alarm_kind": "RCT",
+      "alarm_events": 62,
+      "estimates": {
+        "mcv": 0.964527621730072,
+        "collision": 0.034106919185153295,
+        "markov": 0.07093903448028185,
+        "compression": 0.05435948965572692,
+        "t_tuple": 0.07816207616539156,
+        "lrs": 0.14795326826601418
+      },
+      "nonmcv_min": 0.034106919185153295,
+      "nonmcv_binding": "collision",
+      "estimator_catchers": [
+        "collision",
+        "compression",
+        "markov",
+        "t_tuple",
+        "lrs"
+      ],
+      "below_target": true
+    },
+    {
+      "label": "markov sym stay=0.98",
+      "family": "markov",
+      "params": {
+        "a": 0.98,
+        "b": 0.98
+      },
+      "n": 65536,
+      "h_true": 0.029146345659516508,
+      "mean_bit": 0.4903411865234375,
+      "alarm": true,
+      "first_alarm_at": 131,
+      "latency_ms": 2.62,
+      "alarm_kind": "RCT",
+      "alarm_events": 342,
+      "estimates": {
+        "mcv": 0.9582276228979997,
+        "collision": 0.013099000376714538,
+        "markov": 0.027683187323327647,
+        "compression": 0.023472505780876587,
+        "t_tuple": 0.04058136949468812,
+        "lrs": 0.06825124716133718
+      },
+      "nonmcv_min": 0.013099000376714538,
+      "nonmcv_binding": "collision",
+      "estimator_catchers": [
+        "collision",
+        "compression",
+        "markov",
+        "t_tuple",
+        "lrs"
+      ],
+      "below_target": true
+    },
+    {
+      "label": "markov sym stay=0.99",
+      "family": "markov",
+      "params": {
+        "a": 0.99,
+        "b": 0.99
+      },
+      "n": 65536,
+      "h_true": 0.014499569695115089,
+      "mean_bit": 0.508209228515625,
+      "alarm": true,
+      "first_alarm_at": 81,
+      "latency_ms": 1.6199999999999999,
+      "alarm_kind": "RCT",
+      "alarm_events": 524,
+      "estimates": {
+        "mcv": 0.9622958722086045,
+        "collision": 0.00560262788462885,
+        "markov": 0.013093087269460369,
+        "compression": 0.012338161876466592,
+        "t_tuple": 0.02678969366634173,
+        "lrs": 0.04077007355869374
+      },
+      "nonmcv_min": 0.00560262788462885,
+      "nonmcv_binding": "collision",
+      "estimator_catchers": [
+        "collision",
+        "compression",
+        "markov",
+        "t_tuple",
+        "lrs"
+      ],
+      "below_target": true
+    },
+    {
+      "label": "markov asym a=0.7 b=0.5",
+      "family": "markov",
+      "params": {
+        "a": 0.7,
+        "b": 0.5
+      },
+      "n": 65536,
+      "h_true": 0.5145731728297583,
+      "mean_bit": 0.6239776611328125,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.6692087068956033,
+        "collision": 0.4047176410029921,
+        "markov": 0.5113054159662144,
+        "compression": 0.3999063310703162,
+        "t_tuple": 0.481250964968214,
+        "lrs": 0.7937750631512578
+      },
+      "nonmcv_min": 0.3999063310703162,
+      "nonmcv_binding": "compression",
+      "estimator_catchers": [
+        "compression",
+        "collision",
+        "t_tuple"
+      ],
+      "below_target": false
+    },
+    {
+      "label": "markov asym a=0.8 b=0.5",
+      "family": "markov",
+      "params": {
+        "a": 0.8,
+        "b": 0.5
+      },
+      "n": 65536,
+      "h_true": 0.3219280948873623,
+      "mean_bit": 0.71319580078125,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.4784537163989733,
+        "collision": 0.25644367201846335,
+        "markov": 0.3148671661225812,
+        "compression": 0.2473938721974878,
+        "t_tuple": 0.3318688349287633,
+        "lrs": 0.5450485988789293
+      },
+      "nonmcv_min": 0.2473938721974878,
+      "nonmcv_binding": "compression",
+      "estimator_catchers": [
+        "compression",
+        "collision",
+        "markov",
+        "t_tuple"
+      ],
+      "below_target": true
+    },
+    {
+      "label": "markov asym a=0.9 b=0.6",
+      "family": "markov",
+      "params": {
+        "a": 0.9,
+        "b": 0.6
+      },
+      "n": 65536,
+      "h_true": 0.15200309344504995,
+      "mean_bit": 0.8006134033203125,
+      "alarm": true,
+      "first_alarm_at": 1024,
+      "latency_ms": 20.48,
+      "alarm_kind": "APT",
+      "alarm_events": 17,
+      "estimates": {
+        "mcv": 0.3135962352968406,
+        "collision": 0.1232904342567487,
+        "markov": 0.14348762871168758,
+        "compression": 0.1259769007961212,
+        "t_tuple": 0.15146577136864475,
+        "lrs": 0.2998620358703253
+      },
+      "nonmcv_min": 0.1232904342567487,
+      "nonmcv_binding": "collision",
+      "estimator_catchers": [
+        "collision",
+        "compression",
+        "markov",
+        "t_tuple",
+        "lrs"
+      ],
+      "below_target": true
+    },
+    {
+      "label": "markov asym a=0.9 b=0.3",
+      "family": "markov",
+      "params": {
+        "a": 0.9,
+        "b": 0.3
+      },
+      "n": 65536,
+      "h_true": 0.15200309344504995,
+      "mean_bit": 0.8745269775390625,
+      "alarm": true,
+      "first_alarm_at": 1024,
+      "latency_ms": 20.48,
+      "alarm_kind": "APT",
+      "alarm_events": 55,
+      "estimates": {
+        "mcv": 0.18793716585155618,
+        "collision": 0.13554131310798026,
+        "markov": 0.14368187460480936,
+        "compression": 0.10266027601731102,
+        "t_tuple": 0.14874255213908402,
+        "lrs": 0.2874002505567671
+      },
+      "nonmcv_min": 0.10266027601731102,
+      "nonmcv_binding": "compression",
+      "estimator_catchers": [
+        "compression",
+        "collision",
+        "markov",
+        "t_tuple",
+        "lrs"
+      ],
+      "below_target": true
+    },
+    {
+      "label": "markov asym a=0.95 b=0.5",
+      "family": "markov",
+      "params": {
+        "a": 0.95,
+        "b": 0.5
+      },
+      "n": 65536,
+      "h_true": 0.07400058144377693,
+      "mean_bit": 0.906982421875,
+      "alarm": true,
+      "first_alarm_at": 1024,
+      "latency_ms": 20.48,
+      "alarm_kind": "APT",
+      "alarm_events": 86,
+      "estimates": {
+        "mcv": 0.13621220849999216,
+        "collision": 0.06380084729538724,
+        "markov": 0.06729146789499792,
+        "compression": 0.06114639249210594,
+        "t_tuple": 0.07239857801770508,
+        "lrs": 0.14526039583816297
+      },
+      "nonmcv_min": 0.06114639249210594,
+      "nonmcv_binding": "compression",
+      "estimator_catchers": [
+        "compression",
+        "collision",
+        "markov",
+        "t_tuple",
+        "lrs"
+      ],
+      "below_target": true
+    },
+    {
+      "label": "markov asym a=0.98 b=0.6",
+      "family": "markov",
+      "params": {
+        "a": 0.98,
+        "b": 0.6
+      },
+      "n": 65536,
+      "h_true": 0.029146345659516508,
+      "mean_bit": 0.95263671875,
+      "alarm": true,
+      "first_alarm_at": 81,
+      "latency_ms": 1.6199999999999999,
+      "alarm_kind": "RCT",
+      "alarm_events": 309,
+      "estimates": {
+        "mcv": 0.06676879024101708,
+        "collision": 0.0239751448922545,
+        "markov": 0.021111328218328184,
+        "compression": 0.025549681770222193,
+        "t_tuple": 0.02735559657189912,
+        "lrs": 0.055745520829746674
+      },
+      "nonmcv_min": 0.021111328218328184,
+      "nonmcv_binding": "markov",
+      "estimator_catchers": [
+        "markov",
+        "collision",
+        "compression",
+        "t_tuple",
+        "lrs"
+      ],
+      "below_target": true
+    },
+    {
+      "label": "periodic k=2 eps=0.0",
+      "family": "periodic",
+      "params": {
+        "k": 2,
+        "eps": 0.0
+      },
+      "n": 65536,
+      "h_true": 0.0,
+      "mean_bit": 0.5,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9855562768358623,
+        "collision": 1.0,
+        "markov": 0.007689782753243338,
+        "compression": 0.0,
+        "t_tuple": 0.014110669349751581,
+        "lrs": 0.014111324417911731
+      },
+      "nonmcv_min": 0.0,
+      "nonmcv_binding": "compression",
+      "estimator_catchers": [
+        "compression",
+        "markov",
+        "t_tuple",
+        "lrs"
+      ],
+      "below_target": true
+    },
+    {
+      "label": "periodic k=2 eps=0.01",
+      "family": "periodic",
+      "params": {
+        "k": 2,
+        "eps": 0.01
+      },
+      "n": 65536,
+      "h_true": 0.014499569695115089,
+      "mean_bit": 0.499481201171875,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9840750202658552,
+        "collision": 1.0,
+        "markov": 0.028131763325833444,
+        "compression": 0.008687335818497535,
+        "t_tuple": 0.02781895707042861,
+        "lrs": 0.04153232843651137
+      },
+      "nonmcv_min": 0.008687335818497535,
+      "nonmcv_binding": "compression",
+      "estimator_catchers": [
+        "compression",
+        "t_tuple",
+        "markov",
+        "lrs"
+      ],
+      "below_target": true
+    },
+    {
+      "label": "periodic k=2 eps=0.05",
+      "family": "periodic",
+      "params": {
+        "k": 2,
+        "eps": 0.05
+      },
+      "n": 65536,
+      "h_true": 0.07400058144377693,
+      "mean_bit": 0.5005950927734375,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9838573179362868,
+        "collision": 1.0,
+        "markov": 0.13835265120296314,
+        "compression": 0.041822176966083875,
+        "t_tuple": 0.08083967942566093,
+        "lrs": 0.1455574211038124
+      },
+      "nonmcv_min": 0.041822176966083875,
+      "nonmcv_binding": "compression",
+      "estimator_catchers": [
+        "compression",
+        "t_tuple",
+        "markov",
+        "lrs"
+      ],
+      "below_target": true
+    },
+    {
+      "label": "periodic k=2 eps=0.1",
+      "family": "periodic",
+      "params": {
+        "k": 2,
+        "eps": 0.1
+      },
+      "n": 65536,
+      "h_true": 0.15200309344504995,
+      "mean_bit": 0.4996490478515625,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9845540822356823,
+        "collision": 1.0,
+        "markov": 0.2815378388212351,
+        "compression": 0.08498559323939975,
+        "t_tuple": 0.1681411841894118,
+        "lrs": 0.30272369007288513
+      },
+      "nonmcv_min": 0.08498559323939975,
+      "nonmcv_binding": "compression",
+      "estimator_catchers": [
+        "compression",
+        "t_tuple",
+        "markov",
+        "lrs"
+      ],
+      "below_target": true
+    },
+    {
+      "label": "periodic k=2 eps=0.2",
+      "family": "periodic",
+      "params": {
+        "k": 2,
+        "eps": 0.2
+      },
+      "n": 65536,
+      "h_true": 0.3219280948873623,
+      "mean_bit": 0.499359130859375,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.983726712465803,
+        "collision": 1.0,
+        "markov": 0.5490812640303995,
+        "compression": 0.18532465820385982,
+        "t_tuple": 0.3208450308430182,
+        "lrs": 0.4706959314918243
+      },
+      "nonmcv_min": 0.18532465820385982,
+      "nonmcv_binding": "compression",
+      "estimator_catchers": [
+        "compression",
+        "t_tuple",
+        "lrs"
+      ],
+      "below_target": true
+    },
+    {
+      "label": "periodic k=2 eps=0.3",
+      "family": "periodic",
+      "params": {
+        "k": 2,
+        "eps": 0.3
+      },
+      "n": 65536,
+      "h_true": 0.5145731728297583,
+      "mean_bit": 0.498321533203125,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9807695209192014,
+        "collision": 1.0,
+        "markov": 0.7815763284533118,
+        "compression": 0.315989806041288,
+        "t_tuple": 0.5869367730348859,
+        "lrs": 0.8091150260414626
+      },
+      "nonmcv_min": 0.315989806041288,
+      "nonmcv_binding": "compression",
+      "estimator_catchers": [
+        "compression"
+      ],
+      "below_target": false
+    },
+    {
+      "label": "periodic k=4 eps=0.0",
+      "family": "periodic",
+      "params": {
+        "k": 4,
+        "eps": 0.0
+      },
+      "n": 65536,
+      "h_true": 0.0,
+      "mean_bit": 0.5,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9855562768358623,
+        "collision": 0.0,
+        "markov": 0.9842489811946904,
+        "compression": 0.027284855520619683,
+        "t_tuple": 0.029102528960761896,
+        "lrs": 0.02910452307437842
+      },
+      "nonmcv_min": 0.0,
+      "nonmcv_binding": "collision",
+      "estimator_catchers": [
+        "collision",
+        "compression",
+        "t_tuple",
+        "lrs"
+      ],
+      "below_target": true
+    },
+    {
+      "label": "periodic k=4 eps=0.01",
+      "family": "periodic",
+      "params": {
+        "k": 4,
+        "eps": 0.01
+      },
+      "n": 65536,
+      "h_true": 0.014499569695115089,
+      "mean_bit": 0.5004730224609375,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9842056575943972,
+        "collision": 1.0,
+        "markov": 0.02706879178861948,
+        "compression": 0.008392279953838972,
+        "t_tuple": 0.027545224162031937,
+        "lrs": 0.0409762808046071
+      },
+      "nonmcv_min": 0.008392279953838972,
+      "nonmcv_binding": "compression",
+      "estimator_catchers": [
+        "compression",
+        "markov",
+        "t_tuple",
+        "lrs"
+      ],
+      "below_target": true
+    },
+    {
+      "label": "periodic k=4 eps=0.05",
+      "family": "periodic",
+      "params": {
+        "k": 4,
+        "eps": 0.05
+      },
+      "n": 65536,
+      "h_true": 0.07400058144377693,
+      "mean_bit": 0.4995574951171875,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9842927557859346,
+        "collision": 0.1344869765471469,
+        "markov": 0.9821684464276986,
+        "compression": 0.08711523983640285,
+        "t_tuple": 0.0951491334883506,
+        "lrs": 0.15919941120680303
+      },
+      "nonmcv_min": 0.08711523983640285,
+      "nonmcv_binding": "compression",
+      "estimator_catchers": [
+        "compression",
+        "t_tuple",
+        "collision",
+        "lrs"
+      ],
+      "below_target": true
+    },
+    {
+      "label": "periodic k=4 eps=0.1",
+      "family": "periodic",
+      "params": {
+        "k": 4,
+        "eps": 0.1
+      },
+      "n": 65536,
+      "h_true": 0.15200309344504995,
+      "mean_bit": 0.4985809326171875,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9815082449427655,
+        "collision": 0.2752630163516783,
+        "markov": 0.9777259176244808,
+        "compression": 0.15269025371577086,
+        "t_tuple": 0.1710186488330304,
+        "lrs": 0.29849433890641336
+      },
+      "nonmcv_min": 0.15269025371577086,
+      "nonmcv_binding": "compression",
+      "estimator_catchers": [
+        "compression",
+        "t_tuple",
+        "collision",
+        "lrs"
+      ],
+      "below_target": true
+    },
+    {
+      "label": "periodic k=4 eps=0.2",
+      "family": "periodic",
+      "params": {
+        "k": 4,
+        "eps": 0.2
+      },
+      "n": 65536,
+      "h_true": 0.3219280948873623,
+      "mean_bit": 0.4994659423828125,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.984031477145023,
+        "collision": 1.0,
+        "markov": 0.553008571389371,
+        "compression": 0.18552265984423955,
+        "t_tuple": 0.36421423867092323,
+        "lrs": 0.5891966396660289
+      },
+      "nonmcv_min": 0.18552265984423955,
+      "nonmcv_binding": "compression",
+      "estimator_catchers": [
+        "compression",
+        "t_tuple"
+      ],
+      "below_target": true
+    },
+    {
+      "label": "periodic k=4 eps=0.3",
+      "family": "periodic",
+      "params": {
+        "k": 4,
+        "eps": 0.3
+      },
+      "n": 65536,
+      "h_true": 0.5145731728297583,
+      "mean_bit": 0.504425048828125,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9729710909605228,
+        "collision": 0.74197955475422,
+        "markov": 0.9670784267716895,
+        "compression": 0.5011300806595287,
+        "t_tuple": 0.6075281083449416,
+        "lrs": 0.8540995497777655
+      },
+      "nonmcv_min": 0.5011300806595287,
+      "nonmcv_binding": "compression",
+      "estimator_catchers": [],
+      "below_target": false
+    },
+    {
+      "label": "periodic k=8 eps=0.0",
+      "family": "periodic",
+      "params": {
+        "k": 8,
+        "eps": 0.0
+      },
+      "n": 65536,
+      "h_true": 0.0,
+      "mean_bit": 0.5,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9855562768358623,
+        "collision": 1.0,
+        "markov": 0.9842704166820052,
+        "compression": 0.06861888844244553,
+        "t_tuple": 0.044237062926399354,
+        "lrs": 0.04424174547771207
+      },
+      "nonmcv_min": 0.044237062926399354,
+      "nonmcv_binding": "t_tuple",
+      "estimator_catchers": [
+        "t_tuple",
+        "lrs",
+        "compression"
+      ],
+      "below_target": true
+    },
+    {
+      "label": "periodic k=8 eps=0.01",
+      "family": "periodic",
+      "params": {
+        "k": 8,
+        "eps": 0.01
+      },
+      "n": 65536,
+      "h_true": 0.014499569695115089,
+      "mean_bit": 0.5004425048828125,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9842927557859346,
+        "collision": 0.026737982660698666,
+        "markov": 0.9832465367025082,
+        "compression": 0.041345255728201476,
+        "t_tuple": 0.04304751428932647,
+        "lrs": 0.05698089542145521
+      },
+      "nonmcv_min": 0.026737982660698666,
+      "nonmcv_binding": "collision",
+      "estimator_catchers": [
+        "collision",
+        "compression",
+        "t_tuple",
+        "lrs"
+      ],
+      "below_target": true
+    },
+    {
+      "label": "periodic k=8 eps=0.05",
+      "family": "periodic",
+      "params": {
+        "k": 8,
+        "eps": 0.05
+      },
+      "n": 65536,
+      "h_true": 0.07400058144377693,
+      "mean_bit": 0.4993133544921875,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9835961189381058,
+        "collision": 1.0,
+        "markov": 0.5008976798050376,
+        "compression": 0.1509993252125583,
+        "t_tuple": 0.11427410523683426,
+        "lrs": 0.18163514525666136
+      },
+      "nonmcv_min": 0.11427410523683426,
+      "nonmcv_binding": "t_tuple",
+      "estimator_catchers": [
+        "t_tuple",
+        "compression",
+        "lrs"
+      ],
+      "below_target": true
+    },
+    {
+      "label": "periodic k=8 eps=0.1",
+      "family": "periodic",
+      "params": {
+        "k": 8,
+        "eps": 0.1
+      },
+      "n": 65536,
+      "h_true": 0.15200309344504995,
+      "mean_bit": 0.501556396484375,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.981117108155082,
+        "collision": 1.0,
+        "markov": 0.5915943416292877,
+        "compression": 0.21111278805252878,
+        "t_tuple": 0.1994238610384647,
+        "lrs": 0.3236134176222444
+      },
+      "nonmcv_min": 0.1994238610384647,
+      "nonmcv_binding": "t_tuple",
+      "estimator_catchers": [
+        "t_tuple",
+        "compression",
+        "lrs"
+      ],
+      "below_target": true
+    },
+    {
+      "label": "periodic k=8 eps=0.2",
+      "family": "periodic",
+      "params": {
+        "k": 8,
+        "eps": 0.2
+      },
+      "n": 65536,
+      "h_true": 0.3219280948873623,
+      "mean_bit": 0.5007171630859375,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9835090632201162,
+        "collision": 1.0,
+        "markov": 0.981431143059555,
+        "compression": 0.41589539296271577,
+        "t_tuple": 0.42153238247933017,
+        "lrs": 0.5696810932634194
+      },
+      "nonmcv_min": 0.41589539296271577,
+      "nonmcv_binding": "compression",
+      "estimator_catchers": [
+        "compression",
+        "t_tuple"
+      ],
+      "below_target": true
+    },
+    {
+      "label": "periodic k=8 eps=0.3",
+      "family": "periodic",
+      "params": {
+        "k": 8,
+        "eps": 0.3
+      },
+      "n": 65536,
+      "h_true": 0.5145731728297583,
+      "mean_bit": 0.5008697509765625,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9830738642117371,
+        "collision": 1.0,
+        "markov": 0.8658118571403929,
+        "compression": 0.49604694664503873,
+        "t_tuple": 0.6956586970462362,
+        "lrs": 0.8677206809579718
+      },
+      "nonmcv_min": 0.49604694664503873,
+      "nonmcv_binding": "compression",
+      "estimator_catchers": [
+        "compression"
+      ],
+      "below_target": false
+    },
+    {
+      "label": "periodic k=16 eps=0.0",
+      "family": "periodic",
+      "params": {
+        "k": 16,
+        "eps": 0.0
+      },
+      "n": 65536,
+      "h_true": 0.0,
+      "mean_bit": 0.5,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9855562768358623,
+        "collision": 0.26447646381580436,
+        "markov": 0.6679826333758276,
+        "compression": 0.12894480281713872,
+        "t_tuple": 0.05944377693902136,
+        "lrs": 0.0594538484760263
+      },
+      "nonmcv_min": 0.05944377693902136,
+      "nonmcv_binding": "t_tuple",
+      "estimator_catchers": [
+        "t_tuple",
+        "lrs",
+        "compression",
+        "collision"
+      ],
+      "below_target": true
+    },
+    {
+      "label": "periodic k=16 eps=0.01",
+      "family": "periodic",
+      "params": {
+        "k": 16,
+        "eps": 0.01
+      },
+      "n": 65536,
+      "h_true": 0.014499569695115089,
+      "mean_bit": 0.4998779296875,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9852076076379883,
+        "collision": 0.30063754477605176,
+        "markov": 0.6785743651402425,
+        "compression": 0.1550022163102235,
+        "t_tuple": 0.0725426373979812,
+        "lrs": 0.08566635923771565
+      },
+      "nonmcv_min": 0.0725426373979812,
+      "nonmcv_binding": "t_tuple",
+      "estimator_catchers": [
+        "t_tuple",
+        "lrs",
+        "compression",
+        "collision"
+      ],
+      "below_target": true
+    },
+    {
+      "label": "periodic k=16 eps=0.05",
+      "family": "periodic",
+      "params": {
+        "k": 16,
+        "eps": 0.05
+      },
+      "n": 65536,
+      "h_true": 0.07400058144377693,
+      "mean_bit": 0.4998321533203125,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.985076878631337,
+        "collision": 1.0,
+        "markov": 0.7214679431618033,
+        "compression": 0.20454252471152212,
+        "t_tuple": 0.13088582646926064,
+        "lrs": 0.2008056450973636
+      },
+      "nonmcv_min": 0.13088582646926064,
+      "nonmcv_binding": "t_tuple",
+      "estimator_catchers": [
+        "t_tuple",
+        "lrs",
+        "compression"
+      ],
+      "below_target": true
+    },
+    {
+      "label": "periodic k=16 eps=0.1",
+      "family": "periodic",
+      "params": {
+        "k": 16,
+        "eps": 0.1
+      },
+      "n": 65536,
+      "h_true": 0.15200309344504995,
+      "mean_bit": 0.5002899169921875,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9847283264379094,
+        "collision": 1.0,
+        "markov": 0.7740279778771012,
+        "compression": 0.33716512128320253,
+        "t_tuple": 0.22047968599116263,
+        "lrs": 0.33749510521269926
+      },
+      "nonmcv_min": 0.22047968599116263,
+      "nonmcv_binding": "t_tuple",
+      "estimator_catchers": [
+        "t_tuple",
+        "compression",
+        "lrs"
+      ],
+      "below_target": true
+    },
+    {
+      "label": "periodic k=16 eps=0.2",
+      "family": "periodic",
+      "params": {
+        "k": 16,
+        "eps": 0.2
+      },
+      "n": 65536,
+      "h_true": 0.3219280948873623,
+      "mean_bit": 0.4979248046875,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9796404463025863,
+        "collision": 1.0,
+        "markov": 0.9801739328478477,
+        "compression": 0.48985378386446415,
+        "t_tuple": 0.4745936378736187,
+        "lrs": 0.6364054284128102
+      },
+      "nonmcv_min": 0.4745936378736187,
+      "nonmcv_binding": "t_tuple",
+      "estimator_catchers": [
+        "t_tuple",
+        "compression"
+      ],
+      "below_target": true
+    },
+    {
+      "label": "periodic k=16 eps=0.3",
+      "family": "periodic",
+      "params": {
+        "k": 16,
+        "eps": 0.3
+      },
+      "n": 65536,
+      "h_true": 0.5145731728297583,
+      "mean_bit": 0.498321533203125,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9807695209192014,
+        "collision": 0.735914801991942,
+        "markov": 0.9258159308855171,
+        "compression": 0.8384177290182132,
+        "t_tuple": 0.7532159239316886,
+        "lrs": 0.8879452369629733
+      },
+      "nonmcv_min": 0.735914801991942,
+      "nonmcv_binding": "collision",
+      "estimator_catchers": [],
+      "below_target": false
+    },
+    {
+      "label": "periodic k=64 eps=0.0",
+      "family": "periodic",
+      "params": {
+        "k": 64,
+        "eps": 0.0
+      },
+      "n": 65536,
+      "h_true": 0.0,
+      "mean_bit": 0.5,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9855562768358623,
+        "collision": 1.0,
+        "markov": 0.8984029527930426,
+        "compression": 0.3582433895759618,
+        "t_tuple": 0.08997228505237456,
+        "lrs": 0.09001476989248045
+      },
+      "nonmcv_min": 0.08997228505237456,
+      "nonmcv_binding": "t_tuple",
+      "estimator_catchers": [
+        "t_tuple",
+        "lrs",
+        "compression"
+      ],
+      "below_target": true
+    },
+    {
+      "label": "periodic k=64 eps=0.01",
+      "family": "periodic",
+      "params": {
+        "k": 64,
+        "eps": 0.01
+      },
+      "n": 65536,
+      "h_true": 0.014499569695115089,
+      "mean_bit": 0.500091552734375,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9852947669575396,
+        "collision": 0.40982170980906,
+        "markov": 0.9823042078398677,
+        "compression": 0.32661119284159607,
+        "t_tuple": 0.10222625839531488,
+        "lrs": 0.11495607408789593
+      },
+      "nonmcv_min": 0.10222625839531488,
+      "nonmcv_binding": "t_tuple",
+      "estimator_catchers": [
+        "t_tuple",
+        "lrs",
+        "compression",
+        "collision"
+      ],
+      "below_target": true
+    },
+    {
+      "label": "periodic k=64 eps=0.05",
+      "family": "periodic",
+      "params": {
+        "k": 64,
+        "eps": 0.05
+      },
+      "n": 65536,
+      "h_true": 0.07400058144377693,
+      "mean_bit": 0.4988250732421875,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.982203863845614,
+        "collision": 1.0,
+        "markov": 0.9147290586640449,
+        "compression": 0.5818936748458818,
+        "t_tuple": 0.1667299298091888,
+        "lrs": 0.2395857611044532
+      },
+      "nonmcv_min": 0.1667299298091888,
+      "nonmcv_binding": "t_tuple",
+      "estimator_catchers": [
+        "t_tuple",
+        "lrs"
+      ],
+      "below_target": true
+    },
+    {
+      "label": "periodic k=64 eps=0.1",
+      "family": "periodic",
+      "params": {
+        "k": 64,
+        "eps": 0.1
+      },
+      "n": 65536,
+      "h_true": 0.15200309344504995,
+      "mean_bit": 0.4995574951171875,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9842927557859346,
+        "collision": 1.0,
+        "markov": 0.9291703608434241,
+        "compression": 0.4316920975648577,
+        "t_tuple": 0.3023271048795045,
+        "lrs": 0.3592300419913836
+      },
+      "nonmcv_min": 0.3023271048795045,
+      "nonmcv_binding": "t_tuple",
+      "estimator_catchers": [
+        "t_tuple",
+        "lrs",
+        "compression"
+      ],
+      "below_target": true
+    },
+    {
+      "label": "periodic k=64 eps=0.2",
+      "family": "periodic",
+      "params": {
+        "k": 64,
+        "eps": 0.2
+      },
+      "n": 65536,
+      "h_true": 0.3219280948873623,
+      "mean_bit": 0.5002288818359375,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9849025919014066,
+        "collision": 0.9436881809412094,
+        "markov": 0.9608271284543046,
+        "compression": 0.5922095926534933,
+        "t_tuple": 0.6239661799190545,
+        "lrs": 0.7268806528258581
+      },
+      "nonmcv_min": 0.5922095926534933,
+      "nonmcv_binding": "compression",
+      "estimator_catchers": [],
+      "below_target": true
+    },
+    {
+      "label": "periodic k=64 eps=0.3",
+      "family": "periodic",
+      "params": {
+        "k": 64,
+        "eps": 0.3
+      },
+      "n": 65536,
+      "h_true": 0.5145731728297583,
+      "mean_bit": 0.502655029296875,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9779918643800124,
+        "collision": 0.7109962642280545,
+        "markov": 0.9316946221978362,
+        "compression": 0.807511635850435,
+        "t_tuple": 0.8651305733727064,
+        "lrs": 0.9216403063936603
+      },
+      "nonmcv_min": 0.7109962642280545,
+      "nonmcv_binding": "collision",
+      "estimator_catchers": [],
+      "below_target": false
+    },
+    {
+      "label": "periodic k=256 eps=0.0",
+      "family": "periodic",
+      "params": {
+        "k": 256,
+        "eps": 0.0
+      },
+      "n": 65536,
+      "h_true": 0.0,
+      "mean_bit": 0.5,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9855562768358623,
+        "collision": 0.48364371617735014,
+        "markov": 0.8573484348983073,
+        "compression": 0.7857704403333771,
+        "t_tuple": 0.12061816349925014,
+        "lrs": 0.12072575570728712
+      },
+      "nonmcv_min": 0.12061816349925014,
+      "nonmcv_binding": "t_tuple",
+      "estimator_catchers": [
+        "t_tuple",
+        "lrs",
+        "collision"
+      ],
+      "below_target": true
+    },
+    {
+      "label": "periodic k=256 eps=0.01",
+      "family": "periodic",
+      "params": {
+        "k": 256,
+        "eps": 0.01
+      },
+      "n": 65536,
+      "h_true": 0.014499569695115089,
+      "mean_bit": 0.499725341796875,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9847718908103378,
+        "collision": 0.6248405330304095,
+        "markov": 0.8812785941737586,
+        "compression": 0.5361756782733689,
+        "t_tuple": 0.1326013197486168,
+        "lrs": 0.1499851961447052
+      },
+      "nonmcv_min": 0.1326013197486168,
+      "nonmcv_binding": "t_tuple",
+      "estimator_catchers": [
+        "t_tuple",
+        "lrs"
+      ],
+      "below_target": true
+    },
+    {
+      "label": "periodic k=256 eps=0.05",
+      "family": "periodic",
+      "params": {
+        "k": 256,
+        "eps": 0.05
+      },
+      "n": 65536,
+      "h_true": 0.07400058144377693,
+      "mean_bit": 0.4994659423828125,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.984031477145023,
+        "collision": 1.0,
+        "markov": 0.9829286446839386,
+        "compression": 1.0,
+        "t_tuple": 0.23447530240352119,
+        "lrs": 0.27182415520798864
+      },
+      "nonmcv_min": 0.23447530240352119,
+      "nonmcv_binding": "t_tuple",
+      "estimator_catchers": [
+        "t_tuple",
+        "lrs"
+      ],
+      "below_target": true
+    },
+    {
+      "label": "periodic k=256 eps=0.1",
+      "family": "periodic",
+      "params": {
+        "k": 256,
+        "eps": 0.1
+      },
+      "n": 65536,
+      "h_true": 0.15200309344504995,
+      "mean_bit": 0.499725341796875,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9847718908103378,
+        "collision": 0.6966842179127851,
+        "markov": 0.9261840513518508,
+        "compression": 1.0,
+        "t_tuple": 0.48302788726440865,
+        "lrs": 0.4163717880640706
+      },
+      "nonmcv_min": 0.4163717880640706,
+      "nonmcv_binding": "lrs",
+      "estimator_catchers": [
+        "lrs",
+        "t_tuple"
+      ],
+      "below_target": true
+    },
+    {
+      "label": "periodic k=256 eps=0.2",
+      "family": "periodic",
+      "params": {
+        "k": 256,
+        "eps": 0.2
+      },
+      "n": 65536,
+      "h_true": 0.3219280948873623,
+      "mean_bit": 0.498046875,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9799877588118682,
+        "collision": 0.9837785643563262,
+        "markov": 0.9583955765434768,
+        "compression": 1.0,
+        "t_tuple": 0.817276585159528,
+        "lrs": 0.7714616971437462
+      },
+      "nonmcv_min": 0.7714616971437462,
+      "nonmcv_binding": "lrs",
+      "estimator_catchers": [],
+      "below_target": true
+    },
+    {
+      "label": "periodic k=256 eps=0.3",
+      "family": "periodic",
+      "params": {
+        "k": 256,
+        "eps": 0.3
+      },
+      "n": 65536,
+      "h_true": 0.5145731728297583,
+      "mean_bit": 0.5016937255859375,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9807260784623978,
+        "collision": 0.89688581455596,
+        "markov": 0.9639682860486053,
+        "compression": 0.7952071051014559,
+        "t_tuple": 0.8825796148045468,
+        "lrs": 0.971127967187152
+      },
+      "nonmcv_min": 0.7952071051014559,
+      "nonmcv_binding": "compression",
+      "estimator_catchers": [],
+      "below_target": false
+    },
+    {
+      "label": "lockmix L=256 f=0.1 eps=0.0",
+      "family": "lock-mix",
+      "params": {
+        "segment": 256,
+        "frac": 0.1,
+        "eps_lock": 0.0
+      },
+      "n": 65536,
+      "h_true": 0.9,
+      "mean_bit": 0.4998779296875,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9852076076379883,
+        "collision": 1.0,
+        "markov": 0.851722412240393,
+        "compression": 0.4453669220041168,
+        "t_tuple": 0.26804355355410064,
+        "lrs": 0.5428217955645365
+      },
+      "nonmcv_min": 0.26804355355410064,
+      "nonmcv_binding": "t_tuple",
+      "estimator_catchers": [
+        "t_tuple",
+        "compression"
+      ],
+      "below_target": false
+    },
+    {
+      "label": "lockmix L=256 f=0.25 eps=0.0",
+      "family": "lock-mix",
+      "params": {
+        "segment": 256,
+        "frac": 0.25,
+        "eps_lock": 0.0
+      },
+      "n": 65536,
+      "h_true": 0.75,
+      "mean_bit": 0.5000152587890625,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9855126885307052,
+        "collision": 1.0,
+        "markov": 0.671255797238562,
+        "compression": 0.27040559181994545,
+        "t_tuple": 0.09323082219083675,
+        "lrs": 0.19956990183609372
+      },
+      "nonmcv_min": 0.09323082219083675,
+      "nonmcv_binding": "t_tuple",
+      "estimator_catchers": [
+        "t_tuple",
+        "lrs",
+        "compression"
+      ],
+      "below_target": false
+    },
+    {
+      "label": "lockmix L=256 f=0.5 eps=0.0",
+      "family": "lock-mix",
+      "params": {
+        "segment": 256,
+        "frac": 0.5,
+        "eps_lock": 0.0
+      },
+      "n": 65536,
+      "h_true": 0.5,
+      "mean_bit": 0.4993133544921875,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9835961189381058,
+        "collision": 1.0,
+        "markov": 0.41388921952998636,
+        "compression": 0.1390166795483961,
+        "t_tuple": 0.04313126533740335,
+        "lrs": 0.07262745363887972
+      },
+      "nonmcv_min": 0.04313126533740335,
+      "nonmcv_binding": "t_tuple",
+      "estimator_catchers": [
+        "t_tuple",
+        "lrs",
+        "compression",
+        "markov"
+      ],
+      "below_target": false
+    },
+    {
+      "label": "lockmix L=256 f=0.75 eps=0.0",
+      "family": "lock-mix",
+      "params": {
+        "segment": 256,
+        "frac": 0.75,
+        "eps_lock": 0.0
+      },
+      "n": 65536,
+      "h_true": 0.25,
+      "mean_bit": 0.50152587890625,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9812040181840561,
+        "collision": 1.0,
+        "markov": 0.19307851930243838,
+        "compression": 0.06177070797873019,
+        "t_tuple": 0.028543561577635483,
+        "lrs": 0.04319654875758808
+      },
+      "nonmcv_min": 0.028543561577635483,
+      "nonmcv_binding": "t_tuple",
+      "estimator_catchers": [
+        "t_tuple",
+        "lrs",
+        "compression",
+        "markov"
+      ],
+      "below_target": true
+    },
+    {
+      "label": "lockmix L=256 f=0.9 eps=0.0",
+      "family": "lock-mix",
+      "params": {
+        "segment": 256,
+        "frac": 0.9,
+        "eps_lock": 0.0
+      },
+      "n": 65536,
+      "h_true": 0.09999999999999998,
+      "mean_bit": 0.4992523193359375,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9834220128084226,
+        "collision": 1.0,
+        "markov": 0.07676100422820469,
+        "compression": 0.025355213079702236,
+        "t_tuple": 0.02302098679262101,
+        "lrs": 0.0320806059627302
+      },
+      "nonmcv_min": 0.02302098679262101,
+      "nonmcv_binding": "t_tuple",
+      "estimator_catchers": [
+        "t_tuple",
+        "compression",
+        "lrs",
+        "markov"
+      ],
+      "below_target": true
+    },
+    {
+      "label": "lockmix L=256 f=1.0 eps=0.0",
+      "family": "lock-mix",
+      "params": {
+        "segment": 256,
+        "frac": 1.0,
+        "eps_lock": 0.0
+      },
+      "n": 65536,
+      "h_true": 0.0,
+      "mean_bit": 0.5,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9855562768358623,
+        "collision": 1.0,
+        "markov": 0.007689782753243338,
+        "compression": 0.0,
+        "t_tuple": 0.014110669349751581,
+        "lrs": 0.014111324417911731
+      },
+      "nonmcv_min": 0.0,
+      "nonmcv_binding": "compression",
+      "estimator_catchers": [
+        "compression",
+        "markov",
+        "t_tuple",
+        "lrs"
+      ],
+      "below_target": true
+    },
+    {
+      "label": "lockmix L=256 f=0.1 eps=0.05",
+      "family": "lock-mix",
+      "params": {
+        "segment": 256,
+        "frac": 0.1,
+        "eps_lock": 0.05
+      },
+      "n": 65536,
+      "h_true": 0.9074000581443777,
+      "mean_bit": 0.499786376953125,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9849461615899595,
+        "collision": 1.0,
+        "markov": 0.8732319645128417,
+        "compression": 0.49876826999513485,
+        "t_tuple": 0.3305091491879448,
+        "lrs": 0.6326931823903867
+      },
+      "nonmcv_min": 0.3305091491879448,
+      "nonmcv_binding": "t_tuple",
+      "estimator_catchers": [
+        "t_tuple",
+        "compression"
+      ],
+      "below_target": false
+    },
+    {
+      "label": "lockmix L=256 f=0.25 eps=0.05",
+      "family": "lock-mix",
+      "params": {
+        "segment": 256,
+        "frac": 0.25,
+        "eps_lock": 0.05
+      },
+      "n": 65536,
+      "h_true": 0.7685001453609442,
+      "mean_bit": 0.4976959228515625,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9789894629195229,
+        "collision": 1.0,
+        "markov": 0.7161405055093628,
+        "compression": 0.3268484846873435,
+        "t_tuple": 0.17325265420576014,
+        "lrs": 0.3343723132411849
+      },
+      "nonmcv_min": 0.17325265420576014,
+      "nonmcv_binding": "t_tuple",
+      "estimator_catchers": [
+        "t_tuple",
+        "compression",
+        "lrs"
+      ],
+      "below_target": false
+    },
+    {
+      "label": "lockmix L=256 f=0.5 eps=0.05",
+      "family": "lock-mix",
+      "params": {
+        "segment": 256,
+        "frac": 0.5,
+        "eps_lock": 0.05
+      },
+      "n": 65536,
+      "h_true": 0.5370002907218885,
+      "mean_bit": 0.5013275146484375,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9817690623272685,
+        "collision": 1.0,
+        "markov": 0.5061749731578803,
+        "compression": 0.19925859080469907,
+        "t_tuple": 0.11041490802356155,
+        "lrs": 0.2055499002953433
+      },
+      "nonmcv_min": 0.11041490802356155,
+      "nonmcv_binding": "t_tuple",
+      "estimator_catchers": [
+        "t_tuple",
+        "compression",
+        "lrs"
+      ],
+      "below_target": false
+    },
+    {
+      "label": "lockmix L=256 f=0.75 eps=0.05",
+      "family": "lock-mix",
+      "params": {
+        "segment": 256,
+        "frac": 0.75,
+        "eps_lock": 0.05
+      },
+      "n": 65536,
+      "h_true": 0.3055004360828327,
+      "mean_bit": 0.49993896484375,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9853819315966051,
+        "collision": 1.0,
+        "markov": 0.31020101378677917,
+        "compression": 0.11206569372789899,
+        "t_tuple": 0.09872335168616846,
+        "lrs": 0.18092367585214517
+      },
+      "nonmcv_min": 0.09872335168616846,
+      "nonmcv_binding": "t_tuple",
+      "estimator_catchers": [
+        "t_tuple",
+        "compression",
+        "lrs",
+        "markov"
+      ],
+      "below_target": true
+    },
+    {
+      "label": "lockmix L=256 f=0.9 eps=0.05",
+      "family": "lock-mix",
+      "params": {
+        "segment": 256,
+        "frac": 0.9,
+        "eps_lock": 0.05
+      },
+      "n": 65536,
+      "h_true": 0.16660052329939923,
+      "mean_bit": 0.49920654296875,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.983291447138779,
+        "collision": 1.0,
+        "markov": 0.20376425376499469,
+        "compression": 0.07068014526312115,
+        "t_tuple": 0.09144320299870298,
+        "lrs": 0.1663508683802468
+      },
+      "nonmcv_min": 0.07068014526312115,
+      "nonmcv_binding": "compression",
+      "estimator_catchers": [
+        "compression",
+        "t_tuple",
+        "lrs",
+        "markov"
+      ],
+      "below_target": true
+    },
+    {
+      "label": "lockmix L=256 f=1.0 eps=0.05",
+      "family": "lock-mix",
+      "params": {
+        "segment": 256,
+        "frac": 1.0,
+        "eps_lock": 0.05
+      },
+      "n": 65536,
+      "h_true": 0.07400058144377693,
+      "mean_bit": 0.499237060546875,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9833784895922354,
+        "collision": 1.0,
+        "markov": 0.1404114024769372,
+        "compression": 0.04134208936916721,
+        "t_tuple": 0.08059896892254426,
+        "lrs": 0.1453931761831045
+      },
+      "nonmcv_min": 0.04134208936916721,
+      "nonmcv_binding": "compression",
+      "estimator_catchers": [
+        "compression",
+        "t_tuple",
+        "markov",
+        "lrs"
+      ],
+      "below_target": true
+    },
+    {
+      "label": "lockmix L=4096 f=0.1 eps=0.0",
+      "family": "lock-mix",
+      "params": {
+        "segment": 4096,
+        "frac": 0.1,
+        "eps_lock": 0.0
+      },
+      "n": 65536,
+      "h_true": 0.9,
+      "mean_bit": 0.4981536865234375,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9802917265603857,
+        "collision": 1.0,
+        "markov": 0.84793652846935,
+        "compression": 0.38742501260772716,
+        "t_tuple": 0.06785034517044165,
+        "lrs": 0.12222754057052675
+      },
+      "nonmcv_min": 0.06785034517044165,
+      "nonmcv_binding": "t_tuple",
+      "estimator_catchers": [
+        "t_tuple",
+        "lrs",
+        "compression"
+      ],
+      "below_target": false
+    },
+    {
+      "label": "lockmix L=4096 f=0.25 eps=0.0",
+      "family": "lock-mix",
+      "params": {
+        "segment": 4096,
+        "frac": 0.25,
+        "eps_lock": 0.0
+      },
+      "n": 65536,
+      "h_true": 0.75,
+      "mean_bit": 0.4990692138671875,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9828998217344437,
+        "collision": 1.0,
+        "markov": 0.6679930671112031,
+        "compression": 0.23638571366576452,
+        "t_tuple": 0.04553516864805193,
+        "lrs": 0.07732922026094904
+      },
+      "nonmcv_min": 0.04553516864805193,
+      "nonmcv_binding": "t_tuple",
+      "estimator_catchers": [
+        "t_tuple",
+        "lrs",
+        "compression"
+      ],
+      "below_target": false
+    },
+    {
+      "label": "lockmix L=4096 f=0.5 eps=0.0",
+      "family": "lock-mix",
+      "params": {
+        "segment": 4096,
+        "frac": 0.5,
+        "eps_lock": 0.0
+      },
+      "n": 65536,
+      "h_true": 0.5,
+      "mean_bit": 0.500274658203125,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9847718908103378,
+        "collision": 1.0,
+        "markov": 0.4123246661855854,
+        "compression": 0.12017804319717491,
+        "t_tuple": 0.029743429065385532,
+        "lrs": 0.045540797863038586
+      },
+      "nonmcv_min": 0.029743429065385532,
+      "nonmcv_binding": "t_tuple",
+      "estimator_catchers": [
+        "t_tuple",
+        "lrs",
+        "compression",
+        "markov"
+      ],
+      "below_target": false
+    },
+    {
+      "label": "lockmix L=4096 f=0.75 eps=0.0",
+      "family": "lock-mix",
+      "params": {
+        "segment": 4096,
+        "frac": 0.75,
+        "eps_lock": 0.0
+      },
+      "n": 65536,
+      "h_true": 0.25,
+      "mean_bit": 0.498199462890625,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9804220182606235,
+        "collision": 1.0,
+        "markov": 0.19329988296117195,
+        "compression": 0.049034260311194254,
+        "t_tuple": 0.020724461410659433,
+        "lrs": 0.027387457567312083
+      },
+      "nonmcv_min": 0.020724461410659433,
+      "nonmcv_binding": "t_tuple",
+      "estimator_catchers": [
+        "t_tuple",
+        "lrs",
+        "compression",
+        "markov"
+      ],
+      "below_target": true
+    },
+    {
+      "label": "lockmix L=4096 f=0.9 eps=0.0",
+      "family": "lock-mix",
+      "params": {
+        "segment": 4096,
+        "frac": 0.9,
+        "eps_lock": 0.0
+      },
+      "n": 65536,
+      "h_true": 0.09999999999999998,
+      "mean_bit": 0.4993133544921875,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9835961189381058,
+        "collision": 1.0,
+        "markov": 0.07360152163929935,
+        "compression": 0.018635847440526508,
+        "t_tuple": 0.016713763154279537,
+        "lrs": 0.01933118357273017
+      },
+      "nonmcv_min": 0.016713763154279537,
+      "nonmcv_binding": "t_tuple",
+      "estimator_catchers": [
+        "t_tuple",
+        "compression",
+        "lrs",
+        "markov"
+      ],
+      "below_target": true
+    },
+    {
+      "label": "lockmix L=4096 f=1.0 eps=0.0",
+      "family": "lock-mix",
+      "params": {
+        "segment": 4096,
+        "frac": 1.0,
+        "eps_lock": 0.0
+      },
+      "n": 65536,
+      "h_true": 0.0,
+      "mean_bit": 0.5,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9855562768358623,
+        "collision": 1.0,
+        "markov": 0.007689782753243338,
+        "compression": 0.0,
+        "t_tuple": 0.014110669349751581,
+        "lrs": 0.014111324417911731
+      },
+      "nonmcv_min": 0.0,
+      "nonmcv_binding": "compression",
+      "estimator_catchers": [
+        "compression",
+        "markov",
+        "t_tuple",
+        "lrs"
+      ],
+      "below_target": true
+    },
+    {
+      "label": "lockmix L=4096 f=0.1 eps=0.05",
+      "family": "lock-mix",
+      "params": {
+        "segment": 4096,
+        "frac": 0.1,
+        "eps_lock": 0.05
+      },
+      "n": 65536,
+      "h_true": 0.9074000581443777,
+      "mean_bit": 0.499267578125,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9834655373510226,
+        "collision": 1.0,
+        "markov": 0.8755516330676185,
+        "compression": 0.4416515807067529,
+        "t_tuple": 0.1300755250911226,
+        "lrs": 0.24552988296488223
+      },
+      "nonmcv_min": 0.1300755250911226,
+      "nonmcv_binding": "t_tuple",
+      "estimator_catchers": [
+        "t_tuple",
+        "lrs",
+        "compression"
+      ],
+      "below_target": false
+    },
+    {
+      "label": "lockmix L=4096 f=0.25 eps=0.05",
+      "family": "lock-mix",
+      "params": {
+        "segment": 4096,
+        "frac": 0.25,
+        "eps_lock": 0.05
+      },
+      "n": 65536,
+      "h_true": 0.7685001453609442,
+      "mean_bit": 0.498748779296875,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9819864465394064,
+        "collision": 1.0,
+        "markov": 0.7159002131133904,
+        "compression": 0.29094885908253765,
+        "t_tuple": 0.1159586252474641,
+        "lrs": 0.2158367690595292
+      },
+      "nonmcv_min": 0.1159586252474641,
+      "nonmcv_binding": "t_tuple",
+      "estimator_catchers": [
+        "t_tuple",
+        "lrs",
+        "compression"
+      ],
+      "below_target": false
+    },
+    {
+      "label": "lockmix L=4096 f=0.5 eps=0.05",
+      "family": "lock-mix",
+      "params": {
+        "segment": 4096,
+        "frac": 0.5,
+        "eps_lock": 0.05
+      },
+      "n": 65536,
+      "h_true": 0.5370002907218885,
+      "mean_bit": 0.49822998046875,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9805088859983853,
+        "collision": 1.0,
+        "markov": 0.5056764569944072,
+        "compression": 0.17242913136294877,
+        "t_tuple": 0.10685106311030833,
+        "lrs": 0.19512183554654247
+      },
+      "nonmcv_min": 0.10685106311030833,
+      "nonmcv_binding": "t_tuple",
+      "estimator_catchers": [
+        "t_tuple",
+        "compression",
+        "lrs"
+      ],
+      "below_target": false
+    },
+    {
+      "label": "lockmix L=4096 f=0.75 eps=0.05",
+      "family": "lock-mix",
+      "params": {
+        "segment": 4096,
+        "frac": 0.75,
+        "eps_lock": 0.05
+      },
+      "n": 65536,
+      "h_true": 0.3055004360828327,
+      "mean_bit": 0.5008697509765625,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9830738642117371,
+        "collision": 1.0,
+        "markov": 0.31052257194235106,
+        "compression": 0.09907072630643186,
+        "t_tuple": 0.09442490983417959,
+        "lrs": 0.17196862136315713
+      },
+      "nonmcv_min": 0.09442490983417959,
+      "nonmcv_binding": "t_tuple",
+      "estimator_catchers": [
+        "t_tuple",
+        "compression",
+        "lrs",
+        "markov"
+      ],
+      "below_target": true
+    },
+    {
+      "label": "lockmix L=4096 f=0.9 eps=0.05",
+      "family": "lock-mix",
+      "params": {
+        "segment": 4096,
+        "frac": 0.9,
+        "eps_lock": 0.05
+      },
+      "n": 65536,
+      "h_true": 0.16660052329939923,
+      "mean_bit": 0.5002288818359375,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9849025919014066,
+        "collision": 1.0,
+        "markov": 0.20614738203641989,
+        "compression": 0.06494749552055404,
+        "t_tuple": 0.0874684381404806,
+        "lrs": 0.1575964060486487
+      },
+      "nonmcv_min": 0.06494749552055404,
+      "nonmcv_binding": "compression",
+      "estimator_catchers": [
+        "compression",
+        "t_tuple",
+        "lrs",
+        "markov"
+      ],
+      "below_target": true
+    },
+    {
+      "label": "lockmix L=4096 f=1.0 eps=0.05",
+      "family": "lock-mix",
+      "params": {
+        "segment": 4096,
+        "frac": 1.0,
+        "eps_lock": 0.05
+      },
+      "n": 65536,
+      "h_true": 0.07400058144377693,
+      "mean_bit": 0.500701904296875,
+      "alarm": false,
+      "first_alarm_at": null,
+      "latency_ms": null,
+      "alarm_kind": "-",
+      "alarm_events": 0,
+      "estimates": {
+        "mcv": 0.9835525904157838,
+        "collision": 1.0,
+        "markov": 0.14516448815559435,
+        "compression": 0.04302161521332734,
+        "t_tuple": 0.08592663949597973,
+        "lrs": 0.15522946905323212
+      },
+      "nonmcv_min": 0.04302161521332734,
+      "nonmcv_binding": "compression",
+      "estimator_catchers": [
+        "compression",
+        "t_tuple",
+        "markov",
+        "lrs"
+      ],
+      "below_target": true
+    }
+  ]
+}
