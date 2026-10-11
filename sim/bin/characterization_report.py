@@ -16,7 +16,8 @@ Rules this script holds itself to:
 * It only aggregates. A verdict is computed from a field of a committed
   record by a declared comparison (``EVIDENCE`` below); it is never more
   favourable than that comparison. A failing comparison, or a record whose
-  field is absent, is ``unmet``. A spec row with no evidence declared, or
+  field is absent (including on any one element of a fanned-out list), is
+  ``unmet``. A spec row with no evidence declared, or
   whose declared record file does not exist, is ``not measured``.
 * Row precedence is unmet > not measured > met: one failing piece of
   evidence makes the row unmet; one missing piece keeps it from being met.
@@ -62,24 +63,62 @@ EVIDENCE: dict[str, list[dict]] = {
         "field": "chosen.t_s_chosen_s", "op": "le", "value": 1e-6,
         "pvt": "combining.rows[]",
     }],
-    "Raw min-entropy per bit": [{
-        "record": "sim/raw-bit-min-entropy/records/20261010-102516-3966094.json",
-        "check": "worst-corner h_min >= 0.5 bit/sample at Ts = 20 us (behavioural model)",
-        "field": "ts20us_min_entropy[].h_min_bits", "op": "ge", "value": 0.5,
-        "pvt": "ts20us_min_entropy[]",
-    }],
+    # DR-0010 row 3: "not settled by evidence; three non-comparable sources",
+    # deferred to #221. Every committed source at the design point is declared
+    # here, so one failing source makes the row unmet. (The transistor-level
+    # 20260906-003407-6b86c9c record is at Ts = 100 ns, not the 20 us design
+    # point, so it is not compared against the design-point target.)
+    "Raw min-entropy per bit": [
+        {
+            "record": "sim/raw-bit-min-entropy/records/20261010-102516-3966094.json",
+            "check": "worst-corner h_min >= 0.5 bit/sample at Ts = 20 us (behavioural model, "
+                     "independence assumed by construction; DR-0010 row 3 open on #221)",
+            "field": "ts20us_min_entropy[].h_min_bits", "op": "ge", "value": 0.5,
+            "pvt": "ts20us_min_entropy[]",
+        },
+    ] + [
+        {
+            "record": f"sim/local-mismatch-monte-carlo/records/{rid}.json",
+            "check": "worst array x sampler pairing H_bias >= 0.5 bit/sample "
+                     "(transistor-level local-mismatch MC, static bias only; DR-0010 row 3 open on #221)",
+            "field": "summary.raw_bit.h_bias_min", "op": "ge", "value": 0.5,
+            "pvt": "pvt",
+        }
+        for rid in ("20261009-111125-e57ad27", "20261009-111126-e57ad27", "20261009-111127-e57ad27")
+    ],
     "Conditioning": [{
         "record": "sim/digital-conditioner-equivalence/records/20260905-192506-2ecb0a3.json",
         "check": "CRC-32 LFSR model bit-exact vs independent references (ok == true)",
         "field": "ok", "op": "eq", "value": True,
         "pvt": None,
     }],
-    "Health tests": [{
-        "record": "sim/digital-health-test-parameters/records/20261008-150251-cd45d91.json",
-        "check": "ratified RCT/APT cutoffs raise 0 alarms replayed over the simulated streams",
-        "field": "replay_total_alarms", "op": "le", "value": 0,
-        "pvt": "replay[].stream",
-    }],
+    # DR-0010 row 6: the cutoff values are conditional on row 3 (#221). The
+    # record replays the 20261008-061809-56e0fb7 streams, since superseded by
+    # 20261010-095913-3966094. Both caveats are carried in the check text.
+    "Health tests": [
+        {
+            "record": "sim/digital-health-test-parameters/records/20261008-150251-cd45d91.json",
+            "check": "no false alarms: ratified RCT/APT cutoffs raise 0 alarms replayed over the "
+                     "simulated streams (CONDITIONAL: cutoffs depend on DR-0010 row 3 / #221; replays "
+                     "streams 20261008-061809-56e0fb7, superseded by 20261010-095913-3966094)",
+            "field": "replay_total_alarms", "op": "le", "value": 0,
+            "pvt": "replay[].stream",
+        },
+        {
+            "record": "sim/digital-health-test-parameters/records/20261008-150251-cd45d91.json",
+            "check": "detects stuck-at: RCT detects every stuck-at-0 / stuck-at-1 fault-injection "
+                     "run (detected == runs; same DR-0010 row 3 / #221 condition)",
+            "field": "injection.scenarios[name=stuck-at-0|stuck-at-1].rct", "op": "all_detected",
+            "pvt": None,
+        },
+        {
+            "record": "sim/digital-health-test-parameters/records/20261008-150251-cd45d91.json",
+            "check": "detects stuck-at: APT detects every stuck-at-0 / stuck-at-1 fault-injection "
+                     "run (detected == runs; same DR-0010 row 3 / #221 condition)",
+            "field": "injection.scenarios[name=stuck-at-0|stuck-at-1].apt", "op": "all_detected",
+            "pvt": None,
+        },
+    ],
     "Area": [
         {
             "record": "sim/digital-floorplan-compaction/records/20261009-214736-760b4d3.json",
@@ -120,31 +159,72 @@ def parse_spec_table(text: str) -> list[dict]:
     return rows
 
 
-def extract(obj, path: str) -> list:
-    """Values at a dotted path; ``[]`` fans out over a list."""
-    cur = [obj]
+_PART = re.compile(r"^([^\[\]]*)(?:\[([^\]]*)\])?$")
+
+
+def extract_strict(obj, path: str) -> tuple[list, int]:
+    """(values, n_missing) at a dotted path.
+
+    ``a[]`` fans out over the list ``a``; ``a[k=v1|v2]`` fans out over the
+    elements of ``a`` whose ``k`` is one of the listed values, and every
+    listed value must match at least one element. Anything the path expects
+    but does not find -- an absent key (at top level or on any fanned-out
+    element), a non-list where a list is expected, a selector value no
+    element carries -- counts as missing. Missing is never skipped silently:
+    ``compare`` treats any missing value as a failure.
+    """
+    cur, missing = [obj], 0
     for part in path.split("."):
-        fan = part.endswith("[]")
-        key = part[:-2] if fan else part
+        m = _PART.match(part)
+        if not m:
+            raise SystemExit(f"bad path segment {part!r} in {path!r}")
+        key, sel = m.group(1), m.group(2)
         nxt = []
         for c in cur:
             if key:
                 if not isinstance(c, dict) or key not in c:
+                    missing += 1
                     continue
                 c = c[key]
-            if fan:
-                nxt.extend(c if isinstance(c, list) else [])
-            else:
+            if sel is None:
                 nxt.append(c)
+                continue
+            if not isinstance(c, list):
+                missing += 1
+                continue
+            if not sel:
+                nxt.extend(c)
+                continue
+            skey, _, svals = sel.partition("=")
+            wanted = svals.split("|")
+            for w in wanted:
+                hits = [e for e in c if isinstance(e, dict) and str(e.get(skey)) == w]
+                if not hits:
+                    missing += 1
+                nxt.extend(hits)
         cur = nxt
-    return cur
+    return cur, missing
 
 
-def compare(values: list, op: str, want) -> tuple[bool, str]:
-    """True only if values is non-empty and every value satisfies op."""
+def extract(obj, path: str) -> list:
+    """Values found at a dotted path (see ``extract_strict``)."""
+    return extract_strict(obj, path)[0]
+
+
+def compare(values: list, op: str, want, missing: int = 0) -> tuple[bool, str]:
+    """True only if nothing is missing, values is non-empty, and every value satisfies op."""
+    if missing:
+        return False, f"field absent from {missing} expected element(s)"
     if not values:
         return False, "field absent from record"
     try:
+        if op == "all_detected":
+            # each value is {"detected": int, "runs": int}; met only if detected == runs > 0
+            pairs = [(v["detected"], v["runs"]) for v in values]
+            bad = [p for p in pairs if not (isinstance(p[1], int) and p[1] > 0 and p[0] == p[1])]
+            ok = not bad
+            observed = f"{sum(d for d, _ in pairs)}/{sum(r for _, r in pairs)} detected"
+            return ok, f"observed {observed}"
         if op == "eq":
             ok, observed = all(v == want for v in values), values[0] if len(set(map(repr, values))) == 1 else values
         elif op == "ge":
@@ -153,7 +233,7 @@ def compare(values: list, op: str, want) -> tuple[bool, str]:
             observed = max(values); ok = observed <= want
         else:
             raise SystemExit(f"unknown op {op!r}")
-    except TypeError:
+    except (TypeError, KeyError):
         return False, "field not comparable"
     return ok, f"observed {observed!r}"
 
@@ -164,16 +244,23 @@ def pvt_labels(rec: dict, path: str | None) -> list[str]:
     out = set()
     for v in extract(rec, path):
         if isinstance(v, str):
-            out.add(v)
+            # normalise "ss -40 C 1.62 V" to the dict form "ss -40C 1.62V"
+            out.add(_UNIT_GAP.sub(r"\1\2", v))
         elif isinstance(v, dict):
-            parts = [str(v["corner"])] if "corner" in v else []
-            if "temp_c" in v:
-                parts.append(f"{v['temp_c']:g}C")
-            if "vdd_v" in v:
-                parts.append(f"{v['vdd_v']:g}V")
+            corner = next((v[k] for k in ("corner", "proc") if k in v), None)
+            temp = next((v[k] for k in ("temp_c", "temp") if k in v), None)
+            vdd = next((v[k] for k in ("vdd_v", "vnom") if k in v), None)
+            parts = [str(corner)] if corner is not None else []
+            if temp is not None:
+                parts.append(f"{temp:g}C")
+            if vdd is not None:
+                parts.append(f"{vdd:g}V")
             if parts:
                 out.add(" ".join(parts))
     return sorted(out)
+
+
+_UNIT_GAP = re.compile(r"(-?\d+(?:\.\d+)?) ([CV])\b")
 
 
 def evaluate(root: Path, entry: dict) -> dict:
@@ -186,7 +273,8 @@ def evaluate(root: Path, entry: dict) -> dict:
         return res
     raw = p.read_bytes()
     rec = json.loads(raw)
-    ok, detail = compare(extract(rec, entry["field"]), entry["op"], entry["value"])
+    values, missing = extract_strict(rec, entry["field"])
+    ok, detail = compare(values, entry["op"], entry.get("value"), missing)
     res.update(verdict=MET if ok else UNMET, detail=detail,
                record_id=rec.get("record_id"), sha256=sha256_bytes(raw),
                level=rec.get("level"), pvt=pvt_labels(rec, entry.get("pvt")))
@@ -259,7 +347,7 @@ def render_md(rep: dict) -> str:
         L.append(f"### {r['parameter']}: {r['verdict']}")
         L.append("")
         if not r["evidence"]:
-            L += ["No record declared for this target; rendered `not measured`.", ""]
+            L += ["No evidence mapping declared for this target yet; rendered `not measured`.", ""]
         for e in r["evidence"]:
             L.append(f"- `{e['record_path']}`")
             L.append(f"  - check: {e['check']}")

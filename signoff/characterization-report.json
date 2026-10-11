@@ -1,9 +1,9 @@
 {
   "caveat": "Simulation-derived and provisional until measured on silicon. Aggregates committed records only; never upgrades a verdict.",
   "counts": {
-    "met": 3,
+    "met": 2,
     "not measured": 5,
-    "unmet": 2
+    "unmet": 3
   },
   "generator": "sim/bin/characterization_report.py",
   "overall": "fail",
@@ -58,7 +58,7 @@
     {
       "evidence": [
         {
-          "check": "worst-corner h_min >= 0.5 bit/sample at Ts = 20 us (behavioural model)",
+          "check": "worst-corner h_min >= 0.5 bit/sample at Ts = 20 us (behavioural model, independence assumed by construction; DR-0010 row 3 open on #221)",
           "detail": "observed 0.6674109338172481",
           "level": "behavioral (derived)",
           "pvt": [
@@ -85,6 +85,42 @@
           "record_path": "sim/raw-bit-min-entropy/records/20261010-102516-3966094.json",
           "sha256": "8cfdaea360f1550620e221e9e0a50c1aef72459ec49b3b3b297eb4b914d43279",
           "verdict": "met"
+        },
+        {
+          "check": "worst array x sampler pairing H_bias >= 0.5 bit/sample (transistor-level local-mismatch MC, static bias only; DR-0010 row 3 open on #221)",
+          "detail": "observed 0.679950493450846",
+          "level": "transistor",
+          "pvt": [
+            "ff -40C 1.98V"
+          ],
+          "record_id": "20261009-111125-e57ad27",
+          "record_path": "sim/local-mismatch-monte-carlo/records/20261009-111125-e57ad27.json",
+          "sha256": "ba4631b09991b383e8916990be71771d55c761b5d718b5bab70d4b0b92c027e6",
+          "verdict": "met"
+        },
+        {
+          "check": "worst array x sampler pairing H_bias >= 0.5 bit/sample (transistor-level local-mismatch MC, static bias only; DR-0010 row 3 open on #221)",
+          "detail": "observed 0.6425427630107089",
+          "level": "transistor",
+          "pvt": [
+            "ss -40C 1.62V"
+          ],
+          "record_id": "20261009-111126-e57ad27",
+          "record_path": "sim/local-mismatch-monte-carlo/records/20261009-111126-e57ad27.json",
+          "sha256": "8edc16338c64f9efe2c5141d9f496742b6241e09a50191fbd07f684dd3faec13",
+          "verdict": "met"
+        },
+        {
+          "check": "worst array x sampler pairing H_bias >= 0.5 bit/sample (transistor-level local-mismatch MC, static bias only; DR-0010 row 3 open on #221)",
+          "detail": "observed 0.47180709030319024",
+          "level": "transistor",
+          "pvt": [
+            "tt 27C 1.8V"
+          ],
+          "record_id": "20261009-111127-e57ad27",
+          "record_path": "sim/local-mismatch-monte-carlo/records/20261009-111127-e57ad27.json",
+          "sha256": "d505ce4b328caf86d2a37b96b8948848665f9a1e133b246f36fc5f9225cd7c82",
+          "verdict": "unmet"
         }
       ],
       "parameter": "Raw min-entropy per bit",
@@ -110,7 +146,7 @@
       ],
       "stretch": "\u2014",
       "target": "H\u2080 = 0.5 bit/sample as a design *target* at the entropy-binding corner \u2014 a sizing input, not a claim, until measured",
-      "verdict": "met"
+      "verdict": "unmet"
     },
     {
       "evidence": [],
@@ -142,29 +178,49 @@
     {
       "evidence": [
         {
-          "check": "ratified RCT/APT cutoffs raise 0 alarms replayed over the simulated streams",
+          "check": "no false alarms: ratified RCT/APT cutoffs raise 0 alarms replayed over the simulated streams (CONDITIONAL: cutoffs depend on DR-0010 row 3 / #221; replays streams 20261008-061809-56e0fb7, superseded by 20261010-095913-3966094)",
           "detail": "observed 0",
           "level": "behavioral (derived -- no simulator)",
           "pvt": [
-            "ff -40 C 1.62 V",
-            "ff -40 C 1.98 V",
-            "ff 125 C 1.62 V",
-            "ff 125 C 1.8 V",
-            "ff 125 C 1.98 V",
-            "ff 27 C 1.8 V",
-            "ss -40 C 1.62 V",
-            "ss -40 C 1.98 V",
-            "ss 125 C 1.62 V",
-            "ss 125 C 1.8 V",
-            "ss 125 C 1.98 V",
-            "ss 27 C 1.8 V",
-            "tt -40 C 1.62 V",
-            "tt -40 C 1.98 V",
-            "tt 125 C 1.62 V",
-            "tt 125 C 1.8 V",
-            "tt 125 C 1.98 V",
-            "tt 27 C 1.8 V"
+            "ff -40C 1.62V",
+            "ff -40C 1.98V",
+            "ff 125C 1.62V",
+            "ff 125C 1.8V",
+            "ff 125C 1.98V",
+            "ff 27C 1.8V",
+            "ss -40C 1.62V",
+            "ss -40C 1.98V",
+            "ss 125C 1.62V",
+            "ss 125C 1.8V",
+            "ss 125C 1.98V",
+            "ss 27C 1.8V",
+            "tt -40C 1.62V",
+            "tt -40C 1.98V",
+            "tt 125C 1.62V",
+            "tt 125C 1.8V",
+            "tt 125C 1.98V",
+            "tt 27C 1.8V"
           ],
+          "record_id": "20261008-150251-cd45d91",
+          "record_path": "sim/digital-health-test-parameters/records/20261008-150251-cd45d91.json",
+          "sha256": "4a8c35d7694ccf2f5ec6682aa7b8575510b78ad2ab314b7b8eb02286664ff16a",
+          "verdict": "met"
+        },
+        {
+          "check": "detects stuck-at: RCT detects every stuck-at-0 / stuck-at-1 fault-injection run (detected == runs; same DR-0010 row 3 / #221 condition)",
+          "detail": "observed 216/216 detected",
+          "level": "behavioral (derived -- no simulator)",
+          "pvt": [],
+          "record_id": "20261008-150251-cd45d91",
+          "record_path": "sim/digital-health-test-parameters/records/20261008-150251-cd45d91.json",
+          "sha256": "4a8c35d7694ccf2f5ec6682aa7b8575510b78ad2ab314b7b8eb02286664ff16a",
+          "verdict": "met"
+        },
+        {
+          "check": "detects stuck-at: APT detects every stuck-at-0 / stuck-at-1 fault-injection run (detected == runs; same DR-0010 row 3 / #221 condition)",
+          "detail": "observed 216/216 detected",
+          "level": "behavioral (derived -- no simulator)",
+          "pvt": [],
           "record_id": "20261008-150251-cd45d91",
           "record_path": "sim/digital-health-test-parameters/records/20261008-150251-cd45d91.json",
           "sha256": "4a8c35d7694ccf2f5ec6682aa7b8575510b78ad2ab314b7b8eb02286664ff16a",
@@ -173,24 +229,24 @@
       ],
       "parameter": "Health tests",
       "pvt_coverage": [
-        "ff -40 C 1.62 V",
-        "ff -40 C 1.98 V",
-        "ff 125 C 1.62 V",
-        "ff 125 C 1.8 V",
-        "ff 125 C 1.98 V",
-        "ff 27 C 1.8 V",
-        "ss -40 C 1.62 V",
-        "ss -40 C 1.98 V",
-        "ss 125 C 1.62 V",
-        "ss 125 C 1.8 V",
-        "ss 125 C 1.98 V",
-        "ss 27 C 1.8 V",
-        "tt -40 C 1.62 V",
-        "tt -40 C 1.98 V",
-        "tt 125 C 1.62 V",
-        "tt 125 C 1.8 V",
-        "tt 125 C 1.98 V",
-        "tt 27 C 1.8 V"
+        "ff -40C 1.62V",
+        "ff -40C 1.98V",
+        "ff 125C 1.62V",
+        "ff 125C 1.8V",
+        "ff 125C 1.98V",
+        "ff 27C 1.8V",
+        "ss -40C 1.62V",
+        "ss -40C 1.98V",
+        "ss 125C 1.62V",
+        "ss 125C 1.8V",
+        "ss 125C 1.98V",
+        "ss 27C 1.8V",
+        "tt -40C 1.62V",
+        "tt -40C 1.98V",
+        "tt 125C 1.62V",
+        "tt 125C 1.8V",
+        "tt 125C 1.98V",
+        "tt 27C 1.8V"
       ],
       "stretch": "\u2014",
       "target": "continuous RCT + APT on the raw stream; cutoffs re-derived from sky130 noise/leakage corners, not copied from gf180",

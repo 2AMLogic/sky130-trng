@@ -96,6 +96,46 @@ class Report(unittest.TestCase):
         ev = {"Alpha": [dict(EV["Alpha"][0], field="nope")]}
         self.assertEqual(verdicts(cr.build_report(root, ev))["Alpha"], "unmet")
 
+    def test_negative_fanned_element_missing_field_is_unmet(self):
+        # one corner lacks "x"; the other passes. Skipping it would give met.
+        t = tempfile.TemporaryDirectory(); self.addCleanup(t.cleanup)
+        root = make_root(Path(t.name))
+        p = root / "sim/s/records/b.json"
+        rec = json.loads(p.read_text())
+        del rec["rows"][0]["x"]
+        p.write_text(json.dumps(rec))
+        rep = cr.build_report(root, EV)
+        self.assertEqual(verdicts(rep)["Beta"], "unmet")
+        self.assertIn("absent from 1", rep["rows"][1]["evidence"][0]["detail"])
+
+    def test_negative_fan_over_non_list_is_unmet(self):
+        t = tempfile.TemporaryDirectory(); self.addCleanup(t.cleanup)
+        root = make_root(Path(t.name))
+        ev = {"Alpha": [dict(EV["Alpha"][0], field="ok[]")]}
+        self.assertEqual(verdicts(cr.build_report(root, ev))["Alpha"], "unmet")
+
+    def test_selector_and_all_detected(self):
+        rec = {"inj": [{"name": "s0", "t": {"detected": 5, "runs": 5}},
+                       {"name": "s1", "t": {"detected": 4, "runs": 5}},
+                       {"name": "tog", "t": {"detected": 0, "runs": 5}}]}
+        v, miss = cr.extract_strict(rec, "inj[name=s0].t")
+        self.assertEqual((len(v), miss), (1, 0))
+        self.assertTrue(cr.compare(v, "all_detected", None, miss)[0])
+        # one partially-detected scenario fails the check
+        v, miss = cr.extract_strict(rec, "inj[name=s0|s1].t")
+        self.assertFalse(cr.compare(v, "all_detected", None, miss)[0])
+        # a selected scenario that does not exist is missing, hence unmet
+        v, miss = cr.extract_strict(rec, "inj[name=s0|nope].t")
+        self.assertEqual(miss, 1)
+        self.assertFalse(cr.compare(v, "all_detected", None, miss)[0])
+        # zero runs is never "all detected"
+        self.assertFalse(cr.compare([{"detected": 0, "runs": 0}], "all_detected", None)[0])
+
+    def test_pvt_label_formats_normalised(self):
+        rec = {"s": ["ss -40 C 1.62 V"], "d": {"proc": "ss", "temp": -40.0, "vnom": 1.62}}
+        self.assertEqual(cr.pvt_labels(rec, "s[]"), ["ss -40C 1.62V"])
+        self.assertEqual(cr.pvt_labels(rec, "d"), ["ss -40C 1.62V"])
+
     def test_stray_mapping_key_rejected(self):
         t = tempfile.TemporaryDirectory(); self.addCleanup(t.cleanup)
         root = make_root(Path(t.name))
@@ -135,6 +175,14 @@ class Committed(unittest.TestCase):
         self.assertEqual(cr.main(["--check"]), 0)
         # area is stated unmet, not relaxed
         self.assertEqual(verdicts(rep)["Area"], "unmet")
+        # DR-0010 row 3 is open on #221: the failing tt mismatch record keeps it unmet
+        self.assertEqual(verdicts(rep)["Raw min-entropy per bit"], "unmet")
+        ent = {e["record_id"]: e["verdict"] for e in rep["rows"][2]["evidence"]}
+        self.assertEqual(ent["20261009-111127-e57ad27"], "unmet")
+        # health tests rest on both no-false-alarm and stuck-at detection
+        health = next(r for r in rep["rows"] if r["parameter"] == "Health tests")
+        self.assertEqual(len(health["evidence"]), 3)
+        self.assertTrue(all("#221" in e["check"] for e in health["evidence"][:2]))
 
 
 if __name__ == "__main__":
