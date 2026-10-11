@@ -24,6 +24,13 @@ Groups per corner:
     a10 / a50 / a100 / a200   10 / 50 / 100 / 200 mV pk tones
     q    clean baseline + quasi-static supply nodes (50 kbps family) + negative control
 
+Issue #288 lock-resolution campaign (--campaign lock-resolution): groups lr (200-edge
+windows, +-0.1/0.25/0.4 % detuning ladder at 20/50 mV plus 5 mV, on-frequency rows,
+current-injection controls incl. a clearly free-running +5 % detuned control) and lrc
+(400-edge convergence subset); see README.md for the matrix and the resolution
+derivation. The enable pulse is parameterized (@@ENW@@/@@ENP@@): legacy decks expand
+to the identical 1u/2u literals, the campaign holds the enable high 3 us.
+
 Tone ladder (from the committed ro-array-core-combining record at the same
 PVT point, so no tone depends on a number measured in this campaign): f1..f4 are
 the four rings' own frequencies, fm their mean.
@@ -45,6 +52,7 @@ TB = os.path.join(REPO, "sim/ro-array-supply-perturbation/testbench/tb_ro_array_
 NETLIST = os.path.join(REPO, "design/ro_array_core.spice")
 LIB = "libs.tech/combined/sky130.lib.spice"
 EDGES = range(3, 43)            # rising-edge indices recorded per ring (40 edges, 39 periods)
+NEDGE = 40                      # the #200 window; kept as the default so legacy output is unchanged
 
 # committed ring periods (s) of design/ro_array_core.spice at the corner, from
 # sim/ro-array-core-combining/records/20260825-094545-53f1f7a.json (-40C/1.62V, ss)
@@ -58,6 +66,71 @@ CORNERS = {
                why="fast corner (DR-0003 combining-binding corner)"),
 }
 CTL_RING = 2
+
+# ---- issue #288 lock-resolution campaign ------------------------------------
+# A free-running ring detuned by delta from a tone slips delta*(N-1) ring cycles
+# across an N-edge window, so the detector's DRIFT_LOCK = 0.1-cycle threshold
+# resolves delta_min = DRIFT_LOCK/(N-1): 0.256 % at the #200 40-edge window,
+# 0.050 % at 200 edges, 0.025 % at 400 edges.  The campaign claims +-0.1 %
+# resolution (2x margin at 200 edges) and checks convergence at 400 edges on a
+# 3-unit subset; the on-frequency rows stay drift-UNRESOLVED (exact coincidence
+# is unidentifiable by drift at any window) and are decided, where at all, by
+# detuned neighbours + pull evidence.  Bounded matrix, per corner:
+#   lr   1 baseline + 8 on-frequency (f1..f4 x 20/50 mV) + 48 detuned
+#        (f1..f4 x {+-0.1, +-0.25, +-0.4} % x 20/50 mV) + 8 detuned below the old
+#        10 mV floor (f1..f4 x {+-0.25} % x 5 mV) + 8 current-injection controls
+#        (ring 2 x {1.00, 1.02, 1.05, 1.20} x 10/50 uA; +5 % is the clearly
+#        free-running detuned control)                        = 73 units
+#   lrc  400-edge convergence subset: 1 baseline + ring 2 x {+-0.25} % @ 50 mV
+#                                                             = 3 units
+LR = "lock-resolution"
+LR_EDGES = 200
+LR_EDGES_CONV = 400
+LR_AMPS = (0.020, 0.050)        # inside the #200 10-50 mV bracket, at the known-lock amplitude
+LR_DETUNES = (0.001, 0.0025, 0.004)
+LR_AMP_BELOW = 0.005            # below the 10 mV floor of the #200 brackets
+LR_DETUNE_BELOW = 0.0025
+LR_CTL_KNOBS = (("own", 1.0), ("+2%", 1.02), ("+5%", 1.05), ("+20%", 1.2))
+
+
+def lr_nedge(group):
+    return LR_EDGES_CONV if group == "lrc" else LR_EDGES
+
+
+def lr_stop(c, nedge):
+    """tran stop long enough for `nedge` recorded rises after the 5 ns release,
+    with margin for start-up and lock drag (locked period = tone period <=
+    max(tr)*(1+max detuning))."""
+    s = 5e-9 + (nedge + 3) * max(c["tr"]) * 1.18
+    return f"{math.ceil(s * 1e9):g}n"
+
+
+def detuned_unit(i, dd, amp, f):
+    return dict(kind="tone", tone=f"f{i}{'+' if dd > 0 else '-'}{abs(dd) * 100:g}%",
+                dv=0.0, ra=amp, rf=f[i - 1] * (1 + dd), ri=0.0, detune=dd)
+
+
+def lr_units(group, c):
+    f = [1.0 / t for t in c["tr"]]
+    u = [dict(kind="baseline", tone="-", dv=0.0, ra=0.0, rf=1e6, ri=0.0)]
+    if group == "lrc":                      # convergence subset at 400 edges
+        return u + [detuned_unit(2, s * LR_DETUNE_BELOW, 0.050, f) for s in (1, -1)]
+    for amp in LR_AMPS:                     # on-frequency rows: drift stays UNRESOLVED;
+        for i in range(1, 5):               # pull evidence + detuned neighbours decide
+            u.append(dict(kind="tone", tone=f"f{i}", dv=0.0, ra=amp, rf=f[i - 1], ri=0.0, detune=0.0))
+    for amp in LR_AMPS:
+        for i in range(1, 5):
+            for d in LR_DETUNES:
+                for s in (1, -1):
+                    u.append(detuned_unit(i, s * d, amp, f))
+    for i in range(1, 5):                   # below the #200 10 mV floor
+        for s in (1, -1):
+            u.append(detuned_unit(i, s * LR_DETUNE_BELOW, LR_AMP_BELOW, f))
+    fc = f[CTL_RING - 1]
+    for ima in (0.01, 0.05):
+        for lab, k in LR_CTL_KNOBS:
+            u.append(dict(kind="control", tone=f"ctl:{lab}@{ima * 1e3:g}uA", dv=0.0, ra=0.0, rf=fc * k, ri=ima))
+    return u
 
 
 def tones(tr):
@@ -95,10 +168,10 @@ def units_for(group, c):
     return u
 
 
-def meas_cards():
+def meas_cards(nedge=NEDGE):
     m = []
     for r in range(1, 5):
-        for k in EDGES:
+        for k in range(3, 3 + nedge):
             m.append((f"t{r}_{k}", f".meas tran t{r}_{k} when v(ro{r})=HALF rise={k}"))
     m.append(("xo_avg", ".meas tran xo_avg AVG v(xo) from=60n to=STOP"))
     m.append(("xo_max", ".meas tran xo_max MAX v(xo) from=60n to=STOP"))
@@ -110,14 +183,15 @@ def meas_cards():
     return m
 
 
-def build(c):
+def build(c, nedge=NEDGE, stop=None, enw="1u", enp="2u"):
     text = open(TB).read()
-    sub = {"@@VNOM@@": repr(c["vnom"]), "@@RO_ARRAY@@": NETLIST}
+    sub = {"@@VNOM@@": repr(c["vnom"]), "@@RO_ARRAY@@": NETLIST,
+           "@@ENW@@": enw, "@@ENP@@": enp}
     for k, v in sub.items():
         text = text.replace(k, v)
     half = repr(round(0.5 * c["vnom"], 6))
-    meas = [{"name": n, "spice": s.replace("HALF", half).replace("STOP", c["stop"])}
-            for n, s in meas_cards()]
+    meas = [{"name": n, "spice": s.replace("HALF", half).replace("STOP", stop or c["stop"])}
+            for n, s in meas_cards(nedge)]
     return text, meas
 
 
@@ -125,14 +199,28 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("outdir")
     ap.add_argument("--corners", default="ss,ff")
-    ap.add_argument("--groups", default="a10,a50,a200,q")
+    ap.add_argument("--groups", default=None,
+                    help="legacy amplitude groups; ignored/defaulted by --campaign")
     ap.add_argument("--chunk", type=int, default=8, help="units per request (parallelism on the fleet)")
+    ap.add_argument("--campaign", choices=[LR], default=None,
+                    help="issue #288 lock-resolution campaign (groups lr,lrc; longer edge windows)")
     a = ap.parse_args()
+    if a.campaign == LR:
+        groups = ("lr", "lrc")
+    else:
+        groups = (a.groups or "a10,a50,a200,q").split(",")
     for cn in a.corners.split(","):
         c = CORNERS[cn]
-        text, meas = build(c)
-        for g in a.groups.split(","):
-            allus = units_for(g, c)
+        for g in groups:
+            if a.campaign == LR:
+                nedge, allus = lr_nedge(g), lr_units(g, c)
+                stop = lr_stop(c, nedge)
+                text, meas = build(c, nedge=nedge, stop=stop, enw="3u", enp="4u")
+                extra = {"campaign": LR, "nedge": nedge}
+            else:
+                allus = units_for(g, c)
+                text, meas = build(c)
+                extra = {}
             for ci in range(0, len(allus), a.chunk):
               us = allus[ci:ci + a.chunk]
               d = os.path.join(a.outdir, f"{cn}-{g}-{ci // a.chunk + 1}")
@@ -144,13 +232,17 @@ def main():
                   "models": {"pdk": "sky130A", "lib": LIB},
                   "corners": {"process": [c["proc"]], "temperature_c": [c["temp"]],
                               "supply_v": {"V" + k: [u[k] for u in us] for k in ("dv", "ra", "rf", "ri")}},
-                  "analysis": {"kind": "tran", "args": f"{c['tmax']} {c['stop']} uic"},
+                  "analysis": {"kind": "tran",
+                               "args": (f"{c['tmax']} {stop} uic" if a.campaign == LR
+                                        else f"{c['tmax']} {c['stop']} uic")},
                   "measurements": meas,
-                  "options": {"timeout_s": 3000, "keep_artifacts": False},
+                  # the long-window transients are ~3x the #200 length; give the
+                  # fleet headroom over the legacy 3000 s before calling a unit lost
+                  "options": {"timeout_s": 5400 if a.campaign == LR else 3000, "keep_artifacts": False},
               }
               json.dump(req, open(os.path.join(d, "request.json"), "w"), indent=2)
               json.dump({"corner": cn, "group": g, "chunk": ci // a.chunk + 1, "pvt": dict(c, tr=None), "ctl_ring": CTL_RING,
-                         "units": us}, open(os.path.join(d, "plan.json"), "w"), indent=2)
+                         "units": us, **extra}, open(os.path.join(d, "plan.json"), "w"), indent=2)
               print(d, f"{c['proc']} {c['temp']}C {c['vnom']}V", len(us), "units", len(meas), "measurements")
 
 

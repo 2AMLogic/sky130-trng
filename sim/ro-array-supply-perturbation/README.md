@@ -23,6 +23,49 @@ python3 sim/ro-array-supply-perturbation/ripple.py --check sim/ro-array-supply-p
 python3 sim/tests/test_ripple_reduction.py
 ```
 
+## Lock-resolution campaign (issue #288, DR-0012 follow-up 5)
+
+The #200 records leave two things unresolved: tones placed exactly on a ring
+frequency (drift cannot separate lock from coincidence at the 40-edge window) and
+the lock threshold, only bracketed between the 10 and 50 mV rungs. This campaign
+extends the observation window instead of changing the detector: a free-running
+ring detuned by `delta` from a tone slips `delta*(N-1)` ring cycles across an
+N-edge window, so the unchanged 0.1-cycle `DRIFT_LOCK` criterion resolves
+
+    delta_min = 0.1/(N-1):  0.256 % at 40 edges, 0.050 % at 200, 0.025 % at 400.
+
+The campaign claims **+-0.1 % resolution** (2x margin at the 200-edge window) and
+checks convergence on a 400-edge subset. Exact coincidence stays unidentifiable by
+drift at ANY window, so on-frequency rows remain drift-UNRESOLVED and are decided,
+where at all, by their detuned neighbours plus pull evidence — never forced to a
+binary verdict. LOCK, Q and BIAS are reported separately everywhere: an ff bias
+failure must not disappear behind a lock-only result.
+
+Bounded matrix, per corner (ss/-40 C/1.62 V and ff/-40 C/1.98 V, same as #200):
+
+| group | units | contents |
+|---|---|---|
+| `lr`  | 73 | 1 clean baseline; 8 on-frequency (f1..f4 x 20/50 mV); 48 detuned (f1..f4 x {+-0.1, +-0.25, +-0.4} % x 20/50 mV); 8 below the #200 10 mV floor (f1..f4 x {+-0.25} % x 5 mV); 8 current-injection controls (ring 2 x {1.00, 1.02, 1.05, 1.20} x 10/50 uA) |
+| `lrc` | 3 | 400-edge convergence subset: 1 baseline + ring 2 x {+-0.25} % @ 50 mV |
+
+The +5 % detuned current-injection control is clearly free-running by construction
+(a clean ring slips ~10 cycles over the window), bracketing the injection lock
+range next to #200's locked +2 % and unlocked +20 % rungs.
+
+Run it (requests only; `KLT_SIM_BACKEND=batch` sends them to the fleet):
+
+```bash
+python3 sim/ro-array-supply-perturbation/make-requests.py REQDIR --campaign lock-resolution
+klt sim REQDIR/<corner>-<group>-<n>/request.json -o REQDIR/<d>/out --format json > REQDIR/<d>/resp.json
+python3 sim/ro-array-supply-perturbation/ripple.py --emit-record REQDIR
+```
+
+Testbench delta vs #200: the enable pulse width/period are template parameters
+now (`@@ENW@@`/`@@ENP@@`; the campaign holds the enable high for 3 us). With the
+#200 1 us enable the rings freeze at ~1.0 us — every window past edge ~180 came
+back empty (probed locally before submission; the #200 windows never reached it).
+Legacy decks expand to the identical `1u 2u` literals.
+
 ## What was run
 
 Two PVT points, both -40 C, tt not run: **ss / 1.62 V** (the DR-0002 entropy-binding corner)
@@ -80,7 +123,8 @@ supply tone is a weak injector, which is why the control is a current into a rin
 
 - **Resolution**: 40 edges per ring give ~0.25 % detuning resolution. Tones placed on a ring's own
   frequency are reported UNRESOLVED (lock vs coincidence), not passed; the +0.5 % rows bound the lock range.
-  A "pass" at 10 mV is therefore shown for tones >= 0.5 % off a ring frequency.
+  A "pass" at 10 mV is therefore shown for tones >= 0.5 % off a ring frequency. The #288 campaign
+  (above) narrows this to +-0.1 % with 200-edge windows; its findings live in its own records.
 - **Edge-time floor**: the clean run reads 0.05-0.4 % pk period modulation (timestep interpolation).
 - Pre-layout, ideal sources: no supply impedance or substrate (DR-0006's first-named coupling).
   Ripple is applied in common to all five rails; per-ring uncorrelated ripple was not run.

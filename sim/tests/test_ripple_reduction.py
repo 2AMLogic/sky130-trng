@@ -113,6 +113,71 @@ class Tests(unittest.TestCase):
         rows = [{"amp": 0.01, "ok": True}, {"amp": 0.05, "ok": True}, {"amp": 0.05, "ok": False}]
         self.assertIn("< 50", rp.tolerance(rows))
 
+    # ---- issue #288 lock-resolution campaign: window resolution and controls ----
+
+    def test_near_detuned_free_at_200_edges(self):
+        # +0.1 % detuning slips 0.001*(200-1) = 0.199 ring cycles across the
+        # 200-edge window, above the 0.1-cycle DRIFT_LOCK: a free-running ring
+        # must read free at the claimed resolution.
+        T = 5e-9
+        f = 1.001 / T
+        clean = [train(T, n=200) for _ in range(4)]
+        m = self._metrics(clean, clean, f_rip=f)
+        self.assertTrue(all(t["state"] == "free" for t in m["tone"]))
+        self.assertAlmostEqual(abs(m["tone"][0]["drift_cycles"]), 0.001 * 199, 3)
+        ok, why = rp.row_verdict(m)
+        self.assertTrue(ok, why)
+
+    def test_insufficient_window_control_40_edges(self):
+        # The SAME +0.1 %-detuned situation over the #200 40-edge window slips
+        # only 0.039 cycles: the detector cannot separate the free ring from the
+        # tone and reports COINCIDENT (unresolved) -- the window, not the physics.
+        T = 5e-9
+        f = 1.001 / T
+        clean = [train(T, n=40) for _ in range(4)]
+        m = self._metrics(clean, clean, f_rip=f)
+        self.assertTrue(all(t["state"] == "COINCIDENT" for t in m["tone"]))
+
+    def test_locked_ring_flagged_at_200_edges(self):
+        # Resolution must not come at the cost of missing a true lock: a ring
+        # dragged to the tone period is still LOCKED at the 200-edge window.
+        T0, T1 = 5e-9, 5.1e-9
+        f = 1 / T1
+        clean = [train(T0, n=200) for _ in range(4)]
+        locked = [train(T1, n=200)] + clean[1:]
+        m = self._metrics(locked, clean, f_rip=f)
+        self.assertEqual(m["tone"][0]["state"], "LOCKED")
+        self.assertAlmostEqual(m["tone"][0]["pull_fraction"], 1.0, 6)
+        ok, why = rp.row_verdict(m)
+        self.assertFalse(ok)
+        self.assertTrue(any("LOCK" in w for w in why), why)
+
+    def test_missing_edge_never_reads_locked(self):
+        # A dropped .meas edge must not be readable as a lock: the index shift
+        # puts a ~1-cycle step into the phase residual, so the detector goes
+        # conservative (no LOCKED) and the modulation metric blows up as a flag.
+        T = 5e-9
+        f = 1 / T
+        clean = [train(T, n=200) for _ in range(4)]
+        gapped = train(T, n=201)
+        del gapped[100]
+        m = self._metrics([gapped] + clean[1:], clean, f_rip=f)
+        self.assertNotEqual(m["tone"][0]["state"], "LOCKED")
+        self.assertGreater(m["mod_pk_pct"][0], 40.0)
+
+    def test_longer_window_converges(self):
+        # Same free-running ring, 200 vs 400 edges: the slip doubles as
+        # delta*(N-1) predicts and the verdict is identical -- the convergence
+        # check the lrc subset runs on real data.
+        T = 5e-9
+        f = 1.0025 / T
+        _, _, d200 = rp.tone_lock(train(T, n=200), f)
+        _, _, d400 = rp.tone_lock(train(T, n=400), f)
+        self.assertAlmostEqual(d400, d200 * 399 / 199, 3)   # slip = delta*(N-1)
+        self.assertAlmostEqual(abs(d400), 0.0025 * 399, 3)
+        self.assertGreater(abs(d200), rp.DRIFT_LOCK)
+        self.assertGreater(abs(d400), rp.DRIFT_LOCK)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -17,7 +17,9 @@ What a row is
 -------------
 One klt sim unit: (process, temp, vnom) x (dv, ra, rf, rc).  The deck records the
 rising-edge times t[r][k] of the four BUFFERED ring outputs (k = 3..42, i.e. 40
-edges, 39 periods).  There is deliberately NO injected noise: every figure here
+edges, 39 periods; the issue #288 lock-resolution campaign extends the window to
+200/400 edges -- plans carry "nedge" and the detector math is window-generic).
+There is deliberately NO injected noise: every figure here
 is the deterministic response of the rings to the ripple, so it is a
 robustness measurement, not an entropy measurement.
 
@@ -81,6 +83,7 @@ sys.path.insert(0, os.path.join(REPO, "sim", "bin"))
 
 NEDGE = 40
 DRIFT_LOCK = 0.1                 # ring cycles slipped over the window below which => locked
+LR = "lock-resolution"           # make-requests.py --campaign lr (issue #288): 200/400-edge windows
 RATIOS = [(p, q) for p in range(1, 5) for q in range(1, 5) if math.gcd(p, q) == 1]
 PAIR_RATIOS = [(1, 1), (2, 1), (3, 2), (4, 3)]
 DR5_RATIOS = [(2, 1), (3, 2), (4, 3)]
@@ -253,8 +256,8 @@ def unit_measurements(corner):
     return {x["name"]: x["value"] for x in corner["measurements"] if x.get("value") is not None}
 
 
-def edges_of(meas):
-    return [[meas[f"t{r}_{k}"] for k in range(3, 3 + NEDGE)] for r in range(1, 5)]
+def edges_of(meas, nedge=NEDGE):
+    return [[meas[f"t{r}_{k}"] for k in range(3, 3 + nedge)] for r in range(1, 5)]
 
 
 def load_reqdir(reqdir):
@@ -288,7 +291,7 @@ def build_rows(chunks):
         if base is None or base[3]["status"] != "pass":
             raise SystemExit(f"{cn}: no passing clean baseline unit; refusing to derive deltas")
         bm = unit_measurements(base[3])
-        clean = edges_of(bm)
+        clean = edges_of(bm, base[1].get("nedge", NEDGE))
         bm_bias = bm["xo_avg"] / plan_vnom(base[1])
         rows = []
         for name, plan, u, c in units:
@@ -296,13 +299,17 @@ def build_rows(chunks):
                    "rf_hz": u["rf"] if u["kind"] in ("tone", "control") else None, "ri_mA": u["ri"],
                    "amp": u.get("amp", u["ra"] if u["kind"] == "tone" else 0.0),
                    "klt_status": c["status"], "klt_corner_id": c["corner_id"]}
+            if "nedge" in plan:                     # campaign rows carry their requested window;
+                row["nedge"] = plan["nedge"]        # legacy rows stay key-free (replay-identical)
+            if "detune" in u:
+                row["detune"] = u["detune"]
             pvt = plan["pvt"]
             try:
                 m = unit_measurements(c)
                 if c["status"] != "pass":
                     raise KeyError(f"klt status {c['status']}")
                 row["vdd_pp_v"] = [m["vdd_min"], m["vdd_max"]]
-                row["metrics"] = row_metrics(edges_of(m), clean, pvt["vnom"], u["dv"], m["xo_avg"], row["rf_hz"])
+                row["metrics"] = row_metrics(edges_of(m, plan.get("nedge", NEDGE)), clean, pvt["vnom"], u["dv"], m["xo_avg"], row["rf_hz"])
                 row["metrics"]["edge_retention_proxy"] = 48 / (m["txo_b"] - m["txo_a"])
                 row["metrics"]["xo_swing_frac"] = (m["xo_max"] - m["xo_min"]) / (pvt["vnom"] + u["dv"])
                 ok, why = row_verdict(row["metrics"])
@@ -408,6 +415,81 @@ def summarize(rows, vnom, amps):
                                  if r["metrics"] and any(t["state"] == "LOCKED" for t in r["metrics"]["tone"])]}
 
 
+def _trio(r):
+    """The three criteria SEPARATELY for a usable row (issue #288: a bias
+    failure must not hide behind a lock-only result)."""
+    why = r.get("why") or []
+    return {"LOCK": not any(w.startswith("LOCK") for w in why),
+            "Q": not any(w.startswith("Q:") for w in why),
+            "BIAS": not any(w.startswith("BIAS") for w in why)}
+
+
+def _tone_ring(tone):
+    return int(tone[1]) if tone.startswith("f") and len(tone) > 1 and tone[1].isdigit() else 1
+
+
+def summarize_lr(rows):
+    """Issue #288 lock-resolution summary. LOCK, Q and BIAS are reported
+    separately; on-frequency rows stay drift-UNRESOLVED (exact coincidence is
+    unidentifiable by drift at any window); the 400-edge subset checks that the
+    representative rows converge under the longer window."""
+    tone = [r for r in rows if r["kind"] == "tone"]
+    ctl = [r for r in rows if r["kind"] == "control"]
+    base = next(r for r in rows if r["kind"] == "baseline")
+    nedges = sorted({r.get("nedge", NEDGE) for r in rows})
+    out = {"nedge": nedges,
+           "detuning_resolution_pct": {n: round(DRIFT_LOCK / (n - 1) * 100, 4) for n in nedges},
+           "baseline_T_ns": base["metrics"]["T_ns"] if base["metrics"] else None,
+           "rows_unusable": [(r["tone"], r["klt_status"], r["why"]) for r in rows if r["metrics"] is None]}
+    us = [r for r in tone if r["metrics"]]
+    out["locked"] = [{"amp_mV": round(r["amp"] * 1e3), "tone": r["tone"], "ring": t["ring"],
+                      "p_q": f"{t['p']}:{t['q']}", "drift_cycles": t["drift_cycles"],
+                      "pull_fraction": t["pull_fraction"]}
+                     for r in us for t in r["metrics"]["tone"] if t["state"] == "LOCKED"]
+    lr_by_amp = {}
+    for r in us:
+        d = abs(r.get("detune", 0.0)) * 100
+        if d and any(t["state"] == "LOCKED" for t in r["metrics"]["tone"]):
+            a = round(r["amp"] * 1e3)
+            lr_by_amp[a] = max(lr_by_amp.get(a, 0.0), d)
+    out["lock_range_pct_by_amp"] = lr_by_amp
+    out["on_frequency_unresolved"] = [
+        {"amp_mV": round(r["amp"] * 1e3), "tone": r["tone"],
+         "ring_states": {t["ring"]: t["state"] for t in r["metrics"]["tone"] if t["state"] != "free"},
+         "mod_pk_pct": r["metrics"]["mod_pk_pct"], "shift_pct": r["metrics"]["shift_pct"],
+         "pull_fractions": {t["ring"]: t["pull_fraction"] for t in r["metrics"]["tone"]
+                            if t["pull_fraction"] is not None}}
+        for r in us if r.get("unresolved")]
+    out["verdict_counts"] = {"tone_rows": len(us),
+                             "LOCK_pass": sum(_trio(r)["LOCK"] for r in us),
+                             "Q_pass": sum(_trio(r)["Q"] for r in us),
+                             "BIAS_pass": sum(_trio(r)["BIAS"] for r in us)}
+    out["failing_only_bias"] = [f"{r['tone']}@{r['amp']*1e3:g}mV" for r in us if r["ok_nobias"] and not r["ok"]]
+    out["failing_lock_or_q"] = [f"{r['tone']}@{r['amp']*1e3:g}mV" for r in us if not r["ok_nobias"]]
+    out["controls"] = [{"tone": r["tone"], "state": r["metrics"]["tone"][1]["state"],
+                        "drift_cycles": r["metrics"]["tone"][1]["drift_cycles"],
+                        "clean_drift_cycles": r["metrics"]["tone"][1]["clean_drift_cycles"],
+                        "flagged": r["metrics"]["tone"][1]["state"] == "LOCKED"}
+                       for r in ctl if r["metrics"]]
+    at200 = {(r["tone"], round(r["amp"], 6)): r for r in us if r.get("nedge", NEDGE) == 200}
+    conv = []
+    for r in us:
+        if r.get("nedge") != 400:
+            continue
+        m = at200.get((r["tone"], round(r["amp"], 6)))
+        if not (m and m["metrics"]):
+            continue
+        ring = _tone_ring(r["tone"]) - 1
+        s2, s4 = m["metrics"]["tone"][ring], r["metrics"]["tone"][ring]
+        conv.append({"tone": r["tone"], "amp_mV": round(r["amp"] * 1e3),
+                     "at_200_edges": {"state": s2["state"], "drift_cycles": s2["drift_cycles"]},
+                     "at_400_edges": {"state": s4["state"], "drift_cycles": s4["drift_cycles"]},
+                     "converged": s2["state"] == s4["state"]})
+    out["convergence_200_vs_400"] = conv
+    out["converged_all"] = all(c["converged"] for c in conv) if conv else None
+    return out
+
+
 # ---------------------------------------------------------------- records
 def _f(x, nd=3):
     return "-" if x is None else f"{x:.{nd}f}"
@@ -485,11 +567,88 @@ def render_md(rid, cn, pvt, rows, summ, jobs, sha, now, claim, supersedes="(none
     return "\n".join(L) + "\n"
 
 
+def render_lr_md(rid, pvt, rows, summ, jobs, sha, now):
+    L = [f"# {rid} -- {SLUG} (lock-resolution, issue #288)", "",
+         f"**Claim**: {LR_CLAIM}", "",
+         "**Level**: transistor (pre-layout `design/ro_array_core.spice`; deterministic transient, NO injected noise)",
+         f"**PVT point**: {pvt['proc']} / {pvt['temp']:g} degC / {pvt['vnom']:g} V ({pvt['why']}). "
+         f"**Seed**: N/A (deterministic; every row is one unit of a `klt sim` corners request).",
+         f"**Status**: {PROV}. Not a silicon result, not an entropy measurement.", "",
+         "**Batch jobs**: " + ", ".join(f"`{j}`" for j in jobs), "",
+         "**Window & resolution**: a free-running ring detuned by delta from the tone slips delta*(N-1) ring cycles "
+         "across an N-edge window, so the 0.1-cycle DRIFT_LOCK criterion resolves "
+         + ", ".join(f"{n} edges -> {DRIFT_LOCK / (n - 1) * 100:.3g} %" for n in summ["nedge"]) +
+         "; the campaign claims +-0.1 % (2x margin at the 200-edge window) and checks convergence at 400 edges. "
+         "Every usable row carries all of its requested edge measurements; a unit missing any edge is recorded "
+         "below as an unusable row, never silently dropped.", "",
+         "## Measured brackets vs hypotheses", "",
+         f"- Amplitudes tested: 5, 20, 50 mV pk; detunings tested: +-0.1, +-0.25, +-0.4 % (and +-0.25 % at 5 mV). "
+         "Statements beyond this ladder are hypotheses, not measurements.",
+         f"- On-frequency rows: {len(summ['on_frequency_unresolved'])} drift-UNRESOLVED -- exact coincidence is "
+         "unidentifiable by drift at any window; they are decided, where at all, by detuned neighbours and pull evidence.",
+         f"- Rows with a ring LOCKED to the tone: {summ['locked'] or 'none'}. Largest locked detune per amplitude "
+         f"(mV: max detune %): {summ['lock_range_pct_by_amp'] or 'none'}.",
+         f"- Criterion verdicts over tone rows, reported separately: {summ['verdict_counts']}. "
+         f"Failing ONLY the bias band (LOCK and Q pass): {summ['failing_only_bias'] or 'none'}. "
+         "An ff bias failure does not disappear behind a lock-only result.",
+         "- 200- vs 400-edge convergence: "
+         + ("all representative rows converged" if summ["converged_all"] else str(summ["convergence_200_vs_400"])) + ".", "",
+         "## Tone rows", "",
+         "The LOCK / Q / BIAS columns are the three criteria SEPARATELY; verdict = PASS only if all three hold. "
+         "An on-frequency row (detune 0 %) is drift-UNRESOLVED by construction, not passed and not failed.", "",
+         "| amp (mV) | tone | rf (MHz) | max mod pk % | max shift % | Q ratio | bias_xo (shift) | non-free rings (state p:q drift) | LOCK | Q | BIAS | verdict |",
+         "|---|---|---|---|---|---|---|---|---|---|---|---|"]
+    for r in rows:
+        if r["kind"] not in ("tone", "baseline"):
+            continue
+        m = r["metrics"]
+        if m is None:
+            L.append(f"| {r['amp']*1e3:g} | {r['tone']} | - | - | - | - | - | - | - | - | - | **UNUSABLE** {r['why']} |")
+            continue
+        nf = " ".join(f"r{t['ring']}:{t['state']} {t['p']}:{t['q']} {t['drift_cycles']:+.2f}" +
+                      (f" pull {t['pull_fraction']:.2f}" if t["state"] == "LOCKED" and t.get("pull_fraction") is not None else "")
+                      for t in m["tone"] if t["state"] != "free") or "none"
+        t3 = _trio(r)
+        verdict = "PASS" if r["ok"] else "**FAIL** " + "; ".join(r["why"])
+        if r.get("unresolved"):
+            verdict += " (drift-UNRESOLVED: on-frequency)"
+        L.append(f"| {r['amp']*1e3:g} | {r['tone']} | {_f(r['rf_hz']/1e6 if r['rf_hz'] else None, 3)} | {max(m['mod_pk_pct']):.3f} | "
+                 f"{max(abs(x) for x in m['shift_pct']):.3f} | {m['Q_ratio']:.4f} | {m['bias_xo']:.4f} ({r['bias_shift']:+.3f}) | {nf} | "
+                 f"{'pass' if t3['LOCK'] else 'FAIL'} | {'pass' if t3['Q'] else 'FAIL'} | {'pass' if t3['BIAS'] else 'FAIL'} | {verdict} |")
+    L += ["", "## Current-injection controls (ring 2, node n2)", "",
+          "The +5 % detuned control is clearly free-running by construction (a clean ring slips ~10 cycles over the "
+          "200-edge window), so only a true lock reads LOCKED there; it brackets the current-injection lock range next "
+          "to the #200 +2 % (locked) and +20 % (not locked) rungs.", "",
+          "| tone | ring-2 state | drift (ring cycles) | clean drift | flagged |", "|---|---|---|---|---|"]
+    for c in summ["controls"]:
+        L.append(f"| {c['tone']} | {c['state']} | {c['drift_cycles']:+.3f} | {c['clean_drift_cycles']:+.3f} | "
+                 f"{'YES' if c['flagged'] else 'no'} |")
+    L += ["", "## 200- vs 400-edge convergence subset (ring 2, +-0.25 % @ 50 mV)", "",
+          "| tone | amp (mV) | 200-edge state (drift cyc) | 400-edge state (drift cyc) | converged |",
+          "|---|---|---|---|---|"]
+    for c in summ["convergence_200_vs_400"]:
+        L.append(f"| {c['tone']} | {c['amp_mV']} | {c['at_200_edges']['state']} ({c['at_200_edges']['drift_cycles']:+.2f}) | "
+                 f"{c['at_400_edges']['state']} ({c['at_400_edges']['drift_cycles']:+.2f}) | {'yes' if c['converged'] else 'NO'} |")
+    L += ["", "Per-row pair data, edge times and all raw responses are in the `.json` and `../corners/<id>/` "
+          "(append-only; the #200 records are untouched).", "",
+          "---", "", "- Author: loom-builder@sky130-trng", f"- Timestamp (UTC): {now.isoformat()}", f"- Repo commit: `{sha}`",
+          "- Supersedes: (none; extends the #200 records)"]
+    return "\n".join(L) + "\n"
+
+
 CLAIM = ("Supply-ripple / injection-lock robustness of the committed pre-layout ro_array_core (issue #200): "
          "common-mode sinusoidal ripple of 10, 50, 100 and 200 mV pk on vdd and vddr1..4 at the ring-ladder frequencies "
          "(own, +0.5% detuned, just outside), sub-harmonics, 2x, 10 MHz and the quasi-static (50 kbps) limit; per-ring "
          "period modulation, ring-vs-tone and ring-vs-ring injection-lock closeness, combining-node bias; ring-local "
          "current-injection negative control; deterministic, no injected noise")
+LR_CLAIM = ("Lock-resolution follow-up on the same pre-layout ro_array_core (issue #288, DR-0012 follow-up 5): "
+            "200-edge observation windows resolving +-0.1 % detuning (0.1-cycle drift criterion, 2x margin; a "
+            "free-running ring detuned by delta slips delta*(N-1) cycles over N edges) with a 400-edge convergence "
+            "subset; detuning ladder +-0.1 / +-0.25 / +-0.4 % on both sides of each ring's own frequency at 20 and "
+            "50 mV pk (inside the #200 10-50 mV lock bracket) and +-0.25 % at 5 mV pk (below its 10 mV floor); "
+            "on-frequency rows kept drift-UNRESOLVED and decided, where at all, by detuned neighbours and pull "
+            "evidence; current-injection controls including a clearly free-running +5 % detuned control; LOCK, Q "
+            "and BIAS reported separately; deterministic, no injected noise, no entropy claim")
 PVTS = None
 
 
@@ -502,6 +661,10 @@ def emit_record(reqdir, sha=None):
     spec.loader.exec_module(mr)
     sha = sha or git_short_sha(Path(REPO))
     chunks = load_reqdir(reqdir)
+    campaigns = {pl.get("campaign") for _, pl, _ in chunks}
+    if len(campaigns) > 1:
+        raise SystemExit(f"error: mixed campaigns in one request dir: {campaigns}")
+    campaign = next(iter(campaigns), None)
     allrows = build_rows(chunks)
     base_now = datetime.datetime.now(datetime.timezone.utc)
     for n, cn in enumerate(sorted(allrows), 1):
@@ -510,7 +673,12 @@ def emit_record(reqdir, sha=None):
         pvt = dict(mr.CORNERS[cn])
         pvt.pop("tr")
         rows = allrows[cn]
-        summ = summarize(rows, pvt["vnom"], (0.010, 0.050))
+        if campaign == LR:
+            summ = summarize_lr(rows)
+            claim = LR_CLAIM
+        else:
+            summ = summarize(rows, pvt["vnom"], (0.010, 0.050))
+            claim = CLAIM
         mine = [(nm, pl, rs) for nm, pl, rs in chunks if pl["corner"] == cn]
         jobs = [rs["environment"]["remote"]["job_id"] for _, _, rs in mine]
         cdir = os.path.join(REPO, "sim", SLUG, "corners", rid)
@@ -525,9 +693,13 @@ def emit_record(reqdir, sha=None):
             json.dump(pl, open(os.path.join(cdir, f"{nm}.plan.json"), "w"), indent=1)
             for fn, dst in (("request.json", f"{nm}.request.json"), ("netlist.cir", f"{nm}.netlist.cir")):
                 shutil.copyfile(os.path.join(reqdir, nm, fn), os.path.join(cdir, dst))   # exactly what was submitted
-        rec = {"record_id": rid, "slug": SLUG, "claim": CLAIM, "level": "transistor", "status": PROV,
-               "seed": "N/A (deterministic transient, no injected noise)", "pvt": pvt,
-               "criteria": {"drift_lock_ring_cycles": DRIFT_LOCK, "q_margin": Q_MARGIN, "bias_band": list(BIAS_BAND)},
+        criteria = {"drift_lock_ring_cycles": DRIFT_LOCK, "q_margin": Q_MARGIN, "bias_band": list(BIAS_BAND)}
+        if campaign == LR:
+            criteria.update(nedge=summ["nedge"], detuning_resolution_pct=summ["detuning_resolution_pct"],
+                            claimed_resolution_pct=0.1)
+        rec = {"record_id": rid, "slug": SLUG, "claim": claim, "level": "transistor", "status": PROV,
+               "seed": "N/A (deterministic transient, no injected noise)", "pvt": pvt, "campaign": campaign,
+               "criteria": criteria,
                "testbench": "sim/ro-array-supply-perturbation/testbench/tb_ro_array_supply_perturbation.spice "
                             "(via sim/ro-array-supply-perturbation/make-requests.py)",
                "klt_sim": {"jobs": jobs, "backend": "batch", "remote": [rs["environment"]["remote"] for _, _, rs in mine],
@@ -537,8 +709,13 @@ def emit_record(reqdir, sha=None):
                            "responses": f"sim/{SLUG}/corners/{rid}/*.klt-sim.json.gz"},
                "supersedes": "(none)", "summary": summ, "rows": rows, "timestamp_utc": now.isoformat()}
         json.dump(rec, open(os.path.join(rdir, rid + ".json"), "w"), indent=2, default=str)
-        open(os.path.join(rdir, rid + ".md"), "w").write(render_md(rid, cn, pvt, rows, summ, jobs, sha, now, CLAIM))
-        print(rid, cn, summ["tolerance_rf_cycle_avg"], "| detector fires:", summ["detector_fires_on_negative_control"])
+        md = (render_lr_md(rid, pvt, rows, summ, jobs, sha, now) if campaign == LR
+              else render_md(rid, cn, pvt, rows, summ, jobs, sha, now, claim))
+        open(os.path.join(rdir, rid + ".md"), "w").write(md)
+        tail = (f"locked at: {summ['lock_range_pct_by_amp'] or 'none'} | converged: {summ['converged_all']}"
+                if campaign == LR else summ["tolerance_rf_cycle_avg"])
+        print(rid, cn, tail, "| detector fires:", summ.get("detector_fires_on_negative_control",
+                                                            any(c["flagged"] for c in summ.get("controls", []))))
 
 
 def check(recpath):
@@ -551,7 +728,10 @@ def check(recpath):
         with gzip.open(f, "rt") as fh:
             chunks.append((nm, json.load(open(os.path.join(cdir, nm + ".plan.json"))), json.load(fh)))
     rows = build_rows(chunks)[next(iter({pl["corner"] for _, pl, _ in chunks}))]
-    summ = summarize(rows, rec["pvt"]["vnom"], (0.010, 0.050))
+    if rec.get("campaign") == LR:
+        summ = summarize_lr(rows)
+    else:
+        summ = summarize(rows, rec["pvt"]["vnom"], (0.010, 0.050))
     same = json.loads(json.dumps(rows, default=str)) == rec["rows"] and json.loads(json.dumps(summ, default=str)) == rec["summary"]
     print("replay", "MATCHES" if same else "DIFFERS", recpath)
     return 0 if same else 1

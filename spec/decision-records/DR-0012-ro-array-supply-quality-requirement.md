@@ -311,6 +311,18 @@ retire it.
 | 4 | **Bias-band baseline at ff** (array / DR-0003 band definition) | Resolve the 0.5246 clean ff baseline at the upper edge of 0.31-0.53 against the criterion used; any band change goes through its own DR | A decision record or evidence showing whether the band or the ripple limit is what binds at ff |
 | 5 | **Lock-resolution closure** (sim/ro-array-supply-perturbation) | Resolve the UNRESOLVED on-frequency tone rows (longer windows) and locate the 10-50 mV threshold | A record with finer amplitudes and a longer edge window |
 
+Status of follow-up 5 (issue #288, appended by the campaign that delivered the
+evidence; no criterion or threshold of this record is changed): the lock-resolution
+campaign ran the bounded matrix (200-edge windows resolving +-0.1 % detuning, a
+400-edge convergence subset, the 5/20/50 mV amplitude rungs and the detuned
+ladder on both sides of each ring frequency) through `klt sim` batch at the same
+two PVT points as the evidence above. Its records are the evidence named in this
+row's last column — read the record's own "Measured brackets vs hypotheses"
+section for what was measured versus what remains hypothesis; on-frequency rows
+stay drift-UNRESOLVED there by construction (exact coincidence is unidentifiable
+by drift at any window), and every claim remains simulation-derived and
+provisional until silicon.
+
 Preserved and distinguished:
 
 - **DR-0003 combining ceiling.** `N_max_combine = 6` is unchanged and not

@@ -14,6 +14,12 @@
 *
 *   @@VNOM@@     nominal supply of this PVT point (V)
 *   @@RO_ARRAY@@ absolute path of design/ro_array_core.spice
+*   @@ENW@@      enable pulse WIDTH (s); default 1u (#200 windows end by 460 ns).
+*                The #288 lock-resolution campaign sets 3u: a 1u width drops the
+*                enable at ~1.005 us and freezes the rings, truncating long
+*                observation windows (probed: all four rings stop by ~1.0 us).
+*   @@ENP@@      enable pulse PERIOD (s); default 2u (#288 sets 4u so a re-assert
+*                cannot land inside a long window).
 *
 * Swept through klt sim `corners.supply_v`, zipped by index. That mechanism is an
 * ngspice `alter <source>=<value>` of a DC voltage source -- it cannot reach into a
@@ -62,10 +68,10 @@ Bvddr3 vddr3 0 V = {vnom} + v(dvn) + v(ran)*sin(6.283185307179586*v(rfn)*time)
 Bvddr4 vddr4 0 V = {vnom} + v(dvn) + v(ran)*sin(6.283185307179586*v(rfn)*time)
 Bvdd   vdd   0 V = {vnom} + v(dvn) +  v(ran)                 *sin(6.283185307179586*v(rfn)*time)
 
-Ven1 en1 0 PULSE(0 {vnom} 5n 100p 100p 1u 2u)
-Ven2 en2 0 PULSE(0 {vnom} 5n 100p 100p 1u 2u)
-Ven3 en3 0 PULSE(0 {vnom} 5n 100p 100p 1u 2u)
-Ven4 en4 0 PULSE(0 {vnom} 5n 100p 100p 1u 2u)
+Ven1 en1 0 PULSE(0 {vnom} 5n 100p 100p @@ENW@@ @@ENP@@)
+Ven2 en2 0 PULSE(0 {vnom} 5n 100p 100p @@ENW@@ @@ENP@@)
+Ven3 en3 0 PULSE(0 {vnom} 5n 100p 100p @@ENW@@ @@ENP@@)
+Ven4 en4 0 PULSE(0 {vnom} 5n 100p 100p @@ENW@@ @@ENP@@)
 
 xdut en1 en2 en3 en4 vddr1 vddr2 vddr3 vddr4 vdd 0 xo ro1 ro2 ro3 ro4 ro_array_core
 
