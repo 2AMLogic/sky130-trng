@@ -1,0 +1,1235 @@
+{
+  "schema_version": 1,
+  "issue": 281,
+  "not_signoff": "Evidence, not sign-off. This audit cross-checks klt's own curated sky130 deck coverage report against the composed stream. It is not a foundry DRC runset, and it adds no antenna, density, seal-ring, latch-up or foundry-only rule. No ratified spec value is read or changed.",
+  "generator": "layout/bin/verify-whole.py audit (layout/bin/drc_coverage_audit.py)",
+  "inputs": {
+    "gds": "layout/trng_whole/trng_whole.gds",
+    "gds_sha256": "af2f8dfe2800599e97d769bdedd14924c9fa3f24fc7e1c4f43ccd72ac5572ddd",
+    "top": "trng_whole",
+    "drc_report": "layout/trng_whole/verify/drc.json",
+    "drc_report_input_content_hash": "sha256:af2f8dfe2800599e97d769bdedd14924c9fa3f24fc7e1c4f43ccd72ac5572ddd",
+    "drc_report_input_matches_gds": true,
+    "deck": {
+      "name": "sky130",
+      "content_hash": "sha256:2bcbd625a0e36a4d1f9893b3c5d9b94963179c962b10ba01ffc4f378938c8197",
+      "rules_source": "klt deck rules --deck sky130 --format json (content_hash verified equal to the pin)",
+      "layer_table_source": "klayout_tools.decks.get_layer_names('sky130') from a deck module whose sha256 equals the pin (klt exposes no layer/datatype for rule layers on its CLI)"
+    },
+    "counts_source": "klt layers <gds> --top <top> --flattened --include-text --format json"
+  },
+  "count_semantics": "flattened_shapes: klt's instantiated (hierarchy- and transform-flattened) shape count per layer/datatype under the top cell, text objects included. geometry = flattened_shapes - text_count: the polygons/boxes/paths a DRC rule can act on. definition_shapes: shapes in cell definitions, not instantiated.",
+  "verdict_conditions": {
+    "vacuous-confirmed": {
+      "angle": "the one layer the rule reads has geometry == 0 in the flattened stream",
+      "ongrid": "the one layer the rule reads has geometry == 0 in the flattened stream",
+      "width": "the one layer the rule reads has geometry == 0 in the flattened stream",
+      "space": "the one layer the rule reads has geometry == 0 in the flattened stream",
+      "enclosing": "at least one of the two layers the rule reads has geometry == 0 (the check needs both)",
+      "separation": "at least one of the two layers the rule reads has geometry == 0 (the check needs both)"
+    },
+    "residual": "every layer the rule reads has geometry > 0, yet klt lists the rule as inapplicable",
+    "unresolved": "rule id not in the pinned deck; or a deck layer name not resolvable to exactly one stream layer/datatype that the pinned DRC run also read (drc.json coverage.deck_layers); or a check kind / layer count outside the kinds above. Never forced to vacuous-confirmed"
+  },
+  "unruled_conditions": {
+    "present-unruled": "geometry > 0 and klt's annotation flag is false: drawn shapes that no curated rule reads",
+    "text-or-marker-only": "flattened_shapes > 0 and (geometry == 0, i.e. text objects only, or klt's annotation flag is true)",
+    "unresolved": "listed by klt drc as in the stream but klt layers reports no shapes for it"
+  },
+  "summary": {
+    "rules_audited": 45,
+    "rules_by_verdict": {
+      "vacuous-confirmed": 45
+    },
+    "unruled_layers": 19,
+    "unruled_by_verdict": {
+      "present-unruled": 11,
+      "text-or-marker-only": 8
+    },
+    "stream_layers": 39,
+    "stream_layers_checked": 20,
+    "stream_layers_unruled": 19,
+    "stream_layers_unaccounted": []
+  },
+  "layer_map": {
+    "areaid.rfdiode": "81/125",
+    "capacitor.drawing": "82/64",
+    "capm.drawing": "89/44",
+    "capm2.drawing": "97/44",
+    "dnwell.drawing": "64/18",
+    "hvi.drawing": "75/20",
+    "hvntm.drawing": "125/20",
+    "hvtr.drawing": "18/20",
+    "lvtn.drawing": "125/44",
+    "met3.drawing": "70/20",
+    "met4.drawing": "71/20",
+    "ncm.drawing": "92/44",
+    "nsm.drawing": "61/20",
+    "pad.drawing": "76/20",
+    "pwbm.drawing": "19/44",
+    "pwde.drawing": "124/20",
+    "pwell.res": "64/13",
+    "rpm.drawing": "86/20",
+    "target.drawing": "76/44",
+    "tunm.drawing": "80/20",
+    "uhvi.drawing": "74/22",
+    "vhvi.drawing": "74/21",
+    "via3.drawing": "70/44",
+    "via4.drawing": "71/44"
+  },
+  "rules": [
+    {
+      "rule": "areaid_re.ongrid.1",
+      "check": "ongrid",
+      "deck_layers": [
+        {
+          "name": "areaid.rfdiode",
+          "gds": "81/125",
+          "flattened_shapes": 0,
+          "text_count": 0,
+          "geometry": 0
+        }
+      ],
+      "klt_reason": "no_applicable_geometry",
+      "klt_lists": [
+        "inapplicable",
+        "rules_skipped"
+      ],
+      "verdict": "vacuous-confirmed",
+      "why": "no geometry on areaid.rfdiode"
+    },
+    {
+      "rule": "capm.enclosing.via3.1",
+      "check": "enclosing",
+      "deck_layers": [
+        {
+          "name": "capm.drawing",
+          "gds": "89/44",
+          "flattened_shapes": 0,
+          "text_count": 0,
+          "geometry": 0
+        },
+        {
+          "name": "via3.drawing",
+          "gds": "70/44",
+          "flattened_shapes": 3041,
+          "text_count": 0,
+          "geometry": 3041
+        }
+      ],
+      "klt_reason": "no_applicable_geometry",
+      "klt_lists": [
+        "inapplicable",
+        "rules_skipped"
+      ],
+      "verdict": "vacuous-confirmed",
+      "why": "no geometry on capm.drawing"
+    },
+    {
+      "rule": "capm.separation.via3.1",
+      "check": "separation",
+      "deck_layers": [
+        {
+          "name": "capm.drawing",
+          "gds": "89/44",
+          "flattened_shapes": 0,
+          "text_count": 0,
+          "geometry": 0
+        },
+        {
+          "name": "via3.drawing",
+          "gds": "70/44",
+          "flattened_shapes": 3041,
+          "text_count": 0,
+          "geometry": 3041
+        }
+      ],
+      "klt_reason": "no_applicable_geometry",
+      "klt_lists": [
+        "inapplicable",
+        "rules_skipped"
+      ],
+      "verdict": "vacuous-confirmed",
+      "why": "no geometry on capm.drawing"
+    },
+    {
+      "rule": "capm.space.1",
+      "check": "space",
+      "deck_layers": [
+        {
+          "name": "capm.drawing",
+          "gds": "89/44",
+          "flattened_shapes": 0,
+          "text_count": 0,
+          "geometry": 0
+        }
+      ],
+      "klt_reason": "no_applicable_geometry",
+      "klt_lists": [
+        "inapplicable",
+        "rules_skipped"
+      ],
+      "verdict": "vacuous-confirmed",
+      "why": "no geometry on capm.drawing"
+    },
+    {
+      "rule": "capm.width.1",
+      "check": "width",
+      "deck_layers": [
+        {
+          "name": "capm.drawing",
+          "gds": "89/44",
+          "flattened_shapes": 0,
+          "text_count": 0,
+          "geometry": 0
+        }
+      ],
+      "klt_reason": "no_applicable_geometry",
+      "klt_lists": [
+        "inapplicable",
+        "rules_skipped"
+      ],
+      "verdict": "vacuous-confirmed",
+      "why": "no geometry on capm.drawing"
+    },
+    {
+      "rule": "capm2.enclosing.via4.1",
+      "check": "enclosing",
+      "deck_layers": [
+        {
+          "name": "capm2.drawing",
+          "gds": "97/44",
+          "flattened_shapes": 0,
+          "text_count": 0,
+          "geometry": 0
+        },
+        {
+          "name": "via4.drawing",
+          "gds": "71/44",
+          "flattened_shapes": 171,
+          "text_count": 0,
+          "geometry": 171
+        }
+      ],
+      "klt_reason": "no_applicable_geometry",
+      "klt_lists": [
+        "inapplicable",
+        "rules_skipped"
+      ],
+      "verdict": "vacuous-confirmed",
+      "why": "no geometry on capm2.drawing"
+    },
+    {
+      "rule": "capm2.separation.via4.1",
+      "check": "separation",
+      "deck_layers": [
+        {
+          "name": "capm2.drawing",
+          "gds": "97/44",
+          "flattened_shapes": 0,
+          "text_count": 0,
+          "geometry": 0
+        },
+        {
+          "name": "via4.drawing",
+          "gds": "71/44",
+          "flattened_shapes": 171,
+          "text_count": 0,
+          "geometry": 171
+        }
+      ],
+      "klt_reason": "no_applicable_geometry",
+      "klt_lists": [
+        "inapplicable",
+        "rules_skipped"
+      ],
+      "verdict": "vacuous-confirmed",
+      "why": "no geometry on capm2.drawing"
+    },
+    {
+      "rule": "capm2.space.1",
+      "check": "space",
+      "deck_layers": [
+        {
+          "name": "capm2.drawing",
+          "gds": "97/44",
+          "flattened_shapes": 0,
+          "text_count": 0,
+          "geometry": 0
+        }
+      ],
+      "klt_reason": "no_applicable_geometry",
+      "klt_lists": [
+        "inapplicable",
+        "rules_skipped"
+      ],
+      "verdict": "vacuous-confirmed",
+      "why": "no geometry on capm2.drawing"
+    },
+    {
+      "rule": "capm2.width.1",
+      "check": "width",
+      "deck_layers": [
+        {
+          "name": "capm2.drawing",
+          "gds": "97/44",
+          "flattened_shapes": 0,
+          "text_count": 0,
+          "geometry": 0
+        }
+      ],
+      "klt_reason": "no_applicable_geometry",
+      "klt_lists": [
+        "inapplicable",
+        "rules_skipped"
+      ],
+      "verdict": "vacuous-confirmed",
+      "why": "no geometry on capm2.drawing"
+    },
+    {
+      "rule": "dnwell.angle.1",
+      "check": "angle",
+      "deck_layers": [
+        {
+          "name": "dnwell.drawing",
+          "gds": "64/18",
+          "flattened_shapes": 0,
+          "text_count": 0,
+          "geometry": 0
+        }
+      ],
+      "klt_reason": "no_applicable_geometry",
+      "klt_lists": [
+        "inapplicable",
+        "rules_skipped"
+      ],
+      "verdict": "vacuous-confirmed",
+      "why": "no geometry on dnwell.drawing"
+    },
+    {
+      "rule": "dnwell.ongrid.1",
+      "check": "ongrid",
+      "deck_layers": [
+        {
+          "name": "dnwell.drawing",
+          "gds": "64/18",
+          "flattened_shapes": 0,
+          "text_count": 0,
+          "geometry": 0
+        }
+      ],
+      "klt_reason": "no_applicable_geometry",
+      "klt_lists": [
+        "inapplicable",
+        "rules_skipped"
+      ],
+      "verdict": "vacuous-confirmed",
+      "why": "no geometry on dnwell.drawing"
+    },
+    {
+      "rule": "hvi.angle.1",
+      "check": "angle",
+      "deck_layers": [
+        {
+          "name": "hvi.drawing",
+          "gds": "75/20",
+          "flattened_shapes": 0,
+          "text_count": 0,
+          "geometry": 0
+        }
+      ],
+      "klt_reason": "no_applicable_geometry",
+      "klt_lists": [
+        "inapplicable",
+        "rules_skipped"
+      ],
+      "verdict": "vacuous-confirmed",
+      "why": "no geometry on hvi.drawing"
+    },
+    {
+      "rule": "hvi.ongrid.1",
+      "check": "ongrid",
+      "deck_layers": [
+        {
+          "name": "hvi.drawing",
+          "gds": "75/20",
+          "flattened_shapes": 0,
+          "text_count": 0,
+          "geometry": 0
+        }
+      ],
+      "klt_reason": "no_applicable_geometry",
+      "klt_lists": [
+        "inapplicable",
+        "rules_skipped"
+      ],
+      "verdict": "vacuous-confirmed",
+      "why": "no geometry on hvi.drawing"
+    },
+    {
+      "rule": "hvntm.angle.1",
+      "check": "angle",
+      "deck_layers": [
+        {
+          "name": "hvntm.drawing",
+          "gds": "125/20",
+          "flattened_shapes": 0,
+          "text_count": 0,
+          "geometry": 0
+        }
+      ],
+      "klt_reason": "no_applicable_geometry",
+      "klt_lists": [
+        "inapplicable",
+        "rules_skipped"
+      ],
+      "verdict": "vacuous-confirmed",
+      "why": "no geometry on hvntm.drawing"
+    },
+    {
+      "rule": "hvntm.ongrid.1",
+      "check": "ongrid",
+      "deck_layers": [
+        {
+          "name": "hvntm.drawing",
+          "gds": "125/20",
+          "flattened_shapes": 0,
+          "text_count": 0,
+          "geometry": 0
+        }
+      ],
+      "klt_reason": "no_applicable_geometry",
+      "klt_lists": [
+        "inapplicable",
+        "rules_skipped"
+      ],
+      "verdict": "vacuous-confirmed",
+      "why": "no geometry on hvntm.drawing"
+    },
+    {
+      "rule": "hvtr.angle.1",
+      "check": "angle",
+      "deck_layers": [
+        {
+          "name": "hvtr.drawing",
+          "gds": "18/20",
+          "flattened_shapes": 0,
+          "text_count": 0,
+          "geometry": 0
+        }
+      ],
+      "klt_reason": "no_applicable_geometry",
+      "klt_lists": [
+        "inapplicable",
+        "rules_skipped"
+      ],
+      "verdict": "vacuous-confirmed",
+      "why": "no geometry on hvtr.drawing"
+    },
+    {
+      "rule": "hvtr.ongrid.1",
+      "check": "ongrid",
+      "deck_layers": [
+        {
+          "name": "hvtr.drawing",
+          "gds": "18/20",
+          "flattened_shapes": 0,
+          "text_count": 0,
+          "geometry": 0
+        }
+      ],
+      "klt_reason": "no_applicable_geometry",
+      "klt_lists": [
+        "inapplicable",
+        "rules_skipped"
+      ],
+      "verdict": "vacuous-confirmed",
+      "why": "no geometry on hvtr.drawing"
+    },
+    {
+      "rule": "lvtn.angle.1",
+      "check": "angle",
+      "deck_layers": [
+        {
+          "name": "lvtn.drawing",
+          "gds": "125/44",
+          "flattened_shapes": 0,
+          "text_count": 0,
+          "geometry": 0
+        }
+      ],
+      "klt_reason": "no_applicable_geometry",
+      "klt_lists": [
+        "inapplicable",
+        "rules_skipped"
+      ],
+      "verdict": "vacuous-confirmed",
+      "why": "no geometry on lvtn.drawing"
+    },
+    {
+      "rule": "lvtn.ongrid.1",
+      "check": "ongrid",
+      "deck_layers": [
+        {
+          "name": "lvtn.drawing",
+          "gds": "125/44",
+          "flattened_shapes": 0,
+          "text_count": 0,
+          "geometry": 0
+        }
+      ],
+      "klt_reason": "no_applicable_geometry",
+      "klt_lists": [
+        "inapplicable",
+        "rules_skipped"
+      ],
+      "verdict": "vacuous-confirmed",
+      "why": "no geometry on lvtn.drawing"
+    },
+    {
+      "rule": "met3.enclosing.capm.1",
+      "check": "enclosing",
+      "deck_layers": [
+        {
+          "name": "met3.drawing",
+          "gds": "70/20",
+          "flattened_shapes": 3388,
+          "text_count": 0,
+          "geometry": 3388
+        },
+        {
+          "name": "capm.drawing",
+          "gds": "89/44",
+          "flattened_shapes": 0,
+          "text_count": 0,
+          "geometry": 0
+        }
+      ],
+      "klt_reason": "no_applicable_geometry",
+      "klt_lists": [
+        "inapplicable",
+        "rules_skipped"
+      ],
+      "verdict": "vacuous-confirmed",
+      "why": "no geometry on capm.drawing"
+    },
+    {
+      "rule": "met4.enclosing.capm2.1",
+      "check": "enclosing",
+      "deck_layers": [
+        {
+          "name": "met4.drawing",
+          "gds": "71/20",
+          "flattened_shapes": 1041,
+          "text_count": 0,
+          "geometry": 1041
+        },
+        {
+          "name": "capm2.drawing",
+          "gds": "97/44",
+          "flattened_shapes": 0,
+          "text_count": 0,
+          "geometry": 0
+        }
+      ],
+      "klt_reason": "no_applicable_geometry",
+      "klt_lists": [
+        "inapplicable",
+        "rules_skipped"
+      ],
+      "verdict": "vacuous-confirmed",
+      "why": "no geometry on capm2.drawing"
+    },
+    {
+      "rule": "mf.angle.1",
+      "check": "angle",
+      "deck_layers": [
+        {
+          "name": "target.drawing",
+          "gds": "76/44",
+          "flattened_shapes": 0,
+          "text_count": 0,
+          "geometry": 0
+        }
+      ],
+      "klt_reason": "no_applicable_geometry",
+      "klt_lists": [
+        "inapplicable",
+        "rules_skipped"
+      ],
+      "verdict": "vacuous-confirmed",
+      "why": "no geometry on target.drawing"
+    },
+    {
+      "rule": "mf.ongrid.1",
+      "check": "ongrid",
+      "deck_layers": [
+        {
+          "name": "target.drawing",
+          "gds": "76/44",
+          "flattened_shapes": 0,
+          "text_count": 0,
+          "geometry": 0
+        }
+      ],
+      "klt_reason": "no_applicable_geometry",
+      "klt_lists": [
+        "inapplicable",
+        "rules_skipped"
+      ],
+      "verdict": "vacuous-confirmed",
+      "why": "no geometry on target.drawing"
+    },
+    {
+      "rule": "ncm.angle.1",
+      "check": "angle",
+      "deck_layers": [
+        {
+          "name": "ncm.drawing",
+          "gds": "92/44",
+          "flattened_shapes": 0,
+          "text_count": 0,
+          "geometry": 0
+        }
+      ],
+      "klt_reason": "no_applicable_geometry",
+      "klt_lists": [
+        "inapplicable",
+        "rules_skipped"
+      ],
+      "verdict": "vacuous-confirmed",
+      "why": "no geometry on ncm.drawing"
+    },
+    {
+      "rule": "ncm.ongrid.1",
+      "check": "ongrid",
+      "deck_layers": [
+        {
+          "name": "ncm.drawing",
+          "gds": "92/44",
+          "flattened_shapes": 0,
+          "text_count": 0,
+          "geometry": 0
+        }
+      ],
+      "klt_reason": "no_applicable_geometry",
+      "klt_lists": [
+        "inapplicable",
+        "rules_skipped"
+      ],
+      "verdict": "vacuous-confirmed",
+      "why": "no geometry on ncm.drawing"
+    },
+    {
+      "rule": "nsm.angle.1",
+      "check": "angle",
+      "deck_layers": [
+        {
+          "name": "nsm.drawing",
+          "gds": "61/20",
+          "flattened_shapes": 0,
+          "text_count": 0,
+          "geometry": 0
+        }
+      ],
+      "klt_reason": "no_applicable_geometry",
+      "klt_lists": [
+        "inapplicable",
+        "rules_skipped"
+      ],
+      "verdict": "vacuous-confirmed",
+      "why": "no geometry on nsm.drawing"
+    },
+    {
+      "rule": "nsm.ongrid.1",
+      "check": "ongrid",
+      "deck_layers": [
+        {
+          "name": "nsm.drawing",
+          "gds": "61/20",
+          "flattened_shapes": 0,
+          "text_count": 0,
+          "geometry": 0
+        }
+      ],
+      "klt_reason": "no_applicable_geometry",
+      "klt_lists": [
+        "inapplicable",
+        "rules_skipped"
+      ],
+      "verdict": "vacuous-confirmed",
+      "why": "no geometry on nsm.drawing"
+    },
+    {
+      "rule": "pad.angle.1",
+      "check": "angle",
+      "deck_layers": [
+        {
+          "name": "pad.drawing",
+          "gds": "76/20",
+          "flattened_shapes": 0,
+          "text_count": 0,
+          "geometry": 0
+        }
+      ],
+      "klt_reason": "no_applicable_geometry",
+      "klt_lists": [
+        "inapplicable",
+        "rules_skipped"
+      ],
+      "verdict": "vacuous-confirmed",
+      "why": "no geometry on pad.drawing"
+    },
+    {
+      "rule": "pad.ongrid.1",
+      "check": "ongrid",
+      "deck_layers": [
+        {
+          "name": "pad.drawing",
+          "gds": "76/20",
+          "flattened_shapes": 0,
+          "text_count": 0,
+          "geometry": 0
+        }
+      ],
+      "klt_reason": "no_applicable_geometry",
+      "klt_lists": [
+        "inapplicable",
+        "rules_skipped"
+      ],
+      "verdict": "vacuous-confirmed",
+      "why": "no geometry on pad.drawing"
+    },
+    {
+      "rule": "pwbm.angle.1",
+      "check": "angle",
+      "deck_layers": [
+        {
+          "name": "pwbm.drawing",
+          "gds": "19/44",
+          "flattened_shapes": 0,
+          "text_count": 0,
+          "geometry": 0
+        }
+      ],
+      "klt_reason": "no_applicable_geometry",
+      "klt_lists": [
+        "inapplicable",
+        "rules_skipped"
+      ],
+      "verdict": "vacuous-confirmed",
+      "why": "no geometry on pwbm.drawing"
+    },
+    {
+      "rule": "pwbm.ongrid.1",
+      "check": "ongrid",
+      "deck_layers": [
+        {
+          "name": "pwbm.drawing",
+          "gds": "19/44",
+          "flattened_shapes": 0,
+          "text_count": 0,
+          "geometry": 0
+        }
+      ],
+      "klt_reason": "no_applicable_geometry",
+      "klt_lists": [
+        "inapplicable",
+        "rules_skipped"
+      ],
+      "verdict": "vacuous-confirmed",
+      "why": "no geometry on pwbm.drawing"
+    },
+    {
+      "rule": "pwde.angle.1",
+      "check": "angle",
+      "deck_layers": [
+        {
+          "name": "pwde.drawing",
+          "gds": "124/20",
+          "flattened_shapes": 0,
+          "text_count": 0,
+          "geometry": 0
+        }
+      ],
+      "klt_reason": "no_applicable_geometry",
+      "klt_lists": [
+        "inapplicable",
+        "rules_skipped"
+      ],
+      "verdict": "vacuous-confirmed",
+      "why": "no geometry on pwde.drawing"
+    },
+    {
+      "rule": "pwde.ongrid.1",
+      "check": "ongrid",
+      "deck_layers": [
+        {
+          "name": "pwde.drawing",
+          "gds": "124/20",
+          "flattened_shapes": 0,
+          "text_count": 0,
+          "geometry": 0
+        }
+      ],
+      "klt_reason": "no_applicable_geometry",
+      "klt_lists": [
+        "inapplicable",
+        "rules_skipped"
+      ],
+      "verdict": "vacuous-confirmed",
+      "why": "no geometry on pwde.drawing"
+    },
+    {
+      "rule": "pwell_rs.angle.1",
+      "check": "angle",
+      "deck_layers": [
+        {
+          "name": "pwell.res",
+          "gds": "64/13",
+          "flattened_shapes": 0,
+          "text_count": 0,
+          "geometry": 0
+        }
+      ],
+      "klt_reason": "no_applicable_geometry",
+      "klt_lists": [
+        "inapplicable",
+        "rules_skipped"
+      ],
+      "verdict": "vacuous-confirmed",
+      "why": "no geometry on pwell.res"
+    },
+    {
+      "rule": "pwell_rs.ongrid.1",
+      "check": "ongrid",
+      "deck_layers": [
+        {
+          "name": "pwell.res",
+          "gds": "64/13",
+          "flattened_shapes": 0,
+          "text_count": 0,
+          "geometry": 0
+        }
+      ],
+      "klt_reason": "no_applicable_geometry",
+      "klt_lists": [
+        "inapplicable",
+        "rules_skipped"
+      ],
+      "verdict": "vacuous-confirmed",
+      "why": "no geometry on pwell.res"
+    },
+    {
+      "rule": "rpm.angle.1",
+      "check": "angle",
+      "deck_layers": [
+        {
+          "name": "rpm.drawing",
+          "gds": "86/20",
+          "flattened_shapes": 0,
+          "text_count": 0,
+          "geometry": 0
+        }
+      ],
+      "klt_reason": "no_applicable_geometry",
+      "klt_lists": [
+        "inapplicable",
+        "rules_skipped"
+      ],
+      "verdict": "vacuous-confirmed",
+      "why": "no geometry on rpm.drawing"
+    },
+    {
+      "rule": "rpm.ongrid.1",
+      "check": "ongrid",
+      "deck_layers": [
+        {
+          "name": "rpm.drawing",
+          "gds": "86/20",
+          "flattened_shapes": 0,
+          "text_count": 0,
+          "geometry": 0
+        }
+      ],
+      "klt_reason": "no_applicable_geometry",
+      "klt_lists": [
+        "inapplicable",
+        "rules_skipped"
+      ],
+      "verdict": "vacuous-confirmed",
+      "why": "no geometry on rpm.drawing"
+    },
+    {
+      "rule": "tunm.angle.1",
+      "check": "angle",
+      "deck_layers": [
+        {
+          "name": "tunm.drawing",
+          "gds": "80/20",
+          "flattened_shapes": 0,
+          "text_count": 0,
+          "geometry": 0
+        }
+      ],
+      "klt_reason": "no_applicable_geometry",
+      "klt_lists": [
+        "inapplicable",
+        "rules_skipped"
+      ],
+      "verdict": "vacuous-confirmed",
+      "why": "no geometry on tunm.drawing"
+    },
+    {
+      "rule": "tunm.ongrid.1",
+      "check": "ongrid",
+      "deck_layers": [
+        {
+          "name": "tunm.drawing",
+          "gds": "80/20",
+          "flattened_shapes": 0,
+          "text_count": 0,
+          "geometry": 0
+        }
+      ],
+      "klt_reason": "no_applicable_geometry",
+      "klt_lists": [
+        "inapplicable",
+        "rules_skipped"
+      ],
+      "verdict": "vacuous-confirmed",
+      "why": "no geometry on tunm.drawing"
+    },
+    {
+      "rule": "uhvi.angle.1",
+      "check": "angle",
+      "deck_layers": [
+        {
+          "name": "uhvi.drawing",
+          "gds": "74/22",
+          "flattened_shapes": 0,
+          "text_count": 0,
+          "geometry": 0
+        }
+      ],
+      "klt_reason": "no_applicable_geometry",
+      "klt_lists": [
+        "inapplicable",
+        "rules_skipped"
+      ],
+      "verdict": "vacuous-confirmed",
+      "why": "no geometry on uhvi.drawing"
+    },
+    {
+      "rule": "uhvi.ongrid.1",
+      "check": "ongrid",
+      "deck_layers": [
+        {
+          "name": "uhvi.drawing",
+          "gds": "74/22",
+          "flattened_shapes": 0,
+          "text_count": 0,
+          "geometry": 0
+        }
+      ],
+      "klt_reason": "no_applicable_geometry",
+      "klt_lists": [
+        "inapplicable",
+        "rules_skipped"
+      ],
+      "verdict": "vacuous-confirmed",
+      "why": "no geometry on uhvi.drawing"
+    },
+    {
+      "rule": "vhvi.angle.1",
+      "check": "angle",
+      "deck_layers": [
+        {
+          "name": "vhvi.drawing",
+          "gds": "74/21",
+          "flattened_shapes": 0,
+          "text_count": 0,
+          "geometry": 0
+        }
+      ],
+      "klt_reason": "no_applicable_geometry",
+      "klt_lists": [
+        "inapplicable",
+        "rules_skipped"
+      ],
+      "verdict": "vacuous-confirmed",
+      "why": "no geometry on vhvi.drawing"
+    },
+    {
+      "rule": "vhvi.ongrid.1",
+      "check": "ongrid",
+      "deck_layers": [
+        {
+          "name": "vhvi.drawing",
+          "gds": "74/21",
+          "flattened_shapes": 0,
+          "text_count": 0,
+          "geometry": 0
+        }
+      ],
+      "klt_reason": "no_applicable_geometry",
+      "klt_lists": [
+        "inapplicable",
+        "rules_skipped"
+      ],
+      "verdict": "vacuous-confirmed",
+      "why": "no geometry on vhvi.drawing"
+    },
+    {
+      "rule": "vpp.angle.1",
+      "check": "angle",
+      "deck_layers": [
+        {
+          "name": "capacitor.drawing",
+          "gds": "82/64",
+          "flattened_shapes": 0,
+          "text_count": 0,
+          "geometry": 0
+        }
+      ],
+      "klt_reason": "no_applicable_geometry",
+      "klt_lists": [
+        "inapplicable",
+        "rules_skipped"
+      ],
+      "verdict": "vacuous-confirmed",
+      "why": "no geometry on capacitor.drawing"
+    },
+    {
+      "rule": "vpp.ongrid.1",
+      "check": "ongrid",
+      "deck_layers": [
+        {
+          "name": "capacitor.drawing",
+          "gds": "82/64",
+          "flattened_shapes": 0,
+          "text_count": 0,
+          "geometry": 0
+        }
+      ],
+      "klt_reason": "no_applicable_geometry",
+      "klt_lists": [
+        "inapplicable",
+        "rules_skipped"
+      ],
+      "verdict": "vacuous-confirmed",
+      "why": "no geometry on capacitor.drawing"
+    }
+  ],
+  "unruled_layers": [
+    {
+      "gds": "64/5",
+      "deck_layer_name": null,
+      "definition_shapes": 69,
+      "flattened_shapes": 7933,
+      "text_count": 7933,
+      "geometry": 0,
+      "annotation": false,
+      "text_only": true,
+      "verdict": "text-or-marker-only"
+    },
+    {
+      "gds": "64/16",
+      "deck_layer_name": null,
+      "definition_shapes": 70,
+      "flattened_shapes": 8029,
+      "text_count": 0,
+      "geometry": 8029,
+      "annotation": false,
+      "text_only": false,
+      "verdict": "present-unruled"
+    },
+    {
+      "gds": "64/59",
+      "deck_layer_name": null,
+      "definition_shapes": 69,
+      "flattened_shapes": 7933,
+      "text_count": 7933,
+      "geometry": 0,
+      "annotation": false,
+      "text_only": true,
+      "verdict": "text-or-marker-only"
+    },
+    {
+      "gds": "67/5",
+      "deck_layer_name": null,
+      "definition_shapes": 1577,
+      "flattened_shapes": 15278,
+      "text_count": 15278,
+      "geometry": 0,
+      "annotation": false,
+      "text_only": true,
+      "verdict": "text-or-marker-only"
+    },
+    {
+      "gds": "67/16",
+      "deck_layer_name": null,
+      "definition_shapes": 511,
+      "flattened_shapes": 14872,
+      "text_count": 0,
+      "geometry": 14872,
+      "annotation": false,
+      "text_only": false,
+      "verdict": "present-unruled"
+    },
+    {
+      "gds": "68/5",
+      "deck_layer_name": null,
+      "definition_shapes": 699,
+      "flattened_shapes": 17771,
+      "text_count": 17771,
+      "geometry": 0,
+      "annotation": false,
+      "text_only": true,
+      "verdict": "text-or-marker-only"
+    },
+    {
+      "gds": "68/16",
+      "deck_layer_name": null,
+      "definition_shapes": 140,
+      "flattened_shapes": 17402,
+      "text_count": 0,
+      "geometry": 17402,
+      "annotation": false,
+      "text_only": false,
+      "verdict": "present-unruled"
+    },
+    {
+      "gds": "69/5",
+      "deck_layer_name": null,
+      "definition_shapes": 208,
+      "flattened_shapes": 208,
+      "text_count": 208,
+      "geometry": 0,
+      "annotation": false,
+      "text_only": true,
+      "verdict": "text-or-marker-only"
+    },
+    {
+      "gds": "69/16",
+      "deck_layer_name": null,
+      "definition_shapes": 29,
+      "flattened_shapes": 29,
+      "text_count": 0,
+      "geometry": 29,
+      "annotation": false,
+      "text_only": false,
+      "verdict": "present-unruled"
+    },
+    {
+      "gds": "70/5",
+      "deck_layer_name": null,
+      "definition_shapes": 160,
+      "flattened_shapes": 160,
+      "text_count": 160,
+      "geometry": 0,
+      "annotation": false,
+      "text_only": true,
+      "verdict": "text-or-marker-only"
+    },
+    {
+      "gds": "70/16",
+      "deck_layer_name": null,
+      "definition_shapes": 82,
+      "flattened_shapes": 82,
+      "text_count": 0,
+      "geometry": 82,
+      "annotation": false,
+      "text_only": false,
+      "verdict": "present-unruled"
+    },
+    {
+      "gds": "72/5",
+      "deck_layer_name": null,
+      "definition_shapes": 20,
+      "flattened_shapes": 20,
+      "text_count": 20,
+      "geometry": 0,
+      "annotation": false,
+      "text_only": true,
+      "verdict": "text-or-marker-only"
+    },
+    {
+      "gds": "72/16",
+      "deck_layer_name": null,
+      "definition_shapes": 17,
+      "flattened_shapes": 17,
+      "text_count": 0,
+      "geometry": 17,
+      "annotation": false,
+      "text_only": false,
+      "verdict": "present-unruled"
+    },
+    {
+      "gds": "81/4",
+      "deck_layer_name": null,
+      "definition_shapes": 69,
+      "flattened_shapes": 8605,
+      "text_count": 0,
+      "geometry": 8605,
+      "annotation": false,
+      "text_only": false,
+      "verdict": "present-unruled"
+    },
+    {
+      "gds": "81/23",
+      "deck_layer_name": null,
+      "definition_shapes": 1,
+      "flattened_shapes": 1,
+      "text_count": 0,
+      "geometry": 1,
+      "annotation": false,
+      "text_only": false,
+      "verdict": "present-unruled"
+    },
+    {
+      "gds": "83/44",
+      "deck_layer_name": null,
+      "definition_shapes": 69,
+      "flattened_shapes": 8605,
+      "text_count": 8605,
+      "geometry": 0,
+      "annotation": false,
+      "text_only": true,
+      "verdict": "text-or-marker-only"
+    },
+    {
+      "gds": "122/16",
+      "deck_layer_name": null,
+      "definition_shapes": 70,
+      "flattened_shapes": 8029,
+      "text_count": 0,
+      "geometry": 8029,
+      "annotation": false,
+      "text_only": false,
+      "verdict": "present-unruled"
+    },
+    {
+      "gds": "235/4",
+      "deck_layer_name": null,
+      "definition_shapes": 1,
+      "flattened_shapes": 1,
+      "text_count": 0,
+      "geometry": 1,
+      "annotation": false,
+      "text_only": false,
+      "verdict": "present-unruled"
+    },
+    {
+      "gds": "236/0",
+      "deck_layer_name": null,
+      "definition_shapes": 64,
+      "flattened_shapes": 2321,
+      "text_count": 0,
+      "geometry": 2321,
+      "annotation": false,
+      "text_only": false,
+      "verdict": "present-unruled"
+    }
+  ]
+}

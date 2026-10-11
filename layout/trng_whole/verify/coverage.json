@@ -2604,8 +2604,8 @@
     {
       "id": "L9",
       "item": "curated DRC deck",
-      "status": "partial rule coverage",
-      "detail": "klt's curated sky130 deck checks 91 rules on 20 layers; 19 layer/datatype pairs in the stream have no rules and 45 deck rules are skipped (see drc.json coverage). Clean here is not foundry DRC clean: no antenna, density, seal-ring, latch-up or foundry-only rules."
+      "status": "partial rule coverage, audited",
+      "detail": "klt's curated sky130 deck checks 91 rules on 20 layers. It reports 45 deck rules as not run (coverage.inapplicable, reason no_applicable_geometry; legacy list rules_skipped), and 19 layer/datatype pairs in the stream have no rules. drc_coverage_audit.md / drc_coverage_audit.json (issue #281) check both lists against the flattened stream on the pinned deck. Table 1 gives each not-run rule's check kind, deck layers, per-layer shape counts, klt's reason and a verdict (vacuous-confirmed / residual / unresolved). Table 2 gives each unruled layer's shape and text counts and a verdict (present-unruled / text-or-marker-only); present-unruled layers are a residual gap, drawn and unchecked. verify-whole.py check fails if either table drifts from the stream, the layer map or the deck hash. Clean here is not foundry DRC clean: no foundry sign-off runset, and no antenna, density, seal-ring, latch-up or foundry-only rules."
     },
     {
       "id": "L10",
