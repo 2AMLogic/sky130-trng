@@ -1,0 +1,102 @@
+* XOR combining-gate alternatives -- one deck per (variant, temperature, supply)
+*
+* Issue #282. Circuit-body TEMPLATE for make-requests.py: it carries no .lib,
+* .temp, .tran, .control or .end card -- `klt sim` owns those (process corner
+* via the request's corners.process, temperature via corners.temperature_c,
+* analyses via analysis_steps). make-requests.py substitutes the supply value and two inlined netlist blocks:
+*
+*   VDD token          the supply of this deck (1.62 / 1.80 / 1.98 V)
+*   DESIGN token       the text of design/ro_array_core.spice (ro_array_core,
+*                      ro_ring5, ro_buf, ro_stage, ro_nand2, xor2) with the
+*                      xor2 subcircuit width-scaled for the 2x variant (and
+*                      verbatim for the baseline control)
+*   SAMPLER token      the `.subckt sampler_dff` block of design/sampler_core.spice
+*
+* Four independent circuits share this deck. They have SEPARATE supply
+* sources so that no one circuit's switching shows up in another's current:
+*
+*   1. PULSE-WIDTH BENCH (vddp) -- the nine-width fanout-1 chain of
+*      sim/xor-combining-bandwidth/testbench/tb_xor2_pulse_width.spice, the
+*      component measurement behind w_90. Edges, widths and windows are
+*      unchanged (8 ps edges, w = 500..25 ps, 8-12 ns window).
+*   2. FULL N = 4 ARRAY (vddr1..4 + vdd) -- the committed ro_array_core as in
+*      sim/ro-array-core-combining/testbench/tb_ro_array_core.spice: start-up
+*      by enable release at 5 ns, 60-200 ns steady-state window. Its xo drives
+*      a sampler_dff data input (circuit 3).
+*   3. ROOT SAMPLER LOAD (vdds) -- the same sampler_dff on xo in BOTH
+*      variants, clk held low (transparent: the pass gate is on, the heaviest
+*      input load the cell presents). Its supply is not part of the array
+*      current.
+*   4. INPUT-CAPACITANCE PROBES (vddc) -- effective switched input
+*      capacitance of an xor2 pin a, an xor2 pin b (other pin at 0, output
+*      driving one further xor2, i.e. fanout 1 as in a tree) and of the
+*      sampler_dff D pin, by charge: C = -INTEG(i(Vramp)) / VDD over a
+*      0 -> VDD ramp. These are three SEPARATE figures; the sampler load is
+*      never folded into the first-stage input load.
+*
+* Everything is deterministic (no injected noise).
+
+.option scale=1u
+
+@@DESIGN_NETLIST@@
+
+@@SAMPLER_DFF@@
+
+* --- supplies ---------------------------------------------------------------
+Vddp vddp 0 dc @@VDD@@
+Vddc vddc 0 dc @@VDD@@
+Vdds vdds 0 dc @@VDD@@
+Vddr1 vddr1 0 dc @@VDD@@
+Vddr2 vddr2 0 dc @@VDD@@
+Vddr3 vddr3 0 dc @@VDD@@
+Vddr4 vddr4 0 dc @@VDD@@
+Vdd vdd 0 dc @@VDD@@
+
+* === 1. pulse-width bench: nine instances, b tied low, a driven =============
+Va1 a1 0 PULSE(0 @@VDD@@ 2n 8p 8p 492p 1000p)
+xu1 a1 0 y1 vddp 0 xor2
+xl1 y1 0 z1 vddp 0 xor2
+Va2 a2 0 PULSE(0 @@VDD@@ 2n 8p 8p 292p 600p)
+xu2 a2 0 y2 vddp 0 xor2
+xl2 y2 0 z2 vddp 0 xor2
+Va3 a3 0 PULSE(0 @@VDD@@ 2n 8p 8p 192p 400p)
+xu3 a3 0 y3 vddp 0 xor2
+xl3 y3 0 z3 vddp 0 xor2
+Va4 a4 0 PULSE(0 @@VDD@@ 2n 8p 8p 132p 280p)
+xu4 a4 0 y4 vddp 0 xor2
+xl4 y4 0 z4 vddp 0 xor2
+Va5 a5 0 PULSE(0 @@VDD@@ 2n 8p 8p 92p 200p)
+xu5 a5 0 y5 vddp 0 xor2
+xl5 y5 0 z5 vddp 0 xor2
+Va6 a6 0 PULSE(0 @@VDD@@ 2n 8p 8p 62p 140p)
+xu6 a6 0 y6 vddp 0 xor2
+xl6 y6 0 z6 vddp 0 xor2
+Va7 a7 0 PULSE(0 @@VDD@@ 2n 8p 8p 42p 100p)
+xu7 a7 0 y7 vddp 0 xor2
+xl7 y7 0 z7 vddp 0 xor2
+Va8 a8 0 PULSE(0 @@VDD@@ 2n 8p 8p 27p 70p)
+xu8 a8 0 y8 vddp 0 xor2
+xl8 y8 0 z8 vddp 0 xor2
+Va9 a9 0 PULSE(0 @@VDD@@ 2n 8p 8p 17p 50p)
+xu9 a9 0 y9 vddp 0 xor2
+xl9 y9 0 z9 vddp 0 xor2
+
+* === 2. full N = 4 array, enables released together at 5 ns ================
+Ven1 en1 0 PULSE(0 @@VDD@@ 5n 100p 100p 1u 2u)
+Ven2 en2 0 PULSE(0 @@VDD@@ 5n 100p 100p 1u 2u)
+Ven3 en3 0 PULSE(0 @@VDD@@ 5n 100p 100p 1u 2u)
+Ven4 en4 0 PULSE(0 @@VDD@@ 5n 100p 100p 1u 2u)
+xdut en1 en2 en3 en4 vddr1 vddr2 vddr3 vddr4 vdd 0 xo ro1 ro2 ro3 ro4 ro_array_core
+
+* === 3. root sampler load: clk low (transparent), reset released ===========
+xsamp xo 0 vdds qs vdds 0 sampler_dff
+
+* === 4. input-capacitance probes: 0 -> VDD ramp at 20 ns ===================
+Vcina cina 0 PWL(0 0 20n 0 20.3n @@VDD@@)
+xca cina 0 yca vddc 0 xor2
+xcal yca 0 zca vddc 0 xor2
+Vcinb cinb 0 PWL(0 0 20n 0 20.3n @@VDD@@)
+xcb 0 cinb ycb vddc 0 xor2
+xcbl ycb 0 zcb vddc 0 xor2
+Vcins cins 0 PWL(0 0 20n 0 20.3n @@VDD@@)
+xcs cins 0 vddc qcs vddc 0 sampler_dff
