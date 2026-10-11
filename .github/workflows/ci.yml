@@ -222,6 +222,12 @@ on:
       # issue #291 characterization-report inputs: the spec table it parses
       # (README.md) and the generator (sim/bin/** and sim/*/records/** above)
       - "README.md"
+      # issue #285: the cited 7.digital SDF record's pinned inputs (sim/bin and
+      # sim/*/records|runs, layout/trng_digital, digital/model are covered above)
+      - "sim/digital-sdf-timed-verification/harness/**"
+      - "sim/digital-rtl-equivalence/harness/**"
+      - "digital/tb/cocotb/**"
+      - "digital/flow/place-and-route/**"
       - "layout/sampler_core/drc.json"
       - "layout/sampler_core/lvs.json"
       - ".github/workflows/ci.yml"
@@ -364,6 +370,17 @@ jobs:
         run: |
           pip install --user "klayout-tools==0.7.0"
           klt --version
+
+      # issue #285: the 7.digital citation is unpinned, so the re-render below
+      # cannot see the DUT/SDF/testbench/oracle change after the simulation
+      # ran. Compare the cited record's input-hashes.json with the working
+      # tree (stdlib only, no simulator/PDK; external PDK pins are reported
+      # as not revalidated). On drift: mint a new record + update the citation.
+      - name: sim/tests/test_check_signoff_sim_freshness.py (freshness checker test)
+        run: python3 sim/tests/test_check_signoff_sim_freshness.py
+
+      - name: Cited 7.digital SDF record still matches current inputs
+        run: python3 sim/bin/check_signoff_sim_freshness.py
 
       # Verbatim the command documented in signoff/README.md -- the report
       # embeds the --tiers-doc label and the evidence paths relative to
