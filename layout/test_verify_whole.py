@@ -24,7 +24,15 @@ What these guard, because a verdict string alone is not evidence:
 - the DRC coverage audit (issue #281) must classify every rule klt did not run
   and every unruled stream layer, pinned to drc.json's deck hash; its verdict
   logic is exercised here on stubbed counts (controls 1-5), and the committed
-  markdown must be exactly what the committed JSON renders to.
+  markdown must be exactly what the committed JSON renders to;
+- the physical estimates (issue #283) must compute density windows and naive
+  antenna ratios the same way their committed artifact says they do: exact
+  window grids (clipped denominators, refused invalid grids), cumulative
+  ratios over per-level areas, label-subset net attribution that counts
+  ambiguous/zero-gate/unmatched nets instead of guessing, and a drift gate
+  that catches value, parameter and staleness changes but ignores tool
+  provenance. The klayout-dependent geometry controls skip themselves where
+  klayout is absent (they run for real under pdk-nightly).
 """
 
 from __future__ import annotations
@@ -33,6 +41,8 @@ import gzip
 import hashlib
 import importlib.util
 import json
+import math
+import re
 import sys
 from collections import Counter
 from pathlib import Path
@@ -43,6 +53,7 @@ sys.path.insert(0, str(_REPO_ROOT / "design"))
 sys.path.insert(0, str(_HERE / "bin"))
 from _test_check import Checker  # noqa: E402
 import drc_coverage_audit as A  # noqa: E402
+import physical_estimates as PE  # noqa: E402
 import verify_whole_lib as V  # noqa: E402
 
 _checker = Checker()
@@ -348,6 +359,267 @@ def check_committed_coverage_audit() -> None:
 
 
 # --------------------------------------------------------------------------
+# physical estimates (issue #283): pure calculator logic, committed contract
+# --------------------------------------------------------------------------
+
+
+def check_physical_estimate_logic() -> None:
+    window_grid, window_density = PE.window_grid, PE.window_density
+    cumulative_areas, antenna_ratios, split_labels = PE.cumulative_areas, PE.antenna_ratios, PE.split_labels
+    match_gate_components, gate_areas_from_extract = PE.match_gate_components, PE.gate_areas_from_extract
+    build_document, drift, LEVELS = PE.build_document, PE.drift, PE.LEVELS
+    _check("window grid tiles row-major with clipped edge windows",
+           [(w["ix"], w["iy"], round(w["area"], 9)) for w in window_grid((0, 0, 250, 150), 100, 100)[0]]
+           == [(0, 0, 10000.0), (1, 0, 10000.0), (2, 0, 5000.0),
+               (0, 1, 5000.0), (1, 1, 5000.0), (2, 1, 2500.0)],
+           window_grid((0, 0, 250, 150), 100, 100)[0])
+    n, skipped = window_grid((0, 0, 250, 150), 100, 40)
+    _check("overlapping strides tile ceil(dim/stride) per axis", (len(n), skipped) == (7 * 4, 0), (len(n), skipped))
+    n, skipped = window_grid((0, 0, 0, 0), 100, 100)
+    _check("a zero-area boundary yields no windows and nothing skipped", (n, skipped) == ([], 0), (n, skipped))
+    for window, stride in ((0, 1), (1, 0), (1, 2), (-3, 1)):
+        try:
+            window_grid((0, 0, 10, 10), window, stride)
+            _check(f"invalid grid (window={window}, stride={stride}) is refused", False, "no error")
+        except PE.EstimateError:
+            _check(f"invalid grid (window={window}, stride={stride}) is refused", True)
+    _check("a zero-area window is never divided by", window_density(5.0, 0.0) is None and window_density(5.0, -1.0) is None)
+    _check("window density is geometry / window area", window_density(5.0, 100.0) == 0.05)
+    cum = cumulative_areas({"li1": 1.0, "met2": 2.0})
+    _check("cumulative areas run bottom-up and carry forward",
+           cum == {"li1": 1.0, "met1": 1.0, "met2": 3.0, "met3": 3.0, "met4": 3.0, "met5": 3.0}, cum)
+    r = antenna_ratios({"li1": 1.0, "met1": 2.0}, 1.0)
+    _check("ratios are cumulative area / gate area per level", r["li1"] == 1.0 and r["met1"] == 3.0 and r["met5"] == 3.0, r)
+    _check("a zero-gate net produces no ratio (never infinity)", antenna_ratios({"li1": 1.0}, 0.0) == {})
+    _check("anonymous $N escapes and empty tokens are dropped",
+           split_labels("\\$12,a,,$x,b", ",") == {"a", "b"} and split_labels("n1|n2", "|") == {"n1", "n2"})
+    gate_sets = {"n1": {"n1", "x"}, "n2": {"n2", "x"}}
+    m, amb, unm = match_gate_components([{"x"}, {"n1"}, {"n3"}, set()], gate_sets)
+    _check("label-subset matching: shared-only labels ambiguous, unique labels match, foreign labels unmatched",
+           (len(m), amb, unm) == (1, 1, 1), (m, amb, unm))
+    m, amb, unm = match_gate_components([{"n1", "x"}], {"n1": {"n1", "x"}})
+    _check("a full label set still matches its own net", (len(m), amb, unm) == (1, 0, 0), (m, amb, unm))
+    gate = gate_areas_from_extract({
+        "devices": [
+            {"nets": {"g": "n1"}, "params": {"w_um": 2.0, "l_um": 0.1}},
+            {"nets": {"g": "n1"}, "params": {"w_um": 1.0, "l_um": 0.1}},
+            {"nets": {"g": "n2"}, "params": {"w_um": 0.0, "l_um": 0.1}},
+            {"nets": {"g": "n3"}, "params": {}},
+        ],
+        "abstracted_cells": [{"instance_count": 5}, {"instance_count": 7}],
+    })
+    _check("gate W*L sums per net and counts devices",
+           abs(gate["gate_area_um2"]["n1"] - 0.3) < 1e-12 and gate["gate_area_um2"]["n2"] == 0.0
+           and gate["analog_devices"] == 3 and gate["devices_missing_params"] == 1, gate)
+    _check("a gate net whose only device lacked params is registered with zero known area",
+           "n3" in gate["gate_area_um2"] and gate["gate_area_um2"]["n3"] == 0.0
+           and gate["devices_missing_params"] == 1 and gate["devices_per_gate_net"]["n3"] == 1, gate)
+    _check("abstracted instances sum with their type count",
+           (gate["abstracted_instances"], gate["abstracted_cell_types"]) == (12, 2), gate)
+
+    density = {
+        "top": "t", "windows_total": 2, "windows_skipped": 0,
+        "drawn_area_um2_by_level": {"li1": 4.0, "met1": 8.0, "met2": 0.0, "met3": 0.0, "met4": 0.0, "met5": 0.0},
+        "layers": [
+            {"name": "li1", "gds": "67/20", "empty_layer": False, "drawn_area_um2": 4.0,
+             "whole_block_density": 0.04, "windows_counted": 2, "window_densities": [0.1, 0.0],
+             "density_min": 0.0, "density_max": 0.1, "density_mean": 0.05},
+            {"name": "met1", "gds": "68/20", "empty_layer": False, "drawn_area_um2": 8.0,
+             "whole_block_density": 0.08, "windows_counted": 2, "window_densities": [0.1, 0.1],
+             "density_min": 0.1, "density_max": 0.1, "density_mean": 0.1},
+        ],
+    }
+    components = {
+        "components": [
+            {"labels": ["n1", "x"], "area_um2": {lvl: (1.0 if lvl == "li1" else 2.0 if lvl == "met1" else 0.0)
+                                                 for lvl in LEVELS}, "gate_net": "n1"},
+            {"labels": ["n2"], "area_um2": {lvl: (1.0 if lvl == "li1" else 0.0) for lvl in LEVELS},
+             "gate_net": "n2"},
+            {"labels": ["solo"], "area_um2": {lvl: 0.5 for lvl in LEVELS}, "gate_net": None},
+        ],
+        "component_tokens": [{"n1", "x"}, {"n2"}, {"solo"}],
+        "flat_nets_total": 4, "labeled": 3, "unlabeled": 1, "matched": 2, "ambiguous": 0, "unmatched": 1,
+    }
+    doc = build_document(
+        gds_rel="g.gds", gds_sha256="sha256:g", geometry_sha256="sha256:gg", geometry_counts={"polygons": 1},
+        extract_rel="e.json.gz", extract_sha256="sha256:e", extract_matches_gds=True,
+        layer_map={"li1": (67, 20), "met1": (68, 20), "met2": (69, 20), "met3": (70, 20), "met4": (71, 20),
+                   "met5": (72, 20), "poly": (66, 20)},
+        layer_table_hash="sha256:t", klayout_version="test", bbox=(0.0, 0.0, 100.0, 100.0),
+        gate=gate, components=components, density=density)
+    nets = {e["net"]: e for e in doc["antenna"]["nets"]}
+    _check("a gate net with components is rated with aggregated per-level areas",
+           nets["n1"]["area_um2"]["li1"] == 1.0 and nets["n1"]["cumulative_ratio"]["met1"] == 3.0 / 0.3, nets["n1"])
+    _check("a zero-gate-area net with conductor geometry is listed, unrated, and never infinite",
+           nets["n2"]["cumulative_ratio"] == {} and nets["n2"]["gate_area_um2"] == 0.0
+           and nets["n2"]["components"] == 1, nets["n2"])
+    _check("worst-per-level tables exclude unratable nets",
+           all(w["nets_rated"] == 1 for w in doc["antenna"]["ratios_by_level"]), doc["antenna"]["ratios_by_level"])
+    _check("a gate net without conductor geometry is listed and counted",
+           doc["antenna"]["gate_nets_without_conductor_geometry"] == ["n3"]
+           and doc["coverage"]["gate_area"]["gate_nets_without_conductor_geometry"] == 1)
+    gac = doc["coverage"]["gate_area"]
+    _check("gate-net accounting covers every distinct gate net",
+           gac["gate_nets_rated"] + gac["gate_nets_listed_zero_known_area"]
+           + gac["gate_nets_without_conductor_geometry"] == gac["distinct_gate_nets"], gac)
+    _check("labeled components matching no gate net are counted, not guessed",
+           doc["coverage"]["conductor_components"]["labeled_matching_no_gate_net"] == 1)
+    frac = doc["coverage"]["conductor_components"]["attributed_area_fraction_by_level"]
+    _check("attributed-area fractions compare matched area with drawn area per level",
+           frac["li1"] == 0.5 and frac["met1"] == 0.25 and frac["met5"] is None, frac)
+    _check("all committed ratios are finite", all(math.isfinite(v) for e in doc["antenna"]["nets"]
+                                                  for v in e["cumulative_ratio"].values()))
+    _check("markdown renders from the same document", PE.markdown(doc) == PE.markdown(json.loads(PE.dumps(doc))))
+    _check("drift: unchanged reproduces", drift(doc, json.loads(PE.dumps(doc))) == [])
+    for label, mutate in (
+        ("a density value", lambda d: d["density"]["layers"][0].__setitem__("density_max", 0.2)),
+        ("a window-densities entry", lambda d: d["density"]["layers"][1].__setitem__("window_densities", [0.2, 0.1])),
+        ("the window parameter", lambda d: d["definitions"]["density"].__setitem__("window_um", 50.0)),
+        ("a net's gate area", lambda d: d["antenna"]["nets"][0].__setitem__("gate_area_um2", 0.4)),
+        ("an input hash", lambda d: d["inputs"].__setitem__("gds_sha256", "sha256:other")),
+        ("a coverage count", lambda d: d["coverage"]["gate_area"].__setitem__("analog_devices", 9)),
+    ):
+        edited = json.loads(PE.dumps(doc))
+        mutate(edited)
+        _check(f"drift: {label} changed is caught", bool(drift(doc, edited)), drift(doc, edited))
+    edited = json.loads(PE.dumps(doc))
+    edited["provenance"]["klayout_version"] = "other"
+    _check("drift: a provenance-only change does not drift (by design)", drift(doc, edited) == [], drift(doc, edited))
+
+
+def check_committed_physical_estimates() -> None:
+    path = VERIFY / "physical_estimates.json"
+    if not path.is_file():
+        print("skip   committed physical estimates (physical_estimates.json absent)")
+        return
+    doc = json.loads(path.read_text())
+    md = (VERIFY / "physical_estimates.md").read_text()
+    _check("estimates are labelled estimate, not foundry sign-off",
+           "NOT foundry sign-off" in doc["not_signoff"] and "not a density-rule verdict" in md)
+    _check("definitions are in the artifact header",
+           {"quantity", "window_um", "stride_um", "denominator"} <= set(doc["definitions"]["density"])
+           and {"quantity", "conductor_source", "gate_source", "digital_exclusion", "zero_gate_nets",
+                "not_modelled", "verdict"} <= set(doc["definitions"]["antenna"])
+           and "ARBITRARY" in doc["definitions"]["density"]["window_provenance"])
+    _check("the window grid is validated by definition",
+           "window_um <= 0" in doc["definitions"]["density"]["grid_validation"])
+    gds = _REPO_ROOT / "layout" / "trng_whole" / "trng_whole.gds"
+    ext = VERIFY / "extract.json.gz"
+    _check("committed hashes still describe the committed inputs",
+           doc["inputs"]["gds_sha256"] == sha(gds) and doc["inputs"]["gate_source_sha256"] == sha(ext))
+    _check("the gate source is pinned to the committed GDS", doc["inputs"]["gate_source_matches_gds"] is True)
+    _check("no home-directory path in the estimates", "/home/" not in path.read_text() + md and "/Users/" not in path.read_text() + md)
+    ga = doc["coverage"]["gate_area"]
+    _check("gate-side coverage accounts for every gate net",
+           ga["gate_nets_rated"] + ga["gate_nets_listed_zero_known_area"]
+           + ga["gate_nets_without_conductor_geometry"] == ga["distinct_gate_nets"]
+           and len(doc["antenna"]["nets"]) == ga["gate_nets_rated"] + ga["gate_nets_listed_zero_known_area"])
+    de = ga["digital_exclusion"]
+    _check("digital exclusion uses the defined instance denominator",
+           de["device_bearing_instances"] == ga["analog_devices"] + de["abstracted_instances"]
+           and de["abstracted_instances"] > 0 and 0 < de["known_gate_area_fraction_of_instances"] < 1, de)
+    nets = doc["antenna"]["nets"]
+    _check("every committed ratio is finite and positive",
+           all(math.isfinite(v) and v > 0 for e in nets for v in e["cumulative_ratio"].values()))
+    for w in doc["antenna"]["ratios_by_level"]:
+        rated = [e["cumulative_ratio"][w["level"]] for e in nets if w["level"] in e["cumulative_ratio"]]
+        _check(f"worst {w['level']} ratio is the max over the rated nets",
+               w["nets_rated"] == len(rated) and (w["worst_ratio"] == max(rated) if rated else w["worst_ratio"] is None), w)
+    d = doc["density"]
+    _check("density rows cover exactly the counted windows",
+           all(len(lay["window_densities"]) == lay["windows_counted"]
+               and lay["density_max"] == max(lay["window_densities"] or [0.0])
+               and lay["density_min"] == min(lay["window_densities"] or [0.0]) for lay in d["layers"]))
+    _check("whole-block densities are the drawn area over the boundary",
+           all(abs(lay["whole_block_density"] - lay["drawn_area_um2"] / d["boundary"]["area_um2"]) < 1e-6
+               for lay in d["layers"] if not lay["empty_layer"]))
+    _check("committed markdown is exactly what the JSON renders to", md == PE.markdown(doc))
+    _check("markdown has no unsubstituted template fields", not re.search(r"\{[a-zA-Z_]+\[", md), md)
+    ctl = VERIFY / "controls" / "physical_estimates_controls.json"
+    if ctl.is_file():
+        c = json.loads(ctl.read_text())
+        _check("committed estimate controls (real klayout) all passed", c["all_passed"] is True and len(c["controls"]) >= 9)
+    else:
+        _check("committed estimate controls present", False, str(ctl))
+
+
+def check_physical_estimate_geometry() -> None:
+    """klayout-gated: the real-geometry calculator controls and the
+    verify-whole.py estimates_check glue on a redirected scratch copy."""
+    try:
+        import klayout.db  # noqa: F401, PLC0415
+    except ImportError:
+        print("skip   physical-estimate geometry controls (klayout not importable; pdk-nightly runs them)")
+        return
+    summary = PE.run_controls()
+    for r in summary["controls"]:
+        _check(f"estimate control {r['id']} (real klayout)", r["passed"], r.get("observed"))
+    _check("real-geometry estimate controls all passed", summary["all_passed"])
+
+    try:
+        vw = _load_verify_whole()
+    except Exception as exc:  # noqa: BLE001 -- optional deps of the entry point
+        print(f"skip   estimates_check glue (cannot import verify-whole.py: {exc})")
+        return
+    import shutil  # noqa: PLC0415
+    import tempfile  # noqa: PLC0415
+
+    def snapshot(d: Path) -> dict:
+        return {str(f.relative_to(d)): sha(f) for f in sorted(d.rglob("*")) if f.is_file()} if d.is_dir() else {}
+
+    repo_before = snapshot(VERIFY)
+    with tempfile.TemporaryDirectory(prefix="test-estimates-check-") as t:
+        # a fake repo root mirroring layout/trng_whole: the whole block is
+        # symlinked in (the GDS is read-only input), while the two committed
+        # estimate artifacts are real copies that the negative controls edit.
+        # rel() then yields the same repo-relative strings as the real run, so
+        # an unchanged check can reproduce byte-for-byte.
+        root = Path(t)
+        whole = root / "layout" / "trng_whole"
+        whole.mkdir(parents=True)
+        (whole / "trng_whole.gds").symlink_to(_REPO_ROOT / "layout" / "trng_whole" / "trng_whole.gds")
+        live = root / "live"
+        live.mkdir()
+        (live / "extract.json.gz").symlink_to(_REPO_ROOT / "layout" / "trng_whole" / "verify" / "extract.json.gz")
+        (live / "physical_estimates.json").write_text((VERIFY / PE.JSON_NAME).read_text())
+        (live / "physical_estimates.md").write_text((VERIFY / PE.MD_NAME).read_text())
+        (whole / "verify").symlink_to(live)
+        committed = json.loads((live / PE.JSON_NAME).read_text())
+        vw.REPO_ROOT = root
+        vw.SPEC_DIR = whole
+        vw.VERIFY_DIR = whole / "verify"
+        # the real rel() resolves symlinks (Path.resolve), which would leak the
+        # temp absolute path into the inputs; scope a non-resolving rel to this
+        # fake root instead -- same repo-relative strings as the real run
+        vw.rel = lambda p: str(Path(p).relative_to(root))
+        _check("estimates_check: unchanged committed estimates reproduce", vw.estimates_check() == [],
+               vw.estimates_check())
+        (live / PE.JSON_NAME).unlink()
+        _check("estimates_check: a missing artifact is an explicit failure, not a pass",
+               len(vw.estimates_check()) == 1 and "missing" in vw.estimates_check()[0], vw.estimates_check())
+        doc = json.loads(json.dumps(committed))
+        doc["density"]["layers"][0]["density_max"] += 0.01
+        (live / PE.JSON_NAME).write_text(PE.dumps(doc))
+        out = vw.estimates_check()
+        _check("estimates_check: a perturbed density value drifts", bool(out) and "density" in out[0], out)
+        (live / PE.JSON_NAME).write_text(PE.dumps(committed))
+        doc = json.loads(json.dumps(committed))
+        doc["definitions"]["density"]["window_um"] = 42.0
+        (live / PE.JSON_NAME).write_text(PE.dumps(doc))
+        _check("estimates_check: a changed window parameter drifts", bool(vw.estimates_check()))
+        (live / PE.JSON_NAME).write_text(PE.dumps(committed))
+        md = live / PE.MD_NAME
+        md.write_text(md.read_text().replace("## Density", "## Density EDITED"))
+        _check("estimates_check: an edited markdown drifts",
+               any(PE.MD_NAME in line for line in vw.estimates_check()), vw.estimates_check())
+        _check("estimates_check: the check republishes nothing",
+               snapshot(live) == {PE.JSON_NAME: sha(live / PE.JSON_NAME), PE.MD_NAME: sha(md),
+                                  "extract.json.gz": sha(live / "extract.json.gz")}
+               and md.read_text() != PE.markdown(committed))
+    _check("estimates_check tests left the committed estimates untouched", snapshot(VERIFY) == repo_before)
+
+
+# --------------------------------------------------------------------------
 # dispatcher: publication guards for `controls` / `all`
 # --------------------------------------------------------------------------
 
@@ -458,6 +730,9 @@ def main() -> int:
     check_committed_controls()
     check_coverage_audit_logic()
     check_committed_coverage_audit()
+    check_physical_estimate_logic()
+    check_committed_physical_estimates()
+    check_physical_estimate_geometry()
     check_dispatcher_publication()
     return _checker.summary("layout/test_verify_whole.py")
 

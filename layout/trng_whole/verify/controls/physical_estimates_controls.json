@@ -1,0 +1,142 @@
+{
+  "schema_version": 1,
+  "issue": 283,
+  "not_signoff": "Informational geometry estimates only -- NOT foundry sign-off. The pinned curated sky130 deck ships no density and no antenna rules, so no foundry window, threshold, runset or pass/fail stands behind any number here. Simulation- and extraction-derived estimates are provisional until silicon.",
+  "klayout_required": true,
+  "all_passed": true,
+  "controls": [
+    {
+      "id": "1-density-union",
+      "intent": "overlapping met1 rects union to exactly 6 um2 (no double counting); a child cell placed twice counts both placements (poly 4 um2); absent met5 layer is the empty-layer case (zero density, no error)",
+      "expected": {
+        "met1": 6.0,
+        "poly": 4.0,
+        "met5_empty": true
+      },
+      "observed": {
+        "met1": 6.0,
+        "poly": 4.0,
+        "met5_empty": true
+      },
+      "passed": true
+    },
+    {
+      "id": "2-density-window",
+      "intent": "one 3x3 window over a 9 um2 denominator: met1 density exactly 6/9; geometry outside the boundary (poly at y=10) never leaks into the windows",
+      "expected": {
+        "met1_density_max": 0.6666666666666666,
+        "poly_density_max": 0.0
+      },
+      "observed": {
+        "met1_density_max": 0.666666667,
+        "poly_density_max": 0.0
+      },
+      "passed": true
+    },
+    {
+      "id": "3-density-clip",
+      "intent": "a window larger than the boundary clips to the boundary (denominator 2.5 um2, one window, none skipped, met1 fills it completely: density 1.0)",
+      "expected": {
+        "windows": 1,
+        "skipped": 0,
+        "met1_density_max": 1.0
+      },
+      "observed": {
+        "windows": 1,
+        "skipped": 0,
+        "met1_density_max": 1.0
+      },
+      "passed": true
+    },
+    {
+      "id": "4-invalid-grid-w0.0-s1.0",
+      "intent": "invalid grid (window=0.0, stride=1.0) is refused, not silently tiled",
+      "expected": {
+        "refused": true
+      },
+      "observed": {
+        "error": "window_um must be > 0, got 0.0"
+      },
+      "passed": true
+    },
+    {
+      "id": "4-invalid-grid-w1.0-s0.0",
+      "intent": "invalid grid (window=1.0, stride=0.0) is refused, not silently tiled",
+      "expected": {
+        "refused": true
+      },
+      "observed": {
+        "error": "stride_um must be > 0, got 0.0"
+      },
+      "passed": true
+    },
+    {
+      "id": "4-invalid-grid-w1.0-s2.0",
+      "intent": "invalid grid (window=1.0, stride=2.0) is refused, not silently tiled",
+      "expected": {
+        "refused": true
+      },
+      "observed": {
+        "error": "stride_um 2.0 must not exceed window_um 1.0 (windows tile the boundary without gaps)"
+      },
+      "passed": true
+    },
+    {
+      "id": "5-antenna-known",
+      "intent": "two gates on one net: gate area 0.42*0.15 + 0.84*0.15; cumulative li1 ratio 1/ga, met1 ratio (1+2)/ga; a zero-gate net (n2) is excluded and counted; a gate net with no conductor geometry (n3) is excluded and listed",
+      "expected": {
+        "gate_area": 0.189,
+        "li1": 5.291005291005291,
+        "met1": 15.873015873015873,
+        "matched/amb/unmatched": "2/0/1"
+      },
+      "observed": {
+        "gate_area": 0.189,
+        "li1": 5.291005291005291,
+        "met1": 15.873015873015873,
+        "matched/amb/unmatched": "2/0/1"
+      },
+      "passed": true
+    },
+    {
+      "id": "6-antenna-ambiguous",
+      "intent": "a component carrying only a label shared by two gate nets (the vddr/vddr3/vddr4 pattern) is ambiguous -- excluded and counted; a component with a unique label still matches; an unlabeled component is counted separately",
+      "expected": {
+        "matched": 1,
+        "ambiguous": 1,
+        "unmatched": 0
+      },
+      "observed": {
+        "matched": 1,
+        "ambiguous": 1,
+        "unmatched": 0
+      },
+      "passed": true
+    },
+    {
+      "id": "7-drift",
+      "intent": "drift is caught for density, parameter, gate-area and staleness changes; a provenance-only change does not drift; unchanged reproduces",
+      "expected": {
+        "unchanged_reproduces": true,
+        "per-case": [
+          true,
+          true,
+          true,
+          true,
+          false
+        ]
+      },
+      "observed": {
+        "unchanged": [],
+        "per-case": [
+          true,
+          true,
+          true,
+          true,
+          false
+        ]
+      },
+      "passed": true
+    }
+  ]
+}

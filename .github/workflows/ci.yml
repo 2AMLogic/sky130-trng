@@ -59,8 +59,11 @@ name: CI
 #     canonicaliser refuses to repair shorted ports, the endpoint audit sees a
 #     moved cell pin, and every fault control reached the LVS comparison and
 #     failed naming its nets; this pins those, plus that the committed reports
-#     still describe the committed inputs. Same PR-blocking path, same reason:
-#     it needs nothing installed.
+#     still describe the committed inputs. Since issue #283 it also pins the
+#     physical-estimates calculator (window grids, cumulative antenna ratios,
+#     label-subset net attribution, drift) on pure arithmetic, with the
+#     klayout-dependent geometry controls left to pdk-nightly. Same
+#     PR-blocking path, same reason: it needs nothing installed.
 #
 # layout/test_pex_netlist.py (post-layout netlist rewrite unit test, issue #22)
 #     Pure Python over layout/bin/pex-netlist.py's rewrite functions -- no klt,

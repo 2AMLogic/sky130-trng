@@ -12,10 +12,13 @@ Usage (from the repo root, with the pinned klt first on PATH or via --klt)::
 
     python3 layout/bin/verify-whole.py run          # DRC + extract + LVS + coverage -> verify/
     python3 layout/bin/verify-whole.py controls     # fault controls + baseline re-run -> verify/controls/
-    python3 layout/bin/verify-whole.py check        # audit drift + isolated baseline re-run, diff vs committed
+    python3 layout/bin/verify-whole.py check        # audit + estimates drift + isolated baseline re-run, diff vs committed
     python3 layout/bin/verify-whole.py check --audit-only   # DRC coverage audit drift only (seconds)
+    python3 layout/bin/verify-whole.py check --estimates-only   # physical-estimates drift only (seconds; #283)
     python3 layout/bin/verify-whole.py audit        # regenerate the DRC coverage audit tables only
     python3 layout/bin/verify-whole.py audit-controls   # DRC coverage audit controls -> verify/controls/
+    python3 layout/bin/verify-whole.py estimates    # informational density + naive antenna estimates -> verify/ (#283)
+    python3 layout/bin/verify-whole.py estimates-controls   # estimate calculator controls -> verify/controls/
     python3 layout/bin/verify-whole.py all          # run + controls
 
 ``run`` and ``controls`` take a few minutes each (``klt extract`` of the 8605
@@ -56,6 +59,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 from _klt_common import BuildError, run_klt, write_json  # noqa: E402
 import drc_coverage_audit as A  # noqa: E402
+import physical_estimates as PE  # noqa: E402
 import verify_whole_lib as V  # noqa: E402
 
 REPO_ROOT = HERE.parents[1]
@@ -1544,6 +1548,57 @@ def publish_audit_controls(summary: dict) -> None:
 
 
 # --------------------------------------------------------------------------
+# physical estimates (issue #283): informational density + naive antenna
+# --------------------------------------------------------------------------
+
+
+def compute_estimates() -> dict:
+    """Fresh whole-block density + naive antenna-ratio document from the
+    committed GDS and the committed extraction. Needs the klayout python
+    module but no klt run and no PDK. Raises PE.EstimateError on a
+    definition-level refusal (missing layer mapping, bad top cell)."""
+    gds = SPEC_DIR / "trng_whole.gds"
+    extract = VERIFY_DIR / "extract.json.gz"
+    for path in (gds, extract):
+        if not path.is_file():
+            raise BuildError(f"no {rel(path)} -- the estimates read committed evidence, run their "
+                             "generating commands first")
+    return PE.compute(gds, extract, top=TOP, layer_table=A.load_deck_layer_table(),
+                      extract_rel=rel(extract), gds_rel=rel(gds))
+
+
+def publish_estimates(doc: dict) -> None:
+    VERIFY_DIR.mkdir(parents=True, exist_ok=True)
+    (VERIFY_DIR / PE.JSON_NAME).write_text(PE.dumps(doc))
+    (VERIFY_DIR / PE.MD_NAME).write_text(PE.markdown(doc))
+    leftovers = host_path_hits((VERIFY_DIR / PE.JSON_NAME).read_text() + (VERIFY_DIR / PE.MD_NAME).read_text())
+    if leftovers:
+        raise BuildError(f"host paths in the physical estimates: {leftovers[:5]}")
+
+
+def estimates_check() -> list[str]:
+    """Drift between the committed estimates and a fresh computation. A
+    check computes in memory and never republishes the committed files."""
+    path = VERIFY_DIR / PE.JSON_NAME
+    if not path.is_file():
+        return [f"{PE.JSON_NAME} is missing (run `verify-whole.py estimates`)"]
+    fresh = compute_estimates()
+    drifts = PE.drift(load_json(path), fresh)
+    md = VERIFY_DIR / PE.MD_NAME
+    if not md.is_file() or md.read_text() != PE.markdown(fresh):
+        drifts.append(f"{PE.MD_NAME} differs from the regenerated table")
+    if not fresh["inputs"]["gate_source_matches_gds"]:
+        drifts.append("extract.json.gz input hash does not match trng_whole.gds (stale gate source)")
+    return [f"physical estimates: {d}" for d in drifts]
+
+
+def publish_estimates_controls(summary: dict) -> None:
+    CONTROLS_DIR.mkdir(parents=True, exist_ok=True)
+    (CONTROLS_DIR / PE.CONTROLS_JSON).write_text(A.dumps(summary))
+    (CONTROLS_DIR / PE.CONTROLS_MD).write_text(PE.controls_markdown(summary))
+
+
+# --------------------------------------------------------------------------
 # check
 # --------------------------------------------------------------------------
 
@@ -1552,18 +1607,32 @@ def check(args) -> int:
     if not VERIFY_DIR.joinpath("verify.json").is_file():
         raise BuildError("no committed layout/trng_whole/verify/verify.json -- run `verify-whole.py run` first")
     committed = load_json(VERIFY_DIR / "verify.json")
-    # the coverage audit first: seconds, and it refuses (naming both hashes) on a deck other than the pinned one
-    audit_drifts = audit_check(args.klt, klt_env(os.environ.get("PDK_ROOT")))
+    # each --*-only flag scopes the check to its own drift gate and skips the
+    # others entirely (the audit refuses to run at all on a deck other than
+    # the pinned one, so the estimates-only path must not depend on it)
     if args.audit_only:
+        audit_drifts = audit_check(args.klt, klt_env(os.environ.get("PDK_ROOT")))
         if audit_drifts:
             print("DRIFT in: " + "; ".join(audit_drifts))
             return 1
         print("verify-whole check --audit-only: DRC coverage audit reproduced")
         return 0
+    if args.estimates_only:
+        estimate_drifts = estimates_check()
+        if estimate_drifts:
+            print("DRIFT in: " + "; ".join(estimate_drifts))
+            return 1
+        print("verify-whole check --estimates-only: physical estimates reproduced")
+        return 0
+    # the coverage audit first: seconds, and it refuses (naming both hashes) on a deck other than the pinned one
+    audit_drifts = audit_check(args.klt, klt_env(os.environ.get("PDK_ROOT")))
+    # the physical estimates next: also seconds (klayout geometry, no klt run),
+    # and deliberately part of the same drift gate as the audit (issue #283)
+    estimate_drifts = estimates_check()
     with tempfile.TemporaryDirectory(prefix="verify-whole-check-") as tmp:
         b = build_baseline(args, Path(tmp))
         fresh = verify_report(b)
-        drifts = list(audit_drifts)
+        drifts = list(audit_drifts) + list(estimate_drifts)
         for key in ("inputs_sha256", "reference", "verdict"):
             if committed[key] != fresh[key]:
                 drifts.append(key)
@@ -1603,10 +1672,13 @@ def check(args) -> int:
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
-    ap.add_argument("command", choices=["run", "controls", "check", "all", "audit", "audit-controls"])
+    ap.add_argument("command", choices=["run", "controls", "check", "all", "audit", "audit-controls",
+                                        "estimates", "estimates-controls"])
     ap.add_argument("--klt", default=shutil.which("klt") or "klt")
     ap.add_argument("--allow-tool-drift", action="store_true")
     ap.add_argument("--audit-only", action="store_true", help="check: only the DRC coverage audit drift (no DRC/extract/LVS re-run)")
+    ap.add_argument("--estimates-only", action="store_true",
+                    help="check: only the physical-estimates drift (no audit, no DRC/extract/LVS re-run; issue #283)")
     ap.add_argument("--only", action="append", help="run only this control id (repeatable)")
     ap.add_argument("--no-publish", action="store_true", help="run and report but write nothing under layout/ (debugging)")
     ap.add_argument("--workdir", help="keep scratch output here (debugging; not deleted)")
@@ -1639,6 +1711,23 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"  {r['id']}: passed={r['passed']}")
             print(f"audit-controls: all_passed={summary['all_passed']}")
             return 0 if summary["all_passed"] else 1
+        if args.command == "estimates":
+            doc = compute_estimates()
+            if not args.no_publish:
+                publish_estimates(doc)
+            print(f"estimates: {doc['density']['windows_total']} windows x {len(doc['density']['layers'])} layers; "
+                  f"{len(doc['antenna']['nets'])} antenna nets rated "
+                  f"({doc['coverage']['gate_area']['gate_nets_without_conductor_geometry']} gate nets without "
+                  f"conductor geometry)")
+            return 0
+        if args.command == "estimates-controls":
+            summary = PE.run_controls()
+            if not args.no_publish:
+                publish_estimates_controls(summary)
+            for r in summary["controls"]:
+                print(f"  {r['id']}: passed={r['passed']}")
+            print(f"estimates-controls: all_passed={summary['all_passed']}")
+            return 0 if summary["all_passed"] else 1
         import contextlib  # noqa: PLC0415
 
         ctx = contextlib.nullcontext(args.workdir) if args.workdir else tempfile.TemporaryDirectory(prefix="verify-whole-")
@@ -1661,7 +1750,7 @@ def main(argv: list[str] | None = None) -> int:
                 if not summary["all_detected"] or summary["baseline_rerun_after_controls"]["status"] != "match":
                     return 1
         return 0
-    except (BuildError, A.AuditError) as exc:
+    except (BuildError, A.AuditError, PE.EstimateError) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 1
 

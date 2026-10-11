@@ -90,8 +90,9 @@ audits; **L14** stub pin order; **L15** the extraction warnings, classified.
 `drc_coverage_audit.md` / `drc_coverage_audit.json` turn L9's counts into
 statements a reader can check. **This is evidence, not sign-off.** It checks
 klt's own curated-deck coverage report against the stream. It is not a foundry
-runset, and it adds no antenna, density, seal-ring or latch-up check. Density
-and antenna estimates are tracked separately in #283.
+runset, and it adds no antenna, density, seal-ring or latch-up check. The
+density and antenna *estimates* that accompany it are in
+`physical_estimates.*` (see "Physical estimates" below, issue #283).
 
 - **Table 1: the 45 rules klt did not run** (`drc.json` `coverage.inapplicable`,
   reason `no_applicable_geometry`; `rules_skipped` is the legacy name of the
@@ -110,6 +111,9 @@ and antenna estimates are tracked separately in #283.
   `text-or-marker-only`** (pin-label layers carrying only text objects): for
   example `64/5`, `67/5`, `83/44`. No layer is labelled absent. The deck's layer
   table names none of the 19, and the audit does not guess their purpose.
+
+The "adds no antenna, density … check" limitation stays exactly as it is:
+`physical_estimates.*` (below) are informational estimates, not checks.
 
 Verdict rules are stated per check kind in the table. A rule is
 `vacuous-confirmed` only for a known kind (`angle`/`ongrid`/`width`/`space` need
@@ -133,6 +137,52 @@ unknown rule, unmappable layer, unsupported kind, one-of-two layers, and drift
 on a stream edit / remapped layer / changed deck hash. They are in
 `controls/drc_coverage_audit_controls.md`, and `test_verify_whole.py` runs the
 same controls on stubbed counts with no klt.
+
+## Physical estimates (L9, issue #283)
+
+`physical_estimates.md` / `physical_estimates.json` turn the rest of L9's "no
+antenna, density … rules" statement into **informational numbers a reader can
+check**. **These are estimates, not foundry sign-off** -- the pinned deck has
+no density or antenna rule at all, so no window, threshold or verdict here is
+foundry-derived, and neither artifact contains a pass/fail. What they carry:
+
+- **Density** of the unioned drawing geometry of poly, li1 and met1..met5 over
+  a 100 um x 100 um tiled grid. The window size and stride are an **arbitrary
+  choice** (the deck documents no density window); the denominator is each
+  window's own clipped area inside the top-cell bounding box, zero-area windows
+  are skipped and counted, and invalid grids are refused. Per-window densities
+  are committed so any single window can be spot-checked by hand.
+- **Naive cumulative antenna ratios** per electrical net and level: summed
+  li1..level conductor area / summed MOS gate W*L. Gate areas come from the
+  committed extraction's 264 analog devices; conductor components come from a
+  flat metal-only connectivity extraction and are attributed to a gate net
+  only when their whole label set belongs to that net and no other. Everything
+  that does not meet that bar is excluded and counted: zero-gate nets (never
+  rated, never infinite), gate nets with no attributable conductor geometry
+  (listed), ambiguous label sets, unlabeled geometry. All gates inside the
+  8605 abstracted digital instances are excluded -- reported against the count
+  of placed device-bearing instances, never an invented area fraction. Process
+  sequencing, diode relief, side-wall area and foundry thresholds are not
+  modelled.
+- **Coverage accounting** quantifies how much drawn metal per level the
+  label-based attribution covers (roughly 10-50% by level), so the ratios are
+  read as lower bounds on real per-net exposure for the nets they do cover.
+
+Why computed in-repo rather than with `klt stats`/`klt economy`: `stats
+--per-layer` sums polygon areas without a boolean merge (overlaps
+double-counted — `klt stats` will *not* reproduce these unioned numbers by
+design), and neither command offers windowed per-layer density. Filed as
+klayout-tools#3107 (see `docs/friction-ledger.md`).
+
+**Drift.** `verify-whole.py check` includes the estimates: it recomputes both
+artifacts from the committed GDS + extraction and fails on any difference
+(`check --estimates-only` scopes to this gate alone, in seconds, with no klt
+run). Regenerate with `verify-whole.py estimates`. The calculator controls
+(union without double counting, hierarchy, boundary clipping, empty layer,
+invalid grids, cumulative ratios, zero-gate and ambiguous-label accounting,
+drift) run on synthetic GDS fixtures with real klayout: they are in
+`controls/physical_estimates_controls.md`, and `test_verify_whole.py` runs the
+pure arithmetic halves of the same controls on PR CI with nothing installed.
 
 ## Fault controls
 
@@ -218,8 +268,10 @@ pins is.
 | `lvs.request.json`, `lvs.json` | `klt lvs` request / full report |
 | `coverage.json`, `coverage.md` | per-port coverage matrix + named limitations |
 | `drc_coverage_audit.json`, `drc_coverage_audit.md` | L9 audit: every rule klt did not run and every unruled stream layer, with shape counts and verdicts (issue #281) |
+| `physical_estimates.json`, `physical_estimates.md` | informational density + naive antenna-ratio estimates, definitions and coverage limits in-file, "estimate, not foundry sign-off" (issue #283) |
 | `controls/controls.json`, `controls/controls.md` | fault-control evidence |
 | `controls/drc_coverage_audit_controls.json`, `.md` | coverage-audit controls 1-5 on synthetic fixtures |
+| `controls/physical_estimates_controls.json`, `.md` | estimate calculator controls (union, hierarchy, clipping, grids, ratios, zero-gate/ambiguous accounting, drift) on synthetic fixtures |
 
 ## Handoff to #174 and #170
 
