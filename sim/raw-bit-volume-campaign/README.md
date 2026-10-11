@@ -169,6 +169,10 @@ to the batch fleet failed on 2026-10-11: client klt 0.7.0 got `runner_batch_vers
 (runner 0.5.0, exit 87 after 5 s), and client 0.6.0 (`uvx --from klayout-tools==0.6.0`) exited 4
 after 6 s with every corner `error` (jobs `klt-sim-73ca7992bfe9`, `klt-sim-08f37305d25a`); a data
 point was added to 2AMLogic/klayout-tools#2851. No local fallback was run and nothing was fabricated.
+A single retry on 2026-10-11 (after PR #290 merged, client klt 0.7.0+gc4c7dfe79365, same unit, job
+`klt-sim-f040aa152070`, spot m7i.4xlarge) failed identically: `runner_compatibility: mismatch`, runner 0.5.0,
+exit 87 after 4 s, all 3 corners `error` (`batch_job_failed`). The remaining 19 units were not submitted
+and still nothing was run locally.
 Once a compatible client/runner pair exists, run the 20 units, `--ingest`, and mint the record as
 new evidence.
 
