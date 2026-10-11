@@ -1,0 +1,311 @@
+{
+  "caveat": "Simulation-derived and provisional until measured on silicon. Aggregates committed records only; never upgrades a verdict.",
+  "counts": {
+    "met": 2,
+    "not measured": 5,
+    "unmet": 3
+  },
+  "generator": "sim/bin/characterization_report.py",
+  "overall": "fail",
+  "rows": [
+    {
+      "evidence": [],
+      "parameter": "Entropy source",
+      "pvt_coverage": [],
+      "stretch": "metastability hybrid as a secondary tap",
+      "target": "N-way array of independent free-running ring oscillators, XOR-combined ahead of a single sampler; N re-sized from a jitter budget at the entropy-binding corner",
+      "verdict": "not measured"
+    },
+    {
+      "evidence": [
+        {
+          "check": "chosen sampling period t_s <= 1e-6 s (>= 1 Mbps)",
+          "detail": "observed 2e-05",
+          "level": "transistor (derived)",
+          "pvt": [
+            "ff -40C 1.62V",
+            "ff -40C 1.98V",
+            "ff 27C 1.8V",
+            "ss -40C 1.62V",
+            "ss -40C 1.98V",
+            "ss 27C 1.8V",
+            "tt -40C 1.62V",
+            "tt -40C 1.98V",
+            "tt 27C 1.8V"
+          ],
+          "record_id": "20260825-093740-53f1f7a",
+          "record_path": "sim/ro-array-operating-point/records/20260825-093740-53f1f7a.json",
+          "sha256": "442b600f9b10b8150237951bed8bd5e2ac5837661a6778e9a78b33dcc25caa75",
+          "verdict": "unmet"
+        }
+      ],
+      "parameter": "Raw rate",
+      "pvt_coverage": [
+        "ff -40C 1.62V",
+        "ff -40C 1.98V",
+        "ff 27C 1.8V",
+        "ss -40C 1.62V",
+        "ss -40C 1.98V",
+        "ss 27C 1.8V",
+        "tt -40C 1.62V",
+        "tt -40C 1.98V",
+        "tt 27C 1.8V"
+      ],
+      "stretch": "> 4 Mbps",
+      "target": "> 1 Mbps sustained at the raw tap, binding at the slowest-RO corner",
+      "verdict": "unmet"
+    },
+    {
+      "evidence": [
+        {
+          "check": "worst-corner h_min >= 0.5 bit/sample at Ts = 20 us (behavioural model, independence assumed by construction; DR-0010 row 3 open on #221)",
+          "detail": "observed 0.6674109338172481",
+          "level": "behavioral (derived)",
+          "pvt": [
+            "ff -40C 1.62V",
+            "ff -40C 1.98V",
+            "ff 125C 1.62V",
+            "ff 125C 1.8V",
+            "ff 125C 1.98V",
+            "ff 27C 1.8V",
+            "ss -40C 1.62V",
+            "ss -40C 1.98V",
+            "ss 125C 1.62V",
+            "ss 125C 1.8V",
+            "ss 125C 1.98V",
+            "ss 27C 1.8V",
+            "tt -40C 1.62V",
+            "tt -40C 1.98V",
+            "tt 125C 1.62V",
+            "tt 125C 1.8V",
+            "tt 125C 1.98V",
+            "tt 27C 1.8V"
+          ],
+          "record_id": "20261010-102516-3966094",
+          "record_path": "sim/raw-bit-min-entropy/records/20261010-102516-3966094.json",
+          "sha256": "8cfdaea360f1550620e221e9e0a50c1aef72459ec49b3b3b297eb4b914d43279",
+          "verdict": "met"
+        },
+        {
+          "check": "worst array x sampler pairing H_bias >= 0.5 bit/sample (transistor-level local-mismatch MC, static bias only; DR-0010 row 3 open on #221)",
+          "detail": "observed 0.679950493450846",
+          "level": "transistor",
+          "pvt": [
+            "ff -40C 1.98V"
+          ],
+          "record_id": "20261009-111125-e57ad27",
+          "record_path": "sim/local-mismatch-monte-carlo/records/20261009-111125-e57ad27.json",
+          "sha256": "ba4631b09991b383e8916990be71771d55c761b5d718b5bab70d4b0b92c027e6",
+          "verdict": "met"
+        },
+        {
+          "check": "worst array x sampler pairing H_bias >= 0.5 bit/sample (transistor-level local-mismatch MC, static bias only; DR-0010 row 3 open on #221)",
+          "detail": "observed 0.6425427630107089",
+          "level": "transistor",
+          "pvt": [
+            "ss -40C 1.62V"
+          ],
+          "record_id": "20261009-111126-e57ad27",
+          "record_path": "sim/local-mismatch-monte-carlo/records/20261009-111126-e57ad27.json",
+          "sha256": "8edc16338c64f9efe2c5141d9f496742b6241e09a50191fbd07f684dd3faec13",
+          "verdict": "met"
+        },
+        {
+          "check": "worst array x sampler pairing H_bias >= 0.5 bit/sample (transistor-level local-mismatch MC, static bias only; DR-0010 row 3 open on #221)",
+          "detail": "observed 0.47180709030319024",
+          "level": "transistor",
+          "pvt": [
+            "tt 27C 1.8V"
+          ],
+          "record_id": "20261009-111127-e57ad27",
+          "record_path": "sim/local-mismatch-monte-carlo/records/20261009-111127-e57ad27.json",
+          "sha256": "d505ce4b328caf86d2a37b96b8948848665f9a1e133b246f36fc5f9225cd7c82",
+          "verdict": "unmet"
+        }
+      ],
+      "parameter": "Raw min-entropy per bit",
+      "pvt_coverage": [
+        "ff -40C 1.62V",
+        "ff -40C 1.98V",
+        "ff 125C 1.62V",
+        "ff 125C 1.8V",
+        "ff 125C 1.98V",
+        "ff 27C 1.8V",
+        "ss -40C 1.62V",
+        "ss -40C 1.98V",
+        "ss 125C 1.62V",
+        "ss 125C 1.8V",
+        "ss 125C 1.98V",
+        "ss 27C 1.8V",
+        "tt -40C 1.62V",
+        "tt -40C 1.98V",
+        "tt 125C 1.62V",
+        "tt 125C 1.8V",
+        "tt 125C 1.98V",
+        "tt 27C 1.8V"
+      ],
+      "stretch": "\u2014",
+      "target": "H\u2080 = 0.5 bit/sample as a design *target* at the entropy-binding corner \u2014 a sizing input, not a claim, until measured",
+      "verdict": "unmet"
+    },
+    {
+      "evidence": [],
+      "parameter": "Quality",
+      "pvt_coverage": [],
+      "stretch": "AIS-31 PTG.2 structure",
+      "target": "designed-for-SP 800-90B (raw access + RCT/APT + entropy-source model); validation deferred to measured silicon",
+      "verdict": "not measured"
+    },
+    {
+      "evidence": [
+        {
+          "check": "CRC-32 LFSR model bit-exact vs independent references (ok == true)",
+          "detail": "observed True",
+          "level": "behavioral",
+          "pvt": [],
+          "record_id": "20260905-192506-2ecb0a3",
+          "record_path": "sim/digital-conditioner-equivalence/records/20260905-192506-2ecb0a3.json",
+          "sha256": "883fb254c43cc628165ec0c6f0457c6e28b470410cd564d53e7a51c9438e86d6",
+          "verdict": "met"
+        }
+      ],
+      "parameter": "Conditioning",
+      "pvt_coverage": [],
+      "stretch": "vetted conditioner if the area budget allows",
+      "target": "non-vetted CRC-32 LFSR compression, K = 8 (256 raw bits in : one 32-bit word out)",
+      "verdict": "met"
+    },
+    {
+      "evidence": [
+        {
+          "check": "no false alarms: ratified RCT/APT cutoffs raise 0 alarms replayed over the simulated streams (CONDITIONAL: cutoffs depend on DR-0010 row 3 / #221; replays streams 20261008-061809-56e0fb7, superseded by 20261010-095913-3966094)",
+          "detail": "observed 0",
+          "level": "behavioral (derived -- no simulator)",
+          "pvt": [
+            "ff -40C 1.62V",
+            "ff -40C 1.98V",
+            "ff 125C 1.62V",
+            "ff 125C 1.8V",
+            "ff 125C 1.98V",
+            "ff 27C 1.8V",
+            "ss -40C 1.62V",
+            "ss -40C 1.98V",
+            "ss 125C 1.62V",
+            "ss 125C 1.8V",
+            "ss 125C 1.98V",
+            "ss 27C 1.8V",
+            "tt -40C 1.62V",
+            "tt -40C 1.98V",
+            "tt 125C 1.62V",
+            "tt 125C 1.8V",
+            "tt 125C 1.98V",
+            "tt 27C 1.8V"
+          ],
+          "record_id": "20261008-150251-cd45d91",
+          "record_path": "sim/digital-health-test-parameters/records/20261008-150251-cd45d91.json",
+          "sha256": "4a8c35d7694ccf2f5ec6682aa7b8575510b78ad2ab314b7b8eb02286664ff16a",
+          "verdict": "met"
+        },
+        {
+          "check": "detects stuck-at: RCT detects every stuck-at-0 / stuck-at-1 fault-injection run (detected == runs; same DR-0010 row 3 / #221 condition)",
+          "detail": "observed 216/216 detected",
+          "level": "behavioral (derived -- no simulator)",
+          "pvt": [],
+          "record_id": "20261008-150251-cd45d91",
+          "record_path": "sim/digital-health-test-parameters/records/20261008-150251-cd45d91.json",
+          "sha256": "4a8c35d7694ccf2f5ec6682aa7b8575510b78ad2ab314b7b8eb02286664ff16a",
+          "verdict": "met"
+        },
+        {
+          "check": "detects stuck-at: APT detects every stuck-at-0 / stuck-at-1 fault-injection run (detected == runs; same DR-0010 row 3 / #221 condition)",
+          "detail": "observed 216/216 detected",
+          "level": "behavioral (derived -- no simulator)",
+          "pvt": [],
+          "record_id": "20261008-150251-cd45d91",
+          "record_path": "sim/digital-health-test-parameters/records/20261008-150251-cd45d91.json",
+          "sha256": "4a8c35d7694ccf2f5ec6682aa7b8575510b78ad2ab314b7b8eb02286664ff16a",
+          "verdict": "met"
+        }
+      ],
+      "parameter": "Health tests",
+      "pvt_coverage": [
+        "ff -40C 1.62V",
+        "ff -40C 1.98V",
+        "ff 125C 1.62V",
+        "ff 125C 1.8V",
+        "ff 125C 1.98V",
+        "ff 27C 1.8V",
+        "ss -40C 1.62V",
+        "ss -40C 1.98V",
+        "ss 125C 1.62V",
+        "ss 125C 1.8V",
+        "ss 125C 1.98V",
+        "ss 27C 1.8V",
+        "tt -40C 1.62V",
+        "tt -40C 1.98V",
+        "tt 125C 1.62V",
+        "tt 125C 1.8V",
+        "tt 125C 1.98V",
+        "tt 27C 1.8V"
+      ],
+      "stretch": "\u2014",
+      "target": "continuous RCT + APT on the raw stream; cutoffs re-derived from sky130 noise/leakage corners, not copied from gf180",
+      "verdict": "met"
+    },
+    {
+      "evidence": [],
+      "parameter": "Power",
+      "pvt_coverage": [],
+      "stretch": "\u2014",
+      "target": "< 500 \u00b5W active; idle target set after a sky130 leakage survey",
+      "verdict": "not measured"
+    },
+    {
+      "evidence": [
+        {
+          "check": "target_status == met (target 0.05 mm2)",
+          "detail": "observed 'unchanged: unmet'",
+          "level": null,
+          "pvt": [],
+          "record_id": "20261009-214736-760b4d3",
+          "record_path": "sim/digital-floorplan-compaction/records/20261009-214736-760b4d3.json",
+          "sha256": "8c145673c26a2d41833b89dde55178c9d54018c8575292de0cfc7322ecd78c7f",
+          "verdict": "unmet"
+        },
+        {
+          "check": "target_status == met (target 0.05 mm2)",
+          "detail": "observed 'unchanged: unmet'",
+          "level": null,
+          "pvt": [],
+          "record_id": "20261010-105914-824542d",
+          "record_path": "sim/digital-repaired-compaction/records/20261010-105914-824542d.json",
+          "sha256": "eec70ff620edb50130b340d48968bc37975196cb914a8f785a35045343e6a58d",
+          "verdict": "unmet"
+        }
+      ],
+      "parameter": "Area",
+      "pvt_coverage": [],
+      "stretch": "\u2014",
+      "target": "< 0.05 mm\u00b2",
+      "verdict": "unmet"
+    },
+    {
+      "evidence": [],
+      "parameter": "Operating envelope",
+      "pvt_coverage": [],
+      "stretch": "\u2014",
+      "target": "\u221240 \u2026 +125 \u00b0C; supply per sky130 device flavor (1.8 V core, 3.3 V I/O devices available) \u2014 confirm before ratification",
+      "verdict": "not measured"
+    },
+    {
+      "evidence": [],
+      "parameter": "Interface",
+      "pvt_coverage": [],
+      "stretch": "\u2014",
+      "target": "streaming, mode-selectable raw / conditioned; raw access always available and never gated",
+      "verdict": "not measured"
+    }
+  ],
+  "schema": "sky130-trng/characterization-report/1",
+  "spec_source": "README.md"
+}

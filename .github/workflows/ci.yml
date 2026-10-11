@@ -211,6 +211,9 @@ on:
       # regenerated in a PR must re-grade, not slide through on the old
       # report bytes).
       - "signoff/**"
+      # issue #291 characterization-report inputs: the spec table it parses
+      # (README.md) and the generator (sim/bin/** and sim/*/records/** above)
+      - "README.md"
       - "layout/sampler_core/drc.json"
       - "layout/sampler_core/lvs.json"
       - ".github/workflows/ci.yml"
@@ -283,6 +286,9 @@ jobs:
         run: python3 sim/tests/test_electrical_reduction.py
       - name: sim/tests/test_electrical_final_route_gate.py (issue #250 final-route electrical verdict gates digital P&R; replays recorded sessions)
         run: python3 sim/tests/test_electrical_final_route_gate.py
+
+      - name: sim/tests/test_characterization_report.py (issue #291 aggregation + negative controls)
+        run: python3 sim/tests/test_characterization_report.py
 
       - name: sim/tests/test_restart_matrix.py (issue #267 restart-matrix reduction known-answer + record replay)
         run: python3 sim/tests/test_restart_matrix.py
@@ -368,3 +374,26 @@ jobs:
             echo "Regenerate it with the command in signoff/README.md and commit the diff." >&2
             exit 1
           fi
+
+  # characterization-report staleness gate (issue #291): re-render
+  # signoff/characterization-report.{md,json} from README.md's spec table and
+  # the committed sim/*/records and byte-diff against the committed copies.
+  # Pure stdlib Python, no installs.
+  characterization-report-check:
+    name: Characterization report staleness gate (render + byte-diff)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Re-render into a scratch tree and byte-diff against the committed report
+        run: |
+          python3 sim/bin/characterization_report.py --check
+          mkdir -p /tmp/cr/signoff
+          cp -r sim README.md /tmp/cr/
+          python3 sim/bin/characterization_report.py --root /tmp/cr
+          cmp signoff/characterization-report.json /tmp/cr/signoff/characterization-report.json
+          cmp signoff/characterization-report.md /tmp/cr/signoff/characterization-report.md
