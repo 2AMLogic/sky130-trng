@@ -105,8 +105,10 @@ class PublicationIntegrity(unittest.TestCase):
                                              artifacts=artifacts)
 
     def test_mint_record_invalid_json_leaves_nothing(self):
-        with self.assertRaises(TypeError):
-            self.mint_rec({"bad": object()})
+        loop: dict = {}
+        loop["self"] = loop  # default=str cannot rescue a circular reference
+        with self.assertRaises(ValueError):
+            self.mint_rec(loop)
         self.assertEqual(snapshot(self.root), {})
 
     def test_behavioral_invalid_json_leaves_nothing(self):
