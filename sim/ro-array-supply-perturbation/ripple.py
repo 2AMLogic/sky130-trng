@@ -607,7 +607,7 @@ def render_lr_md(rid, pvt, rows, summ, jobs, sha, now):
             continue
         nf = " ".join(f"r{t['ring']}:{t['state']} {t['p']}:{t['q']} {t['drift_cycles']:+.2f}" +
                       (f" pull {t['pull_fraction']:.2f}" if t["state"] == "LOCKED" and t.get("pull_fraction") is not None else "")
-                      for t in m["tone"] if t["state"] != "free") or "none"
+                      for t in (m["tone"] or []) if t["state"] != "free") or "none"
         t3 = _trio(r)
         verdict = "PASS" if r["ok"] else "**FAIL** " + "; ".join(r["why"])
         if r.get("unresolved"):
