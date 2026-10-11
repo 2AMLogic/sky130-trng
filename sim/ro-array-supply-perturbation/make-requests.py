@@ -230,6 +230,12 @@ def main():
                   "netlist": "netlist.cir", "engine": "ngspice", "backend": "batch",
                   "netlist_source": "extracted",
                   "models": {"pdk": "sky130A", "lib": LIB},
+                  # runner_version_check=warn: the fleet image's klt build string
+                  # lags the submitting client, and enforce (the default) then
+                  # preflight-rejects every job before any simulation (exit 87,
+                  # probed). The skew is recorded in environment.remote instead.
+                  "batch": {"runner_version_check": "warn", "capacity_wait_s": 240}
+                  if a.campaign == LR else {},
                   "corners": {"process": [c["proc"]], "temperature_c": [c["temp"]],
                               "supply_v": {"V" + k: [u[k] for u in us] for k in ("dv", "ra", "rf", "ri")}},
                   "analysis": {"kind": "tran",
