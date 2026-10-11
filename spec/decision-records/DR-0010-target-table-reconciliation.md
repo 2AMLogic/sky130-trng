@@ -104,6 +104,18 @@ size on this topology (`N` the entropy law wants is 78 at 1 Mbps against
 `N_max_combine` = 6); it would need a redesigned combining gate, which no
 issue currently owns. Listed for completeness.
 
+Redesign evidence for R-B (#282, `sim/xor-combining-alternatives/records/20261011-074331-ba1ae9e.md`;
+`klt sim` batch, DR-0003's nine PVT points, baseline control reproducing the
+committed `w_90` and loaded ring periods within +-5 % / +-2 %): widening every
+MOS in the three XOR instances by exactly 2x (topology and `N = 4` unchanged)
+cuts the single-gate `w_90` by about 5 % but leaves the binding
+`N_max_combine` at 6 (ff / -40 C / 1.98 V) and moves the raw-rate ceiling from
+79.46 to 80.15 kbps (+0.9 %; 52.98 to 53.43 kbps at the committed `N = 4`), at
++98 % first-stage input capacitance, +49 % mean active power and +100 % XOR
+device area. This variant therefore does not change the evidence in this
+packet. It is evidence only: the rate row, the options above and this record's
+Proposed / operator-owned status are unchanged.
+
 ## Operator options: area (not pre-decided)
 
 Option A-1 — **hold `< 0.05 mm²` and name the work needed.** The compaction
