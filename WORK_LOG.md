@@ -2,6 +2,34 @@
 
 Chronological record of recently merged pull requests and closed issues.
 
+### 2026-10-11
+
+- **PR #303**: Whole-block verify: informational density and naive antenna-ratio estimates (#283)
+- **Issue #283** (closed): Whole-block verify: informational metal/poly density and naive antenna-ratio estimates (split from #281)
+- **PR #302**: feat(sim): health-test detection coverage on correlated/periodic streams (#300)
+- **Issue #300** (closed): Health-test detection coverage against correlated / injection-locked raw streams
+- **PR #299**: docs(sim): #289 batch retry still blocked by runner/client version mismatch
+- **PR #298**: Friction ledger: index of cited klayout-tools issues with CI coverage check
+- **Issue #295** (closed): Friction ledger: in-repo index of filed klayout-tools issues with CI coverage check
+- **PR #297**: feat(spec): index DR-0011 and add decision-record index checker (#296)
+- **Issue #296** (closed): Decision-record index consistency check (DR-0011 missing from spec/README.md)
+- **PR #294**: docs: top-level REPRODUCE.md cold-start index with CI consistency check
+- **Issue #292** (closed): Top-level REPRODUCE.md cold-start index with CI consistency check (T1 items 9/10)
+- **PR #293**: feat(signoff): aggregated characterization report + CI staleness gate (#291)
+- **Issue #291** (closed): Aggregated characterization report generator with CI staleness gate (T1 item 8)
+- **PR #290**: feat(sim): non-nominal PVT seeded transistor raw-bit cross-check (generator, reducer, controls)
+- **PR #287**: feat(sim): XOR combining-gate alternatives evidence for the raw-rate decision (#282)
+- **Issue #282** (closed): Evidence for the raw-rate decision: measure XOR combining-gate alternatives against the ~78 kbps bandwidth ceiling
+- **PR #284**: feat(verify): audit klt-inapplicable DRC rules and unruled layers against the composed GDS
+- **Issue #281** (closed): Whole-block DRC: audit the 45 klt-inapplicable deck rules and 19 unruled stream layers against the composed GDS
+- **PR #280**: fix(sim): reject summary collisions with behavioral evidence provenance
+- **Issue #276** (closed): Reject summary collisions with behavioral evidence provenance
+- **PR #279**: fix(sim): publish complete evidence bundles with exclusive id reservation
+- **Issue #277** (closed): Publish complete evidence bundles with exclusive record ID reservation
+- **PR #275**: Reject colliding artifact basenames before minting behavioral evidence
+- **Issue #273** (closed): Reject colliding artifact basenames before minting behavioral evidence
+- **Issue #278** (closed): Auditor: guard telemetry dispositions and read-only S3 refinement
+
 ### 2026-10-10
 
 - **PR #272**: feat(sim): restart-matrix reduction + behavioural known-answer record for the C5 restart dataset
