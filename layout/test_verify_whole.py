@@ -20,7 +20,11 @@ What these guard, because a verdict string alone is not evidence:
 - the endpoint audit must flag a single moved standard-cell pin;
 - the committed reports must still describe the committed inputs and the
   committed canonical layout netlist, and every fault control must have reached
-  the LVS comparison and failed naming its nets.
+  the LVS comparison and failed naming its nets;
+- the DRC coverage audit (issue #281) must classify every rule klt did not run
+  and every unruled stream layer, pinned to drc.json's deck hash; its verdict
+  logic is exercised here on stubbed counts (controls 1-5), and the committed
+  markdown must be exactly what the committed JSON renders to.
 """
 
 from __future__ import annotations
@@ -38,6 +42,7 @@ _REPO_ROOT = _HERE.parent
 sys.path.insert(0, str(_REPO_ROOT / "design"))
 sys.path.insert(0, str(_HERE / "bin"))
 from _test_check import Checker  # noqa: E402
+import drc_coverage_audit as A  # noqa: E402
 import verify_whole_lib as V  # noqa: E402
 
 _checker = Checker()
@@ -255,6 +260,94 @@ def check_committed_controls() -> None:
 
 
 # --------------------------------------------------------------------------
+# DRC coverage audit (issue #281)
+# --------------------------------------------------------------------------
+
+_STUB_TABLE_NAMES = {
+    (64, 18): "dnwell.drawing", (89, 44): "capm.drawing", (97, 44): "capm2.drawing",
+    (70, 44): "via3.drawing", (70, 20): "met3.drawing", (68, 20): "met1.drawing",
+}
+_STUB_RULES = [
+    {"id": "dnwell.angle.1", "check": "angle", "layers": ["dnwell.drawing"]},
+    {"id": "capm.enclosing.via3.1", "check": "enclosing", "layers": ["capm.drawing", "via3.drawing"]},
+    {"id": "met3.enclosing.capm.1", "check": "enclosing", "layers": ["met3.drawing", "capm.drawing"]},
+]
+
+
+def check_coverage_audit_logic() -> None:
+    """Controls 1-5 with counts derived from the fixture spec (no klt, no GDS).
+    The deck rules and layer table are a small stub carrying the committed pin:
+    this exercises the verdict logic and the drift / hash gates, not the deck."""
+    drc = json.loads((VERIFY / "drc.json").read_text())
+    pin = A.pinned_deck_hash(drc)
+    rules = {"content_hash": pin, "rules": _STUB_RULES}
+    summary = A.run_controls(real_drc=drc, real_rules=rules, table=(pin, dict(_STUB_TABLE_NAMES)),
+                             count_fn=lambda spec, extra: A.stub_layers_doc(spec, extra))
+    for r in summary["controls"]:
+        _check(f"audit control {r['id']} (stubbed counts)", r["passed"], r.get("observed") or r.get("cases"))
+    ids = {r["id"].split("-")[0] for r in summary["controls"]}
+    _check("audit controls cover 1 absent, 2 residual, 3 unresolved, 4 two-layer, 5 drift",
+           {"1", "2", "3a", "3b", "3c", "4a", "4b", "5"} <= ids, ids)
+    # a check kind the audit does not know never becomes vacuous on a shape count alone
+    row = A.classify_rule({"rule": "x", "reason": None, "lists": []}, {"x": {"check": "isolated", "layers": ["dnwell.drawing"]}},
+                          {"dnwell.drawing": ["64/18"]}, {"64/18"}, {})
+    _check("unknown check kind with an empty layer stays unresolved", row["verdict"] == "unresolved", row)
+    row = A.classify_rule({"rule": "x", "reason": None, "lists": []}, {"x": {"check": "angle", "layers": ["dnwell.drawing"]}},
+                          {"dnwell.drawing": ["64/18"]}, set(), {})
+    _check("a layer the pinned DRC run did not read stays unresolved", row["verdict"] == "unresolved", row)
+
+
+def check_committed_coverage_audit() -> None:
+    path = VERIFY / "drc_coverage_audit.json"
+    if not path.is_file():
+        print("skip   committed coverage audit (drc_coverage_audit.json absent)")
+        return
+    doc = json.loads(path.read_text())
+    drc = json.loads((VERIFY / "drc.json").read_text())
+    rep = json.loads((VERIFY / "verify.json").read_text())
+    cov = drc["coverage"]
+    _check("audit is labelled evidence, not sign-off", "not sign-off" in doc["not_signoff"] and "antenna" in doc["not_signoff"])
+    _check("audit is pinned to drc.json's deck hash", doc["inputs"]["deck"]["content_hash"] == drc["provenance"]["deck"]["content_hash"])
+    _check("audit describes the committed composed GDS",
+           doc["inputs"]["gds_sha256"] == rep["inputs_sha256"]["layout/trng_whole/trng_whole.gds"] and doc["inputs"]["drc_report_input_matches_gds"])
+    want = {e["id"] for e in cov["inapplicable"]} | set(cov["rules_skipped"]) | {e["id"] if isinstance(e, dict) else e for e in cov["skipped"]}
+    got = [r["rule"] for r in doc["rules"]]
+    _check(f"every not-run rule is classified exactly once ({len(want)})", sorted(got) == sorted(want), sorted(want ^ set(got)))
+    _check("every rule verdict is one of the three", all(r["verdict"] in ("vacuous-confirmed", "residual", "unresolved") for r in doc["rules"]))
+    for r in doc["rules"]:
+        if r["verdict"] != "vacuous-confirmed":
+            continue
+        empty = [lay for lay in r["deck_layers"] if lay["gds"] and lay["geometry"] == 0]
+        _check(f"{r['rule']}: vacuous verdict backed by a mapped zero-geometry layer and a known kind",
+               bool(empty) and r["check"] in A.SINGLE_LAYER_KINDS + A.TWO_LAYER_KINDS
+               and len(r["deck_layers"]) == (1 if r["check"] in A.SINGLE_LAYER_KINDS else 2), r)
+    _check("every unruled stream layer is listed in order",
+           [u["gds"] for u in doc["unruled_layers"]] == cov["layers_in_stream_without_rules"])
+    _check("no unruled layer is labelled absent", all(u["verdict"] in ("present-unruled", "text-or-marker-only") for u in doc["unruled_layers"]),
+           [u for u in doc["unruled_layers"] if u["verdict"] not in ("present-unruled", "text-or-marker-only")])
+    for u in doc["unruled_layers"]:
+        _check(f"unruled {u['gds']}: verdict follows its counts",
+               u["geometry"] == u["flattened_shapes"] - u["text_count"]
+               and (u["verdict"] == "text-or-marker-only") == (u["geometry"] == 0 or u["annotation"]), u)
+    _check("stream fully accounted (checked + unruled)", doc["summary"]["stream_layers_unaccounted"] == [], doc["summary"])
+    md = (VERIFY / "drc_coverage_audit.md").read_text()
+    _check("committed audit markdown is exactly what the JSON renders to", md == A.markdown(doc))
+    _check("no home-directory path in the audit", "/home/" not in path.read_text() + md and "/Users/" not in path.read_text() + md)
+    covj = json.loads((VERIFY / "coverage.json").read_text())
+    l9 = next(item for item in covj["limitations"] if item["id"] == "L9")
+    _check("coverage L9 cites both audit tables", "drc_coverage_audit.md" in l9["detail"] and "Table 1" in l9["detail"] and "Table 2" in l9["detail"], l9)
+    _check("coverage L9 keeps the foundry/antenna/density/seal-ring/latch-up limitations",
+           all(w in l9["detail"] for w in ("not foundry DRC clean", "antenna", "density", "seal-ring", "latch-up")), l9)
+    ctl = VERIFY / "controls" / "drc_coverage_audit_controls.json"
+    if ctl.is_file():
+        c = json.loads(ctl.read_text())
+        _check("committed audit controls (real klt counts) all passed", c["all_passed"] is True and len(c["controls"]) >= 9)
+        _check("audit controls ran on the pinned deck", c["deck_content_hash"] == drc["provenance"]["deck"]["content_hash"])
+    else:
+        _check("committed audit controls present", False, str(ctl))
+
+
+# --------------------------------------------------------------------------
 # dispatcher: publication guards for `controls` / `all`
 # --------------------------------------------------------------------------
 
@@ -363,6 +456,8 @@ def main() -> int:
     check_build_reference()
     check_committed_evidence()
     check_committed_controls()
+    check_coverage_audit_logic()
+    check_committed_coverage_audit()
     check_dispatcher_publication()
     return _checker.summary("layout/test_verify_whole.py")
 
