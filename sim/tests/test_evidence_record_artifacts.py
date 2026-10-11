@@ -224,5 +224,55 @@ class PublicationIntegrity(unittest.TestCase):
         self.assertEqual(len(list(self.recs.glob("*.md"))), 1)
 
 
+class ReservedSummaryKeys(unittest.TestCase):
+    """Issue #276: summary keys may not shadow writer-owned metadata."""
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self._tmp.cleanup)
+        self.root = Path(self._tmp.name) / "repo"
+        self.root.mkdir()
+
+    def mint(self, summary, artifacts=None):
+        with mock.patch.object(er, "git_short_sha", return_value="abc1234"):
+            return er.mint_behavioral_record(self.root, "slug", "claim", "body", summary, artifacts=artifacts)
+
+    def test_every_reserved_key_rejected_without_output(self):
+        src = Path(self._tmp.name) / "a.txt"
+        src.write_text("x")
+        for key in er.RESERVED_BEHAVIORAL_KEYS:
+            with self.subTest(key=key):
+                with self.assertRaises(SystemExit) as cm:
+                    self.mint({key: "forged", "ok": 1}, artifacts=[src])
+                self.assertIn(key, str(cm.exception))
+                self.assertEqual(list(self.root.rglob("*")), [])
+
+    def test_all_conflicting_keys_named(self):
+        with self.assertRaises(SystemExit) as cm:
+            self.mint({"level": "transistor", "repo_sha": "x", "fine": 1})
+        msg = str(cm.exception)
+        self.assertIn("level", msg)
+        self.assertIn("repo_sha", msg)
+        self.assertNotIn("'fine'", msg)
+
+    def test_reserved_set_covers_writer_json_fields(self):
+        rid = self.mint({})
+        rec = json.loads((self.root / "sim" / "slug" / "records" / f"{rid}.json").read_text())
+        self.assertEqual(set(rec), set(er.RESERVED_BEHAVIORAL_KEYS))
+
+    def test_ordinary_summary_shape_and_provenance_agree(self):
+        rid = self.mint({"verdict": "PASS", "n": 3})
+        d = self.root / "sim" / "slug" / "records"
+        rec = json.loads((d / f"{rid}.json").read_text())
+        self.assertEqual(rec["verdict"], "PASS")
+        self.assertEqual(rec["n"], 3)
+        self.assertEqual(rec["record_id"], rid)
+        self.assertEqual(rec["level"], "behavioral")
+        md = (d / f"{rid}.md").read_text()
+        self.assertIn(f"# {rid} -- slug", md)
+        self.assertIn("**Level**: behavioral", md)
+        self.assertIn(f"`{rec['repo_sha']}`", md)
+
+
 if __name__ == "__main__":
     unittest.main()

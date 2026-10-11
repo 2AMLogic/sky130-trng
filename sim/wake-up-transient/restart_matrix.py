@@ -426,7 +426,7 @@ def emit_record():
         art.write_bytes(gzip.compress(canonical(values).encode(), compresslevel=9, mtime=0))
         rid = mint_behavioral_record(
             REPO, SLUG, CLAIM, body,
-            {"leg": LEG, "status": PROV, "claim": CLAIM, "model_boundary": MODEL_BOUNDARY,
+            {"leg": LEG, "status": PROV, "model_boundary": MODEL_BOUNDARY,
              "contract": {"rows": REC_ROWS, "cols": REC_COLS, "first_window": FIRST_WINDOW, "min_rows": MIN_ROWS,
                           "min_cols": MIN_COLS, "h_floor": H_FLOOR, "alpha": ALPHA, "ts_s": 20e-6},
              "points": len(entries) // len(ARMS), "arms": list(ARMS),

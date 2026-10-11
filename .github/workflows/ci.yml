@@ -276,7 +276,7 @@ jobs:
       - name: sim/tests/test_restart_matrix.py (issue #267 restart-matrix reduction known-answer + record replay)
         run: python3 sim/tests/test_restart_matrix.py
 
-      - name: sim/tests/test_evidence_record_artifacts.py (issues #273, #277 artifact collisions, bundle publication integrity)
+      - name: sim/tests/test_evidence_record_artifacts.py (issues #273/#276/#277 artifact collisions, reserved summary keys, bundle publication integrity)
         run: python3 sim/tests/test_evidence_record_artifacts.py
 
   sim-records-append-only:
