@@ -43,6 +43,7 @@ from __future__ import annotations
 
 import datetime as _dt
 import json
+import os
 import platform
 import shutil
 import subprocess
@@ -89,6 +90,115 @@ def record_footer(*, author: str, now: _dt.datetime, sha: str) -> list[str]:
     ]
 
 
+class RecordCollision(Exception):
+    """The record id is already taken (published, or reserved by another writer)."""
+
+
+def _link_noreplace(src: Path, dst: Path) -> None:
+    """Publish `src` as `dst` without ever overwriting (hard link, then unlink src)."""
+    os.link(src, dst)  # raises FileExistsError if dst exists
+    os.unlink(src)
+
+
+def _check_artifacts(artifacts: list[Path]) -> None:
+    for path in artifacts:
+        if not (path.is_file() and os.access(path, os.R_OK)):
+            raise SystemExit(f"error: artifact {str(path)!r} is missing or unreadable")
+
+
+def _publish_bundle(
+    records_dir: Path,
+    rid: str,
+    md_text: str,
+    json_text: str,
+    *,
+    runs_dir: Path | None = None,
+    artifacts: list[Path] | None = None,
+    what: str,
+) -> tuple[Path, Path]:
+    """Publish one evidence bundle (md + json [+ runs dir]) for `rid`.
+
+    Completion boundary and recovery
+    --------------------------------
+    All payloads are fully serialized by the caller before this is called.
+    The id is then reserved exclusively with ``os.open(O_CREAT|O_EXCL)`` on
+    ``<records_dir>/.<rid>.reserve``; a second writer for the same id fails
+    with :class:`RecordCollision`. Payloads and copied artifacts are staged
+    next to their final locations (same filesystem) and published in this
+    order: artifacts directory, then ``<rid>.json``, then ``<rid>.md``. Each
+    step refuses to overwrite. The bundle is COMPLETE only once ``<rid>.md``
+    exists; the ``.md`` is published last. Separate renames are not one
+    atomic transaction: if the process is killed (SIGKILL, power loss)
+    between steps, a partial bundle can remain. On an ordinary exception
+    this function removes exactly what this invocation created (staged
+    files, anything it already published, its reservation) and re-raises.
+    After a hard kill the leftover ``.<rid>.reserve`` makes later writers
+    refuse that id with a message naming it; recovery is to delete the
+    ``.<rid>.reserve`` file, any ``.<rid>.*`` staging leftovers, and any
+    partial ``<rid>.json`` / ``runs/<rid>/`` that has no ``<rid>.md``.
+    Complete (``.md`` present) records are never touched.
+    """
+    records_dir.mkdir(parents=True, exist_ok=True)
+    md_path = records_dir / f"{rid}.md"
+    json_path = records_dir / f"{rid}.json"
+    reserve = records_dir / f".{rid}.reserve"
+    stage_md = records_dir / f".{rid}.md.stage"
+    stage_json = records_dir / f".{rid}.json.stage"
+    stage_runs = runs_dir.parent / f".{rid}.runs.stage" if runs_dir else None
+
+    try:
+        fd = os.open(reserve, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o644)
+    except FileExistsError:
+        raise RecordCollision(
+            f"record id {rid} is already reserved by another writer or an interrupted "
+            f"attempt ({reserve.name}); wait a second and re-run, or see "
+            "_publish_bundle docs for recovery") from None
+    owned_files: list[Path] = []  # created by this invocation, removed on failure
+    owned_dirs: list[Path] = []
+    try:
+        with os.fdopen(fd, "w") as fh:
+            fh.write(f"pid={os.getpid()}\n")
+        if (md_path.exists() or json_path.exists()
+                or (runs_dir is not None and runs_dir.exists())):
+            raise RecordCollision(f"record id {rid} already exists")
+
+        stage_md.write_text(md_text)
+        owned_files.append(stage_md)
+        stage_json.write_text(json_text)
+        owned_files.append(stage_json)
+        if runs_dir is not None and artifacts:
+            stage_runs.mkdir(parents=True)
+            owned_dirs.append(stage_runs)
+            for path in artifacts:
+                shutil.copy2(path, stage_runs / path.name)
+
+        if stage_runs is not None and artifacts:
+            os.rename(stage_runs, runs_dir)  # fails if runs_dir is a non-empty dir
+            owned_dirs.remove(stage_runs)
+            owned_dirs.append(runs_dir)
+        _link_noreplace(stage_json, json_path)
+        owned_files.remove(stage_json)
+        owned_files.append(json_path)
+        _link_noreplace(stage_md, md_path)
+        owned_files.remove(stage_md)
+        owned_files.append(md_path)
+    except BaseException:
+        for f in owned_files:
+            try:
+                f.unlink()
+            except OSError:
+                pass
+        for d in owned_dirs:
+            shutil.rmtree(d, ignore_errors=True)
+        raise
+    finally:
+        try:
+            reserve.unlink()
+        except OSError:
+            pass
+    return md_path, json_path
+
+
 def mint_record(
     out_records: Path,
     repo_root: Path,
@@ -119,7 +229,6 @@ def mint_record(
     Returns `(md_path, json_path)` on success, or `None` (after printing an
     error to stderr) if a record with this `rid` already exists.
     """
-    out_records.mkdir(parents=True, exist_ok=True)
     md_path = out_records / f"{rid}.md"
     json_path = out_records / f"{rid}.json"
     if md_path.exists() or json_path.exists():
@@ -128,8 +237,13 @@ def mint_record(
         return None
 
     footer = record_footer(author=author, now=now, sha=sha)
-    md_path.write_text("\n".join(header) + body + "\n".join(footer) + "\n")
-    json_path.write_text(json.dumps(summary, indent=2, default=str) + "\n")
+    md_text = "\n".join(header) + body + "\n".join(footer) + "\n"
+    json_text = json.dumps(summary, indent=2, default=str) + "\n"  # before any publication
+    try:
+        _publish_bundle(out_records, rid, md_text, json_text, what="record")
+    except RecordCollision as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return None
     print(f"\nrecord written: {md_path.relative_to(repo_root)}", file=sys.stderr)
     return md_path, json_path
 
@@ -198,15 +312,9 @@ def mint_behavioral_record(
                              f"sim/{slug}/runs/{rid}/; supply uniquely named files")
         seen[path.name] = path
 
-    records_dir.mkdir(parents=True, exist_ok=True)
-
-    stored: list[str] = []
-    if artifacts:
-        runs_dir.mkdir(parents=True, exist_ok=True)
-        for path in artifacts:
-            path = Path(path)
-            shutil.copy2(path, runs_dir / path.name)
-            stored.append(f"sim/{slug}/runs/{rid}/{path.name}")
+    art_paths = [Path(p) for p in artifacts or []]
+    _check_artifacts(art_paths)
+    stored = [f"sim/{slug}/runs/{rid}/{p.name}" for p in art_paths]
 
     tool_block = {
         "python": platform.python_version(),
@@ -249,8 +357,8 @@ def mint_behavioral_record(
         "",
     ]
 
-    md_path.write_text("\n".join(head) + body_md.rstrip("\n") + "\n" + "\n".join(tail))
-    json_path.write_text(json.dumps({
+    md_text = "\n".join(head) + body_md.rstrip("\n") + "\n" + "\n".join(tail)
+    json_text = json.dumps({
         "record_id": rid,
         "slug": slug,
         "level": level,
@@ -263,6 +371,11 @@ def mint_behavioral_record(
         "tools": tool_block,
         "artifacts": stored,
         **summary,
-    }, indent=2, sort_keys=False) + "\n")
+    }, indent=2, sort_keys=False) + "\n"  # serialize before touching the filesystem
+    try:
+        _publish_bundle(records_dir, rid, md_text, json_text,
+                        runs_dir=runs_dir, artifacts=art_paths, what="record")
+    except RecordCollision as exc:
+        raise SystemExit(f"error: {exc} (under sim/{slug}/)") from None
     print(f"record written: {md_path.relative_to(repo_root)}", file=sys.stderr)
     return rid
