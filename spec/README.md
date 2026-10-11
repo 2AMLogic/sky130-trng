@@ -112,6 +112,15 @@
   pre-deciding them (power pending #174/#201); routes min-entropy to #221.
   Does not edit the README table.
 
+- [`decision-records/DR-0011-external-interface-vs-assumed-challenge-4-pin-budget.md`](decision-records/DR-0011-external-interface-vs-assumed-challenge-4-pin-budget.md)
+  — **Proposed**. Issue #244's re-count of DR-0004's external digital
+  interface (45 inputs / 72 outputs, literal) against the *assumed*
+  Challenge #4 budget of 24 inputs / 12 outputs (an assumption; the brief is
+  unpublished). Weighs interface options and recommends Option C, a wrapper
+  around the existing RTL (inputs 45 -> 8, outputs 72 -> 11), with Option E as
+  fallback. A recommendation only: no wrapper exists, DR-0004's register map
+  is not altered, and nothing is ratified.
+
 - [`decision-records/DR-0012-ro-array-supply-quality-requirement.md`](decision-records/DR-0012-ro-array-supply-quality-requirement.md)
   — **Proposed**. Issue #208's supply-quality requirement for the RO array
   rail, from the #200 supply-perturbation evidence (pre-layout, ideal
