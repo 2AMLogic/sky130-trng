@@ -8,6 +8,7 @@ This roadmap is generated from the current GitHub label state.
 Judge-approved PRs stuck under a `loom:operator` merge-risk hold — implementation work is done, only a human merge decision is missing.
 
 - **#218**: ci: run volume-model and ripple-reduction tests in PR-blocking job
+- **#286**: Guard active SDF signoff evidence against changed simulation inputs
 
 ## Operator Priority
 
@@ -26,7 +27,7 @@ Human-approved issues ready for implementation (`loom:issue`).
 
 Issues currently being built (`loom:building`).
 
-_None._
+- **#288**: Resolve near-frequency supply injection-lock brackets with longer observation windows
 
 ## PRs Awaiting Review
 
@@ -39,6 +40,7 @@ _None._
 PRs that passed review and are queued for Champion auto-merge (`loom:pr`).
 
 - **#218**: ci: run volume-model and ripple-reduction tests in PR-blocking job
+- **#286**: Guard active SDF signoff evidence against changed simulation inputs
 
 ## Proposed
 
@@ -49,11 +51,12 @@ Issues carrying `loom:curated`.
 - **#217**: CI: run test_raw_bit_volume_model and test_ripple_reduction in the PR-blocking lint job *(curated)*
 - **#221**: Decision record request: local mismatch can cap tt raw-bit H below DR-0004's 0.5 floor; adjacent rings approach 1:1 *(curated)*
 - **#230**: CI: guard that every test_*.py is wired into a CI workflow and path filter *(curated)*
+- **#288**: Resolve near-frequency supply injection-lock brackets with longer observation windows *(curated)*
+- **#289**: Extend seeded transistor raw-bit model cross-checks beyond nominal PVT *(curated)*
 
 ## Proposed (Architect / Hermit)
 
 - **#201**: Gated-off analog block idle/leakage across the full PVT envelope incl. +125 C, with combined digital standby estimate *(architect)*
-- **#273**: Reject colliding artifact basenames before minting behavioral evidence *(architect)*
 
 ## Epics
 
@@ -64,13 +67,13 @@ Issues carrying `loom:curated`.
 
 | Tier | Count |
 |------|-------|
-| Operator merge-risk holds | 1 |
+| Operator merge-risk holds | 2 |
 | Operator priority | 0 |
 | Ready (`loom:issue`) | 2 |
-| In Progress (`loom:building`) | 0 |
+| In Progress (`loom:building`) | 1 |
 | PRs awaiting review | 0 |
-| Approved PRs awaiting merge | 1 |
-| Curated | 5 |
-| Architect / Hermit proposals | 2 |
+| Approved PRs awaiting merge | 2 |
+| Curated | 7 |
+| Architect / Hermit proposals | 1 |
 | Active epics | 2 |
 <!-- guide:plan-body:end -->
