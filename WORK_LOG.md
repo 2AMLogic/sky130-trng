@@ -4,6 +4,20 @@ Chronological record of recently merged pull requests and closed issues.
 
 ### 2026-10-10
 
+- **PR #272**: feat(sim): restart-matrix reduction + behavioural known-answer record for the C5 restart dataset
+- **Issue #267** (closed): Restart-matrix (SP 800-90B restart-test shape) reduction with behavioral known-answer record, ahead of silicon
+- **Issue #270** (closed): Auditor guard telemetry: cloud-cli:aws s3 (rm|rb|cp|mv|sync|mb)
+- **PR #271**: feat(sim): protect measurements/ records and raw captures with append-only guard
+- **Issue #269** (closed): Protect silicon measurement records and raw captures with the existing append-only CI guard
+- **PR #268**: ci(pdk-nightly): reproduce whole-block composition and baseline DRC/LVS (#264)
+- **Issue #264** (closed): PDK nightly: reproduce composed whole-block geometry and baseline DRC/LVS
+- **PR #266**: feat(sim): protect record-associated runs/ and corners/ artifacts in append-only guard
+- **Issue #265** (closed): Preserve raw run artifacts associated with append-only simulation records
+- **Issue #259** (closed): Auditor guard telemetry: gh-api-rawfield-body-literal-at
+- **PR #263**: feat(sim): bounded Vth-shift sensitivity of the RO array across PVT (#254)
+- **Issue #254** (closed): End-of-life drift: bounded Vth-shift (BTI/HCI) derate of the RO array across PVT
+- **Issue #258** (closed): Auditor guard telemetry: worktree-write-confinement-unresolved-var
+
 - **Issue #244** (closed): Decision record: DR-0004 external interface vs the assumed Challenge #4 pin budget (brief §2 re-map)
 - **Issue #208** (closed): Decision record needed: RO-array supply-quality requirement (droop/ripple) from #200 evidence
 - **Issue #250** (closed): Gate digital P&R success on extracted final-route Liberty electrical limits
