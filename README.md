@@ -101,6 +101,13 @@ measurements/  silicon characterization (empty until tape-out; layout contract a
                plan: measurements/README.md, spec/silicon-characterization-plan.md)
 ```
 
+## Reproducing the results
+
+[`REPRODUCE.md`](REPRODUCE.md) is the cold-start index: for each result family
+(design netlists, layout DRC/LVS, post-layout PVT campaigns, raw-bit/entropy
+campaigns, digital flow) the command, tool versions and pinned PDK revision.
+A CI check keeps it consistent with the tree.
+
 ## Chipalooza
 
 [`docs/chipalooza/challenge-4-proposal.md`](docs/chipalooza/challenge-4-proposal.md)
