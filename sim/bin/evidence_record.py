@@ -180,6 +180,24 @@ def mint_behavioral_record(
     if md_path.exists() or json_path.exists() or runs_dir.exists():
         raise SystemExit(f"error: record id {rid} already exists under sim/{slug}/; "
                          "wait a second and re-run")
+
+    # Artifacts are stored flat under runs/<rid>/ by basename, so two inputs
+    # sharing a basename (or one input listed twice) would silently overwrite
+    # each other while the record still listed both. Refuse before creating
+    # any record or run directory (issue #273).
+    seen: dict[str, Path] = {}
+    for path in artifacts or []:
+        path = Path(path)
+        prior = seen.get(path.name)
+        if prior is not None:
+            if prior.resolve() == path.resolve():
+                raise SystemExit(f"error: artifact {str(path)!r} is supplied more than once; "
+                                 "list each source file once")
+            raise SystemExit(f"error: artifacts {str(prior)!r} and {str(path)!r} share the "
+                             f"basename {path.name!r} and would overwrite each other in "
+                             f"sim/{slug}/runs/{rid}/; supply uniquely named files")
+        seen[path.name] = path
+
     records_dir.mkdir(parents=True, exist_ok=True)
 
     stored: list[str] = []

@@ -93,6 +93,12 @@ name: CI
 #     fail-closed input checks, and a replay of one point of the committed
 #     behavioural record. No ngspice, no PDK.
 #
+# sim/tests/test_evidence_record_artifacts.py (issue #273) -- stdlib-only temp-directory
+#     test that mint_behavioral_record refuses colliding or repeated artifact
+#     basenames before creating any record/run output, and that unique names
+#     keep their bytes and the artifacts list format. Covered by the existing
+#     sim/bin/** and sim/tests/** path filters.
+#
 # signoff-check (issue #155) -- the gap-to-T1 tier report staleness gate.
 #     `klt signoff --manifest signoff/block-manifest.json` re-renders this
 #     block's graded T1 item table from the committed evidence envelopes
@@ -269,6 +275,9 @@ jobs:
 
       - name: sim/tests/test_restart_matrix.py (issue #267 restart-matrix reduction known-answer + record replay)
         run: python3 sim/tests/test_restart_matrix.py
+
+      - name: sim/tests/test_evidence_record_artifacts.py (issue #273 artifact basename-collision rejection)
+        run: python3 sim/tests/test_evidence_record_artifacts.py
 
   sim-records-append-only:
     name: sim/ + measurements/ append-only evidence rule (no edit/delete/rename of committed records or raw artifacts)
