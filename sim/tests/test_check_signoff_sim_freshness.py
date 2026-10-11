@@ -15,25 +15,37 @@ chk = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(chk)
 
 SLUG = "sim/digital-sdf-timed-verification"
-RID = "20261009-172301-8cbd26a"
+# Records are append-only evidence, so this one stays on disk even after the
+# live citation is removed or moved on; it backs the fixtures in that case.
+FALLBACK_RID = "20261009-172301-8cbd26a"
 ITEM = chk.DEFAULT_ITEM
 
 
-def make_tree(dst):
-    """Copy the cited record + every repo file it pins into dst."""
-    real = json.loads((REPO / "signoff/block-manifest.json").read_text())
-    cite = real["evidence"][ITEM]
+def live_rid(src):
+    """Record id the manifest under src currently cites for ITEM, else None."""
+    ev = json.loads((src / "signoff/block-manifest.json").read_text()).get("evidence", {})
+    cite = ev.get(ITEM)
     cite = cite["file"] if isinstance(cite, dict) else cite
-    assert RID in cite, "cited record changed; update RID"
-    run = Path(SLUG) / "runs" / RID
-    rel = [run / "input-hashes.json", run / "timed-declared.report.json", Path(SLUG) / "records" / f"{RID}.json",
+    return Path(cite).parts[3] if isinstance(cite, str) else None
+
+
+RID = live_rid(REPO) or FALLBACK_RID
+
+
+def make_tree(dst, src=REPO, rid=None):
+    """Copy the record + every repo file it pins from src into dst.  The record
+    is the one src's manifest cites (so a legitimate new citation just works),
+    falling back to the historical record when nothing is cited."""
+    rid = rid or live_rid(src) or FALLBACK_RID
+    run = Path(SLUG) / "runs" / rid
+    rel = [run / "input-hashes.json", run / "timed-declared.report.json", Path(SLUG) / "records" / f"{rid}.json",
            run / "trng_digital.baseline.sdf.gz", run / chk.ORACLE_FILE]
-    hashes = json.loads((REPO / run / "input-hashes.json").read_text())
+    hashes = json.loads((src / run / "input-hashes.json").read_text())
     rel += [Path(k) for k in hashes if "(" not in k and not k.startswith("$")]
-    rel += [p.relative_to(REPO) for p in (REPO / chk.MODEL_DIR).glob("*.py")]
+    rel += [p.relative_to(src) for p in (src / chk.MODEL_DIR).glob("*.py")]
     for r in rel:
         (dst / r).parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy(REPO / r, dst / r)
+        shutil.copy(src / r, dst / r)
     (dst / "signoff").mkdir()
     write_manifest(dst, f"{run}/timed-declared.report.json")
 
@@ -74,8 +86,11 @@ class Freshness(unittest.TestCase):
     def test_real_cited_record_passes(self):
         problems, notes = chk.check(REPO, REPO / "signoff/block-manifest.json")
         self.assertEqual(problems, [])
-        self.assertTrue(any("external" in n for n in notes))
-        self.assertTrue(any("not retained" in n for n in notes))
+        if live_rid(REPO) is None:
+            self.assertTrue(any("no active evidence" in n for n in notes))
+        else:
+            self.assertTrue(any("external" in n for n in notes))
+            self.assertTrue(any("not retained" in n for n in notes))
 
     def test_fixture_passes(self):
         self.assertEqual(self.run_chk()[0], [])
@@ -158,6 +173,47 @@ class Freshness(unittest.TestCase):
         self.assertTrue(any(rid2 in p and "DRIFT layout/trng_digital/sta.json" in p for p in problems), problems)
         write_manifest(self.root, f"{SLUG}/runs/{RID}/timed-declared.report.json")
         self.assertEqual(self.run_chk()[0], [])
+
+    def test_removed_citation_is_no_active_evidence(self):
+        """Recovery path: dropping evidence['7.digital'] must go green, not Usage."""
+        (self.root / "signoff/block-manifest.json").write_text(json.dumps({"evidence": {}}))
+        problems, notes = self.run_chk()
+        self.assertEqual(problems, [])
+        self.assertTrue(any("no active evidence" in n for n in notes), notes)
+        self.assertEqual(chk.main(["--repo-root", str(self.root)]), 0)
+        (self.root / "signoff/block-manifest.json").write_text(json.dumps({}))
+        self.assertEqual(self.run_chk()[0], [])
+
+    def test_malformed_present_citation_still_rejected(self):
+        for bad in [None, 5, [], ["a", "b"], {"file": 3}]:
+            with self.subTest(bad):
+                (self.root / "signoff/block-manifest.json").write_text(
+                    json.dumps({"evidence": {ITEM: bad}}))
+                with self.assertRaises(chk.Usage):
+                    self.run_chk()
+
+    def test_fixtures_follow_a_changed_live_citation(self):
+        """A legitimate new record/citation must not break fixture setup."""
+        with tempfile.TemporaryDirectory() as t1, tempfile.TemporaryDirectory() as t2:
+            live, fx = Path(t1), Path(t2)
+            make_tree(live)
+            rid2 = "20270101-000000-newlive"
+            shutil.copytree(live / SLUG / "runs" / RID, live / SLUG / "runs" / rid2)
+            rec = json.loads((live / SLUG / "records" / f"{RID}.json").read_text())
+            rec["record_id"] = rid2
+            (live / SLUG / "records" / f"{rid2}.json").write_text(json.dumps(rec))
+            write_manifest(live, f"{SLUG}/runs/{rid2}/timed-declared.report.json")
+            make_tree(fx, src=live)
+            self.assertEqual(live_rid(fx), rid2)
+            self.assertEqual(chk.check(fx, fx / "signoff/block-manifest.json")[0], [])
+
+    def test_fixtures_independent_of_removed_live_citation(self):
+        with tempfile.TemporaryDirectory() as t1, tempfile.TemporaryDirectory() as t2:
+            live, fx = Path(t1), Path(t2)
+            make_tree(live)
+            (live / "signoff/block-manifest.json").write_text(json.dumps({"evidence": {}}))
+            make_tree(fx, src=live)
+            self.assertEqual(chk.check(fx, fx / "signoff/block-manifest.json")[0], [])
 
     def test_bad_citation_is_usage_error(self):
         write_manifest(self.root, "somewhere/else/report.json")

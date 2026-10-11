@@ -12,7 +12,8 @@ record is checked; historical records are never compared with today's sources.
 
     check_signoff_sim_freshness.py [--repo-root DIR] [--manifest PATH] [--item ID]
 
-Exit 0: every checkable pin matches.  Exit 1: drift / missing / malformed
+Exit 0: every checkable pin matches, or the item carries no citation (nothing
+to revalidate; a present but malformed citation is still exit 2).  Exit 1: drift / missing / malformed
 (each problem names the path and record).  Exit 2: usage or unreadable input.
 
 On drift: mint a NEW verification record (never edit hashes of an old one) and
@@ -78,8 +79,15 @@ def load_json(path):
 
 
 def locate(root, manifest_path, item):
-    """(report path, run dir, hashes path, record path) for the cited item."""
-    ev = load_json(manifest_path).get("evidence", {}).get(item)
+    """(report path, run dir, hashes path, record path) for the cited item, or
+    None when the manifest carries no citation for it (the documented recovery
+    path: citation removed, nothing active to revalidate)."""
+    evidence = load_json(manifest_path).get("evidence", {})
+    if not isinstance(evidence, dict):
+        raise Usage(f"{manifest_path}: evidence is not an object")
+    if item not in evidence:
+        return None
+    ev = evidence[item]
     cite = ev.get("file") if isinstance(ev, dict) else ev
     if isinstance(cite, list):
         cite = cite[0] if len(cite) == 1 else None
@@ -98,7 +106,11 @@ def check(root, manifest_path, item=DEFAULT_ITEM):
     """Returns (problems, notes)."""
     root = Path(root)
     problems, notes = [], []
-    report, run_dir, hashes_path, record_path = locate(root, manifest_path, item)
+    located = locate(root, manifest_path, item)
+    if located is None:
+        notes.append(f"no active evidence cited for {item}; nothing to revalidate")
+        return problems, notes
+    report, run_dir, hashes_path, record_path = located
     rid = run_dir.name
     tag = f"record {rid}"
     for p in (report, hashes_path):
@@ -185,6 +197,8 @@ def main(argv=None):
               "with a reason and regenerate signoff/t1-report.json). Do not edit old hashes.",
               file=sys.stderr)
         return 1
+    if any(n.startswith("no active evidence") for n in notes):
+        return 0
     print(f"ok: {a.item} cited record's pins match the working tree")
     return 0
 
