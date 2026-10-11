@@ -134,6 +134,14 @@ def mint_record(
     return md_path, json_path
 
 
+# JSON fields the writer itself owns in mint_behavioral_record(); a caller
+# summary may not use any of these names (issue #276).
+RESERVED_BEHAVIORAL_KEYS = (
+    "record_id", "slug", "level", "claim", "seeds", "supersedes", "author",
+    "timestamp_utc", "repo_sha", "tools", "artifacts",
+)
+
+
 def mint_behavioral_record(
     repo_root: Path,
     slug: str,
@@ -172,6 +180,15 @@ def mint_behavioral_record(
     * append-only: a correction mints a new record and names the one it
       supersedes.
     """
+    # Writer-owned metadata must not be overridden by the caller's summary:
+    # the markdown and returned id would disagree with the JSON (issue #276).
+    # Checked first, before any id is minted or anything is created.
+    clash = sorted(set(summary or {}) & set(RESERVED_BEHAVIORAL_KEYS))
+    if clash:
+        raise SystemExit(f"error: summary keys {clash} collide with writer-owned record "
+                         f"metadata {list(RESERVED_BEHAVIORAL_KEYS)}; rename them or pass the "
+                         "value through the matching mint_behavioral_record argument")
+
     now, sha, rid = new_record_id(repo_root)
     records_dir = repo_root / "sim" / slug / "records"
     runs_dir = repo_root / "sim" / slug / "runs" / rid
@@ -262,7 +279,7 @@ def mint_behavioral_record(
         "repo_sha": sha,
         "tools": tool_block,
         "artifacts": stored,
-        **summary,
+        **(summary or {}),
     }, indent=2, sort_keys=False) + "\n")
     print(f"record written: {md_path.relative_to(repo_root)}", file=sys.stderr)
     return rid
