@@ -311,6 +311,26 @@ retire it.
 | 4 | **Bias-band baseline at ff** (array / DR-0003 band definition) | Resolve the 0.5246 clean ff baseline at the upper edge of 0.31-0.53 against the criterion used; any band change goes through its own DR | A decision record or evidence showing whether the band or the ripple limit is what binds at ff |
 | 5 | **Lock-resolution closure** (sim/ro-array-supply-perturbation) | Resolve the UNRESOLVED on-frequency tone rows (longer windows) and locate the 10-50 mV threshold | A record with finer amplitudes and a longer edge window |
 
+Status of follow-up 5 (issue #288; a status note only -- no criterion, threshold
+or target of this record changes, and nothing here ratifies it): the lock-resolution
+campaign ran its bounded matrix through `klt sim` batch at the same two PVT points
+(200-edge windows resolving +-0.1 % detuning, a 400-edge convergence subset, 5/20/50
+mV pk rungs, detuned ladder on both sides of each ring frequency, current-injection
+controls). Records: `sim/ro-array-supply-perturbation/records/20261012-111244-8100a6b`
+(ff) and `20261012-111245-8100a6b` (ss); all 76 planned rows per corner usable. Measured
+at ss, asymmetric about the ring frequency: a 20 mV pk tone at +0.1 % locks all four
+rings (edge in (0.1, 0.25] % on the + side), but at -0.1 % only ring 1 locks (rings 2-4
+stay free); a 50 mV tone locks all four rings at +0.1 % and out beyond +0.4 %, while ring 4
+stays free at -0.1 %; 5 mV leaves every ring free at +-0.25 % (+-0.1 % untested at 5 mV);
+exact on-frequency rows stay UNRESOLVED. So the ss lock threshold lies below 20 mV pk
+only for tones ~0.1 % above a ring frequency (the #200 bracket was 10-50 mV); on the
+minus side it is not located below 50 mV for every ring, and between 5 and 20 mV it is
+not located at all. At ff, ring 4 locks at 20 and
+50 mV out to 0.25-0.4 %, rings 1-3 mostly do not; the ff bias figure is not converged
+in window length (clean baseline 0.542 at 200 edges vs 0.469 at 400), which belongs to
+follow-up 4. The records separate measured brackets from hypotheses; every claim is
+deterministic, pre-layout, simulation-derived and provisional until silicon.
+
 Preserved and distinguished:
 
 - **DR-0003 combining ceiling.** `N_max_combine = 6` is unchanged and not

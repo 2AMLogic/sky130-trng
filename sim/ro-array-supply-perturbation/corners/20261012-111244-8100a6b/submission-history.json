@@ -1,0 +1,185 @@
+{
+ "summary": "The lr group was first packaged as 8-unit requests (2026-10-11/12; lrc as 3-unit). Most first-pass requests were refused at launch by the shared fleet's BATCH_MAX_CONCURRENT_INSTANCES cap; every 8-unit request that did run hit the fleet's 3600 s job poweroff and returned all units as batch_job_timeout with no measurements; several clients were stopped by outer wall-clock limits while their jobs kept running (klt sim batch has no re-attach, so those results were never collected). Three first-pass requests returned and are reused verbatim because their request and netlist bytes are identical to the 3-unit packaging (marked 'reused'). The record's rows come only from the 3-unit request set; no other attempt below contributed a unit.",
+ "attempts": [
+  {
+   "request": "ff-lr-1 (first-pass packaging)",
+   "corner": "ff",
+   "job_id": "klt-sim-7686c96a0708",
+   "outcome": "returned 8 units, status ['error'], diagnostics ['batch_job_timeout'], fleet elapsed 3604 s"
+  },
+  {
+   "request": "ff-lr-10 (first-pass packaging)",
+   "corner": "ff",
+   "job_id": "klt-sim-72766a357010",
+   "outcome": "returned 1 units, status ['pass'], fleet elapsed 41 s -- reused verbatim (as ff-lr-25)"
+  },
+  {
+   "request": "ff-lr-2 (first-pass packaging)",
+   "corner": "ff",
+   "job_id": null,
+   "outcome": "refused: batch backend failed: batch-fleet-provision.sh launch failed (exit 1): error: 10 instance(s) already running + 1 requested exceeds BATCH_MAX_CONCURRENT_INSTANCES=8"
+  },
+  {
+   "request": "ff-lr-3 (first-pass packaging)",
+   "corner": "ff",
+   "job_id": null,
+   "outcome": "refused: batch backend failed: batch-fleet-provision.sh launch failed (exit 1): error: 10 instance(s) already running + 1 requested exceeds BATCH_MAX_CONCURRENT_INSTANCES=8"
+  },
+  {
+   "request": "ff-lr-4 (first-pass packaging)",
+   "corner": "ff",
+   "job_id": null,
+   "outcome": "refused: batch backend failed: batch-fleet-provision.sh launch failed (exit 1): error: 10 instance(s) already running + 1 requested exceeds BATCH_MAX_CONCURRENT_INSTANCES=8"
+  },
+  {
+   "request": "ff-lr-5 (first-pass packaging)",
+   "corner": "ff",
+   "job_id": null,
+   "outcome": "refused: batch backend failed: batch-fleet-provision.sh launch failed (exit 1): error: 10 instance(s) already running + 1 requested exceeds BATCH_MAX_CONCURRENT_INSTANCES=8"
+  },
+  {
+   "request": "ff-lr-6 (first-pass packaging)",
+   "corner": "ff",
+   "job_id": null,
+   "outcome": "refused: batch backend failed: batch-fleet-provision.sh launch failed (exit 1): error: 10 instance(s) already running + 1 requested exceeds BATCH_MAX_CONCURRENT_INSTANCES=8"
+  },
+  {
+   "request": "ff-lr-6 (first-pass packaging)",
+   "corner": "ff",
+   "job_id": "klt-sim-3ccf15d6d5bf",
+   "outcome": "returned 8 units, status ['error'], diagnostics ['batch_job_timeout'], fleet elapsed 3604 s"
+  },
+  {
+   "request": "ff-lr-7 (first-pass packaging)",
+   "corner": "ff",
+   "job_id": null,
+   "outcome": "refused: batch backend failed: batch-fleet-provision.sh launch failed (exit 1): error: 10 instance(s) already running + 1 requested exceeds BATCH_MAX_CONCURRENT_INSTANCES=8"
+  },
+  {
+   "request": "ff-lr-8 (first-pass packaging)",
+   "corner": "ff",
+   "job_id": null,
+   "outcome": "refused: batch backend failed: batch-fleet-provision.sh launch failed (exit 1): error: 10 instance(s) already running + 1 requested exceeds BATCH_MAX_CONCURRENT_INSTANCES=8"
+  },
+  {
+   "request": "ff-lr-9 (first-pass packaging)",
+   "corner": "ff",
+   "job_id": null,
+   "outcome": "refused: batch backend failed: batch-fleet-provision.sh launch failed (exit 1): error: 10 instance(s) already running + 1 requested exceeds BATCH_MAX_CONCURRENT_INSTANCES=8"
+  },
+  {
+   "request": "ff-lrc-1 (first-pass packaging)",
+   "corner": "ff",
+   "job_id": "klt-sim-6162ff259aa8",
+   "outcome": "returned 3 units, status ['pass'], fleet elapsed 65 s -- reused verbatim (as ff-lrc-1)"
+  },
+  {
+   "request": "ss-lr-1 (first-pass packaging)",
+   "corner": "ss",
+   "job_id": "klt-sim-76b982e1420a",
+   "outcome": "returned 8 units, status ['error'], diagnostics ['batch_job_timeout'], fleet elapsed 3604 s"
+  },
+  {
+   "request": "ss-lr-10 (first-pass packaging)",
+   "corner": "ss",
+   "job_id": null,
+   "outcome": "refused: batch backend failed: batch-fleet-provision.sh launch failed (exit 1): error: 10 instance(s) already running + 1 requested exceeds BATCH_MAX_CONCURRENT_INSTANCES=8"
+  },
+  {
+   "request": "ss-lr-2 (first-pass packaging)",
+   "corner": "ss",
+   "job_id": null,
+   "outcome": "refused: batch backend failed: batch-fleet-provision.sh launch failed (exit 1): error: 10 instance(s) already running + 1 requested exceeds BATCH_MAX_CONCURRENT_INSTANCES=8"
+  },
+  {
+   "request": "ss-lr-3 (first-pass packaging)",
+   "corner": "ss",
+   "job_id": null,
+   "outcome": "refused: batch backend failed: batch-fleet-provision.sh launch failed (exit 1): error: 10 instance(s) already running + 1 requested exceeds BATCH_MAX_CONCURRENT_INSTANCES=8"
+  },
+  {
+   "request": "ss-lr-4 (first-pass packaging)",
+   "corner": "ss",
+   "job_id": null,
+   "outcome": "refused: batch backend failed: batch-fleet-provision.sh launch failed (exit 1): error: 10 instance(s) already running + 1 requested exceeds BATCH_MAX_CONCURRENT_INSTANCES=8"
+  },
+  {
+   "request": "ss-lr-5 (first-pass packaging)",
+   "corner": "ss",
+   "job_id": null,
+   "outcome": "refused: batch backend failed: batch-fleet-provision.sh launch failed (exit 1): error: 10 instance(s) already running + 1 requested exceeds BATCH_MAX_CONCURRENT_INSTANCES=8"
+  },
+  {
+   "request": "ss-lr-6 (first-pass packaging)",
+   "corner": "ss",
+   "job_id": null,
+   "outcome": "refused: batch backend failed: batch-fleet-provision.sh launch failed (exit 1): error: 10 instance(s) already running + 1 requested exceeds BATCH_MAX_CONCURRENT_INSTANCES=8"
+  },
+  {
+   "request": "ss-lr-6 (first-pass packaging)",
+   "corner": "ss",
+   "job_id": "klt-sim-0213dc341d1b",
+   "outcome": "returned 8 units, status ['error'], diagnostics ['batch_job_timeout'], fleet elapsed 3604 s"
+  },
+  {
+   "request": "ss-lr-7 (first-pass packaging)",
+   "corner": "ss",
+   "job_id": null,
+   "outcome": "refused: batch backend failed: batch-fleet-provision.sh launch failed (exit 1): error: 10 instance(s) already running + 1 requested exceeds BATCH_MAX_CONCURRENT_INSTANCES=8"
+  },
+  {
+   "request": "ss-lr-8 (first-pass packaging)",
+   "corner": "ss",
+   "job_id": null,
+   "outcome": "refused: batch backend failed: batch-fleet-provision.sh launch failed (exit 1): error: 10 instance(s) already running + 1 requested exceeds BATCH_MAX_CONCURRENT_INSTANCES=8"
+  },
+  {
+   "request": "ss-lr-9 (first-pass packaging)",
+   "corner": "ss",
+   "job_id": null,
+   "outcome": "refused: batch backend failed: batch-fleet-provision.sh launch failed (exit 1): error: 10 instance(s) already running + 1 requested exceeds BATCH_MAX_CONCURRENT_INSTANCES=8"
+  },
+  {
+   "request": "ss-lrc-1 (first-pass packaging)",
+   "corner": "ss",
+   "job_id": "klt-sim-8b55c54e1f30",
+   "outcome": "returned 3 units, status ['pass'], fleet elapsed 2329 s -- reused verbatim (as ss-lrc-1)"
+  },
+  {
+   "request": "ss-lrc-1 (2026-10-12 06:13)",
+   "corner": "ss",
+   "job_id": null,
+   "outcome": "client terminated by the previous session before a job id was reported; no result"
+  },
+  {
+   "request": "ss-lr-1 (8-unit, 2026-10-12 06:19)",
+   "corner": "ss",
+   "job_id": "klt-sim-d8ec434b617c",
+   "outcome": "client terminated by the previous session; fleet job ran on (instance launched 06:19:27) but klt cannot re-attach, result not collected"
+  },
+  {
+   "request": "ff-lr-1 (8-unit, 2026-10-12 06:28)",
+   "corner": "ff",
+   "job_id": "klt-sim-84eb90135b43",
+   "outcome": "client killed by an outer 2500 s wall-clock limit at 07:09; fleet job ran on (instance launched 06:28:12) but klt cannot re-attach, result not collected"
+  },
+  {
+   "request": "ff-lr-9 (8-unit, 2026-10-12 08:13)",
+   "corner": "ff",
+   "job_id": "klt-sim-fca4864e4348 (inferred from launch time)",
+   "outcome": "instance shut down ~08:56 but the client was still polling at 10:2x with no result; client stopped, no units returned"
+  },
+  {
+   "request": "ss-lr-22 (3-unit, 2026-10-12 10:01)",
+   "corner": "ss",
+   "job_id": null,
+   "outcome": "client stopped by the submitting session's 2 h background-task limit before the job returned; job orphaned (no re-attach); request resubmitted"
+  },
+  {
+   "request": "ff-lr-2 (3-unit, 2026-10-12 10:13)",
+   "corner": "ff",
+   "job_id": null,
+   "outcome": "client stopped by the submitting session's 2 h background-task limit before the job returned; job orphaned (no re-attach); request resubmitted"
+  }
+ ]
+}

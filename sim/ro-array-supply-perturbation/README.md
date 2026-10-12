@@ -23,6 +23,108 @@ python3 sim/ro-array-supply-perturbation/ripple.py --check sim/ro-array-supply-p
 python3 sim/tests/test_ripple_reduction.py
 ```
 
+## Lock-resolution campaign (issue #288, DR-0012 follow-up 5)
+
+The #200 records leave two things unresolved: tones placed exactly on a ring
+frequency (drift cannot separate lock from coincidence at the 40-edge window) and
+the lock threshold, only bracketed between the 10 and 50 mV rungs. This campaign
+extends the observation window instead of changing the detector: a free-running
+ring detuned by `delta` from a tone slips `delta*(N-1)` ring cycles across an
+N-edge window, so the unchanged 0.1-cycle `DRIFT_LOCK` criterion resolves
+
+    delta_min = 0.1/(N-1):  0.256 % at 40 edges, 0.050 % at 200, 0.025 % at 400.
+
+The campaign claims **+-0.1 % resolution** (2x margin at the 200-edge window) and
+checks convergence on a 400-edge subset. Exact coincidence stays unidentifiable by
+drift at ANY window, so on-frequency rows remain drift-UNRESOLVED and are decided,
+where at all, by their detuned neighbours plus pull evidence — never forced to a
+binary verdict. LOCK, Q and BIAS are reported separately everywhere: an ff bias
+failure must not disappear behind a lock-only result.
+
+Bounded matrix, per corner (ss/-40 C/1.62 V and ff/-40 C/1.98 V, same as #200):
+
+| group | units | contents |
+|---|---|---|
+| `lr`  | 73 | 1 clean baseline; 8 on-frequency (f1..f4 x 20/50 mV); 48 detuned (f1..f4 x {+-0.1, +-0.25, +-0.4} % x 20/50 mV); 8 below the #200 10 mV floor (f1..f4 x {+-0.25} % x 5 mV); 8 current-injection controls (ring 2 x {1.00, 1.02, 1.05, 1.20} x 10/50 uA) |
+| `lrc` | 3 | 400-edge convergence subset: 1 baseline + ring 2 x {+-0.25} % @ 50 mV |
+
+Controls: the clean baseline at each window is the free-running reference; the
+current-injection rows add a +5 % rung between #200's +2 % and +20 % ones. At +5 %
+the clean ring slips ~10 cycles over the window, so only a true injection lock can
+read LOCKED there; whether the injected ring stays free is measured, not assumed.
+
+Run it (requests only; `KLT_SIM_BACKEND=batch` sends them to the fleet):
+
+```bash
+python3 sim/ro-array-supply-perturbation/make-requests.py REQDIR --campaign lock-resolution
+klt sim REQDIR/<corner>-<group>-<n>/request.json -o REQDIR/<d>/out --format json > REQDIR/<d>/resp.json
+python3 sim/ro-array-supply-perturbation/ripple.py --emit-record REQDIR
+```
+
+What a campaign record carries (append-only, one per PVT point; `--check` replays it):
+
+- every planned unit as a row -- a refused/failed/never-completed request becomes
+  `missing` rows carrying the klt error, a short response becomes `not-returned`
+  rows, and a unit whose rings stop before the requested edge count is unusable;
+  the summary counts planned vs usable rows;
+- `rows[].window`: edges requested, edges observed per ring, and the span covered;
+- a clean baseline matched to the row's own window (400-edge rows use the 400-edge
+  baseline; with none they are unusable, not compared across windows);
+- `inputs`: per request the sha256 of the submitted request and netlist, the
+  netlist closure, client and fleet-runner klt, ngspice, PDK and models-lib pins;
+  `corners/<id>/` holds the request, netlist, plan and raw response (or the
+  `*.missing.json` note) for each request;
+- measured lock brackets per amplitude x ring x side on the 200-edge window, kept
+  apart from the hypotheses section; LOCK, Q and BIAS verdict counts separately.
+
+Testbench delta vs #200: the enable pulse width/period are template parameters
+now (`@@ENW@@`/`@@ENP@@`; the campaign holds the enable high for 3 us). With the
+#200 1 us enable the rings freeze at ~1.0 us — every window past edge ~180 came
+back empty (probed locally before submission; the #200 windows never reached it).
+Legacy decks expand to the identical `1u 2u` literals.
+
+Packaging: 3 units per request (`LR_CHUNK`). The first 8-unit packaging ran into the
+fleet's 3600 s job poweroff and returned nothing (see the records' submission history);
+only the packaging changed, not the unit matrix.
+
+### Lock-resolution results (records `20261012-111244-8100a6b` ff, `20261012-111245-8100a6b` ss)
+
+All 76 planned rows per corner returned and are usable (50 + 2 `klt sim` batch
+requests, 0 missing). Deterministic, pre-layout, ideal sources; simulation-derived and
+provisional until silicon. No spec or threshold change, no entropy claim.
+
+Measured (200-edge window, tested ladder only; "eff" = detuning from the clean ring in
+the window, which is what the drift criterion sees):
+
+- **ss / 1.62 V** (entropy-binding): at **20 mV** every ring locks at nominal +0.1 %
+  (eff +0.08..+0.10 %) and is free at +0.25 % (edge in (0.1, 0.25] %); on the - side
+  ring 1 locks at -0.1 %, rings 2-4 are free from -0.1 % (range < 0.1 %). At **50 mV**
+  every ring is LOCKED out to +0.4 % (edge not bracketed: > 0.4 %) and the - side edge
+  is in (0.1, 0.25] % for rings 1-3, < 0.1 % for ring 4. At **5 mV** all rings are free
+  at +-0.25 % (lock range, if any, < 0.25 %; +-0.1 % was not tested at 5 mV). All 8
+  on-frequency rows stay COINCIDENT/UNRESOLVED (|eff| <= 0.017 %, inside the 0.05 %
+  window resolution).
+- **ff / 1.98 V**: rings 1-2 are free at every tested detuning at 20 and 50 mV (lock
+  range < ~0.1 %); ring 3 likewise except at 20 mV nominal -0.1 %, which reads LOCKED at
+  eff -0.197 % while the eff -0.097 % row is free (non-monotone; recorded as such).
+  Ring 4 locks: 20 mV - side edge in (0.25, 0.4] % (+ side < 0.1 %), 50 mV + side edge
+  in (0.25, 0.4] % and - side locked out to 0.4 %. The clean ff rings
+  sit up to ~0.12 % off the committed periods, so 7 of 8 nominal on-frequency rows
+  resolve (free) and 1 stays COINCIDENT.
+- **Convergence**: the 400-edge ring-2 +-0.25 % @ 50 mV rows read the same state as the
+  200-edge rows at both corners (ss +0.25 % LOCKED at both windows, the rest free).
+- **Q**: every tone row passes (min Q ratio 0.995 ff, 0.9997 ss).
+- **BIAS** (reported separately): ss 64/66 tone rows in band; ff 42/66, and the ff
+  clean baseline itself reads 0.5417 over the 200-edge window (outside 0.31-0.53) but
+  0.4691 over the 400-edge window -- the ff bias figure is not converged in window
+  length, which bears on DR-0012 follow-up 4 and is not resolved here.
+- **Controls**: every detuned current-injection control (+2/+5/+20 %, 10 and 50 uA)
+  reads LOCKED at both corners (sensitivity); own-frequency controls are COINCIDENT.
+
+Hypotheses (not measured): the lock-range edges between tested rungs; whether 5 mV
+locks within +-0.1 %; amplitude scaling of the lock range; per-ring ripple, supply
+impedance, substrate and layout coupling.
+
 ## What was run
 
 Two PVT points, both -40 C, tt not run: **ss / 1.62 V** (the DR-0002 entropy-binding corner)
@@ -80,7 +182,8 @@ supply tone is a weak injector, which is why the control is a current into a rin
 
 - **Resolution**: 40 edges per ring give ~0.25 % detuning resolution. Tones placed on a ring's own
   frequency are reported UNRESOLVED (lock vs coincidence), not passed; the +0.5 % rows bound the lock range.
-  A "pass" at 10 mV is therefore shown for tones >= 0.5 % off a ring frequency.
+  A "pass" at 10 mV is therefore shown for tones >= 0.5 % off a ring frequency. The #288 campaign
+  (above) narrows this to +-0.1 % with 200-edge windows; its findings live in its own records.
 - **Edge-time floor**: the clean run reads 0.05-0.4 % pk period modulation (timestep interpolation).
 - Pre-layout, ideal sources: no supply impedance or substrate (DR-0006's first-named coupling).
   Ripple is applied in common to all five rails; per-ring uncorrelated ripple was not run.
@@ -98,5 +201,12 @@ supply tone is a weak injector, which is why the control is a current into a rin
   `alter` of a `.param` is a silent no-op. Worked around with behavioural rails reading DC knob sources.
 - `2AMLogic/klayout-tools#2868`: no way to get a threshold-crossing series from a transient (160 `.meas` cards per unit).
 - `2AMLogic/klayout-tools#2869`: concurrent multi-request batch submissions mostly refused with `batch_no_capacity`.
+- `2AMLogic/klayout-tools#2833` (#288 campaign): the fleet powers a job off at 3600 s and a job that hits it
+  returns every unit as `batch_job_timeout` with no measurements, while the client sizes its own wait at
+  timeout_s x units (~12 h). Worked around with 3-unit requests.
+- `2AMLogic/klayout-tools#2970` (#288 campaign): byte-identical 3-unit requests took ~50 s on one instance
+  family and 600-1140 s on another; job size cannot be predicted or the family chosen.
+- `2AMLogic/klayout-tools#2978` (#288 campaign): no job id until completion and no re-attach, so a client
+  stopped by an outer wall-clock limit orphans a running job; those requests were resubmitted.
 - `sim/bin/corner-run.py` was not used: it substitutes a fixed set of placeholders and runs one corner at a time
   locally, and has no way to sweep ripple parameters. The campaign is `klt sim` batch requests, like #184/#188/#197.
