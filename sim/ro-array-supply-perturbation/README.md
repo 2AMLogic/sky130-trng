@@ -201,5 +201,12 @@ supply tone is a weak injector, which is why the control is a current into a rin
   `alter` of a `.param` is a silent no-op. Worked around with behavioural rails reading DC knob sources.
 - `2AMLogic/klayout-tools#2868`: no way to get a threshold-crossing series from a transient (160 `.meas` cards per unit).
 - `2AMLogic/klayout-tools#2869`: concurrent multi-request batch submissions mostly refused with `batch_no_capacity`.
+- `2AMLogic/klayout-tools#2833` (#288 campaign): the fleet powers a job off at 3600 s and a job that hits it
+  returns every unit as `batch_job_timeout` with no measurements, while the client sizes its own wait at
+  timeout_s x units (~12 h). Worked around with 3-unit requests.
+- `2AMLogic/klayout-tools#2970` (#288 campaign): byte-identical 3-unit requests took ~50 s on one instance
+  family and 600-1140 s on another; job size cannot be predicted or the family chosen.
+- `2AMLogic/klayout-tools#2978` (#288 campaign): no job id until completion and no re-attach, so a client
+  stopped by an outer wall-clock limit orphans a running job; those requests were resubmitted.
 - `sim/bin/corner-run.py` was not used: it substitutes a fixed set of placeholders and runs one corner at a time
   locally, and has no way to sweep ripple parameters. The campaign is `klt sim` batch requests, like #184/#188/#197.
