@@ -318,11 +318,14 @@ campaign ran its bounded matrix through `klt sim` batch at the same two PVT poin
 mV pk rungs, detuned ladder on both sides of each ring frequency, current-injection
 controls). Records: `sim/ro-array-supply-perturbation/records/20261012-111244-8100a6b`
 (ff) and `20261012-111245-8100a6b` (ss); all 76 planned rows per corner usable. Measured
-at ss: a 20 mV pk tone within ~0.1 % of a ring frequency locks it (edge in
-(0.1, 0.25] % on the + side), 50 mV locks out beyond +0.4 %, and 5 mV leaves every ring
-free at +-0.25 % (+-0.1 % untested at 5 mV); exact on-frequency rows stay UNRESOLVED.
-So, for tones within ~0.1 % of a ring frequency, the ss lock threshold lies below
-20 mV pk (the #200 bracket was 10-50 mV); between 5 and 20 mV it is not located. At ff, ring 4 locks at 20 and
+at ss, asymmetric about the ring frequency: a 20 mV pk tone at +0.1 % locks all four
+rings (edge in (0.1, 0.25] % on the + side), but at -0.1 % only ring 1 locks (rings 2-4
+stay free); a 50 mV tone locks all four rings at +0.1 % and out beyond +0.4 %, while ring 4
+stays free at -0.1 %; 5 mV leaves every ring free at +-0.25 % (+-0.1 % untested at 5 mV);
+exact on-frequency rows stay UNRESOLVED. So the ss lock threshold lies below 20 mV pk
+only for tones ~0.1 % above a ring frequency (the #200 bracket was 10-50 mV); on the
+minus side it is not located below 50 mV for every ring, and between 5 and 20 mV it is
+not located at all. At ff, ring 4 locks at 20 and
 50 mV out to 0.25-0.4 %, rings 1-3 mostly do not; the ff bias figure is not converged
 in window length (clean baseline 0.542 at 200 edges vs 0.469 at 400), which belongs to
 follow-up 4. The records separate measured brackets from hypotheses; every claim is
