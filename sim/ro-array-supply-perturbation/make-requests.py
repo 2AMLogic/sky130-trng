@@ -91,6 +91,14 @@ LR_DETUNES = (0.001, 0.0025, 0.004)
 LR_AMP_BELOW = 0.005            # below the 10 mV floor of the #200 brackets
 LR_DETUNE_BELOW = 0.0025
 LR_CTL_KNOBS = (("own", 1.0), ("+2%", 1.02), ("+5%", 1.05), ("+20%", 1.2))
+# Units per request.  The fleet powers a job off unconditionally after
+# BATCH_MAX_JOB_SECONDS = 3600 s and returns NO unit of a job that hits it
+# (every unit `batch_job_timeout`).  The first submission used 8-unit
+# requests: ff-lr-1 and ss-lr-1 both hit the cap at 3604 s with nothing
+# returned, while the 3-unit lrc requests finished (ff 65 s, ss 400-edge
+# 2329 s).  3 units keeps a 200-edge ss request at about half the cap.
+# Only the packaging changes; the unit matrix is identical.
+LR_CHUNK = 3
 
 
 def lr_nedge(group):
@@ -201,10 +209,13 @@ def main():
     ap.add_argument("--corners", default="ss,ff")
     ap.add_argument("--groups", default=None,
                     help="legacy amplitude groups; ignored/defaulted by --campaign")
-    ap.add_argument("--chunk", type=int, default=8, help="units per request (parallelism on the fleet)")
+    ap.add_argument("--chunk", type=int, default=None,
+                    help="units per request (default 8; 3 for --campaign lock-resolution, see LR_CHUNK)")
     ap.add_argument("--campaign", choices=[LR], default=None,
                     help="issue #288 lock-resolution campaign (groups lr,lrc; longer edge windows)")
     a = ap.parse_args()
+    if a.chunk is None:
+        a.chunk = LR_CHUNK if a.campaign == LR else 8
     if a.campaign == LR:
         groups = ("lr", "lrc")
     else:

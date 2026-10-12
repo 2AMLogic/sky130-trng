@@ -713,7 +713,7 @@ def render_md(rid, cn, pvt, rows, summ, jobs, sha, now, claim, supersedes="(none
     return "\n".join(L) + "\n"
 
 
-def render_lr_md(rid, pvt, rows, summ, jobs, sha, now, inputs=None):
+def render_lr_md(rid, pvt, rows, summ, jobs, sha, now, inputs=None, history=None):
     inputs = inputs or {}
     nmiss = len(summ["rows_unusable"])
     L = [f"# {rid} -- {SLUG} (lock-resolution, issue #288)", "",
@@ -821,6 +821,12 @@ def render_lr_md(rid, pvt, rows, summ, jobs, sha, now, inputs=None):
         for u in summ["rows_unusable"]:
             L.append(f"| {u['chunk']} | {u['kind']} | {u['tone']} | {u['amp_mV']:g} | {u['nedge']} | {u['klt_status']} | "
                      f"{'; '.join(u['why'])[:300]} |")
+    if history:
+        L += ["", "## Earlier submissions of this campaign (no usable units; kept for the record)", "",
+              history.get("summary", ""), "", "| request | job | outcome |", "|---|---|---|"]
+        for h in history.get("attempts", []):
+            if h.get("corner") in (None, pvt["proc"]):
+                L.append(f"| {h['request']} | {h.get('job_id') or '-'} | {h['outcome']} |")
     L += ["", "Full hashes, netlist closure and per-row observed windows are in the `.json`; requests, netlists, plans, "
           "raw responses and missing-request notes are in `../corners/<id>/` (append-only; the #200 records are "
           "untouched).", "",
@@ -950,8 +956,13 @@ def emit_record(reqdir, sha=None):
         if campaign == LR:
             rec["inputs"] = inputs
             rec["requests_missing"] = [{"request": nm, "reason": why} for nm, _, why in mine_missing]
+            hist = os.path.join(reqdir, "submission-history.json")
+            if os.path.isfile(hist):            # earlier refused / timed-out submissions of this campaign
+                rec["submission_history"] = _jload(hist)
+                shutil.copyfile(hist, os.path.join(cdir, "submission-history.json"))
         json.dump(rec, open(os.path.join(rdir, rid + ".json"), "w"), indent=2, default=str)
-        md = (render_lr_md(rid, pvt, rows, summ, jobs, sha, now, inputs) if campaign == LR
+        md = (render_lr_md(rid, pvt, rows, summ, jobs, sha, now, inputs, rec.get("submission_history"))
+              if campaign == LR
               else render_md(rid, cn, pvt, rows, summ, jobs, sha, now, claim))
         open(os.path.join(rdir, rid + ".md"), "w").write(md)
         tail = (f"locked at: {summ['lock_range_pct_by_amp'] or 'none'} | converged: {summ['converged_all']} | "
