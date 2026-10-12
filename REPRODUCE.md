@@ -191,3 +191,19 @@ python3 sim/digital-pnr/harness/pnr-and-verify.py --emit-record                #
 | `sim/digital-electrical-repair/` | `bin/run-study.sh`; see its `README.md` |
 | `sim/digital-floorplan-compaction/` | `bin/run-study.sh`; see its `README.md` |
 | `sim/digital-repaired-compaction/` | `bin/run-study.sh`; see its `README.md` |
+
+## 4a. Whole-block characterization (`sim/post-layout-whole-block/`)
+
+Detail: `sim/post-layout-whole-block/README.md`. Requests are `klt sim` batch
+corners requests (never a local ngspice grid); IR is `klt power`.
+
+```bash
+python3 sim/tests/test_whole_block_reduction.py                                  # stdlib only
+python3 sim/post-layout-whole-block/make-requests.py /tmp/wb --set grid          # the 4 x (tt/ss/ff) requests
+python3 sim/post-layout-whole-block/ir/run-ir.py /tmp/wb-ir                      # klt power static IR
+python3 sim/post-layout-whole-block/analysis/reduce-whole-block.py               # coverage reduction (exit 1 until 12/12)
+```
+
+| Directory | Entry point |
+|---|---|
+| `sim/post-layout-whole-block/` | `make-requests.py`, `ir/run-ir.py`, `analysis/reduce-whole-block.py` |

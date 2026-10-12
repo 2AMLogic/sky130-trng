@@ -1,0 +1,164 @@
+{
+  "power_nets": [
+    "vdd",
+    "vss",
+    "vddr1",
+    "vddr2",
+    "vddr3",
+    "vddr4",
+    "VPWR",
+    "VGND"
+  ],
+  "stackup": [
+    {
+      "name": "met1",
+      "layer": "68/20",
+      "label_layer": "68/5",
+      "sheet_resistance_ohm_per_sq": 0.125
+    },
+    {
+      "name": "met2",
+      "layer": "69/20",
+      "label_layer": "69/5",
+      "sheet_resistance_ohm_per_sq": 0.125
+    },
+    {
+      "name": "met3",
+      "layer": "70/20",
+      "label_layer": "70/5",
+      "sheet_resistance_ohm_per_sq": 0.047
+    },
+    {
+      "name": "met4",
+      "layer": "71/20",
+      "label_layer": "71/5",
+      "sheet_resistance_ohm_per_sq": 0.047
+    },
+    {
+      "name": "met5",
+      "layer": "72/20",
+      "label_layer": "72/5",
+      "sheet_resistance_ohm_per_sq": 0.029
+    }
+  ],
+  "vias": [
+    {
+      "name": "via",
+      "layer": "68/44",
+      "between": [
+        "met1",
+        "met2"
+      ],
+      "resistance_ohm": 4.5
+    },
+    {
+      "name": "via2",
+      "layer": "69/44",
+      "between": [
+        "met2",
+        "met3"
+      ],
+      "resistance_ohm": 3.41
+    },
+    {
+      "name": "via3",
+      "layer": "70/44",
+      "between": [
+        "met3",
+        "met4"
+      ],
+      "resistance_ohm": 3.41
+    },
+    {
+      "name": "via4",
+      "layer": "71/44",
+      "between": [
+        "met4",
+        "met5"
+      ],
+      "resistance_ohm": 0.38
+    }
+  ],
+  "pads": [
+    {
+      "name": "pad_vdd",
+      "net": "vdd",
+      "x_um": 138.77,
+      "y_um": 332.0,
+      "voltage_v": 1.8
+    },
+    {
+      "name": "pad_vss",
+      "net": "vss",
+      "x_um": 184.77,
+      "y_um": 332.0,
+      "voltage_v": 0.0
+    },
+    {
+      "name": "pad_vddr1",
+      "net": "vddr1",
+      "x_um": 313.77,
+      "y_um": 332.0,
+      "voltage_v": 1.8
+    },
+    {
+      "name": "pad_vddr2",
+      "net": "vddr2",
+      "x_um": 258.77,
+      "y_um": 332.0,
+      "voltage_v": 1.8
+    },
+    {
+      "name": "pad_vddr3",
+      "net": "vddr3",
+      "x_um": 196.77,
+      "y_um": 332.0,
+      "voltage_v": 1.8
+    },
+    {
+      "name": "pad_vddr4",
+      "net": "vddr4",
+      "x_um": 148.77,
+      "y_um": 332.0,
+      "voltage_v": 1.8
+    }
+  ],
+  "current_model": {
+    "supply_net": "vdd",
+    "ground_net": "vss",
+    "instances": [
+      {
+        "name": "ring1_assumed",
+        "x_um": 309.441,
+        "y_um": 296.784,
+        "current_a": 2.055e-05,
+        "supply_net": "vddr1",
+        "ground_net": "vss"
+      },
+      {
+        "name": "ring2_assumed",
+        "x_um": 254.16,
+        "y_um": 296.786,
+        "current_a": 2.055e-05,
+        "supply_net": "vddr2",
+        "ground_net": "vss"
+      },
+      {
+        "name": "ring3_assumed",
+        "x_um": 198.446,
+        "y_um": 296.791,
+        "current_a": 2.055e-05,
+        "supply_net": "vddr3",
+        "ground_net": "vss"
+      },
+      {
+        "name": "ring4_assumed",
+        "x_um": 143.624,
+        "y_um": 296.793,
+        "current_a": 2.055e-05,
+        "supply_net": "vddr4",
+        "ground_net": "vss"
+      }
+    ]
+  }
+}

@@ -2321,7 +2321,7 @@ DRC/LVS results are **not** a block result and must not be cited as one.
 | `trng_digital` macro DRC on the current deck | clean, 0 violations (re-run 2026-10-07, host klt `0.6.0+g1eb3e4bfd0f5`, confirmatory, not committed) | `trng_digital/drc.json` |
 | Block LVS (mixed transistor/cell-level) | **match, 0 error mismatches (issue #173)**: analog transistor level (264/264 devices), digital standard-cell level (8605 black-box instances), 2511/2511 nets, 123/123 anchored pins. Coverage matrix, boundary and limitations stated in `trng_whole/verify/README.md`; digital cell internals, substrate/`VNB` and device bodies are **not** checked | `trng_whole/verify/lvs.json`, `lvs.request.json`, `lvs.ref.spice`, `coverage.md` |
 | Whole-block fault controls (swapped signal x3, disconnected interface, distinct-supply short) | **5/5 detected** (reach LVS, fail naming the nets); baseline re-run afterwards matches with identical stable fields | `trng_whole/verify/controls/` |
-| Block post-layout PVT, dynamic power, IR, `vddr` coupling | **not run** | #174 (`sim/README.md`, "Whole-block post-layout verification") |
+| Block post-layout PVT, dynamic power, IR, `vddr` coupling | **attempted in #174, UNMET**: 0/12 PVT points have a result (batch fleet refused, `batch_runner_version_mismatch`); IR is partial (assumed ring loads, met1-met5 only); no dynamic power | `sim/post-layout-whole-block/` (follow-ups #307, #308) |
 | Area vs `< 0.05 mm2` | **Unmet**: 0.126116 mm2 (2.52x) | `trng_whole/report.json` `area` |
 
 Reproduction of what exists (pins as in `trng_whole/README.md`; no SPICE):

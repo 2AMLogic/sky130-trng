@@ -80,6 +80,16 @@ connectivity only, no parasitics). No whole-block *post-layout simulation*
 record exists in any slug. Separate analog and digital evidence must not be
 cited as one.
 
+**Update (issue #174):** the whole-block campaign now has its slug,
+`post-layout-whole-block/` (see its `README.md` and the dated record under
+`records/`). **No whole-block PVT point is MET**: the 12 requests were submitted
+as `klt sim` batch corners requests and were refused by the fleet
+(`batch_runner_version_mismatch`; runner klt 0.5.0 vs client 0.7.0), and the
+one local single-corner probe (about 25 000 extracted transistors, 970 ns) did
+not finish in 60 minutes at 17 GB RSS. The slug's static-IR result (`klt power`,
+met1-met5 only, ring loads assumed from DR-0003) is partial. Nothing there
+supports #18 AC3.
+
 When the whole-block campaign lands (#174, whose #173 prerequisite is now
 delivered), it belongs in a
 new append-only slug. It must carry the full `tt`/`ss`/`ff` x four-point PVT
