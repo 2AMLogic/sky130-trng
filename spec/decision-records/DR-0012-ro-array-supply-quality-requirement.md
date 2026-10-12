@@ -311,17 +311,22 @@ retire it.
 | 4 | **Bias-band baseline at ff** (array / DR-0003 band definition) | Resolve the 0.5246 clean ff baseline at the upper edge of 0.31-0.53 against the criterion used; any band change goes through its own DR | A decision record or evidence showing whether the band or the ripple limit is what binds at ff |
 | 5 | **Lock-resolution closure** (sim/ro-array-supply-perturbation) | Resolve the UNRESOLVED on-frequency tone rows (longer windows) and locate the 10-50 mV threshold | A record with finer amplitudes and a longer edge window |
 
-Status of follow-up 5 (issue #288, appended by the campaign that delivered the
-evidence; no criterion or threshold of this record is changed): the lock-resolution
-campaign ran the bounded matrix (200-edge windows resolving +-0.1 % detuning, a
-400-edge convergence subset, the 5/20/50 mV amplitude rungs and the detuned
-ladder on both sides of each ring frequency) through `klt sim` batch at the same
-two PVT points as the evidence above. Its records are the evidence named in this
-row's last column — read the record's own "Measured brackets vs hypotheses"
-section for what was measured versus what remains hypothesis; on-frequency rows
-stay drift-UNRESOLVED there by construction (exact coincidence is unidentifiable
-by drift at any window), and every claim remains simulation-derived and
-provisional until silicon.
+Status of follow-up 5 (issue #288; a status note only -- no criterion, threshold
+or target of this record changes, and nothing here ratifies it): the lock-resolution
+campaign ran its bounded matrix through `klt sim` batch at the same two PVT points
+(200-edge windows resolving +-0.1 % detuning, a 400-edge convergence subset, 5/20/50
+mV pk rungs, detuned ladder on both sides of each ring frequency, current-injection
+controls). Records: `sim/ro-array-supply-perturbation/records/20261012-111244-8100a6b`
+(ff) and `20261012-111245-8100a6b` (ss); all 76 planned rows per corner usable. Measured
+at ss: a 20 mV pk tone within ~0.1 % of a ring frequency locks it (edge in
+(0.1, 0.25] % on the + side), 50 mV locks out beyond +0.4 %, and 5 mV leaves every ring
+free at +-0.25 % (+-0.1 % untested at 5 mV); exact on-frequency rows stay UNRESOLVED.
+So, for tones within ~0.1 % of a ring frequency, the ss lock threshold lies below
+20 mV pk (the #200 bracket was 10-50 mV); between 5 and 20 mV it is not located. At ff, ring 4 locks at 20 and
+50 mV out to 0.25-0.4 %, rings 1-3 mostly do not; the ff bias figure is not converged
+in window length (clean baseline 0.542 at 200 edges vs 0.469 at 400), which belongs to
+follow-up 4. The records separate measured brackets from hypotheses; every claim is
+deterministic, pre-layout, simulation-derived and provisional until silicon.
 
 Preserved and distinguished:
 

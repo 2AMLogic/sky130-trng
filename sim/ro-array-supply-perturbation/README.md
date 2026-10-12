@@ -83,6 +83,48 @@ now (`@@ENW@@`/`@@ENP@@`; the campaign holds the enable high for 3 us). With the
 back empty (probed locally before submission; the #200 windows never reached it).
 Legacy decks expand to the identical `1u 2u` literals.
 
+Packaging: 3 units per request (`LR_CHUNK`). The first 8-unit packaging ran into the
+fleet's 3600 s job poweroff and returned nothing (see the records' submission history);
+only the packaging changed, not the unit matrix.
+
+### Lock-resolution results (records `20261012-111244-8100a6b` ff, `20261012-111245-8100a6b` ss)
+
+All 76 planned rows per corner returned and are usable (50 + 2 `klt sim` batch
+requests, 0 missing). Deterministic, pre-layout, ideal sources; simulation-derived and
+provisional until silicon. No spec or threshold change, no entropy claim.
+
+Measured (200-edge window, tested ladder only; "eff" = detuning from the clean ring in
+the window, which is what the drift criterion sees):
+
+- **ss / 1.62 V** (entropy-binding): at **20 mV** every ring locks at nominal +0.1 %
+  (eff +0.08..+0.10 %) and is free at +0.25 % (edge in (0.1, 0.25] %); on the - side
+  ring 1 locks at -0.1 %, rings 2-4 are free from -0.1 % (range < 0.1 %). At **50 mV**
+  every ring is LOCKED out to +0.4 % (edge not bracketed: > 0.4 %) and the - side edge
+  is in (0.1, 0.25] % for rings 1-3, < 0.1 % for ring 4. At **5 mV** all rings are free
+  at +-0.25 % (lock range, if any, < 0.25 %; +-0.1 % was not tested at 5 mV). All 8
+  on-frequency rows stay COINCIDENT/UNRESOLVED (|eff| <= 0.017 %, inside the 0.05 %
+  window resolution).
+- **ff / 1.98 V**: rings 1-2 are free at every tested detuning at 20 and 50 mV (lock
+  range < ~0.1 %); ring 3 likewise except at 20 mV nominal -0.1 %, which reads LOCKED at
+  eff -0.197 % while the eff -0.097 % row is free (non-monotone; recorded as such).
+  Ring 4 locks: 20 mV - side edge in (0.25, 0.4] % (+ side < 0.1 %), 50 mV + side edge
+  in (0.25, 0.4] % and - side locked out to 0.4 %. The clean ff rings
+  sit up to ~0.12 % off the committed periods, so 7 of 8 nominal on-frequency rows
+  resolve (free) and 1 stays COINCIDENT.
+- **Convergence**: the 400-edge ring-2 +-0.25 % @ 50 mV rows read the same state as the
+  200-edge rows at both corners (ss +0.25 % LOCKED at both windows, the rest free).
+- **Q**: every tone row passes (min Q ratio 0.995 ff, 0.9997 ss).
+- **BIAS** (reported separately): ss 64/66 tone rows in band; ff 42/66, and the ff
+  clean baseline itself reads 0.5417 over the 200-edge window (outside 0.31-0.53) but
+  0.4691 over the 400-edge window -- the ff bias figure is not converged in window
+  length, which bears on DR-0012 follow-up 4 and is not resolved here.
+- **Controls**: every detuned current-injection control (+2/+5/+20 %, 10 and 50 uA)
+  reads LOCKED at both corners (sensitivity); own-frequency controls are COINCIDENT.
+
+Hypotheses (not measured): the lock-range edges between tested rungs; whether 5 mV
+locks within +-0.1 %; amplitude scaling of the lock range; per-ring ripple, supply
+impedance, substrate and layout coupling.
+
 ## What was run
 
 Two PVT points, both -40 C, tt not run: **ss / 1.62 V** (the DR-0002 entropy-binding corner)
