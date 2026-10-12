@@ -261,40 +261,140 @@ def edges_of(meas, nedge=NEDGE):
 
 
 def load_reqdir(reqdir):
-    chunks = []
+    return load_reqdir_all(reqdir)[0]
+
+
+def _submit_error(d):
+    """Why a request directory has no usable response: the klt error message if
+    the client wrote one, else a generic not-completed note.  Never raises."""
+    for fn in ("resp.json", "klt.log"):
+        p = os.path.join(d, fn)
+        try:
+            txt = open(p).read()
+        except OSError:
+            continue
+        if not txt.strip():
+            continue
+        try:
+            msg = json.loads(txt).get("error", {}).get("message")
+            if msg:
+                return msg
+        except (ValueError, AttributeError):
+            pass
+        return txt.strip()[-600:]
+    return "no response: request not submitted or submission did not complete"
+
+
+def load_reqdir_all(reqdir):
+    """-> (chunks, missing).  chunks = [(name, plan, resp)] for requests with a
+    response; missing = [(name, plan, reason)] for requests that were refused,
+    failed or never completed, so a record can carry them as explicit rows
+    instead of silently dropping them (issue #288 evidence requirement)."""
+    chunks, missing = [], []
     for d in sorted(glob.glob(os.path.join(reqdir, "*-*-*"))):
+        nm = os.path.basename(d)
+        if not os.path.isfile(os.path.join(d, "plan.json")):
+            continue
+        plan = json.load(open(os.path.join(d, "plan.json")))
         resp = os.path.join(d, "resp.json")
+        rs = None
         if os.path.isfile(resp) and os.path.getsize(resp) > 0:     # a refused/unfinished request leaves it empty
-            chunks.append((os.path.basename(d), json.load(open(os.path.join(d, "plan.json"))),
-                           json.load(open(os.path.join(d, "resp.json")))))
-    return chunks
+            try:
+                rs = json.load(open(resp))
+            except ValueError:
+                rs = None
+        if rs is not None and "corners" in rs:
+            chunks.append((nm, plan, rs))
+        else:
+            missing.append((nm, plan, _submit_error(d)))
+    return chunks, missing
+
+
+def observed_window(meas, nedge):
+    """Observed window per ring: how many of the requested rising edges came
+    back, and the time span they cover.  Recorded for every campaign row so an
+    insufficient or truncated window is visible, not inferred."""
+    obs, span = [], []
+    for r in range(1, 5):
+        ts = [meas[f"t{r}_{k}"] for k in range(3, 3 + nedge) if f"t{r}_{k}" in meas]
+        obs.append(len(ts))
+        span.append((max(ts) - min(ts)) * 1e9 if len(ts) > 1 else None)
+    return {"edges_requested": nedge, "edges_observed": obs, "span_ns": span}
+
+
+def _missing_row(name, plan, u, status, reason):
+    row = {"chunk": name, "kind": u["kind"], "tone": u["tone"], "dv": u["dv"], "ra": u["ra"],
+           "rf_hz": u["rf"] if u["kind"] in ("tone", "control") else None, "ri_mA": u["ri"],
+           "amp": u.get("amp", u["ra"] if u["kind"] == "tone" else 0.0),
+           "klt_status": status, "klt_corner_id": None}
+    if "nedge" in plan:
+        row["nedge"] = plan["nedge"]
+    if "detune" in u:
+        row["detune"] = u["detune"]
+    row["metrics"], row["ok"], row["ok_nobias"], row["why"] = None, False, False, [f"{status}: {reason}"]
+    return row
 
 
 def plan_vnom(plan):
     return plan["pvt"]["vnom"] + 0.0
 
 
-def build_rows(chunks):
+def build_rows(chunks, missing=()):
     """chunks: [(name, plan, resp)] -> {corner: [row...]} with metrics. Units are
-    matched to plan entries by index; a failed unit is kept as an error row."""
+    matched to plan entries by index; a failed unit is kept as an error row.
+
+    Campaign plans (carrying "nedge") additionally get: a clean baseline matched
+    to the row's own window length (a 400-edge row is compared with the 400-edge
+    baseline, never a 200-edge one); explicit rows for units the response did not
+    return and for every unit of a request in `missing` [(name, plan, reason)];
+    and the observed window per row.  Legacy plans take the original path
+    unchanged so the #200 records replay byte-for-byte."""
     by_corner = {}
     for name, plan, resp in chunks:
         by_corner.setdefault(plan["corner"], []).append((name, plan, resp))
+    miss_by_corner = {}
+    for name, plan, reason in missing:
+        miss_by_corner.setdefault(plan["corner"], []).append((name, plan, reason))
+        by_corner.setdefault(plan["corner"], [])
     result = {}
     for cn, items in by_corner.items():
-        units = []
+        units, absent = [], []
         for name, plan, resp in items:
             cs = resp["corners"]
             for u, c in zip(plan["units"], cs):
                 units.append((name, plan, u, c))
-        base = next((x for x in units if x[2]["kind"] == "baseline"), None)
-        if base is None or base[3]["status"] != "pass":
-            raise SystemExit(f"{cn}: no passing clean baseline unit; refusing to derive deltas")
-        bm = unit_measurements(base[3])
-        clean = edges_of(bm, base[1].get("nedge", NEDGE))
-        bm_bias = bm["xo_avg"] / plan_vnom(base[1])
+            if "nedge" in plan:
+                for u in plan["units"][len(cs):]:   # response returned fewer units than planned
+                    absent.append(_missing_row(name, plan, u, "not-returned",
+                                               f"response carries {len(cs)} of {len(plan['units'])} units"))
+        for name, plan, reason in miss_by_corner.get(cn, []):
+            for u in plan["units"]:
+                absent.append(_missing_row(name, plan, u, "missing", reason))
+        campaign = any("nedge" in x[1] for x in units) or bool(absent)
+        bases = {}
+        for x in units:
+            if x[2]["kind"] == "baseline" and x[3]["status"] == "pass":
+                bases.setdefault(x[1].get("nedge", NEDGE), x)
+        if not campaign:
+            base = next((x for x in units if x[2]["kind"] == "baseline"), None)
+            if base is None or base[3]["status"] != "pass":
+                raise SystemExit(f"{cn}: no passing clean baseline unit; refusing to derive deltas")
+            bases = {base[1].get("nedge", NEDGE): base}
+        clean_by_n = {}
+        for n, base in bases.items():
+            bm = unit_measurements(base[3])
+            clean_by_n[n] = (edges_of(bm, n), bm["xo_avg"] / plan_vnom(base[1]))
         rows = []
         for name, plan, u, c in units:
+            n = plan.get("nedge", NEDGE)
+            if n not in clean_by_n:
+                row = _missing_row(name, plan, u, c["status"],
+                                   f"no passing clean baseline at the {n}-edge window; deltas not derived")
+                row["klt_corner_id"] = c["corner_id"]
+                row["window"] = observed_window(unit_measurements(c), n)
+                rows.append(row)
+                continue
+            clean, bm_bias = clean_by_n[n]
             row = {"chunk": name, "kind": u["kind"], "tone": u["tone"], "dv": u["dv"], "ra": u["ra"],
                    "rf_hz": u["rf"] if u["kind"] in ("tone", "control") else None, "ri_mA": u["ri"],
                    "amp": u.get("amp", u["ra"] if u["kind"] == "tone" else 0.0),
@@ -304,6 +404,8 @@ def build_rows(chunks):
             if "detune" in u:
                 row["detune"] = u["detune"]
             pvt = plan["pvt"]
+            if "nedge" in plan:
+                row["window"] = observed_window(unit_measurements(c), n)
             try:
                 m = unit_measurements(c)
                 if c["status"] != "pass":
@@ -320,7 +422,7 @@ def build_rows(chunks):
             except (KeyError, ZeroDivisionError, ValueError) as e:
                 row["metrics"], row["ok"], row["ok_nobias"], row["why"] = None, False, False, [f"unusable unit: {e!r}"]
             rows.append(row)
-        result[cn] = rows
+        result[cn] = rows + absent
     return result
 
 
@@ -435,13 +537,49 @@ def summarize_lr(rows):
     representative rows converge under the longer window."""
     tone = [r for r in rows if r["kind"] == "tone"]
     ctl = [r for r in rows if r["kind"] == "control"]
-    base = next(r for r in rows if r["kind"] == "baseline")
     nedges = sorted({r.get("nedge", NEDGE) for r in rows})
     out = {"nedge": nedges,
            "detuning_resolution_pct": {n: round(DRIFT_LOCK / (n - 1) * 100, 4) for n in nedges},
-           "baseline_T_ns": base["metrics"]["T_ns"] if base["metrics"] else None,
-           "rows_unusable": [(r["tone"], r["klt_status"], r["why"]) for r in rows if r["metrics"] is None]}
+           "baseline_T_ns": {n: next((r["metrics"]["T_ns"] for r in rows if r["kind"] == "baseline"
+                                      and r.get("nedge", NEDGE) == n and r["metrics"]), None) for n in nedges},
+           "rows_planned": len(rows),
+           "rows_usable": sum(1 for r in rows if r["metrics"]),
+           "rows_unusable": [{"chunk": r["chunk"], "kind": r["kind"], "tone": r["tone"],
+                              "amp_mV": round(r["amp"] * 1e3, 3), "nedge": r.get("nedge", NEDGE),
+                              "klt_status": r["klt_status"], "why": r["why"]}
+                             for r in rows if r["metrics"] is None]}
     us = [r for r in tone if r["metrics"]]
+    # measured lock brackets: per amplitude x ring x side, the state of the ring the
+    # tone was placed next to, at each tested detuning (on-frequency rows excluded:
+    # they are drift-UNRESOLVED by construction)
+    br = {}
+    for r in tone:
+        d = r.get("detune", 0.0)
+        if not d or r.get("nedge", NEDGE) != nedges[0]:    # primary window only; 400-edge rows are the
+            continue                                        # convergence check, reported separately
+        ring = _tone_ring(r["tone"])
+        key = (round(r["amp"] * 1e3, 3), ring, "+" if d > 0 else "-")
+        st = r["metrics"]["tone"][ring - 1]["state"] if r["metrics"] else "unusable"
+        br.setdefault(key, []).append((round(abs(d) * 100, 4), st))
+    brackets = []
+    for (amp, ring, side), pts in sorted(br.items()):
+        pts.sort()
+        lk = [d for d, s in pts if s == "LOCKED"]
+        fr = [d for d, s in pts if s == "free"]
+        if not lk and fr:
+            stmt = f"no lock at any tested detuning; lock range (if any) < {min(fr):g} %"
+        elif lk and not [d for d in fr if d > max(lk)]:
+            stmt = f"locked out to {max(lk):g} % (largest tested); edge not bracketed"
+        elif lk:
+            nxt = min(d for d in fr if d > max(lk))
+            stmt = f"lock-range edge in ({max(lk):g}, {nxt:g}] %"
+            if any(d < max(lk) for d in fr):
+                stmt += " (non-monotone: free below a locked detuning)"
+        else:
+            stmt = "no LOCKED/free reading at the tested detunings (unusable or COINCIDENT only)"
+        brackets.append({"amp_mV": amp, "ring": ring, "side": side,
+                         "states": {f"{d:g}%": s for d, s in pts}, "bracket": stmt})
+    out["lock_brackets"] = brackets
     out["locked"] = [{"amp_mV": round(r["amp"] * 1e3), "tone": r["tone"], "ring": t["ring"],
                       "p_q": f"{t['p']}:{t['q']}", "drift_cycles": t["drift_cycles"],
                       "pull_fraction": t["pull_fraction"]}
@@ -460,7 +598,8 @@ def summarize_lr(rows):
          "pull_fractions": {t["ring"]: t["pull_fraction"] for t in r["metrics"]["tone"]
                             if t["pull_fraction"] is not None}}
         for r in us if r.get("unresolved")]
-    out["verdict_counts"] = {"tone_rows": len(us),
+    out["verdict_counts"] = {"tone_rows_planned": len(tone), "tone_rows_unusable": len(tone) - len(us),
+                             "tone_rows": len(us),
                              "LOCK_pass": sum(_trio(r)["LOCK"] for r in us),
                              "Q_pass": sum(_trio(r)["Q"] for r in us),
                              "BIAS_pass": sum(_trio(r)["BIAS"] for r in us)}
@@ -473,19 +612,26 @@ def summarize_lr(rows):
                        for r in ctl if r["metrics"]]
     at200 = {(r["tone"], round(r["amp"], 6)): r for r in us if r.get("nedge", NEDGE) == 200}
     conv = []
-    for r in us:
+    conv_missing = []
+    for r in tone:
         if r.get("nedge") != 400:
             continue
         m = at200.get((r["tone"], round(r["amp"], 6)))
-        if not (m and m["metrics"]):
+        if not (r["metrics"] and m and m["metrics"]):
+            conv_missing.append({"tone": r["tone"], "amp_mV": round(r["amp"] * 1e3),
+                                 "have_400": bool(r["metrics"]), "have_200": bool(m and m["metrics"])})
             continue
         ring = _tone_ring(r["tone"]) - 1
         s2, s4 = m["metrics"]["tone"][ring], r["metrics"]["tone"][ring]
         conv.append({"tone": r["tone"], "amp_mV": round(r["amp"] * 1e3),
                      "at_200_edges": {"state": s2["state"], "drift_cycles": s2["drift_cycles"]},
                      "at_400_edges": {"state": s4["state"], "drift_cycles": s4["drift_cycles"]},
+                     "drift_ratio_400_over_200": (s4["drift_cycles"] / s2["drift_cycles"]
+                                                  if s2["drift_cycles"] else None),
+                     "drift_ratio_free_running_expected": 399 / 199,
                      "converged": s2["state"] == s4["state"]})
     out["convergence_200_vs_400"] = conv
+    out["convergence_unpaired"] = conv_missing
     out["converged_all"] = all(c["converged"] for c in conv) if conv else None
     return out
 
@@ -567,43 +713,65 @@ def render_md(rid, cn, pvt, rows, summ, jobs, sha, now, claim, supersedes="(none
     return "\n".join(L) + "\n"
 
 
-def render_lr_md(rid, pvt, rows, summ, jobs, sha, now):
+def render_lr_md(rid, pvt, rows, summ, jobs, sha, now, inputs=None):
+    inputs = inputs or {}
+    nmiss = len(summ["rows_unusable"])
     L = [f"# {rid} -- {SLUG} (lock-resolution, issue #288)", "",
          f"**Claim**: {LR_CLAIM}", "",
          "**Level**: transistor (pre-layout `design/ro_array_core.spice`; deterministic transient, NO injected noise)",
          f"**PVT point**: {pvt['proc']} / {pvt['temp']:g} degC / {pvt['vnom']:g} V ({pvt['why']}). "
          f"**Seed**: N/A (deterministic; every row is one unit of a `klt sim` corners request).",
-         f"**Status**: {PROV}. Not a silicon result, not an entropy measurement.", "",
-         "**Batch jobs**: " + ", ".join(f"`{j}`" for j in jobs), "",
+         f"**Status**: {PROV}. Pre-layout, deterministic, ideal sources; not a silicon result, not an entropy "
+         "measurement, no spec or threshold change.", "",
+         "**Batch jobs**: " + (", ".join(f"`{j}`" for j in jobs) or "none returned"), "",
+         f"**Coverage**: {summ['rows_usable']} of {summ['rows_planned']} planned rows usable; {nmiss} missing / "
+         "failed / unusable rows are listed below, never silently dropped.", "",
          "**Window & resolution**: a free-running ring detuned by delta from the tone slips delta*(N-1) ring cycles "
          "across an N-edge window, so the 0.1-cycle DRIFT_LOCK criterion resolves "
          + ", ".join(f"{n} edges -> {DRIFT_LOCK / (n - 1) * 100:.3g} %" for n in summ["nedge"]) +
          "; the campaign claims +-0.1 % (2x margin at the 200-edge window) and checks convergence at 400 edges. "
-         "Every usable row carries all of its requested edge measurements; a unit missing any edge is recorded "
-         "below as an unusable row, never silently dropped.", "",
-         "## Measured brackets vs hypotheses", "",
-         f"- Amplitudes tested: 5, 20, 50 mV pk; detunings tested: +-0.1, +-0.25, +-0.4 % (and +-0.25 % at 5 mV). "
-         "Statements beyond this ladder are hypotheses, not measurements.",
-         f"- On-frequency rows: {len(summ['on_frequency_unresolved'])} drift-UNRESOLVED -- exact coincidence is "
-         "unidentifiable by drift at any window; they are decided, where at all, by detuned neighbours and pull evidence.",
-         f"- Rows with a ring LOCKED to the tone: {summ['locked'] or 'none'}. Largest locked detune per amplitude "
-         f"(mV: max detune %): {summ['lock_range_pct_by_amp'] or 'none'}.",
-         f"- Criterion verdicts over tone rows, reported separately: {summ['verdict_counts']}. "
-         f"Failing ONLY the bias band (LOCK and Q pass): {summ['failing_only_bias'] or 'none'}. "
-         "An ff bias failure does not disappear behind a lock-only result.",
-         "- 200- vs 400-edge convergence: "
-         + ("all representative rows converged" if summ["converged_all"] else str(summ["convergence_200_vs_400"])) + ".", "",
-         "## Tone rows", "",
-         "The LOCK / Q / BIAS columns are the three criteria SEPARATELY; verdict = PASS only if all three hold. "
-         "An on-frequency row (detune 0 %) is drift-UNRESOLVED by construction, not passed and not failed.", "",
-         "| amp (mV) | tone | rf (MHz) | max mod pk % | max shift % | Q ratio | bias_xo (shift) | non-free rings (state p:q drift) | LOCK | Q | BIAS | verdict |",
-         "|---|---|---|---|---|---|---|---|---|---|---|---|"]
+         "Every usable row carries all of its requested edge measurements; the observed edge count and span per "
+         "ring are in `rows[].window`.", "",
+         "## Measured brackets", "",
+         "Only what the tested ladder shows (amplitudes 5, 20, 50 mV pk; detunings +-0.1, +-0.25, +-0.4 % at "
+         "20/50 mV and +-0.25 % at 5 mV). State of the ring the tone was placed next to:", "",
+         f"| amp (mV) | ring | side | states by detuning ({summ['nedge'][0]}-edge window) | measured bracket |", "|---|---|---|---|---|"]
+    for b in summ["lock_brackets"]:
+        st = ", ".join(f"{k}: {v}" for k, v in b["states"].items())
+        L.append(f"| {b['amp_mV']:g} | {b['ring']} | {b['side']} | {st} | {b['bracket']} |")
+    L += ["",
+          f"- Rows with any ring LOCKED to the tone: {len(summ['locked'])}. Largest locked detune per amplitude "
+          f"(mV: max detune %): {summ['lock_range_pct_by_amp'] or 'none'}.",
+          f"- On-frequency rows drift-UNRESOLVED: {len(summ['on_frequency_unresolved'])} (exact coincidence is "
+          "unidentifiable by drift at any window; read them with the detuned neighbours in the table above).",
+          f"- Criterion verdicts over usable tone rows, reported separately: {summ['verdict_counts']}. "
+          f"Failing ONLY the bias band (LOCK and Q pass): {summ['failing_only_bias'] or 'none'}. "
+          f"Failing LOCK or Q: {summ['failing_lock_or_q'] or 'none'}. A bias failure does not disappear behind a "
+          "lock-only result.",
+          "- 200- vs 400-edge convergence: "
+          + ("no pair available" if summ["converged_all"] is None else
+             ("all paired rows converged" if summ["converged_all"] else "NOT all converged -- see table"))
+          + (f"; unpaired: {summ['convergence_unpaired']}" if summ["convergence_unpaired"] else "") + ".", "",
+          "## Hypotheses (not measured here)", "",
+          "- The lock range between tested detunings, and at amplitudes between/above the tested rungs, is "
+          "interpolation only.",
+          "- Whether an on-frequency tone locks a ring or merely coincides with it is not decided by drift; the "
+          "detuned-neighbour reading is an inference.",
+          "- Per-ring (uncorrelated) ripple, supply impedance, substrate coupling and layout parasitics are not "
+          "modelled; post-layout and silicon may differ.", "",
+          "## Tone rows", "",
+          "The LOCK / Q / BIAS columns are the three criteria SEPARATELY; verdict = PASS only if all three hold. "
+          "An on-frequency row (detune 0 %) is drift-UNRESOLVED by construction, not passed and not failed.", "",
+          "| N | amp (mV) | tone | rf (MHz) | max mod pk % | max shift % | Q ratio | bias_xo (shift) | non-free rings (state p:q drift) | LOCK | Q | BIAS | verdict |",
+          "|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
     for r in rows:
         if r["kind"] not in ("tone", "baseline"):
             continue
         m = r["metrics"]
+        N = r.get("nedge", NEDGE)
         if m is None:
-            L.append(f"| {r['amp']*1e3:g} | {r['tone']} | - | - | - | - | - | - | - | - | - | **UNUSABLE** {r['why']} |")
+            L.append(f"| {N} | {r['amp']*1e3:g} | {r['tone']} | - | - | - | - | - | - | - | - | - | "
+                     f"**{r['klt_status'].upper()}** {'; '.join(r['why'])[:300]} |")
             continue
         nf = " ".join(f"r{t['ring']}:{t['state']} {t['p']}:{t['q']} {t['drift_cycles']:+.2f}" +
                       (f" pull {t['pull_fraction']:.2f}" if t["state"] == "LOCKED" and t.get("pull_fraction") is not None else "")
@@ -612,7 +780,7 @@ def render_lr_md(rid, pvt, rows, summ, jobs, sha, now):
         verdict = "PASS" if r["ok"] else "**FAIL** " + "; ".join(r["why"])
         if r.get("unresolved"):
             verdict += " (drift-UNRESOLVED: on-frequency)"
-        L.append(f"| {r['amp']*1e3:g} | {r['tone']} | {_f(r['rf_hz']/1e6 if r['rf_hz'] else None, 3)} | {max(m['mod_pk_pct']):.3f} | "
+        L.append(f"| {N} | {r['amp']*1e3:g} | {r['tone']} | {_f(r['rf_hz']/1e6 if r['rf_hz'] else None, 3)} | {max(m['mod_pk_pct']):.3f} | "
                  f"{max(abs(x) for x in m['shift_pct']):.3f} | {m['Q_ratio']:.4f} | {m['bias_xo']:.4f} ({r['bias_shift']:+.3f}) | {nf} | "
                  f"{'pass' if t3['LOCK'] else 'FAIL'} | {'pass' if t3['Q'] else 'FAIL'} | {'pass' if t3['BIAS'] else 'FAIL'} | {verdict} |")
     L += ["", "## Current-injection controls (ring 2, node n2)", "",
@@ -623,14 +791,39 @@ def render_lr_md(rid, pvt, rows, summ, jobs, sha, now):
     for c in summ["controls"]:
         L.append(f"| {c['tone']} | {c['state']} | {c['drift_cycles']:+.3f} | {c['clean_drift_cycles']:+.3f} | "
                  f"{'YES' if c['flagged'] else 'no'} |")
+    for r in rows:
+        if r["kind"] == "control" and r["metrics"] is None:
+            L.append(f"| {r['tone']} | **{r['klt_status'].upper()}** | - | - | - |")
     L += ["", "## 200- vs 400-edge convergence subset (ring 2, +-0.25 % @ 50 mV)", "",
-          "| tone | amp (mV) | 200-edge state (drift cyc) | 400-edge state (drift cyc) | converged |",
-          "|---|---|---|---|---|"]
+          "| tone | amp (mV) | 200-edge state (drift cyc) | 400-edge state (drift cyc) | drift ratio (free-running: 2.005) | converged |",
+          "|---|---|---|---|---|---|"]
     for c in summ["convergence_200_vs_400"]:
         L.append(f"| {c['tone']} | {c['amp_mV']} | {c['at_200_edges']['state']} ({c['at_200_edges']['drift_cycles']:+.2f}) | "
-                 f"{c['at_400_edges']['state']} ({c['at_400_edges']['drift_cycles']:+.2f}) | {'yes' if c['converged'] else 'NO'} |")
-    L += ["", "Per-row pair data, edge times and all raw responses are in the `.json` and `../corners/<id>/` "
-          "(append-only; the #200 records are untouched).", "",
+                 f"{c['at_400_edges']['state']} ({c['at_400_edges']['drift_cycles']:+.2f}) | "
+                 f"{_f(c['drift_ratio_400_over_200'])} | {'yes' if c['converged'] else 'NO'} |")
+    for c in summ["convergence_unpaired"]:
+        L.append(f"| {c['tone']} | {c['amp_mV']} | {'have' if c['have_200'] else 'MISSING'} | "
+                 f"{'have' if c['have_400'] else 'MISSING'} | - | unpaired |")
+    L += ["", "## Requests, inputs and pins", "",
+          "| request | status | units returned | request sha256 | netlist sha256 | job | client / runner klt | PDK | models lib sha256 |",
+          "|---|---|---|---|---|---|---|---|---|"]
+    for nm in sorted(inputs):
+        i = inputs[nm]
+        pv = i.get("provenance") or {}
+        pdk = pv.get("pdk") or {}
+        L.append(f"| {nm} | {i['status']} | {i['units_returned']}/{i['units']} | `{i['request_sha256'][:16]}` | "
+                 f"`{i['netlist_sha256'][:16]}` | {pv.get('job_id') or '-'} | {pv.get('client_klt') or '-'} / "
+                 f"{pv.get('runner_klt') or '-'} | {pdk.get('name', '-')} {pdk.get('version', '')} | "
+                 f"`{(pv.get('models_lib_sha256') or '-')[:16]}` |")
+    if summ["rows_unusable"]:
+        L += ["", "## Missing / failed / unusable rows", "", "| request | kind | tone | amp (mV) | N | status | reason |",
+              "|---|---|---|---|---|---|---|"]
+        for u in summ["rows_unusable"]:
+            L.append(f"| {u['chunk']} | {u['kind']} | {u['tone']} | {u['amp_mV']:g} | {u['nedge']} | {u['klt_status']} | "
+                     f"{'; '.join(u['why'])[:300]} |")
+    L += ["", "Full hashes, netlist closure and per-row observed windows are in the `.json`; requests, netlists, plans, "
+          "raw responses and missing-request notes are in `../corners/<id>/` (append-only; the #200 records are "
+          "untouched).", "",
           "---", "", "- Author: loom-builder@sky130-trng", f"- Timestamp (UTC): {now.isoformat()}", f"- Repo commit: `{sha}`",
           "- Supersedes: (none; extends the #200 records)"]
     return "\n".join(L) + "\n"
@@ -652,6 +845,34 @@ LR_CLAIM = ("Lock-resolution follow-up on the same pre-layout ro_array_core (iss
 PVTS = None
 
 
+def _jload(path):
+    with open(path) as fh:
+        return json.load(fh)
+
+
+def _sha256(path):
+    import hashlib
+    h = hashlib.sha256()
+    with open(path, "rb") as fh:
+        for blk in iter(lambda: fh.read(1 << 16), b""):
+            h.update(blk)
+    return h.hexdigest()
+
+
+def _provenance(rs):
+    """Tool / PDK pins and input hashes carried by one klt sim response."""
+    env, prov = rs.get("environment", {}), rs.get("provenance", {})
+    rem = env.get("remote") or {}
+    return {"job_id": rem.get("job_id"), "client_klt": prov.get("klt_version"),
+            "runner_klt": rem.get("runner_klt_version"), "runner_compatibility": rem.get("runner_compatibility"),
+            "klayout": prov.get("klayout_version"), "engine": env.get("engine"),
+            "engine_version": env.get("engine_version"), "pdk": prov.get("pdk"),
+            "models_lib_sha256": env.get("models_lib_sha256"), "netlist_sha256": env.get("netlist_sha256"),
+            "netlist_closure": [{"path": x.get("path"), "sha256": x.get("sha256")}
+                                for x in env.get("netlist_closure", [])],
+            "budget": env.get("budget")}
+
+
 def emit_record(reqdir, sha=None):
     import importlib.util
     from evidence_record import git_short_sha
@@ -660,12 +881,14 @@ def emit_record(reqdir, sha=None):
     mr = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mr)
     sha = sha or git_short_sha(Path(REPO))
-    chunks = load_reqdir(reqdir)
-    campaigns = {pl.get("campaign") for _, pl, _ in chunks}
+    chunks, missing = load_reqdir_all(reqdir)
+    campaigns = {pl.get("campaign") for _, pl, _ in chunks} | {pl.get("campaign") for _, pl, _ in missing}
     if len(campaigns) > 1:
         raise SystemExit(f"error: mixed campaigns in one request dir: {campaigns}")
     campaign = next(iter(campaigns), None)
-    allrows = build_rows(chunks)
+    if campaign != LR:
+        missing = []          # legacy path unchanged: unreturned requests were never recorded there
+    allrows = build_rows(chunks, missing)
     base_now = datetime.datetime.now(datetime.timezone.utc)
     for n, cn in enumerate(sorted(allrows), 1):
         now = base_now + datetime.timedelta(seconds=n)
@@ -680,54 +903,79 @@ def emit_record(reqdir, sha=None):
             summ = summarize(rows, pvt["vnom"], (0.010, 0.050))
             claim = CLAIM
         mine = [(nm, pl, rs) for nm, pl, rs in chunks if pl["corner"] == cn]
-        jobs = [rs["environment"]["remote"]["job_id"] for _, _, rs in mine]
+        mine_missing = [(nm, pl, why) for nm, pl, why in missing if pl["corner"] == cn]
+        jobs = [(rs.get("environment", {}).get("remote") or {}).get("job_id") for _, _, rs in mine]
         cdir = os.path.join(REPO, "sim", SLUG, "corners", rid)
         rdir = os.path.join(REPO, "sim", SLUG, "records")
         if os.path.exists(os.path.join(rdir, rid + ".json")) or os.path.exists(cdir):
             raise SystemExit(f"error: {rid} exists")
         os.makedirs(cdir)
         os.makedirs(rdir, exist_ok=True)
+        inputs = {}
         for nm, pl, rs in mine:
             with gzip.open(os.path.join(cdir, f"{nm}.klt-sim.json.gz"), "wt") as fh:   # raw response, verbatim
                 json.dump(rs, fh, indent=1)
             json.dump(pl, open(os.path.join(cdir, f"{nm}.plan.json"), "w"), indent=1)
             for fn, dst in (("request.json", f"{nm}.request.json"), ("netlist.cir", f"{nm}.netlist.cir")):
                 shutil.copyfile(os.path.join(reqdir, nm, fn), os.path.join(cdir, dst))   # exactly what was submitted
+            inputs[nm] = {"status": "returned", "units": len(pl["units"]), "units_returned": len(rs["corners"]),
+                          "request_sha256": _sha256(os.path.join(cdir, f"{nm}.request.json")),
+                          "netlist_sha256": _sha256(os.path.join(cdir, f"{nm}.netlist.cir")),
+                          "provenance": _provenance(rs)}
+        for nm, pl, why in mine_missing:                  # refused / failed / never completed: kept, not dropped
+            json.dump(pl, open(os.path.join(cdir, f"{nm}.plan.json"), "w"), indent=1)
+            json.dump({"request": nm, "reason": why}, open(os.path.join(cdir, f"{nm}.missing.json"), "w"), indent=1)
+            for fn, dst in (("request.json", f"{nm}.request.json"), ("netlist.cir", f"{nm}.netlist.cir")):
+                shutil.copyfile(os.path.join(reqdir, nm, fn), os.path.join(cdir, dst))
+            inputs[nm] = {"status": "missing", "units": len(pl["units"]), "units_returned": 0, "reason": why,
+                          "request_sha256": _sha256(os.path.join(cdir, f"{nm}.request.json")),
+                          "netlist_sha256": _sha256(os.path.join(cdir, f"{nm}.netlist.cir"))}
         criteria = {"drift_lock_ring_cycles": DRIFT_LOCK, "q_margin": Q_MARGIN, "bias_band": list(BIAS_BAND)}
         if campaign == LR:
             criteria.update(nedge=summ["nedge"], detuning_resolution_pct=summ["detuning_resolution_pct"],
                             claimed_resolution_pct=0.1)
+        first = mine[0][2] if mine else {}
         rec = {"record_id": rid, "slug": SLUG, "claim": claim, "level": "transistor", "status": PROV,
                "seed": "N/A (deterministic transient, no injected noise)", "pvt": pvt, "campaign": campaign,
                "criteria": criteria,
                "testbench": "sim/ro-array-supply-perturbation/testbench/tb_ro_array_supply_perturbation.spice "
                             "(via sim/ro-array-supply-perturbation/make-requests.py)",
-               "klt_sim": {"jobs": jobs, "backend": "batch", "remote": [rs["environment"]["remote"] for _, _, rs in mine],
-                           "engine_version": mine[0][2]["environment"]["engine_version"],
-                           "models_lib_sha256": mine[0][2]["environment"]["models_lib_sha256"],
-                           "submitter_klt": mine[0][2]["provenance"]["klt_version"],
+               "klt_sim": {"jobs": jobs, "backend": "batch",
+                           "remote": [rs.get("environment", {}).get("remote") for _, _, rs in mine],
+                           "engine_version": first.get("environment", {}).get("engine_version"),
+                           "models_lib_sha256": first.get("environment", {}).get("models_lib_sha256"),
+                           "submitter_klt": first.get("provenance", {}).get("klt_version"),
                            "responses": f"sim/{SLUG}/corners/{rid}/*.klt-sim.json.gz"},
                "supersedes": "(none)", "summary": summ, "rows": rows, "timestamp_utc": now.isoformat()}
+        if campaign == LR:
+            rec["inputs"] = inputs
+            rec["requests_missing"] = [{"request": nm, "reason": why} for nm, _, why in mine_missing]
         json.dump(rec, open(os.path.join(rdir, rid + ".json"), "w"), indent=2, default=str)
-        md = (render_lr_md(rid, pvt, rows, summ, jobs, sha, now) if campaign == LR
+        md = (render_lr_md(rid, pvt, rows, summ, jobs, sha, now, inputs) if campaign == LR
               else render_md(rid, cn, pvt, rows, summ, jobs, sha, now, claim))
         open(os.path.join(rdir, rid + ".md"), "w").write(md)
-        tail = (f"locked at: {summ['lock_range_pct_by_amp'] or 'none'} | converged: {summ['converged_all']}"
+        tail = (f"locked at: {summ['lock_range_pct_by_amp'] or 'none'} | converged: {summ['converged_all']} | "
+                f"usable {summ['rows_usable']}/{summ['rows_planned']}"
                 if campaign == LR else summ["tolerance_rf_cycle_avg"])
         print(rid, cn, tail, "| detector fires:", summ.get("detector_fires_on_negative_control",
                                                             any(c["flagged"] for c in summ.get("controls", []))))
 
 
 def check(recpath):
-    """Replay a record from its committed raw responses; exit 1 on any difference."""
+    """Replay a record from its committed raw responses (and, for campaign
+    records, the committed `*.missing.json` notes); exit 1 on any difference."""
     rec = json.load(open(recpath))
     cdir = os.path.join(REPO, "sim", SLUG, "corners", rec["record_id"])
-    chunks = []
+    chunks, missing = [], []
     for f in sorted(glob.glob(os.path.join(cdir, "*.klt-sim.json.gz"))):
         nm = os.path.basename(f)[:-len(".klt-sim.json.gz")]
         with gzip.open(f, "rt") as fh:
-            chunks.append((nm, json.load(open(os.path.join(cdir, nm + ".plan.json"))), json.load(fh)))
-    rows = build_rows(chunks)[next(iter({pl["corner"] for _, pl, _ in chunks}))]
+            chunks.append((nm, _jload(os.path.join(cdir, nm + ".plan.json")), json.load(fh)))
+    for f in sorted(glob.glob(os.path.join(cdir, "*.missing.json"))):
+        nm = os.path.basename(f)[:-len(".missing.json")]
+        missing.append((nm, _jload(os.path.join(cdir, nm + ".plan.json")), _jload(f)["reason"]))
+    corner = next(iter({pl["corner"] for _, pl, _ in chunks + missing}))
+    rows = build_rows(chunks, missing)[corner]
     if rec.get("campaign") == LR:
         summ = summarize_lr(rows)
     else:
