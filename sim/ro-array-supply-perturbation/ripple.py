@@ -550,42 +550,57 @@ def summarize_lr(rows):
                              for r in rows if r["metrics"] is None]}
     us = [r for r in tone if r["metrics"]]
     # measured lock brackets: per amplitude x ring x side, the state of the ring the
-    # tone was placed next to, at each tested detuning (on-frequency rows excluded:
-    # they are drift-UNRESOLVED by construction)
-    br = {}
+    # tone was placed next to, at each tested detuning.  Two readings:
+    #   nominal  -- the ladder as designed (relative to the committed combining-record
+    #               period); on-frequency rows excluded (drift-UNRESOLVED by design);
+    #   eff      -- the tone's detuning from the CLEAN ring in this window,
+    #               clean_drift/(N-1), which is what the drift criterion actually
+    #               sees.  The clean ring can sit ~0.1-0.2 % off the committed period
+    #               (ff), so a nominal +0.1 % row can be effectively on-frequency and a
+    #               nominal on-frequency row effectively detuned.  Points within the
+    #               window resolution of the clean ring are listed but bound nothing.
+    res = DRIFT_LOCK / (nedges[0] - 1) * 100
+
+    def _stmt(pts):
+        lk = [d for d, s in pts if s == "LOCKED"]
+        fr = [d for d, s in pts if s == "free"]
+        if not lk and fr:
+            return f"no lock at any tested detuning; lock range (if any) < {min(fr):.3g} %"
+        if lk and not [d for d in fr if d > max(lk)]:
+            return f"locked out to {max(lk):.3g} % (largest tested); edge not bracketed"
+        if lk:
+            nxt = min(d for d in fr if d > max(lk))
+            st = f"lock-range edge in ({max(lk):.3g}, {nxt:.3g}] %"
+            return st + (" (non-monotone: free below a locked detuning)" if any(d < max(lk) for d in fr) else "")
+        return "no LOCKED/free reading at the tested detunings (unusable or COINCIDENT only)"
+
+    per = {}
     for r in tone:
-        d = r.get("detune", 0.0)
-        if not d or r.get("nedge", NEDGE) != nedges[0]:    # primary window only; 400-edge rows are the
+        if r.get("nedge", NEDGE) != nedges[0]:              # primary window only; 400-edge rows are the
             continue                                        # convergence check, reported separately
         ring = _tone_ring(r["tone"])
-        key = (round(r["amp"] * 1e3, 3), ring, "+" if d > 0 else "-")
+        d = r.get("detune", 0.0)
         st = r["metrics"]["tone"][ring - 1]["state"] if r["metrics"] else "unusable"
-        # effective detuning of the tone from the CLEAN ring in this window (the
-        # nominal ladder is relative to the committed combining-record period,
-        # which the clean ring here can differ from): clean drift / (N-1)
-        eff = (r["metrics"]["tone"][ring - 1]["clean_drift_cycles"] / (r.get("nedge", NEDGE) - 1) * 100
+        eff = (r["metrics"]["tone"][ring - 1]["clean_drift_cycles"] / (nedges[0] - 1) * 100
                if r["metrics"] else None)
-        br.setdefault(key, []).append((round(abs(d) * 100, 4), st, eff))
+        per.setdefault((round(r["amp"] * 1e3, 3), ring), []).append((d * 100, eff, st))
     brackets = []
-    for (amp, ring, side), pts in sorted(br.items()):
-        pts.sort(key=lambda x: x[0])
-        lk = [d for d, s, _ in pts if s == "LOCKED"]
-        fr = [d for d, s, _ in pts if s == "free"]
-        if not lk and fr:
-            stmt = f"no lock at any tested detuning; lock range (if any) < {min(fr):g} %"
-        elif lk and not [d for d in fr if d > max(lk)]:
-            stmt = f"locked out to {max(lk):g} % (largest tested); edge not bracketed"
-        elif lk:
-            nxt = min(d for d in fr if d > max(lk))
-            stmt = f"lock-range edge in ({max(lk):g}, {nxt:g}] %"
-            if any(d < max(lk) for d in fr):
-                stmt += " (non-monotone: free below a locked detuning)"
-        else:
-            stmt = "no LOCKED/free reading at the tested detunings (unusable or COINCIDENT only)"
-        brackets.append({"amp_mV": amp, "ring": ring, "side": side,
-                         "states": {f"{d:g}%": s for d, s, _ in pts},
-                         "eff_detune_pct": {f"{d:g}%": (None if e is None else round(e, 4)) for d, _, e in pts},
-                         "bracket": stmt})
+    for (amp, ring), pts in sorted(per.items()):
+        for side, sg in (("+", 1), ("-", -1)):
+            nom = sorted((abs(d), st) for d, _, st in pts if d * sg > 0)
+            effp = sorted((abs(e), st) for _, e, st in pts if e is not None and e * sg > 0 and abs(e) >= res)
+            if not nom and not effp:
+                continue
+            brackets.append({
+                "amp_mV": amp, "ring": ring, "side": side,
+                "states": {f"{abs(d):g}%": st for d, _, st in sorted(pts, key=lambda x: abs(x[0])) if d * sg > 0},
+                "eff_detune_pct": {f"{abs(d):g}%": (None if e is None else round(e, 4))
+                                   for d, e, _ in pts if d * sg > 0},
+                "bracket": _stmt(nom) if nom else "no detuned row on this side",
+                "bracket_eff": (_stmt(effp) if effp else "no point outside the window resolution on this side")})
+    eff_on = [{"amp_mV": amp, "ring": ring, "eff_detune_pct": round(e, 4), "state": st}
+              for (amp, ring), pts in sorted(per.items()) for d, e, st in pts if d == 0 and e is not None]
+    out["on_frequency_effective"] = eff_on
     out["lock_brackets"] = brackets
     out["locked"] = [{"amp_mV": round(r["amp"] * 1e3), "tone": r["tone"], "ring": t["ring"],
                       "p_q": f"{t['p']}:{t['q']}", "drift_cycles": t["drift_cycles"],
@@ -610,8 +625,11 @@ def summarize_lr(rows):
                              "LOCK_pass": sum(_trio(r)["LOCK"] for r in us),
                              "Q_pass": sum(_trio(r)["Q"] for r in us),
                              "BIAS_pass": sum(_trio(r)["BIAS"] for r in us)}
-    out["failing_only_bias"] = [f"{r['tone']}@{r['amp']*1e3:g}mV" for r in us if r["ok_nobias"] and not r["ok"]]
-    out["failing_lock_or_q"] = [f"{r['tone']}@{r['amp']*1e3:g}mV" for r in us if not r["ok_nobias"]]
+    def _lab(r):
+        n = r.get("nedge", NEDGE)
+        return f"{r['tone']}@{r['amp']*1e3:g}mV" + ("" if n == nedges[0] else f"/{n}e")
+    out["failing_only_bias"] = [_lab(r) for r in us if r["ok_nobias"] and not r["ok"]]
+    out["failing_lock_or_q"] = [_lab(r) for r in us if not r["ok_nobias"]]
     out["controls"] = [{"tone": r["tone"], "state": r["metrics"]["tone"][1]["state"],
                         "drift_cycles": r["metrics"]["tone"][1]["drift_cycles"],
                         "clean_drift_cycles": r["metrics"]["tone"][1]["clean_drift_cycles"],
@@ -746,11 +764,18 @@ def render_lr_md(rid, pvt, rows, summ, jobs, sha, now, inputs=None, history=None
          "LOCKED means the mean slip stayed under 0.1 cycle over the window: a ring pulled to within the resolution but "
          "still slipping slowly (just outside an Adler lock range) is indistinguishable here and reads LOCKED -- the "
          "conservative direction for the LOCK criterion. State of the ring the tone was placed next to:", "",
-         f"| amp (mV) | ring | side | states by detuning ({summ['nedge'][0]}-edge window) | measured bracket |", "|---|---|---|---|---|"]
+         f"| amp (mV) | ring | nominal side | states by nominal detuning ({summ['nedge'][0]}-edge window) | bracket (nominal) | bracket (eff, same-sign points) |",
+         "|---|---|---|---|---|---|"]
     for b in summ["lock_brackets"]:
         st = ", ".join(f"{k}" + (f" (eff {b['eff_detune_pct'][k]:+.3f}%)" if b["eff_detune_pct"].get(k) is not None else "")
                        + f": {v}" for k, v in b["states"].items())
-        L.append(f"| {b['amp_mV']:g} | {b['ring']} | {b['side']} | {st} | {b['bracket']} |")
+        L.append(f"| {b['amp_mV']:g} | {b['ring']} | {b['side']} | {st} | {b['bracket']} | {b['bracket_eff']} |")
+    if summ.get("on_frequency_effective"):
+        L += ["", "Nominal on-frequency rows, with the tone's effective detuning from the clean ring in this window "
+              f"(|eff| < {DRIFT_LOCK / (summ['nedge'][0] - 1) * 100:.3g} % is within the window resolution, hence "
+              "COINCIDENT/UNRESOLVED; outside it the row is an ordinary detuned reading): "
+              + "; ".join(f"{o['amp_mV']:g} mV f{o['ring']}: eff {o['eff_detune_pct']:+.3f} % -> {o['state']}"
+                          for o in summ["on_frequency_effective"]) + "."]
     L += ["",
           f"- Rows with any ring LOCKED to the tone: {len(summ['locked'])}. Largest locked detune per amplitude "
           f"(mV: max detune %): {summ['lock_range_pct_by_amp'] or 'none'}.",

@@ -273,6 +273,26 @@ class Tests(unittest.TestCase):
         self.assertEqual(len(b), 1)
         self.assertEqual(b[0]["states"], {"0.1%": "LOCKED", "0.25%": "free", "0.4%": "free"})
         self.assertEqual(b[0]["bracket"], "lock-range edge in (0.1, 0.25] %")
+        # the clean ring sits exactly on the committed period here, so the
+        # effective-detuning reading agrees with the nominal one
+        self.assertEqual(b[0]["bracket_eff"], "lock-range edge in (0.1, 0.25] %")
+
+    def test_effective_detuning_regroups_offset_ring(self):
+        # the clean ring runs 0.2 % fast against the committed period: a nominal
+        # +0.1 % tone is then effectively -0.1 % from it.  The effective reading
+        # must use what the drift criterion saw, not the nominal ladder label.
+        f2 = 1 / self.TR[1]
+        Tc = self.TR[1] / 1.002                       # clean ring 0.2 % fast
+        clean = [self.TR[0], Tc, self.TR[2], self.TR[3]]
+        units = [self._unit("baseline")] + [self._unit("tone", f"f2+{d * 100:g}%", f2 * (1 + d), 0.05, d)
+                                            for d in (0.001, 0.0025)]
+        resp = {"corners": [self._corner(200, periods=clean)] + [self._corner(200, periods=clean)] * 2}
+        rows = rp.build_rows([("ss-lr-1", self._plan(200, units), resp)])["ss"]
+        b = rp.summarize_lr(rows)["lock_brackets"]
+        side = {x["side"]: x for x in b}
+        self.assertAlmostEqual(side["+"]["eff_detune_pct"]["0.1%"], -0.0998, 3)
+        self.assertIn("< 0.0998 %", side["-"]["bracket_eff"])   # the +0.1 % row lands on the eff - side
+        self.assertIn("no point outside", side["+"]["bracket_eff"])   # +0.25 % is within resolution
 
     def test_legacy_records_replay_unchanged(self):
         # the #200 records must keep replaying from their committed responses
