@@ -839,7 +839,7 @@ def render_lr_md(rid, pvt, rows, summ, jobs, sha, now, inputs=None, history=None
             L.append(f"| {u['chunk']} | {u['kind']} | {u['tone']} | {u['amp_mV']:g} | {u['nedge']} | {u['klt_status']} | "
                      f"{'; '.join(u['why'])[:300]} |")
     if history:
-        L += ["", "## Earlier submissions of this campaign (no usable units; kept for the record)", "",
+        L += ["", "## Submission history (refused, timed-out, orphaned and reused earlier requests)", "",
               history.get("summary", ""), "", "| request | job | outcome |", "|---|---|---|"]
         for h in history.get("attempts", []):
             if h.get("corner") in (None, pvt["proc"]):
