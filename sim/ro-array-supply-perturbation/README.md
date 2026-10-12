@@ -60,6 +60,22 @@ klt sim REQDIR/<corner>-<group>-<n>/request.json -o REQDIR/<d>/out --format json
 python3 sim/ro-array-supply-perturbation/ripple.py --emit-record REQDIR
 ```
 
+What a campaign record carries (append-only, one per PVT point; `--check` replays it):
+
+- every planned unit as a row -- a refused/failed/never-completed request becomes
+  `missing` rows carrying the klt error, a short response becomes `not-returned`
+  rows, and a unit whose rings stop before the requested edge count is unusable;
+  the summary counts planned vs usable rows;
+- `rows[].window`: edges requested, edges observed per ring, and the span covered;
+- a clean baseline matched to the row's own window (400-edge rows use the 400-edge
+  baseline; with none they are unusable, not compared across windows);
+- `inputs`: per request the sha256 of the submitted request and netlist, the
+  netlist closure, client and fleet-runner klt, ngspice, PDK and models-lib pins;
+  `corners/<id>/` holds the request, netlist, plan and raw response (or the
+  `*.missing.json` note) for each request;
+- measured lock brackets per amplitude x ring x side on the 200-edge window, kept
+  apart from the hypotheses section; LOCK, Q and BIAS verdict counts separately.
+
 Testbench delta vs #200: the enable pulse width/period are template parameters
 now (`@@ENW@@`/`@@ENP@@`; the campaign holds the enable high for 3 us). With the
 #200 1 us enable the rings freeze at ~1.0 us — every window past edge ~180 came
