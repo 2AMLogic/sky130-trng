@@ -20,7 +20,6 @@ _None._
 
 Human-approved issues ready for implementation (`loom:issue`).
 
-- **#174**: Whole-block characterization: post-layout PVT, dynamic power and IR evidence
 - **#221**: Decision record request: local mismatch can cap tt raw-bit H below DR-0004's 0.5 floor; adjacent rings approach 1:1
 - **#230**: CI: guard that every test_*.py is wired into a CI workflow and path filter
 
@@ -28,6 +27,7 @@ Human-approved issues ready for implementation (`loom:issue`).
 
 Issues currently being built (`loom:building`).
 
+- **#174**: Whole-block characterization: post-layout PVT, dynamic power and IR evidence
 - **#288**: Resolve near-frequency supply injection-lock brackets with longer observation windows
 
 ## PRs Awaiting Review
@@ -70,8 +70,8 @@ Issues carrying `loom:curated`.
 |------|-------|
 | Operator merge-risk holds | 2 |
 | Operator priority | 0 |
-| Ready (`loom:issue`) | 3 |
-| In Progress (`loom:building`) | 1 |
+| Ready (`loom:issue`) | 2 |
+| In Progress (`loom:building`) | 2 |
 | PRs awaiting review | 0 |
 | Approved PRs awaiting merge | 2 |
 | Curated | 7 |
