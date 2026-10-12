@@ -114,3 +114,11 @@ flow/build/
 
 # issue #250: transient scratch of the final-route electrical audit
 .audit-tmp-*/
+
+# issue #174: the 15 MB plain netlist and the per-request inlined decks are
+# regenerated deterministically (make-netlist.py / make-requests.py); the
+# committed form is trng_whole.sim.spice.gz and the sha256 in plan.json/records.
+sim/post-layout-whole-block/trng_whole.sim.spice
+sim/post-layout-whole-block/corners/*/netlist.cir
+# issue #174: the record's copied submit-attempt logs are evidence (named in the record)
+!sim/post-layout-whole-block/runs/**/*.log

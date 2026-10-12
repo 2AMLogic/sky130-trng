@@ -1,0 +1,497 @@
+{
+  "comment": "extractor port cluster -> canonical top port; order = .subckt trng_whole port order",
+  "ports": [
+    {
+      "canonical": "bus_wdata[1]",
+      "cluster": "A|A0|B|bus_wdata[1]"
+    },
+    {
+      "canonical": "bus_wdata[0]",
+      "cluster": "A|A0|bus_wdata[0]"
+    },
+    {
+      "canonical": "startup_done",
+      "cluster": "A|A1|A2|B1_N|Q|startup_done"
+    },
+    {
+      "canonical": "bus_addr[2]",
+      "cluster": "A|A1|A_N|B|D|bus_addr[2]"
+    },
+    {
+      "canonical": "bus_wdata[2]",
+      "cluster": "A|A2|B|bus_wdata[2]"
+    },
+    {
+      "canonical": "bus_addr[0]",
+      "cluster": "A|A_N|B|B2|bus_addr[0]"
+    },
+    {
+      "canonical": "bus_addr[3]",
+      "cluster": "A|A_N|B|C|bus_addr[3]"
+    },
+    {
+      "canonical": "out_ready",
+      "cluster": "A|B1|out_ready"
+    },
+    {
+      "canonical": "clk",
+      "cluster": "A|DIODE|a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via"
+    },
+    {
+      "canonical": "bus_we",
+      "cluster": "A|D_N|bus_we"
+    },
+    {
+      "canonical": "bus_rdata[15]",
+      "cluster": "A|Q|bus_rdata[15]"
+    },
+    {
+      "canonical": "bus_rdata[17]",
+      "cluster": "A|Q|bus_rdata[17]"
+    },
+    {
+      "canonical": "bus_rdata[18]",
+      "cluster": "A|Q|bus_rdata[18]"
+    },
+    {
+      "canonical": "bus_rdata[19]",
+      "cluster": "A|Q|bus_rdata[19]"
+    },
+    {
+      "canonical": "bus_rdata[21]",
+      "cluster": "A|Q|bus_rdata[21]"
+    },
+    {
+      "canonical": "bus_rdata[23]",
+      "cluster": "A|Q|bus_rdata[23]"
+    },
+    {
+      "canonical": "bus_rdata[24]",
+      "cluster": "A|Q|bus_rdata[24]"
+    },
+    {
+      "canonical": "bus_rdata[25]",
+      "cluster": "A|Q|bus_rdata[25]"
+    },
+    {
+      "canonical": "bus_rdata[27]",
+      "cluster": "A|Q|bus_rdata[27]"
+    },
+    {
+      "canonical": "bus_rdata[29]",
+      "cluster": "A|Q|bus_rdata[29]"
+    },
+    {
+      "canonical": "bus_rdata[31]",
+      "cluster": "A|Q|bus_rdata[31]"
+    },
+    {
+      "canonical": "bus_rdata[7]",
+      "cluster": "A|Q|bus_rdata[7]"
+    },
+    {
+      "canonical": "bus_re",
+      "cluster": "A|bus_re"
+    },
+    {
+      "canonical": "gated",
+      "cluster": "A1|B|Y|gated"
+    },
+    {
+      "canonical": "bus_rdata[0]",
+      "cluster": "A1|Q|bus_rdata[0]"
+    },
+    {
+      "canonical": "bus_rdata[10]",
+      "cluster": "A1|Q|bus_rdata[10]"
+    },
+    {
+      "canonical": "bus_rdata[11]",
+      "cluster": "A1|Q|bus_rdata[11]"
+    },
+    {
+      "canonical": "bus_rdata[13]",
+      "cluster": "A1|Q|bus_rdata[13]"
+    },
+    {
+      "canonical": "bus_rdata[14]",
+      "cluster": "A1|Q|bus_rdata[14]"
+    },
+    {
+      "canonical": "bus_rdata[16]",
+      "cluster": "A1|Q|bus_rdata[16]"
+    },
+    {
+      "canonical": "bus_rdata[1]",
+      "cluster": "A1|Q|bus_rdata[1]"
+    },
+    {
+      "canonical": "bus_rdata[20]",
+      "cluster": "A1|Q|bus_rdata[20]"
+    },
+    {
+      "canonical": "bus_rdata[22]",
+      "cluster": "A1|Q|bus_rdata[22]"
+    },
+    {
+      "canonical": "bus_rdata[26]",
+      "cluster": "A1|Q|bus_rdata[26]"
+    },
+    {
+      "canonical": "bus_rdata[28]",
+      "cluster": "A1|Q|bus_rdata[28]"
+    },
+    {
+      "canonical": "bus_rdata[2]",
+      "cluster": "A1|Q|bus_rdata[2]"
+    },
+    {
+      "canonical": "bus_rdata[30]",
+      "cluster": "A1|Q|bus_rdata[30]"
+    },
+    {
+      "canonical": "bus_rdata[3]",
+      "cluster": "A1|Q|bus_rdata[3]"
+    },
+    {
+      "canonical": "bus_rdata[4]",
+      "cluster": "A1|Q|bus_rdata[4]"
+    },
+    {
+      "canonical": "bus_rdata[5]",
+      "cluster": "A1|Q|bus_rdata[5]"
+    },
+    {
+      "canonical": "bus_rdata[6]",
+      "cluster": "A1|Q|bus_rdata[6]"
+    },
+    {
+      "canonical": "bus_rdata[8]",
+      "cluster": "A1|Q|bus_rdata[8]"
+    },
+    {
+      "canonical": "bus_rdata[9]",
+      "cluster": "A1|Q|bus_rdata[9]"
+    },
+    {
+      "canonical": "bus_addr[1]",
+      "cluster": "A_N|B|bus_addr[1]"
+    },
+    {
+      "canonical": "bus_rdata[12]",
+      "cluster": "B2|Q|bus_rdata[12]"
+    },
+    {
+      "canonical": "rst_n",
+      "cluster": "RESET_B|SET_B|en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n"
+    },
+    {
+      "canonical": "vss",
+      "cluster": "VGND|g_vss_m1|inv_clk_vss|inv_mc_vss|inv_q_vss|mph_g|nand_m_vss|nand_s2_vss|s1_vss_m1|s2_vss_m1|s3_vss_m1|s4_vss_m1|sb_vss|sr1_vss|sr2_vss|sr3_vss|sr4_vss|sv_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss|vss_link|vss_link_bridge|vss_link_dip|vss_link_m1|vss_x1|vss_x2|vss_x3"
+    },
+    {
+      "canonical": "vdd",
+      "cluster": "VPB|VPWR|a|d|inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|sb_vdd|sr1_vdd|sr2_vdd|sr3_vdd|sr4_vdd|sv_d_vdd_tie|sv_vdd|tg_d_a|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd|vdd_b1|vdd_b2|vdd_b3|vdd_b4|vdd_link|vdd_link_dip|vdd_x1|vdd_x2|vdd_x3"
+    },
+    {
+      "canonical": "alarm",
+      "cluster": "Y|alarm"
+    },
+    {
+      "canonical": "out_data[0]",
+      "cluster": "Y|out_data[0]"
+    },
+    {
+      "canonical": "out_data[10]",
+      "cluster": "Y|out_data[10]"
+    },
+    {
+      "canonical": "out_data[11]",
+      "cluster": "Y|out_data[11]"
+    },
+    {
+      "canonical": "out_data[12]",
+      "cluster": "Y|out_data[12]"
+    },
+    {
+      "canonical": "out_data[13]",
+      "cluster": "Y|out_data[13]"
+    },
+    {
+      "canonical": "out_data[14]",
+      "cluster": "Y|out_data[14]"
+    },
+    {
+      "canonical": "out_data[15]",
+      "cluster": "Y|out_data[15]"
+    },
+    {
+      "canonical": "out_data[16]",
+      "cluster": "Y|out_data[16]"
+    },
+    {
+      "canonical": "out_data[17]",
+      "cluster": "Y|out_data[17]"
+    },
+    {
+      "canonical": "out_data[18]",
+      "cluster": "Y|out_data[18]"
+    },
+    {
+      "canonical": "out_data[19]",
+      "cluster": "Y|out_data[19]"
+    },
+    {
+      "canonical": "out_data[1]",
+      "cluster": "Y|out_data[1]"
+    },
+    {
+      "canonical": "out_data[20]",
+      "cluster": "Y|out_data[20]"
+    },
+    {
+      "canonical": "out_data[21]",
+      "cluster": "Y|out_data[21]"
+    },
+    {
+      "canonical": "out_data[22]",
+      "cluster": "Y|out_data[22]"
+    },
+    {
+      "canonical": "out_data[23]",
+      "cluster": "Y|out_data[23]"
+    },
+    {
+      "canonical": "out_data[24]",
+      "cluster": "Y|out_data[24]"
+    },
+    {
+      "canonical": "out_data[25]",
+      "cluster": "Y|out_data[25]"
+    },
+    {
+      "canonical": "out_data[26]",
+      "cluster": "Y|out_data[26]"
+    },
+    {
+      "canonical": "out_data[27]",
+      "cluster": "Y|out_data[27]"
+    },
+    {
+      "canonical": "out_data[28]",
+      "cluster": "Y|out_data[28]"
+    },
+    {
+      "canonical": "out_data[29]",
+      "cluster": "Y|out_data[29]"
+    },
+    {
+      "canonical": "out_data[2]",
+      "cluster": "Y|out_data[2]"
+    },
+    {
+      "canonical": "out_data[30]",
+      "cluster": "Y|out_data[30]"
+    },
+    {
+      "canonical": "out_data[31]",
+      "cluster": "Y|out_data[31]"
+    },
+    {
+      "canonical": "out_data[3]",
+      "cluster": "Y|out_data[3]"
+    },
+    {
+      "canonical": "out_data[4]",
+      "cluster": "Y|out_data[4]"
+    },
+    {
+      "canonical": "out_data[5]",
+      "cluster": "Y|out_data[5]"
+    },
+    {
+      "canonical": "out_data[6]",
+      "cluster": "Y|out_data[6]"
+    },
+    {
+      "canonical": "out_data[7]",
+      "cluster": "Y|out_data[7]"
+    },
+    {
+      "canonical": "out_data[8]",
+      "cluster": "Y|out_data[8]"
+    },
+    {
+      "canonical": "out_data[9]",
+      "cluster": "Y|out_data[9]"
+    },
+    {
+      "canonical": "out_valid",
+      "cluster": "Y|out_valid"
+    },
+    {
+      "canonical": "ring_bit1",
+      "cluster": "a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|ring_bit1|y"
+    },
+    {
+      "canonical": "ring_bit2",
+      "cluster": "a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|ring_bit2|y"
+    },
+    {
+      "canonical": "ring_bit3",
+      "cluster": "a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|ring_bit3|y"
+    },
+    {
+      "canonical": "ring_bit4",
+      "cluster": "a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|ring_bit4|y"
+    },
+    {
+      "canonical": "en1",
+      "cluster": "en|en1|g_en"
+    },
+    {
+      "canonical": "en2",
+      "cluster": "en|en2|g_en"
+    },
+    {
+      "canonical": "en3",
+      "cluster": "en|en3|g_en"
+    },
+    {
+      "canonical": "en4",
+      "cluster": "en|en4|g_en"
+    },
+    {
+      "canonical": "vddr1",
+      "cluster": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr1"
+    },
+    {
+      "canonical": "vddr2",
+      "cluster": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr2"
+    },
+    {
+      "canonical": "vddr3",
+      "cluster": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr3"
+    },
+    {
+      "canonical": "vddr4",
+      "cluster": "g_vddr_m1|mnt_g|s1_vddr_m1|s2_vddr_m1|s3_vddr_m1|s4_vddr_m1|vddr|vddr4"
+    },
+    {
+      "canonical": "bus_wdata[9]",
+      "cluster": "bus_wdata[9]"
+    },
+    {
+      "canonical": "bus_wdata[8]",
+      "cluster": "bus_wdata[8]"
+    },
+    {
+      "canonical": "bus_wdata[7]",
+      "cluster": "bus_wdata[7]"
+    },
+    {
+      "canonical": "bus_wdata[6]",
+      "cluster": "bus_wdata[6]"
+    },
+    {
+      "canonical": "bus_wdata[5]",
+      "cluster": "bus_wdata[5]"
+    },
+    {
+      "canonical": "bus_wdata[4]",
+      "cluster": "bus_wdata[4]"
+    },
+    {
+      "canonical": "bus_wdata[3]",
+      "cluster": "bus_wdata[3]"
+    },
+    {
+      "canonical": "bus_wdata[31]",
+      "cluster": "bus_wdata[31]"
+    },
+    {
+      "canonical": "bus_wdata[30]",
+      "cluster": "bus_wdata[30]"
+    },
+    {
+      "canonical": "bus_wdata[29]",
+      "cluster": "bus_wdata[29]"
+    },
+    {
+      "canonical": "bus_wdata[28]",
+      "cluster": "bus_wdata[28]"
+    },
+    {
+      "canonical": "bus_wdata[27]",
+      "cluster": "bus_wdata[27]"
+    },
+    {
+      "canonical": "bus_wdata[26]",
+      "cluster": "bus_wdata[26]"
+    },
+    {
+      "canonical": "bus_wdata[25]",
+      "cluster": "bus_wdata[25]"
+    },
+    {
+      "canonical": "bus_wdata[24]",
+      "cluster": "bus_wdata[24]"
+    },
+    {
+      "canonical": "bus_wdata[23]",
+      "cluster": "bus_wdata[23]"
+    },
+    {
+      "canonical": "bus_wdata[22]",
+      "cluster": "bus_wdata[22]"
+    },
+    {
+      "canonical": "bus_wdata[21]",
+      "cluster": "bus_wdata[21]"
+    },
+    {
+      "canonical": "bus_wdata[20]",
+      "cluster": "bus_wdata[20]"
+    },
+    {
+      "canonical": "bus_wdata[19]",
+      "cluster": "bus_wdata[19]"
+    },
+    {
+      "canonical": "bus_wdata[18]",
+      "cluster": "bus_wdata[18]"
+    },
+    {
+      "canonical": "bus_wdata[17]",
+      "cluster": "bus_wdata[17]"
+    },
+    {
+      "canonical": "bus_wdata[16]",
+      "cluster": "bus_wdata[16]"
+    },
+    {
+      "canonical": "bus_wdata[15]",
+      "cluster": "bus_wdata[15]"
+    },
+    {
+      "canonical": "bus_wdata[14]",
+      "cluster": "bus_wdata[14]"
+    },
+    {
+      "canonical": "bus_wdata[13]",
+      "cluster": "bus_wdata[13]"
+    },
+    {
+      "canonical": "bus_wdata[12]",
+      "cluster": "bus_wdata[12]"
+    },
+    {
+      "canonical": "bus_wdata[11]",
+      "cluster": "bus_wdata[11]"
+    },
+    {
+      "canonical": "bus_wdata[10]",
+      "cluster": "bus_wdata[10]"
+    }
+  ]
+}

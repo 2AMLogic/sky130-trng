@@ -1,0 +1,467 @@
+{
+  "gds": "layout/trng_whole/trng_whole.gds",
+  "gds_sha256": "af2f8dfe2800599e97d769bdedd14924c9fa3f24fc7e1c4f43ccd72ac5572ddd",
+  "top": "trng_whole",
+  "specs": {
+    "spec.pads-only.json": "258bce864943d21bad6c3dd2680d8d450a99c3d5edf0a3cf4c1a06030e519792",
+    "spec.ring-loads.json": "be51c09d2eb23803b993b6d5a30c7063e4ee725c6f9e56a6ce27f3bdb6450871"
+  },
+  "ring_current_a_assumed": 2.055e-05,
+  "ring_current_source": "DR-0003 max per-ring running supply current (ff/-40C/1.98V), NOT a whole-block measurement",
+  "islands": {
+    "vdd": [
+      {
+        "island_id": "vdd#0",
+        "node_count": 3250,
+        "edge_count": 7099,
+        "unsolved_reason": null
+      },
+      {
+        "island_id": "vdd#1",
+        "node_count": 83,
+        "edge_count": 91,
+        "unsolved_reason": null
+      },
+      {
+        "island_id": "vdd#2",
+        "node_count": 83,
+        "edge_count": 91,
+        "unsolved_reason": null
+      },
+      {
+        "island_id": "vdd#3",
+        "node_count": 83,
+        "edge_count": 91,
+        "unsolved_reason": null
+      },
+      {
+        "island_id": "vdd#4",
+        "node_count": 83,
+        "edge_count": 91,
+        "unsolved_reason": null
+      },
+      {
+        "island_id": "vdd#5",
+        "node_count": 83,
+        "edge_count": 91,
+        "unsolved_reason": null
+      },
+      {
+        "island_id": "vdd#6",
+        "node_count": 83,
+        "edge_count": 91,
+        "unsolved_reason": null
+      },
+      {
+        "island_id": "vdd#7",
+        "node_count": 83,
+        "edge_count": 91,
+        "unsolved_reason": null
+      },
+      {
+        "island_id": "vdd#8",
+        "node_count": 83,
+        "edge_count": 91,
+        "unsolved_reason": null
+      },
+      {
+        "island_id": "vdd#9",
+        "node_count": 83,
+        "edge_count": 91,
+        "unsolved_reason": null
+      },
+      {
+        "island_id": "vdd#10",
+        "node_count": 83,
+        "edge_count": 91,
+        "unsolved_reason": null
+      },
+      {
+        "island_id": "vdd#11",
+        "node_count": 83,
+        "edge_count": 91,
+        "unsolved_reason": null
+      },
+      {
+        "island_id": "vdd#12",
+        "node_count": 83,
+        "edge_count": 91,
+        "unsolved_reason": null
+      }
+    ],
+    "vss": [
+      {
+        "island_id": "vss#0",
+        "node_count": 5308,
+        "edge_count": 9830,
+        "unsolved_reason": null
+      }
+    ],
+    "vddr1": [
+      {
+        "island_id": "vddr1#0",
+        "node_count": 598,
+        "edge_count": 632,
+        "unsolved_reason": null
+      }
+    ],
+    "vddr2": [
+      {
+        "island_id": "vddr2#0",
+        "node_count": 598,
+        "edge_count": 632,
+        "unsolved_reason": null
+      }
+    ],
+    "vddr3": [
+      {
+        "island_id": "vddr3#0",
+        "node_count": 599,
+        "edge_count": 633,
+        "unsolved_reason": null
+      }
+    ],
+    "vddr4": [
+      {
+        "island_id": "vddr4#0",
+        "node_count": 599,
+        "edge_count": 633,
+        "unsolved_reason": null
+      }
+    ],
+    "VPWR": [
+      {
+        "island_id": "VPWR#0",
+        "node_count": 3250,
+        "edge_count": 7099,
+        "unsolved_reason": null
+      }
+    ],
+    "VGND": [
+      {
+        "island_id": "VGND#0",
+        "node_count": 5308,
+        "edge_count": 9830,
+        "unsolved_reason": null
+      }
+    ]
+  },
+  "worst_case_droop_mv": 8.045302245,
+  "ir_drop_nets": [
+    {
+      "net": "vdd",
+      "pad_count": 1,
+      "instance_count": 0,
+      "current_a": 0.0,
+      "solved_island_count": 1,
+      "unsolved_island_count": 12,
+      "worst_case_droop_mv": 0.0,
+      "worst_case_node": {
+        "net": "vdd",
+        "island_id": "vdd#0",
+        "node_id": "n0",
+        "layer": "met1",
+        "x_um": -39.66,
+        "y_um": 8.16,
+        "voltage_v": 1.8,
+        "droop_mv": 0.0
+      },
+      "islands": [
+        {
+          "island_id": "vdd#0",
+          "solved": true,
+          "unsolved_reason": null,
+          "worst_droop_mv": null,
+          "worst_node": null,
+          "total_current_a": null
+        },
+        {
+          "island_id": "vdd#1",
+          "solved": false,
+          "unsolved_reason": "no_pad",
+          "worst_droop_mv": null,
+          "worst_node": null,
+          "total_current_a": null
+        },
+        {
+          "island_id": "vdd#2",
+          "solved": false,
+          "unsolved_reason": "no_pad",
+          "worst_droop_mv": null,
+          "worst_node": null,
+          "total_current_a": null
+        },
+        {
+          "island_id": "vdd#3",
+          "solved": false,
+          "unsolved_reason": "no_pad",
+          "worst_droop_mv": null,
+          "worst_node": null,
+          "total_current_a": null
+        },
+        {
+          "island_id": "vdd#4",
+          "solved": false,
+          "unsolved_reason": "no_pad",
+          "worst_droop_mv": null,
+          "worst_node": null,
+          "total_current_a": null
+        },
+        {
+          "island_id": "vdd#5",
+          "solved": false,
+          "unsolved_reason": "no_pad",
+          "worst_droop_mv": null,
+          "worst_node": null,
+          "total_current_a": null
+        },
+        {
+          "island_id": "vdd#6",
+          "solved": false,
+          "unsolved_reason": "no_pad",
+          "worst_droop_mv": null,
+          "worst_node": null,
+          "total_current_a": null
+        },
+        {
+          "island_id": "vdd#7",
+          "solved": false,
+          "unsolved_reason": "no_pad",
+          "worst_droop_mv": null,
+          "worst_node": null,
+          "total_current_a": null
+        },
+        {
+          "island_id": "vdd#8",
+          "solved": false,
+          "unsolved_reason": "no_pad",
+          "worst_droop_mv": null,
+          "worst_node": null,
+          "total_current_a": null
+        },
+        {
+          "island_id": "vdd#9",
+          "solved": false,
+          "unsolved_reason": "no_pad",
+          "worst_droop_mv": null,
+          "worst_node": null,
+          "total_current_a": null
+        },
+        {
+          "island_id": "vdd#10",
+          "solved": false,
+          "unsolved_reason": "no_pad",
+          "worst_droop_mv": null,
+          "worst_node": null,
+          "total_current_a": null
+        },
+        {
+          "island_id": "vdd#11",
+          "solved": false,
+          "unsolved_reason": "no_pad",
+          "worst_droop_mv": null,
+          "worst_node": null,
+          "total_current_a": null
+        },
+        {
+          "island_id": "vdd#12",
+          "solved": false,
+          "unsolved_reason": "no_pad",
+          "worst_droop_mv": null,
+          "worst_node": null,
+          "total_current_a": null
+        }
+      ]
+    },
+    {
+      "net": "vss",
+      "pad_count": 1,
+      "instance_count": 4,
+      "current_a": 8.22e-05,
+      "solved_island_count": 1,
+      "unsolved_island_count": 0,
+      "worst_case_droop_mv": 8.045302245,
+      "worst_case_node": {
+        "net": "vss",
+        "island_id": "vss#0",
+        "node_id": "n2497",
+        "layer": "met1",
+        "x_um": 308.69,
+        "y_um": 295.0475,
+        "voltage_v": 0.008045302,
+        "droop_mv": 8.045302245
+      },
+      "islands": [
+        {
+          "island_id": "vss#0",
+          "solved": true,
+          "unsolved_reason": null,
+          "worst_droop_mv": null,
+          "worst_node": null,
+          "total_current_a": null
+        }
+      ]
+    },
+    {
+      "net": "vddr1",
+      "pad_count": 1,
+      "instance_count": 1,
+      "current_a": 2.055e-05,
+      "solved_island_count": 1,
+      "unsolved_island_count": 0,
+      "worst_case_droop_mv": 0.35081704,
+      "worst_case_node": {
+        "net": "vddr1",
+        "island_id": "vddr1#0",
+        "node_id": "n215",
+        "layer": "met1",
+        "x_um": 310.8725,
+        "y_um": 295.8675,
+        "voltage_v": 1.799649183,
+        "droop_mv": 0.35081704
+      },
+      "islands": [
+        {
+          "island_id": "vddr1#0",
+          "solved": true,
+          "unsolved_reason": null,
+          "worst_droop_mv": null,
+          "worst_node": null,
+          "total_current_a": null
+        }
+      ]
+    },
+    {
+      "net": "vddr2",
+      "pad_count": 1,
+      "instance_count": 1,
+      "current_a": 2.055e-05,
+      "solved_island_count": 1,
+      "unsolved_island_count": 0,
+      "worst_case_droop_mv": 0.355350128,
+      "worst_case_node": {
+        "net": "vddr2",
+        "island_id": "vddr2#0",
+        "node_id": "n215",
+        "layer": "met1",
+        "x_um": 255.5725,
+        "y_um": 295.8675,
+        "voltage_v": 1.79964465,
+        "droop_mv": 0.355350128
+      },
+      "islands": [
+        {
+          "island_id": "vddr2#0",
+          "solved": true,
+          "unsolved_reason": null,
+          "worst_droop_mv": null,
+          "worst_node": null,
+          "total_current_a": null
+        }
+      ]
+    },
+    {
+      "net": "vddr3",
+      "pad_count": 1,
+      "instance_count": 1,
+      "current_a": 2.055e-05,
+      "solved_island_count": 1,
+      "unsolved_island_count": 0,
+      "worst_case_droop_mv": 0.303890582,
+      "worst_case_node": {
+        "net": "vddr3",
+        "island_id": "vddr3#0",
+        "node_id": "n264",
+        "layer": "met1",
+        "x_um": 198.505,
+        "y_um": 296.76,
+        "voltage_v": 1.799696109,
+        "droop_mv": 0.303890582
+      },
+      "islands": [
+        {
+          "island_id": "vddr3#0",
+          "solved": true,
+          "unsolved_reason": null,
+          "worst_droop_mv": null,
+          "worst_node": null,
+          "total_current_a": null
+        }
+      ]
+    },
+    {
+      "net": "vddr4",
+      "pad_count": 1,
+      "instance_count": 1,
+      "current_a": 2.055e-05,
+      "solved_island_count": 1,
+      "unsolved_island_count": 0,
+      "worst_case_droop_mv": 0.364416304,
+      "worst_case_node": {
+        "net": "vddr4",
+        "island_id": "vddr4#0",
+        "node_id": "n215",
+        "layer": "met1",
+        "x_um": 144.9725,
+        "y_um": 295.8675,
+        "voltage_v": 1.799635584,
+        "droop_mv": 0.364416304
+      },
+      "islands": [
+        {
+          "island_id": "vddr4#0",
+          "solved": true,
+          "unsolved_reason": null,
+          "worst_droop_mv": null,
+          "worst_node": null,
+          "total_current_a": null
+        }
+      ]
+    },
+    {
+      "net": "VPWR",
+      "pad_count": 0,
+      "instance_count": 0,
+      "current_a": 0.0,
+      "solved_island_count": 0,
+      "unsolved_island_count": 1,
+      "worst_case_droop_mv": null,
+      "worst_case_node": null,
+      "islands": [
+        {
+          "island_id": "VPWR#0",
+          "solved": false,
+          "unsolved_reason": "no_pad",
+          "worst_droop_mv": null,
+          "worst_node": null,
+          "total_current_a": null
+        }
+      ]
+    },
+    {
+      "net": "VGND",
+      "pad_count": 0,
+      "instance_count": 0,
+      "current_a": 0.0,
+      "solved_island_count": 0,
+      "unsolved_island_count": 1,
+      "worst_case_droop_mv": null,
+      "worst_case_node": null,
+      "islands": [
+        {
+          "island_id": "VGND#0",
+          "solved": false,
+          "unsolved_reason": "no_pad",
+          "worst_droop_mv": null,
+          "worst_node": null,
+          "total_current_a": null
+        }
+      ]
+    }
+  ],
+  "em_verdict_status": "not_checked",
+  "klt_status": "not_checked",
+  "warnings_unsolved": [
+    "14 island(s) have no pad and no modelled current, so they have no DC operating point and were not solved (first: 'vdd#1') -- see ir_drop_map.nets[].islands[].unsolved_reason for the full list"
+  ]
+}
