@@ -560,12 +560,17 @@ def summarize_lr(rows):
         ring = _tone_ring(r["tone"])
         key = (round(r["amp"] * 1e3, 3), ring, "+" if d > 0 else "-")
         st = r["metrics"]["tone"][ring - 1]["state"] if r["metrics"] else "unusable"
-        br.setdefault(key, []).append((round(abs(d) * 100, 4), st))
+        # effective detuning of the tone from the CLEAN ring in this window (the
+        # nominal ladder is relative to the committed combining-record period,
+        # which the clean ring here can differ from): clean drift / (N-1)
+        eff = (r["metrics"]["tone"][ring - 1]["clean_drift_cycles"] / (r.get("nedge", NEDGE) - 1) * 100
+               if r["metrics"] else None)
+        br.setdefault(key, []).append((round(abs(d) * 100, 4), st, eff))
     brackets = []
     for (amp, ring, side), pts in sorted(br.items()):
-        pts.sort()
-        lk = [d for d, s in pts if s == "LOCKED"]
-        fr = [d for d, s in pts if s == "free"]
+        pts.sort(key=lambda x: x[0])
+        lk = [d for d, s, _ in pts if s == "LOCKED"]
+        fr = [d for d, s, _ in pts if s == "free"]
         if not lk and fr:
             stmt = f"no lock at any tested detuning; lock range (if any) < {min(fr):g} %"
         elif lk and not [d for d in fr if d > max(lk)]:
@@ -578,7 +583,9 @@ def summarize_lr(rows):
         else:
             stmt = "no LOCKED/free reading at the tested detunings (unusable or COINCIDENT only)"
         brackets.append({"amp_mV": amp, "ring": ring, "side": side,
-                         "states": {f"{d:g}%": s for d, s in pts}, "bracket": stmt})
+                         "states": {f"{d:g}%": s for d, s, _ in pts},
+                         "eff_detune_pct": {f"{d:g}%": (None if e is None else round(e, 4)) for d, _, e in pts},
+                         "bracket": stmt})
     out["lock_brackets"] = brackets
     out["locked"] = [{"amp_mV": round(r["amp"] * 1e3), "tone": r["tone"], "ring": t["ring"],
                       "p_q": f"{t['p']}:{t['q']}", "drift_cycles": t["drift_cycles"],
@@ -734,10 +741,15 @@ def render_lr_md(rid, pvt, rows, summ, jobs, sha, now, inputs=None, history=None
          "ring are in `rows[].window`.", "",
          "## Measured brackets", "",
          "Only what the tested ladder shows (amplitudes 5, 20, 50 mV pk; detunings +-0.1, +-0.25, +-0.4 % at "
-         "20/50 mV and +-0.25 % at 5 mV). State of the ring the tone was placed next to:", "",
+         "20/50 mV and +-0.25 % at 5 mV), nominal detuning relative to the committed ring period; `eff` is the tone's "
+         "detuning from the CLEAN ring in this window (clean drift / (N-1)), which is what the drift criterion sees. "
+         "LOCKED means the mean slip stayed under 0.1 cycle over the window: a ring pulled to within the resolution but "
+         "still slipping slowly (just outside an Adler lock range) is indistinguishable here and reads LOCKED -- the "
+         "conservative direction for the LOCK criterion. State of the ring the tone was placed next to:", "",
          f"| amp (mV) | ring | side | states by detuning ({summ['nedge'][0]}-edge window) | measured bracket |", "|---|---|---|---|---|"]
     for b in summ["lock_brackets"]:
-        st = ", ".join(f"{k}: {v}" for k, v in b["states"].items())
+        st = ", ".join(f"{k}" + (f" (eff {b['eff_detune_pct'][k]:+.3f}%)" if b["eff_detune_pct"].get(k) is not None else "")
+                       + f": {v}" for k, v in b["states"].items())
         L.append(f"| {b['amp_mV']:g} | {b['ring']} | {b['side']} | {st} | {b['bracket']} |")
     L += ["",
           f"- Rows with any ring LOCKED to the tone: {len(summ['locked'])}. Largest locked detune per amplitude "
@@ -797,7 +809,10 @@ def render_lr_md(rid, pvt, rows, summ, jobs, sha, now, inputs=None, history=None
         if r["kind"] == "control" and r["metrics"] is None:
             L.append(f"| {r['tone']} | **{r['klt_status'].upper()}** | - | - | - |")
     L += ["", "## 200- vs 400-edge convergence subset (ring 2, +-0.25 % @ 50 mV)", "",
-          "| tone | amp (mV) | 200-edge state (drift cyc) | 400-edge state (drift cyc) | drift ratio (free-running: 2.005) | converged |",
+          "Converged = same state at both windows. The 400/200 drift ratio is 399/199 = 2.005 only for an unperturbed "
+          "ring; a pulled-but-unlocked ring slips non-uniformly within a beat period, so its ratio departs from that "
+          "without changing the state.", "",
+          "| tone | amp (mV) | 200-edge state (drift cyc) | 400-edge state (drift cyc) | drift ratio 400/200 | converged |",
           "|---|---|---|---|---|---|"]
     for c in summ["convergence_200_vs_400"]:
         L.append(f"| {c['tone']} | {c['amp_mV']} | {c['at_200_edges']['state']} ({c['at_200_edges']['drift_cycles']:+.2f}) | "
