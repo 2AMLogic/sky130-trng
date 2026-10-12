@@ -784,9 +784,11 @@ def render_lr_md(rid, pvt, rows, summ, jobs, sha, now, inputs=None, history=None
                  f"{max(abs(x) for x in m['shift_pct']):.3f} | {m['Q_ratio']:.4f} | {m['bias_xo']:.4f} ({r['bias_shift']:+.3f}) | {nf} | "
                  f"{'pass' if t3['LOCK'] else 'FAIL'} | {'pass' if t3['Q'] else 'FAIL'} | {'pass' if t3['BIAS'] else 'FAIL'} | {verdict} |")
     L += ["", "## Current-injection controls (ring 2, node n2)", "",
-          "The +5 % detuned control is clearly free-running by construction (a clean ring slips ~10 cycles over the "
-          "200-edge window), so only a true lock reads LOCKED there; it brackets the current-injection lock range next "
-          "to the #200 +2 % (locked) and +20 % (not locked) rungs.", "",
+          "Detector controls. At +2/+5/+20 % the CLEAN ring slips ~0.4/~10/~40 cycles against the injected tone over "
+          "the 200-edge window, so the clean run is the free-running reference and a LOCKED reading there can only be a "
+          "true injection lock (sensitivity); the own-frequency rows are COINCIDENT by construction. Whether the injected "
+          "ring stays free at a given detuning is the measurement, not an assumption (#200 already saw +20 % lock at "
+          "these injection levels).", "",
           "| tone | ring-2 state | drift (ring cycles) | clean drift | flagged |", "|---|---|---|---|---|"]
     for c in summ["controls"]:
         L.append(f"| {c['tone']} | {c['state']} | {c['drift_cycles']:+.3f} | {c['clean_drift_cycles']:+.3f} | "
@@ -846,7 +848,7 @@ LR_CLAIM = ("Lock-resolution follow-up on the same pre-layout ro_array_core (iss
             "subset; detuning ladder +-0.1 / +-0.25 / +-0.4 % on both sides of each ring's own frequency at 20 and "
             "50 mV pk (inside the #200 10-50 mV lock bracket) and +-0.25 % at 5 mV pk (below its 10 mV floor); "
             "on-frequency rows kept drift-UNRESOLVED and decided, where at all, by detuned neighbours and pull "
-            "evidence; current-injection controls including a clearly free-running +5 % detuned control; LOCK, Q "
+            "evidence; current-injection controls at own/+2/+5/+20 % detuning against the clean free-running reference; LOCK, Q "
             "and BIAS reported separately; deterministic, no injected noise, no entropy claim")
 PVTS = None
 

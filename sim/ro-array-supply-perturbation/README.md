@@ -48,9 +48,10 @@ Bounded matrix, per corner (ss/-40 C/1.62 V and ff/-40 C/1.98 V, same as #200):
 | `lr`  | 73 | 1 clean baseline; 8 on-frequency (f1..f4 x 20/50 mV); 48 detuned (f1..f4 x {+-0.1, +-0.25, +-0.4} % x 20/50 mV); 8 below the #200 10 mV floor (f1..f4 x {+-0.25} % x 5 mV); 8 current-injection controls (ring 2 x {1.00, 1.02, 1.05, 1.20} x 10/50 uA) |
 | `lrc` | 3 | 400-edge convergence subset: 1 baseline + ring 2 x {+-0.25} % @ 50 mV |
 
-The +5 % detuned current-injection control is clearly free-running by construction
-(a clean ring slips ~10 cycles over the window), bracketing the injection lock
-range next to #200's locked +2 % and unlocked +20 % rungs.
+Controls: the clean baseline at each window is the free-running reference; the
+current-injection rows add a +5 % rung between #200's +2 % and +20 % ones. At +5 %
+the clean ring slips ~10 cycles over the window, so only a true injection lock can
+read LOCKED there; whether the injected ring stays free is measured, not assumed.
 
 Run it (requests only; `KLT_SIM_BACKEND=batch` sends them to the fleet):
 

@@ -26,7 +26,7 @@ Groups per corner:
 
 Issue #288 lock-resolution campaign (--campaign lock-resolution): groups lr (200-edge
 windows, +-0.1/0.25/0.4 % detuning ladder at 20/50 mV plus 5 mV, on-frequency rows,
-current-injection controls incl. a clearly free-running +5 % detuned control) and lrc
+current-injection controls incl. a +5 % detuned rung) and lrc
 (400-edge convergence subset); see README.md for the matrix and the resolution
 derivation. The enable pulse is parameterized (@@ENW@@/@@ENP@@): legacy decks expand
 to the identical 1u/2u literals, the campaign holds the enable high 3 us.
@@ -79,8 +79,8 @@ CTL_RING = 2
 #   lr   1 baseline + 8 on-frequency (f1..f4 x 20/50 mV) + 48 detuned
 #        (f1..f4 x {+-0.1, +-0.25, +-0.4} % x 20/50 mV) + 8 detuned below the old
 #        10 mV floor (f1..f4 x {+-0.25} % x 5 mV) + 8 current-injection controls
-#        (ring 2 x {1.00, 1.02, 1.05, 1.20} x 10/50 uA; +5 % is the clearly
-#        free-running detuned control)                        = 73 units
+#        (ring 2 x {1.00, 1.02, 1.05, 1.20} x 10/50 uA; at +5 % the clean
+#        ring slips ~10 cycles, so only a true lock reads LOCKED) = 73 units
 #   lrc  400-edge convergence subset: 1 baseline + ring 2 x {+-0.25} % @ 50 mV
 #                                                             = 3 units
 LR = "lock-resolution"
