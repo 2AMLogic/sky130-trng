@@ -10,11 +10,18 @@ Judge-approved PRs stuck under a `loom:operator` merge-risk hold — implementat
 - **#218**: ci: run volume-model and ripple-reduction tests in PR-blocking job
 - **#286**: Guard active SDF signoff evidence against changed simulation inputs
 
-## Operator Priority
+## Very Important
 
-Issues the operator starred (`loom:operator-priority`); land these first.
+`loom:very-important` (one counts per workspace); every stage takes these first.
 
 _None._
+
+## Important
+
+`loom:important`; taken before unlabelled work.
+
+- **#174**: Whole-block characterization: post-layout PVT, dynamic power and IR evidence
+- **#307**: Whole-block 12-point PVT matrix: run on the klt batch fleet once the runner image matches the client (follow-up of #174)
 
 ## Ready
 
@@ -27,8 +34,7 @@ Human-approved issues ready for implementation (`loom:issue`).
 
 Issues currently being built (`loom:building`).
 
-- **#174**: Whole-block characterization: post-layout PVT, dynamic power and IR evidence
-- **#288**: Resolve near-frequency supply injection-lock brackets with longer observation windows
+_None._
 
 ## PRs Awaiting Review
 
@@ -52,7 +58,7 @@ Issues carrying `loom:curated`.
 - **#217**: CI: run test_raw_bit_volume_model and test_ripple_reduction in the PR-blocking lint job *(curated)*
 - **#221**: Decision record request: local mismatch can cap tt raw-bit H below DR-0004's 0.5 floor; adjacent rings approach 1:1 *(curated)*
 - **#230**: CI: guard that every test_*.py is wired into a CI workflow and path filter *(curated)*
-- **#288**: Resolve near-frequency supply injection-lock brackets with longer observation windows *(curated)*
+- **#285**: Guard active SDF signoff evidence against changed simulation inputs *(curated)*
 - **#289**: Extend seeded transistor raw-bit model cross-checks beyond nominal PVT *(curated)*
 
 ## Proposed (Architect / Hermit)
@@ -66,12 +72,13 @@ Issues carrying `loom:curated`.
 
 ## Backlog Balance
 
-| Tier | Count |
+| Bucket | Count |
 |------|-------|
 | Operator merge-risk holds | 2 |
-| Operator priority | 0 |
+| Very important | 0 |
+| Important | 2 |
 | Ready (`loom:issue`) | 2 |
-| In Progress (`loom:building`) | 2 |
+| In Progress (`loom:building`) | 0 |
 | PRs awaiting review | 0 |
 | Approved PRs awaiting merge | 2 |
 | Curated | 7 |

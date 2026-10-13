@@ -4,6 +4,8 @@ Chronological record of recently merged pull requests and closed issues.
 
 ### 2026-10-12
 
+- **PR #311**: feat(sim): lock-resolution campaign for the supply-ripple evidence (#288)
+- **Issue #288** (closed): Resolve near-frequency supply injection-lock brackets with longer observation windows
 - **PR #309**: Whole-block characterization attempt: partial static IR, 12-point matrix explicitly Unmet (Part of #174)
 - **PR #306**: ci(pdk-nightly): record nightly failures on loom-ui
 
