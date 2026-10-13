@@ -2,6 +2,11 @@
 
 Chronological record of recently merged pull requests and closed issues.
 
+### 2026-10-12
+
+- **PR #309**: Whole-block characterization attempt: partial static IR, 12-point matrix explicitly Unmet (Part of #174)
+- **PR #306**: ci(pdk-nightly): record nightly failures on loom-ui
+
 ### 2026-10-11
 
 - **PR #303**: Whole-block verify: informational density and naive antenna-ratio estimates (#283)
