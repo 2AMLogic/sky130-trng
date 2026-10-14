@@ -1014,6 +1014,20 @@ def emit_record(reqdir, sha=None):
                                                             any(c["flagged"] for c in summ.get("controls", []))))
 
 
+def _replay_equal(a, b, rel=1e-9):
+    """Structural equality where floats match to `rel` (relative) instead of bit-for-bit.
+    Python 3.12 made float `sum()` compensated, so a record emitted on 3.12 replays
+    1-ulp different on 3.11 (the CI interpreter); anything above 1e-9 is a real change."""
+    if isinstance(a, float) or isinstance(b, float):
+        return (isinstance(a, (int, float)) and isinstance(b, (int, float)) and not isinstance(a, bool)
+                and not isinstance(b, bool) and (a == b or math.isclose(a, b, rel_tol=rel, abs_tol=1e-12)))
+    if isinstance(a, dict) and isinstance(b, dict):
+        return a.keys() == b.keys() and all(_replay_equal(a[k], b[k], rel) for k in a)
+    if isinstance(a, list) and isinstance(b, list):
+        return len(a) == len(b) and all(_replay_equal(x, y, rel) for x, y in zip(a, b))
+    return a == b
+
+
 def check(recpath):
     """Replay a record from its committed raw responses (and, for campaign
     records, the committed `*.missing.json` notes); exit 1 on any difference."""
@@ -1033,7 +1047,8 @@ def check(recpath):
         summ = summarize_lr(rows)
     else:
         summ = summarize(rows, rec["pvt"]["vnom"], (0.010, 0.050))
-    same = json.loads(json.dumps(rows, default=str)) == rec["rows"] and json.loads(json.dumps(summ, default=str)) == rec["summary"]
+    same = (_replay_equal(json.loads(json.dumps(rows, default=str)), rec["rows"])
+            and _replay_equal(json.loads(json.dumps(summ, default=str)), rec["summary"]))
     print("replay", "MATCHES" if same else "DIFFERS", recpath)
     return 0 if same else 1
 
