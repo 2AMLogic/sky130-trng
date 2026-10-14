@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "engine": "icarus",
+  "hdl_toplevel": "trng_digital",
+  "testbench": "test_trng_digital_fv",
+  "status": "fail",
+  "test_count": 13,
+  "passed_count": 9,
+  "failed_count": 4,
+  "skipped_count": 0,
+  "tests": [
+    {
+      "name": "test_00_drive_program",
+      "status": "failed",
+      "sim_time_ns": 42400.0,
+      "real_time_s": 1.6090717315673828,
+      "error_type": "AssertionError",
+      "error_message": "observed 3815 cycles, stimulus has 4239: 424 observation(s) missing"
+    },
+    {
+      "name": "test_phase_01_post_reset_idle_id_parameter_reads",
+      "status": "passed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 4.267692565917969e-05
+    },
+    {
+      "name": "test_phase_02_sampling_disabled_raw_valid_high_but_ctrl_en_low",
+      "status": "passed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 2.86102294921875e-05
+    },
+    {
+      "name": "test_phase_03_enable_run_the_start_up_window_with_interleaved_",
+      "status": "passed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 0.00012135505676269531
+    },
+    {
+      "name": "test_phase_04_drain_the_raw_fifo_through_raw_data_pop_on_read",
+      "status": "passed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 1.52587890625e-05
+    },
+    {
+      "name": "test_phase_05_raw_streaming_port_out_ready_pops_while_sampling",
+      "status": "passed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 3.9577484130859375e-05
+    },
+    {
+      "name": "test_phase_06_simultaneous_register_pop_and_stream_pop_registe",
+      "status": "passed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 2.6464462280273438e-05
+    },
+    {
+      "name": "test_phase_07_out_mode_switch_to_conditioned_flushes_both_path",
+      "status": "passed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 0.00011324882507324219
+    },
+    {
+      "name": "test_phase_08_induce_an_rct_trip_with_a_stuck_source",
+      "status": "passed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 2.2649765014648438e-05
+    },
+    {
+      "name": "test_phase_09_gated_data_blocked_raw_data_still_readable",
+      "status": "passed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 2.3603439331054688e-05
+    },
+    {
+      "name": "test_phase_10_write_1_to_clear_then_re_run_the_start_up_test",
+      "status": "failed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 0.0005843639373779297,
+      "error_type": "AssertionError",
+      "error_message": "phase 'write-1-to-clear, then re-run the start-up test': 1005 observations for 1295 cycles"
+    },
+    {
+      "name": "test_phase_11_soft_rst_then_resume_sampling",
+      "status": "failed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 0.0007853507995605469,
+      "error_type": "AssertionError",
+      "error_message": "phase 'SOFT_RST, then resume sampling': 0 observations for 134 cycles"
+    },
+    {
+      "name": "test_zz_trace_length_exact",
+      "status": "failed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 0.00031256675720214844,
+      "error_type": "AssertionError",
+      "error_message": "trace lengths differ: observed 3815, model 4239, stimulus 4239"
+    }
+  ],
+  "coverage": null,
+  "trace": null,
+  "environment": {
+    "engine": "icarus",
+    "engine_version": "13.0",
+    "cocotb_version": "2.0.1",
+    "results_xml": "<work>/truncated-observations/.klt/functional-verification/results_icarus.xml",
+    "random_seed": 1,
+    "sdf": null
+  }
+}

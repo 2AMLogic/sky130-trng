@@ -12,7 +12,13 @@ Usage (from the repo root, with the pinned klt first on PATH or via --klt)::
 
     python3 layout/bin/verify-whole.py run          # DRC + extract + LVS + coverage -> verify/
     python3 layout/bin/verify-whole.py controls     # fault controls + baseline re-run -> verify/controls/
-    python3 layout/bin/verify-whole.py check        # isolated baseline re-run, diff vs committed
+    python3 layout/bin/verify-whole.py check        # audit + estimates drift + isolated baseline re-run, diff vs committed
+    python3 layout/bin/verify-whole.py check --audit-only   # DRC coverage audit drift only (seconds)
+    python3 layout/bin/verify-whole.py check --estimates-only   # physical-estimates drift only (seconds; #283)
+    python3 layout/bin/verify-whole.py audit        # regenerate the DRC coverage audit tables only
+    python3 layout/bin/verify-whole.py audit-controls   # DRC coverage audit controls -> verify/controls/
+    python3 layout/bin/verify-whole.py estimates    # informational density + naive antenna estimates -> verify/ (#283)
+    python3 layout/bin/verify-whole.py estimates-controls   # estimate calculator controls -> verify/controls/
     python3 layout/bin/verify-whole.py all          # run + controls
 
 ``run`` and ``controls`` take a few minutes each (``klt extract`` of the 8605
@@ -52,6 +58,8 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 from _klt_common import BuildError, run_klt, write_json  # noqa: E402
+import drc_coverage_audit as A  # noqa: E402
+import physical_estimates as PE  # noqa: E402
 import verify_whole_lib as V  # noqa: E402
 
 REPO_ROOT = HERE.parents[1]
@@ -59,6 +67,10 @@ SPEC_DIR = REPO_ROOT / "layout" / "trng_whole"
 VERIFY_DIR = SPEC_DIR / "verify"
 CONTROLS_DIR = VERIFY_DIR / "controls"
 TOP = "trng_whole"
+AUDIT_JSON = "drc_coverage_audit.json"
+AUDIT_MD = "drc_coverage_audit.md"
+AUDIT_CONTROLS_JSON = "drc_coverage_audit_controls.json"
+AUDIT_CONTROLS_MD = "drc_coverage_audit_controls.md"
 LEF_REL = "sky130A/libs.ref/sky130_fd_sc_hd/lef/sky130_fd_sc_hd.lef"
 SPICE_REL = "sky130A/libs.ref/sky130_fd_sc_hd/spice/sky130_fd_sc_hd.spice"
 REUSE = False  # set by --reuse-extract (debugging); refused when publishing
@@ -516,12 +528,18 @@ def coverage_matrix(inp: Inputs, run: dict, endpoint: dict, ref_facts: dict, drc
         {
             "id": "L9",
             "item": "curated DRC deck",
-            "status": "partial rule coverage",
+            "status": "partial rule coverage, audited",
             "detail": f"klt's curated sky130 deck checks {len(layers['rules_checked'])} rules on "
-            f"{len(layers['layers_checked'])} layers; {len(layers['layers_in_stream_without_rules'])} layer/datatype "
-            f"pairs in the stream have no rules and {len(layers['rules_skipped'])} deck rules are skipped (see drc.json "
-            "coverage). Clean here is not foundry DRC clean: no antenna, density, seal-ring, latch-up or "
-            "foundry-only rules.",
+            f"{len(layers['layers_checked'])} layers. It reports {len(layers['rules_skipped'])} deck rules as not run "
+            "(coverage.inapplicable, reason no_applicable_geometry; legacy list rules_skipped), and "
+            f"{len(layers['layers_in_stream_without_rules'])} layer/datatype pairs in the stream have no rules. "
+            f"{AUDIT_MD} / {AUDIT_JSON} (issue #281) check both lists against the flattened stream on the pinned "
+            "deck. Table 1 gives each not-run rule's check kind, deck layers, per-layer shape counts, klt's reason and "
+            "a verdict (vacuous-confirmed / residual / unresolved). Table 2 gives each unruled layer's shape and text "
+            "counts and a verdict (present-unruled / text-or-marker-only); present-unruled layers are a residual gap, "
+            "drawn and unchecked. verify-whole.py check fails if either table drifts from the stream, the layer map or "
+            "the deck hash. Clean here is not foundry DRC clean: no foundry sign-off runset, and no antenna, density, "
+            "seal-ring, latch-up or foundry-only rules.",
         },
         {
             "id": "L10",
@@ -796,6 +814,7 @@ def build_baseline(args, workdir: Path) -> dict:
         raise BuildError("trng_whole.gds changed during verification")
     return {
         "inp": inp,
+        "klt": args.klt,
         "env": env,
         "pdk_root": pdk_root,
         "pins": pins,
@@ -930,6 +949,8 @@ def publish_baseline(b: dict) -> None:
         leftovers += [f"{name}: {h}" for h in host_path_hits(text)]
     if leftovers:
         raise BuildError("host paths remain in committed evidence:\n  " + "\n  ".join(leftovers[:10]))
+    # the coverage audit reads the drc.json just written, so it always describes this run
+    publish_audit(compute_audit(b["klt"], b["env"]))
 
 
 def scrub_host(text: str, pdk_root: str) -> str:
@@ -1439,6 +1460,145 @@ def publish_controls(summary: dict, pdk_root: str) -> None:
 
 
 # --------------------------------------------------------------------------
+# DRC coverage audit (issue #281)
+# --------------------------------------------------------------------------
+
+
+def klt_layers_doc(klt: str, env: dict[str, str], gds: Path, top: str) -> dict:
+    return run_klt(["layers", str(gds), "--top", top, "--flattened", "--include-text"], env=env, klt=klt)
+
+
+def pinned_deck_rules(klt: str, env: dict[str, str]) -> dict:
+    return run_klt(["deck", "rules", "--deck", "sky130"], env=env, klt=klt)
+
+
+def compute_audit(klt: str, env: dict[str, str]) -> dict:
+    """Audit the committed drc.json's not-run rules and unruled layers against
+    the committed stream. Raises A.AuditError on a deck-hash mismatch."""
+    gds = SPEC_DIR / "trng_whole.gds"
+    drc_path = VERIFY_DIR / "drc.json"
+    if not drc_path.is_file():
+        raise BuildError(f"no {rel(drc_path)} to audit -- run `verify-whole.py run` first")
+    drc = load_json(drc_path)
+    pinned = A.pinned_deck_hash(drc)
+    deck_rules = pinned_deck_rules(klt, env)
+    A.require_pinned(deck_rules.get("content_hash"), pinned, f"{klt} deck rules --deck sky130")
+    return A.build_audit(
+        drc_report=drc,
+        deck_rules=deck_rules,
+        layer_table=A.load_deck_layer_table(),
+        layers_doc=klt_layers_doc(klt, env, gds, TOP),
+        gds_sha256=sha256_file(gds),
+        gds_rel=rel(gds),
+        drc_rel=rel(drc_path),
+        top=TOP,
+    )
+
+
+def publish_audit(doc: dict) -> None:
+    if not doc["inputs"]["drc_report_input_matches_gds"]:
+        raise BuildError("drc.json was not produced from the committed trng_whole.gds; refusing to publish an audit of a stale report")
+    VERIFY_DIR.mkdir(parents=True, exist_ok=True)
+    (VERIFY_DIR / AUDIT_JSON).write_text(A.dumps(doc))
+    (VERIFY_DIR / AUDIT_MD).write_text(A.markdown(doc))
+    leftovers = host_path_hits((VERIFY_DIR / AUDIT_JSON).read_text() + (VERIFY_DIR / AUDIT_MD).read_text())
+    if leftovers:
+        raise BuildError(f"host paths in the coverage audit: {leftovers[:5]}")
+
+
+def audit_check(klt: str, env: dict[str, str]) -> list[str]:
+    """Drift between the committed audit tables and a fresh audit."""
+    path = VERIFY_DIR / AUDIT_JSON
+    if not path.is_file():
+        return [f"{AUDIT_JSON} is missing (run `verify-whole.py audit`)"]
+    fresh = compute_audit(klt, env)
+    drifts = A.drift(load_json(path), fresh)
+    md = VERIFY_DIR / AUDIT_MD
+    if not md.is_file() or md.read_text() != A.markdown(fresh):
+        drifts.append(f"{AUDIT_MD} differs from the regenerated table")
+    if not fresh["inputs"]["drc_report_input_matches_gds"]:
+        drifts.append("drc.json input hash does not match trng_whole.gds")
+    return [f"coverage audit: {d}" for d in drifts]
+
+
+def audit_controls(klt: str, env: dict[str, str]) -> dict:
+    """Controls 1-5 on synthetic GDS fixtures, counted by the real klt."""
+    drc = load_json(VERIFY_DIR / "drc.json")
+    rules = pinned_deck_rules(klt, env)
+    A.require_pinned(rules.get("content_hash"), A.pinned_deck_hash(drc), f"{klt} deck rules --deck sky130")
+    table = A.load_deck_layer_table()
+    with tempfile.TemporaryDirectory(prefix="verify-whole-audit-controls-") as tmp:
+        n = [0]
+
+        def count_fn(spec: dict, extra: dict | None) -> dict:
+            n[0] += 1
+            gds = Path(tmp) / f"fixture-{n[0]}.gds"
+            A.write_fixture(gds, spec, extra)
+            return klt_layers_doc(klt, env, gds, A.CONTROL_TOP)
+
+        return A.run_controls(real_drc=drc, real_rules=rules, table=table, count_fn=count_fn)
+
+
+def publish_audit_controls(summary: dict) -> None:
+    CONTROLS_DIR.mkdir(parents=True, exist_ok=True)
+    (CONTROLS_DIR / AUDIT_CONTROLS_JSON).write_text(A.dumps(summary))
+    (CONTROLS_DIR / AUDIT_CONTROLS_MD).write_text(
+        A.controls_markdown(summary, "`klt layers --flattened --include-text` on each fixture GDS written with klayout.db")
+    )
+
+
+# --------------------------------------------------------------------------
+# physical estimates (issue #283): informational density + naive antenna
+# --------------------------------------------------------------------------
+
+
+def compute_estimates() -> dict:
+    """Fresh whole-block density + naive antenna-ratio document from the
+    committed GDS and the committed extraction. Needs the klayout python
+    module but no klt run and no PDK. Raises PE.EstimateError on a
+    definition-level refusal (missing layer mapping, bad top cell)."""
+    gds = SPEC_DIR / "trng_whole.gds"
+    extract = VERIFY_DIR / "extract.json.gz"
+    for path in (gds, extract):
+        if not path.is_file():
+            raise BuildError(f"no {rel(path)} -- the estimates read committed evidence, run their "
+                             "generating commands first")
+    return PE.compute(gds, extract, top=TOP, layer_table=A.load_deck_layer_table(),
+                      extract_rel=rel(extract), gds_rel=rel(gds))
+
+
+def publish_estimates(doc: dict) -> None:
+    VERIFY_DIR.mkdir(parents=True, exist_ok=True)
+    (VERIFY_DIR / PE.JSON_NAME).write_text(PE.dumps(doc))
+    (VERIFY_DIR / PE.MD_NAME).write_text(PE.markdown(doc))
+    leftovers = host_path_hits((VERIFY_DIR / PE.JSON_NAME).read_text() + (VERIFY_DIR / PE.MD_NAME).read_text())
+    if leftovers:
+        raise BuildError(f"host paths in the physical estimates: {leftovers[:5]}")
+
+
+def estimates_check() -> list[str]:
+    """Drift between the committed estimates and a fresh computation. A
+    check computes in memory and never republishes the committed files."""
+    path = VERIFY_DIR / PE.JSON_NAME
+    if not path.is_file():
+        return [f"{PE.JSON_NAME} is missing (run `verify-whole.py estimates`)"]
+    fresh = compute_estimates()
+    drifts = PE.drift(load_json(path), fresh)
+    md = VERIFY_DIR / PE.MD_NAME
+    if not md.is_file() or md.read_text() != PE.markdown(fresh):
+        drifts.append(f"{PE.MD_NAME} differs from the regenerated table")
+    if not fresh["inputs"]["gate_source_matches_gds"]:
+        drifts.append("extract.json.gz input hash does not match trng_whole.gds (stale gate source)")
+    return [f"physical estimates: {d}" for d in drifts]
+
+
+def publish_estimates_controls(summary: dict) -> None:
+    CONTROLS_DIR.mkdir(parents=True, exist_ok=True)
+    (CONTROLS_DIR / PE.CONTROLS_JSON).write_text(A.dumps(summary))
+    (CONTROLS_DIR / PE.CONTROLS_MD).write_text(PE.controls_markdown(summary))
+
+
+# --------------------------------------------------------------------------
 # check
 # --------------------------------------------------------------------------
 
@@ -1447,10 +1607,32 @@ def check(args) -> int:
     if not VERIFY_DIR.joinpath("verify.json").is_file():
         raise BuildError("no committed layout/trng_whole/verify/verify.json -- run `verify-whole.py run` first")
     committed = load_json(VERIFY_DIR / "verify.json")
+    # each --*-only flag scopes the check to its own drift gate and skips the
+    # others entirely (the audit refuses to run at all on a deck other than
+    # the pinned one, so the estimates-only path must not depend on it)
+    if args.audit_only:
+        audit_drifts = audit_check(args.klt, klt_env(os.environ.get("PDK_ROOT")))
+        if audit_drifts:
+            print("DRIFT in: " + "; ".join(audit_drifts))
+            return 1
+        print("verify-whole check --audit-only: DRC coverage audit reproduced")
+        return 0
+    if args.estimates_only:
+        estimate_drifts = estimates_check()
+        if estimate_drifts:
+            print("DRIFT in: " + "; ".join(estimate_drifts))
+            return 1
+        print("verify-whole check --estimates-only: physical estimates reproduced")
+        return 0
+    # the coverage audit first: seconds, and it refuses (naming both hashes) on a deck other than the pinned one
+    audit_drifts = audit_check(args.klt, klt_env(os.environ.get("PDK_ROOT")))
+    # the physical estimates next: also seconds (klayout geometry, no klt run),
+    # and deliberately part of the same drift gate as the audit (issue #283)
+    estimate_drifts = estimates_check()
     with tempfile.TemporaryDirectory(prefix="verify-whole-check-") as tmp:
         b = build_baseline(args, Path(tmp))
         fresh = verify_report(b)
-        drifts = []
+        drifts = list(audit_drifts) + list(estimate_drifts)
         for key in ("inputs_sha256", "reference", "verdict"):
             if committed[key] != fresh[key]:
                 drifts.append(key)
@@ -1477,7 +1659,7 @@ def check(args) -> int:
             note.append("raw extracted netlist hash differs (anonymous $N numbering is not stable across hosts); "
                         "compared the structural fields instead")
     if drifts:
-        print("DRIFT in: " + ", ".join(drifts))
+        print("DRIFT in: " + "; ".join(drifts))
         return 1
     print("verify-whole check: committed evidence reproduced" + (" (" + "; ".join(note) + ")" if note else ""))
     return 0
@@ -1490,9 +1672,13 @@ def check(args) -> int:
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
-    ap.add_argument("command", choices=["run", "controls", "check", "all"])
+    ap.add_argument("command", choices=["run", "controls", "check", "all", "audit", "audit-controls",
+                                        "estimates", "estimates-controls"])
     ap.add_argument("--klt", default=shutil.which("klt") or "klt")
     ap.add_argument("--allow-tool-drift", action="store_true")
+    ap.add_argument("--audit-only", action="store_true", help="check: only the DRC coverage audit drift (no DRC/extract/LVS re-run)")
+    ap.add_argument("--estimates-only", action="store_true",
+                    help="check: only the physical-estimates drift (no audit, no DRC/extract/LVS re-run; issue #283)")
     ap.add_argument("--only", action="append", help="run only this control id (repeatable)")
     ap.add_argument("--no-publish", action="store_true", help="run and report but write nothing under layout/ (debugging)")
     ap.add_argument("--workdir", help="keep scratch output here (debugging; not deleted)")
@@ -1510,6 +1696,38 @@ def main(argv: list[str] | None = None) -> int:
     try:
         if args.command == "check":
             return check(args)
+        if args.command in ("audit", "audit-controls"):
+            env = klt_env(os.environ.get("PDK_ROOT"))
+            if args.command == "audit":
+                doc = compute_audit(args.klt, env)
+                if not args.no_publish:
+                    publish_audit(doc)
+                print(f"audit: rules {doc['summary']['rules_by_verdict']}, unruled layers {doc['summary']['unruled_by_verdict']}")
+                return 0
+            summary = audit_controls(args.klt, env)
+            if not args.no_publish:
+                publish_audit_controls(summary)
+            for r in summary["controls"]:
+                print(f"  {r['id']}: passed={r['passed']}")
+            print(f"audit-controls: all_passed={summary['all_passed']}")
+            return 0 if summary["all_passed"] else 1
+        if args.command == "estimates":
+            doc = compute_estimates()
+            if not args.no_publish:
+                publish_estimates(doc)
+            print(f"estimates: {doc['density']['windows_total']} windows x {len(doc['density']['layers'])} layers; "
+                  f"{len(doc['antenna']['nets'])} antenna nets rated "
+                  f"({doc['coverage']['gate_area']['gate_nets_without_conductor_geometry']} gate nets without "
+                  f"conductor geometry)")
+            return 0
+        if args.command == "estimates-controls":
+            summary = PE.run_controls()
+            if not args.no_publish:
+                publish_estimates_controls(summary)
+            for r in summary["controls"]:
+                print(f"  {r['id']}: passed={r['passed']}")
+            print(f"estimates-controls: all_passed={summary['all_passed']}")
+            return 0 if summary["all_passed"] else 1
         import contextlib  # noqa: PLC0415
 
         ctx = contextlib.nullcontext(args.workdir) if args.workdir else tempfile.TemporaryDirectory(prefix="verify-whole-")
@@ -1532,7 +1750,7 @@ def main(argv: list[str] | None = None) -> int:
                 if not summary["all_detected"] or summary["baseline_rerun_after_controls"]["status"] != "match":
                     return 1
         return 0
-    except BuildError as exc:
+    except (BuildError, A.AuditError, PE.EstimateError) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 1
 

@@ -1,0 +1,36 @@
+<testsuites name="results">
+  <testsuite name="all" package="all">
+    <property name="random_seed" value="1" />
+    <testcase name="test_00_drive_program" classname="test_trng_digital_fv" file="./digital/tb/cocotb/test_trng_digital_fv.py" lineno="184" time="7.682140827178955" sim_time_ns="84800000.0" ratio_time="11038589.620745128" />
+    <testcase name="test_phase_01_post_reset_idle_id_parameter_reads" classname="test_trng_digital_fv" file="./digital/tb/cocotb/test_trng_digital_fv.py" lineno="195" time="2.3603439331054688e-05" sim_time_ns="0.0" ratio_time="0.0" />
+    <testcase name="test_phase_02_sampling_disabled_raw_valid_high_but_ctrl_en_low" classname="test_trng_digital_fv" file="./digital/tb/cocotb/test_trng_digital_fv.py" lineno="195" time="1.7642974853515625e-05" sim_time_ns="0.0" ratio_time="0.0" />
+    <testcase name="test_phase_03_enable_run_the_start_up_window_with_interleaved_" classname="test_trng_digital_fv" file="./digital/tb/cocotb/test_trng_digital_fv.py" lineno="195" time="0.0007274150848388672" sim_time_ns="0.0" ratio_time="0.0">
+      <failure error_type="AssertionError" error_msg="phase 'enable, run the start-up window with interleaved STATUS reads': 1075/1089 cycles differ from the model, first at cycle 100: dut='00000006 1 80000000 0 1 0' model='00000006 0 00000000 0 1 0'" />
+    </testcase>
+    <testcase name="test_phase_04_drain_the_raw_fifo_through_raw_data_pop_on_read" classname="test_trng_digital_fv" file="./digital/tb/cocotb/test_trng_digital_fv.py" lineno="195" time="0.00033926963806152344" sim_time_ns="0.0" ratio_time="0.0">
+      <failure error_type="AssertionError" error_msg="phase 'drain the raw FIFO through RAW_DATA (pop-on-read)': 9/12 cycles differ from the model, first at cycle 1175: dut='0001241d 1 80000000 0 0 1' model='0001040d 1 bd70d1a4 0 0 1'" />
+    </testcase>
+    <testcase name="test_phase_05_raw_streaming_port_out_ready_pops_while_sampling" classname="test_trng_digital_fv" file="./digital/tb/cocotb/test_trng_digital_fv.py" lineno="195" time="5.7220458984375e-05" sim_time_ns="0.0" ratio_time="0.0" />
+    <testcase name="test_phase_06_simultaneous_register_pop_and_stream_pop_registe" classname="test_trng_digital_fv" file="./digital/tb/cocotb/test_trng_digital_fv.py" lineno="195" time="0.0005993843078613281" sim_time_ns="0.0" ratio_time="0.0">
+      <failure error_type="AssertionError" error_msg="phase 'simultaneous register pop and stream pop (register wins)': 122/136 cycles differ from the model, first at cycle 1457: dut='00000000 1 80c08411 0 0 1' model='00000000 0 00000000 0 0 1'" />
+    </testcase>
+    <testcase name="test_phase_07_out_mode_switch_to_conditioned_flushes_both_path" classname="test_trng_digital_fv" file="./digital/tb/cocotb/test_trng_digital_fv.py" lineno="195" time="0.0003230571746826172" sim_time_ns="0.0" ratio_time="0.0">
+      <failure error_type="AssertionError" error_msg="phase 'OUT_MODE switch to conditioned (flushes both paths)': 529/1035 cycles differ from the model, first at cycle 1579: dut='00c08410 0 00000000 0 0 1' model='00000000 1 77f083da 0 0 1'" />
+    </testcase>
+    <testcase name="test_phase_08_induce_an_rct_trip_with_a_stuck_source" classname="test_trng_digital_fv" file="./digital/tb/cocotb/test_trng_digital_fv.py" lineno="195" time="0.0002193450927734375" sim_time_ns="0.0" ratio_time="0.0">
+      <failure error_type="AssertionError" error_msg="phase 'induce an RCT trip with a stuck source': 2/88 cycles differ from the model, first at cycle 2693: dut='00000000 0 00000000 1 1 1' model='00000000 0 00000000 0 0 1'" />
+    </testcase>
+    <testcase name="test_phase_09_gated_data_blocked_raw_data_still_readable" classname="test_trng_digital_fv" file="./digital/tb/cocotb/test_trng_digital_fv.py" lineno="195" time="0.0001842975616455078" sim_time_ns="0.0" ratio_time="0.0">
+      <failure error_type="AssertionError" error_msg="phase 'gated: DATA blocked, RAW_DATA still readable': 7/108 cycles differ from the model, first at cycle 2800: dut='c0c48498 0 00000000 1 1 0' model='c53a387f 0 00000000 1 1 0'" />
+    </testcase>
+    <testcase name="test_phase_10_write_1_to_clear_then_re_run_the_start_up_test" classname="test_trng_digital_fv" file="./digital/tb/cocotb/test_trng_digital_fv.py" lineno="195" time="0.0003306865692138672" sim_time_ns="0.0" ratio_time="0.0">
+      <failure error_type="AssertionError" error_msg="phase 'write-1-to-clear, then re-run the start-up test': 902/1295 cycles differ from the model, first at cycle 2810: dut='40400800 0 00000000 1 1 0' model='6ddd177c 0 00000000 1 1 0'" />
+    </testcase>
+    <testcase name="test_phase_11_soft_rst_then_resume_sampling" classname="test_trng_digital_fv" file="./digital/tb/cocotb/test_trng_digital_fv.py" lineno="195" time="0.0002353191375732422" sim_time_ns="0.0" ratio_time="0.0">
+      <failure error_type="AssertionError" error_msg="phase 'SOFT_RST, then resume sampling': 119/134 cycles differ from the model, first at cycle 4105: dut='00012419 1 e9e5d2c2 0 0 1' model='00010409 0 00000000 0 0 1'" />
+    </testcase>
+    <testcase name="test_zz_trace_length_exact" classname="test_trng_digital_fv" file="./digital/tb/cocotb/test_trng_digital_fv.py" lineno="219" time="0.00023889541625976562" sim_time_ns="0.0" ratio_time="0.0">
+      <failure error_type="AssertionError" error_msg="full trace differs from the model" />
+    </testcase>
+  </testsuite>
+</testsuites>

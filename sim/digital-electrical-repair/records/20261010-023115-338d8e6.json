@@ -1,0 +1,271 @@
+{
+ "record_id": "20261010-023115-338d8e6",
+ "timestamp_utc": "2026-10-10T02:31:15.307219+00:00",
+ "repo_sha": "338d8e6",
+ "issue": 236,
+ "runs": {
+  "control": {
+   "dir": "sim/digital-electrical-repair/runs/20261010-control/control",
+   "candidate_verdict": "not clean: final-route violations",
+   "est_totals": {
+    "max_slew": 1130,
+    "max_capacitance": 37
+   },
+   "final_totals": {
+    "max_slew": 1512,
+    "max_capacitance": 50
+   },
+   "chain": {
+    "drc": true,
+    "lvs": true,
+    "sta": true,
+    "cosim": true,
+    "negative_controls": true
+   },
+   "cost": {
+    "die_area_um2": 60049.5,
+    "core_area_um2": 54877.6,
+    "utilization_pct": 42.6334,
+    "wirelength_um": 66327,
+    "worst_slack_ns": 15993,
+    "worst_setup_slack_ns": 15947.6,
+    "worst_hold_slack_ns": 0.28546,
+    "clock_skew_ns": 0.02665,
+    "setup_violation_count": 0,
+    "hold_violation_count": 0,
+    "route_drc_violation_count": 0,
+    "antenna_violation_count": 0,
+    "stdcell_instance_area_um2": 23396.2,
+    "instances_total": 8605,
+    "instances_logic_and_buffers": 2321,
+    "instances_by_name_prefix": {
+     "FILLER": 5580,
+     "synth": 2166,
+     "TAP_TAPCELL_ROW": 704,
+     "clkload": 56,
+     "place": 23,
+     "ANTENNA": 1,
+     "clkbuf_0_clk": 1,
+     "clkbuf_3_0__f_clk": 1,
+     "clkbuf_3_1__f_clk": 1,
+     "clkbuf_3_2__f_clk": 1,
+     "clkbuf_3_3__f_clk": 1,
+     "clkbuf_3_4__f_clk": 1
+    },
+    "repair_inserted_buffers_by_prefix": {
+     "input": 0,
+     "output": 0,
+     "place": 23,
+     "rebuffer": 0,
+     "wire": 0,
+     "max_cap": 0,
+     "split": 0,
+     "clkbuf": 75,
+     "clkload": 56,
+     "fanout": 0,
+     "max_length": 0
+    }
+   }
+  },
+  "slew0531": {
+   "dir": "sim/digital-electrical-repair/runs/20261010-cand1/slew0531",
+   "candidate_verdict": "clean candidate (final-route audit, all expected corners)",
+   "est_totals": {
+    "max_slew": 0,
+    "max_capacitance": 0
+   },
+   "final_totals": {
+    "max_slew": 0,
+    "max_capacitance": 0
+   },
+   "chain": {
+    "drc": true,
+    "lvs": true,
+    "sta": true,
+    "cosim": true,
+    "negative_controls": true
+   },
+   "cost": {
+    "die_area_um2": 60049.5,
+    "core_area_um2": 54877.6,
+    "utilization_pct": 43.7346,
+    "wirelength_um": 67149,
+    "worst_slack_ns": 15994.2,
+    "worst_setup_slack_ns": 15958.4,
+    "worst_hold_slack_ns": 0.2838,
+    "clock_skew_ns": 0.0794,
+    "setup_violation_count": 0,
+    "hold_violation_count": 0,
+    "route_drc_violation_count": 0,
+    "antenna_violation_count": 0,
+    "stdcell_instance_area_um2": 24000.5,
+    "instances_total": 8562,
+    "instances_logic_and_buffers": 2389,
+    "instances_by_name_prefix": {
+     "FILLER": 5469,
+     "synth": 2166,
+     "TAP_TAPCELL_ROW": 704,
+     "place": 90,
+     "clkload": 59,
+     "ANTENNA": 1,
+     "clkbuf_0_clk": 1,
+     "clkbuf_3_0__f_clk": 1,
+     "clkbuf_3_1__f_clk": 1,
+     "clkbuf_3_2__f_clk": 1,
+     "clkbuf_3_3__f_clk": 1,
+     "clkbuf_3_4__f_clk": 1
+    },
+    "repair_inserted_buffers_by_prefix": {
+     "input": 0,
+     "output": 0,
+     "place": 90,
+     "rebuffer": 0,
+     "wire": 0,
+     "max_cap": 0,
+     "split": 0,
+     "clkbuf": 73,
+     "clkload": 59,
+     "fanout": 0,
+     "max_length": 0
+    }
+   }
+  },
+  "slew0531-cap034": {
+   "dir": "sim/digital-electrical-repair/runs/20261010-cand1/slew0531-cap034",
+   "candidate_verdict": "clean candidate (final-route audit, all expected corners)",
+   "est_totals": {
+    "max_slew": 0,
+    "max_capacitance": 0
+   },
+   "final_totals": {
+    "max_slew": 0,
+    "max_capacitance": 0
+   },
+   "chain": {
+    "drc": true,
+    "lvs": true,
+    "sta": true,
+    "cosim": true,
+    "negative_controls": true
+   },
+   "cost": {
+    "die_area_um2": 60049.5,
+    "core_area_um2": 54877.6,
+    "utilization_pct": 46.5299,
+    "wirelength_um": 71077,
+    "worst_slack_ns": 15993.1,
+    "worst_setup_slack_ns": 15951.4,
+    "worst_hold_slack_ns": 0.28814,
+    "clock_skew_ns": 0.05503,
+    "setup_violation_count": 0,
+    "hold_violation_count": 0,
+    "route_drc_violation_count": 0,
+    "antenna_violation_count": 0,
+    "stdcell_instance_area_um2": 25534.5,
+    "instances_total": 8823,
+    "instances_logic_and_buffers": 2651,
+    "instances_by_name_prefix": {
+     "FILLER": 5468,
+     "synth": 2166,
+     "TAP_TAPCELL_ROW": 704,
+     "max_cap": 232,
+     "place": 97,
+     "clkload": 57,
+     "wire": 19,
+     "ANTENNA": 5,
+     "clkbuf_0_clk": 1,
+     "clkbuf_3_0__f_clk": 1,
+     "clkbuf_3_1__f_clk": 1,
+     "clkbuf_3_2__f_clk": 1
+    },
+    "repair_inserted_buffers_by_prefix": {
+     "input": 0,
+     "output": 0,
+     "place": 97,
+     "rebuffer": 0,
+     "wire": 19,
+     "max_cap": 232,
+     "split": 0,
+     "clkbuf": 75,
+     "clkload": 57,
+     "fanout": 0,
+     "max_length": 0
+    }
+   }
+  },
+  "slew0700": {
+   "dir": "sim/digital-electrical-repair/runs/20261010-cand2/slew0700",
+   "candidate_verdict": "not clean: final-route violations",
+   "est_totals": {
+    "max_slew": 6,
+    "max_capacitance": 0
+   },
+   "final_totals": {
+    "max_slew": 12,
+    "max_capacitance": 2
+   },
+   "chain": {
+    "drc": true,
+    "lvs": true,
+    "sta": true,
+    "cosim": true,
+    "negative_controls": true
+   },
+   "cost": {
+    "die_area_um2": 60049.5,
+    "core_area_um2": 54877.6,
+    "utilization_pct": 42.9822,
+    "wirelength_um": 65971,
+    "worst_slack_ns": 15994.1,
+    "worst_setup_slack_ns": 15956.3,
+    "worst_hold_slack_ns": 0.28148,
+    "clock_skew_ns": 0.04716,
+    "setup_violation_count": 0,
+    "hold_violation_count": 0,
+    "route_drc_violation_count": 0,
+    "antenna_violation_count": 0,
+    "stdcell_instance_area_um2": 23587.6,
+    "instances_total": 8652,
+    "instances_logic_and_buffers": 2339,
+    "instances_by_name_prefix": {
+     "FILLER": 5609,
+     "synth": 2166,
+     "TAP_TAPCELL_ROW": 704,
+     "place": 50,
+     "clkload": 47,
+     "ANTENNA": 1,
+     "clkbuf_0_clk": 1,
+     "clkbuf_3_0__f_clk": 1,
+     "clkbuf_3_1__f_clk": 1,
+     "clkbuf_3_2__f_clk": 1,
+     "clkbuf_3_3__f_clk": 1,
+     "clkbuf_3_4__f_clk": 1
+    },
+    "repair_inserted_buffers_by_prefix": {
+     "input": 0,
+     "output": 0,
+     "place": 50,
+     "rebuffer": 0,
+     "wire": 0,
+     "max_cap": 0,
+     "split": 0,
+     "clkbuf": 75,
+     "clkload": 47,
+     "fanout": 0,
+     "max_length": 0
+    }
+   }
+  }
+ },
+ "clean_candidates": [
+  "slew0531",
+  "slew0531-cap034"
+ ],
+ "derivation": {
+  "slew_tt_budget_ns": 0.5903,
+  "with_margin_ns": 0.531
+ },
+ "promoted_geometry": null,
+ "area_target_status": "unmet (unchanged)",
+ "tool_gap_issue": "2AMLogic/klayout-tools#3005"
+}

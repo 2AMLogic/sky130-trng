@@ -1,0 +1,198 @@
+{
+  "netlist": "netlist.cir",
+  "engine": "ngspice",
+  "backend": "batch",
+  "netlist_source": "extracted",
+  "models": {
+    "pdk": "sky130A",
+    "lib": "libs.tech/combined/sky130.lib.spice"
+  },
+  "corners": {
+    "process": [
+      "tt",
+      "ss",
+      "ff"
+    ],
+    "temperature_c": [
+      27.0
+    ]
+  },
+  "analysis": {
+    "kind": "tran",
+    "args": "5p 200n"
+  },
+  "measurements": [
+    {
+      "name": "vx1",
+      "spice": ".meas tran vx1 MAX v(y1) from=8n to=12n"
+    },
+    {
+      "name": "vn1",
+      "spice": ".meas tran vn1 MIN v(y1) from=8n to=12n"
+    },
+    {
+      "name": "vx2",
+      "spice": ".meas tran vx2 MAX v(y2) from=8n to=12n"
+    },
+    {
+      "name": "vn2",
+      "spice": ".meas tran vn2 MIN v(y2) from=8n to=12n"
+    },
+    {
+      "name": "vx3",
+      "spice": ".meas tran vx3 MAX v(y3) from=8n to=12n"
+    },
+    {
+      "name": "vn3",
+      "spice": ".meas tran vn3 MIN v(y3) from=8n to=12n"
+    },
+    {
+      "name": "vx4",
+      "spice": ".meas tran vx4 MAX v(y4) from=8n to=12n"
+    },
+    {
+      "name": "vn4",
+      "spice": ".meas tran vn4 MIN v(y4) from=8n to=12n"
+    },
+    {
+      "name": "vx5",
+      "spice": ".meas tran vx5 MAX v(y5) from=8n to=12n"
+    },
+    {
+      "name": "vn5",
+      "spice": ".meas tran vn5 MIN v(y5) from=8n to=12n"
+    },
+    {
+      "name": "vx6",
+      "spice": ".meas tran vx6 MAX v(y6) from=8n to=12n"
+    },
+    {
+      "name": "vn6",
+      "spice": ".meas tran vn6 MIN v(y6) from=8n to=12n"
+    },
+    {
+      "name": "vx7",
+      "spice": ".meas tran vx7 MAX v(y7) from=8n to=12n"
+    },
+    {
+      "name": "vn7",
+      "spice": ".meas tran vn7 MIN v(y7) from=8n to=12n"
+    },
+    {
+      "name": "vx8",
+      "spice": ".meas tran vx8 MAX v(y8) from=8n to=12n"
+    },
+    {
+      "name": "vn8",
+      "spice": ".meas tran vn8 MIN v(y8) from=8n to=12n"
+    },
+    {
+      "name": "vx9",
+      "spice": ".meas tran vx9 MAX v(y9) from=8n to=12n"
+    },
+    {
+      "name": "vn9",
+      "spice": ".meas tran vn9 MIN v(y9) from=8n to=12n"
+    },
+    {
+      "name": "t1a",
+      "spice": ".meas tran t1a when v(ro1)=0.9 rise=3"
+    },
+    {
+      "name": "t1b",
+      "spice": ".meas tran t1b when v(ro1)=0.9 rise=13"
+    },
+    {
+      "name": "t2a",
+      "spice": ".meas tran t2a when v(ro2)=0.9 rise=3"
+    },
+    {
+      "name": "t2b",
+      "spice": ".meas tran t2b when v(ro2)=0.9 rise=13"
+    },
+    {
+      "name": "t3a",
+      "spice": ".meas tran t3a when v(ro3)=0.9 rise=3"
+    },
+    {
+      "name": "t3b",
+      "spice": ".meas tran t3b when v(ro3)=0.9 rise=13"
+    },
+    {
+      "name": "t4a",
+      "spice": ".meas tran t4a when v(ro4)=0.9 rise=3"
+    },
+    {
+      "name": "t4b",
+      "spice": ".meas tran t4b when v(ro4)=0.9 rise=13"
+    },
+    {
+      "name": "vxo_max",
+      "spice": ".meas tran vxo_max MAX v(xo) from=60n to=200n"
+    },
+    {
+      "name": "vxo_min",
+      "spice": ".meas tran vxo_min MIN v(xo) from=60n to=200n"
+    },
+    {
+      "name": "vxo_avg",
+      "spice": ".meas tran vxo_avg AVG v(xo) from=60n to=200n"
+    },
+    {
+      "name": "vt1_avg",
+      "spice": ".meas tran vt1_avg AVG v(xdut.t1) from=60n to=200n"
+    },
+    {
+      "name": "txo_a",
+      "spice": ".meas tran txo_a when v(xo)=0.9 rise=2"
+    },
+    {
+      "name": "txo_b",
+      "spice": ".meas tran txo_b when v(xo)=0.9 rise=50"
+    },
+    {
+      "name": "tt1a",
+      "spice": ".meas tran tt1a when v(xdut.t1)=0.9 rise=2"
+    },
+    {
+      "name": "tt1b",
+      "spice": ".meas tran tt1b when v(xdut.t1)=0.9 rise=50"
+    },
+    {
+      "name": "i1",
+      "spice": ".meas tran i1 AVG i(Vddr1) from=60n to=200n"
+    },
+    {
+      "name": "i2",
+      "spice": ".meas tran i2 AVG i(Vddr2) from=60n to=200n"
+    },
+    {
+      "name": "i3",
+      "spice": ".meas tran i3 AVG i(Vddr3) from=60n to=200n"
+    },
+    {
+      "name": "i4",
+      "spice": ".meas tran i4 AVG i(Vddr4) from=60n to=200n"
+    },
+    {
+      "name": "ib",
+      "spice": ".meas tran ib AVG i(Vdd) from=60n to=200n"
+    },
+    {
+      "name": "qa",
+      "spice": ".meas tran qa INTEG i(Vcina) from=19.9n to=21n"
+    },
+    {
+      "name": "qb",
+      "spice": ".meas tran qb INTEG i(Vcinb) from=19.9n to=21n"
+    },
+    {
+      "name": "qs",
+      "spice": ".meas tran qs INTEG i(Vcins) from=19.9n to=21n"
+    }
+  ],
+  "options": {
+    "timeout_s": 7200,
+    "keep_artifacts": false
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "netlist": "netlist.cir",
+  "engine": "ngspice",
+  "backend": "batch",
+  "netlist_source": "extracted",
+  "models": {
+    "pdk": "sky130A",
+    "lib": "libs.tech/combined/sky130.lib.spice"
+  },
+  "corners": {
+    "process": [
+      "ss_mm"
+    ],
+    "temperature_c": [
+      -40.0
+    ]
+  },
+  "analysis": {
+    "kind": "tran",
+    "args": "100p 3.04u"
+  },
+  "measurements": [
+    {
+      "name": "t_up",
+      "spice": ".meas tran t_up when v(q)=0.81 rise=1 td=100n"
+    },
+    {
+      "name": "vtrip_up",
+      "spice": ".meas tran vtrip_up find v(d) when v(q)=0.81 rise=1 td=100n"
+    },
+    {
+      "name": "t_dn",
+      "spice": ".meas tran t_dn when v(q)=0.81 fall=1 td=1.6u"
+    },
+    {
+      "name": "vtrip_dn",
+      "spice": ".meas tran vtrip_dn find v(d) when v(q)=0.81 fall=1 td=1.6u"
+    }
+  ],
+  "options": {
+    "timeout_s": 3000,
+    "keep_artifacts": false
+  },
+  "monte_carlo": {
+    "n": 30,
+    "seed": 215,
+    "vary": "mismatch"
+  }
+}

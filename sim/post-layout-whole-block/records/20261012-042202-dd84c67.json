@@ -1,0 +1,1135 @@
+{
+  "record_id": "20261012-042202-dd84c67",
+  "slug": "post-layout-whole-block",
+  "level": "transistor-level whole-block, connectivity netlist (no parasitics) + klt power static IR",
+  "claim": "whole-block (layout/trng_whole) transistor-level characterization over the 12-point PVT matrix, dynamic power, and static IR -- extracted-CONNECTIVITY netlist, no parasitics; unmet coverage is listed explicitly",
+  "seeds": {},
+  "supersedes": null,
+  "author": "loom-builder@sky130-trng",
+  "timestamp_utc": "2026-10-12T04:22:02.279611+00:00",
+  "repo_sha": "dd84c67",
+  "tools": {
+    "python": "3.12.3",
+    "platform": "Linux-7.0.0-1013-aws-x86_64-with-glibc2.39",
+    "klt": "see environment in sources",
+    "script": "sim/post-layout-whole-block/analysis/reduce-whole-block.py"
+  },
+  "artifacts": [
+    "sim/post-layout-whole-block/runs/20261012-042202-dd84c67/grid-125C-1.98V.plan.json",
+    "sim/post-layout-whole-block/runs/20261012-042202-dd84c67/grid-125C-1.98V.request.json",
+    "sim/post-layout-whole-block/runs/20261012-042202-dd84c67/grid-125C-1.98V.submit-attempts.log",
+    "sim/post-layout-whole-block/runs/20261012-042202-dd84c67/grid-27C-1.80V.plan.json",
+    "sim/post-layout-whole-block/runs/20261012-042202-dd84c67/grid-27C-1.80V.request.json",
+    "sim/post-layout-whole-block/runs/20261012-042202-dd84c67/grid-27C-1.80V.submit-attempts.log",
+    "sim/post-layout-whole-block/runs/20261012-042202-dd84c67/grid-m40C-1.62V.plan.json",
+    "sim/post-layout-whole-block/runs/20261012-042202-dd84c67/grid-m40C-1.62V.request.json",
+    "sim/post-layout-whole-block/runs/20261012-042202-dd84c67/grid-m40C-1.62V.submit-attempts.log",
+    "sim/post-layout-whole-block/runs/20261012-042202-dd84c67/grid-m40C-1.98V.plan.json",
+    "sim/post-layout-whole-block/runs/20261012-042202-dd84c67/grid-m40C-1.98V.request.json",
+    "sim/post-layout-whole-block/runs/20261012-042202-dd84c67/grid-m40C-1.98V.submit-attempts.log",
+    "sim/post-layout-whole-block/runs/20261012-042202-dd84c67/ir.spec.pads-only.json",
+    "sim/post-layout-whole-block/runs/20261012-042202-dd84c67/ir.spec.ring-loads.json",
+    "sim/post-layout-whole-block/runs/20261012-042202-dd84c67/ir.summary.json",
+    "sim/post-layout-whole-block/runs/20261012-042202-dd84c67/startup-probe-batch.plan.json",
+    "sim/post-layout-whole-block/runs/20261012-042202-dd84c67/startup-probe-batch.request.json",
+    "sim/post-layout-whole-block/runs/20261012-042202-dd84c67/startup-probe-batch.submit-attempts.log",
+    "sim/post-layout-whole-block/runs/20261012-042202-dd84c67/startup-probe.outcome.txt",
+    "sim/post-layout-whole-block/runs/20261012-042202-dd84c67/startup-probe.plan.json",
+    "sim/post-layout-whole-block/runs/20261012-042202-dd84c67/startup-probe.request.json"
+  ],
+  "reduction": {
+    "matrix": {
+      "expected": 12,
+      "met": 0,
+      "unmet": 12,
+      "complete": false
+    },
+    "points": [
+      {
+        "point": "tt/-40C/1.62V",
+        "process": "tt",
+        "temperature_c": -40.0,
+        "vdd_v": 1.62,
+        "source": "grid-m40C-1.62V",
+        "remote": {
+          "provider": "aws-batch-fleet",
+          "job_id": "klt-sim-5165290b04cf",
+          "bucket": "2am-batch-jobs-221082181346",
+          "region": "us-east-1",
+          "instance_id": "i-0bc676d367d536c4d",
+          "instance_type": "c7i.4xlarge",
+          "availability_zone": "us-east-1c",
+          "ami_id": "ami-0e40e3245f1923ac8",
+          "lifecycle": "spot",
+          "spot": true,
+          "state": "failed",
+          "exit_code": "87",
+          "concurrency": "1",
+          "physical_cores": "8",
+          "elapsed_seconds": 4,
+          "runner_klt_version": "0.5.0",
+          "client_klt_version": "0.7.0+g122d607d5c52",
+          "runner_compatibility": "mismatch",
+          "runner_compatibility_warning": "the fleet runner ran klt 0.5.0 but the submitting client is 0.7.0+g122d607d5c52; request options the runner does not know may have been ignored -- update the runner image or use a compatible client"
+        },
+        "status": "UNMET",
+        "reasons": [
+          "klt corner status 'error'",
+          "diagnostic batch_job_failed: batch job klt-sim-5165290b04cf finished 'failed' (job command exited 87): the job's klt reported: the fleet runner runs klt 0.5.0 but the submitting client is 0",
+          "610 measurement(s) absent/non-finite (first: ['alarm_k2', 'alarm_k3', 'alarm_k36'])"
+        ]
+      },
+      {
+        "point": "ss/-40C/1.62V",
+        "process": "ss",
+        "temperature_c": -40.0,
+        "vdd_v": 1.62,
+        "source": "grid-m40C-1.62V",
+        "remote": {
+          "provider": "aws-batch-fleet",
+          "job_id": "klt-sim-5165290b04cf",
+          "bucket": "2am-batch-jobs-221082181346",
+          "region": "us-east-1",
+          "instance_id": "i-0bc676d367d536c4d",
+          "instance_type": "c7i.4xlarge",
+          "availability_zone": "us-east-1c",
+          "ami_id": "ami-0e40e3245f1923ac8",
+          "lifecycle": "spot",
+          "spot": true,
+          "state": "failed",
+          "exit_code": "87",
+          "concurrency": "1",
+          "physical_cores": "8",
+          "elapsed_seconds": 4,
+          "runner_klt_version": "0.5.0",
+          "client_klt_version": "0.7.0+g122d607d5c52",
+          "runner_compatibility": "mismatch",
+          "runner_compatibility_warning": "the fleet runner ran klt 0.5.0 but the submitting client is 0.7.0+g122d607d5c52; request options the runner does not know may have been ignored -- update the runner image or use a compatible client"
+        },
+        "status": "UNMET",
+        "reasons": [
+          "klt corner status 'error'",
+          "diagnostic batch_job_failed: batch job klt-sim-5165290b04cf finished 'failed' (job command exited 87): the job's klt reported: the fleet runner runs klt 0.5.0 but the submitting client is 0",
+          "610 measurement(s) absent/non-finite (first: ['alarm_k2', 'alarm_k3', 'alarm_k36'])"
+        ]
+      },
+      {
+        "point": "ff/-40C/1.62V",
+        "process": "ff",
+        "temperature_c": -40.0,
+        "vdd_v": 1.62,
+        "source": "grid-m40C-1.62V",
+        "remote": {
+          "provider": "aws-batch-fleet",
+          "job_id": "klt-sim-5165290b04cf",
+          "bucket": "2am-batch-jobs-221082181346",
+          "region": "us-east-1",
+          "instance_id": "i-0bc676d367d536c4d",
+          "instance_type": "c7i.4xlarge",
+          "availability_zone": "us-east-1c",
+          "ami_id": "ami-0e40e3245f1923ac8",
+          "lifecycle": "spot",
+          "spot": true,
+          "state": "failed",
+          "exit_code": "87",
+          "concurrency": "1",
+          "physical_cores": "8",
+          "elapsed_seconds": 4,
+          "runner_klt_version": "0.5.0",
+          "client_klt_version": "0.7.0+g122d607d5c52",
+          "runner_compatibility": "mismatch",
+          "runner_compatibility_warning": "the fleet runner ran klt 0.5.0 but the submitting client is 0.7.0+g122d607d5c52; request options the runner does not know may have been ignored -- update the runner image or use a compatible client"
+        },
+        "status": "UNMET",
+        "reasons": [
+          "klt corner status 'error'",
+          "diagnostic batch_job_failed: batch job klt-sim-5165290b04cf finished 'failed' (job command exited 87): the job's klt reported: the fleet runner runs klt 0.5.0 but the submitting client is 0",
+          "610 measurement(s) absent/non-finite (first: ['alarm_k2', 'alarm_k3', 'alarm_k36'])"
+        ]
+      },
+      {
+        "point": "tt/27C/1.80V",
+        "process": "tt",
+        "temperature_c": 27.0,
+        "vdd_v": 1.8,
+        "source": "grid-27C-1.80V",
+        "remote": {
+          "provider": "aws-batch-fleet",
+          "job_id": "klt-sim-94c2f5fa70c7",
+          "bucket": "2am-batch-jobs-221082181346",
+          "region": "us-east-1",
+          "instance_id": "i-033730112c7800ba7",
+          "instance_type": "c7i.4xlarge",
+          "availability_zone": "us-east-1c",
+          "ami_id": "ami-0e40e3245f1923ac8",
+          "lifecycle": "spot",
+          "spot": true,
+          "state": "failed",
+          "exit_code": "87",
+          "concurrency": "1",
+          "physical_cores": "8",
+          "elapsed_seconds": 4,
+          "runner_klt_version": "0.5.0",
+          "client_klt_version": "0.7.0+g122d607d5c52",
+          "runner_compatibility": "mismatch",
+          "runner_compatibility_warning": "the fleet runner ran klt 0.5.0 but the submitting client is 0.7.0+g122d607d5c52; request options the runner does not know may have been ignored -- update the runner image or use a compatible client"
+        },
+        "status": "UNMET",
+        "reasons": [
+          "klt corner status 'error'",
+          "diagnostic batch_job_failed: batch job klt-sim-94c2f5fa70c7 finished 'failed' (job command exited 87): the job's klt reported: the fleet runner runs klt 0.5.0 but the submitting client is 0",
+          "610 measurement(s) absent/non-finite (first: ['alarm_k2', 'alarm_k3', 'alarm_k36'])"
+        ]
+      },
+      {
+        "point": "ss/27C/1.80V",
+        "process": "ss",
+        "temperature_c": 27.0,
+        "vdd_v": 1.8,
+        "source": "grid-27C-1.80V",
+        "remote": {
+          "provider": "aws-batch-fleet",
+          "job_id": "klt-sim-94c2f5fa70c7",
+          "bucket": "2am-batch-jobs-221082181346",
+          "region": "us-east-1",
+          "instance_id": "i-033730112c7800ba7",
+          "instance_type": "c7i.4xlarge",
+          "availability_zone": "us-east-1c",
+          "ami_id": "ami-0e40e3245f1923ac8",
+          "lifecycle": "spot",
+          "spot": true,
+          "state": "failed",
+          "exit_code": "87",
+          "concurrency": "1",
+          "physical_cores": "8",
+          "elapsed_seconds": 4,
+          "runner_klt_version": "0.5.0",
+          "client_klt_version": "0.7.0+g122d607d5c52",
+          "runner_compatibility": "mismatch",
+          "runner_compatibility_warning": "the fleet runner ran klt 0.5.0 but the submitting client is 0.7.0+g122d607d5c52; request options the runner does not know may have been ignored -- update the runner image or use a compatible client"
+        },
+        "status": "UNMET",
+        "reasons": [
+          "klt corner status 'error'",
+          "diagnostic batch_job_failed: batch job klt-sim-94c2f5fa70c7 finished 'failed' (job command exited 87): the job's klt reported: the fleet runner runs klt 0.5.0 but the submitting client is 0",
+          "610 measurement(s) absent/non-finite (first: ['alarm_k2', 'alarm_k3', 'alarm_k36'])"
+        ]
+      },
+      {
+        "point": "ff/27C/1.80V",
+        "process": "ff",
+        "temperature_c": 27.0,
+        "vdd_v": 1.8,
+        "source": "grid-27C-1.80V",
+        "remote": {
+          "provider": "aws-batch-fleet",
+          "job_id": "klt-sim-94c2f5fa70c7",
+          "bucket": "2am-batch-jobs-221082181346",
+          "region": "us-east-1",
+          "instance_id": "i-033730112c7800ba7",
+          "instance_type": "c7i.4xlarge",
+          "availability_zone": "us-east-1c",
+          "ami_id": "ami-0e40e3245f1923ac8",
+          "lifecycle": "spot",
+          "spot": true,
+          "state": "failed",
+          "exit_code": "87",
+          "concurrency": "1",
+          "physical_cores": "8",
+          "elapsed_seconds": 4,
+          "runner_klt_version": "0.5.0",
+          "client_klt_version": "0.7.0+g122d607d5c52",
+          "runner_compatibility": "mismatch",
+          "runner_compatibility_warning": "the fleet runner ran klt 0.5.0 but the submitting client is 0.7.0+g122d607d5c52; request options the runner does not know may have been ignored -- update the runner image or use a compatible client"
+        },
+        "status": "UNMET",
+        "reasons": [
+          "klt corner status 'error'",
+          "diagnostic batch_job_failed: batch job klt-sim-94c2f5fa70c7 finished 'failed' (job command exited 87): the job's klt reported: the fleet runner runs klt 0.5.0 but the submitting client is 0",
+          "610 measurement(s) absent/non-finite (first: ['alarm_k2', 'alarm_k3', 'alarm_k36'])"
+        ]
+      },
+      {
+        "point": "tt/-40C/1.98V",
+        "process": "tt",
+        "temperature_c": -40.0,
+        "vdd_v": 1.98,
+        "source": "grid-m40C-1.98V",
+        "remote": {
+          "provider": "aws-batch-fleet",
+          "job_id": "klt-sim-e5ed1b8eb2df",
+          "bucket": "2am-batch-jobs-221082181346",
+          "region": "us-east-1",
+          "instance_id": "i-02b9848f4792da9a5",
+          "instance_type": "c7i.4xlarge",
+          "availability_zone": "us-east-1c",
+          "ami_id": "ami-0e40e3245f1923ac8",
+          "lifecycle": "spot",
+          "spot": true,
+          "state": "failed",
+          "exit_code": "87",
+          "concurrency": "1",
+          "physical_cores": "8",
+          "elapsed_seconds": 5,
+          "runner_klt_version": "0.5.0",
+          "client_klt_version": "0.7.0+g122d607d5c52",
+          "runner_compatibility": "mismatch",
+          "runner_compatibility_warning": "the fleet runner ran klt 0.5.0 but the submitting client is 0.7.0+g122d607d5c52; request options the runner does not know may have been ignored -- update the runner image or use a compatible client"
+        },
+        "status": "UNMET",
+        "reasons": [
+          "klt corner status 'error'",
+          "diagnostic batch_job_failed: batch job klt-sim-e5ed1b8eb2df finished 'failed' (job command exited 87): the job's klt reported: the fleet runner runs klt 0.5.0 but the submitting client is 0",
+          "610 measurement(s) absent/non-finite (first: ['alarm_k2', 'alarm_k3', 'alarm_k36'])"
+        ]
+      },
+      {
+        "point": "ss/-40C/1.98V",
+        "process": "ss",
+        "temperature_c": -40.0,
+        "vdd_v": 1.98,
+        "source": "grid-m40C-1.98V",
+        "remote": {
+          "provider": "aws-batch-fleet",
+          "job_id": "klt-sim-e5ed1b8eb2df",
+          "bucket": "2am-batch-jobs-221082181346",
+          "region": "us-east-1",
+          "instance_id": "i-02b9848f4792da9a5",
+          "instance_type": "c7i.4xlarge",
+          "availability_zone": "us-east-1c",
+          "ami_id": "ami-0e40e3245f1923ac8",
+          "lifecycle": "spot",
+          "spot": true,
+          "state": "failed",
+          "exit_code": "87",
+          "concurrency": "1",
+          "physical_cores": "8",
+          "elapsed_seconds": 5,
+          "runner_klt_version": "0.5.0",
+          "client_klt_version": "0.7.0+g122d607d5c52",
+          "runner_compatibility": "mismatch",
+          "runner_compatibility_warning": "the fleet runner ran klt 0.5.0 but the submitting client is 0.7.0+g122d607d5c52; request options the runner does not know may have been ignored -- update the runner image or use a compatible client"
+        },
+        "status": "UNMET",
+        "reasons": [
+          "klt corner status 'error'",
+          "diagnostic batch_job_failed: batch job klt-sim-e5ed1b8eb2df finished 'failed' (job command exited 87): the job's klt reported: the fleet runner runs klt 0.5.0 but the submitting client is 0",
+          "610 measurement(s) absent/non-finite (first: ['alarm_k2', 'alarm_k3', 'alarm_k36'])"
+        ]
+      },
+      {
+        "point": "ff/-40C/1.98V",
+        "process": "ff",
+        "temperature_c": -40.0,
+        "vdd_v": 1.98,
+        "source": "grid-m40C-1.98V",
+        "remote": {
+          "provider": "aws-batch-fleet",
+          "job_id": "klt-sim-e5ed1b8eb2df",
+          "bucket": "2am-batch-jobs-221082181346",
+          "region": "us-east-1",
+          "instance_id": "i-02b9848f4792da9a5",
+          "instance_type": "c7i.4xlarge",
+          "availability_zone": "us-east-1c",
+          "ami_id": "ami-0e40e3245f1923ac8",
+          "lifecycle": "spot",
+          "spot": true,
+          "state": "failed",
+          "exit_code": "87",
+          "concurrency": "1",
+          "physical_cores": "8",
+          "elapsed_seconds": 5,
+          "runner_klt_version": "0.5.0",
+          "client_klt_version": "0.7.0+g122d607d5c52",
+          "runner_compatibility": "mismatch",
+          "runner_compatibility_warning": "the fleet runner ran klt 0.5.0 but the submitting client is 0.7.0+g122d607d5c52; request options the runner does not know may have been ignored -- update the runner image or use a compatible client"
+        },
+        "status": "UNMET",
+        "reasons": [
+          "klt corner status 'error'",
+          "diagnostic batch_job_failed: batch job klt-sim-e5ed1b8eb2df finished 'failed' (job command exited 87): the job's klt reported: the fleet runner runs klt 0.5.0 but the submitting client is 0",
+          "610 measurement(s) absent/non-finite (first: ['alarm_k2', 'alarm_k3', 'alarm_k36'])"
+        ]
+      },
+      {
+        "point": "tt/125C/1.98V",
+        "process": "tt",
+        "temperature_c": 125.0,
+        "vdd_v": 1.98,
+        "source": "grid-125C-1.98V",
+        "remote": {
+          "provider": "aws-batch-fleet",
+          "job_id": "klt-sim-79694ce8fd46",
+          "bucket": "2am-batch-jobs-221082181346",
+          "region": "us-east-1",
+          "instance_id": "i-0d462f3c76036b6f0",
+          "instance_type": "c7i.4xlarge",
+          "availability_zone": "us-east-1c",
+          "ami_id": "ami-0e40e3245f1923ac8",
+          "lifecycle": "spot",
+          "spot": true,
+          "state": "failed",
+          "exit_code": "87",
+          "concurrency": "1",
+          "physical_cores": "8",
+          "elapsed_seconds": 4,
+          "runner_klt_version": "0.5.0",
+          "client_klt_version": "0.7.0+g122d607d5c52",
+          "runner_compatibility": "mismatch",
+          "runner_compatibility_warning": "the fleet runner ran klt 0.5.0 but the submitting client is 0.7.0+g122d607d5c52; request options the runner does not know may have been ignored -- update the runner image or use a compatible client"
+        },
+        "status": "UNMET",
+        "reasons": [
+          "klt corner status 'error'",
+          "diagnostic batch_job_failed: batch job klt-sim-79694ce8fd46 finished 'failed' (job command exited 87): the job's klt reported: the fleet runner runs klt 0.5.0 but the submitting client is 0",
+          "610 measurement(s) absent/non-finite (first: ['alarm_k2', 'alarm_k3', 'alarm_k36'])"
+        ]
+      },
+      {
+        "point": "ss/125C/1.98V",
+        "process": "ss",
+        "temperature_c": 125.0,
+        "vdd_v": 1.98,
+        "source": "grid-125C-1.98V",
+        "remote": {
+          "provider": "aws-batch-fleet",
+          "job_id": "klt-sim-79694ce8fd46",
+          "bucket": "2am-batch-jobs-221082181346",
+          "region": "us-east-1",
+          "instance_id": "i-0d462f3c76036b6f0",
+          "instance_type": "c7i.4xlarge",
+          "availability_zone": "us-east-1c",
+          "ami_id": "ami-0e40e3245f1923ac8",
+          "lifecycle": "spot",
+          "spot": true,
+          "state": "failed",
+          "exit_code": "87",
+          "concurrency": "1",
+          "physical_cores": "8",
+          "elapsed_seconds": 4,
+          "runner_klt_version": "0.5.0",
+          "client_klt_version": "0.7.0+g122d607d5c52",
+          "runner_compatibility": "mismatch",
+          "runner_compatibility_warning": "the fleet runner ran klt 0.5.0 but the submitting client is 0.7.0+g122d607d5c52; request options the runner does not know may have been ignored -- update the runner image or use a compatible client"
+        },
+        "status": "UNMET",
+        "reasons": [
+          "klt corner status 'error'",
+          "diagnostic batch_job_failed: batch job klt-sim-79694ce8fd46 finished 'failed' (job command exited 87): the job's klt reported: the fleet runner runs klt 0.5.0 but the submitting client is 0",
+          "610 measurement(s) absent/non-finite (first: ['alarm_k2', 'alarm_k3', 'alarm_k36'])"
+        ]
+      },
+      {
+        "point": "ff/125C/1.98V",
+        "process": "ff",
+        "temperature_c": 125.0,
+        "vdd_v": 1.98,
+        "source": "grid-125C-1.98V",
+        "remote": {
+          "provider": "aws-batch-fleet",
+          "job_id": "klt-sim-79694ce8fd46",
+          "bucket": "2am-batch-jobs-221082181346",
+          "region": "us-east-1",
+          "instance_id": "i-0d462f3c76036b6f0",
+          "instance_type": "c7i.4xlarge",
+          "availability_zone": "us-east-1c",
+          "ami_id": "ami-0e40e3245f1923ac8",
+          "lifecycle": "spot",
+          "spot": true,
+          "state": "failed",
+          "exit_code": "87",
+          "concurrency": "1",
+          "physical_cores": "8",
+          "elapsed_seconds": 4,
+          "runner_klt_version": "0.5.0",
+          "client_klt_version": "0.7.0+g122d607d5c52",
+          "runner_compatibility": "mismatch",
+          "runner_compatibility_warning": "the fleet runner ran klt 0.5.0 but the submitting client is 0.7.0+g122d607d5c52; request options the runner does not know may have been ignored -- update the runner image or use a compatible client"
+        },
+        "status": "UNMET",
+        "reasons": [
+          "klt corner status 'error'",
+          "diagnostic batch_job_failed: batch job klt-sim-79694ce8fd46 finished 'failed' (job command exited 87): the job's klt reported: the fleet runner runs klt 0.5.0 but the submitting client is 0",
+          "610 measurement(s) absent/non-finite (first: ['alarm_k2', 'alarm_k3', 'alarm_k36'])"
+        ]
+      }
+    ],
+    "sources": [
+      {
+        "dir": "grid-125C-1.98V",
+        "report": "sim/post-layout-whole-block/corners/grid-125C-1.98V/report.json",
+        "report_sha256": "b449c63eaf86692d2956598bd8c0cb87189ed075018ad54e0cf87f4742ab03cb",
+        "request.json": "5668a94d8d128976a41d6202669403a6ac61a1d39b049c5d9f80dcf6afb76ab6",
+        "plan.json": "e0baeba58cc378be5f750f24b87acf8b15d26d175f481ea91b71424f9b34ef1c",
+        "netlist_sha256": "ffbe2160d1949db2ead2bea1b0bee06750b4952b45896981d7993033d4298f8a",
+        "submit_attempts": {
+          "count": 1,
+          "capacity_refused": 0,
+          "log": [
+            "attempt 1 rc=4 04:20:14"
+          ]
+        },
+        "remote": {
+          "provider": "aws-batch-fleet",
+          "job_id": "klt-sim-79694ce8fd46",
+          "bucket": "2am-batch-jobs-221082181346",
+          "region": "us-east-1",
+          "instance_id": "i-0d462f3c76036b6f0",
+          "instance_type": "c7i.4xlarge",
+          "availability_zone": "us-east-1c",
+          "ami_id": "ami-0e40e3245f1923ac8",
+          "lifecycle": "spot",
+          "spot": true,
+          "state": "failed",
+          "exit_code": "87",
+          "concurrency": "1",
+          "physical_cores": "8",
+          "elapsed_seconds": 4,
+          "runner_klt_version": "0.5.0",
+          "client_klt_version": "0.7.0+g122d607d5c52",
+          "runner_compatibility": "mismatch",
+          "runner_compatibility_warning": "the fleet runner ran klt 0.5.0 but the submitting client is 0.7.0+g122d607d5c52; request options the runner does not know may have been ignored -- update the runner image or use a compatible client"
+        },
+        "status": "error"
+      },
+      {
+        "dir": "grid-27C-1.80V",
+        "report": "sim/post-layout-whole-block/corners/grid-27C-1.80V/report.json",
+        "report_sha256": "7838a00c5c480854e267e3c171e6d9ce2dc4845a6918c5f058db78795b482481",
+        "request.json": "4997ae1f5c8a4aa0ab7fb6ac68200274afb44761eda6967c4e99f77f8b5f2aab",
+        "plan.json": "1dd9d5b2b948e0156587277b2751c21b3b7a5ce9614b0053a205593b328f2f7a",
+        "netlist_sha256": "6f92eb5d5467a89c1b74b0b199cc09a373f54ea031dd993e322560ae36c5ffef",
+        "submit_attempts": {
+          "count": 2,
+          "capacity_refused": 1,
+          "log": [
+            "attempt 1 rc=1 04:13:39",
+            "attempt 2 rc=4 04:18:31"
+          ]
+        },
+        "remote": {
+          "provider": "aws-batch-fleet",
+          "job_id": "klt-sim-94c2f5fa70c7",
+          "bucket": "2am-batch-jobs-221082181346",
+          "region": "us-east-1",
+          "instance_id": "i-033730112c7800ba7",
+          "instance_type": "c7i.4xlarge",
+          "availability_zone": "us-east-1c",
+          "ami_id": "ami-0e40e3245f1923ac8",
+          "lifecycle": "spot",
+          "spot": true,
+          "state": "failed",
+          "exit_code": "87",
+          "concurrency": "1",
+          "physical_cores": "8",
+          "elapsed_seconds": 4,
+          "runner_klt_version": "0.5.0",
+          "client_klt_version": "0.7.0+g122d607d5c52",
+          "runner_compatibility": "mismatch",
+          "runner_compatibility_warning": "the fleet runner ran klt 0.5.0 but the submitting client is 0.7.0+g122d607d5c52; request options the runner does not know may have been ignored -- update the runner image or use a compatible client"
+        },
+        "status": "error"
+      },
+      {
+        "dir": "grid-m40C-1.62V",
+        "report": "sim/post-layout-whole-block/corners/grid-m40C-1.62V/report.json",
+        "report_sha256": "36716582956d56890b58ca711a84faa3eb6638317861f52bfee71f3bd3d52d86",
+        "request.json": "67105bbd46eb08df5b6b775461e8f6bd4c6d8531286a150c6163a3e7ca2f6b49",
+        "plan.json": "4b715b4d1ec8ca0576f6647b919c6d71cac4a4514adde1a7af23ee9fcb4b0a26",
+        "netlist_sha256": "0689fa77bc94c223a178416f345cb1666f10d4ee82f8bc5ba5b2c3d2419f6442",
+        "submit_attempts": {
+          "count": 4,
+          "capacity_refused": 3,
+          "log": [
+            "attempt 1 rc=1 04:00:33",
+            "attempt 2 rc=1 04:04:38",
+            "attempt 3 rc=1 04:08:43",
+            "attempt 4 rc=4 04:13:34"
+          ]
+        },
+        "remote": {
+          "provider": "aws-batch-fleet",
+          "job_id": "klt-sim-5165290b04cf",
+          "bucket": "2am-batch-jobs-221082181346",
+          "region": "us-east-1",
+          "instance_id": "i-0bc676d367d536c4d",
+          "instance_type": "c7i.4xlarge",
+          "availability_zone": "us-east-1c",
+          "ami_id": "ami-0e40e3245f1923ac8",
+          "lifecycle": "spot",
+          "spot": true,
+          "state": "failed",
+          "exit_code": "87",
+          "concurrency": "1",
+          "physical_cores": "8",
+          "elapsed_seconds": 4,
+          "runner_klt_version": "0.5.0",
+          "client_klt_version": "0.7.0+g122d607d5c52",
+          "runner_compatibility": "mismatch",
+          "runner_compatibility_warning": "the fleet runner ran klt 0.5.0 but the submitting client is 0.7.0+g122d607d5c52; request options the runner does not know may have been ignored -- update the runner image or use a compatible client"
+        },
+        "status": "error"
+      },
+      {
+        "dir": "grid-m40C-1.98V",
+        "report": "sim/post-layout-whole-block/corners/grid-m40C-1.98V/report.json",
+        "report_sha256": "86a83fc2b55ac12c3c09b54c454e7e42599777fd633dad392fca79d79bfb1a95",
+        "request.json": "08f957025d408375ad06d91e93d49ce9c68e5175501038e11c8afaaf2f7cf860",
+        "plan.json": "d8e78cf6ccd5f16b7f033606a02c6fea53b6145067fb2d13a4226663ce320b48",
+        "netlist_sha256": "9e9ed4e1026a5a411796a5fcb54f0dfd72d7e26eb086629cbd16cd9c833ead6e",
+        "submit_attempts": {
+          "count": 1,
+          "capacity_refused": 0,
+          "log": [
+            "attempt 1 rc=4 04:19:23"
+          ]
+        },
+        "remote": {
+          "provider": "aws-batch-fleet",
+          "job_id": "klt-sim-e5ed1b8eb2df",
+          "bucket": "2am-batch-jobs-221082181346",
+          "region": "us-east-1",
+          "instance_id": "i-02b9848f4792da9a5",
+          "instance_type": "c7i.4xlarge",
+          "availability_zone": "us-east-1c",
+          "ami_id": "ami-0e40e3245f1923ac8",
+          "lifecycle": "spot",
+          "spot": true,
+          "state": "failed",
+          "exit_code": "87",
+          "concurrency": "1",
+          "physical_cores": "8",
+          "elapsed_seconds": 5,
+          "runner_klt_version": "0.5.0",
+          "client_klt_version": "0.7.0+g122d607d5c52",
+          "runner_compatibility": "mismatch",
+          "runner_compatibility_warning": "the fleet runner ran klt 0.5.0 but the submitting client is 0.7.0+g122d607d5c52; request options the runner does not know may have been ignored -- update the runner image or use a compatible client"
+        },
+        "status": "error"
+      },
+      {
+        "dir": "startup-probe",
+        "report": "sim/post-layout-whole-block/corners/startup-probe/report.json",
+        "report_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "request.json": "c9dbf8fe98f896918807f958c60b73e964f697e17ae1dfcd135ba737722e930b",
+        "plan.json": "68b734926404ff67cebf00a37a52cc87891000b88c9b10fb9c42a60d4fc2bd72",
+        "netlist_sha256": "e896f8651f03259b3d86f7639ced045fa471ead75b4ee5e164ea00963ecbab9a",
+        "remote": null,
+        "status": "error-envelope",
+        "error": "report.json is not valid JSON (run killed or never completed)"
+      },
+      {
+        "dir": "startup-probe-batch",
+        "report": "sim/post-layout-whole-block/corners/startup-probe-batch/report.json",
+        "report_sha256": "1790b9d7f4181ad35b17eea407c40db7dde80f29335fdf7486b44463a168c6ee",
+        "request.json": "b2f8e72253e77dc4e90c1d04913eab6d737fd3ae86a89252b450308bc0b02478",
+        "plan.json": "616488008fdec1d14515771776e3e8641772fbf3a474c63a45ce5502417674fa",
+        "netlist_sha256": "e896f8651f03259b3d86f7639ced045fa471ead75b4ee5e164ea00963ecbab9a",
+        "submit_attempts": {
+          "count": 8,
+          "capacity_refused": 7,
+          "log": [
+            "attempt 1 rc=1 03:20:25",
+            "attempt 2 rc=1 03:25:31",
+            "attempt 3 rc=1 03:30:36",
+            "attempt 4 rc=1 03:35:42",
+            "attempt 5 rc=1 03:40:48",
+            "attempt 6 rc=1 03:45:53",
+            "attempt 7 rc=1 03:51:00",
+            "attempt 8 rc=4 03:56:53"
+          ]
+        },
+        "remote": {
+          "provider": "aws-batch-fleet",
+          "job_id": "klt-sim-e99f3a60da30",
+          "bucket": "2am-batch-jobs-221082181346",
+          "region": "us-east-1",
+          "instance_id": "i-0126e97faec937d4a",
+          "instance_type": "m7i.4xlarge",
+          "availability_zone": "us-east-1d",
+          "ami_id": "ami-0e40e3245f1923ac8",
+          "lifecycle": "spot",
+          "spot": true,
+          "state": "failed",
+          "exit_code": "87",
+          "concurrency": "1",
+          "physical_cores": "8",
+          "elapsed_seconds": 5,
+          "runner_klt_version": "0.5.0",
+          "client_klt_version": "0.7.0+g122d607d5c52",
+          "runner_compatibility": "mismatch",
+          "runner_compatibility_warning": "the fleet runner ran klt 0.5.0 but the submitting client is 0.7.0+g122d607d5c52; request options the runner does not know may have been ignored -- update the runner image or use a compatible client"
+        },
+        "status": "error"
+      }
+    ],
+    "ir": {
+      "gds": "layout/trng_whole/trng_whole.gds",
+      "gds_sha256": "af2f8dfe2800599e97d769bdedd14924c9fa3f24fc7e1c4f43ccd72ac5572ddd",
+      "top": "trng_whole",
+      "specs": {
+        "spec.pads-only.json": "258bce864943d21bad6c3dd2680d8d450a99c3d5edf0a3cf4c1a06030e519792",
+        "spec.ring-loads.json": "be51c09d2eb23803b993b6d5a30c7063e4ee725c6f9e56a6ce27f3bdb6450871"
+      },
+      "ring_current_a_assumed": 2.055e-05,
+      "ring_current_source": "DR-0003 max per-ring running supply current (ff/-40C/1.98V), NOT a whole-block measurement",
+      "islands": {
+        "vdd": [
+          {
+            "island_id": "vdd#0",
+            "node_count": 3250,
+            "edge_count": 7099,
+            "unsolved_reason": null
+          },
+          {
+            "island_id": "vdd#1",
+            "node_count": 83,
+            "edge_count": 91,
+            "unsolved_reason": null
+          },
+          {
+            "island_id": "vdd#2",
+            "node_count": 83,
+            "edge_count": 91,
+            "unsolved_reason": null
+          },
+          {
+            "island_id": "vdd#3",
+            "node_count": 83,
+            "edge_count": 91,
+            "unsolved_reason": null
+          },
+          {
+            "island_id": "vdd#4",
+            "node_count": 83,
+            "edge_count": 91,
+            "unsolved_reason": null
+          },
+          {
+            "island_id": "vdd#5",
+            "node_count": 83,
+            "edge_count": 91,
+            "unsolved_reason": null
+          },
+          {
+            "island_id": "vdd#6",
+            "node_count": 83,
+            "edge_count": 91,
+            "unsolved_reason": null
+          },
+          {
+            "island_id": "vdd#7",
+            "node_count": 83,
+            "edge_count": 91,
+            "unsolved_reason": null
+          },
+          {
+            "island_id": "vdd#8",
+            "node_count": 83,
+            "edge_count": 91,
+            "unsolved_reason": null
+          },
+          {
+            "island_id": "vdd#9",
+            "node_count": 83,
+            "edge_count": 91,
+            "unsolved_reason": null
+          },
+          {
+            "island_id": "vdd#10",
+            "node_count": 83,
+            "edge_count": 91,
+            "unsolved_reason": null
+          },
+          {
+            "island_id": "vdd#11",
+            "node_count": 83,
+            "edge_count": 91,
+            "unsolved_reason": null
+          },
+          {
+            "island_id": "vdd#12",
+            "node_count": 83,
+            "edge_count": 91,
+            "unsolved_reason": null
+          }
+        ],
+        "vss": [
+          {
+            "island_id": "vss#0",
+            "node_count": 5308,
+            "edge_count": 9830,
+            "unsolved_reason": null
+          }
+        ],
+        "vddr1": [
+          {
+            "island_id": "vddr1#0",
+            "node_count": 598,
+            "edge_count": 632,
+            "unsolved_reason": null
+          }
+        ],
+        "vddr2": [
+          {
+            "island_id": "vddr2#0",
+            "node_count": 598,
+            "edge_count": 632,
+            "unsolved_reason": null
+          }
+        ],
+        "vddr3": [
+          {
+            "island_id": "vddr3#0",
+            "node_count": 599,
+            "edge_count": 633,
+            "unsolved_reason": null
+          }
+        ],
+        "vddr4": [
+          {
+            "island_id": "vddr4#0",
+            "node_count": 599,
+            "edge_count": 633,
+            "unsolved_reason": null
+          }
+        ],
+        "VPWR": [
+          {
+            "island_id": "VPWR#0",
+            "node_count": 3250,
+            "edge_count": 7099,
+            "unsolved_reason": null
+          }
+        ],
+        "VGND": [
+          {
+            "island_id": "VGND#0",
+            "node_count": 5308,
+            "edge_count": 9830,
+            "unsolved_reason": null
+          }
+        ]
+      },
+      "worst_case_droop_mv": 8.045302245,
+      "ir_drop_nets": [
+        {
+          "net": "vdd",
+          "pad_count": 1,
+          "instance_count": 0,
+          "current_a": 0.0,
+          "solved_island_count": 1,
+          "unsolved_island_count": 12,
+          "worst_case_droop_mv": 0.0,
+          "worst_case_node": {
+            "net": "vdd",
+            "island_id": "vdd#0",
+            "node_id": "n0",
+            "layer": "met1",
+            "x_um": -39.66,
+            "y_um": 8.16,
+            "voltage_v": 1.8,
+            "droop_mv": 0.0
+          },
+          "islands": [
+            {
+              "island_id": "vdd#0",
+              "solved": true,
+              "unsolved_reason": null,
+              "worst_droop_mv": null,
+              "worst_node": null,
+              "total_current_a": null
+            },
+            {
+              "island_id": "vdd#1",
+              "solved": false,
+              "unsolved_reason": "no_pad",
+              "worst_droop_mv": null,
+              "worst_node": null,
+              "total_current_a": null
+            },
+            {
+              "island_id": "vdd#2",
+              "solved": false,
+              "unsolved_reason": "no_pad",
+              "worst_droop_mv": null,
+              "worst_node": null,
+              "total_current_a": null
+            },
+            {
+              "island_id": "vdd#3",
+              "solved": false,
+              "unsolved_reason": "no_pad",
+              "worst_droop_mv": null,
+              "worst_node": null,
+              "total_current_a": null
+            },
+            {
+              "island_id": "vdd#4",
+              "solved": false,
+              "unsolved_reason": "no_pad",
+              "worst_droop_mv": null,
+              "worst_node": null,
+              "total_current_a": null
+            },
+            {
+              "island_id": "vdd#5",
+              "solved": false,
+              "unsolved_reason": "no_pad",
+              "worst_droop_mv": null,
+              "worst_node": null,
+              "total_current_a": null
+            },
+            {
+              "island_id": "vdd#6",
+              "solved": false,
+              "unsolved_reason": "no_pad",
+              "worst_droop_mv": null,
+              "worst_node": null,
+              "total_current_a": null
+            },
+            {
+              "island_id": "vdd#7",
+              "solved": false,
+              "unsolved_reason": "no_pad",
+              "worst_droop_mv": null,
+              "worst_node": null,
+              "total_current_a": null
+            },
+            {
+              "island_id": "vdd#8",
+              "solved": false,
+              "unsolved_reason": "no_pad",
+              "worst_droop_mv": null,
+              "worst_node": null,
+              "total_current_a": null
+            },
+            {
+              "island_id": "vdd#9",
+              "solved": false,
+              "unsolved_reason": "no_pad",
+              "worst_droop_mv": null,
+              "worst_node": null,
+              "total_current_a": null
+            },
+            {
+              "island_id": "vdd#10",
+              "solved": false,
+              "unsolved_reason": "no_pad",
+              "worst_droop_mv": null,
+              "worst_node": null,
+              "total_current_a": null
+            },
+            {
+              "island_id": "vdd#11",
+              "solved": false,
+              "unsolved_reason": "no_pad",
+              "worst_droop_mv": null,
+              "worst_node": null,
+              "total_current_a": null
+            },
+            {
+              "island_id": "vdd#12",
+              "solved": false,
+              "unsolved_reason": "no_pad",
+              "worst_droop_mv": null,
+              "worst_node": null,
+              "total_current_a": null
+            }
+          ]
+        },
+        {
+          "net": "vss",
+          "pad_count": 1,
+          "instance_count": 4,
+          "current_a": 8.22e-05,
+          "solved_island_count": 1,
+          "unsolved_island_count": 0,
+          "worst_case_droop_mv": 8.045302245,
+          "worst_case_node": {
+            "net": "vss",
+            "island_id": "vss#0",
+            "node_id": "n2497",
+            "layer": "met1",
+            "x_um": 308.69,
+            "y_um": 295.0475,
+            "voltage_v": 0.008045302,
+            "droop_mv": 8.045302245
+          },
+          "islands": [
+            {
+              "island_id": "vss#0",
+              "solved": true,
+              "unsolved_reason": null,
+              "worst_droop_mv": null,
+              "worst_node": null,
+              "total_current_a": null
+            }
+          ]
+        },
+        {
+          "net": "vddr1",
+          "pad_count": 1,
+          "instance_count": 1,
+          "current_a": 2.055e-05,
+          "solved_island_count": 1,
+          "unsolved_island_count": 0,
+          "worst_case_droop_mv": 0.35081704,
+          "worst_case_node": {
+            "net": "vddr1",
+            "island_id": "vddr1#0",
+            "node_id": "n215",
+            "layer": "met1",
+            "x_um": 310.8725,
+            "y_um": 295.8675,
+            "voltage_v": 1.799649183,
+            "droop_mv": 0.35081704
+          },
+          "islands": [
+            {
+              "island_id": "vddr1#0",
+              "solved": true,
+              "unsolved_reason": null,
+              "worst_droop_mv": null,
+              "worst_node": null,
+              "total_current_a": null
+            }
+          ]
+        },
+        {
+          "net": "vddr2",
+          "pad_count": 1,
+          "instance_count": 1,
+          "current_a": 2.055e-05,
+          "solved_island_count": 1,
+          "unsolved_island_count": 0,
+          "worst_case_droop_mv": 0.355350128,
+          "worst_case_node": {
+            "net": "vddr2",
+            "island_id": "vddr2#0",
+            "node_id": "n215",
+            "layer": "met1",
+            "x_um": 255.5725,
+            "y_um": 295.8675,
+            "voltage_v": 1.79964465,
+            "droop_mv": 0.355350128
+          },
+          "islands": [
+            {
+              "island_id": "vddr2#0",
+              "solved": true,
+              "unsolved_reason": null,
+              "worst_droop_mv": null,
+              "worst_node": null,
+              "total_current_a": null
+            }
+          ]
+        },
+        {
+          "net": "vddr3",
+          "pad_count": 1,
+          "instance_count": 1,
+          "current_a": 2.055e-05,
+          "solved_island_count": 1,
+          "unsolved_island_count": 0,
+          "worst_case_droop_mv": 0.303890582,
+          "worst_case_node": {
+            "net": "vddr3",
+            "island_id": "vddr3#0",
+            "node_id": "n264",
+            "layer": "met1",
+            "x_um": 198.505,
+            "y_um": 296.76,
+            "voltage_v": 1.799696109,
+            "droop_mv": 0.303890582
+          },
+          "islands": [
+            {
+              "island_id": "vddr3#0",
+              "solved": true,
+              "unsolved_reason": null,
+              "worst_droop_mv": null,
+              "worst_node": null,
+              "total_current_a": null
+            }
+          ]
+        },
+        {
+          "net": "vddr4",
+          "pad_count": 1,
+          "instance_count": 1,
+          "current_a": 2.055e-05,
+          "solved_island_count": 1,
+          "unsolved_island_count": 0,
+          "worst_case_droop_mv": 0.364416304,
+          "worst_case_node": {
+            "net": "vddr4",
+            "island_id": "vddr4#0",
+            "node_id": "n215",
+            "layer": "met1",
+            "x_um": 144.9725,
+            "y_um": 295.8675,
+            "voltage_v": 1.799635584,
+            "droop_mv": 0.364416304
+          },
+          "islands": [
+            {
+              "island_id": "vddr4#0",
+              "solved": true,
+              "unsolved_reason": null,
+              "worst_droop_mv": null,
+              "worst_node": null,
+              "total_current_a": null
+            }
+          ]
+        },
+        {
+          "net": "VPWR",
+          "pad_count": 0,
+          "instance_count": 0,
+          "current_a": 0.0,
+          "solved_island_count": 0,
+          "unsolved_island_count": 1,
+          "worst_case_droop_mv": null,
+          "worst_case_node": null,
+          "islands": [
+            {
+              "island_id": "VPWR#0",
+              "solved": false,
+              "unsolved_reason": "no_pad",
+              "worst_droop_mv": null,
+              "worst_node": null,
+              "total_current_a": null
+            }
+          ]
+        },
+        {
+          "net": "VGND",
+          "pad_count": 0,
+          "instance_count": 0,
+          "current_a": 0.0,
+          "solved_island_count": 0,
+          "unsolved_island_count": 1,
+          "worst_case_droop_mv": null,
+          "worst_case_node": null,
+          "islands": [
+            {
+              "island_id": "VGND#0",
+              "solved": false,
+              "unsolved_reason": "no_pad",
+              "worst_droop_mv": null,
+              "worst_node": null,
+              "total_current_a": null
+            }
+          ]
+        }
+      ],
+      "em_verdict_status": "not_checked",
+      "klt_status": "not_checked",
+      "warnings_unsolved": [
+        "14 island(s) have no pad and no modelled current, so they have no DC operating point and were not solved (first: 'vdd#1') -- see ir_drop_map.nets[].islands[].unsolved_reason for the full list"
+      ]
+    },
+    "ac3_claimable": false
+  }
+}

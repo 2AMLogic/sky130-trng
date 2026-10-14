@@ -1,0 +1,620 @@
+{
+ "schema": "sky130-trng.electrical-audit/1",
+ "stage": "final route: routed DEF + extracted post-route SPEF, fresh OpenSTA session per corner",
+ "limits_checked": "Liberty default_max_transition (ns) and per-pin max_capacitance (pF); no set_max_* override; no set_load/set_driving_cell",
+ "units": {
+  "slew": "ns",
+  "capacitance": "pF"
+ },
+ "request": "sim/digital-electrical-repair/requests/slew0531-cap034.json",
+ "corners": {
+  "ff_100C_1v65": {
+   "status": "audited",
+   "sensitivity_pins_listed": 8363,
+   "max_slew": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_1902_/Y",
+     "limit": 1.4933,
+     "value": 0.4946,
+     "slack": 0.9987,
+     "state": "MET"
+    }
+   },
+   "max_capacitance": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_1784_/Y",
+     "limit": 0.0421,
+     "value": 0.0067,
+     "slack": 0.0355,
+     "state": "MET"
+    }
+   }
+  },
+  "ff_100C_1v95": {
+   "status": "audited",
+   "sensitivity_pins_listed": 8363,
+   "max_slew": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_1902_/Y",
+     "limit": 1.498,
+     "value": 0.4043,
+     "slack": 1.0937,
+     "state": "MET"
+    }
+   },
+   "max_capacitance": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_1784_/Y",
+     "limit": 0.0568,
+     "value": 0.0068,
+     "slack": 0.05,
+     "state": "MET"
+    }
+   }
+  },
+  "ff_n40C_1v56": {
+   "status": "audited",
+   "sensitivity_pins_listed": 8363,
+   "max_slew": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_1902_/Y",
+     "limit": 1.4882,
+     "value": 0.6618,
+     "slack": 0.8263,
+     "state": "MET"
+    }
+   },
+   "max_capacitance": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_1784_/Y",
+     "limit": 0.0284,
+     "value": 0.0064,
+     "slack": 0.022,
+     "state": "MET"
+    }
+   }
+  },
+  "ff_n40C_1v65": {
+   "status": "audited",
+   "sensitivity_pins_listed": 8363,
+   "max_slew": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_1902_/Y",
+     "limit": 1.499,
+     "value": 0.5792,
+     "slack": 0.9198,
+     "state": "MET"
+    }
+   },
+   "max_capacitance": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_1784_/Y",
+     "limit": 0.0339,
+     "value": 0.0065,
+     "slack": 0.0274,
+     "state": "MET"
+    }
+   }
+  },
+  "ff_n40C_1v76": {
+   "status": "audited",
+   "sensitivity_pins_listed": 8363,
+   "max_slew": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_1902_/Y",
+     "limit": 1.4885,
+     "value": 0.5068,
+     "slack": 0.9817,
+     "state": "MET"
+    }
+   },
+   "max_capacitance": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_1784_/Y",
+     "limit": 0.0403,
+     "value": 0.0065,
+     "slack": 0.0338,
+     "state": "MET"
+    }
+   }
+  },
+  "ff_n40C_1v95": {
+   "status": "audited",
+   "sensitivity_pins_listed": 8363,
+   "max_slew": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_1902_/Y",
+     "limit": 1.4886,
+     "value": 0.4272,
+     "slack": 1.0614,
+     "state": "MET"
+    }
+   },
+   "max_capacitance": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_1784_/Y",
+     "limit": 0.0513,
+     "value": 0.0067,
+     "slack": 0.0446,
+     "state": "MET"
+    }
+   }
+  },
+  "ss_100C_1v40": {
+   "status": "audited",
+   "sensitivity_pins_listed": 8363,
+   "max_slew": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_2412_/B",
+     "limit": 10.0,
+     "value": 1.3183,
+     "slack": 8.6817,
+     "state": "MET"
+    }
+   },
+   "max_capacitance": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_1784_/Y",
+     "limit": 0.0969,
+     "value": 0.0064,
+     "slack": 0.0905,
+     "state": "MET"
+    }
+   }
+  },
+  "ss_100C_1v60": {
+   "status": "audited",
+   "sensitivity_pins_listed": 8363,
+   "max_slew": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_1902_/Y",
+     "limit": 1.4948,
+     "value": 0.944,
+     "slack": 0.5507,
+     "state": "MET"
+    }
+   },
+   "max_capacitance": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_2411_/Y",
+     "limit": 0.0266,
+     "value": 0.016,
+     "slack": 0.0106,
+     "state": "MET"
+    }
+   }
+  },
+  "ss_n40C_1v28": {
+   "status": "audited",
+   "sensitivity_pins_listed": 8363,
+   "max_slew": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_1902_/Y",
+     "limit": 4.9335,
+     "value": 4.1733,
+     "slack": 0.7602,
+     "state": "MET"
+    }
+   },
+   "max_capacitance": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_2402_/Y",
+     "limit": 0.0153,
+     "value": 0.0115,
+     "slack": 0.0038,
+     "state": "MET"
+    }
+   }
+  },
+  "ss_n40C_1v35": {
+   "status": "audited",
+   "sensitivity_pins_listed": 8363,
+   "max_slew": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_1902_/Y",
+     "limit": 9.9813,
+     "value": 2.8518,
+     "slack": 7.1294,
+     "state": "MET"
+    }
+   },
+   "max_capacitance": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_2422_/Y",
+     "limit": 0.0366,
+     "value": 0.0058,
+     "slack": 0.0308,
+     "state": "MET"
+    }
+   }
+  },
+  "ss_n40C_1v40": {
+   "status": "audited",
+   "sensitivity_pins_listed": 8363,
+   "max_slew": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_1902_/Y",
+     "limit": 9.983,
+     "value": 2.2887,
+     "slack": 7.6943,
+     "state": "MET"
+    }
+   },
+   "max_capacitance": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_2422_/Y",
+     "limit": 0.0481,
+     "value": 0.0059,
+     "slack": 0.0422,
+     "state": "MET"
+    }
+   }
+  },
+  "ss_n40C_1v44": {
+   "status": "audited",
+   "sensitivity_pins_listed": 8363,
+   "max_slew": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_1642_/Y",
+     "limit": 4.9385,
+     "value": 1.9238,
+     "slack": 3.0147,
+     "state": "MET"
+    }
+   },
+   "max_capacitance": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_2422_/Y",
+     "limit": 0.0267,
+     "value": 0.0059,
+     "slack": 0.0208,
+     "state": "MET"
+    }
+   }
+  },
+  "ss_n40C_1v60": {
+   "status": "audited",
+   "sensitivity_pins_listed": 8363,
+   "max_slew": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_1902_/Y",
+     "limit": 1.4832,
+     "value": 1.2428,
+     "slack": 0.2404,
+     "state": "MET"
+    }
+   },
+   "max_capacitance": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_1642_/Y",
+     "limit": 0.0211,
+     "value": 0.0167,
+     "slack": 0.0043,
+     "state": "MET"
+    }
+   }
+  },
+  "ss_n40C_1v76": {
+   "status": "audited",
+   "sensitivity_pins_listed": 8363,
+   "max_slew": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_1902_/Y",
+     "limit": 1.4843,
+     "value": 0.9129,
+     "slack": 0.5714,
+     "state": "MET"
+    }
+   },
+   "max_capacitance": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_1784_/Y",
+     "limit": 0.0183,
+     "value": 0.0064,
+     "slack": 0.0119,
+     "state": "MET"
+    }
+   }
+  },
+  "tt_025C_1v80": {
+   "status": "audited",
+   "sensitivity_pins_listed": 8363,
+   "max_slew": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_1903_/C",
+     "limit": 1.5,
+     "value": 0.5859,
+     "slack": 0.9141,
+     "state": "MET"
+    }
+   },
+   "max_capacitance": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_1784_/Y",
+     "limit": 0.0339,
+     "value": 0.0066,
+     "slack": 0.0273,
+     "state": "MET"
+    }
+   }
+  },
+  "tt_100C_1v80": {
+   "status": "audited",
+   "sensitivity_pins_listed": 8363,
+   "max_slew": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_1903_/C",
+     "limit": 1.5,
+     "value": 0.5627,
+     "slack": 0.9373,
+     "state": "MET"
+    }
+   },
+   "max_capacitance": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_1784_/Y",
+     "limit": 0.0366,
+     "value": 0.0067,
+     "slack": 0.0299,
+     "state": "MET"
+    }
+   }
+  }
+ },
+ "reduction": {
+  "kind": "final",
+  "verdict": "clean",
+  "label": "clean",
+  "totals": {
+   "max_slew": 0,
+   "max_capacitance": 0
+  },
+  "coverage": {
+   "ff_100C_1v65": "audited",
+   "ff_100C_1v95": "audited",
+   "ff_n40C_1v56": "audited",
+   "ff_n40C_1v65": "audited",
+   "ff_n40C_1v76": "audited",
+   "ff_n40C_1v95": "audited",
+   "ss_100C_1v40": "audited",
+   "ss_100C_1v60": "audited",
+   "ss_n40C_1v28": "audited",
+   "ss_n40C_1v35": "audited",
+   "ss_n40C_1v40": "audited",
+   "ss_n40C_1v44": "audited",
+   "ss_n40C_1v60": "audited",
+   "ss_n40C_1v76": "audited",
+   "tt_025C_1v80": "audited",
+   "tt_100C_1v80": "audited"
+  },
+  "corners_expected": 16,
+  "corners_audited": 16,
+  "surplus_corners": []
+ },
+ "violators": {
+  "ff_100C_1v65": {
+   "max_slew": [],
+   "max_capacitance": []
+  },
+  "ff_100C_1v95": {
+   "max_slew": [],
+   "max_capacitance": []
+  },
+  "ff_n40C_1v56": {
+   "max_slew": [],
+   "max_capacitance": []
+  },
+  "ff_n40C_1v65": {
+   "max_slew": [],
+   "max_capacitance": []
+  },
+  "ff_n40C_1v76": {
+   "max_slew": [],
+   "max_capacitance": []
+  },
+  "ff_n40C_1v95": {
+   "max_slew": [],
+   "max_capacitance": []
+  },
+  "ss_100C_1v40": {
+   "max_slew": [],
+   "max_capacitance": []
+  },
+  "ss_100C_1v60": {
+   "max_slew": [],
+   "max_capacitance": []
+  },
+  "ss_n40C_1v28": {
+   "max_slew": [],
+   "max_capacitance": []
+  },
+  "ss_n40C_1v35": {
+   "max_slew": [],
+   "max_capacitance": []
+  },
+  "ss_n40C_1v40": {
+   "max_slew": [],
+   "max_capacitance": []
+  },
+  "ss_n40C_1v44": {
+   "max_slew": [],
+   "max_capacitance": []
+  },
+  "ss_n40C_1v60": {
+   "max_slew": [],
+   "max_capacitance": []
+  },
+  "ss_n40C_1v76": {
+   "max_slew": [],
+   "max_capacitance": []
+  },
+  "tt_025C_1v80": {
+   "max_slew": [],
+   "max_capacitance": []
+  },
+  "tt_100C_1v80": {
+   "max_slew": [],
+   "max_capacitance": []
+  }
+ }
+}

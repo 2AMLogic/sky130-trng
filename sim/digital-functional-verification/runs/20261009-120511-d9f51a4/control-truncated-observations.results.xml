@@ -1,0 +1,26 @@
+<testsuites name="results">
+  <testsuite name="all" package="all">
+    <property name="random_seed" value="1" />
+    <testcase name="test_00_drive_program" classname="test_trng_digital_fv" file="./digital/tb/cocotb/test_trng_digital_fv.py" lineno="142" time="1.6090717315673828" sim_time_ns="42400.0" ratio_time="26350.596538476584">
+      <failure error_type="AssertionError" error_msg="observed 3815 cycles, stimulus has 4239: 424 observation(s) missing" />
+    </testcase>
+    <testcase name="test_phase_01_post_reset_idle_id_parameter_reads" classname="test_trng_digital_fv" file="./digital/tb/cocotb/test_trng_digital_fv.py" lineno="153" time="4.267692565917969e-05" sim_time_ns="0.0" ratio_time="0.0" />
+    <testcase name="test_phase_02_sampling_disabled_raw_valid_high_but_ctrl_en_low" classname="test_trng_digital_fv" file="./digital/tb/cocotb/test_trng_digital_fv.py" lineno="153" time="2.86102294921875e-05" sim_time_ns="0.0" ratio_time="0.0" />
+    <testcase name="test_phase_03_enable_run_the_start_up_window_with_interleaved_" classname="test_trng_digital_fv" file="./digital/tb/cocotb/test_trng_digital_fv.py" lineno="153" time="0.00012135505676269531" sim_time_ns="0.0" ratio_time="0.0" />
+    <testcase name="test_phase_04_drain_the_raw_fifo_through_raw_data_pop_on_read" classname="test_trng_digital_fv" file="./digital/tb/cocotb/test_trng_digital_fv.py" lineno="153" time="1.52587890625e-05" sim_time_ns="0.0" ratio_time="0.0" />
+    <testcase name="test_phase_05_raw_streaming_port_out_ready_pops_while_sampling" classname="test_trng_digital_fv" file="./digital/tb/cocotb/test_trng_digital_fv.py" lineno="153" time="3.9577484130859375e-05" sim_time_ns="0.0" ratio_time="0.0" />
+    <testcase name="test_phase_06_simultaneous_register_pop_and_stream_pop_registe" classname="test_trng_digital_fv" file="./digital/tb/cocotb/test_trng_digital_fv.py" lineno="153" time="2.6464462280273438e-05" sim_time_ns="0.0" ratio_time="0.0" />
+    <testcase name="test_phase_07_out_mode_switch_to_conditioned_flushes_both_path" classname="test_trng_digital_fv" file="./digital/tb/cocotb/test_trng_digital_fv.py" lineno="153" time="0.00011324882507324219" sim_time_ns="0.0" ratio_time="0.0" />
+    <testcase name="test_phase_08_induce_an_rct_trip_with_a_stuck_source" classname="test_trng_digital_fv" file="./digital/tb/cocotb/test_trng_digital_fv.py" lineno="153" time="2.2649765014648438e-05" sim_time_ns="0.0" ratio_time="0.0" />
+    <testcase name="test_phase_09_gated_data_blocked_raw_data_still_readable" classname="test_trng_digital_fv" file="./digital/tb/cocotb/test_trng_digital_fv.py" lineno="153" time="2.3603439331054688e-05" sim_time_ns="0.0" ratio_time="0.0" />
+    <testcase name="test_phase_10_write_1_to_clear_then_re_run_the_start_up_test" classname="test_trng_digital_fv" file="./digital/tb/cocotb/test_trng_digital_fv.py" lineno="153" time="0.0005843639373779297" sim_time_ns="0.0" ratio_time="0.0">
+      <failure error_type="AssertionError" error_msg="phase 'write-1-to-clear, then re-run the start-up test': 1005 observations for 1295 cycles" />
+    </testcase>
+    <testcase name="test_phase_11_soft_rst_then_resume_sampling" classname="test_trng_digital_fv" file="./digital/tb/cocotb/test_trng_digital_fv.py" lineno="153" time="0.0007853507995605469" sim_time_ns="0.0" ratio_time="0.0">
+      <failure error_type="AssertionError" error_msg="phase 'SOFT_RST, then resume sampling': 0 observations for 134 cycles" />
+    </testcase>
+    <testcase name="test_zz_trace_length_exact" classname="test_trng_digital_fv" file="./digital/tb/cocotb/test_trng_digital_fv.py" lineno="177" time="0.00031256675720214844" sim_time_ns="0.0" ratio_time="0.0">
+      <failure error_type="AssertionError" error_msg="trace lengths differ: observed 3815, model 4239, stimulus 4239" />
+    </testcase>
+  </testsuite>
+</testsuites>

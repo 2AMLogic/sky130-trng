@@ -76,11 +76,113 @@ klt defaults only; **L5** fill/tap/diode handling; **L6** `power_connectivity`
 is `unchecked` for this reference form (power is part of the ordinary compare
 instead); **L7** hierarchy flattened; **L8** pin names canonicalised (never
 repaired when zero or several ports share a net); **L9** curated deck: partial
-rule coverage (45 deck rules skipped, 19 stream layers without rules; no
-antenna, density, seal ring or latch-up); **L10** analog DRC history;
+rule coverage. 45 deck rules not run, 19 stream layers without rules, each
+classified in `drc_coverage_audit.md` (see "DRC coverage audit" below). Clean
+on the curated deck is still not foundry DRC clean: no foundry sign-off runset,
+and no antenna, density, seal-ring, latch-up or foundry-only rules.
+**L10** analog DRC history;
 **L11** connectivity only, no parasitics; **L12** area target still Unmet;
 **L13** 29 unloaded input pins (`bus_wdata[31:3]`) have vacuous endpoint
 audits; **L14** stub pin order; **L15** the extraction warnings, classified.
+
+## DRC coverage audit (L9, issue #281)
+
+`drc_coverage_audit.md` / `drc_coverage_audit.json` turn L9's counts into
+statements a reader can check. **This is evidence, not sign-off.** It checks
+klt's own curated-deck coverage report against the stream. It is not a foundry
+runset, and it adds no antenna, density, seal-ring or latch-up check. The
+density and antenna *estimates* that accompany it are in
+`physical_estimates.*` (see "Physical estimates" below, issue #283).
+
+- **Table 1: the 45 rules klt did not run** (`drc.json` `coverage.inapplicable`,
+  reason `no_applicable_geometry`; `rules_skipped` is the legacy name of the
+  same list). Each row gives the rule's check kind and deck layers from
+  `klt deck rules`. Each layer is resolved to its stream layer/datatype through
+  the deck's own layer table, and the row gives that layer's flattened shape
+  count in `trng_whole.gds` (`klt layers --flattened --include-text`). Result:
+  **45 of 45 `vacuous-confirmed`**, 0 residual, 0 unresolved. Every rule reads
+  a layer with no geometry in the stream: `capm`/`capm2`, `dnwell`, the
+  HV/implant/marker layers, `pad`, and so on. For the six two-layer rules
+  (`capm.enclosing.via3.1`, `met3.enclosing.capm.1`, ...), `via3`/`via4`/`met3`/`met4`
+  do carry shapes, but the MiM-cap plate each rule also needs is empty.
+- **Table 2: the 19 stream layer/datatypes no curated rule reads.** **11 are
+  `present-unruled`** (drawn geometry that nothing checks, a real residual
+  gap): for example `64/16`, `122/16`, `81/4`, `236/0`, `235/4`. **8 are
+  `text-or-marker-only`** (pin-label layers carrying only text objects): for
+  example `64/5`, `67/5`, `83/44`. No layer is labelled absent. The deck's layer
+  table names none of the 19, and the audit does not guess their purpose.
+
+The "adds no antenna, density … check" limitation stays exactly as it is:
+`physical_estimates.*` (below) are informational estimates, not checks.
+
+Verdict rules are stated per check kind in the table. A rule is
+`vacuous-confirmed` only for a known kind (`angle`/`ongrid`/`width`/`space` need
+their one layer empty; `enclosing`/`separation` need one of their two layers
+empty). An unknown rule, unmappable layer or unsupported kind is `unresolved`,
+never vacuous.
+
+**Pinning.** The mapping is taken only from the deck that produced `drc.json`.
+`klt deck rules` must report `content_hash` equal to `drc.json`
+`provenance.deck.content_hash` (`sha256:2bcbd625…`). The layer table comes from
+`klayout_tools.decks.get_layer_names('sky130')`, imported from a `klayout_tools`
+whose deck module hashes to that same value. If either hash differs, the audit
+refuses and names both hashes. klt exposes no layer/datatype for rule layers on
+its CLI, hence the Python import; filed as klayout-tools#3092.
+
+**Drift.** `verify-whole.py check` (and the seconds-long
+`check --audit-only`) recomputes the audit and fails if the stream, the
+resolved layer map or the deck hash changes either table. Controls 1-5 run on
+synthetic GDS fixtures with the real pinned deck: absent layer, present layer,
+unknown rule, unmappable layer, unsupported kind, one-of-two layers, and drift
+on a stream edit / remapped layer / changed deck hash. They are in
+`controls/drc_coverage_audit_controls.md`, and `test_verify_whole.py` runs the
+same controls on stubbed counts with no klt.
+
+## Physical estimates (L9, issue #283)
+
+`physical_estimates.md` / `physical_estimates.json` turn the rest of L9's "no
+antenna, density … rules" statement into **informational numbers a reader can
+check**. **These are estimates, not foundry sign-off** -- the pinned deck has
+no density or antenna rule at all, so no window, threshold or verdict here is
+foundry-derived, and neither artifact contains a pass/fail. What they carry:
+
+- **Density** of the unioned drawing geometry of poly, li1 and met1..met5 over
+  a 100 um x 100 um tiled grid. The window size and stride are an **arbitrary
+  choice** (the deck documents no density window); the denominator is each
+  window's own clipped area inside the top-cell bounding box, zero-area windows
+  are skipped and counted, and invalid grids are refused. Per-window densities
+  are committed so any single window can be spot-checked by hand.
+- **Naive cumulative antenna ratios** per electrical net and level: summed
+  li1..level conductor area / summed MOS gate W*L. Gate areas come from the
+  committed extraction's 264 analog devices; conductor components come from a
+  flat metal-only connectivity extraction and are attributed to a gate net
+  only when their whole label set belongs to that net and no other. Everything
+  that does not meet that bar is excluded and counted: zero-gate nets (never
+  rated, never infinite), gate nets with no attributable conductor geometry
+  (listed), ambiguous label sets, unlabeled geometry. All gates inside the
+  8605 abstracted digital instances are excluded -- reported against the count
+  of placed device-bearing instances, never an invented area fraction. Process
+  sequencing, diode relief, side-wall area and foundry thresholds are not
+  modelled.
+- **Coverage accounting** quantifies how much drawn metal per level the
+  label-based attribution covers (roughly 10-50% by level), so the ratios are
+  read as lower bounds on real per-net exposure for the nets they do cover.
+
+Why computed in-repo rather than with `klt stats`/`klt economy`: `stats
+--per-layer` sums polygon areas without a boolean merge (overlaps
+double-counted — `klt stats` will *not* reproduce these unioned numbers by
+design), and neither command offers windowed per-layer density. Filed as
+klayout-tools#3107 (see `docs/friction-ledger.md`).
+
+**Drift.** `verify-whole.py check` includes the estimates: it recomputes both
+artifacts from the committed GDS + extraction and fails on any difference
+(`check --estimates-only` scopes to this gate alone, in seconds, with no klt
+run). Regenerate with `verify-whole.py estimates`. The calculator controls
+(union without double counting, hierarchy, boundary clipping, empty layer,
+invalid grids, cumulative ratios, zero-gate and ambiguous-label accounting,
+drift) run on synthetic GDS fixtures with real klayout: they are in
+`controls/physical_estimates_controls.md`, and `test_verify_whole.py` runs the
+pure arithmetic halves of the same controls on PR CI with nothing installed.
 
 ## Fault controls
 
@@ -125,9 +227,18 @@ SPICE grid.
 ```bash
 python layout/bin/verify-whole.py run        # DRC + extract + LVS + coverage   (~8 min)
 python layout/bin/verify-whole.py controls   # the five fault controls + baseline re-run (~45 min)
-python layout/bin/verify-whole.py check      # isolated baseline re-run, diff against committed (~8 min)
+python layout/bin/verify-whole.py check      # coverage-audit drift + isolated baseline re-run, diff against committed (~8 min)
+python layout/bin/verify-whole.py check --audit-only   # DRC coverage audit drift only (seconds)
+python layout/bin/verify-whole.py audit      # regenerate drc_coverage_audit.{json,md} from the committed drc.json
+python layout/bin/verify-whole.py audit-controls   # coverage-audit controls 1-5 -> controls/drc_coverage_audit_controls.*
 python3 layout/test_verify_whole.py          # evidence contract tests, no klt needed
 ```
+
+The coverage audit needs the pinned klt specifically, not just "a klt": a
+newer build ships a different curated deck (klt 0.7.0's is `sha256:f8f2c3f4…`),
+and the audit refuses it by design rather than mapping `drc.json`'s rules
+through another deck. Pass the pinned venv's binary with `--klt` if the `klt`
+on `PATH` is a different build.
 
 The committed reports can also be re-verified with the tool itself, from this
 directory (they record relative paths, so these resolve against the committed
@@ -156,7 +267,11 @@ pins is.
 | `lvs.ref.spice` | the generated mixed-level reference |
 | `lvs.request.json`, `lvs.json` | `klt lvs` request / full report |
 | `coverage.json`, `coverage.md` | per-port coverage matrix + named limitations |
+| `drc_coverage_audit.json`, `drc_coverage_audit.md` | L9 audit: every rule klt did not run and every unruled stream layer, with shape counts and verdicts (issue #281) |
+| `physical_estimates.json`, `physical_estimates.md` | informational density + naive antenna-ratio estimates, definitions and coverage limits in-file, "estimate, not foundry sign-off" (issue #283) |
 | `controls/controls.json`, `controls/controls.md` | fault-control evidence |
+| `controls/drc_coverage_audit_controls.json`, `.md` | coverage-audit controls 1-5 on synthetic fixtures |
+| `controls/physical_estimates_controls.json`, `.md` | estimate calculator controls (union, hierarchy, clipping, grids, ratios, zero-gate/ambiguous accounting, drift) on synthetic fixtures |
 
 ## Handoff to #174 and #170
 
@@ -175,4 +290,6 @@ pins is.
   or Monte Carlo grids go through `klt sim` (batch backend), never hand-launched.
 - **Tool friction filed (generic):** klayout-tools#2853 (mixed-level LVS needs
   a pre-extracted netlist, dropping `body_verification`/`power_connectivity`)
-  and klayout-tools#2854 (a declared pin set cannot yield canonical pin names).
+  and klayout-tools#2854 (a declared pin set cannot yield canonical pin names),
+  klayout-tools#3092 (deck rule layers cannot be mapped to stream
+  layer/datatype from CLI JSON).

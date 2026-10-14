@@ -1,0 +1,121 @@
+{
+  "schema_version": 1,
+  "engine": "icarus",
+  "hdl_toplevel": "trng_digital",
+  "testbench": "test_trng_digital_fv",
+  "status": "fail",
+  "test_count": 13,
+  "passed_count": 11,
+  "failed_count": 2,
+  "skipped_count": 0,
+  "tests": [
+    {
+      "name": "test_00_drive_program",
+      "status": "passed",
+      "sim_time_ns": 21200.0,
+      "real_time_s": 6.716540813446045
+    },
+    {
+      "name": "test_phase_01_post_reset_idle_id_parameter_reads",
+      "status": "passed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 4.00543212890625e-05
+    },
+    {
+      "name": "test_phase_02_sampling_disabled_raw_valid_high_but_ctrl_en_low",
+      "status": "passed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 1.3589859008789062e-05
+    },
+    {
+      "name": "test_phase_03_enable_run_the_start_up_window_with_interleaved_",
+      "status": "passed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 6.318092346191406e-05
+    },
+    {
+      "name": "test_phase_04_drain_the_raw_fifo_through_raw_data_pop_on_read",
+      "status": "passed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 2.7894973754882812e-05
+    },
+    {
+      "name": "test_phase_05_raw_streaming_port_out_ready_pops_while_sampling",
+      "status": "passed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 1.9550323486328125e-05
+    },
+    {
+      "name": "test_phase_06_simultaneous_register_pop_and_stream_pop_registe",
+      "status": "passed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 1.239776611328125e-05
+    },
+    {
+      "name": "test_phase_07_out_mode_switch_to_conditioned_flushes_both_path",
+      "status": "failed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 0.0006017684936523438,
+      "error_type": "AssertionError",
+      "error_message": "phase 'OUT_MODE switch to conditioned (flushes both paths)': 6/1035 cycles differ from the model, first at cycle 2351: dut='c0acf36b 1 d02cbfef 0 0 1' model='c0acf36b 1 5729bd9e 0 0 1'"
+    },
+    {
+      "name": "test_phase_08_induce_an_rct_trip_with_a_stuck_source",
+      "status": "passed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 1.7881393432617188e-05
+    },
+    {
+      "name": "test_phase_09_gated_data_blocked_raw_data_still_readable",
+      "status": "passed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 1.5974044799804688e-05
+    },
+    {
+      "name": "test_phase_10_write_1_to_clear_then_re_run_the_start_up_test",
+      "status": "passed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 6.699562072753906e-05
+    },
+    {
+      "name": "test_phase_11_soft_rst_then_resume_sampling",
+      "status": "passed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 1.2636184692382812e-05
+    },
+    {
+      "name": "test_zz_trace_length_exact",
+      "status": "failed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 0.0003674030303955078,
+      "error_type": "AssertionError",
+      "error_message": "full trace differs from the model"
+    }
+  ],
+  "coverage": null,
+  "trace": null,
+  "environment": {
+    "engine": "icarus",
+    "engine_version": "13.0",
+    "cocotb_version": "2.0.1",
+    "results_xml": "<work>/ctl-clock-5ns/.klt/functional-verification/results_icarus.xml",
+    "random_seed": 1,
+    "sdf": {
+      "file": "<work>/sdf/trng_digital.baseline.sdf",
+      "corner": "typ",
+      "entries": "all",
+      "annotated": true,
+      "partial": true,
+      "dropped": {
+        "timingcheck": {
+          "count": 455,
+          "reason": "Icarus Verilog implements SDF delay annotation (IOPATH/INTERCONNECT) but not SDF TIMINGCHECK -- every TIMINGCHECK section in the SDF is dropped, so $setup/$hold/$width checks run against the cell library's own placeholder timing, not the characterised limits in the SDF"
+        },
+        "zero_delay_alias_port_interconnect": {
+          "count": 33,
+          "reason": "Icarus Verilog cannot insert an intermodpath onto a top-level port bit the gate-level netlist drives through a Verilog 'assign' alias (the shape a P&R backend produces for a constant/tie-cell-driven output: 'assign uio_oe[0] = net0;'), so every INTERCONNECT entry with such a destination fails with 'Could not find intermodpath!'. Entries whose every min:typ:max delay value is zero model no delay at any corner, so they are removed before annotation and counted here instead of failing the run -- a non-zero-delay entry on the same destination is left in place and still fails loudly"
+        }
+      }
+    }
+  }
+}

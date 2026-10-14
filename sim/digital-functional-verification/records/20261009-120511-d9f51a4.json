@@ -1,0 +1,315 @@
+{
+  "record_id": "20261009-120511-d9f51a4",
+  "slug": "digital-functional-verification",
+  "level": "gate (post-route as-built netlist, functional/unit-delay -- NOT SDF-timed)",
+  "claim": "The directed bit-exact trng_digital suite (4239 cycles, 11 phases) passes through the pinned native `klt functional-verification` interface (klayout-tools 0.7.0, cocotb 2.0.1, Icarus 13.0) on both the RTL and the routed sky130_fd_sc_hd netlist at functional/unit-delay level against the independent behavioural model; an xor->and routed netlist, truncated, dropped and missing observations all fail the same path. Not SDF-timed (not item 7); the digital specification is still Proposed (item 5 not claimed).",
+  "seeds": {
+    "cosim_stimulus_seed": 20260905,
+    "cocotb_random_seed": 1
+  },
+  "supersedes": null,
+  "author": "loom-builder@sky130-trng",
+  "timestamp_utc": "2026-10-09T12:05:11.751894+00:00",
+  "repo_sha": "d9f51a4",
+  "tools": {
+    "python": "3.12.3",
+    "platform": "Linux-7.0.0-1014-aws-x86_64-with-glibc2.39",
+    "klt": "klt 0.7.0",
+    "cocotb": "2.0.1",
+    "iverilog": "Icarus Verilog version 13.0 (stable) (v13_0)"
+  },
+  "artifacts": [
+    "sim/digital-functional-verification/runs/20261009-120511-d9f51a4/rtl.request.json",
+    "sim/digital-functional-verification/runs/20261009-120511-d9f51a4/rtl.report.json",
+    "sim/digital-functional-verification/runs/20261009-120511-d9f51a4/rtl.results.xml",
+    "sim/digital-functional-verification/runs/20261009-120511-d9f51a4/routed-gate.request.json",
+    "sim/digital-functional-verification/runs/20261009-120511-d9f51a4/routed-gate.report.json",
+    "sim/digital-functional-verification/runs/20261009-120511-d9f51a4/routed-gate.results.xml",
+    "sim/digital-functional-verification/runs/20261009-120511-d9f51a4/control-xor-to-and-all.request.json",
+    "sim/digital-functional-verification/runs/20261009-120511-d9f51a4/control-xor-to-and-all.report.json",
+    "sim/digital-functional-verification/runs/20261009-120511-d9f51a4/control-xor-to-and-all.results.xml",
+    "sim/digital-functional-verification/runs/20261009-120511-d9f51a4/control-truncated-observations.request.json",
+    "sim/digital-functional-verification/runs/20261009-120511-d9f51a4/control-truncated-observations.report.json",
+    "sim/digital-functional-verification/runs/20261009-120511-d9f51a4/control-truncated-observations.results.xml",
+    "sim/digital-functional-verification/runs/20261009-120511-d9f51a4/control-dropped-observation.request.json",
+    "sim/digital-functional-verification/runs/20261009-120511-d9f51a4/control-dropped-observation.report.json",
+    "sim/digital-functional-verification/runs/20261009-120511-d9f51a4/control-dropped-observation.results.xml",
+    "sim/digital-functional-verification/runs/20261009-120511-d9f51a4/control-no-observations.request.json",
+    "sim/digital-functional-verification/runs/20261009-120511-d9f51a4/control-no-observations.report.json",
+    "sim/digital-functional-verification/runs/20261009-120511-d9f51a4/control-no-observations.results.xml",
+    "sim/digital-functional-verification/runs/20261009-120511-d9f51a4/mutation-rtl.request.json",
+    "sim/digital-functional-verification/runs/20261009-120511-d9f51a4/mutation-rtl.report.json",
+    "sim/digital-functional-verification/runs/20261009-120511-d9f51a4/mutation-rtl.proposals.json",
+    "sim/digital-functional-verification/runs/20261009-120511-d9f51a4/mutation-rtl.results.xml",
+    "sim/digital-functional-verification/runs/20261009-120511-d9f51a4/mutation-routed-gate.request.json",
+    "sim/digital-functional-verification/runs/20261009-120511-d9f51a4/mutation-routed-gate.report.json",
+    "sim/digital-functional-verification/runs/20261009-120511-d9f51a4/mutation-routed-gate.proposals.json",
+    "sim/digital-functional-verification/runs/20261009-120511-d9f51a4/mutation-routed-gate.results.xml",
+    "sim/digital-functional-verification/runs/20261009-120511-d9f51a4/rtl.stimulus.txt",
+    "sim/digital-functional-verification/runs/20261009-120511-d9f51a4/rtl.observations.txt",
+    "sim/digital-functional-verification/runs/20261009-120511-d9f51a4/rtl.model-observations.txt",
+    "sim/digital-functional-verification/runs/20261009-120511-d9f51a4/routed-gate.stimulus.txt",
+    "sim/digital-functional-verification/runs/20261009-120511-d9f51a4/routed-gate.observations.txt",
+    "sim/digital-functional-verification/runs/20261009-120511-d9f51a4/routed-gate.model-observations.txt",
+    "sim/digital-functional-verification/runs/20261009-120511-d9f51a4/input-hashes.json"
+  ],
+  "verdict": {
+    "rtl_baseline": true,
+    "routed_gate_baseline": true,
+    "negative_controls_detected": true,
+    "item5_compound_citation_allowed": false
+  },
+  "native_report": "klt functional-verification --format json; one report.json per run, preserved verbatim (paths sanitised)",
+  "coverage_class": "functional / unit-delay (FUNCTIONAL + UNIT_DELAY #1); NOT SDF-timed; NOT item-7 evidence",
+  "baselines": {
+    "rtl": {
+      "rc": 0,
+      "status": "pass",
+      "test_count": 13,
+      "passed": 13,
+      "failed": 0,
+      "skipped": 0,
+      "failed_tests": [],
+      "sdf": null,
+      "stderr": "",
+      "trace_lines": {
+        "stimulus": 4239,
+        "observations": 4239,
+        "model-observations": 4239
+      }
+    },
+    "routed-gate": {
+      "rc": 0,
+      "status": "pass",
+      "test_count": 13,
+      "passed": 13,
+      "failed": 0,
+      "skipped": 0,
+      "failed_tests": [],
+      "sdf": null,
+      "stderr": "",
+      "trace_lines": {
+        "stimulus": 4239,
+        "observations": 4239,
+        "model-observations": 4239
+      }
+    }
+  },
+  "negative_controls": {
+    "xor-to-and-all": {
+      "mutation": "19 xor2_1 instances rewritten to and2_1 in the routed netlist",
+      "detected": true,
+      "rc": 3,
+      "status": "fail",
+      "test_count": 13,
+      "passed": 1,
+      "failed": 12,
+      "failed_tests": [
+        "test_phase_01_post_reset_idle_id_parameter_reads",
+        "test_phase_02_sampling_disabled_raw_valid_high_but_ctrl_en_low",
+        "test_phase_03_enable_run_the_start_up_window_with_interleaved_",
+        "test_phase_04_drain_the_raw_fifo_through_raw_data_pop_on_read",
+        "test_phase_05_raw_streaming_port_out_ready_pops_while_sampling",
+        "test_phase_06_simultaneous_register_pop_and_stream_pop_registe",
+        "test_phase_07_out_mode_switch_to_conditioned_flushes_both_path",
+        "test_phase_08_induce_an_rct_trip_with_a_stuck_source",
+        "test_phase_09_gated_data_blocked_raw_data_still_readable",
+        "test_phase_10_write_1_to_clear_then_re_run_the_start_up_test",
+        "test_phase_11_soft_rst_then_resume_sampling",
+        "test_zz_trace_length_exact"
+      ]
+    },
+    "truncated-observations": {
+      "mutation": "observation record stops after 3815 of 4239 cycles (TRNG_FV_FAULT=truncate:3815)",
+      "detected": true,
+      "rc": 3,
+      "status": "fail",
+      "test_count": 13,
+      "passed": 9,
+      "failed": 4,
+      "failed_tests": [
+        "test_00_drive_program",
+        "test_phase_10_write_1_to_clear_then_re_run_the_start_up_test",
+        "test_phase_11_soft_rst_then_resume_sampling",
+        "test_zz_trace_length_exact"
+      ]
+    },
+    "dropped-observation": {
+      "mutation": "cycle 1413's observation omitted from the record (TRNG_FV_FAULT=drop:1413)",
+      "detected": true,
+      "rc": 3,
+      "status": "fail",
+      "test_count": 13,
+      "passed": 5,
+      "failed": 8,
+      "failed_tests": [
+        "test_00_drive_program",
+        "test_phase_06_simultaneous_register_pop_and_stream_pop_registe",
+        "test_phase_07_out_mode_switch_to_conditioned_flushes_both_path",
+        "test_phase_08_induce_an_rct_trip_with_a_stuck_source",
+        "test_phase_09_gated_data_blocked_raw_data_still_readable",
+        "test_phase_10_write_1_to_clear_then_re_run_the_start_up_test",
+        "test_phase_11_soft_rst_then_resume_sampling",
+        "test_zz_trace_length_exact"
+      ]
+    },
+    "no-observations": {
+      "mutation": "no observation recorded at all (TRNG_FV_FAULT=truncate:0)",
+      "detected": true,
+      "rc": 3,
+      "status": "fail",
+      "test_count": 13,
+      "passed": 0,
+      "failed": 13,
+      "failed_tests": [
+        "test_00_drive_program",
+        "test_phase_01_post_reset_idle_id_parameter_reads",
+        "test_phase_02_sampling_disabled_raw_valid_high_but_ctrl_en_low",
+        "test_phase_03_enable_run_the_start_up_window_with_interleaved_",
+        "test_phase_04_drain_the_raw_fifo_through_raw_data_pop_on_read",
+        "test_phase_05_raw_streaming_port_out_ready_pops_while_sampling",
+        "test_phase_06_simultaneous_register_pop_and_stream_pop_registe",
+        "test_phase_07_out_mode_switch_to_conditioned_flushes_both_path",
+        "test_phase_08_induce_an_rct_trip_with_a_stuck_source",
+        "test_phase_09_gated_data_blocked_raw_data_still_readable",
+        "test_phase_10_write_1_to_clear_then_re_run_the_start_up_test",
+        "test_phase_11_soft_rst_then_resume_sampling",
+        "test_zz_trace_length_exact"
+      ]
+    }
+  },
+  "mutation_testing": {
+    "rtl": {
+      "proposal_count": 2,
+      "valid_count": 2,
+      "rejected_count": 0,
+      "killed_count": 2,
+      "survived_count": 0,
+      "mutation_score": 1.0,
+      "survivors": []
+    },
+    "routed-gate": {
+      "proposal_count": 19,
+      "valid_count": 19,
+      "rejected_count": 0,
+      "killed_count": 13,
+      "survived_count": 6,
+      "mutation_score": 0.6842105263157895,
+      "survivors": [
+        "trng_digital.routed.v:2176",
+        "trng_digital.routed.v:2183",
+        "trng_digital.routed.v:2840",
+        "trng_digital.routed.v:2983",
+        "trng_digital.routed.v:3095",
+        "trng_digital.routed.v:3231"
+      ]
+    }
+  },
+  "item5_review": {
+    "sta_half": {
+      "met": true,
+      "corners": 16,
+      "evidence": "layout/trng_digital/sta.json"
+    },
+    "functional_half": {
+      "met": true,
+      "evidence": "this record (native klt functional-verification reports)"
+    },
+    "spec_ratification": {
+      "met": false,
+      "dr_0004_status": "Proposed"
+    },
+    "compound_citation_allowed": false
+  },
+  "input_hashes": {
+    "digital/rtl/trng_digital.v": "sha256:219738aae7c5fd3bfede92ae20bebe38e843f7341690eed151d1545a93db90ef",
+    "layout/trng_digital/trng_digital.routed.v": "sha256:9f3956848e6e75223f75bd154df905fecbb4e988593e78d1a92e347969fbf37f",
+    "layout/trng_digital/sta.json": "sha256:5baf337a954bdc5a0937163603295c47757e15d59a48edf34d1ecbcd1945949a",
+    "digital/tb/cocotb/sky130_fd_sc_hd_sim_defines.v": "sha256:d321676fd5523f6ff36c7218276c9d6038791dd7ca0ad555a94e350f0b00a9ca",
+    "digital/tb/cocotb/test_trng_digital_fv.py": "sha256:b842591f79b7b8a05905dd8c873c07cf444a8e7c06a88ddd4371b8d255897f64",
+    "sim/digital-rtl-equivalence/harness/rtl-cosim.py": "sha256:d2ec9bdb3b50f56e7ec3e14e0bb57a421447ad1a8aaa3fd976ea8b3e12b11461",
+    "digital/model/__init__.py": "sha256:8817cfbccef9e8e87d4a8592c5aad6a49db28b6ab00e0c7956462c35eb72a512",
+    "digital/model/conditioner.py": "sha256:276e18b4c52223d5a25c38bbb2934c5e9a84387c9bf3440db3cad11a2a692edf",
+    "digital/model/digital_top.py": "sha256:f6975e86aeff4ca7c3d60d620f4d19402e11d8bb8de80348d4495d17f98b7727",
+    "digital/model/health.py": "sha256:dcde276f8719aa6c55ab5504334750a1f08c31562bbdd22c7ce4f0ae83cac222",
+    "digital/model/params.py": "sha256:5d1453665cf46650f21549b7b8c0d87432ce8498942f9c3e462da5c562f9a225",
+    "digital/model/regmap.py": "sha256:c9e6770ac2ae01364244a552e5f31bbfc5cd2d6f43cefdb38eaba38fc4fc2626",
+    "$PDK_LIBS_REF/sky130_fd_sc_hd/verilog/primitives.v": "sha256:7d4b1441d06b0f2b9662befa675a0484d77149e04eb42a5f1fa2d4cfded7b2ce",
+    "$PDK_LIBS_REF/sky130_fd_sc_hd/verilog/sky130_fd_sc_hd.v": "sha256:12d5d6448ccf265c544d88402d5c10ab6de9bee8b8cde48eee1f31ea8c3c3e45",
+    "stimulus.txt (generated, seed 20260905)": "sha256:7a44c814f4f980eece64560b6d43553411c59bf111fd519c97f9722961adae6d",
+    "model-observations.txt (oracle trace)": "sha256:89f4308ba8c5292a6184054004c68e8d5cab0373f6b474145e25480d25bb949d"
+  },
+  "pins": {
+    "klt": "klt 0.7.0",
+    "cocotb": "2.0.1",
+    "icarus": "13.0",
+    "engine": "icarus",
+    "klt_version_reported": "klt 0.7.0",
+    "pdk": {
+      "variant": "sky130A",
+      "version": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b"
+    }
+  },
+  "program": {
+    "seed": 20260905,
+    "cycles": 4239,
+    "phases": [
+      {
+        "name": "post-reset idle + ID/parameter reads",
+        "start": 0,
+        "end": 20
+      },
+      {
+        "name": "sampling disabled: raw_valid high but CTRL.EN low",
+        "start": 20,
+        "end": 86
+      },
+      {
+        "name": "enable, run the start-up window with interleaved STATUS reads",
+        "start": 86,
+        "end": 1175
+      },
+      {
+        "name": "drain the raw FIFO through RAW_DATA (pop-on-read)",
+        "start": 1175,
+        "end": 1187
+      },
+      {
+        "name": "raw streaming port: out_ready pops while sampling",
+        "start": 1187,
+        "end": 1443
+      },
+      {
+        "name": "simultaneous register pop and stream pop (register wins)",
+        "start": 1443,
+        "end": 1579
+      },
+      {
+        "name": "OUT_MODE switch to conditioned (flushes both paths)",
+        "start": 1579,
+        "end": 2614
+      },
+      {
+        "name": "induce an RCT trip with a stuck source",
+        "start": 2614,
+        "end": 2702
+      },
+      {
+        "name": "gated: DATA blocked, RAW_DATA still readable",
+        "start": 2702,
+        "end": 2810
+      },
+      {
+        "name": "write-1-to-clear, then re-run the start-up test",
+        "start": 2810,
+        "end": 4105
+      },
+      {
+        "name": "SOFT_RST, then resume sampling",
+        "start": 4105,
+        "end": 4239
+      }
+    ]
+  },
+  "reproduction": "uv venv .venv && uv pip install --python .venv/bin/python \"klayout-tools==0.7.0\" \"cocotb==2.0.1\" && python3 sim/digital-functional-verification/harness/fv-cosim.py --klt .venv/bin/klt --emit-record"
+}

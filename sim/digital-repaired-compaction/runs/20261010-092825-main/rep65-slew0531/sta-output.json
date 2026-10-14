@@ -1,0 +1,1149 @@
+{
+  "schema_version": 1,
+  "engine": "openroad",
+  "engine_version": "26Q3-1510-g6cb3f2b704",
+  "hdl_toplevel": null,
+  "status": "ok",
+  "def_path": "sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital.def",
+  "verilog_path": null,
+  "geometry_source": "routed",
+  "wire_load_model": null,
+  "wire_load_mode": null,
+  "spef_path": "sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef",
+  "provenance": {
+    "klt_version": "0.6.0+g10f3da34c088",
+    "klayout_version": "0.30.12",
+    "pdk": {
+      "name": "sky130A",
+      "source": "PDK_ROOT environment variable",
+      "version": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b"
+    },
+    "deck": null,
+    "input": {
+      "content_hash": "sha256:fc718414017b6dd3da0f9917537ac7d1c1d8649e4eea509674090c569e238bba",
+      "role": "layout"
+    }
+  },
+  "corners": [
+    {
+      "corner": "ff_100C_1v65",
+      "engine_log": {
+        "invocation_id": "044c59e8d71d40d0b1ec0a2a6ded2b97",
+        "script_name": "sta_trng_digital__ff_100C_1v65.tcl",
+        "script_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "script_sha256": "d36ce57b9817cc2c3296b3c73a198f908aa5513e1356532fdb93f8bbcecae178",
+        "metrics_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "outcome": "exited",
+        "returncode": 0,
+        "directory": {
+          "path": null,
+          "scope": "external"
+        },
+        "stdout_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "stderr_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "metadata_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "retention_errors": []
+      },
+      "worst_slack_ns": 15994.8,
+      "total_negative_slack_ns": 0,
+      "worst_hold_slack_ns": 0.37227,
+      "total_negative_hold_slack_ns": 0,
+      "fmax_mhz": 0.2497,
+      "timing_status": "constrained",
+      "setup_violation_count": 0,
+      "hold_violation_count": 0,
+      "clock_skew_ns": 0.01822,
+      "estimated_power_mw": 0.0174,
+      "spef_annotation": {
+        "nets_annotated": 2354,
+        "nets_total": 8067,
+        "design_nets_annotated": 2354,
+        "design_nets_total": 2354,
+        "design_nets_missing_sample": [],
+        "reader_warning_count": 2002,
+        "reader_warning_sample": [
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 131, net $100 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 152, net $1000 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 167, net $10000 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 177, net $1001 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 191, net $1003 not found."
+        ],
+        "unannotated_driver_count": 301,
+        "partially_unannotated_driver_count": 33,
+        "delay_changed": true,
+        "annotation_complete": false,
+        "annotation_warning": "read_spef discarded annotation for 2002 SPEF record(s) it could not resolve against the linked design (OpenSTA STA-1650/STA-1648 'not found' warnings); report_parasitic_annotation found 301 driver(s) with no parasitics attached after read_spef -- the worst_slack_ns/etc. fields above are NOT a real-parasitics measurement to the extent annotation is missing."
+      },
+      "deck": {
+        "name": "sky130_fd_sc_hd__ff_100C_1v65",
+        "content_hash": "sha256:913e67fc551be7e4e97fc031f3e72e5ef3251438ceeb44753f73b68df58f5650",
+        "released": false
+      }
+    },
+    {
+      "corner": "ff_100C_1v95",
+      "engine_log": {
+        "invocation_id": "b44059ef12eb4fad9c68d01000b45fb2",
+        "script_name": "sta_trng_digital__ff_100C_1v95.tcl",
+        "script_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "script_sha256": "d5d1c276ade77acd70415b2def394ab86f11b2694fceb95489ee703ceb9f2f9f",
+        "metrics_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "outcome": "exited",
+        "returncode": 0,
+        "directory": {
+          "path": null,
+          "scope": "external"
+        },
+        "stdout_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "stderr_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "metadata_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "retention_errors": []
+      },
+      "worst_slack_ns": 15995.9,
+      "total_negative_slack_ns": 0,
+      "worst_hold_slack_ns": 0.29683,
+      "total_negative_hold_slack_ns": 0,
+      "fmax_mhz": 0.2497,
+      "timing_status": "constrained",
+      "setup_violation_count": 0,
+      "hold_violation_count": 0,
+      "clock_skew_ns": 0.01442,
+      "estimated_power_mw": 0.0298,
+      "spef_annotation": {
+        "nets_annotated": 2354,
+        "nets_total": 8067,
+        "design_nets_annotated": 2354,
+        "design_nets_total": 2354,
+        "design_nets_missing_sample": [],
+        "reader_warning_count": 2002,
+        "reader_warning_sample": [
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 131, net $100 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 152, net $1000 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 167, net $10000 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 177, net $1001 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 191, net $1003 not found."
+        ],
+        "unannotated_driver_count": 301,
+        "partially_unannotated_driver_count": 33,
+        "delay_changed": true,
+        "annotation_complete": false,
+        "annotation_warning": "read_spef discarded annotation for 2002 SPEF record(s) it could not resolve against the linked design (OpenSTA STA-1650/STA-1648 'not found' warnings); report_parasitic_annotation found 301 driver(s) with no parasitics attached after read_spef -- the worst_slack_ns/etc. fields above are NOT a real-parasitics measurement to the extent annotation is missing."
+      },
+      "deck": {
+        "name": "sky130_fd_sc_hd__ff_100C_1v95",
+        "content_hash": "sha256:15c9ccefec536ff35d694314af5812e7c03b4e5a356ec8ea28f2e40bbeec04e7",
+        "released": false
+      }
+    },
+    {
+      "corner": "ff_n40C_1v56",
+      "engine_log": {
+        "invocation_id": "3cad692a6053478fac932a7eaf6cca1b",
+        "script_name": "sta_trng_digital__ff_n40C_1v56.tcl",
+        "script_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "script_sha256": "65ad615388775feead58c88333c3e45aaa96f10f140e93202e726289f5ec3c44",
+        "metrics_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "outcome": "exited",
+        "returncode": 0,
+        "directory": {
+          "path": null,
+          "scope": "external"
+        },
+        "stdout_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "stderr_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "metadata_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "retention_errors": []
+      },
+      "worst_slack_ns": 15993.4,
+      "total_negative_slack_ns": 0,
+      "worst_hold_slack_ns": 0.42037,
+      "total_negative_hold_slack_ns": 0,
+      "fmax_mhz": 0.2496,
+      "timing_status": "constrained",
+      "setup_violation_count": 0,
+      "hold_violation_count": 0,
+      "clock_skew_ns": 0.02459,
+      "estimated_power_mw": 0.0015,
+      "spef_annotation": {
+        "nets_annotated": 2354,
+        "nets_total": 8067,
+        "design_nets_annotated": 2354,
+        "design_nets_total": 2354,
+        "design_nets_missing_sample": [],
+        "reader_warning_count": 2002,
+        "reader_warning_sample": [
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 131, net $100 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 152, net $1000 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 167, net $10000 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 177, net $1001 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 191, net $1003 not found."
+        ],
+        "unannotated_driver_count": 301,
+        "partially_unannotated_driver_count": 33,
+        "delay_changed": true,
+        "annotation_complete": false,
+        "annotation_warning": "read_spef discarded annotation for 2002 SPEF record(s) it could not resolve against the linked design (OpenSTA STA-1650/STA-1648 'not found' warnings); report_parasitic_annotation found 301 driver(s) with no parasitics attached after read_spef -- the worst_slack_ns/etc. fields above are NOT a real-parasitics measurement to the extent annotation is missing."
+      },
+      "deck": {
+        "name": "sky130_fd_sc_hd__ff_n40C_1v56",
+        "content_hash": "sha256:d64f38f3e67f8adab818531901385dbd29c6a4805e6166f7166bcc3e9370ef88",
+        "released": false
+      }
+    },
+    {
+      "corner": "ff_n40C_1v65",
+      "engine_log": {
+        "invocation_id": "aab8edfc14da4413a367aebc116aa8c5",
+        "script_name": "sta_trng_digital__ff_n40C_1v65.tcl",
+        "script_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "script_sha256": "4a9342916182d25d46e35061d3f100ec5f4f141f843ecfa120249f61b6091ecb",
+        "metrics_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "outcome": "exited",
+        "returncode": 0,
+        "directory": {
+          "path": null,
+          "scope": "external"
+        },
+        "stdout_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "stderr_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "metadata_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "retention_errors": []
+      },
+      "worst_slack_ns": 15994.3,
+      "total_negative_slack_ns": 0,
+      "worst_hold_slack_ns": 0.37309,
+      "total_negative_hold_slack_ns": 0,
+      "fmax_mhz": 0.2496,
+      "timing_status": "constrained",
+      "setup_violation_count": 0,
+      "hold_violation_count": 0,
+      "clock_skew_ns": 0.02153,
+      "estimated_power_mw": 0.0017,
+      "spef_annotation": {
+        "nets_annotated": 2354,
+        "nets_total": 8067,
+        "design_nets_annotated": 2354,
+        "design_nets_total": 2354,
+        "design_nets_missing_sample": [],
+        "reader_warning_count": 2002,
+        "reader_warning_sample": [
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 131, net $100 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 152, net $1000 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 167, net $10000 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 177, net $1001 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 191, net $1003 not found."
+        ],
+        "unannotated_driver_count": 301,
+        "partially_unannotated_driver_count": 33,
+        "delay_changed": true,
+        "annotation_complete": false,
+        "annotation_warning": "read_spef discarded annotation for 2002 SPEF record(s) it could not resolve against the linked design (OpenSTA STA-1650/STA-1648 'not found' warnings); report_parasitic_annotation found 301 driver(s) with no parasitics attached after read_spef -- the worst_slack_ns/etc. fields above are NOT a real-parasitics measurement to the extent annotation is missing."
+      },
+      "deck": {
+        "name": "sky130_fd_sc_hd__ff_n40C_1v65",
+        "content_hash": "sha256:dd777cb159bf2fc853773d74a3c3e8269b73869d25aae49d0f80f117df9631ee",
+        "released": false
+      }
+    },
+    {
+      "corner": "ff_n40C_1v76",
+      "engine_log": {
+        "invocation_id": "d8b73501e6ee41bf9181250d4f329252",
+        "script_name": "sta_trng_digital__ff_n40C_1v76.tcl",
+        "script_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "script_sha256": "5d9a9166aa456871167e701f07810c3e13fe9dbc0a5795cc56d96837f4cf444a",
+        "metrics_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "outcome": "exited",
+        "returncode": 0,
+        "directory": {
+          "path": null,
+          "scope": "external"
+        },
+        "stdout_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "stderr_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "metadata_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "retention_errors": []
+      },
+      "worst_slack_ns": 15995.1,
+      "total_negative_slack_ns": 0,
+      "worst_hold_slack_ns": 0.32822,
+      "total_negative_hold_slack_ns": 0,
+      "fmax_mhz": 0.2497,
+      "timing_status": "constrained",
+      "setup_violation_count": 0,
+      "hold_violation_count": 0,
+      "clock_skew_ns": 0.01933,
+      "estimated_power_mw": 0.002,
+      "spef_annotation": {
+        "nets_annotated": 2354,
+        "nets_total": 8067,
+        "design_nets_annotated": 2354,
+        "design_nets_total": 2354,
+        "design_nets_missing_sample": [],
+        "reader_warning_count": 2002,
+        "reader_warning_sample": [
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 131, net $100 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 152, net $1000 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 167, net $10000 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 177, net $1001 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 191, net $1003 not found."
+        ],
+        "unannotated_driver_count": 301,
+        "partially_unannotated_driver_count": 33,
+        "delay_changed": true,
+        "annotation_complete": false,
+        "annotation_warning": "read_spef discarded annotation for 2002 SPEF record(s) it could not resolve against the linked design (OpenSTA STA-1650/STA-1648 'not found' warnings); report_parasitic_annotation found 301 driver(s) with no parasitics attached after read_spef -- the worst_slack_ns/etc. fields above are NOT a real-parasitics measurement to the extent annotation is missing."
+      },
+      "deck": {
+        "name": "sky130_fd_sc_hd__ff_n40C_1v76",
+        "content_hash": "sha256:0f5b7ceef23114c3834870f86c2f90ea24d597622fcd5abd2916b1fb604e8a26",
+        "released": false
+      }
+    },
+    {
+      "corner": "ff_n40C_1v95",
+      "engine_log": {
+        "invocation_id": "0734788016484902a10b3ed83e1516c8",
+        "script_name": "sta_trng_digital__ff_n40C_1v95.tcl",
+        "script_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "script_sha256": "5ecba797050be9a2961489c583ac0c833e8699b5f9382fd9e4933705cf2ff6cc",
+        "metrics_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "outcome": "exited",
+        "returncode": 0,
+        "directory": {
+          "path": null,
+          "scope": "external"
+        },
+        "stdout_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "stderr_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "metadata_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "retention_errors": []
+      },
+      "worst_slack_ns": 15996,
+      "total_negative_slack_ns": 0,
+      "worst_hold_slack_ns": 0.27644,
+      "total_negative_hold_slack_ns": 0,
+      "fmax_mhz": 0.2497,
+      "timing_status": "constrained",
+      "setup_violation_count": 0,
+      "hold_violation_count": 0,
+      "clock_skew_ns": 0.01594,
+      "estimated_power_mw": 0.0025,
+      "spef_annotation": {
+        "nets_annotated": 2354,
+        "nets_total": 8067,
+        "design_nets_annotated": 2354,
+        "design_nets_total": 2354,
+        "design_nets_missing_sample": [],
+        "reader_warning_count": 2002,
+        "reader_warning_sample": [
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 131, net $100 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 152, net $1000 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 167, net $10000 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 177, net $1001 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 191, net $1003 not found."
+        ],
+        "unannotated_driver_count": 301,
+        "partially_unannotated_driver_count": 33,
+        "delay_changed": true,
+        "annotation_complete": false,
+        "annotation_warning": "read_spef discarded annotation for 2002 SPEF record(s) it could not resolve against the linked design (OpenSTA STA-1650/STA-1648 'not found' warnings); report_parasitic_annotation found 301 driver(s) with no parasitics attached after read_spef -- the worst_slack_ns/etc. fields above are NOT a real-parasitics measurement to the extent annotation is missing."
+      },
+      "deck": {
+        "name": "sky130_fd_sc_hd__ff_n40C_1v95",
+        "content_hash": "sha256:fb61d91c55a7f85b1989e8149d040b13ba5e7f5478f5bf0c3c16c5da30720139",
+        "released": false
+      }
+    },
+    {
+      "corner": "ss_100C_1v40",
+      "engine_log": {
+        "invocation_id": "0b0ab55c50c5428a9a319c7c1f833240",
+        "script_name": "sta_trng_digital__ss_100C_1v40.tcl",
+        "script_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "script_sha256": "949e7bdbf476dfdb8cf60d63b534f5ae4f83775c45059a9fa146a4fab11390fa",
+        "metrics_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "outcome": "exited",
+        "returncode": 0,
+        "directory": {
+          "path": null,
+          "scope": "external"
+        },
+        "stdout_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "stderr_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "metadata_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "retention_errors": []
+      },
+      "worst_slack_ns": 15981.3,
+      "total_negative_slack_ns": 0,
+      "worst_hold_slack_ns": 1.31754,
+      "total_negative_hold_slack_ns": 0,
+      "fmax_mhz": 0.2488,
+      "timing_status": "constrained",
+      "setup_violation_count": 0,
+      "hold_violation_count": 0,
+      "clock_skew_ns": 0.05413,
+      "estimated_power_mw": 0.0107,
+      "spef_annotation": {
+        "nets_annotated": 2354,
+        "nets_total": 8067,
+        "design_nets_annotated": 2354,
+        "design_nets_total": 2354,
+        "design_nets_missing_sample": [],
+        "reader_warning_count": 2002,
+        "reader_warning_sample": [
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 131, net $100 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 152, net $1000 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 167, net $10000 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 177, net $1001 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 191, net $1003 not found."
+        ],
+        "unannotated_driver_count": 301,
+        "partially_unannotated_driver_count": 33,
+        "delay_changed": true,
+        "annotation_complete": false,
+        "annotation_warning": "read_spef discarded annotation for 2002 SPEF record(s) it could not resolve against the linked design (OpenSTA STA-1650/STA-1648 'not found' warnings); report_parasitic_annotation found 301 driver(s) with no parasitics attached after read_spef -- the worst_slack_ns/etc. fields above are NOT a real-parasitics measurement to the extent annotation is missing."
+      },
+      "deck": {
+        "name": "sky130_fd_sc_hd__ss_100C_1v40",
+        "content_hash": "sha256:88c8ce95b6a7f333bd9e618fc765c3005fbeccfca2727226bd821c0d16fcaac8",
+        "released": false
+      }
+    },
+    {
+      "corner": "ss_100C_1v60",
+      "engine_log": {
+        "invocation_id": "f041af5eb2b44f8589736b9be74f3da4",
+        "script_name": "sta_trng_digital__ss_100C_1v60.tcl",
+        "script_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "script_sha256": "b86304468be1877f690e8662903b1874e036bc8cbd937a3a821ef634b2b62f7e",
+        "metrics_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "outcome": "exited",
+        "returncode": 0,
+        "directory": {
+          "path": null,
+          "scope": "external"
+        },
+        "stdout_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "stderr_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "metadata_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "retention_errors": []
+      },
+      "worst_slack_ns": 15987.1,
+      "total_negative_slack_ns": 0,
+      "worst_hold_slack_ns": 0.91728,
+      "total_negative_hold_slack_ns": 0,
+      "fmax_mhz": 0.2492,
+      "timing_status": "constrained",
+      "setup_violation_count": 0,
+      "hold_violation_count": 0,
+      "clock_skew_ns": 0.039,
+      "estimated_power_mw": 0.0159,
+      "spef_annotation": {
+        "nets_annotated": 2354,
+        "nets_total": 8067,
+        "design_nets_annotated": 2354,
+        "design_nets_total": 2354,
+        "design_nets_missing_sample": [],
+        "reader_warning_count": 2002,
+        "reader_warning_sample": [
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 131, net $100 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 152, net $1000 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 167, net $10000 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 177, net $1001 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 191, net $1003 not found."
+        ],
+        "unannotated_driver_count": 301,
+        "partially_unannotated_driver_count": 33,
+        "delay_changed": true,
+        "annotation_complete": false,
+        "annotation_warning": "read_spef discarded annotation for 2002 SPEF record(s) it could not resolve against the linked design (OpenSTA STA-1650/STA-1648 'not found' warnings); report_parasitic_annotation found 301 driver(s) with no parasitics attached after read_spef -- the worst_slack_ns/etc. fields above are NOT a real-parasitics measurement to the extent annotation is missing."
+      },
+      "deck": {
+        "name": "sky130_fd_sc_hd__ss_100C_1v60",
+        "content_hash": "sha256:9b24f0db3967ac67b4cae1f74bb480fd47922d18d0ed577e3c121739b412c361",
+        "released": false
+      }
+    },
+    {
+      "corner": "ss_n40C_1v28",
+      "engine_log": {
+        "invocation_id": "ad4fba1e262f401b88ba1081e3668831",
+        "script_name": "sta_trng_digital__ss_n40C_1v28.tcl",
+        "script_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "script_sha256": "01628f12fcf86752da8c086793ef22681d7489422ce93514b42a7a47985694a9",
+        "metrics_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "outcome": "exited",
+        "returncode": 0,
+        "directory": {
+          "path": null,
+          "scope": "external"
+        },
+        "stdout_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "stderr_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "metadata_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "retention_errors": []
+      },
+      "worst_slack_ns": 15954,
+      "total_negative_slack_ns": 0,
+      "worst_hold_slack_ns": 2.57688,
+      "total_negative_hold_slack_ns": 0,
+      "fmax_mhz": 0.2472,
+      "timing_status": "constrained",
+      "setup_violation_count": 0,
+      "hold_violation_count": 0,
+      "clock_skew_ns": 0.16035,
+      "estimated_power_mw": 0.0008,
+      "spef_annotation": {
+        "nets_annotated": 2354,
+        "nets_total": 8067,
+        "design_nets_annotated": 2354,
+        "design_nets_total": 2354,
+        "design_nets_missing_sample": [],
+        "reader_warning_count": 2002,
+        "reader_warning_sample": [
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 131, net $100 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 152, net $1000 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 167, net $10000 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 177, net $1001 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 191, net $1003 not found."
+        ],
+        "unannotated_driver_count": 301,
+        "partially_unannotated_driver_count": 33,
+        "delay_changed": true,
+        "annotation_complete": false,
+        "annotation_warning": "read_spef discarded annotation for 2002 SPEF record(s) it could not resolve against the linked design (OpenSTA STA-1650/STA-1648 'not found' warnings); report_parasitic_annotation found 301 driver(s) with no parasitics attached after read_spef -- the worst_slack_ns/etc. fields above are NOT a real-parasitics measurement to the extent annotation is missing."
+      },
+      "deck": {
+        "name": "sky130_fd_sc_hd__ss_n40C_1v28",
+        "content_hash": "sha256:afd8201328f73996b7c80bf13909674ba7b483ec413dea3fca74831cec712578",
+        "released": false
+      }
+    },
+    {
+      "corner": "ss_n40C_1v35",
+      "engine_log": {
+        "invocation_id": "2f2fccf20805437aa4f8b13ba1865a71",
+        "script_name": "sta_trng_digital__ss_n40C_1v35.tcl",
+        "script_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "script_sha256": "fe982dd348e65d6edf24e9656433e4ca15bebf20335dc980b859fac0c935ee77",
+        "metrics_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "outcome": "exited",
+        "returncode": 0,
+        "directory": {
+          "path": null,
+          "scope": "external"
+        },
+        "stdout_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "stderr_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "metadata_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "retention_errors": []
+      },
+      "worst_slack_ns": 15967.6,
+      "total_negative_slack_ns": 0,
+      "worst_hold_slack_ns": 1.89552,
+      "total_negative_hold_slack_ns": 0,
+      "fmax_mhz": 0.248,
+      "timing_status": "constrained",
+      "setup_violation_count": 0,
+      "hold_violation_count": 0,
+      "clock_skew_ns": 0.11318,
+      "estimated_power_mw": 0.001,
+      "spef_annotation": {
+        "nets_annotated": 2354,
+        "nets_total": 8067,
+        "design_nets_annotated": 2354,
+        "design_nets_total": 2354,
+        "design_nets_missing_sample": [],
+        "reader_warning_count": 2002,
+        "reader_warning_sample": [
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 131, net $100 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 152, net $1000 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 167, net $10000 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 177, net $1001 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 191, net $1003 not found."
+        ],
+        "unannotated_driver_count": 301,
+        "partially_unannotated_driver_count": 33,
+        "delay_changed": true,
+        "annotation_complete": false,
+        "annotation_warning": "read_spef discarded annotation for 2002 SPEF record(s) it could not resolve against the linked design (OpenSTA STA-1650/STA-1648 'not found' warnings); report_parasitic_annotation found 301 driver(s) with no parasitics attached after read_spef -- the worst_slack_ns/etc. fields above are NOT a real-parasitics measurement to the extent annotation is missing."
+      },
+      "deck": {
+        "name": "sky130_fd_sc_hd__ss_n40C_1v35",
+        "content_hash": "sha256:8fd5aefd2053feef0a9bd3a5a972680dd77ddb8dda744836611656f37f969855",
+        "released": false
+      }
+    },
+    {
+      "corner": "ss_n40C_1v40",
+      "engine_log": {
+        "invocation_id": "832abf5f8f284edd96d94b3ccff4b12c",
+        "script_name": "sta_trng_digital__ss_n40C_1v40.tcl",
+        "script_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "script_sha256": "a99dcf22bd141a2c2a19671015ed624c09165e5e71c388ff04933616468b2c0d",
+        "metrics_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "outcome": "exited",
+        "returncode": 0,
+        "directory": {
+          "path": null,
+          "scope": "external"
+        },
+        "stdout_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "stderr_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "metadata_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "retention_errors": []
+      },
+      "worst_slack_ns": 15973.6,
+      "total_negative_slack_ns": 0,
+      "worst_hold_slack_ns": 1.58111,
+      "total_negative_hold_slack_ns": 0,
+      "fmax_mhz": 0.2484,
+      "timing_status": "constrained",
+      "setup_violation_count": 0,
+      "hold_violation_count": 0,
+      "clock_skew_ns": 0.0918,
+      "estimated_power_mw": 0.0011,
+      "spef_annotation": {
+        "nets_annotated": 2354,
+        "nets_total": 8067,
+        "design_nets_annotated": 2354,
+        "design_nets_total": 2354,
+        "design_nets_missing_sample": [],
+        "reader_warning_count": 2002,
+        "reader_warning_sample": [
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 131, net $100 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 152, net $1000 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 167, net $10000 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 177, net $1001 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 191, net $1003 not found."
+        ],
+        "unannotated_driver_count": 301,
+        "partially_unannotated_driver_count": 33,
+        "delay_changed": true,
+        "annotation_complete": false,
+        "annotation_warning": "read_spef discarded annotation for 2002 SPEF record(s) it could not resolve against the linked design (OpenSTA STA-1650/STA-1648 'not found' warnings); report_parasitic_annotation found 301 driver(s) with no parasitics attached after read_spef -- the worst_slack_ns/etc. fields above are NOT a real-parasitics measurement to the extent annotation is missing."
+      },
+      "deck": {
+        "name": "sky130_fd_sc_hd__ss_n40C_1v40",
+        "content_hash": "sha256:2c6c61b165c313a6eb18d805431f981cebf9cf138cec39a67d01ea99f63a4717",
+        "released": false
+      }
+    },
+    {
+      "corner": "ss_n40C_1v44",
+      "engine_log": {
+        "invocation_id": "c0722ebf403d40d79595dbeb1ec64542",
+        "script_name": "sta_trng_digital__ss_n40C_1v44.tcl",
+        "script_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "script_sha256": "923a6fa539c010fc15c81d430ee8af2bf4bb33ef658ad0fa82d3c87e7cb298fe",
+        "metrics_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "outcome": "exited",
+        "returncode": 0,
+        "directory": {
+          "path": null,
+          "scope": "external"
+        },
+        "stdout_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "stderr_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "metadata_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "retention_errors": []
+      },
+      "worst_slack_ns": 15977.1,
+      "total_negative_slack_ns": 0,
+      "worst_hold_slack_ns": 1.40367,
+      "total_negative_hold_slack_ns": 0,
+      "fmax_mhz": 0.2486,
+      "timing_status": "constrained",
+      "setup_violation_count": 0,
+      "hold_violation_count": 0,
+      "clock_skew_ns": 0.07986,
+      "estimated_power_mw": 0.0012,
+      "spef_annotation": {
+        "nets_annotated": 2354,
+        "nets_total": 8067,
+        "design_nets_annotated": 2354,
+        "design_nets_total": 2354,
+        "design_nets_missing_sample": [],
+        "reader_warning_count": 2002,
+        "reader_warning_sample": [
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 131, net $100 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 152, net $1000 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 167, net $10000 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 177, net $1001 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 191, net $1003 not found."
+        ],
+        "unannotated_driver_count": 301,
+        "partially_unannotated_driver_count": 33,
+        "delay_changed": true,
+        "annotation_complete": false,
+        "annotation_warning": "read_spef discarded annotation for 2002 SPEF record(s) it could not resolve against the linked design (OpenSTA STA-1650/STA-1648 'not found' warnings); report_parasitic_annotation found 301 driver(s) with no parasitics attached after read_spef -- the worst_slack_ns/etc. fields above are NOT a real-parasitics measurement to the extent annotation is missing."
+      },
+      "deck": {
+        "name": "sky130_fd_sc_hd__ss_n40C_1v44",
+        "content_hash": "sha256:88814187f8226bb6e7ad394a1afef161eb1c4006ed1f095cc31ab0da7dae1f0f",
+        "released": false
+      }
+    },
+    {
+      "corner": "ss_n40C_1v60",
+      "engine_log": {
+        "invocation_id": "6b4582161ef24d419f26214889593c6d",
+        "script_name": "sta_trng_digital__ss_n40C_1v60.tcl",
+        "script_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "script_sha256": "251b9393a5f77efdac2fa523a501ca1527a4e236bfbf184bc0f036f466421979",
+        "metrics_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "outcome": "exited",
+        "returncode": 0,
+        "directory": {
+          "path": null,
+          "scope": "external"
+        },
+        "stdout_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "stderr_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "metadata_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "retention_errors": []
+      },
+      "worst_slack_ns": 15985.4,
+      "total_negative_slack_ns": 0,
+      "worst_hold_slack_ns": 0.92767,
+      "total_negative_hold_slack_ns": 0,
+      "fmax_mhz": 0.2491,
+      "timing_status": "constrained",
+      "setup_violation_count": 0,
+      "hold_violation_count": 0,
+      "clock_skew_ns": 0.05027,
+      "estimated_power_mw": 0.0016,
+      "spef_annotation": {
+        "nets_annotated": 2354,
+        "nets_total": 8067,
+        "design_nets_annotated": 2354,
+        "design_nets_total": 2354,
+        "design_nets_missing_sample": [],
+        "reader_warning_count": 2002,
+        "reader_warning_sample": [
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 131, net $100 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 152, net $1000 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 167, net $10000 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 177, net $1001 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 191, net $1003 not found."
+        ],
+        "unannotated_driver_count": 301,
+        "partially_unannotated_driver_count": 33,
+        "delay_changed": true,
+        "annotation_complete": false,
+        "annotation_warning": "read_spef discarded annotation for 2002 SPEF record(s) it could not resolve against the linked design (OpenSTA STA-1650/STA-1648 'not found' warnings); report_parasitic_annotation found 301 driver(s) with no parasitics attached after read_spef -- the worst_slack_ns/etc. fields above are NOT a real-parasitics measurement to the extent annotation is missing."
+      },
+      "deck": {
+        "name": "sky130_fd_sc_hd__ss_n40C_1v60",
+        "content_hash": "sha256:23cba893b985a950a7951e3f29ae66ae6a639aaef75c1478e2306fb68d4a7ee5",
+        "released": false
+      }
+    },
+    {
+      "corner": "ss_n40C_1v76",
+      "engine_log": {
+        "invocation_id": "aef578dc1c4146ee8fef8066e4ed1b68",
+        "script_name": "sta_trng_digital__ss_n40C_1v76.tcl",
+        "script_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "script_sha256": "a9f8a133ff56e8b692bf5f379c3e9d337609575589710471ea67e6a698bea37d",
+        "metrics_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "outcome": "exited",
+        "returncode": 0,
+        "directory": {
+          "path": null,
+          "scope": "external"
+        },
+        "stdout_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "stderr_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "metadata_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "retention_errors": []
+      },
+      "worst_slack_ns": 15989.4,
+      "total_negative_slack_ns": 0,
+      "worst_hold_slack_ns": 0.70662,
+      "total_negative_hold_slack_ns": 0,
+      "fmax_mhz": 0.2493,
+      "timing_status": "constrained",
+      "setup_violation_count": 0,
+      "hold_violation_count": 0,
+      "clock_skew_ns": 0.03738,
+      "estimated_power_mw": 0.002,
+      "spef_annotation": {
+        "nets_annotated": 2354,
+        "nets_total": 8067,
+        "design_nets_annotated": 2354,
+        "design_nets_total": 2354,
+        "design_nets_missing_sample": [],
+        "reader_warning_count": 2002,
+        "reader_warning_sample": [
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 131, net $100 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 152, net $1000 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 167, net $10000 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 177, net $1001 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 191, net $1003 not found."
+        ],
+        "unannotated_driver_count": 301,
+        "partially_unannotated_driver_count": 33,
+        "delay_changed": true,
+        "annotation_complete": false,
+        "annotation_warning": "read_spef discarded annotation for 2002 SPEF record(s) it could not resolve against the linked design (OpenSTA STA-1650/STA-1648 'not found' warnings); report_parasitic_annotation found 301 driver(s) with no parasitics attached after read_spef -- the worst_slack_ns/etc. fields above are NOT a real-parasitics measurement to the extent annotation is missing."
+      },
+      "deck": {
+        "name": "sky130_fd_sc_hd__ss_n40C_1v76",
+        "content_hash": "sha256:f4f16d4f7040623afb60d0480a035e4128c5c1212361ae3bd13c3a52d9692a84",
+        "released": false
+      }
+    },
+    {
+      "corner": "tt_025C_1v80",
+      "engine_log": {
+        "invocation_id": "d36329afa2b84ec2889caa0e72124e98",
+        "script_name": "sta_trng_digital__tt_025C_1v80.tcl",
+        "script_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "script_sha256": "4bca3423497c09d651204c3f222b93fa1f7c503340dd7fa8425f884d056720ae",
+        "metrics_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "outcome": "exited",
+        "returncode": 0,
+        "directory": {
+          "path": null,
+          "scope": "external"
+        },
+        "stdout_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "stderr_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "metadata_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "retention_errors": []
+      },
+      "worst_slack_ns": 15993.5,
+      "total_negative_slack_ns": 0,
+      "worst_hold_slack_ns": 0.45269,
+      "total_negative_hold_slack_ns": 0,
+      "fmax_mhz": 0.2496,
+      "timing_status": "constrained",
+      "setup_violation_count": 0,
+      "hold_violation_count": 0,
+      "clock_skew_ns": 0.02189,
+      "estimated_power_mw": 0.0021,
+      "spef_annotation": {
+        "nets_annotated": 2354,
+        "nets_total": 8067,
+        "design_nets_annotated": 2354,
+        "design_nets_total": 2354,
+        "design_nets_missing_sample": [],
+        "reader_warning_count": 2002,
+        "reader_warning_sample": [
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 131, net $100 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 152, net $1000 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 167, net $10000 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 177, net $1001 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 191, net $1003 not found."
+        ],
+        "unannotated_driver_count": 301,
+        "partially_unannotated_driver_count": 33,
+        "delay_changed": true,
+        "annotation_complete": false,
+        "annotation_warning": "read_spef discarded annotation for 2002 SPEF record(s) it could not resolve against the linked design (OpenSTA STA-1650/STA-1648 'not found' warnings); report_parasitic_annotation found 301 driver(s) with no parasitics attached after read_spef -- the worst_slack_ns/etc. fields above are NOT a real-parasitics measurement to the extent annotation is missing."
+      },
+      "deck": {
+        "name": "sky130_fd_sc_hd__tt_025C_1v80",
+        "content_hash": "sha256:8e78e14442062dba34d414fca6490b2f6b96038d4510d1438ca44fee31487135",
+        "released": false
+      }
+    },
+    {
+      "corner": "tt_100C_1v80",
+      "engine_log": {
+        "invocation_id": "b0ac0e8b4e704ceda08337eac0ea2c73",
+        "script_name": "sta_trng_digital__tt_100C_1v80.tcl",
+        "script_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "script_sha256": "9efa5432156bba8d7225b74a15d52f5c58505eb5d5e8826057d0e9b2df9f9c90",
+        "metrics_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "outcome": "exited",
+        "returncode": 0,
+        "directory": {
+          "path": null,
+          "scope": "external"
+        },
+        "stdout_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "stderr_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "metadata_path": {
+          "path": null,
+          "scope": "external"
+        },
+        "retention_errors": []
+      },
+      "worst_slack_ns": 15993.6,
+      "total_negative_slack_ns": 0,
+      "worst_hold_slack_ns": 0.46468,
+      "total_negative_hold_slack_ns": 0,
+      "fmax_mhz": 0.2496,
+      "timing_status": "constrained",
+      "setup_violation_count": 0,
+      "hold_violation_count": 0,
+      "clock_skew_ns": 0.02081,
+      "estimated_power_mw": 0.0054,
+      "spef_annotation": {
+        "nets_annotated": 2354,
+        "nets_total": 8067,
+        "design_nets_annotated": 2354,
+        "design_nets_total": 2354,
+        "design_nets_missing_sample": [],
+        "reader_warning_count": 2002,
+        "reader_warning_sample": [
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 131, net $100 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 152, net $1000 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 167, net $10000 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 177, net $1001 not found.",
+          "[WARNING STA-1650] /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/sim/digital-repaired-compaction/requests/.klt/place-and-route/trng_digital_route.spef line 191, net $1003 not found."
+        ],
+        "unannotated_driver_count": 301,
+        "partially_unannotated_driver_count": 33,
+        "delay_changed": true,
+        "annotation_complete": false,
+        "annotation_warning": "read_spef discarded annotation for 2002 SPEF record(s) it could not resolve against the linked design (OpenSTA STA-1650/STA-1648 'not found' warnings); report_parasitic_annotation found 301 driver(s) with no parasitics attached after read_spef -- the worst_slack_ns/etc. fields above are NOT a real-parasitics measurement to the extent annotation is missing."
+      },
+      "deck": {
+        "name": "sky130_fd_sc_hd__tt_100C_1v80",
+        "content_hash": "sha256:7c6b9fc62d7e83b8317cdca883d79107d8f2ff1061b04519fda7d3088560015b",
+        "released": false
+      }
+    }
+  ]
+}

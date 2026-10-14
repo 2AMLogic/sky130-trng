@@ -1,0 +1,93 @@
+OpenROAD 26Q3-1510-g6cb3f2b704 
+Features included (+) or not (-): +GPU +GUI +Python
+This program is licensed under the BSD-3 license. See the LICENSE file for details.
+Components of this program may be licensed under more restrictive licenses which must be honored.
+[WARNING CTS-0128] -obstruction_aware is obsolete.
+[INFO CTS-0050] Root buffer is sky130_fd_sc_hd__buf_4.
+[INFO CTS-0051] Sink buffer is sky130_fd_sc_hd__buf_4.
+[INFO CTS-0052] The following clock buffers will be used for CTS:
+                    sky130_fd_sc_hd__buf_4
+[INFO CTS-0049] Characterization buffer is sky130_fd_sc_hd__buf_4.
+[INFO CTS-0007] Net "clk" found for clock "clk".
+[INFO CTS-0010]  Clock net "clk" has 456 sinks.
+[INFO CTS-0008] TritonCTS found 1 clock nets.
+[INFO CTS-0097] Characterization used 1 buffer(s) types.
+[INFO CTS-0201] 0 blockages from hard placement blockages and placed macros will be used.
+[INFO CTS-0027] Generating H-Tree topology for net clk.
+[INFO CTS-0028]  Total number of sinks: 456.
+[INFO CTS-0090]  Sinks will be clustered based on buffer max cap.
+[INFO CTS-0030]  Number of static layers: 0.
+[INFO CTS-0020]  Wire segment unit: 13600  dbu (13 um).
+[INFO CTS-0206] Best clustering solution was found from max clustering size of 8 and max clustering diameter of 75.
+[INFO CTS-0019]  Total number of sinks after clustering: 64.
+[INFO CTS-0024]  Normalized sink region: [(0.55583, 0.898109), (14.5201, 16.8261)].
+[INFO CTS-0025]     Width:  13.9643.
+[INFO CTS-0026]     Height: 15.9280.
+ Level 1
+    Direction: Vertical
+    Sinks per sub-region: 32
+    Sub-region size: 13.9643 X 7.9640
+[INFO CTS-0034]     Segment length (rounded): 4.
+ Level 2
+    Direction: Horizontal
+    Sinks per sub-region: 16
+    Sub-region size: 6.9821 X 7.9640
+[INFO CTS-0034]     Segment length (rounded): 4.
+ Level 3
+    Direction: Vertical
+    Sinks per sub-region: 8
+    Sub-region size: 6.9821 X 3.9820
+[INFO CTS-0034]     Segment length (rounded): 2.
+[INFO CTS-0038]  Stop criterion found. Sink region hpwl is smaller than max wirelength (3240.630 um) and max number of sinks is 15.
+[INFO CTS-0035]  Number of sinks covered: 64.
+[INFO CTS-0018]     Created 73 clock buffers.
+[INFO CTS-0012]     Minimum number of buffers in the clock path: 3.
+[INFO CTS-0013]     Maximum number of buffers in the clock path: 3.
+[INFO CTS-0015]     Created 73 clock nets.
+[INFO CTS-0016]     Fanout distribution for the current clock = 5:1, 6:10, 7:39, 8:19, 9:2, 12:1..
+[INFO CTS-0017]     Max level of the clock tree: 3.
+[INFO CTS-0098] Clock net "clk"
+[INFO CTS-0099]  Sinks 515
+[INFO CTS-0100]  Leaf buffers 64
+[INFO CTS-0101]  Average sink wire length 255.39 um
+[INFO CTS-0102]  Path depth 2 - 3
+[INFO CTS-0207]  Dummy loads inserted 59
+[INFO CTS-0500] Runtime: 1.25s
+[INFO RSZ-0033] No hold violations found.
+[INFO RSZ-0506] Runtime: 0.20s
+[INFO DPL-0006] Core area: 54877.63 um^2
+[INFO DPL-0007] Movable instances area: 23117.17 um^2
+[INFO DPL-0008] Fixed instances area within core: 880.84 um^2
+[INFO DPL-0009] Utilization: 43.7%
+[INFO DPL-0005] Diamond search max displacement: +/- 500 sites horizontally, +/- 100 rows vertically.
+[INFO DPL-1102] Legalizing using negotiation legalizer.
+[INFO DPL-1103] Negotiation base search window: +/-20 sites horizontally, +/-5 rows vertically 
+	Automatic search window extension enabled.
+	Search window extendable up to the max displacement cap of +/-500 sites, +/-100 rows near walls.
+[INFO DPL-1104] NegotiationLegalizer DRC penalty: 5.
+[INFO DPL-0392] Negotiation cell height distribution (1 unique row-count(s)):
+[INFO DPL-0393]   height 1 row(s): 3092 cells
+          |      Total |  Illegal |  Illegal
+Iteration | Violations |    Cells |    Sites
+---------------------------------------------
+        0 |         12 |         4 |         8
+        1 |          0 |         0 |         0
+Negotiation phase 1 converged at iteration 1.
+[INFO DPL-0500] Runtime: 0.03s
+Placement Analysis
+---------------------------------
+total displacement        785.4 u
+average displacement        0.3 u
+max displacement           15.0 u
+original HPWL           50967.1 u
+legalized HPWL          51284.6 u
+delta HPWL                    1 %
+
+===KLT_SETUP_VIOLATIONS_BEGIN===
+No paths found.
+
+===KLT_SETUP_VIOLATIONS_END===
+===KLT_HOLD_VIOLATIONS_BEGIN===
+No paths found.
+
+===KLT_HOLD_VIOLATIONS_END===

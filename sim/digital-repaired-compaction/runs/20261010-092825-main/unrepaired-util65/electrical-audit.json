@@ -1,0 +1,10150 @@
+{
+ "schema": "sky130-trng.electrical-audit/1",
+ "stage": "final route: routed DEF + extracted post-route SPEF, fresh OpenSTA session per corner",
+ "limits_checked": "Liberty default_max_transition (ns) and per-pin max_capacitance (pF); no set_max_* override; no set_load/set_driving_cell",
+ "units": {
+  "slew": "ns",
+  "capacitance": "pF"
+ },
+ "request": "sim/digital-floorplan-compaction/requests/util65.json",
+ "corners": {
+  "ff_100C_1v65": {
+   "status": "audited",
+   "sensitivity_pins_listed": 7260,
+   "max_slew": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_2077_/B",
+     "limit": 1.5,
+     "value": 1.0867,
+     "slack": 0.4133,
+     "state": "MET"
+    }
+   },
+   "max_capacitance": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_1766_/Y",
+     "limit": 0.0458,
+     "value": 0.0184,
+     "slack": 0.0274,
+     "state": "MET"
+    }
+   }
+  },
+  "ff_100C_1v95": {
+   "status": "audited",
+   "sensitivity_pins_listed": 7260,
+   "max_slew": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_2077_/B",
+     "limit": 1.5,
+     "value": 0.9242,
+     "slack": 0.5758,
+     "state": "MET"
+    }
+   },
+   "max_capacitance": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_1766_/Y",
+     "limit": 0.0604,
+     "value": 0.0188,
+     "slack": 0.0416,
+     "state": "MET"
+    }
+   }
+  },
+  "ff_n40C_1v56": {
+   "status": "audited",
+   "sensitivity_pins_listed": 7260,
+   "max_slew": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_2077_/B",
+     "limit": 1.5,
+     "value": 1.3656,
+     "slack": 0.1344,
+     "state": "MET"
+    }
+   },
+   "max_capacitance": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_2071_/X",
+     "limit": 0.1392,
+     "value": 0.1263,
+     "slack": 0.0129,
+     "state": "MET"
+    }
+   }
+  },
+  "ff_n40C_1v65": {
+   "status": "audited",
+   "sensitivity_pins_listed": 7260,
+   "max_slew": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_2077_/B",
+     "limit": 1.5,
+     "value": 1.2316,
+     "slack": 0.2684,
+     "state": "MET"
+    }
+   },
+   "max_capacitance": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_1766_/Y",
+     "limit": 0.0375,
+     "value": 0.0178,
+     "slack": 0.0197,
+     "state": "MET"
+    }
+   }
+  },
+  "ff_n40C_1v76": {
+   "status": "audited",
+   "sensitivity_pins_listed": 7260,
+   "max_slew": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_2077_/B",
+     "limit": 1.5,
+     "value": 1.1108,
+     "slack": 0.3892,
+     "state": "MET"
+    }
+   },
+   "max_capacitance": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_1766_/Y",
+     "limit": 0.044,
+     "value": 0.0181,
+     "slack": 0.0259,
+     "state": "MET"
+    }
+   }
+  },
+  "ff_n40C_1v95": {
+   "status": "audited",
+   "sensitivity_pins_listed": 7260,
+   "max_slew": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_2077_/B",
+     "limit": 1.5,
+     "value": 0.9717,
+     "slack": 0.5283,
+     "state": "MET"
+    }
+   },
+   "max_capacitance": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_1766_/Y",
+     "limit": 0.0549,
+     "value": 0.0184,
+     "slack": 0.0365,
+     "state": "MET"
+    }
+   }
+  },
+  "ss_100C_1v40": {
+   "status": "audited",
+   "sensitivity_pins_listed": 7260,
+   "max_slew": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_2625_/Y",
+     "limit": 9.9825,
+     "value": 3.6909,
+     "slack": 6.2916,
+     "state": "MET"
+    }
+   },
+   "max_capacitance": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_2416_/Y",
+     "limit": 0.0969,
+     "value": 0.0123,
+     "slack": 0.0846,
+     "state": "MET"
+    }
+   }
+  },
+  "ss_100C_1v60": {
+   "status": "audited",
+   "sensitivity_pins_listed": 7260,
+   "max_slew": {
+    "count": 270,
+    "unique_pins": 270,
+    "worst_excess": 1.1666,
+    "worst_pin": "_2625_/Y",
+    "worst_value": 2.6644,
+    "worst_limit": 1.4977,
+    "limits": [
+     1.4785,
+     1.4864,
+     1.4877,
+     1.4904,
+     1.4931,
+     1.4977,
+     1.5,
+     1.5046
+    ],
+    "worst_margin": {
+     "pin": "_2625_/Y",
+     "limit": 1.4977,
+     "value": 2.6644,
+     "slack": -1.1666,
+     "state": "VIOLATED"
+    }
+   },
+   "max_capacitance": {
+    "count": 7,
+    "unique_pins": 7,
+    "worst_excess": 0.0481,
+    "worst_pin": "_2625_/Y",
+    "worst_value": 0.0976,
+    "worst_limit": 0.0494,
+    "limits": [
+     0.0403,
+     0.0494,
+     0.0504,
+     0.0632,
+     0.0934,
+     0.0998,
+     0.1904
+    ],
+    "worst_margin": {
+     "pin": "_2625_/Y",
+     "limit": 0.0494,
+     "value": 0.0976,
+     "slack": -0.0481,
+     "state": "VIOLATED"
+    }
+   }
+  },
+  "ss_n40C_1v28": {
+   "status": "audited",
+   "sensitivity_pins_listed": 7260,
+   "max_slew": {
+    "count": 489,
+    "unique_pins": 489,
+    "worst_excess": 2.7538,
+    "worst_pin": "_1463_/Y",
+    "worst_value": 7.7007,
+    "worst_limit": 4.9469,
+    "limits": [
+     4.8135,
+     4.8889,
+     4.9235,
+     4.9418,
+     4.9469,
+     4.9592,
+     4.976,
+     4.9817,
+     4.9932,
+     4.9937,
+     4.9995,
+     5.0,
+     5.0281
+    ],
+    "worst_margin": {
+     "pin": "_1463_/Y",
+     "limit": 4.9469,
+     "value": 7.7007,
+     "slack": -2.7538,
+     "state": "VIOLATED"
+    }
+   },
+   "max_capacitance": {
+    "count": 17,
+    "unique_pins": 17,
+    "worst_excess": 0.0316,
+    "worst_pin": "place21/X",
+    "worst_value": 0.3039,
+    "worst_limit": 0.2724,
+    "limits": [
+     0.0099,
+     0.0122,
+     0.016,
+     0.0206,
+     0.0237,
+     0.0412,
+     0.061,
+     0.0702,
+     0.0946,
+     0.0984,
+     0.1686,
+     0.2724
+    ],
+    "worst_margin": {
+     "pin": "place21/X",
+     "limit": 0.2724,
+     "value": 0.3039,
+     "slack": -0.0316,
+     "state": "VIOLATED"
+    }
+   }
+  },
+  "ss_n40C_1v35": {
+   "status": "audited",
+   "sensitivity_pins_listed": 7260,
+   "max_slew": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_1463_/Y",
+     "limit": 9.968,
+     "value": 5.0967,
+     "slack": 4.8713,
+     "state": "MET"
+    }
+   },
+   "max_capacitance": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_2416_/Y",
+     "limit": 0.0374,
+     "value": 0.0114,
+     "slack": 0.026,
+     "state": "MET"
+    }
+   }
+  },
+  "ss_n40C_1v40": {
+   "status": "audited",
+   "sensitivity_pins_listed": 7260,
+   "max_slew": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_3180_/Y",
+     "limit": 9.9804,
+     "value": 4.1337,
+     "slack": 5.8466,
+     "state": "MET"
+    }
+   },
+   "max_capacitance": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_2416_/Y",
+     "limit": 0.0488,
+     "value": 0.0115,
+     "slack": 0.0373,
+     "state": "MET"
+    }
+   }
+  },
+  "ss_n40C_1v44": {
+   "status": "audited",
+   "sensitivity_pins_listed": 7260,
+   "max_slew": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_3226_/B",
+     "limit": 5.0,
+     "value": 3.5898,
+     "slack": 1.4102,
+     "state": "MET"
+    }
+   },
+   "max_capacitance": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_1766_/Y",
+     "limit": 0.0313,
+     "value": 0.017,
+     "slack": 0.0143,
+     "state": "MET"
+    }
+   }
+  },
+  "ss_n40C_1v60": {
+   "status": "audited",
+   "sensitivity_pins_listed": 7260,
+   "max_slew": {
+    "count": 574,
+    "unique_pins": 574,
+    "worst_excess": 0.9116,
+    "worst_pin": "_2071_/X",
+    "worst_value": 2.3994,
+    "worst_limit": 1.4878,
+    "limits": [
+     1.4426,
+     1.4728,
+     1.4738,
+     1.4739,
+     1.4761,
+     1.4868,
+     1.4878,
+     1.496,
+     1.4978,
+     1.4979,
+     1.4982,
+     1.5,
+     1.5021,
+     1.5066
+    ],
+    "worst_margin": {
+     "pin": "_2071_/X",
+     "limit": 1.4878,
+     "value": 2.3994,
+     "slack": -0.9116,
+     "state": "VIOLATED"
+    }
+   },
+   "max_capacitance": {
+    "count": 19,
+    "unique_pins": 19,
+    "worst_excess": 0.0781,
+    "worst_pin": "place21/X",
+    "worst_value": 0.3372,
+    "worst_limit": 0.2591,
+    "limits": [
+     0.0137,
+     0.0174,
+     0.0211,
+     0.0275,
+     0.0385,
+     0.0613,
+     0.0668,
+     0.0769,
+     0.0797,
+     0.0861,
+     0.1447,
+     0.2591
+    ],
+    "worst_margin": {
+     "pin": "place21/X",
+     "limit": 0.2591,
+     "value": 0.3372,
+     "slack": -0.0781,
+     "state": "VIOLATED"
+    }
+   }
+  },
+  "ss_n40C_1v76": {
+   "status": "audited",
+   "sensitivity_pins_listed": 7260,
+   "max_slew": {
+    "count": 189,
+    "unique_pins": 189,
+    "worst_excess": 0.3715,
+    "worst_pin": "_2077_/B",
+    "worst_value": 1.8715,
+    "worst_limit": 1.5,
+    "limits": [
+     1.4881,
+     1.4955,
+     1.4987,
+     1.5,
+     1.504,
+     1.5092,
+     1.5124
+    ],
+    "worst_margin": {
+     "pin": "_2077_/B",
+     "limit": 1.5,
+     "value": 1.8715,
+     "slack": -0.3715,
+     "state": "VIOLATED"
+    }
+   },
+   "max_capacitance": {
+    "count": 5,
+    "unique_pins": 5,
+    "worst_excess": 0.026,
+    "worst_pin": "_2071_/X",
+    "worst_value": 0.1276,
+    "worst_limit": 0.1016,
+    "limits": [
+     0.0531,
+     0.0852,
+     0.1016,
+     0.1062,
+     0.1923
+    ],
+    "worst_margin": {
+     "pin": "_2071_/X",
+     "limit": 0.1016,
+     "value": 0.1276,
+     "slack": -0.026,
+     "state": "VIOLATED"
+    }
+   }
+  },
+  "tt_025C_1v80": {
+   "status": "audited",
+   "sensitivity_pins_listed": 7260,
+   "max_slew": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_2071_/X",
+     "limit": 1.4989,
+     "value": 1.2611,
+     "slack": 0.2378,
+     "state": "MET"
+    }
+   },
+   "max_capacitance": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_1766_/Y",
+     "limit": 0.0366,
+     "value": 0.0184,
+     "slack": 0.0183,
+     "state": "MET"
+    }
+   }
+  },
+  "tt_100C_1v80": {
+   "status": "audited",
+   "sensitivity_pins_listed": 7260,
+   "max_slew": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_2625_/Y",
+     "limit": 1.4864,
+     "value": 1.3224,
+     "slack": 0.164,
+     "state": "MET"
+    }
+   },
+   "max_capacitance": {
+    "count": 0,
+    "unique_pins": 0,
+    "worst_excess": 0.0,
+    "worst_pin": null,
+    "limits": [],
+    "worst_margin": {
+     "pin": "_2625_/Y",
+     "limit": 0.1025,
+     "value": 0.0997,
+     "slack": 0.0028,
+     "state": "MET"
+    }
+   }
+  }
+ },
+ "reduction": {
+  "kind": "final",
+  "verdict": "violations",
+  "label": "violations",
+  "totals": {
+   "max_slew": 1522,
+   "max_capacitance": 48
+  },
+  "coverage": {
+   "ff_100C_1v65": "audited",
+   "ff_100C_1v95": "audited",
+   "ff_n40C_1v56": "audited",
+   "ff_n40C_1v65": "audited",
+   "ff_n40C_1v76": "audited",
+   "ff_n40C_1v95": "audited",
+   "ss_100C_1v40": "audited",
+   "ss_100C_1v60": "audited",
+   "ss_n40C_1v28": "audited",
+   "ss_n40C_1v35": "audited",
+   "ss_n40C_1v40": "audited",
+   "ss_n40C_1v44": "audited",
+   "ss_n40C_1v60": "audited",
+   "ss_n40C_1v76": "audited",
+   "tt_025C_1v80": "audited",
+   "tt_100C_1v80": "audited"
+  },
+  "corners_expected": 16,
+  "corners_audited": 16,
+  "surplus_corners": []
+ },
+ "violators": {
+  "ff_100C_1v65": {
+   "max_slew": [],
+   "max_capacitance": []
+  },
+  "ff_100C_1v95": {
+   "max_slew": [],
+   "max_capacitance": []
+  },
+  "ff_n40C_1v56": {
+   "max_slew": [],
+   "max_capacitance": []
+  },
+  "ff_n40C_1v65": {
+   "max_slew": [],
+   "max_capacitance": []
+  },
+  "ff_n40C_1v76": {
+   "max_slew": [],
+   "max_capacitance": []
+  },
+  "ff_n40C_1v95": {
+   "max_slew": [],
+   "max_capacitance": []
+  },
+  "ss_100C_1v40": {
+   "max_slew": [],
+   "max_capacitance": []
+  },
+  "ss_100C_1v60": {
+   "max_slew": [
+    {
+     "pin": "_2625_/Y",
+     "limit": 1.4977,
+     "value": 2.6644,
+     "excess": 1.1666
+    },
+    {
+     "pin": "_2673_/B",
+     "limit": 1.5,
+     "value": 2.6644,
+     "excess": 1.1644
+    },
+    {
+     "pin": "_2674_/A2",
+     "limit": 1.5,
+     "value": 2.6644,
+     "excess": 1.1644
+    },
+    {
+     "pin": "_2684_/B",
+     "limit": 1.5,
+     "value": 2.6644,
+     "excess": 1.1644
+    },
+    {
+     "pin": "_2685_/A2",
+     "limit": 1.5,
+     "value": 2.6644,
+     "excess": 1.1644
+    },
+    {
+     "pin": "_2688_/B",
+     "limit": 1.5,
+     "value": 2.6644,
+     "excess": 1.1644
+    },
+    {
+     "pin": "_2689_/A2",
+     "limit": 1.5,
+     "value": 2.6644,
+     "excess": 1.1644
+    },
+    {
+     "pin": "_2695_/B",
+     "limit": 1.5,
+     "value": 2.6644,
+     "excess": 1.1644
+    },
+    {
+     "pin": "_2696_/A2",
+     "limit": 1.5,
+     "value": 2.6644,
+     "excess": 1.1644
+    },
+    {
+     "pin": "_2698_/B",
+     "limit": 1.5,
+     "value": 2.6644,
+     "excess": 1.1644
+    },
+    {
+     "pin": "_2699_/A2",
+     "limit": 1.5,
+     "value": 2.6644,
+     "excess": 1.1644
+    },
+    {
+     "pin": "_2702_/B",
+     "limit": 1.5,
+     "value": 2.6644,
+     "excess": 1.1644
+    },
+    {
+     "pin": "_2703_/A2",
+     "limit": 1.5,
+     "value": 2.6644,
+     "excess": 1.1644
+    },
+    {
+     "pin": "_2706_/B",
+     "limit": 1.5,
+     "value": 2.6644,
+     "excess": 1.1644
+    },
+    {
+     "pin": "_2707_/A2",
+     "limit": 1.5,
+     "value": 2.6644,
+     "excess": 1.1644
+    },
+    {
+     "pin": "_2711_/B",
+     "limit": 1.5,
+     "value": 2.6644,
+     "excess": 1.1644
+    },
+    {
+     "pin": "_2712_/A2",
+     "limit": 1.5,
+     "value": 2.6644,
+     "excess": 1.1644
+    },
+    {
+     "pin": "_2715_/B",
+     "limit": 1.5,
+     "value": 2.6644,
+     "excess": 1.1644
+    },
+    {
+     "pin": "_2716_/A2",
+     "limit": 1.5,
+     "value": 2.6644,
+     "excess": 1.1644
+    },
+    {
+     "pin": "_2719_/B",
+     "limit": 1.5,
+     "value": 2.6644,
+     "excess": 1.1644
+    },
+    {
+     "pin": "_2720_/A2",
+     "limit": 1.5,
+     "value": 2.6644,
+     "excess": 1.1644
+    },
+    {
+     "pin": "_2723_/B",
+     "limit": 1.5,
+     "value": 2.6644,
+     "excess": 1.1644
+    },
+    {
+     "pin": "_2724_/A2",
+     "limit": 1.5,
+     "value": 2.6644,
+     "excess": 1.1644
+    },
+    {
+     "pin": "_2727_/B",
+     "limit": 1.5,
+     "value": 2.6644,
+     "excess": 1.1644
+    },
+    {
+     "pin": "_2728_/A2",
+     "limit": 1.5,
+     "value": 2.6644,
+     "excess": 1.1644
+    },
+    {
+     "pin": "_2731_/B",
+     "limit": 1.5,
+     "value": 2.6644,
+     "excess": 1.1644
+    },
+    {
+     "pin": "_2732_/A2",
+     "limit": 1.5,
+     "value": 2.6644,
+     "excess": 1.1644
+    },
+    {
+     "pin": "_2735_/B",
+     "limit": 1.5,
+     "value": 2.6644,
+     "excess": 1.1644
+    },
+    {
+     "pin": "_2736_/A2",
+     "limit": 1.5,
+     "value": 2.6644,
+     "excess": 1.1644
+    },
+    {
+     "pin": "place33/A",
+     "limit": 1.5,
+     "value": 2.6644,
+     "excess": 1.1644
+    },
+    {
+     "pin": "_2071_/X",
+     "limit": 1.4931,
+     "value": 1.9346,
+     "excess": 0.4415
+    },
+    {
+     "pin": "_2801_/Y",
+     "limit": 1.4877,
+     "value": 1.9249,
+     "excess": 0.4372
+    },
+    {
+     "pin": "_2077_/B",
+     "limit": 1.5,
+     "value": 1.9346,
+     "excess": 0.4346
+    },
+    {
+     "pin": "_2089_/B",
+     "limit": 1.5,
+     "value": 1.9346,
+     "excess": 0.4346
+    },
+    {
+     "pin": "_2093_/B",
+     "limit": 1.5,
+     "value": 1.9346,
+     "excess": 0.4346
+    },
+    {
+     "pin": "_2096_/B",
+     "limit": 1.5,
+     "value": 1.9346,
+     "excess": 0.4346
+    },
+    {
+     "pin": "_2103_/B2",
+     "limit": 1.5,
+     "value": 1.9346,
+     "excess": 0.4346
+    },
+    {
+     "pin": "_2106_/B",
+     "limit": 1.5,
+     "value": 1.9346,
+     "excess": 0.4346
+    },
+    {
+     "pin": "_2109_/B",
+     "limit": 1.5,
+     "value": 1.9346,
+     "excess": 0.4346
+    },
+    {
+     "pin": "_2113_/B2",
+     "limit": 1.5,
+     "value": 1.9346,
+     "excess": 0.4346
+    },
+    {
+     "pin": "_2116_/B2",
+     "limit": 1.5,
+     "value": 1.9346,
+     "excess": 0.4346
+    },
+    {
+     "pin": "_2119_/B",
+     "limit": 1.5,
+     "value": 1.9346,
+     "excess": 0.4346
+    },
+    {
+     "pin": "_2122_/B",
+     "limit": 1.5,
+     "value": 1.9346,
+     "excess": 0.4346
+    },
+    {
+     "pin": "_2126_/B",
+     "limit": 1.5,
+     "value": 1.9346,
+     "excess": 0.4346
+    },
+    {
+     "pin": "_2129_/B",
+     "limit": 1.5,
+     "value": 1.9346,
+     "excess": 0.4346
+    },
+    {
+     "pin": "_2132_/B",
+     "limit": 1.5,
+     "value": 1.9346,
+     "excess": 0.4346
+    },
+    {
+     "pin": "_2135_/B2",
+     "limit": 1.5,
+     "value": 1.9346,
+     "excess": 0.4346
+    },
+    {
+     "pin": "_2138_/B",
+     "limit": 1.5,
+     "value": 1.9346,
+     "excess": 0.4346
+    },
+    {
+     "pin": "_2141_/B",
+     "limit": 1.5,
+     "value": 1.9346,
+     "excess": 0.4346
+    },
+    {
+     "pin": "_2144_/B",
+     "limit": 1.5,
+     "value": 1.9346,
+     "excess": 0.4346
+    },
+    {
+     "pin": "_2147_/B2",
+     "limit": 1.5,
+     "value": 1.9346,
+     "excess": 0.4346
+    },
+    {
+     "pin": "_2150_/B2",
+     "limit": 1.5,
+     "value": 1.9346,
+     "excess": 0.4346
+    },
+    {
+     "pin": "_2153_/B2",
+     "limit": 1.5,
+     "value": 1.9346,
+     "excess": 0.4346
+    },
+    {
+     "pin": "_2156_/B",
+     "limit": 1.5,
+     "value": 1.9346,
+     "excess": 0.4346
+    },
+    {
+     "pin": "_2159_/B2",
+     "limit": 1.5,
+     "value": 1.9346,
+     "excess": 0.4346
+    },
+    {
+     "pin": "_2162_/B2",
+     "limit": 1.5,
+     "value": 1.9346,
+     "excess": 0.4346
+    },
+    {
+     "pin": "_2165_/B",
+     "limit": 1.5,
+     "value": 1.9346,
+     "excess": 0.4346
+    },
+    {
+     "pin": "_2168_/B2",
+     "limit": 1.5,
+     "value": 1.9346,
+     "excess": 0.4346
+    },
+    {
+     "pin": "_2171_/B2",
+     "limit": 1.5,
+     "value": 1.9346,
+     "excess": 0.4346
+    },
+    {
+     "pin": "_2177_/B2",
+     "limit": 1.5,
+     "value": 1.9346,
+     "excess": 0.4346
+    },
+    {
+     "pin": "_2180_/B2",
+     "limit": 1.5,
+     "value": 1.9346,
+     "excess": 0.4346
+    },
+    {
+     "pin": "_2183_/A",
+     "limit": 1.5,
+     "value": 1.9346,
+     "excess": 0.4346
+    },
+    {
+     "pin": "_2209_/B",
+     "limit": 1.5,
+     "value": 1.9346,
+     "excess": 0.4346
+    },
+    {
+     "pin": "_2404_/A2",
+     "limit": 1.5,
+     "value": 1.9346,
+     "excess": 0.4346
+    },
+    {
+     "pin": "_2405_/A3",
+     "limit": 1.5,
+     "value": 1.9346,
+     "excess": 0.4346
+    },
+    {
+     "pin": "_3142_/B",
+     "limit": 1.5,
+     "value": 1.9346,
+     "excess": 0.4346
+    },
+    {
+     "pin": "_2802_/B1",
+     "limit": 1.5,
+     "value": 1.9249,
+     "excess": 0.4249
+    },
+    {
+     "pin": "_3183_/B2",
+     "limit": 1.5,
+     "value": 1.9249,
+     "excess": 0.4249
+    },
+    {
+     "pin": "_3196_/B2",
+     "limit": 1.5,
+     "value": 1.9249,
+     "excess": 0.4249
+    },
+    {
+     "pin": "_3201_/B2",
+     "limit": 1.5,
+     "value": 1.9249,
+     "excess": 0.4249
+    },
+    {
+     "pin": "_3205_/B2",
+     "limit": 1.5,
+     "value": 1.9249,
+     "excess": 0.4249
+    },
+    {
+     "pin": "_3207_/B2",
+     "limit": 1.5,
+     "value": 1.9249,
+     "excess": 0.4249
+    },
+    {
+     "pin": "_3209_/B2",
+     "limit": 1.5,
+     "value": 1.9249,
+     "excess": 0.4249
+    },
+    {
+     "pin": "_3213_/B2",
+     "limit": 1.5,
+     "value": 1.9249,
+     "excess": 0.4249
+    },
+    {
+     "pin": "_3217_/B2",
+     "limit": 1.5,
+     "value": 1.9249,
+     "excess": 0.4249
+    },
+    {
+     "pin": "_3220_/B2",
+     "limit": 1.5,
+     "value": 1.9249,
+     "excess": 0.4249
+    },
+    {
+     "pin": "_3227_/A1",
+     "limit": 1.5,
+     "value": 1.9249,
+     "excess": 0.4249
+    },
+    {
+     "pin": "_3234_/B2",
+     "limit": 1.5,
+     "value": 1.9249,
+     "excess": 0.4249
+    },
+    {
+     "pin": "_3237_/A1",
+     "limit": 1.5,
+     "value": 1.9249,
+     "excess": 0.4249
+    },
+    {
+     "pin": "_3240_/A1",
+     "limit": 1.5,
+     "value": 1.9249,
+     "excess": 0.4249
+    },
+    {
+     "pin": "_3243_/A1",
+     "limit": 1.5,
+     "value": 1.9249,
+     "excess": 0.4249
+    },
+    {
+     "pin": "_3255_/A1",
+     "limit": 1.5,
+     "value": 1.9249,
+     "excess": 0.4249
+    },
+    {
+     "pin": "_3260_/A1",
+     "limit": 1.5,
+     "value": 1.9249,
+     "excess": 0.4249
+    },
+    {
+     "pin": "_3262_/B2",
+     "limit": 1.5,
+     "value": 1.9249,
+     "excess": 0.4249
+    },
+    {
+     "pin": "_3266_/A1",
+     "limit": 1.5,
+     "value": 1.9249,
+     "excess": 0.4249
+    },
+    {
+     "pin": "_3271_/A1",
+     "limit": 1.5,
+     "value": 1.9249,
+     "excess": 0.4249
+    },
+    {
+     "pin": "_3277_/A1",
+     "limit": 1.5,
+     "value": 1.9249,
+     "excess": 0.4249
+    },
+    {
+     "pin": "_3285_/A1",
+     "limit": 1.5,
+     "value": 1.9249,
+     "excess": 0.4249
+    },
+    {
+     "pin": "_3291_/A1",
+     "limit": 1.5,
+     "value": 1.9249,
+     "excess": 0.4249
+    },
+    {
+     "pin": "_3180_/Y",
+     "limit": 1.4785,
+     "value": 1.8736,
+     "excess": 0.3951
+    },
+    {
+     "pin": "_3226_/B",
+     "limit": 1.5,
+     "value": 1.8736,
+     "excess": 0.3736
+    },
+    {
+     "pin": "_3232_/A2",
+     "limit": 1.5,
+     "value": 1.8736,
+     "excess": 0.3736
+    },
+    {
+     "pin": "_3233_/B",
+     "limit": 1.5,
+     "value": 1.8736,
+     "excess": 0.3736
+    },
+    {
+     "pin": "_3236_/A2",
+     "limit": 1.5,
+     "value": 1.8736,
+     "excess": 0.3736
+    },
+    {
+     "pin": "_3239_/A2",
+     "limit": 1.5,
+     "value": 1.8736,
+     "excess": 0.3736
+    },
+    {
+     "pin": "_3242_/B1",
+     "limit": 1.5,
+     "value": 1.8736,
+     "excess": 0.3736
+    },
+    {
+     "pin": "_3253_/A2",
+     "limit": 1.5,
+     "value": 1.8736,
+     "excess": 0.3736
+    },
+    {
+     "pin": "_3259_/A2",
+     "limit": 1.5,
+     "value": 1.8736,
+     "excess": 0.3736
+    },
+    {
+     "pin": "_3261_/B",
+     "limit": 1.5,
+     "value": 1.8736,
+     "excess": 0.3736
+    },
+    {
+     "pin": "_3264_/A2",
+     "limit": 1.5,
+     "value": 1.8736,
+     "excess": 0.3736
+    },
+    {
+     "pin": "_3270_/A2",
+     "limit": 1.5,
+     "value": 1.8736,
+     "excess": 0.3736
+    },
+    {
+     "pin": "_3276_/A2",
+     "limit": 1.5,
+     "value": 1.8736,
+     "excess": 0.3736
+    },
+    {
+     "pin": "_3279_/A2",
+     "limit": 1.5,
+     "value": 1.8736,
+     "excess": 0.3736
+    },
+    {
+     "pin": "_3284_/A2",
+     "limit": 1.5,
+     "value": 1.8736,
+     "excess": 0.3736
+    },
+    {
+     "pin": "_3290_/A2",
+     "limit": 1.5,
+     "value": 1.8736,
+     "excess": 0.3736
+    },
+    {
+     "pin": "place36/A",
+     "limit": 1.5,
+     "value": 1.8736,
+     "excess": 0.3736
+    },
+    {
+     "pin": "_2438_/B",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2439_/A2",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2452_/B",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2453_/A2",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2459_/B",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2460_/A2",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2465_/B",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2466_/A2",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2471_/B",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2472_/A2",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2476_/B",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2477_/A2",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2483_/B",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2484_/A2",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2488_/B",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2489_/A2",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2493_/B",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2494_/A2",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2499_/B",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2500_/A2",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2504_/B",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2505_/A2",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2509_/B",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2510_/A2",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2514_/B",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2515_/A2",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2519_/B",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2520_/A2",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2524_/B",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2525_/A2",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2529_/B",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2530_/A2",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2534_/B",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2535_/A2",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2539_/B",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2540_/A2",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2545_/B",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2546_/A2",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2553_/B",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2554_/A2",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2559_/B",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2560_/A2",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2562_/B",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2563_/A2",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2570_/B",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2571_/A2",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2579_/B",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2582_/B",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2583_/A2",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2588_/B",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2589_/A2",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2594_/B",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2595_/A2",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2604_/B",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2607_/B",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2608_/A2",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2616_/B",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2621_/B",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2622_/A2",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_3162_/A",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_3163_/A2",
+     "limit": 1.5,
+     "value": 1.7386,
+     "excess": 0.2386
+    },
+    {
+     "pin": "_2433_/X",
+     "limit": 1.5046,
+     "value": 1.7386,
+     "excess": 0.234
+    },
+    {
+     "pin": "_2235_/Y",
+     "limit": 1.4864,
+     "value": 1.6596,
+     "excess": 0.1732
+    },
+    {
+     "pin": "_2237_/B",
+     "limit": 1.5,
+     "value": 1.6596,
+     "excess": 0.1596
+    },
+    {
+     "pin": "_2241_/B",
+     "limit": 1.5,
+     "value": 1.6596,
+     "excess": 0.1596
+    },
+    {
+     "pin": "_2245_/B",
+     "limit": 1.5,
+     "value": 1.6596,
+     "excess": 0.1596
+    },
+    {
+     "pin": "_2248_/B",
+     "limit": 1.5,
+     "value": 1.6596,
+     "excess": 0.1596
+    },
+    {
+     "pin": "_2251_/B",
+     "limit": 1.5,
+     "value": 1.6596,
+     "excess": 0.1596
+    },
+    {
+     "pin": "_2254_/B",
+     "limit": 1.5,
+     "value": 1.6596,
+     "excess": 0.1596
+    },
+    {
+     "pin": "_2257_/B",
+     "limit": 1.5,
+     "value": 1.6596,
+     "excess": 0.1596
+    },
+    {
+     "pin": "_2260_/B",
+     "limit": 1.5,
+     "value": 1.6596,
+     "excess": 0.1596
+    },
+    {
+     "pin": "_2264_/B",
+     "limit": 1.5,
+     "value": 1.6596,
+     "excess": 0.1596
+    },
+    {
+     "pin": "_2267_/B",
+     "limit": 1.5,
+     "value": 1.6596,
+     "excess": 0.1596
+    },
+    {
+     "pin": "_2270_/B",
+     "limit": 1.5,
+     "value": 1.6596,
+     "excess": 0.1596
+    },
+    {
+     "pin": "_2273_/B",
+     "limit": 1.5,
+     "value": 1.6596,
+     "excess": 0.1596
+    },
+    {
+     "pin": "_2276_/B",
+     "limit": 1.5,
+     "value": 1.6596,
+     "excess": 0.1596
+    },
+    {
+     "pin": "_2280_/B",
+     "limit": 1.5,
+     "value": 1.6596,
+     "excess": 0.1596
+    },
+    {
+     "pin": "_2283_/B",
+     "limit": 1.5,
+     "value": 1.6596,
+     "excess": 0.1596
+    },
+    {
+     "pin": "_2286_/B",
+     "limit": 1.5,
+     "value": 1.6596,
+     "excess": 0.1596
+    },
+    {
+     "pin": "_2289_/B",
+     "limit": 1.5,
+     "value": 1.6596,
+     "excess": 0.1596
+    },
+    {
+     "pin": "_2292_/B",
+     "limit": 1.5,
+     "value": 1.6596,
+     "excess": 0.1596
+    },
+    {
+     "pin": "_2295_/B",
+     "limit": 1.5,
+     "value": 1.6596,
+     "excess": 0.1596
+    },
+    {
+     "pin": "_2298_/B",
+     "limit": 1.5,
+     "value": 1.6596,
+     "excess": 0.1596
+    },
+    {
+     "pin": "_2301_/B",
+     "limit": 1.5,
+     "value": 1.6596,
+     "excess": 0.1596
+    },
+    {
+     "pin": "_2304_/B",
+     "limit": 1.5,
+     "value": 1.6596,
+     "excess": 0.1596
+    },
+    {
+     "pin": "_2307_/B",
+     "limit": 1.5,
+     "value": 1.6596,
+     "excess": 0.1596
+    },
+    {
+     "pin": "_2311_/B",
+     "limit": 1.5,
+     "value": 1.6596,
+     "excess": 0.1596
+    },
+    {
+     "pin": "_2314_/B",
+     "limit": 1.5,
+     "value": 1.6596,
+     "excess": 0.1596
+    },
+    {
+     "pin": "_2317_/B",
+     "limit": 1.5,
+     "value": 1.6596,
+     "excess": 0.1596
+    },
+    {
+     "pin": "_2320_/B",
+     "limit": 1.5,
+     "value": 1.6596,
+     "excess": 0.1596
+    },
+    {
+     "pin": "_2323_/B",
+     "limit": 1.5,
+     "value": 1.6596,
+     "excess": 0.1596
+    },
+    {
+     "pin": "_2326_/B",
+     "limit": 1.5,
+     "value": 1.6596,
+     "excess": 0.1596
+    },
+    {
+     "pin": "_2329_/B",
+     "limit": 1.5,
+     "value": 1.6596,
+     "excess": 0.1596
+    },
+    {
+     "pin": "_2332_/B",
+     "limit": 1.5,
+     "value": 1.6596,
+     "excess": 0.1596
+    },
+    {
+     "pin": "_1463_/Y",
+     "limit": 1.4904,
+     "value": 1.5477,
+     "excess": 0.0574
+    },
+    {
+     "pin": "_1465_/C",
+     "limit": 1.5,
+     "value": 1.5477,
+     "excess": 0.0477
+    },
+    {
+     "pin": "_1476_/B",
+     "limit": 1.5,
+     "value": 1.5477,
+     "excess": 0.0477
+    },
+    {
+     "pin": "_1492_/D",
+     "limit": 1.5,
+     "value": 1.5477,
+     "excess": 0.0477
+    },
+    {
+     "pin": "_1499_/B",
+     "limit": 1.5,
+     "value": 1.5477,
+     "excess": 0.0477
+    },
+    {
+     "pin": "_1506_/B",
+     "limit": 1.5,
+     "value": 1.5477,
+     "excess": 0.0477
+    },
+    {
+     "pin": "_1522_/A",
+     "limit": 1.5,
+     "value": 1.5477,
+     "excess": 0.0477
+    },
+    {
+     "pin": "_1530_/C",
+     "limit": 1.5,
+     "value": 1.5477,
+     "excess": 0.0477
+    },
+    {
+     "pin": "_1536_/B",
+     "limit": 1.5,
+     "value": 1.5477,
+     "excess": 0.0477
+    },
+    {
+     "pin": "_1547_/B",
+     "limit": 1.5,
+     "value": 1.5477,
+     "excess": 0.0477
+    },
+    {
+     "pin": "_1553_/B",
+     "limit": 1.5,
+     "value": 1.5477,
+     "excess": 0.0477
+    },
+    {
+     "pin": "_1559_/B",
+     "limit": 1.5,
+     "value": 1.5477,
+     "excess": 0.0477
+    },
+    {
+     "pin": "_1570_/C",
+     "limit": 1.5,
+     "value": 1.5477,
+     "excess": 0.0477
+    },
+    {
+     "pin": "_2805_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_2811_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_2814_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_2817_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_2823_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_2826_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_2829_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_2836_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_2841_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_2845_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_2848_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_2851_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_2854_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_2857_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_2865_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_2868_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_2871_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_2883_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_2936_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_2939_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_2941_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_2944_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_2948_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_2950_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_2952_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_2955_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_2960_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_2962_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_2964_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_2966_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_2968_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_2970_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_2975_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_2977_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_2979_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_2986_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_3018_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_3019_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_3020_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_3021_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_3022_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_3023_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_3024_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_3026_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_3027_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_3028_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_3029_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_3030_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_3031_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_3032_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_3034_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_3035_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_3037_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_3039_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_3172_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_3174_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    },
+    {
+     "pin": "_3175_/S",
+     "limit": 1.5,
+     "value": 1.5053,
+     "excess": 0.0053
+    }
+   ],
+   "max_capacitance": [
+    {
+     "pin": "_2625_/Y",
+     "limit": 0.0494,
+     "value": 0.0976,
+     "excess": 0.0481
+    },
+    {
+     "pin": "_2433_/X",
+     "limit": 0.1904,
+     "value": 0.2216,
+     "excess": 0.0312
+    },
+    {
+     "pin": "_2071_/X",
+     "limit": 0.0998,
+     "value": 0.1305,
+     "excess": 0.0307
+    },
+    {
+     "pin": "_2801_/Y",
+     "limit": 0.0632,
+     "value": 0.0872,
+     "excess": 0.024
+    },
+    {
+     "pin": "_2235_/Y",
+     "limit": 0.0934,
+     "value": 0.1127,
+     "excess": 0.0193
+    },
+    {
+     "pin": "_3180_/Y",
+     "limit": 0.0504,
+     "value": 0.0652,
+     "excess": 0.0149
+    },
+    {
+     "pin": "_1463_/Y",
+     "limit": 0.0403,
+     "value": 0.0434,
+     "excess": 0.0031
+    }
+   ]
+  },
+  "ss_n40C_1v28": {
+   "max_slew": [
+    {
+     "pin": "_1463_/Y",
+     "limit": 4.9469,
+     "value": 7.7007,
+     "excess": 2.7538
+    },
+    {
+     "pin": "_1465_/C",
+     "limit": 5.0,
+     "value": 7.7007,
+     "excess": 2.7007
+    },
+    {
+     "pin": "_1476_/B",
+     "limit": 5.0,
+     "value": 7.7007,
+     "excess": 2.7007
+    },
+    {
+     "pin": "_1492_/D",
+     "limit": 5.0,
+     "value": 7.7007,
+     "excess": 2.7007
+    },
+    {
+     "pin": "_1499_/B",
+     "limit": 5.0,
+     "value": 7.7007,
+     "excess": 2.7007
+    },
+    {
+     "pin": "_1506_/B",
+     "limit": 5.0,
+     "value": 7.7007,
+     "excess": 2.7007
+    },
+    {
+     "pin": "_1522_/A",
+     "limit": 5.0,
+     "value": 7.7007,
+     "excess": 2.7007
+    },
+    {
+     "pin": "_1530_/C",
+     "limit": 5.0,
+     "value": 7.7007,
+     "excess": 2.7007
+    },
+    {
+     "pin": "_1536_/B",
+     "limit": 5.0,
+     "value": 7.7007,
+     "excess": 2.7007
+    },
+    {
+     "pin": "_1547_/B",
+     "limit": 5.0,
+     "value": 7.7007,
+     "excess": 2.7007
+    },
+    {
+     "pin": "_1553_/B",
+     "limit": 5.0,
+     "value": 7.7007,
+     "excess": 2.7007
+    },
+    {
+     "pin": "_1559_/B",
+     "limit": 5.0,
+     "value": 7.7007,
+     "excess": 2.7007
+    },
+    {
+     "pin": "_1570_/C",
+     "limit": 5.0,
+     "value": 7.7007,
+     "excess": 2.7007
+    },
+    {
+     "pin": "_2625_/Y",
+     "limit": 4.9937,
+     "value": 6.9284,
+     "excess": 1.9347
+    },
+    {
+     "pin": "_2673_/B",
+     "limit": 5.0,
+     "value": 6.9284,
+     "excess": 1.9284
+    },
+    {
+     "pin": "_2674_/A2",
+     "limit": 5.0,
+     "value": 6.9284,
+     "excess": 1.9284
+    },
+    {
+     "pin": "_2684_/B",
+     "limit": 5.0,
+     "value": 6.9284,
+     "excess": 1.9284
+    },
+    {
+     "pin": "_2685_/A2",
+     "limit": 5.0,
+     "value": 6.9284,
+     "excess": 1.9284
+    },
+    {
+     "pin": "_2688_/B",
+     "limit": 5.0,
+     "value": 6.9284,
+     "excess": 1.9284
+    },
+    {
+     "pin": "_2689_/A2",
+     "limit": 5.0,
+     "value": 6.9284,
+     "excess": 1.9284
+    },
+    {
+     "pin": "_2695_/B",
+     "limit": 5.0,
+     "value": 6.9284,
+     "excess": 1.9284
+    },
+    {
+     "pin": "_2696_/A2",
+     "limit": 5.0,
+     "value": 6.9284,
+     "excess": 1.9284
+    },
+    {
+     "pin": "_2698_/B",
+     "limit": 5.0,
+     "value": 6.9284,
+     "excess": 1.9284
+    },
+    {
+     "pin": "_2699_/A2",
+     "limit": 5.0,
+     "value": 6.9284,
+     "excess": 1.9284
+    },
+    {
+     "pin": "_2702_/B",
+     "limit": 5.0,
+     "value": 6.9284,
+     "excess": 1.9284
+    },
+    {
+     "pin": "_2703_/A2",
+     "limit": 5.0,
+     "value": 6.9284,
+     "excess": 1.9284
+    },
+    {
+     "pin": "_2706_/B",
+     "limit": 5.0,
+     "value": 6.9284,
+     "excess": 1.9284
+    },
+    {
+     "pin": "_2707_/A2",
+     "limit": 5.0,
+     "value": 6.9284,
+     "excess": 1.9284
+    },
+    {
+     "pin": "_2711_/B",
+     "limit": 5.0,
+     "value": 6.9284,
+     "excess": 1.9284
+    },
+    {
+     "pin": "_2712_/A2",
+     "limit": 5.0,
+     "value": 6.9284,
+     "excess": 1.9284
+    },
+    {
+     "pin": "_2715_/B",
+     "limit": 5.0,
+     "value": 6.9284,
+     "excess": 1.9284
+    },
+    {
+     "pin": "_2716_/A2",
+     "limit": 5.0,
+     "value": 6.9284,
+     "excess": 1.9284
+    },
+    {
+     "pin": "_2719_/B",
+     "limit": 5.0,
+     "value": 6.9284,
+     "excess": 1.9284
+    },
+    {
+     "pin": "_2720_/A2",
+     "limit": 5.0,
+     "value": 6.9284,
+     "excess": 1.9284
+    },
+    {
+     "pin": "_2723_/B",
+     "limit": 5.0,
+     "value": 6.9284,
+     "excess": 1.9284
+    },
+    {
+     "pin": "_2724_/A2",
+     "limit": 5.0,
+     "value": 6.9284,
+     "excess": 1.9284
+    },
+    {
+     "pin": "_2727_/B",
+     "limit": 5.0,
+     "value": 6.9284,
+     "excess": 1.9284
+    },
+    {
+     "pin": "_2728_/A2",
+     "limit": 5.0,
+     "value": 6.9284,
+     "excess": 1.9284
+    },
+    {
+     "pin": "_2731_/B",
+     "limit": 5.0,
+     "value": 6.9284,
+     "excess": 1.9284
+    },
+    {
+     "pin": "_2732_/A2",
+     "limit": 5.0,
+     "value": 6.9284,
+     "excess": 1.9284
+    },
+    {
+     "pin": "_2735_/B",
+     "limit": 5.0,
+     "value": 6.9284,
+     "excess": 1.9284
+    },
+    {
+     "pin": "_2736_/A2",
+     "limit": 5.0,
+     "value": 6.9284,
+     "excess": 1.9284
+    },
+    {
+     "pin": "place33/A",
+     "limit": 5.0,
+     "value": 6.9284,
+     "excess": 1.9284
+    },
+    {
+     "pin": "_3180_/Y",
+     "limit": 4.9418,
+     "value": 6.8517,
+     "excess": 1.9099
+    },
+    {
+     "pin": "_3226_/B",
+     "limit": 5.0,
+     "value": 6.8517,
+     "excess": 1.8517
+    },
+    {
+     "pin": "_3232_/A2",
+     "limit": 5.0,
+     "value": 6.8517,
+     "excess": 1.8517
+    },
+    {
+     "pin": "_3233_/B",
+     "limit": 5.0,
+     "value": 6.8517,
+     "excess": 1.8517
+    },
+    {
+     "pin": "_3236_/A2",
+     "limit": 5.0,
+     "value": 6.8517,
+     "excess": 1.8517
+    },
+    {
+     "pin": "_3239_/A2",
+     "limit": 5.0,
+     "value": 6.8517,
+     "excess": 1.8517
+    },
+    {
+     "pin": "_3242_/B1",
+     "limit": 5.0,
+     "value": 6.8517,
+     "excess": 1.8517
+    },
+    {
+     "pin": "_3253_/A2",
+     "limit": 5.0,
+     "value": 6.8517,
+     "excess": 1.8517
+    },
+    {
+     "pin": "_3259_/A2",
+     "limit": 5.0,
+     "value": 6.8517,
+     "excess": 1.8517
+    },
+    {
+     "pin": "_3261_/B",
+     "limit": 5.0,
+     "value": 6.8517,
+     "excess": 1.8517
+    },
+    {
+     "pin": "_3264_/A2",
+     "limit": 5.0,
+     "value": 6.8517,
+     "excess": 1.8517
+    },
+    {
+     "pin": "_3270_/A2",
+     "limit": 5.0,
+     "value": 6.8517,
+     "excess": 1.8517
+    },
+    {
+     "pin": "_3276_/A2",
+     "limit": 5.0,
+     "value": 6.8517,
+     "excess": 1.8517
+    },
+    {
+     "pin": "_3279_/A2",
+     "limit": 5.0,
+     "value": 6.8517,
+     "excess": 1.8517
+    },
+    {
+     "pin": "_3284_/A2",
+     "limit": 5.0,
+     "value": 6.8517,
+     "excess": 1.8517
+    },
+    {
+     "pin": "_3290_/A2",
+     "limit": 5.0,
+     "value": 6.8517,
+     "excess": 1.8517
+    },
+    {
+     "pin": "place36/A",
+     "limit": 5.0,
+     "value": 6.8517,
+     "excess": 1.8517
+    },
+    {
+     "pin": "_1766_/Y",
+     "limit": 4.8889,
+     "value": 6.2035,
+     "excess": 1.3147
+    },
+    {
+     "pin": "_1767_/B",
+     "limit": 5.0,
+     "value": 6.2035,
+     "excess": 1.2035
+    },
+    {
+     "pin": "_1773_/C",
+     "limit": 5.0,
+     "value": 6.2035,
+     "excess": 1.2035
+    },
+    {
+     "pin": "_3281_/A1",
+     "limit": 5.0,
+     "value": 6.2035,
+     "excess": 1.2035
+    },
+    {
+     "pin": "_3288_/A1",
+     "limit": 5.0,
+     "value": 6.2035,
+     "excess": 1.2035
+    },
+    {
+     "pin": "_3292_/A1",
+     "limit": 5.0,
+     "value": 6.2035,
+     "excess": 1.2035
+    },
+    {
+     "pin": "_2071_/X",
+     "limit": 4.9995,
+     "value": 5.871,
+     "excess": 0.8716
+    },
+    {
+     "pin": "_2077_/B",
+     "limit": 5.0,
+     "value": 5.871,
+     "excess": 0.871
+    },
+    {
+     "pin": "_2089_/B",
+     "limit": 5.0,
+     "value": 5.871,
+     "excess": 0.871
+    },
+    {
+     "pin": "_2093_/B",
+     "limit": 5.0,
+     "value": 5.871,
+     "excess": 0.871
+    },
+    {
+     "pin": "_2096_/B",
+     "limit": 5.0,
+     "value": 5.871,
+     "excess": 0.871
+    },
+    {
+     "pin": "_2103_/B2",
+     "limit": 5.0,
+     "value": 5.871,
+     "excess": 0.871
+    },
+    {
+     "pin": "_2106_/B",
+     "limit": 5.0,
+     "value": 5.871,
+     "excess": 0.871
+    },
+    {
+     "pin": "_2109_/B",
+     "limit": 5.0,
+     "value": 5.871,
+     "excess": 0.871
+    },
+    {
+     "pin": "_2113_/B2",
+     "limit": 5.0,
+     "value": 5.871,
+     "excess": 0.871
+    },
+    {
+     "pin": "_2116_/B2",
+     "limit": 5.0,
+     "value": 5.871,
+     "excess": 0.871
+    },
+    {
+     "pin": "_2119_/B",
+     "limit": 5.0,
+     "value": 5.871,
+     "excess": 0.871
+    },
+    {
+     "pin": "_2122_/B",
+     "limit": 5.0,
+     "value": 5.871,
+     "excess": 0.871
+    },
+    {
+     "pin": "_2126_/B",
+     "limit": 5.0,
+     "value": 5.871,
+     "excess": 0.871
+    },
+    {
+     "pin": "_2129_/B",
+     "limit": 5.0,
+     "value": 5.871,
+     "excess": 0.871
+    },
+    {
+     "pin": "_2132_/B",
+     "limit": 5.0,
+     "value": 5.871,
+     "excess": 0.871
+    },
+    {
+     "pin": "_2135_/B2",
+     "limit": 5.0,
+     "value": 5.871,
+     "excess": 0.871
+    },
+    {
+     "pin": "_2138_/B",
+     "limit": 5.0,
+     "value": 5.871,
+     "excess": 0.871
+    },
+    {
+     "pin": "_2141_/B",
+     "limit": 5.0,
+     "value": 5.871,
+     "excess": 0.871
+    },
+    {
+     "pin": "_2144_/B",
+     "limit": 5.0,
+     "value": 5.871,
+     "excess": 0.871
+    },
+    {
+     "pin": "_2147_/B2",
+     "limit": 5.0,
+     "value": 5.871,
+     "excess": 0.871
+    },
+    {
+     "pin": "_2150_/B2",
+     "limit": 5.0,
+     "value": 5.871,
+     "excess": 0.871
+    },
+    {
+     "pin": "_2153_/B2",
+     "limit": 5.0,
+     "value": 5.871,
+     "excess": 0.871
+    },
+    {
+     "pin": "_2156_/B",
+     "limit": 5.0,
+     "value": 5.871,
+     "excess": 0.871
+    },
+    {
+     "pin": "_2159_/B2",
+     "limit": 5.0,
+     "value": 5.871,
+     "excess": 0.871
+    },
+    {
+     "pin": "_2162_/B2",
+     "limit": 5.0,
+     "value": 5.871,
+     "excess": 0.871
+    },
+    {
+     "pin": "_2165_/B",
+     "limit": 5.0,
+     "value": 5.871,
+     "excess": 0.871
+    },
+    {
+     "pin": "_2168_/B2",
+     "limit": 5.0,
+     "value": 5.871,
+     "excess": 0.871
+    },
+    {
+     "pin": "_2171_/B2",
+     "limit": 5.0,
+     "value": 5.871,
+     "excess": 0.871
+    },
+    {
+     "pin": "_2177_/B2",
+     "limit": 5.0,
+     "value": 5.871,
+     "excess": 0.871
+    },
+    {
+     "pin": "_2180_/B2",
+     "limit": 5.0,
+     "value": 5.871,
+     "excess": 0.871
+    },
+    {
+     "pin": "_2183_/A",
+     "limit": 5.0,
+     "value": 5.871,
+     "excess": 0.871
+    },
+    {
+     "pin": "_2209_/B",
+     "limit": 5.0,
+     "value": 5.871,
+     "excess": 0.871
+    },
+    {
+     "pin": "_2404_/A2",
+     "limit": 5.0,
+     "value": 5.871,
+     "excess": 0.871
+    },
+    {
+     "pin": "_2405_/A3",
+     "limit": 5.0,
+     "value": 5.871,
+     "excess": 0.871
+    },
+    {
+     "pin": "_3142_/B",
+     "limit": 5.0,
+     "value": 5.871,
+     "excess": 0.871
+    },
+    {
+     "pin": "_2438_/B",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2439_/A2",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2452_/B",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2453_/A2",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2459_/B",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2460_/A2",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2465_/B",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2466_/A2",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2471_/B",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2472_/A2",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2476_/B",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2477_/A2",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2483_/B",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2484_/A2",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2488_/B",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2489_/A2",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2493_/B",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2494_/A2",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2499_/B",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2500_/A2",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2504_/B",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2505_/A2",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2509_/B",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2510_/A2",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2514_/B",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2515_/A2",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2519_/B",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2520_/A2",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2524_/B",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2525_/A2",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2529_/B",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2530_/A2",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2534_/B",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2535_/A2",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2539_/B",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2540_/A2",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2545_/B",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2546_/A2",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2553_/B",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2554_/A2",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2559_/B",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2560_/A2",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2562_/B",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2563_/A2",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2570_/B",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2571_/A2",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2579_/B",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2582_/B",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2583_/A2",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2588_/B",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2589_/A2",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2594_/B",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2595_/A2",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2604_/B",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2607_/B",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2608_/A2",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2616_/B",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2621_/B",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2622_/A2",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_3162_/A",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_3163_/A2",
+     "limit": 5.0,
+     "value": 5.7986,
+     "excess": 0.7986
+    },
+    {
+     "pin": "_2433_/X",
+     "limit": 5.0281,
+     "value": 5.7986,
+     "excess": 0.7705
+    },
+    {
+     "pin": "_2801_/Y",
+     "limit": 4.9817,
+     "value": 5.567,
+     "excess": 0.5853
+    },
+    {
+     "pin": "_2802_/B1",
+     "limit": 5.0,
+     "value": 5.567,
+     "excess": 0.567
+    },
+    {
+     "pin": "_3183_/B2",
+     "limit": 5.0,
+     "value": 5.567,
+     "excess": 0.567
+    },
+    {
+     "pin": "_3196_/B2",
+     "limit": 5.0,
+     "value": 5.567,
+     "excess": 0.567
+    },
+    {
+     "pin": "_3201_/B2",
+     "limit": 5.0,
+     "value": 5.567,
+     "excess": 0.567
+    },
+    {
+     "pin": "_3205_/B2",
+     "limit": 5.0,
+     "value": 5.567,
+     "excess": 0.567
+    },
+    {
+     "pin": "_3207_/B2",
+     "limit": 5.0,
+     "value": 5.567,
+     "excess": 0.567
+    },
+    {
+     "pin": "_3209_/B2",
+     "limit": 5.0,
+     "value": 5.567,
+     "excess": 0.567
+    },
+    {
+     "pin": "_3213_/B2",
+     "limit": 5.0,
+     "value": 5.567,
+     "excess": 0.567
+    },
+    {
+     "pin": "_3217_/B2",
+     "limit": 5.0,
+     "value": 5.567,
+     "excess": 0.567
+    },
+    {
+     "pin": "_3220_/B2",
+     "limit": 5.0,
+     "value": 5.567,
+     "excess": 0.567
+    },
+    {
+     "pin": "_3227_/A1",
+     "limit": 5.0,
+     "value": 5.567,
+     "excess": 0.567
+    },
+    {
+     "pin": "_3234_/B2",
+     "limit": 5.0,
+     "value": 5.567,
+     "excess": 0.567
+    },
+    {
+     "pin": "_3237_/A1",
+     "limit": 5.0,
+     "value": 5.567,
+     "excess": 0.567
+    },
+    {
+     "pin": "_3240_/A1",
+     "limit": 5.0,
+     "value": 5.567,
+     "excess": 0.567
+    },
+    {
+     "pin": "_3243_/A1",
+     "limit": 5.0,
+     "value": 5.567,
+     "excess": 0.567
+    },
+    {
+     "pin": "_3255_/A1",
+     "limit": 5.0,
+     "value": 5.567,
+     "excess": 0.567
+    },
+    {
+     "pin": "_3260_/A1",
+     "limit": 5.0,
+     "value": 5.567,
+     "excess": 0.567
+    },
+    {
+     "pin": "_3262_/B2",
+     "limit": 5.0,
+     "value": 5.567,
+     "excess": 0.567
+    },
+    {
+     "pin": "_3266_/A1",
+     "limit": 5.0,
+     "value": 5.567,
+     "excess": 0.567
+    },
+    {
+     "pin": "_3271_/A1",
+     "limit": 5.0,
+     "value": 5.567,
+     "excess": 0.567
+    },
+    {
+     "pin": "_3277_/A1",
+     "limit": 5.0,
+     "value": 5.567,
+     "excess": 0.567
+    },
+    {
+     "pin": "_3285_/A1",
+     "limit": 5.0,
+     "value": 5.567,
+     "excess": 0.567
+    },
+    {
+     "pin": "_3291_/A1",
+     "limit": 5.0,
+     "value": 5.567,
+     "excess": 0.567
+    },
+    {
+     "pin": "place21/X",
+     "limit": 4.9932,
+     "value": 5.5497,
+     "excess": 0.5565
+    },
+    {
+     "pin": "_2805_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_2811_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_2814_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_2817_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_2823_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_2826_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_2829_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_2836_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_2841_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_2845_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_2848_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_2851_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_2854_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_2857_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_2865_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_2868_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_2871_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_2883_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_2936_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_2939_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_2941_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_2944_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_2948_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_2950_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_2952_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_2955_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_2960_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_2962_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_2964_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_2966_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_2968_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_2970_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_2975_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_2977_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_2979_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_2986_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_3018_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_3019_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_3020_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_3021_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_3022_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_3023_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_3024_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_3026_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_3027_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_3028_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_3029_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_3030_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_3031_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_3032_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_3034_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_3035_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_3037_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_3039_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_3172_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_3174_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_3175_/S",
+     "limit": 5.0,
+     "value": 5.5497,
+     "excess": 0.5497
+    },
+    {
+     "pin": "_1902_/Y",
+     "limit": 4.9235,
+     "value": 5.4666,
+     "excess": 0.5431
+    },
+    {
+     "pin": "_1903_/C",
+     "limit": 5.0,
+     "value": 5.4666,
+     "excess": 0.4666
+    },
+    {
+     "pin": "_2078_/B",
+     "limit": 5.0,
+     "value": 5.4666,
+     "excess": 0.4666
+    },
+    {
+     "pin": "_2348_/A2",
+     "limit": 5.0,
+     "value": 5.4666,
+     "excess": 0.4666
+    },
+    {
+     "pin": "_2358_/A2",
+     "limit": 5.0,
+     "value": 5.4666,
+     "excess": 0.4666
+    },
+    {
+     "pin": "place23/X",
+     "limit": 4.9932,
+     "value": 5.4198,
+     "excess": 0.4266
+    },
+    {
+     "pin": "_2446_/S",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2455_/S",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2462_/S",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2467_/S",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2473_/S",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2478_/S",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2485_/S",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2490_/S",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2496_/S",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2501_/S",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2506_/S",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2511_/S",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2516_/S",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2521_/S",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2531_/S",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2536_/S",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2556_/S",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2611_/A",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2612_/A1",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2630_/S",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2634_/S",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2637_/S",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2640_/S",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2645_/S",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2648_/S",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2651_/S",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2654_/S",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2657_/S",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2660_/S",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2663_/S",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2666_/S",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2669_/S",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2672_/S",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2678_/S",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2681_/S",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2694_/S",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2740_/B",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2741_/A1",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2742_/B",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2743_/A1",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2744_/B",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2745_/A1",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2746_/B",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2747_/A1",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2748_/B",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2749_/A1",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2750_/B",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2751_/A1",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2753_/B",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2754_/A1",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2755_/B",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2756_/A1",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2757_/B",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2758_/A1",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2759_/B",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2760_/A1",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2761_/B",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2762_/A1",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2763_/B",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2764_/A1",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2765_/B",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2766_/A1",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2767_/B",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2768_/A1",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2771_/B",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2772_/A1",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2773_/B",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2774_/A1",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2777_/B",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2778_/A1",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_3164_/S",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_3167_/S",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_3168_/A",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_3169_/A1",
+     "limit": 5.0,
+     "value": 5.4198,
+     "excess": 0.4198
+    },
+    {
+     "pin": "_2416_/Y",
+     "limit": 4.8135,
+     "value": 5.2288,
+     "excess": 0.4153
+    },
+    {
+     "pin": "_1455_/Y",
+     "limit": 4.8889,
+     "value": 5.2857,
+     "excess": 0.3968
+    },
+    {
+     "pin": "_1642_/Y",
+     "limit": 4.9592,
+     "value": 5.2581,
+     "excess": 0.2989
+    },
+    {
+     "pin": "_1456_/B",
+     "limit": 5.0,
+     "value": 5.2857,
+     "excess": 0.2857
+    },
+    {
+     "pin": "_1517_/B",
+     "limit": 5.0,
+     "value": 5.2857,
+     "excess": 0.2857
+    },
+    {
+     "pin": "_1564_/B",
+     "limit": 5.0,
+     "value": 5.2857,
+     "excess": 0.2857
+    },
+    {
+     "pin": "_3229_/Y",
+     "limit": 4.9592,
+     "value": 5.2403,
+     "excess": 0.281
+    },
+    {
+     "pin": "_1643_/A",
+     "limit": 5.0,
+     "value": 5.2581,
+     "excess": 0.2581
+    },
+    {
+     "pin": "_1644_/B",
+     "limit": 5.0,
+     "value": 5.2581,
+     "excess": 0.2581
+    },
+    {
+     "pin": "_2235_/Y",
+     "limit": 4.976,
+     "value": 5.2194,
+     "excess": 0.2433
+    },
+    {
+     "pin": "_3230_/B",
+     "limit": 5.0,
+     "value": 5.2403,
+     "excess": 0.2403
+    },
+    {
+     "pin": "_3238_/A3",
+     "limit": 5.0,
+     "value": 5.2403,
+     "excess": 0.2403
+    },
+    {
+     "pin": "_3247_/A2",
+     "limit": 5.0,
+     "value": 5.2403,
+     "excess": 0.2403
+    },
+    {
+     "pin": "_3250_/B",
+     "limit": 5.0,
+     "value": 5.2403,
+     "excess": 0.2403
+    },
+    {
+     "pin": "_3267_/B1",
+     "limit": 5.0,
+     "value": 5.2403,
+     "excess": 0.2403
+    },
+    {
+     "pin": "_3272_/B",
+     "limit": 5.0,
+     "value": 5.2403,
+     "excess": 0.2403
+    },
+    {
+     "pin": "_3281_/B1",
+     "limit": 5.0,
+     "value": 5.2403,
+     "excess": 0.2403
+    },
+    {
+     "pin": "_2417_/D",
+     "limit": 5.0,
+     "value": 5.2288,
+     "excess": 0.2288
+    },
+    {
+     "pin": "_2420_/A2",
+     "limit": 5.0,
+     "value": 5.2288,
+     "excess": 0.2288
+    },
+    {
+     "pin": "_2801_/C",
+     "limit": 5.0,
+     "value": 5.2288,
+     "excess": 0.2288
+    },
+    {
+     "pin": "_3187_/B",
+     "limit": 5.0,
+     "value": 5.2288,
+     "excess": 0.2288
+    },
+    {
+     "pin": "_2237_/B",
+     "limit": 5.0,
+     "value": 5.2194,
+     "excess": 0.2194
+    },
+    {
+     "pin": "_2241_/B",
+     "limit": 5.0,
+     "value": 5.2194,
+     "excess": 0.2194
+    },
+    {
+     "pin": "_2245_/B",
+     "limit": 5.0,
+     "value": 5.2194,
+     "excess": 0.2194
+    },
+    {
+     "pin": "_2248_/B",
+     "limit": 5.0,
+     "value": 5.2194,
+     "excess": 0.2194
+    },
+    {
+     "pin": "_2251_/B",
+     "limit": 5.0,
+     "value": 5.2194,
+     "excess": 0.2194
+    },
+    {
+     "pin": "_2254_/B",
+     "limit": 5.0,
+     "value": 5.2194,
+     "excess": 0.2194
+    },
+    {
+     "pin": "_2257_/B",
+     "limit": 5.0,
+     "value": 5.2194,
+     "excess": 0.2194
+    },
+    {
+     "pin": "_2260_/B",
+     "limit": 5.0,
+     "value": 5.2194,
+     "excess": 0.2194
+    },
+    {
+     "pin": "_2264_/B",
+     "limit": 5.0,
+     "value": 5.2194,
+     "excess": 0.2194
+    },
+    {
+     "pin": "_2267_/B",
+     "limit": 5.0,
+     "value": 5.2194,
+     "excess": 0.2194
+    },
+    {
+     "pin": "_2270_/B",
+     "limit": 5.0,
+     "value": 5.2194,
+     "excess": 0.2194
+    },
+    {
+     "pin": "_2273_/B",
+     "limit": 5.0,
+     "value": 5.2194,
+     "excess": 0.2194
+    },
+    {
+     "pin": "_2276_/B",
+     "limit": 5.0,
+     "value": 5.2194,
+     "excess": 0.2194
+    },
+    {
+     "pin": "_2280_/B",
+     "limit": 5.0,
+     "value": 5.2194,
+     "excess": 0.2194
+    },
+    {
+     "pin": "_2283_/B",
+     "limit": 5.0,
+     "value": 5.2194,
+     "excess": 0.2194
+    },
+    {
+     "pin": "_2286_/B",
+     "limit": 5.0,
+     "value": 5.2194,
+     "excess": 0.2194
+    },
+    {
+     "pin": "_2289_/B",
+     "limit": 5.0,
+     "value": 5.2194,
+     "excess": 0.2194
+    },
+    {
+     "pin": "_2292_/B",
+     "limit": 5.0,
+     "value": 5.2194,
+     "excess": 0.2194
+    },
+    {
+     "pin": "_2295_/B",
+     "limit": 5.0,
+     "value": 5.2194,
+     "excess": 0.2194
+    },
+    {
+     "pin": "_2298_/B",
+     "limit": 5.0,
+     "value": 5.2194,
+     "excess": 0.2194
+    },
+    {
+     "pin": "_2301_/B",
+     "limit": 5.0,
+     "value": 5.2194,
+     "excess": 0.2194
+    },
+    {
+     "pin": "_2304_/B",
+     "limit": 5.0,
+     "value": 5.2194,
+     "excess": 0.2194
+    },
+    {
+     "pin": "_2307_/B",
+     "limit": 5.0,
+     "value": 5.2194,
+     "excess": 0.2194
+    },
+    {
+     "pin": "_2311_/B",
+     "limit": 5.0,
+     "value": 5.2194,
+     "excess": 0.2194
+    },
+    {
+     "pin": "_2314_/B",
+     "limit": 5.0,
+     "value": 5.2194,
+     "excess": 0.2194
+    },
+    {
+     "pin": "_2317_/B",
+     "limit": 5.0,
+     "value": 5.2194,
+     "excess": 0.2194
+    },
+    {
+     "pin": "_2320_/B",
+     "limit": 5.0,
+     "value": 5.2194,
+     "excess": 0.2194
+    },
+    {
+     "pin": "_2323_/B",
+     "limit": 5.0,
+     "value": 5.2194,
+     "excess": 0.2194
+    },
+    {
+     "pin": "_2326_/B",
+     "limit": 5.0,
+     "value": 5.2194,
+     "excess": 0.2194
+    },
+    {
+     "pin": "_2329_/B",
+     "limit": 5.0,
+     "value": 5.2194,
+     "excess": 0.2194
+    },
+    {
+     "pin": "_2332_/B",
+     "limit": 5.0,
+     "value": 5.2194,
+     "excess": 0.2194
+    },
+    {
+     "pin": "place40/X",
+     "limit": 4.9932,
+     "value": 5.1657,
+     "excess": 0.1724
+    },
+    {
+     "pin": "_1440_/A",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_1666_/A",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_1774_/B",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_1776_/B",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_1777_/B",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_1778_/B",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_1779_/B",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_1780_/B",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_1782_/B",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_1783_/B",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_1869_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_1874_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_1879_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_1882_/B",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_1887_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_1890_/B1",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_1893_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_1896_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_1898_/B",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_1901_/A",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_1902_/C1",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_1916_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_1949_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_1953_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_1956_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_1958_/B1",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_1960_/B1",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_1965_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_1968_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_1971_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_1973_/B",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_1978_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_1981_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_1984_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_1987_/B",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_1992_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_1997_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_2012_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_2020_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_2025_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_2030_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_2035_/B1",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_2037_/B",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_2046_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_2189_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_2193_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_2197_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_2201_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_2212_/B1",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_2238_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_2242_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_2246_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_2249_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_2252_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_2255_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_2258_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_2261_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_2265_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_2268_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_2271_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_2274_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_2277_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_2281_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_2284_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_2287_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_2290_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_2293_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_2296_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_2299_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_2302_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_2305_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_2308_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_2310_/B",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_2315_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_2318_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_2321_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_2324_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_2327_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_2330_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_2333_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_2335_/A",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_2338_/A",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_2341_/A",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_2401_/B",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_2406_/B",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_2798_/B",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_3121_/B",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_3126_/B",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_3132_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_3135_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_3139_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_3146_/A2",
+     "limit": 5.0,
+     "value": 5.1657,
+     "excess": 0.1657
+    },
+    {
+     "pin": "_1651_/Y",
+     "limit": 4.8889,
+     "value": 5.0296,
+     "excess": 0.1407
+    },
+    {
+     "pin": "_1568_/Y",
+     "limit": 4.9418,
+     "value": 5.0623,
+     "excess": 0.1206
+    },
+    {
+     "pin": "_1572_/A1",
+     "limit": 5.0,
+     "value": 5.0623,
+     "excess": 0.0623
+    },
+    {
+     "pin": "_1575_/C",
+     "limit": 5.0,
+     "value": 5.0623,
+     "excess": 0.0623
+    },
+    {
+     "pin": "_1576_/A2",
+     "limit": 5.0,
+     "value": 5.0623,
+     "excess": 0.0623
+    },
+    {
+     "pin": "_1579_/C",
+     "limit": 5.0,
+     "value": 5.0623,
+     "excess": 0.0623
+    },
+    {
+     "pin": "_1580_/A2",
+     "limit": 5.0,
+     "value": 5.0623,
+     "excess": 0.0623
+    },
+    {
+     "pin": "_1590_/C",
+     "limit": 5.0,
+     "value": 5.0623,
+     "excess": 0.0623
+    },
+    {
+     "pin": "_1591_/A2",
+     "limit": 5.0,
+     "value": 5.0623,
+     "excess": 0.0623
+    },
+    {
+     "pin": "_1594_/C",
+     "limit": 5.0,
+     "value": 5.0623,
+     "excess": 0.0623
+    },
+    {
+     "pin": "_1595_/A2",
+     "limit": 5.0,
+     "value": 5.0623,
+     "excess": 0.0623
+    },
+    {
+     "pin": "_1598_/C",
+     "limit": 5.0,
+     "value": 5.0623,
+     "excess": 0.0623
+    },
+    {
+     "pin": "_1599_/A2",
+     "limit": 5.0,
+     "value": 5.0623,
+     "excess": 0.0623
+    },
+    {
+     "pin": "_1602_/C",
+     "limit": 5.0,
+     "value": 5.0623,
+     "excess": 0.0623
+    },
+    {
+     "pin": "_1652_/D",
+     "limit": 5.0,
+     "value": 5.0296,
+     "excess": 0.0296
+    },
+    {
+     "pin": "_1653_/A3",
+     "limit": 5.0,
+     "value": 5.0296,
+     "excess": 0.0296
+    },
+    {
+     "pin": "_2204_/B",
+     "limit": 5.0,
+     "value": 5.0296,
+     "excess": 0.0296
+    },
+    {
+     "pin": "_2207_/A1",
+     "limit": 5.0,
+     "value": 5.0296,
+     "excess": 0.0296
+    },
+    {
+     "pin": "_2211_/A2",
+     "limit": 5.0,
+     "value": 5.0296,
+     "excess": 0.0296
+    }
+   ],
+   "max_capacitance": [
+    {
+     "pin": "place21/X",
+     "limit": 0.2724,
+     "value": 0.3039,
+     "excess": 0.0316
+    },
+    {
+     "pin": "_2433_/X",
+     "limit": 0.1686,
+     "value": 0.1955,
+     "excess": 0.0268
+    },
+    {
+     "pin": "place23/X",
+     "limit": 0.2724,
+     "value": 0.2983,
+     "excess": 0.0259
+    },
+    {
+     "pin": "_2625_/Y",
+     "limit": 0.061,
+     "value": 0.0862,
+     "excess": 0.0251
+    },
+    {
+     "pin": "_2071_/X",
+     "limit": 0.0984,
+     "value": 0.1163,
+     "excess": 0.0179
+    },
+    {
+     "pin": "_3180_/Y",
+     "limit": 0.0412,
+     "value": 0.058,
+     "excess": 0.0168
+    },
+    {
+     "pin": "_1463_/Y",
+     "limit": 0.0237,
+     "value": 0.0383,
+     "excess": 0.0146
+    },
+    {
+     "pin": "place40/X",
+     "limit": 0.2724,
+     "value": 0.2837,
+     "excess": 0.0113
+    },
+    {
+     "pin": "_2801_/Y",
+     "limit": 0.0702,
+     "value": 0.079,
+     "excess": 0.0088
+    },
+    {
+     "pin": "_2235_/Y",
+     "limit": 0.0946,
+     "value": 0.0994,
+     "excess": 0.0048
+    },
+    {
+     "pin": "_1766_/Y",
+     "limit": 0.0122,
+     "value": 0.0162,
+     "excess": 0.004
+    },
+    {
+     "pin": "_1902_/Y",
+     "limit": 0.016,
+     "value": 0.0182,
+     "excess": 0.0021
+    },
+    {
+     "pin": "_1642_/Y",
+     "limit": 0.0206,
+     "value": 0.0221,
+     "excess": 0.0015
+    },
+    {
+     "pin": "_3229_/Y",
+     "limit": 0.0206,
+     "value": 0.022,
+     "excess": 0.0014
+    },
+    {
+     "pin": "_1568_/Y",
+     "limit": 0.0412,
+     "value": 0.0424,
+     "excess": 0.0012
+    },
+    {
+     "pin": "_1455_/Y",
+     "limit": 0.0122,
+     "value": 0.0134,
+     "excess": 0.0012
+    },
+    {
+     "pin": "_2416_/Y",
+     "limit": 0.0099,
+     "value": 0.011,
+     "excess": 0.0011
+    }
+   ]
+  },
+  "ss_n40C_1v35": {
+   "max_slew": [],
+   "max_capacitance": []
+  },
+  "ss_n40C_1v40": {
+   "max_slew": [],
+   "max_capacitance": []
+  },
+  "ss_n40C_1v44": {
+   "max_slew": [],
+   "max_capacitance": []
+  },
+  "ss_n40C_1v60": {
+   "max_slew": [
+    {
+     "pin": "_2071_/X",
+     "limit": 1.4878,
+     "value": 2.3994,
+     "excess": 0.9116
+    },
+    {
+     "pin": "_2077_/B",
+     "limit": 1.5,
+     "value": 2.3994,
+     "excess": 0.8994
+    },
+    {
+     "pin": "_2089_/B",
+     "limit": 1.5,
+     "value": 2.3994,
+     "excess": 0.8994
+    },
+    {
+     "pin": "_2093_/B",
+     "limit": 1.5,
+     "value": 2.3994,
+     "excess": 0.8994
+    },
+    {
+     "pin": "_2096_/B",
+     "limit": 1.5,
+     "value": 2.3994,
+     "excess": 0.8994
+    },
+    {
+     "pin": "_2103_/B2",
+     "limit": 1.5,
+     "value": 2.3994,
+     "excess": 0.8994
+    },
+    {
+     "pin": "_2106_/B",
+     "limit": 1.5,
+     "value": 2.3994,
+     "excess": 0.8994
+    },
+    {
+     "pin": "_2109_/B",
+     "limit": 1.5,
+     "value": 2.3994,
+     "excess": 0.8994
+    },
+    {
+     "pin": "_2113_/B2",
+     "limit": 1.5,
+     "value": 2.3994,
+     "excess": 0.8994
+    },
+    {
+     "pin": "_2116_/B2",
+     "limit": 1.5,
+     "value": 2.3994,
+     "excess": 0.8994
+    },
+    {
+     "pin": "_2119_/B",
+     "limit": 1.5,
+     "value": 2.3994,
+     "excess": 0.8994
+    },
+    {
+     "pin": "_2122_/B",
+     "limit": 1.5,
+     "value": 2.3994,
+     "excess": 0.8994
+    },
+    {
+     "pin": "_2126_/B",
+     "limit": 1.5,
+     "value": 2.3994,
+     "excess": 0.8994
+    },
+    {
+     "pin": "_2129_/B",
+     "limit": 1.5,
+     "value": 2.3994,
+     "excess": 0.8994
+    },
+    {
+     "pin": "_2132_/B",
+     "limit": 1.5,
+     "value": 2.3994,
+     "excess": 0.8994
+    },
+    {
+     "pin": "_2135_/B2",
+     "limit": 1.5,
+     "value": 2.3994,
+     "excess": 0.8994
+    },
+    {
+     "pin": "_2138_/B",
+     "limit": 1.5,
+     "value": 2.3994,
+     "excess": 0.8994
+    },
+    {
+     "pin": "_2141_/B",
+     "limit": 1.5,
+     "value": 2.3994,
+     "excess": 0.8994
+    },
+    {
+     "pin": "_2144_/B",
+     "limit": 1.5,
+     "value": 2.3994,
+     "excess": 0.8994
+    },
+    {
+     "pin": "_2147_/B2",
+     "limit": 1.5,
+     "value": 2.3994,
+     "excess": 0.8994
+    },
+    {
+     "pin": "_2150_/B2",
+     "limit": 1.5,
+     "value": 2.3994,
+     "excess": 0.8994
+    },
+    {
+     "pin": "_2153_/B2",
+     "limit": 1.5,
+     "value": 2.3994,
+     "excess": 0.8994
+    },
+    {
+     "pin": "_2156_/B",
+     "limit": 1.5,
+     "value": 2.3994,
+     "excess": 0.8994
+    },
+    {
+     "pin": "_2159_/B2",
+     "limit": 1.5,
+     "value": 2.3994,
+     "excess": 0.8994
+    },
+    {
+     "pin": "_2162_/B2",
+     "limit": 1.5,
+     "value": 2.3994,
+     "excess": 0.8994
+    },
+    {
+     "pin": "_2165_/B",
+     "limit": 1.5,
+     "value": 2.3994,
+     "excess": 0.8994
+    },
+    {
+     "pin": "_2168_/B2",
+     "limit": 1.5,
+     "value": 2.3994,
+     "excess": 0.8994
+    },
+    {
+     "pin": "_2171_/B2",
+     "limit": 1.5,
+     "value": 2.3994,
+     "excess": 0.8994
+    },
+    {
+     "pin": "_2177_/B2",
+     "limit": 1.5,
+     "value": 2.3994,
+     "excess": 0.8994
+    },
+    {
+     "pin": "_2180_/B2",
+     "limit": 1.5,
+     "value": 2.3994,
+     "excess": 0.8994
+    },
+    {
+     "pin": "_2183_/A",
+     "limit": 1.5,
+     "value": 2.3994,
+     "excess": 0.8994
+    },
+    {
+     "pin": "_2209_/B",
+     "limit": 1.5,
+     "value": 2.3994,
+     "excess": 0.8994
+    },
+    {
+     "pin": "_2404_/A2",
+     "limit": 1.5,
+     "value": 2.3994,
+     "excess": 0.8994
+    },
+    {
+     "pin": "_2405_/A3",
+     "limit": 1.5,
+     "value": 2.3994,
+     "excess": 0.8994
+    },
+    {
+     "pin": "_3142_/B",
+     "limit": 1.5,
+     "value": 2.3994,
+     "excess": 0.8994
+    },
+    {
+     "pin": "_3226_/B",
+     "limit": 1.5,
+     "value": 2.3856,
+     "excess": 0.8856
+    },
+    {
+     "pin": "_3232_/A2",
+     "limit": 1.5,
+     "value": 2.3856,
+     "excess": 0.8856
+    },
+    {
+     "pin": "_3233_/B",
+     "limit": 1.5,
+     "value": 2.3856,
+     "excess": 0.8856
+    },
+    {
+     "pin": "_3236_/A2",
+     "limit": 1.5,
+     "value": 2.3856,
+     "excess": 0.8856
+    },
+    {
+     "pin": "_3239_/A2",
+     "limit": 1.5,
+     "value": 2.3856,
+     "excess": 0.8856
+    },
+    {
+     "pin": "_3242_/B1",
+     "limit": 1.5,
+     "value": 2.3856,
+     "excess": 0.8856
+    },
+    {
+     "pin": "_3253_/A2",
+     "limit": 1.5,
+     "value": 2.3856,
+     "excess": 0.8856
+    },
+    {
+     "pin": "_3259_/A2",
+     "limit": 1.5,
+     "value": 2.3856,
+     "excess": 0.8856
+    },
+    {
+     "pin": "_3261_/B",
+     "limit": 1.5,
+     "value": 2.3856,
+     "excess": 0.8856
+    },
+    {
+     "pin": "_3264_/A2",
+     "limit": 1.5,
+     "value": 2.3856,
+     "excess": 0.8856
+    },
+    {
+     "pin": "_3270_/A2",
+     "limit": 1.5,
+     "value": 2.3856,
+     "excess": 0.8856
+    },
+    {
+     "pin": "_3276_/A2",
+     "limit": 1.5,
+     "value": 2.3856,
+     "excess": 0.8856
+    },
+    {
+     "pin": "_3279_/A2",
+     "limit": 1.5,
+     "value": 2.3856,
+     "excess": 0.8856
+    },
+    {
+     "pin": "_3284_/A2",
+     "limit": 1.5,
+     "value": 2.3856,
+     "excess": 0.8856
+    },
+    {
+     "pin": "_3290_/A2",
+     "limit": 1.5,
+     "value": 2.3856,
+     "excess": 0.8856
+    },
+    {
+     "pin": "place36/A",
+     "limit": 1.5,
+     "value": 2.3856,
+     "excess": 0.8856
+    },
+    {
+     "pin": "_3180_/Y",
+     "limit": 1.5066,
+     "value": 2.3856,
+     "excess": 0.879
+    },
+    {
+     "pin": "_2625_/Y",
+     "limit": 1.4979,
+     "value": 2.2235,
+     "excess": 0.7257
+    },
+    {
+     "pin": "_2673_/B",
+     "limit": 1.5,
+     "value": 2.2235,
+     "excess": 0.7235
+    },
+    {
+     "pin": "_2674_/A2",
+     "limit": 1.5,
+     "value": 2.2235,
+     "excess": 0.7235
+    },
+    {
+     "pin": "_2684_/B",
+     "limit": 1.5,
+     "value": 2.2235,
+     "excess": 0.7235
+    },
+    {
+     "pin": "_2685_/A2",
+     "limit": 1.5,
+     "value": 2.2235,
+     "excess": 0.7235
+    },
+    {
+     "pin": "_2688_/B",
+     "limit": 1.5,
+     "value": 2.2235,
+     "excess": 0.7235
+    },
+    {
+     "pin": "_2689_/A2",
+     "limit": 1.5,
+     "value": 2.2235,
+     "excess": 0.7235
+    },
+    {
+     "pin": "_2695_/B",
+     "limit": 1.5,
+     "value": 2.2235,
+     "excess": 0.7235
+    },
+    {
+     "pin": "_2696_/A2",
+     "limit": 1.5,
+     "value": 2.2235,
+     "excess": 0.7235
+    },
+    {
+     "pin": "_2698_/B",
+     "limit": 1.5,
+     "value": 2.2235,
+     "excess": 0.7235
+    },
+    {
+     "pin": "_2699_/A2",
+     "limit": 1.5,
+     "value": 2.2235,
+     "excess": 0.7235
+    },
+    {
+     "pin": "_2702_/B",
+     "limit": 1.5,
+     "value": 2.2235,
+     "excess": 0.7235
+    },
+    {
+     "pin": "_2703_/A2",
+     "limit": 1.5,
+     "value": 2.2235,
+     "excess": 0.7235
+    },
+    {
+     "pin": "_2706_/B",
+     "limit": 1.5,
+     "value": 2.2235,
+     "excess": 0.7235
+    },
+    {
+     "pin": "_2707_/A2",
+     "limit": 1.5,
+     "value": 2.2235,
+     "excess": 0.7235
+    },
+    {
+     "pin": "_2711_/B",
+     "limit": 1.5,
+     "value": 2.2235,
+     "excess": 0.7235
+    },
+    {
+     "pin": "_2712_/A2",
+     "limit": 1.5,
+     "value": 2.2235,
+     "excess": 0.7235
+    },
+    {
+     "pin": "_2715_/B",
+     "limit": 1.5,
+     "value": 2.2235,
+     "excess": 0.7235
+    },
+    {
+     "pin": "_2716_/A2",
+     "limit": 1.5,
+     "value": 2.2235,
+     "excess": 0.7235
+    },
+    {
+     "pin": "_2719_/B",
+     "limit": 1.5,
+     "value": 2.2235,
+     "excess": 0.7235
+    },
+    {
+     "pin": "_2720_/A2",
+     "limit": 1.5,
+     "value": 2.2235,
+     "excess": 0.7235
+    },
+    {
+     "pin": "_2723_/B",
+     "limit": 1.5,
+     "value": 2.2235,
+     "excess": 0.7235
+    },
+    {
+     "pin": "_2724_/A2",
+     "limit": 1.5,
+     "value": 2.2235,
+     "excess": 0.7235
+    },
+    {
+     "pin": "_2727_/B",
+     "limit": 1.5,
+     "value": 2.2235,
+     "excess": 0.7235
+    },
+    {
+     "pin": "_2728_/A2",
+     "limit": 1.5,
+     "value": 2.2235,
+     "excess": 0.7235
+    },
+    {
+     "pin": "_2731_/B",
+     "limit": 1.5,
+     "value": 2.2235,
+     "excess": 0.7235
+    },
+    {
+     "pin": "_2732_/A2",
+     "limit": 1.5,
+     "value": 2.2235,
+     "excess": 0.7235
+    },
+    {
+     "pin": "_2735_/B",
+     "limit": 1.5,
+     "value": 2.2235,
+     "excess": 0.7235
+    },
+    {
+     "pin": "_2736_/A2",
+     "limit": 1.5,
+     "value": 2.2235,
+     "excess": 0.7235
+    },
+    {
+     "pin": "place33/A",
+     "limit": 1.5,
+     "value": 2.2235,
+     "excess": 0.7235
+    },
+    {
+     "pin": "_2438_/B",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2439_/A2",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2452_/B",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2453_/A2",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2459_/B",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2460_/A2",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2465_/B",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2466_/A2",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2471_/B",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2472_/A2",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2476_/B",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2477_/A2",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2483_/B",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2484_/A2",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2488_/B",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2489_/A2",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2493_/B",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2494_/A2",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2499_/B",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2500_/A2",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2504_/B",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2505_/A2",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2509_/B",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2510_/A2",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2514_/B",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2515_/A2",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2519_/B",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2520_/A2",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2524_/B",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2525_/A2",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2529_/B",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2530_/A2",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2534_/B",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2535_/A2",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2539_/B",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2540_/A2",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2545_/B",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2546_/A2",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2553_/B",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2554_/A2",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2559_/B",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2560_/A2",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2562_/B",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2563_/A2",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2570_/B",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2571_/A2",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2579_/B",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2582_/B",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2583_/A2",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2588_/B",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2589_/A2",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2594_/B",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2595_/A2",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2604_/B",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2607_/B",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2608_/A2",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2616_/B",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2621_/B",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2622_/A2",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_3162_/A",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_3163_/A2",
+     "limit": 1.5,
+     "value": 2.1783,
+     "excess": 0.6783
+    },
+    {
+     "pin": "_2433_/X",
+     "limit": 1.5021,
+     "value": 2.1783,
+     "excess": 0.6762
+    },
+    {
+     "pin": "_1463_/Y",
+     "limit": 1.4728,
+     "value": 2.1032,
+     "excess": 0.6303
+    },
+    {
+     "pin": "_1465_/C",
+     "limit": 1.5,
+     "value": 2.1032,
+     "excess": 0.6032
+    },
+    {
+     "pin": "_1476_/B",
+     "limit": 1.5,
+     "value": 2.1032,
+     "excess": 0.6032
+    },
+    {
+     "pin": "_1492_/D",
+     "limit": 1.5,
+     "value": 2.1032,
+     "excess": 0.6032
+    },
+    {
+     "pin": "_1499_/B",
+     "limit": 1.5,
+     "value": 2.1032,
+     "excess": 0.6032
+    },
+    {
+     "pin": "_1506_/B",
+     "limit": 1.5,
+     "value": 2.1032,
+     "excess": 0.6032
+    },
+    {
+     "pin": "_1522_/A",
+     "limit": 1.5,
+     "value": 2.1032,
+     "excess": 0.6032
+    },
+    {
+     "pin": "_1530_/C",
+     "limit": 1.5,
+     "value": 2.1032,
+     "excess": 0.6032
+    },
+    {
+     "pin": "_1536_/B",
+     "limit": 1.5,
+     "value": 2.1032,
+     "excess": 0.6032
+    },
+    {
+     "pin": "_1547_/B",
+     "limit": 1.5,
+     "value": 2.1032,
+     "excess": 0.6032
+    },
+    {
+     "pin": "_1553_/B",
+     "limit": 1.5,
+     "value": 2.1032,
+     "excess": 0.6032
+    },
+    {
+     "pin": "_1559_/B",
+     "limit": 1.5,
+     "value": 2.1032,
+     "excess": 0.6032
+    },
+    {
+     "pin": "_1570_/C",
+     "limit": 1.5,
+     "value": 2.1032,
+     "excess": 0.6032
+    },
+    {
+     "pin": "_2235_/Y",
+     "limit": 1.4978,
+     "value": 2.001,
+     "excess": 0.5033
+    },
+    {
+     "pin": "_2237_/B",
+     "limit": 1.5,
+     "value": 2.001,
+     "excess": 0.501
+    },
+    {
+     "pin": "_2241_/B",
+     "limit": 1.5,
+     "value": 2.001,
+     "excess": 0.501
+    },
+    {
+     "pin": "_2245_/B",
+     "limit": 1.5,
+     "value": 2.001,
+     "excess": 0.501
+    },
+    {
+     "pin": "_2248_/B",
+     "limit": 1.5,
+     "value": 2.001,
+     "excess": 0.501
+    },
+    {
+     "pin": "_2251_/B",
+     "limit": 1.5,
+     "value": 2.001,
+     "excess": 0.501
+    },
+    {
+     "pin": "_2254_/B",
+     "limit": 1.5,
+     "value": 2.001,
+     "excess": 0.501
+    },
+    {
+     "pin": "_2257_/B",
+     "limit": 1.5,
+     "value": 2.001,
+     "excess": 0.501
+    },
+    {
+     "pin": "_2260_/B",
+     "limit": 1.5,
+     "value": 2.001,
+     "excess": 0.501
+    },
+    {
+     "pin": "_2264_/B",
+     "limit": 1.5,
+     "value": 2.001,
+     "excess": 0.501
+    },
+    {
+     "pin": "_2267_/B",
+     "limit": 1.5,
+     "value": 2.001,
+     "excess": 0.501
+    },
+    {
+     "pin": "_2270_/B",
+     "limit": 1.5,
+     "value": 2.001,
+     "excess": 0.501
+    },
+    {
+     "pin": "_2273_/B",
+     "limit": 1.5,
+     "value": 2.001,
+     "excess": 0.501
+    },
+    {
+     "pin": "_2276_/B",
+     "limit": 1.5,
+     "value": 2.001,
+     "excess": 0.501
+    },
+    {
+     "pin": "_2280_/B",
+     "limit": 1.5,
+     "value": 2.001,
+     "excess": 0.501
+    },
+    {
+     "pin": "_2283_/B",
+     "limit": 1.5,
+     "value": 2.001,
+     "excess": 0.501
+    },
+    {
+     "pin": "_2286_/B",
+     "limit": 1.5,
+     "value": 2.001,
+     "excess": 0.501
+    },
+    {
+     "pin": "_2289_/B",
+     "limit": 1.5,
+     "value": 2.001,
+     "excess": 0.501
+    },
+    {
+     "pin": "_2292_/B",
+     "limit": 1.5,
+     "value": 2.001,
+     "excess": 0.501
+    },
+    {
+     "pin": "_2295_/B",
+     "limit": 1.5,
+     "value": 2.001,
+     "excess": 0.501
+    },
+    {
+     "pin": "_2298_/B",
+     "limit": 1.5,
+     "value": 2.001,
+     "excess": 0.501
+    },
+    {
+     "pin": "_2301_/B",
+     "limit": 1.5,
+     "value": 2.001,
+     "excess": 0.501
+    },
+    {
+     "pin": "_2304_/B",
+     "limit": 1.5,
+     "value": 2.001,
+     "excess": 0.501
+    },
+    {
+     "pin": "_2307_/B",
+     "limit": 1.5,
+     "value": 2.001,
+     "excess": 0.501
+    },
+    {
+     "pin": "_2311_/B",
+     "limit": 1.5,
+     "value": 2.001,
+     "excess": 0.501
+    },
+    {
+     "pin": "_2314_/B",
+     "limit": 1.5,
+     "value": 2.001,
+     "excess": 0.501
+    },
+    {
+     "pin": "_2317_/B",
+     "limit": 1.5,
+     "value": 2.001,
+     "excess": 0.501
+    },
+    {
+     "pin": "_2320_/B",
+     "limit": 1.5,
+     "value": 2.001,
+     "excess": 0.501
+    },
+    {
+     "pin": "_2323_/B",
+     "limit": 1.5,
+     "value": 2.001,
+     "excess": 0.501
+    },
+    {
+     "pin": "_2326_/B",
+     "limit": 1.5,
+     "value": 2.001,
+     "excess": 0.501
+    },
+    {
+     "pin": "_2329_/B",
+     "limit": 1.5,
+     "value": 2.001,
+     "excess": 0.501
+    },
+    {
+     "pin": "_2332_/B",
+     "limit": 1.5,
+     "value": 2.001,
+     "excess": 0.501
+    },
+    {
+     "pin": "place21/X",
+     "limit": 1.4982,
+     "value": 1.9325,
+     "excess": 0.4343
+    },
+    {
+     "pin": "_2805_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_2811_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_2814_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_2817_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_2823_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_2826_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_2829_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_2836_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_2841_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_2845_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_2848_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_2851_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_2854_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_2857_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_2865_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_2868_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_2871_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_2883_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_2936_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_2939_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_2941_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_2944_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_2948_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_2950_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_2952_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_2955_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_2960_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_2962_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_2964_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_2966_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_2968_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_2970_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_2975_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_2977_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_2979_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_2986_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_3018_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_3019_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_3020_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_3021_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_3022_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_3023_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_3024_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_3026_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_3027_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_3028_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_3029_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_3030_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_3031_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_3032_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_3034_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_3035_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_3037_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_3039_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_3172_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_3174_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "_3175_/S",
+     "limit": 1.5,
+     "value": 1.9325,
+     "excess": 0.4325
+    },
+    {
+     "pin": "place23/X",
+     "limit": 1.4982,
+     "value": 1.8749,
+     "excess": 0.3767
+    },
+    {
+     "pin": "_2446_/S",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2455_/S",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2462_/S",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2467_/S",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2473_/S",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2478_/S",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2485_/S",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2490_/S",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2496_/S",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2501_/S",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2506_/S",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2511_/S",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2516_/S",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2521_/S",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2531_/S",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2536_/S",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2556_/S",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2611_/A",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2612_/A1",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2630_/S",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2634_/S",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2637_/S",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2640_/S",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2645_/S",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2648_/S",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2651_/S",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2654_/S",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2657_/S",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2660_/S",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2663_/S",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2666_/S",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2669_/S",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2672_/S",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2678_/S",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2681_/S",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2694_/S",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2740_/B",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2741_/A1",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2742_/B",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2743_/A1",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2744_/B",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2745_/A1",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2746_/B",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2747_/A1",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2748_/B",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2749_/A1",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2750_/B",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2751_/A1",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2753_/B",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2754_/A1",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2755_/B",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2756_/A1",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2757_/B",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2758_/A1",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2759_/B",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2760_/A1",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2761_/B",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2762_/A1",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2763_/B",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2764_/A1",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2765_/B",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2766_/A1",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2767_/B",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2768_/A1",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2771_/B",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2772_/A1",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2773_/B",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2774_/A1",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2777_/B",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2778_/A1",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_3164_/S",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_3167_/S",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_3168_/A",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_3169_/A1",
+     "limit": 1.5,
+     "value": 1.8749,
+     "excess": 0.3749
+    },
+    {
+     "pin": "_2801_/Y",
+     "limit": 1.496,
+     "value": 1.8578,
+     "excess": 0.3619
+    },
+    {
+     "pin": "_2802_/B1",
+     "limit": 1.5,
+     "value": 1.8578,
+     "excess": 0.3578
+    },
+    {
+     "pin": "_3183_/B2",
+     "limit": 1.5,
+     "value": 1.8578,
+     "excess": 0.3578
+    },
+    {
+     "pin": "_3196_/B2",
+     "limit": 1.5,
+     "value": 1.8578,
+     "excess": 0.3578
+    },
+    {
+     "pin": "_3201_/B2",
+     "limit": 1.5,
+     "value": 1.8578,
+     "excess": 0.3578
+    },
+    {
+     "pin": "_3205_/B2",
+     "limit": 1.5,
+     "value": 1.8578,
+     "excess": 0.3578
+    },
+    {
+     "pin": "_3207_/B2",
+     "limit": 1.5,
+     "value": 1.8578,
+     "excess": 0.3578
+    },
+    {
+     "pin": "_3209_/B2",
+     "limit": 1.5,
+     "value": 1.8578,
+     "excess": 0.3578
+    },
+    {
+     "pin": "_3213_/B2",
+     "limit": 1.5,
+     "value": 1.8578,
+     "excess": 0.3578
+    },
+    {
+     "pin": "_3217_/B2",
+     "limit": 1.5,
+     "value": 1.8578,
+     "excess": 0.3578
+    },
+    {
+     "pin": "_3220_/B2",
+     "limit": 1.5,
+     "value": 1.8578,
+     "excess": 0.3578
+    },
+    {
+     "pin": "_3227_/A1",
+     "limit": 1.5,
+     "value": 1.8578,
+     "excess": 0.3578
+    },
+    {
+     "pin": "_3234_/B2",
+     "limit": 1.5,
+     "value": 1.8578,
+     "excess": 0.3578
+    },
+    {
+     "pin": "_3237_/A1",
+     "limit": 1.5,
+     "value": 1.8578,
+     "excess": 0.3578
+    },
+    {
+     "pin": "_3240_/A1",
+     "limit": 1.5,
+     "value": 1.8578,
+     "excess": 0.3578
+    },
+    {
+     "pin": "_3243_/A1",
+     "limit": 1.5,
+     "value": 1.8578,
+     "excess": 0.3578
+    },
+    {
+     "pin": "_3255_/A1",
+     "limit": 1.5,
+     "value": 1.8578,
+     "excess": 0.3578
+    },
+    {
+     "pin": "_3260_/A1",
+     "limit": 1.5,
+     "value": 1.8578,
+     "excess": 0.3578
+    },
+    {
+     "pin": "_3262_/B2",
+     "limit": 1.5,
+     "value": 1.8578,
+     "excess": 0.3578
+    },
+    {
+     "pin": "_3266_/A1",
+     "limit": 1.5,
+     "value": 1.8578,
+     "excess": 0.3578
+    },
+    {
+     "pin": "_3271_/A1",
+     "limit": 1.5,
+     "value": 1.8578,
+     "excess": 0.3578
+    },
+    {
+     "pin": "_3277_/A1",
+     "limit": 1.5,
+     "value": 1.8578,
+     "excess": 0.3578
+    },
+    {
+     "pin": "_3285_/A1",
+     "limit": 1.5,
+     "value": 1.8578,
+     "excess": 0.3578
+    },
+    {
+     "pin": "_3291_/A1",
+     "limit": 1.5,
+     "value": 1.8578,
+     "excess": 0.3578
+    },
+    {
+     "pin": "_1766_/Y",
+     "limit": 1.4739,
+     "value": 1.8004,
+     "excess": 0.3265
+    },
+    {
+     "pin": "_1767_/B",
+     "limit": 1.5,
+     "value": 1.8004,
+     "excess": 0.3004
+    },
+    {
+     "pin": "_1773_/C",
+     "limit": 1.5,
+     "value": 1.8004,
+     "excess": 0.3004
+    },
+    {
+     "pin": "_3281_/A1",
+     "limit": 1.5,
+     "value": 1.8004,
+     "excess": 0.3004
+    },
+    {
+     "pin": "_3288_/A1",
+     "limit": 1.5,
+     "value": 1.8004,
+     "excess": 0.3004
+    },
+    {
+     "pin": "_3292_/A1",
+     "limit": 1.5,
+     "value": 1.8004,
+     "excess": 0.3004
+    },
+    {
+     "pin": "place40/X",
+     "limit": 1.4982,
+     "value": 1.7602,
+     "excess": 0.262
+    },
+    {
+     "pin": "_1572_/A1",
+     "limit": 1.5,
+     "value": 1.7618,
+     "excess": 0.2618
+    },
+    {
+     "pin": "_1575_/C",
+     "limit": 1.5,
+     "value": 1.7618,
+     "excess": 0.2618
+    },
+    {
+     "pin": "_1576_/A2",
+     "limit": 1.5,
+     "value": 1.7618,
+     "excess": 0.2618
+    },
+    {
+     "pin": "_1579_/C",
+     "limit": 1.5,
+     "value": 1.7618,
+     "excess": 0.2618
+    },
+    {
+     "pin": "_1580_/A2",
+     "limit": 1.5,
+     "value": 1.7618,
+     "excess": 0.2618
+    },
+    {
+     "pin": "_1590_/C",
+     "limit": 1.5,
+     "value": 1.7618,
+     "excess": 0.2618
+    },
+    {
+     "pin": "_1591_/A2",
+     "limit": 1.5,
+     "value": 1.7618,
+     "excess": 0.2618
+    },
+    {
+     "pin": "_1594_/C",
+     "limit": 1.5,
+     "value": 1.7618,
+     "excess": 0.2618
+    },
+    {
+     "pin": "_1595_/A2",
+     "limit": 1.5,
+     "value": 1.7618,
+     "excess": 0.2618
+    },
+    {
+     "pin": "_1598_/C",
+     "limit": 1.5,
+     "value": 1.7618,
+     "excess": 0.2618
+    },
+    {
+     "pin": "_1599_/A2",
+     "limit": 1.5,
+     "value": 1.7618,
+     "excess": 0.2618
+    },
+    {
+     "pin": "_1602_/C",
+     "limit": 1.5,
+     "value": 1.7618,
+     "excess": 0.2618
+    },
+    {
+     "pin": "_1440_/A",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_1666_/A",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_1774_/B",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_1776_/B",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_1777_/B",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_1778_/B",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_1779_/B",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_1780_/B",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_1782_/B",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_1783_/B",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_1869_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_1874_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_1879_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_1882_/B",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_1887_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_1890_/B1",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_1893_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_1896_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_1898_/B",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_1901_/A",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_1902_/C1",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_1916_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_1949_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_1953_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_1956_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_1958_/B1",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_1960_/B1",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_1965_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_1968_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_1971_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_1973_/B",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_1978_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_1981_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_1984_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_1987_/B",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_1992_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_1997_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_2012_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_2020_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_2025_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_2030_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_2035_/B1",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_2037_/B",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_2046_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_2189_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_2193_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_2197_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_2201_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_2212_/B1",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_2238_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_2242_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_2246_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_2249_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_2252_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_2255_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_2258_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_2261_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_2265_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_2268_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_2271_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_2274_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_2277_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_2281_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_2284_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_2287_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_2290_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_2293_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_2296_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_2299_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_2302_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_2305_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_2308_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_2310_/B",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_2315_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_2318_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_2321_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_2324_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_2327_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_2330_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_2333_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_2335_/A",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_2338_/A",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_2341_/A",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_2401_/B",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_2406_/B",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_2798_/B",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_3121_/B",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_3126_/B",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_3132_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_3135_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_3139_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_3146_/A2",
+     "limit": 1.5,
+     "value": 1.7602,
+     "excess": 0.2602
+    },
+    {
+     "pin": "_1568_/Y",
+     "limit": 1.5066,
+     "value": 1.7618,
+     "excess": 0.2552
+    },
+    {
+     "pin": "_1458_/C",
+     "limit": 1.5,
+     "value": 1.6817,
+     "excess": 0.1817
+    },
+    {
+     "pin": "_1467_/B2",
+     "limit": 1.5,
+     "value": 1.6817,
+     "excess": 0.1817
+    },
+    {
+     "pin": "_1474_/B",
+     "limit": 1.5,
+     "value": 1.6817,
+     "excess": 0.1817
+    },
+    {
+     "pin": "_1477_/B2",
+     "limit": 1.5,
+     "value": 1.6817,
+     "excess": 0.1817
+    },
+    {
+     "pin": "_1491_/B",
+     "limit": 1.5,
+     "value": 1.6817,
+     "excess": 0.1817
+    },
+    {
+     "pin": "_1493_/B2",
+     "limit": 1.5,
+     "value": 1.6817,
+     "excess": 0.1817
+    },
+    {
+     "pin": "_1497_/B",
+     "limit": 1.5,
+     "value": 1.6817,
+     "excess": 0.1817
+    },
+    {
+     "pin": "_1500_/B2",
+     "limit": 1.5,
+     "value": 1.6817,
+     "excess": 0.1817
+    },
+    {
+     "pin": "_1504_/B",
+     "limit": 1.5,
+     "value": 1.6817,
+     "excess": 0.1817
+    },
+    {
+     "pin": "_1507_/B2",
+     "limit": 1.5,
+     "value": 1.6817,
+     "excess": 0.1817
+    },
+    {
+     "pin": "_1546_/B",
+     "limit": 1.5,
+     "value": 1.6817,
+     "excess": 0.1817
+    },
+    {
+     "pin": "_3153_/B1",
+     "limit": 1.5,
+     "value": 1.6817,
+     "excess": 0.1817
+    },
+    {
+     "pin": "_3486_/Q",
+     "limit": 1.4868,
+     "value": 1.6669,
+     "excess": 0.1801
+    },
+    {
+     "pin": "_1457_/Y",
+     "limit": 1.5066,
+     "value": 1.6817,
+     "excess": 0.1751
+    },
+    {
+     "pin": "_1437_/D",
+     "limit": 1.5,
+     "value": 1.6669,
+     "excess": 0.1669
+    },
+    {
+     "pin": "_1451_/A_N",
+     "limit": 1.5,
+     "value": 1.6669,
+     "excess": 0.1669
+    },
+    {
+     "pin": "_1455_/D",
+     "limit": 1.5,
+     "value": 1.6669,
+     "excess": 0.1669
+    },
+    {
+     "pin": "_1458_/A",
+     "limit": 1.5,
+     "value": 1.6669,
+     "excess": 0.1669
+    },
+    {
+     "pin": "_1463_/A",
+     "limit": 1.5,
+     "value": 1.6669,
+     "excess": 0.1669
+    },
+    {
+     "pin": "_1474_/A",
+     "limit": 1.5,
+     "value": 1.6669,
+     "excess": 0.1669
+    },
+    {
+     "pin": "_1482_/B",
+     "limit": 1.5,
+     "value": 1.6669,
+     "excess": 0.1669
+    },
+    {
+     "pin": "_1491_/A",
+     "limit": 1.5,
+     "value": 1.6669,
+     "excess": 0.1669
+    },
+    {
+     "pin": "_1497_/A",
+     "limit": 1.5,
+     "value": 1.6669,
+     "excess": 0.1669
+    },
+    {
+     "pin": "_1504_/A",
+     "limit": 1.5,
+     "value": 1.6669,
+     "excess": 0.1669
+    },
+    {
+     "pin": "_1511_/A",
+     "limit": 1.5,
+     "value": 1.6669,
+     "excess": 0.1669
+    },
+    {
+     "pin": "_1520_/A",
+     "limit": 1.5,
+     "value": 1.6669,
+     "excess": 0.1669
+    },
+    {
+     "pin": "_1527_/A",
+     "limit": 1.5,
+     "value": 1.6669,
+     "excess": 0.1669
+    },
+    {
+     "pin": "_1535_/A",
+     "limit": 1.5,
+     "value": 1.6669,
+     "excess": 0.1669
+    },
+    {
+     "pin": "_1542_/A",
+     "limit": 1.5,
+     "value": 1.6669,
+     "excess": 0.1669
+    },
+    {
+     "pin": "_1546_/A_N",
+     "limit": 1.5,
+     "value": 1.6669,
+     "excess": 0.1669
+    },
+    {
+     "pin": "_1552_/A",
+     "limit": 1.5,
+     "value": 1.6669,
+     "excess": 0.1669
+    },
+    {
+     "pin": "_1558_/A",
+     "limit": 1.5,
+     "value": 1.6669,
+     "excess": 0.1669
+    },
+    {
+     "pin": "_1575_/A",
+     "limit": 1.5,
+     "value": 1.6669,
+     "excess": 0.1669
+    },
+    {
+     "pin": "_1579_/A",
+     "limit": 1.5,
+     "value": 1.6669,
+     "excess": 0.1669
+    },
+    {
+     "pin": "_1590_/A",
+     "limit": 1.5,
+     "value": 1.6669,
+     "excess": 0.1669
+    },
+    {
+     "pin": "_1594_/A",
+     "limit": 1.5,
+     "value": 1.6669,
+     "excess": 0.1669
+    },
+    {
+     "pin": "_1598_/A",
+     "limit": 1.5,
+     "value": 1.6669,
+     "excess": 0.1669
+    },
+    {
+     "pin": "_1602_/A",
+     "limit": 1.5,
+     "value": 1.6669,
+     "excess": 0.1669
+    },
+    {
+     "pin": "_1606_/A",
+     "limit": 1.5,
+     "value": 1.6669,
+     "excess": 0.1669
+    },
+    {
+     "pin": "_1611_/A",
+     "limit": 1.5,
+     "value": 1.6669,
+     "excess": 0.1669
+    },
+    {
+     "pin": "_1616_/A",
+     "limit": 1.5,
+     "value": 1.6669,
+     "excess": 0.1669
+    },
+    {
+     "pin": "_1621_/A",
+     "limit": 1.5,
+     "value": 1.6669,
+     "excess": 0.1669
+    },
+    {
+     "pin": "_1626_/B",
+     "limit": 1.5,
+     "value": 1.6669,
+     "excess": 0.1669
+    },
+    {
+     "pin": "_1631_/A1",
+     "limit": 1.5,
+     "value": 1.6669,
+     "excess": 0.1669
+    },
+    {
+     "pin": "_1635_/A1",
+     "limit": 1.5,
+     "value": 1.6669,
+     "excess": 0.1669
+    },
+    {
+     "pin": "_2339_/A",
+     "limit": 1.5,
+     "value": 1.6669,
+     "excess": 0.1669
+    },
+    {
+     "pin": "_3229_/Y",
+     "limit": 1.4738,
+     "value": 1.6357,
+     "excess": 0.1619
+    },
+    {
+     "pin": "_3230_/B",
+     "limit": 1.5,
+     "value": 1.6357,
+     "excess": 0.1357
+    },
+    {
+     "pin": "_3238_/A3",
+     "limit": 1.5,
+     "value": 1.6357,
+     "excess": 0.1357
+    },
+    {
+     "pin": "_3247_/A2",
+     "limit": 1.5,
+     "value": 1.6357,
+     "excess": 0.1357
+    },
+    {
+     "pin": "_3250_/B",
+     "limit": 1.5,
+     "value": 1.6357,
+     "excess": 0.1357
+    },
+    {
+     "pin": "_3267_/B1",
+     "limit": 1.5,
+     "value": 1.6357,
+     "excess": 0.1357
+    },
+    {
+     "pin": "_3272_/B",
+     "limit": 1.5,
+     "value": 1.6357,
+     "excess": 0.1357
+    },
+    {
+     "pin": "_3281_/B1",
+     "limit": 1.5,
+     "value": 1.6357,
+     "excess": 0.1357
+    },
+    {
+     "pin": "_1902_/Y",
+     "limit": 1.4761,
+     "value": 1.5968,
+     "excess": 0.1206
+    },
+    {
+     "pin": "_1903_/C",
+     "limit": 1.5,
+     "value": 1.5968,
+     "excess": 0.0968
+    },
+    {
+     "pin": "_2078_/B",
+     "limit": 1.5,
+     "value": 1.5968,
+     "excess": 0.0968
+    },
+    {
+     "pin": "_2348_/A2",
+     "limit": 1.5,
+     "value": 1.5968,
+     "excess": 0.0968
+    },
+    {
+     "pin": "_2358_/A2",
+     "limit": 1.5,
+     "value": 1.5968,
+     "excess": 0.0968
+    },
+    {
+     "pin": "_1642_/Y",
+     "limit": 1.4738,
+     "value": 1.5598,
+     "excess": 0.086
+    },
+    {
+     "pin": "_1643_/A",
+     "limit": 1.5,
+     "value": 1.5598,
+     "excess": 0.0598
+    },
+    {
+     "pin": "_1644_/B",
+     "limit": 1.5,
+     "value": 1.5598,
+     "excess": 0.0598
+    },
+    {
+     "pin": "_1455_/Y",
+     "limit": 1.4739,
+     "value": 1.519,
+     "excess": 0.0451
+    },
+    {
+     "pin": "_2428_/Y",
+     "limit": 1.4978,
+     "value": 1.5346,
+     "excess": 0.0368
+    },
+    {
+     "pin": "_2522_/B",
+     "limit": 1.5,
+     "value": 1.5346,
+     "excess": 0.0346
+    },
+    {
+     "pin": "_2523_/A2",
+     "limit": 1.5,
+     "value": 1.5346,
+     "excess": 0.0346
+    },
+    {
+     "pin": "_2541_/B",
+     "limit": 1.5,
+     "value": 1.5346,
+     "excess": 0.0346
+    },
+    {
+     "pin": "_2542_/A2",
+     "limit": 1.5,
+     "value": 1.5346,
+     "excess": 0.0346
+    },
+    {
+     "pin": "_2547_/B",
+     "limit": 1.5,
+     "value": 1.5346,
+     "excess": 0.0346
+    },
+    {
+     "pin": "_2548_/A2",
+     "limit": 1.5,
+     "value": 1.5346,
+     "excess": 0.0346
+    },
+    {
+     "pin": "_2557_/B",
+     "limit": 1.5,
+     "value": 1.5346,
+     "excess": 0.0346
+    },
+    {
+     "pin": "_2558_/A2",
+     "limit": 1.5,
+     "value": 1.5346,
+     "excess": 0.0346
+    },
+    {
+     "pin": "_2564_/B",
+     "limit": 1.5,
+     "value": 1.5346,
+     "excess": 0.0346
+    },
+    {
+     "pin": "_2565_/A2",
+     "limit": 1.5,
+     "value": 1.5346,
+     "excess": 0.0346
+    },
+    {
+     "pin": "_2568_/B",
+     "limit": 1.5,
+     "value": 1.5346,
+     "excess": 0.0346
+    },
+    {
+     "pin": "_2569_/A2",
+     "limit": 1.5,
+     "value": 1.5346,
+     "excess": 0.0346
+    },
+    {
+     "pin": "_2574_/B",
+     "limit": 1.5,
+     "value": 1.5346,
+     "excess": 0.0346
+    },
+    {
+     "pin": "_2575_/A2",
+     "limit": 1.5,
+     "value": 1.5346,
+     "excess": 0.0346
+    },
+    {
+     "pin": "_2584_/B",
+     "limit": 1.5,
+     "value": 1.5346,
+     "excess": 0.0346
+    },
+    {
+     "pin": "_2585_/A2",
+     "limit": 1.5,
+     "value": 1.5346,
+     "excess": 0.0346
+    },
+    {
+     "pin": "_2590_/B",
+     "limit": 1.5,
+     "value": 1.5346,
+     "excess": 0.0346
+    },
+    {
+     "pin": "_2591_/A2",
+     "limit": 1.5,
+     "value": 1.5346,
+     "excess": 0.0346
+    },
+    {
+     "pin": "_2596_/B",
+     "limit": 1.5,
+     "value": 1.5346,
+     "excess": 0.0346
+    },
+    {
+     "pin": "_2597_/A2",
+     "limit": 1.5,
+     "value": 1.5346,
+     "excess": 0.0346
+    },
+    {
+     "pin": "_2601_/B",
+     "limit": 1.5,
+     "value": 1.5346,
+     "excess": 0.0346
+    },
+    {
+     "pin": "_2602_/A2",
+     "limit": 1.5,
+     "value": 1.5346,
+     "excess": 0.0346
+    },
+    {
+     "pin": "_2613_/B",
+     "limit": 1.5,
+     "value": 1.5346,
+     "excess": 0.0346
+    },
+    {
+     "pin": "_2614_/A2",
+     "limit": 1.5,
+     "value": 1.5346,
+     "excess": 0.0346
+    },
+    {
+     "pin": "_2619_/B",
+     "limit": 1.5,
+     "value": 1.5346,
+     "excess": 0.0346
+    },
+    {
+     "pin": "_2620_/A2",
+     "limit": 1.5,
+     "value": 1.5346,
+     "excess": 0.0346
+    },
+    {
+     "pin": "place31/A",
+     "limit": 1.5,
+     "value": 1.5346,
+     "excess": 0.0346
+    },
+    {
+     "pin": "_1456_/B",
+     "limit": 1.5,
+     "value": 1.519,
+     "excess": 0.019
+    },
+    {
+     "pin": "_1517_/B",
+     "limit": 1.5,
+     "value": 1.519,
+     "excess": 0.019
+    },
+    {
+     "pin": "_1564_/B",
+     "limit": 1.5,
+     "value": 1.519,
+     "excess": 0.019
+    },
+    {
+     "pin": "_2075_/Y",
+     "limit": 1.4978,
+     "value": 1.5163,
+     "excess": 0.0185
+    },
+    {
+     "pin": "_2077_/C",
+     "limit": 1.5,
+     "value": 1.5163,
+     "excess": 0.0163
+    },
+    {
+     "pin": "_2089_/C",
+     "limit": 1.5,
+     "value": 1.5163,
+     "excess": 0.0163
+    },
+    {
+     "pin": "_2093_/C",
+     "limit": 1.5,
+     "value": 1.5163,
+     "excess": 0.0163
+    },
+    {
+     "pin": "_2096_/C",
+     "limit": 1.5,
+     "value": 1.5163,
+     "excess": 0.0163
+    },
+    {
+     "pin": "_2106_/C",
+     "limit": 1.5,
+     "value": 1.5163,
+     "excess": 0.0163
+    },
+    {
+     "pin": "_2109_/C",
+     "limit": 1.5,
+     "value": 1.5163,
+     "excess": 0.0163
+    },
+    {
+     "pin": "_2119_/C",
+     "limit": 1.5,
+     "value": 1.5163,
+     "excess": 0.0163
+    },
+    {
+     "pin": "_2122_/C",
+     "limit": 1.5,
+     "value": 1.5163,
+     "excess": 0.0163
+    },
+    {
+     "pin": "_2126_/C",
+     "limit": 1.5,
+     "value": 1.5163,
+     "excess": 0.0163
+    },
+    {
+     "pin": "_2129_/C",
+     "limit": 1.5,
+     "value": 1.5163,
+     "excess": 0.0163
+    },
+    {
+     "pin": "_2132_/C",
+     "limit": 1.5,
+     "value": 1.5163,
+     "excess": 0.0163
+    },
+    {
+     "pin": "_2138_/C",
+     "limit": 1.5,
+     "value": 1.5163,
+     "excess": 0.0163
+    },
+    {
+     "pin": "_2141_/C",
+     "limit": 1.5,
+     "value": 1.5163,
+     "excess": 0.0163
+    },
+    {
+     "pin": "_2144_/C",
+     "limit": 1.5,
+     "value": 1.5163,
+     "excess": 0.0163
+    },
+    {
+     "pin": "_2156_/C",
+     "limit": 1.5,
+     "value": 1.5163,
+     "excess": 0.0163
+    },
+    {
+     "pin": "_2165_/C",
+     "limit": 1.5,
+     "value": 1.5163,
+     "excess": 0.0163
+    },
+    {
+     "pin": "_2174_/C",
+     "limit": 1.5,
+     "value": 1.5163,
+     "excess": 0.0163
+    },
+    {
+     "pin": "_2183_/B",
+     "limit": 1.5,
+     "value": 1.5163,
+     "excess": 0.0163
+    },
+    {
+     "pin": "_2214_/C",
+     "limit": 1.5,
+     "value": 1.5163,
+     "excess": 0.0163
+    },
+    {
+     "pin": "_3142_/C",
+     "limit": 1.5,
+     "value": 1.5163,
+     "excess": 0.0163
+    },
+    {
+     "pin": "_2416_/Y",
+     "limit": 1.4426,
+     "value": 1.4488,
+     "excess": 0.0062
+    }
+   ],
+   "max_capacitance": [
+    {
+     "pin": "place21/X",
+     "limit": 0.2591,
+     "value": 0.3372,
+     "excess": 0.0781
+    },
+    {
+     "pin": "place23/X",
+     "limit": 0.2591,
+     "value": 0.3276,
+     "excess": 0.0685
+    },
+    {
+     "pin": "_2433_/X",
+     "limit": 0.1447,
+     "value": 0.2116,
+     "excess": 0.0669
+    },
+    {
+     "pin": "_2071_/X",
+     "limit": 0.0769,
+     "value": 0.1255,
+     "excess": 0.0486
+    },
+    {
+     "pin": "place40/X",
+     "limit": 0.2591,
+     "value": 0.3063,
+     "excess": 0.0472
+    },
+    {
+     "pin": "_2625_/Y",
+     "limit": 0.0613,
+     "value": 0.0932,
+     "excess": 0.0319
+    },
+    {
+     "pin": "_2235_/Y",
+     "limit": 0.0797,
+     "value": 0.1081,
+     "excess": 0.0284
+    },
+    {
+     "pin": "_3180_/Y",
+     "limit": 0.0385,
+     "value": 0.0624,
+     "excess": 0.024
+    },
+    {
+     "pin": "_2801_/Y",
+     "limit": 0.0668,
+     "value": 0.084,
+     "excess": 0.0171
+    },
+    {
+     "pin": "_1463_/Y",
+     "limit": 0.0275,
+     "value": 0.0416,
+     "excess": 0.0141
+    },
+    {
+     "pin": "_3486_/Q",
+     "limit": 0.0861,
+     "value": 0.0973,
+     "excess": 0.0112
+    },
+    {
+     "pin": "_1568_/Y",
+     "limit": 0.0385,
+     "value": 0.0457,
+     "excess": 0.0072
+    },
+    {
+     "pin": "_1457_/Y",
+     "limit": 0.0385,
+     "value": 0.0435,
+     "excess": 0.0051
+    },
+    {
+     "pin": "_1766_/Y",
+     "limit": 0.0137,
+     "value": 0.0176,
+     "excess": 0.0038
+    },
+    {
+     "pin": "_2428_/Y",
+     "limit": 0.0797,
+     "value": 0.0824,
+     "excess": 0.0027
+    },
+    {
+     "pin": "_3229_/Y",
+     "limit": 0.0211,
+     "value": 0.0238,
+     "excess": 0.0027
+    },
+    {
+     "pin": "_2075_/Y",
+     "limit": 0.0797,
+     "value": 0.0814,
+     "excess": 0.0017
+    },
+    {
+     "pin": "_1902_/Y",
+     "limit": 0.0174,
+     "value": 0.0191,
+     "excess": 0.0017
+    },
+    {
+     "pin": "_1642_/Y",
+     "limit": 0.0211,
+     "value": 0.0225,
+     "excess": 0.0014
+    }
+   ]
+  },
+  "ss_n40C_1v76": {
+   "max_slew": [
+    {
+     "pin": "_2077_/B",
+     "limit": 1.5,
+     "value": 1.8715,
+     "excess": 0.3715
+    },
+    {
+     "pin": "_2089_/B",
+     "limit": 1.5,
+     "value": 1.8715,
+     "excess": 0.3715
+    },
+    {
+     "pin": "_2093_/B",
+     "limit": 1.5,
+     "value": 1.8715,
+     "excess": 0.3715
+    },
+    {
+     "pin": "_2096_/B",
+     "limit": 1.5,
+     "value": 1.8715,
+     "excess": 0.3715
+    },
+    {
+     "pin": "_2103_/B2",
+     "limit": 1.5,
+     "value": 1.8715,
+     "excess": 0.3715
+    },
+    {
+     "pin": "_2106_/B",
+     "limit": 1.5,
+     "value": 1.8715,
+     "excess": 0.3715
+    },
+    {
+     "pin": "_2109_/B",
+     "limit": 1.5,
+     "value": 1.8715,
+     "excess": 0.3715
+    },
+    {
+     "pin": "_2113_/B2",
+     "limit": 1.5,
+     "value": 1.8715,
+     "excess": 0.3715
+    },
+    {
+     "pin": "_2116_/B2",
+     "limit": 1.5,
+     "value": 1.8715,
+     "excess": 0.3715
+    },
+    {
+     "pin": "_2119_/B",
+     "limit": 1.5,
+     "value": 1.8715,
+     "excess": 0.3715
+    },
+    {
+     "pin": "_2122_/B",
+     "limit": 1.5,
+     "value": 1.8715,
+     "excess": 0.3715
+    },
+    {
+     "pin": "_2126_/B",
+     "limit": 1.5,
+     "value": 1.8715,
+     "excess": 0.3715
+    },
+    {
+     "pin": "_2129_/B",
+     "limit": 1.5,
+     "value": 1.8715,
+     "excess": 0.3715
+    },
+    {
+     "pin": "_2132_/B",
+     "limit": 1.5,
+     "value": 1.8715,
+     "excess": 0.3715
+    },
+    {
+     "pin": "_2135_/B2",
+     "limit": 1.5,
+     "value": 1.8715,
+     "excess": 0.3715
+    },
+    {
+     "pin": "_2138_/B",
+     "limit": 1.5,
+     "value": 1.8715,
+     "excess": 0.3715
+    },
+    {
+     "pin": "_2141_/B",
+     "limit": 1.5,
+     "value": 1.8715,
+     "excess": 0.3715
+    },
+    {
+     "pin": "_2144_/B",
+     "limit": 1.5,
+     "value": 1.8715,
+     "excess": 0.3715
+    },
+    {
+     "pin": "_2147_/B2",
+     "limit": 1.5,
+     "value": 1.8715,
+     "excess": 0.3715
+    },
+    {
+     "pin": "_2150_/B2",
+     "limit": 1.5,
+     "value": 1.8715,
+     "excess": 0.3715
+    },
+    {
+     "pin": "_2153_/B2",
+     "limit": 1.5,
+     "value": 1.8715,
+     "excess": 0.3715
+    },
+    {
+     "pin": "_2156_/B",
+     "limit": 1.5,
+     "value": 1.8715,
+     "excess": 0.3715
+    },
+    {
+     "pin": "_2159_/B2",
+     "limit": 1.5,
+     "value": 1.8715,
+     "excess": 0.3715
+    },
+    {
+     "pin": "_2162_/B2",
+     "limit": 1.5,
+     "value": 1.8715,
+     "excess": 0.3715
+    },
+    {
+     "pin": "_2165_/B",
+     "limit": 1.5,
+     "value": 1.8715,
+     "excess": 0.3715
+    },
+    {
+     "pin": "_2168_/B2",
+     "limit": 1.5,
+     "value": 1.8715,
+     "excess": 0.3715
+    },
+    {
+     "pin": "_2171_/B2",
+     "limit": 1.5,
+     "value": 1.8715,
+     "excess": 0.3715
+    },
+    {
+     "pin": "_2177_/B2",
+     "limit": 1.5,
+     "value": 1.8715,
+     "excess": 0.3715
+    },
+    {
+     "pin": "_2180_/B2",
+     "limit": 1.5,
+     "value": 1.8715,
+     "excess": 0.3715
+    },
+    {
+     "pin": "_2183_/A",
+     "limit": 1.5,
+     "value": 1.8715,
+     "excess": 0.3715
+    },
+    {
+     "pin": "_2209_/B",
+     "limit": 1.5,
+     "value": 1.8715,
+     "excess": 0.3715
+    },
+    {
+     "pin": "_2404_/A2",
+     "limit": 1.5,
+     "value": 1.8715,
+     "excess": 0.3715
+    },
+    {
+     "pin": "_2405_/A3",
+     "limit": 1.5,
+     "value": 1.8715,
+     "excess": 0.3715
+    },
+    {
+     "pin": "_3142_/B",
+     "limit": 1.5,
+     "value": 1.8715,
+     "excess": 0.3715
+    },
+    {
+     "pin": "_2071_/X",
+     "limit": 1.504,
+     "value": 1.8715,
+     "excess": 0.3675
+    },
+    {
+     "pin": "_3226_/B",
+     "limit": 1.5,
+     "value": 1.7815,
+     "excess": 0.2815
+    },
+    {
+     "pin": "_3232_/A2",
+     "limit": 1.5,
+     "value": 1.7815,
+     "excess": 0.2815
+    },
+    {
+     "pin": "_3233_/B",
+     "limit": 1.5,
+     "value": 1.7815,
+     "excess": 0.2815
+    },
+    {
+     "pin": "_3236_/A2",
+     "limit": 1.5,
+     "value": 1.7815,
+     "excess": 0.2815
+    },
+    {
+     "pin": "_3239_/A2",
+     "limit": 1.5,
+     "value": 1.7815,
+     "excess": 0.2815
+    },
+    {
+     "pin": "_3242_/B1",
+     "limit": 1.5,
+     "value": 1.7815,
+     "excess": 0.2815
+    },
+    {
+     "pin": "_3253_/A2",
+     "limit": 1.5,
+     "value": 1.7815,
+     "excess": 0.2815
+    },
+    {
+     "pin": "_3259_/A2",
+     "limit": 1.5,
+     "value": 1.7815,
+     "excess": 0.2815
+    },
+    {
+     "pin": "_3261_/B",
+     "limit": 1.5,
+     "value": 1.7815,
+     "excess": 0.2815
+    },
+    {
+     "pin": "_3264_/A2",
+     "limit": 1.5,
+     "value": 1.7815,
+     "excess": 0.2815
+    },
+    {
+     "pin": "_3270_/A2",
+     "limit": 1.5,
+     "value": 1.7815,
+     "excess": 0.2815
+    },
+    {
+     "pin": "_3276_/A2",
+     "limit": 1.5,
+     "value": 1.7815,
+     "excess": 0.2815
+    },
+    {
+     "pin": "_3279_/A2",
+     "limit": 1.5,
+     "value": 1.7815,
+     "excess": 0.2815
+    },
+    {
+     "pin": "_3284_/A2",
+     "limit": 1.5,
+     "value": 1.7815,
+     "excess": 0.2815
+    },
+    {
+     "pin": "_3290_/A2",
+     "limit": 1.5,
+     "value": 1.7815,
+     "excess": 0.2815
+    },
+    {
+     "pin": "place36/A",
+     "limit": 1.5,
+     "value": 1.7815,
+     "excess": 0.2815
+    },
+    {
+     "pin": "_3180_/Y",
+     "limit": 1.5092,
+     "value": 1.7815,
+     "excess": 0.2723
+    },
+    {
+     "pin": "_2438_/B",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2439_/A2",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2452_/B",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2453_/A2",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2459_/B",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2460_/A2",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2465_/B",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2466_/A2",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2471_/B",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2472_/A2",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2476_/B",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2477_/A2",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2483_/B",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2484_/A2",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2488_/B",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2489_/A2",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2493_/B",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2494_/A2",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2499_/B",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2500_/A2",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2504_/B",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2505_/A2",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2509_/B",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2510_/A2",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2514_/B",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2515_/A2",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2519_/B",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2520_/A2",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2524_/B",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2525_/A2",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2529_/B",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2530_/A2",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2534_/B",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2535_/A2",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2539_/B",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2540_/A2",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2545_/B",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2546_/A2",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2553_/B",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2554_/A2",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2559_/B",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2560_/A2",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2562_/B",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2563_/A2",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2570_/B",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2571_/A2",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2579_/B",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2582_/B",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2583_/A2",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2588_/B",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2589_/A2",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2594_/B",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2595_/A2",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2604_/B",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2607_/B",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2608_/A2",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2616_/B",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2621_/B",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2622_/A2",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_3162_/A",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_3163_/A2",
+     "limit": 1.5,
+     "value": 1.6828,
+     "excess": 0.1828
+    },
+    {
+     "pin": "_2433_/X",
+     "limit": 1.5124,
+     "value": 1.6828,
+     "excess": 0.1704
+    },
+    {
+     "pin": "_2625_/Y",
+     "limit": 1.4987,
+     "value": 1.6641,
+     "excess": 0.1654
+    },
+    {
+     "pin": "_2673_/B",
+     "limit": 1.5,
+     "value": 1.6641,
+     "excess": 0.1641
+    },
+    {
+     "pin": "_2674_/A2",
+     "limit": 1.5,
+     "value": 1.6641,
+     "excess": 0.1641
+    },
+    {
+     "pin": "_2684_/B",
+     "limit": 1.5,
+     "value": 1.6641,
+     "excess": 0.1641
+    },
+    {
+     "pin": "_2685_/A2",
+     "limit": 1.5,
+     "value": 1.6641,
+     "excess": 0.1641
+    },
+    {
+     "pin": "_2688_/B",
+     "limit": 1.5,
+     "value": 1.6641,
+     "excess": 0.1641
+    },
+    {
+     "pin": "_2689_/A2",
+     "limit": 1.5,
+     "value": 1.6641,
+     "excess": 0.1641
+    },
+    {
+     "pin": "_2695_/B",
+     "limit": 1.5,
+     "value": 1.6641,
+     "excess": 0.1641
+    },
+    {
+     "pin": "_2696_/A2",
+     "limit": 1.5,
+     "value": 1.6641,
+     "excess": 0.1641
+    },
+    {
+     "pin": "_2698_/B",
+     "limit": 1.5,
+     "value": 1.6641,
+     "excess": 0.1641
+    },
+    {
+     "pin": "_2699_/A2",
+     "limit": 1.5,
+     "value": 1.6641,
+     "excess": 0.1641
+    },
+    {
+     "pin": "_2702_/B",
+     "limit": 1.5,
+     "value": 1.6641,
+     "excess": 0.1641
+    },
+    {
+     "pin": "_2703_/A2",
+     "limit": 1.5,
+     "value": 1.6641,
+     "excess": 0.1641
+    },
+    {
+     "pin": "_2706_/B",
+     "limit": 1.5,
+     "value": 1.6641,
+     "excess": 0.1641
+    },
+    {
+     "pin": "_2707_/A2",
+     "limit": 1.5,
+     "value": 1.6641,
+     "excess": 0.1641
+    },
+    {
+     "pin": "_2711_/B",
+     "limit": 1.5,
+     "value": 1.6641,
+     "excess": 0.1641
+    },
+    {
+     "pin": "_2712_/A2",
+     "limit": 1.5,
+     "value": 1.6641,
+     "excess": 0.1641
+    },
+    {
+     "pin": "_2715_/B",
+     "limit": 1.5,
+     "value": 1.6641,
+     "excess": 0.1641
+    },
+    {
+     "pin": "_2716_/A2",
+     "limit": 1.5,
+     "value": 1.6641,
+     "excess": 0.1641
+    },
+    {
+     "pin": "_2719_/B",
+     "limit": 1.5,
+     "value": 1.6641,
+     "excess": 0.1641
+    },
+    {
+     "pin": "_2720_/A2",
+     "limit": 1.5,
+     "value": 1.6641,
+     "excess": 0.1641
+    },
+    {
+     "pin": "_2723_/B",
+     "limit": 1.5,
+     "value": 1.6641,
+     "excess": 0.1641
+    },
+    {
+     "pin": "_2724_/A2",
+     "limit": 1.5,
+     "value": 1.6641,
+     "excess": 0.1641
+    },
+    {
+     "pin": "_2727_/B",
+     "limit": 1.5,
+     "value": 1.6641,
+     "excess": 0.1641
+    },
+    {
+     "pin": "_2728_/A2",
+     "limit": 1.5,
+     "value": 1.6641,
+     "excess": 0.1641
+    },
+    {
+     "pin": "_2731_/B",
+     "limit": 1.5,
+     "value": 1.6641,
+     "excess": 0.1641
+    },
+    {
+     "pin": "_2732_/A2",
+     "limit": 1.5,
+     "value": 1.6641,
+     "excess": 0.1641
+    },
+    {
+     "pin": "_2735_/B",
+     "limit": 1.5,
+     "value": 1.6641,
+     "excess": 0.1641
+    },
+    {
+     "pin": "_2736_/A2",
+     "limit": 1.5,
+     "value": 1.6641,
+     "excess": 0.1641
+    },
+    {
+     "pin": "place33/A",
+     "limit": 1.5,
+     "value": 1.6641,
+     "excess": 0.1641
+    },
+    {
+     "pin": "_2235_/Y",
+     "limit": 1.4881,
+     "value": 1.5417,
+     "excess": 0.0536
+    },
+    {
+     "pin": "_2237_/B",
+     "limit": 1.5,
+     "value": 1.5417,
+     "excess": 0.0417
+    },
+    {
+     "pin": "_2241_/B",
+     "limit": 1.5,
+     "value": 1.5417,
+     "excess": 0.0417
+    },
+    {
+     "pin": "_2245_/B",
+     "limit": 1.5,
+     "value": 1.5417,
+     "excess": 0.0417
+    },
+    {
+     "pin": "_2248_/B",
+     "limit": 1.5,
+     "value": 1.5417,
+     "excess": 0.0417
+    },
+    {
+     "pin": "_2251_/B",
+     "limit": 1.5,
+     "value": 1.5417,
+     "excess": 0.0417
+    },
+    {
+     "pin": "_2254_/B",
+     "limit": 1.5,
+     "value": 1.5417,
+     "excess": 0.0417
+    },
+    {
+     "pin": "_2257_/B",
+     "limit": 1.5,
+     "value": 1.5417,
+     "excess": 0.0417
+    },
+    {
+     "pin": "_2260_/B",
+     "limit": 1.5,
+     "value": 1.5417,
+     "excess": 0.0417
+    },
+    {
+     "pin": "_2264_/B",
+     "limit": 1.5,
+     "value": 1.5417,
+     "excess": 0.0417
+    },
+    {
+     "pin": "_2267_/B",
+     "limit": 1.5,
+     "value": 1.5417,
+     "excess": 0.0417
+    },
+    {
+     "pin": "_2270_/B",
+     "limit": 1.5,
+     "value": 1.5417,
+     "excess": 0.0417
+    },
+    {
+     "pin": "_2273_/B",
+     "limit": 1.5,
+     "value": 1.5417,
+     "excess": 0.0417
+    },
+    {
+     "pin": "_2276_/B",
+     "limit": 1.5,
+     "value": 1.5417,
+     "excess": 0.0417
+    },
+    {
+     "pin": "_2280_/B",
+     "limit": 1.5,
+     "value": 1.5417,
+     "excess": 0.0417
+    },
+    {
+     "pin": "_2283_/B",
+     "limit": 1.5,
+     "value": 1.5417,
+     "excess": 0.0417
+    },
+    {
+     "pin": "_2286_/B",
+     "limit": 1.5,
+     "value": 1.5417,
+     "excess": 0.0417
+    },
+    {
+     "pin": "_2289_/B",
+     "limit": 1.5,
+     "value": 1.5417,
+     "excess": 0.0417
+    },
+    {
+     "pin": "_2292_/B",
+     "limit": 1.5,
+     "value": 1.5417,
+     "excess": 0.0417
+    },
+    {
+     "pin": "_2295_/B",
+     "limit": 1.5,
+     "value": 1.5417,
+     "excess": 0.0417
+    },
+    {
+     "pin": "_2298_/B",
+     "limit": 1.5,
+     "value": 1.5417,
+     "excess": 0.0417
+    },
+    {
+     "pin": "_2301_/B",
+     "limit": 1.5,
+     "value": 1.5417,
+     "excess": 0.0417
+    },
+    {
+     "pin": "_2304_/B",
+     "limit": 1.5,
+     "value": 1.5417,
+     "excess": 0.0417
+    },
+    {
+     "pin": "_2307_/B",
+     "limit": 1.5,
+     "value": 1.5417,
+     "excess": 0.0417
+    },
+    {
+     "pin": "_2311_/B",
+     "limit": 1.5,
+     "value": 1.5417,
+     "excess": 0.0417
+    },
+    {
+     "pin": "_2314_/B",
+     "limit": 1.5,
+     "value": 1.5417,
+     "excess": 0.0417
+    },
+    {
+     "pin": "_2317_/B",
+     "limit": 1.5,
+     "value": 1.5417,
+     "excess": 0.0417
+    },
+    {
+     "pin": "_2320_/B",
+     "limit": 1.5,
+     "value": 1.5417,
+     "excess": 0.0417
+    },
+    {
+     "pin": "_2323_/B",
+     "limit": 1.5,
+     "value": 1.5417,
+     "excess": 0.0417
+    },
+    {
+     "pin": "_2326_/B",
+     "limit": 1.5,
+     "value": 1.5417,
+     "excess": 0.0417
+    },
+    {
+     "pin": "_2329_/B",
+     "limit": 1.5,
+     "value": 1.5417,
+     "excess": 0.0417
+    },
+    {
+     "pin": "_2332_/B",
+     "limit": 1.5,
+     "value": 1.5417,
+     "excess": 0.0417
+    },
+    {
+     "pin": "_1463_/Y",
+     "limit": 1.4955,
+     "value": 1.5025,
+     "excess": 0.007
+    },
+    {
+     "pin": "_1465_/C",
+     "limit": 1.5,
+     "value": 1.5025,
+     "excess": 0.0025
+    },
+    {
+     "pin": "_1476_/B",
+     "limit": 1.5,
+     "value": 1.5025,
+     "excess": 0.0025
+    },
+    {
+     "pin": "_1492_/D",
+     "limit": 1.5,
+     "value": 1.5025,
+     "excess": 0.0025
+    },
+    {
+     "pin": "_1499_/B",
+     "limit": 1.5,
+     "value": 1.5025,
+     "excess": 0.0025
+    },
+    {
+     "pin": "_1506_/B",
+     "limit": 1.5,
+     "value": 1.5025,
+     "excess": 0.0025
+    },
+    {
+     "pin": "_1522_/A",
+     "limit": 1.5,
+     "value": 1.5025,
+     "excess": 0.0025
+    },
+    {
+     "pin": "_1530_/C",
+     "limit": 1.5,
+     "value": 1.5025,
+     "excess": 0.0025
+    },
+    {
+     "pin": "_1536_/B",
+     "limit": 1.5,
+     "value": 1.5025,
+     "excess": 0.0025
+    },
+    {
+     "pin": "_1547_/B",
+     "limit": 1.5,
+     "value": 1.5025,
+     "excess": 0.0025
+    },
+    {
+     "pin": "_1553_/B",
+     "limit": 1.5,
+     "value": 1.5025,
+     "excess": 0.0025
+    },
+    {
+     "pin": "_1559_/B",
+     "limit": 1.5,
+     "value": 1.5025,
+     "excess": 0.0025
+    },
+    {
+     "pin": "_1570_/C",
+     "limit": 1.5,
+     "value": 1.5025,
+     "excess": 0.0025
+    }
+   ],
+   "max_capacitance": [
+    {
+     "pin": "_2071_/X",
+     "limit": 0.1016,
+     "value": 0.1276,
+     "excess": 0.026
+    },
+    {
+     "pin": "_2433_/X",
+     "limit": 0.1923,
+     "value": 0.216,
+     "excess": 0.0238
+    },
+    {
+     "pin": "_3180_/Y",
+     "limit": 0.0531,
+     "value": 0.0635,
+     "excess": 0.0104
+    },
+    {
+     "pin": "_2625_/Y",
+     "limit": 0.0852,
+     "value": 0.095,
+     "excess": 0.0099
+    },
+    {
+     "pin": "_2235_/Y",
+     "limit": 0.1062,
+     "value": 0.1103,
+     "excess": 0.0041
+    }
+   ]
+  },
+  "tt_025C_1v80": {
+   "max_slew": [],
+   "max_capacitance": []
+  },
+  "tt_100C_1v80": {
+   "max_slew": [],
+   "max_capacitance": []
+  }
+ }
+}

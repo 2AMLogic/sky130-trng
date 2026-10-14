@@ -1,0 +1,331 @@
+{
+ "schema_version": 1,
+ "issue": 223,
+ "klt_version": "klt 0.7.0",
+ "klayout_version": "0.30.12",
+ "all_detected": true,
+ "controls": [
+  {
+   "id": "P0-baseline",
+   "description": "committed GDS + committed spec (positive control: must be clean)",
+   "expected": "clean",
+   "detected": true,
+   "klt_exit": 4,
+   "input_sha256": "sha256:c65e15818ebb0bf3fb2f59cab63563e88c1acebe32f0e83040c43c9ad87fa750",
+   "spec_sha256": "sha256:1dac9ff27f8d32b730fae51a7767869b3bbe2f040562ec771b160c87b437278a",
+   "command": "klt erc <input> <spec> --findings-only --format json",
+   "erc_status": "clean",
+   "erc_finding_count": 0,
+   "rules": {},
+   "findings_sample": [],
+   "net_islands": {
+    "VPWR": 1,
+    "VGND": 1
+   },
+   "coverage_checked_non_gate": [
+    "erc.missing_tie:[\"nwell_vpwr\"]",
+    "erc.missing_tie:[\"substrate_vgnd\"]",
+    "erc.net_connectivity:[\"VGND\"]",
+    "erc.net_connectivity:[\"VPWR\"]"
+   ],
+   "coverage_skipped": []
+  },
+  {
+   "id": "N1-supply-disconnection",
+   "description": "delete every met4-met5 cut (71/44): the met5 straps (and their VPWR/VGND labels) detach from the met4/met1 grid",
+   "expected": "erc.unconnected_net",
+   "detected": true,
+   "klt_exit": 3,
+   "input_sha256": "sha256:eb11c7afaaaf31506c1a418177521bea5703f063f046f06452fb661acea32d14",
+   "spec_sha256": "sha256:1dac9ff27f8d32b730fae51a7767869b3bbe2f040562ec771b160c87b437278a",
+   "command": "klt erc <input> <spec> --findings-only --format json",
+   "erc_status": "violations",
+   "erc_finding_count": 2,
+   "rules": {
+    "erc.unconnected_net": 2
+   },
+   "findings_sample": [
+    {
+     "rule": "erc.unconnected_net",
+     "description": "declared net 'VGND' resolves to 2 disconnected electrical islands (expected exactly one)",
+     "net": "VGND",
+     "other_net": null,
+     "gate_id": null,
+     "layer": null,
+     "bbox": {
+      "left": 5060,
+      "bottom": 5200,
+      "right": 239660,
+      "top": 239600
+     },
+     "islands": [
+      {
+       "bbox": {
+        "left": 5060,
+        "bottom": 5200,
+        "right": 239660,
+        "top": 239600
+       },
+       "layer": "met1",
+       "shape_count": 889
+      },
+      {
+       "bbox": {
+        "left": 5060,
+        "bottom": 18240,
+        "right": 239660,
+        "top": 19840
+       },
+       "layer": "met5",
+       "shape_count": 1
+      }
+     ]
+    },
+    {
+     "rule": "erc.unconnected_net",
+     "description": "declared net 'VPWR' resolves to 2 disconnected electrical islands (expected exactly one)",
+     "net": "VPWR",
+     "other_net": null,
+     "gate_id": null,
+     "layer": null,
+     "bbox": {
+      "left": 5060,
+      "bottom": 6910,
+      "right": 239660,
+      "top": 237890
+     },
+     "islands": [
+      {
+       "bbox": {
+        "left": 5060,
+        "bottom": 6910,
+        "right": 239660,
+        "top": 237890
+       },
+       "layer": "met1",
+       "shape_count": 782
+      },
+      {
+       "bbox": {
+        "left": 5060,
+        "bottom": 31840,
+        "right": 239660,
+        "top": 33440
+       },
+       "layer": "met5",
+       "shape_count": 1
+      }
+     ]
+    }
+   ],
+   "net_islands": {
+    "VPWR": 2,
+    "VGND": 2
+   },
+   "coverage_checked_non_gate": [
+    "erc.missing_tie:[\"nwell_vpwr\"]",
+    "erc.missing_tie:[\"substrate_vgnd\"]",
+    "erc.net_connectivity:[\"VGND\"]",
+    "erc.net_connectivity:[\"VPWR\"]"
+   ],
+   "coverage_skipped": []
+  },
+  {
+   "id": "N2-supply-short",
+   "description": "drop a met5 box bridging two adjacent power straps (one VPWR, one VGND)",
+   "expected": "erc.supply_short",
+   "detected": true,
+   "klt_exit": 3,
+   "input_sha256": "sha256:e96143f511ee70d1720ef45e8c68a449d50f2fa9303852fd0ba4d6ba073d56ab",
+   "spec_sha256": "sha256:1dac9ff27f8d32b730fae51a7767869b3bbe2f040562ec771b160c87b437278a",
+   "command": "klt erc <input> <spec> --findings-only --format json",
+   "erc_status": "violations",
+   "erc_finding_count": 1,
+   "rules": {
+    "erc.supply_short": 1
+   },
+   "findings_sample": [
+    {
+     "rule": "erc.supply_short",
+     "description": "declared nets 'VGND' and 'VPWR' are electrically the same net (shorted together)",
+     "net": "VGND",
+     "other_net": "VPWR",
+     "gate_id": null,
+     "layer": null,
+     "bbox": null,
+     "islands": null
+    }
+   ],
+   "net_islands": {
+    "VPWR": 1,
+    "VGND": 1
+   },
+   "coverage_checked_non_gate": [
+    "erc.missing_tie:[\"nwell_vpwr\"]",
+    "erc.missing_tie:[\"substrate_vgnd\"]",
+    "erc.net_connectivity:[\"VGND\"]",
+    "erc.net_connectivity:[\"VPWR\"]"
+   ],
+   "coverage_skipped": []
+  },
+  {
+   "id": "N3-missing-well-tie",
+   "description": "remove the n-tap from every tapcell of one nwell: that drawn well keeps no VPWR tap",
+   "expected": "erc.missing_tie",
+   "detected": true,
+   "klt_exit": 3,
+   "input_sha256": "sha256:ea1c41286a45f39364052c437e044bfd430e6cd2e5b30671cf3cde81dd895434",
+   "spec_sha256": "sha256:1dac9ff27f8d32b730fae51a7767869b3bbe2f040562ec771b160c87b437278a",
+   "command": "klt erc <input> <spec> --findings-only --format json",
+   "erc_status": "violations",
+   "erc_finding_count": 1,
+   "rules": {
+    "erc.missing_tie": 1
+   },
+   "findings_sample": [
+    {
+     "rule": "erc.missing_tie",
+     "description": "well/tub region has no 'nwell_vpwr' tap contact drawn inside it",
+     "net": "VPWR",
+     "other_net": null,
+     "gate_id": null,
+     "layer": "nwell_vpwr",
+     "bbox": {
+      "left": 4870,
+      "bottom": 120985,
+      "right": 239850,
+      "top": 123815
+     },
+     "islands": null
+    }
+   ],
+   "net_islands": {
+    "VPWR": 1,
+    "VGND": 1
+   },
+   "coverage_checked_non_gate": [
+    "erc.missing_tie:[\"nwell_vpwr\"]",
+    "erc.missing_tie:[\"substrate_vgnd\"]",
+    "erc.net_connectivity:[\"VGND\"]",
+    "erc.net_connectivity:[\"VPWR\"]"
+   ],
+   "coverage_skipped": []
+  },
+  {
+   "id": "N4-missing-substrate-tie",
+   "description": "remove the p-tap from one tapcell: its asserted substrate box holds no VGND tap",
+   "expected": "erc.missing_tie",
+   "detected": true,
+   "klt_exit": 3,
+   "input_sha256": "sha256:d90421ef8825f3dfa5e1b146cb739bd11445cb98d392c6beded1d3bf985758fa",
+   "spec_sha256": "sha256:1dac9ff27f8d32b730fae51a7767869b3bbe2f040562ec771b160c87b437278a",
+   "command": "klt erc <input> <spec> --findings-only --format json",
+   "erc_status": "violations",
+   "erc_finding_count": 1,
+   "rules": {
+    "erc.missing_tie": 1
+   },
+   "findings_sample": [
+    {
+     "rule": "erc.missing_tie",
+     "description": "well/tub region has no 'substrate_vgnd' tap contact drawn inside it",
+     "net": "VGND",
+     "other_net": null,
+     "gate_id": null,
+     "layer": "substrate_vgnd",
+     "bbox": {
+      "left": 157005,
+      "bottom": 120000,
+      "right": 157175,
+      "top": 120525
+     },
+     "islands": null
+    }
+   ],
+   "net_islands": {
+    "VPWR": 1,
+    "VGND": 1
+   },
+   "coverage_checked_non_gate": [
+    "erc.missing_tie:[\"nwell_vpwr\"]",
+    "erc.missing_tie:[\"substrate_vgnd\"]",
+    "erc.net_connectivity:[\"VGND\"]",
+    "erc.net_connectivity:[\"VPWR\"]"
+   ],
+   "coverage_skipped": []
+  },
+  {
+   "id": "N5-wrong-net-tie",
+   "description": "spec mutation: declare the nwell tie against VGND instead of VPWR (every well's taps reach VPWR, not VGND)",
+   "expected": "erc.missing_tie",
+   "detected": true,
+   "klt_exit": 3,
+   "input_sha256": "sha256:c65e15818ebb0bf3fb2f59cab63563e88c1acebe32f0e83040c43c9ad87fa750",
+   "spec_sha256": "sha256:bea750ad5fe466429590b957f3bd9afb7815c2e8542b997e18bbe24fd785d3e5",
+   "command": "klt erc <input> <spec> --findings-only --format json",
+   "erc_status": "violations",
+   "erc_finding_count": 43,
+   "rules": {
+    "erc.missing_tie": 43
+   },
+   "findings_sample": [
+    {
+     "rule": "erc.missing_tie",
+     "description": "well/tub tap is not connected to declared net 'VGND'",
+     "net": "VGND",
+     "other_net": null,
+     "gate_id": null,
+     "layer": "nwell_vpwr",
+     "bbox": {
+      "left": 4870,
+      "bottom": 6745,
+      "right": 239850,
+      "top": 9575
+     },
+     "islands": null
+    },
+    {
+     "rule": "erc.missing_tie",
+     "description": "well/tub tap is not connected to declared net 'VGND'",
+     "net": "VGND",
+     "other_net": null,
+     "gate_id": null,
+     "layer": "nwell_vpwr",
+     "bbox": {
+      "left": 4870,
+      "bottom": 12185,
+      "right": 239850,
+      "top": 15015
+     },
+     "islands": null
+    },
+    {
+     "rule": "erc.missing_tie",
+     "description": "well/tub tap is not connected to declared net 'VGND'",
+     "net": "VGND",
+     "other_net": null,
+     "gate_id": null,
+     "layer": "nwell_vpwr",
+     "bbox": {
+      "left": 4870,
+      "bottom": 17625,
+      "right": 239850,
+      "top": 20455
+     },
+     "islands": null
+    }
+   ],
+   "net_islands": {
+    "VPWR": 1,
+    "VGND": 1
+   },
+   "coverage_checked_non_gate": [
+    "erc.missing_tie:[\"nwell_vpwr\"]",
+    "erc.missing_tie:[\"substrate_vgnd\"]",
+    "erc.net_connectivity:[\"VGND\"]",
+    "erc.net_connectivity:[\"VPWR\"]"
+   ],
+   "coverage_skipped": []
+  }
+ ]
+}

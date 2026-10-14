@@ -63,6 +63,10 @@ directed stimulus program against each mapped netlist via Icarus + the
 |---|---|---|
 | `digital-synthesis/` | cell count, area, Liberty-summed leakage and ABC's pre-layout critical-path estimate for `trng_digital.v` mapped onto `sky130_fd_sc_hd`, unconstrained and at the block's own 50 kHz sample clock; RTL↔gate equivalence; gate-level cosim against the same directed program `digital-rtl-equivalence/` uses | #117 |
 | `digital-pnr/` | placed-and-routed `trng_digital` (sky130_fd_sc_hd, 50 kHz-constrained netlist): klt-deck DRC, cell-level LVS, 16-corner post-route STA on routed DEF + extracted SPEF, routed-netlist functional cosim vs the normative model, negative controls; geometry under `layout/trng_digital/` | #166 |
+| `digital-floorplan-compaction/` | area feasibility only: the same netlist re-placed-and-routed at 40/55/65 % target utilisation through the `digital-pnr/` chain (DRC, LVS, 16-corner STA, cosim, controls); combined-area lower bounds and labelled estimates vs the unchanged 0.05 mm2 target. Study geometry is NOT promoted; `layout/trng_digital/` stays the 40 % baseline | #226 |
+| `digital-electrical-repair/` | isolated study of the unrepaired Liberty max-slew / max-capacitance violations in the routed `trng_digital` macro (1167 pin rows over 16 corners of the in-flow global-route estimate): constraint-driven repair requests run through the unchanged `digital-pnr/` chain, then a final-route OpenSTA audit per corner. Edits nothing in `digital/flow/`, `layout/trng_digital/` or `layout/trng_whole/`; no geometry is promoted; the 0.05 mm2 area target is untouched | #236 |
+| `digital-functional-verification/` | native `klt functional-verification` (cocotb + Icarus) of `trng_digital`: the directed program and independent model of `digital-rtl-equivalence/` against the RTL and the routed netlist, with four negative controls and single-point mutants. Functional / unit-delay only, NOT SDF-timed evidence | #222 |
+| `digital-sdf-timed-verification/` | SDF-annotated, routed-netlist verification of `trng_digital` through `klt functional-verification`: sky130_fd_sc_hd timing cell models with `trng_digital.sdf.gz` back-annotated, declared-timing and stress baselines plus SDF/arc-shift controls. One SDF corner (`tt_025C_1v80`), no setup/hold timing checks (Icarus), provisional | #227 |
 
 **Whole-block post-layout verification (issue #18): none recorded yet
 (re-checked 2026-10-07).** The post-layout slugs (`post-layout-*`) cover the
@@ -75,6 +79,16 @@ connectivity netlist (`layout/trng_whole/verify/trng_whole.layout.spice`;
 connectivity only, no parasitics). No whole-block *post-layout simulation*
 record exists in any slug. Separate analog and digital evidence must not be
 cited as one.
+
+**Update (issue #174):** the whole-block campaign now has its slug,
+`post-layout-whole-block/` (see its `README.md` and the dated record under
+`records/`). **No whole-block PVT point is MET**: the 12 requests were submitted
+as `klt sim` batch corners requests and were refused by the fleet
+(`batch_runner_version_mismatch`; runner klt 0.5.0 vs client 0.7.0), and the
+one local single-corner probe (about 25 000 extracted transistors, 970 ns) did
+not finish in 60 minutes at 17 GB RSS. The slug's static-IR result (`klt power`,
+met1-met5 only, ring loads assumed from DR-0003) is partial. Nothing there
+supports #18 AC3.
 
 When the whole-block campaign lands (#174, whose #173 prerequisite is now
 delivered), it belongs in a
@@ -125,12 +139,16 @@ assembled `ro_array_core` + `sampler_dff` path from injected per-stage
 |---|---|---|
 | `raw-bit-min-entropy/` | a real, noise-driven raw bit sequence from the assembled array + sampler, and its MCV-style min-entropy point estimate, per PVT corner; plus `analysis/raw-bit-battery.py` (reduced SP 800-22 battery + non-MCV SP 800-90B estimators, INSUFFICIENT below minimum length) | #21 |
 | `raw-bit-volume-campaign/` | >= 1e5 raw bits per tt/ss/ff corner (`level: behavioral`, calibrated on and cross-checked against the transistor records, at DR-0003's Ts = 20 us and the #21 Ts = 100 ns), plus an independent-seed transistor-level cross-check run as `klt sim` batch requests | #188 |
+| `digital-conditioned-output/` | the CRC-32 conditioner model run over the volume-campaign raw streams (16384 DATA bits each, MSB-first words): reused SP 800-22-style battery + non-IID 90B estimators per corner, and a raw-H x 256 vs 32-bit accounting table; simulation-derived, no full-entropy claim | #243 |
 
 Issue #200 then perturbed the supply, which every record above holds ideal and quiet:
 
 | Slug | Claim under test | Landed by |
 |---|---|---|
 | `ro-array-supply-perturbation/` | supply-ripple and injection-lock robustness of the committed pre-layout `ro_array_core` at the ss/-40 C/1.62 V binding corner and the ff/-40 C/1.98 V fast corner: ripple 10-200 mV pk across the ring ladder, sub-harmonics, 10 MHz and the quasi-static (50 kbps) limit; ripple tolerance under DR-0003's margins; ring-local negative control (`klt sim` batch requests) | #200 |
+| `xor-combining-alternatives/` | evidence for DR-0010's rate row (`klt sim` batch, 18 jobs = 2 variants x DR-0003's 9 PVT points): the committed minimum-width `xor2` (control, reproduces the committed `w_90` within +-5 % and loaded ring period within +-2 %) against one 2x-device-width variant in the unchanged balanced depth-2 `N = 4` tree -- `w_90`, four loaded ring periods, root swing / edge retention / DC level, ring and XOR+buffer current, power, XOR device-area proxy, first-stage input load and root sampler load (separately), per-point `N_max_combine`, entropy replay and raw-rate ceiling. Does not choose or amend the rate target | #282 |
+| `local-mismatch-monte-carlo/` | local device-mismatch Monte Carlo (`klt sim` `monte_carlo`, `*_mm` sections) of the committed pre-layout `ro_array_core` (30 draws/corner: per-ring period spread, ring-pair proximity, `Q` ratio, combining-node bias) and of the `sampler_dff` decision offset (60 draws/corner), propagated to raw-bit bias and an `H_bias` min-entropy bound against DR-0004's H = 0.5 floor, at tt/27 C/1.8 V, ss/-40 C/1.62 V and ff/-40 C/1.98 V | #215 |
+| `wake-up-transient/` | analog wake-up transient of the committed pre-layout `ro_array_core` against DR-0004's 1024-sample start-up window: enable-gated and supply-ramp settling, first-window raw bits, and a behavioural start-up margin at 18 calibrated PVT points. **PARTIAL**: the 54-unit PVT grid and transistor noisy leg were not run (batch fleet rejected the submits); only single-corner local probes are committed. Also the restart-matrix reduction for the C5 silicon restart dataset (`restart_matrix.py`) and its behavioural 1000 x 2048 known-answer record at the 18 points (analysis path only; provisional until silicon) | #216, #267 |
 
 `sim/tests/test_raw_bit_entropy.py` is the fast, always-runnable unit-test
 suite behind that record's reduction step (standard library only, no
@@ -222,6 +240,30 @@ Two rules from the root `CLAUDE.md` govern everything under this directory:
 - **`sim/` results are append-only evidence.** A record is never edited or
   deleted after it is written; a correction mints a new record and names the
   one it supersedes via its `Supersedes` field.
+
+  This rule is enforced in CI (issue #232): the `sim-records-append-only`
+  job runs `sim/bin/check_records_append_only.py` on every PR and fails if any
+  existing `sim/*/records/*` file is modified, deleted or renamed (added
+  files pass). A sanctioned exception must be listed in
+  `sim/records-append-only-allowlist.txt` (empty by default), which makes it
+  a visible, reviewed diff.
+
+  Issue #265 extends the same rule to the raw artifacts of a record: every
+  existing file, at any depth and of any extension, under
+  `sim/<slug>/runs/<record-id>/` or `sim/<slug>/corners/<record-id>/` may not
+  be modified, deleted, renamed or type-changed when `<record-id>` names a
+  record in `sim/<slug>/records/` **of the PR's base tree** (a record is
+  `<id>.md`, `<id>.json` or an `<id>/` directory; counted once). Because
+  association uses the base tree, deleting or renaming the record in the same
+  PR does not unprotect its artifacts. New files and new directories pass, so
+  a superseding record gets a fresh `runs/<new-id>/` / `corners/<new-id>/`
+  directory. Matching is exact on the ID (no fuzzy matching). The following
+  historical directories have no record with the same ID and are therefore
+  not protected:
+  `digital-electrical-repair/runs/{20261010-cand1,20261010-cand2,20261010-control}`,
+  `digital-floorplan-compaction/runs/{20261009-193521-760b4d3,20261009-202126-760b4d3}`,
+  `digital-repaired-compaction/runs/20261010-092825-main`.
+  The allowlist honours artifact paths too.
 
 ## Quick start
 
@@ -1364,6 +1406,38 @@ ids — the same labelling-instability class `layout/pex-ring/`'s own
 issue-#96 analysis found (and klayout-tools#1065 / #1559 already track), not
 the value-moving class `layout/pex-array/` hit. Nothing here is superseded;
 the numbers stand against the committed library.
+
+## Threshold-shift (BTI/HCI-like) sensitivity of the RO array (issue #254)
+
+`ro-vth-drift-sensitivity/` is a bounded **sensitivity** campaign: a repository-owned gate-offset
+wrapper shifts the effective Vth of every NMOS (`dVtn`) and PMOS (`d|Vtp|`) of the committed
+`design/ro_ring5.spice` and `design/ro_array_core.spice`, and the ring jitter / period / `Q_ring`
+and the array ladder / fidelity / current / closest small-rational approach are re-measured across
+PVT against the matched zero-shift rows. Common-mode 0/20/40/60 mV over the full tt/ss/ff x
+-40/27/125 C x 1.62/1.8/1.98 V grid for both decks, plus asymmetric (60, 0) and (0, 60) mV for the
+array at the three headline PVT points. **This is a sensitivity bound, not a lifetime prediction**:
+20 mV is a finite-difference resolution, 60 mV an outer stress point, and neither maps to any time,
+stress voltage, duty cycle or temperature. It is a first-order electrical model (gate offset only) and
+makes no spec change; DR-0003/DR-0004 are only *evaluated against* the envelope, and any guard band or
+lifetime is an operator decision (`spec/README.md`).
+
+| Item | Where |
+|---|---|
+| wrapper + deterministic aged-netlist generator | `ro-vth-drift-sensitivity/aging.py` |
+| grid, coverage manifest (fails on a missing/duplicate key), request derivation | `campaign.py`, `coverage-manifest.json`, `make-requests.py` |
+| controls (DC gate-offset to 1 uV, zero-shift equivalence, tt/27 C/1.8 V pilot) | `analysis/sensitivity.py --emit-controls` |
+| reduction, records, versioned calibration artifact, replay | `analysis/sensitivity.py`, `records/` |
+| matched-seed behavioral replay through the raw-bit min-entropy reduction (model output) | `analysis/behavioral_replay.py` |
+| tests | `tests/test_vth_drift.py` |
+
+The behavioral generator `raw-bit-volume-campaign/behavioral_raw_bit.py` consumes the shifted calibration only
+through an explicit artifact (`calibration(..., artifact=, shift_mv=)`); a missing shift key, schema mismatch,
+source-row hash mismatch, or an artifact without a shift (or a shift without an artifact) is a hard error, never
+a silent fallback to the historical time-zero calibration. All existing records remain unchanged.
+
+Batch note: the fleet runner is klt 0.5.0 and refuses a 0.7.0 client (`batch_runner_version_mismatch`); the grid was
+submitted with a throwaway `uvx --from "klayout-tools==0.6.0" klt sim` client (no host tool was changed). The jobs'
+ids and the submitting client version are in the records. See the open `2AMLogic/klayout-tools` issues #2948 and #2851.
 
 ## Writing a new record
 

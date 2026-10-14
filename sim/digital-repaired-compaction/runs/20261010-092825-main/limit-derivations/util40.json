@@ -1,0 +1,226 @@
+{
+ "schema": "sky130-trng.limit-derivation/1",
+ "run_dir": "sim/digital-floorplan-compaction/runs/20261009-202126-760b4d3/util40",
+ "units": {
+  "slew": "ns",
+  "capacitance": "pF"
+ },
+ "stage": "routed DEF + extracted post-route SPEF (final route), tt vs corner decks",
+ "slew": {
+  "ff_100C_1v65": {
+   "limit_ns": 1.5,
+   "ratio_to_tt_max": 1.1467,
+   "ratio_pin": "_3507_/D",
+   "worst_slew_ns": 1.1119,
+   "tt_budget_ns": 1.308
+  },
+  "ff_100C_1v95": {
+   "limit_ns": 1.5,
+   "ratio_to_tt_max": 0.9531,
+   "ratio_pin": "_3507_/D",
+   "worst_slew_ns": 0.8979,
+   "tt_budget_ns": 1.5738
+  },
+  "ff_n40C_1v56": {
+   "limit_ns": 1.5,
+   "ratio_to_tt_max": 1.2651,
+   "ratio_pin": "_3524_/D",
+   "worst_slew_ns": 1.5026,
+   "tt_budget_ns": 1.1856
+  },
+  "ff_n40C_1v65": {
+   "limit_ns": 1.5,
+   "ratio_to_tt_max": 1.1505,
+   "ratio_pin": "_3507_/D",
+   "worst_slew_ns": 1.3158,
+   "tt_budget_ns": 1.3037
+  },
+  "ff_n40C_1v76": {
+   "limit_ns": 1.5,
+   "ratio_to_tt_max": 1.0333,
+   "ratio_pin": "_3507_/D",
+   "worst_slew_ns": 1.1531,
+   "tt_budget_ns": 1.4517
+  },
+  "ff_n40C_1v95": {
+   "limit_ns": 1.5,
+   "ratio_to_tt_max": 0.8971,
+   "ratio_pin": "_3518_/D",
+   "worst_slew_ns": 0.9662,
+   "tt_budget_ns": 1.672
+  },
+  "ss_100C_1v40": {
+   "limit_ns": 10.0,
+   "ratio_to_tt_max": 3.3909,
+   "ratio_pin": "_2214_/B",
+   "worst_slew_ns": 3.0542,
+   "tt_budget_ns": 2.9491
+  },
+  "ss_100C_1v60": {
+   "limit_ns": 1.5,
+   "ratio_to_tt_max": 2.4266,
+   "ratio_pin": "_2214_/B",
+   "worst_slew_ns": 2.229,
+   "tt_budget_ns": 0.6182
+  },
+  "ss_n40C_1v28": {
+   "limit_ns": 5.0,
+   "ratio_to_tt_max": 8.4699,
+   "ratio_pin": "_3071_/B",
+   "worst_slew_ns": 8.2764,
+   "tt_budget_ns": 0.5903
+  },
+  "ss_n40C_1v35": {
+   "limit_ns": 10.0,
+   "ratio_to_tt_max": 5.6425,
+   "ratio_pin": "_3071_/B",
+   "worst_slew_ns": 6.021,
+   "tt_budget_ns": 1.7723
+  },
+  "ss_n40C_1v40": {
+   "limit_ns": 10.0,
+   "ratio_to_tt_max": 4.4588,
+   "ratio_pin": "_3071_/B",
+   "worst_slew_ns": 4.9804,
+   "tt_budget_ns": 2.2428
+  },
+  "ss_n40C_1v44": {
+   "limit_ns": 5.0,
+   "ratio_to_tt_max": 3.7802,
+   "ratio_pin": "_3071_/B",
+   "worst_slew_ns": 4.3343,
+   "tt_budget_ns": 1.3227
+  },
+  "ss_n40C_1v60": {
+   "limit_ns": 1.5,
+   "ratio_to_tt_max": 2.3124,
+   "ratio_pin": "_3071_/B",
+   "worst_slew_ns": 2.8703,
+   "tt_budget_ns": 0.6487
+  },
+  "ss_n40C_1v76": {
+   "limit_ns": 1.5,
+   "ratio_to_tt_max": 1.6563,
+   "ratio_pin": "_2354_/B1",
+   "worst_slew_ns": 2.1365,
+   "tt_budget_ns": 0.9056
+  },
+  "tt_025C_1v80": {
+   "limit_ns": 1.5,
+   "ratio_to_tt_max": 1.0,
+   "ratio_pin": "startup_done",
+   "worst_slew_ns": 1.3445,
+   "tt_budget_ns": 1.5
+  },
+  "tt_100C_1v80": {
+   "limit_ns": 1.5,
+   "ratio_to_tt_max": 1.2044,
+   "ratio_pin": "_2361_/B",
+   "worst_slew_ns": 1.2831,
+   "tt_budget_ns": 1.2454
+  }
+ },
+ "slew_tt_budget_ns": 0.5903,
+ "slew_budget_with_margin_ns": 0.531,
+ "margin": 0.1,
+ "cap_per_corner": {
+  "ff_100C_1v65": {
+   "min_ratio_to_tt": 0.9977,
+   "cell": "sky130_fd_sc_hd__clkinv_2",
+   "cell_limit_pf": 0.394602,
+   "cell_tt_limit_pf": 0.395518
+  },
+  "ff_100C_1v95": {
+   "min_ratio_to_tt": 1.1275,
+   "cell": "sky130_fd_sc_hd__clkinv_4",
+   "cell_limit_pf": 0.882578,
+   "cell_tt_limit_pf": 0.782786
+  },
+  "ff_n40C_1v56": {
+   "min_ratio_to_tt": 0.8312,
+   "cell": "sky130_fd_sc_hd__o221ai_1",
+   "cell_limit_pf": 0.058604,
+   "cell_tt_limit_pf": 0.070506
+  },
+  "ff_n40C_1v65": {
+   "min_ratio_to_tt": 0.9814,
+   "cell": "sky130_fd_sc_hd__o41a_1",
+   "cell_limit_pf": 0.144663,
+   "cell_tt_limit_pf": 0.14741
+  },
+  "ff_n40C_1v76": {
+   "min_ratio_to_tt": 1.1019,
+   "cell": "sky130_fd_sc_hd__bufinv_16",
+   "cell_limit_pf": 1.663523,
+   "cell_tt_limit_pf": 1.509714
+  },
+  "ff_n40C_1v95": {
+   "min_ratio_to_tt": 1.2723,
+   "cell": "sky130_fd_sc_hd__bufinv_16",
+   "cell_limit_pf": 1.920786,
+   "cell_tt_limit_pf": 1.509714
+  },
+  "ss_100C_1v40": {
+   "min_ratio_to_tt": 1.9485,
+   "cell": "sky130_fd_sc_hd__nand4_1",
+   "cell_limit_pf": 0.242625,
+   "cell_tt_limit_pf": 0.124522
+  },
+  "ss_100C_1v60": {
+   "min_ratio_to_tt": 0.3898,
+   "cell": "sky130_fd_sc_hd__nand4_1",
+   "cell_limit_pf": 0.048533,
+   "cell_tt_limit_pf": 0.124522
+  },
+  "ss_n40C_1v28": {
+   "min_ratio_to_tt": 0.293,
+   "cell": "sky130_fd_sc_hd__o41ai_1",
+   "cell_limit_pf": 0.009928,
+   "cell_tt_limit_pf": 0.033884
+  },
+  "ss_n40C_1v35": {
+   "min_ratio_to_tt": 1.0811,
+   "cell": "sky130_fd_sc_hd__o41ai_1",
+   "cell_limit_pf": 0.036631,
+   "cell_tt_limit_pf": 0.033884
+  },
+  "ss_n40C_1v40": {
+   "min_ratio_to_tt": 1.396,
+   "cell": "sky130_fd_sc_hd__o221ai_1",
+   "cell_limit_pf": 0.098429,
+   "cell_tt_limit_pf": 0.070506
+  },
+  "ss_n40C_1v44": {
+   "min_ratio_to_tt": 0.7884,
+   "cell": "sky130_fd_sc_hd__o41ai_1",
+   "cell_limit_pf": 0.026713,
+   "cell_tt_limit_pf": 0.033884
+  },
+  "ss_n40C_1v60": {
+   "min_ratio_to_tt": 0.3516,
+   "cell": "sky130_fd_sc_hd__o41ai_1",
+   "cell_limit_pf": 0.011912,
+   "cell_tt_limit_pf": 0.033884
+  },
+  "ss_n40C_1v76": {
+   "min_ratio_to_tt": 0.5407,
+   "cell": "sky130_fd_sc_hd__o41ai_1",
+   "cell_limit_pf": 0.018321,
+   "cell_tt_limit_pf": 0.033884
+  },
+  "tt_025C_1v80": {
+   "min_ratio_to_tt": 1.0,
+   "cell": "sky130_fd_sc_hd__o41a_1",
+   "cell_limit_pf": 0.14741,
+   "cell_tt_limit_pf": 0.14741
+  },
+  "tt_100C_1v80": {
+   "min_ratio_to_tt": 0.8235,
+   "cell": "sky130_fd_sc_hd__nand4b_1",
+   "cell_limit_pf": 0.102549,
+   "cell_tt_limit_pf": 0.124522
+  }
+ },
+ "cap_min_ratio_to_tt": 0.293,
+ "cap_note": "per-cell ratios; a design-wide scalar cannot express them"
+}

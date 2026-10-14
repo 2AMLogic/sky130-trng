@@ -1,0 +1,482 @@
+{
+  "record_id": "20261010-164921-7e279ab",
+  "slug": "ro-vth-drift-sensitivity",
+  "kind": "controls",
+  "level": "transistor",
+  "status": "simulation-derived; provisional until silicon",
+  "claim": "Vth-shift wrapper controls (DC gate-offset probe, zero-shift equivalence, tt/27C/1.8V pilot); gate the full grid. This is a sensitivity bound, not a lifetime prediction.",
+  "seed": "ring5: .option seed=1 (source deck); array: deterministic",
+  "supersedes": "(none)",
+  "pass": true,
+  "controls": {
+    "pass": true,
+    "checks": [
+      {
+        "name": "dc-offset-within-1uV",
+        "ok": true,
+        "detail": "6 units (symmetric 0/20/40/60 and asymmetric (60,0), (0,60) mV); max |err| = 0 V (NMOS), 0 V (PMOS); tol 1e-06 V"
+      },
+      {
+        "name": "wrapped-current-equals-unwrapped-at-shifted-gate",
+        "ok": true,
+        "detail": "max |I_wrapped / I_unwrapped(shifted gate) - 1| = 0"
+      },
+      {
+        "name": "offset-sign (NMOS gate lowered, PMOS gate raised)",
+        "ok": true,
+        "detail": "offn = V(g)-V(gd) >= 0; offp = V(gd)-V(g) >= 0"
+      },
+      {
+        "name": "ring5-zero-shift-runs-pass",
+        "ok": true,
+        "detail": "unwrapped pass, wrapped-zero pass"
+      },
+      {
+        "name": "ring5-zero-shift-tbar",
+        "ok": true,
+        "detail": "unwrapped 2.42527e-09 vs wrapped-zero 2.42606e-09 (rel +3.274e-04, tol 0.001)"
+      },
+      {
+        "name": "ring5-zero-shift-swing_frac",
+        "ok": true,
+        "detail": "unwrapped 0.891226 vs wrapped-zero 0.891582 (rel +3.990e-04, tol 0.001)"
+      },
+      {
+        "name": "ring5-zero-shift-sigma_1_raw",
+        "ok": true,
+        "detail": "unwrapped 3.28723e-12 vs wrapped-zero 2.68904e-12 (rel -1.820e-01, tol 0.452548)"
+      },
+      {
+        "name": "ring5-zero-shift-vs-historical-tbar",
+        "ok": true,
+        "detail": "20260825-053659-54f5715: rel +5.398e-04, tol 0.001"
+      },
+      {
+        "name": "ring5-zero-shift-vs-historical-sigma_1_raw",
+        "ok": true,
+        "informational": true,
+        "detail": "20260825-053659-54f5715: rel -8.145e-02 (informational; different runner, estimator resolution ~16 % 1-sigma each)"
+      },
+      {
+        "name": "ring5-zero-shift-vs-historical-swing_frac",
+        "ok": true,
+        "detail": "20260825-053659-54f5715: rel +4.038e-04, tol 0.001"
+      },
+      {
+        "name": "array-zero-shift-runs-pass",
+        "ok": true,
+        "detail": "unwrapped pass, wrapped-zero pass"
+      },
+      {
+        "name": "array-zero-shift-tr1",
+        "ok": true,
+        "detail": "unwrapped 2.88339e-09 vs wrapped-zero 2.88339e-09 (rel +0.000e+00, tol 0.001)"
+      },
+      {
+        "name": "array-zero-shift-tr2",
+        "ok": true,
+        "detail": "unwrapped 2.71791e-09 vs wrapped-zero 2.71791e-09 (rel +0.000e+00, tol 0.001)"
+      },
+      {
+        "name": "array-zero-shift-tr3",
+        "ok": true,
+        "detail": "unwrapped 2.57285e-09 vs wrapped-zero 2.57284e-09 (rel -3.887e-06, tol 0.001)"
+      },
+      {
+        "name": "array-zero-shift-tr4",
+        "ok": true,
+        "detail": "unwrapped 2.43465e-09 vs wrapped-zero 2.43465e-09 (rel +0.000e+00, tol 0.001)"
+      },
+      {
+        "name": "array-zero-shift-skew_span",
+        "ok": true,
+        "detail": "unwrapped 1.18431 vs wrapped-zero 1.18431 (rel +0.000e+00, tol 0.001)"
+      },
+      {
+        "name": "array-zero-shift-edge_retention",
+        "ok": true,
+        "detail": "unwrapped 0.623413 vs wrapped-zero 0.623414 (rel +9.688e-07, tol 0.001)"
+      },
+      {
+        "name": "array-zero-shift-retention_n2",
+        "ok": true,
+        "detail": "unwrapped 0.801923 vs wrapped-zero 0.801923 (rel +1.194e-07, tol 0.001)"
+      },
+      {
+        "name": "array-zero-shift-bias_xo",
+        "ok": true,
+        "detail": "unwrapped 0.357807 vs wrapped-zero 0.357772 (rel -9.627e-05, tol 0.001)"
+      },
+      {
+        "name": "array-zero-shift-swing_frac_xo",
+        "ok": true,
+        "detail": "unwrapped 1.16884 vs wrapped-zero 1.16894 (rel +8.555e-05, tol 0.001)"
+      },
+      {
+        "name": "array-zero-shift-i_array_total",
+        "ok": true,
+        "detail": "unwrapped 0.000116379 vs wrapped-zero 0.000116377 (rel -1.633e-05, tol 0.001)"
+      },
+      {
+        "name": "array-zero-shift-vs-historical-tr1",
+        "ok": true,
+        "detail": "20260825-094718-53f1f7a: rel -6.936e-07, tol 0.001"
+      },
+      {
+        "name": "array-zero-shift-vs-historical-tr4",
+        "ok": true,
+        "detail": "20260825-094718-53f1f7a: rel -1.232e-06, tol 0.001"
+      },
+      {
+        "name": "array-zero-shift-vs-historical-edge_retention",
+        "ok": true,
+        "detail": "20260825-094718-53f1f7a: rel -2.488e-05, tol 0.001"
+      },
+      {
+        "name": "array-zero-shift-vs-historical-i_array_total",
+        "ok": true,
+        "detail": "20260825-094718-53f1f7a: rel -1.787e-04, tol 0.001"
+      },
+      {
+        "name": "ring5-pilot-started",
+        "ok": true,
+        "detail": "all four common-mode units completed with every measurement"
+      },
+      {
+        "name": "ring5-pilot-monotone-period-increase",
+        "ok": true,
+        "detail": "T: 0 mV -> +0.00 %, 20 mV -> +6.11 %, 40 mV -> +12.84 %, 60 mV -> +20.12 %"
+      },
+      {
+        "name": "array-pilot-started",
+        "ok": true,
+        "detail": "all four common-mode units completed with every measurement"
+      },
+      {
+        "name": "array-pilot-monotone-period-increase",
+        "ok": true,
+        "detail": "T: 0 mV -> +0.00 %, 20 mV -> +5.77 %, 40 mV -> +12.08 %, 60 mV -> +18.97 %"
+      }
+    ],
+    "floor": 6.458852e-13,
+    "dc_probe": [
+      {
+        "dvtn_v": 0.0,
+        "dvtp_v": 0.0,
+        "status": "pass",
+        "offn_v": 0.0,
+        "offp_v": 0.0,
+        "err_n_v": 0.0,
+        "err_p_v": 0.0,
+        "idn_ratio": 1.0,
+        "idp_ratio": 1.0
+      },
+      {
+        "dvtn_v": 0.02,
+        "dvtp_v": 0.02,
+        "status": "pass",
+        "offn_v": 0.02,
+        "offp_v": 0.02,
+        "err_n_v": 0.0,
+        "err_p_v": 0.0,
+        "idn_ratio": 1.0,
+        "idp_ratio": 1.0
+      },
+      {
+        "dvtn_v": 0.04,
+        "dvtp_v": 0.04,
+        "status": "pass",
+        "offn_v": 0.04,
+        "offp_v": 0.04,
+        "err_n_v": 0.0,
+        "err_p_v": 0.0,
+        "idn_ratio": 1.0,
+        "idp_ratio": 1.0
+      },
+      {
+        "dvtn_v": 0.06,
+        "dvtp_v": 0.06,
+        "status": "pass",
+        "offn_v": 0.06,
+        "offp_v": 0.06,
+        "err_n_v": 0.0,
+        "err_p_v": 0.0,
+        "idn_ratio": 1.0,
+        "idp_ratio": 1.0
+      },
+      {
+        "dvtn_v": 0.06,
+        "dvtp_v": 0.0,
+        "status": "pass",
+        "offn_v": 0.06,
+        "offp_v": 0.0,
+        "err_n_v": 0.0,
+        "err_p_v": 0.0,
+        "idn_ratio": 1.0,
+        "idp_ratio": 1.0
+      },
+      {
+        "dvtn_v": 0.0,
+        "dvtp_v": 0.06,
+        "status": "pass",
+        "offn_v": 0.0,
+        "offp_v": 0.06,
+        "err_n_v": 0.0,
+        "err_p_v": 0.0,
+        "idn_ratio": 1.0,
+        "idp_ratio": 1.0
+      }
+    ],
+    "equivalence": {
+      "ring5": {
+        "tbar": {
+          "unwrapped": 2.4252700000000002e-09,
+          "wrapped_zero": 2.4260640000000002e-09,
+          "rel": 0.0003273862291621743,
+          "tol": 0.001
+        },
+        "swing_frac": {
+          "unwrapped": 0.8912264444444444,
+          "wrapped_zero": 0.8915820555555555,
+          "rel": 0.00039901319505020183,
+          "tol": 0.001
+        },
+        "sigma_1_raw": {
+          "unwrapped": 3.287230477244326e-12,
+          "wrapped_zero": 2.6890389596126318e-12,
+          "rel": -0.18197431600024472,
+          "tol": 0.4525483399593905
+        },
+        "vs_historical": {
+          "reference": {
+            "record": "20260825-053659-54f5715",
+            "tbar": 2.424755e-09,
+            "sigma_1_raw": 2.927494e-12,
+            "swing_frac": 0.8912222
+          },
+          "rel": {
+            "tbar": 0.0005398483558134437,
+            "sigma_1_raw": -0.08145363931996719,
+            "swing_frac": 0.0004037775939103039
+          }
+        }
+      },
+      "array": {
+        "tr1": {
+          "unwrapped": 2.88339e-09,
+          "wrapped_zero": 2.88339e-09,
+          "rel": 0.0,
+          "tol": 0.001
+        },
+        "tr2": {
+          "unwrapped": 2.71791e-09,
+          "wrapped_zero": 2.71791e-09,
+          "rel": 0.0,
+          "tol": 0.001
+        },
+        "tr3": {
+          "unwrapped": 2.57285e-09,
+          "wrapped_zero": 2.57284e-09,
+          "rel": -3.886740385095067e-06,
+          "tol": 0.001
+        },
+        "tr4": {
+          "unwrapped": 2.43465e-09,
+          "wrapped_zero": 2.43465e-09,
+          "rel": 0.0,
+          "tol": 0.001
+        },
+        "skew_span": {
+          "unwrapped": 1.1843139670999938,
+          "wrapped_zero": 1.1843139670999938,
+          "rel": 0.0,
+          "tol": 0.001
+        },
+        "edge_retention": {
+          "unwrapped": 0.6234130881769441,
+          "wrapped_zero": 0.6234136921684149,
+          "rel": 9.688463111778844e-07,
+          "tol": 0.001
+        },
+        "retention_n2": {
+          "unwrapped": 0.8019229644848395,
+          "wrapped_zero": 0.8019230602427121,
+          "rel": 1.1941031363704724e-07,
+          "tol": 0.001
+        },
+        "bias_xo": {
+          "unwrapped": 0.35780666666666666,
+          "wrapped_zero": 0.3577722222222222,
+          "rel": -9.626551893326951e-05,
+          "tol": 0.001
+        },
+        "swing_frac_xo": {
+          "unwrapped": 1.16884,
+          "wrapped_zero": 1.16894,
+          "rel": 8.555490914075037e-05,
+          "tol": 0.001
+        },
+        "i_array_total": {
+          "unwrapped": 0.00011637879999999999,
+          "wrapped_zero": 0.00011637690000000001,
+          "rel": -1.6325997518329416e-05,
+          "tol": 0.001
+        },
+        "vs_historical": {
+          "reference": {
+            "record": "20260825-094718-53f1f7a",
+            "tr1": 2.883392e-09,
+            "tr4": 2.434653e-09,
+            "edge_retention": 0.6234292,
+            "i_array_total": 0.0001163977
+          },
+          "rel": {
+            "tr1": -6.936275054325591e-07,
+            "tr4": -1.2322084502747188e-06,
+            "edge_retention": -2.4875048498018693e-05,
+            "i_array_total": -0.0001786976890436609
+          }
+        }
+      }
+    },
+    "pilot": {
+      "ring5": [
+        {
+          "shift_mv": 0.0,
+          "ok": true,
+          "T": 2.4260640000000002e-09,
+          "rel_to_zero": 0.0
+        },
+        {
+          "shift_mv": 20.0,
+          "ok": true,
+          "T": 2.574394e-09,
+          "rel_to_zero": 0.061140184265542796
+        },
+        {
+          "shift_mv": 40.0,
+          "ok": true,
+          "T": 2.7376160000000003e-09,
+          "rel_to_zero": 0.12841870618417328
+        },
+        {
+          "shift_mv": 60.0,
+          "ok": true,
+          "T": 2.9141814999999996e-09,
+          "rel_to_zero": 0.20119728910696466
+        }
+      ],
+      "array": [
+        {
+          "shift_mv": 0.0,
+          "ok": true,
+          "T": 2.6521975e-09,
+          "rel_to_zero": 0.0
+        },
+        {
+          "shift_mv": 20.0,
+          "ok": true,
+          "T": 2.8053049999999998e-09,
+          "rel_to_zero": 0.05772854397155558
+        },
+        {
+          "shift_mv": 40.0,
+          "ok": true,
+          "T": 2.9724575000000003e-09,
+          "rel_to_zero": 0.12075269658462484
+        },
+        {
+          "shift_mv": 60.0,
+          "ok": true,
+          "T": 3.1552050000000004e-09,
+          "rel_to_zero": 0.1896568788712003
+        }
+      ]
+    }
+  },
+  "provenance": {
+    "generator_sha256": "60ec036ce35060e1c102fa01299b613661989d0d5bb9cc99cc3221ac3c73c9fd",
+    "aging_sha256": "4af3c5e741c4860c77dc5fb11f8fc3656d0f5dd207cb586ee903f3b54040f3dd",
+    "wrapper_sha256": "fc32994018964fdd0d67bff359d2af349f3f95cc51159133a7ecaa5a98bc445a",
+    "pdk_commit": "c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+    "requests": {
+      "dc-probe": {
+        "netlist_sha256": "64596bf0b96ffcbd7951062ac101f516937450e62981b95d3465cab8799da8ac",
+        "wrapper_sha256": "fc32994018964fdd0d67bff359d2af349f3f95cc51159133a7ecaa5a98bc445a",
+        "aging_sha256": "4af3c5e741c4860c77dc5fb11f8fc3656d0f5dd207cb586ee903f3b54040f3dd",
+        "testbench_sha256": "06a7841bc63f1a30f08dadc83a867ab2c14b98267b5ba5563237074e65d555c6"
+      },
+      "ring5-unwrapped": {
+        "deck": "ring5",
+        "vdd": 1.8,
+        "stop": "175n",
+        "tmax": "20p",
+        "wrap": false,
+        "source_testbench": "sim/ro-ring-jitter-accumulation/testbench/tb_ro_ring5_jitter.spice",
+        "source_testbench_sha256": "c24ad84ad4f4f479028108cae126804b9619d9145cd52289d6c9a1eb7e3d6943",
+        "design_netlist": "design/ro_ring5.spice",
+        "generator_sha256": "60ec036ce35060e1c102fa01299b613661989d0d5bb9cc99cc3221ac3c73c9fd",
+        "aging_sha256": "4af3c5e741c4860c77dc5fb11f8fc3656d0f5dd207cb586ee903f3b54040f3dd",
+        "source_sha256": "19dccb82a3e9a1239d509a03e645954f79a857ab3b11e41a2a53faa105b58ea4",
+        "netlist_sha256": "5e0df508f8c1296103ec4c17ee8653317bed409c0c0c6ab14b6bfd34333c3e63"
+      },
+      "ring5-pilot": {
+        "deck": "ring5",
+        "vdd": 1.8,
+        "stop": "175n",
+        "tmax": "20p",
+        "wrap": true,
+        "source_testbench": "sim/ro-ring-jitter-accumulation/testbench/tb_ro_ring5_jitter.spice",
+        "source_testbench_sha256": "c24ad84ad4f4f479028108cae126804b9619d9145cd52289d6c9a1eb7e3d6943",
+        "design_netlist": "design/ro_ring5.spice",
+        "generator_sha256": "60ec036ce35060e1c102fa01299b613661989d0d5bb9cc99cc3221ac3c73c9fd",
+        "aging_sha256": "4af3c5e741c4860c77dc5fb11f8fc3656d0f5dd207cb586ee903f3b54040f3dd",
+        "wrapped_nfet": 5,
+        "wrapped_pfet": 5,
+        "wrapper_version": "1",
+        "wrapper_sha256": "fc32994018964fdd0d67bff359d2af349f3f95cc51159133a7ecaa5a98bc445a",
+        "source_sha256": "19dccb82a3e9a1239d509a03e645954f79a857ab3b11e41a2a53faa105b58ea4",
+        "aged_sha256": "cf4949a080b9237c24cb5a01e24b210fe1da93ce3c8f7623b5b9b30a663b7022",
+        "netlist_sha256": "44e314e03deede1b0b77f66c4ac8d91d8cf9af93c8c4b3d29fea5e71d971e6f4"
+      },
+      "array-unwrapped": {
+        "deck": "array",
+        "vdd": 1.8,
+        "stop": "300n",
+        "tmax": "5p",
+        "wrap": false,
+        "source_testbench": "sim/ro-array-core-combining/testbench/tb_ro_array_core.spice",
+        "source_testbench_sha256": "189dc609c0782903cc74d55035892ec319a8a5ef2ce2b9b6a140616024a26e9b",
+        "design_netlist": "design/ro_array_core.spice",
+        "generator_sha256": "60ec036ce35060e1c102fa01299b613661989d0d5bb9cc99cc3221ac3c73c9fd",
+        "aging_sha256": "4af3c5e741c4860c77dc5fb11f8fc3656d0f5dd207cb586ee903f3b54040f3dd",
+        "source_sha256": "aed8b59124438c27a2547f40bad0d0abfdb1ade28ed53671be437bd12bd12e44",
+        "netlist_sha256": "0f2ba84a4feee999d699803ebca861c3350c93066a4ba91904881c604b22ae9e"
+      },
+      "array-pilot": {
+        "deck": "array",
+        "vdd": 1.8,
+        "stop": "300n",
+        "tmax": "5p",
+        "wrap": true,
+        "source_testbench": "sim/ro-array-core-combining/testbench/tb_ro_array_core.spice",
+        "source_testbench_sha256": "189dc609c0782903cc74d55035892ec319a8a5ef2ce2b9b6a140616024a26e9b",
+        "design_netlist": "design/ro_array_core.spice",
+        "generator_sha256": "60ec036ce35060e1c102fa01299b613661989d0d5bb9cc99cc3221ac3c73c9fd",
+        "aging_sha256": "4af3c5e741c4860c77dc5fb11f8fc3656d0f5dd207cb586ee903f3b54040f3dd",
+        "wrapped_nfet": 12,
+        "wrapped_pfet": 12,
+        "wrapper_version": "1",
+        "wrapper_sha256": "fc32994018964fdd0d67bff359d2af349f3f95cc51159133a7ecaa5a98bc445a",
+        "source_sha256": "aed8b59124438c27a2547f40bad0d0abfdb1ade28ed53671be437bd12bd12e44",
+        "aged_sha256": "72b8140eb6829a02c3b370769bb839c55784940d633af1b950c168d25f0051bb",
+        "netlist_sha256": "49ed4de6b704ce5e8f68e820e708db5ae8e15bd2a4d9a628cfddadbddbec0d11"
+      }
+    }
+  },
+  "timestamp_utc": "2026-10-10T16:49:21.591449+00:00",
+  "klt_sim": {
+    "backend": "local",
+    "responses": "sim/ro-vth-drift-sensitivity/corners/20261010-164921-7e279ab/*.klt-sim.json.gz"
+  }
+}

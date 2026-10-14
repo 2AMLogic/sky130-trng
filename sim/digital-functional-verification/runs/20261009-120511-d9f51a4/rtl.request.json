@@ -1,0 +1,15 @@
+{
+  "schema": "klt.functional_verification.request/1",
+  "engine": "icarus",
+  "sources": [
+    "./digital/rtl/trng_digital.v"
+  ],
+  "hdl_toplevel": "trng_digital",
+  "testbench": {
+    "module": "test_trng_digital_fv",
+    "search_path": "./digital/tb/cocotb"
+  },
+  "options": {
+    "random_seed": 1
+  }
+}

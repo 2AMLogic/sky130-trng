@@ -1,0 +1,53 @@
+{
+  "_comment": "Issue #251 study inputs. Verify with sha256sum. Requests are the #226 utilisation requests plus constraints.max_transition_ns only (netlist path rebased, same file).",
+  "committed_request": {
+    "path": "digital/flow/place-and-route/pnr-trng-digital-50khz.json",
+    "sha256": "sha256:97b6cb9123e43cbacb09724dc448ec8e976a78cd46dc85a1580a66fc54232350"
+  },
+  "netlist": {
+    "path": "sim/digital-synthesis/runs/20260910-001436-a4c3194/50khz-constrained-trng_digital_synth.v",
+    "sha256": "sha256:9d2b8aed1cd057bd7985ca77e7394921a005846934a4b9c01921c56dade83126"
+  },
+  "requests": {
+    "rep40-slew0531": {
+      "path": "sim/digital-repaired-compaction/requests/rep40-slew0531.json",
+      "sha256": "sha256:6720f3f92a477c098a11976ac48d1df26468213c9c7bfc3f9f10f72f1fa2e6c1",
+      "utilization_pct": 40,
+      "max_transition_ns": 0.531,
+      "run": "20261010-092825-main"
+    },
+    "rep55-slew0524": {
+      "path": "sim/digital-repaired-compaction/requests/rep55-slew0524.json",
+      "sha256": "sha256:878c8f2cb0debed352047b68d7b3107106d641df514640aed018386eaa658f74",
+      "utilization_pct": 55,
+      "max_transition_ns": 0.524,
+      "run": "unrun"
+    },
+    "rep55-slew0531": {
+      "path": "sim/digital-repaired-compaction/requests/rep55-slew0531.json",
+      "sha256": "sha256:58ee00310720ddd335299c35c60216a46705c7e6267bc7979e440f0c8d224e8d",
+      "utilization_pct": 55,
+      "max_transition_ns": 0.531,
+      "run": "20261010-092825-main"
+    },
+    "rep65-slew0531": {
+      "path": "sim/digital-repaired-compaction/requests/rep65-slew0531.json",
+      "sha256": "sha256:a6b675d583b2388e397a5b828d9d98111df672b1f0caf1bc8dcfed3097f4958a",
+      "utilization_pct": 65,
+      "max_transition_ns": 0.531,
+      "run": "20261010-092825-main"
+    }
+  },
+  "tool_pins": {
+    "path": "digital/flow/place-and-route/tool-pins.json",
+    "sha256": "sha256:a8d0a3b5e427452b82d7cfc4099b8ca4ebb77009acaed0de139951ec58374841"
+  },
+  "scripts": {
+    "sim/digital-repaired-compaction/bin/run-study.sh": "sha256:d6179e6b4ac93f8df0625ad7166d787579eae27b814fe64e98ecdcdf16919462",
+    "sim/digital-repaired-compaction/analysis/repaired_compaction.py": "sha256:980d900fc09625584063f5dea652060adffac93a31c92b84671020e1bb588174",
+    "sim/digital-electrical-repair/analysis/final_route_audit.py": "sha256:95fa4d181c96298f11fc13a776de1a36e8842d40e9ffacee84d01a9fa5455daf",
+    "sim/digital-electrical-repair/analysis/derive_limits.py": "sha256:db84a3d2bff6b77b7acd85b9a9986df5c821482a2055e55241b4eb1a6fdc2097",
+    "sim/digital-electrical-repair/analysis/summarise_run.py": "sha256:c0d6d67a4834687cc39953aaf48175f62ce6b8ba60ba70d15cb90cc01769dba5",
+    "sim/digital-pnr/harness/pnr-and-verify.py": "sha256:5449751ab0084be5278a7f3c3e5d800b1ede9fa5b71895bb7994361a35b3f42e"
+  }
+}

@@ -1,0 +1,22 @@
+<testsuites name="results">
+  <testsuite name="all" package="all">
+    <property name="random_seed" value="1" />
+    <testcase name="test_00_drive_program" classname="test_trng_digital_fv" file="./digital/tb/cocotb/test_trng_digital_fv.py" lineno="184" time="6.716540813446045" sim_time_ns="21200.0" ratio_time="3156.386686068978" />
+    <testcase name="test_phase_01_post_reset_idle_id_parameter_reads" classname="test_trng_digital_fv" file="./digital/tb/cocotb/test_trng_digital_fv.py" lineno="195" time="4.00543212890625e-05" sim_time_ns="0.0" ratio_time="0.0" />
+    <testcase name="test_phase_02_sampling_disabled_raw_valid_high_but_ctrl_en_low" classname="test_trng_digital_fv" file="./digital/tb/cocotb/test_trng_digital_fv.py" lineno="195" time="1.3589859008789062e-05" sim_time_ns="0.0" ratio_time="0.0" />
+    <testcase name="test_phase_03_enable_run_the_start_up_window_with_interleaved_" classname="test_trng_digital_fv" file="./digital/tb/cocotb/test_trng_digital_fv.py" lineno="195" time="6.318092346191406e-05" sim_time_ns="0.0" ratio_time="0.0" />
+    <testcase name="test_phase_04_drain_the_raw_fifo_through_raw_data_pop_on_read" classname="test_trng_digital_fv" file="./digital/tb/cocotb/test_trng_digital_fv.py" lineno="195" time="2.7894973754882812e-05" sim_time_ns="0.0" ratio_time="0.0" />
+    <testcase name="test_phase_05_raw_streaming_port_out_ready_pops_while_sampling" classname="test_trng_digital_fv" file="./digital/tb/cocotb/test_trng_digital_fv.py" lineno="195" time="1.9550323486328125e-05" sim_time_ns="0.0" ratio_time="0.0" />
+    <testcase name="test_phase_06_simultaneous_register_pop_and_stream_pop_registe" classname="test_trng_digital_fv" file="./digital/tb/cocotb/test_trng_digital_fv.py" lineno="195" time="1.239776611328125e-05" sim_time_ns="0.0" ratio_time="0.0" />
+    <testcase name="test_phase_07_out_mode_switch_to_conditioned_flushes_both_path" classname="test_trng_digital_fv" file="./digital/tb/cocotb/test_trng_digital_fv.py" lineno="195" time="0.0006017684936523438" sim_time_ns="0.0" ratio_time="0.0">
+      <failure error_type="AssertionError" error_msg="phase 'OUT_MODE switch to conditioned (flushes both paths)': 6/1035 cycles differ from the model, first at cycle 2351: dut='c0acf36b 1 d02cbfef 0 0 1' model='c0acf36b 1 5729bd9e 0 0 1'" />
+    </testcase>
+    <testcase name="test_phase_08_induce_an_rct_trip_with_a_stuck_source" classname="test_trng_digital_fv" file="./digital/tb/cocotb/test_trng_digital_fv.py" lineno="195" time="1.7881393432617188e-05" sim_time_ns="0.0" ratio_time="0.0" />
+    <testcase name="test_phase_09_gated_data_blocked_raw_data_still_readable" classname="test_trng_digital_fv" file="./digital/tb/cocotb/test_trng_digital_fv.py" lineno="195" time="1.5974044799804688e-05" sim_time_ns="0.0" ratio_time="0.0" />
+    <testcase name="test_phase_10_write_1_to_clear_then_re_run_the_start_up_test" classname="test_trng_digital_fv" file="./digital/tb/cocotb/test_trng_digital_fv.py" lineno="195" time="6.699562072753906e-05" sim_time_ns="0.0" ratio_time="0.0" />
+    <testcase name="test_phase_11_soft_rst_then_resume_sampling" classname="test_trng_digital_fv" file="./digital/tb/cocotb/test_trng_digital_fv.py" lineno="195" time="1.2636184692382812e-05" sim_time_ns="0.0" ratio_time="0.0" />
+    <testcase name="test_zz_trace_length_exact" classname="test_trng_digital_fv" file="./digital/tb/cocotb/test_trng_digital_fv.py" lineno="219" time="0.0003674030303955078" sim_time_ns="0.0" ratio_time="0.0">
+      <failure error_type="AssertionError" error_msg="full trace differs from the model" />
+    </testcase>
+  </testsuite>
+</testsuites>

@@ -1,0 +1,78 @@
+{
+  "netlist": "netlist.cir",
+  "engine": "ngspice",
+  "backend": "local",
+  "netlist_source": "extracted",
+  "models": {
+    "pdk": "sky130A",
+    "lib": "libs.tech/combined/sky130.lib.spice"
+  },
+  "corners": {
+    "process": [
+      "tt"
+    ],
+    "temperature_c": [
+      27.0
+    ],
+    "supply_v": {
+      "Vdvn": [
+        0.0,
+        0.02,
+        0.04,
+        0.06,
+        0.06,
+        0.0
+      ],
+      "Vdvp": [
+        0.0,
+        0.02,
+        0.04,
+        0.06,
+        0.0,
+        0.06
+      ]
+    }
+  },
+  "analysis": {
+    "kind": "dc",
+    "args": "Vsup 1.7 1.8 0.1"
+  },
+  "measurements": [
+    {
+      "name": "offn",
+      "spice": ".meas dc offn find v(offn) at=1.8"
+    },
+    {
+      "name": "offp",
+      "spice": ".meas dc offp find v(offp) at=1.8"
+    },
+    {
+      "name": "dvn_rb",
+      "spice": ".meas dc dvn_rb find v(vth_dvn) at=1.8"
+    },
+    {
+      "name": "dvp_rb",
+      "spice": ".meas dc dvp_rb find v(vth_dvp) at=1.8"
+    },
+    {
+      "name": "idn",
+      "spice": ".meas dc idn find i(Vdn) at=1.8"
+    },
+    {
+      "name": "idnr",
+      "spice": ".meas dc idnr find i(Vdnr) at=1.8"
+    },
+    {
+      "name": "idp",
+      "spice": ".meas dc idp find i(Vdp) at=1.8"
+    },
+    {
+      "name": "idpr",
+      "spice": ".meas dc idpr find i(Vdpr) at=1.8"
+    }
+  ],
+  "options": {
+    "timeout_s": 600,
+    "keep_artifacts": false
+  }
+}

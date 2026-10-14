@@ -1,0 +1,16 @@
+startup-probe (local, single corner tt / 27 C / 1.80 V, 970 ns, 6 program cycles, save_mode netlist)
+-------------------------------------------------------------------------------------------------
+Run on the shared 8-vCPU host with `--backend local` (the one single-corner debug probe the host
+rules allow), absolute -o path, options.timeout_s 3600.
+
+Observed: ngspice RSS grew steadily (9.5 GB at 10 min, 12.1 GB at 20 min, 14.0 GB at 30 min,
+15.8 GB at 40 min, 17.3 GB at 50 min) and ngspice.log never advanced past its header
+("Circuit: * klt sim -- generated corner deck, do not edit"); no analysis banner, no measurement.
+The wrapper was stopped at the ~60 minute background limit before klt wrote a report
+(report.json is empty/not JSON on purpose: it is the artifact of an unfinished run, kept as the
+evidence). The orphaned ngspice process was killed afterwards. An earlier attempt (relative -o,
+klayout-tools#2892/#2939) and a first absolute-path attempt with the default options.timeout_s
+(120 s, 'timeout' diagnostic) preceded it and are not kept.
+
+Consequence: a 7.87 us, 75-cycle transistor-level run of the ~25 000-transistor flat netlist is
+not feasible locally, and the 970 ns probe gives no rate to extrapolate from.

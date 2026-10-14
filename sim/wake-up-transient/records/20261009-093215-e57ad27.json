@@ -1,0 +1,345 @@
+{
+  "record_id": "20261009-093215-e57ad27",
+  "slug": "wake-up-transient",
+  "leg": "noisy",
+  "claim": "First raw bits after an enable release from the stopped state, transistor level with injected trnoise, over many noise seeds (issue #216): across-seed agreement per sample index of the raw bit and of the four per-ring sampled bits, first window vs later windows, a noise-off negative control, and a cross-check against the phase-diffusion model; Ts = 100 ns compressed sampling",
+  "level": "transistor",
+  "status": "simulation-derived; provisional until silicon",
+  "seeds": [
+    838246558
+  ],
+  "control_seeds": [],
+  "pvt": {
+    "temp_c": -40.0,
+    "vdd_v": 1.62
+  },
+  "process_corners": [
+    "ss"
+  ],
+  "testbench": "sim/wake-up-transient/testbench/tb_wakeup_raw_bits.spice (via sim/wake-up-transient/make-requests.py)",
+  "tran": {
+    "tmax": "40p",
+    "noise_amp_v_rms": "2.0e-3",
+    "ts_s": 1e-07,
+    "ten_s": 2e-08
+  },
+  "requests_without_response": [],
+  "klt_sim": {
+    "jobs": [
+      null
+    ],
+    "backend": "local (single-unit debug probe)",
+    "remote": [
+      null
+    ],
+    "monte_carlo": [
+      {
+        "n": 1,
+        "seed": 216000,
+        "vary": "mismatch",
+        "family_mismatch": [
+          {
+            "family": "other",
+            "active": null,
+            "note": "mismatch activity for the 'other' family is not independently verified for PDK family 'sky130'; treat any sampled spread for it as unconfirmed."
+          }
+        ]
+      }
+    ],
+    "engine_version": "46",
+    "models_lib_sha256": "48de7c677e2c6e7d09b2559279de9f818be71010a4aa933d728eb4db3b133c84",
+    "submitter_klt": "0.7.0+g5c94de0ebbfe",
+    "responses": "sim/wake-up-transient/corners/20261009-093215-e57ad27/*.klt-sim.json.gz"
+  },
+  "corners_dir": "20261009-093215-e57ad27",
+  "supersedes": "(none)",
+  "summary": {
+    "n_units": 1,
+    "n_ok": 1,
+    "not_ok": [],
+    "quiet_before_enable": true,
+    "oscillating_at_end": true,
+    "t_first_edge_after_en_max_s": 2.6604000000000004e-09,
+    "windows": [
+      {
+        "window": [
+          0,
+          8
+        ],
+        "xor": 0.0,
+        "rings": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "mcv": {
+          "n": 8,
+          "p_hat": 1.0,
+          "p_u_99": 1.0,
+          "h_mcv": 0.0
+        }
+      },
+      {
+        "window": [
+          8,
+          16
+        ],
+        "xor": 0.0,
+        "rings": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "mcv": {
+          "n": 8,
+          "p_hat": 0.625,
+          "p_u_99": 1.0,
+          "h_mcv": 0.0
+        }
+      },
+      {
+        "window": [
+          16,
+          24
+        ],
+        "xor": 0.0,
+        "rings": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "mcv": {
+          "n": 8,
+          "p_hat": 0.625,
+          "p_u_99": 1.0,
+          "h_mcv": 0.0
+        }
+      }
+    ],
+    "control": null,
+    "xcheck_inside": 0,
+    "xcheck_total": 0,
+    "cal": {
+      "sigma1": 3.606166e-12,
+      "periods_s": [
+        5.431000000000002e-09,
+        5.216299999999999e-09,
+        5.022800000000002e-09,
+        4.830900000000002e-09
+      ],
+      "delays_s": [
+        2.61045e-09,
+        2.51513e-09,
+        2.42835e-09,
+        2.34369e-09
+      ],
+      "jitter_record": "20260825-060208-54f5715",
+      "period_source": "det record 20261009-093152-e57ad27"
+    }
+  },
+  "xcheck": {},
+  "units": [
+    {
+      "corner_id": "ss/novdd/-40C/mc0",
+      "status": "pass",
+      "seed": 838246558,
+      "sample_index": 0,
+      "bits": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        1,
+        1,
+        0,
+        1,
+        1,
+        0,
+        1,
+        0
+      ],
+      "valid": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "ring_bits": [
+        [
+          0,
+          1,
+          0,
+          1,
+          1,
+          1,
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          1,
+          1,
+          1,
+          0,
+          1,
+          0,
+          1
+        ],
+        [
+          1,
+          1,
+          1,
+          0,
+          0,
+          1,
+          1,
+          1,
+          0,
+          0,
+          1,
+          1,
+          1,
+          0,
+          0,
+          1,
+          1,
+          1,
+          0,
+          0,
+          1,
+          1,
+          1,
+          0
+        ],
+        [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1
+        ],
+        [
+          0,
+          1,
+          1,
+          1,
+          0,
+          1,
+          1,
+          1,
+          0,
+          1,
+          1,
+          0,
+          0,
+          1,
+          1,
+          0,
+          0,
+          1,
+          1,
+          0,
+          0,
+          1,
+          1,
+          0
+        ]
+      ],
+      "t_first_edge_abs": [
+        2.26604e-08,
+        2.25665e-08,
+        2.24764e-08,
+        2.23947e-08
+      ],
+      "pre_enable_ro_range": [
+        [
+          9.37437e-05,
+          -8.03342e-06
+        ],
+        [
+          9.52639e-05,
+          -7.65819e-06
+        ],
+        [
+          9.68197e-05,
+          -5.95867e-06
+        ],
+        [
+          0.000100496,
+          -8.45492e-06
+        ]
+      ],
+      "late_swing_frac": [
+        1.0921483950617283,
+        1.0343162345679011,
+        1.0925340740740739,
+        1.0397293209876541
+      ],
+      "ok": true,
+      "request": "noisy-ss-m40-1v62-1"
+    }
+  ],
+  "control_units": [],
+  "timestamp_utc": "2026-10-09T09:32:15.915967+00:00",
+  "repo_sha": "e57ad27"
+}

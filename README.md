@@ -97,8 +97,23 @@ digital/       everything downstream of the raw tap: behavioural model + RTL
 sim/           testbenches + PVT corner results (ngspice), plus behavioural records
 layout/        GDS + DRC/LVS reports (klayout-tools driven), plus layout/pex/,
                the extracted post-layout netlist sim/ simulates
-measurements/  silicon characterization (empty until tape-out)
+measurements/  silicon characterization (empty until tape-out; layout contract and
+               plan: measurements/README.md, spec/silicon-characterization-plan.md)
 ```
+
+## Reproducing the results
+
+[`REPRODUCE.md`](REPRODUCE.md) is the cold-start index: for each result family
+(design netlists, layout DRC/LVS, post-layout PVT campaigns, raw-bit/entropy
+campaigns, digital flow) the command, tool versions and pinned PDK revision.
+A CI check keeps it consistent with the tree.
+
+## Tool friction
+
+[`docs/friction-ledger.md`](docs/friction-ledger.md) indexes every
+`2AMLogic/klayout-tools` issue this port cites (the canary's friction output):
+the generic tool gap, where it bit, upstream state, and any workaround. A CI
+check fails if the tree cites an issue the ledger lacks.
 
 ## Chipalooza
 

@@ -2,7 +2,108 @@
 
 Chronological record of recently merged pull requests and closed issues.
 
+### 2026-10-12
+
+- **PR #311**: feat(sim): lock-resolution campaign for the supply-ripple evidence (#288)
+- **Issue #288** (closed): Resolve near-frequency supply injection-lock brackets with longer observation windows
+- **PR #309**: Whole-block characterization attempt: partial static IR, 12-point matrix explicitly Unmet (Part of #174)
+- **PR #306**: ci(pdk-nightly): record nightly failures on loom-ui
+
+### 2026-10-11
+
+- **PR #303**: Whole-block verify: informational density and naive antenna-ratio estimates (#283)
+- **Issue #283** (closed): Whole-block verify: informational metal/poly density and naive antenna-ratio estimates (split from #281)
+- **PR #302**: feat(sim): health-test detection coverage on correlated/periodic streams (#300)
+- **Issue #300** (closed): Health-test detection coverage against correlated / injection-locked raw streams
+- **PR #299**: docs(sim): #289 batch retry still blocked by runner/client version mismatch
+- **PR #298**: Friction ledger: index of cited klayout-tools issues with CI coverage check
+- **Issue #295** (closed): Friction ledger: in-repo index of filed klayout-tools issues with CI coverage check
+- **PR #297**: feat(spec): index DR-0011 and add decision-record index checker (#296)
+- **Issue #296** (closed): Decision-record index consistency check (DR-0011 missing from spec/README.md)
+- **PR #294**: docs: top-level REPRODUCE.md cold-start index with CI consistency check
+- **Issue #292** (closed): Top-level REPRODUCE.md cold-start index with CI consistency check (T1 items 9/10)
+- **PR #293**: feat(signoff): aggregated characterization report + CI staleness gate (#291)
+- **Issue #291** (closed): Aggregated characterization report generator with CI staleness gate (T1 item 8)
+- **PR #290**: feat(sim): non-nominal PVT seeded transistor raw-bit cross-check (generator, reducer, controls)
+- **PR #287**: feat(sim): XOR combining-gate alternatives evidence for the raw-rate decision (#282)
+- **Issue #282** (closed): Evidence for the raw-rate decision: measure XOR combining-gate alternatives against the ~78 kbps bandwidth ceiling
+- **PR #284**: feat(verify): audit klt-inapplicable DRC rules and unruled layers against the composed GDS
+- **Issue #281** (closed): Whole-block DRC: audit the 45 klt-inapplicable deck rules and 19 unruled stream layers against the composed GDS
+- **PR #280**: fix(sim): reject summary collisions with behavioral evidence provenance
+- **Issue #276** (closed): Reject summary collisions with behavioral evidence provenance
+- **PR #279**: fix(sim): publish complete evidence bundles with exclusive id reservation
+- **Issue #277** (closed): Publish complete evidence bundles with exclusive record ID reservation
+- **PR #275**: Reject colliding artifact basenames before minting behavioral evidence
+- **Issue #273** (closed): Reject colliding artifact basenames before minting behavioral evidence
+- **Issue #278** (closed): Auditor: guard telemetry dispositions and read-only S3 refinement
+
+### 2026-10-10
+
+- **PR #272**: feat(sim): restart-matrix reduction + behavioural known-answer record for the C5 restart dataset
+- **Issue #267** (closed): Restart-matrix (SP 800-90B restart-test shape) reduction with behavioral known-answer record, ahead of silicon
+- **Issue #270** (closed): Auditor guard telemetry: cloud-cli:aws s3 (rm|rb|cp|mv|sync|mb)
+- **PR #271**: feat(sim): protect measurements/ records and raw captures with append-only guard
+- **Issue #269** (closed): Protect silicon measurement records and raw captures with the existing append-only CI guard
+- **PR #268**: ci(pdk-nightly): reproduce whole-block composition and baseline DRC/LVS (#264)
+- **Issue #264** (closed): PDK nightly: reproduce composed whole-block geometry and baseline DRC/LVS
+- **PR #266**: feat(sim): protect record-associated runs/ and corners/ artifacts in append-only guard
+- **Issue #265** (closed): Preserve raw run artifacts associated with append-only simulation records
+- **Issue #259** (closed): Auditor guard telemetry: gh-api-rawfield-body-literal-at
+- **PR #263**: feat(sim): bounded Vth-shift sensitivity of the RO array across PVT (#254)
+- **Issue #254** (closed): End-of-life drift: bounded Vth-shift (BTI/HCI) derate of the RO array across PVT
+- **Issue #258** (closed): Auditor guard telemetry: worktree-write-confinement-unresolved-var
+
+- **Issue #244** (closed): Decision record: DR-0004 external interface vs the assumed Challenge #4 pin budget (brief §2 re-map)
+- **Issue #208** (closed): Decision record needed: RO-array supply-quality requirement (droop/ripple) from #200 evidence
+- **Issue #250** (closed): Gate digital P&R success on extracted final-route Liberty electrical limits
+- **Issue #253** (closed): Raw-bit statistical evidence at SP 800-90B standard sample size (>= 2^20 bits per stream)
+- **Issue #251** (closed): Measure repaired digital floorplan compaction with 16-corner electrical closure
+- **Issue #256** (closed): Silicon characterization plan: claim-to-measurement table, observability audit, measurements/ layout
+- **PR #247**: docs(spec): DR-0011 Proposed -- external interface vs assumed Challenge #4 pin budget
+- **PR #248**: docs(spec): DR-0012 Proposed -- RO-array supply-quality requirement (#208)
+- **PR #252**: Gate digital P&R on extracted final-route Liberty electrical limits
+- **PR #255**: feat(sim): 2^20-bit raw-bit streams and min-H shift vs 2^17 (#253)
+- **PR #257**: sim: repaired floorplan compaction with 16-corner electrical closure (#251)
+- **PR #260**: docs(spec): silicon characterization plan, DR-0014 Proposed, measurements/ layout contract (#256)
+
+- **PR #245**: feat(sim): conditioned-output (DATA) battery + estimator evidence (#243)
+- **PR #241**: docs: sync sim/README slug index and Challenge #4 sign-off row 3 (#240)
+- **PR #242**: docs(spec): DR-0010 target-table reconciliation packet (Proposed)
+- **PR #238**: feat(digital): constraint-driven electrical-limit repair study with 16-corner final-route audit (#236)
+- **Issue #243** (closed): Conditioned-output (DATA) statistical evidence: run the CRC-32 conditioner over the volume-campaign raw streams
+- **Issue #240** (closed): docs: sync sim/README slug index and Challenge #4 sign-off row 3 with delivered evidence
+- **Issue #239** (closed): Spec: DR-0010 target-table reconciliation packet (rate, area, power rows) for operator ratification
+- **Issue #236** (closed): Digital physical closure: repair and audit low-voltage Liberty slew/capacitance violations
+- **Issue #235** (closed): Auditor guard telemetry: worktree-write-confinement-unresolved-var
+
+### 2026-10-09
+
+- **PR #237**: CI: enforce sim/ append-only record rule (#232)
+- **PR #234**: sim: digital floorplan-compaction feasibility study (#226)
+- **PR #229**: Add SDF-annotated routed digital verification with annotation controls (#227)
+- **PR #225**: feat(layout): native supply ERC for routed trng_digital; cite item 11.digital
+- **PR #224**: feat(sim): native klt functional-verification evidence for the digital suite
+- **PR #220**: Local-mismatch Monte Carlo of RO array spread and sampler offset/bias
+- **PR #219**: Wake-up transient campaign vs DR-0004 start-up window (partial, #216)
+- **PR #214**: Cite delivered digital DRC/LVS evidence in T1 manifest (#211)
+- **PR #213**: Refresh current sign-off status and simulated-stream documentation
+- **PR #209**: Supply-ripple and injection-lock robustness campaign for the RO array (#200)
+- **Issue #232** (closed): CI: enforce the sim/ append-only record rule (fail PRs that modify, rename or delete committed records)
+- **Issue #226** (closed): Measure digital floorplan compaction feasibility against the unchanged area target
+- **Issue #223** (closed): Verify routed digital supplies and well ties with native ERC evidence
+- **Issue #227** (closed): Add SDF-annotated routed digital verification with annotation controls
+- **Issue #210** (closed): Guard telemetry: retain containment for unresolved scratch-write variables
+- **Issue #222** (closed): Record native digital functional-verification evidence alongside routed STA
+- **Issue #207** (closed): Guard telemetry: retain shared-stash creation protection
+- **Issue #215** (closed): Local-mismatch Monte Carlo of RO array frequency spread and sampler decision offset/bias
+- **Issue #211** (closed): Refresh T1 manifest with eligible delivered digital physical evidence
+- **Issue #212** (closed): Refresh current sign-off status and simulated-stream documentation
+- **Issue #200** (closed): Supply-ripple and injection-lock robustness campaign for the RO array (transistor level)
+
 ### 2026-10-08
+
+- **PR #206**: chore(signoff): klayout-tools 0.7.0 grader; 11.analog met (3/22)
+- **Issue #164** (closed): Re-grade T1 item 11 (11.analog) once klayout-tools#2405 (alias-joined LVS supply pairing) lands
 
 - **PR #204**: Whole-block DRC, mixed-level LVS and fault controls for trng_whole (#173)
 - **PR #203**: Re-derive and empirically validate RCT/APT cutoffs against estimated H (#196)

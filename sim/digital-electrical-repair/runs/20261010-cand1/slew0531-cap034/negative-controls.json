@@ -1,0 +1,25 @@
+{
+  "lvs-pin-swap": {
+    "mutation": "swapped A_N/B nets on one nand2b (net435 <-> net431)",
+    "status": "mismatch",
+    "error_count": 1,
+    "detected": true
+  },
+  "lvs-instance-deleted": {
+    "mutation": "deleted nor2_1 instance _1440_",
+    "status": "mismatch",
+    "error_count": 1,
+    "detected": true
+  },
+  "sta-clock-period-1ns": {
+    "mutation": "same routed DEF+SPEF at tt_025C_1v80, clock_period_ns 1.0 with IO delays 0.2 ns (a 1 GHz target the routed design must miss; a 5000 ns clock with the 4000 ns IO delays unchanged was tried first and still passed, so it is not a valid control)",
+    "worst_slack_ns": -6.57644,
+    "setup_violation_count": 491,
+    "detected": true
+  },
+  "cosim-xor-to-and": {
+    "mutation": "18 xor2_1 instances replaced by and2_1 in the routed netlist",
+    "mismatches": 4030,
+    "detected": true
+  }
+}

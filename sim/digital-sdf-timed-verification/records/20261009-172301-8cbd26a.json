@@ -1,0 +1,399 @@
+{
+  "record_id": "20261009-172301-8cbd26a",
+  "slug": "digital-sdf-timed-verification",
+  "level": "gate (post-route as-built netlist, SDF-annotated, single corner)",
+  "claim": "The directed bit-exact trng_digital suite (4239 cycles, 11 phases) passes through the pinned native `klt functional-verification` interface on the routed sky130_fd_sc_hd netlist with the post-route SDF back-annotated (Icarus 13.0, single corner tt_025C_1v80, 20000 ns and 8 ns periods; annotation partial: no TIMINGCHECK), with a mistargeted SDF, an unannotated run, an exact +137 ps instance-level delay shift, a +15000 ns delay shift and a 5 ns clock all behaving as controls. Not a PVT sweep; simulation-derived and provisional; DR-0004 remains Proposed.",
+  "seeds": {
+    "cosim_stimulus_seed": 20260905,
+    "cocotb_random_seed": 1
+  },
+  "supersedes": null,
+  "author": "loom-builder@sky130-trng",
+  "timestamp_utc": "2026-10-09T17:23:01.263832+00:00",
+  "repo_sha": "8cbd26a",
+  "tools": {
+    "python": "3.12.3",
+    "platform": "Linux-7.0.0-1013-aws-x86_64-with-glibc2.39",
+    "klt": "klt 0.7.0",
+    "cocotb": "2.0.1",
+    "iverilog": "Icarus Verilog version 13.0 (stable) (v13_0)"
+  },
+  "artifacts": [
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/timed-declared.request.json",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/timed-declared.report.json",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/timed-declared.results.xml",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/timed-declared.timing-probe.json",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/timed-declared.stimulus.txt",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/timed-declared.observations.txt",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/timed-declared.model-observations.txt",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/timed-at-speed.request.json",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/timed-at-speed.report.json",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/timed-at-speed.results.xml",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/timed-at-speed.timing-probe.json",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/timed-at-speed.stimulus.txt",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/timed-at-speed.observations.txt",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/timed-at-speed.model-observations.txt",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/ctl-sdf-removed.request.json",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/ctl-sdf-removed.report.json",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/ctl-sdf-removed.results.xml",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/ctl-sdf-removed.timing-probe.json",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/ctl-sdf-removed.stimulus.txt",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/ctl-sdf-removed.observations.txt",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/ctl-sdf-removed.model-observations.txt",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/ctl-sdf-mistargeted.request.json",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/ctl-sdf-mistargeted.report.json",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/ctl-sdf-mistargeted.results.xml",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/ctl-sdf-mistargeted.stderr.json",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/ctl-sdf-mistargeted.timing-probe.json",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/ctl-sdf-mistargeted.stimulus.txt",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/ctl-sdf-mistargeted.observations.txt",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/ctl-sdf-mistargeted.model-observations.txt",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/ctl-delay-shift.request.json",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/ctl-delay-shift.report.json",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/ctl-delay-shift.results.xml",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/ctl-delay-shift.timing-probe.json",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/ctl-delay-shift.stimulus.txt",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/ctl-delay-shift.observations.txt",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/ctl-delay-shift.model-observations.txt",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/ctl-delay-fail.request.json",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/ctl-delay-fail.report.json",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/ctl-delay-fail.results.xml",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/ctl-delay-fail.timing-probe.json",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/ctl-delay-fail.stimulus.txt",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/ctl-delay-fail.observations.txt",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/ctl-delay-fail.model-observations.txt",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/ctl-clock-5ns.request.json",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/ctl-clock-5ns.report.json",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/ctl-clock-5ns.results.xml",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/ctl-clock-5ns.timing-probe.json",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/ctl-clock-5ns.stimulus.txt",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/ctl-clock-5ns.observations.txt",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/ctl-clock-5ns.model-observations.txt",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/ctl-clock-5ns-unannotated.request.json",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/ctl-clock-5ns-unannotated.report.json",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/ctl-clock-5ns-unannotated.results.xml",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/ctl-clock-5ns-unannotated.timing-probe.json",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/ctl-clock-5ns-unannotated.stimulus.txt",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/ctl-clock-5ns-unannotated.observations.txt",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/ctl-clock-5ns-unannotated.model-observations.txt",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/trng_digital.baseline.sdf.gz",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/sdf-mistargeted.diff.txt",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/sdf-delay-shift.diff.txt",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/sdf-delay-fail.diff.txt",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/sdf-baseline-dropped-entries.diff.txt",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/sdf-census.json",
+    "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/input-hashes.json"
+  ],
+  "verdict": {
+    "timed_declared_baseline": true,
+    "timed_at_speed_baseline": true,
+    "controls_detected": true,
+    "sdf_annotated": true
+  },
+  "native_report": "klt functional-verification --format json; one report.json per run, preserved (paths sanitised)",
+  "coverage_class": "SDF-annotated (partial: no TIMINGCHECK), single corner tt_025C_1v80, routed netlist; provisional",
+  "timed_runs": {
+    "timed-declared": {
+      "rc": 0,
+      "status": "pass",
+      "test_count": 13,
+      "passed": 13,
+      "failed": 0,
+      "skipped": 0,
+      "failed_tests": [],
+      "sdf": {
+        "file": "<work>/sdf/trng_digital.baseline.sdf",
+        "corner": "typ",
+        "entries": "all",
+        "annotated": true,
+        "partial": true,
+        "dropped": {
+          "timingcheck": {
+            "count": 455,
+            "reason": "Icarus Verilog implements SDF delay annotation (IOPATH/INTERCONNECT) but not SDF TIMINGCHECK -- every TIMINGCHECK section in the SDF is dropped, so $setup/$hold/$width checks run against the cell library's own placeholder timing, not the characterised limits in the SDF"
+          },
+          "zero_delay_alias_port_interconnect": {
+            "count": 33,
+            "reason": "Icarus Verilog cannot insert an intermodpath onto a top-level port bit the gate-level netlist drives through a Verilog 'assign' alias (the shape a P&R backend produces for a constant/tie-cell-driven output: 'assign uio_oe[0] = net0;'), so every INTERCONNECT entry with such a destination fails with 'Could not find intermodpath!'. Entries whose every min:typ:max delay value is zero model no delay at any corner, so they are removed before annotation and counted here instead of failing the run -- a non-zero-delay entry on the same destination is left in place and still fails loudly"
+          }
+        }
+      },
+      "stderr": "",
+      "clock_period_ns": 20000,
+      "trace_lines": {
+        "stimulus": 4239,
+        "observations": 4239,
+        "model-observations": 4239
+      },
+      "probe": {
+        "bus_rdata": {
+          "clk_to_out_ps": {
+            "n": 268,
+            "min_ps": 873,
+            "max_ps": 931
+          }
+        },
+        "out_data": {
+          "clk_to_out_ps": {
+            "n": 265,
+            "min_ps": 1041,
+            "max_ps": 2075
+          }
+        },
+        "startup_done": {
+          "clk_to_out_ps": {
+            "n": 4,
+            "min_ps": 1042,
+            "max_ps": 1077
+          }
+        }
+      }
+    },
+    "timed-at-speed": {
+      "rc": 0,
+      "status": "pass",
+      "test_count": 13,
+      "passed": 13,
+      "failed": 0,
+      "skipped": 0,
+      "failed_tests": [],
+      "sdf": {
+        "file": "<work>/sdf/trng_digital.baseline.sdf",
+        "corner": "typ",
+        "entries": "all",
+        "annotated": true,
+        "partial": true,
+        "dropped": {
+          "timingcheck": {
+            "count": 455,
+            "reason": "Icarus Verilog implements SDF delay annotation (IOPATH/INTERCONNECT) but not SDF TIMINGCHECK -- every TIMINGCHECK section in the SDF is dropped, so $setup/$hold/$width checks run against the cell library's own placeholder timing, not the characterised limits in the SDF"
+          },
+          "zero_delay_alias_port_interconnect": {
+            "count": 33,
+            "reason": "Icarus Verilog cannot insert an intermodpath onto a top-level port bit the gate-level netlist drives through a Verilog 'assign' alias (the shape a P&R backend produces for a constant/tie-cell-driven output: 'assign uio_oe[0] = net0;'), so every INTERCONNECT entry with such a destination fails with 'Could not find intermodpath!'. Entries whose every min:typ:max delay value is zero model no delay at any corner, so they are removed before annotation and counted here instead of failing the run -- a non-zero-delay entry on the same destination is left in place and still fails loudly"
+          }
+        }
+      },
+      "stderr": "",
+      "clock_period_ns": 8,
+      "trace_lines": {
+        "stimulus": 4239,
+        "observations": 4239,
+        "model-observations": 4239
+      },
+      "probe": {
+        "bus_rdata": {
+          "clk_to_out_ps": {
+            "n": 268,
+            "min_ps": 873,
+            "max_ps": 931
+          }
+        },
+        "out_data": {
+          "clk_to_out_ps": {
+            "n": 265,
+            "min_ps": 1041,
+            "max_ps": 2075
+          }
+        },
+        "startup_done": {
+          "clk_to_out_ps": {
+            "n": 4,
+            "min_ps": 1042,
+            "max_ps": 1077
+          }
+        }
+      }
+    }
+  },
+  "controls": {
+    "sdf-removed": {
+      "description": "identical models/netlist/testbench/period, `options.sdf` omitted",
+      "detected": true,
+      "evidence": "functional verdict pass, environment.sdf=None, output latencies all 0 ps -> the timed-coverage gate rejects it",
+      "rc": 0,
+      "status": "pass",
+      "test_count": 13,
+      "passed": 13,
+      "failed": 0,
+      "failed_tests": []
+    },
+    "sdf-mistargeted": {
+      "description": "every `(INSTANCE _N_)` in the SDF renamed `_zzN_` (no instance matches)",
+      "detected": true,
+      "evidence": "tool exit 1 (error envelope on stderr, preserved as `ctl-sdf-mistargeted.stderr.json`): SDF back-annotation of '<work>/sdf/trng_digital.mistargeted.sdf' did not fully apply: 2165 diagnostic(s) in the icarus transcript -- SDF ERROR: <work>/ctl-sdf-mistargeted/.klt/functional...",
+      "rc": 1,
+      "status": null,
+      "test_count": null,
+      "passed": null,
+      "failed": null,
+      "failed_tests": []
+    },
+    "delay-shift-exact": {
+      "description": "+137 ps on the `IOPATH CLK Q` arc of _3399_ (the flop driving `startup_done`)",
+      "detected": true,
+      "evidence": "oracle pass; startup_done clk->out latencies [1077, 1042, 1077, 1042] -> [1214, 1179, 1214, 1179] (deltas [137]); bus_rdata/out_data latencies unchanged: True",
+      "rc": 0,
+      "status": "pass",
+      "test_count": 13,
+      "passed": 13,
+      "failed": 0,
+      "failed_tests": []
+    },
+    "delay-fail": {
+      "description": "+15000 ns on the same arc (output settles after the sample point)",
+      "detected": true,
+      "evidence": "exit 3, 5/13 tests failed: ['test_phase_03_enable_run_the_start_up_window_with_interleaved_', 'test_phase_08_induce_an_rct_trip_with_a_stuck_source', 'test_phase_10_write_1_to_clear_then_re_run_the_start_up_test', 'test_phase_11_soft_rst_then_resume_sampling', 'test_zz_trace_length_exact']",
+      "rc": 3,
+      "status": "fail",
+      "test_count": 13,
+      "passed": 8,
+      "failed": 5,
+      "failed_tests": [
+        "test_phase_03_enable_run_the_start_up_window_with_interleaved_",
+        "test_phase_08_induce_an_rct_trip_with_a_stuck_source",
+        "test_phase_10_write_1_to_clear_then_re_run_the_start_up_test",
+        "test_phase_11_soft_rst_then_resume_sampling",
+        "test_zz_trace_length_exact"
+      ]
+    },
+    "clock-5ns": {
+      "description": "SDF baseline at 5 ns period (half period shorter than the annotated output paths)",
+      "detected": true,
+      "evidence": "annotated: exit 3, 2/13 failed ['test_phase_07_out_mode_switch_to_conditioned_flushes_both_path', 'test_zz_trace_length_exact']; same run without SDF: exit 0 pass (zero-delay)",
+      "rc": 3,
+      "status": "fail",
+      "test_count": 13,
+      "passed": 11,
+      "failed": 2,
+      "failed_tests": [
+        "test_phase_07_out_mode_switch_to_conditioned_flushes_both_path",
+        "test_zz_trace_length_exact"
+      ]
+    }
+  },
+  "sdf_census": {
+    "sdf_iopath_entries": 6030,
+    "sdf_interconnect_entries": 6163,
+    "sdf_interconnect_nonzero": 0,
+    "sdf_timingcheck_sections": 456,
+    "sdf_cell_instances": 2320,
+    "netlist_cell_instances": 2321,
+    "netlist_instances_present_in_sdf": 2320,
+    "celltype_mismatches": 0,
+    "netlist_instances_absent_from_sdf": [
+      "ANTENNA_1"
+    ],
+    "netlist_instances_absent_count": 1,
+    "sdf_instances_absent_from_netlist": 0
+  },
+  "sdf_derivation": {
+    "dropped_zero_delay_port_source_interconnects": 39
+  },
+  "item7_review": {
+    "report_has_annotated_sdf_object": true,
+    "annotation_partial": true,
+    "dropped_classes": {
+      "timingcheck": 455,
+      "zero_delay_alias_port_interconnect": 33
+    },
+    "single_sdf_corner": "tt_025C_1v80 (the P&R request's corner); not a PVT sweep",
+    "dr_0004_status": "Proposed"
+  },
+  "input_hashes": {
+    "layout/trng_digital/trng_digital.routed.v": "sha256:9f3956848e6e75223f75bd154df905fecbb4e988593e78d1a92e347969fbf37f",
+    "layout/trng_digital/trng_digital.sdf.gz": "sha256:46850cda3d0948738e17a6e70fdb4f71e6c9829e9f925547a934f15d9fc5dd78",
+    "layout/trng_digital/sta.json": "sha256:5baf337a954bdc5a0937163603295c47757e15d59a48edf34d1ecbcd1945949a",
+    "digital/flow/place-and-route/pnr-trng-digital-50khz.json": "sha256:97b6cb9123e43cbacb09724dc448ec8e976a78cd46dc85a1580a66fc54232350",
+    "digital/tb/cocotb/test_trng_digital_fv.py": "sha256:a6525c9717fd4f2f52b750c1bc35a743a248fab23ffc3d864861fb519e6b40e6",
+    "sim/digital-rtl-equivalence/harness/rtl-cosim.py": "sha256:d2ec9bdb3b50f56e7ec3e14e0bb57a421447ad1a8aaa3fd976ea8b3e12b11461",
+    "sim/digital-sdf-timed-verification/harness/fv-sdf-cosim.py": "sha256:eef0f73b67feefb63977982eccfcc241f20f77f52affc38197f7c90fcbf41d0c",
+    "digital/model/__init__.py": "sha256:8817cfbccef9e8e87d4a8592c5aad6a49db28b6ab00e0c7956462c35eb72a512",
+    "digital/model/conditioner.py": "sha256:276e18b4c52223d5a25c38bbb2934c5e9a84387c9bf3440db3cad11a2a692edf",
+    "digital/model/digital_top.py": "sha256:f6975e86aeff4ca7c3d60d620f4d19402e11d8bb8de80348d4495d17f98b7727",
+    "digital/model/health.py": "sha256:dcde276f8719aa6c55ab5504334750a1f08c31562bbdd22c7ce4f0ae83cac222",
+    "digital/model/params.py": "sha256:5d1453665cf46650f21549b7b8c0d87432ce8498942f9c3e462da5c562f9a225",
+    "digital/model/regmap.py": "sha256:c9e6770ac2ae01364244a552e5f31bbfc5cd2d6f43cefdb38eaba38fc4fc2626",
+    "layout/trng_digital/trng_digital.sdf (decompressed)": "sha256:cae0b59b15787cd9fecce34fd6746f77af1816215fc3a17725f763b2a578db15",
+    "derived SDF: baseline (uncompressed)": "sha256:432f6abdb6d024bbd2c6a75e3c54f9eade03a9ad937274b0e6331919bdc4bd1b",
+    "derived SDF: mistargeted (uncompressed)": "sha256:ef19230906242eee29dd0f0583bf8452c1d0f8396d88609720b7c4b0508a0899",
+    "derived SDF: delay-shift (uncompressed)": "sha256:ba7646b74d24edb2490e0e79c5bb3644db54ac3bcca85621fb42132d2f45bca8",
+    "derived SDF: delay-fail (uncompressed)": "sha256:6508d2499d20e8be24f53074ae3331c6a51985ba59adaaf42a73f58245aaea31",
+    "$PDK_LIBS_REF/sky130_fd_sc_hd/verilog/primitives.v": "sha256:7d4b1441d06b0f2b9662befa675a0484d77149e04eb42a5f1fa2d4cfded7b2ce",
+    "$PDK_LIBS_REF/sky130_fd_sc_hd/verilog/sky130_fd_sc_hd.v": "sha256:12d5d6448ccf265c544d88402d5c10ab6de9bee8b8cde48eee1f31ea8c3c3e45",
+    "model-observations.txt (oracle trace)": "sha256:89f4308ba8c5292a6184054004c68e8d5cab0373f6b474145e25480d25bb949d"
+  },
+  "pins": {
+    "klt": "klt 0.7.0",
+    "cocotb": "2.0.1",
+    "icarus": "13.0",
+    "engine": "icarus",
+    "klt_version_reported": "klt 0.7.0",
+    "pdk": {
+      "variant": "sky130A",
+      "version": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b"
+    }
+  },
+  "program": {
+    "seed": 20260905,
+    "cycles": 4239,
+    "phases": [
+      {
+        "name": "post-reset idle + ID/parameter reads",
+        "start": 0,
+        "end": 20
+      },
+      {
+        "name": "sampling disabled: raw_valid high but CTRL.EN low",
+        "start": 20,
+        "end": 86
+      },
+      {
+        "name": "enable, run the start-up window with interleaved STATUS reads",
+        "start": 86,
+        "end": 1175
+      },
+      {
+        "name": "drain the raw FIFO through RAW_DATA (pop-on-read)",
+        "start": 1175,
+        "end": 1187
+      },
+      {
+        "name": "raw streaming port: out_ready pops while sampling",
+        "start": 1187,
+        "end": 1443
+      },
+      {
+        "name": "simultaneous register pop and stream pop (register wins)",
+        "start": 1443,
+        "end": 1579
+      },
+      {
+        "name": "OUT_MODE switch to conditioned (flushes both paths)",
+        "start": 1579,
+        "end": 2614
+      },
+      {
+        "name": "induce an RCT trip with a stuck source",
+        "start": 2614,
+        "end": 2702
+      },
+      {
+        "name": "gated: DATA blocked, RAW_DATA still readable",
+        "start": 2702,
+        "end": 2810
+      },
+      {
+        "name": "write-1-to-clear, then re-run the start-up test",
+        "start": 2810,
+        "end": 4105
+      },
+      {
+        "name": "SOFT_RST, then resume sampling",
+        "start": 4105,
+        "end": 4239
+      }
+    ]
+  },
+  "reproduction": "uv venv .venv && uv pip install --python .venv/bin/python \"klayout-tools==0.7.0\" \"cocotb==2.0.1\" && python3 sim/digital-sdf-timed-verification/harness/fv-sdf-cosim.py --klt .venv/bin/klt --emit-record"
+}

@@ -98,6 +98,14 @@ name: PDK nightly
 # per night, so three weeks of red is one issue with a comment thread, not
 # twenty-one duplicates.
 #
+# report-loom-ui (below) records the same result on loom-ui, the fleet's
+# alert hub (2AMLogic/loom-ui#3319, docs/alerts/external.md): it opens
+# incident `ext:2AMLogic.sky130-trng:pdk-nightly:nightly` exactly when
+# report-failure fires, and resolves it when a later scheduled or dispatched
+# run on main is green. It authenticates with the job's GitHub Actions OIDC
+# token (no secret) and is best-effort: continue-on-error, and it never
+# touches the issue.
+#
 # Note: GitHub disables scheduled workflows in a repository with no activity
 # for 60 days. If this stops running, re-enable it from the Actions tab.
 
@@ -227,8 +235,12 @@ jobs:
 
   layout-check:
     name: Layout composition drift guard (compose-cell.py --check)
+    # 45 min (was 30, issue #264): measured baseline for the two whole-block
+    # reproductions below is ~8 s (compose-whole --check) + ~380 s
+    # (verify-whole check) on a 16-core host; hosted 4-vCPU runners are
+    # slower, so the allowance is generous but still bounded.
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     if: >-
       github.event_name == 'schedule' ||
       github.event_name == 'workflow_dispatch' ||
@@ -353,6 +365,48 @@ jobs:
             exit 1
           fi
 
+      # Whole-block reproduction (issue #264). Read-only: both commands
+      # rebuild into temp dirs and diff against the committed evidence; the
+      # final step asserts no tracked file changed. They run AFTER the cell
+      # checks. Same klt + PDK as above; verify-whole.py takes the PDK via
+      # `klt pdk find` and refuses tool drift vs layout/pdk.json's
+      # klt_version_pin. Curated-deck and mixed-level coverage caveats are
+      # unchanged (layout/trng_whole/verify/README.md); this is not a
+      # foundry sign-off claim. A failure here fails the job, so
+      # report-failure (needs: layout-check) files/updates the tracker.
+      - name: Whole-block toolchain imports (klayout, klayout_tools)
+        run: |
+          set -euo pipefail
+          python3 -c "import klayout.db as db, klayout_tools; print('klayout', db.__version__); print('klayout_tools', klayout_tools.__file__)"
+          klt --version
+
+      - name: compose-whole.py --check (composed whole-block geometry)
+        run: |
+          set -euo pipefail
+          python3 layout/bin/compose-whole.py layout/trng_whole/floorplan.json --check
+
+      # Informational density + naive antenna estimates (issue #283): the
+      # full `check` below already covers their drift gate; this step runs
+      # the calculator's real-geometry controls (union, hierarchy, clipping,
+      # empty layer, invalid grids, cumulative ratios, zero-gate/ambiguous
+      # accounting) on synthetic GDS fixtures, which need klayout and do not
+      # run on the nothing-installed PR path.
+      - name: verify-whole.py estimates-controls (estimate calculator controls)
+        run: |
+          set -euo pipefail
+          python3 layout/bin/verify-whole.py estimates-controls
+
+      - name: verify-whole.py check (audit + estimates drift; baseline DRC / extraction / LVS reproduction)
+        run: |
+          set -euo pipefail
+          python3 layout/bin/verify-whole.py check --klt "$(command -v klt)"
+
+      - name: Committed artifacts unchanged
+        run: |
+          set -euo pipefail
+          git status --porcelain --untracked-files=no
+          git diff --exit-code
+
   report-failure:
     name: Surface a red nightly as a loom:triage issue
     needs: [netlist-check, layout-check]
@@ -369,8 +423,11 @@ jobs:
     permissions:
       contents: read
       issues: write
+    outputs:
+      issue_url: ${{ steps.file.outputs.issue_url }}
     steps:
       - name: File or update the nightly-failure issue
+        id: file
         uses: actions/github-script@v7
         with:
           script: |
@@ -417,6 +474,7 @@ jobs:
               await github.rest.issues.createComment({
                 ...context.repo, issue_number: tracker.number, body,
               });
+              core.setOutput('issue_url', tracker.html_url);
               core.notice(`pdk-nightly still red; commented on #${tracker.number}`);
             } else {
               const created = await github.rest.issues.create({
@@ -425,5 +483,66 @@ jobs:
                 body: `${MARKER}\n\n${body}`,
                 labels: ['loom:triage', 'tier:maintenance'],
               });
+              core.setOutput('issue_url', created.data.html_url);
               core.notice(`pdk-nightly went red; filed #${created.data.number}`);
+            }
+
+  report-loom-ui:
+    name: Record the result on loom-ui
+    needs: [netlist-check, layout-check, report-failure]
+    # `open` on the same runs report-failure files for (a failed scheduled or
+    # dispatched run), `resolved` when both checks pass. Only on main: loom-ui
+    # accepts Actions OIDC tokens from main/master refs alone. A cancelled or
+    # skipped check posts nothing. Best-effort: continue-on-error, and the
+    # script itself only warns, so it can never turn the run red or change
+    # report-failure's issue.
+    if: >-
+      always() &&
+      github.ref == 'refs/heads/main' &&
+      (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') &&
+      (contains(needs.*.result, 'failure') ||
+       (needs.netlist-check.result == 'success' && needs.layout-check.result == 'success'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    continue-on-error: true
+    permissions:
+      id-token: write
+    steps:
+      - name: Post to loom-ui /api/alerts/external
+        uses: actions/github-script@v7
+        env:
+          NETLIST_RESULT: ${{ needs.netlist-check.result }}
+          LAYOUT_RESULT: ${{ needs.layout-check.result }}
+          ISSUE_URL: ${{ needs.report-failure.outputs.issue_url }}
+        with:
+          script: |
+            const results = { 'netlist-check': process.env.NETLIST_RESULT, 'layout-check': process.env.LAYOUT_RESULT };
+            const failed = Object.keys(results).filter((j) => results[j] === 'failure');
+            const state = failed.length ? 'open' : 'resolved';
+            const [owner, repo] = process.env.GITHUB_REPOSITORY.split('/');
+            const runUrl = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}` +
+                           `/actions/runs/${process.env.GITHUB_RUN_ID}`;
+            try {
+              const token = await core.getIDToken('https://dashboard.2amlogic.com/alerts');
+              const response = await fetch('https://dashboard.2amlogic.com/api/alerts/external', {
+                method: 'POST',
+                headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' },
+                body: JSON.stringify({
+                  source: `${owner}.${repo}`,
+                  rule: 'pdk-nightly',
+                  key: 'nightly',
+                  title: `${repo} pdk-nightly is red on main`,
+                  severity: 'warning',
+                  state,
+                  detail: failed.length
+                    ? `Failing job(s): ${failed.join(', ')}. Run: ${runUrl}`
+                    : `netlist-check and layout-check passed. Run: ${runUrl}`,
+                  link: process.env.ISSUE_URL || runUrl,
+                }),
+              });
+              // 4xx other than 429 is a contract refusal: give up quietly.
+              if (!response.ok) core.warning(`loom-ui answered ${response.status}: ${await response.text()}`);
+              else core.info(`loom-ui: ${await response.text()}`);
+            } catch (err) {
+              core.warning(`loom-ui alert not recorded: ${err.message}`);
             }

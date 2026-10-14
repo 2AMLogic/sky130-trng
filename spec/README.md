@@ -103,6 +103,53 @@
   composition (`layout/trng_whole/`) gives distribution geometry, but its
   measurement obligations remain open (#174).
 
+- [`decision-records/DR-0010-target-table-reconciliation.md`](decision-records/DR-0010-target-table-reconciliation.md)
+  — **Proposed**. Issue #239's ratification packet for `README.md`'s
+  "Target specification (DRAFT)" table: every row, with the current README
+  value, the measured/derived sky130 value cited to a committed file, and a
+  proposed disposition. Carries DR-0003's 50 kbps / ~78 kbps rate amendment
+  with its cost stated; presents area and power as operator options without
+  pre-deciding them (power pending #174/#201); routes min-entropy to #221.
+  Does not edit the README table.
+
+- [`decision-records/DR-0011-external-interface-vs-assumed-challenge-4-pin-budget.md`](decision-records/DR-0011-external-interface-vs-assumed-challenge-4-pin-budget.md)
+  — **Proposed**. Issue #244's re-count of DR-0004's external digital
+  interface (45 inputs / 72 outputs, literal) against the *assumed*
+  Challenge #4 budget of 24 inputs / 12 outputs (an assumption; the brief is
+  unpublished). Weighs interface options and recommends Option C, a wrapper
+  around the existing RTL (inputs 45 -> 8, outputs 72 -> 11), with Option E as
+  fallback. A recommendation only: no wrapper exists, DR-0004's register map
+  is not altered, and nothing is ratified.
+
+- [`decision-records/DR-0012-ro-array-supply-quality-requirement.md`](decision-records/DR-0012-ro-array-supply-quality-requirement.md)
+  — **Proposed**. Issue #208's supply-quality requirement for the RO array
+  rail, from the #200 supply-perturbation evidence (pre-layout, ideal
+  sources, `sigma_1` not re-measured). Separates static droop, slow ripple,
+  sample-spanning ripple, RF lock and combining-node bias; separates measured
+  brackets from proposed limits; weighs rail conditioning, operating-point
+  change and an environmental assumption plus monitor, recommending rail
+  conditioning conditionally. Changes no target and preserves DR-0003's
+  combining ceiling; distinct from #221 (mismatch/entropy).
+
+- [`decision-records/DR-0014-silicon-characterization-plan.md`](decision-records/DR-0014-silicon-characterization-plan.md)
+  — **Proposed**. Issue #256's silicon characterization plan
+  ([`silicon-characterization-plan.md`](silicon-characterization-plan.md)):
+  a claim-to-measurement table linking every simulated claim to its `sim/`
+  records, an observability audit against DR-0011 (no gap in the pin budget,
+  conditional on bonding `raw_bit`/`raw_valid`; ring period not observable),
+  and the `measurements/` layout contract. Claims no measured result; no
+  silicon exists. DR-0013 is held by the open #221 proposal.
+
+### Open requests for an operator decision record (no record yet)
+
+- **End-of-life Vth-drift envelope** — issue [#262](https://github.com/2AMLogic/sky130-trng/issues/262), from
+  issue #254's bounded gate-offset sensitivity campaign
+  ([`../sim/ro-vth-drift-sensitivity/`](../sim/ro-vth-drift-sensitivity/)). The campaign shows how far a
+  0-60 mV common-mode threshold shift moves the ring periods, `Q_ring`, the frequency ladder and the
+  model-derived `H` bound against DR-0003's `Q` margin and DR-0004's `H = 0.5` evaluation floor. It is a
+  sensitivity bound, not a lifetime prediction, and **changes no ratified or proposed decision**; whether to
+  adopt a lifetime, a guard band or a re-sizing is left to the operator via that request.
+
 A record's status is meaningful: **Proposed** means drafted and not accepted
 by anyone. Ratification is an operator decision, so no record here declares
 itself Accepted. See the repo README for scope.

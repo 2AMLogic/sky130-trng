@@ -15,6 +15,7 @@ DR-0003's Ts = 20 us. Splitting into seeds does not cut simulated time.
 | `behavioral_raw_bit.py` | the model (4 free-running rings with white period jitter, XOR, ideal edge sampler), calibration from committed records, cross-checks, stream generation, record minting (`--emit-record`), reproducibility check (`--regenerate-check`) |
 | `make-requests.py` | `klt sim` batch requests. Default: the #21 testbench, unmodified, one noise seed per request, tt/ss/ff at 27 C / 1.8 V. `--deck combining`: the combining deck, unmodified, one request per (T, Vdd) point (default the 125 C hot grid), tt/ss/ff bundled |
 | `derive-combining.py` | turns the combining batch responses into append-only `ro-array-core-combining` records (deck `let` figures recomputed; raw response kept under `sim/ro-array-core-combining/corners/<id>/klt-sim.json`) |
+| `transistor_pvt_crosscheck.py` | issue #289 reducer for the non-nominal transistor cross-check (below): validates every `klt sim` response against its request manifest, reduces per (process, T, Vdd), `--ingest` / `--emit-record` / `--check` |
 | `transistor/seed*.klt-sim.json` | committed batch responses (job id in `environment.remote.job_id`) read by the cross-check |
 | `records/`, `runs/<id>/` | append-only record (`.md`/`.json`) and the packed-hex bitstreams |
 
@@ -88,3 +89,93 @@ python3 sim/raw-bit-min-entropy/analysis/raw-bit-battery.py \
 The derived append-only record lands in `sim/raw-bit-min-entropy/records/`
 (`level: behavioral (derived)`); `--check` exits nonzero if results, input
 hashes or rendered tables change. Runtime is about one minute (pure Python).
+
+## Standards-sized streams, 2^20 bits (issue #253)
+
+SP 800-90B's non-IID estimators are specified for ~1e6 samples; at 2^17 the
+confidence penalty is wider. `behavioral_raw_bit.py` now takes `--nbits`
+(default 131072, so #188/#197 behaviour is unchanged) and `--set all`
+(base + hot = 36 streams). The model, calibration, master seed and per-stream
+seed labels are unchanged, so the first 2^17 bits of each new stream are
+bit-identical to the corresponding #188/#197 stream.
+
+```bash
+python3 sim/raw-bit-volume-campaign/behavioral_raw_bit.py --set all --nbits 1048576 --emit-record
+python3 sim/raw-bit-volume-campaign/behavioral_raw_bit.py --regenerate-check sim/raw-bit-volume-campaign/records/<id>.json
+```
+
+The record `20261010-095913-3966094` supersedes `20261008-061809-56e0fb7`
+and `20261008-135454-847b454` by name; both stay untouched and still replay
+(`--regenerate-check` reads each stream's declared `n`). The period-uncertainty
+sensitivity table stays at 2^17 samples per draw (not re-run). The battery
+adapter derives its segment count as `n // 8192` (16 at 2^17, 128 at 2^20). The
+derived battery/90B record and the min-H shift versus the 2^17 records are in
+`sim/raw-bit-min-entropy/records/` (see its "Shift versus the 2^17 records"
+section). Measured runtime at 2^20 in pure Python, single process: generation
++ stats for the 36 streams ~15 min; battery + 90B pass (and each `--check`
+replay) ~11 min for all 36 streams. No vectorisation or coverage reduction was
+needed. Replay the derived record with
+`raw-bit-battery.py --check sim/raw-bit-min-entropy/records/20261010-102516-3966094.json`.
+Its `--compare` option reports the min-H shift against earlier derived records.
+
+## Non-nominal transistor raw-bit cross-check (issue #289)
+
+The p_hat / seed-to-seed Hamming cross-checks above were 27 C/1.8 V only. #289 extends
+the same short-window method (the #21 testbench unmodified, Ts = 100 ns, 24 samples,
+tt/ss/ff bundled per request, same sampler) to the calibrated non-nominal PVT set. The
+bands are the existing 99 % model-ensemble bands and are not retuned after results;
+disagreements are investigated and reported, not absorbed.
+
+**Bounded matrix, declared before any run**: 5 points (-40 C/1.62 V, -40 C/1.98 V,
+125 C/1.62 V, 125 C/1.8 V, 125 C/1.98 V) x tt/ss/ff x 4 seeds (101..104) = 20 batch
+requests, 60 corner-runs. A Hamming comparison needs >= 4 usable seeds per
+(process, T, Vdd) cell; a sequence needs >= 23 valid samples.
+
+```bash
+python3 sim/raw-bit-volume-campaign/make-requests.py REQDIR --pvt=-40:1.62,-40:1.98,125:1.62,125:1.8,125:1.98 --seeds 101,102,103,104
+klt sim REQDIR/<key>/request.json -o REQDIR/<key>/out --format json > REQDIR/<key>/resp.json   # KLT_SIM_BACKEND=batch, one per unit
+python3 sim/raw-bit-volume-campaign/transistor_pvt_crosscheck.py --ingest REQDIR   # no-overwrite copy into transistor/pvt/
+python3 sim/raw-bit-volume-campaign/transistor_pvt_crosscheck.py                   # print the reduction
+python3 sim/raw-bit-volume-campaign/transistor_pvt_crosscheck.py --emit-record     # append-only record
+python3 sim/raw-bit-volume-campaign/transistor_pvt_crosscheck.py --check sim/raw-bit-volume-campaign/records/<id>.json
+```
+
+* Unit name `<key>` = `pvt_<T>C_<V>V_Ts100ns_seed<S>`; PVT, Ts and seed are all in the
+  request directory, manifest and committed file names (`transistor/pvt/<key>.manifest.json`,
+  `<key>.klt-sim.json`). Duplicate identities are flagged as collisions.
+* `make-requests.py` without `--pvt` is unchanged and byte-identical (nominal `s<seed>`
+  requests); the nominal loader reads only `transistor/seed*.klt-sim.json`, so existing
+  records and streams are untouched and still replay.
+* The klt corner id carries no supply, so the supply is bound by the request manifest: the
+  response must match the manifest's netlist sha256 (swapped-PVT/seed responses fail with
+  `pvt_mismatch`), its corner temperature, and the declared supply (the highest valid-high
+  level must be within 5 % of Vdd, else `supply_mismatch`; the 0.5 x Vdd thresholds always
+  come from the manifest). Samples not within 20 % of a rail are counted as indeterminate.
+* Row statuses (every one is kept and listed in the record): `ok`, `tool_fail`,
+  `pvt_mismatch`, `supply_mismatch`, `corner_missing`, `measurement_missing`,
+  `too_few_valid`, `bad_unit` (missing/invalid manifest or response, collision). Cells are
+  `inside`/`outside` (all declared seeds usable), `incomplete`, `insufficient_seeds`,
+  `no_data` or `no_calibration`. `matrix_complete` is true only if every cell is
+  `inside`/`outside` and no undeclared PVT is present; points are never pooled.
+* The record carries tool/PDK/netlist hashes (`environment` of each response), job ids,
+  per-seed sample counts, invalid/indeterminate counts, p_hat and Hamming with model bands.
+* Controls: `sim/tests/test_raw_bit_pvt_crosscheck.py` (swapped PVT/temperature, missing
+  corner/seed/manifest/response, wrong supply, failed tool responses, collisions,
+  undeclared points; synthetic fixtures only, never evidence).
+
+**Status: evidence runs pending.** The generator, reducer, controls and docs are in; no
+non-nominal transistor result exists yet. Submitting the first unit (`pvt_125C_1.8V_Ts100ns_seed101`)
+to the batch fleet failed on 2026-10-11: client klt 0.7.0 got `runner_batch_version_mismatch`
+(runner 0.5.0, exit 87 after 5 s), and client 0.6.0 (`uvx --from klayout-tools==0.6.0`) exited 4
+after 6 s with every corner `error` (jobs `klt-sim-73ca7992bfe9`, `klt-sim-08f37305d25a`); a data
+point was added to 2AMLogic/klayout-tools#2851. No local fallback was run and nothing was fabricated.
+A single retry on 2026-10-11 (after PR #290 merged, client klt 0.7.0+gc4c7dfe79365, same unit, job
+`klt-sim-f040aa152070`, spot m7i.4xlarge) failed identically: `runner_compatibility: mismatch`, runner 0.5.0,
+exit 87 after 4 s, all 3 corners `error` (`batch_job_failed`). The remaining 19 units were not submitted
+and still nothing was run locally.
+Once a compatible client/runner pair exists, run the 20 units, `--ingest`, and mint the record as
+new evidence.
+
+**Remaining limits**: a 24-sample, Ts = 100 ns, 4-seed model check, not a million-bit
+transistor run and not a Ts = 20 us (50 kbps) validation, which stays an extrapolation;
+simulation-derived and provisional until silicon.

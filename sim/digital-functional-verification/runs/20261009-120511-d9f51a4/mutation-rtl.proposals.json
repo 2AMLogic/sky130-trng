@@ -1,0 +1,26 @@
+{
+  "schema": "klt.functional_verification.mutation_proposals/1",
+  "scope": [
+    "./digital/rtl/trng_digital.v"
+  ],
+  "proposals": [
+    {
+      "index": 1,
+      "category": "operator_change",
+      "file": "./digital/rtl/trng_digital.v",
+      "line": 130,
+      "original_code": "(s[31] ^ b)",
+      "mutated_code": "(s[31] & b)",
+      "detectability_argument": "CRC-32 feedback XOR -> AND: every conditioned word changes"
+    },
+    {
+      "index": 2,
+      "category": "operator_change",
+      "file": "./digital/rtl/trng_digital.v",
+      "line": 289,
+      "original_code": "(new_ctrl[1] ^ ctrl[1])",
+      "mutated_code": "(new_ctrl[1] & ctrl[1])",
+      "detectability_argument": "OUT_MODE change detect XOR -> AND: the mode-switch flush never fires"
+    }
+  ]
+}

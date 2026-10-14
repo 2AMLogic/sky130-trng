@@ -1,0 +1,100 @@
+{
+  "verdict": {
+    "drc": true,
+    "lvs": true,
+    "sta": true,
+    "cosim": true,
+    "negative_controls": true
+  },
+  "tool_drift": [],
+  "notes": [],
+  "request_sha256": "sha256:6720f3f92a477c098a11976ac48d1df26468213c9c7bfc3f9f10f72f1fa2e6c1",
+  "netlist_sha256": "sha256:9d2b8aed1cd057bd7985ca77e7394921a005846934a4b9c01921c56dade83126",
+  "pdk": {
+    "schema_version": 1,
+    "root": "<external -- not recorded by absolute location; see this record's PDK name/version and deck content_hash instead>",
+    "variant": "sky130A",
+    "version": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+    "resolved_via": "PDK_ROOT environment variable",
+    "assets": {
+      "ngspice": "<external -- not recorded by absolute location; see this record's PDK name/version and deck content_hash instead>",
+      "xschem": "<external -- not recorded by absolute location; see this record's PDK name/version and deck content_hash instead>",
+      "klayout": "<external -- not recorded by absolute location; see this record's PDK name/version and deck content_hash instead>",
+      "magic": "<external -- not recorded by absolute location; see this record's PDK name/version and deck content_hash instead>",
+      "netgen": "<external -- not recorded by absolute location; see this record's PDK name/version and deck content_hash instead>",
+      "libs_ref": "<external -- not recorded by absolute location; see this record's PDK name/version and deck content_hash instead>"
+    },
+    "broken_symlinks": [],
+    "has_pcell_library": true,
+    "ambiguous_roots": []
+  },
+  "gate_cosim": {
+    "ok": true,
+    "cycles": 4239,
+    "mismatches": 0,
+    "length_ok": true,
+    "expected_len": 4239,
+    "actual_len": 4239,
+    "first_diffs": [],
+    "phases": [
+      {
+        "name": "post-reset idle + ID/parameter reads",
+        "start": 0,
+        "end": 20
+      },
+      {
+        "name": "sampling disabled: raw_valid high but CTRL.EN low",
+        "start": 20,
+        "end": 86
+      },
+      {
+        "name": "enable, run the start-up window with interleaved STATUS reads",
+        "start": 86,
+        "end": 1175
+      },
+      {
+        "name": "drain the raw FIFO through RAW_DATA (pop-on-read)",
+        "start": 1175,
+        "end": 1187
+      },
+      {
+        "name": "raw streaming port: out_ready pops while sampling",
+        "start": 1187,
+        "end": 1443
+      },
+      {
+        "name": "simultaneous register pop and stream pop (register wins)",
+        "start": 1443,
+        "end": 1579
+      },
+      {
+        "name": "OUT_MODE switch to conditioned (flushes both paths)",
+        "start": 1579,
+        "end": 2614
+      },
+      {
+        "name": "induce an RCT trip with a stuck source",
+        "start": 2614,
+        "end": 2702
+      },
+      {
+        "name": "gated: DATA blocked, RAW_DATA still readable",
+        "start": 2702,
+        "end": 2810
+      },
+      {
+        "name": "write-1-to-clear, then re-run the start-up test",
+        "start": 2810,
+        "end": 4105
+      },
+      {
+        "name": "SOFT_RST, then resume sampling",
+        "start": 4105,
+        "end": 4239
+      }
+    ],
+    "sim_stdout": "tb_trng_digital: 4239 cycles transcribed\n/home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-251/digital/tb/tb_trng_digital.v:87: $finish called at 42400000 (1ps)",
+    "iverilog_version": "Icarus Verilog version 13.0 (stable) (v13_0)",
+    "seed": 20260905
+  }
+}

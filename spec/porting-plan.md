@@ -535,6 +535,9 @@ than by accident:
    support, given gf180-trng's own rate target is unresolved (DR-0010/
    DR-0011, both **Proposed**, §2.6) and this repo's README currently
    mirrors the *ratified* `> 1 Mbps` figure rather than either proposal?
+   See [DR-0010](decision-records/DR-0010-target-table-reconciliation.md)
+   (Proposed) for the per-row reconciliation packet and the proposed rate
+   amendment.
 4. Vetted vs. non-vetted conditioner: DR-0004's default (non-vetted,
    area-driven) and DR-0008's specific choice (CRC-32/LFSR, K=8) both
    transfer as a *starting assumption* (§1.1), but sky130's own area budget

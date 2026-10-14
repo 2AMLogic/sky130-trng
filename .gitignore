@@ -8,6 +8,9 @@ __pycache__/
 # sim/ harness: per-corner ngspice logs under corners/ are committed evidence
 # (append-only record trail), so they escape the *.log rule.
 !sim/*/corners/**/*.log
+# issue #226: per-run harness stderr and retained OpenROAD stage logs are
+# committed evidence too (a failed or congested route is diagnosable only from them).
+!sim/digital-floorplan-compaction/runs/**/*.log
 sim/build/
 # ngspice's BSIM4 model-parameter checker dumps this next to the process's
 # cwd on every run that elaborates a BSIM4 card -- scratch, never evidence.
@@ -56,14 +59,19 @@ flow/build/
 .loom/claims/
 .loom/locks/
 .loom/signals/
+.loom/sweep-dispatch-tap/
 .loom/status/
 .loom/retry-state/
 .loom/exit-codes/
 .loom/sweep-checkpoint/
 .loom/sweep-run/
+.loom/targets/
+.loom/target*/
+.cargo-target*/
+.loom-target/
+/target-*/
 .loom/state/*
 !.loom/state/detect-unlabeled-epics-dismissed
-.loom/concierge/
 .loom/stats/
 .loom/diagnostics/
 .loom/guide-docs-state.json
@@ -103,3 +111,16 @@ flow/build/
 .loom/gh-config-by-owner-*/
 .loom-local/
 # <<< loom-managed <<<
+# issue #236: retained OpenROAD logs and per-corner audit logs are committed evidence.
+!sim/digital-electrical-repair/runs/**/*.log
+
+# issue #250: transient scratch of the final-route electrical audit
+.audit-tmp-*/
+
+# issue #174: the 15 MB plain netlist and the per-request inlined decks are
+# regenerated deterministically (make-netlist.py / make-requests.py); the
+# committed form is trng_whole.sim.spice.gz and the sha256 in plan.json/records.
+sim/post-layout-whole-block/trng_whole.sim.spice
+sim/post-layout-whole-block/corners/*/netlist.cir
+# issue #174: the record's copied submit-attempt logs are evidence (named in the record)
+!sim/post-layout-whole-block/runs/**/*.log

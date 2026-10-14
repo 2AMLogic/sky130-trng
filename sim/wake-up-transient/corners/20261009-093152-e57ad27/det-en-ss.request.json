@@ -1,0 +1,1403 @@
+{
+  "netlist": "netlist.cir",
+  "engine": "ngspice",
+  "backend": "batch",
+  "netlist_source": "extracted",
+  "models": {
+    "pdk": "sky130A",
+    "lib": "libs.tech/combined/sky130.lib.spice"
+  },
+  "corners": {
+    "process": [
+      "ss"
+    ],
+    "temperature_c": [
+      -40.0
+    ],
+    "supply_v": {
+      "Vk": [
+        1.62
+      ],
+      "Vm": [
+        0.0
+      ]
+    }
+  },
+  "analysis": {
+    "kind": "tran",
+    "args": "10p 2.45e-07"
+  },
+  "measurements": [
+    {
+      "name": "tf1",
+      "spice": ".meas tran tf1 when v(ro1)=v(half) rise=1"
+    },
+    {
+      "name": "t1_1",
+      "spice": ".meas tran t1_1 when v(ro1)=v(half) rise=1 td=5e-09"
+    },
+    {
+      "name": "d1_1",
+      "spice": ".meas tran d1_1 param='t1_1-5e-09'"
+    },
+    {
+      "name": "t1_2",
+      "spice": ".meas tran t1_2 when v(ro1)=v(half) rise=2 td=5e-09"
+    },
+    {
+      "name": "d1_2",
+      "spice": ".meas tran d1_2 param='t1_2-5e-09'"
+    },
+    {
+      "name": "t1_3",
+      "spice": ".meas tran t1_3 when v(ro1)=v(half) rise=3 td=5e-09"
+    },
+    {
+      "name": "d1_3",
+      "spice": ".meas tran d1_3 param='t1_3-5e-09'"
+    },
+    {
+      "name": "t1_4",
+      "spice": ".meas tran t1_4 when v(ro1)=v(half) rise=4 td=5e-09"
+    },
+    {
+      "name": "d1_4",
+      "spice": ".meas tran d1_4 param='t1_4-5e-09'"
+    },
+    {
+      "name": "t1_5",
+      "spice": ".meas tran t1_5 when v(ro1)=v(half) rise=5 td=5e-09"
+    },
+    {
+      "name": "d1_5",
+      "spice": ".meas tran d1_5 param='t1_5-5e-09'"
+    },
+    {
+      "name": "t1_6",
+      "spice": ".meas tran t1_6 when v(ro1)=v(half) rise=6 td=5e-09"
+    },
+    {
+      "name": "d1_6",
+      "spice": ".meas tran d1_6 param='t1_6-5e-09'"
+    },
+    {
+      "name": "t1_7",
+      "spice": ".meas tran t1_7 when v(ro1)=v(half) rise=7 td=5e-09"
+    },
+    {
+      "name": "d1_7",
+      "spice": ".meas tran d1_7 param='t1_7-5e-09'"
+    },
+    {
+      "name": "t1_8",
+      "spice": ".meas tran t1_8 when v(ro1)=v(half) rise=8 td=5e-09"
+    },
+    {
+      "name": "d1_8",
+      "spice": ".meas tran d1_8 param='t1_8-5e-09'"
+    },
+    {
+      "name": "t1_9",
+      "spice": ".meas tran t1_9 when v(ro1)=v(half) rise=9 td=5e-09"
+    },
+    {
+      "name": "d1_9",
+      "spice": ".meas tran d1_9 param='t1_9-5e-09'"
+    },
+    {
+      "name": "t1_10",
+      "spice": ".meas tran t1_10 when v(ro1)=v(half) rise=10 td=5e-09"
+    },
+    {
+      "name": "d1_10",
+      "spice": ".meas tran d1_10 param='t1_10-5e-09'"
+    },
+    {
+      "name": "t1_11",
+      "spice": ".meas tran t1_11 when v(ro1)=v(half) rise=11 td=5e-09"
+    },
+    {
+      "name": "d1_11",
+      "spice": ".meas tran d1_11 param='t1_11-5e-09'"
+    },
+    {
+      "name": "t1_12",
+      "spice": ".meas tran t1_12 when v(ro1)=v(half) rise=12 td=5e-09"
+    },
+    {
+      "name": "d1_12",
+      "spice": ".meas tran d1_12 param='t1_12-5e-09'"
+    },
+    {
+      "name": "t1_13",
+      "spice": ".meas tran t1_13 when v(ro1)=v(half) rise=13 td=5e-09"
+    },
+    {
+      "name": "d1_13",
+      "spice": ".meas tran d1_13 param='t1_13-5e-09'"
+    },
+    {
+      "name": "t1_14",
+      "spice": ".meas tran t1_14 when v(ro1)=v(half) rise=14 td=5e-09"
+    },
+    {
+      "name": "d1_14",
+      "spice": ".meas tran d1_14 param='t1_14-5e-09'"
+    },
+    {
+      "name": "t1_15",
+      "spice": ".meas tran t1_15 when v(ro1)=v(half) rise=15 td=5e-09"
+    },
+    {
+      "name": "d1_15",
+      "spice": ".meas tran d1_15 param='t1_15-5e-09'"
+    },
+    {
+      "name": "t1_16",
+      "spice": ".meas tran t1_16 when v(ro1)=v(half) rise=16 td=5e-09"
+    },
+    {
+      "name": "d1_16",
+      "spice": ".meas tran d1_16 param='t1_16-5e-09'"
+    },
+    {
+      "name": "t1_17",
+      "spice": ".meas tran t1_17 when v(ro1)=v(half) rise=17 td=5e-09"
+    },
+    {
+      "name": "d1_17",
+      "spice": ".meas tran d1_17 param='t1_17-5e-09'"
+    },
+    {
+      "name": "t1_18",
+      "spice": ".meas tran t1_18 when v(ro1)=v(half) rise=18 td=5e-09"
+    },
+    {
+      "name": "d1_18",
+      "spice": ".meas tran d1_18 param='t1_18-5e-09'"
+    },
+    {
+      "name": "t1_19",
+      "spice": ".meas tran t1_19 when v(ro1)=v(half) rise=19 td=5e-09"
+    },
+    {
+      "name": "d1_19",
+      "spice": ".meas tran d1_19 param='t1_19-5e-09'"
+    },
+    {
+      "name": "t1_20",
+      "spice": ".meas tran t1_20 when v(ro1)=v(half) rise=20 td=5e-09"
+    },
+    {
+      "name": "d1_20",
+      "spice": ".meas tran d1_20 param='t1_20-5e-09'"
+    },
+    {
+      "name": "t1_21",
+      "spice": ".meas tran t1_21 when v(ro1)=v(half) rise=21 td=5e-09"
+    },
+    {
+      "name": "d1_21",
+      "spice": ".meas tran d1_21 param='t1_21-5e-09'"
+    },
+    {
+      "name": "t1_22",
+      "spice": ".meas tran t1_22 when v(ro1)=v(half) rise=22 td=5e-09"
+    },
+    {
+      "name": "d1_22",
+      "spice": ".meas tran d1_22 param='t1_22-5e-09'"
+    },
+    {
+      "name": "t1_23",
+      "spice": ".meas tran t1_23 when v(ro1)=v(half) rise=23 td=5e-09"
+    },
+    {
+      "name": "d1_23",
+      "spice": ".meas tran d1_23 param='t1_23-5e-09'"
+    },
+    {
+      "name": "t1_24",
+      "spice": ".meas tran t1_24 when v(ro1)=v(half) rise=24 td=5e-09"
+    },
+    {
+      "name": "d1_24",
+      "spice": ".meas tran d1_24 param='t1_24-5e-09'"
+    },
+    {
+      "name": "t1_25",
+      "spice": ".meas tran t1_25 when v(ro1)=v(half) rise=25 td=5e-09"
+    },
+    {
+      "name": "d1_25",
+      "spice": ".meas tran d1_25 param='t1_25-5e-09'"
+    },
+    {
+      "name": "t1_26",
+      "spice": ".meas tran t1_26 when v(ro1)=v(half) rise=26 td=5e-09"
+    },
+    {
+      "name": "d1_26",
+      "spice": ".meas tran d1_26 param='t1_26-5e-09'"
+    },
+    {
+      "name": "t1_27",
+      "spice": ".meas tran t1_27 when v(ro1)=v(half) rise=27 td=5e-09"
+    },
+    {
+      "name": "d1_27",
+      "spice": ".meas tran d1_27 param='t1_27-5e-09'"
+    },
+    {
+      "name": "t1_28",
+      "spice": ".meas tran t1_28 when v(ro1)=v(half) rise=28 td=5e-09"
+    },
+    {
+      "name": "d1_28",
+      "spice": ".meas tran d1_28 param='t1_28-5e-09'"
+    },
+    {
+      "name": "t1_29",
+      "spice": ".meas tran t1_29 when v(ro1)=v(half) rise=29 td=5e-09"
+    },
+    {
+      "name": "d1_29",
+      "spice": ".meas tran d1_29 param='t1_29-5e-09'"
+    },
+    {
+      "name": "t1_30",
+      "spice": ".meas tran t1_30 when v(ro1)=v(half) rise=30 td=5e-09"
+    },
+    {
+      "name": "d1_30",
+      "spice": ".meas tran d1_30 param='t1_30-5e-09'"
+    },
+    {
+      "name": "t1_31",
+      "spice": ".meas tran t1_31 when v(ro1)=v(half) rise=31 td=5e-09"
+    },
+    {
+      "name": "d1_31",
+      "spice": ".meas tran d1_31 param='t1_31-5e-09'"
+    },
+    {
+      "name": "t1_32",
+      "spice": ".meas tran t1_32 when v(ro1)=v(half) rise=32 td=5e-09"
+    },
+    {
+      "name": "d1_32",
+      "spice": ".meas tran d1_32 param='t1_32-5e-09'"
+    },
+    {
+      "name": "t1_33",
+      "spice": ".meas tran t1_33 when v(ro1)=v(half) rise=33 td=5e-09"
+    },
+    {
+      "name": "d1_33",
+      "spice": ".meas tran d1_33 param='t1_33-5e-09'"
+    },
+    {
+      "name": "t1_34",
+      "spice": ".meas tran t1_34 when v(ro1)=v(half) rise=34 td=5e-09"
+    },
+    {
+      "name": "d1_34",
+      "spice": ".meas tran d1_34 param='t1_34-5e-09'"
+    },
+    {
+      "name": "t1_35",
+      "spice": ".meas tran t1_35 when v(ro1)=v(half) rise=35 td=5e-09"
+    },
+    {
+      "name": "d1_35",
+      "spice": ".meas tran d1_35 param='t1_35-5e-09'"
+    },
+    {
+      "name": "t1_36",
+      "spice": ".meas tran t1_36 when v(ro1)=v(half) rise=36 td=5e-09"
+    },
+    {
+      "name": "d1_36",
+      "spice": ".meas tran d1_36 param='t1_36-5e-09'"
+    },
+    {
+      "name": "t1_37",
+      "spice": ".meas tran t1_37 when v(ro1)=v(half) rise=37 td=5e-09"
+    },
+    {
+      "name": "d1_37",
+      "spice": ".meas tran d1_37 param='t1_37-5e-09'"
+    },
+    {
+      "name": "t1_38",
+      "spice": ".meas tran t1_38 when v(ro1)=v(half) rise=38 td=5e-09"
+    },
+    {
+      "name": "d1_38",
+      "spice": ".meas tran d1_38 param='t1_38-5e-09'"
+    },
+    {
+      "name": "t1_39",
+      "spice": ".meas tran t1_39 when v(ro1)=v(half) rise=39 td=5e-09"
+    },
+    {
+      "name": "d1_39",
+      "spice": ".meas tran d1_39 param='t1_39-5e-09'"
+    },
+    {
+      "name": "t1_40",
+      "spice": ".meas tran t1_40 when v(ro1)=v(half) rise=40 td=5e-09"
+    },
+    {
+      "name": "d1_40",
+      "spice": ".meas tran d1_40 param='t1_40-5e-09'"
+    },
+    {
+      "name": "t1_41",
+      "spice": ".meas tran t1_41 when v(ro1)=v(half) rise=41 td=5e-09"
+    },
+    {
+      "name": "d1_41",
+      "spice": ".meas tran d1_41 param='t1_41-5e-09'"
+    },
+    {
+      "name": "ro1_max",
+      "spice": ".meas tran ro1_max MAX v(ro1) from=2.15e-07 to=2.45e-07"
+    },
+    {
+      "name": "ro1_min",
+      "spice": ".meas tran ro1_min MIN v(ro1) from=2.15e-07 to=2.45e-07"
+    },
+    {
+      "name": "tf2",
+      "spice": ".meas tran tf2 when v(ro2)=v(half) rise=1"
+    },
+    {
+      "name": "t2_1",
+      "spice": ".meas tran t2_1 when v(ro2)=v(half) rise=1 td=5e-09"
+    },
+    {
+      "name": "d2_1",
+      "spice": ".meas tran d2_1 param='t2_1-5e-09'"
+    },
+    {
+      "name": "t2_2",
+      "spice": ".meas tran t2_2 when v(ro2)=v(half) rise=2 td=5e-09"
+    },
+    {
+      "name": "d2_2",
+      "spice": ".meas tran d2_2 param='t2_2-5e-09'"
+    },
+    {
+      "name": "t2_3",
+      "spice": ".meas tran t2_3 when v(ro2)=v(half) rise=3 td=5e-09"
+    },
+    {
+      "name": "d2_3",
+      "spice": ".meas tran d2_3 param='t2_3-5e-09'"
+    },
+    {
+      "name": "t2_4",
+      "spice": ".meas tran t2_4 when v(ro2)=v(half) rise=4 td=5e-09"
+    },
+    {
+      "name": "d2_4",
+      "spice": ".meas tran d2_4 param='t2_4-5e-09'"
+    },
+    {
+      "name": "t2_5",
+      "spice": ".meas tran t2_5 when v(ro2)=v(half) rise=5 td=5e-09"
+    },
+    {
+      "name": "d2_5",
+      "spice": ".meas tran d2_5 param='t2_5-5e-09'"
+    },
+    {
+      "name": "t2_6",
+      "spice": ".meas tran t2_6 when v(ro2)=v(half) rise=6 td=5e-09"
+    },
+    {
+      "name": "d2_6",
+      "spice": ".meas tran d2_6 param='t2_6-5e-09'"
+    },
+    {
+      "name": "t2_7",
+      "spice": ".meas tran t2_7 when v(ro2)=v(half) rise=7 td=5e-09"
+    },
+    {
+      "name": "d2_7",
+      "spice": ".meas tran d2_7 param='t2_7-5e-09'"
+    },
+    {
+      "name": "t2_8",
+      "spice": ".meas tran t2_8 when v(ro2)=v(half) rise=8 td=5e-09"
+    },
+    {
+      "name": "d2_8",
+      "spice": ".meas tran d2_8 param='t2_8-5e-09'"
+    },
+    {
+      "name": "t2_9",
+      "spice": ".meas tran t2_9 when v(ro2)=v(half) rise=9 td=5e-09"
+    },
+    {
+      "name": "d2_9",
+      "spice": ".meas tran d2_9 param='t2_9-5e-09'"
+    },
+    {
+      "name": "t2_10",
+      "spice": ".meas tran t2_10 when v(ro2)=v(half) rise=10 td=5e-09"
+    },
+    {
+      "name": "d2_10",
+      "spice": ".meas tran d2_10 param='t2_10-5e-09'"
+    },
+    {
+      "name": "t2_11",
+      "spice": ".meas tran t2_11 when v(ro2)=v(half) rise=11 td=5e-09"
+    },
+    {
+      "name": "d2_11",
+      "spice": ".meas tran d2_11 param='t2_11-5e-09'"
+    },
+    {
+      "name": "t2_12",
+      "spice": ".meas tran t2_12 when v(ro2)=v(half) rise=12 td=5e-09"
+    },
+    {
+      "name": "d2_12",
+      "spice": ".meas tran d2_12 param='t2_12-5e-09'"
+    },
+    {
+      "name": "t2_13",
+      "spice": ".meas tran t2_13 when v(ro2)=v(half) rise=13 td=5e-09"
+    },
+    {
+      "name": "d2_13",
+      "spice": ".meas tran d2_13 param='t2_13-5e-09'"
+    },
+    {
+      "name": "t2_14",
+      "spice": ".meas tran t2_14 when v(ro2)=v(half) rise=14 td=5e-09"
+    },
+    {
+      "name": "d2_14",
+      "spice": ".meas tran d2_14 param='t2_14-5e-09'"
+    },
+    {
+      "name": "t2_15",
+      "spice": ".meas tran t2_15 when v(ro2)=v(half) rise=15 td=5e-09"
+    },
+    {
+      "name": "d2_15",
+      "spice": ".meas tran d2_15 param='t2_15-5e-09'"
+    },
+    {
+      "name": "t2_16",
+      "spice": ".meas tran t2_16 when v(ro2)=v(half) rise=16 td=5e-09"
+    },
+    {
+      "name": "d2_16",
+      "spice": ".meas tran d2_16 param='t2_16-5e-09'"
+    },
+    {
+      "name": "t2_17",
+      "spice": ".meas tran t2_17 when v(ro2)=v(half) rise=17 td=5e-09"
+    },
+    {
+      "name": "d2_17",
+      "spice": ".meas tran d2_17 param='t2_17-5e-09'"
+    },
+    {
+      "name": "t2_18",
+      "spice": ".meas tran t2_18 when v(ro2)=v(half) rise=18 td=5e-09"
+    },
+    {
+      "name": "d2_18",
+      "spice": ".meas tran d2_18 param='t2_18-5e-09'"
+    },
+    {
+      "name": "t2_19",
+      "spice": ".meas tran t2_19 when v(ro2)=v(half) rise=19 td=5e-09"
+    },
+    {
+      "name": "d2_19",
+      "spice": ".meas tran d2_19 param='t2_19-5e-09'"
+    },
+    {
+      "name": "t2_20",
+      "spice": ".meas tran t2_20 when v(ro2)=v(half) rise=20 td=5e-09"
+    },
+    {
+      "name": "d2_20",
+      "spice": ".meas tran d2_20 param='t2_20-5e-09'"
+    },
+    {
+      "name": "t2_21",
+      "spice": ".meas tran t2_21 when v(ro2)=v(half) rise=21 td=5e-09"
+    },
+    {
+      "name": "d2_21",
+      "spice": ".meas tran d2_21 param='t2_21-5e-09'"
+    },
+    {
+      "name": "t2_22",
+      "spice": ".meas tran t2_22 when v(ro2)=v(half) rise=22 td=5e-09"
+    },
+    {
+      "name": "d2_22",
+      "spice": ".meas tran d2_22 param='t2_22-5e-09'"
+    },
+    {
+      "name": "t2_23",
+      "spice": ".meas tran t2_23 when v(ro2)=v(half) rise=23 td=5e-09"
+    },
+    {
+      "name": "d2_23",
+      "spice": ".meas tran d2_23 param='t2_23-5e-09'"
+    },
+    {
+      "name": "t2_24",
+      "spice": ".meas tran t2_24 when v(ro2)=v(half) rise=24 td=5e-09"
+    },
+    {
+      "name": "d2_24",
+      "spice": ".meas tran d2_24 param='t2_24-5e-09'"
+    },
+    {
+      "name": "t2_25",
+      "spice": ".meas tran t2_25 when v(ro2)=v(half) rise=25 td=5e-09"
+    },
+    {
+      "name": "d2_25",
+      "spice": ".meas tran d2_25 param='t2_25-5e-09'"
+    },
+    {
+      "name": "t2_26",
+      "spice": ".meas tran t2_26 when v(ro2)=v(half) rise=26 td=5e-09"
+    },
+    {
+      "name": "d2_26",
+      "spice": ".meas tran d2_26 param='t2_26-5e-09'"
+    },
+    {
+      "name": "t2_27",
+      "spice": ".meas tran t2_27 when v(ro2)=v(half) rise=27 td=5e-09"
+    },
+    {
+      "name": "d2_27",
+      "spice": ".meas tran d2_27 param='t2_27-5e-09'"
+    },
+    {
+      "name": "t2_28",
+      "spice": ".meas tran t2_28 when v(ro2)=v(half) rise=28 td=5e-09"
+    },
+    {
+      "name": "d2_28",
+      "spice": ".meas tran d2_28 param='t2_28-5e-09'"
+    },
+    {
+      "name": "t2_29",
+      "spice": ".meas tran t2_29 when v(ro2)=v(half) rise=29 td=5e-09"
+    },
+    {
+      "name": "d2_29",
+      "spice": ".meas tran d2_29 param='t2_29-5e-09'"
+    },
+    {
+      "name": "t2_30",
+      "spice": ".meas tran t2_30 when v(ro2)=v(half) rise=30 td=5e-09"
+    },
+    {
+      "name": "d2_30",
+      "spice": ".meas tran d2_30 param='t2_30-5e-09'"
+    },
+    {
+      "name": "t2_31",
+      "spice": ".meas tran t2_31 when v(ro2)=v(half) rise=31 td=5e-09"
+    },
+    {
+      "name": "d2_31",
+      "spice": ".meas tran d2_31 param='t2_31-5e-09'"
+    },
+    {
+      "name": "t2_32",
+      "spice": ".meas tran t2_32 when v(ro2)=v(half) rise=32 td=5e-09"
+    },
+    {
+      "name": "d2_32",
+      "spice": ".meas tran d2_32 param='t2_32-5e-09'"
+    },
+    {
+      "name": "t2_33",
+      "spice": ".meas tran t2_33 when v(ro2)=v(half) rise=33 td=5e-09"
+    },
+    {
+      "name": "d2_33",
+      "spice": ".meas tran d2_33 param='t2_33-5e-09'"
+    },
+    {
+      "name": "t2_34",
+      "spice": ".meas tran t2_34 when v(ro2)=v(half) rise=34 td=5e-09"
+    },
+    {
+      "name": "d2_34",
+      "spice": ".meas tran d2_34 param='t2_34-5e-09'"
+    },
+    {
+      "name": "t2_35",
+      "spice": ".meas tran t2_35 when v(ro2)=v(half) rise=35 td=5e-09"
+    },
+    {
+      "name": "d2_35",
+      "spice": ".meas tran d2_35 param='t2_35-5e-09'"
+    },
+    {
+      "name": "t2_36",
+      "spice": ".meas tran t2_36 when v(ro2)=v(half) rise=36 td=5e-09"
+    },
+    {
+      "name": "d2_36",
+      "spice": ".meas tran d2_36 param='t2_36-5e-09'"
+    },
+    {
+      "name": "t2_37",
+      "spice": ".meas tran t2_37 when v(ro2)=v(half) rise=37 td=5e-09"
+    },
+    {
+      "name": "d2_37",
+      "spice": ".meas tran d2_37 param='t2_37-5e-09'"
+    },
+    {
+      "name": "t2_38",
+      "spice": ".meas tran t2_38 when v(ro2)=v(half) rise=38 td=5e-09"
+    },
+    {
+      "name": "d2_38",
+      "spice": ".meas tran d2_38 param='t2_38-5e-09'"
+    },
+    {
+      "name": "t2_39",
+      "spice": ".meas tran t2_39 when v(ro2)=v(half) rise=39 td=5e-09"
+    },
+    {
+      "name": "d2_39",
+      "spice": ".meas tran d2_39 param='t2_39-5e-09'"
+    },
+    {
+      "name": "t2_40",
+      "spice": ".meas tran t2_40 when v(ro2)=v(half) rise=40 td=5e-09"
+    },
+    {
+      "name": "d2_40",
+      "spice": ".meas tran d2_40 param='t2_40-5e-09'"
+    },
+    {
+      "name": "t2_41",
+      "spice": ".meas tran t2_41 when v(ro2)=v(half) rise=41 td=5e-09"
+    },
+    {
+      "name": "d2_41",
+      "spice": ".meas tran d2_41 param='t2_41-5e-09'"
+    },
+    {
+      "name": "ro2_max",
+      "spice": ".meas tran ro2_max MAX v(ro2) from=2.15e-07 to=2.45e-07"
+    },
+    {
+      "name": "ro2_min",
+      "spice": ".meas tran ro2_min MIN v(ro2) from=2.15e-07 to=2.45e-07"
+    },
+    {
+      "name": "tf3",
+      "spice": ".meas tran tf3 when v(ro3)=v(half) rise=1"
+    },
+    {
+      "name": "t3_1",
+      "spice": ".meas tran t3_1 when v(ro3)=v(half) rise=1 td=5e-09"
+    },
+    {
+      "name": "d3_1",
+      "spice": ".meas tran d3_1 param='t3_1-5e-09'"
+    },
+    {
+      "name": "t3_2",
+      "spice": ".meas tran t3_2 when v(ro3)=v(half) rise=2 td=5e-09"
+    },
+    {
+      "name": "d3_2",
+      "spice": ".meas tran d3_2 param='t3_2-5e-09'"
+    },
+    {
+      "name": "t3_3",
+      "spice": ".meas tran t3_3 when v(ro3)=v(half) rise=3 td=5e-09"
+    },
+    {
+      "name": "d3_3",
+      "spice": ".meas tran d3_3 param='t3_3-5e-09'"
+    },
+    {
+      "name": "t3_4",
+      "spice": ".meas tran t3_4 when v(ro3)=v(half) rise=4 td=5e-09"
+    },
+    {
+      "name": "d3_4",
+      "spice": ".meas tran d3_4 param='t3_4-5e-09'"
+    },
+    {
+      "name": "t3_5",
+      "spice": ".meas tran t3_5 when v(ro3)=v(half) rise=5 td=5e-09"
+    },
+    {
+      "name": "d3_5",
+      "spice": ".meas tran d3_5 param='t3_5-5e-09'"
+    },
+    {
+      "name": "t3_6",
+      "spice": ".meas tran t3_6 when v(ro3)=v(half) rise=6 td=5e-09"
+    },
+    {
+      "name": "d3_6",
+      "spice": ".meas tran d3_6 param='t3_6-5e-09'"
+    },
+    {
+      "name": "t3_7",
+      "spice": ".meas tran t3_7 when v(ro3)=v(half) rise=7 td=5e-09"
+    },
+    {
+      "name": "d3_7",
+      "spice": ".meas tran d3_7 param='t3_7-5e-09'"
+    },
+    {
+      "name": "t3_8",
+      "spice": ".meas tran t3_8 when v(ro3)=v(half) rise=8 td=5e-09"
+    },
+    {
+      "name": "d3_8",
+      "spice": ".meas tran d3_8 param='t3_8-5e-09'"
+    },
+    {
+      "name": "t3_9",
+      "spice": ".meas tran t3_9 when v(ro3)=v(half) rise=9 td=5e-09"
+    },
+    {
+      "name": "d3_9",
+      "spice": ".meas tran d3_9 param='t3_9-5e-09'"
+    },
+    {
+      "name": "t3_10",
+      "spice": ".meas tran t3_10 when v(ro3)=v(half) rise=10 td=5e-09"
+    },
+    {
+      "name": "d3_10",
+      "spice": ".meas tran d3_10 param='t3_10-5e-09'"
+    },
+    {
+      "name": "t3_11",
+      "spice": ".meas tran t3_11 when v(ro3)=v(half) rise=11 td=5e-09"
+    },
+    {
+      "name": "d3_11",
+      "spice": ".meas tran d3_11 param='t3_11-5e-09'"
+    },
+    {
+      "name": "t3_12",
+      "spice": ".meas tran t3_12 when v(ro3)=v(half) rise=12 td=5e-09"
+    },
+    {
+      "name": "d3_12",
+      "spice": ".meas tran d3_12 param='t3_12-5e-09'"
+    },
+    {
+      "name": "t3_13",
+      "spice": ".meas tran t3_13 when v(ro3)=v(half) rise=13 td=5e-09"
+    },
+    {
+      "name": "d3_13",
+      "spice": ".meas tran d3_13 param='t3_13-5e-09'"
+    },
+    {
+      "name": "t3_14",
+      "spice": ".meas tran t3_14 when v(ro3)=v(half) rise=14 td=5e-09"
+    },
+    {
+      "name": "d3_14",
+      "spice": ".meas tran d3_14 param='t3_14-5e-09'"
+    },
+    {
+      "name": "t3_15",
+      "spice": ".meas tran t3_15 when v(ro3)=v(half) rise=15 td=5e-09"
+    },
+    {
+      "name": "d3_15",
+      "spice": ".meas tran d3_15 param='t3_15-5e-09'"
+    },
+    {
+      "name": "t3_16",
+      "spice": ".meas tran t3_16 when v(ro3)=v(half) rise=16 td=5e-09"
+    },
+    {
+      "name": "d3_16",
+      "spice": ".meas tran d3_16 param='t3_16-5e-09'"
+    },
+    {
+      "name": "t3_17",
+      "spice": ".meas tran t3_17 when v(ro3)=v(half) rise=17 td=5e-09"
+    },
+    {
+      "name": "d3_17",
+      "spice": ".meas tran d3_17 param='t3_17-5e-09'"
+    },
+    {
+      "name": "t3_18",
+      "spice": ".meas tran t3_18 when v(ro3)=v(half) rise=18 td=5e-09"
+    },
+    {
+      "name": "d3_18",
+      "spice": ".meas tran d3_18 param='t3_18-5e-09'"
+    },
+    {
+      "name": "t3_19",
+      "spice": ".meas tran t3_19 when v(ro3)=v(half) rise=19 td=5e-09"
+    },
+    {
+      "name": "d3_19",
+      "spice": ".meas tran d3_19 param='t3_19-5e-09'"
+    },
+    {
+      "name": "t3_20",
+      "spice": ".meas tran t3_20 when v(ro3)=v(half) rise=20 td=5e-09"
+    },
+    {
+      "name": "d3_20",
+      "spice": ".meas tran d3_20 param='t3_20-5e-09'"
+    },
+    {
+      "name": "t3_21",
+      "spice": ".meas tran t3_21 when v(ro3)=v(half) rise=21 td=5e-09"
+    },
+    {
+      "name": "d3_21",
+      "spice": ".meas tran d3_21 param='t3_21-5e-09'"
+    },
+    {
+      "name": "t3_22",
+      "spice": ".meas tran t3_22 when v(ro3)=v(half) rise=22 td=5e-09"
+    },
+    {
+      "name": "d3_22",
+      "spice": ".meas tran d3_22 param='t3_22-5e-09'"
+    },
+    {
+      "name": "t3_23",
+      "spice": ".meas tran t3_23 when v(ro3)=v(half) rise=23 td=5e-09"
+    },
+    {
+      "name": "d3_23",
+      "spice": ".meas tran d3_23 param='t3_23-5e-09'"
+    },
+    {
+      "name": "t3_24",
+      "spice": ".meas tran t3_24 when v(ro3)=v(half) rise=24 td=5e-09"
+    },
+    {
+      "name": "d3_24",
+      "spice": ".meas tran d3_24 param='t3_24-5e-09'"
+    },
+    {
+      "name": "t3_25",
+      "spice": ".meas tran t3_25 when v(ro3)=v(half) rise=25 td=5e-09"
+    },
+    {
+      "name": "d3_25",
+      "spice": ".meas tran d3_25 param='t3_25-5e-09'"
+    },
+    {
+      "name": "t3_26",
+      "spice": ".meas tran t3_26 when v(ro3)=v(half) rise=26 td=5e-09"
+    },
+    {
+      "name": "d3_26",
+      "spice": ".meas tran d3_26 param='t3_26-5e-09'"
+    },
+    {
+      "name": "t3_27",
+      "spice": ".meas tran t3_27 when v(ro3)=v(half) rise=27 td=5e-09"
+    },
+    {
+      "name": "d3_27",
+      "spice": ".meas tran d3_27 param='t3_27-5e-09'"
+    },
+    {
+      "name": "t3_28",
+      "spice": ".meas tran t3_28 when v(ro3)=v(half) rise=28 td=5e-09"
+    },
+    {
+      "name": "d3_28",
+      "spice": ".meas tran d3_28 param='t3_28-5e-09'"
+    },
+    {
+      "name": "t3_29",
+      "spice": ".meas tran t3_29 when v(ro3)=v(half) rise=29 td=5e-09"
+    },
+    {
+      "name": "d3_29",
+      "spice": ".meas tran d3_29 param='t3_29-5e-09'"
+    },
+    {
+      "name": "t3_30",
+      "spice": ".meas tran t3_30 when v(ro3)=v(half) rise=30 td=5e-09"
+    },
+    {
+      "name": "d3_30",
+      "spice": ".meas tran d3_30 param='t3_30-5e-09'"
+    },
+    {
+      "name": "t3_31",
+      "spice": ".meas tran t3_31 when v(ro3)=v(half) rise=31 td=5e-09"
+    },
+    {
+      "name": "d3_31",
+      "spice": ".meas tran d3_31 param='t3_31-5e-09'"
+    },
+    {
+      "name": "t3_32",
+      "spice": ".meas tran t3_32 when v(ro3)=v(half) rise=32 td=5e-09"
+    },
+    {
+      "name": "d3_32",
+      "spice": ".meas tran d3_32 param='t3_32-5e-09'"
+    },
+    {
+      "name": "t3_33",
+      "spice": ".meas tran t3_33 when v(ro3)=v(half) rise=33 td=5e-09"
+    },
+    {
+      "name": "d3_33",
+      "spice": ".meas tran d3_33 param='t3_33-5e-09'"
+    },
+    {
+      "name": "t3_34",
+      "spice": ".meas tran t3_34 when v(ro3)=v(half) rise=34 td=5e-09"
+    },
+    {
+      "name": "d3_34",
+      "spice": ".meas tran d3_34 param='t3_34-5e-09'"
+    },
+    {
+      "name": "t3_35",
+      "spice": ".meas tran t3_35 when v(ro3)=v(half) rise=35 td=5e-09"
+    },
+    {
+      "name": "d3_35",
+      "spice": ".meas tran d3_35 param='t3_35-5e-09'"
+    },
+    {
+      "name": "t3_36",
+      "spice": ".meas tran t3_36 when v(ro3)=v(half) rise=36 td=5e-09"
+    },
+    {
+      "name": "d3_36",
+      "spice": ".meas tran d3_36 param='t3_36-5e-09'"
+    },
+    {
+      "name": "t3_37",
+      "spice": ".meas tran t3_37 when v(ro3)=v(half) rise=37 td=5e-09"
+    },
+    {
+      "name": "d3_37",
+      "spice": ".meas tran d3_37 param='t3_37-5e-09'"
+    },
+    {
+      "name": "t3_38",
+      "spice": ".meas tran t3_38 when v(ro3)=v(half) rise=38 td=5e-09"
+    },
+    {
+      "name": "d3_38",
+      "spice": ".meas tran d3_38 param='t3_38-5e-09'"
+    },
+    {
+      "name": "t3_39",
+      "spice": ".meas tran t3_39 when v(ro3)=v(half) rise=39 td=5e-09"
+    },
+    {
+      "name": "d3_39",
+      "spice": ".meas tran d3_39 param='t3_39-5e-09'"
+    },
+    {
+      "name": "t3_40",
+      "spice": ".meas tran t3_40 when v(ro3)=v(half) rise=40 td=5e-09"
+    },
+    {
+      "name": "d3_40",
+      "spice": ".meas tran d3_40 param='t3_40-5e-09'"
+    },
+    {
+      "name": "t3_41",
+      "spice": ".meas tran t3_41 when v(ro3)=v(half) rise=41 td=5e-09"
+    },
+    {
+      "name": "d3_41",
+      "spice": ".meas tran d3_41 param='t3_41-5e-09'"
+    },
+    {
+      "name": "ro3_max",
+      "spice": ".meas tran ro3_max MAX v(ro3) from=2.15e-07 to=2.45e-07"
+    },
+    {
+      "name": "ro3_min",
+      "spice": ".meas tran ro3_min MIN v(ro3) from=2.15e-07 to=2.45e-07"
+    },
+    {
+      "name": "tf4",
+      "spice": ".meas tran tf4 when v(ro4)=v(half) rise=1"
+    },
+    {
+      "name": "t4_1",
+      "spice": ".meas tran t4_1 when v(ro4)=v(half) rise=1 td=5e-09"
+    },
+    {
+      "name": "d4_1",
+      "spice": ".meas tran d4_1 param='t4_1-5e-09'"
+    },
+    {
+      "name": "t4_2",
+      "spice": ".meas tran t4_2 when v(ro4)=v(half) rise=2 td=5e-09"
+    },
+    {
+      "name": "d4_2",
+      "spice": ".meas tran d4_2 param='t4_2-5e-09'"
+    },
+    {
+      "name": "t4_3",
+      "spice": ".meas tran t4_3 when v(ro4)=v(half) rise=3 td=5e-09"
+    },
+    {
+      "name": "d4_3",
+      "spice": ".meas tran d4_3 param='t4_3-5e-09'"
+    },
+    {
+      "name": "t4_4",
+      "spice": ".meas tran t4_4 when v(ro4)=v(half) rise=4 td=5e-09"
+    },
+    {
+      "name": "d4_4",
+      "spice": ".meas tran d4_4 param='t4_4-5e-09'"
+    },
+    {
+      "name": "t4_5",
+      "spice": ".meas tran t4_5 when v(ro4)=v(half) rise=5 td=5e-09"
+    },
+    {
+      "name": "d4_5",
+      "spice": ".meas tran d4_5 param='t4_5-5e-09'"
+    },
+    {
+      "name": "t4_6",
+      "spice": ".meas tran t4_6 when v(ro4)=v(half) rise=6 td=5e-09"
+    },
+    {
+      "name": "d4_6",
+      "spice": ".meas tran d4_6 param='t4_6-5e-09'"
+    },
+    {
+      "name": "t4_7",
+      "spice": ".meas tran t4_7 when v(ro4)=v(half) rise=7 td=5e-09"
+    },
+    {
+      "name": "d4_7",
+      "spice": ".meas tran d4_7 param='t4_7-5e-09'"
+    },
+    {
+      "name": "t4_8",
+      "spice": ".meas tran t4_8 when v(ro4)=v(half) rise=8 td=5e-09"
+    },
+    {
+      "name": "d4_8",
+      "spice": ".meas tran d4_8 param='t4_8-5e-09'"
+    },
+    {
+      "name": "t4_9",
+      "spice": ".meas tran t4_9 when v(ro4)=v(half) rise=9 td=5e-09"
+    },
+    {
+      "name": "d4_9",
+      "spice": ".meas tran d4_9 param='t4_9-5e-09'"
+    },
+    {
+      "name": "t4_10",
+      "spice": ".meas tran t4_10 when v(ro4)=v(half) rise=10 td=5e-09"
+    },
+    {
+      "name": "d4_10",
+      "spice": ".meas tran d4_10 param='t4_10-5e-09'"
+    },
+    {
+      "name": "t4_11",
+      "spice": ".meas tran t4_11 when v(ro4)=v(half) rise=11 td=5e-09"
+    },
+    {
+      "name": "d4_11",
+      "spice": ".meas tran d4_11 param='t4_11-5e-09'"
+    },
+    {
+      "name": "t4_12",
+      "spice": ".meas tran t4_12 when v(ro4)=v(half) rise=12 td=5e-09"
+    },
+    {
+      "name": "d4_12",
+      "spice": ".meas tran d4_12 param='t4_12-5e-09'"
+    },
+    {
+      "name": "t4_13",
+      "spice": ".meas tran t4_13 when v(ro4)=v(half) rise=13 td=5e-09"
+    },
+    {
+      "name": "d4_13",
+      "spice": ".meas tran d4_13 param='t4_13-5e-09'"
+    },
+    {
+      "name": "t4_14",
+      "spice": ".meas tran t4_14 when v(ro4)=v(half) rise=14 td=5e-09"
+    },
+    {
+      "name": "d4_14",
+      "spice": ".meas tran d4_14 param='t4_14-5e-09'"
+    },
+    {
+      "name": "t4_15",
+      "spice": ".meas tran t4_15 when v(ro4)=v(half) rise=15 td=5e-09"
+    },
+    {
+      "name": "d4_15",
+      "spice": ".meas tran d4_15 param='t4_15-5e-09'"
+    },
+    {
+      "name": "t4_16",
+      "spice": ".meas tran t4_16 when v(ro4)=v(half) rise=16 td=5e-09"
+    },
+    {
+      "name": "d4_16",
+      "spice": ".meas tran d4_16 param='t4_16-5e-09'"
+    },
+    {
+      "name": "t4_17",
+      "spice": ".meas tran t4_17 when v(ro4)=v(half) rise=17 td=5e-09"
+    },
+    {
+      "name": "d4_17",
+      "spice": ".meas tran d4_17 param='t4_17-5e-09'"
+    },
+    {
+      "name": "t4_18",
+      "spice": ".meas tran t4_18 when v(ro4)=v(half) rise=18 td=5e-09"
+    },
+    {
+      "name": "d4_18",
+      "spice": ".meas tran d4_18 param='t4_18-5e-09'"
+    },
+    {
+      "name": "t4_19",
+      "spice": ".meas tran t4_19 when v(ro4)=v(half) rise=19 td=5e-09"
+    },
+    {
+      "name": "d4_19",
+      "spice": ".meas tran d4_19 param='t4_19-5e-09'"
+    },
+    {
+      "name": "t4_20",
+      "spice": ".meas tran t4_20 when v(ro4)=v(half) rise=20 td=5e-09"
+    },
+    {
+      "name": "d4_20",
+      "spice": ".meas tran d4_20 param='t4_20-5e-09'"
+    },
+    {
+      "name": "t4_21",
+      "spice": ".meas tran t4_21 when v(ro4)=v(half) rise=21 td=5e-09"
+    },
+    {
+      "name": "d4_21",
+      "spice": ".meas tran d4_21 param='t4_21-5e-09'"
+    },
+    {
+      "name": "t4_22",
+      "spice": ".meas tran t4_22 when v(ro4)=v(half) rise=22 td=5e-09"
+    },
+    {
+      "name": "d4_22",
+      "spice": ".meas tran d4_22 param='t4_22-5e-09'"
+    },
+    {
+      "name": "t4_23",
+      "spice": ".meas tran t4_23 when v(ro4)=v(half) rise=23 td=5e-09"
+    },
+    {
+      "name": "d4_23",
+      "spice": ".meas tran d4_23 param='t4_23-5e-09'"
+    },
+    {
+      "name": "t4_24",
+      "spice": ".meas tran t4_24 when v(ro4)=v(half) rise=24 td=5e-09"
+    },
+    {
+      "name": "d4_24",
+      "spice": ".meas tran d4_24 param='t4_24-5e-09'"
+    },
+    {
+      "name": "t4_25",
+      "spice": ".meas tran t4_25 when v(ro4)=v(half) rise=25 td=5e-09"
+    },
+    {
+      "name": "d4_25",
+      "spice": ".meas tran d4_25 param='t4_25-5e-09'"
+    },
+    {
+      "name": "t4_26",
+      "spice": ".meas tran t4_26 when v(ro4)=v(half) rise=26 td=5e-09"
+    },
+    {
+      "name": "d4_26",
+      "spice": ".meas tran d4_26 param='t4_26-5e-09'"
+    },
+    {
+      "name": "t4_27",
+      "spice": ".meas tran t4_27 when v(ro4)=v(half) rise=27 td=5e-09"
+    },
+    {
+      "name": "d4_27",
+      "spice": ".meas tran d4_27 param='t4_27-5e-09'"
+    },
+    {
+      "name": "t4_28",
+      "spice": ".meas tran t4_28 when v(ro4)=v(half) rise=28 td=5e-09"
+    },
+    {
+      "name": "d4_28",
+      "spice": ".meas tran d4_28 param='t4_28-5e-09'"
+    },
+    {
+      "name": "t4_29",
+      "spice": ".meas tran t4_29 when v(ro4)=v(half) rise=29 td=5e-09"
+    },
+    {
+      "name": "d4_29",
+      "spice": ".meas tran d4_29 param='t4_29-5e-09'"
+    },
+    {
+      "name": "t4_30",
+      "spice": ".meas tran t4_30 when v(ro4)=v(half) rise=30 td=5e-09"
+    },
+    {
+      "name": "d4_30",
+      "spice": ".meas tran d4_30 param='t4_30-5e-09'"
+    },
+    {
+      "name": "t4_31",
+      "spice": ".meas tran t4_31 when v(ro4)=v(half) rise=31 td=5e-09"
+    },
+    {
+      "name": "d4_31",
+      "spice": ".meas tran d4_31 param='t4_31-5e-09'"
+    },
+    {
+      "name": "t4_32",
+      "spice": ".meas tran t4_32 when v(ro4)=v(half) rise=32 td=5e-09"
+    },
+    {
+      "name": "d4_32",
+      "spice": ".meas tran d4_32 param='t4_32-5e-09'"
+    },
+    {
+      "name": "t4_33",
+      "spice": ".meas tran t4_33 when v(ro4)=v(half) rise=33 td=5e-09"
+    },
+    {
+      "name": "d4_33",
+      "spice": ".meas tran d4_33 param='t4_33-5e-09'"
+    },
+    {
+      "name": "t4_34",
+      "spice": ".meas tran t4_34 when v(ro4)=v(half) rise=34 td=5e-09"
+    },
+    {
+      "name": "d4_34",
+      "spice": ".meas tran d4_34 param='t4_34-5e-09'"
+    },
+    {
+      "name": "t4_35",
+      "spice": ".meas tran t4_35 when v(ro4)=v(half) rise=35 td=5e-09"
+    },
+    {
+      "name": "d4_35",
+      "spice": ".meas tran d4_35 param='t4_35-5e-09'"
+    },
+    {
+      "name": "t4_36",
+      "spice": ".meas tran t4_36 when v(ro4)=v(half) rise=36 td=5e-09"
+    },
+    {
+      "name": "d4_36",
+      "spice": ".meas tran d4_36 param='t4_36-5e-09'"
+    },
+    {
+      "name": "t4_37",
+      "spice": ".meas tran t4_37 when v(ro4)=v(half) rise=37 td=5e-09"
+    },
+    {
+      "name": "d4_37",
+      "spice": ".meas tran d4_37 param='t4_37-5e-09'"
+    },
+    {
+      "name": "t4_38",
+      "spice": ".meas tran t4_38 when v(ro4)=v(half) rise=38 td=5e-09"
+    },
+    {
+      "name": "d4_38",
+      "spice": ".meas tran d4_38 param='t4_38-5e-09'"
+    },
+    {
+      "name": "t4_39",
+      "spice": ".meas tran t4_39 when v(ro4)=v(half) rise=39 td=5e-09"
+    },
+    {
+      "name": "d4_39",
+      "spice": ".meas tran d4_39 param='t4_39-5e-09'"
+    },
+    {
+      "name": "t4_40",
+      "spice": ".meas tran t4_40 when v(ro4)=v(half) rise=40 td=5e-09"
+    },
+    {
+      "name": "d4_40",
+      "spice": ".meas tran d4_40 param='t4_40-5e-09'"
+    },
+    {
+      "name": "t4_41",
+      "spice": ".meas tran t4_41 when v(ro4)=v(half) rise=41 td=5e-09"
+    },
+    {
+      "name": "d4_41",
+      "spice": ".meas tran d4_41 param='t4_41-5e-09'"
+    },
+    {
+      "name": "ro4_max",
+      "spice": ".meas tran ro4_max MAX v(ro4) from=2.15e-07 to=2.45e-07"
+    },
+    {
+      "name": "ro4_min",
+      "spice": ".meas tran ro4_min MIN v(ro4) from=2.15e-07 to=2.45e-07"
+    },
+    {
+      "name": "vdd_end",
+      "spice": ".meas tran vdd_end FIND v(vdd) AT=2.45e-07"
+    }
+  ],
+  "options": {
+    "timeout_s": 3000,
+    "keep_artifacts": false
+  },
+  "batch": {
+    "capacity_wait_s": 3600
+  }
+}

@@ -59,8 +59,11 @@ name: CI
 #     canonicaliser refuses to repair shorted ports, the endpoint audit sees a
 #     moved cell pin, and every fault control reached the LVS comparison and
 #     failed naming its nets; this pins those, plus that the committed reports
-#     still describe the committed inputs. Same PR-blocking path, same reason:
-#     it needs nothing installed.
+#     still describe the committed inputs. Since issue #283 it also pins the
+#     physical-estimates calculator (window grids, cumulative antenna ratios,
+#     label-subset net attribution, drift) on pure arithmetic, with the
+#     klayout-dependent geometry controls left to pdk-nightly. Same
+#     PR-blocking path, same reason: it needs nothing installed.
 #
 # layout/test_pex_netlist.py (post-layout netlist rewrite unit test, issue #22)
 #     Pure Python over layout/bin/pex-netlist.py's rewrite functions -- no klt,
@@ -87,6 +90,25 @@ name: CI
 #     of #190's list, so both could regress with no PR going red. The
 #     `paths:` filter above also lists the campaign/record directories they
 #     load.
+#
+# sim/tests/test_conditioned_output.py (issue #243) -- stdlib-only unit test
+#     for the conditioned-output (DATA) analysis: pins the MSB-first word
+#     serialization, block/partial-block handling, the 16 x 1024 conditioned
+#     segment policy, the raw-H x 256 vs 32-bit accounting flags, and that the
+#     committed record's first stream still reproduces. No ngspice, no PDK.
+#
+# sim/tests/test_restart_matrix.py (issue #267) -- stdlib-only unit test of the
+#     restart-matrix reduction (sim/wake-up-transient/restart_matrix.py) the C5
+#     silicon restart dataset will go through: IID known-answer PASS, a
+#     deterministic-column FAIL naming its index, the 1000 x 2048 boundary and
+#     fail-closed input checks, and a replay of one point of the committed
+#     behavioural record. No ngspice, no PDK.
+#
+# sim/tests/test_evidence_record_artifacts.py (issue #273) -- stdlib-only temp-directory
+#     test that mint_behavioral_record refuses colliding or repeated artifact
+#     basenames before creating any record/run output, and that unique names
+#     keep their bytes and the artifacts list format. Covered by the existing
+#     sim/bin/** and sim/tests/** path filters.
 #
 # signoff-check (issue #155) -- the gap-to-T1 tier report staleness gate.
 #     `klt signoff --manifest signoff/block-manifest.json` re-renders this
@@ -125,6 +147,15 @@ name: CI
 #     covered by the PDK nightly's compose-cell --check reproductions
 #     instead; see signoff/README.md's freshness section.
 #
+# sim/bin/check_records_append_only.py (sim/ + measurements/ append-only record rule, issues #232/#269)
+#     Pure Python + git. `sim/` results and `measurements/` silicon evidence are
+#     append-only (sim/README.md, measurements/README.md): the job diffs
+#     base...HEAD and fails if any existing {sim,measurements}/*/records/* file
+#     or record-associated runs/corners artifact is Modified, Deleted, Renamed
+#     or type-changed; Added files pass. Reviewed exceptions
+#     live in sim/records-append-only-allowlist.txt (empty at first). Needs
+#     full history (fetch-depth: 0) and nothing installed.
+#
 # design/netlist.py --check (schematic-vs-netlist staleness guard) is
 # DELIBERATELY NOT here. It shells out to xschem and resolves the sky130
 # xschem symbol library through a real PDK install (design/pdk.json pins
@@ -140,18 +171,49 @@ on:
     branches: [main]
   pull_request:
     paths:
+      # issue #292 REPRODUCE.md index + its consistency checker
+      - "REPRODUCE.md"
+      # issue #295 friction ledger (docs/friction-ledger.md) + its coverage checker
+      - "docs/friction-ledger.md"
+      - "tools/**"
+      # issue #296 decision-record index + its consistency checker
+      - "spec/README.md"
+      - "spec/decision-records/**"
+      - "sim/pdk.json"
+      - "layout/pdk.json"
       - "design/**"
       - "layout/bin/**"
       # sim/tests unit tests and everything they import or read (issue #190)
       - "sim/tests/**"
       - "sim/bin/**"
+      # issue #236 electrical-limit reduction controls import this module
+      - "sim/digital-electrical-repair/analysis/**"
+      # issue #250 final-route gate test replays these recorded runs and loads the harness
+      - "sim/digital-electrical-repair/runs/**"
+      - "sim/digital-electrical-repair/requests/**"
+      - "sim/digital-pnr/harness/**"
+      - "sim/digital-synthesis/harness/**"
+      # append-only record rule (issue #232): any change under a records dir
+      - "sim/*/records/**"
+      - "sim/*/runs/**"
+      - "sim/*/corners/**"
+      - "sim/records-append-only-allowlist.txt"
+      # issue #269: measured silicon records and raw captures
+      - "measurements/*/records/**"
+      - "measurements/*/runs/**"
+      - "measurements/*/corners/**"
       - "sim/raw-bit-min-entropy/**"
       - "sim/raw-bit-volume-campaign/**"
       - "sim/ro-array-core-combining/**"
       - "sim/ro-ring-jitter-accumulation/**"
       - "sim/ro-array-supply-perturbation/**"
+      # issue #243 conditioned-output analysis + the committed streams it reads
+      - "sim/digital-conditioned-output/**"
       - "digital/model/**"
       - "sim/digital-health-test-parameters/analysis/**"
+      # issue #267 restart-matrix reducer, its phase model and the PVT-set source it re-counts
+      - "sim/wake-up-transient/**"
+      - "sim/raw-bit-volume-campaign/behavioral_raw_bit.py"
       - "layout/test_pex_netlist.py"
       - "layout/test_compose_cell.py"
       - "layout/test_compose_whole.py"
@@ -167,6 +229,9 @@ on:
       # regenerated in a PR must re-grade, not slide through on the old
       # report bytes).
       - "signoff/**"
+      # issue #291 characterization-report inputs: the spec table it parses
+      # (README.md) and the generator (sim/bin/** and sim/*/records/** above)
+      - "README.md"
       - "layout/sampler_core/drc.json"
       - "layout/sampler_core/lvs.json"
       - ".github/workflows/ci.yml"
@@ -211,6 +276,24 @@ jobs:
       - name: layout/test_verify_whole.py (whole-block verification evidence contract)
         run: python3 layout/test_verify_whole.py
 
+      - name: tools/check_reproduce.py (REPRODUCE.md consistent with the tree and PDK pins)
+        run: python3 tools/check_reproduce.py
+
+      - name: tools/test_check_reproduce.py (REPRODUCE.md checker negative controls)
+        run: python3 tools/test_check_reproduce.py
+
+      - name: tools/check_spec_index.py (spec/README.md decision-record index consistent with the records)
+        run: python3 tools/check_spec_index.py
+
+      - name: tools/test_check_spec_index.py (decision-record index checker negative controls)
+        run: python3 tools/test_check_spec_index.py
+
+      - name: tools/check_friction_ledger.py (every cited klayout-tools issue is in the friction ledger)
+        run: python3 tools/check_friction_ledger.py
+
+      - name: tools/test_check_friction_ledger.py (friction ledger checker negative controls)
+        run: python3 tools/test_check_friction_ledger.py
+
       - name: sim/tests/test_raw_bit_entropy.py (raw-bit entropy estimator unit test)
         run: python3 sim/tests/test_raw_bit_entropy.py
 
@@ -228,6 +311,45 @@ jobs:
 
       - name: sim/tests/test_ripple_reduction.py (supply-ripple reduction analysis unit test)
         run: python3 sim/tests/test_ripple_reduction.py
+
+      - name: sim/tests/test_floorplan_compaction.py (issue #226 study guard + area-model contract)
+        run: python3 sim/tests/test_floorplan_compaction.py
+
+      - name: sim/tests/test_conditioned_output.py (issue #243 conditioned DATA analysis unit test)
+        run: python3 sim/tests/test_conditioned_output.py
+
+      - name: sim/tests/test_electrical_reduction.py (issue #236 missing-corner / injected-violation / no-data reduction controls)
+        run: python3 sim/tests/test_electrical_reduction.py
+      - name: sim/tests/test_electrical_final_route_gate.py (issue #250 final-route electrical verdict gates digital P&R; replays recorded sessions)
+        run: python3 sim/tests/test_electrical_final_route_gate.py
+
+      - name: sim/tests/test_characterization_report.py (issue #291 aggregation + negative controls)
+        run: python3 sim/tests/test_characterization_report.py
+
+      - name: sim/tests/test_restart_matrix.py (issue #267 restart-matrix reduction known-answer + record replay)
+        run: python3 sim/tests/test_restart_matrix.py
+
+      - name: sim/tests/test_evidence_record_artifacts.py (issues #273/#276/#277 artifact collisions, reserved summary keys, bundle publication integrity)
+        run: python3 sim/tests/test_evidence_record_artifacts.py
+
+  sim-records-append-only:
+    name: sim/ + measurements/ append-only evidence rule (no edit/delete/rename of committed records or raw artifacts)
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: sim/tests/test_check_records_append_only.py (checker unit test)
+        run: python3 sim/tests/test_check_records_append_only.py
+
+      - name: Fail on modified/deleted/renamed {sim,measurements}/*/{records,runs,corners} evidence
+        run: python3 sim/bin/check_records_append_only.py "origin/${{ github.base_ref }}"
 
   signoff-check:
     name: Signoff tier-report staleness gate (klt signoff --manifest)
@@ -288,3 +410,26 @@ jobs:
             echo "Regenerate it with the command in signoff/README.md and commit the diff." >&2
             exit 1
           fi
+
+  # characterization-report staleness gate (issue #291): re-render
+  # signoff/characterization-report.{md,json} from README.md's spec table and
+  # the committed sim/*/records and byte-diff against the committed copies.
+  # Pure stdlib Python, no installs.
+  characterization-report-check:
+    name: Characterization report staleness gate (render + byte-diff)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Re-render into a scratch tree and byte-diff against the committed report
+        run: |
+          python3 sim/bin/characterization_report.py --check
+          mkdir -p /tmp/cr/signoff
+          cp -r sim README.md /tmp/cr/
+          python3 sim/bin/characterization_report.py --root /tmp/cr
+          cmp signoff/characterization-report.json /tmp/cr/signoff/characterization-report.json
+          cmp signoff/characterization-report.md /tmp/cr/signoff/characterization-report.md
