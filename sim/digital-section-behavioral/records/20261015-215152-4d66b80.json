@@ -1,0 +1,6530 @@
+{
+  "record_id": "20261015-215152-4d66b80",
+  "slug": "digital-section-behavioral",
+  "level": "behavioral",
+  "claim": "experiment J: detection coverage and false-alarm limit of a STUDY lag-k match-count monitor (not adopted, additive to the unchanged DR-0004 RCT/APT) on the experiment-I SYNTHETIC logic stimuli (no silicon entropy claim)",
+  "seeds": {
+    "python_random": 20261011,
+    "false_alarm_random": 20261012
+  },
+  "supersedes": null,
+  "author": "loom-builder@sky130-trng",
+  "timestamp_utc": "2026-10-15T21:51:52.002405+00:00",
+  "repo_sha": "4d66b80",
+  "tools": {
+    "python": "3.12.3",
+    "platform": "Linux-6.17.0-1019-aws-x86_64-with-glibc2.39"
+  },
+  "artifacts": [
+    "sim/digital-section-behavioral/runs/20261015-215152-4d66b80/lagcount-coverage-rows.txt"
+  ],
+  "ok": true,
+  "seed": 20261011,
+  "n": 65536,
+  "experiment": "J",
+  "h_design": 0.5,
+  "rows": [
+    {
+      "label": "control fair",
+      "family": "control",
+      "h_true": 1.0,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L8_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L8_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W4096": {
+          "alarm": false,
+          "first": null
+        }
+      }
+    },
+    {
+      "label": "markov sym stay=0.5",
+      "family": "markov",
+      "h_true": 1.0,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L8_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L8_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W4096": {
+          "alarm": false,
+          "first": null
+        }
+      }
+    },
+    {
+      "label": "markov sym stay=0.6",
+      "family": "markov",
+      "h_true": 0.7369655941662062,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L8_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L8_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W4096": {
+          "alarm": false,
+          "first": null
+        }
+      }
+    },
+    {
+      "label": "markov sym stay=0.7",
+      "family": "markov",
+      "h_true": 0.5145731728297583,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": true,
+          "first": 17416
+        },
+        "L16_W1024": {
+          "alarm": true,
+          "first": 17424
+        },
+        "L32_W1024": {
+          "alarm": true,
+          "first": 19488
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 20544
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 20608
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 20736
+        },
+        "L8_W2048": {
+          "alarm": true,
+          "first": 2056
+        },
+        "L16_W2048": {
+          "alarm": true,
+          "first": 4112
+        },
+        "L32_W2048": {
+          "alarm": true,
+          "first": 4128
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 2176
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 4352
+        },
+        "L8_W4096": {
+          "alarm": true,
+          "first": 4104
+        },
+        "L16_W4096": {
+          "alarm": true,
+          "first": 4112
+        },
+        "L32_W4096": {
+          "alarm": true,
+          "first": 4128
+        },
+        "L64_W4096": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W4096": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "markov sym stay=0.8",
+      "family": "markov",
+      "h_true": 0.3219280948873623,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": true,
+          "first": 1032
+        },
+        "L16_W1024": {
+          "alarm": true,
+          "first": 1040
+        },
+        "L32_W1024": {
+          "alarm": true,
+          "first": 1056
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 1088
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 1152
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 1280
+        },
+        "L8_W2048": {
+          "alarm": true,
+          "first": 2056
+        },
+        "L16_W2048": {
+          "alarm": true,
+          "first": 2064
+        },
+        "L32_W2048": {
+          "alarm": true,
+          "first": 2080
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 2112
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 2176
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": true,
+          "first": 4104
+        },
+        "L16_W4096": {
+          "alarm": true,
+          "first": 4112
+        },
+        "L32_W4096": {
+          "alarm": true,
+          "first": 4128
+        },
+        "L64_W4096": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W4096": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "markov sym stay=0.9",
+      "family": "markov",
+      "h_true": 0.15200309344504995,
+      "rct_apt_alarm": true,
+      "lag": {
+        "L8_W1024": {
+          "alarm": true,
+          "first": 1032
+        },
+        "L16_W1024": {
+          "alarm": true,
+          "first": 1040
+        },
+        "L32_W1024": {
+          "alarm": true,
+          "first": 1056
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 1088
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 1152
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 1280
+        },
+        "L8_W2048": {
+          "alarm": true,
+          "first": 2056
+        },
+        "L16_W2048": {
+          "alarm": true,
+          "first": 2064
+        },
+        "L32_W2048": {
+          "alarm": true,
+          "first": 2080
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 2112
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 2176
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": true,
+          "first": 4104
+        },
+        "L16_W4096": {
+          "alarm": true,
+          "first": 4112
+        },
+        "L32_W4096": {
+          "alarm": true,
+          "first": 4128
+        },
+        "L64_W4096": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W4096": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "markov sym stay=0.95",
+      "family": "markov",
+      "h_true": 0.07400058144377693,
+      "rct_apt_alarm": true,
+      "lag": {
+        "L8_W1024": {
+          "alarm": true,
+          "first": 1032
+        },
+        "L16_W1024": {
+          "alarm": true,
+          "first": 1040
+        },
+        "L32_W1024": {
+          "alarm": true,
+          "first": 1056
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 1088
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 1152
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 1280
+        },
+        "L8_W2048": {
+          "alarm": true,
+          "first": 2056
+        },
+        "L16_W2048": {
+          "alarm": true,
+          "first": 2064
+        },
+        "L32_W2048": {
+          "alarm": true,
+          "first": 2080
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 2112
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 2176
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": true,
+          "first": 4104
+        },
+        "L16_W4096": {
+          "alarm": true,
+          "first": 4112
+        },
+        "L32_W4096": {
+          "alarm": true,
+          "first": 4128
+        },
+        "L64_W4096": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W4096": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "markov sym stay=0.98",
+      "family": "markov",
+      "h_true": 0.029146345659516508,
+      "rct_apt_alarm": true,
+      "lag": {
+        "L8_W1024": {
+          "alarm": true,
+          "first": 1032
+        },
+        "L16_W1024": {
+          "alarm": true,
+          "first": 1040
+        },
+        "L32_W1024": {
+          "alarm": true,
+          "first": 1056
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 1088
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 1152
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 1280
+        },
+        "L8_W2048": {
+          "alarm": true,
+          "first": 2056
+        },
+        "L16_W2048": {
+          "alarm": true,
+          "first": 2064
+        },
+        "L32_W2048": {
+          "alarm": true,
+          "first": 2080
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 2112
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 2176
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": true,
+          "first": 4104
+        },
+        "L16_W4096": {
+          "alarm": true,
+          "first": 4112
+        },
+        "L32_W4096": {
+          "alarm": true,
+          "first": 4128
+        },
+        "L64_W4096": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W4096": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "markov sym stay=0.99",
+      "family": "markov",
+      "h_true": 0.014499569695115089,
+      "rct_apt_alarm": true,
+      "lag": {
+        "L8_W1024": {
+          "alarm": true,
+          "first": 1032
+        },
+        "L16_W1024": {
+          "alarm": true,
+          "first": 1040
+        },
+        "L32_W1024": {
+          "alarm": true,
+          "first": 1056
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 1088
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 1152
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 1280
+        },
+        "L8_W2048": {
+          "alarm": true,
+          "first": 2056
+        },
+        "L16_W2048": {
+          "alarm": true,
+          "first": 2064
+        },
+        "L32_W2048": {
+          "alarm": true,
+          "first": 2080
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 2112
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 2176
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": true,
+          "first": 4104
+        },
+        "L16_W4096": {
+          "alarm": true,
+          "first": 4112
+        },
+        "L32_W4096": {
+          "alarm": true,
+          "first": 4128
+        },
+        "L64_W4096": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W4096": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "markov asym a=0.7 b=0.5",
+      "family": "markov",
+      "h_true": 0.5145731728297583,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L8_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L8_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W4096": {
+          "alarm": false,
+          "first": null
+        }
+      }
+    },
+    {
+      "label": "markov asym a=0.8 b=0.5",
+      "family": "markov",
+      "h_true": 0.3219280948873623,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": true,
+          "first": 1032
+        },
+        "L16_W1024": {
+          "alarm": true,
+          "first": 1040
+        },
+        "L32_W1024": {
+          "alarm": true,
+          "first": 1056
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 1088
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 1152
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 6400
+        },
+        "L8_W2048": {
+          "alarm": true,
+          "first": 2056
+        },
+        "L16_W2048": {
+          "alarm": true,
+          "first": 2064
+        },
+        "L32_W2048": {
+          "alarm": true,
+          "first": 2080
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 2112
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 2176
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": true,
+          "first": 4104
+        },
+        "L16_W4096": {
+          "alarm": true,
+          "first": 4112
+        },
+        "L32_W4096": {
+          "alarm": true,
+          "first": 4128
+        },
+        "L64_W4096": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W4096": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "markov asym a=0.9 b=0.6",
+      "family": "markov",
+      "h_true": 0.15200309344504995,
+      "rct_apt_alarm": true,
+      "lag": {
+        "L8_W1024": {
+          "alarm": true,
+          "first": 1032
+        },
+        "L16_W1024": {
+          "alarm": true,
+          "first": 1040
+        },
+        "L32_W1024": {
+          "alarm": true,
+          "first": 1056
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 1088
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 1152
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 1280
+        },
+        "L8_W2048": {
+          "alarm": true,
+          "first": 2056
+        },
+        "L16_W2048": {
+          "alarm": true,
+          "first": 2064
+        },
+        "L32_W2048": {
+          "alarm": true,
+          "first": 2080
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 2112
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 2176
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": true,
+          "first": 4104
+        },
+        "L16_W4096": {
+          "alarm": true,
+          "first": 4112
+        },
+        "L32_W4096": {
+          "alarm": true,
+          "first": 4128
+        },
+        "L64_W4096": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W4096": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "markov asym a=0.9 b=0.3",
+      "family": "markov",
+      "h_true": 0.15200309344504995,
+      "rct_apt_alarm": true,
+      "lag": {
+        "L8_W1024": {
+          "alarm": true,
+          "first": 1032
+        },
+        "L16_W1024": {
+          "alarm": true,
+          "first": 1040
+        },
+        "L32_W1024": {
+          "alarm": true,
+          "first": 1056
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 1088
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 1152
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 1280
+        },
+        "L8_W2048": {
+          "alarm": true,
+          "first": 2056
+        },
+        "L16_W2048": {
+          "alarm": true,
+          "first": 2064
+        },
+        "L32_W2048": {
+          "alarm": true,
+          "first": 2080
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 2112
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 2176
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": true,
+          "first": 4104
+        },
+        "L16_W4096": {
+          "alarm": true,
+          "first": 4112
+        },
+        "L32_W4096": {
+          "alarm": true,
+          "first": 4128
+        },
+        "L64_W4096": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W4096": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "markov asym a=0.95 b=0.5",
+      "family": "markov",
+      "h_true": 0.07400058144377693,
+      "rct_apt_alarm": true,
+      "lag": {
+        "L8_W1024": {
+          "alarm": true,
+          "first": 1032
+        },
+        "L16_W1024": {
+          "alarm": true,
+          "first": 1040
+        },
+        "L32_W1024": {
+          "alarm": true,
+          "first": 1056
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 1088
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 1152
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 1280
+        },
+        "L8_W2048": {
+          "alarm": true,
+          "first": 2056
+        },
+        "L16_W2048": {
+          "alarm": true,
+          "first": 2064
+        },
+        "L32_W2048": {
+          "alarm": true,
+          "first": 2080
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 2112
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 2176
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": true,
+          "first": 4104
+        },
+        "L16_W4096": {
+          "alarm": true,
+          "first": 4112
+        },
+        "L32_W4096": {
+          "alarm": true,
+          "first": 4128
+        },
+        "L64_W4096": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W4096": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "markov asym a=0.98 b=0.6",
+      "family": "markov",
+      "h_true": 0.029146345659516508,
+      "rct_apt_alarm": true,
+      "lag": {
+        "L8_W1024": {
+          "alarm": true,
+          "first": 1032
+        },
+        "L16_W1024": {
+          "alarm": true,
+          "first": 1040
+        },
+        "L32_W1024": {
+          "alarm": true,
+          "first": 1056
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 1088
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 1152
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 1280
+        },
+        "L8_W2048": {
+          "alarm": true,
+          "first": 2056
+        },
+        "L16_W2048": {
+          "alarm": true,
+          "first": 2064
+        },
+        "L32_W2048": {
+          "alarm": true,
+          "first": 2080
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 2112
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 2176
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": true,
+          "first": 4104
+        },
+        "L16_W4096": {
+          "alarm": true,
+          "first": 4112
+        },
+        "L32_W4096": {
+          "alarm": true,
+          "first": 4128
+        },
+        "L64_W4096": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W4096": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "periodic k=2 eps=0.0",
+      "family": "periodic",
+      "h_true": 0.0,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": true,
+          "first": 1032
+        },
+        "L16_W1024": {
+          "alarm": true,
+          "first": 1040
+        },
+        "L32_W1024": {
+          "alarm": true,
+          "first": 1056
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 1088
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 1152
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 1280
+        },
+        "L8_W2048": {
+          "alarm": true,
+          "first": 2056
+        },
+        "L16_W2048": {
+          "alarm": true,
+          "first": 2064
+        },
+        "L32_W2048": {
+          "alarm": true,
+          "first": 2080
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 2112
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 2176
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": true,
+          "first": 4104
+        },
+        "L16_W4096": {
+          "alarm": true,
+          "first": 4112
+        },
+        "L32_W4096": {
+          "alarm": true,
+          "first": 4128
+        },
+        "L64_W4096": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W4096": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "periodic k=2 eps=0.01",
+      "family": "periodic",
+      "h_true": 0.014499569695115089,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": true,
+          "first": 1032
+        },
+        "L16_W1024": {
+          "alarm": true,
+          "first": 1040
+        },
+        "L32_W1024": {
+          "alarm": true,
+          "first": 1056
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 1088
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 1152
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 1280
+        },
+        "L8_W2048": {
+          "alarm": true,
+          "first": 2056
+        },
+        "L16_W2048": {
+          "alarm": true,
+          "first": 2064
+        },
+        "L32_W2048": {
+          "alarm": true,
+          "first": 2080
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 2112
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 2176
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": true,
+          "first": 4104
+        },
+        "L16_W4096": {
+          "alarm": true,
+          "first": 4112
+        },
+        "L32_W4096": {
+          "alarm": true,
+          "first": 4128
+        },
+        "L64_W4096": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W4096": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "periodic k=2 eps=0.05",
+      "family": "periodic",
+      "h_true": 0.07400058144377693,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": true,
+          "first": 1032
+        },
+        "L16_W1024": {
+          "alarm": true,
+          "first": 1040
+        },
+        "L32_W1024": {
+          "alarm": true,
+          "first": 1056
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 1088
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 1152
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 1280
+        },
+        "L8_W2048": {
+          "alarm": true,
+          "first": 2056
+        },
+        "L16_W2048": {
+          "alarm": true,
+          "first": 2064
+        },
+        "L32_W2048": {
+          "alarm": true,
+          "first": 2080
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 2112
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 2176
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": true,
+          "first": 4104
+        },
+        "L16_W4096": {
+          "alarm": true,
+          "first": 4112
+        },
+        "L32_W4096": {
+          "alarm": true,
+          "first": 4128
+        },
+        "L64_W4096": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W4096": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "periodic k=2 eps=0.1",
+      "family": "periodic",
+      "h_true": 0.15200309344504995,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": true,
+          "first": 1032
+        },
+        "L16_W1024": {
+          "alarm": true,
+          "first": 1040
+        },
+        "L32_W1024": {
+          "alarm": true,
+          "first": 1056
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 1088
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 1152
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 1280
+        },
+        "L8_W2048": {
+          "alarm": true,
+          "first": 2056
+        },
+        "L16_W2048": {
+          "alarm": true,
+          "first": 2064
+        },
+        "L32_W2048": {
+          "alarm": true,
+          "first": 2080
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 2112
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 2176
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": true,
+          "first": 4104
+        },
+        "L16_W4096": {
+          "alarm": true,
+          "first": 4112
+        },
+        "L32_W4096": {
+          "alarm": true,
+          "first": 4128
+        },
+        "L64_W4096": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W4096": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "periodic k=2 eps=0.2",
+      "family": "periodic",
+      "h_true": 0.3219280948873623,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": true,
+          "first": 7176
+        },
+        "L16_W1024": {
+          "alarm": true,
+          "first": 7184
+        },
+        "L32_W1024": {
+          "alarm": true,
+          "first": 7200
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 7232
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 7296
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 14592
+        },
+        "L8_W2048": {
+          "alarm": true,
+          "first": 2056
+        },
+        "L16_W2048": {
+          "alarm": true,
+          "first": 2064
+        },
+        "L32_W2048": {
+          "alarm": true,
+          "first": 2080
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 2112
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 2176
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": true,
+          "first": 4104
+        },
+        "L16_W4096": {
+          "alarm": true,
+          "first": 4112
+        },
+        "L32_W4096": {
+          "alarm": true,
+          "first": 4128
+        },
+        "L64_W4096": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W4096": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "periodic k=2 eps=0.3",
+      "family": "periodic",
+      "h_true": 0.5145731728297583,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L8_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L8_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W4096": {
+          "alarm": false,
+          "first": null
+        }
+      }
+    },
+    {
+      "label": "periodic k=4 eps=0.0",
+      "family": "periodic",
+      "h_true": 0.0,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": true,
+          "first": 1032
+        },
+        "L16_W1024": {
+          "alarm": true,
+          "first": 1040
+        },
+        "L32_W1024": {
+          "alarm": true,
+          "first": 1056
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 1088
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 1152
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 1280
+        },
+        "L8_W2048": {
+          "alarm": true,
+          "first": 2056
+        },
+        "L16_W2048": {
+          "alarm": true,
+          "first": 2064
+        },
+        "L32_W2048": {
+          "alarm": true,
+          "first": 2080
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 2112
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 2176
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": true,
+          "first": 4104
+        },
+        "L16_W4096": {
+          "alarm": true,
+          "first": 4112
+        },
+        "L32_W4096": {
+          "alarm": true,
+          "first": 4128
+        },
+        "L64_W4096": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W4096": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "periodic k=4 eps=0.01",
+      "family": "periodic",
+      "h_true": 0.014499569695115089,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": true,
+          "first": 1032
+        },
+        "L16_W1024": {
+          "alarm": true,
+          "first": 1040
+        },
+        "L32_W1024": {
+          "alarm": true,
+          "first": 1056
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 1088
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 1152
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 1280
+        },
+        "L8_W2048": {
+          "alarm": true,
+          "first": 2056
+        },
+        "L16_W2048": {
+          "alarm": true,
+          "first": 2064
+        },
+        "L32_W2048": {
+          "alarm": true,
+          "first": 2080
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 2112
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 2176
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": true,
+          "first": 4104
+        },
+        "L16_W4096": {
+          "alarm": true,
+          "first": 4112
+        },
+        "L32_W4096": {
+          "alarm": true,
+          "first": 4128
+        },
+        "L64_W4096": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W4096": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "periodic k=4 eps=0.05",
+      "family": "periodic",
+      "h_true": 0.07400058144377693,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": true,
+          "first": 1032
+        },
+        "L16_W1024": {
+          "alarm": true,
+          "first": 1040
+        },
+        "L32_W1024": {
+          "alarm": true,
+          "first": 1056
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 1088
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 1152
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 1280
+        },
+        "L8_W2048": {
+          "alarm": true,
+          "first": 2056
+        },
+        "L16_W2048": {
+          "alarm": true,
+          "first": 2064
+        },
+        "L32_W2048": {
+          "alarm": true,
+          "first": 2080
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 2112
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 2176
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": true,
+          "first": 4104
+        },
+        "L16_W4096": {
+          "alarm": true,
+          "first": 4112
+        },
+        "L32_W4096": {
+          "alarm": true,
+          "first": 4128
+        },
+        "L64_W4096": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W4096": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "periodic k=4 eps=0.1",
+      "family": "periodic",
+      "h_true": 0.15200309344504995,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": true,
+          "first": 1032
+        },
+        "L16_W1024": {
+          "alarm": true,
+          "first": 1040
+        },
+        "L32_W1024": {
+          "alarm": true,
+          "first": 1056
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 1088
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 1152
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 1280
+        },
+        "L8_W2048": {
+          "alarm": true,
+          "first": 2056
+        },
+        "L16_W2048": {
+          "alarm": true,
+          "first": 2064
+        },
+        "L32_W2048": {
+          "alarm": true,
+          "first": 2080
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 2112
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 2176
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": true,
+          "first": 4104
+        },
+        "L16_W4096": {
+          "alarm": true,
+          "first": 4112
+        },
+        "L32_W4096": {
+          "alarm": true,
+          "first": 4128
+        },
+        "L64_W4096": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W4096": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "periodic k=4 eps=0.2",
+      "family": "periodic",
+      "h_true": 0.3219280948873623,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": true,
+          "first": 17416
+        },
+        "L16_W1024": {
+          "alarm": true,
+          "first": 12304
+        },
+        "L32_W1024": {
+          "alarm": true,
+          "first": 12320
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 17472
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 17536
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 17664
+        },
+        "L8_W2048": {
+          "alarm": true,
+          "first": 4104
+        },
+        "L16_W2048": {
+          "alarm": true,
+          "first": 4112
+        },
+        "L32_W2048": {
+          "alarm": true,
+          "first": 4128
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 2112
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 2176
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": true,
+          "first": 4104
+        },
+        "L16_W4096": {
+          "alarm": true,
+          "first": 4112
+        },
+        "L32_W4096": {
+          "alarm": true,
+          "first": 4128
+        },
+        "L64_W4096": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W4096": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "periodic k=4 eps=0.3",
+      "family": "periodic",
+      "h_true": 0.5145731728297583,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L8_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L8_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W4096": {
+          "alarm": false,
+          "first": null
+        }
+      }
+    },
+    {
+      "label": "periodic k=8 eps=0.0",
+      "family": "periodic",
+      "h_true": 0.0,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": true,
+          "first": 1032
+        },
+        "L16_W1024": {
+          "alarm": true,
+          "first": 1040
+        },
+        "L32_W1024": {
+          "alarm": true,
+          "first": 1056
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 1088
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 1152
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 1280
+        },
+        "L8_W2048": {
+          "alarm": true,
+          "first": 2056
+        },
+        "L16_W2048": {
+          "alarm": true,
+          "first": 2064
+        },
+        "L32_W2048": {
+          "alarm": true,
+          "first": 2080
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 2112
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 2176
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": true,
+          "first": 4104
+        },
+        "L16_W4096": {
+          "alarm": true,
+          "first": 4112
+        },
+        "L32_W4096": {
+          "alarm": true,
+          "first": 4128
+        },
+        "L64_W4096": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W4096": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "periodic k=8 eps=0.01",
+      "family": "periodic",
+      "h_true": 0.014499569695115089,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": true,
+          "first": 1032
+        },
+        "L16_W1024": {
+          "alarm": true,
+          "first": 1040
+        },
+        "L32_W1024": {
+          "alarm": true,
+          "first": 1056
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 1088
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 1152
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 1280
+        },
+        "L8_W2048": {
+          "alarm": true,
+          "first": 2056
+        },
+        "L16_W2048": {
+          "alarm": true,
+          "first": 2064
+        },
+        "L32_W2048": {
+          "alarm": true,
+          "first": 2080
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 2112
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 2176
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": true,
+          "first": 4104
+        },
+        "L16_W4096": {
+          "alarm": true,
+          "first": 4112
+        },
+        "L32_W4096": {
+          "alarm": true,
+          "first": 4128
+        },
+        "L64_W4096": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W4096": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "periodic k=8 eps=0.05",
+      "family": "periodic",
+      "h_true": 0.07400058144377693,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": true,
+          "first": 1032
+        },
+        "L16_W1024": {
+          "alarm": true,
+          "first": 1040
+        },
+        "L32_W1024": {
+          "alarm": true,
+          "first": 1056
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 1088
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 1152
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 1280
+        },
+        "L8_W2048": {
+          "alarm": true,
+          "first": 2056
+        },
+        "L16_W2048": {
+          "alarm": true,
+          "first": 2064
+        },
+        "L32_W2048": {
+          "alarm": true,
+          "first": 2080
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 2112
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 2176
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": true,
+          "first": 4104
+        },
+        "L16_W4096": {
+          "alarm": true,
+          "first": 4112
+        },
+        "L32_W4096": {
+          "alarm": true,
+          "first": 4128
+        },
+        "L64_W4096": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W4096": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "periodic k=8 eps=0.1",
+      "family": "periodic",
+      "h_true": 0.15200309344504995,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": true,
+          "first": 1032
+        },
+        "L16_W1024": {
+          "alarm": true,
+          "first": 1040
+        },
+        "L32_W1024": {
+          "alarm": true,
+          "first": 1056
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 1088
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 1152
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 1280
+        },
+        "L8_W2048": {
+          "alarm": true,
+          "first": 2056
+        },
+        "L16_W2048": {
+          "alarm": true,
+          "first": 2064
+        },
+        "L32_W2048": {
+          "alarm": true,
+          "first": 2080
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 2112
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 2176
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": true,
+          "first": 4104
+        },
+        "L16_W4096": {
+          "alarm": true,
+          "first": 4112
+        },
+        "L32_W4096": {
+          "alarm": true,
+          "first": 4128
+        },
+        "L64_W4096": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W4096": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "periodic k=8 eps=0.2",
+      "family": "periodic",
+      "h_true": 0.3219280948873623,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": true,
+          "first": 26632
+        },
+        "L16_W1024": {
+          "alarm": true,
+          "first": 6160
+        },
+        "L32_W1024": {
+          "alarm": true,
+          "first": 19488
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 19520
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 6272
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 1280
+        },
+        "L8_W2048": {
+          "alarm": true,
+          "first": 6152
+        },
+        "L16_W2048": {
+          "alarm": true,
+          "first": 6160
+        },
+        "L32_W2048": {
+          "alarm": true,
+          "first": 2080
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 2112
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 2176
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": true,
+          "first": 4104
+        },
+        "L16_W4096": {
+          "alarm": true,
+          "first": 4112
+        },
+        "L32_W4096": {
+          "alarm": true,
+          "first": 4128
+        },
+        "L64_W4096": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W4096": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "periodic k=8 eps=0.3",
+      "family": "periodic",
+      "h_true": 0.5145731728297583,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L8_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L8_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W4096": {
+          "alarm": false,
+          "first": null
+        }
+      }
+    },
+    {
+      "label": "periodic k=16 eps=0.0",
+      "family": "periodic",
+      "h_true": 0.0,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": true,
+          "first": 1032
+        },
+        "L16_W1024": {
+          "alarm": true,
+          "first": 1040
+        },
+        "L32_W1024": {
+          "alarm": true,
+          "first": 1056
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 1088
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 1152
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 1280
+        },
+        "L8_W2048": {
+          "alarm": true,
+          "first": 2056
+        },
+        "L16_W2048": {
+          "alarm": true,
+          "first": 2064
+        },
+        "L32_W2048": {
+          "alarm": true,
+          "first": 2080
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 2112
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 2176
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": true,
+          "first": 4104
+        },
+        "L16_W4096": {
+          "alarm": true,
+          "first": 4112
+        },
+        "L32_W4096": {
+          "alarm": true,
+          "first": 4128
+        },
+        "L64_W4096": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W4096": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "periodic k=16 eps=0.01",
+      "family": "periodic",
+      "h_true": 0.014499569695115089,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W1024": {
+          "alarm": true,
+          "first": 1040
+        },
+        "L32_W1024": {
+          "alarm": true,
+          "first": 1056
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 1088
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 1152
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 1280
+        },
+        "L8_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W2048": {
+          "alarm": true,
+          "first": 2064
+        },
+        "L32_W2048": {
+          "alarm": true,
+          "first": 2080
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 2112
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 2176
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W4096": {
+          "alarm": true,
+          "first": 4112
+        },
+        "L32_W4096": {
+          "alarm": true,
+          "first": 4128
+        },
+        "L64_W4096": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W4096": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "periodic k=16 eps=0.05",
+      "family": "periodic",
+      "h_true": 0.07400058144377693,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W1024": {
+          "alarm": true,
+          "first": 1040
+        },
+        "L32_W1024": {
+          "alarm": true,
+          "first": 1056
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 1088
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 1152
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 1280
+        },
+        "L8_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W2048": {
+          "alarm": true,
+          "first": 2064
+        },
+        "L32_W2048": {
+          "alarm": true,
+          "first": 2080
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 2112
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 2176
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W4096": {
+          "alarm": true,
+          "first": 4112
+        },
+        "L32_W4096": {
+          "alarm": true,
+          "first": 4128
+        },
+        "L64_W4096": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W4096": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "periodic k=16 eps=0.1",
+      "family": "periodic",
+      "h_true": 0.15200309344504995,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W1024": {
+          "alarm": true,
+          "first": 1040
+        },
+        "L32_W1024": {
+          "alarm": true,
+          "first": 1056
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 1088
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 1152
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 1280
+        },
+        "L8_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W2048": {
+          "alarm": true,
+          "first": 2064
+        },
+        "L32_W2048": {
+          "alarm": true,
+          "first": 2080
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 2112
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 2176
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": true,
+          "first": 4104
+        },
+        "L16_W4096": {
+          "alarm": true,
+          "first": 4112
+        },
+        "L32_W4096": {
+          "alarm": true,
+          "first": 4128
+        },
+        "L64_W4096": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W4096": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "periodic k=16 eps=0.2",
+      "family": "periodic",
+      "h_true": 0.3219280948873623,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W1024": {
+          "alarm": true,
+          "first": 64544
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 31808
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 64640
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 18688
+        },
+        "L8_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W2048": {
+          "alarm": true,
+          "first": 2064
+        },
+        "L32_W2048": {
+          "alarm": true,
+          "first": 2080
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 2112
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 4352
+        },
+        "L8_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W4096": {
+          "alarm": true,
+          "first": 4112
+        },
+        "L32_W4096": {
+          "alarm": true,
+          "first": 4128
+        },
+        "L64_W4096": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W4096": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "periodic k=16 eps=0.3",
+      "family": "periodic",
+      "h_true": 0.5145731728297583,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L8_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L8_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W4096": {
+          "alarm": false,
+          "first": null
+        }
+      }
+    },
+    {
+      "label": "periodic k=64 eps=0.0",
+      "family": "periodic",
+      "h_true": 0.0,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 1088
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 1152
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 1280
+        },
+        "L8_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 2112
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 2176
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W4096": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W4096": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "periodic k=64 eps=0.01",
+      "family": "periodic",
+      "h_true": 0.014499569695115089,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 1088
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 1152
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 1280
+        },
+        "L8_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 2112
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 2176
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W4096": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W4096": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "periodic k=64 eps=0.05",
+      "family": "periodic",
+      "h_true": 0.07400058144377693,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 1088
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 1152
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 1280
+        },
+        "L8_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 2112
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 2176
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W4096": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W4096": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "periodic k=64 eps=0.1",
+      "family": "periodic",
+      "h_true": 0.15200309344504995,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 1088
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 1152
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 1280
+        },
+        "L8_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 2112
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 2176
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W4096": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W4096": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "periodic k=64 eps=0.2",
+      "family": "periodic",
+      "h_true": 0.3219280948873623,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 23616
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 23680
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 28928
+        },
+        "L8_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W4096": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W4096": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "periodic k=64 eps=0.3",
+      "family": "periodic",
+      "h_true": 0.5145731728297583,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L8_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L8_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W4096": {
+          "alarm": false,
+          "first": null
+        }
+      }
+    },
+    {
+      "label": "periodic k=256 eps=0.0",
+      "family": "periodic",
+      "h_true": 0.0,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 1280
+        },
+        "L8_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "periodic k=256 eps=0.01",
+      "family": "periodic",
+      "h_true": 0.014499569695115089,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 1280
+        },
+        "L8_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "periodic k=256 eps=0.05",
+      "family": "periodic",
+      "h_true": 0.07400058144377693,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 1280
+        },
+        "L8_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "periodic k=256 eps=0.1",
+      "family": "periodic",
+      "h_true": 0.15200309344504995,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 1280
+        },
+        "L8_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "periodic k=256 eps=0.2",
+      "family": "periodic",
+      "h_true": 0.3219280948873623,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L8_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "periodic k=256 eps=0.3",
+      "family": "periodic",
+      "h_true": 0.5145731728297583,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L8_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L8_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W4096": {
+          "alarm": false,
+          "first": null
+        }
+      }
+    },
+    {
+      "label": "lockmix L=256 f=0.1 eps=0.0",
+      "family": "lock-mix",
+      "h_true": 0.9,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L8_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L8_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W4096": {
+          "alarm": false,
+          "first": null
+        }
+      }
+    },
+    {
+      "label": "lockmix L=256 f=0.25 eps=0.0",
+      "family": "lock-mix",
+      "h_true": 0.75,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L8_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L8_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W4096": {
+          "alarm": false,
+          "first": null
+        }
+      }
+    },
+    {
+      "label": "lockmix L=256 f=0.5 eps=0.0",
+      "family": "lock-mix",
+      "h_true": 0.5,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": true,
+          "first": 1032
+        },
+        "L16_W1024": {
+          "alarm": true,
+          "first": 1040
+        },
+        "L32_W1024": {
+          "alarm": true,
+          "first": 1056
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 1088
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 1152
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 1280
+        },
+        "L8_W2048": {
+          "alarm": true,
+          "first": 2056
+        },
+        "L16_W2048": {
+          "alarm": true,
+          "first": 2064
+        },
+        "L32_W2048": {
+          "alarm": true,
+          "first": 2080
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 2112
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 2176
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": true,
+          "first": 4104
+        },
+        "L16_W4096": {
+          "alarm": true,
+          "first": 4112
+        },
+        "L32_W4096": {
+          "alarm": true,
+          "first": 4128
+        },
+        "L64_W4096": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W4096": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "lockmix L=256 f=0.75 eps=0.0",
+      "family": "lock-mix",
+      "h_true": 0.25,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": true,
+          "first": 1032
+        },
+        "L16_W1024": {
+          "alarm": true,
+          "first": 1040
+        },
+        "L32_W1024": {
+          "alarm": true,
+          "first": 1056
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 1088
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 1152
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 1280
+        },
+        "L8_W2048": {
+          "alarm": true,
+          "first": 2056
+        },
+        "L16_W2048": {
+          "alarm": true,
+          "first": 2064
+        },
+        "L32_W2048": {
+          "alarm": true,
+          "first": 2080
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 2112
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 2176
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": true,
+          "first": 4104
+        },
+        "L16_W4096": {
+          "alarm": true,
+          "first": 4112
+        },
+        "L32_W4096": {
+          "alarm": true,
+          "first": 4128
+        },
+        "L64_W4096": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W4096": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "lockmix L=256 f=0.9 eps=0.0",
+      "family": "lock-mix",
+      "h_true": 0.09999999999999998,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": true,
+          "first": 1032
+        },
+        "L16_W1024": {
+          "alarm": true,
+          "first": 1040
+        },
+        "L32_W1024": {
+          "alarm": true,
+          "first": 1056
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 1088
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 1152
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 1280
+        },
+        "L8_W2048": {
+          "alarm": true,
+          "first": 2056
+        },
+        "L16_W2048": {
+          "alarm": true,
+          "first": 2064
+        },
+        "L32_W2048": {
+          "alarm": true,
+          "first": 2080
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 2112
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 2176
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": true,
+          "first": 4104
+        },
+        "L16_W4096": {
+          "alarm": true,
+          "first": 4112
+        },
+        "L32_W4096": {
+          "alarm": true,
+          "first": 4128
+        },
+        "L64_W4096": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W4096": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "lockmix L=256 f=1.0 eps=0.0",
+      "family": "lock-mix",
+      "h_true": 0.0,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": true,
+          "first": 1032
+        },
+        "L16_W1024": {
+          "alarm": true,
+          "first": 1040
+        },
+        "L32_W1024": {
+          "alarm": true,
+          "first": 1056
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 1088
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 1152
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 1280
+        },
+        "L8_W2048": {
+          "alarm": true,
+          "first": 2056
+        },
+        "L16_W2048": {
+          "alarm": true,
+          "first": 2064
+        },
+        "L32_W2048": {
+          "alarm": true,
+          "first": 2080
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 2112
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 2176
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": true,
+          "first": 4104
+        },
+        "L16_W4096": {
+          "alarm": true,
+          "first": 4112
+        },
+        "L32_W4096": {
+          "alarm": true,
+          "first": 4128
+        },
+        "L64_W4096": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W4096": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "lockmix L=256 f=0.1 eps=0.05",
+      "family": "lock-mix",
+      "h_true": 0.9074000581443777,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L8_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L8_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W4096": {
+          "alarm": false,
+          "first": null
+        }
+      }
+    },
+    {
+      "label": "lockmix L=256 f=0.25 eps=0.05",
+      "family": "lock-mix",
+      "h_true": 0.7685001453609442,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L8_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L8_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W4096": {
+          "alarm": false,
+          "first": null
+        }
+      }
+    },
+    {
+      "label": "lockmix L=256 f=0.5 eps=0.05",
+      "family": "lock-mix",
+      "h_true": 0.5370002907218885,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": true,
+          "first": 1032
+        },
+        "L16_W1024": {
+          "alarm": true,
+          "first": 1040
+        },
+        "L32_W1024": {
+          "alarm": true,
+          "first": 1056
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 2112
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 2176
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W2048": {
+          "alarm": true,
+          "first": 2056
+        },
+        "L16_W2048": {
+          "alarm": true,
+          "first": 2064
+        },
+        "L32_W2048": {
+          "alarm": true,
+          "first": 2080
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 2112
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 2176
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": true,
+          "first": 4104
+        },
+        "L16_W4096": {
+          "alarm": true,
+          "first": 4112
+        },
+        "L32_W4096": {
+          "alarm": true,
+          "first": 4128
+        },
+        "L64_W4096": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W4096": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "lockmix L=256 f=0.75 eps=0.05",
+      "family": "lock-mix",
+      "h_true": 0.3055004360828327,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": true,
+          "first": 1032
+        },
+        "L16_W1024": {
+          "alarm": true,
+          "first": 1040
+        },
+        "L32_W1024": {
+          "alarm": true,
+          "first": 1056
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 1088
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 1152
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 1280
+        },
+        "L8_W2048": {
+          "alarm": true,
+          "first": 2056
+        },
+        "L16_W2048": {
+          "alarm": true,
+          "first": 2064
+        },
+        "L32_W2048": {
+          "alarm": true,
+          "first": 2080
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 2112
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 2176
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": true,
+          "first": 4104
+        },
+        "L16_W4096": {
+          "alarm": true,
+          "first": 4112
+        },
+        "L32_W4096": {
+          "alarm": true,
+          "first": 4128
+        },
+        "L64_W4096": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W4096": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "lockmix L=256 f=0.9 eps=0.05",
+      "family": "lock-mix",
+      "h_true": 0.16660052329939923,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": true,
+          "first": 1032
+        },
+        "L16_W1024": {
+          "alarm": true,
+          "first": 1040
+        },
+        "L32_W1024": {
+          "alarm": true,
+          "first": 1056
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 1088
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 1152
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 1280
+        },
+        "L8_W2048": {
+          "alarm": true,
+          "first": 2056
+        },
+        "L16_W2048": {
+          "alarm": true,
+          "first": 2064
+        },
+        "L32_W2048": {
+          "alarm": true,
+          "first": 2080
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 2112
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 2176
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": true,
+          "first": 4104
+        },
+        "L16_W4096": {
+          "alarm": true,
+          "first": 4112
+        },
+        "L32_W4096": {
+          "alarm": true,
+          "first": 4128
+        },
+        "L64_W4096": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W4096": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "lockmix L=256 f=1.0 eps=0.05",
+      "family": "lock-mix",
+      "h_true": 0.07400058144377693,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": true,
+          "first": 1032
+        },
+        "L16_W1024": {
+          "alarm": true,
+          "first": 1040
+        },
+        "L32_W1024": {
+          "alarm": true,
+          "first": 1056
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 1088
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 1152
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 1280
+        },
+        "L8_W2048": {
+          "alarm": true,
+          "first": 2056
+        },
+        "L16_W2048": {
+          "alarm": true,
+          "first": 2064
+        },
+        "L32_W2048": {
+          "alarm": true,
+          "first": 2080
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 2112
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 2176
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": true,
+          "first": 4104
+        },
+        "L16_W4096": {
+          "alarm": true,
+          "first": 4112
+        },
+        "L32_W4096": {
+          "alarm": true,
+          "first": 4128
+        },
+        "L64_W4096": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W4096": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "lockmix L=4096 f=0.1 eps=0.0",
+      "family": "lock-mix",
+      "h_true": 0.9,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": true,
+          "first": 33800
+        },
+        "L16_W1024": {
+          "alarm": true,
+          "first": 33808
+        },
+        "L32_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L8_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L8_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W4096": {
+          "alarm": false,
+          "first": null
+        }
+      }
+    },
+    {
+      "label": "lockmix L=4096 f=0.25 eps=0.0",
+      "family": "lock-mix",
+      "h_true": 0.75,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": true,
+          "first": 1032
+        },
+        "L16_W1024": {
+          "alarm": true,
+          "first": 1040
+        },
+        "L32_W1024": {
+          "alarm": true,
+          "first": 1056
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 1088
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 1152
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 1280
+        },
+        "L8_W2048": {
+          "alarm": true,
+          "first": 2056
+        },
+        "L16_W2048": {
+          "alarm": true,
+          "first": 2064
+        },
+        "L32_W2048": {
+          "alarm": true,
+          "first": 2080
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 2112
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 2176
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W4096": {
+          "alarm": false,
+          "first": null
+        }
+      }
+    },
+    {
+      "label": "lockmix L=4096 f=0.5 eps=0.0",
+      "family": "lock-mix",
+      "h_true": 0.5,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": true,
+          "first": 1032
+        },
+        "L16_W1024": {
+          "alarm": true,
+          "first": 1040
+        },
+        "L32_W1024": {
+          "alarm": true,
+          "first": 1056
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 1088
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 1152
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 1280
+        },
+        "L8_W2048": {
+          "alarm": true,
+          "first": 2056
+        },
+        "L16_W2048": {
+          "alarm": true,
+          "first": 2064
+        },
+        "L32_W2048": {
+          "alarm": true,
+          "first": 2080
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 2112
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 2176
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": true,
+          "first": 4104
+        },
+        "L16_W4096": {
+          "alarm": true,
+          "first": 4112
+        },
+        "L32_W4096": {
+          "alarm": true,
+          "first": 4128
+        },
+        "L64_W4096": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W4096": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "lockmix L=4096 f=0.75 eps=0.0",
+      "family": "lock-mix",
+      "h_true": 0.25,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": true,
+          "first": 1032
+        },
+        "L16_W1024": {
+          "alarm": true,
+          "first": 1040
+        },
+        "L32_W1024": {
+          "alarm": true,
+          "first": 1056
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 1088
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 1152
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 1280
+        },
+        "L8_W2048": {
+          "alarm": true,
+          "first": 2056
+        },
+        "L16_W2048": {
+          "alarm": true,
+          "first": 2064
+        },
+        "L32_W2048": {
+          "alarm": true,
+          "first": 2080
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 2112
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 2176
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": true,
+          "first": 4104
+        },
+        "L16_W4096": {
+          "alarm": true,
+          "first": 4112
+        },
+        "L32_W4096": {
+          "alarm": true,
+          "first": 4128
+        },
+        "L64_W4096": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W4096": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "lockmix L=4096 f=0.9 eps=0.0",
+      "family": "lock-mix",
+      "h_true": 0.09999999999999998,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": true,
+          "first": 1032
+        },
+        "L16_W1024": {
+          "alarm": true,
+          "first": 1040
+        },
+        "L32_W1024": {
+          "alarm": true,
+          "first": 1056
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 1088
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 1152
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 1280
+        },
+        "L8_W2048": {
+          "alarm": true,
+          "first": 2056
+        },
+        "L16_W2048": {
+          "alarm": true,
+          "first": 2064
+        },
+        "L32_W2048": {
+          "alarm": true,
+          "first": 2080
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 2112
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 2176
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": true,
+          "first": 4104
+        },
+        "L16_W4096": {
+          "alarm": true,
+          "first": 4112
+        },
+        "L32_W4096": {
+          "alarm": true,
+          "first": 4128
+        },
+        "L64_W4096": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W4096": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "lockmix L=4096 f=1.0 eps=0.0",
+      "family": "lock-mix",
+      "h_true": 0.0,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": true,
+          "first": 1032
+        },
+        "L16_W1024": {
+          "alarm": true,
+          "first": 1040
+        },
+        "L32_W1024": {
+          "alarm": true,
+          "first": 1056
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 1088
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 1152
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 1280
+        },
+        "L8_W2048": {
+          "alarm": true,
+          "first": 2056
+        },
+        "L16_W2048": {
+          "alarm": true,
+          "first": 2064
+        },
+        "L32_W2048": {
+          "alarm": true,
+          "first": 2080
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 2112
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 2176
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": true,
+          "first": 4104
+        },
+        "L16_W4096": {
+          "alarm": true,
+          "first": 4112
+        },
+        "L32_W4096": {
+          "alarm": true,
+          "first": 4128
+        },
+        "L64_W4096": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W4096": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "lockmix L=4096 f=0.1 eps=0.05",
+      "family": "lock-mix",
+      "h_true": 0.9074000581443777,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W1024": {
+          "alarm": false,
+          "first": null
+        },
+        "L8_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W2048": {
+          "alarm": false,
+          "first": null
+        },
+        "L8_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W4096": {
+          "alarm": false,
+          "first": null
+        }
+      }
+    },
+    {
+      "label": "lockmix L=4096 f=0.25 eps=0.05",
+      "family": "lock-mix",
+      "h_true": 0.7685001453609442,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": true,
+          "first": 1032
+        },
+        "L16_W1024": {
+          "alarm": true,
+          "first": 1040
+        },
+        "L32_W1024": {
+          "alarm": true,
+          "first": 1056
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 1088
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 1152
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 1280
+        },
+        "L8_W2048": {
+          "alarm": true,
+          "first": 2056
+        },
+        "L16_W2048": {
+          "alarm": true,
+          "first": 2064
+        },
+        "L32_W2048": {
+          "alarm": true,
+          "first": 2080
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 2112
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 2176
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L16_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L32_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L64_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L128_W4096": {
+          "alarm": false,
+          "first": null
+        },
+        "L256_W4096": {
+          "alarm": false,
+          "first": null
+        }
+      }
+    },
+    {
+      "label": "lockmix L=4096 f=0.5 eps=0.05",
+      "family": "lock-mix",
+      "h_true": 0.5370002907218885,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": true,
+          "first": 1032
+        },
+        "L16_W1024": {
+          "alarm": true,
+          "first": 1040
+        },
+        "L32_W1024": {
+          "alarm": true,
+          "first": 1056
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 1088
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 1152
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 1280
+        },
+        "L8_W2048": {
+          "alarm": true,
+          "first": 2056
+        },
+        "L16_W2048": {
+          "alarm": true,
+          "first": 2064
+        },
+        "L32_W2048": {
+          "alarm": true,
+          "first": 2080
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 2112
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 2176
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": true,
+          "first": 4104
+        },
+        "L16_W4096": {
+          "alarm": true,
+          "first": 4112
+        },
+        "L32_W4096": {
+          "alarm": true,
+          "first": 4128
+        },
+        "L64_W4096": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W4096": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "lockmix L=4096 f=0.75 eps=0.05",
+      "family": "lock-mix",
+      "h_true": 0.3055004360828327,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": true,
+          "first": 1032
+        },
+        "L16_W1024": {
+          "alarm": true,
+          "first": 1040
+        },
+        "L32_W1024": {
+          "alarm": true,
+          "first": 1056
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 1088
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 1152
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 1280
+        },
+        "L8_W2048": {
+          "alarm": true,
+          "first": 2056
+        },
+        "L16_W2048": {
+          "alarm": true,
+          "first": 2064
+        },
+        "L32_W2048": {
+          "alarm": true,
+          "first": 2080
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 2112
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 2176
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": true,
+          "first": 4104
+        },
+        "L16_W4096": {
+          "alarm": true,
+          "first": 4112
+        },
+        "L32_W4096": {
+          "alarm": true,
+          "first": 4128
+        },
+        "L64_W4096": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W4096": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "lockmix L=4096 f=0.9 eps=0.05",
+      "family": "lock-mix",
+      "h_true": 0.16660052329939923,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": true,
+          "first": 1032
+        },
+        "L16_W1024": {
+          "alarm": true,
+          "first": 1040
+        },
+        "L32_W1024": {
+          "alarm": true,
+          "first": 1056
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 1088
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 1152
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 1280
+        },
+        "L8_W2048": {
+          "alarm": true,
+          "first": 2056
+        },
+        "L16_W2048": {
+          "alarm": true,
+          "first": 2064
+        },
+        "L32_W2048": {
+          "alarm": true,
+          "first": 2080
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 2112
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 2176
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": true,
+          "first": 4104
+        },
+        "L16_W4096": {
+          "alarm": true,
+          "first": 4112
+        },
+        "L32_W4096": {
+          "alarm": true,
+          "first": 4128
+        },
+        "L64_W4096": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W4096": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    },
+    {
+      "label": "lockmix L=4096 f=1.0 eps=0.05",
+      "family": "lock-mix",
+      "h_true": 0.07400058144377693,
+      "rct_apt_alarm": false,
+      "lag": {
+        "L8_W1024": {
+          "alarm": true,
+          "first": 1032
+        },
+        "L16_W1024": {
+          "alarm": true,
+          "first": 1040
+        },
+        "L32_W1024": {
+          "alarm": true,
+          "first": 1056
+        },
+        "L64_W1024": {
+          "alarm": true,
+          "first": 1088
+        },
+        "L128_W1024": {
+          "alarm": true,
+          "first": 1152
+        },
+        "L256_W1024": {
+          "alarm": true,
+          "first": 1280
+        },
+        "L8_W2048": {
+          "alarm": true,
+          "first": 2056
+        },
+        "L16_W2048": {
+          "alarm": true,
+          "first": 2064
+        },
+        "L32_W2048": {
+          "alarm": true,
+          "first": 2080
+        },
+        "L64_W2048": {
+          "alarm": true,
+          "first": 2112
+        },
+        "L128_W2048": {
+          "alarm": true,
+          "first": 2176
+        },
+        "L256_W2048": {
+          "alarm": true,
+          "first": 2304
+        },
+        "L8_W4096": {
+          "alarm": true,
+          "first": 4104
+        },
+        "L16_W4096": {
+          "alarm": true,
+          "first": 4112
+        },
+        "L32_W4096": {
+          "alarm": true,
+          "first": 4128
+        },
+        "L64_W4096": {
+          "alarm": true,
+          "first": 4160
+        },
+        "L128_W4096": {
+          "alarm": true,
+          "first": 4224
+        },
+        "L256_W4096": {
+          "alarm": true,
+          "first": 4352
+        }
+      }
+    }
+  ],
+  "false_alarm": [
+    {
+      "lags": 32,
+      "window": 4096,
+      "cutoff": 2670,
+      "n": 1000000,
+      "windows": 244,
+      "failing_windows": 0,
+      "worst_count": 2165,
+      "mean_of_window_max": 2113.5860655737706,
+      "bias_p1": null
+    },
+    {
+      "lags": 32,
+      "window": 4096,
+      "cutoff": 2670,
+      "n": 1000000,
+      "windows": 244,
+      "failing_windows": 0,
+      "worst_count": 2574,
+      "mean_of_window_max": 2457.0778688524592,
+      "bias_p1": 0.7071067811865476
+    },
+    {
+      "lags": 256,
+      "window": 4096,
+      "cutoff": 2679,
+      "n": 1000000,
+      "windows": 244,
+      "failing_windows": 0,
+      "worst_count": 2171,
+      "mean_of_window_max": 2137.44262295082,
+      "bias_p1": null
+    },
+    {
+      "lags": 256,
+      "window": 4096,
+      "cutoff": 2679,
+      "n": 1000000,
+      "windows": 244,
+      "failing_windows": 0,
+      "worst_count": 2572,
+      "mean_of_window_max": 2478.2131147540986,
+      "bias_p1": 0.7071067811865476
+    },
+    {
+      "lags": 32,
+      "window": 1024,
+      "cutoff": 735,
+      "n": 1000000,
+      "windows": 976,
+      "failing_windows": 0,
+      "worst_count": 578,
+      "mean_of_window_max": 545.1157786885246,
+      "bias_p1": null
+    },
+    {
+      "lags": 32,
+      "window": 1024,
+      "cutoff": 735,
+      "n": 1000000,
+      "windows": 976,
+      "failing_windows": 0,
+      "worst_count": 674,
+      "mean_of_window_max": 628.1823770491803,
+      "bias_p1": 0.7071067811865476
+    }
+  ],
+  "calibration": [
+    {
+      "lags": 16,
+      "window": 1024,
+      "cutoff": 649,
+      "n": 1000000,
+      "windows": 976,
+      "failing_windows": 38,
+      "worst_count": 675,
+      "mean_of_window_max": 623.484631147541,
+      "bias_p1": 0.7071067811865476,
+      "kind": "exact (used)",
+      "true_tail": 0.003264259453442533
+    },
+    {
+      "lags": 16,
+      "window": 1024,
+      "cutoff": 643,
+      "n": 1000000,
+      "windows": 976,
+      "failing_windows": 84,
+      "worst_count": 675,
+      "mean_of_window_max": 623.484631147541,
+      "bias_p1": 0.7071067811865476,
+      "kind": "binomial (not used)",
+      "true_tail": 0.008538909454340462
+    },
+    {
+      "lags": 16,
+      "window": 4096,
+      "cutoff": 2496,
+      "n": 1000000,
+      "windows": 244,
+      "failing_windows": 7,
+      "worst_count": 2510,
+      "mean_of_window_max": 2445.8688524590166,
+      "bias_p1": 0.7071067811865476,
+      "kind": "exact (used)",
+      "true_tail": 0.0036989139954845384
+    },
+    {
+      "lags": 16,
+      "window": 4096,
+      "cutoff": 2484,
+      "n": 1000000,
+      "windows": 244,
+      "failing_windows": 21,
+      "worst_count": 2510,
+      "mean_of_window_max": 2445.8688524590166,
+      "bias_p1": 0.7071067811865476,
+      "kind": "binomial (not used)",
+      "true_tail": 0.00954561307877626
+    }
+  ],
+  "corner_replay": [
+    {
+      "label": "tt 27 C 1.8 V",
+      "h_est": 0.7701137306856425,
+      "cfg": {
+        "L16_W2048": {
+          "alarms": 0,
+          "worst": 1103,
+          "cutoff": 1389
+        },
+        "L32_W4096": {
+          "alarms": 0,
+          "worst": 2160,
+          "cutoff": 2670
+        },
+        "L256_W4096": {
+          "alarms": 0,
+          "worst": 2175,
+          "cutoff": 2679
+        }
+      }
+    },
+    {
+      "label": "ss 27 C 1.8 V",
+      "h_est": 0.6715216121223239,
+      "cfg": {
+        "L16_W2048": {
+          "alarms": 0,
+          "worst": 1128,
+          "cutoff": 1389
+        },
+        "L32_W4096": {
+          "alarms": 0,
+          "worst": 2199,
+          "cutoff": 2670
+        },
+        "L256_W4096": {
+          "alarms": 0,
+          "worst": 2197,
+          "cutoff": 2679
+        }
+      }
+    },
+    {
+      "label": "ff 27 C 1.8 V",
+      "h_est": 0.81278619203816,
+      "cfg": {
+        "L16_W2048": {
+          "alarms": 0,
+          "worst": 1100,
+          "cutoff": 1389
+        },
+        "L32_W4096": {
+          "alarms": 0,
+          "worst": 2182,
+          "cutoff": 2670
+        },
+        "L256_W4096": {
+          "alarms": 0,
+          "worst": 2170,
+          "cutoff": 2679
+        }
+      }
+    },
+    {
+      "label": "tt -40 C 1.62 V",
+      "h_est": 0.7765546797914663,
+      "cfg": {
+        "L16_W2048": {
+          "alarms": 0,
+          "worst": 1116,
+          "cutoff": 1389
+        },
+        "L32_W4096": {
+          "alarms": 0,
+          "worst": 2207,
+          "cutoff": 2670
+        },
+        "L256_W4096": {
+          "alarms": 0,
+          "worst": 2222,
+          "cutoff": 2679
+        }
+      }
+    },
+    {
+      "label": "ss -40 C 1.62 V",
+      "h_est": 0.6485812646602823,
+      "cfg": {
+        "L16_W2048": {
+          "alarms": 0,
+          "worst": 1199,
+          "cutoff": 1389
+        },
+        "L32_W4096": {
+          "alarms": 0,
+          "worst": 2363,
+          "cutoff": 2670
+        },
+        "L256_W4096": {
+          "alarms": 0,
+          "worst": 2361,
+          "cutoff": 2679
+        }
+      }
+    },
+    {
+      "label": "ff -40 C 1.62 V",
+      "h_est": 0.7853201114743757,
+      "cfg": {
+        "L16_W2048": {
+          "alarms": 0,
+          "worst": 1107,
+          "cutoff": 1389
+        },
+        "L32_W4096": {
+          "alarms": 0,
+          "worst": 2174,
+          "cutoff": 2670
+        },
+        "L256_W4096": {
+          "alarms": 0,
+          "worst": 2179,
+          "cutoff": 2679
+        }
+      }
+    },
+    {
+      "label": "tt -40 C 1.98 V",
+      "h_est": 0.7507154834985424,
+      "cfg": {
+        "L16_W2048": {
+          "alarms": 0,
+          "worst": 1103,
+          "cutoff": 1389
+        },
+        "L32_W4096": {
+          "alarms": 0,
+          "worst": 2149,
+          "cutoff": 2670
+        },
+        "L256_W4096": {
+          "alarms": 0,
+          "worst": 2165,
+          "cutoff": 2679
+        }
+      }
+    },
+    {
+      "label": "ss -40 C 1.98 V",
+      "h_est": 0.7418356497457393,
+      "cfg": {
+        "L16_W2048": {
+          "alarms": 0,
+          "worst": 1104,
+          "cutoff": 1389
+        },
+        "L32_W4096": {
+          "alarms": 0,
+          "worst": 2202,
+          "cutoff": 2670
+        },
+        "L256_W4096": {
+          "alarms": 0,
+          "worst": 2207,
+          "cutoff": 2679
+        }
+      }
+    },
+    {
+      "label": "ff -40 C 1.98 V",
+      "h_est": 0.7799377425413144,
+      "cfg": {
+        "L16_W2048": {
+          "alarms": 0,
+          "worst": 1089,
+          "cutoff": 1389
+        },
+        "L32_W4096": {
+          "alarms": 0,
+          "worst": 2132,
+          "cutoff": 2670
+        },
+        "L256_W4096": {
+          "alarms": 0,
+          "worst": 2165,
+          "cutoff": 2679
+        }
+      }
+    },
+    {
+      "label": "tt 125 C 1.62 V",
+      "h_est": 0.8192557504209094,
+      "cfg": {
+        "L16_W2048": {
+          "alarms": 0,
+          "worst": 1121,
+          "cutoff": 1389
+        },
+        "L32_W4096": {
+          "alarms": 0,
+          "worst": 2209,
+          "cutoff": 2670
+        },
+        "L256_W4096": {
+          "alarms": 0,
+          "worst": 2213,
+          "cutoff": 2679
+        }
+      }
+    },
+    {
+      "label": "ss 125 C 1.62 V",
+      "h_est": 0.7240739106266373,
+      "cfg": {
+        "L16_W2048": {
+          "alarms": 0,
+          "worst": 1098,
+          "cutoff": 1389
+        },
+        "L32_W4096": {
+          "alarms": 0,
+          "worst": 2160,
+          "cutoff": 2670
+        },
+        "L256_W4096": {
+          "alarms": 0,
+          "worst": 2165,
+          "cutoff": 2679
+        }
+      }
+    },
+    {
+      "label": "ff 125 C 1.62 V",
+      "h_est": 0.7566235275506433,
+      "cfg": {
+        "L16_W2048": {
+          "alarms": 0,
+          "worst": 1103,
+          "cutoff": 1389
+        },
+        "L32_W4096": {
+          "alarms": 0,
+          "worst": 2153,
+          "cutoff": 2670
+        },
+        "L256_W4096": {
+          "alarms": 0,
+          "worst": 2166,
+          "cutoff": 2679
+        }
+      }
+    },
+    {
+      "label": "tt 125 C 1.8 V",
+      "h_est": 0.7343893505306073,
+      "cfg": {
+        "L16_W2048": {
+          "alarms": 0,
+          "worst": 1098,
+          "cutoff": 1389
+        },
+        "L32_W4096": {
+          "alarms": 0,
+          "worst": 2171,
+          "cutoff": 2670
+        },
+        "L256_W4096": {
+          "alarms": 0,
+          "worst": 2182,
+          "cutoff": 2679
+        }
+      }
+    },
+    {
+      "label": "ss 125 C 1.8 V",
+      "h_est": 0.795191768096093,
+      "cfg": {
+        "L16_W2048": {
+          "alarms": 0,
+          "worst": 1100,
+          "cutoff": 1389
+        },
+        "L32_W4096": {
+          "alarms": 0,
+          "worst": 2165,
+          "cutoff": 2670
+        },
+        "L256_W4096": {
+          "alarms": 0,
+          "worst": 2216,
+          "cutoff": 2679
+        }
+      }
+    },
+    {
+      "label": "ff 125 C 1.8 V",
+      "h_est": 0.7512742440505845,
+      "cfg": {
+        "L16_W2048": {
+          "alarms": 0,
+          "worst": 1098,
+          "cutoff": 1389
+        },
+        "L32_W4096": {
+          "alarms": 0,
+          "worst": 2156,
+          "cutoff": 2670
+        },
+        "L256_W4096": {
+          "alarms": 0,
+          "worst": 2169,
+          "cutoff": 2679
+        }
+      }
+    },
+    {
+      "label": "tt 125 C 1.98 V",
+      "h_est": 0.7240379133062232,
+      "cfg": {
+        "L16_W2048": {
+          "alarms": 0,
+          "worst": 1116,
+          "cutoff": 1389
+        },
+        "L32_W4096": {
+          "alarms": 0,
+          "worst": 2154,
+          "cutoff": 2670
+        },
+        "L256_W4096": {
+          "alarms": 0,
+          "worst": 2169,
+          "cutoff": 2679
+        }
+      }
+    },
+    {
+      "label": "ss 125 C 1.98 V",
+      "h_est": 0.7481736056509075,
+      "cfg": {
+        "L16_W2048": {
+          "alarms": 0,
+          "worst": 1088,
+          "cutoff": 1389
+        },
+        "L32_W4096": {
+          "alarms": 0,
+          "worst": 2146,
+          "cutoff": 2670
+        },
+        "L256_W4096": {
+          "alarms": 0,
+          "worst": 2179,
+          "cutoff": 2679
+        }
+      }
+    },
+    {
+      "label": "ff 125 C 1.98 V",
+      "h_est": 0.7735652669172399,
+      "cfg": {
+        "L16_W2048": {
+          "alarms": 0,
+          "worst": 1108,
+          "cutoff": 1389
+        },
+        "L32_W4096": {
+          "alarms": 0,
+          "worst": 2156,
+          "cutoff": 2670
+        },
+        "L256_W4096": {
+          "alarms": 0,
+          "worst": 2155,
+          "cutoff": 2679
+        }
+      }
+    }
+  ]
+}

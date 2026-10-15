@@ -1,0 +1,120 @@
+{
+  "record_id": "20261015-214950-df2fc8b",
+  "slug": "digital-synthesis",
+  "level": "gate",
+  "claim": "DR-0015 study: standalone sky130_fd_sc_hd synthesis (area/cell count, estimate of a prototype, no equivalence proof) of a parallel lag-count monitor over a (LAGS, WIN) grid, against the trng_digital area; not adopted",
+  "seeds": {},
+  "supersedes": null,
+  "author": "loom-builder@sky130-trng",
+  "timestamp_utc": "2026-10-15T21:49:50.225703+00:00",
+  "repo_sha": "df2fc8b",
+  "tools": {
+    "python": "3.12.3",
+    "platform": "Linux-6.17.0-1019-aws-x86_64-with-glibc2.39",
+    "yosys": "0.67+post"
+  },
+  "artifacts": [
+    "sim/digital-synthesis/runs/20261015-214950-df2fc8b/lagcount_monitor.v"
+  ],
+  "rows": [
+    {
+      "lags": 8,
+      "win": 1024,
+      "cutoff": 732,
+      "instances": 586,
+      "area_um2": 5637.9072,
+      "seq_area_um2": 2777.664,
+      "leakage_nw": 2.4333752903000003,
+      "engine_version": "0.67+post",
+      "input_hash": "sha256:b29f099b64162c01ab70a5a4c7f9199ef311ac2f7d429239d5ffa9ea1b1e6c9d",
+      "deck_hash": "sha256:8e78e14442062dba34d414fca6490b2f6b96038d4510d1438ca44fee31487135"
+    },
+    {
+      "lags": 16,
+      "win": 1024,
+      "cutoff": 733,
+      "instances": 1117,
+      "area_um2": 10667.7312,
+      "seq_area_um2": 5204.992,
+      "leakage_nw": 4.577314547499999,
+      "engine_version": "0.67+post",
+      "input_hash": "sha256:773caab691e33cf81b0a13928e7661e6ef5cf53417ecb7a4797d3986a4915edf",
+      "deck_hash": "sha256:8e78e14442062dba34d414fca6490b2f6b96038d4510d1438ca44fee31487135"
+    },
+    {
+      "lags": 16,
+      "win": 2048,
+      "cutoff": 1389,
+      "instances": 1156,
+      "area_um2": 11471.0016,
+      "seq_area_um2": 5630.4,
+      "leakage_nw": 4.9850798113999994,
+      "engine_version": "0.67+post",
+      "input_hash": "sha256:4a49fe67a99f837c1c1f4f1176026591cbe26b9fe491170e1d1e85456a8d0c4c",
+      "deck_hash": "sha256:8e78e14442062dba34d414fca6490b2f6b96038d4510d1438ca44fee31487135"
+    },
+    {
+      "lags": 32,
+      "win": 1024,
+      "cutoff": 735,
+      "instances": 2068,
+      "area_um2": 19904.0896,
+      "seq_area_um2": 10034.624,
+      "leakage_nw": 8.413789882199996,
+      "engine_version": "0.67+post",
+      "input_hash": "sha256:8bc20eb037d2049528dfb12a6c068a5b5a9b45e99260203e5436d21048fcb907",
+      "deck_hash": "sha256:8e78e14442062dba34d414fca6490b2f6b96038d4510d1438ca44fee31487135"
+    },
+    {
+      "lags": 32,
+      "win": 4096,
+      "cutoff": 2670,
+      "instances": 2483,
+      "area_um2": 23981.7504,
+      "seq_area_um2": 11686.208,
+      "leakage_nw": 10.303744457799999,
+      "engine_version": "0.67+post",
+      "input_hash": "sha256:90616356a9b113aa0c12d83ee411f7aedf46769e79ae919ba9ab64a12534234a",
+      "deck_hash": "sha256:8e78e14442062dba34d414fca6490b2f6b96038d4510d1438ca44fee31487135"
+    },
+    {
+      "lags": 64,
+      "win": 4096,
+      "cutoff": 2673,
+      "instances": 4787,
+      "area_um2": 46176.7872,
+      "seq_area_um2": 22921.984,
+      "leakage_nw": 19.635138384100006,
+      "engine_version": "0.67+post",
+      "input_hash": "sha256:163cf42a2eb92d92e8f83641f2d53a7a5a68d21e2065bc0844d09a3e5827840b",
+      "deck_hash": "sha256:8e78e14442062dba34d414fca6490b2f6b96038d4510d1438ca44fee31487135"
+    },
+    {
+      "lags": 128,
+      "win": 4096,
+      "cutoff": 2676,
+      "instances": 9080,
+      "area_um2": 88912.7744,
+      "seq_area_um2": 45368.512,
+      "leakage_nw": 37.7790599718,
+      "engine_version": "0.67+post",
+      "input_hash": "sha256:236919183ef37057cc1fc5cf9dc4b84e7c3985e55aa72526209c370caecd1752",
+      "deck_hash": "sha256:8e78e14442062dba34d414fca6490b2f6b96038d4510d1438ca44fee31487135"
+    },
+    {
+      "lags": 256,
+      "win": 4096,
+      "cutoff": 2679,
+      "instances": 20082,
+      "area_um2": 185499.1584,
+      "seq_area_um2": 90236.544,
+      "leakage_nw": 77.3331684204,
+      "engine_version": "0.67+post",
+      "input_hash": "sha256:d27b1e62c0e3cb8341d26cae1e4e2846eb23125c2c52c3b9d803051a121e63d7",
+      "deck_hash": "sha256:8e78e14442062dba34d414fca6490b2f6b96038d4510d1438ca44fee31487135"
+    }
+  ],
+  "baseline_trng_digital_area_um2": 22203.7952,
+  "baseline_record": "20260910-001436-a4c3194",
+  "pdk": "sky130A"
+}
