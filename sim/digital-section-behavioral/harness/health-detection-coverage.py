@@ -286,6 +286,9 @@ LAG_GRID_L = (8, 16, 32, 64, 128, 256)
 LAG_GRID_W = (1024, 2048, 4096)
 #: configurations whose full per-stream table is reported
 LAG_REPORT = ((32, 4096), (256, 4096))
+_REPLAY = REPO_ROOT / "sim" / "digital-health-test-parameters" / "analysis" / "health-test-replay.py"
+#: configurations replayed over the sky130 behavioural corner streams
+REPLAY_CONFIGS = ((16, 2048), (32, 4096), (256, 4096))
 FA_SAMPLES = 1_000_000
 FA_SEED_OFFSET = 1
 #: loosened per-window alpha used only to calibrate the tail derivation empirically
@@ -359,7 +362,27 @@ def false_alarm_run(seed, lags, window, c_override=None, bias_p1=None, n=FA_SAMP
             "bias_p1": bias_p1}
 
 
-def build_report_j(rows, seed, n, fa, cal):
+def corner_replay():
+    """Lag monitor over the 18 Ts = 20 us sky130 behavioural corner streams (hash-verified loader of the replay analysis)."""
+    spec = importlib.util.spec_from_file_location("health_test_replay", _REPLAY)
+    mod = importlib.util.module_from_spec(spec)
+    sys.path.insert(0, str(_REPLAY.parent))
+    spec.loader.exec_module(mod)
+    out = []
+    for st in mod.load_streams():
+        bits = st["bits"]
+        v = lagcount.pack(bits)
+        row = {"label": mod.label(st), "h_est": st["h"], "n": len(bits), "cfg": {}}
+        for lags, w in REPLAY_CONFIGS:
+            hits = lagcount.scan_packed(v, len(bits), lags, w)
+            mx = max(lagcount.window_max_counts(v, len(bits), lags, w))
+            row["cfg"][(lags, w)] = {"alarms": len(hits), "worst": mx,
+                                     "cutoff": lagcount.c_lag(lags, w)}
+        out.append(row)
+    return out
+
+
+def build_report_j(rows, seed, n, fa, cal, replay):
     L = []
     a = L.append
     low = [r for r in rows if r["below_target"]]
@@ -462,6 +485,26 @@ def build_report_j(rows, seed, n, fa, cal):
         tgt = 2.0 ** -40 / lags
         a(f"| {lags} | {w} | {cb} | {t:.3g} | {tgt:.3g} | {t / tgt:.3g} | {lagcount.c_lag(lags, w)} |")
     a("")
+    a("## Replay over the sky130 behavioural corner streams")
+    a("")
+    a("The 18 Ts = 20 us streams of the volume campaigns (131072 samples each, hash-verified by the loader of "
+      "`sim/digital-health-test-parameters/analysis/health-test-replay.py`; behavioural model with independent noise "
+      "increments, **not silicon**). Worst = largest lag match count over every lag and window; "
+      "margin = `C_L` - worst.")
+    a("")
+    hdr = "| stream | H_est |" + "".join(f" L={l} W={w} (C_L {lagcount.c_lag(l, w)}): alarms / worst |" for l, w in REPLAY_CONFIGS)
+    a(hdr)
+    a("|---|---|" + "---|" * len(REPLAY_CONFIGS))
+    for r in replay:
+        a(f"| {r['label']} | {r['h_est']:.3f} |" + "".join(
+            f" {r['cfg'][c]['alarms']} / {r['cfg'][c]['worst']} |" for c in REPLAY_CONFIGS))
+    a("")
+    for c in REPLAY_CONFIGS:
+        worst = max(r["cfg"][c]["worst"] for r in replay)
+        cut = replay[0]["cfg"][c]["cutoff"]
+        a(f"- L={c[0]} W={c[1]}: total alarms {sum(r['cfg'][c]['alarms'] for r in replay)}; "
+          f"worst count {worst} vs `C_L` {cut} (min margin {cut - worst}, {(cut - worst) / c[1]:.3f} of W)")
+    a("")
     a("## Notes")
     a("")
     a("- A period-k stream has lag-k match rate 1 (less flip noise); the monitor therefore covers periods")
@@ -494,12 +537,14 @@ def main_j(args):
             r["kind"] = kind
             r["true_tail"] = lagcount.exact_tail(w, 1, 2.0 ** -H_DESIGN, c)
             cal.append(r)
-    body = build_report_j(rows, args.seed, args.n, fa, cal)
+    replay = corner_replay()
+    body = build_report_j(rows, args.seed, args.n, fa, cal, replay)
     print(body)
     ctrl = rows[0]
     ok = (not ctrl["rct_apt_alarm"]
           and all(not ctrl["lag"][k]["alarm"] for k in ctrl["lag"])
           and all(f["failing_windows"] == 0 for f in fa)
+          and all(r["cfg"][c]["alarms"] == 0 for r in replay for c in REPLAY_CONFIGS)
           and all(c["failing_windows"] / c["windows"] <= 2.0 ** -CAL_ALPHA_LOG2 * 1.5
                   for c in cal if c["kind"].startswith("exact")))
     if not ok:
@@ -522,7 +567,10 @@ def main_j(args):
             body_md=body,
             summary={"ok": ok, "seed": args.seed, "n": args.n, "experiment": "J",
                      "h_design": H_DESIGN, "rows": summary_rows, "false_alarm": fa,
-                     "calibration": cal},
+                     "calibration": cal,
+                     "corner_replay": [{"label": r["label"], "h_est": r["h_est"],
+                                        "cfg": {f"L{k[0]}_W{k[1]}": v for k, v in r["cfg"].items()}}
+                                       for r in replay]},
             level="behavioral",
             seeds={"python_random": args.seed, "false_alarm_random": args.seed + FA_SEED_OFFSET},
             artifacts=[artifact],
