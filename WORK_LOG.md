@@ -2,6 +2,14 @@
 
 Chronological record of recently merged pull requests and closed issues.
 
+### 2026-10-15
+
+- **PR #286**: Guard active SDF signoff evidence against changed simulation inputs
+- **Issue #285** (closed): Guard active SDF signoff evidence against changed simulation inputs
+- **PR #218**: ci: run volume-model and ripple-reduction tests in PR-blocking job
+- **Issue #217** (closed): CI: run test_raw_bit_volume_model and test_ripple_reduction in the PR-blocking lint job
+- **Issue #162** (closed): README: embed the fleet burndown chart (one line)
+
 ### 2026-10-12
 
 - **PR #311**: feat(sim): lock-resolution campaign for the supply-ripple evidence (#288)
