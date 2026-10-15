@@ -345,6 +345,24 @@ def detect_power_table(lags, window):
     return c, rows
 
 
+def covered_h(lags, window, target):
+    """Largest min-entropy h of a period-k + flip-noise stream (k <= L) alarmed with probability >= ``target`` per window.
+
+    Binomial approximation of the alarm probability at the stream's own lag k (match rate
+    (1-eps)^2 + eps^2), bisected over eps; the simulated grid above is the cross-check.
+    """
+    c = lagcount.c_lag(lags, window)
+    lo, hi = 0.0, 1 - 2.0 ** -H_DESIGN
+    for _ in range(50):
+        mid = (lo + hi) / 2
+        rate = (1 - mid) ** 2 + mid ** 2
+        if lagcount.tail_probability(window, rate, c) >= target:
+            lo = mid
+        else:
+            hi = mid
+    return lo, h_periodic(lo)
+
+
 def false_alarm_run(seed, lags, window, c_override=None, bias_p1=None, n=FA_SAMPLES):
     """Seeded i.i.d. stream (fair, or P(1)=bias_p1): failing windows + worst lag count seen."""
     rng = random.Random(seed)
@@ -448,6 +466,17 @@ def build_report_j(rows, seed, n, fa, cal, replay):
         for t in tab:
             a(f"| {t['eps']} | {fmt_h(t['h'])} | {t['rate']:.4f} | {t['p_window']:.3g} |")
         a("")
+    a("Largest flip noise `eps` (and its `h`) a period-k stream can carry and still be alarmed with the "
+      "stated probability in one window (binomial approximation; first-verdict latency = L + W_L samples):")
+    a("")
+    a("| L | W_L | C_L | per-window P >= 0.5: eps / h | per-window P >= 0.99: eps / h | first-verdict latency ms |")
+    a("|---|---|---|---|---|---|")
+    for lags, w in ((8, 1024), (16, 1024), (16, 2048), (32, 1024), (32, 4096), (256, 4096)):
+        e5, h5 = covered_h(lags, w, 0.5)
+        e99, h99 = covered_h(lags, w, 0.99)
+        a(f"| {lags} | {w} | {lagcount.c_lag(lags, w)} | {e5:.3f} / {h5:.3f} | {e99:.3f} / {h99:.3f} | "
+          f"{(lags + w) / RAW_RATE_BPS * 1e3:.1f} |")
+    a("")
     a("## False-alarm check on seeded i.i.d. streams")
     a("")
     a(f"Analytic limit: per lag `2^-40 / L`, per window `<= 2^-40` for any i.i.d. source with min-entropy "
