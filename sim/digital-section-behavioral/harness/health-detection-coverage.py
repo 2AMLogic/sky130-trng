@@ -28,10 +28,19 @@ about the real source's entropy. "Caught by an estimator" means its point
 estimate is below the design target H_DESIGN; the estimators are the repo's
 labelled approximations, not a validated 90B implementation.
 
+Experiment J (``--lagcount``, issue #301, DR-0015) re-runs the same stream
+families through a *study* lag-k match-count monitor
+(``digital/model/lagcount.py``, additive, not adopted, not wired into the
+health monitor) next to the unchanged RCT/APT, over a grid of lag counts ``L``
+and windows ``W_L``, and checks the monitor's false-alarm limit on seeded
+i.i.d. streams. RCT/APT cutoffs are not touched by either experiment.
+
 Usage::
 
     python3 sim/digital-section-behavioral/harness/health-detection-coverage.py
     python3 sim/digital-section-behavioral/harness/health-detection-coverage.py --emit-record
+    python3 sim/digital-section-behavioral/harness/health-detection-coverage.py --lagcount
+    python3 sim/digital-section-behavioral/harness/health-detection-coverage.py --lagcount --emit-record
 """
 
 from __future__ import annotations
@@ -49,6 +58,7 @@ sys.path.insert(0, str(REPO_ROOT / "digital"))
 sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
 
 from evidence_record import mint_behavioral_record  # noqa: E402
+from model import lagcount  # noqa: E402
 from model.health import HealthMonitor  # noqa: E402
 from model.params import C_APT, C_RCT, H_DESIGN, STARTUP_SAMPLES, W_APT  # noqa: E402
 
@@ -149,39 +159,44 @@ def measure(label, family, params, h_true, bits):
     }
 
 
-def sweep(seed, n):
-    rng = random.Random(seed)
-    rows = []
+def streams(seed, n):
+    """Yield ``(label, family, params, h_true, bits)`` for every experiment-I stream.
 
-    def add(label, fam, params, h, bits):
-        rows.append(measure(label, fam, params, h, bits))
+    One shared seeded ``random.Random`` drawn in a fixed order, so the same
+    ``(seed, n)`` reproduces the same streams for experiments I and J.
+    """
+    rng = random.Random(seed)
 
     # control: fair coin
-    add("control fair", "control", {}, 1.0, [rng.getrandbits(1) for _ in range(n)])
+    yield ("control fair", "control", {}, 1.0, [rng.getrandbits(1) for _ in range(n)])
 
     # Markov: symmetric stay sweep, plus biased/asymmetric chains
     for s in (0.5, 0.6, 0.7, 0.8, 0.9, 0.95, 0.98, 0.99):
-        add(f"markov sym stay={s}", "markov", {"a": s, "b": s}, h_markov(s, s),
-            gen_markov(rng, n, s, s))
+        yield (f"markov sym stay={s}", "markov", {"a": s, "b": s}, h_markov(s, s),
+               gen_markov(rng, n, s, s))
     for a, b in ((0.7, 0.5), (0.8, 0.5), (0.9, 0.6), (0.9, 0.3), (0.95, 0.5), (0.98, 0.6)):
-        add(f"markov asym a={a} b={b}", "markov", {"a": a, "b": b}, h_markov(a, b),
-            gen_markov(rng, n, a, b))
+        yield (f"markov asym a={a} b={b}", "markov", {"a": a, "b": b}, h_markov(a, b),
+               gen_markov(rng, n, a, b))
 
     # period-k with flip noise
     for k in (2, 4, 8, 16, 64, 256):
         for eps in (0.0, 0.01, 0.05, 0.1, 0.2, 0.3):
             pat = balanced_pattern(rng, k)
-            add(f"periodic k={k} eps={eps}", "periodic", {"k": k, "eps": eps},
-                h_periodic(eps), gen_periodic(rng, n, k, 0.0 + eps, pat))
+            yield (f"periodic k={k} eps={eps}", "periodic", {"k": k, "eps": eps},
+                   h_periodic(eps), gen_periodic(rng, n, k, 0.0 + eps, pat))
 
     # lock-fraction mixture
     for seg in (256, 4096):
         for eps in (0.0, 0.05):
             for f in (0.1, 0.25, 0.5, 0.75, 0.9, 1.0):
-                add(f"lockmix L={seg} f={f} eps={eps}", "lock-mix",
-                    {"segment": seg, "frac": f, "eps_lock": eps}, h_lockmix(f, eps),
-                    gen_lockmix(rng, n, seg, f, eps))
-    return rows
+                yield (f"lockmix L={seg} f={f} eps={eps}", "lock-mix",
+                       {"segment": seg, "frac": f, "eps_lock": eps}, h_lockmix(f, eps),
+                       gen_lockmix(rng, n, seg, f, eps))
+
+
+def sweep(seed, n):
+    return [measure(label, fam, params, h, bits)
+            for label, fam, params, h, bits in streams(seed, n)]
 
 
 # ------------------------------------------------------------- reporting
@@ -265,12 +280,266 @@ def build_report(rows, seed, n):
     return "\n".join(L)
 
 
+# ------------------------------------------------------- experiment J (#301)
+
+LAG_GRID_L = (8, 16, 32, 64, 128, 256)
+LAG_GRID_W = (1024, 2048, 4096)
+#: configurations whose full per-stream table is reported
+LAG_REPORT = ((32, 4096), (256, 4096))
+FA_SAMPLES = 1_000_000
+FA_SEED_OFFSET = 1
+#: loosened per-window alpha used only to calibrate the tail derivation empirically
+CAL_ALPHA_LOG2 = 4
+
+
+def run_lag(v, n, lags, window):
+    first, mask = lagcount.first_alarm_packed(v, n, lags, window)
+    return first, mask
+
+
+def lag_sweep(seed, n):
+    """Per stream: RCT/APT outcome plus the lag monitor over the (L, W_L) grid."""
+    rows = []
+    for label, fam, params, h, bits in streams(seed, n):
+        first, which, _ = run_health(bits)
+        v = lagcount.pack(bits)
+        lag = {}
+        for w in LAG_GRID_W:
+            for lags in LAG_GRID_L:
+                f, mask = run_lag(v, len(bits), lags, w)
+                lag[(lags, w)] = {"alarm": f is not None, "first": f, "lag_mask": mask}
+        rows.append({"label": label, "family": fam, "params": params, "h_true": h,
+                     "below_target": h < H_DESIGN, "rct_apt_alarm": first is not None,
+                     "rct_apt_first": first, "rct_apt_kind": which, "lag": lag})
+    return rows
+
+
+def coverage_by_config(rows):
+    out = {}
+    low = [r for r in rows if r["below_target"]]
+    hi = [r for r in rows if not r["below_target"]]
+    for w in LAG_GRID_W:
+        for lags in LAG_GRID_L:
+            key = (lags, w)
+            caught = [r for r in low if r["lag"][key]["alarm"] or r["rct_apt_alarm"]]
+            newly = [r for r in low if r["lag"][key]["alarm"] and not r["rct_apt_alarm"]]
+            missed = [r for r in low if not (r["lag"][key]["alarm"] or r["rct_apt_alarm"])]
+            fa = [r for r in hi if r["lag"][key]["alarm"]]
+            out[key] = {"c_l": lagcount.c_lag(lags, w), "caught": len(caught),
+                        "newly": len(newly), "missed": missed, "false_alarms": fa,
+                        "n_low": len(low)}
+    return out
+
+
+def detect_power_table(lags, window):
+    """Analytic per-window detection of a period-k stream with flip noise, at its own lag k."""
+    c = lagcount.c_lag(lags, window)
+    rows = []
+    for eps in (0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.28, 0.2929):
+        rate = (1 - eps) ** 2 + eps ** 2
+        rows.append({"eps": eps, "h": h_periodic(eps), "rate": rate,
+                     "p_window": lagcount.tail_probability(window, rate, c)})
+    return c, rows
+
+
+def false_alarm_run(seed, lags, window, c_override=None, bias_p1=None, n=FA_SAMPLES):
+    """Seeded i.i.d. stream (fair, or P(1)=bias_p1): failing windows + worst lag count seen."""
+    rng = random.Random(seed)
+    if bias_p1 is None:
+        bits = [rng.getrandbits(1) for _ in range(n)]
+    else:
+        bits = [1 if rng.random() < bias_p1 else 0 for _ in range(n)]
+    v = lagcount.pack(bits)
+    c = lagcount.c_lag(lags, window) if c_override is None else c_override
+    hits = lagcount.scan_packed(v, n, lags, window, c)
+    maxes = lagcount.window_max_counts(v, n, lags, window)
+    return {"lags": lags, "window": window, "cutoff": c, "n": n, "windows": len(maxes),
+            "failing_windows": len(hits), "worst_count": max(maxes),
+            "mean_of_window_max": sum(maxes) / len(maxes),
+            "bias_p1": bias_p1}
+
+
+def build_report_j(rows, seed, n, fa, cal):
+    L = []
+    a = L.append
+    low = [r for r in rows if r["below_target"]]
+    cov = coverage_by_config(rows)
+    a("## Configuration")
+    a("")
+    a(f"- DUT: `digital/model/lagcount.py` study monitor **next to** the unchanged RCT/APT "
+      f"(`C_RCT` = {C_RCT}, `C_APT` = {C_APT}, `W` = {W_APT}; DR-0004 not modified). The lag monitor is "
+      f"**not adopted** and not wired into `HealthMonitor`.")
+    a(f"- stimulus: the experiment-I streams, **declared synthetic logic stimuli**, "
+      f"`random.Random({seed})`, {n:,} samples each; identical to record `20261011-143828-a7af876`. "
+      f"PVT-independent (no SPICE, no PDK). **No entropy claim on silicon; provisional until measured.**")
+    a(f"- cutoff `C_L`: smallest `C` with *exact* `Pr(M_lag1 >= C) <= 2^-40 / L` for an i.i.d. source with "
+      f"`P(1) = 2^-H_DESIGN` (lag-match rate {float(lagcount.match_probability(H_DESIGN)):.6f}), where the lag-1 "
+      f"match count is computed by an exact Markov-chain DP (no independence assumption); Bonferroni over `L` "
+      f"lags makes the per-window false-alarm bound `2^-40` for any **i.i.d.** source at or above `H_DESIGN`")
+    a("- the DR-0004 §2 binomial `Bin(W_L, p^2+q^2)` treats the match indicators as independent; they are "
+      "1-dependent for a biased source, so that cutoff under-covers (table below). It is reported, not used")
+    a(f"- streams below `H_DESIGN`: {len(low)} of {len(rows)}")
+    a("")
+    a("## Coverage grid (streams below `H_DESIGN` caught by RCT/APT or the lag monitor)")
+    a("")
+    a("| L | W_L | C_L (exact) | C_L (binomial, not used) | caught | of which only the lag monitor | still missed | alarms on at/above-target streams |")
+    a("|---|---|---|---|---|---|---|---|")
+    for w in LAG_GRID_W:
+        for lags in LAG_GRID_L:
+            c = cov[(lags, w)]
+            a(f"| {lags} | {w} | {c['c_l']} | {lagcount.c_lag_binomial(lags, w)} | {c['caught']}/{c['n_low']} | {c['newly']} | "
+              f"{len(c['missed'])} | {len(c['false_alarms'])} |")
+    a("")
+    for lags, w in LAG_REPORT:
+        c = cov[(lags, w)]
+        a(f"## Per-stream table, L = {lags}, W_L = {w} (C_L = {c['c_l']})")
+        a("")
+        a("| stream | h_true | RCT/APT | lag monitor | lag first alarm @ | latency ms | lags failed (lowest) |")
+        a("|---|---|---|---|---|---|---|")
+        for r in rows:
+            e = r["lag"][(lags, w)]
+            first = r["rct_apt_first"]
+            lowest = "-"
+            if e["lag_mask"]:
+                lowest = str((e["lag_mask"] & -e["lag_mask"]).bit_length())
+            a(f"| {r['label']} | {fmt_h(r['h_true'])} | "
+              f"{('YES @ ' + str(first)) if r['rct_apt_alarm'] else 'no'} | "
+              f"{'YES' if e['alarm'] else 'no'} | {e['first'] if e['alarm'] else '-'} | "
+              f"{('%.0f' % (e['first'] / RAW_RATE_BPS * 1e3)) if e['alarm'] else '-'} | {lowest} |")
+        a("")
+        a(f"Still missed at this configuration ({len(c['missed'])}): "
+          + (", ".join(f"`{r['label']}` (h={fmt_h(r['h_true'])})" for r in c["missed"]) or "none") + ".")
+        a("")
+        fa_rows = c["false_alarms"]
+        a("Alarms on streams at/above `H_DESIGN`: "
+          + (", ".join(f"`{r['label']}` (h={fmt_h(r['h_true'])})" for r in fa_rows) or "none") + ".")
+        a("")
+    a("## Analytic per-window detection, period-k stream with flip noise at its own lag k")
+    a("")
+    for lags, w in LAG_REPORT:
+        c, tab = detect_power_table(lags, w)
+        a(f"L = {lags}, W_L = {w}, C_L = {c} (match rate must reach {c / w:.4f}):")
+        a("")
+        a("| eps | h = -log2(1-eps) | lag-k match rate | Pr(window alarms) |")
+        a("|---|---|---|---|")
+        for t in tab:
+            a(f"| {t['eps']} | {fmt_h(t['h'])} | {t['rate']:.4f} | {t['p_window']:.3g} |")
+        a("")
+    a("## False-alarm check on seeded i.i.d. streams")
+    a("")
+    a(f"Analytic limit: per lag `2^-40 / L`, per window `<= 2^-40` for any i.i.d. source with min-entropy "
+      f">= `H_DESIGN` (union bound; the lag counts are positively correlated, so this is conservative). "
+      f"At 50 kHz and W_L = 4096 a stream makes ~12 windows/s, so the expected time to one false "
+      f"window is ~2^40 / 12 s (~2.9e3 years); 2^-40 cannot be reached by simulation, so the sample "
+      f"check below shows no failing window and the margin to `C_L`, and a loosened-alpha run "
+      f"validates the tail derivation itself.")
+    a("")
+    a("| source | L | W_L | C_L | samples | windows | failing windows | worst lag count | mean window max |")
+    a("|---|---|---|---|---|---|---|---|---|")
+    for f in fa:
+        src = "fair" if f["bias_p1"] is None else f"i.i.d. P(1) = {f['bias_p1']:.4f} (H = {H_DESIGN})"
+        a(f"| {src} | {f['lags']} | {f['window']} | {f['cutoff']} | {f['n']:,} | {f['windows']} | "
+          f"{f['failing_windows']} | {f['worst_count']} | {f['mean_of_window_max']:.1f} |")
+    a("")
+    a(f"Tail calibration at a loosened per-window alpha = 2^-{CAL_ALPHA_LOG2} (same code paths, `H_DESIGN` "
+      f"i.i.d. source, so the expected failing-window fraction is <= 2^-{CAL_ALPHA_LOG2}). The binomial "
+      f"cutoff is run alongside to show the under-coverage:")
+    a("")
+    a("| cutoff derivation | L | W_L | C_L (alpha 2^-%d) | windows | failing windows | observed fraction | bound | exact true tail at this C_L, per lag (target %.3g) |" % (CAL_ALPHA_LOG2, 2.0 ** -CAL_ALPHA_LOG2 / 16))
+    a("|---|---|---|---|---|---|---|---|---|")
+    for c in cal:
+        a(f"| {c['kind']} | {c['lags']} | {c['window']} | {c['cutoff']} | {c['windows']} | {c['failing_windows']} | "
+          f"{c['failing_windows'] / c['windows']:.4f} | {2.0 ** -CAL_ALPHA_LOG2:.4f} | {c['true_tail']:.3g} |")
+    a("")
+    a("The same under-coverage at the real operating point, analytically (exact lag-1 tail at the binomial "
+      "cutoff versus its per-lag target `2^-40 / L`):")
+    a("")
+    a("| L | W_L | C_L binomial | exact `Pr(M >= C_L binomial)` | target `2^-40 / L` | factor over target | C_L exact |")
+    a("|---|---|---|---|---|---|---|")
+    for lags, w in ((8, 1024), (32, 1024), (32, 4096), (256, 4096)):
+        cb = lagcount.c_lag_binomial(lags, w)
+        t = lagcount.exact_tail(w, 1, 2.0 ** -H_DESIGN, cb)
+        tgt = 2.0 ** -40 / lags
+        a(f"| {lags} | {w} | {cb} | {t:.3g} | {tgt:.3g} | {t / tgt:.3g} | {lagcount.c_lag(lags, w)} |")
+    a("")
+    a("## Notes")
+    a("")
+    a("- A period-k stream has lag-k match rate 1 (less flip noise); the monitor therefore covers periods")
+    a("  k <= L (and any stream with a lag-j<=L correlation above `C_L / W_L`). A period > L stays missed by")
+    a("  construction: that is the documented limit, not a defect.")
+    a("- The monitor is one-sided (high match rate). Anti-correlation is not a failure mode of interest here;")
+    a("  a period-k stream is always caught through its lag-k (high) match rate.")
+    a("- Ratified cutoffs and spec text are unchanged. Adoption, RTL and register plumbing are a separate,")
+    a("  operator-ratified decision (DR-0015 is Proposed).")
+    return "\n".join(L)
+
+
+def main_j(args):
+    rows = lag_sweep(args.seed, args.n)
+    fa = []
+    for lags, w in ((32, 4096), (256, 4096), (32, 1024)):
+        fa.append(false_alarm_run(args.seed + FA_SEED_OFFSET, lags, w))
+        fa.append(false_alarm_run(args.seed + FA_SEED_OFFSET + 1, lags, w,
+                                  bias_p1=2 ** -H_DESIGN))
+    cal = []
+    from decimal import Decimal
+    for lags, w in ((16, 1024), (16, 4096)):
+        alpha_log2 = CAL_ALPHA_LOG2
+        c_exact = lagcount.c_lag(lags, w, alpha_log2=alpha_log2)
+        alpha = Decimal(2) ** -alpha_log2 / Decimal(lags)
+        c_binom = lagcount.binomial_cutoff(w, lagcount.match_probability(H_DESIGN), alpha)
+        for kind, c in (("exact (used)", c_exact), ("binomial (not used)", c_binom)):
+            r = false_alarm_run(args.seed + FA_SEED_OFFSET + 2, lags, w, c_override=c,
+                                bias_p1=2 ** -H_DESIGN)
+            r["kind"] = kind
+            r["true_tail"] = lagcount.exact_tail(w, 1, 2.0 ** -H_DESIGN, c)
+            cal.append(r)
+    body = build_report_j(rows, args.seed, args.n, fa, cal)
+    print(body)
+    ctrl = rows[0]
+    ok = (not ctrl["rct_apt_alarm"]
+          and all(not ctrl["lag"][k]["alarm"] for k in ctrl["lag"])
+          and all(f["failing_windows"] == 0 for f in fa)
+          and all(c["failing_windows"] / c["windows"] <= 2.0 ** -CAL_ALPHA_LOG2 * 1.5
+                  for c in cal if c["kind"].startswith("exact")))
+    if not ok:
+        print("\nHARNESS SANITY FAILED", file=sys.stderr)
+    if args.emit_record:
+        artifact = Path(tempfile.gettempdir()) / "lagcount-coverage-rows.txt"
+        artifact.write_text("\n".join(
+            f"{r['label']}\th_true={r['h_true']:.4f}\trct_apt={r['rct_apt_alarm']}\t"
+            + "\t".join(f"L{k[0]}W{k[1]}={v['first']}" for k, v in r["lag"].items())
+            for r in rows) + "\n")
+        summary_rows = [{"label": r["label"], "family": r["family"], "h_true": r["h_true"],
+                         "rct_apt_alarm": r["rct_apt_alarm"],
+                         "lag": {f"L{k[0]}_W{k[1]}": {"alarm": v["alarm"], "first": v["first"]}
+                                 for k, v in r["lag"].items()}} for r in rows]
+        mint_behavioral_record(
+            repo_root=REPO_ROOT, slug=SLUG,
+            claim=("experiment J: detection coverage and false-alarm limit of a STUDY lag-k match-count "
+                   "monitor (not adopted, additive to the unchanged DR-0004 RCT/APT) on the experiment-I "
+                   "SYNTHETIC logic stimuli (no silicon entropy claim)"),
+            body_md=body,
+            summary={"ok": ok, "seed": args.seed, "n": args.n, "experiment": "J",
+                     "h_design": H_DESIGN, "rows": summary_rows, "false_alarm": fa,
+                     "calibration": cal},
+            level="behavioral",
+            seeds={"python_random": args.seed, "false_alarm_random": args.seed + FA_SEED_OFFSET},
+            artifacts=[artifact],
+        )
+    return 0 if ok else 1
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--seed", type=int, default=DEFAULT_SEED)
     ap.add_argument("--n", type=int, default=DEFAULT_N)
     ap.add_argument("--emit-record", action="store_true")
+    ap.add_argument("--lagcount", action="store_true",
+                    help="experiment J: study lag-k match-count monitor next to RCT/APT (#301)")
     args = ap.parse_args(argv)
+    if args.lagcount:
+        return main_j(args)
 
     rows = sweep(args.seed, args.n)
     body = build_report(rows, args.seed, args.n)
