@@ -266,6 +266,19 @@ the vendored item rules (no new simulation; existing artifacts only):
 | `pnr.json` | not a citation | No T1 row grades a `place-and-route` envelope by itself; it is the PDN provenance for 11.digital and the layout provenance for item 2. |
 | `1, 2, 6, 8, 9, 10` | unchanged | No klt verb / no aggregated artifact, as before. |
 
+**Freshness of the unpinned `7.digital` citation (issue #285).** CI's
+`signoff-check` job runs `python3 sim/bin/check_signoff_sim_freshness.py`,
+which follows the manifest citation to its run directory, requires the
+matching `sim/<slug>/records/<id>.json`, and re-hashes every pin in the
+run's `input-hashes.json` (routed netlist, SDF and its decompressed form,
+STA report, P&R request, cocotb testbench, timing harness, RTL-cosim oracle,
+each `digital/model/*.py`, the retained baseline SDF and oracle trace).
+Pins for the PDK Verilog and the three fault-injected derived SDFs cannot be
+revalidated without the PDK / the discarded bytes; they are checked for
+presence and digest shape only and printed as `note:` lines. On drift, mint a
+**new** record and update the citation; or drop the citation with a reason
+and regenerate `t1-report.json`. Never edit an old record's hashes.
+
 **Disclosures that travel with the two new `met` rows (quoted from the
 envelopes, not re-derived):**
 
