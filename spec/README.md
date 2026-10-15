@@ -140,6 +140,15 @@
   and the `measurements/` layout contract. Claims no measured result; no
   silicon exists. DR-0013 is held by the open #221 proposal.
 
+- [`decision-records/DR-0015-lag-count-monitor-study.md`](decision-records/DR-0015-lag-count-monitor-study.md)
+  — **Proposed**. Issue #301's bounded study of an online lag-k match-count
+  monitor for the balanced periodic / lock-mixture streams RCT/APT miss
+  (experiment I, #300). Derives the cutoff with the dependence-aware tail
+  (the DR-0004 binomial method under-covers by about 1,000x here), the
+  false-alarm limit, the covered period/`h` range and the area cost, and
+  recommends **not adopting** it yet. Changes no DR-0004 value, RTL or target;
+  all simulation-derived, provisional until silicon.
+
 ### Open requests for an operator decision record (no record yet)
 
 - **End-of-life Vth-drift envelope** — issue [#262](https://github.com/2AMLogic/sky130-trng/issues/262), from
