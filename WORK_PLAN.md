@@ -5,10 +5,9 @@ This roadmap is generated from the current GitHub label state.
 <!-- guide:plan-body:start -->
 ## Operator Attention: Merge-Risk-Hold Pileup
 
-Judge-approved PRs stuck under a `loom:operator` merge-risk hold — implementation work is done, only a human merge decision is missing.
+Judge-approved PRs under a hold (`loom:blocked` or `loom:operator`) — only a human merge decision is missing.
 
-- **#218**: ci: run volume-model and ripple-reduction tests in PR-blocking job
-- **#286**: Guard active SDF signoff evidence against changed simulation inputs
+_None._
 
 ## Very Important
 
@@ -34,7 +33,7 @@ Human-approved issues ready for implementation (`loom:issue`).
 
 Issues currently being built (`loom:building`).
 
-_None._
+- **#314**: Re-pin open_pdks to f6eeac7 (ciel) — fleet retires volare c6d73a3
 
 ## PRs Awaiting Review
 
@@ -46,20 +45,17 @@ _None._
 
 PRs that passed review and are queued for Champion auto-merge (`loom:pr`).
 
-- **#218**: ci: run volume-model and ripple-reduction tests in PR-blocking job
-- **#286**: Guard active SDF signoff evidence against changed simulation inputs
+_None._
 
 ## Proposed
 
 Issues carrying `loom:curated`.
 
-- **#162**: README: embed the fleet burndown chart (one line) *(curated)*
 - **#174**: Whole-block characterization: post-layout PVT, dynamic power and IR evidence *(curated)*
-- **#217**: CI: run test_raw_bit_volume_model and test_ripple_reduction in the PR-blocking lint job *(curated)*
 - **#221**: Decision record request: local mismatch can cap tt raw-bit H below DR-0004's 0.5 floor; adjacent rings approach 1:1 *(curated)*
 - **#230**: CI: guard that every test_*.py is wired into a CI workflow and path filter *(curated)*
-- **#285**: Guard active SDF signoff evidence against changed simulation inputs *(curated)*
 - **#289**: Extend seeded transistor raw-bit model cross-checks beyond nominal PVT *(curated)*
+- **#314**: Re-pin open_pdks to f6eeac7 (ciel) — fleet retires volare c6d73a3 *(curated)*
 
 ## Proposed (Architect / Hermit)
 
@@ -74,14 +70,14 @@ Issues carrying `loom:curated`.
 
 | Bucket | Count |
 |------|-------|
-| Operator merge-risk holds | 2 |
+| Operator merge-risk holds | 0 |
 | Very important | 0 |
 | Important | 2 |
 | Ready (`loom:issue`) | 2 |
-| In Progress (`loom:building`) | 0 |
+| In Progress (`loom:building`) | 1 |
 | PRs awaiting review | 0 |
-| Approved PRs awaiting merge | 2 |
-| Curated | 7 |
+| Approved PRs awaiting merge | 0 |
+| Curated | 5 |
 | Architect / Hermit proposals | 1 |
 | Active epics | 2 |
 <!-- guide:plan-body:end -->
