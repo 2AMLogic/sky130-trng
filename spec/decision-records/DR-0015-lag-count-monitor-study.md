@@ -261,6 +261,20 @@ What this record does establish, for the operator to ratify or not:
   (DR-0014), with the experiment-I and experiment-J tables as the documented
   limitation.
 
+## Verification-gate scope change: signoff freshness checker
+
+`sim/bin/check_signoff_sim_freshness.py` previously required every
+`digital/model/*.py` to be pinned in the cited signoff record. This PR adds
+`digital/model/lagcount.py`, an additive study model that nothing in the
+signed-off digital section imports; signoff records are append-only, so it
+cannot be pinned retroactively. The checker now exempts it through an explicit
+`STUDY_ONLY_MODELS = {"lagcount.py"}` set. This is a deliberate, narrow change
+to a verification gate, not a relaxation of what the record covers: all other
+`digital/model/*.py` files (and any new one) remain mandatory pins, and
+`test_check_signoff_sim_freshness.py` asserts both the exemption and that it
+is exact. If lag-count is later adopted into the signed-off design, remove it
+from the set and mint a new signoff record that pins it.
+
 ## Follow-ups (not done here, none blocks this record)
 
 - Bracket the period and `h` an injection-locked ring produces (#200 / #288) so
