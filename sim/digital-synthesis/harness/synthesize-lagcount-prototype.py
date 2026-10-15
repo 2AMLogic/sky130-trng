@@ -52,7 +52,11 @@ SLUG = "digital-synthesis"
 
 
 def specialise(src: str, lags: int, win: int, cutoff: int) -> str:
-    """Override the three module parameter defaults (klt requests carry no -P overrides)."""
+    """Override the three module parameter defaults in a per-config copy of the source.
+
+    ``klt synthesize`` has no parameter-override field and silently ignores an unknown
+    request key (klayout-tools#3466), so each sweep point gets its own specialised source.
+    """
     win_bits = win.bit_length() - 1
     assert 1 << win_bits == win
     out = src
