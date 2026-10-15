@@ -36,10 +36,12 @@ from typing import Callable, Iterable, NamedTuple
 
 #: Directories expected to *contain* sky130 variant directories. Shared by
 #: both callers; each also searches its own config-supplied roots first, in
-#: the order it assembles them.
+#: the order it assembles them. ``~/.ciel`` precedes the legacy ``~/.volare``
+#: (issue #314); a stale volare tree is still found, but never silently --
+#: see :func:`pin_mismatch`.
 BUILTIN_SEARCH_ROOTS = (
-    "~/.volare",
     "~/.ciel",
+    "~/.volare",
     "/usr/share/pdk",
     "/usr/local/share/pdk",
     "~/share/pdk",
@@ -165,3 +167,24 @@ def read_open_pdks_commit(path: Path) -> str:
         if text:
             return text.splitlines()[0]
     return "unknown"
+
+
+def pin_mismatch(path: Path, pinned: str | None) -> str | None:
+    """Describe a resolved PDK tree whose open_pdks revision is not the pin.
+
+    Returns ``None`` when *pinned* is unset or equals the revision recorded
+    in ``<path>/SOURCES``; otherwise a one-line message naming the tree, the
+    revision it carries and the pin, so a caller can print or raise it. A
+    leftover ``~/.volare`` tree at an older revision is thereby never used
+    silently (issue #314; cf. 2AMLogic/gf180-comparator#288).
+    """
+    if not pinned:
+        return None
+    installed = read_open_pdks_commit(path)
+    if installed == pinned:
+        return None
+    return (
+        f"PDK at {path} is open_pdks {installed}, but the pin is {pinned}; "
+        "install the pinned revision (see install_command in design/pdk.json) "
+        "or remove the stale tree"
+    )

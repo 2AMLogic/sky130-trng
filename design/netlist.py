@@ -131,6 +131,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _pdk_search import (  # noqa: E402
     BUILTIN_SEARCH_ROOTS,
     PdkSearchError,
+    pin_mismatch,
     read_open_pdks_commit,
     search_pdk,
 )
@@ -188,14 +189,16 @@ _VARIANT_DIR_LABEL = "libs.tech/xschem directory"
 INSTALL_HINT = """\
 sky130 PDK not found.
 
-Install it with volare (or ciel, its successor):
+Install it with ciel (volare's successor):
 
-    pip install volare
-    volare enable --pdk sky130 c6d73a35f524070e85faff4a6a9eef49553ebc2b
+    pip install ciel==2.6.1
+    ciel enable --pdk-family sky130 -l sky130_fd_pr f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7
 
-That open_pdks commit is the one design/pdk.json pins and the one
-spec/porting-plan.md was written against. volare installs into
-~/.volare/<variant> and this script finds it there automatically.
+That open_pdks commit is the one design/pdk.json pins (the older
+spec/porting-plan.md was written against c6d73a3, see DR-0015). ciel
+installs into ~/.ciel/<variant> and this script finds it there
+automatically. A tree at any other revision (e.g. a leftover ~/.volare) is
+reported on stderr as a mismatch rather than used silently.
 
 If your PDK lives somewhere else, point this script at it:
 
@@ -387,6 +390,9 @@ def find_pdk() -> Pdk:
         raise PdkNotFound(str(exc)) from exc
     if found is None:
         raise PdkNotFound(INSTALL_HINT)
+    mismatch = pin_mismatch(found.path, config.get("open_pdks_commit"))
+    if mismatch:
+        print(f"warning: {mismatch}", file=sys.stderr)
     return Pdk(path=found.path, variant=found.variant, source=found.source)
 
 
