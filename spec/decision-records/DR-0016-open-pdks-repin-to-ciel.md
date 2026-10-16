@@ -1,5 +1,5 @@
 ---
-dr: DR-0015-open-pdks-repin-to-ciel
+dr: DR-0016-open-pdks-repin-to-ciel
 title: Re-pin open_pdks from c6d73a3 (volare) to f6eeac7 (ciel 2.6.1)
 status: Proposed
 date: 2026-10-15
@@ -9,7 +9,7 @@ superseded_by: n/a
 related: "#314 (this record), #315 (re-qualification of cited records), DR-0001 (operating envelope), design/pdk.json, sim/pdk.json, layout/pdk.json, REPRODUCE.md"
 ---
 
-# DR-0015: re-pin open_pdks to f6eeac7 via ciel
+# DR-0016: re-pin open_pdks to f6eeac7 via ciel
 
 ## Status
 

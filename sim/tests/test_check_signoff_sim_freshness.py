@@ -125,6 +125,15 @@ class Freshness(unittest.TestCase):
         (self.root / "digital/model/extra.py").write_text("x = 1\n")
         self.assert_fails("mandatory pin missing: digital/model/extra.py")
 
+    def test_study_only_model_needs_no_pin(self):
+        (self.root / "digital/model/lagcount.py").write_text("x = 1\n")
+        self.assertEqual(self.run_chk()[0], [])
+
+    def test_study_only_exclusion_is_exact(self):
+        self.assertEqual(chk.STUDY_ONLY_MODELS, {"lagcount.py"})
+        (self.root / "digital/model/lagcount_v2.py").write_text("x = 1\n")
+        self.assert_fails("mandatory pin missing: digital/model/lagcount_v2.py")
+
     def test_removed_mandatory_pin(self):
         for key in ["layout/trng_digital/trng_digital.sdf.gz", "digital/model/params.py",
                     "$PDK_LIBS_REF/sky130_fd_sc_hd/verilog/primitives.v", chk.ORACLE_KEY]:

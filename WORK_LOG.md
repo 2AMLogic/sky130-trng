@@ -4,6 +4,8 @@ Chronological record of recently merged pull requests and closed issues.
 
 ### 2026-10-15
 
+- **PR #318**: feat(sim): lag-count monitor study — DR-0015 Proposed, additive model, coverage and area evidence
+- **Issue #301** (closed): DR request: on-chip coverage of correlated/periodic raw streams (RCT/APT miss balanced periodic sources)
 - **PR #286**: Guard active SDF signoff evidence against changed simulation inputs
 - **Issue #285** (closed): Guard active SDF signoff evidence against changed simulation inputs
 - **PR #218**: ci: run volume-model and ripple-reduction tests in PR-blocking job

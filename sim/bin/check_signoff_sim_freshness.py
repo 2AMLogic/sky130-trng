@@ -41,7 +41,7 @@ DIGEST = re.compile(r"^sha256:[0-9a-f]{64}$")
 # Mandatory repository-file pins: the inputs fv-sdf-cosim.py hashes (routed
 # netlist, compressed SDF, STA report, P&R request, cocotb testbench, the
 # timing harness itself, the RTL-cosim oracle).  digital/model/*.py is
-# mandatory per file as it exists today.
+# mandatory per file as it exists today, except STUDY_ONLY_MODELS.
 REQUIRED_FILES = [
     "layout/trng_digital/trng_digital.routed.v",
     "layout/trng_digital/trng_digital.sdf.gz",
@@ -52,6 +52,13 @@ REQUIRED_FILES = [
     "sim/digital-sdf-timed-verification/harness/fv-sdf-cosim.py",
 ]
 MODEL_DIR = "digital/model"
+# Deliberate, named exclusions from the MODEL_DIR pin rule (DR-0015): additive
+# study models that are not part of the signed-off digital section (nothing in
+# digital_top / the routed netlist imports them) and so cannot appear in an
+# append-only signoff record.  Every other digital/model/*.py stays mandatory;
+# a new model file is still a failure until it is pinned or listed here by an
+# explicit, reviewed edit.
+STUDY_ONLY_MODELS = frozenset({"lagcount.py"})
 REQUIRED_DECOMPRESSED = ["layout/trng_digital/trng_digital.sdf (decompressed)"]
 # pin key -> run-dir file holding its bytes
 RECORD_LOCAL_SDF = {"derived SDF: baseline (uncompressed)": "trng_digital.baseline.sdf.gz"}
@@ -134,7 +141,8 @@ def check(root, manifest_path, item=DEFAULT_ITEM):
     # declared contract: required pins present
     required = list(REQUIRED_FILES + REQUIRED_DECOMPRESSED + [ORACLE_KEY]
                     + REQUIRED_DERIVED + REQUIRED_EXTERNAL)
-    required += sorted(p.relative_to(root).as_posix() for p in (root / MODEL_DIR).glob("*.py"))
+    required += sorted(p.relative_to(root).as_posix() for p in (root / MODEL_DIR).glob("*.py")
+                       if p.name not in STUDY_ONLY_MODELS)
     for key in required:
         if key not in hashes:
             problems.append(f"{tag}: mandatory pin missing: {key}")
