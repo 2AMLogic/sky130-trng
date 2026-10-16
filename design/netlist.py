@@ -195,7 +195,7 @@ Install it with ciel (volare's successor):
     ciel enable --pdk-family sky130 -l sky130_fd_pr f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7
 
 That open_pdks commit is the one design/pdk.json pins (the older
-spec/porting-plan.md was written against c6d73a3, see DR-0015). ciel
+spec/porting-plan.md was written against c6d73a3, see DR-0016). ciel
 installs into ~/.ciel/<variant> and this script finds it there
 automatically. A tree at any other revision (e.g. a leftover ~/.volare) is
 reported on stderr as a mismatch rather than used silently.
