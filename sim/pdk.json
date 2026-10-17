@@ -39,8 +39,8 @@
     "                    recorded here so a future manifest can opt into",
     "                    them without re-deriving what the PDK ships.",
     "  default_pdk_root  fallback search root when PDK_ROOT is unset and",
-    "                    `volare path` is unavailable -- volare's own",
-    "                    default install location.",
+    "                    `volare path` is unavailable -- ciel's own",
+    "                    default install location (issue #314).",
     "This file's PDK-resolution order (env var -> PDK_ROOT/PDK ->",
     "sim/pdk.local.json -> sim/pdk.json -> built-in search roots) matches",
     "design/netlist.py's resolver, so a schematic export and a simulation",
@@ -49,11 +49,11 @@
     "resolver this file feeds."
   ],
   "variant": "sky130A",
-  "open_pdks_commit": "c6d73a35f524070e85faff4a6a9eef49553ebc2b",
-  "install_command": "volare enable --pdk sky130 c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+  "open_pdks_commit": "f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7",
+  "install_command": "ciel enable --pdk-family sky130 -l sky130_fd_pr f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7",
   "ngspice_lib": "libs.tech/combined/sky130.lib.spice",
   "process_corners": ["tt", "ss", "sf", "fs", "ff", "ll", "hh"],
   "default_corners": ["tt", "ss", "ff"],
-  "default_pdk_root": "~/.volare",
+  "default_pdk_root": "~/.ciel",
   "search_roots": []
 }
