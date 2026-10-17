@@ -4,6 +4,8 @@ Chronological record of recently merged pull requests and closed issues.
 
 ### 2026-10-17
 
+- **PR #323**: feat(signoff): cite artifact-anchored generic evidence for T1 items 1, 2, 9, 10
+- **Issue #320** (closed): T1 items 1, 2, 9, 10: cite artifact-anchored inventory envelopes for both partitions
 - **PR #322**: feat: map remaining spec rows to evidence and cite item 8 via generic envelope
 - **Issue #321** (closed): T1 item 8: map the four unmapped characterization rows to their committed records, then cite the report
 
