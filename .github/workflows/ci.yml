@@ -238,6 +238,18 @@ on:
       - "sim/digital-rtl-equivalence/harness/**"
       - "digital/tb/cocotb/**"
       - "digital/flow/place-and-route/**"
+      # issue #320: inputs inventoried by signoff/attest.py for T1 items 1, 2,
+      # 9, 10 (the rest are covered by the globs above)
+      - "digital/flow/**"
+      - "digital/tb/**"
+      - "sim/*/testbench/**"
+      - "sim/*/harness/**"
+      - "sim/*/analysis/**"
+      - "sim/*/bin/**"
+      - "sim/*/requests/**"
+      - "sim/*/*.py"
+      - "LICENSE"
+      - ".github/workflows/**"
       - "layout/sampler_core/drc.json"
       - "layout/sampler_core/lvs.json"
       - ".github/workflows/ci.yml"
@@ -397,6 +409,18 @@ jobs:
 
       - name: Cited 7.digital SDF record still matches current inputs
         run: python3 sim/bin/check_signoff_sim_freshness.py
+
+      # issue #320: the 1.digital / 2.analog / 2.digital / 10 (and 1.analog / 9,
+      # which grade unmet with a stated reason) citations are artifact-anchored
+      # generic envelopes minted by signoff/attest.py from committed inventories.
+      # --check fails when an inventoried file changed, appeared or vanished, or
+      # when an envelope / manifest pin no longer matches; the re-render below
+      # then cannot be reached with a stale pin. stdlib only.
+      - name: sim/tests/test_signoff_attest.py (attestation generator + negative controls)
+        run: python3 sim/tests/test_signoff_attest.py
+
+      - name: signoff/attest.py --check (inventories + envelopes + manifest pins fresh)
+        run: python3 signoff/attest.py --check
 
       # Verbatim the command documented in signoff/README.md -- the report
       # embeds the --tiers-doc label and the evidence paths relative to

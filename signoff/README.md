@@ -325,6 +325,51 @@ met count drops by one); `5.digital`
 remains `unmet`/`no_evidence`. `klt signoff --check` on the committed report
 prints `status: match`.
 
+## Items 1, 2, 9, 10 attestation (issue #320)
+
+klayout-tools has no verb behind these four items, and the 0.7.0 grader
+accepts them only from an opt-in artifact-anchored `generic` envelope
+(`--describe-grader`: `generic: 1, 2, 8, 9, 10`). `signoff/attest.py` (stdlib
+only) builds those envelopes from committed inventories, as of `43f26fd`,
+2026-10-17 (klt 0.7.0, open_pdks `c6d73a35f524`):
+
+| Row | Envelope | Verdict | What the mechanical check establishes |
+|---|---|---|---|
+| `1.digital` | `attest/1.digital.json` | `met` | RTL sha256 equals the input hash pinned by both synthesis outputs and by `tool-pins.json`; the committed 50 kHz synthesized netlist matches the P&R input pin. |
+| `2.analog` | `attest/2.analog.json` | `met` | `sampler_core.gds` is the exact GDS the `3.analog` DRC pin names; `compose` request/response, cell spec and README are committed (documented provenance). |
+| `2.digital` | `attest/2.digital.json` | `met` | `trng_digital.gds` is the `3.digital` pinned GDS; the P&R request, tool pins and record are committed and the record's RTL/netlist hashes match the current tree. |
+| `10` | `attest/10.json` | `met` | README points to `REPRODUCE.md` and has the spec section; LICENSE is Apache-2.0; `ci.yml` runs the reproduce checker, the append-only rule and this gate. |
+| `1.analog` | `attest/1.analog.json` | `unmet` (`check_failed`) | Deliberately `fail`: the netlist is derived from the schematics by `design/netlist.py`, which needs xschem. Only `pdk-nightly.yml` (`netlist-check`) gates that diff; nothing stdlib can establish it, so it is not self-attested. |
+| `9` | `attest/9.json` | `unmet` (`check_failed`) | `sim/ro-ring-timestep-convergence` has committed records but no testbench/harness/script outside `records/`, `runs/`, `corners/` (only `tt.log`). Every other record-bearing family has one, the three `pdk.json` pins agree, and `REPRODUCE.md` states the pin. Fix by committing that campaign's deck or documenting why it is not a claimed measurement; then `--write`. |
+
+Each `attest/<key>.inventory.json` lists the inventoried files with sha256;
+each `attest/<key>.json` envelope pins its inventory by
+`provenance.input.path` + `content_hash`, and the manifest entry pins the
+same hash, so the grader re-hashes the inventory (`input_verified: true`).
+The grader does not walk the member files: `attest.py --check` (CI,
+`signoff-check`) does, and goes red when any member changed, appeared or
+vanished, or when an envelope/manifest pin differs.
+
+Limits, stated plainly: these are presence-and-consistency checks over
+committed files. `2.*` do not re-run the layout generator (that is
+`pdk-nightly`'s `layout-check`); `9` checks that a testbench source exists per
+record-bearing family, not that it covers every measurement; `10` checks that
+CI runs the named gates, not that they pass.
+
+Regenerate after a deliberate change (review the diff, then re-run the
+report command above):
+
+```bash
+python3 signoff/attest.py --write      # inventories, envelopes, manifest pins
+python3 signoff/attest.py --check      # what CI runs; read-only
+```
+
+Once a klayout-tools release carries `klt signoff --attest`/`--inventory`
+(present in the `0.7.1.dev` development build, absent from 0.7.0 as of
+2026-10-17), switch these rows to it and drop `attest.py`; the CI pin stays at
+0.7.0 until then. Item 9's inventory pins the PDK files, so #314 (open_pdks
+re-pin) and this issue's rows need a `--write` after whichever lands second.
+
 ## Block kind and the partition boundary (the mixed-signal claim)
 
 `kind: mixed-signal`, confirmed against the block. The **analog partition**

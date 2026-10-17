@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "key": "1.digital",
+  "t1_item": 1,
+  "partition": "digital",
+  "claim": "committed RTL plus the synthesized netlist derived from it",
+  "selectors": [
+    "digital/rtl/trng_digital.v",
+    "digital/flow/unconstrained/synthesize-trng-digital.json",
+    "digital/flow/constrained-50khz/synthesize-trng-digital-50khz.json",
+    "sim/digital-synthesis/runs/20260910-001436-a4c3194/unconstrained-synthesize-output.json",
+    "sim/digital-synthesis/runs/20260910-001436-a4c3194/50khz-constrained-synthesize-output.json",
+    "sim/digital-synthesis/runs/20260910-001436-a4c3194/unconstrained-trng_digital_synth.v",
+    "sim/digital-synthesis/runs/20260910-001436-a4c3194/50khz-constrained-trng_digital_synth.v",
+    "digital/flow/place-and-route/tool-pins.json"
+  ],
+  "member_count": 8,
+  "members": [
+    {
+      "path": "digital/flow/constrained-50khz/synthesize-trng-digital-50khz.json",
+      "sha256": "sha256:2fd27f82097f89f604688a749f1560b88c9c71f3ebc5ea0f5456d23a4d604626"
+    },
+    {
+      "path": "digital/flow/place-and-route/tool-pins.json",
+      "sha256": "sha256:a8d0a3b5e427452b82d7cfc4099b8ca4ebb77009acaed0de139951ec58374841"
+    },
+    {
+      "path": "digital/flow/unconstrained/synthesize-trng-digital.json",
+      "sha256": "sha256:bb62368fc56eccbc6a33c18e086a9aa2377305e6113e193d04acda3441f3ab13"
+    },
+    {
+      "path": "digital/rtl/trng_digital.v",
+      "sha256": "sha256:219738aae7c5fd3bfede92ae20bebe38e843f7341690eed151d1545a93db90ef"
+    },
+    {
+      "path": "sim/digital-synthesis/runs/20260910-001436-a4c3194/50khz-constrained-synthesize-output.json",
+      "sha256": "sha256:941a56e0d5d4463e5d2332c762967f5e65e87a177d7d0c2157133c1d1f12fb9e"
+    },
+    {
+      "path": "sim/digital-synthesis/runs/20260910-001436-a4c3194/50khz-constrained-trng_digital_synth.v",
+      "sha256": "sha256:9d2b8aed1cd057bd7985ca77e7394921a005846934a4b9c01921c56dade83126"
+    },
+    {
+      "path": "sim/digital-synthesis/runs/20260910-001436-a4c3194/unconstrained-synthesize-output.json",
+      "sha256": "sha256:a63e64cfebeef34c2bdae09416d30e5776964ef24b5c766504530ff0cb171fe5"
+    },
+    {
+      "path": "sim/digital-synthesis/runs/20260910-001436-a4c3194/unconstrained-trng_digital_synth.v",
+      "sha256": "sha256:d03e7f46bb59dd5c18548ffe1af0c0c910119618809198dbedbf2c1653d02ff8"
+    }
+  ]
+}
