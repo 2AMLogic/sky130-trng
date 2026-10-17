@@ -156,6 +156,16 @@ class Report(unittest.TestCase):
         self.assertIn("**not measured**", cr.render_md(rep))
 
     @mock.patch.object(cr, "EVIDENCE", EV)
+    def test_envelope_status_never_pass_unless_overall_pass(self):
+        _, rep = self.build()
+        for overall in ("fail", "incomplete"):
+            env = json.loads(cr.render_envelope({**rep, "overall": overall}))
+            self.assertEqual((env["kind"], env["status"]), ("generic", "fail"))
+            self.assertEqual(env["metrics"]["overall"], overall)
+        env = json.loads(cr.render_envelope({**rep, "overall": "pass"}))
+        self.assertEqual(env["status"], "pass")
+
+    @mock.patch.object(cr, "EVIDENCE", EV)
     def test_check_mode_detects_staleness(self):
         t = tempfile.TemporaryDirectory(); self.addCleanup(t.cleanup)
         root = make_root(Path(t.name))

@@ -132,10 +132,22 @@
     "                    hash, so freshness is as strong as regenerating the",
     "                    record when the netlist or SDF changes (the",
     "                    record's input-hashes.json pins every input).",
-    "  8                  no aggregated, current characterization artifact",
-    "                    exists yet; a hand-rolled `\"kind\": \"generic\"`",
-    "                    wrapper asserting status pass would be a",
-    "                    self-attestation, not evidence.",
+    "  8                  (issue #321) CITED as 8.analog and 8.digital:",
+    "                    signoff/characterization-envelope.json, a `\"kind\":",
+    "                    \"generic\"` envelope that sim/bin/characterization_report.py",
+    "                    writes from the aggregated report, never by hand. Its",
+    "                    `status` is `pass` only when the report's `overall` is",
+    "                    `pass`; `fail` and `incomplete` both render `fail`, and",
+    "                    `metrics` carries the real `overall`, the verdict",
+    "                    counts and the open rows. At the time of citing,",
+    "                    overall is `fail`: Raw rate, Raw min-entropy per bit and",
+    "                    Area are unmet and Power is not measured, so item 8",
+    "                    renders `unmet` (the envelope's own failing status), not",
+    "                    `no_evidence`. Cited UNPINNED: the envelope carries no",
+    "                    provenance block, so freshness is the",
+    "                    characterization-report-check CI gate, which byte-diffs",
+    "                    the envelope with the report. Every verdict is",
+    "                    simulation-derived and provisional until silicon.",
     "  11                 the item-11 `klt erc` supply evidence exists AND is",
     "                    now cited (issue #161): `erc-supply-spec.json`",
     "                    declares `ties[]` for every distinct well/substrate",
@@ -271,6 +283,12 @@
     "10": {
       "file": "signoff/attest/10.json",
       "content_hash": "sha256:08b737cac69a9b37dedca0559b5d955212d2ffa09704b1ee88075fecdf580fbf"
+    },
+    "8.analog": {
+      "file": "signoff/characterization-envelope.json"
+    },
+    "8.digital": {
+      "file": "signoff/characterization-envelope.json"
     }
   }
 }
