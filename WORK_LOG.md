@@ -2,6 +2,11 @@
 
 Chronological record of recently merged pull requests and closed issues.
 
+### 2026-10-17
+
+- **PR #322**: feat: map remaining spec rows to evidence and cite item 8 via generic envelope
+- **Issue #321** (closed): T1 item 8: map the four unmapped characterization rows to their committed records, then cite the report
+
 ### 2026-10-15
 
 - **PR #318**: feat(sim): lag-count monitor study — DR-0015 Proposed, additive model, coverage and area evidence
