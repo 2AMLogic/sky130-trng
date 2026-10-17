@@ -6,6 +6,7 @@ Reads the spec target table in ``README.md`` and the minted
 
     signoff/characterization-report.md
     signoff/characterization-report.json
+    signoff/characterization-envelope.json
 
 one row per spec target, with a verdict (``met`` / ``unmet`` /
 ``not measured``), the PVT conditions covered, and the record id plus
@@ -48,6 +49,7 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[2]
 OUT_MD = "signoff/characterization-report.md"
 OUT_JSON = "signoff/characterization-report.json"
+OUT_ENVELOPE = "signoff/characterization-envelope.json"
 SPEC_FILE = "README.md"
 SPEC_HEADING = "## Target specification"
 
@@ -119,6 +121,50 @@ EVIDENCE: dict[str, list[dict]] = {
             "pvt": None,
         },
     ],
+    # DR-0010 row 1: N = 4 five-stage rings, XOR tree, N re-sized at the
+    # entropy-binding corner. Checks the sized N and that it fits inside the
+    # XOR tree's combinable limit at every corner of the sizing record. The
+    # metastability-hybrid stretch has no evidence and is not compared.
+    "Entropy source": [
+        {
+            "record": "sim/ro-array-operating-point/records/20260825-093740-53f1f7a.json",
+            "check": "array re-sized to N == 4 from the jitter budget at the entropy-binding corner "
+                     "(ss, -40 C, 1.62 V)",
+            "field": "chosen.n", "op": "eq", "value": 4,
+            "pvt": None,
+        },
+        {
+            "record": "sim/ro-array-operating-point/records/20260825-093740-53f1f7a.json",
+            "check": "N = 4 does not exceed the XOR-combining limit n_max_combine at any sized corner",
+            "field": "combining.rows[].n_max_combine", "op": "ge", "value": 4,
+            "pvt": "combining.rows[]",
+        },
+    ],
+    # DR-0010 row 4: designed-for SP 800-90B. Compares the raw-access and
+    # RCT/APT-trip behaviour of the assembled digital section; it makes no
+    # Tier 3 claim and does not evidence the entropy-source model or any
+    # validation (deferred to silicon).
+    "Quality": [
+        {
+            "record": "sim/digital-section-behavioral/records/20260905-192548-2ecb0a3.json",
+            "check": "raw words stay readable while the conditioned path is gated on an alarm "
+                     "(experiment F, >= 1 raw word read while gated)",
+            "field": "experiments.F.raw_words_readable_while_gated", "op": "ge", "value": 1,
+            "pvt": None,
+        },
+        {
+            "record": "sim/digital-section-behavioral/records/20260905-192548-2ecb0a3.json",
+            "check": "RCT trips at the expected sample on a stuck source (experiment B ok)",
+            "field": "experiments.B.ok", "op": "eq", "value": True,
+            "pvt": None,
+        },
+        {
+            "record": "sim/digital-section-behavioral/records/20260905-192548-2ecb0a3.json",
+            "check": "APT trips on a biased source (experiment C ok)",
+            "field": "experiments.C.ok", "op": "eq", "value": True,
+            "pvt": None,
+        },
+    ],
     "Area": [
         {
             "record": "sim/digital-floorplan-compaction/records/20261009-214736-760b4d3.json",
@@ -129,6 +175,79 @@ EVIDENCE: dict[str, list[dict]] = {
             "record": "sim/digital-repaired-compaction/records/20261010-105914-824542d.json",
             "check": "target_status == met (target 0.05 mm2)",
             "field": "target_status", "op": "eq", "value": "met", "pvt": None,
+        },
+    ],
+    # DR-0010 row 9: the combining deck is the only committed record family run
+    # across the temperature/supply grid. The temperature span itself is not a
+    # scalar in any record, so the row's PVT coverage lists what was run.
+    "Operating envelope": [
+        {
+            "record": "sim/ro-array-core-combining/records/20260825-094545-53f1f7a.json",
+            "check": "ro_array_core combining deck passes at every process corner (overall == PASS) "
+                     "at this supply/temperature point; the span is the union of the PVT labels, "
+                     "not a scalar compared against -40..+125 C",
+            "field": "overall", "op": "eq", "value": "PASS",
+            "pvt": "pvt",
+        },
+        {
+            "record": "sim/ro-array-core-combining/records/20260825-094718-53f1f7a.json",
+            "check": "ro_array_core combining deck passes at every process corner (overall == PASS) "
+                     "at this supply/temperature point; the span is the union of the PVT labels, "
+                     "not a scalar compared against -40..+125 C",
+            "field": "overall", "op": "eq", "value": "PASS",
+            "pvt": "pvt",
+        },
+        {
+            "record": "sim/ro-array-core-combining/records/20260825-094856-53f1f7a.json",
+            "check": "ro_array_core combining deck passes at every process corner (overall == PASS) "
+                     "at this supply/temperature point; the span is the union of the PVT labels, "
+                     "not a scalar compared against -40..+125 C",
+            "field": "overall", "op": "eq", "value": "PASS",
+            "pvt": "pvt",
+        },
+        {
+            "record": "sim/ro-array-core-combining/records/20261008-135355-847b454.json",
+            "check": "ro_array_core combining deck passes at every process corner (overall == PASS) "
+                     "at this supply/temperature point; the span is the union of the PVT labels, "
+                     "not a scalar compared against -40..+125 C",
+            "field": "overall", "op": "eq", "value": "PASS",
+            "pvt": "pvt",
+        },
+        {
+            "record": "sim/ro-array-core-combining/records/20261008-135356-847b454.json",
+            "check": "ro_array_core combining deck passes at every process corner (overall == PASS) "
+                     "at this supply/temperature point; the span is the union of the PVT labels, "
+                     "not a scalar compared against -40..+125 C",
+            "field": "overall", "op": "eq", "value": "PASS",
+            "pvt": "pvt",
+        },
+        {
+            "record": "sim/ro-array-core-combining/records/20261008-135357-847b454.json",
+            "check": "ro_array_core combining deck passes at every process corner (overall == PASS) "
+                     "at this supply/temperature point; the span is the union of the PVT labels, "
+                     "not a scalar compared against -40..+125 C",
+            "field": "overall", "op": "eq", "value": "PASS",
+            "pvt": "pvt",
+        },
+    ],
+    # DR-0010 row 10: raw path never gated, two-path interface. Streaming
+    # time-to-first-valid is derived in DR-0004 section 6, not recorded.
+    "Interface": [
+        {
+            "record": "sim/digital-rtl-equivalence/records/20260905-192519-2ecb0a3.json",
+            "check": "RTL is cycle-for-cycle equivalent to the behavioural model (0 mismatches)",
+            "field": "mismatches", "op": "le", "value": 0, "pvt": None,
+        },
+        {
+            "record": "sim/digital-functional-verification/records/20261009-120511-d9f51a4.json",
+            "check": "routed gate-level netlist passes the directed suite (functional/unit-delay)",
+            "field": "verdict.routed_gate_baseline", "op": "eq", "value": True, "pvt": None,
+        },
+        {
+            "record": "sim/digital-section-behavioral/records/20260905-192548-2ecb0a3.json",
+            "check": "raw path never gated: no conditioned data read while gated, gate asserted "
+                     "(experiment F)",
+            "field": "experiments.F.data_read_while_gated", "op": "le", "value": 0, "pvt": None,
         },
     ],
 }
@@ -322,6 +441,28 @@ def render_json(rep: dict) -> str:
     return json.dumps(rep, indent=2, sort_keys=True) + "\n"
 
 
+def render_envelope(rep: dict) -> str:
+    """``klt signoff`` generic envelope (T1 item 8) derived from the report.
+
+    ``status`` is ``pass`` only when the report's ``overall`` is ``pass``;
+    ``fail`` and ``incomplete`` both render ``fail``. It is computed here, never
+    hand-written, and ``--check`` byte-diffs it with the report.
+    """
+    c = rep["counts"]
+    open_rows = [r["parameter"] for r in rep["rows"] if r["verdict"] != MET]
+    env = {
+        "schema_version": 1,
+        "kind": "generic",
+        "status": "pass" if rep["overall"] == "pass" else "fail",
+        "summary": f"characterization report overall={rep['overall']}: {c[MET]} met, "
+                   f"{c[UNMET]} unmet, {c[NOT_MEASURED]} not measured of {len(rep['rows'])} "
+                   "spec targets (simulation-derived, provisional until silicon)",
+        "source": OUT_JSON,
+        "metrics": {"overall": rep["overall"], "counts": c, "open_rows": open_rows},
+    }
+    return json.dumps(env, indent=2, sort_keys=True) + "\n"
+
+
 def _esc(s: str) -> str:
     return s.replace("|", "\\|")
 
@@ -365,7 +506,8 @@ def main(argv=None) -> int:
     ap.add_argument("--check", action="store_true", help="exit 1 if committed outputs are stale")
     a = ap.parse_args(argv)
     rep = build_report(a.root)
-    outs = {OUT_MD: render_md(rep), OUT_JSON: render_json(rep)}
+    outs = {OUT_MD: render_md(rep), OUT_JSON: render_json(rep),
+            OUT_ENVELOPE: render_envelope(rep)}
     if a.check:
         stale = [p for p, t in outs.items()
                  if not (a.root / p).is_file() or (a.root / p).read_bytes() != t.encode()]
