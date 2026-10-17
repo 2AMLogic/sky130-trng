@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "kind": "generic",
+  "t1_item": 1,
+  "status": "fail",
+  "source": "signoff/attest.py",
+  "failures": [
+    "netlist_freshness_unverified: design/sampler_core.spice is derived from design/xschem/*.sch by `design/netlist.py`, which needs xschem; the schematic->netlist diff is gated only by .github/workflows/pdk-nightly.yml (netlist-check), so no stdlib check here can establish it"
+  ],
+  "provenance": {
+    "input": {
+      "path": "signoff/attest/1.analog.inventory.json",
+      "content_hash": "sha256:6a8cf1b9c080dee0841229093ec30bb50030697f5c1e360af441353d72c8d152"
+    }
+  }
+}

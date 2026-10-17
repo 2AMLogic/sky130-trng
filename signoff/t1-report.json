@@ -5,7 +5,7 @@
   "tier": null,
   "t1_item_count": 22,
   "build_t1_item_count": 22,
-  "t1_met_count": 7,
+  "t1_met_count": 12,
   "source_doc": "signoff/design-evidence-tiers.md",
   "source_doc_content_hash": "sha256:63eeec72e3d849761cf32dcf091af5728b069b1515e32bb3138e9454303671e5",
   "build": {
@@ -26,7 +26,7 @@
       "text": "committed schematic sources (or generator) plus the netlist derived from them, regenerated on design change.",
       "notes": [],
       "status": "unmet",
-      "reason": "no_evidence",
+      "reason": "check_failed",
       "graded_by_build": true,
       "citation": null
     },
@@ -37,10 +37,25 @@
       "partition": "digital",
       "text": "committed RTL sources plus the synthesized gate-level netlist derived from them, regenerated on design change. For a hand-captured full-custom digital partition (no RTL, no synthesis step \u2014 see \"Full-custom digital sub-case\" above), this item is satisfied instead by the Analog column's artifact: committed schematic sources (or generator) plus the netlist derived from them, regenerated on design change, with every logic gate captured as a schematic exactly like an analog partition's.",
       "notes": [],
-      "status": "unmet",
-      "reason": "no_evidence",
+      "status": "met",
+      "reason": null,
       "graded_by_build": true,
-      "citation": null
+      "citation": {
+        "file": "signoff/attest/1.digital.json",
+        "command": null,
+        "kind": "generic",
+        "check_status": "pass",
+        "content_hash": "sha256:7bb5440af41388d8aa1fe2b1378f8bdfbab9d22b32fc91928d249012e0ec60d8",
+        "input_verified": true,
+        "exit_status": 0,
+        "artifact_binding": {
+          "t1_item": 1,
+          "path": "signoff/attest/1.digital.inventory.json",
+          "content_hash": "sha256:7bb5440af41388d8aa1fe2b1378f8bdfbab9d22b32fc91928d249012e0ec60d8",
+          "input_verified": true,
+          "source": "signoff/attest.py"
+        }
+      }
     },
     {
       "tier": "T1",
@@ -49,10 +64,25 @@
       "partition": "analog",
       "text": "committed GDS/OASIS, reproducibly generated or with documented provenance.",
       "notes": [],
-      "status": "unmet",
-      "reason": "no_evidence",
+      "status": "met",
+      "reason": null,
       "graded_by_build": true,
-      "citation": null
+      "citation": {
+        "file": "signoff/attest/2.analog.json",
+        "command": null,
+        "kind": "generic",
+        "check_status": "pass",
+        "content_hash": "sha256:c3c4463447aec3ab1006162d2d1a4cd5a62d4db3a5bd712d29d764a49294902f",
+        "input_verified": true,
+        "exit_status": 0,
+        "artifact_binding": {
+          "t1_item": 2,
+          "path": "signoff/attest/2.analog.inventory.json",
+          "content_hash": "sha256:c3c4463447aec3ab1006162d2d1a4cd5a62d4db3a5bd712d29d764a49294902f",
+          "input_verified": true,
+          "source": "signoff/attest.py"
+        }
+      }
     },
     {
       "tier": "T1",
@@ -61,10 +91,25 @@
       "partition": "digital",
       "text": "committed routed GDS/OASIS from place-and-route, reproducibly generated from the gate-level netlist (P&R script/flow committed, not a one-off hand edit). For the same full-custom sub-case, this item is satisfied instead by the Analog column's artifact: committed GDS/OASIS, reproducibly generated or with documented provenance \u2014 hand-drawn layout, not P&R output.",
       "notes": [],
-      "status": "unmet",
-      "reason": "no_evidence",
+      "status": "met",
+      "reason": null,
       "graded_by_build": true,
-      "citation": null
+      "citation": {
+        "file": "signoff/attest/2.digital.json",
+        "command": null,
+        "kind": "generic",
+        "check_status": "pass",
+        "content_hash": "sha256:e61b71b92c0a96067aa35d803a78db4573fd540908581315872d6870e6a47257",
+        "input_verified": true,
+        "exit_status": 0,
+        "artifact_binding": {
+          "t1_item": 2,
+          "path": "signoff/attest/2.digital.inventory.json",
+          "content_hash": "sha256:e61b71b92c0a96067aa35d803a78db4573fd540908581315872d6870e6a47257",
+          "input_verified": true,
+          "source": "signoff/attest.py"
+        }
+      }
     },
     {
       "tier": "T1",
@@ -474,7 +519,7 @@
       "text": "every claimed measurement's testbench committed, with a documented cold-start invocation a third party can run; pinned PDK revision.",
       "notes": [],
       "status": "unmet",
-      "reason": "no_evidence",
+      "reason": "check_failed",
       "graded_by_build": true,
       "citation": null
     },
@@ -486,7 +531,7 @@
       "text": "every claimed measurement's testbench committed, with a documented cold-start invocation a third party can run; pinned PDK revision.",
       "notes": [],
       "status": "unmet",
-      "reason": "no_evidence",
+      "reason": "check_failed",
       "graded_by_build": true,
       "citation": null
     },
@@ -497,10 +542,25 @@
       "partition": "analog",
       "text": "a README stating what the block is, its spec table, and how to reproduce every result; a license; CI that at minimum keeps the harness and evidence formats valid.",
       "notes": [],
-      "status": "unmet",
-      "reason": "no_evidence",
+      "status": "met",
+      "reason": null,
       "graded_by_build": true,
-      "citation": null
+      "citation": {
+        "file": "signoff/attest/10.json",
+        "command": null,
+        "kind": "generic",
+        "check_status": "pass",
+        "content_hash": "sha256:08b737cac69a9b37dedca0559b5d955212d2ffa09704b1ee88075fecdf580fbf",
+        "input_verified": true,
+        "exit_status": 0,
+        "artifact_binding": {
+          "t1_item": 10,
+          "path": "signoff/attest/10.inventory.json",
+          "content_hash": "sha256:08b737cac69a9b37dedca0559b5d955212d2ffa09704b1ee88075fecdf580fbf",
+          "input_verified": true,
+          "source": "signoff/attest.py"
+        }
+      }
     },
     {
       "tier": "T1",
@@ -509,10 +569,25 @@
       "partition": "digital",
       "text": "a README stating what the block is, its spec table, and how to reproduce every result; a license; CI that at minimum keeps the harness and evidence formats valid.",
       "notes": [],
-      "status": "unmet",
-      "reason": "no_evidence",
+      "status": "met",
+      "reason": null,
       "graded_by_build": true,
-      "citation": null
+      "citation": {
+        "file": "signoff/attest/10.json",
+        "command": null,
+        "kind": "generic",
+        "check_status": "pass",
+        "content_hash": "sha256:08b737cac69a9b37dedca0559b5d955212d2ffa09704b1ee88075fecdf580fbf",
+        "input_verified": true,
+        "exit_status": 0,
+        "artifact_binding": {
+          "t1_item": 10,
+          "path": "signoff/attest/10.inventory.json",
+          "content_hash": "sha256:08b737cac69a9b37dedca0559b5d955212d2ffa09704b1ee88075fecdf580fbf",
+          "input_verified": true,
+          "source": "signoff/attest.py"
+        }
+      }
     },
     {
       "tier": "T1",
