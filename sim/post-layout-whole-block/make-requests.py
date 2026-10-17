@@ -94,7 +94,8 @@ def sha256_file(path: Path) -> str:
 
 
 def pwl_card(sig: str, net: str, points: list[tuple[float, float]]) -> str:
-    pts = " ".join(f"{t:.1f}n {v:.3f}" for t, v in points)
+    # logical 0/1 -> volts: highs sit at the declared VIH, not at 1.000 V
+    pts = " ".join(f"{t:.1f}n {v * VIH:.3f}" for t, v in points)
     return f"V{sig} {net} 0 PWL({pts})"
 
 
@@ -135,7 +136,9 @@ def measurement_cards(cycles: list[dict]) -> tuple[list[dict], list[str]]:
             "ring_bit3", "ring_bit4", "alarm", "gated", "startup_done",
             "out_valid", "vdd", "vss", "vddr1", "vddr2", "vddr3", "vddr4"}
 
-    def add(name: str, card: str, save_net: str | None = None):
+    def add(name: str, card: str, save_net: str | None = None, t: float | None = None):
+        if t is not None and t > t_stop:
+            return  # unreachable within this (truncated) program's stop time
         meas.append({"name": name, "spice": card})
         if save_net:
             save.add(save_net)
@@ -144,8 +147,8 @@ def measurement_cards(cycles: list[dict]) -> tuple[list[dict], list[str]]:
     for k, inp in enumerate(inputs):
         if inp["raw_valid"]:
             t = P.t_edge_ns(k) + P.CAPTURE_NS
-            add(f"raw_bit_k{k}", f".meas tran raw_bit_k{k} FIND v(raw_bit) AT={t:.1f}n", "raw_bit")
-            add(f"raw_valid_k{k}", f".meas tran raw_valid_k{k} FIND v(raw_valid) AT={t:.1f}n", "raw_valid")
+            add(f"raw_bit_k{k}", f".meas tran raw_bit_k{k} FIND v(raw_bit) AT={t:.1f}n", "raw_bit", t)
+            add(f"raw_valid_k{k}", f".meas tran raw_valid_k{k} FIND v(raw_valid) AT={t:.1f}n", "raw_valid", t)
 
     # -- bus_rdata on every read cycle: visible during the NEXT cycle
     for k, inp in enumerate(inputs):
@@ -154,24 +157,24 @@ def measurement_cards(cycles: list[dict]) -> tuple[list[dict], list[str]]:
             for bit in range(32):
                 add(f"rdata_k{k}_b{bit}",
                     f".meas tran rdata_k{k}_b{bit} FIND v(bus_rdata_{bit}_) AT={t:.1f}n",
-                    f"bus_rdata_{bit}_")
+                    f"bus_rdata_{bit}_", t)
 
     # -- streaming-port captures: every cycle where a word can complete or pop
     for k in range(3, n):
         if inputs[k]["out_ready"] or inputs[k - 1]["out_ready"]:
             t = P.t_edge_ns(k) + P.RDATA_NS
-            add(f"out_valid_k{k}", f".meas tran out_valid_k{k} FIND v(out_valid) AT={t:.1f}n", "out_valid")
+            add(f"out_valid_k{k}", f".meas tran out_valid_k{k} FIND v(out_valid) AT={t:.1f}n", "out_valid", t)
             if k in (36, 37, 74) or k >= n - 3:
                 for bit in range(32):
                     add(f"odata_k{k}_b{bit}",
                         f".meas tran odata_k{k}_b{bit} FIND v(out_data_{bit}_) AT={t:.1f}n",
-                        f"out_data_{bit}_")
+                        f"out_data_{bit}_", t)
 
     # -- scalar observables at every bus-quiet sample-phase boundary of interest
     for k in sorted({2, 3, 36, 42, 74, n - 1}):
         t = P.t_edge_ns(k) + P.RDATA_NS
         for sig in ("alarm", "gated", "startup_done"):
-            add(f"{sig}_k{k}", f".meas tran {sig}_k{k} FIND v({sig}) AT={t:.1f}n", sig)
+            add(f"{sig}_k{k}", f".meas tran {sig}_k{k} FIND v({sig}) AT={t:.1f}n", sig, t)
 
     # -- first stream-valid assertion time (throughput tap, see README)
     add("t_out_valid_first", ".meas tran t_out_valid_first WHEN v(out_valid)=1.4 RISE=1", "out_valid")

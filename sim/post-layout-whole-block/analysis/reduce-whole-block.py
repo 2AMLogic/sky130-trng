@@ -43,6 +43,11 @@ REPO = BLOCK.parents[1]
 sys.path.insert(0, str(BLOCK))
 sys.path.insert(0, str(REPO / "sim" / "bin"))
 import program as P  # noqa: E402
+import importlib.util  # noqa: E402
+
+_mr_spec = importlib.util.spec_from_file_location("make_requests", BLOCK / "make-requests.py")
+MR = importlib.util.module_from_spec(_mr_spec)
+_mr_spec.loader.exec_module(MR)
 
 SLUG = "post-layout-whole-block"
 GRID = [(-40.0, 1.62), (27.0, 1.8), (-40.0, 1.98), (125.0, 1.98)]
@@ -83,6 +88,12 @@ def analyse_corner(corner: dict, vdd: float) -> dict:
     diag = [d for d in corner.get("diagnostics", []) if d.get("code") != "measurement"]
     for d in diag[:5]:
         problems.append(f"diagnostic {d.get('code')}: {d.get('message', '')[:160]}")
+    # the program's own measurement set is the contract: an entry that is
+    # wholly omitted from the report is as unmet as one that is null
+    required = {e["name"] for e in MR.measurement_cards(P.build_program()[0])[0]}
+    omitted = sorted(required - set(m))
+    if omitted:
+        problems.append(f"{len(omitted)} required measurement(s) omitted from the report (first: {omitted[:3]})")
     missing = sorted(n for n, v in m.items() if not is_num(v))
     if missing:
         problems.append(f"{len(missing)} measurement(s) absent/non-finite (first: {missing[:3]})")
@@ -90,7 +101,7 @@ def analyse_corner(corner: dict, vdd: float) -> dict:
         problems.append("no measurements in the report")
 
     out: dict = {"problems": problems}
-    if missing or not m:
+    if missing or omitted or not m:
         return out
 
     thr = vdd / 2.0

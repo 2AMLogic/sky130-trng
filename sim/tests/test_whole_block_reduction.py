@@ -29,7 +29,7 @@ P = R.P
 BITS = [(i * 7 + 3) % 5 % 2 for i in range(64)]
 
 
-def synth_corner(proc, temp, vdd, flip=None, drop=None, status="pass"):
+def synth_corner(proc, temp, vdd, flip=None, drop=None, omit=None, status="pass"):
     cycles, _ = P.build_program()
     meas_entries, _ = MR.measurement_cards(cycles)
     rows = P.model_replay(BITS)
@@ -68,6 +68,8 @@ def synth_corner(proc, temp, vdd, flip=None, drop=None, status="pass"):
         vals[flip] = hi - vals[flip]
     if drop:
         vals[drop] = None
+    if omit:
+        del vals[omit]
     return {"process": proc, "temperature_c": temp, "supply_v": {"Vvdd": vdd}, "status": status,
             "diagnostics": [], "measurements": [{"name": k, "value": v} for k, v in vals.items()]}
 
@@ -114,6 +116,44 @@ class WholeBlockReduction(unittest.TestCase):
         self.assertTrue(by["ff"]["status"] == "UNMET")
         self.assertTrue(red["ac3_claimable"] is False)
 
+
+    def test_omitted_measurement_is_unmet(self):
+        tmp_path = Path(tempfile.mkdtemp(prefix="wbred-"))
+        t, v = R.GRID[1]
+        write_report(tmp_path, "grid-a", [synth_corner("tt", t, v, omit="i_vdd_w2"),
+                                          synth_corner("ss", t, v, omit="rdata_k0_b0"),
+                                          synth_corner("ff", t, v)])
+        red = R.reduce(tmp_path, None)
+        by = {p["process"]: p for p in red["points"] if p["temperature_c"] == t}
+        for proc in ("tt", "ss"):
+            self.assertTrue(by[proc]["status"] == "UNMET" and any("omitted" in r for r in by[proc]["reasons"]))
+        self.assertTrue(by["ff"]["status"] == "MET")
+
+    def test_nonfinite_measurement_is_unmet(self):
+        tmp_path = Path(tempfile.mkdtemp(prefix="wbred-"))
+        t, v = R.GRID[1]
+        c = synth_corner("tt", t, v)
+        c["measurements"][0]["value"] = float("nan")
+        write_report(tmp_path, "grid-a", [c])
+        red = R.reduce(tmp_path, None)
+        pt = next(p for p in red["points"] if p["process"] == "tt" and p["temperature_c"] == t)
+        self.assertTrue(pt["status"] == "UNMET")
+
+    def test_pwl_highs_use_declared_vih(self):
+        cycles, _ = P.build_program()
+        cards = MR.input_cards(cycles, len(cycles))
+        peaks = [max(float(x) for x in c.split("PWL(")[1].rstrip(")").split()[1::2]) for c in cards]
+        self.assertTrue(max(peaks) == MR.VIH and all(p in (0.0, MR.VIH) for p in peaks))
+
+    def test_probe_measurements_within_stop_time(self):
+        cycles, _ = P.build_program(limit=6)
+        t_stop = P.t_stop_ns(cycles)
+        meas, _ = MR.measurement_cards(cycles)
+        import re
+        for e in meas:
+            mt = re.search(r"AT=([0-9.]+)n", e["spice"])
+            if mt:
+                self.assertTrue(float(mt.group(1)) <= t_stop, e["name"])
 
     def test_error_envelope_stays_unmet(self):
         tmp_path = Path(tempfile.mkdtemp(prefix="wbred-"))
