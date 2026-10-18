@@ -323,7 +323,7 @@ def main(argv: list[str] | None = None) -> int:
         make_request("startup-probe-batch", reqdir / "startup-probe-batch",
                      processes=["tt"], temp_c=27.0, supply=1.8, backend="batch",
                      analysis_args=f"{t_stop:.0f}n", header=hdr, cycles=cycles,
-                     timeout_s=14400, poll_timeout_s=7000)
+                     timeout_s=3480, poll_timeout_s=3700)
         print(f"wrote {reqdir/'startup-probe-batch'}")
         return 0
 
