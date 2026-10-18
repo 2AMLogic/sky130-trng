@@ -2,6 +2,10 @@
 
 Chronological record of recently merged pull requests and closed issues.
 
+### 2026-10-18
+
+- **PR #328**: fix(sim): correct whole-block stimulus levels, probe measurements and reducer omission handling
+
 ### 2026-10-17
 
 - **PR #323**: feat(signoff): cite artifact-anchored generic evidence for T1 items 1, 2, 9, 10
