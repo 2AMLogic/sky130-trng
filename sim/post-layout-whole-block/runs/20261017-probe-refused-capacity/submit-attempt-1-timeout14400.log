@@ -1,0 +1,9 @@
+klt: warning: 2 installs provide PDK variant 'sky130A'; read /home/ubuntu/.ciel (search root: ~/.ciel), skipped /home/ubuntu/.volare (search root: ~/.volare). Resolution is first-match-wins, so a pinned open_pdks build may not be the one this run read -- pin the root explicitly (--pdk-root, or a request's models.pdk_root) to disable the search and choose deliberately.
+klt sim: warning: batch job bound 14520s (options.timeout_s 14400s x 1 units + 120s; a conservative fully-serial upper bound, not a runtime estimate) exceeds the fleet's whole-job ceiling of 3600s (max_job_seconds from fleet_config); a job still running at the ceiling is killed and every unit is reported batch_job_timeout. No remote.hosts value fits: a single unit's bound exceeds the ceiling -- lower options.timeout_s to at most 3480s
+klt: batch job klt-sim-75446b644412 submitting to s3://2am-batch-jobs-221082181346/jobs/klt-sim-75446b644412
+klt sim: batch job klt-sim-75446b644412: submitted
+klt sim: batch backend failed: batch-fleet-provision.sh launch failed (exit 1): error: 8 instance(s) already running + 1 requested exceeds BATCH_MAX_CONCURRENT_INSTANCES=8
+
+real	0m7.296s
+user	0m5.470s
+sys	0m0.662s
