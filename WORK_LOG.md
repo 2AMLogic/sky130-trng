@@ -4,6 +4,7 @@ Chronological record of recently merged pull requests and closed issues.
 
 ### 2026-10-18
 
+- **PR #329**: sim(whole-block): record fleet startup probe that failed at ngspice parse
 - **PR #328**: fix(sim): correct whole-block stimulus levels, probe measurements and reducer omission handling
 
 ### 2026-10-17

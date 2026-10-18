@@ -26,6 +26,7 @@ _None._
 
 Human-approved issues ready for implementation (`loom:issue`).
 
+- **#18**: [Epic #542] 4B — Chipalooza Challenge #4 (Sky130) brief document + sign-off
 - **#221**: Decision record request: local mismatch can cap tt raw-bit H below DR-0004's 0.5 floor; adjacent rings approach 1:1
 - **#230**: CI: guard that every test_*.py is wired into a CI workflow and path filter
 
@@ -33,7 +34,6 @@ Human-approved issues ready for implementation (`loom:issue`).
 
 Issues currently being built (`loom:building`).
 
-- **#307**: Whole-block 12-point PVT matrix: run on the klt batch fleet once the runner image matches the client (follow-up of #174)
 - **#314**: Re-pin open_pdks to f6eeac7 (ciel) — fleet retires volare c6d73a3
 
 ## PRs Awaiting Review
@@ -76,8 +76,8 @@ Issues carrying `loom:curated`.
 | Operator merge-risk holds | 0 |
 | Very important | 0 |
 | Important | 2 |
-| Ready (`loom:issue`) | 2 |
-| In Progress (`loom:building`) | 2 |
+| Ready (`loom:issue`) | 3 |
+| In Progress (`loom:building`) | 1 |
 | PRs awaiting review | 0 |
 | Approved PRs awaiting merge | 0 |
 | Curated | 6 |
