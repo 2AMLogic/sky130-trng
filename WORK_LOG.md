@@ -6,6 +6,7 @@ Chronological record of recently merged pull requests and closed issues.
 
 - **PR #329**: sim(whole-block): record fleet startup probe that failed at ngspice parse
 - **PR #328**: fix(sim): correct whole-block stimulus levels, probe measurements and reducer omission handling
+- **Issue #138** (closed): CI: preserve started main verification runs with event-aware concurrency
 
 ### 2026-10-17
 
@@ -13,6 +14,18 @@ Chronological record of recently merged pull requests and closed issues.
 - **Issue #320** (closed): T1 items 1, 2, 9, 10: cite artifact-anchored inventory envelopes for both partitions
 - **PR #322**: feat: map remaining spec rows to evidence and cite item 8 via generic envelope
 - **Issue #321** (closed): T1 item 8: map the four unmapped characterization rows to their committed records, then cite the report
+- **PR #184**: refactor(layout): remove inert BLOCKED_BLOCKS path from gen_analog_layout.py
+- **PR #181**: refactor: route design netlisting through klt netlist
+- **PR #178**: test: use shared start_clock in four remaining cocotb testbenches
+- **Issue #179** (closed): Simplify design/netlist.py: replace raw xschem call with klt netlist
+- **Issue #177** (closed): Remove inert BLOCKED_BLOCKS path from gen_analog_layout.py: empty since #72
+- **Issue #176** (closed): Finish #44: four cocotb testbenches still redefine the shared 12 MHz clock helper
+
+### 2026-10-16
+
+- **PR #173**: chore(sim): remove unused mk_dut.py and fix stale DUT references
+- **PR #172**: Bump Repo Skills 0.24.1 -> 0.24.3
+- **Issue #107** (closed): Remove sim/tools/mk_dut.py: unused, superseded by design/netlist.py
 
 ### 2026-10-15
 
@@ -23,6 +36,16 @@ Chronological record of recently merged pull requests and closed issues.
 - **PR #218**: ci: run volume-model and ripple-reduction tests in PR-blocking job
 - **Issue #217** (closed): CI: run test_raw_bit_volume_model and test_ripple_reduction in the PR-blocking lint job
 - **Issue #162** (closed): README: embed the fleet burndown chart (one line)
+- **PR #170**: docs(records): equivalence-sim attempts on flattened driver incomplete; raise signal-quality timeout
+- **PR #168**: docs(records): driver layout-plan re-run on post-resize netlist fails on m=4
+- **PR #164**: feat(digital): SDF-annotated gate-level regression for T1 item 7.digital (#93)
+- **PR #162**: Regenerate digital physical/evidence chain from current RTL (#131)
+- **PR #149**: feat(rtl): add trim[4:0] integration input to usb_utmi_phy (#115)
+- **Issue #115** (closed): RTL: add trim[4:0] pass-through input port (pin contract, #109)
+
+### 2026-10-14
+
+- **Issue #90** (closed): README: embed the fleet burndown chart (one line)
 
 ### 2026-10-12
 
@@ -58,6 +81,9 @@ Chronological record of recently merged pull requests and closed issues.
 - **PR #275**: Reject colliding artifact basenames before minting behavioral evidence
 - **Issue #273** (closed): Reject colliding artifact basenames before minting behavioral evidence
 - **Issue #278** (closed): Auditor: guard telemetry dispositions and read-only S3 refinement
+- **PR #151**: docs(spec): fix evidence link in decision 0005
+- **Issue #159** (closed): Auditor guard decision: keep detached force-push guard
+- **Issue #156** (closed): Lint: run scripts/test_setup_env.sh from npm run lint so setup-env.sh regressions reach CI
 
 ### 2026-10-10
 
@@ -74,7 +100,6 @@ Chronological record of recently merged pull requests and closed issues.
 - **PR #263**: feat(sim): bounded Vth-shift sensitivity of the RO array across PVT (#254)
 - **Issue #254** (closed): End-of-life drift: bounded Vth-shift (BTI/HCI) derate of the RO array across PVT
 - **Issue #258** (closed): Auditor guard telemetry: worktree-write-confinement-unresolved-var
-
 - **Issue #244** (closed): Decision record: DR-0004 external interface vs the assumed Challenge #4 pin budget (brief §2 re-map)
 - **Issue #208** (closed): Decision record needed: RO-array supply-quality requirement (droop/ripple) from #200 evidence
 - **Issue #250** (closed): Gate digital P&R success on extracted final-route Liberty electrical limits
@@ -87,7 +112,6 @@ Chronological record of recently merged pull requests and closed issues.
 - **PR #255**: feat(sim): 2^20-bit raw-bit streams and min-H shift vs 2^17 (#253)
 - **PR #257**: sim: repaired floorplan compaction with 16-corner electrical closure (#251)
 - **PR #260**: docs(spec): silicon characterization plan, DR-0014 Proposed, measurements/ layout contract (#256)
-
 - **PR #245**: feat(sim): conditioned-output (DATA) battery + estimator evidence (#243)
 - **PR #241**: docs: sync sim/README slug index and Challenge #4 sign-off row 3 (#240)
 - **PR #242**: docs(spec): DR-0010 target-table reconciliation packet (Proposed)
@@ -97,6 +121,12 @@ Chronological record of recently merged pull requests and closed issues.
 - **Issue #239** (closed): Spec: DR-0010 target-table reconciliation packet (rate, area, power rows) for operator ratification
 - **Issue #236** (closed): Digital physical closure: repair and audit low-voltage Liberty slew/capacitance violations
 - **Issue #235** (closed): Auditor guard telemetry: worktree-write-confinement-unresolved-var
+- **PR #153**: fix(verification): current-source records superseding stale #112/#113 carry-forwards (#147)
+- **PR #145**: RTL: add pu_en output derived from TermSelect (#112)
+- **Issue #152** (closed): Build failure on main: pin-contract planned TXOE test is stale
+- **Issue #132** (closed): Decide whether UTMI Reset should reach the vendored RX transforms synchronously
+- **Issue #113** (closed): RTL: add txoe driver-enable output (pin contract, #109)
+- **Issue #112** (closed): RTL: add pu_en output derived from TermSelect (pin contract, #109)
 
 ### 2026-10-09
 
@@ -121,12 +151,19 @@ Chronological record of recently merged pull requests and closed issues.
 - **Issue #211** (closed): Refresh T1 manifest with eligible delivered digital physical evidence
 - **Issue #212** (closed): Refresh current sign-off status and simulated-stream documentation
 - **Issue #200** (closed): Supply-ripple and injection-lock robustness campaign for the RO array (transistor level)
+- **PR #141**: docs(layout): re-measure resized differential_receiver (DRC clean, LVS mismatch)
+- **PR #137**: fix: require full 45-corner evidence before fixed-trim PASS
+- **PR #125**: Add --tool-light mode to setup-env.sh (#117)
+- **Issue #136** (closed): Require complete PVT evidence before fixed-trim analysis can report PASS
+- **Issue #130** (closed): Verify UTMI Reset aborts transmission through stuffing and EOP states
+- **Issue #123** (closed): Characterize RX boundary synchronization with paired-input skew and reset injection
+- **Issue #103** (closed): Re-run differential_receiver layout/DRC/LVS after MP_B1/MN_B1 resize (PR #102)
+- **Issue #95** (closed): signoff: bare evidence keys 3 and 4 grade the analog partition met with no analog layout
 
 ### 2026-10-08
 
 - **PR #206**: chore(signoff): klayout-tools 0.7.0 grader; 11.analog met (3/22)
 - **Issue #164** (closed): Re-grade T1 item 11 (11.analog) once klayout-tools#2405 (alias-joined LVS supply pairing) lands
-
 - **PR #204**: Whole-block DRC, mixed-level LVS and fault controls for trng_whole (#173)
 - **PR #203**: Re-derive and empirically validate RCT/APT cutoffs against estimated H (#196)
 - **PR #202**: Add 125 C combining evidence and hot volume record (#197)
@@ -143,6 +180,14 @@ Chronological record of recently merged pull requests and closed issues.
 - **Issue #188** (closed): Raw-bit volume campaign: >=1e5 bits per PVT corner for statistical evidence (current record has 24)
 - **Issue #190** (closed): CI: run sim/tests unit tests (test_raw_bit_entropy, test_digital_section) in the lint job
 - **Issue #189** (closed): Add SP 800-22-style battery and non-MCV SP 800-90B estimators to the raw-bit analysis
+- **PR #122**: Add top-level RX stuffing-error propagation and recovery tests (#118)
+- **PR #121**: Reconcile status docs with superseding verification evidence
+- **PR #111**: Attempt SDF-annotated gate-level regression for T1 item 7.digital (blocked; negative result recorded) (#93)
+- **Issue #120** (closed): Reconcile current PHY status documents with superseding verification evidence
+- **Issue #118** (closed): Verify top-level RX stuffing-error propagation and packet recovery
+- **Issue #108** (closed): Verify RX bit sampling against spec §7 ±0.25% clock tolerance (no test covers host/device rate offset)
+- **Issue #97** (closed): Analog: make differential_receiver resolve 200 mV over the full 0.8-2.5 V common-mode range (spec §4)
+- **Issue #92** (closed): T1 item 5 (digital): mint one multi-corner klt sta envelope on the routed layout and cite it
 
 ### 2026-10-07
 
@@ -179,6 +224,11 @@ Chronological record of recently merged pull requests and closed issues.
 - **Issue #161** (closed): T1 item 11: declare sampler_core's well ties in the klt erc supply spec on klayout-tools 0.6.0 and cite 11.analog in the block manifest
 - **Issue #160** (closed): Bump the signoff grader pin to klayout-tools 0.6.0, re-vendor the tiers doc, and regenerate signoff/t1-report.json
 
+### 2026-09-22
+
+- **PR #88**: feat: vendor shared USB protocol RTL and adapt the UTMI wrapper
+- **Issue #87** (closed): Re-run usb_utmi_phy place-and-route and post-layout PVT against the vendored rtl/common sources (post-#84)
+
 ### 2026-09-21
 
 - **PR #158**: feat(layout): add T1 item-11 klt erc supply read for sampler_core
@@ -187,6 +237,10 @@ Chronological record of recently merged pull requests and closed issues.
 - **Issue #155** (closed): Commit a klt signoff block manifest so this block's T1 state is graded, not hand-read
 - **Issue #154** (closed): T1 item 11 (power delivery, structural): no klt erc supply spec or report in this repo
 - **Issue #153** (closed): run-pdk-check label does not exist, so both PDK-gated workflows' documented PR opt-in is dead
+- **Issue #83** (closed): T1 item 11 (digital): declare well/substrate ties[] in layout/digital/erc-supply-spec.json and re-run klt erc — upstream klayout-tools#2169 fix is already in the pinned klt
+- **Issue #79** (closed): T1 item 11 digital leg: committed LVS report predates power_connectivity - re-run digital LVS on a klt that computes it
+- **Issue #78** (closed): Commit a klt signoff block manifest so this block's T1 state is graded, not hand-read
+- **Issue #77** (closed): T1 item 11 (power delivery, structural): no klt erc supply spec or report in this repo
 
 ### 2026-09-18
 
