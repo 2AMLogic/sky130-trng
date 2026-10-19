@@ -209,11 +209,6 @@ def c_lag(lags: int, window: int = STUDY_WINDOW, h: float = H_DESIGN,
     raise ValueError("no valid cutoff for this window/lags/alpha")
 
 
-def family_false_alarm_bound(lags: int, alpha_log2: int = ALPHA_LOG2) -> Decimal:
-    """Union bound on Pr(any lag fails in one window) for an i.i.d. source at ``H_DESIGN`` or above."""
-    return Decimal(lags) * (Decimal(2) ** -alpha_log2 / Decimal(lags))
-
-
 def tail_probability(window: int, rate: float, cutoff: int) -> float:
     """``Pr(Binomial(window, rate) >= cutoff)`` in floats (log-space; for detection power, not cutoffs)."""
     if rate <= 0.0:
