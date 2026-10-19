@@ -2,6 +2,11 @@
 
 Chronological record of recently merged pull requests and closed issues.
 
+### 2026-10-19
+
+- **PR #336**: refactor: remove unused tautological family_false_alarm_bound
+- **Issue #335** (closed): Remove family_false_alarm_bound: unused tautology (always returns 2**-alpha)
+
 ### 2026-10-18
 
 - **PR #329**: sim(whole-block): record fleet startup probe that failed at ngspice parse
