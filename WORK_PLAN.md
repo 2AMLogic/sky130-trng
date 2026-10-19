@@ -34,12 +34,13 @@ Human-approved issues ready for implementation (`loom:issue`).
 Issues currently being built (`loom:building`).
 
 - **#314**: Re-pin open_pdks to f6eeac7 (ciel) — fleet retires volare c6d73a3
+- **#338**: Drop the report-loom-ui job from pdk-nightly (CI pushes nothing; no OIDC)
 
 ## PRs Awaiting Review
 
 PRs waiting on Judge (`loom:review-requested`).
 
-_None._
+- **#339**: ci: remove report-loom-ui job and OIDC permission from pdk-nightly
 
 ## Approved (Awaiting Merge)
 
@@ -57,6 +58,7 @@ Issues carrying `loom:curated`.
 - **#289**: Extend seeded transistor raw-bit model cross-checks beyond nominal PVT *(curated)*
 - **#307**: Whole-block 12-point PVT matrix: run on the klt batch fleet once the runner image matches the client (follow-up of #174) *(curated)*
 - **#314**: Re-pin open_pdks to f6eeac7 (ciel) — fleet retires volare c6d73a3 *(curated)*
+- **#338**: Drop the report-loom-ui job from pdk-nightly (CI pushes nothing; no OIDC) *(curated)*
 
 ## Proposed (Architect / Hermit)
 
@@ -76,10 +78,10 @@ Issues carrying `loom:curated`.
 | Very important | 0 |
 | Important | 2 |
 | Ready (`loom:issue`) | 2 |
-| In Progress (`loom:building`) | 1 |
-| PRs awaiting review | 0 |
+| In Progress (`loom:building`) | 2 |
+| PRs awaiting review | 1 |
 | Approved PRs awaiting merge | 0 |
-| Curated | 6 |
+| Curated | 7 |
 | Architect / Hermit proposals | 2 |
 | Active epics | 2 |
 <!-- guide:plan-body:end -->
