@@ -20,7 +20,6 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[1]
 SLUG = REPO / "sim" / "ro-vth-drift-sensitivity"
-sys.path.insert(0, str(REPO / "sim" / "bin"))
 sys.path.insert(0, str(SLUG))
 sys.path.insert(0, str(SLUG / "analysis"))
 import aging  # noqa: E402

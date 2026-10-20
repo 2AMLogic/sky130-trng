@@ -5,22 +5,17 @@
 """
 from __future__ import annotations
 
-import importlib.util
-import sys
 import json
 import random
+import sys
 import tempfile
 import unittest
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from loadmod import load_module  # noqa: E402
-_spec = importlib.util.spec_from_file_location(
-    "behavioral_raw_bit", REPO_ROOT / "sim/raw-bit-volume-campaign/behavioral_raw_bit.py")
-m = importlib.util.module_from_spec(_spec)
-_spec.loader.exec_module(m)
+m = load_module("behavioral_raw_bit", REPO_ROOT / "sim/raw-bit-volume-campaign/behavioral_raw_bit.py")
 
 mr = load_module("make_requests", REPO_ROOT / "sim/raw-bit-volume-campaign/make-requests.py")
 dc = load_module("derive_combining", REPO_ROOT / "sim/raw-bit-volume-campaign/derive-combining.py")
