@@ -18,7 +18,6 @@ harness' ``electrical_check`` / ``assemble_verdict``:
 from __future__ import annotations
 
 import gzip
-import importlib.util
 import json
 import sys
 import tempfile
@@ -27,21 +26,15 @@ from pathlib import Path
 from types import SimpleNamespace
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from loadmod import load_module  # noqa: E402
 RUNS = REPO_ROOT / "sim/digital-electrical-repair/runs"
 CONTROL = RUNS / "20261010-control/control"
 CAND = RUNS / "20261010-cand1/slew0531"
 
 
-def _load(name, path):
-    sp = importlib.util.spec_from_file_location(name, path)
-    m = importlib.util.module_from_spec(sp)
-    sys.modules[name] = m
-    sp.loader.exec_module(m)
-    return m
-
-
-fra = _load("final_route_audit", REPO_ROOT / "sim/digital-electrical-repair/analysis/final_route_audit.py")
-harness = _load("pnr_and_verify_under_test", REPO_ROOT / "sim/digital-pnr/harness/pnr-and-verify.py")
+fra = load_module("final_route_audit", REPO_ROOT / "sim/digital-electrical-repair/analysis/final_route_audit.py", register=True)
+harness = load_module("pnr_and_verify_under_test", REPO_ROOT / "sim/digital-pnr/harness/pnr-and-verify.py", register=True)
 
 
 def corners_of(run: Path) -> list[str]:

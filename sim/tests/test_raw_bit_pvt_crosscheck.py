@@ -11,25 +11,20 @@ from __future__ import annotations
 
 import copy
 import hashlib
-import importlib.util
 import json
 import random
+import sys
 import tempfile
 import unittest
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from loadmod import load_module  # noqa: E402
 
 
-def _load(name, rel):
-    sp = importlib.util.spec_from_file_location(name, REPO_ROOT / rel)
-    mod = importlib.util.module_from_spec(sp)
-    sp.loader.exec_module(mod)
-    return mod
-
-
-x = _load("transistor_pvt_crosscheck", "sim/raw-bit-volume-campaign/transistor_pvt_crosscheck.py")
-mr = _load("make_requests_pvt", "sim/raw-bit-volume-campaign/make-requests.py")
+x = load_module("transistor_pvt_crosscheck", REPO_ROOT / "sim/raw-bit-volume-campaign/transistor_pvt_crosscheck.py")
+mr = load_module("make_requests_pvt", REPO_ROOT / "sim/raw-bit-volume-campaign/make-requests.py")
 
 POINTS = x.DECLARED_POINTS
 SEEDS = x.DECLARED_SEEDS

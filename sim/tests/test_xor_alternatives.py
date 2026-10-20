@@ -7,7 +7,6 @@ records only.
     python3 sim/tests/test_xor_alternatives.py
 """
 import copy
-import importlib.util
 import math
 import os
 import re
@@ -16,17 +15,13 @@ import unittest
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 D = os.path.join(HERE, "..", "xor-combining-alternatives")
+sys.path.insert(0, os.path.join(HERE, "..", "bin"))
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from loadmod import load_module  # noqa: E402
 
 
-def _load(name, fn):
-    s = importlib.util.spec_from_file_location(name, os.path.join(D, fn))
-    m = importlib.util.module_from_spec(s)
-    s.loader.exec_module(m)
-    return m
-
-
-MR = _load("xa_mr", "make-requests.py")
-RD = _load("xa_rd", "reduce.py")
+MR = load_module("xa_mr", os.path.join(D, "make-requests.py"))
+RD = load_module("xa_rd", os.path.join(D, "reduce.py"))
 
 
 def swing_curve(w90_target, vdd=1.8):

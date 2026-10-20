@@ -11,7 +11,6 @@ no OpenROAD needed):
 """
 
 import contextlib
-import importlib.util
 import io
 import json
 import sys
@@ -19,19 +18,14 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from loadmod import load_module  # noqa: E402
 STUDY = ROOT / "sim" / "digital-floorplan-compaction"
-
-
-def _load(name, path):
-    spec = importlib.util.spec_from_file_location(name, path)
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    return mod
 
 
 class HarnessGuard(unittest.TestCase):
     def test_emit_record_refused_for_study_request(self):
-        h = _load("pnr_and_verify", ROOT / "sim" / "digital-pnr" / "harness" / "pnr-and-verify.py")
+        h = load_module("pnr_and_verify", ROOT / "sim" / "digital-pnr" / "harness" / "pnr-and-verify.py")
         err = io.StringIO()
         with contextlib.redirect_stderr(err):
             rc = h.main(["--request", str(STUDY / "requests" / "util55.json"), "--emit-record"])
@@ -43,7 +37,7 @@ class HarnessGuard(unittest.TestCase):
 
 class AreaModel(unittest.TestCase):
     def setUp(self):
-        self.m = _load("compaction", STUDY / "analysis" / "compaction.py")
+        self.m = load_module("compaction", STUDY / "analysis" / "compaction.py")
         self.whole = json.loads((ROOT / "layout" / "trng_whole" / "report.json").read_text())
 
     def test_reproduces_committed_bbox(self):

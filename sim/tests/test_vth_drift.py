@@ -8,7 +8,6 @@ its negative tests (missing key, schema/source-hash mismatch, forced time-zero f
     python3 sim/tests/test_vth_drift.py
 """
 import copy
-import importlib.util
 import json
 import math
 import os
@@ -26,16 +25,11 @@ sys.path.insert(0, str(SLUG / "analysis"))
 import aging  # noqa: E402
 import campaign as C  # noqa: E402
 import sensitivity as S  # noqa: E402
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from loadmod import load_module  # noqa: E402
 
 
-def _load(path, name):
-    spec = importlib.util.spec_from_file_location(name, path)
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    return mod
-
-
-BRB = _load(REPO / "sim/raw-bit-volume-campaign/behavioral_raw_bit.py", "brb_t")
+BRB = load_module("brb_t", REPO / "sim/raw-bit-volume-campaign/behavioral_raw_bit.py")
 
 NFET = ("XMn y a ny vss sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 nf=1 ad=0.1218 as=0.1218 pd=1.42 ps=1.42 nrd=0.69047619047619\n"
         "+ nrs=0.69047619047619 sa=0 sb=0 sd=0 mult=1 m=1")
@@ -357,7 +351,7 @@ class CalibrationConsumerTests(unittest.TestCase):
 
 class ReplayTests(unittest.TestCase):
     def test_matched_seed_label_carries_no_shift(self):
-        rp = _load(SLUG / "analysis/behavioral_replay.py", "rp_t")
+        rp = load_module("rp_t", SLUG / "analysis/behavioral_replay.py")
         self.assertNotIn("20", rp.label("tt", 27.0, 1.8).replace("27", "").replace("1.8", "").replace("Ts20us", ""))
         self.assertEqual(rp.label("tt", 27.0, 1.8), rp.label("tt", 27.0, 1.8))
         self.assertEqual(BRB.sub_seed(rp.label("tt", 27.0, 1.8)), BRB.sub_seed(rp.label("tt", 27.0, 1.8)))
