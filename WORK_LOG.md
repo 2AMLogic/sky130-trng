@@ -2,6 +2,11 @@
 
 Chronological record of recently merged pull requests and closed issues.
 
+### 2026-10-20
+
+- **PR #343**: refactor(sim): share one importlib path loader across sim scripts
+- **Issue #342** (closed): Consolidate 11 copy-pasted importlib _load helpers into one shared loader
+
 ### 2026-10-19
 
 - **PR #336**: refactor: remove unused tautological family_false_alarm_bound
