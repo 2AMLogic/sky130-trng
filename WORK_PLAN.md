@@ -7,7 +7,7 @@ This roadmap is generated from the current GitHub label state.
 
 Judge-approved PRs under a hold (`loom:blocked` or `loom:operator`) — only a human merge decision is missing.
 
-_None._
+- **#339**: ci: remove report-loom-ui job and OIDC permission from pdk-nightly
 
 ## Very Important
 
@@ -40,13 +40,13 @@ Issues currently being built (`loom:building`).
 
 PRs waiting on Judge (`loom:review-requested`).
 
-- **#339**: ci: remove report-loom-ui job and OIDC permission from pdk-nightly
+_None._
 
 ## Approved (Awaiting Merge)
 
 PRs that passed review and are queued for Champion auto-merge (`loom:pr`).
 
-_None._
+- **#339**: ci: remove report-loom-ui job and OIDC permission from pdk-nightly
 
 ## Proposed
 
@@ -74,13 +74,13 @@ Issues carrying `loom:curated`.
 
 | Bucket | Count |
 |------|-------|
-| Operator merge-risk holds | 0 |
+| Operator merge-risk holds | 1 |
 | Very important | 0 |
 | Important | 2 |
 | Ready (`loom:issue`) | 2 |
 | In Progress (`loom:building`) | 2 |
-| PRs awaiting review | 1 |
-| Approved PRs awaiting merge | 0 |
+| PRs awaiting review | 0 |
+| Approved PRs awaiting merge | 1 |
 | Curated | 7 |
 | Architect / Hermit proposals | 2 |
 | Active epics | 2 |
