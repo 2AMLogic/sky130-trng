@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import importlib.util
+import sys
 import json
 import random
 import tempfile
@@ -13,20 +14,15 @@ import unittest
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
+from loadmod import load_module  # noqa: E402
 _spec = importlib.util.spec_from_file_location(
     "behavioral_raw_bit", REPO_ROOT / "sim/raw-bit-volume-campaign/behavioral_raw_bit.py")
 m = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(m)
 
-def _load(name, rel):
-    sp = importlib.util.spec_from_file_location(name, REPO_ROOT / rel)
-    mod = importlib.util.module_from_spec(sp)
-    sp.loader.exec_module(mod)
-    return mod
-
-
-mr = _load("make_requests", "sim/raw-bit-volume-campaign/make-requests.py")
-dc = _load("derive_combining", "sim/raw-bit-volume-campaign/derive-combining.py")
+mr = load_module("make_requests", REPO_ROOT / "sim/raw-bit-volume-campaign/make-requests.py")
+dc = load_module("derive_combining", REPO_ROOT / "sim/raw-bit-volume-campaign/derive-combining.py")
 
 PER = [2.88e-9, 2.72e-9, 2.57e-9, 2.43e-9]
 

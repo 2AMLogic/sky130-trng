@@ -31,7 +31,6 @@ import datetime
 import glob
 import gzip
 import hashlib
-import importlib.util
 import json
 import math
 import os
@@ -48,6 +47,7 @@ sys.path.insert(0, str(REPO / "sim" / "bin"))
 import aging  # noqa: E402
 import campaign as C  # noqa: E402
 from evidence_record import git_short_sha  # noqa: E402
+from loadmod import load_module  # noqa: E402
 
 SLUG = C.SLUG
 SENTENCE = "This is a sensitivity bound, not a lifetime prediction."
@@ -67,15 +67,8 @@ H_FLOOR_DR0004 = 0.5                              # DR-0004 evaluates the health
 T_S_DR0003 = 20e-6
 
 
-def _load(path, name):
-    spec = importlib.util.spec_from_file_location(name, path)
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    return mod
-
-
-AS = _load(REPO / "sim/ro-array-sizing/analysis/array-sizing.py", "array_sizing")
-DC = _load(REPO / "sim/raw-bit-volume-campaign/derive-combining.py", "derive_combining")
+AS = load_module("array_sizing", REPO / "sim/ro-array-sizing/analysis/array-sizing.py")
+DC = load_module("derive_combining", REPO / "sim/raw-bit-volume-campaign/derive-combining.py")
 
 
 def sha256_json(obj) -> str:

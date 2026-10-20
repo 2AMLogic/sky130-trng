@@ -39,7 +39,6 @@ from __future__ import annotations
 import argparse
 import glob
 import gzip
-import importlib.util
 import json
 import math
 import os
@@ -51,17 +50,11 @@ HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[1]
 SLUG = "xor-combining-alternatives"
 sys.path.insert(0, str(REPO / "sim" / "bin"))
+from loadmod import load_module  # noqa: E402
 
 
-def _load(path, name):
-    spec = importlib.util.spec_from_file_location(name, path)
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    return mod
-
-
-OP = _load(REPO / "sim" / "ro-array-operating-point" / "analysis" / "operating-point.py", "operating_point")
-MR = _load(HERE / "make-requests.py", "xor_alt_make_requests")
+OP = load_module("operating_point", REPO / "sim" / "ro-array-operating-point" / "analysis" / "operating-point.py")
+MR = load_module("xor_alt_make_requests", HERE / "make-requests.py")
 from evidence_record import mint_record, new_record_id  # noqa: E402
 
 TOL_W90 = 0.05            # baseline control vs committed w_90
