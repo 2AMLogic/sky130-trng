@@ -1,9 +1,8 @@
 """Load a Python source file as a module by path (stdlib only).
 
 Many sim scripts have hyphenated filenames (``fv-cosim.py``,
-``make-requests.py``) and cannot be imported normally. Scripts that need one
-put ``sim/bin`` on ``sys.path`` (as they already do for ``evidence_record``)
-and call :func:`load_module`.
+``make-requests.py``) and cannot be imported normally. Tests that need one
+put ``sim/tests`` on ``sys.path`` and call :func:`load_module`.
 """
 
 from __future__ import annotations

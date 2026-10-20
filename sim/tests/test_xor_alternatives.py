@@ -16,6 +16,7 @@ import unittest
 HERE = os.path.dirname(os.path.abspath(__file__))
 D = os.path.join(HERE, "..", "xor-combining-alternatives")
 sys.path.insert(0, os.path.join(HERE, "..", "bin"))
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from loadmod import load_module  # noqa: E402
 
 

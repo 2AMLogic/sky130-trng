@@ -26,6 +26,7 @@ sys.path.insert(0, str(SLUG / "analysis"))
 import aging  # noqa: E402
 import campaign as C  # noqa: E402
 import sensitivity as S  # noqa: E402
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from loadmod import load_module  # noqa: E402
 
 
