@@ -70,6 +70,7 @@ import datetime
 import glob
 import gzip
 import hashlib
+import importlib.util
 import json
 import math
 import os
@@ -83,8 +84,6 @@ HERE = Path(__file__).resolve().parent
 SLUG = "wake-up-transient"
 sys.path.insert(0, str(REPO / "sim" / "bin"))
 sys.path.insert(0, str(REPO))
-
-from loadmod import load_module  # noqa: E402
 
 PROV = "simulation-derived; provisional until silicon"
 TOLS = (0.01, 0.005)            # settling tolerances (fractional period error); the steady-state
@@ -103,8 +102,15 @@ XCHK_REPS = 1000                # model replicates for the noisy-leg cross-check
 XCHK_PERIOD_UNC = 0.002         # relative ring-period uncertainty used to randomise the model's mean phase
 
 
+def _load(name, path):
+    spec = importlib.util.spec_from_file_location(name, path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
 def make_requests():
-    return load_module("wakeup_make_requests", HERE / "make-requests.py")
+    return _load("wakeup_make_requests", HERE / "make-requests.py")
 
 
 # ======================================================================= det
@@ -476,7 +482,7 @@ def det_calibration(temp, vdd, proc):
 
 
 def calibration(temp, vdd, proc):
-    vc = load_module("behavioral_raw_bit", REPO / "sim/raw-bit-volume-campaign/behavioral_raw_bit.py")
+    vc = _load("behavioral_raw_bit", REPO / "sim/raw-bit-volume-campaign/behavioral_raw_bit.py")
     base = vc.calibration(temp, vdd, proc)
     det = det_calibration(temp, vdd, proc)
     cal = {"temp_c": temp, "vdd_v": vdd, "corner": proc, "sigma1": base["sigma"][1],
@@ -612,7 +618,7 @@ MARGIN_CLAIM = ("Margin of DR-0004's 1024-sample start-up window (20.48 ms at DR
 
 
 def margin_compute():
-    vc = load_module("behavioral_raw_bit", REPO / "sim/raw-bit-volume-campaign/behavioral_raw_bit.py")
+    vc = _load("behavioral_raw_bit", REPO / "sim/raw-bit-volume-campaign/behavioral_raw_bit.py")
     points = list(vc.PVT_POINTS_BASE) + list(vc.PVT_POINTS_HOT)
     tau = 0.5 * TS
     rows = []
@@ -943,7 +949,7 @@ def check(path):
                 and json.loads(json.dumps(xchk, default=str)) == rec["xcheck"]
                 and json.loads(json.dumps(summ, default=str)) == rec["summary"])
     elif leg == "restart-matrix":
-        return load_module("restart_matrix", HERE / "restart_matrix.py").check(path)
+        return _load("restart_matrix", HERE / "restart_matrix.py").check(path)
     elif leg == "margin":
         rows = margin_compute()
         same = json.loads(json.dumps(rows, default=str)) == rec["rows"]

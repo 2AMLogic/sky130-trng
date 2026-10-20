@@ -37,6 +37,7 @@ from __future__ import annotations
 
 import gzip
 import hashlib
+import importlib.util
 import json
 import math
 import random
@@ -49,8 +50,6 @@ REPO = HERE.parents[1]
 SLUG = "wake-up-transient"
 sys.path.insert(0, str(REPO / "sim" / "bin"))
 sys.path.insert(0, str(REPO))
-
-from loadmod import load_module  # noqa: E402
 
 FIRST_WINDOW = 1024             # DR-0004 start-up test length = the first window
 MIN_ROWS = 1000                 # spec/silicon-characterization-plan.md: 1000 independent restarts
@@ -86,6 +85,13 @@ class MatrixError(ValueError):
     """A restart matrix that the reduction refuses (malformed, ragged, undersized or non-binary)."""
 
 
+def _load(name, path):
+    spec = importlib.util.spec_from_file_location(name, path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
 _ENTROPY = None
 
 
@@ -93,7 +99,7 @@ def mcv_estimate(bits):
     """The repository's MCV estimator (raw-bit-entropy.py), loaded once."""
     global _ENTROPY
     if _ENTROPY is None:
-        _ENTROPY = load_module("raw_bit_entropy", REPO / "sim/raw-bit-min-entropy/analysis/raw-bit-entropy.py")
+        _ENTROPY = _load("raw_bit_entropy", REPO / "sim/raw-bit-min-entropy/analysis/raw-bit-entropy.py")
     return _ENTROPY.mcv_estimate(bits)
 
 
@@ -279,12 +285,12 @@ def summary_text(s, title="restart matrix"):
 
 # ================================================================= behavioural record
 def wakeup_module():
-    return load_module("wakeup", HERE / "wakeup.py")
+    return _load("wakeup", HERE / "wakeup.py")
 
 
 def record_points():
     """The 18 calibrated points: process corners x behavioral_raw_bit.PVT_SETS['all'] (re-counted at run time)."""
-    vc = load_module("behavioral_raw_bit", REPO / "sim/raw-bit-volume-campaign/behavioral_raw_bit.py")
+    vc = _load("behavioral_raw_bit", REPO / "sim/raw-bit-volume-campaign/behavioral_raw_bit.py")
     return [(proc, t, v) for (t, v) in vc.PVT_SETS["all"] for proc in CORNERS]
 
 
