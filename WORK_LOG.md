@@ -2,6 +2,11 @@
 
 Chronological record of recently merged pull requests and closed issues.
 
+### 2026-10-21
+
+- **PR #339**: ci: remove report-loom-ui job and OIDC permission from pdk-nightly
+- **Issue #338** (closed): Drop the report-loom-ui job from pdk-nightly (CI pushes nothing; no OIDC)
+
 ### 2026-10-20
 
 - **PR #343**: refactor(sim): share one importlib path loader across sim scripts
