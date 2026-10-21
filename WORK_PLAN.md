@@ -26,13 +26,14 @@ _None._
 
 Human-approved issues ready for implementation (`loom:issue`).
 
-- **#221**: Decision record request: local mismatch can cap tt raw-bit H below DR-0004's 0.5 floor; adjacent rings approach 1:1
-- **#230**: CI: guard that every test_*.py is wired into a CI workflow and path filter
+_None._
 
 ## In Progress
 
 Issues currently being built (`loom:building`).
 
+- **#221**: Decision record request: local mismatch can cap tt raw-bit H below DR-0004's 0.5 floor; adjacent rings approach 1:1
+- **#230**: CI: guard that every test_*.py is wired into a CI workflow and path filter
 - **#314**: Re-pin open_pdks to f6eeac7 (ciel) — fleet retires volare c6d73a3
 
 ## PRs Awaiting Review
@@ -75,8 +76,8 @@ Issues carrying `loom:curated`.
 | Operator merge-risk holds | 0 |
 | Very important | 0 |
 | Important | 2 |
-| Ready (`loom:issue`) | 2 |
-| In Progress (`loom:building`) | 1 |
+| Ready (`loom:issue`) | 0 |
+| In Progress (`loom:building`) | 3 |
 | PRs awaiting review | 0 |
 | Approved PRs awaiting merge | 0 |
 | Curated | 6 |
