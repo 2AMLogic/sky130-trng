@@ -20,8 +20,8 @@ minted records is not named here, or if the PDK pins in `design/pdk.json`,
 
 | What | Pin | Source of truth |
 |---|---|---|
-| PDK | sky130A, open_pdks `c6d73a35f524070e85faff4a6a9eef49553ebc2b` | `design/pdk.json`, `sim/pdk.json`, `layout/pdk.json` |
-| PDK install | `volare enable --pdk sky130 c6d73a35f524070e85faff4a6a9eef49553ebc2b` | same files, `install_command` |
+| PDK | sky130A, open_pdks `f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7` | `design/pdk.json`, `sim/pdk.json`, `layout/pdk.json` |
+| PDK install | `ciel enable --pdk-family sky130 -l sky130_fd_pr f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7` | same files, `install_command` |
 | xschem | >= 3.4.7 (hard gate) | `design/pdk.json` `xschem_version_min` |
 | klt (klayout-tools) | `0.6.0+g5edb557f91d0` | `layout/pdk.json` `klt_version_pin`, `ci_klt_install` |
 | KLayout / python klayout | 0.30.12 | `layout/trng_whole/README.md` ("Reproducing") |
@@ -36,7 +36,7 @@ against the pin before debugging a layout failure.
 Cold start, once per machine:
 
 ```bash
-volare enable --pdk sky130 c6d73a35f524070e85faff4a6a9eef49553ebc2b
+ciel enable --pdk-family sky130 -l sky130_fd_pr f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7
 python3 design/netlist.py --pdk          # xschem + PDK resolved against the pins
 python3 sim/bin/corner-run.py --print-env
 ```

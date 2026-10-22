@@ -79,7 +79,7 @@ cells, everything `design/sampler_core.spice`'s flat 22-device
 names one; see "The sampler library" for what is specific to the second.
 
 ```bash
-volare enable --pdk sky130 c6d73a35f524070e85faff4a6a9eef49553ebc2b
+ciel enable --pdk-family sky130 -l sky130_fd_pr f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7
 python3 layout/bin/pex-netlist.py layout/pex/pex.json --check   # verify
 python3 layout/bin/pex-netlist.py layout/pex/pex.json           # regenerate
 ```

@@ -31,7 +31,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import _pdk_search  # path insert above must run before this import resolves
-from _pdk_search import PdkSearchError, read_open_pdks_commit, search_pdk
+from _pdk_search import PdkSearchError, pin_mismatch, read_open_pdks_commit, search_pdk
 from _test_check import Checker
 
 _checker = Checker()
@@ -333,6 +333,55 @@ def check_read_open_pdks_commit_unknown_when_missing_or_empty() -> None:
         )
 
 
+def check_ciel_precedes_volare_in_builtin_roots() -> None:
+    """``~/.ciel`` is searched before the legacy ``~/.volare`` (issue #314)."""
+    roots = list(_pdk_search.BUILTIN_SEARCH_ROOTS)
+    _check(
+        "BUILTIN_SEARCH_ROOTS: ~/.ciel listed before ~/.volare",
+        "~/.ciel" in roots and "~/.volare" in roots and roots.index("~/.ciel") < roots.index("~/.volare"),
+        f"got {roots!r}",
+    )
+    with tempfile.TemporaryDirectory() as tmp:
+        home = Path(tmp)
+        _make_variant_dir(home / ".ciel", "sky130A")
+        _make_variant_dir(home / ".volare", "sky130A")
+        found = search_pdk(
+            variant="sky130A",
+            is_variant_dir=_is_variant_dir,
+            variant_dir_label="libs.tech/xschem directory",
+            search_roots=[str(home / ".ciel"), str(home / ".volare")],
+            env={},
+        )
+        _check(
+            "both ~/.ciel and ~/.volare present: ciel wins",
+            found is not None and found.path == (home / ".ciel" / "sky130A").resolve(),
+            f"got {found}",
+        )
+
+
+def check_pin_mismatch_reporting() -> None:
+    """A tree whose SOURCES revision differs from the pin is reported."""
+    pin = "f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7"
+    stale = "c6d73a35f524070e85faff4a6a9eef49553ebc2b"
+    with tempfile.TemporaryDirectory() as tmp:
+        good = Path(tmp) / "good"
+        bad = Path(tmp) / "bad"
+        none = Path(tmp) / "none"
+        for d, rev in ((good, pin), (bad, stale)):
+            d.mkdir()
+            (d / "SOURCES").write_text(f"open_pdks {rev} https://example.invalid\n")
+        none.mkdir()
+        _check("pin_mismatch: matching revision -> None", pin_mismatch(good, pin) is None)
+        msg = pin_mismatch(bad, pin)
+        _check(
+            "pin_mismatch: stale revision names both revisions",
+            msg is not None and stale in msg and pin in msg,
+            f"got {msg!r}",
+        )
+        _check("pin_mismatch: missing SOURCES is a mismatch", pin_mismatch(none, pin) is not None)
+        _check("pin_mismatch: no pin -> None", pin_mismatch(bad, None) is None)
+
+
 def main() -> int:
     check_search_roots_order()
     check_search_roots_skips_non_matching()
@@ -346,6 +395,8 @@ def main() -> int:
     check_read_open_pdks_commit_finds_open_pdks_line()
     check_read_open_pdks_commit_falls_back_to_first_line()
     check_read_open_pdks_commit_unknown_when_missing_or_empty()
+    check_ciel_precedes_volare_in_builtin_roots()
+    check_pin_mismatch_reporting()
 
     return _checker.summary("design/test_pdk_search.py")
 

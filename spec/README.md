@@ -149,6 +149,12 @@
   recommends **not adopting** it yet. Changes no DR-0004 value, RTL or target;
   all simulation-derived, provisional until silicon.
 
+- [`decision-records/DR-0016-open-pdks-repin-to-ciel.md`](decision-records/DR-0016-open-pdks-repin-to-ciel.md)
+  — **Proposed**. Issue #314: forward-looking open_pdks pin moves from
+  `c6d73a3` (volare) to `f6eeac7` (ciel 2.6.1); the PDK search prefers
+  `~/.ciel` and reports a revision mismatch. Existing records stay as
+  produced under `c6d73a3`; re-qualification is #315.
+
 ### Open requests for an operator decision record (no record yet)
 
 - **End-of-life Vth-drift envelope** — issue [#262](https://github.com/2AMLogic/sky130-trng/issues/262), from
