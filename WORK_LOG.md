@@ -2,6 +2,12 @@
 
 Chronological record of recently merged pull requests and closed issues.
 
+### 2026-10-23
+
+- **PR #353**: docs(sim): record ngspice-46 reproduction of ro-ring timestep-convergence points 0 and 4
+- **PR #351**: feat(sim): add timestep-convergence harness so T1 item 9 attests
+- **PR #349**: feat(sim): store new run evidence in the artifact store, commit only manifests
+
 ### 2026-10-21
 
 - **PR #339**: ci: remove report-loom-ui job and OIDC permission from pdk-nightly
