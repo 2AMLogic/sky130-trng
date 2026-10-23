@@ -147,6 +147,16 @@ name: CI
 #     covered by the PDK nightly's compose-cell --check reproductions
 #     instead; see signoff/README.md's freshness section.
 #
+# sim/tests/test_artifact_store.py + sim/bin/check_artifact_manifests.py (issue #347)
+#     -- stdlib-only. New run output is stored through `klt artifact put` and git
+#     keeps only manifests/artifacts/*.manifest.json. The unit tests drive the
+#     writer against a fake `klt`/broker (no broker or klt needed in CI),
+#     including the fail-closed paths; the checker validates the committed
+#     manifests (schema, `artifact:` URIs only, no bucket/account text) and fails
+#     when a stored object's bytes are also tracked. The live `klt artifact
+#     verify` needs the broker and is an out-of-band step. The signoff-check
+#     pin below deliberately stays klayout-tools==0.7.0.
+#
 # sim/bin/check_records_append_only.py (sim/ + measurements/ append-only record rule, issues #232/#269)
 #     Pure Python + git. `sim/` results and `measurements/` silicon evidence are
 #     append-only (sim/README.md, measurements/README.md): the job diffs
@@ -195,6 +205,10 @@ on:
       - "sim/digital-synthesis/harness/**"
       # append-only record rule (issue #232): any change under a records dir
       - "sim/*/records/**"
+      # issue #347: artifact-store manifests + summaries (checked and append-only)
+      - "manifests/**"
+      - "sim/*/artifacts/**"
+      - ".gitignore"
       - "sim/*/runs/**"
       - "sim/*/corners/**"
       - "sim/records-append-only-allowlist.txt"
@@ -349,6 +363,12 @@ jobs:
 
       - name: sim/tests/test_evidence_record_artifacts.py (issues #273/#276/#277 artifact collisions, reserved summary keys, bundle publication integrity)
         run: python3 sim/tests/test_evidence_record_artifacts.py
+
+      - name: sim/tests/test_artifact_store.py (issue #347 artifact-store writer + manifest checker, fake klt, fail-closed paths)
+        run: python3 sim/tests/test_artifact_store.py
+
+      - name: sim/bin/check_artifact_manifests.py (issue #347 manifests valid, artifact: URIs only, no stored object committed)
+        run: python3 sim/bin/check_artifact_manifests.py check --tree HEAD
 
   sim-records-append-only:
     name: sim/ + measurements/ append-only evidence rule (no edit/delete/rename of committed records or raw artifacts)

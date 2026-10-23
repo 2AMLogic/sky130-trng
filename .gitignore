@@ -12,6 +12,9 @@ __pycache__/
 # committed evidence too (a failed or congested route is diagnosable only from them).
 !sim/digital-floorplan-compaction/runs/**/*.log
 sim/build/
+# raw outputs staged for `klt artifact put` (sim/bin/artifact_store.py, issue #347):
+# the bytes live in the artifact store; only manifests/artifacts/ is committed.
+.artifact-staging/
 # ngspice's BSIM4 model-parameter checker dumps this next to the process's
 # cwd on every run that elaborates a BSIM4 card -- scratch, never evidence.
 bsim4v5.out

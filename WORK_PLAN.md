@@ -35,12 +35,14 @@ Issues currently being built (`loom:building`).
 - **#221**: Decision record request: local mismatch can cap tt raw-bit H below DR-0004's 0.5 floor; adjacent rings approach 1:1
 - **#230**: CI: guard that every test_*.py is wired into a CI workflow and path filter
 - **#314**: Re-pin open_pdks to f6eeac7 (ciel) — fleet retires volare c6d73a3
+- **#347**: Adopt the common artifact store for sim evidence (manifests in git, bytes via klt artifact)
+- **#348**: T1 item 9: commit the testbench for sim/ro-ring-timestep-convergence (or declare it unclaimed) and re-attest
 
 ## PRs Awaiting Review
 
 PRs waiting on Judge (`loom:review-requested`).
 
-_None._
+- **#349**: feat(sim): store new run evidence in the artifact store, commit only manifests
 
 ## Approved (Awaiting Merge)
 
@@ -58,6 +60,8 @@ Issues carrying `loom:curated`.
 - **#289**: Extend seeded transistor raw-bit model cross-checks beyond nominal PVT *(curated)*
 - **#307**: Whole-block 12-point PVT matrix: run on the klt batch fleet once the runner image matches the client (follow-up of #174) *(curated)*
 - **#314**: Re-pin open_pdks to f6eeac7 (ciel) — fleet retires volare c6d73a3 *(curated)*
+- **#347**: Adopt the common artifact store for sim evidence (manifests in git, bytes via klt artifact) *(curated)*
+- **#348**: T1 item 9: commit the testbench for sim/ro-ring-timestep-convergence (or declare it unclaimed) and re-attest *(curated)*
 
 ## Proposed (Architect / Hermit)
 
@@ -77,10 +81,10 @@ Issues carrying `loom:curated`.
 | Very important | 0 |
 | Important | 2 |
 | Ready (`loom:issue`) | 0 |
-| In Progress (`loom:building`) | 3 |
-| PRs awaiting review | 0 |
+| In Progress (`loom:building`) | 5 |
+| PRs awaiting review | 1 |
 | Approved PRs awaiting merge | 0 |
-| Curated | 6 |
+| Curated | 8 |
 | Architect / Hermit proposals | 2 |
 | Active epics | 2 |
 <!-- guide:plan-body:end -->

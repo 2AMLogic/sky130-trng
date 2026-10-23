@@ -1447,15 +1447,42 @@ ids and the submitting client version are in the records. See the open `2AMLogic
    `.control` block that runs whatever analyses you need and `print`s each
    measurement as `name = value`.
 2. Run it: `python3 sim/bin/corner-run.py sim/<slug>/testbench/<file>.spice --slug <slug> --claim "<claim>" --corners tt,ss,ff`.
-3. Commit the testbench (if new) and the minted `sim/<slug>/records/<record-id>.{md,json}`
-   plus `sim/<slug>/corners/<record-id>/` -- the raw log is what makes a
-   record auditable without re-running anything.
+3. Commit the testbench (if new), the minted `sim/<slug>/records/<record-id>.{md,json}`,
+   `manifests/artifacts/<slug>-<record-id>.manifest.json` and the summary
+   `sim/<slug>/artifacts/<record-id>.md`. The raw logs are not committed: they
+   are in the artifact store, and the manifest's sha256s are what make the
+   record auditable (see "Artifact store" below).
 
 A record id is never reused: the runner refuses to start if
 `sim/<slug>/records/<record-id>.md` (or its `.json` twin, or the matching
 `sim/<slug>/corners/<record-id>/`) already exists. Running twice within the
 same second on the same commit is the only way to collide; wait a second and
 re-run.
+
+## Artifact store (issue #347, DR-0016)
+
+New run output does not go into git. `sim/bin/corner-run.py` and
+`evidence_record.mint_behavioral_record(artifacts=[...])` stage the raw files in
+the git-ignored `.artifact-staging/`, store them with `klt artifact put`, and
+commit only a manifest (`manifests/artifacts/<bench>-<run-id>.manifest.json`:
+name, size, sha256, `artifact:<key>` URI per object) and a summary
+(`sim/<bench>/artifacts/<run-id>.md`). The record JSON's `artifact_manifest`
+names the manifest.
+
+- Needs klayout-tools `7e3561f` or later (`klt artifact put|get|verify`) and
+  `$KLT_ARTIFACT_BROKER` (set for agent sessions on fleet workers). Never write
+  the broker URL into the repo.
+- Fail closed: unset broker, a `klt` without `artifact put`, or an unreachable
+  broker exits nonzero with nothing written under `manifests/` or `sim/`; the
+  staged bytes stay in `.artifact-staging/` for a retry (delete the run's staging
+  directory first). There is no fallback that commits the bytes.
+- Check a manifest from a fleet worker: `klt artifact verify manifests/artifacts/<file>`.
+- CI (`python3 sim/bin/check_artifact_manifests.py check`) validates the manifest
+  schema, accepts only `artifact:` URIs and fails when a stored object's bytes are
+  also tracked. Manifests and summaries are append-only like records.
+- Manifest-forward only: evidence already committed stays. Per-bench scripts that
+  write `runs/`/`corners/` directly (not through the paths above) still commit
+  bytes and are to be converted separately.
 
 ### PVT grid
 
