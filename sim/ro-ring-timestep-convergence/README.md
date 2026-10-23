@@ -35,3 +35,16 @@ The committed records were produced with ngspice-46 (`tools.ngspice`) from a dir
 ngspice-42 gives the same swing (within 1e-5) but a different cycle count and sigma_1 (see #348); the
 sigma_N figures are ngspice-version-sensitive and should be compared only against runs from the same
 ngspice build.
+
+Re-run on ngspice-46 (2026-10-23, `706501c`, tt / 27 C / 1.8 V, seed 1; relative delta vs committed):
+
+| point | `tbar` | `sigma_1` | `swing_frac` | `tk` |
+|---|---|---|---|---|
+| 4 (tmax=5p, `noise_amp=0`) | 0 | 0 | 0 | 0 (bit-identical) |
+| 0 (tmax=5p, default noise) | 1.2e-6 | 7.7e-2 | 1.5e-4 | 6.4e-5 |
+
+The deterministic control reproduces exactly. In the noisy point, `tbar`, `swing_frac` and `tk`
+reproduce within 1e-3, but `sigma_1` does not (3.098e-12 vs committed 3.355e-12) even on the same
+ngspice major version, so the committed `sigma_1` is not bit-reproducible from this tree. The
+cause is not established. Treat the committed `sigma_1` values as indicative of the noise
+mechanism, not as a reproducible number.
