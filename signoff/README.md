@@ -353,7 +353,7 @@ only) builds those envelopes from committed inventories, as of `43f26fd`,
 | `2.digital` | `attest/2.digital.json` | `met` | `trng_digital.gds` is the `3.digital` pinned GDS; the P&R request, tool pins and record are committed and the record's RTL/netlist hashes match the current tree. |
 | `10` | `attest/10.json` | `met` | README points to `REPRODUCE.md` and has the spec section; LICENSE is Apache-2.0; `ci.yml` runs the reproduce checker, the append-only rule and this gate. |
 | `1.analog` | `attest/1.analog.json` | `unmet` (`check_failed`) | Deliberately `fail`: the netlist is derived from the schematics by `design/netlist.py`, which needs xschem. Only `pdk-nightly.yml` (`netlist-check`) gates that diff; nothing stdlib can establish it, so it is not self-attested. |
-| `9` | `attest/9.json` | `unmet` (`check_failed`) | `sim/ro-ring-timestep-convergence` has committed records but no testbench/harness/script outside `records/`, `runs/`, `corners/` (only `tt.log`). Every other record-bearing family has one, the three `pdk.json` pins agree, and `REPRODUCE.md` states the pin. Fix by committing that campaign's deck or documenting why it is not a claimed measurement; then `--write`. |
+| `9` | `attest/9.json` | `met` | Every record-bearing `sim/` family has a committed testbench/harness/script outside `records/`, `runs/`, `corners/` (`sim/ro-ring-timestep-convergence` via `harness/run-convergence.py`), the three `pdk.json` pins agree, and `REPRODUCE.md` states the pin. |
 
 Each `attest/<key>.inventory.json` lists the inventoried files with sha256;
 each `attest/<key>.json` envelope pins its inventory by

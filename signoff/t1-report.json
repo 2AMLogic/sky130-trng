@@ -5,7 +5,7 @@
   "tier": null,
   "t1_item_count": 22,
   "build_t1_item_count": 22,
-  "t1_met_count": 12,
+  "t1_met_count": 14,
   "source_doc": "signoff/design-evidence-tiers.md",
   "source_doc_content_hash": "sha256:63eeec72e3d849761cf32dcf091af5728b069b1515e32bb3138e9454303671e5",
   "build": {
@@ -518,10 +518,25 @@
       "partition": "analog",
       "text": "every claimed measurement's testbench committed, with a documented cold-start invocation a third party can run; pinned PDK revision.",
       "notes": [],
-      "status": "unmet",
-      "reason": "check_failed",
+      "status": "met",
+      "reason": null,
       "graded_by_build": true,
-      "citation": null
+      "citation": {
+        "file": "signoff/attest/9.json",
+        "command": null,
+        "kind": "generic",
+        "check_status": "pass",
+        "content_hash": "sha256:2698356b3d83a03817849556f336361159beeacfb432bae8bd83738b664f3d96",
+        "input_verified": true,
+        "exit_status": 0,
+        "artifact_binding": {
+          "t1_item": 9,
+          "path": "signoff/attest/9.inventory.json",
+          "content_hash": "sha256:2698356b3d83a03817849556f336361159beeacfb432bae8bd83738b664f3d96",
+          "input_verified": true,
+          "source": "signoff/attest.py"
+        }
+      }
     },
     {
       "tier": "T1",
@@ -530,10 +545,25 @@
       "partition": "digital",
       "text": "every claimed measurement's testbench committed, with a documented cold-start invocation a third party can run; pinned PDK revision.",
       "notes": [],
-      "status": "unmet",
-      "reason": "check_failed",
+      "status": "met",
+      "reason": null,
       "graded_by_build": true,
-      "citation": null
+      "citation": {
+        "file": "signoff/attest/9.json",
+        "command": null,
+        "kind": "generic",
+        "check_status": "pass",
+        "content_hash": "sha256:2698356b3d83a03817849556f336361159beeacfb432bae8bd83738b664f3d96",
+        "input_verified": true,
+        "exit_status": 0,
+        "artifact_binding": {
+          "t1_item": 9,
+          "path": "signoff/attest/9.inventory.json",
+          "content_hash": "sha256:2698356b3d83a03817849556f336361159beeacfb432bae8bd83738b664f3d96",
+          "input_verified": true,
+          "source": "signoff/attest.py"
+        }
+      }
     },
     {
       "tier": "T1",
@@ -550,13 +580,13 @@
         "command": null,
         "kind": "generic",
         "check_status": "pass",
-        "content_hash": "sha256:58ec5c5e84f88098b0ada571e384be1adb1f9eee63f90f8f96661a036ae9840d",
+        "content_hash": "sha256:94bf2b1ee8d48fb1b6d1efecd4ade9023f7b4eeb0643ec1f691c5a9bd3965137",
         "input_verified": true,
         "exit_status": 0,
         "artifact_binding": {
           "t1_item": 10,
           "path": "signoff/attest/10.inventory.json",
-          "content_hash": "sha256:58ec5c5e84f88098b0ada571e384be1adb1f9eee63f90f8f96661a036ae9840d",
+          "content_hash": "sha256:94bf2b1ee8d48fb1b6d1efecd4ade9023f7b4eeb0643ec1f691c5a9bd3965137",
           "input_verified": true,
           "source": "signoff/attest.py"
         }
@@ -577,13 +607,13 @@
         "command": null,
         "kind": "generic",
         "check_status": "pass",
-        "content_hash": "sha256:58ec5c5e84f88098b0ada571e384be1adb1f9eee63f90f8f96661a036ae9840d",
+        "content_hash": "sha256:94bf2b1ee8d48fb1b6d1efecd4ade9023f7b4eeb0643ec1f691c5a9bd3965137",
         "input_verified": true,
         "exit_status": 0,
         "artifact_binding": {
           "t1_item": 10,
           "path": "signoff/attest/10.inventory.json",
-          "content_hash": "sha256:58ec5c5e84f88098b0ada571e384be1adb1f9eee63f90f8f96661a036ae9840d",
+          "content_hash": "sha256:94bf2b1ee8d48fb1b6d1efecd4ade9023f7b4eeb0643ec1f691c5a9bd3965137",
           "input_verified": true,
           "source": "signoff/attest.py"
         }
