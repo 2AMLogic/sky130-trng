@@ -24,6 +24,23 @@ class Parse(unittest.TestCase):
         self.assertEqual(chk.violations(z, {"sim/a/records/x.json"}), [])
 
 
+class ArtifactStoreManifests(unittest.TestCase):
+    """Issue #347: committed manifests and their summaries are append-only."""
+
+    def test_manifest_edit_delete_rename_typechange_fail_new_passes(self):
+        z = ("M\0manifests/artifacts/b-r.manifest.json\0D\0manifests/artifacts/c-r.manifest.json\0"
+             "R\0manifests/artifacts/d-r.manifest.json\0T\0manifests/artifacts/e-r.manifest.json\0"
+             "A\0manifests/artifacts/new-r.manifest.json\0M\0manifests/artifacts/README.md\0"
+             "M\0sim/b/artifacts/r.md\0A\0sim/b/artifacts/new.md\0")
+        self.assertEqual([p for _, p in chk.violations(z)], [
+            "manifests/artifacts/b-r.manifest.json", "manifests/artifacts/c-r.manifest.json",
+            "manifests/artifacts/d-r.manifest.json", "manifests/artifacts/e-r.manifest.json",
+            "sim/b/artifacts/r.md"])
+
+    def test_manifests_root_is_diffed(self):
+        self.assertIn("manifests", chk.ROOTS)
+
+
 class Artifacts(unittest.TestCase):
     ids = {("sim", "s", "r1")}
 

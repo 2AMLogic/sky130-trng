@@ -50,6 +50,9 @@ import subprocess
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import artifact_store  # noqa: E402
+
 
 def git_short_sha(repo_root: Path) -> str:
     """Return the short SHA of HEAD in `repo_root`, or "unknown" on failure."""
@@ -252,7 +255,7 @@ def mint_record(
 # summary may not use any of these names (issue #276).
 RESERVED_BEHAVIORAL_KEYS = (
     "record_id", "slug", "level", "claim", "seeds", "supersedes", "author",
-    "timestamp_utc", "repo_sha", "tools", "artifacts",
+    "timestamp_utc", "repo_sha", "tools", "artifacts", "artifact_manifest",
 )
 
 
@@ -287,10 +290,12 @@ def mint_behavioral_record(
     * a ``level:`` field on every record (here always a ``behavioral``
       flavour);
     * every stochastic run states every seed;
-    * raw run artifacts committed alongside, under
-      ``sim/<slug>/runs/<id>/`` (``.txt``, not ``.log`` -- the repository's
-      ``.gitignore`` exempts only ``sim/*/corners/**/*.log``, and these are
-      not corner logs);
+    * raw run artifacts stored in the fleet artifact store (issue #347):
+      only ``manifests/artifacts/<slug>-<id>.manifest.json`` and the summary
+      ``sim/<slug>/artifacts/<id>.md`` are committed, never the bytes. Fail
+      closed -- no broker, no ``klt artifact put`` or an unreachable broker
+      aborts with nothing written; there is no committing fallback (see
+      ``sim/bin/artifact_store.py``);
     * append-only: a correction mints a new record and names the one it
       supersedes.
     """
@@ -332,6 +337,12 @@ def mint_behavioral_record(
     art_paths = [Path(p) for p in artifacts or []]
     _check_artifacts(art_paths)
     stored = [f"sim/{slug}/runs/{rid}/{p.name}" for p in art_paths]
+    manifest_rel = f"manifests/artifacts/{slug}-{rid}.manifest.json"
+    if art_paths:  # fail closed before any record output exists
+        try:
+            artifact_store.preflight()
+        except artifact_store.ArtifactStoreError as exc:
+            raise SystemExit(f"error: {exc}") from None
 
     tool_block = {
         "python": platform.python_version(),
@@ -363,7 +374,7 @@ def mint_behavioral_record(
         f"- Tools: {json.dumps(tool_block)}",
     ]
     if stored:
-        tail += ["- Artifacts (committed alongside this record):"]
+        tail += [f"- Artifacts (stored in the artifact store, manifest `{manifest_rel}`):"]
         tail += [f"  - `{p}`" for p in stored]
     tail += [
         "",
@@ -387,12 +398,23 @@ def mint_behavioral_record(
         "repo_sha": sha,
         "tools": tool_block,
         "artifacts": stored,
+        "artifact_manifest": manifest_rel if stored else None,
         **(summary or {}),
     }, indent=2, sort_keys=False) + "\n"  # serialize before touching the filesystem
+    run = None
+    if art_paths:
+        try:
+            run = artifact_store.store_run(repo_root, slug, rid, art_paths)
+        except artifact_store.ArtifactStoreError as exc:
+            raise SystemExit(f"error: {exc}") from None
     try:
-        _publish_bundle(records_dir, rid, md_text, json_text,
-                        runs_dir=runs_dir, artifacts=art_paths, what="record")
-    except RecordCollision as exc:
-        raise SystemExit(f"error: {exc} (under sim/{slug}/)") from None
+        _publish_bundle(records_dir, rid, md_text, json_text, what="record")
+    except BaseException as exc:
+        if run is not None:  # the objects stay in the store; drop the manifest this call wrote
+            run.manifest.unlink(missing_ok=True)
+            run.summary.unlink(missing_ok=True)
+        if isinstance(exc, RecordCollision):
+            raise SystemExit(f"error: {exc} (under sim/{slug}/)") from None
+        raise
     print(f"record written: {md_path.relative_to(repo_root)}", file=sys.stderr)
     return rid

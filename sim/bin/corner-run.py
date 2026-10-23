@@ -96,6 +96,14 @@ as a named measurement and checked for being a finite, parseable number --
 this is what "not NaN" actually verifies, deck-generically, without this
 script needing to know what any particular deck is measuring.
 
+Raw per-corner outputs (ngspice logs, ``onoise`` traces) are NOT committed
+(issue #347): they are stored in the fleet artifact store through
+``sim/bin/artifact_store.py`` and git keeps only
+``manifests/artifacts/<slug>-<rid>.manifest.json`` plus the summary
+``sim/<slug>/artifacts/<rid>.md``.  The run fails closed before ngspice starts
+when ``$KLT_ARTIFACT_BROKER`` is unset or ``klt`` lacks ``artifact put``; a
+put failure writes no record.  There is no flag that commits the bytes.
+
 Exit status: ``0`` all requested corners passed and a record was written,
 ``2`` a record was written but at least one corner failed its checks,
 ``1`` harness/setup error (no record written).
@@ -124,6 +132,8 @@ DEFAULT_RO_RING5 = REPO_ROOT / "design" / "ro_ring5.spice"
 DEFAULT_PEX_LIB = REPO_ROOT / "layout" / "pex" / "ro_ring5_pex.spice"
 
 sys.path.insert(0, str(REPO_ROOT / "design"))
+sys.path.insert(0, str(SIM_DIR / "bin"))
+import artifact_store  # noqa: E402
 from _pdk_search import (  # noqa: E402
     BUILTIN_SEARCH_ROOTS,
     PdkSearchError,
@@ -582,17 +592,24 @@ def write_record(
         raise HarnessError(
             f"record {rid} already exists under {slug_dir} -- refusing to overwrite"
         )
-    corners_dir.mkdir(parents=True)
-    records_dir.mkdir(parents=True, exist_ok=True)
 
     overall_ok = all(r.ok for r in results)
     state = repo_state()
 
+    # Raw outputs go to the artifact store (issue #347); on failure nothing is
+    # written under manifests/ or sim/ and the staged bytes are kept.
+    raw_files = []
     for r in results:
-        (corners_dir / r.log_path.name).write_text(r.log_path.read_text())
+        raw_files.append(r.log_path)
         onoise_src = r.deck_path.parent / f"{r.corner}.onoise.txt"
         if onoise_src.is_file():
-            (corners_dir / onoise_src.name).write_text(onoise_src.read_text())
+            raw_files.append(onoise_src)
+    try:
+        artifact_store.store_run(REPO_ROOT, slug, rid, raw_files)
+    except artifact_store.ArtifactStoreError as exc:
+        raise HarnessError(str(exc)) from None
+    manifest_rel = f"manifests/artifacts/{slug}-{rid}.manifest.json"
+    records_dir.mkdir(parents=True, exist_ok=True)
 
     json_record = {
         "record_id": rid,
@@ -627,10 +644,11 @@ def write_record(
                 "onoise_max": r.onoise_max,
                 "onoise_spread_ratio": r.onoise_spread,
                 "problems": r.problems,
-                "log": f"corners/{r.log_path.name}",
+                "log": f"sim/{slug}/runs/{rid}/{r.log_path.name}",
             }
             for r in results
         ],
+        "artifact_manifest": manifest_rel,
         "overall": "PASS" if overall_ok else "FAIL",
         "subset_reason": subset_reason,
         "supersedes": supersedes or "(none)",
@@ -708,7 +726,8 @@ def write_record(
         "",
         f"- Testbench: `{testbench.relative_to(REPO_ROOT)}`",
         "- Runner: `sim/bin/corner-run.py`",
-        f"- Raw per-corner logs: `sim/{slug}/corners/{rid}/`",
+        f"- Raw per-corner logs (artifact store; manifest `{manifest_rel}`, "
+        f"summary `sim/{slug}/artifacts/{rid}.md`)",
         f"- JSON record: `sim/{slug}/records/{rid}.json`",
         "",
         f"- Author: {author}",
@@ -915,6 +934,12 @@ def main(argv: list[str] | None = None) -> int:
         print("error: --slug and --claim are required for a real run", file=sys.stderr)
         return 1
 
+    try:
+        artifact_store.preflight()  # fail closed before spending ngspice time
+    except artifact_store.ArtifactStoreError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 1
+
     rid = record_id()
     scratch_root = tempfile.mkdtemp(prefix=f"sim-corner-run-{rid}-")
     scratch_dir = Path(scratch_root)
@@ -961,6 +986,9 @@ def main(argv: list[str] | None = None) -> int:
             tmax=args.tmax,
             noise_amp=args.noise_amp,
         )
+    except HarnessError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 1
     finally:
         shutil.rmtree(scratch_dir, ignore_errors=True)
 
