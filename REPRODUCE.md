@@ -111,7 +111,7 @@ as above, using the testbench named in the record's `claim`.
 |---|---|
 | `sim/ro-stage-noise-mechanism-check/` | `testbench/tb_ro_stage_noise.spice` |
 | `sim/ro-stage-small-signal-gain/` | `testbench/tb_ro_stage_gain.spice` |
-| `sim/ro-ring-timestep-convergence/` | corners only; decks of `sim/ro-ring-jitter-accumulation/` |
+| `sim/ro-ring-timestep-convergence/` | `harness/run-convergence.py` (six-point sweep over `sim/ro-ring-jitter-accumulation/`'s `tb_ro_ring5_jitter.spice`); see its `README.md` |
 | `sim/ro-ring-jitter-accumulation/` | `testbench/tb_ro_ring5_jitter.spice`, `testbench/tb_ro_ring11_jitter.spice` |
 | `sim/ro-ring5-swing-and-current/` | `testbench/tb_ro_ring5_swing_current.spice` |
 | `sim/xor-combining-bandwidth/` | `testbench/tb_xor2_pulse_width.spice` |

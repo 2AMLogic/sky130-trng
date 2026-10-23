@@ -76,11 +76,10 @@
     "                    <key>.inventory.json by path + sha256, and the entry",
     "                    here pins the same hash. `attest.py --check` (CI) walks",
     "                    the inventoried files. Verdicts: 1.digital, 2.analog,",
-    "                    2.digital, 10 met; 1.analog (schematic->netlist freshness",
-    "                    needs xschem, gated only by pdk-nightly) and 9",
-    "                    (sim/ro-ring-timestep-convergence has no committed",
-    "                    testbench) are cited with status `fail` and render",
-    "                    unmet/check_failed with the reason in the envelope.",
+    "                    2.digital, 9, 10 met; 1.analog (schematic->netlist",
+    "                    freshness needs xschem, gated only by pdk-nightly) is",
+    "                    cited with status `fail` and renders unmet/check_failed",
+    "                    with the reason in the envelope.",
     "                    See signoff/README.md \"Items 1, 2, 9, 10 attestation\".",
     "                    Switch to `klt signoff --attest` once a release has it.",
     "  5.analog           no `klt sim` envelope exists -- sim/ campaigns are",
@@ -278,11 +277,11 @@
     },
     "9": {
       "file": "signoff/attest/9.json",
-      "content_hash": "sha256:da3f3185b840cae6afe25f780d507ea215157aacbed35a14d46d92d04163dfb7"
+      "content_hash": "sha256:34b51a2acaec71f46dba756cf44be050aca91234985ec31519e3a91f00ad6aa2"
     },
     "10": {
       "file": "signoff/attest/10.json",
-      "content_hash": "sha256:f1f805e6f81d7b4eb78bcd2c4b7531e3b471eb1e0f4698520b035be68fe849d5"
+      "content_hash": "sha256:72803ff14cdfd55ee11eaad64708dc19700905e7decc93df440bf5014335d10c"
     },
     "8.analog": {
       "file": "signoff/characterization-envelope.json"
