@@ -149,6 +149,12 @@
   recommends **not adopting** it yet. Changes no DR-0004 value, RTL or target;
   all simulation-derived, provisional until silicon.
 
+- [`decision-records/DR-0016-evidence-bytes-in-artifact-store.md`](decision-records/DR-0016-evidence-bytes-in-artifact-store.md)
+  — **Proposed**. Issue #347: new sim evidence bytes go to the fleet artifact
+  store (`klt artifact put`); git keeps a manifest and a summary per run.
+  Fails closed, manifest-forward only, no history rewrite. Changes no result,
+  spec value or existing record.
+
 ### Open requests for an operator decision record (no record yet)
 
 - **End-of-life Vth-drift envelope** — issue [#262](https://github.com/2AMLogic/sky130-trng/issues/262), from

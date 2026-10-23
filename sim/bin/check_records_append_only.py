@@ -23,6 +23,11 @@ measurements/<slug>/runs/<record-id>/ (and corners/).  Association keys are
 (root, slug, record-id), so a sim record never protects a same-named
 measurements directory or vice versa.
 
+Issue #347 extends the rule to artifact-store evidence: an existing
+manifests/artifacts/*.manifest.json (the committed name/size/sha256 manifest of
+a run's stored bytes) and an existing sim/<slug>/artifacts/* summary is never
+edited, deleted, renamed or type-changed; new ones pass.
+
 Stdlib + git only.  Usage:  check_records_append_only.py [BASE_REF]
 (default origin/main).  A sanctioned exception goes in
 sim/records-append-only-allowlist.txt (one fully qualified repo-relative path per line, sim/... or
@@ -36,7 +41,8 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
 ALLOWLIST = REPO / "sim" / "records-append-only-allowlist.txt"
-ROOTS = ("sim", "measurements")
+ROOTS = ("sim", "measurements", "manifests")
+ARTIFACT_STORE_RE = re.compile(r"^(?:manifests/artifacts/[^/]+\.manifest\.json|sim/[^/]+/artifacts/.+)$")
 RECORD_RE = re.compile(r"^(?:sim|measurements)/[^/]+/records/.+")
 ARTIFACT_RE = re.compile(r"^(sim|measurements)/([^/]+)/(?:runs|corners)/([^/]+)/.+")
 BASE_RECORD_RE = re.compile(r"^(sim|measurements)/([^/]+)/records/([^/]+)(?:/.*)?$")
@@ -75,7 +81,7 @@ def base_record_ids(ls_tree_names):
 
 
 def is_protected(path, record_ids):
-    if RECORD_RE.match(path):
+    if RECORD_RE.match(path) or ARTIFACT_STORE_RE.match(path):
         return True
     m = ARTIFACT_RE.match(path)
     return bool(m) and (m.group(1), m.group(2), m.group(3)) in record_ids

@@ -8,6 +8,7 @@ Standard library only. Everything runs in temporary directories; nothing is writ
 from __future__ import annotations
 
 import json
+import os
 import sys
 import tempfile
 import unittest
@@ -16,7 +17,16 @@ from unittest import mock
 
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO / "sim" / "bin"))
+sys.path.insert(0, str(REPO / "sim" / "tests"))
 import evidence_record as er  # noqa: E402
+import fake_klt  # noqa: E402
+
+
+def use_fake_klt(case, tmp, mode="ok"):
+    """Put a fake `klt` + broker env in front of the test (issue #347)."""
+    patcher = mock.patch.dict(os.environ, fake_klt.install(tmp / "bin", mode))
+    patcher.start()
+    case.addCleanup(patcher.stop)
 
 
 def mint(root: Path, artifacts):
@@ -29,6 +39,7 @@ class ArtifactCollision(unittest.TestCase):
         self._tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self._tmp.cleanup)
         self.tmp = Path(self._tmp.name)
+        use_fake_klt(self, self.tmp)
         self.root = self.tmp / "repo"
         self.root.mkdir()
 
@@ -59,9 +70,11 @@ class ArtifactCollision(unittest.TestCase):
         a = self.write("a/one.txt", "first")
         b = self.write("b/two.txt", "second")
         rid = mint(self.root, [a, b])
-        runs = self.root / "sim" / "slug" / "runs" / rid
-        self.assertEqual((runs / "one.txt").read_text(), "first")
-        self.assertEqual((runs / "two.txt").read_text(), "second")
+        self.assertFalse((self.root / "sim" / "slug" / "runs").exists())  # bytes are not committed
+        man = json.loads((self.root / "manifests/artifacts" / f"slug-{rid}.manifest.json").read_text())
+        self.assertEqual([e["name"] for e in man["entries"]],
+                         [f"sim/slug/runs/{rid}/one.txt", f"sim/slug/runs/{rid}/two.txt"])
+        self.assertTrue(all(e["uri"].startswith("artifact:") for e in man["entries"]))
         rec = json.loads((self.root / "sim" / "slug" / "records" / f"{rid}.json").read_text())
         self.assertEqual(rec["artifacts"],
                          [f"sim/slug/runs/{rid}/one.txt", f"sim/slug/runs/{rid}/two.txt"])
@@ -78,6 +91,7 @@ class PublicationIntegrity(unittest.TestCase):
         self._tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self._tmp.cleanup)
         self.tmp = Path(self._tmp.name)
+        use_fake_klt(self, self.tmp)
         self.root = self.tmp / "repo"
         self.root.mkdir()
         self.art = self.tmp / "a.txt"
@@ -125,7 +139,9 @@ class PublicationIntegrity(unittest.TestCase):
         rid = self.seed()
         base = self.root / "sim" / "slug"
         self.assertTrue((base / "records" / f"{rid}.md").is_file())
-        self.assertEqual((base / "runs" / rid / "a.txt").read_text(), "data")
+        self.assertFalse((base / "runs").exists())
+        self.assertTrue((self.root / "manifests/artifacts" / f"slug-{rid}.manifest.json").is_file())
+        self.assertTrue((base / "artifacts" / f"{rid}.md").is_file())
         self.assertIsNotNone(self.mint_rec({"x": 1}, rid="20260101-000009-abc1234"))
         names = sorted(p.name for p in self.recs.iterdir())
         self.assertEqual(names, [f"{rid}.json", f"{rid}.md",
@@ -145,15 +161,6 @@ class PublicationIntegrity(unittest.TestCase):
 
     def test_publication_failure_mint_record(self):
         self._inject("_link_noreplace", lambda: self.mint_rec({"x": 1}, rid="20260101-000009-abc1234"))
-
-    def test_copy_failure_cleans_stage(self):
-        self.seed()
-        before = snapshot(self.root)
-        with mock.patch.object(er.shutil, "copy2", side_effect=OSError("injected")):
-            with self.assertRaises(OSError):
-                self.behav(artifacts=[self.art])
-        self.assertEqual(snapshot(self.root), before)
-        self.assertFalse(any(p.name.startswith(".") for p in (self.root / "sim/slug/runs").iterdir()))
 
     def test_late_publication_failure_removes_published_pieces(self):
         self.seed()
@@ -220,7 +227,7 @@ class PublicationIntegrity(unittest.TestCase):
             [t.start() for t in ts]
             [t.join() for t in ts]
         self.assertEqual(sorted(r[0] for r in results), ["collision", "ok"])
-        self.assertEqual((self.root / "sim/slug/runs" / rid / "a.txt").read_text(), "data")
+        self.assertTrue((self.root / "manifests/artifacts" / f"slug-{rid}.manifest.json").is_file())
         self.assertEqual(len(list(self.recs.glob("*.md"))), 1)
 
 
