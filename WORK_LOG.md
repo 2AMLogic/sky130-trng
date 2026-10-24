@@ -2,6 +2,11 @@
 
 Chronological record of recently merged pull requests and closed issues.
 
+### 2026-10-24
+
+- **PR #357**: docs: scope manifest URI grep claim to manifest files
+- **Issue #350** (closed): Live-verify klt artifact verify on first real sim campaign (follow-up of #347 / PR #349)
+
 ### 2026-10-23
 
 - **PR #353**: docs(sim): record ngspice-46 reproduction of ro-ring timestep-convergence points 0 and 4
