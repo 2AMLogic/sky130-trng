@@ -7,6 +7,7 @@ Chronological record of recently merged pull requests and closed issues.
 - **PR #353**: docs(sim): record ngspice-46 reproduction of ro-ring timestep-convergence points 0 and 4
 - **PR #351**: feat(sim): add timestep-convergence harness so T1 item 9 attests
 - **PR #349**: feat(sim): store new run evidence in the artifact store, commit only manifests
+- **Issue #348** (closed): T1 item 9: commit the testbench for sim/ro-ring-timestep-convergence (or declare it unclaimed) and re-attest
 
 ### 2026-10-21
 
