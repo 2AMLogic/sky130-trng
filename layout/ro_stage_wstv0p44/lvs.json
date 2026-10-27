@@ -1,14 +1,23 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "engine": "klayout",
-  "layout": "ro_stage_wstv0p44.spice",
+  "layout": {
+    "path": "layout/ro_stage_wstv0p44/ro_stage_wstv0p44.spice",
+    "scope": "repo"
+  },
   "reference": "ro_stage_wstv0p44.ref.spice",
   "top": "RO_STAGE_WSTV0P44",
   "reference_top": "RO_STAGE",
+  "reference_conversion": {
+    "form": "subckt-call",
+    "deck": "sky130",
+    "device_map": null
+  },
   "parameter_tolerance": null,
   "options": {
     "combine_devices": false,
     "combine_devices_per_circuit": null,
+    "combine_devices_max_attempts": 5,
     "flatten_layout": false,
     "flatten_reference": false,
     "netgen_setup": null,
@@ -16,6 +25,8 @@
     "compare_parameters": null,
     "power_connectivity": null,
     "anchor_top_level_pins": null,
+    "strict_top_level_pin_count": false,
+    "compare_mos_flavour": false,
     "supply_nets": [
       "GND",
       "VCC",
@@ -23,9 +34,11 @@
       "VGND",
       "VPWR",
       "VSS"
-    ]
+    ],
+    "finfet_bulk": null
   },
   "hints_applied": null,
+  "constant_nets_applied": null,
   "status": "match",
   "power_connectivity": {
     "status": "unchecked",
@@ -73,17 +86,17 @@
     "engine": "klayout",
     "engine_version": "0.30.12",
     "netgen_binary": null,
-    "layout_sha256": "ee6205826c97bbf4579b3b67534838b56c7ecafd294a6290564d70729a70f275",
+    "layout_sha256": "48ec71044db98252d17ab13154337fb06862f82914dfbffb3e856081b0020215",
     "reference_sha256": "c7bf1b716487921ec84733cd13571035e6254f944fbc34667e37187fa7b5543c",
     "extracted_netlist": null
   },
   "provenance": {
-    "klt_version": "0.6.0+g5edb557f91d0",
+    "klt_version": "0.8.0",
     "klayout_version": "0.30.12",
     "pdk": null,
     "deck": null,
     "input": {
-      "content_hash": "sha256:ee6205826c97bbf4579b3b67534838b56c7ecafd294a6290564d70729a70f275",
+      "content_hash": "sha256:48ec71044db98252d17ab13154337fb06862f82914dfbffb3e856081b0020215",
       "role": "netlist"
     },
     "klayout_version_mismatch": false

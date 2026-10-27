@@ -1,11 +1,15 @@
 {
-  "schema_version": 3,
-  "file": "sampler_tg.gds",
+  "schema_version": 4,
+  "file": {
+    "path": "layout/sampler_tg/sampler_tg.gds",
+    "scope": "repo"
+  },
   "deck": "sky130",
   "top": "sampler_tg",
   "dbu_um": 0.001,
   "netlist_path": "sampler_tg.spice",
   "netlist_sha256": "35439a1e16d28ccf0c411b174b662d6ac85c30cfc01827e91fb567a7e45610fe",
+  "netlist_normalized_sha256": "284aa448688612a94cd517065d2e35fd4acdde3e55b0209d40e0a889cbe799ef",
   "status": "extracted",
   "device_count": 2,
   "net_count": 6,
@@ -15,15 +19,40 @@
     "pfet": 1
   },
   "dummy_devices_dropped": 0,
-  "ignored_layers": [],
-  "device_recognition_only_layers": [],
+  "ignored_layers": [
+    {
+      "layer": 95,
+      "datatype": 20,
+      "shapes": 2
+    }
+  ],
+  "device_recognition_only_layers": [
+    {
+      "layer": 93,
+      "datatype": 44,
+      "shapes": 2
+    },
+    {
+      "layer": 94,
+      "datatype": 20,
+      "shapes": 2
+    }
+  ],
   "device_classes": [
     "nfet",
     "pfet",
     "pnp",
     "sky130_fd_pr__model__cap_mim",
     "sky130_fd_pr__model__cap_mim_m4",
-    "resistor"
+    "resistor",
+    "diode_pw2nd_05v5",
+    "diode_pw2nd_05v5_lvt",
+    "diode_pw2nd_05v5_nvt",
+    "diode_pw2nd_11v0",
+    "diode_pd2nw_05v5",
+    "diode_pd2nw_05v5_lvt",
+    "diode_pd2nw_05v5_hvt",
+    "diode_pd2nw_11v0"
   ],
   "devices": [
     {
@@ -122,7 +151,7 @@
         {
           "text": "ctrl",
           "x_um": 0.545,
-          "y_um": 2.5
+          "y_um": 2.35
         }
       ]
     },
@@ -136,7 +165,7 @@
         {
           "text": "ctrlb",
           "x_um": 0.545,
-          "y_um": 1.03
+          "y_um": 1.18
         }
       ]
     },
@@ -169,30 +198,40 @@
       ]
     }
   ],
-  "warnings": [],
+  "warnings": [
+    "1 layer (95/20) carrying 2 shapes is outside 'sky130' deck's connectivity graph -- this geometry is invisible to extraction, so a net routed only through it extracts as multiple disconnected nets instead of one, which will silently mismatch a downstream `klt lvs` reference netlist -- see ignored_layers[] for the full per-layer shape counts. See docs/cli/extract.md's 'ignored_layers' field documentation."
+  ],
   "black_box_regions": [],
   "abstracted_cells": [],
   "unmodelled_poly": [],
   "merged_net_labels": [],
+  "split_net_labels": [],
   "voltage_domain_warnings": [],
+  "missing_flavour_markers": [],
+  "unsupported_devices": [],
   "unbiased_pmos_body_nets": [],
   "single_terminal_nets": [],
   "dead_metal": [],
   "matched_device_groups": [],
   "def_pin_promotion": null,
+  "pin_renames": null,
+  "rename_declared_pins": false,
+  "declared_pins": null,
+  "def_pins": null,
   "label_layers": null,
+  "probes": [],
   "pdk": null,
   "provenance": {
-    "klt_version": "0.6.0+g5edb557f91d0",
+    "klt_version": "0.8.0",
     "klayout_version": "0.30.12",
     "pdk": null,
     "deck": {
       "name": "sky130",
-      "content_hash": "sha256:2bcbd625a0e36a4d1f9893b3c5d9b94963179c962b10ba01ffc4f378938c8197",
-      "released": false
+      "content_hash": "sha256:ba0f97887e3d231aec8b54f1f52f2941ded0228f0234b6759712bcaca0e942e6",
+      "released": true
     },
     "input": {
-      "content_hash": "sha256:9e6ec2149da43d3f5816579f4fc07874b88fe9897ea31387724174e810f84e09",
+      "content_hash": "sha256:97e0cd32b2cbb6d1239e97c2439c0fcfe652d8d03e3971d71c849d645b2e8225",
       "role": "layout"
     }
   },
@@ -203,5 +242,17 @@
     "extract__device__count": 2,
     "extract__net__count": 6,
     "extract__pin__count": 6
+  },
+  "timing": {
+    "stages": {
+      "read_layout": 0.001,
+      "device_extraction": 0.006,
+      "diagnostics": 0.0,
+      "netlist_write": 0.0,
+      "netlist_hash": 0.0,
+      "netlist_normalized_hash": 0.0
+    },
+    "total_seconds": 0.098,
+    "unattributed_seconds": 0.091
   }
 }

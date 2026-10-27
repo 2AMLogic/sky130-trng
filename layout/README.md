@@ -2533,3 +2533,39 @@ clean), then `ro_ring5*`, `ro_array_core`, `sampler_core`/`sampler_dff`,
 then `trng_digital`/`trng_whole` and the pex libraries, each DRC- and
 LVS-clean with 0.8.0 provenance, and only then move the three pins together.
 Tracked in #366.
+
+## Leaf-cell regeneration under klayout-tools 0.8.0 (issue #369)
+
+First bottom-up step of the re-baseline deferred above (tracking #366).
+Regenerated with `klayout-tools==0.8.0` (KLayout 0.30.12) in a throwaway venv
+(`uv venv` + `uv pip install`, never a host-tool install) and
+`PDK_ROOT=~/.volare`, i.e. the pinned open_pdks
+`c6d73a35f524070e85faff4a6a9eef49553ebc2b`. The pins in `pdk-nightly.yml`,
+`layout/pdk.json` and `REPRODUCE.md` are **unchanged**: the remaining cells
+still drift under 0.8.0, so the pins move only once the whole set is
+regenerated. No rule was waived and the spec is untouched.
+
+| cell | action | `klt drc --deck sky130` | LVS | `--check` (0.8.0) |
+|---|---|---|---|---|
+| `primitives/` (six geometries) | `klt gen mos_array` re-run with the README table's params, then `klt drc` / `klt extract` | clean, 0 violations each | n/a (single devices; extract class and W/L unchanged) | n/a (no `cell.json`) |
+| `ro_buf` | regenerated, `cell.json` unchanged (class B) | clean | match, 2/2 devices, 4/4 nets | matches |
+| `sampler_tg` | regenerated, `cell.json` unchanged (class B) | clean | match, 2/2 devices, 6/6 nets | matches |
+| `ro_stage`, `ro_stage_wstv0p44/46/48` | regenerated; **floorplan edit**: `mn` origin x 3.24 -> 3.48 um (class C) | clean | match, 4/4 devices, 6/6 nets | matches |
+
+Class C detail: with the old origin the grown `mnt` and `mn` nsdm shapes sat
+0.15 um apart (`nsdm.space.1`, one violation at x 2.965..3.115 um). Moving `mn`
+right by 0.24 um clears the rule (gap 0.39 um); no waypoint or other origin
+needed to change, and all nets still route. The committed `ro_stage.gds` and
+`ro_buf.gds` no longer violate `poly.endcap.diff.1` (the rule is now in their
+`drc.json` rules checked, 0 violations); this was 8 and 2 violations on the
+old GDS. Device and net counts are unchanged from before regeneration.
+
+Provenance: each regenerated response carries `klt_version` `0.8.0` and
+`provenance.pdk.source` "PDK_ROOT environment variable" with the pinned
+open_pdks version. `provenance.pdk.ambiguous_sources` still lists
+`search root: ~/.ciel` (an unused alternative root on this host, not the PDK
+used) and `compatibility` reports `mismatch` against klt 0.8.0's own expected
+open_pdks `f6eeac7dad08...`, which is the repo-pin-versus-tool-default
+difference, not a drift in the geometry. `layout/test_compose_cell.py` passes.
+
+Reproduce: `PDK_ROOT=~/.volare <0.8.0 venv>/bin/python layout/bin/compose-cell.py layout/<cell>/cell.json --check`.
