@@ -25,9 +25,7 @@ Exactly two variants are compared; the topology and `N = 4` are held fixed:
 
 ```bash
 python3 sim/xor-combining-alternatives/make-requests.py REQDIR          # 6 requests = 18 jobs
-# batch fleet runner is klt 0.5.0 -> use the 0.6.0 client (no host tool is changed)
-uvx --from "klayout-tools==0.6.0" klt sim REQDIR/<d>/request.json -o REQDIR/<d>/out --format json > REQDIR/<d>/resp.json   # KLT_SIM_BACKEND=batch
-# pin stays 0.6.0 until the batch runner image carries klt 0.8.0 (it refuses a newer client; klayout-tools#4109, #4211; issue #307)
+uvx --from "klayout-tools==0.8.0" klt sim REQDIR/<d>/request.json -o REQDIR/<d>/out --format json > REQDIR/<d>/resp.json   # KLT_SIM_BACKEND=batch
 python3 sim/xor-combining-alternatives/reduce.py --emit-record REQDIR
 python3 sim/xor-combining-alternatives/reduce.py --check sim/xor-combining-alternatives/records/<id>.json
 python3 sim/xor-combining-alternatives/reduce.py --known-answer
