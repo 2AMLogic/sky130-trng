@@ -2,6 +2,11 @@
 
 Chronological record of recently merged pull requests and closed issues.
 
+### 2026-10-27
+
+- **PR #367**: docs(layout): classify klayout-tools 0.8.0 drift across layout cells
+- **PR #365**: ci: move signoff grader pin to klayout-tools 0.8.0
+
 ### 2026-10-24
 
 - **PR #357**: docs: scope manifest URI grep claim to manifest files
