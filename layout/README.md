@@ -2466,8 +2466,17 @@ current pin (`5edb557f91d0`) and `klayout-tools==0.7.0` both report
 **PDK confound (not the cause).** With `PDK_ROOT` unset, 0.8.0 searches
 `~/.ciel` before `~/.volare`; on a host whose `~/.ciel` holds a newer
 open_pdks it silently builds against that PDK (the generator JSON records it
-only as `provenance.pdk.ambiguous_sources`). Set `PDK_ROOT` explicitly when
+only as `provenance.pdk.ambiguous_sources`; `klt pdk find --format text` also
+omits it, klayout-tools#4428). Set `PDK_ROOT` explicitly when
 reproducing. The drift below is identical with the PDK pinned.
+
+**Deck rule diff recipe.** No built-in cross-version diff is needed: `klt deck
+rules --deck sky130 --format json` lists every rule id (unique, but not
+sorted), so for each pin run
+`uvx --from "klayout-tools==X.Y.Z" klt deck rules --deck sky130 --format json`,
+extract the sorted `rules[].id`, and `diff` the two lists. 0.7.0 (136 rules)
+vs 0.8.0 (150 rules) adds 14, including `poly.endcap.diff.1`, `nsdm.space.1`
+and `nsdm.width.1`, and removes none.
 
 ### Per-cell result (klt 0.8.0, pinned PDK)
 
@@ -2569,3 +2578,27 @@ open_pdks `f6eeac7dad08...`, which is the repo-pin-versus-tool-default
 difference, not a drift in the geometry. `layout/test_compose_cell.py` passes.
 
 Reproduce: `PDK_ROOT=~/.volare <0.8.0 venv>/bin/python layout/bin/compose-cell.py layout/<cell>/cell.json --check`.
+
+### Re-floorplan of the class C `*_nand2` cells under 0.8.0 (issue #370)
+
+Regenerated under `klayout-tools==0.8.0` (throwaway venv, `PDK_ROOT=~/.volare`):
+`ro_nand2`, `ro_nand2_wstv0p44/46/48` and `sampler_nand2`. Each now passes
+`compose-cell.py --check` with every net routed, DRC clean (including
+`poly.endcap.diff.1` and `nsdm.space.1`), and LVS matching with the device and
+net counts unchanged (6/6 devices, 8/8 nets; `sampler_nand2` 4/4, 6/6).
+
+The 0.8.0 blocks grew (poly endcap +0.15 um, so the gate pad moved up 0.15 um
+and the bbox gained 0.125 um of nsdm margin in x), eating the clearances the
+old explicit origins relied on. The same delta was applied to all five cells
+(same topology): the PMOS row (`mph`/`mpa`/`mpb`, `nwell_tap`) moved up 0.45 um;
+`mnab` moved right 0.25 um; `psub_tap` left 0.10 um (`ro_nand2*` only). The
+final-stage waypoints moved with their pins (py/vss/vddr lanes +0.45 um in y;
+the `y` jog to `mnab_y` now ends at x=5.04). Netlists, spec and waivers are
+untouched.
+
+`xor2` needs the same kind of fix: its `y` net threaded a 0.125 um gap above
+`mn34` (`li1.space.1`); raising the `y` lanes from y=4.6 to y=4.8 um routes
+it. Its evidence is **not** regenerated here: it embeds the committed pre-0.8.0
+`ro_buf.gds` twice (`inv_a`/`inv_b`), which still carries the four
+`poly.endcap.diff.1` violations. Re-run `compose-cell.py layout/xor2/cell.json`
+after the `ro_buf` leaf regeneration (#369) lands.

@@ -1,14 +1,23 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "engine": "klayout",
-  "layout": "sampler_nand2.spice",
+  "layout": {
+    "path": "layout/sampler_nand2/sampler_nand2.spice",
+    "scope": "repo"
+  },
   "reference": "sampler_nand2.ref.spice",
   "top": "SAMPLER_NAND2",
   "reference_top": "SAMPLER_NAND2",
+  "reference_conversion": {
+    "form": "subckt-call",
+    "deck": "sky130",
+    "device_map": null
+  },
   "parameter_tolerance": null,
   "options": {
     "combine_devices": false,
     "combine_devices_per_circuit": null,
+    "combine_devices_max_attempts": 5,
     "flatten_layout": false,
     "flatten_reference": false,
     "netgen_setup": null,
@@ -16,6 +25,8 @@
     "compare_parameters": null,
     "power_connectivity": null,
     "anchor_top_level_pins": null,
+    "strict_top_level_pin_count": false,
+    "compare_mos_flavour": false,
     "supply_nets": [
       "GND",
       "VCC",
@@ -23,9 +34,11 @@
       "VGND",
       "VPWR",
       "VSS"
-    ]
+    ],
+    "finfet_bulk": null
   },
   "hints_applied": null,
+  "constant_nets_applied": null,
   "status": "match",
   "power_connectivity": {
     "status": "unchecked",
@@ -73,17 +86,17 @@
     "engine": "klayout",
     "engine_version": "0.30.12",
     "netgen_binary": null,
-    "layout_sha256": "1219bc3177bcf37686f1d8c69342a0550e0555ebf4809910ee09b3417f9c8d94",
+    "layout_sha256": "f35618125e1ec5e638cf7396f9703b6ae9585028df8e8ab9a9577448943608aa",
     "reference_sha256": "7f4a9e7091e2225470e52130d695db35a867e3d24981bdd74f84cb75a18df3a3",
     "extracted_netlist": null
   },
   "provenance": {
-    "klt_version": "0.6.0+g5edb557f91d0",
+    "klt_version": "0.8.0",
     "klayout_version": "0.30.12",
     "pdk": null,
     "deck": null,
     "input": {
-      "content_hash": "sha256:1219bc3177bcf37686f1d8c69342a0550e0555ebf4809910ee09b3417f9c8d94",
+      "content_hash": "sha256:f35618125e1ec5e638cf7396f9703b6ae9585028df8e8ab9a9577448943608aa",
       "role": "netlist"
     },
     "klayout_version_mismatch": false
