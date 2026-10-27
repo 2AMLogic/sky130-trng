@@ -4,6 +4,12 @@ Chronological record of recently merged pull requests and closed issues.
 
 ### 2026-10-27
 
+- **PR #379**: fix: regenerate xor2 layout evidence under klayout-tools 0.8.0
+- **PR #377**: docs(sim): move batch-client recipes and friction ledger to klayout-tools 0.8.0
+- **PR #375**: fix(layout): regenerate leaf cells under klayout-tools 0.8.0
+- **Issue #370** (closed): Re-floorplan ro_nand2*, sampler_nand2 and xor2 for klayout-tools 0.8.0
+- **Issue #369** (closed): Regenerate leaf layout cells under klayout-tools 0.8.0 (primitives, ro_buf, ro_stage*, sampler_tg)
+- **Issue #363** (closed): Bump klayout-tools pin 0.7.0, 5edb557f91d0 → 0.8.0
 - **PR #376**: fix(layout): re-floorplan nand2 cells for klt 0.8.0 block growth
 - **PR #373**: docs: record klayout-tools#4428 and the deck rule-diff recipe
 - **Issue #368** (closed): File klayout-tools friction issues for 0.8.0 PDK-root preference and missing deck-rule diff (from #367)
