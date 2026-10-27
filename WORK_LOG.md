@@ -4,6 +4,10 @@ Chronological record of recently merged pull requests and closed issues.
 
 ### 2026-10-27
 
+- **PR #376**: fix(layout): re-floorplan nand2 cells for klt 0.8.0 block growth
+- **PR #373**: docs: record klayout-tools#4428 and the deck rule-diff recipe
+- **Issue #368** (closed): File klayout-tools friction issues for 0.8.0 PDK-root preference and missing deck-rule diff (from #367)
+- **Issue #364** (closed): Nightly compose-cell --check does not reproduce the nineteen cells under klt 0.8.0
 - **PR #367**: docs(layout): classify klayout-tools 0.8.0 drift across layout cells
 - **PR #365**: ci: move signoff grader pin to klayout-tools 0.8.0
 
