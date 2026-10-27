@@ -2446,3 +2446,90 @@ Each was then `--check`ed. The rebuild is deterministic: a second
 - `layout/pex*/` and `sim/post-layout-*`: **not refreshed**. Each pex
   README's "Superseded by the issue #181 regeneration" note lists exactly
   what they cite. Re-extraction is tracked in #184.
+
+## klayout-tools 0.8.0 drift classification (issue #364)
+
+Investigation only: no evidence under `layout/` was regenerated and the
+nightly pin (`pdk-nightly.yml`, `layout/pdk.json` `klt_version_pin` /
+`ci_klt_install`, `REPRODUCE.md`) is **deliberately unchanged**. Evidence stays
+append-only; re-baselining it is a separate, bottom-up piece of work (below).
+
+**Method.** Throwaway venvs outside any host tool (`uv venv` +
+`uv pip install "klayout-tools==0.8.0"`, KLayout 0.30.12), one cell at a time,
+`PYTHON -- layout/bin/compose-cell.py layout/<cell>/cell.json --check`, with
+`PDK_ROOT=~/.volare` so the PDK is the pinned open_pdks
+`c6d73a35f524070e85faff4a6a9eef49553ebc2b`. Controls under the same PDK: the
+current pin (`5edb557f91d0`) and `klayout-tools==0.7.0` both report
+"rebuild matches committed evidence" for `ro_stage`, `ro_nand2`, `ro_ring5`,
+`xor2` and `ro_buf`. So the drift enters between 0.7.0 and 0.8.0.
+
+**PDK confound (not the cause).** With `PDK_ROOT` unset, 0.8.0 searches
+`~/.ciel` before `~/.volare`; on a host whose `~/.ciel` holds a newer
+open_pdks it silently builds against that PDK (the generator JSON records it
+only as `provenance.pdk.ambiguous_sources`). Set `PDK_ROOT` explicitly when
+reproducing. The drift below is identical with the PDK pinned.
+
+### Per-cell result (klt 0.8.0, pinned PDK)
+
+All nineteen cells with a `cell.json` drift; none reproduces. Classes:
+A = new curated-deck rules fire on the committed (old-generator) GDS,
+B = generator geometry growth (bbox shift), C = explicit placement/waypoints
+no longer fit the grown blocks (unrouted nets or `nsdm.space.1`).
+
+| cell | stage reached | drift |
+|---|---|---|
+| `ro_buf` | compose | B (bbox x0 -0.075, y0 -0.125, y1 +0.05 um) |
+| `sampler_tg` | compose | B (bbox x0 -0.05, y0 -0.125, x1 +0.05, y1 +0.05 um) |
+| `ro_stage`, `ro_stage_wstv0p44/46/48` | drc | B + C (1 DRC violation, `nsdm.space.1`) |
+| `ro_ring5`, `ro_ring5_wstv0p44/46/48` | drc | A + C (`violation_count` 42 each; rules `nsdm.space.1`, `poly.endcap.diff.1`) |
+| `ro_array_core` | drc | A + C (`violation_count` 212; rules `nsdm.space.1`, `poly.endcap.diff.1`) |
+| `sampler_core` | drc | A + C (`violation_count` 344; rules `nsdm.space.1`, `poly.endcap.diff.1`) |
+| `sampler_dff` | drc | A (`violation_count` 22; rule `poly.endcap.diff.1` only) |
+| `ro_nand2`, `ro_nand2_wstv0p44/46/48` | gen-compose | C (`nets left unrouted: en, a`) |
+| `sampler_nand2` | gen-compose | C (`nets left unrouted: en, a`) |
+| `xor2` | gen-compose | C (`nets left unrouted: y`) |
+
+Not checked (no `cell.json`): `primitives/`, `trng_digital/`, `trng_whole/`,
+`pex*/`, and the `*-poc` directories.
+
+### Classification: intended behaviour change, no regression found
+
+- **A. Deck gained `poly.endcap.diff.1`.** `klt drc --deck sky130` on the
+  *committed, untouched* `ro_stage.gds`, `ro_buf.gds` and `sampler_dff.gds`
+  is `clean` under the pin (the rule is absent from `rules_checked`) and
+  reports 8, 2 and 22 `poly.endcap.diff.1` violations under 0.8.0. The
+  committed GDS genuinely has a short poly endcap past diff at the gate; the
+  pinned deck simply did not check it. This is a deck coverage increase.
+- **B. `mos_array` draws more.** Per-primitive diff for `ro_stage/gen/mn`:
+  poly now extends 0.15 um past diff at both ends (was flush with the
+  0.42 um diff pad), an nsdm shape (93/44) with 0.125 um margin and an npc
+  shape (95/20) are drawn, and the generator note "family 'sky130' declares
+  no S/D implant role" is gone (`sd_implant_present` false -> true). That
+  explains the bbox growth and the gate pad moving up 0.15 um, and fixes
+  the endcap shortfall in A for freshly generated cells.
+- **C. Hand-tuned floorplans no longer fit.** `ro_nand2`, `sampler_nand2`
+  and `xor2` use `placement.strategy: explicit` with hard-coded origins and
+  waypoints tuned to the old block outlines. Control: feeding the committed
+  (old-geometry) `ro_nand2/core.compose.request.json` to the 0.8.0
+  `klt gen-compose` gives a response with no `unrouted_nets`, matching the
+  pinned build's output, so the router itself did not regress. The failure
+  appears only once the blocks grow. Likewise `nsdm.space.1` appears where
+  two grown blocks' new implants land closer than the nsdm space rule at the
+  old origins. `poly.endcap.diff.1` in `ro_ring5`/`ro_array_core`/
+  `sampler_core` comes from placing the *committed* `ro_stage`/
+  `sampler_*` GDS (class A), not from new composition.
+
+No klayout-tools issue was filed: nothing observed is a tool defect. The
+two usability notes (silent `~/.ciel`-before-`~/.volare` PDK preference, and
+no machine-readable diff of deck rule sets between releases) were not
+judged to be defects.
+
+### What moving the pin requires (deferred)
+
+Regenerate bottom-up under 0.8.0 with `PDK_ROOT` pinned: primitives, then
+`ro_buf`/`ro_stage*`/`sampler_tg`, re-floorplan `ro_nand2*`/`sampler_nand2`/
+`xor2` (new origins/waypoints so `en`/`a`/`y` route and `nsdm.space.1` is
+clean), then `ro_ring5*`, `ro_array_core`, `sampler_core`/`sampler_dff`,
+then `trng_digital`/`trng_whole` and the pex libraries, each DRC- and
+LVS-clean with 0.8.0 provenance, and only then move the three pins together.
+Tracked in #366.
