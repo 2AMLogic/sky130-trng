@@ -2596,9 +2596,31 @@ final-stage waypoints moved with their pins (py/vss/vddr lanes +0.45 um in y;
 the `y` jog to `mnab_y` now ends at x=5.04). Netlists, spec and waivers are
 untouched.
 
-`xor2` needs the same kind of fix: its `y` net threaded a 0.125 um gap above
+`xor2` needed the same kind of fix: its `y` net threaded a 0.125 um gap above
 `mn34` (`li1.space.1`); raising the `y` lanes from y=4.6 to y=4.8 um routes
-it. Its evidence is **not** regenerated here: it embeds the committed pre-0.8.0
-`ro_buf.gds` twice (`inv_a`/`inv_b`), which still carries the four
-`poly.endcap.diff.1` violations. Re-run `compose-cell.py layout/xor2/cell.json`
-after the `ro_buf` leaf regeneration (#369) lands.
+it (this landed with the nand2 cells; its evidence is regenerated below).
+
+### Regeneration of `xor2` under 0.8.0 (issue #370)
+
+Regenerated under `klayout-tools==0.8.0` (throwaway venv with its `bin/` first
+on `PATH`, `PDK_ROOT=~/.volare`) after the `ro_buf` leaf regeneration (#369)
+landed, so both embedded `ro_buf.gds` copies (`inv_a`/`inv_b`) are 0.8.0.
+`compose-cell.py --check` passes; DRC is clean (0 violations, with
+`poly.endcap.diff.1` and `nsdm.space.1` among the rules checked, the four
+`poly.endcap.diff.1` violations of the old embedded `ro_buf` are gone); LVS
+matches 12/12 devices and 10/10 nets (unchanged). All five evidence files record
+`klt_version` `0.8.0`.
+
+The `y` lane fix alone was not enough: the final-stage `a`/`b` legs left
+the inverters' hand-declared `a` ports unrouted. At local y=1.70 the port's
+0.42 um li1 pad sat 0.16 um from `ro_buf`'s 0.8.0 nfet gate pad (top edge
+1.39 um), under `li1.space.1`, and no y between the nfet and pfet gate pads
+(1.39 .. 2.14 um) fits a 0.42 um pad at the 0.17 um spacing (the gap is 0.75
+um, a pad plus two spacings needs 0.76). The port is now declared at local y=1.18
+um, the centre of `ro_buf`'s own nfet gate pad on the same net, so the new pad
+merges with it instead of sitting next to it; the matching final-stage waypoints
+moved from y=6.81 to y=6.29. Netlist, spec, waivers and pins are untouched.
+
+Reproduce: `PATH=<0.8.0 venv>/bin:$PATH PDK_ROOT=~/.volare python3 layout/bin/compose-cell.py layout/xor2/cell.json --check`
+(`compose-cell.py` calls whichever `klt` is first on `PATH`; with the host's
+newer `klt` the provenance records that version instead).

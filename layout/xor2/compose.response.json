@@ -10,10 +10,10 @@
   },
   "dbu_um": 0.001,
   "bbox_um": {
-    "x0": -6.175,
-    "y0": -1.5,
+    "x0": -6.25,
+    "y0": -1.625,
     "x1": 16.175,
-    "y1": 14.07
+    "y1": 14.120000000000001
   },
   "ports": [],
   "blocks": [
@@ -23,16 +23,16 @@
       "generator": "gen-compose",
       "cell_name": "core",
       "source_path": "core.gds",
-      "source_digest": "sha256:4ab89bd50d176d47807acac8bde570f65b3bcf93a9831902d986c9a4dd109065",
+      "source_digest": "sha256:9886601a64b503d547c79bc3ed9b93ba69dba09a9464a8a5ef195c5f14d7cad6",
       "offset_um": {
         "x": 0.0,
         "y": 0.0
       },
       "bbox_um": {
-        "x0": -6.175,
-        "y0": -1.5,
+        "x0": -6.25,
+        "y0": -1.625,
         "x1": 16.175,
-        "y1": 14.07
+        "y1": 14.120000000000001
       },
       "orientation": "none",
       "abuts": []
@@ -52,7 +52,7 @@
         }
       ],
       "routed": true,
-      "route_length_um": 15.445000000000002,
+      "route_length_um": 15.814999999999998,
       "status": "routed",
       "landed_on_block": true,
       "legs": [
@@ -68,7 +68,7 @@
             }
           ],
           "routed": true,
-          "route_length_um": 15.445000000000002,
+          "route_length_um": 15.814999999999998,
           "reason": null,
           "channel_track": 0,
           "landed_on_block": true
@@ -88,7 +88,7 @@
         }
       ],
       "routed": true,
-      "route_length_um": 28.834999999999997,
+      "route_length_um": 28.165000000000003,
       "status": "routed",
       "landed_on_block": true,
       "legs": [
@@ -104,7 +104,7 @@
             }
           ],
           "routed": true,
-          "route_length_um": 28.834999999999997,
+          "route_length_um": 28.165000000000003,
           "reason": null,
           "channel_track": 0,
           "landed_on_block": true
@@ -124,7 +124,7 @@
         }
       ],
       "routed": true,
-      "route_length_um": 8.540000000000003,
+      "route_length_um": 8.39,
       "status": "routed",
       "landed_on_block": true,
       "legs": [
@@ -140,7 +140,7 @@
             }
           ],
           "routed": true,
-          "route_length_um": 8.540000000000003,
+          "route_length_um": 8.39,
           "reason": null,
           "channel_track": 0,
           "landed_on_block": true
@@ -160,7 +160,7 @@
         }
       ],
       "routed": true,
-      "route_length_um": 5.26,
+      "route_length_um": 5.110000000000001,
       "status": "routed",
       "landed_on_block": true,
       "legs": [
@@ -176,7 +176,7 @@
             }
           ],
           "routed": true,
-          "route_length_um": 5.26,
+          "route_length_um": 5.110000000000001,
           "reason": null,
           "channel_track": 0,
           "landed_on_block": true
@@ -196,7 +196,7 @@
         }
       ],
       "routed": true,
-      "route_length_um": 11.110000000000001,
+      "route_length_um": 11.48,
       "status": "routed",
       "landed_on_block": true,
       "legs": [
@@ -212,7 +212,7 @@
             }
           ],
           "routed": true,
-          "route_length_um": 11.110000000000001,
+          "route_length_um": 11.48,
           "reason": null,
           "channel_track": 0,
           "landed_on_block": true
@@ -232,7 +232,7 @@
         }
       ],
       "routed": true,
-      "route_length_um": 8.95,
+      "route_length_um": 8.280000000000001,
       "status": "routed",
       "landed_on_block": true,
       "legs": [
@@ -248,7 +248,7 @@
             }
           ],
           "routed": true,
-          "route_length_um": 8.95,
+          "route_length_um": 8.280000000000001,
           "reason": null,
           "channel_track": 0,
           "landed_on_block": true
@@ -268,7 +268,7 @@
         }
       ],
       "routed": true,
-      "route_length_um": 38.845,
+      "route_length_um": 38.695,
       "status": "routed",
       "landed_on_block": true,
       "legs": [
@@ -284,7 +284,7 @@
             }
           ],
           "routed": true,
-          "route_length_um": 38.845,
+          "route_length_um": 38.695,
           "reason": null,
           "channel_track": 0,
           "landed_on_block": true
@@ -304,7 +304,7 @@
         }
       ],
       "routed": true,
-      "route_length_um": 38.005,
+      "route_length_um": 37.855000000000004,
       "status": "routed",
       "landed_on_block": true,
       "legs": [
@@ -320,7 +320,7 @@
             }
           ],
           "routed": true,
-          "route_length_um": 38.005,
+          "route_length_um": 37.855000000000004,
           "reason": null,
           "channel_track": 0,
           "landed_on_block": true
@@ -337,12 +337,20 @@
   },
   "warnings": [],
   "provenance": {
-    "klt_version": "0.6.0+g5edb557f91d0",
+    "klt_version": "0.8.0",
     "klayout_version": "0.30.12",
     "pdk": {
       "name": "sky130A",
-      "source": "search root: ~/.volare",
-      "version": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b"
+      "source": "PDK_ROOT environment variable",
+      "version": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+      "ambiguous_sources": [
+        "search root: ~/.ciel"
+      ],
+      "compatibility": {
+        "status": "mismatch",
+        "package": "open_pdks-sky130",
+        "expected": "open_pdks f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7"
+      }
     },
     "deck": null,
     "input": null

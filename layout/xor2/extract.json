@@ -1,11 +1,15 @@
 {
-  "schema_version": 3,
-  "file": "xor2.gds",
+  "schema_version": 4,
+  "file": {
+    "path": "layout/xor2/xor2.gds",
+    "scope": "repo"
+  },
   "deck": "sky130",
   "top": "xor2",
   "dbu_um": 0.001,
   "netlist_path": "xor2.spice",
   "netlist_sha256": "3541f322898a528539ae2e59727a69998b8787575ac3e30c2988f93847e74c87",
+  "netlist_normalized_sha256": "ba4c9d634abc5df676f1b08d06b05543332ddf080b08455e6f46c2c2442f9064",
   "status": "extracted",
   "device_count": 12,
   "net_count": 10,
@@ -15,15 +19,40 @@
     "pfet": 6
   },
   "dummy_devices_dropped": 0,
-  "ignored_layers": [],
-  "device_recognition_only_layers": [],
+  "ignored_layers": [
+    {
+      "layer": 95,
+      "datatype": 20,
+      "shapes": 12
+    }
+  ],
+  "device_recognition_only_layers": [
+    {
+      "layer": 93,
+      "datatype": 44,
+      "shapes": 8
+    },
+    {
+      "layer": 94,
+      "datatype": 20,
+      "shapes": 7
+    }
+  ],
   "device_classes": [
     "nfet",
     "pfet",
     "pnp",
     "sky130_fd_pr__model__cap_mim",
     "sky130_fd_pr__model__cap_mim_m4",
-    "resistor"
+    "resistor",
+    "diode_pw2nd_05v5",
+    "diode_pw2nd_05v5_lvt",
+    "diode_pw2nd_05v5_nvt",
+    "diode_pw2nd_11v0",
+    "diode_pd2nw_05v5",
+    "diode_pd2nw_05v5_lvt",
+    "diode_pd2nw_05v5_hvt",
+    "diode_pd2nw_11v0"
   ],
   "devices": [
     {
@@ -453,13 +482,13 @@
       "label_positions_um": [
         {
           "text": "an",
-          "x_um": 0.545,
+          "x_um": 0.47,
           "y_um": 6.31
         },
         {
           "text": "an",
           "x_um": 1.215,
-          "y_um": 7.28
+          "y_um": 7.205
         },
         {
           "text": "inva_y",
@@ -469,12 +498,12 @@
         {
           "text": "mn34_g0",
           "x_um": 0.895,
-          "y_um": 4.03
+          "y_um": 4.18
         },
         {
           "text": "mp13_g1",
           "x_um": 1.215,
-          "y_um": 11.55
+          "y_um": 11.4
         },
         {
           "text": "y",
@@ -497,28 +526,28 @@
         },
         {
           "text": "b",
-          "x_um": 9.18,
-          "y_um": 6.81
+          "x_um": 8.995,
+          "y_um": 6.29
         },
         {
           "text": "b",
-          "x_um": 10.26,
-          "y_um": 6.81
+          "x_um": 10.595,
+          "y_um": 6.29
         },
         {
           "text": "invb_a",
           "x_um": 14.735,
-          "y_um": 6.81
+          "y_um": 6.29
         },
         {
           "text": "mn12_g1",
           "x_um": 8.565,
-          "y_um": 4.03
+          "y_um": 4.18
         },
         {
           "text": "mp24_g0",
           "x_um": 8.365,
-          "y_um": 11.55
+          "y_um": 11.4
         }
       ]
     },
@@ -531,7 +560,7 @@
       "label_positions_um": [
         {
           "text": "a",
-          "x_um": -6.028,
+          "x_um": -6.362,
           "y_um": 10.4
         },
         {
@@ -541,23 +570,23 @@
         },
         {
           "text": "a",
-          "x_um": -1.553,
+          "x_um": -1.367,
           "y_um": 1.0
         },
         {
           "text": "inva_a",
           "x_um": -3.44,
-          "y_um": 6.81
+          "y_um": 6.29
         },
         {
           "text": "mn12_g0",
           "x_um": 7.895,
-          "y_um": 4.03
+          "y_um": 4.18
         },
         {
           "text": "mp13_g0",
           "x_um": 0.545,
-          "y_um": 11.55
+          "y_um": 11.4
         }
       ]
     },
@@ -570,12 +599,12 @@
       "label_positions_um": [
         {
           "text": "bn",
-          "x_um": 8.178,
+          "x_um": 8.253,
           "y_um": 16.0
         },
         {
           "text": "bn",
-          "x_um": 8.598,
+          "x_um": 8.672,
           "y_um": 16.0
         },
         {
@@ -586,12 +615,12 @@
         {
           "text": "mn34_g1",
           "x_um": 1.565,
-          "y_um": 4.03
+          "y_um": 4.18
         },
         {
           "text": "mp24_g1",
           "x_um": 7.695,
-          "y_um": 11.55
+          "y_um": 11.4
         },
         {
           "text": "y",
@@ -727,7 +756,7 @@
         {
           "text": "y",
           "x_um": 3.5,
-          "y_um": 4.6
+          "y_um": 4.8
         },
         {
           "text": "y",
@@ -747,7 +776,10 @@
     "net 'an|inva_y|mn34_g0|mp13_g1|y' merges 5 distinct labels (an, inva_y, mn34_g0, mp13_g1, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
     "net 'a|b|invb_a|mn12_g1|mp24_g0' merges 5 distinct labels (a, b, invb_a, mn12_g1, mp24_g0) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
     "net 'a|inva_a|mn12_g0|mp13_g0' merges 4 distinct labels (a, inva_a, mn12_g0, mp13_g0) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
-    "net 'bn|invb_y|mn34_g1|mp24_g1|y' merges 5 distinct labels (bn, invb_y, mn34_g1, mp24_g1, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section."
+    "net 'bn|invb_y|mn34_g1|mp24_g1|y' merges 5 distinct labels (bn, invb_y, mn34_g1, mp24_g1, y) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "label 'a' is drawn on 2 separate nets (net_id 5, 7) -- the same-named nets are not connected in the layout (e.g. unstrapped supply rails), so the written netlist names them 'a', 'a$1', ... -- see docs/cli/extract.md's 'Split net labels' section.",
+    "label 'y' is drawn on 3 separate nets (net_id 2, 4, 8) -- the same-named nets are not connected in the layout (e.g. unstrapped supply rails), so the written netlist names them 'y', 'y$1', ... -- see docs/cli/extract.md's 'Split net labels' section.",
+    "1 layer (95/20) carrying 12 shapes is outside 'sky130' deck's connectivity graph -- this geometry is invisible to extraction, so a net routed only through it extracts as multiple disconnected nets instead of one, which will silently mismatch a downstream `klt lvs` reference netlist -- see ignored_layers[] for the full per-layer shape counts. See docs/cli/extract.md's 'ignored_layers' field documentation."
   ],
   "black_box_regions": [],
   "abstracted_cells": [],
@@ -793,25 +825,51 @@
       ]
     }
   ],
+  "split_net_labels": [
+    {
+      "label": "a",
+      "nets": [
+        5,
+        7
+      ],
+      "count": 2
+    },
+    {
+      "label": "y",
+      "nets": [
+        2,
+        4,
+        8
+      ],
+      "count": 3
+    }
+  ],
   "voltage_domain_warnings": [],
+  "missing_flavour_markers": [],
+  "unsupported_devices": [],
   "unbiased_pmos_body_nets": [],
   "single_terminal_nets": [],
   "dead_metal": [],
   "matched_device_groups": [],
   "def_pin_promotion": null,
+  "pin_renames": null,
+  "rename_declared_pins": false,
+  "declared_pins": null,
+  "def_pins": null,
   "label_layers": null,
+  "probes": [],
   "pdk": null,
   "provenance": {
-    "klt_version": "0.6.0+g5edb557f91d0",
+    "klt_version": "0.8.0",
     "klayout_version": "0.30.12",
     "pdk": null,
     "deck": {
       "name": "sky130",
-      "content_hash": "sha256:2bcbd625a0e36a4d1f9893b3c5d9b94963179c962b10ba01ffc4f378938c8197",
-      "released": false
+      "content_hash": "sha256:ba0f97887e3d231aec8b54f1f52f2941ded0228f0234b6759712bcaca0e942e6",
+      "released": true
     },
     "input": {
-      "content_hash": "sha256:fb8e51c17b3c1a96fc50a5dfebb9a5e317c6ed0dc8a2b40463812d64b18158ee",
+      "content_hash": "sha256:26dc21f689665e50ffbc6f69f122b98e5ce1d2e11a203a6055ab70507d43bb59",
       "role": "layout"
     }
   },
@@ -822,5 +880,17 @@
     "extract__device__count": 12,
     "extract__net__count": 10,
     "extract__pin__count": 8
+  },
+  "timing": {
+    "stages": {
+      "read_layout": 0.001,
+      "device_extraction": 0.011,
+      "diagnostics": 0.0,
+      "netlist_write": 0.0,
+      "netlist_hash": 0.0,
+      "netlist_normalized_hash": 0.0
+    },
+    "total_seconds": 0.087,
+    "unattributed_seconds": 0.075
   }
 }
