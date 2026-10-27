@@ -2466,8 +2466,17 @@ current pin (`5edb557f91d0`) and `klayout-tools==0.7.0` both report
 **PDK confound (not the cause).** With `PDK_ROOT` unset, 0.8.0 searches
 `~/.ciel` before `~/.volare`; on a host whose `~/.ciel` holds a newer
 open_pdks it silently builds against that PDK (the generator JSON records it
-only as `provenance.pdk.ambiguous_sources`). Set `PDK_ROOT` explicitly when
+only as `provenance.pdk.ambiguous_sources`; `klt pdk find --format text` also
+omits it, klayout-tools#4428). Set `PDK_ROOT` explicitly when
 reproducing. The drift below is identical with the PDK pinned.
+
+**Deck rule diff recipe.** No built-in cross-version diff is needed: `klt deck
+rules --deck sky130 --format json` lists every rule id (unique, but not
+sorted), so for each pin run
+`uvx --from "klayout-tools==X.Y.Z" klt deck rules --deck sky130 --format json`,
+extract the sorted `rules[].id`, and `diff` the two lists. 0.7.0 (136 rules)
+vs 0.8.0 (150 rules) adds 14, including `poly.endcap.diff.1`, `nsdm.space.1`
+and `nsdm.width.1`, and removes none.
 
 ### Per-cell result (klt 0.8.0, pinned PDK)
 
