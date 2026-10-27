@@ -1,14 +1,23 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "engine": "klayout",
-  "layout": "ro_stage.spice",
+  "layout": {
+    "path": "layout/ro_stage/ro_stage.spice",
+    "scope": "repo"
+  },
   "reference": "ro_stage.ref.spice",
   "top": "RO_STAGE",
   "reference_top": "RO_STAGE",
+  "reference_conversion": {
+    "form": "subckt-call",
+    "deck": "sky130",
+    "device_map": null
+  },
   "parameter_tolerance": null,
   "options": {
     "combine_devices": false,
     "combine_devices_per_circuit": null,
+    "combine_devices_max_attempts": 5,
     "flatten_layout": false,
     "flatten_reference": false,
     "netgen_setup": null,
@@ -16,6 +25,8 @@
     "compare_parameters": null,
     "power_connectivity": null,
     "anchor_top_level_pins": null,
+    "strict_top_level_pin_count": false,
+    "compare_mos_flavour": false,
     "supply_nets": [
       "GND",
       "VCC",
@@ -23,9 +34,11 @@
       "VGND",
       "VPWR",
       "VSS"
-    ]
+    ],
+    "finfet_bulk": null
   },
   "hints_applied": null,
+  "constant_nets_applied": null,
   "status": "match",
   "power_connectivity": {
     "status": "unchecked",
@@ -73,17 +86,17 @@
     "engine": "klayout",
     "engine_version": "0.30.12",
     "netgen_binary": null,
-    "layout_sha256": "745a30690ebc0b288f293c47b4dc3185e77dd4b057ea62a69dfbe3117e35e128",
+    "layout_sha256": "f84c6f1bfe67ccb54a89ba06d88a79c7933e03b52518d82d95f382f56b163d0d",
     "reference_sha256": "0e4e1834262e49a5f3444b5f45103f3942ae7fd88dc565feb525876a7e61cab1",
     "extracted_netlist": null
   },
   "provenance": {
-    "klt_version": "0.6.0+g5edb557f91d0",
+    "klt_version": "0.8.0",
     "klayout_version": "0.30.12",
     "pdk": null,
     "deck": null,
     "input": {
-      "content_hash": "sha256:745a30690ebc0b288f293c47b4dc3185e77dd4b057ea62a69dfbe3117e35e128",
+      "content_hash": "sha256:f84c6f1bfe67ccb54a89ba06d88a79c7933e03b52518d82d95f382f56b163d0d",
       "role": "netlist"
     },
     "klayout_version_mismatch": false

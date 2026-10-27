@@ -10,10 +10,10 @@
   },
   "dbu_um": 0.001,
   "bbox_um": {
-    "x0": -2.19,
-    "y0": -0.71,
-    "x1": 4.33,
-    "y1": 4.81
+    "x0": -2.265,
+    "y0": -0.835,
+    "x1": 4.695,
+    "y1": 4.859999999999999
   },
   "ports": [],
   "blocks": [
@@ -23,16 +23,16 @@
       "generator": "gen-compose",
       "cell_name": "core",
       "source_path": "core.gds",
-      "source_digest": "sha256:2a5c148fe3e0ca6ce939b2bea26724ef0d21504bd8cb787c4d7ee21b7d888f01",
+      "source_digest": "sha256:6dd7a791105b4b178d155477e90ad6b1dfcae3381461ad33a4d9116b2c2b5922",
       "offset_um": {
         "x": 0.0,
         "y": 0.0
       },
       "bbox_um": {
-        "x0": -2.19,
-        "y0": -0.71,
-        "x1": 4.33,
-        "y1": 4.81
+        "x0": -2.265,
+        "y0": -0.835,
+        "x1": 4.695,
+        "y1": 4.859999999999999
       },
       "orientation": "none",
       "abuts": []
@@ -52,7 +52,7 @@
         }
       ],
       "routed": true,
-      "route_length_um": 4.620000000000001,
+      "route_length_um": 4.470000000000001,
       "status": "routed",
       "landed_on_block": true,
       "legs": [
@@ -68,7 +68,7 @@
             }
           ],
           "routed": true,
-          "route_length_um": 4.620000000000001,
+          "route_length_um": 4.470000000000001,
           "reason": null,
           "channel_track": 0,
           "landed_on_block": true
@@ -88,7 +88,7 @@
         }
       ],
       "routed": true,
-      "route_length_um": 9.56,
+      "route_length_um": 9.41,
       "status": "routed",
       "landed_on_block": true,
       "legs": [
@@ -104,7 +104,7 @@
             }
           ],
           "routed": true,
-          "route_length_um": 9.56,
+          "route_length_um": 9.41,
           "reason": null,
           "channel_track": 0,
           "landed_on_block": true
@@ -121,12 +121,20 @@
   },
   "warnings": [],
   "provenance": {
-    "klt_version": "0.6.0+g5edb557f91d0",
+    "klt_version": "0.8.0",
     "klayout_version": "0.30.12",
     "pdk": {
       "name": "sky130A",
-      "source": "search root: ~/.volare",
-      "version": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b"
+      "source": "PDK_ROOT environment variable",
+      "version": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+      "ambiguous_sources": [
+        "search root: ~/.ciel"
+      ],
+      "compatibility": {
+        "status": "mismatch",
+        "package": "open_pdks-sky130",
+        "expected": "open_pdks f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7"
+      }
     },
     "deck": null,
     "input": null

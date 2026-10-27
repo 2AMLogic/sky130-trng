@@ -1,11 +1,15 @@
 {
-  "schema_version": 3,
-  "file": "ro_stage_wstv0p44.gds",
+  "schema_version": 4,
+  "file": {
+    "path": "layout/ro_stage_wstv0p44/ro_stage_wstv0p44.gds",
+    "scope": "repo"
+  },
   "deck": "sky130",
   "top": "ro_stage_wstv0p44",
   "dbu_um": 0.001,
   "netlist_path": "ro_stage_wstv0p44.spice",
-  "netlist_sha256": "ee6205826c97bbf4579b3b67534838b56c7ecafd294a6290564d70729a70f275",
+  "netlist_sha256": "48ec71044db98252d17ab13154337fb06862f82914dfbffb3e856081b0020215",
+  "netlist_normalized_sha256": "0b8b5aed08627c0976ce9a6f23c4c03c6db8e0b888bd2c099a9f451c1e10e53f",
   "status": "extracted",
   "device_count": 4,
   "net_count": 6,
@@ -15,15 +19,40 @@
     "pfet": 2
   },
   "dummy_devices_dropped": 0,
-  "ignored_layers": [],
-  "device_recognition_only_layers": [],
+  "ignored_layers": [
+    {
+      "layer": 95,
+      "datatype": 20,
+      "shapes": 4
+    }
+  ],
+  "device_recognition_only_layers": [
+    {
+      "layer": 93,
+      "datatype": 44,
+      "shapes": 3
+    },
+    {
+      "layer": 94,
+      "datatype": 20,
+      "shapes": 3
+    }
+  ],
   "device_classes": [
     "nfet",
     "pfet",
     "pnp",
     "sky130_fd_pr__model__cap_mim",
     "sky130_fd_pr__model__cap_mim_m4",
-    "resistor"
+    "resistor",
+    "diode_pw2nd_05v5",
+    "diode_pw2nd_05v5_lvt",
+    "diode_pw2nd_05v5_nvt",
+    "diode_pw2nd_11v0",
+    "diode_pd2nw_05v5",
+    "diode_pd2nw_05v5_lvt",
+    "diode_pd2nw_05v5_hvt",
+    "diode_pd2nw_11v0"
   ],
   "devices": [
     {
@@ -165,7 +194,7 @@
       "label_positions_um": [
         {
           "text": "a",
-          "x_um": 3.685,
+          "x_um": 3.805,
           "y_um": 1.87
         }
       ]
@@ -180,7 +209,7 @@
         {
           "text": "mnt_g",
           "x_um": 1.42,
-          "y_um": 1.04
+          "y_um": 1.19
         },
         {
           "text": "vddr",
@@ -194,7 +223,7 @@
         },
         {
           "text": "vddr",
-          "x_um": 1.955,
+          "x_um": 1.88,
           "y_um": 4.4
         }
       ]
@@ -209,7 +238,7 @@
         {
           "text": "mph_g",
           "x_um": 1.42,
-          "y_um": 2.91
+          "y_um": 2.76
         },
         {
           "text": "vss",
@@ -224,7 +253,7 @@
         {
           "text": "vss",
           "x_um": 0.5,
-          "y_um": 1.515
+          "y_um": 1.44
         }
       ]
     },
@@ -237,7 +266,7 @@
       "label_positions_um": [
         {
           "text": "ny",
-          "x_um": 3.04,
+          "x_um": 3.16,
           "y_um": 0.21
         }
       ]
@@ -266,7 +295,7 @@
         {
           "text": "y",
           "x_um": 4.9,
-          "y_um": 2.075
+          "y_um": 2.195
         }
       ]
     }
@@ -274,7 +303,8 @@
   "warnings": [
     "promoted 4 net(s) to top-level pins from label(s) found only below the top cell (inside instanced sub-cells): a, ny, py, y -- these are internal nodes once instanced; pass top_cell_pins_only (--top-cell-pins) to keep them internal (issue #291)",
     "net 'mnt_g|vddr' merges 2 distinct labels (mnt_g, vddr) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
-    "net 'mph_g|vss' merges 2 distinct labels (mph_g, vss) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section."
+    "net 'mph_g|vss' merges 2 distinct labels (mph_g, vss) onto one net -- KLayout joins multiple labels found on the same electrical net (as '|' here and in the written netlist, matching NetlistSpiceWriter's own node-name escaping); this usually means two differently-named nets were shorted together in the layout -- see docs/cli/extract.md's 'Merged net labels' section.",
+    "1 layer (95/20) carrying 4 shapes is outside 'sky130' deck's connectivity graph -- this geometry is invisible to extraction, so a net routed only through it extracts as multiple disconnected nets instead of one, which will silently mismatch a downstream `klt lvs` reference netlist -- see ignored_layers[] for the full per-layer shape counts. See docs/cli/extract.md's 'ignored_layers' field documentation."
   ],
   "black_box_regions": [],
   "abstracted_cells": [],
@@ -295,25 +325,33 @@
       ]
     }
   ],
+  "split_net_labels": [],
   "voltage_domain_warnings": [],
+  "missing_flavour_markers": [],
+  "unsupported_devices": [],
   "unbiased_pmos_body_nets": [],
   "single_terminal_nets": [],
   "dead_metal": [],
   "matched_device_groups": [],
   "def_pin_promotion": null,
+  "pin_renames": null,
+  "rename_declared_pins": false,
+  "declared_pins": null,
+  "def_pins": null,
   "label_layers": null,
+  "probes": [],
   "pdk": null,
   "provenance": {
-    "klt_version": "0.6.0+g5edb557f91d0",
+    "klt_version": "0.8.0",
     "klayout_version": "0.30.12",
     "pdk": null,
     "deck": {
       "name": "sky130",
-      "content_hash": "sha256:2bcbd625a0e36a4d1f9893b3c5d9b94963179c962b10ba01ffc4f378938c8197",
-      "released": false
+      "content_hash": "sha256:ba0f97887e3d231aec8b54f1f52f2941ded0228f0234b6759712bcaca0e942e6",
+      "released": true
     },
     "input": {
-      "content_hash": "sha256:115da1fd9d479db262e8230212ec7d733611d0f53ecacdbf64017f4c7cfb67be",
+      "content_hash": "sha256:a8a1dcc9eb2f79451b9fc089934caccd9f1353dfbbec38ddbba7ab29a5e3e636",
       "role": "layout"
     }
   },
@@ -324,5 +362,17 @@
     "extract__device__count": 4,
     "extract__net__count": 6,
     "extract__pin__count": 6
+  },
+  "timing": {
+    "stages": {
+      "read_layout": 0.001,
+      "device_extraction": 0.007,
+      "diagnostics": 0.0,
+      "netlist_write": 0.0,
+      "netlist_hash": 0.0,
+      "netlist_normalized_hash": 0.0
+    },
+    "total_seconds": 0.088,
+    "unattributed_seconds": 0.08
   }
 }
