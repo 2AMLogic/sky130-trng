@@ -21,6 +21,7 @@ entropy measurement.
 ```bash
 python3 sim/local-mismatch-monte-carlo/make-requests.py REQDIR
 uvx --from "klayout-tools==0.6.0" klt sim REQDIR/<d>/request.json -o REQDIR/<d>/out --format json > REQDIR/<d>/resp.json   # KLT_SIM_BACKEND=batch
+# pin stays 0.6.0 until the batch runner image carries klt 0.8.0 (it refuses a newer client; klayout-tools#4109, #4211; issue #307)
 python3 sim/local-mismatch-monte-carlo/reduce.py --emit-record REQDIR
 python3 sim/local-mismatch-monte-carlo/reduce.py --check sim/local-mismatch-monte-carlo/records/<id>.json
 python3 sim/tests/test_mismatch_reduction.py

@@ -29,7 +29,7 @@ Cold start (touches nothing host-wide; needs `iverilog` on PATH):
 
 ```
 uv venv .venv
-uv pip install --python .venv/bin/python "klayout-tools==0.7.0" "cocotb==2.0.1"
+uv pip install --python .venv/bin/python "klayout-tools==0.8.0" "cocotb==2.0.1"
 python3 sim/digital-sdf-timed-verification/harness/fv-sdf-cosim.py --klt "$PWD/.venv/bin/klt"            # dry run
 python3 sim/digital-sdf-timed-verification/harness/fv-sdf-cosim.py --klt "$PWD/.venv/bin/klt" --emit-record
 ```
