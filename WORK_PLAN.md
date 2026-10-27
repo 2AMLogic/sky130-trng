@@ -35,6 +35,7 @@ Issues currently being built (`loom:building`).
 - **#221**: Decision record request: local mismatch can cap tt raw-bit H below DR-0004's 0.5 floor; adjacent rings approach 1:1
 - **#230**: CI: guard that every test_*.py is wired into a CI workflow and path filter
 - **#314**: Re-pin open_pdks to f6eeac7 (ciel) — fleet retires volare c6d73a3
+- **#360**: T1 item 1 (Design sources, analog partition): attest schematic-to-netlist freshness with klt signoff --attest 1 where xschem runs
 
 ## PRs Awaiting Review
 
@@ -46,7 +47,7 @@ _None._
 
 PRs that passed review and are queued for Champion auto-merge (`loom:pr`).
 
-_None._
+- **#361**: feat(signoff): wire klt signoff --attest 1 for analog netlist freshness
 
 ## Proposed
 
@@ -59,6 +60,7 @@ Issues carrying `loom:curated`.
 - **#307**: Whole-block 12-point PVT matrix: run on the klt batch fleet once the runner image matches the client (follow-up of #174) *(curated)*
 - **#314**: Re-pin open_pdks to f6eeac7 (ciel) — fleet retires volare c6d73a3 *(curated)*
 - **#347**: Adopt the common artifact store for sim evidence (manifests in git, bytes via klt artifact) *(curated)*
+- **#360**: T1 item 1 (Design sources, analog partition): attest schematic-to-netlist freshness with klt signoff --attest 1 where xschem runs *(curated)*
 
 ## Proposed (Architect / Hermit)
 
@@ -78,10 +80,10 @@ Issues carrying `loom:curated`.
 | Very important | 0 |
 | Important | 2 |
 | Ready (`loom:issue`) | 0 |
-| In Progress (`loom:building`) | 3 |
+| In Progress (`loom:building`) | 4 |
 | PRs awaiting review | 0 |
-| Approved PRs awaiting merge | 0 |
-| Curated | 7 |
+| Approved PRs awaiting merge | 1 |
+| Curated | 8 |
 | Architect / Hermit proposals | 2 |
 | Active epics | 2 |
 <!-- guide:plan-body:end -->
