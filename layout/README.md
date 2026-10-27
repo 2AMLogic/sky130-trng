@@ -2624,3 +2624,65 @@ moved from y=6.81 to y=6.29. Netlist, spec, waivers and pins are untouched.
 Reproduce: `PATH=<0.8.0 venv>/bin:$PATH PDK_ROOT=~/.volare python3 layout/bin/compose-cell.py layout/xor2/cell.json --check`
 (`compose-cell.py` calls whichever `klt` is first on `PATH`; with the host's
 newer `klt` the provenance records that version instead).
+
+### Regeneration of the composites under 0.8.0 (issue #371)
+
+Second bottom-up step of #366, on top of the leaf (#369) and nand2/xor2
+(#370) regenerations. Built with `klayout-tools==0.8.0` in a throwaway venv and
+`PDK_ROOT=~/.volare` (pinned open_pdks `c6d73a35...`; `~/.ciel` not used). The
+pins in `pdk-nightly.yml`, `layout/pdk.json` and `REPRODUCE.md` are unchanged
+(sibling #372). No rule was waived and the spec is untouched.
+
+| cell | action | DRC | LVS | `--check` |
+|---|---|---|---|---|
+| `ro_ring5`, `ro_ring5_wstv0p44/46/48` | regenerated; hand-declared ports/waypoints moved (below) | clean | match, 22/22 devices, 19/19 nets | matches |
+| `ro_array_core` | regenerated; ports/waypoints moved (below) | clean | match, 132/132 devices, 96/96 nets | matches |
+| `sampler_dff` | regenerated; ports/waypoints moved (below) | clean | match, 22/22 devices, 14/14 nets | matches |
+| `sampler_core` | regenerated, `cell.json` unchanged | clean | match, 264/264 devices, 152/152 nets | matches |
+
+All nineteen `layout/*/cell.json` cells now pass `compose-cell.py --check` on
+0.8.0. The A-class `poly.endcap.diff.1` violations cleared with the leaf
+regeneration alone (committed `sampler_dff.gds` is 0 violations, the rule is in
+its rules checked). The C-class part was real: the leaf ports these recipes
+declare by hand (block-local coordinates) moved when the leaves grew, so every
+hand-declared port was re-measured on the new leaf GDS with `klayout.db`:
+
+- `ro_nand2`/`sampler_nand2`: `a` (4.98, 2.75 -> 3.05), `en` (3.685, 1.975 ->
+  3.55, 2.2), `y` x 4.79 -> 5.04, `vddr_m1` y 4.4 -> 4.85, nand `vdd` tap port
+  y 4.45 -> 4.9 (the tap ring's hole now sits where the old port was).
+- `ro_stage`: `a` x 3.685 -> 3.55 (the old x put the 0.42 um landing pad 0.045 um
+  from the gate strap's own leg).
+- `ro_buf`: `a` y 1.7 -> 2.35 (`ro_array_core`; the `rn` lanes still run at
+  y=1.7 and jog up at the pin, so `vdd_strap1` in `sampler_core` is not
+  crossed) / 1.18 (`sampler_dff`); `xor2`: `a`/`b` y 6.81 -> 6.29 (centre of a
+  gate pad, since a 0.42 um pad plus two spacings no longer fits between them).
+- `sampler_tg`: `ctrl` y 2.5 -> 2.35, `ctrlb` y 1.03 -> 1.18.
+- `sampler_dff` met1/met2 lanes re-derived for the grown outlines: `hop1e`/
+  `hop2e` x 14.0/44.9 -> 14.2/45.1 (the nand output blob now reaches
+  0.14 um closer, and the old pad shorted `clkb` to `mb`/`q` until LVS caught
+  it), `qb` climbs straight up at x=44.43 and runs at y=1.76, `s` runs at
+  y=1.64 / 3.5, `rst_n` at y=2.2, `q`'s last waypoint y 2.71 -> 3.01.
+- Pin labels `en1-4`/`vddr1-4` in `ro_array_core` follow the ring ports
+  (`en` at ring-local (3.55, 2.2), `vddr` at (0.0, 4.85)); the
+  `layout/trng_whole/floorplan.json` `en1-4` ports follow them
+  (x 5.74/61.04/116.34/171.64, y 25.835).
+
+`pex*/` libraries were regenerated with `pex-netlist.py` (all six
+descriptors, `pex/pex.json`, `pex/pex-sampler.json`, `pex-ring`, `pex-array`,
+`pex-sampler-core`, `pex-sampler-dff-assembled`). No sim campaign was re-run.
+
+**`trng_whole`: composed, not re-verified.** `compose-whole.py` rebuilds
+`trng_whole.gds` (18 nets / 22 legs routed, 107 pins) and `klt drc --deck
+sky130` on it is clean, but `verify-whole.py run` fails on 0.8.0 before
+publishing anything: `klt extract --abstract-cells` now keeps `VNB` on the
+layout-side stubs (the harness assumes it is dropped), so the stub pin lists
+and the endpoint audit differ. Tying `VNB` to `vss` in the reference was tried
+and gives 652 LVS errors, so `layout/trng_whole/verify/` is still the 0.6.0
+evidence and no longer matches the composed stream's hash
+(`test_verify_whole.py` fails on the input-hash and estimates checks). That
+harness adaptation is tracked separately. `trng_digital/` is an OpenROAD
+artifact, not a `compose-cell.py` cell: its GDS is unchanged and
+`klt drc --deck sky130` on it is clean on 0.8.0, so its committed evidence
+was left as is.
+
+Reproduce: `PATH=<0.8.0 venv>/bin:$PATH PDK_ROOT=~/.volare python3 layout/bin/compose-cell.py layout/<cell>/cell.json --check`.
