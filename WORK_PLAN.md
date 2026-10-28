@@ -7,7 +7,7 @@ This roadmap is generated from the current GitHub label state.
 
 Judge-approved PRs under a hold (`loom:blocked` or `loom:operator`) — only a human merge decision is missing.
 
-_None._
+- **#361**: feat(signoff): wire klt signoff --attest 1 for analog netlist freshness
 
 ## Very Important
 
@@ -21,13 +21,12 @@ _None._
 
 - **#174**: Whole-block characterization: post-layout PVT, dynamic power and IR evidence
 - **#307**: Whole-block 12-point PVT matrix: run on the klt batch fleet once the runner image matches the client (follow-up of #174)
-- **#370**: Re-floorplan ro_nand2*, sampler_nand2 and xor2 for klayout-tools 0.8.0
 
 ## Ready
 
 Human-approved issues ready for implementation (`loom:issue`).
 
-_None._
+- **#314**: Re-pin open_pdks to f6eeac7 (ciel) — fleet retires volare c6d73a3
 
 ## In Progress
 
@@ -35,23 +34,20 @@ Issues currently being built (`loom:building`).
 
 - **#221**: Decision record request: local mismatch can cap tt raw-bit H below DR-0004's 0.5 floor; adjacent rings approach 1:1
 - **#230**: CI: guard that every test_*.py is wired into a CI workflow and path filter
-- **#314**: Re-pin open_pdks to f6eeac7 (ciel) — fleet retires volare c6d73a3
 - **#360**: T1 item 1 (Design sources, analog partition): attest schematic-to-netlist freshness with klt signoff --attest 1 where xschem runs
-- **#363**: Bump klayout-tools pin 0.7.0, 5edb557f91d0 → 0.8.0
-- **#369**: Regenerate leaf layout cells under klayout-tools 0.8.0 (primitives, ro_buf, ro_stage*, sampler_tg)
+- **#371**: Regenerate composite layout cells, trng_digital/trng_whole and pex libraries under klayout-tools 0.8.0
 
 ## PRs Awaiting Review
 
 PRs waiting on Judge (`loom:review-requested`).
 
-- **#377**: docs(sim): move batch-client recipes and friction ledger to klayout-tools 0.8.0
+_None._
 
 ## Approved (Awaiting Merge)
 
 PRs that passed review and are queued for Champion auto-merge (`loom:pr`).
 
 - **#361**: feat(signoff): wire klt signoff --attest 1 for analog netlist freshness
-- **#375**: fix(layout): regenerate leaf cells under klayout-tools 0.8.0
 
 ## Proposed
 
@@ -65,9 +61,7 @@ Issues carrying `loom:curated`.
 - **#314**: Re-pin open_pdks to f6eeac7 (ciel) — fleet retires volare c6d73a3 *(curated)*
 - **#347**: Adopt the common artifact store for sim evidence (manifests in git, bytes via klt artifact) *(curated)*
 - **#360**: T1 item 1 (Design sources, analog partition): attest schematic-to-netlist freshness with klt signoff --attest 1 where xschem runs *(curated)*
-- **#363**: Bump klayout-tools pin 0.7.0, 5edb557f91d0 → 0.8.0 *(curated)*
-- **#369**: Regenerate leaf layout cells under klayout-tools 0.8.0 (primitives, ro_buf, ro_stage*, sampler_tg) *(curated)*
-- **#370**: Re-floorplan ro_nand2*, sampler_nand2 and xor2 for klayout-tools 0.8.0 *(curated)*
+- **#371**: Regenerate composite layout cells, trng_digital/trng_whole and pex libraries under klayout-tools 0.8.0 *(curated)*
 
 ## Proposed (Architect / Hermit)
 
@@ -83,14 +77,14 @@ Issues carrying `loom:curated`.
 
 | Bucket | Count |
 |------|-------|
-| Operator merge-risk holds | 0 |
+| Operator merge-risk holds | 1 |
 | Very important | 0 |
-| Important | 3 |
-| Ready (`loom:issue`) | 0 |
-| In Progress (`loom:building`) | 6 |
-| PRs awaiting review | 1 |
-| Approved PRs awaiting merge | 2 |
-| Curated | 11 |
+| Important | 2 |
+| Ready (`loom:issue`) | 1 |
+| In Progress (`loom:building`) | 4 |
+| PRs awaiting review | 0 |
+| Approved PRs awaiting merge | 1 |
+| Curated | 9 |
 | Architect / Hermit proposals | 2 |
 | Active epics | 2 |
 <!-- guide:plan-body:end -->
