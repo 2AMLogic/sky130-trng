@@ -2,6 +2,10 @@
 
 Chronological record of recently merged pull requests and closed issues.
 
+### 2026-10-29
+
+- **PR #389**: fix(sim): map sub-0.42um nFETs to special_nfet_01v8 in whole-block netlist
+
 ### 2026-10-27
 
 - **PR #379**: fix: regenerate xor2 layout evidence under klayout-tools 0.8.0
