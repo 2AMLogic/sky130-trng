@@ -2,7 +2,7 @@
   "schema_version": 1,
   "issue": 281,
   "not_signoff": "Evidence, not sign-off. This audit cross-checks klt's own curated sky130 deck coverage report against the composed stream. It is not a foundry DRC runset, and it adds no antenna, density, seal-ring, latch-up or foundry-only rule. No ratified spec value is read or changed.",
-  "deck_content_hash": "sha256:2bcbd625a0e36a4d1f9893b3c5d9b94963179c962b10ba01ffc4f378938c8197",
+  "deck_content_hash": "sha256:ba0f97887e3d231aec8b54f1f52f2941ded0228f0234b6759712bcaca0e942e6",
   "all_passed": true,
   "controls": [
     {
@@ -200,14 +200,14 @@
           "change": "klt deck rules reports a different deck content_hash",
           "caught": true,
           "drift": [
-            "klt deck rules --deck sky130: deck content hash sha256:0000000000000000000000000000000000000000000000000000000000000000 does not match the pinned deck sha256:2bcbd625a0e36a4d1f9893b3c5d9b94963179c962b10ba01ffc4f378938c8197 recorded in layout/trng_whole/verify/drc.json provenance.deck.content_hash. The audit refuses to map rules through a different deck; use the klt build that produced drc.json (layout/pdk.json klt_version_pin)."
+            "klt deck rules --deck sky130: deck content hash sha256:0000000000000000000000000000000000000000000000000000000000000000 does not match the pinned deck sha256:ba0f97887e3d231aec8b54f1f52f2941ded0228f0234b6759712bcaca0e942e6 recorded in layout/trng_whole/verify/drc.json provenance.deck.content_hash. The audit refuses to map rules through a different deck; use the klt build that produced drc.json (layout/pdk.json klt_version_pin)."
           ]
         },
         {
           "change": "deck layer table comes from a deck module with a different hash",
           "caught": true,
           "drift": [
-            "klayout_tools.decks sky130 layer table (deck module sha256): deck content hash sha256:1111111111111111111111111111111111111111111111111111111111111111 does not match the pinned deck sha256:2bcbd625a0e36a4d1f9893b3c5d9b94963179c962b10ba01ffc4f378938c8197 recorded in layout/trng_whole/verify/drc.json provenance.deck.content_hash. The audit refuses to map rules through a different deck; use the klt build that produced drc.json (layout/pdk.json klt_version_pin)."
+            "klayout_tools.decks sky130 layer table (deck module sha256): deck content hash sha256:1111111111111111111111111111111111111111111111111111111111111111 does not match the pinned deck sha256:ba0f97887e3d231aec8b54f1f52f2941ded0228f0234b6759712bcaca0e942e6 recorded in layout/trng_whole/verify/drc.json provenance.deck.content_hash. The audit refuses to map rules through a different deck; use the klt build that produced drc.json (layout/pdk.json klt_version_pin)."
           ]
         }
       ],

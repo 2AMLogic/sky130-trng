@@ -263,8 +263,9 @@ def build_reference_text(inp: Inputs, pdk_root: str) -> tuple[str, dict]:
         "*   macro's documented supply aliases); cells the Verilog never instantiates (fill,",
         "*   tap) come from the routed DEF COMPONENTS and must be power-only. Internal nets",
         "*   carry a d_ prefix; unconnected output pins get unique NC_ nets.",
-        "* VNB (substrate-only pin) is omitted from every stub: klt extract drops it from the",
-        "*   layout-side stubs (the deck's global substrate net), so substrate/VNB",
+        "* VNB (substrate-only pin) is omitted from every stub: the layout side has it",
+        "*   stripped after extraction (klt 0.8.0 binds it by an access-point probe that",
+        "*   lands on unrelated nets for a minority of instances), so substrate/VNB",
         "*   connectivity of the digital cells is NOT checked by this reference.",
         "* The digital module boundary (trng_digital) is flattened away: the extraction is flat.",
         "* Port order/names: layout/trng_whole/trng_whole.ref.spice (.subckt trng_whole).",
@@ -343,6 +344,8 @@ def run_pass(
     if extract.get("status") != "extracted" or not raw.is_file():
         raise BuildError(f"{label}: klt extract did not produce a netlist (status {extract.get('status')!r})")
     canon_text, canon = V.canonicalise_pins(raw.read_text(), TOP, inp.ports)
+    canon_text, substrate = V.strip_substrate_pins(canon_text, TOP)
+    canon["substrate_pin_strip"] = substrate
     layout = workdir / "trng_whole.layout.spice"
     layout.write_text(canon_text)
     lvs_req_path = workdir / "lvs.request.json"
@@ -469,8 +472,10 @@ def coverage_matrix(inp: Inputs, run: dict, endpoint: dict, ref_facts: dict, drc
             "id": "L2",
             "item": "digital substrate / VNB and well-body ties",
             "status": "not checked",
-            "detail": "klt extract drops VNB from every abstracted stub (substrate-only; deck global net 'vsubs'), "
-            "so the reference omits it and nothing here verifies digital substrate or p-well connectivity. "
+            "detail": "VNB is substrate-only and carried by neither side: the reference omits it and the extracted layout "
+            "netlist has it stripped (klt 0.8.0 binds it by a LEF-box access-point probe that lands on unrelated nets "
+            "for a minority of instances; see README 'VNB under klt 0.8.0'), so nothing here verifies digital "
+            "substrate or p-well connectivity. "
             "VPB (n-well) IS carried as a stub pin and tied to vdd on the reference; the endpoint audit proves "
             "every VPB sits on the same net as VPWR.",
         },
@@ -612,16 +617,16 @@ def coverage_matrix(inp: Inputs, run: dict, endpoint: dict, ref_facts: dict, drc
 def warning_review(ext: dict) -> str:
     warns = ext.get("warnings") or []
     merged = sum(1 for w in warns if w.startswith("net ") and " merges " in w)
-    vsubs = sum(1 for w in warns if "vsubs" in w)
     ignored = ext.get("ignored_layers") or []
     same = [w for w in warns if "onto the same net" in w and "VPB, VPWR" in w]
     n_same = int(same[0].split()[0]) if same else 0
     return (
         f"{len(warns)} klt extract warnings, all classified: {merged} 'net merges N distinct labels' (the analog "
         "macro labels its internal nodes; harmless to connectivity, and the reason pin names need canonicalising, L8); "
-        f"{vsubs} '--abstract-cells ... resolve only through the deck's global net vsubs' (VNB dropped from those stubs, L2); "
-        f"one 'abstract-cells instances resolved VPB and VPWR onto the same net' ({n_same} instances: this is the documented "
-        "VPB=VPWR well tie, confirmed rather than hidden); one 'promoted nets from labels below the top cell' (three "
+        f"one 'abstract-cells instances resolved two or more pins onto the same net' ({n_same} instance-level groupings: "
+        "the VPB=VPWR well tie is the documented one, confirmed rather than hidden; every other grouping involves the "
+        "substrate pin VNB, which klt 0.8.0 binds by a LEF-box access-point probe, and is removed by "
+        "strip_substrate_pins before comparison, L2 and README 'VNB under klt 0.8.0'); one 'promoted nets from labels below the top cell' (three "
         "analog internal nodes, demoted by the declared pin set - the extracted top has exactly 123 pins); one 'kept N nets "
         "internal: not in the declared pin set'; one dead-metal notice (see verify.json extract.dead_metal: all li1/mcon/met1 "
         "inside the digital macro's hidden cell artwork, none on met2..met5 or in the analog macro or the composition "

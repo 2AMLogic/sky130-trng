@@ -11,8 +11,9 @@
 *   macro's documented supply aliases); cells the Verilog never instantiates (fill,
 *   tap) come from the routed DEF COMPONENTS and must be power-only. Internal nets
 *   carry a d_ prefix; unconnected output pins get unique NC_ nets.
-* VNB (substrate-only pin) is omitted from every stub: klt extract drops it from the
-*   layout-side stubs (the deck's global substrate net), so substrate/VNB
+* VNB (substrate-only pin) is omitted from every stub: the layout side has it
+*   stripped after extraction (klt 0.8.0 binds it by an access-point probe that
+*   lands on unrelated nets for a minority of instances), so substrate/VNB
 *   connectivity of the digital cells is NOT checked by this reference.
 * The digital module boundary (trng_digital) is flattened away: the extraction is flat.
 * Port order/names: layout/trng_whole/trng_whole.ref.spice (.subckt trng_whole).

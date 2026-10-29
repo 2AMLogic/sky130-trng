@@ -33,9 +33,11 @@ from collections import Counter, defaultdict
 from pathlib import Path
 
 POWER_PINS = {"VPWR": "vdd", "VPB": "vdd", "VGND": "vss"}
-#: Pins a layout-side abstracted stub never carries (the deck's global
-#: substrate net; see the extract report warnings) and the reference
-#: therefore does not carry either.
+#: Pins neither side of the comparison carries. klt 0.6.0 dropped ``VNB`` from
+#: the layout-side stubs; klt 0.8.0 keeps it (merged from the LEF ``pwell`` pin
+#: and bound by probing the LEF box centre, so a measured minority of instances
+#: land on unrelated signal/supply nets). ``strip_substrate_pins`` removes it
+#: from the extracted netlist so both sides stay VNB-free (limitation L2).
 DROPPED_STUB_PINS = {"VNB"}
 POWER_ONLY = {"VPWR", "VGND", "VPB", "VNB"}
 
@@ -267,6 +269,50 @@ def build_reference(
 # --------------------------------------------------------------------------
 # layout netlist pin canonicalisation
 # --------------------------------------------------------------------------
+
+
+def strip_substrate_pins(text: str, top: str) -> tuple[str, dict]:
+    """Remove ``DROPPED_STUB_PINS`` from every pin-only stub ``.SUBCKT`` and
+    from every instance of such a stub in *text* (klt >= 0.8.0 layout side).
+
+    Only pins of device-free stubs are touched; the top circuit's own pins and
+    every MOSFET are left alone. Returns the rewritten text and facts
+    recording what was removed and where each removed pin had landed
+    (``same_net_as_vgnd`` vs ``other_net``), so the disclosure is measured,
+    not asserted.
+    """
+    stubs = {k: v["ports"] for k, v in parse_subckts(text).items() if k != top and not v["cards"]}
+    drop_idx = {k: [i for i, p in enumerate(v) if p in DROPPED_STUB_PINS] for k, v in stubs.items()}
+    drop_idx = {k: v for k, v in drop_idx.items() if v}
+    facts = {"stub_types_with_substrate_pin": len(drop_idx), "instances_stripped": 0,
+             "same_net_as_vgnd": 0, "other_net": 0, "other_net_examples": {}}
+    out: list[str] = []
+    for line in join_continuations(text):
+        tok = _TOKEN.findall(line.strip())
+        if tok and tok[0].upper() == ".SUBCKT" and len(tok) > 1 and tok[1] in drop_idx:
+            keep = [t for i, t in enumerate(tok[2:]) if i not in drop_idx[tok[1]]]
+            out.append(" ".join(tok[:2] + keep))
+        elif tok and tok[0][0] in "Xx" and not line.startswith("*") and len(tok) > 2 and tok[-1] in drop_idx:
+            cell, conns = tok[-1], tok[1:-1]
+            ports = stubs[cell]
+            if len(conns) != len(ports):
+                raise VerifyError(f"{tok[0]}: {len(conns)} nets for stub {cell} ({len(ports)} pins)")
+            vgnd = conns[ports.index("VGND")] if "VGND" in ports else None
+            for i in drop_idx[cell]:
+                facts["instances_stripped"] += 1
+                if conns[i] == vgnd:
+                    facts["same_net_as_vgnd"] += 1
+                else:
+                    facts["other_net"] += 1
+                    ex = facts["other_net_examples"]
+                    key = conns[i][:40]
+                    ex[key] = ex.get(key, 0) + 1
+            keep = [t for i, t in enumerate(conns) if i not in drop_idx[cell]]
+            out.append(" ".join([tok[0], *keep, cell]))
+        else:
+            out.append(line)
+    facts["other_net_examples"] = dict(sorted(facts["other_net_examples"].items(), key=lambda kv: -kv[1])[:6])
+    return "\n".join(out) + "\n", facts
 
 
 def top_pins(text: str, top: str) -> list[str]:

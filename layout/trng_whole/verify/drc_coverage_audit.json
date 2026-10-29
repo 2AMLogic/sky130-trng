@@ -5,14 +5,14 @@
   "generator": "layout/bin/verify-whole.py audit (layout/bin/drc_coverage_audit.py)",
   "inputs": {
     "gds": "layout/trng_whole/trng_whole.gds",
-    "gds_sha256": "af2f8dfe2800599e97d769bdedd14924c9fa3f24fc7e1c4f43ccd72ac5572ddd",
+    "gds_sha256": "6738c0eb87057caf19bc6b14420a390dcce437f2a218aaf2199db4f420df6ff5",
     "top": "trng_whole",
     "drc_report": "layout/trng_whole/verify/drc.json",
-    "drc_report_input_content_hash": "sha256:af2f8dfe2800599e97d769bdedd14924c9fa3f24fc7e1c4f43ccd72ac5572ddd",
+    "drc_report_input_content_hash": "sha256:6738c0eb87057caf19bc6b14420a390dcce437f2a218aaf2199db4f420df6ff5",
     "drc_report_input_matches_gds": true,
     "deck": {
       "name": "sky130",
-      "content_hash": "sha256:2bcbd625a0e36a4d1f9893b3c5d9b94963179c962b10ba01ffc4f378938c8197",
+      "content_hash": "sha256:ba0f97887e3d231aec8b54f1f52f2941ded0228f0234b6759712bcaca0e942e6",
       "rules_source": "klt deck rules --deck sky130 --format json (content_hash verified equal to the pin)",
       "layer_table_source": "klayout_tools.decks.get_layer_names('sky130') from a deck module whose sha256 equals the pin (klt exposes no layer/datatype for rule layers on its CLI)"
     },
@@ -37,9 +37,10 @@
     "unresolved": "listed by klt drc as in the stream but klt layers reports no shapes for it"
   },
   "summary": {
-    "rules_audited": 45,
+    "rules_audited": 48,
     "rules_by_verdict": {
-      "vacuous-confirmed": 45
+      "unresolved": 2,
+      "vacuous-confirmed": 46
     },
     "unruled_layers": 19,
     "unruled_by_verdict": {
@@ -52,6 +53,7 @@
     "stream_layers_unaccounted": []
   },
   "layer_map": {
+    "79/20": null,
     "areaid.rfdiode": "81/125",
     "capacitor.drawing": "82/64",
     "capm.drawing": "89/44",
@@ -65,6 +67,7 @@
     "met4.drawing": "71/20",
     "ncm.drawing": "92/44",
     "nsm.drawing": "61/20",
+    "nwell.drawing": "64/20",
     "pad.drawing": "76/20",
     "pwbm.drawing": "19/44",
     "pwde.drawing": "124/20",
@@ -661,6 +664,33 @@
       "why": "no geometry on nsm.drawing"
     },
     {
+      "rule": "nwell.enclosed.hvi.1",
+      "check": "enclosed",
+      "deck_layers": [
+        {
+          "name": "nwell.drawing",
+          "gds": "64/20",
+          "flattened_shapes": 8821,
+          "text_count": 0,
+          "geometry": 8821
+        },
+        {
+          "name": "hvi.drawing",
+          "gds": "75/20",
+          "flattened_shapes": 0,
+          "text_count": 0,
+          "geometry": 0
+        }
+      ],
+      "klt_reason": "no_applicable_geometry",
+      "klt_lists": [
+        "inapplicable",
+        "rules_skipped"
+      ],
+      "verdict": "unresolved",
+      "why": "check kind 'enclosed' is not one this audit understands"
+    },
+    {
       "rule": "pad.angle.1",
       "check": "angle",
       "deck_layers": [
@@ -861,6 +891,26 @@
       "why": "no geometry on rpm.drawing"
     },
     {
+      "rule": "rpm.width.1",
+      "check": "width",
+      "deck_layers": [
+        {
+          "name": "rpm.drawing",
+          "gds": "86/20",
+          "flattened_shapes": 0,
+          "text_count": 0,
+          "geometry": 0
+        }
+      ],
+      "klt_reason": "no_applicable_geometry",
+      "klt_lists": [
+        "inapplicable",
+        "rules_skipped"
+      ],
+      "verdict": "vacuous-confirmed",
+      "why": "no geometry on rpm.drawing"
+    },
+    {
       "rule": "tunm.angle.1",
       "check": "angle",
       "deck_layers": [
@@ -939,6 +989,26 @@
       ],
       "verdict": "vacuous-confirmed",
       "why": "no geometry on uhvi.drawing"
+    },
+    {
+      "rule": "urpm.width.1",
+      "check": "width",
+      "deck_layers": [
+        {
+          "name": "79/20",
+          "gds": null,
+          "flattened_shapes": null,
+          "text_count": null,
+          "geometry": null
+        }
+      ],
+      "klt_reason": "no_applicable_geometry",
+      "klt_lists": [
+        "inapplicable",
+        "rules_skipped"
+      ],
+      "verdict": "unresolved",
+      "why": "deck layer table does not name '79/20'"
     },
     {
       "rule": "vhvi.angle.1",
