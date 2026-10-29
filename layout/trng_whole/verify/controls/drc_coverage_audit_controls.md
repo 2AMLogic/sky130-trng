@@ -2,7 +2,7 @@
 
 Evidence, not sign-off. This audit cross-checks klt's own curated sky130 deck coverage report against the composed stream. It is not a foundry DRC runset, and it adds no antenna, density, seal-ring, latch-up or foundry-only rule. No ratified spec value is read or changed.
 
-Synthetic fixtures (top cell `audit_ctl`, boxes and texts only) are audited with the real pinned deck (`sha256:2bcbd625a0e36a4d1f9893b3c5d9b94963179c962b10ba01ffc4f378938c8197`) and its layer table. Coverage lists are stubbed per control, and so are deck rules where stated. Shape counts: `klt layers --flattened --include-text` on each fixture GDS written with klayout.db.
+Synthetic fixtures (top cell `audit_ctl`, boxes and texts only) are audited with the real pinned deck (`sha256:ba0f97887e3d231aec8b54f1f52f2941ded0228f0234b6759712bcaca0e942e6`) and its layer table. Coverage lists are stubbed per control, and so are deck rules where stated. Shape counts: `klt layers --flattened --include-text` on each fixture GDS written with klayout.db.
 
 | control | intent | expected | observed | passed |
 |---|---|---|---|---|

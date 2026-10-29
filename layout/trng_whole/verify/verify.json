@@ -6,20 +6,20 @@
   "not_signoff": "Whole-block project verification on klt's curated sky130 decks and the open_pdks install pinned in layout/pdk.json. NOT foundry sign-off: no foundry DRC/LVS/antenna/density runset, no parasitic extraction, no electrical or entropy characterisation. Provisional until silicon.",
   "verdict": "DRC clean (0 violations) and LVS match (0 errors) on the declared mixed-level coverage; named limitations in coverage.md; no foundry sign-off",
   "inputs_sha256": {
-    "layout/trng_whole/trng_whole.gds": "af2f8dfe2800599e97d769bdedd14924c9fa3f24fc7e1c4f43ccd72ac5572ddd",
+    "layout/trng_whole/trng_whole.gds": "6738c0eb87057caf19bc6b14420a390dcce437f2a218aaf2199db4f420df6ff5",
     "layout/trng_whole/trng_whole.ref.spice": "983d3d2237ec19fd86612254de638a74b8f3fb32ab16af8dbfd6e3e30d56d38f",
-    "layout/trng_whole/interface.json": "ffee0519b72088f917c67e94e565c4f3953b7969c534ef1aebc7e694b064309d",
-    "layout/trng_whole/report.json": "d98e25c9e601f09e9d9c39cbdecbde9fafa3ca03f38e45d9426cf53733dc0ae8",
+    "layout/trng_whole/interface.json": "827e59097d9b859f804dbfb26cfd44922bbd148283d1bd6e8378c5a1a3ce8a01",
+    "layout/trng_whole/report.json": "523e5415811af1bcf1b85618ab9b808e0bfcb6c2c55ecde99adc36f2980a4791",
     "layout/sampler_core/sampler_core.ref.spice": "18aa2d10f86fbd1d298b5030c1911e3e680f0fa8bfacf64e484ba0fcfbc2288c",
     "layout/trng_digital/trng_digital.routed.v": "9f3956848e6e75223f75bd154df905fecbb4e988593e78d1a92e347969fbf37f",
     "layout/trng_digital/trng_digital.def": "55b59c05ed2807a5b023efe4b45dfd9d9d4c68e136907c57c84e39179ef214fa",
-    "layout/sampler_core/sampler_core.gds": "e3ff54a9bb15122298f0d5df817612ed1caacb3b045533f9ba86d009036c2004",
+    "layout/sampler_core/sampler_core.gds": "76d3f856930a1350efcd1357dc2d70191f6779f51f7a96121ec79aef676c347e",
     "layout/trng_digital/trng_digital.gds": "c65e15818ebb0bf3fb2f59cab63563e88c1acebe32f0e83040c43c9ad87fa750",
     "layout/pdk.json": "fe36111d6767f93757e50b9cc4f46ebeb16d6f2dee2e9a154c3facd9f9d43c78"
   },
   "reference": {
     "path": "layout/trng_whole/verify/lvs.ref.spice",
-    "sha256": "5b96d0a18d46ae7977d33868e07446c1f3e2e2f1536200b64030e4c6e0a83845",
+    "sha256": "e3f833edb8f7d8a11378a3d6660d8373d7db245c483d1f7ffd98e2ab164cbe44",
     "facts": {
       "analog_devices": 264,
       "digital_cell_instances": 8605,
@@ -40,7 +40,7 @@
     "generator": "layout/bin/verify-whole.py (build_reference_text) + layout/bin/verify_whole_lib.py"
   },
   "tool_pins": {
-    "klt_version": "0.6.0+g5edb557f91d0",
+    "klt_version": "0.8.0",
     "klt_pin_expected": "0.6.0+g5edb557f91d0",
     "klt_pin_source": "pip install \"klayout-tools @ git+https://github.com/2AMLogic/klayout-tools@5edb557f91d0116368c386617802ec727b4bdc90\"",
     "open_pdks_commit_expected": "c6d73a35f524070e85faff4a6a9eef49553ebc2b",
@@ -57,11 +57,11 @@
     "violation_count": 0,
     "deck": {
       "name": "sky130",
-      "content_hash": "sha256:2bcbd625a0e36a4d1f9893b3c5d9b94963179c962b10ba01ffc4f378938c8197",
-      "released": false
+      "content_hash": "sha256:ba0f97887e3d231aec8b54f1f52f2941ded0228f0234b6759712bcaca0e942e6",
+      "released": true
     },
-    "input_content_hash": "sha256:af2f8dfe2800599e97d769bdedd14924c9fa3f24fc7e1c4f43ccd72ac5572ddd",
-    "rules_checked": 91
+    "input_content_hash": "sha256:6738c0eb87057caf19bc6b14420a390dcce437f2a218aaf2199db4f420df6ff5",
+    "rules_checked": 102
   },
   "extract": {
     "request": "layout/trng_whole/verify/extract.request.json",
@@ -86,13 +86,13 @@
     },
     "abstracted_cell_types": 69,
     "abstracted_instances": 8605,
-    "warning_count": 159,
-    "raw_netlist_sha256": "0beeaec5bf29197f7a0c3d5a2918c8fc2192695eb0a9927f71b837d8ea739610",
+    "warning_count": 199,
+    "raw_netlist_sha256": "d2270db6c83c53febdfd92a11218001d2bc4eb061686585195c8b48f0682a9af",
     "raw_netlist_note": "anonymous $N net numbering is not a stable cross-host contract (klt extract --help); the canonical netlist hash below is what the LVS report pins",
     "deck": {
       "name": "sky130",
-      "content_hash": "sha256:2bcbd625a0e36a4d1f9893b3c5d9b94963179c962b10ba01ffc4f378938c8197",
-      "released": false
+      "content_hash": "sha256:ba0f97887e3d231aec8b54f1f52f2941ded0228f0234b6759712bcaca0e942e6",
+      "released": true
     }
   },
   "pin_canonicalisation": {
@@ -102,14 +102,28 @@
     "ports_missing": [],
     "ports_duplicated": [],
     "joined_pins": {},
-    "unnamed_pins": []
+    "unnamed_pins": [],
+    "substrate_pin_strip": {
+      "stub_types_with_substrate_pin": 68,
+      "instances_stripped": 7901,
+      "same_net_as_vgnd": 7295,
+      "other_net": 606,
+      "other_net_examples": {
+        "rst_n": 435,
+        "vdd": 127,
+        "bus_addr[3]": 2,
+        "bus_rdata[17]": 1,
+        "bus_addr[1]": 1,
+        "bus_wdata[1]": 1
+      }
+    }
   },
   "lvs": {
     "request": "layout/trng_whole/verify/lvs.request.json",
     "report": "layout/trng_whole/verify/lvs.json",
     "layout_netlist": "layout/trng_whole/verify/trng_whole.layout.spice",
-    "layout_netlist_sha256": "383c5374047d6f9a3093aa83d4b3cdff5f3333d3b9e60f23be98a9e61455e622",
-    "reference_sha256": "5b96d0a18d46ae7977d33868e07446c1f3e2e2f1536200b64030e4c6e0a83845",
+    "layout_netlist_sha256": "46bd61b35d2193f279506625bf4c4f5ff1ab50436767e49f805caaf24cb33465",
+    "reference_sha256": "e3f833edb8f7d8a11378a3d6660d8373d7db245c483d1f7ffd98e2ab164cbe44",
     "status": "match",
     "mismatch_count": 1,
     "error_count": 0,

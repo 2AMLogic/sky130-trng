@@ -45,8 +45,8 @@ contains `licon1.ongrid.1`, and `test_verify_whole.py` asserts it).
   `VPWR`/`VPB` are tied to `vdd` and `VGND` to `vss`; the 6284 fill/tap
   instances (never in the Verilog) come from the routed DEF `COMPONENTS` and
   must be power-only cells. They are **compared, not pruned**.
-- **Hierarchy is flattened**; `VNB` is dropped from every stub (klt extract
-  resolves it only through the deck's global substrate net).
+- **Hierarchy is flattened**; `VNB` is carried by neither side of the
+  comparison (see "`VNB` under klt 0.8.0" below).
 - **Digital black boxes must not hide boundary defects.** Three layers keep
   them honest: every cell's signal *and* power pin is an explicit stub pin
   compared by the LVS engine; `options.anchor_top_level_pins` pairs each of the
@@ -58,6 +58,38 @@ contains `licon1.ongrid.1`, and `test_verify_whole.py` asserts it).
 The reference is generated, not hand-edited: `lvs.ref.spice` (sha256 in
 `verify.json`) is built by `layout/bin/verify-whole.py` from the #172 inputs;
 `verify-whole.py check` rebuilds it and fails on drift.
+
+### `VNB` under klt 0.8.0
+
+klt 0.6.0 dropped the substrate-only `VNB` pin from every abstracted stub. klt
+0.8.0 keeps it: the pin is merged from the PDK LEF (a `pwell`-layer box, no
+drawn conductor in the cell), its access point is the centre of that LEF box,
+and the net is whatever conductor is found there, falling back to the deck's
+global substrate net only when nothing is. Measured on this stream (klt 0.8.0,
+`verify.json` `pin_canonicalisation.substrate_pin_strip`): 68 stub types carry
+`VNB`, on 7901 instances (the 8605 placed cells less the 704 `tapvpwrvgnd_1`,
+which have no `VNB`). On 7295 the pin lands on the same net as `VGND`. On 606
+it lands on an unrelated net (`rst_n` 435, `vdd` 127, a few bus/status ports),
+because a signal or supply conductor happens to sit at the box centre.
+Connecting `VNB` to `vss` on the reference therefore gave 652 LVS errors that
+describe the access-point heuristic, not the layout.
+
+What `verify-whole.py` does: `strip_substrate_pins` removes `VNB` from every
+pin-only stub and every instance of it in the extracted netlist, after pin
+canonicalisation and before the LVS and endpoint audit; the reference has never
+carried it. The stub pin-list comparison, the endpoint audit and
+`anchor_top_level_pins` are unchanged and still run, and the removal is counted
+and recorded in `verify.json`. This restores the 0.6.0 comparison, not a weaker
+one: substrate/`VNB` connectivity was never checked (limitation L2) and still
+is not. Result: LVS match, 0 errors, 123/123 ports clean, 5/5 fault controls
+detected, baseline re-run matches.
+The tool gap is filed as 2AMLogic/klayout-tools#4571.
+
+Also new on this stream under 0.8.0: the pinned curated deck hash changed, and
+two deck rules are classed `unresolved` by the DRC coverage audit, not forced
+to a verdict: `nwell.enclosed.hvi.1` (check kind `enclosed`, unknown to the
+audit) and `urpm.width.1` (layer `79/20` not in the deck layer table). They
+were absent from the 0.6.0 deck. See `drc_coverage_audit.md`.
 
 ## Coverage matrix and limitations
 
