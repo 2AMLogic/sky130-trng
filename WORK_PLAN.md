@@ -36,6 +36,7 @@ Issues currently being built (`loom:building`).
 - **#230**: CI: guard that every test_*.py is wired into a CI workflow and path filter
 - **#360**: T1 item 1 (Design sources, analog partition): attest schematic-to-netlist freshness with klt signoff --attest 1 where xschem runs
 - **#371**: Regenerate composite layout cells, trng_digital/trng_whole and pex libraries under klayout-tools 0.8.0
+- **#381**: verify-whole: adapt the whole-block harness to klayout-tools 0.8.0 VNB handling
 
 ## PRs Awaiting Review
 
@@ -62,6 +63,7 @@ Issues carrying `loom:curated`.
 - **#347**: Adopt the common artifact store for sim evidence (manifests in git, bytes via klt artifact) *(curated)*
 - **#360**: T1 item 1 (Design sources, analog partition): attest schematic-to-netlist freshness with klt signoff --attest 1 where xschem runs *(curated)*
 - **#371**: Regenerate composite layout cells, trng_digital/trng_whole and pex libraries under klayout-tools 0.8.0 *(curated)*
+- **#381**: verify-whole: adapt the whole-block harness to klayout-tools 0.8.0 VNB handling *(curated)*
 
 ## Proposed (Architect / Hermit)
 
@@ -81,10 +83,10 @@ Issues carrying `loom:curated`.
 | Very important | 0 |
 | Important | 2 |
 | Ready (`loom:issue`) | 1 |
-| In Progress (`loom:building`) | 4 |
+| In Progress (`loom:building`) | 5 |
 | PRs awaiting review | 0 |
 | Approved PRs awaiting merge | 1 |
-| Curated | 9 |
+| Curated | 10 |
 | Architect / Hermit proposals | 2 |
 | Active epics | 2 |
 <!-- guide:plan-body:end -->
