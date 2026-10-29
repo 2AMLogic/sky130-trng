@@ -12,7 +12,7 @@ ngspice-runnable** netlist body for the ``trng_whole`` cell:
   convention ``layout/bin/pex-netlist.py`` documents for the cell PEX
   libraries. No parasitics: this is the connectivity netlist #173
   extracted, in runnable form.
-* three deterministic, recorded text transforms the raw extract needs to
+* four deterministic, recorded text transforms the raw extract needs to
   run under ngspice (the committed ``trng_whole.layout.spice`` was never
   runnable -- it is an LVS artifact):
 
@@ -60,6 +60,7 @@ Standard library only (plus a ``klt`` binary on PATH).
 from __future__ import annotations
 
 import argparse
+import gzip
 import hashlib
 import json
 import re
@@ -73,10 +74,21 @@ REPO = HERE.parents[1]
 GDS = REPO / "layout" / "trng_whole" / "trng_whole.gds"
 EXTRACT_REQUEST = REPO / "layout" / "trng_whole" / "verify" / "extract.request.json"
 DEFAULT_OUT = HERE / "trng_whole.sim.spice"
+COMMITTED_GZ = HERE / "trng_whole.sim.spice.gz"  # the copy actually committed
 PORTS_JSON = HERE / "trng_whole.sim.ports.json"
 
 SUBCKT_RE = re.compile(r"^\.SUBCKT\s+trng_whole\s+(.*)$", re.M)
 BRACKET_RE = re.compile(r"\b([A-Za-z_][A-Za-z0-9_]*)\[(\d+)\]")
+# transform 4: smallest bin of the PDK's scalable nfet_01v8 is wmin = 0.42 um
+NFET_MIN_BIN_W_UM = 0.42
+NARROW_NFET_RE = re.compile(
+    r"\bsky130_fd_pr__nfet_01v8(\s+(?:L=[0-9.eE+-]+\s+)?W=)([0-9.eE+-]+)")
+
+
+def _special_nfet(m: "re.Match[str]") -> str:
+    if float(m.group(2)) < NFET_MIN_BIN_W_UM:
+        return "sky130_fd_pr__special_nfet_01v8" + m.group(1) + m.group(2)
+    return m.group(0)
 
 
 def sha256_file(path: Path) -> str:
@@ -159,6 +171,7 @@ def canonicalise(text: str) -> tuple[str, dict[str, str]]:
     if merged:
         raise SystemExit(f"$-scrub would collide with existing tokens: {sorted(merged)[:5]}")
     body = BRACKET_RE.sub(r"\1_\2_", body)
+    body = NARROW_NFET_RE.sub(_special_nfet, body)
     return body, mapping
 
 
@@ -184,14 +197,18 @@ def build(dest: Path, ports_dest: Path) -> dict:
 
 
 def check() -> int:
-    if not DEFAULT_OUT.exists():
-        print(f"error: {DEFAULT_OUT.relative_to(REPO)} does not exist", file=sys.stderr)
+    if DEFAULT_OUT.exists():
+        committed = DEFAULT_OUT.read_text()
+    elif COMMITTED_GZ.exists():
+        committed = gzip.decompress(COMMITTED_GZ.read_bytes()).decode()
+    else:
+        print(f"error: neither {DEFAULT_OUT.relative_to(REPO)} nor its .gz exists",
+              file=sys.stderr)
         return 1
     with tempfile.TemporaryDirectory() as td:
         raw = Path(td) / "raw.spice"
         run_extract(raw)
         text, mapping = canonicalise(raw.read_text())
-    committed = DEFAULT_OUT.read_text()
     if text != committed:
         print("error: re-derived netlist differs from the committed "
               f"{DEFAULT_OUT.relative_to(REPO)}; a klt/PDK pin may have moved -- "
