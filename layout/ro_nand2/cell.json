@@ -75,13 +75,13 @@
         "strategy": "explicit",
         "order": ["mph", "mpa", "mpb", "mnt", "mnab", "nwell_tap", "psub_tap"],
         "origins_um": {
-          "mph": {"x": 0.0, "y": 3.95},
-          "mpa": {"x": 3.04, "y": 4.16},
-          "mpb": {"x": 5.42, "y": 4.16},
+          "mph": {"x": 0.0, "y": 4.4},
+          "mpa": {"x": 3.04, "y": 4.61},
+          "mpb": {"x": 5.42, "y": 4.61},
           "mnt": {"x": 0.0, "y": 0.0},
-          "mnab": {"x": 3.24, "y": -0.21},
-          "nwell_tap": {"x": -2.04, "y": 2.82},
-          "psub_tap": {"x": -2.14, "y": -0.71}
+          "mnab": {"x": 3.49, "y": -0.21},
+          "nwell_tap": {"x": -2.04, "y": 3.27},
+          "psub_tap": {"x": -2.24, "y": -0.71}
         }
       },
       "routing": {"layer_role": "metal", "width_um": 0.17},
@@ -114,14 +114,14 @@
       "connectivity": [
         {"net": "py", "pins": [{"block": "core", "port": "mph_py"}, {"block": "core", "port": "mpa_py"}]},
         {"net": "py", "pins": [{"block": "core", "port": "mpa_py"}, {"block": "core", "port": "mpb_py"}],
-         "waypoints_um": [[3.25, 4.5], [5.21, 4.5]]},
+         "waypoints_um": [[3.25, 4.95], [5.21, 4.95]]},
         {"net": "y", "pins": [{"block": "core", "port": "mpa_y"}, {"block": "core", "port": "mpb_y"}]},
         {"net": "y", "pins": [{"block": "core", "port": "mpb_y"}, {"block": "core", "port": "mnab_y"}],
-         "waypoints_um": [[4.54, 1.0], [4.79, 1.0]]},
+         "waypoints_um": [[4.54, 1.0], [5.04, 1.0]]},
         {"net": "vss", "pins": [{"block": "core", "port": "mph_g"}, {"block": "core", "port": "vss"}],
-         "waypoints_um": [[0.5, 2.92], [0.5, 0.92]]},
+         "waypoints_um": [[0.5, 3.37], [0.5, 0.92]]},
         {"net": "vddr", "pins": [{"block": "core", "port": "mnt_g"}, {"block": "core", "port": "vddr"}],
-         "waypoints_um": [[2.0, 1.03], [2.0, 4.4], [-1.83, 4.4]]}
+         "waypoints_um": [[2.0, 1.03], [2.0, 4.85], [-1.83, 4.85]]}
       ]
     }
   ],

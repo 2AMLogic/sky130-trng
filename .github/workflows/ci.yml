@@ -125,7 +125,7 @@ name: CI
 #     at tier T1 and 3 for "ran successfully, at least one item unmet" --
 #     the documented mid-ladder state, not a failure -- so the job treats
 #     0 and 3 as render successes and 1/2 as failures, then byte-compares.
-#     The `klayout-tools==0.7.0` pin (0.6.0 until issue #164) deliberately DIVERGES from the PDK
+#     The `klayout-tools==0.8.0` pin (0.7.0 until issue #363, 0.6.0 until issue #164) deliberately DIVERGES from the PDK
 #     nightly's install (0.5.0 from 2026-09-23, issue #160; klayout-tools
 #     source commit 5edb557f91d0 since issue #181): this job is
 #     a pure JSON+markdown transform with no PDK, so it follows the
@@ -155,7 +155,7 @@ name: CI
 #     manifests (schema, `artifact:` URIs only, no bucket/account text) and fails
 #     when a stored object's bytes are also tracked. The live `klt artifact
 #     verify` needs the broker and is an out-of-band step. The signoff-check
-#     pin below deliberately stays klayout-tools==0.7.0.
+#     pin below deliberately stays klayout-tools==0.8.0.
 #
 # sim/bin/check_records_append_only.py (sim/ + measurements/ append-only record rule, issues #232/#269)
 #     Pure Python + git. `sim/` results and `measurements/` silicon evidence are
@@ -409,14 +409,16 @@ jobs:
       # klt_version_pin documents for the nightly's --check runs. The
       # grader is a pure JSON transform, so it follows the grader release
       # (0.6.0: first tagged erc-kind grading build, klayout-tools#2247;
-      # 0.7.0: LVS supply-pairing fix, klayout-tools#2405/#2431, issue #164)
+      # 0.7.0: LVS supply-pairing fix, klayout-tools#2405/#2431, issue #164;
+      # 0.8.0: issue #363 -- re-rendered signoff/t1-report.json differs
+      # from the 0.7.0 render only in the build stamp and ruleset id)
       # alone; the nightly's pin gates the nineteen committed cells'
       # compose-cell --check reproductions and moves only with a full
       # --check re-verification (0.6.0 changed gen-compose's
       # via-drop/tap-role handling, klayout-tools#2312).
       - name: Install klt (klayout-tools, the signoff grading build)
         run: |
-          pip install --user "klayout-tools==0.7.0"
+          pip install --user "klayout-tools==0.8.0"
           klt --version
 
       # issue #285: the 7.digital citation is unpinned, so the re-render below

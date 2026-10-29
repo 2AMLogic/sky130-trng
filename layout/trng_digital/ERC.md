@@ -13,7 +13,7 @@ only; not a foundry LVS/ERC/latch-up signoff, and not IR-drop/EM (#174).
 
 ## Pins
 
-- klt `0.7.0` (released, the pin `.github/workflows/ci.yml` uses), klayout 0.30.12.
+- klt `0.7.0` (released; the build that produced `erc.json`. `.github/workflows/ci.yml` grades on 0.8.0 since issue #363), klayout 0.30.12.
   `erc.json` `provenance.klt_version` records it.
 - Input GDS `sha256:c65e1581...` = `erc.json` `provenance.input.content_hash`
   = `drc.json`'s input hash (same artifact generation as 3.digital).
