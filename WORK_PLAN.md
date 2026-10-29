@@ -37,6 +37,7 @@ Issues currently being built (`loom:building`).
 - **#360**: T1 item 1 (Design sources, analog partition): attest schematic-to-netlist freshness with klt signoff --attest 1 where xschem runs
 - **#371**: Regenerate composite layout cells, trng_digital/trng_whole and pex libraries under klayout-tools 0.8.0
 - **#381**: verify-whole: adapt the whole-block harness to klayout-tools 0.8.0 VNB handling
+- **#386**: Flat netlist fails ngspice model binning (sky130_fd_pr__nfet_01v8 L=0.15 W=0.36): blocks #307
 
 ## PRs Awaiting Review
 
@@ -64,6 +65,7 @@ Issues carrying `loom:curated`.
 - **#360**: T1 item 1 (Design sources, analog partition): attest schematic-to-netlist freshness with klt signoff --attest 1 where xschem runs *(curated)*
 - **#371**: Regenerate composite layout cells, trng_digital/trng_whole and pex libraries under klayout-tools 0.8.0 *(curated)*
 - **#381**: verify-whole: adapt the whole-block harness to klayout-tools 0.8.0 VNB handling *(curated)*
+- **#386**: Flat netlist fails ngspice model binning (sky130_fd_pr__nfet_01v8 L=0.15 W=0.36): blocks #307 *(curated)*
 
 ## Proposed (Architect / Hermit)
 
@@ -83,10 +85,10 @@ Issues carrying `loom:curated`.
 | Very important | 0 |
 | Important | 2 |
 | Ready (`loom:issue`) | 1 |
-| In Progress (`loom:building`) | 5 |
+| In Progress (`loom:building`) | 6 |
 | PRs awaiting review | 0 |
 | Approved PRs awaiting merge | 1 |
-| Curated | 10 |
+| Curated | 11 |
 | Architect / Hermit proposals | 2 |
 | Active epics | 2 |
 <!-- guide:plan-body:end -->
