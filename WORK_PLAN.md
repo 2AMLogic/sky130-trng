@@ -50,6 +50,7 @@ _None._
 PRs that passed review and are queued for Champion auto-merge (`loom:pr`).
 
 - **#361**: feat(signoff): wire klt signoff --attest 1 for analog netlist freshness
+- **#388**: fix(verify): strip klt 0.8.0 VNB from abstracted stubs, regenerate whole-block evidence
 
 ## Proposed
 
@@ -87,7 +88,7 @@ Issues carrying `loom:curated`.
 | Ready (`loom:issue`) | 1 |
 | In Progress (`loom:building`) | 6 |
 | PRs awaiting review | 0 |
-| Approved PRs awaiting merge | 1 |
+| Approved PRs awaiting merge | 2 |
 | Curated | 11 |
 | Architect / Hermit proposals | 2 |
 | Active epics | 2 |
