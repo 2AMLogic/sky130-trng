@@ -4,6 +4,8 @@ Chronological record of recently merged pull requests and closed issues.
 
 ### 2026-10-30
 
+- **PR #393**: docs(sim): record fleet probe of bin-fixed whole-block netlist (past parse, timeout in analysis)
+- **Issue #386** (closed): Flat netlist fails ngspice model binning (sky130_fd_pr__nfet_01v8 L=0.15 W=0.36): blocks #307
 - **PR #391**: feat(sim): all-cards bin-coverage scan for whole-block netlist with pre-fix control
 
 ### 2026-10-29
