@@ -2,6 +2,10 @@
 
 Chronological record of recently merged pull requests and closed issues.
 
+### 2026-10-30
+
+- **PR #391**: feat(sim): all-cards bin-coverage scan for whole-block netlist with pre-fix control
+
 ### 2026-10-29
 
 - **PR #389**: fix(sim): map sub-0.42um nFETs to special_nfet_01v8 in whole-block netlist
