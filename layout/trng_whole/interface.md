@@ -14,10 +14,10 @@ characterization (#174).
 | `raw_valid` | inter_macro | analog_to_digital | (100.56, 2.71); 69/20 | (228.21, 271.35) | `raw_valid` | - (internal net) |
 | `clk` | shared_input | external_to_both | (108.0, -1.7); 69/20 | (220.77, 266.94) | `clk` | (220.77, 332.0) |
 | `rst_n` | shared_input | external_to_both | (124.0, 5.0); 69/20 | (204.77, 273.64) | `rst_n` | (204.77, 332.0) |
-| `en1` | analog_external | external_to_analog | (5.875, 25.61); 67/20 | (322.895, 294.25) | - | (322.895, 332.0) |
-| `en2` | analog_external | external_to_analog | (61.175, 25.61); 67/20 | (267.595, 294.25) | - | (267.595, 332.0) |
-| `en3` | analog_external | external_to_analog | (116.475, 25.61); 67/20 | (212.295, 294.25) | - | (212.295, 332.0) |
-| `en4` | analog_external | external_to_analog | (171.775, 25.61); 67/20 | (156.995, 294.25) | - | (156.995, 332.0) |
+| `en1` | analog_external | external_to_analog | (5.74, 25.835); 67/20 | (323.03, 294.475) | - | (323.03, 332.0) |
+| `en2` | analog_external | external_to_analog | (61.04, 25.835); 67/20 | (267.73, 294.475) | - | (267.73, 332.0) |
+| `en3` | analog_external | external_to_analog | (116.34, 25.835); 67/20 | (212.43, 294.475) | - | (212.43, 332.0) |
+| `en4` | analog_external | external_to_analog | (171.64, 25.835); 67/20 | (157.13, 294.475) | - | (157.13, 332.0) |
 | `vddr1` | ring_supply | external_to_analog | (15.0, 29.635); 69/20 | (313.77, 298.275) | - | (313.77, 332.0) |
 | `vddr2` | ring_supply | external_to_analog | (70.0, 29.635); 69/20 | (258.77, 298.275) | - | (258.77, 332.0) |
 | `vddr3` | ring_supply | external_to_analog | (132.0, 29.635); 69/20 | (196.77, 298.275) | - | (196.77, 332.0) |
@@ -156,4 +156,4 @@ macro's own pin shape.
 macro's `vdd`/`vss`); VPB/VNB are tied to VPWR/VGND by tap cells inside the digital
 macro. `vddr1`..`vddr4` reach only the analog macro and are four distinct nets.
 
-Combined drawn bbox: 378.16 x 333.5 um = 0.126116 mm2 against the unchanged 0.05 mm2 target: **Unmet**.
+Combined drawn bbox: 378.235 x 333.5 um = 0.126141 mm2 against the unchanged 0.05 mm2 target: **Unmet**.

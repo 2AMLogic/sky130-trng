@@ -10,7 +10,7 @@
   },
   "dbu_um": 0.001,
   "bbox_um": {
-    "x0": -2.19,
+    "x0": -2.265,
     "y0": -3.585,
     "x1": 50.47,
     "y1": 7.085
@@ -22,14 +22,14 @@
       "source": "cell",
       "generator": null,
       "cell_name": "rst_n_bus",
-      "source_path": "/home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-181/layout/sampler_dff/rst_n_bus.gds",
-      "source_digest": "sha256:2a8e8811d46d2941fb4db8f49dbb350605bc40a431d2b1f4c9a4942529b3dd4a",
+      "source_path": "rst_n_bus.gds",
+      "source_digest": "sha256:15aa036181410f97263188e8d9dd058b045af71da7463499b47e8fcc7cc9224c",
       "offset_um": {
         "x": 0.0,
         "y": 0.0
       },
       "bbox_um": {
-        "x0": -2.19,
+        "x0": -2.265,
         "y0": -3.585,
         "x1": 50.47,
         "y1": 7.085
@@ -229,12 +229,20 @@
   },
   "warnings": [],
   "provenance": {
-    "klt_version": "0.6.0+g5edb557f91d0",
+    "klt_version": "0.8.0",
     "klayout_version": "0.30.12",
     "pdk": {
       "name": "sky130A",
-      "source": "search root: ~/.volare",
-      "version": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b"
+      "source": "PDK_ROOT environment variable",
+      "version": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+      "ambiguous_sources": [
+        "search root: ~/.ciel"
+      ],
+      "compatibility": {
+        "status": "mismatch",
+        "package": "open_pdks-sky130",
+        "expected": "open_pdks f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7"
+      }
     },
     "deck": null,
     "input": null

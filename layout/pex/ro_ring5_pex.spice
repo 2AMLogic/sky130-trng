@@ -31,15 +31,15 @@
 .subckt ro_nand2_pex_wstv0p42__core a en y vddr py vss ny
 * device instance $1 r0 *1 1.42,0.21 nfet
 Xn1 ny__t0 vddr__t0 vss__t0 vss__t2 sky130_fd_pr__nfet_01v8 L=2 W=0.42 AS=0.1764 AD=0.1764 PS=1.68 PD=1.68
-* device instance $2 r0 *1 3.785,0.21 nfet
+* device instance $2 r0 *1 4.035,0.21 nfet
 Xn2 n3__t0 en__t0 ny__t1 vss__t3 sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.2184 PS=2.62 PD=1.36
-* device instance $3 r0 *1 4.455,0.21 nfet
+* device instance $3 r0 *1 4.705,0.21 nfet
 Xn3 y__t0 a__t0 n3__t1 vss__t4 sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.2184 AD=0.3948 PS=1.36 PD=2.62
-* device instance $4 r0 *1 1.42,3.74 pfet
+* device instance $4 r0 *1 1.42,4.19 pfet
 Xn4 py__t0 vss__t1 vddr__t1 vddr__t2 sky130_fd_pr__pfet_01v8 L=2 W=0.42 AS=0.1764 AD=0.1764 PS=1.68 PD=1.68
-* device instance $5 r0 *1 3.585,3.74 pfet
+* device instance $5 r0 *1 3.585,4.19 pfet
 Xn5 y__t1 en__t1 py__t1 vddr__t3 sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
-* device instance $6 r0 *1 4.875,3.74 pfet
+* device instance $6 r0 *1 4.875,4.19 pfet
 Xn6 py__t2 a__t1 y__t2 vddr__t4 sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
 * device instance _3_t0 r0 *1 0,0
 R_3_t0 n3__t0 n3 12.8
@@ -48,37 +48,37 @@ R_3_t1 n3__t1 n3 12.8
 * device instance _3 r0 *1 0,0
 C_3 n3 vsubs 1.15618e-16
 * device instance a_t0 r0 *1 0,0
-Ra_t0 a__t0 a 175.09895
+Ra_t0 a__t0 a 249.11075
 * device instance a_t1 r0 *1 0,0
-Ra_t1 a__t1 a 175.09895
+Ra_t1 a__t1 a 249.11075
 * device instance a r0 *1 0,0
-Ca a vsubs 6.07536e-16
+Ca a vsubs 7.10913e-16
 * device instance en_t0 r0 *1 0,0
-Ren_t0 en__t0 en 166.9848
+Ren_t0 en__t0 en 259.452
 * device instance en_t1 r0 *1 0,0
-Ren_t1 en__t1 en 166.9848
+Ren_t1 en__t1 en 259.452
 * device instance en r0 *1 0,0
-Cen en vsubs 5.93421e-16
+Cen en vsubs 7.37613e-16
 * device instance mnab_y_mpa_y_mpb_y_y_t0 r0 *1 0,0
-Rmnab_y_mpa_y_mpb_y_y_t0 y__t0 y 37.5392638434
+Rmnab_y_mpa_y_mpb_y_y_t0 y__t0 y 38.3169121582
 * device instance mnab_y_mpa_y_mpb_y_y_t1 r0 *1 0,0
-Rmnab_y_mpa_y_mpb_y_y_t1 y__t1 y 21.9601317572
+Rmnab_y_mpa_y_mpb_y_y_t1 y__t1 y 22.2392528946
 * device instance mnab_y_mpa_y_mpb_y_y_t2 r0 *1 0,0
-Rmnab_y_mpa_y_mpb_y_y_t2 y__t2 y 20.8137043994
+Rmnab_y_mpa_y_mpb_y_y_t2 y__t2 y 20.2630349472
 * device instance mnab_y_mpa_y_mpb_y_y r0 *1 0,0
-Cmnab_y_mpa_y_mpb_y_y y vsubs 8.56767e-16
+Cmnab_y_mpa_y_mpb_y_y y vsubs 9.18744e-16
 * device instance mnt_g_vddr_t0 r0 *1 0,0
-Rmnt_g_vddr_t0 vddr__t0 vddr 96.5964987762
+Rmnt_g_vddr_t0 vddr__t0 vddr 479.430022435
 * device instance mnt_g_vddr_t1 r0 *1 0,0
-Rmnt_g_vddr_t1 vddr__t1 vddr 42.1836266243
+Rmnt_g_vddr_t1 vddr__t1 vddr 195.560925854
 * device instance mnt_g_vddr_t2 r0 *1 0,0
-Rmnt_g_vddr_t2 vddr__t2 vddr 42.1836266243
+Rmnt_g_vddr_t2 vddr__t2 vddr 195.560925854
 * device instance mnt_g_vddr_t3 r0 *1 0,0
-Rmnt_g_vddr_t3 vddr__t3 vddr 39.9745359616
+Rmnt_g_vddr_t3 vddr__t3 vddr 186.068150423
 * device instance mnt_g_vddr_t4 r0 *1 0,0
-Rmnt_g_vddr_t4 vddr__t4 vddr 77.4042120137
+Rmnt_g_vddr_t4 vddr__t4 vddr 349.737875435
 * device instance mnt_g_vddr r0 *1 0,0
-Cmnt_g_vddr vddr vsubs 1.70354e-15
+Cmnt_g_vddr vddr vsubs 2.222292e-15
 * device instance mpa_py_mpb_py_mph_py_py_t0 r0 *1 0,0
 Rmpa_py_mpb_py_mph_py_py_t0 py__t0 py 33.64835
 * device instance mpa_py_mpb_py_mph_py_py_t1 r0 *1 0,0
@@ -88,25 +88,25 @@ Rmpa_py_mpb_py_mph_py_py_t2 py__t2 py 28.4095054715
 * device instance mpa_py_mpb_py_mph_py_py r0 *1 0,0
 Cmpa_py_mpb_py_mph_py_py py vsubs 7.94002e-16
 * device instance mph_g_vss_t0 r0 *1 0,0
-Rmph_g_vss_t0 vss__t0 vss 42.3862225375
+Rmph_g_vss_t0 vss__t0 vss 198.57575909
 * device instance mph_g_vss_t1 r0 *1 0,0
-Rmph_g_vss_t1 vss__t1 vss 99.3218433158
+Rmph_g_vss_t1 vss__t1 vss 473.72278182
 * device instance mph_g_vss_t2 r0 *1 0,0
-Rmph_g_vss_t2 vss__t2 vss 42.3862225375
+Rmph_g_vss_t2 vss__t2 vss 198.57575909
 * device instance mph_g_vss_t3 r0 *1 0,0
-Rmph_g_vss_t3 vss__t3 vss 48.1641581156
+Rmph_g_vss_t3 vss__t3 vss 228.933923602
 * device instance mph_g_vss_t4 r0 *1 0,0
-Rmph_g_vss_t4 vss__t4 vss 68.2816534936
+Rmph_g_vss_t4 vss__t4 vss 313.963476398
 * device instance mph_g_vss r0 *1 0,0
-Cmph_g_vss vss vsubs 1.368791e-15
+Cmph_g_vss vss vsubs 1.904864e-15
 * device instance ny_t0 r0 *1 0,0
-Rny_t0 ny__t0 ny 44.45845
+Rny_t0 ny__t0 ny 53.0227
 * device instance ny_t1 r0 *1 0,0
-Rny_t1 ny__t1 ny 44.45845
+Rny_t1 ny__t1 ny 53.0227
 * device instance ny r0 *1 0,0
-Cny ny vsubs 2.11758e-16
+Cny ny vsubs 2.33681e-16
 * device instance cc_a_mnab_y_mpa_y_mpb_y_y r0 *1 0,0
-Ccc_a_mnab_y_mpa_y_mpb_y_y a y 1.5977e-17
+Ccc_a_mnab_y_mpa_y_mpb_y_y a y 6.626e-18
 * device instance vsubs_dctie r0 *1 0,0
 Rvsubs_dctie vsubs 0 1e+12
 .ends ro_nand2_pex_wstv0p42__core
@@ -124,15 +124,15 @@ xpex a en y vddr py vss ny ro_nand2_pex_wstv0p42__core
 .subckt ro_nand2_pex_wstv0p44__core a en y vddr py vss ny
 * device instance $1 r0 *1 1.42,0.21 nfet
 Xn1 ny__t0 vddr__t0 vss__t0 vss__t2 sky130_fd_pr__nfet_01v8 L=2 W=0.44 AS=0.1848 AD=0.1848 PS=1.72 PD=1.72
-* device instance $2 r0 *1 3.785,0.21 nfet
+* device instance $2 r0 *1 4.035,0.21 nfet
 Xn2 n3__t0 en__t0 ny__t1 vss__t3 sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.2184 PS=2.62 PD=1.36
-* device instance $3 r0 *1 4.455,0.21 nfet
+* device instance $3 r0 *1 4.705,0.21 nfet
 Xn3 y__t0 a__t0 n3__t1 vss__t4 sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.2184 AD=0.3948 PS=1.36 PD=2.62
-* device instance $4 r0 *1 1.42,3.74 pfet
+* device instance $4 r0 *1 1.42,4.19 pfet
 Xn4 py__t0 vss__t1 vddr__t1 vddr__t2 sky130_fd_pr__pfet_01v8 L=2 W=0.44 AS=0.1848 AD=0.1848 PS=1.72 PD=1.72
-* device instance $5 r0 *1 3.585,3.74 pfet
+* device instance $5 r0 *1 3.585,4.19 pfet
 Xn5 y__t1 en__t1 py__t1 vddr__t3 sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
-* device instance $6 r0 *1 4.875,3.74 pfet
+* device instance $6 r0 *1 4.875,4.19 pfet
 Xn6 py__t2 a__t1 y__t2 vddr__t4 sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
 * device instance _3_t0 r0 *1 0,0
 R_3_t0 n3__t0 n3 12.8
@@ -141,37 +141,37 @@ R_3_t1 n3__t1 n3 12.8
 * device instance _3 r0 *1 0,0
 C_3 n3 vsubs 1.15618e-16
 * device instance a_t0 r0 *1 0,0
-Ra_t0 a__t0 a 175.09895
+Ra_t0 a__t0 a 249.11075
 * device instance a_t1 r0 *1 0,0
-Ra_t1 a__t1 a 175.09895
+Ra_t1 a__t1 a 249.11075
 * device instance a r0 *1 0,0
-Ca a vsubs 6.07536e-16
+Ca a vsubs 7.10913e-16
 * device instance en_t0 r0 *1 0,0
-Ren_t0 en__t0 en 166.9848
+Ren_t0 en__t0 en 259.452
 * device instance en_t1 r0 *1 0,0
-Ren_t1 en__t1 en 166.9848
+Ren_t1 en__t1 en 259.452
 * device instance en r0 *1 0,0
-Cen en vsubs 5.93421e-16
+Cen en vsubs 7.37613e-16
 * device instance mnab_y_mpa_y_mpb_y_y_t0 r0 *1 0,0
-Rmnab_y_mpa_y_mpb_y_y_t0 y__t0 y 37.5392638434
+Rmnab_y_mpa_y_mpb_y_y_t0 y__t0 y 38.3169121582
 * device instance mnab_y_mpa_y_mpb_y_y_t1 r0 *1 0,0
-Rmnab_y_mpa_y_mpb_y_y_t1 y__t1 y 21.9601317572
+Rmnab_y_mpa_y_mpb_y_y_t1 y__t1 y 22.2392528946
 * device instance mnab_y_mpa_y_mpb_y_y_t2 r0 *1 0,0
-Rmnab_y_mpa_y_mpb_y_y_t2 y__t2 y 20.8137043994
+Rmnab_y_mpa_y_mpb_y_y_t2 y__t2 y 20.2630349472
 * device instance mnab_y_mpa_y_mpb_y_y r0 *1 0,0
-Cmnab_y_mpa_y_mpb_y_y y vsubs 8.56767e-16
+Cmnab_y_mpa_y_mpb_y_y y vsubs 9.18744e-16
 * device instance mnt_g_vddr_t0 r0 *1 0,0
-Rmnt_g_vddr_t0 vddr__t0 vddr 96.791704049
+Rmnt_g_vddr_t0 vddr__t0 vddr 479.635586255
 * device instance mnt_g_vddr_t1 r0 *1 0,0
-Rmnt_g_vddr_t1 vddr__t1 vddr 42.2688726368
+Rmnt_g_vddr_t1 vddr__t1 vddr 195.644775945
 * device instance mnt_g_vddr_t2 r0 *1 0,0
-Rmnt_g_vddr_t2 vddr__t2 vddr 42.2688726368
+Rmnt_g_vddr_t2 vddr__t2 vddr 195.644775945
 * device instance mnt_g_vddr_t3 r0 *1 0,0
-Rmnt_g_vddr_t3 vddr__t3 vddr 40.0553177736
+Rmnt_g_vddr_t3 vddr__t3 vddr 186.147930325
 * device instance mnt_g_vddr_t4 r0 *1 0,0
-Rmnt_g_vddr_t4 vddr__t4 vddr 77.5606329038
+Rmnt_g_vddr_t4 vddr__t4 vddr 349.88783153
 * device instance mnt_g_vddr r0 *1 0,0
-Cmnt_g_vddr vddr vsubs 1.704624e-15
+Cmnt_g_vddr vddr vsubs 2.223376e-15
 * device instance mpa_py_mpb_py_mph_py_py_t0 r0 *1 0,0
 Rmpa_py_mpb_py_mph_py_py_t0 py__t0 py 33.9531
 * device instance mpa_py_mpb_py_mph_py_py_t1 r0 *1 0,0
@@ -181,25 +181,25 @@ Rmpa_py_mpb_py_mph_py_py_t2 py__t2 py 28.6668077402
 * device instance mpa_py_mpb_py_mph_py_py r0 *1 0,0
 Cmpa_py_mpb_py_mph_py_py py vsubs 7.95941e-16
 * device instance mph_g_vss_t0 r0 *1 0,0
-Rmph_g_vss_t0 vss__t0 vss 42.4711388085
+Rmph_g_vss_t0 vss__t0 vss 198.660188484
 * device instance mph_g_vss_t1 r0 *1 0,0
-Rmph_g_vss_t1 vss__t1 vss 99.5208240237
+Rmph_g_vss_t1 vss__t1 vss 473.924196776
 * device instance mph_g_vss_t2 r0 *1 0,0
-Rmph_g_vss_t2 vss__t2 vss 42.4711388085
+Rmph_g_vss_t2 vss__t2 vss 198.660188484
 * device instance mph_g_vss_t3 r0 *1 0,0
-Rmph_g_vss_t3 vss__t3 vss 48.2606498636
+Rmph_g_vss_t3 vss__t3 vss 229.031260521
 * device instance mph_g_vss_t4 r0 *1 0,0
-Rmph_g_vss_t4 vss__t4 vss 68.4184484956
+Rmph_g_vss_t4 vss__t4 vss 314.096965734
 * device instance mph_g_vss r0 *1 0,0
-Cmph_g_vss vss vsubs 1.369874e-15
+Cmph_g_vss vss vsubs 1.905948e-15
 * device instance ny_t0 r0 *1 0,0
-Rny_t0 ny__t0 ny 44.6445
+Rny_t0 ny__t0 ny 53.185
 * device instance ny_t1 r0 *1 0,0
-Rny_t1 ny__t1 ny 44.6445
+Rny_t1 ny__t1 ny 53.185
 * device instance ny r0 *1 0,0
-Cny ny vsubs 2.13697e-16
+Cny ny vsubs 2.3562e-16
 * device instance cc_a_mnab_y_mpa_y_mpb_y_y r0 *1 0,0
-Ccc_a_mnab_y_mpa_y_mpb_y_y a y 1.5977e-17
+Ccc_a_mnab_y_mpa_y_mpb_y_y a y 6.626e-18
 * device instance vsubs_dctie r0 *1 0,0
 Rvsubs_dctie vsubs 0 1e+12
 .ends ro_nand2_pex_wstv0p44__core
@@ -217,15 +217,15 @@ xpex a en y vddr py vss ny ro_nand2_pex_wstv0p44__core
 .subckt ro_nand2_pex_wstv0p46__core a en y vddr py vss ny
 * device instance $1 r0 *1 1.42,0.21 nfet
 Xn1 ny__t0 vddr__t0 vss__t0 vss__t2 sky130_fd_pr__nfet_01v8 L=2 W=0.46 AS=0.1932 AD=0.1932 PS=1.76 PD=1.76
-* device instance $2 r0 *1 3.785,0.21 nfet
+* device instance $2 r0 *1 4.035,0.21 nfet
 Xn2 n3__t0 en__t0 ny__t1 vss__t3 sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.2184 PS=2.62 PD=1.36
-* device instance $3 r0 *1 4.455,0.21 nfet
+* device instance $3 r0 *1 4.705,0.21 nfet
 Xn3 y__t0 a__t0 n3__t1 vss__t4 sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.2184 AD=0.3948 PS=1.36 PD=2.62
-* device instance $4 r0 *1 1.42,3.74 pfet
+* device instance $4 r0 *1 1.42,4.19 pfet
 Xn4 py__t0 vss__t1 vddr__t1 vddr__t2 sky130_fd_pr__pfet_01v8 L=2 W=0.46 AS=0.1932 AD=0.1932 PS=1.76 PD=1.76
-* device instance $5 r0 *1 3.585,3.74 pfet
+* device instance $5 r0 *1 3.585,4.19 pfet
 Xn5 y__t1 en__t1 py__t1 vddr__t3 sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
-* device instance $6 r0 *1 4.875,3.74 pfet
+* device instance $6 r0 *1 4.875,4.19 pfet
 Xn6 py__t2 a__t1 y__t2 vddr__t4 sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
 * device instance _3_t0 r0 *1 0,0
 R_3_t0 n3__t0 n3 12.8
@@ -234,37 +234,37 @@ R_3_t1 n3__t1 n3 12.8
 * device instance _3 r0 *1 0,0
 C_3 n3 vsubs 1.15618e-16
 * device instance a_t0 r0 *1 0,0
-Ra_t0 a__t0 a 175.09895
+Ra_t0 a__t0 a 249.11075
 * device instance a_t1 r0 *1 0,0
-Ra_t1 a__t1 a 175.09895
+Ra_t1 a__t1 a 249.11075
 * device instance a r0 *1 0,0
-Ca a vsubs 6.07536e-16
+Ca a vsubs 7.10913e-16
 * device instance en_t0 r0 *1 0,0
-Ren_t0 en__t0 en 166.9848
+Ren_t0 en__t0 en 259.452
 * device instance en_t1 r0 *1 0,0
-Ren_t1 en__t1 en 166.9848
+Ren_t1 en__t1 en 259.452
 * device instance en r0 *1 0,0
-Cen en vsubs 5.93421e-16
+Cen en vsubs 7.37613e-16
 * device instance mnab_y_mpa_y_mpb_y_y_t0 r0 *1 0,0
-Rmnab_y_mpa_y_mpb_y_y_t0 y__t0 y 37.5392638434
+Rmnab_y_mpa_y_mpb_y_y_t0 y__t0 y 38.3169121582
 * device instance mnab_y_mpa_y_mpb_y_y_t1 r0 *1 0,0
-Rmnab_y_mpa_y_mpb_y_y_t1 y__t1 y 21.9601317572
+Rmnab_y_mpa_y_mpb_y_y_t1 y__t1 y 22.2392528946
 * device instance mnab_y_mpa_y_mpb_y_y_t2 r0 *1 0,0
-Rmnab_y_mpa_y_mpb_y_y_t2 y__t2 y 20.8137043994
+Rmnab_y_mpa_y_mpb_y_y_t2 y__t2 y 20.2630349472
 * device instance mnab_y_mpa_y_mpb_y_y r0 *1 0,0
-Cmnab_y_mpa_y_mpb_y_y y vsubs 8.56767e-16
+Cmnab_y_mpa_y_mpb_y_y y vsubs 9.18744e-16
 * device instance mnt_g_vddr_t0 r0 *1 0,0
-Rmnt_g_vddr_t0 vddr__t0 vddr 96.9869416995
+Rmnt_g_vddr_t0 vddr__t0 vddr 479.841115986
 * device instance mnt_g_vddr_t1 r0 *1 0,0
-Rmnt_g_vddr_t1 vddr__t1 vddr 42.3541327887
+Rmnt_g_vddr_t1 vddr__t1 vddr 195.728612131
 * device instance mnt_g_vddr_t2 r0 *1 0,0
-Rmnt_g_vddr_t2 vddr__t2 vddr 42.3541327887
+Rmnt_g_vddr_t2 vddr__t2 vddr 195.728612131
 * device instance mnt_g_vddr_t3 r0 *1 0,0
-Rmnt_g_vddr_t3 vddr__t3 vddr 40.1361129844
+Rmnt_g_vddr_t3 vddr__t3 vddr 186.227696996
 * device instance mnt_g_vddr_t4 r0 *1 0,0
-Rmnt_g_vddr_t4 vddr__t4 vddr 77.7170797387
+Rmnt_g_vddr_t4 vddr__t4 vddr 350.037762757
 * device instance mnt_g_vddr r0 *1 0,0
-Cmnt_g_vddr vddr vsubs 1.705707e-15
+Cmnt_g_vddr vddr vsubs 2.224459e-15
 * device instance mpa_py_mpb_py_mph_py_py_t0 r0 *1 0,0
 Rmpa_py_mpb_py_mph_py_py_t0 py__t0 py 34.25785
 * device instance mpa_py_mpb_py_mph_py_py_t1 r0 *1 0,0
@@ -274,25 +274,25 @@ Rmpa_py_mpb_py_mph_py_py_t2 py__t2 py 28.9241100089
 * device instance mpa_py_mpb_py_mph_py_py r0 *1 0,0
 Cmpa_py_mpb_py_mph_py_py py vsubs 7.9788e-16
 * device instance mph_g_vss_t0 r0 *1 0,0
-Rmph_g_vss_t0 vss__t0 vss 42.5560550796
+Rmph_g_vss_t0 vss__t0 vss 198.744631925
 * device instance mph_g_vss_t1 r0 *1 0,0
-Rmph_g_vss_t1 vss__t1 vss 99.7198047316
+Rmph_g_vss_t1 vss__t1 vss 474.125645239
 * device instance mph_g_vss_t2 r0 *1 0,0
-Rmph_g_vss_t2 vss__t2 vss 42.5560550796
+Rmph_g_vss_t2 vss__t2 vss 198.744631925
 * device instance mph_g_vss_t3 r0 *1 0,0
-Rmph_g_vss_t3 vss__t3 vss 48.3571416117
+Rmph_g_vss_t3 vss__t3 vss 229.128613633
 * device instance mph_g_vss_t4 r0 *1 0,0
-Rmph_g_vss_t4 vss__t4 vss 68.5552434976
+Rmph_g_vss_t4 vss__t4 vss 314.230477277
 * device instance mph_g_vss r0 *1 0,0
-Cmph_g_vss vss vsubs 1.370958e-15
+Cmph_g_vss vss vsubs 1.907031e-15
 * device instance ny_t0 r0 *1 0,0
-Rny_t0 ny__t0 ny 44.8339
+Rny_t0 ny__t0 ny 53.351
 * device instance ny_t1 r0 *1 0,0
-Rny_t1 ny__t1 ny 44.8339
+Rny_t1 ny__t1 ny 53.351
 * device instance ny r0 *1 0,0
-Cny ny vsubs 2.15636e-16
+Cny ny vsubs 2.37559e-16
 * device instance cc_a_mnab_y_mpa_y_mpb_y_y r0 *1 0,0
-Ccc_a_mnab_y_mpa_y_mpb_y_y a y 1.5977e-17
+Ccc_a_mnab_y_mpa_y_mpb_y_y a y 6.626e-18
 * device instance vsubs_dctie r0 *1 0,0
 Rvsubs_dctie vsubs 0 1e+12
 .ends ro_nand2_pex_wstv0p46__core
@@ -310,15 +310,15 @@ xpex a en y vddr py vss ny ro_nand2_pex_wstv0p46__core
 .subckt ro_nand2_pex_wstv0p48__core a en y vddr py vss ny
 * device instance $1 r0 *1 1.42,0.21 nfet
 Xn1 ny__t0 vddr__t0 vss__t0 vss__t2 sky130_fd_pr__nfet_01v8 L=2 W=0.48 AS=0.2016 AD=0.2016 PS=1.8 PD=1.8
-* device instance $2 r0 *1 3.785,0.21 nfet
+* device instance $2 r0 *1 4.035,0.21 nfet
 Xn2 n3__t0 en__t0 ny__t1 vss__t3 sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.2184 PS=2.62 PD=1.36
-* device instance $3 r0 *1 4.455,0.21 nfet
+* device instance $3 r0 *1 4.705,0.21 nfet
 Xn3 y__t0 a__t0 n3__t1 vss__t4 sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.2184 AD=0.3948 PS=1.36 PD=2.62
-* device instance $4 r0 *1 1.42,3.74 pfet
+* device instance $4 r0 *1 1.42,4.19 pfet
 Xn4 py__t0 vss__t1 vddr__t1 vddr__t2 sky130_fd_pr__pfet_01v8 L=2 W=0.48 AS=0.2016 AD=0.2016 PS=1.8 PD=1.8
-* device instance $5 r0 *1 3.585,3.74 pfet
+* device instance $5 r0 *1 3.585,4.19 pfet
 Xn5 y__t1 en__t1 py__t1 vddr__t3 sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
-* device instance $6 r0 *1 4.875,3.74 pfet
+* device instance $6 r0 *1 4.875,4.19 pfet
 Xn6 py__t2 a__t1 y__t2 vddr__t4 sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
 * device instance _3_t0 r0 *1 0,0
 R_3_t0 n3__t0 n3 12.8
@@ -327,37 +327,37 @@ R_3_t1 n3__t1 n3 12.8
 * device instance _3 r0 *1 0,0
 C_3 n3 vsubs 1.15618e-16
 * device instance a_t0 r0 *1 0,0
-Ra_t0 a__t0 a 175.09895
+Ra_t0 a__t0 a 249.11075
 * device instance a_t1 r0 *1 0,0
-Ra_t1 a__t1 a 175.09895
+Ra_t1 a__t1 a 249.11075
 * device instance a r0 *1 0,0
-Ca a vsubs 6.07536e-16
+Ca a vsubs 7.10913e-16
 * device instance en_t0 r0 *1 0,0
-Ren_t0 en__t0 en 166.9848
+Ren_t0 en__t0 en 259.452
 * device instance en_t1 r0 *1 0,0
-Ren_t1 en__t1 en 166.9848
+Ren_t1 en__t1 en 259.452
 * device instance en r0 *1 0,0
-Cen en vsubs 5.93421e-16
+Cen en vsubs 7.37613e-16
 * device instance mnab_y_mpa_y_mpb_y_y_t0 r0 *1 0,0
-Rmnab_y_mpa_y_mpb_y_y_t0 y__t0 y 37.5392638434
+Rmnab_y_mpa_y_mpb_y_y_t0 y__t0 y 38.3169121582
 * device instance mnab_y_mpa_y_mpb_y_y_t1 r0 *1 0,0
-Rmnab_y_mpa_y_mpb_y_y_t1 y__t1 y 21.9601317572
+Rmnab_y_mpa_y_mpb_y_y_t1 y__t1 y 22.2392528946
 * device instance mnab_y_mpa_y_mpb_y_y_t2 r0 *1 0,0
-Rmnab_y_mpa_y_mpb_y_y_t2 y__t2 y 20.8137043994
+Rmnab_y_mpa_y_mpb_y_y_t2 y__t2 y 20.2630349472
 * device instance mnab_y_mpa_y_mpb_y_y r0 *1 0,0
-Cmnab_y_mpa_y_mpb_y_y y vsubs 8.56767e-16
+Cmnab_y_mpa_y_mpb_y_y y vsubs 9.18744e-16
 * device instance mnt_g_vddr_t0 r0 *1 0,0
-Rmnt_g_vddr_t0 vddr__t0 vddr 97.1821469724
+Rmnt_g_vddr_t0 vddr__t0 vddr 480.046645717
 * device instance mnt_g_vddr_t1 r0 *1 0,0
-Rmnt_g_vddr_t1 vddr__t1 vddr 42.4393788012
+Rmnt_g_vddr_t1 vddr__t1 vddr 195.812448316
 * device instance mnt_g_vddr_t2 r0 *1 0,0
-Rmnt_g_vddr_t2 vddr__t2 vddr 42.4393788012
+Rmnt_g_vddr_t2 vddr__t2 vddr 195.812448316
 * device instance mnt_g_vddr_t3 r0 *1 0,0
-Rmnt_g_vddr_t3 vddr__t3 vddr 40.2168947963
+Rmnt_g_vddr_t3 vddr__t3 vddr 186.307463667
 * device instance mnt_g_vddr_t4 r0 *1 0,0
-Rmnt_g_vddr_t4 vddr__t4 vddr 77.8735006289
+Rmnt_g_vddr_t4 vddr__t4 vddr 350.187693983
 * device instance mnt_g_vddr r0 *1 0,0
-Cmnt_g_vddr vddr vsubs 1.706791e-15
+Cmnt_g_vddr vddr vsubs 2.225543e-15
 * device instance mpa_py_mpb_py_mph_py_py_t0 r0 *1 0,0
 Rmpa_py_mpb_py_mph_py_py_t0 py__t0 py 34.5626
 * device instance mpa_py_mpb_py_mph_py_py_t1 r0 *1 0,0
@@ -367,25 +367,25 @@ Rmpa_py_mpb_py_mph_py_py_t2 py__t2 py 29.1814122776
 * device instance mpa_py_mpb_py_mph_py_py r0 *1 0,0
 Cmpa_py_mpb_py_mph_py_py py vsubs 7.99818e-16
 * device instance mph_g_vss_t0 r0 *1 0,0
-Rmph_g_vss_t0 vss__t0 vss 42.6409713506
+Rmph_g_vss_t0 vss__t0 vss 198.82906132
 * device instance mph_g_vss_t1 r0 *1 0,0
-Rmph_g_vss_t1 vss__t1 vss 99.9187854396
+Rmph_g_vss_t1 vss__t1 vss 474.327060195
 * device instance mph_g_vss_t2 r0 *1 0,0
-Rmph_g_vss_t2 vss__t2 vss 42.6409713506
+Rmph_g_vss_t2 vss__t2 vss 198.82906132
 * device instance mph_g_vss_t3 r0 *1 0,0
-Rmph_g_vss_t3 vss__t3 vss 48.4536333597
+Rmph_g_vss_t3 vss__t3 vss 229.225950552
 * device instance mph_g_vss_t4 r0 *1 0,0
-Rmph_g_vss_t4 vss__t4 vss 68.6920384995
+Rmph_g_vss_t4 vss__t4 vss 314.363966614
 * device instance mph_g_vss r0 *1 0,0
-Cmph_g_vss vss vsubs 1.372042e-15
+Cmph_g_vss vss vsubs 1.908115e-15
 * device instance ny_t0 r0 *1 0,0
-Rny_t0 ny__t0 ny 45.02655
+Rny_t0 ny__t0 ny 53.52065
 * device instance ny_t1 r0 *1 0,0
-Rny_t1 ny__t1 ny 45.02655
+Rny_t1 ny__t1 ny 53.52065
 * device instance ny r0 *1 0,0
-Cny ny vsubs 2.17575e-16
+Cny ny vsubs 2.39497e-16
 * device instance cc_a_mnab_y_mpa_y_mpb_y_y r0 *1 0,0
-Ccc_a_mnab_y_mpa_y_mpb_y_y a y 1.5977e-17
+Ccc_a_mnab_y_mpa_y_mpb_y_y a y 6.626e-18
 * device instance vsubs_dctie r0 *1 0,0
 Rvsubs_dctie vsubs 0 1e+12
 .ends ro_nand2_pex_wstv0p48__core
@@ -403,44 +403,44 @@ xpex a en y vddr py vss ny ro_nand2_pex_wstv0p48__core
 .subckt ro_stage_pex_wstv0p42__core a vddr vss ny py y
 * device instance $1 r0 *1 1.42,0.21 nfet
 Xn1 ny__t0 vddr__t0 vss__t0 vss__t2 sky130_fd_pr__nfet_01v8 L=2 W=0.42 AS=0.1764 AD=0.1764 PS=1.68 PD=1.68
-* device instance $2 r0 *1 3.785,0.21 nfet
+* device instance $2 r0 *1 4.025,0.21 nfet
 Xn2 y__t0 a__t0 ny__t1 vss__t3 sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
 * device instance $3 r0 *1 1.42,3.74 pfet
 Xn3 py__t0 vss__t1 vddr__t1 vddr__t2 sky130_fd_pr__pfet_01v8 L=2 W=0.42 AS=0.1764 AD=0.1764 PS=1.68 PD=1.68
 * device instance $4 r0 *1 3.585,3.74 pfet
 Xn4 y__t1 a__t1 py__t1 vddr__t3 sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
 * device instance a_t0 r0 *1 0,0
-Ra_t0 a__t0 a 174.7298
+Ra_t0 a__t0 a 250.2175
 * device instance a_t1 r0 *1 0,0
-Ra_t1 a__t1 a 174.7298
+Ra_t1 a__t1 a 250.2175
 * device instance a r0 *1 0,0
-Ca a vsubs 6.11836e-16
+Ca a vsubs 7.1569e-16
 * device instance mnt_g_vddr_t0 r0 *1 0,0
-Rmnt_g_vddr_t0 vddr__t0 vddr 122.006080691
+Rmnt_g_vddr_t0 vddr__t0 vddr 574.10147426
 * device instance mnt_g_vddr_t1 r0 *1 0,0
-Rmnt_g_vddr_t1 vddr__t1 vddr 46.7415070546
+Rmnt_g_vddr_t1 vddr__t1 vddr 219.942874626
 * device instance mnt_g_vddr_t2 r0 *1 0,0
-Rmnt_g_vddr_t2 vddr__t2 vddr 46.7415070546
+Rmnt_g_vddr_t2 vddr__t2 vddr 219.942874626
 * device instance mnt_g_vddr_t3 r0 *1 0,0
-Rmnt_g_vddr_t3 vddr__t3 vddr 83.4398051993
+Rmnt_g_vddr_t3 vddr__t3 vddr 392.627276488
 * device instance mnt_g_vddr r0 *1 0,0
-Cmnt_g_vddr vddr vsubs 1.771254e-15
+Cmnt_g_vddr vddr vsubs 2.251521e-15
 * device instance mph_g_vss_t0 r0 *1 0,0
-Rmph_g_vss_t0 vss__t0 vss 46.8219163816
+Rmph_g_vss_t0 vss__t0 vss 218.652507562
 * device instance mph_g_vss_t1 r0 *1 0,0
-Rmph_g_vss_t1 vss__t1 vss 119.570879015
+Rmph_g_vss_t1 vss__t1 vss 543.534388312
 * device instance mph_g_vss_t2 r0 *1 0,0
-Rmph_g_vss_t2 vss__t2 vss 46.8219163816
+Rmph_g_vss_t2 vss__t2 vss 218.652507562
 * device instance mph_g_vss_t3 r0 *1 0,0
-Rmph_g_vss_t3 vss__t3 vss 87.3253882221
+Rmph_g_vss_t3 vss__t3 vss 427.386896564
 * device instance mph_g_vss r0 *1 0,0
-Cmph_g_vss vss vsubs 1.368791e-15
+Cmph_g_vss vss vsubs 1.849058e-15
 * device instance ny_t0 r0 *1 0,0
-Rny_t0 ny__t0 ny 41.7022
+Rny_t0 ny__t0 ny 50.4787
 * device instance ny_t1 r0 *1 0,0
-Rny_t1 ny__t1 ny 41.7022
+Rny_t1 ny__t1 ny 50.4787
 * device instance ny r0 *1 0,0
-Cny ny vsubs 1.71044e-16
+Cny ny vsubs 1.92089e-16
 * device instance py_t0 r0 *1 0,0
 Rpy_t0 py__t0 py 37.6683
 * device instance py_t1 r0 *1 0,0
@@ -448,11 +448,11 @@ Rpy_t1 py__t1 py 37.6683
 * device instance py r0 *1 0,0
 Cpy py vsubs 1.9321e-16
 * device instance y_t0 r0 *1 0,0
-Ry_t0 y__t0 y 205.06525
+Ry_t0 y__t0 y 196.2255
 * device instance y_t1 r0 *1 0,0
-Ry_t1 y__t1 y 205.06525
+Ry_t1 y__t1 y 196.2255
 * device instance y r0 *1 0,0
-Cy y vsubs 6.03733e-16
+Cy y vsubs 5.82687e-16
 * device instance cc_mnt_g_vddr_py r0 *1 0,0
 Ccc_mnt_g_vddr_py vddr py 3.118e-18
 * device instance vsubs_dctie r0 *1 0,0
@@ -470,7 +470,7 @@ xpex a vddr vss ny py y ro_stage_pex_wstv0p42__core
 * klt extract --parasitics: 4 devices, 6 nets
 *-----------------------------------------------------------------------
 .subckt ro_stage_pex_wstv0p44__core a vddr vss ny py y
-* device instance $1 r0 *1 3.785,0.21 nfet
+* device instance $1 r0 *1 4.025,0.21 nfet
 Xn1 y__t0 a__t0 ny__t0 vss__t2 sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
 * device instance $2 r0 *1 1.42,0.21 nfet
 Xn2 ny__t1 vddr__t0 vss__t0 vss__t3 sky130_fd_pr__nfet_01v8 L=2 W=0.44 AS=0.1848 AD=0.1848 PS=1.72 PD=1.72
@@ -479,37 +479,37 @@ Xn3 py__t0 vss__t1 vddr__t1 vddr__t2 sky130_fd_pr__pfet_01v8 L=2 W=0.44 AS=0.184
 * device instance $4 r0 *1 3.585,3.74 pfet
 Xn4 y__t1 a__t1 py__t1 vddr__t3 sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
 * device instance a_t0 r0 *1 0,0
-Ra_t0 a__t0 a 174.7298
+Ra_t0 a__t0 a 250.2175
 * device instance a_t1 r0 *1 0,0
-Ra_t1 a__t1 a 174.7298
+Ra_t1 a__t1 a 250.2175
 * device instance a r0 *1 0,0
-Ca a vsubs 6.11836e-16
+Ca a vsubs 7.1569e-16
 * device instance mnt_g_vddr_t0 r0 *1 0,0
-Rmnt_g_vddr_t0 vddr__t0 vddr 122.252150797
+Rmnt_g_vddr_t0 vddr__t0 vddr 574.347544365
 * device instance mnt_g_vddr_t1 r0 *1 0,0
-Rmnt_g_vddr_t1 vddr__t1 vddr 46.8357784837
+Rmnt_g_vddr_t1 vddr__t1 vddr 220.037146055
 * device instance mnt_g_vddr_t2 r0 *1 0,0
-Rmnt_g_vddr_t2 vddr__t2 vddr 46.8357784837
+Rmnt_g_vddr_t2 vddr__t2 vddr 220.037146055
 * device instance mnt_g_vddr_t3 r0 *1 0,0
-Rmnt_g_vddr_t3 vddr__t3 vddr 83.6080922353
+Rmnt_g_vddr_t3 vddr__t3 vddr 392.795563524
 * device instance mnt_g_vddr r0 *1 0,0
-Cmnt_g_vddr vddr vsubs 1.772304e-15
+Cmnt_g_vddr vddr vsubs 2.252571e-15
 * device instance mph_g_vss_t0 r0 *1 0,0
-Rmph_g_vss_t0 vss__t0 vss 46.9157190917
+Rmph_g_vss_t0 vss__t0 vss 218.745994436
 * device instance mph_g_vss_t1 r0 *1 0,0
-Rmph_g_vss_t1 vss__t1 vss 119.810426503
+Rmph_g_vss_t1 vss__t1 vss 543.766781398
 * device instance mph_g_vss_t2 r0 *1 0,0
-Rmph_g_vss_t2 vss__t2 vss 87.5003353132
+Rmph_g_vss_t2 vss__t2 vss 427.56962973
 * device instance mph_g_vss_t3 r0 *1 0,0
-Rmph_g_vss_t3 vss__t3 vss 46.9157190917
+Rmph_g_vss_t3 vss__t3 vss 218.745994436
 * device instance mph_g_vss r0 *1 0,0
-Cmph_g_vss vss vsubs 1.369874e-15
+Cmph_g_vss vss vsubs 1.850141e-15
 * device instance ny_t0 r0 *1 0,0
-Rny_t0 ny__t0 ny 41.76295
+Rny_t0 ny__t0 ny 50.51025
 * device instance ny_t1 r0 *1 0,0
-Rny_t1 ny__t1 ny 41.76295
+Rny_t1 ny__t1 ny 50.51025
 * device instance ny r0 *1 0,0
-Cny ny vsubs 1.72982e-16
+Cny ny vsubs 1.94028e-16
 * device instance py_t0 r0 *1 0,0
 Rpy_t0 py__t0 py 37.875
 * device instance py_t1 r0 *1 0,0
@@ -517,11 +517,11 @@ Rpy_t1 py__t1 py 37.875
 * device instance py r0 *1 0,0
 Cpy py vsubs 1.95101e-16
 * device instance y_t0 r0 *1 0,0
-Ry_t0 y__t0 y 205.06525
+Ry_t0 y__t0 y 196.2255
 * device instance y_t1 r0 *1 0,0
-Ry_t1 y__t1 y 205.06525
+Ry_t1 y__t1 y 196.2255
 * device instance y r0 *1 0,0
-Cy y vsubs 6.03733e-16
+Cy y vsubs 5.82687e-16
 * device instance cc_mnt_g_vddr_py r0 *1 0,0
 Ccc_mnt_g_vddr_py vddr py 3.266e-18
 * device instance vsubs_dctie r0 *1 0,0
@@ -539,7 +539,7 @@ xpex a vddr vss ny py y ro_stage_pex_wstv0p44__core
 * klt extract --parasitics: 4 devices, 6 nets
 *-----------------------------------------------------------------------
 .subckt ro_stage_pex_wstv0p46__core a vddr vss ny py y
-* device instance $1 r0 *1 3.785,0.21 nfet
+* device instance $1 r0 *1 4.025,0.21 nfet
 Xn1 y__t0 a__t0 ny__t0 vss__t2 sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
 * device instance $2 r0 *1 1.42,0.21 nfet
 Xn2 ny__t1 vddr__t0 vss__t0 vss__t3 sky130_fd_pr__nfet_01v8 L=2 W=0.46 AS=0.1932 AD=0.1932 PS=1.76 PD=1.76
@@ -548,37 +548,37 @@ Xn3 py__t0 vss__t1 vddr__t1 vddr__t2 sky130_fd_pr__pfet_01v8 L=2 W=0.46 AS=0.193
 * device instance $4 r0 *1 3.585,3.74 pfet
 Xn4 y__t1 a__t1 py__t1 vddr__t3 sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
 * device instance a_t0 r0 *1 0,0
-Ra_t0 a__t0 a 174.7298
+Ra_t0 a__t0 a 250.2175
 * device instance a_t1 r0 *1 0,0
-Ra_t1 a__t1 a 174.7298
+Ra_t1 a__t1 a 250.2175
 * device instance a r0 *1 0,0
-Ca a vsubs 6.11836e-16
+Ca a vsubs 7.1569e-16
 * device instance mnt_g_vddr_t0 r0 *1 0,0
-Rmnt_g_vddr_t0 vddr__t0 vddr 122.498220903
+Rmnt_g_vddr_t0 vddr__t0 vddr 574.593614471
 * device instance mnt_g_vddr_t1 r0 *1 0,0
-Rmnt_g_vddr_t1 vddr__t1 vddr 46.9300499128
+Rmnt_g_vddr_t1 vddr__t1 vddr 220.131417485
 * device instance mnt_g_vddr_t2 r0 *1 0,0
-Rmnt_g_vddr_t2 vddr__t2 vddr 46.9300499128
+Rmnt_g_vddr_t2 vddr__t2 vddr 220.131417485
 * device instance mnt_g_vddr_t3 r0 *1 0,0
-Rmnt_g_vddr_t3 vddr__t3 vddr 83.7763792713
+Rmnt_g_vddr_t3 vddr__t3 vddr 392.96385056
 * device instance mnt_g_vddr r0 *1 0,0
-Cmnt_g_vddr vddr vsubs 1.773355e-15
+Cmnt_g_vddr vddr vsubs 2.253621e-15
 * device instance mph_g_vss_t0 r0 *1 0,0
-Rmph_g_vss_t0 vss__t0 vss 47.0095218017
+Rmph_g_vss_t0 vss__t0 vss 218.83948131
 * device instance mph_g_vss_t1 r0 *1 0,0
-Rmph_g_vss_t1 vss__t1 vss 120.049973992
+Rmph_g_vss_t1 vss__t1 vss 543.999174483
 * device instance mph_g_vss_t2 r0 *1 0,0
-Rmph_g_vss_t2 vss__t2 vss 87.6752824043
+Rmph_g_vss_t2 vss__t2 vss 427.752362896
 * device instance mph_g_vss_t3 r0 *1 0,0
-Rmph_g_vss_t3 vss__t3 vss 47.0095218017
+Rmph_g_vss_t3 vss__t3 vss 218.83948131
 * device instance mph_g_vss r0 *1 0,0
-Cmph_g_vss vss vsubs 1.370958e-15
+Cmph_g_vss vss vsubs 1.851225e-15
 * device instance ny_t0 r0 *1 0,0
-Rny_t0 ny__t0 ny 41.8333
+Rny_t0 ny__t0 ny 50.5516
 * device instance ny_t1 r0 *1 0,0
-Rny_t1 ny__t1 ny 41.8333
+Rny_t1 ny__t1 ny 50.5516
 * device instance ny r0 *1 0,0
-Cny ny vsubs 1.74921e-16
+Cny ny vsubs 1.95967e-16
 * device instance py_t0 r0 *1 0,0
 Rpy_t0 py__t0 py 38.0848
 * device instance py_t1 r0 *1 0,0
@@ -586,11 +586,11 @@ Rpy_t1 py__t1 py 38.0848
 * device instance py r0 *1 0,0
 Cpy py vsubs 1.96992e-16
 * device instance y_t0 r0 *1 0,0
-Ry_t0 y__t0 y 205.06525
+Ry_t0 y__t0 y 196.2255
 * device instance y_t1 r0 *1 0,0
-Ry_t1 y__t1 y 205.06525
+Ry_t1 y__t1 y 196.2255
 * device instance y r0 *1 0,0
-Cy y vsubs 6.03733e-16
+Cy y vsubs 5.82687e-16
 * device instance cc_mnt_g_vddr_py r0 *1 0,0
 Ccc_mnt_g_vddr_py vddr py 3.415e-18
 * device instance vsubs_dctie r0 *1 0,0
@@ -608,7 +608,7 @@ xpex a vddr vss ny py y ro_stage_pex_wstv0p46__core
 * klt extract --parasitics: 4 devices, 6 nets
 *-----------------------------------------------------------------------
 .subckt ro_stage_pex_wstv0p48__core a vddr vss ny py y
-* device instance $1 r0 *1 3.785,0.21 nfet
+* device instance $1 r0 *1 4.025,0.21 nfet
 Xn1 y__t0 a__t0 ny__t0 vss__t2 sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
 * device instance $2 r0 *1 1.42,0.21 nfet
 Xn2 ny__t1 vddr__t0 vss__t0 vss__t3 sky130_fd_pr__nfet_01v8 L=2 W=0.48 AS=0.2016 AD=0.2016 PS=1.8 PD=1.8
@@ -617,37 +617,37 @@ Xn3 py__t0 vss__t1 vddr__t1 vddr__t2 sky130_fd_pr__pfet_01v8 L=2 W=0.48 AS=0.201
 * device instance $4 r0 *1 3.585,3.74 pfet
 Xn4 y__t1 a__t1 py__t1 vddr__t3 sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
 * device instance a_t0 r0 *1 0,0
-Ra_t0 a__t0 a 174.7298
+Ra_t0 a__t0 a 250.2175
 * device instance a_t1 r0 *1 0,0
-Ra_t1 a__t1 a 174.7298
+Ra_t1 a__t1 a 250.2175
 * device instance a r0 *1 0,0
-Ca a vsubs 6.11836e-16
+Ca a vsubs 7.1569e-16
 * device instance mnt_g_vddr_t0 r0 *1 0,0
-Rmnt_g_vddr_t0 vddr__t0 vddr 122.744331823
+Rmnt_g_vddr_t0 vddr__t0 vddr 574.839725391
 * device instance mnt_g_vddr_t1 r0 *1 0,0
-Rmnt_g_vddr_t1 vddr__t1 vddr 47.0243369783
+Rmnt_g_vddr_t1 vddr__t1 vddr 220.22570455
 * device instance mnt_g_vddr_t2 r0 *1 0,0
-Rmnt_g_vddr_t2 vddr__t2 vddr 47.0243369783
+Rmnt_g_vddr_t2 vddr__t2 vddr 220.22570455
 * device instance mnt_g_vddr_t3 r0 *1 0,0
-Rmnt_g_vddr_t3 vddr__t3 vddr 83.9446942202
+Rmnt_g_vddr_t3 vddr__t3 vddr 393.132165509
 * device instance mnt_g_vddr r0 *1 0,0
-Cmnt_g_vddr vddr vsubs 1.774405e-15
+Cmnt_g_vddr vddr vsubs 2.254671e-15
 * device instance mph_g_vss_t0 r0 *1 0,0
-Rmph_g_vss_t0 vss__t0 vss 47.1033245117
+Rmph_g_vss_t0 vss__t0 vss 218.932968184
 * device instance mph_g_vss_t1 r0 *1 0,0
-Rmph_g_vss_t1 vss__t1 vss 120.289521481
+Rmph_g_vss_t1 vss__t1 vss 544.231567569
 * device instance mph_g_vss_t2 r0 *1 0,0
-Rmph_g_vss_t2 vss__t2 vss 87.8502294954
+Rmph_g_vss_t2 vss__t2 vss 427.935096062
 * device instance mph_g_vss_t3 r0 *1 0,0
-Rmph_g_vss_t3 vss__t3 vss 47.1033245117
+Rmph_g_vss_t3 vss__t3 vss 218.932968184
 * device instance mph_g_vss r0 *1 0,0
-Cmph_g_vss vss vsubs 1.372042e-15
+Cmph_g_vss vss vsubs 1.852308e-15
 * device instance ny_t0 r0 *1 0,0
-Rny_t0 ny__t0 ny 41.9128
+Rny_t0 ny__t0 ny 50.6022
 * device instance ny_t1 r0 *1 0,0
-Rny_t1 ny__t1 ny 41.9128
+Rny_t1 ny__t1 ny 50.6022
 * device instance ny r0 *1 0,0
-Cny ny vsubs 1.7686e-16
+Cny ny vsubs 1.97906e-16
 * device instance py_t0 r0 *1 0,0
 Rpy_t0 py__t0 py 38.29745
 * device instance py_t1 r0 *1 0,0
@@ -655,11 +655,11 @@ Rpy_t1 py__t1 py 38.29745
 * device instance py r0 *1 0,0
 Cpy py vsubs 1.98882e-16
 * device instance y_t0 r0 *1 0,0
-Ry_t0 y__t0 y 205.06525
+Ry_t0 y__t0 y 196.2255
 * device instance y_t1 r0 *1 0,0
-Ry_t1 y__t1 y 205.06525
+Ry_t1 y__t1 y 196.2255
 * device instance y r0 *1 0,0
-Cy y vsubs 6.03733e-16
+Cy y vsubs 5.82687e-16
 * device instance cc_mnt_g_vddr_py r0 *1 0,0
 Ccc_mnt_g_vddr_py vddr py 3.563e-18
 * device instance vsubs_dctie r0 *1 0,0
@@ -682,11 +682,11 @@ Xn1 y__t0 a__t0 vss__t0 vss__t1 sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 
 * device instance $2 r0 *1 0.545,3.53 pfet
 Xn2 y__t1 a__t1 vdd__t0 vdd__t1 sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
 * device instance a_t0 r0 *1 0,0
-Ra_t0 a__t0 a 159.62375
+Ra_t0 a__t0 a 226.31425
 * device instance a_t1 r0 *1 0,0
-Ra_t1 a__t1 a 159.62375
+Ra_t1 a__t1 a 226.31425
 * device instance a r0 *1 0,0
-Ca a vsubs 5.75883e-16
+Ca a vsubs 6.58692e-16
 * device instance vdd_t0 r0 *1 0,0
 Rvdd_t0 vdd__t0 vdd 98.9335
 * device instance vdd_t1 r0 *1 0,0

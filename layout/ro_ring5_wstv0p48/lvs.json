@@ -1,14 +1,23 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "engine": "klayout",
-  "layout": "ro_ring5_wstv0p48.spice",
+  "layout": {
+    "path": "layout/ro_ring5_wstv0p48/ro_ring5_wstv0p48.spice",
+    "scope": "repo"
+  },
   "reference": "ro_ring5_wstv0p48.ref.spice",
   "top": "RO_RING5_WSTV0P48",
   "reference_top": "RO_RING5",
+  "reference_conversion": {
+    "form": "subckt-call",
+    "deck": "sky130",
+    "device_map": null
+  },
   "parameter_tolerance": null,
   "options": {
     "combine_devices": false,
     "combine_devices_per_circuit": null,
+    "combine_devices_max_attempts": 5,
     "flatten_layout": false,
     "flatten_reference": true,
     "netgen_setup": null,
@@ -16,6 +25,8 @@
     "compare_parameters": null,
     "power_connectivity": null,
     "anchor_top_level_pins": null,
+    "strict_top_level_pin_count": false,
+    "compare_mos_flavour": false,
     "supply_nets": [
       "GND",
       "VCC",
@@ -23,9 +34,11 @@
       "VGND",
       "VPWR",
       "VSS"
-    ]
+    ],
+    "finfet_bulk": null
   },
   "hints_applied": null,
+  "constant_nets_applied": null,
   "status": "match",
   "power_connectivity": {
     "status": "unchecked",
@@ -75,17 +88,17 @@
     "engine": "klayout",
     "engine_version": "0.30.12",
     "netgen_binary": null,
-    "layout_sha256": "c964c3b23d0f6c266db701fcb9ce6e68b92723cce911af7280db0742752524e1",
+    "layout_sha256": "bed1aadb9686be09857d451221c69f348f9e1f30cc3b71626e6eb76deeaf6673",
     "reference_sha256": "a3da90070c4186489e50d44e240f7b74c31767f117815e55a15c2ce7a6b9f1ef",
     "extracted_netlist": null
   },
   "provenance": {
-    "klt_version": "0.6.0+g5edb557f91d0",
+    "klt_version": "0.8.0",
     "klayout_version": "0.30.12",
     "pdk": null,
     "deck": null,
     "input": {
-      "content_hash": "sha256:c964c3b23d0f6c266db701fcb9ce6e68b92723cce911af7280db0742752524e1",
+      "content_hash": "sha256:bed1aadb9686be09857d451221c69f348f9e1f30cc3b71626e6eb76deeaf6673",
       "role": "netlist"
     },
     "klayout_version_mismatch": false
@@ -152,7 +165,7 @@
       "pin": true
     },
     {
-      "layout": "\\$5",
+      "layout": "\\$3",
       "reference": "G_NM",
       "pin": false
     },
