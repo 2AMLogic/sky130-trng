@@ -5,7 +5,7 @@
   "tier": null,
   "t1_item_count": 22,
   "build_t1_item_count": 22,
-  "t1_met_count": 14,
+  "t1_met_count": 15,
   "source_doc": "signoff/design-evidence-tiers.md",
   "source_doc_content_hash": "sha256:63eeec72e3d849761cf32dcf091af5728b069b1515e32bb3138e9454303671e5",
   "build": {
@@ -25,10 +25,35 @@
       "partition": "analog",
       "text": "committed schematic sources (or generator) plus the netlist derived from them, regenerated on design change.",
       "notes": [],
-      "status": "unmet",
-      "reason": "check_failed",
+      "status": "met",
+      "reason": null,
       "graded_by_build": true,
-      "citation": null
+      "citation": {
+        "file": "signoff/attest/1.analog.json",
+        "command": null,
+        "kind": "generic",
+        "check_status": "pass",
+        "content_hash": "sha256:af994a4b2400bc354257c7e4a3dca15b7229365a1f5ed8c2645b159b713857e9",
+        "input_verified": true,
+        "exit_status": 0,
+        "artifact_binding": {
+          "t1_item": 1,
+          "path": {
+            "path": "signoff/attest/1.analog.inventory.json",
+            "scope": "repo"
+          },
+          "content_hash": "sha256:af994a4b2400bc354257c7e4a3dca15b7229365a1f5ed8c2645b159b713857e9",
+          "input_verified": true,
+          "summary": "T1 item 1 (Design sources): 29/29 attestation checks passed (klt signoff --attest)",
+          "source": "signoff/attest/1.analog.inventory.json",
+          "attestation": {
+            "producer": "klt signoff --attest",
+            "inventory_schema_version": 1,
+            "check_count": 29,
+            "passed_count": 29
+          }
+        }
+      }
     },
     {
       "tier": "T1",
@@ -580,13 +605,13 @@
         "command": null,
         "kind": "generic",
         "check_status": "pass",
-        "content_hash": "sha256:3afa743b25192a80505b90b22fbe1ee24e42ad73dd2d4d0090f071dbad248952",
+        "content_hash": "sha256:cc9c7fc3330ed50d9cb3a262f3364915e4f506fbbe4fdb4ff45fc2194b2f7d6f",
         "input_verified": true,
         "exit_status": 0,
         "artifact_binding": {
           "t1_item": 10,
           "path": "signoff/attest/10.inventory.json",
-          "content_hash": "sha256:3afa743b25192a80505b90b22fbe1ee24e42ad73dd2d4d0090f071dbad248952",
+          "content_hash": "sha256:cc9c7fc3330ed50d9cb3a262f3364915e4f506fbbe4fdb4ff45fc2194b2f7d6f",
           "input_verified": true,
           "source": "signoff/attest.py"
         }
@@ -607,13 +632,13 @@
         "command": null,
         "kind": "generic",
         "check_status": "pass",
-        "content_hash": "sha256:3afa743b25192a80505b90b22fbe1ee24e42ad73dd2d4d0090f071dbad248952",
+        "content_hash": "sha256:cc9c7fc3330ed50d9cb3a262f3364915e4f506fbbe4fdb4ff45fc2194b2f7d6f",
         "input_verified": true,
         "exit_status": 0,
         "artifact_binding": {
           "t1_item": 10,
           "path": "signoff/attest/10.inventory.json",
-          "content_hash": "sha256:3afa743b25192a80505b90b22fbe1ee24e42ad73dd2d4d0090f071dbad248952",
+          "content_hash": "sha256:cc9c7fc3330ed50d9cb3a262f3364915e4f506fbbe4fdb4ff45fc2194b2f7d6f",
           "input_verified": true,
           "source": "signoff/attest.py"
         }

@@ -1,16 +1,269 @@
 {
   "schema_version": 1,
   "kind": "generic",
+  "status": "pass",
   "t1_item": 1,
-  "status": "fail",
-  "source": "signoff/attest.py",
-  "failures": [
-    "netlist_freshness_unverified: design/sampler_core.spice is derived from design/xschem/*.sch by `design/netlist.py`, which needs xschem; the schematic->netlist diff is gated only by .github/workflows/pdk-nightly.yml (netlist-check), so no stdlib check here can establish it"
-  ],
+  "summary": "T1 item 1 (Design sources): 29/29 attestation checks passed (klt signoff --attest)",
+  "source": "signoff/attest/1.analog.inventory.json",
+  "attestation": {
+    "producer": "klt signoff --attest",
+    "inventory_schema_version": 1,
+    "hash_algorithm": "sha256-raw-bytes",
+    "check_count": 29,
+    "passed_count": 29,
+    "checks": [
+      {
+        "check": "present",
+        "role": "source",
+        "path": "design/netlist.py",
+        "passed": true,
+        "content_hash": "sha256:0e51b762d340a3f1f0201a1c76e1b91d6a9c0f2b46e1518d5504c6d02d9b8b7a"
+      },
+      {
+        "check": "present",
+        "role": "source",
+        "path": "design/pdk.json",
+        "passed": true,
+        "content_hash": "sha256:ef0cf0db1db6ff58f6126e6fc1505ece2cc339891f07997390f490720e4da06a"
+      },
+      {
+        "check": "present",
+        "role": "source",
+        "path": "design/xschem/ro_array_core.sch",
+        "passed": true,
+        "content_hash": "sha256:1d37a32538102e5de418eeb3ead1eb4eebe03a383233bdde8084f999f5089163"
+      },
+      {
+        "check": "present",
+        "role": "source",
+        "path": "design/xschem/ro_array_core.sym",
+        "passed": true,
+        "content_hash": "sha256:f50b91f1f0f59569694f70033e6068f730c1b13e07ab5c76789d4fa95bb47981"
+      },
+      {
+        "check": "present",
+        "role": "source",
+        "path": "design/xschem/ro_buf.sch",
+        "passed": true,
+        "content_hash": "sha256:7ca4cbab7fb6877a0ce6d7e3e743eba3c0b3556ce78b32876171fd715d091c5c"
+      },
+      {
+        "check": "present",
+        "role": "source",
+        "path": "design/xschem/ro_buf.sym",
+        "passed": true,
+        "content_hash": "sha256:4a73adbef70d58a1e3a69515e59793d3cc5d15df2b51f0c4fff8aa2347922b3e"
+      },
+      {
+        "check": "present",
+        "role": "source",
+        "path": "design/xschem/ro_nand2.sch",
+        "passed": true,
+        "content_hash": "sha256:9e9bee48cc009a32497a77d1faae22e3afad0931cfcfdee25adb645534012343"
+      },
+      {
+        "check": "present",
+        "role": "source",
+        "path": "design/xschem/ro_nand2.sym",
+        "passed": true,
+        "content_hash": "sha256:1eb606446f910b47ab86ee353c664fab926a221b1cf2407a8f017ee9339bd904"
+      },
+      {
+        "check": "present",
+        "role": "source",
+        "path": "design/xschem/ro_ring11.sch",
+        "passed": true,
+        "content_hash": "sha256:f3b2e31215af0cbc43ec96075552dc1c60828227ed53f7f9c61f2e2c7e09657d"
+      },
+      {
+        "check": "present",
+        "role": "source",
+        "path": "design/xschem/ro_ring11.sym",
+        "passed": true,
+        "content_hash": "sha256:70725b06010fd510696920ce82bbe2dc0c1d3add39e081facaea4f0cbf611148"
+      },
+      {
+        "check": "present",
+        "role": "source",
+        "path": "design/xschem/ro_ring5.sch",
+        "passed": true,
+        "content_hash": "sha256:ab9638d58472a434894e79be8b77a72a45c6c047cd187269d484f9a12c29f678"
+      },
+      {
+        "check": "present",
+        "role": "source",
+        "path": "design/xschem/ro_ring5.sym",
+        "passed": true,
+        "content_hash": "sha256:802157eee20249f9f4935a7e3e66570e7bb20c858696c5f6a09b3211faeabe6d"
+      },
+      {
+        "check": "present",
+        "role": "source",
+        "path": "design/xschem/ro_stage.sch",
+        "passed": true,
+        "content_hash": "sha256:586cdfa3d2c06e93baac61af7d07420b68799cd835be9b65461c1b9300ad6656"
+      },
+      {
+        "check": "present",
+        "role": "source",
+        "path": "design/xschem/ro_stage.sym",
+        "passed": true,
+        "content_hash": "sha256:d9f54da01844e6230bdcba39afd32346dffab191e98af301da848ad49d5a9f62"
+      },
+      {
+        "check": "present",
+        "role": "source",
+        "path": "design/xschem/sampler_core.sch",
+        "passed": true,
+        "content_hash": "sha256:0c30444dfe4c826e5de6fa8a91e45a75d46f134894b314880892247a17054019"
+      },
+      {
+        "check": "present",
+        "role": "source",
+        "path": "design/xschem/sampler_core.sym",
+        "passed": true,
+        "content_hash": "sha256:c92f9663bc8fd80bdcbfa0b155db53bca80f4fdc1f6e77ad4c3a0af0da783b79"
+      },
+      {
+        "check": "present",
+        "role": "source",
+        "path": "design/xschem/sampler_dff.sch",
+        "passed": true,
+        "content_hash": "sha256:9b1da1e0cdb9a4ae6ac400b26c128cddc98554e9a0d4036278716f31e5186eff"
+      },
+      {
+        "check": "present",
+        "role": "source",
+        "path": "design/xschem/sampler_dff.sym",
+        "passed": true,
+        "content_hash": "sha256:fb4f4aec6592821f2b2d32eb7d85bb73f22820bd98d971a499e2b70df3f33d85"
+      },
+      {
+        "check": "present",
+        "role": "source",
+        "path": "design/xschem/trng_top.sch",
+        "passed": true,
+        "content_hash": "sha256:78aaa0bfeeed5299b564d823cdb7d3f21411f39805e48285dac9c01d294c568c"
+      },
+      {
+        "check": "present",
+        "role": "source",
+        "path": "design/xschem/xor2.sch",
+        "passed": true,
+        "content_hash": "sha256:0746b1ca951a2d5e215298da4bd6620bd34df89844ca71320521cc440f7b6a31"
+      },
+      {
+        "check": "present",
+        "role": "source",
+        "path": "design/xschem/xor2.sym",
+        "passed": true,
+        "content_hash": "sha256:0e01f5394cfb068f6013ce31b22487c82206cd8c2c70f9d14b5cdf4e4e5b1ea8"
+      },
+      {
+        "check": "present",
+        "role": "derived",
+        "path": "design/ro_array_core.spice",
+        "passed": true,
+        "content_hash": "sha256:aed8b59124438c27a2547f40bad0d0abfdb1ade28ed53671be437bd12bd12e44"
+      },
+      {
+        "check": "present",
+        "role": "derived",
+        "path": "design/ro_ring5.spice",
+        "passed": true,
+        "content_hash": "sha256:19dccb82a3e9a1239d509a03e645954f79a857ab3b11e41a2a53faa105b58ea4"
+      },
+      {
+        "check": "present",
+        "role": "derived",
+        "path": "design/sampler_core.spice",
+        "passed": true,
+        "content_hash": "sha256:34a9af2714b7cfd71092c9733fb4007a61747b032eadcf5491ae9db811999b71"
+      },
+      {
+        "check": "present",
+        "role": "derived",
+        "path": "design/trng_top.spice",
+        "passed": true,
+        "content_hash": "sha256:3d1ecc97b757f961c5f9fa7b63555132723bc87be373e9e5c3cbd1f18bde6a3b"
+      },
+      {
+        "check": "command",
+        "role": "freshness",
+        "target": "design/ro_array_core.spice",
+        "generator": "python3 design/netlist.py",
+        "argv": [
+          "python3",
+          "design/netlist.py",
+          "--check",
+          "--top",
+          "ro_array_core"
+        ],
+        "cwd": ".",
+        "exit_status": 0,
+        "passed": true
+      },
+      {
+        "check": "command",
+        "role": "freshness",
+        "target": "design/ro_ring5.spice",
+        "generator": "python3 design/netlist.py",
+        "argv": [
+          "python3",
+          "design/netlist.py",
+          "--check",
+          "--top",
+          "ro_ring5"
+        ],
+        "cwd": ".",
+        "exit_status": 0,
+        "passed": true
+      },
+      {
+        "check": "command",
+        "role": "freshness",
+        "target": "design/sampler_core.spice",
+        "generator": "python3 design/netlist.py",
+        "argv": [
+          "python3",
+          "design/netlist.py",
+          "--check",
+          "--top",
+          "sampler_core"
+        ],
+        "cwd": ".",
+        "exit_status": 0,
+        "passed": true
+      },
+      {
+        "check": "command",
+        "role": "freshness",
+        "target": "design/trng_top.spice",
+        "generator": "python3 design/netlist.py",
+        "argv": [
+          "python3",
+          "design/netlist.py",
+          "--check",
+          "--top",
+          "trng_top"
+        ],
+        "cwd": ".",
+        "exit_status": 0,
+        "passed": true
+      }
+    ]
+  },
   "provenance": {
+    "klt_version": "0.8.0",
+    "klayout_version": null,
+    "pdk": null,
+    "deck": null,
     "input": {
-      "path": "signoff/attest/1.analog.inventory.json",
-      "content_hash": "sha256:6a8cf1b9c080dee0841229093ec30bb50030697f5c1e360af441353d72c8d152"
+      "path": {
+        "path": "signoff/attest/1.analog.inventory.json",
+        "scope": "repo"
+      },
+      "content_hash": "sha256:af994a4b2400bc354257c7e4a3dca15b7229365a1f5ed8c2645b159b713857e9"
     }
   }
 }
