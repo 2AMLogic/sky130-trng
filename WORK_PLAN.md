@@ -7,7 +7,7 @@ This roadmap is generated from the current GitHub label state.
 
 Judge-approved PRs under a hold (`loom:blocked` or `loom:operator`) — only a human merge decision is missing.
 
-- **#399**: feat: commit klt-minted 1.analog attestation and make netlist-check --check blocking
+_None._
 
 ## Very Important
 
@@ -35,7 +35,6 @@ Issues currently being built (`loom:building`).
 
 - **#221**: Decision record request: local mismatch can cap tt raw-bit H below DR-0004's 0.5 floor; adjacent rings approach 1:1
 - **#230**: CI: guard that every test_*.py is wired into a CI workflow and path filter
-- **#360**: T1 item 1 (Design sources, analog partition): attest schematic-to-netlist freshness with klt signoff --attest 1 where xschem runs
 - **#371**: Regenerate composite layout cells, trng_digital/trng_whole and pex libraries under klayout-tools 0.8.0
 - **#381**: verify-whole: adapt the whole-block harness to klayout-tools 0.8.0 VNB handling
 
@@ -50,7 +49,6 @@ _None._
 PRs that passed review and are queued for Champion auto-merge (`loom:pr`).
 
 - **#388**: fix(verify): strip klt 0.8.0 VNB from abstracted stubs, regenerate whole-block evidence
-- **#399**: feat: commit klt-minted 1.analog attestation and make netlist-check --check blocking
 
 ## Proposed
 
@@ -63,7 +61,6 @@ Issues carrying `loom:curated`.
 - **#307**: Whole-block 12-point PVT matrix: run on the klt batch fleet once the runner image matches the client (follow-up of #174) *(curated)*
 - **#314**: Re-pin open_pdks to f6eeac7 (ciel) — fleet retires volare c6d73a3 *(curated)*
 - **#347**: Adopt the common artifact store for sim evidence (manifests in git, bytes via klt artifact) *(curated)*
-- **#360**: T1 item 1 (Design sources, analog partition): attest schematic-to-netlist freshness with klt signoff --attest 1 where xschem runs *(curated)*
 - **#371**: Regenerate composite layout cells, trng_digital/trng_whole and pex libraries under klayout-tools 0.8.0 *(curated)*
 - **#381**: verify-whole: adapt the whole-block harness to klayout-tools 0.8.0 VNB handling *(curated)*
 - **#395**: Measure the whole-block klt extract on current klt with --progress (on Spot) and report to klayout-tools#4594 *(curated)*
@@ -83,14 +80,14 @@ Issues carrying `loom:curated`.
 
 | Bucket | Count |
 |------|-------|
-| Operator merge-risk holds | 1 |
+| Operator merge-risk holds | 0 |
 | Very important | 0 |
 | Important | 2 |
 | Ready (`loom:issue`) | 2 |
-| In Progress (`loom:building`) | 5 |
+| In Progress (`loom:building`) | 4 |
 | PRs awaiting review | 0 |
-| Approved PRs awaiting merge | 2 |
-| Curated | 11 |
+| Approved PRs awaiting merge | 1 |
+| Curated | 10 |
 | Architect / Hermit proposals | 3 |
 | Active epics | 2 |
 <!-- guide:plan-body:end -->
