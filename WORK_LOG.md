@@ -2,6 +2,10 @@
 
 Chronological record of recently merged pull requests and closed issues.
 
+### 2026-10-31
+
+- **PR #361**: feat(signoff): wire klt signoff --attest 1 for analog netlist freshness
+
 ### 2026-10-30
 
 - **PR #393**: docs(sim): record fleet probe of bin-fixed whole-block netlist (past parse, timeout in analysis)
