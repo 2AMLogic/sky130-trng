@@ -77,9 +77,9 @@
     "                    here pins the same hash. `attest.py --check` (CI) walks",
     "                    the inventoried files. Verdicts: 1.digital, 2.analog,",
     "                    2.digital, 9, 10 met; 1.analog (schematic->netlist",
-    "                    freshness needs xschem, gated only by pdk-nightly) is",
-    "                    cited with status `fail` and renders unmet/check_failed",
-    "                    with the reason in the envelope.",
+    "                    freshness needs xschem) is minted by `klt signoff",
+    "                    --attest 1` in pdk-nightly netlist-check and renders",
+    "                    met (issue #360).",
     "                    See signoff/README.md \"Items 1, 2, 9, 10 attestation\".",
     "                    Switch to `klt signoff --attest` once a release has it.",
     "  5.analog           no `klt sim` envelope exists -- sim/ campaigns are",
@@ -261,7 +261,7 @@
     },
     "1.analog": {
       "file": "signoff/attest/1.analog.json",
-      "content_hash": "sha256:6a8cf1b9c080dee0841229093ec30bb50030697f5c1e360af441353d72c8d152"
+      "content_hash": "sha256:af994a4b2400bc354257c7e4a3dca15b7229365a1f5ed8c2645b159b713857e9"
     },
     "1.digital": {
       "file": "signoff/attest/1.digital.json",
@@ -281,7 +281,7 @@
     },
     "10": {
       "file": "signoff/attest/10.json",
-      "content_hash": "sha256:3afa743b25192a80505b90b22fbe1ee24e42ad73dd2d4d0090f071dbad248952"
+      "content_hash": "sha256:cc9c7fc3330ed50d9cb3a262f3364915e4f506fbbe4fdb4ff45fc2194b2f7d6f"
     },
     "8.analog": {
       "file": "signoff/characterization-envelope.json"
