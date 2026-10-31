@@ -7,7 +7,7 @@ This roadmap is generated from the current GitHub label state.
 
 Judge-approved PRs under a hold (`loom:blocked` or `loom:operator`) — only a human merge decision is missing.
 
-- **#361**: feat(signoff): wire klt signoff --attest 1 for analog netlist freshness
+- **#399**: feat: commit klt-minted 1.analog attestation and make netlist-check --check blocking
 
 ## Very Important
 
@@ -49,8 +49,8 @@ _None._
 
 PRs that passed review and are queued for Champion auto-merge (`loom:pr`).
 
-- **#361**: feat(signoff): wire klt signoff --attest 1 for analog netlist freshness
 - **#388**: fix(verify): strip klt 0.8.0 VNB from abstracted stubs, regenerate whole-block evidence
+- **#399**: feat: commit klt-minted 1.analog attestation and make netlist-check --check blocking
 
 ## Proposed
 
