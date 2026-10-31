@@ -4,6 +4,7 @@ Chronological record of recently merged pull requests and closed issues.
 
 ### 2026-10-31
 
+- **PR #399**: feat: commit klt-minted 1.analog attestation and make netlist-check --check blocking
 - **PR #361**: feat(signoff): wire klt signoff --attest 1 for analog netlist freshness
 
 ### 2026-10-30
