@@ -217,6 +217,47 @@ jobs:
       - name: design/netlist.py --check
         run: python3 design/netlist.py --check
 
+      # issue #360: T1 item 1 (analog) is attested by klt, not self-declared.
+      # `klt signoff --attest` needs klayout-tools >= 0.8.0 (ci.yml's
+      # signoff-check grader is still 0.7.0, which lacks it), so it gets its
+      # own pinned install here. The inventory declares
+      # `design/netlist.py --check --top <cell>` as each derived netlist's
+      # freshness check (not `klt netlist --check`: netlist.py normalises
+      # paths and line wrapping and adds the ERC guard, so a raw re-export
+      # would not byte-match the committed .spice).
+      - name: Install the klt that provides `signoff --attest`
+        run: pip install --user "klayout-tools==0.8.0"
+
+      # Always re-attests (exit 0 pass / 3 fail: a stale netlist or ERC defect
+      # turns this red and writes nothing) and uploads the envelope. When the
+      # committed envelope is not yet a klt-minted pass, download this
+      # artifact and commit it as signoff/attest/1.analog.json, pin it in
+      # signoff/block-manifest.json and re-render signoff/t1-report.json.
+      - name: klt signoff --attest 1 (analog freshness, tool-derived)
+        run: |
+          set -euo pipefail
+          klt signoff --attest 1 \
+            --inventory signoff/attest/1.analog.inventory.json \
+            -o "$RUNNER_TEMP/1.analog.json"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: attest-1-analog
+          path: ${{ runner.temp }}/1.analog.json
+
+      # Once a klt-minted passing envelope is committed this fails on drift
+      # (exit != 0 when the committed envelope no longer reproduces).
+      - name: klt signoff --attest 1 --check (committed envelope still reproduces)
+        run: |
+          set -euo pipefail
+          if python3 -c "import json,sys; e=json.load(open('signoff/attest/1.analog.json')); sys.exit(0 if e.get('status')=='pass' and e.get('source')!='signoff/attest.py' else 1)"; then
+            klt signoff --attest 1 \
+              --inventory signoff/attest/1.analog.inventory.json \
+              --check signoff/attest/1.analog.json
+          else
+            echo "::warning::signoff/attest/1.analog.json is not yet a klt-minted pass; commit the attest-1-analog artifact (issue #360)."
+          fi
+
       # Regression fixture for the ERC wiring itself (issue #16): confirms a
       # schematic with a deliberately broken net (a lab_pin moved off its
       # net) is actually caught, not just that the current committed

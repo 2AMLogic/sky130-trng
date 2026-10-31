@@ -68,8 +68,7 @@ class AttestTest(unittest.TestCase):
         self.assertEqual(rc, 0, err)
 
     def test_negative_control_edited_inventoried_file_is_stale(self):
-        for rel, key in (("design/sampler_core.spice", "1.analog"),
-                         ("digital/rtl/trng_digital.v", "1.digital"),
+        for rel, key in (("digital/rtl/trng_digital.v", "1.digital"),
                          ("layout/sampler_core/sampler_core.gds", "2.analog")):
             with self.subTest(rel=rel):
                 p = self.tmp / rel
@@ -104,9 +103,8 @@ class AttestTest(unittest.TestCase):
         self.assertEqual(rc, 1)
         self.assertIn("block-manifest.json", err)
 
-    def test_unverifiable_analog_netlist_freshness_is_never_pass(self):
-        env = json.loads((REPO / "signoff/attest/1.analog.json").read_text())
-        self.assertEqual(env["status"], "fail")
+    def test_analog_item_1_is_not_self_attested(self):
+        self.assertNotIn("1.analog", attest.ROWS)
 
 
 if __name__ == "__main__":
