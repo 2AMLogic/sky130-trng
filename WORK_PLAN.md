@@ -26,7 +26,6 @@ _None._
 
 Human-approved issues ready for implementation (`loom:issue`).
 
-- **#307**: Whole-block 12-point PVT matrix: run on the klt batch fleet once the runner image matches the client (follow-up of #174)
 - **#314**: Re-pin open_pdks to f6eeac7 (ciel) — fleet retires volare c6d73a3
 
 ## In Progress
@@ -37,12 +36,14 @@ Issues currently being built (`loom:building`).
 - **#230**: CI: guard that every test_*.py is wired into a CI workflow and path filter
 - **#371**: Regenerate composite layout cells, trng_digital/trng_whole and pex libraries under klayout-tools 0.8.0
 - **#381**: verify-whole: adapt the whole-block harness to klayout-tools 0.8.0 VNB handling
+- **#403**: Whole-block fleet probe that finishes and reports simulated time reached (rate measurement; prerequisite of #307)
+- **#404**: Decision record: reduced-work approach for the whole-block PVT matrix (prerequisite of #307)
 
 ## PRs Awaiting Review
 
 PRs waiting on Judge (`loom:review-requested`).
 
-_None._
+- **#405**: docs(spec): DR-0017 whole-block PVT reduction via gate-level digital behind a boundary
 
 ## Approved (Awaiting Merge)
 
@@ -60,12 +61,13 @@ Issues carrying `loom:curated`.
 - **#230**: CI: guard that every test_*.py is wired into a CI workflow and path filter *(curated)*
 - **#262**: Operator decision request: end-of-life Vth-drift sensitivity vs DR-0003 Q margin and DR-0004 health cutoffs (from #254) *(curated)*
 - **#289**: Extend seeded transistor raw-bit model cross-checks beyond nominal PVT *(curated)*
-- **#307**: Whole-block 12-point PVT matrix: run on the klt batch fleet once the runner image matches the client (follow-up of #174) *(curated)*
 - **#314**: Re-pin open_pdks to f6eeac7 (ciel) — fleet retires volare c6d73a3 *(curated)*
 - **#347**: Adopt the common artifact store for sim evidence (manifests in git, bytes via klt artifact) *(curated)*
 - **#371**: Regenerate composite layout cells, trng_digital/trng_whole and pex libraries under klayout-tools 0.8.0 *(curated)*
 - **#381**: verify-whole: adapt the whole-block harness to klayout-tools 0.8.0 VNB handling *(curated)*
 - **#395**: Measure the whole-block klt extract on current klt with --progress (on Spot) and report to klayout-tools#4594 *(curated)*
+- **#403**: Whole-block fleet probe that finishes and reports simulated time reached (rate measurement; prerequisite of #307) *(curated)*
+- **#404**: Decision record: reduced-work approach for the whole-block PVT matrix (prerequisite of #307) *(curated)*
 
 ## Proposed (Architect / Hermit)
 
@@ -85,11 +87,11 @@ Issues carrying `loom:curated`.
 | Operator merge-risk holds | 0 |
 | Very important | 0 |
 | Important | 2 |
-| Ready (`loom:issue`) | 2 |
-| In Progress (`loom:building`) | 4 |
-| PRs awaiting review | 0 |
+| Ready (`loom:issue`) | 1 |
+| In Progress (`loom:building`) | 6 |
+| PRs awaiting review | 1 |
 | Approved PRs awaiting merge | 1 |
-| Curated | 12 |
+| Curated | 13 |
 | Architect / Hermit proposals | 3 |
 | Active epics | 2 |
 <!-- guide:plan-body:end -->
