@@ -155,6 +155,14 @@
   Fails closed, manifest-forward only, no history rewrite. Changes no result,
   spec value or existing record.
 
+- [`decision-records/DR-0017-whole-block-reduced-work-pvt.md`](decision-records/DR-0017-whole-block-reduced-work-pvt.md)
+  — **Proposed**. Issue #404: how the whole-block post-layout PVT campaign
+  of #174 is to be reduced. Chooses a transistor-level analog chain with the
+  digital section at gate level behind a defined boundary, rather than a
+  shorter or split transistor-level program. Leaves O5-digital and O7
+  UNMET and keeps #18 AC3 UNMET. Relaxes no ratified result, spec value or
+  existing record; runs no simulation.
+
 ### Open requests for an operator decision record (no record yet)
 
 - **End-of-life Vth-drift envelope** — issue [#262](https://github.com/2AMLogic/sky130-trng/issues/262), from
