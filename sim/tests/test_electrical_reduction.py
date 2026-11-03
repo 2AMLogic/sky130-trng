@@ -9,15 +9,15 @@ unsupported check, or a setup/hold pass into electrical success.
 from __future__ import annotations
 
 import copy
-import importlib.util
+import sys
+import os
 import unittest
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-_sp = importlib.util.spec_from_file_location(
-    "electrical", REPO_ROOT / "sim/digital-electrical-repair/analysis/electrical.py")
-e = importlib.util.module_from_spec(_sp)
-_sp.loader.exec_module(e)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from loadmod import load_module  # noqa: E402
+e = load_module("electrical", REPO_ROOT / "sim/digital-electrical-repair/analysis/electrical.py")
 
 CORNERS = [f"c{i}" for i in range(16)]
 

@@ -3,16 +3,17 @@
 
     python3 sim/tests/test_wakeup_reduction.py
 """
-import importlib.util
 import math
 import random
+import sys
+import os
 import unittest
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-_spec = importlib.util.spec_from_file_location("wakeup", REPO / "sim/wake-up-transient/wakeup.py")
-w = importlib.util.module_from_spec(_spec)
-_spec.loader.exec_module(w)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from loadmod import load_module  # noqa: E402
+w = load_module("wakeup", REPO / "sim/wake-up-transient/wakeup.py")
 
 
 def edge_train(p_final, n, first=1.0e-9, slow=0.0, tau=3.0):

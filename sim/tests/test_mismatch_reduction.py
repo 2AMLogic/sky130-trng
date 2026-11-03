@@ -5,16 +5,16 @@ Synthetic inputs only -- no simulator, no PDK, no fleet.
 
     python3 sim/tests/test_mismatch_reduction.py
 """
-import importlib.util
 import math
 import os
+import sys
 import unittest
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 _p = os.path.join(HERE, "..", "local-mismatch-monte-carlo", "reduce.py")
-_s = importlib.util.spec_from_file_location("mm_reduce", _p)
-mm = importlib.util.module_from_spec(_s)
-_s.loader.exec_module(mm)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from loadmod import load_module  # noqa: E402
+mm = load_module("mm_reduce", _p)
 
 
 class TestStats(unittest.TestCase):

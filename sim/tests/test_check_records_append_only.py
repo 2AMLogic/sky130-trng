@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 """Unit + end-to-end test for sim/bin/check_records_append_only.py (issue #232).
 Builds a throwaway git repo; stdlib only."""
-import importlib.util
 import subprocess
 import sys
 import tempfile
+import os
 import unittest
 from pathlib import Path
 
 SCRIPT = Path(__file__).resolve().parents[1] / "bin" / "check_records_append_only.py"
-spec = importlib.util.spec_from_file_location("chk", SCRIPT)
-chk = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(chk)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from loadmod import load_module  # noqa: E402
+chk = load_module("chk", SCRIPT)
 
 
 class Parse(unittest.TestCase):
