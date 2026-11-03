@@ -4,6 +4,8 @@ Chronological record of recently merged pull requests and closed issues.
 
 ### 2026-11-03
 
+- **PR #410**: refactor(tests): use shared load_module in 13 sim tests
+- **Issue #409** (closed): Use shared load_module in 16 remaining inline test loaders (follow-up to #342)
 - **PR #407**: sim: add 100 ns rate-probe variant; record that it still times out
 - **Issue #403** (closed): Whole-block fleet probe that finishes and reports simulated time reached (rate measurement; prerequisite of #307)
 
