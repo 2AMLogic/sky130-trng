@@ -3,18 +3,19 @@
 envelopes cited for T1 items 1, 2, 9, 10.  Stdlib only.  Fixture trees hold
 only the inventoried files, so no simulator, PDK or klt is needed."""
 import contextlib
-import importlib.util
 import io
 import json
 import shutil
 import tempfile
+import sys
+import os
 import unittest
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-spec = importlib.util.spec_from_file_location("attest", REPO / "signoff" / "attest.py")
-attest = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(attest)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from loadmod import load_module  # noqa: E402
+attest = load_module("attest", REPO / "signoff" / "attest.py")
 
 
 def run(root, *argv):

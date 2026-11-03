@@ -13,23 +13,22 @@ input at alpha = 0.01; short input must be INSUFFICIENT, never PASS.
 from __future__ import annotations
 
 import hashlib
-import importlib.util
 import io
 import json
 import random
 import sys
 import tempfile
+import os
 import unittest
 from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 _PATH = REPO_ROOT / "sim" / "raw-bit-min-entropy" / "analysis" / "raw-bit-battery.py"
-_spec = importlib.util.spec_from_file_location("raw_bit_battery", _PATH)
-assert _spec is not None and _spec.loader is not None
-B = importlib.util.module_from_spec(_spec)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from loadmod import load_module  # noqa: E402
 sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
-_spec.loader.exec_module(B)
+B = load_module("raw_bit_battery", _PATH)
 
 
 def ideal(n, seed=1):

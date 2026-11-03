@@ -2,17 +2,18 @@
 """Test for sim/bin/check_signoff_sim_freshness.py (issue #285).
 Builds throwaway fixture trees from the real cited record; stdlib only."""
 import gzip
-import importlib.util
 import json
 import shutil
 import tempfile
+import sys
+import os
 import unittest
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-spec = importlib.util.spec_from_file_location("chk", REPO / "sim" / "bin" / "check_signoff_sim_freshness.py")
-chk = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(chk)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from loadmod import load_module  # noqa: E402
+chk = load_module("chk", REPO / "sim" / "bin" / "check_signoff_sim_freshness.py")
 
 SLUG = "sim/digital-sdf-timed-verification"
 # Records are append-only evidence, so this one stays on disk even after the

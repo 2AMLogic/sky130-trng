@@ -16,9 +16,9 @@ campaign this module's arithmetic reduces.
 
 from __future__ import annotations
 
-import importlib.util
 import random
 import sys
+import os
 import unittest
 from pathlib import Path
 
@@ -30,11 +30,10 @@ _MODULE_PATH = (
 # The analysis script's filename has a hyphen, so it cannot be `import`ed by
 # module path -- load it explicitly, same workaround this repository's other
 # hyphenated-filename analysis scripts need if ever imported rather than run.
-_spec = importlib.util.spec_from_file_location("raw_bit_entropy", _MODULE_PATH)
-assert _spec is not None and _spec.loader is not None
-raw_bit_entropy = importlib.util.module_from_spec(_spec)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from loadmod import load_module  # noqa: E402
 sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
-_spec.loader.exec_module(raw_bit_entropy)
+raw_bit_entropy = load_module("raw_bit_entropy", _MODULE_PATH)
 
 
 VDD = 1.8

@@ -15,7 +15,6 @@ prototype.
 
 from __future__ import annotations
 
-import importlib.util
 import itertools
 import math
 import random
@@ -23,15 +22,16 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import os
 import unittest
 from decimal import Decimal
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 _PATH = REPO_ROOT / "sim" / "digital-section-behavioral" / "harness" / "health-detection-coverage.py"
-_spec = importlib.util.spec_from_file_location("health_detection_coverage", _PATH)
-H = importlib.util.module_from_spec(_spec)
-_spec.loader.exec_module(H)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from loadmod import load_module  # noqa: E402
+H = load_module("health_detection_coverage", _PATH)
 
 from model import lagcount as LC  # noqa: E402  (H put digital/ on sys.path)
 from model.params import C_APT  # noqa: E402

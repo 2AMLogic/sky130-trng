@@ -13,9 +13,9 @@ the style of ``test_digital_section.py``.
 
 from __future__ import annotations
 
-import importlib.util
 import random
 import sys
+import os
 import unittest
 from pathlib import Path
 
@@ -27,10 +27,9 @@ from model.health import HealthMonitor  # noqa: E402
 
 _PATH = (REPO_ROOT / "sim" / "digital-health-test-parameters" / "analysis"
          / "health-test-replay.py")
-_spec = importlib.util.spec_from_file_location("health_test_replay", _PATH)
-R = importlib.util.module_from_spec(_spec)
-sys.modules["health_test_replay"] = R
-_spec.loader.exec_module(R)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from loadmod import load_module  # noqa: E402
+R = load_module("health_test_replay", _PATH, register=True)
 
 
 def healthy(n: int, seed: int = 1234) -> list[int]:
