@@ -155,6 +155,16 @@ class WholeBlockReduction(unittest.TestCase):
             if mt:
                 self.assertTrue(float(mt.group(1)) <= t_stop, e["name"])
 
+    def test_rate_probe_measurements_within_stop_time(self):
+        import re
+        stop = MR.RATE_PROBE_STOP_NS
+        self.assertTrue(stop < P.T0_NS)  # no clock-dependent measurement possible
+        meas, save = MR.rate_probe_measurements(stop)
+        self.assertTrue(len(meas) > 0 and len(save) > 0)
+        for e in meas:
+            times = [float(x) for x in re.findall(r"(?:AT|TO)=([0-9.]+)n", e["spice"])]
+            self.assertTrue(times and max(times) <= stop, e["name"])
+
     def test_error_envelope_stays_unmet(self):
         tmp_path = Path(tempfile.mkdtemp(prefix="wbred-"))
         d = tmp_path / "grid-b"

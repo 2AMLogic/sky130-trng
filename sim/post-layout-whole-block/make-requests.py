@@ -11,6 +11,9 @@ Writes ``corners/<name>/{netlist.cir,request.json,plan.json}`` for two sets:
     return before the 12-point grid is submitted to the batch fleet, and
     its wall-clock is the compute-budget measurement the record cites.
 
+``--set rate-probe``
+    one short batch unit (issue #403) reporting simulated time reached.
+
 ``--set grid``
     one request per (T, Vdd) point of this repo's established four-point
     post-layout grid -- (-40 C, 1.62 V), (27 C, 1.8 V), (-40 C, 1.98 V),
@@ -126,6 +129,29 @@ def input_cards(cycles: list[dict], n_cycles: int) -> list[str]:
     return cards
 
 
+#: rate-probe (issue #403): .tran stop (ns). Rings start at 5 ns, the clock at
+#: T0_NS, so this covers DC start-up + ring oscillation only; short enough to
+#: finish inside one unit ceiling and yield a sec-per-ns figure.
+RATE_PROBE_STOP_NS = 100.0
+RATE_PROBE_FROM_NS = 20.0
+
+
+def rate_probe_measurements(t_stop: float) -> tuple[list[dict], list[str]]:
+    """Measurements for the rate probe; every one bounded by ``t_stop``."""
+    assert RATE_PROBE_FROM_NS < t_stop
+    f, t = f"{RATE_PROBE_FROM_NS:.0f}n", f"{t_stop:.0f}n"
+    meas = [{"name": f"i_{r}_probe",
+             "spice": f".meas tran i_{r}_probe AVG i(V{r}) FROM={f} TO={t}"}
+            for r in ("vdd", "vddr1", "vddr2", "vddr3", "vddr4")]
+    meas += [{"name": f"v_ring_bit{i}_end",
+              "spice": f".meas tran v_ring_bit{i}_end FIND v(ring_bit{i}) AT={t}"}
+             for i in (1, 2, 3, 4)]
+    save = ["vdd", "vss", "vddr1", "vddr2", "vddr3", "vddr4",
+            "ring_bit1", "ring_bit2", "ring_bit3", "ring_bit4"]
+    save += [f"i(V{r})" for r in ("vdd", "vss", "vddr1", "vddr2", "vddr3", "vddr4")]
+    return meas, sorted(save)
+
+
 def measurement_cards(cycles: list[dict]) -> tuple[list[dict], list[str]]:
     """The request's measurements[] entries; returns (entries, .save nets)."""
     n = len(cycles)
@@ -197,7 +223,7 @@ def measurement_cards(cycles: list[dict]) -> tuple[list[dict], list[str]]:
     return meas, sorted(save)
 
 
-def deck_body(cycles: list[dict], header: list[str]) -> str:
+def deck_body(cycles: list[dict], header: list[str], rate_probe_stop: float | None = None):
     body = ["* " + line for line in header]
     body += [
         "",
@@ -225,7 +251,8 @@ def deck_body(cycles: list[dict], header: list[str]) -> str:
     ]
     ports = _subckt_ports()
     body.append("Xw " + " ".join(ports) + " trng_whole")
-    meas, save = measurement_cards(cycles)
+    meas, save = (rate_probe_measurements(rate_probe_stop) if rate_probe_stop
+                  else measurement_cards(cycles))
     body.append("* ---- saved trace set (memory: only measured nets) ----")
     for i in range(0, len(save), 8):
         body.append(".save " + " ".join(save[i:i + 8]))
@@ -257,10 +284,11 @@ def _subckt_ports() -> list[str]:
 def make_request(name: str, outdir: Path, *, processes: list[str], temp_c: float,
                  supply: float, backend: str, analysis_args: str,
                  header: list[str], cycles: list[dict] | None = None,
-                 timeout_s: int = 1800, poll_timeout_s: int | None = None) -> None:
+                 timeout_s: int = 1800, poll_timeout_s: int | None = None,
+                 rate_probe_stop: float | None = None) -> None:
     if cycles is None:
         cycles, _ = P.build_program()
-    body, meas = deck_body(cycles, header)
+    body, meas = deck_body(cycles, header, rate_probe_stop)
     outdir.mkdir(parents=True, exist_ok=True)
     (outdir / "netlist.cir").write_text(body)
     request = {
@@ -299,11 +327,25 @@ def make_request(name: str, outdir: Path, *, processes: list[str], temp_c: float
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("reqdir", type=Path, help="output directory (usually corners/<id>)")
-    ap.add_argument("--set", dest="which", choices=("controls", "grid"), required=True)
+    ap.add_argument("--set", dest="which", choices=("controls", "grid", "rate-probe"), required=True)
     args = ap.parse_args(argv)
     reqdir: Path = args.reqdir
     if reqdir.exists() and any(reqdir.iterdir()):
         ap.error(f"{reqdir} exists and is not empty; refusing to mix sets")
+    if args.which == "rate-probe":
+        # issue #403: one short batch unit; the 970 ns probe timed out at 3480 s
+        # with zero measurements, so this one reports how far time got instead.
+        cycles, _ = P.build_program(limit=6)
+        stop = RATE_PROBE_STOP_NS
+        hdr = ["post-layout-whole-block rate-probe (issue #403)",
+               f".tran stop {stop:.0f} ns: DC start-up + rings only, before the clock",
+               "netlist body: sim/post-layout-whole-block/trng_whole.sim.spice"]
+        make_request("rate-probe-batch", reqdir / "rate-probe-batch",
+                     processes=["tt"], temp_c=27.0, supply=1.8, backend="batch",
+                     analysis_args=f"{stop:.0f}n", header=hdr, cycles=cycles,
+                     timeout_s=3480, poll_timeout_s=3700, rate_probe_stop=stop)
+        print(f"wrote {reqdir/'rate-probe-batch'}")
+        return 0
     if args.which == "controls":
         cut = 6
         cycles, phases = P.build_program(limit=cut)
