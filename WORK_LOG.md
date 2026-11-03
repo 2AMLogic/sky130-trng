@@ -2,6 +2,11 @@
 
 Chronological record of recently merged pull requests and closed issues.
 
+### 2026-11-03
+
+- **PR #407**: sim: add 100 ns rate-probe variant; record that it still times out
+- **Issue #403** (closed): Whole-block fleet probe that finishes and reports simulated time reached (rate measurement; prerequisite of #307)
+
 ### 2026-10-31
 
 - **PR #399**: feat: commit klt-minted 1.analog attestation and make netlist-check --check blocking
