@@ -49,7 +49,6 @@ from __future__ import annotations
 import argparse
 import difflib
 import gzip
-import importlib.util
 import io
 import json
 import os
@@ -63,21 +62,16 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO_ROOT / "digital"))
 sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
+sys.path.insert(0, str(REPO_ROOT / "sim" / "tests"))
+from loadmod import load_module  # noqa: E402
 
 from evidence_record import mint_behavioral_record  # noqa: E402
 
 
-def _load(path: Path, name: str):
-    spec = importlib.util.spec_from_file_location(name, path)
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    return mod
-
-
-FV = _load(REPO_ROOT / "sim" / "digital-functional-verification" / "harness"
-           / "fv-cosim.py", "fv_cosim_222")
-rtl_cosim = _load(REPO_ROOT / "sim" / "digital-rtl-equivalence" / "harness"
-                  / "rtl-cosim.py", "rtl_cosim")
+FV = load_module("fv_cosim_222", REPO_ROOT / "sim" / "digital-functional-verification" / "harness"
+           / "fv-cosim.py")
+rtl_cosim = load_module("rtl_cosim", REPO_ROOT / "sim" / "digital-rtl-equivalence" / "harness"
+                  / "rtl-cosim.py")
 sha256, rel, run_fv = FV.sha256, FV.rel, FV.run_fv
 PINS, DEFAULT_SEED = FV.PINS, FV.DEFAULT_SEED
 
