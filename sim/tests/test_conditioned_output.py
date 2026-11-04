@@ -12,21 +12,20 @@ the committed record's first stream still reproduces from the committed inputs.
 
 from __future__ import annotations
 
-import importlib.util
 import json
 import random
 import sys
+import os
 import unittest
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 _PATH = (REPO_ROOT / "sim" / "digital-conditioned-output" / "analysis"
          / "conditioned-output.py")
-_spec = importlib.util.spec_from_file_location("conditioned_output", _PATH)
-assert _spec is not None and _spec.loader is not None
-C = importlib.util.module_from_spec(_spec)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from loadmod import load_module  # noqa: E402
 sys.path.insert(0, str(REPO_ROOT))
-_spec.loader.exec_module(C)
+C = load_module("conditioned_output", _PATH)
 
 from digital.model.conditioner import Crc32Conditioner  # noqa: E402
 

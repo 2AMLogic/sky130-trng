@@ -1,0 +1,34 @@
+klt: warning: 2 installs provide PDK variant 'sky130A'; read /home/ubuntu/.ciel (search root: ~/.ciel), skipped /home/ubuntu/.volare (search root: ~/.volare). Resolution is first-match-wins, so a pinned open_pdks build may not be the one this run read -- pin the root explicitly (--pdk-root, or a request's models.pdk_root) to disable the search and choose deliberately.
+klt sim: batch job klt-sim-c290c482f586: failed
+netlist: sim/post-layout-whole-block/runs/20261103-rate-probe/corners/rate-probe-batch/netlist.cir
+status: error
+corners: 1  passed: 0  failed: 0  errored: 1  inconclusive: 0
+engine: ngspice -
+models_lib: <outside repo>
+pdk: sky130A open_pdks f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7 (via search root: ~/.ciel)
+pdk: WARNING: variant also installed under search root: ~/.volare -- resolution is first-match-wins; pin --pdk-root (or models.pdk_root) to choose deliberately
+pdk_stamp: not_comparable (client_stamp_unavailable)
+models_staged: false
+
+measurements:
+  i_vdd_probe [error]  worst=None @ tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C (margin=None)
+  i_vddr1_probe [error]  worst=None @ tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C (margin=None)
+  i_vddr2_probe [error]  worst=None @ tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C (margin=None)
+  i_vddr3_probe [error]  worst=None @ tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C (margin=None)
+  i_vddr4_probe [error]  worst=None @ tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C (margin=None)
+  v_ring_bit1_end [error]  worst=None @ tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C (margin=None)
+  v_ring_bit2_end [error]  worst=None @ tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C (margin=None)
+  v_ring_bit3_end [error]  worst=None @ tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C (margin=None)
+  v_ring_bit4_end [error]  worst=None @ tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C (margin=None)
+
+tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C  [error]  runtime=3480.667s
+    diagnostic: timeout - ngspice did not complete within 3480s, killed
+    diagnostic: measurement - measurement 'i_vdd_probe' produced no value
+    diagnostic: measurement - measurement 'i_vddr1_probe' produced no value
+    diagnostic: measurement - measurement 'i_vddr2_probe' produced no value
+    diagnostic: measurement - measurement 'i_vddr3_probe' produced no value
+    diagnostic: measurement - measurement 'i_vddr4_probe' produced no value
+    diagnostic: measurement - measurement 'v_ring_bit1_end' produced no value
+    diagnostic: measurement - measurement 'v_ring_bit2_end' produced no value
+    diagnostic: measurement - measurement 'v_ring_bit3_end' produced no value
+    diagnostic: measurement - measurement 'v_ring_bit4_end' produced no value

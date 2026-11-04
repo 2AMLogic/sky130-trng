@@ -6,10 +6,10 @@ omitted point is UNMET (incomplete coverage named), a flipped bus bit is an
 oracle mismatch, a klt error envelope / errored corner stays UNMET, and an
 absent measurement never passes.
 """
-import importlib.util
 import json
 import sys
 import tempfile
+import os
 import unittest
 from pathlib import Path
 
@@ -18,12 +18,10 @@ BLOCK = REPO / "sim" / "post-layout-whole-block"
 sys.path.insert(0, str(BLOCK))
 sys.path.insert(0, str(REPO / "sim" / "bin"))
 
-_spec = importlib.util.spec_from_file_location("reduce_wb", BLOCK / "analysis" / "reduce-whole-block.py")
-R = importlib.util.module_from_spec(_spec)
-_spec.loader.exec_module(R)
-_mr = importlib.util.spec_from_file_location("make_requests", BLOCK / "make-requests.py")
-MR = importlib.util.module_from_spec(_mr)
-_mr.loader.exec_module(MR)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from loadmod import load_module  # noqa: E402
+R = load_module("reduce_wb", BLOCK / "analysis" / "reduce-whole-block.py")
+MR = load_module("make_requests", BLOCK / "make-requests.py")
 P = R.P
 
 BITS = [(i * 7 + 3) % 5 % 2 for i in range(64)]
@@ -154,6 +152,16 @@ class WholeBlockReduction(unittest.TestCase):
             mt = re.search(r"AT=([0-9.]+)n", e["spice"])
             if mt:
                 self.assertTrue(float(mt.group(1)) <= t_stop, e["name"])
+
+    def test_rate_probe_measurements_within_stop_time(self):
+        import re
+        stop = MR.RATE_PROBE_STOP_NS
+        self.assertTrue(stop < P.T0_NS)  # no clock-dependent measurement possible
+        meas, save = MR.rate_probe_measurements(stop)
+        self.assertTrue(len(meas) > 0 and len(save) > 0)
+        for e in meas:
+            times = [float(x) for x in re.findall(r"(?:AT|TO)=([0-9.]+)n", e["spice"])]
+            self.assertTrue(times and max(times) <= stop, e["name"])
 
     def test_error_envelope_stays_unmet(self):
         tmp_path = Path(tempfile.mkdtemp(prefix="wbred-"))

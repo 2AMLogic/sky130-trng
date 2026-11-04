@@ -7,16 +7,16 @@ quiet on data that is not, independent of any SPICE run.
 
     python3 sim/tests/test_ripple_reduction.py
 """
-import importlib.util
 import math
 import os
+import sys
 import unittest
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 _p = os.path.join(HERE, "..", "ro-array-supply-perturbation", "ripple.py")
-_s = importlib.util.spec_from_file_location("ripple", _p)
-rp = importlib.util.module_from_spec(_s)
-_s.loader.exec_module(rp)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from loadmod import load_module  # noqa: E402
+rp = load_module("ripple", _p)
 
 
 def train(T, n=rp.NEDGE, t0=9e-9, mod=0.0, fmod=None):
