@@ -14,6 +14,8 @@ for most attempts (klayout-tools#2917), and the one local single-corner probe
 that the host rules allow did not finish. Nothing in this slug was computed by
 a hand-launched ngspice grid.
 
+How the whole-block work is to be reduced (analog at transistor level, digital at gate level; digital-current, IR and `Ts` rows stay UNMET): `spec/decision-records/DR-0017-whole-block-reduced-work-pvt.md` (Proposed, #404).
+
 ## What is in the slug
 
 | Path | What |
