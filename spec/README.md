@@ -159,8 +159,9 @@
   — **Proposed**. Issue #404: how the whole-block post-layout PVT campaign
   of #174 is to be reduced. Chooses a transistor-level analog chain with the
   digital section at gate level behind a defined boundary, rather than a
-  shorter or split transistor-level program. Leaves O5-digital and O7
-  UNMET and keeps #18 AC3 UNMET. Relaxes no ratified result, spec value or
+  shorter or split transistor-level program, subject to an explicit
+  feasibility gate (#403's 100 ns probe also timed out). Leaves O5d, O7 and
+  O8 UNMET and keeps #18 AC3 UNMET. Relaxes no ratified result, spec value or
   existing record; runs no simulation.
 
 ### Open requests for an operator decision record (no record yet)
