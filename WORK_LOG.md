@@ -2,6 +2,13 @@
 
 Chronological record of recently merged pull requests and closed issues.
 
+### 2026-11-04
+
+- **PR #405**: docs(spec): DR-0017 whole-block PVT reduction via gate-level digital behind a boundary
+- **Issue #404** (closed): Decision record: reduced-work approach for the whole-block PVT matrix (prerequisite of #307)
+- **PR #413**: refactor(sim): use shared load_module in five scripts instead of local _load
+- **Issue #412** (closed): Consolidate duplicated importlib _load helpers in sim scripts onto shared load_module
+
 ### 2026-11-03
 
 - **PR #410**: refactor(tests): use shared load_module in 13 sim tests
