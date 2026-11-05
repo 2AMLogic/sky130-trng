@@ -193,6 +193,87 @@ class WholeBlockReduction(unittest.TestCase):
         red = R.reduce(tmp_path, None)
         self.assertTrue(red["matrix"]["met"] == 0 and len(red["sources"]) == 1)
 
+    def _complete(self):
+        tmp_path = Path(tempfile.mkdtemp(prefix="wbred-"))
+        for t, v in R.GRID:
+            write_report(tmp_path, f"grid-{t}-{v}", [synth_corner(p, t, v) for p in R.PROCESSES])
+        return tmp_path
+
+    def test_o5d_unmet_with_clean_corner_and_oracle_match(self):
+        red = R.reduce(self._complete(), None)
+        self.assertTrue(red["matrix"]["complete"])
+        obs = {o["id"]: o for o in red["obligations"]}
+        self.assertEqual(sorted(obs), ["O1", "O2", "O3", "O4", "O5a", "O5d", "O6", "O7", "O8"])
+        for oid in ("O5d", "O7", "O8"):
+            self.assertEqual(obs[oid]["status"], "UNMET")
+        for oid in ("O1", "O2", "O3", "O4", "O5a", "O6"):
+            self.assertEqual(obs[oid]["status"], "MET")
+        self.assertIs(red["ac3_claimable"], False)
+
+    def test_power_provenance_and_level_labels(self):
+        red = R.reduce(self._complete(), None)
+        self.assertEqual(red["level"], R.LEVEL_MIXED)
+        self.assertEqual(red["provenance"], {"analog": "transistor", "digital": "gate-level"})
+        for pt in red["points"]:
+            self.assertEqual(pt["level"], R.LEVEL_MIXED)
+            pp = pt["power"]["provenance"]
+            self.assertEqual(pp["digital_dynamic_power_w_estimate"], "gate-level")
+            for k in ("i_vdd_w1", "i_vdd_w2", "i_vss_w2", "digital_delta_i_a"):
+                self.assertEqual(pp[k], "mixed")
+
+    def test_absent_provenance_makes_every_row_unmet(self):
+        red = R.reduce(self._complete(), None, provenance=None)
+        self.assertTrue(all(o["status"] == "UNMET" for o in red["obligations"]))
+        self.assertTrue(all(p["status"] == "UNMET" for p in red["points"]))
+        self.assertFalse(red["matrix"]["complete"])
+        self.assertIs(red["ac3_claimable"], False)
+        self.assertEqual(red["level"], R.LEVEL_UNLABELLED)
+
+    def test_gate_level_never_emits_unqualified_transistor_label(self):
+        red = R.reduce(self._complete(), None)
+        text = R.render(red) + json.dumps(red, default=str)
+        self.assertIn("mixed-level (analog transistor / digital gate-level), connectivity-only extract (no R/C)", text)
+        self.assertNotIn(R.LEVEL_TRANSISTOR, text)
+        self.assertNotIn("transistor-level whole-block", text)
+        self.assertNotIn("post-layout PVT", text)
+
+    def test_plan_provenance_requires_every_grid_plan(self):
+        tmp = Path(tempfile.mkdtemp(prefix="wbred-"))
+        for n, prov in (("grid-a", P.PROVENANCE), ("grid-b", P.PROVENANCE)):
+            (tmp / n).mkdir()
+            (tmp / n / "plan.json").write_text(json.dumps({"provenance": prov}))
+        self.assertEqual(R.plan_provenance(tmp), P.PROVENANCE)
+        (tmp / "grid-b" / "plan.json").write_text(json.dumps({}))
+        self.assertIsNone(R.plan_provenance(tmp))
+        self.assertIsNone(R.plan_provenance(Path(tempfile.mkdtemp(prefix="wbred-"))))
+
+    def test_boundary_signals_match_ports(self):
+        ports = json.loads((BLOCK / "trng_whole.sim.ports.json").read_text())["ports"]
+        import re
+        names = {re.sub(r"\[\d+\]$", "", p["canonical"]) for p in ports}
+        b = P.boundary_signals()
+        inter = {n for n, v in b.items() if v["dir"] == "analog->digital"}  # internal nets
+        self.assertEqual(set(b) - inter, names)
+        self.assertEqual(sum(v["width"] for n, v in b.items() if n not in inter), len(ports))
+        self.assertEqual(b["raw_bit"]["dir"], "analog->digital")
+        self.assertEqual(b["en1"]["dir"], "tb->analog")
+
+    def test_digital_stimulus_has_no_analog_sources(self):
+        cycles, _ = P.build_program()
+        st = P.digital_stimulus(cycles)
+        self.assertEqual(len(st), 75)
+        self.assertNotIn("raw_bit", st[0])
+        self.assertEqual(st[4]["t_edge_ns"], P.t_edge_ns(4))
+
+    def test_plan_hashes_and_partition_counts(self):
+        part = MR.partition_check()
+        self.assertEqual(part["analog_transistors"] + part["digital_transistors"], 25355)
+        self.assertEqual(part["analog_transistors"], 264)
+        self.assertEqual(part["diode_instances"], 1)
+        self.assertEqual(part["total_instances"], 25356)
+        self.assertEqual(len({part["flat_whole_netlist_sha256"], part["analog_partition_sha256"],
+                              part["digital_gate_netlist_sha256"]}), 3)
+
 
 if __name__ == "__main__":
     unittest.main()

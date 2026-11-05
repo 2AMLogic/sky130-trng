@@ -14,7 +14,7 @@ for most attempts (klayout-tools#2917), and the one local single-corner probe
 that the host rules allow did not finish. Nothing in this slug was computed by
 a hand-launched ngspice grid.
 
-How the whole-block work is to be reduced (analog at transistor level, digital at gate level; digital-current, IR and `Ts` rows stay UNMET): `spec/decision-records/DR-0017-whole-block-reduced-work-pvt.md` (Proposed, #404).
+How the whole-block work is to be reduced (analog at transistor level, digital at gate level; digital-current, IR and `Ts` rows stay UNMET): `spec/decision-records/DR-0017-whole-block-reduced-work-pvt.md` (Accepted 2026-11-05, #404).
 
 ## What is in the slug
 
@@ -104,3 +104,39 @@ python3 sim/post-layout-whole-block/ir/run-ir.py /tmp/wb-ir                    #
 
 `klt sim` needs **absolute** `-o`/request paths (relative `-o` makes ngspice
 never start; klayout-tools#2892/#2939).
+
+## DR-0017 option (b): provenance, partition, and what is still open (issue #431 Step 2)
+
+Level of any result produced under option (b), worded verbatim wherever it is
+reported: **mixed-level (analog transistor / digital gate-level),
+connectivity-only extract (no R/C)**. `program.PROVENANCE` carries it; every
+`plan.json` records it and the reducer writes it at matrix and point level.
+`i_vdd_*`, `i_vss_w2` and `digital_delta_i_a` are `mixed`;
+`digital_dynamic_power_w_estimate` is `gate-level`. The reducer's `obligations`
+section lists O1-O8; **O5d, O7, O8 are forced UNMET** and `ac3_claimable` is
+`false` (#18 AC3 stays UNMET). A reduction with no recorded provenance marks
+every point and every row UNMET.
+
+Partition: `make-requests.py` splits the flat `trng_whole.sim.spice.gz` extract
+at composed y = 250 um (analog macro above, digital macro below; empty band
+240-260 um) and `partition_check()` asserts, before any `plan.json` is written:
+25 356 instances = 264 analog transistors + 25 091 digital transistors + the
+antenna diode; the flat `.SUBCKT` ports equal `trng_whole.sim.ports.json`
+(123); the nets both halves touch are exactly `clk`, `rst_n`, `raw_bit`,
+`raw_valid` (+ `vdd`/`vss`). `plan.json` records `flat_whole_netlist_sha256`,
+`analog_partition_sha256` and `digital_gate_netlist_sha256` (the routed
+gate-level `layout/trng_digital/trng_digital.routed.v`). The check is a
+transistor-count and net-name correspondence, not an LVS of the gate-level
+netlist against the transistor-level digital macro.
+
+**Open (not done by this change, so nothing here is claimed for it):**
+
+* Gate-level digital co-simulation behind the boundary and its realisation in
+  ngspice, with a **measured** fleet run and simulated time reached.
+* Hence `GRID_TIMEOUT_S` / `poll_timeout_s` are **not** re-set; the 0.057 s per
+  simulated ns analog-only rate does not size the full block. If the measured
+  full-block rate exceeds the 3480 s ceiling, that is recorded as a negative
+  result for option (b).
+* Boundary-load model (DR-0017 option 1 or 2) and the Liberty deck per (T, Vdd)
+  point: not chosen yet; to be stated with their source when the co-simulation
+  is built.
