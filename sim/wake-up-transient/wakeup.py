@@ -693,7 +693,9 @@ def margin_md(rows, summ):
     L = ["## Margin statement (DR-0004 start-up window, 1024 samples = 20.48 ms at 50 kbps)", ""]
     ae, ar = summ["analog_settle_worst_en"], summ["analog_settle_worst_ramp"]
     L += [f"1. **Analog settling** (transistor, deterministic, {summ['det_units_ok']}/{summ['det_units']} units run settled in-window "
-          "(ONLY those units: the full 54-unit tt/ss/ff x -40/27/125 C x 1.62/1.8/1.98 V envelope grid needs the batch fleet; see README); records "
+          + (("(the full 54-unit tt/ss/ff x -40/27/125 C x 1.62/1.8/1.98 V envelope, both modes, run on the batch fleet, plus earlier single-corner probes); records ")
+          if summ["det_units"] >= 54 else
+          "(ONLY those units: the full 54-unit tt/ss/ff x -40/27/125 C x 1.62/1.8/1.98 V envelope grid needs the batch fleet; see README); records ")
           + ", ".join(f"`{x}`" for x in summ["det_records"]) + "):",
           f"   - enable-gated wake: every ring within 1 % of its final period by **{_ns(ae['t_s'])} ns** after the enable "
           f"(worst at {ae['pvt']['temp_c']:g} C / {ae['pvt']['vdd_v']:g} V, `{ae['record']}`) = {ae['fraction_of_one_ts'] * 100:.4f} % of one "
@@ -713,6 +715,13 @@ def margin_md(rows, summ):
         v = km[k]
         L.append(f"| <= {e:.4g} ({k}) | >= {-math.log2(0.5 + e):.4g} bit | {v['worst_corner']} | {v['worst_samples']} | "
                  + (f"{v['margin_x']:.2f}x" if v.get("margin_x") else ("-" if v["worst_samples"] is None else "inf")) + " |")
+    nz = [r for r in noisy_records() if r.get("summary", {}).get("n_units", 0) >= 32]
+    if nz:
+        L += ["", "   Transistor cross-check of that stationarity (injected-trnoise seeds from the same reset state; "
+              "Ts = 100 ns compressed; raw-bit and per-ring first-window disagreement vs the phase-diffusion model's 99 % band): "
+              + "; ".join(f"`{r['record_id']}` {r['summary']['n_units']} seeds at {r['pvt']['temp_c']:g} C / {r['pvt']['vdd_v']:g} V "
+                          f"inside band {r['summary']['xcheck_inside']}/{r['summary']['xcheck_total']}" for r in nz)
+              + ". Any row outside the band is reported in that record, not dropped."]
     worst40 = km["2^-40"]["worst_samples"]
     adequate = worst40 is not None and worst40 < STARTUP_SAMPLES
     L += ["", f"3. **DR-0004 start-up test on every simulated wake-up** ({NMC} per corner per arm, digital/model HealthMonitor): "
@@ -803,7 +812,12 @@ def _backend(mine):
 
 
 def _jobs(mine):
-    return [rs["environment"].get("remote", {}).get("job_id") for _, _, rs in mine if rs]
+    """Fleet job ids, one per shard: a sharded batch run reports `remote.fleet[]`, a single job `remote.job_id`."""
+    out = []
+    for _, _, rs in mine:
+        remote = (rs or {}).get("environment", {}).get("remote") or {}
+        out += [f["job_id"] for f in remote.get("fleet", []) if f.get("job_id")] or [remote.get("job_id")]
+    return out
 
 
 def det_build(chunks, temp, vdd):
