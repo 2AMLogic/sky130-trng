@@ -4,6 +4,7 @@ Chronological record of recently merged pull requests and closed issues.
 
 ### 2026-11-05
 
+- **PR #432**: docs(spec): accept DR-0017 with the claim-level condition (operator r6-q26)
 - **PR #429**: docs(sim): mark superseded wake-up-transient not-run paragraphs historical
 - **Issue #428** (closed): wake-up-transient README: 'What was and was not run' still says the grid is unrun
 - **PR #427**: feat(sim): wake-up transient PVT envelope and noisy transistor leg from the batch fleet
