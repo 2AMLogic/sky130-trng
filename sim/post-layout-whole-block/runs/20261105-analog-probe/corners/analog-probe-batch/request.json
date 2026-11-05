@@ -1,0 +1,85 @@
+{
+  "netlist": "netlist.cir",
+  "engine": "ngspice",
+  "backend": "batch",
+  "netlist_source": "extracted",
+  "models": {
+    "pdk": "sky130A",
+    "lib": "libs.tech/combined/sky130.lib.spice"
+  },
+  "corners": {
+    "process": [
+      "tt"
+    ],
+    "temperature_c": [
+      27.0
+    ],
+    "supply_v": {
+      "Vvdd": [
+        1.8
+      ],
+      "Vvddr1": [
+        1.8
+      ],
+      "Vvddr2": [
+        1.8
+      ],
+      "Vvddr3": [
+        1.8
+      ],
+      "Vvddr4": [
+        1.8
+      ]
+    }
+  },
+  "analysis": {
+    "kind": "tran",
+    "args": "20p 500n"
+  },
+  "measurements": [
+    {
+      "name": "i_vdd_probe",
+      "spice": ".meas tran i_vdd_probe AVG i(Vvdd) FROM=20n TO=500n"
+    },
+    {
+      "name": "i_vddr1_probe",
+      "spice": ".meas tran i_vddr1_probe AVG i(Vvddr1) FROM=20n TO=500n"
+    },
+    {
+      "name": "i_vddr2_probe",
+      "spice": ".meas tran i_vddr2_probe AVG i(Vvddr2) FROM=20n TO=500n"
+    },
+    {
+      "name": "i_vddr3_probe",
+      "spice": ".meas tran i_vddr3_probe AVG i(Vvddr3) FROM=20n TO=500n"
+    },
+    {
+      "name": "i_vddr4_probe",
+      "spice": ".meas tran i_vddr4_probe AVG i(Vvddr4) FROM=20n TO=500n"
+    },
+    {
+      "name": "v_ring_bit1_end",
+      "spice": ".meas tran v_ring_bit1_end FIND v(ring_bit1) AT=500n"
+    },
+    {
+      "name": "v_ring_bit2_end",
+      "spice": ".meas tran v_ring_bit2_end FIND v(ring_bit2) AT=500n"
+    },
+    {
+      "name": "v_ring_bit3_end",
+      "spice": ".meas tran v_ring_bit3_end FIND v(ring_bit3) AT=500n"
+    },
+    {
+      "name": "v_ring_bit4_end",
+      "spice": ".meas tran v_ring_bit4_end FIND v(ring_bit4) AT=500n"
+    }
+  ],
+  "options": {
+    "timeout_s": 3480,
+    "keep_artifacts": true,
+    "save_mode": "netlist"
+  },
+  "batch": {
+    "poll_timeout_s": 3700
+  }
+}

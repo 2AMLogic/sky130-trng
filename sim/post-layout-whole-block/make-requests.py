@@ -41,6 +41,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 import shutil
 import sys
 from pathlib import Path
@@ -82,6 +83,61 @@ def _netlist_text() -> str:
         return NETLIST_BODY.read_text()
     import gzip
     return gzip.decompress(NETLIST_GZ.read_bytes()).decode()
+
+
+#: analog-chain probe (issue #431): the extract's device comments carry the
+#: composed-frame (x, y) um; the analog macro (sampler_core) is placed at
+#: origin y = 268.64 and the digital macro occupies y < 250 (the device-y
+#: histogram has an empty band 240-260 um), so a y cut separates them.
+ANALOG_Y_MIN_UM = 250.0
+_DEV_RE = re.compile(r"^\* device instance \S+ \S+ \*1 ([-\d.]+),([-\d.]+) ")
+
+
+def analog_netlist_text() -> str:
+    """The flat netlist with only the analog-macro devices (digital absent).
+
+    Digital pins (raw_bit/raw_valid sinks, buses) are left unloaded -- the
+    boundary is open, which is the 'absent' option of DR-0017's feasibility
+    gate. Header, ports and net names are unchanged.
+    """
+    lines = _netlist_text().splitlines()
+    out: list[str] = []
+    keep = True
+    in_header = True
+    rename = _cluster_to_port()
+    for ln in lines:
+        if ln.startswith("* device instance"):
+            in_header = False
+            m = _DEV_RE.match(ln)
+            assert m, ln
+            keep = float(m.group(2)) >= ANALOG_Y_MIN_UM
+        elif ln.upper().startswith(".ENDS"):
+            keep = True
+        if keep:
+            if not in_header and not ln.startswith("*"):
+                ln = re.sub(r"\S+", lambda m: rename.get(m.group(0), m.group(0)), ln)
+            out.append(ln)
+    return "\n".join(out) + "\n"
+
+
+def _scrub(name: str) -> str:
+    """The make-netlist.py token transforms ($ -> z, name[i] -> name_i_)."""
+    return re.sub(r"\b([A-Za-z_][A-Za-z0-9_]*)\[(\d+)\]", r"\1_\2_", name.replace("$", "z"))
+
+
+def _cluster_to_port() -> dict[str, str]:
+    """Body net token -> canonical port name, from trng_whole.sim.ports.json.
+
+    The committed netlist's ``.SUBCKT`` header carries the canonical port
+    names but its body still uses the extractor's cluster names (transform 1
+    of make-netlist.py renames the header only), so as committed no port
+    (supply, clock, enable) reaches any device. The analog probe cannot run
+    that way (singular matrix at the first floating enable net), so it
+    applies the rename here, at request assembly, without touching the
+    committed body (re-pinning it is a separate change).
+    """
+    ports = json.loads((HERE / "trng_whole.sim.ports.json").read_text())["ports"]
+    return {_scrub(p["cluster"]): _scrub(p["canonical"]) for p in ports}
 
 
 def fmt(v: float) -> str:
@@ -134,6 +190,8 @@ def input_cards(cycles: list[dict], n_cycles: int) -> list[str]:
 #: finish inside one unit ceiling and yield a sec-per-ns figure.
 RATE_PROBE_STOP_NS = 100.0
 RATE_PROBE_FROM_NS = 20.0
+#: analog-chain probe (issue #431): rings from 5 ns, clock from T0_NS (320 ns).
+ANALOG_PROBE_STOP_NS = 500.0
 
 
 def rate_probe_measurements(t_stop: float) -> tuple[list[dict], list[str]]:
@@ -223,13 +281,14 @@ def measurement_cards(cycles: list[dict]) -> tuple[list[dict], list[str]]:
     return meas, sorted(save)
 
 
-def deck_body(cycles: list[dict], header: list[str], rate_probe_stop: float | None = None):
+def deck_body(cycles: list[dict], header: list[str], rate_probe_stop: float | None = None,
+              analog_only: bool = False):
     body = ["* " + line for line in header]
     body += [
         "",
         ".option scale=1u",
         "",
-        *_netlist_text().splitlines(),
+        *(analog_netlist_text() if analog_only else _netlist_text()).splitlines(),
         "",
         "* ---- supplies (corners.supply_v alters the named sources) ----",
         "Vvdd vdd 0 dc 1.8",
@@ -285,10 +344,11 @@ def make_request(name: str, outdir: Path, *, processes: list[str], temp_c: float
                  supply: float, backend: str, analysis_args: str,
                  header: list[str], cycles: list[dict] | None = None,
                  timeout_s: int = 1800, poll_timeout_s: int | None = None,
-                 rate_probe_stop: float | None = None) -> None:
+                 rate_probe_stop: float | None = None,
+                 analog_only: bool = False) -> None:
     if cycles is None:
         cycles, _ = P.build_program()
-    body, meas = deck_body(cycles, header, rate_probe_stop)
+    body, meas = deck_body(cycles, header, rate_probe_stop, analog_only)
     outdir.mkdir(parents=True, exist_ok=True)
     (outdir / "netlist.cir").write_text(body)
     request = {
@@ -327,11 +387,26 @@ def make_request(name: str, outdir: Path, *, processes: list[str], temp_c: float
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("reqdir", type=Path, help="output directory (usually corners/<id>)")
-    ap.add_argument("--set", dest="which", choices=("controls", "grid", "rate-probe"), required=True)
+    ap.add_argument("--set", dest="which", choices=("controls", "grid", "rate-probe", "analog-probe"), required=True)
     args = ap.parse_args(argv)
     reqdir: Path = args.reqdir
     if reqdir.exists() and any(reqdir.iterdir()):
         ap.error(f"{reqdir} exists and is not empty; refusing to mix sets")
+    if args.which == "analog-probe":
+        # issue #431 Step 1 (DR-0017 feasibility gate): analog chain only
+        # (rings + sampler, 264 transistors), digital absent; one batch unit.
+        cycles, _ = P.build_program(limit=6)
+        stop = ANALOG_PROBE_STOP_NS
+        hdr = ["post-layout-whole-block analog-chain probe (issue #431)",
+               f".tran stop {stop:.0f} ns: rings + sampler transistor-level, digital absent",
+               f"devices with composed y >= {ANALOG_Y_MIN_UM:.0f} um only"]
+        make_request("analog-probe-batch", reqdir / "analog-probe-batch",
+                     processes=["tt"], temp_c=27.0, supply=1.8, backend="batch",
+                     analysis_args=f"{stop:.0f}n", header=hdr, cycles=cycles,
+                     timeout_s=3480, poll_timeout_s=3700, rate_probe_stop=stop,
+                     analog_only=True)
+        print(f"wrote {reqdir/'analog-probe-batch'}")
+        return 0
     if args.which == "rate-probe":
         # issue #403: one short batch unit; the 970 ns probe timed out at 3480 s
         # with zero measurements, so this one reports how far time got instead.
