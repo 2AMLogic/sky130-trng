@@ -139,5 +139,29 @@ class StartupTest(unittest.TestCase):
         self.assertIsNone(r["first_trip_index"])
 
 
+class BatchSharding(unittest.TestCase):
+    """Every generated request must stay under the fleet's whole-job ceiling (issue #216)."""
+
+    @classmethod
+    def setUpClass(cls):
+        import json
+        import subprocess
+        import tempfile
+        cls.reqs = {}
+        with tempfile.TemporaryDirectory() as d:
+            subprocess.run([sys.executable, "-I", str(REPO / "sim/wake-up-transient/make-requests.py"), d],
+                           check=True, capture_output=True)
+            for name in os.listdir(d):
+                cls.reqs[name] = json.load(open(os.path.join(d, name, "request.json")))
+
+    def test_job_bound_under_ceiling(self):
+        self.assertTrue(self.reqs)
+        for name, r in self.reqs.items():
+            b = r["batch"]
+            # klt sim_batch bound = per-job overhead (120 s) + units x per-unit timeout
+            self.assertLessEqual(120 + b["max_units_per_job"] * r["options"]["timeout_s"], 3600, name)
+            self.assertLessEqual(b["max_concurrent_jobs"], 4, name)
+
+
 if __name__ == "__main__":
     unittest.main()
