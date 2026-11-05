@@ -26,6 +26,9 @@ re-emitted as `20261105-102351-49aec1a`. Earlier records are kept unedited as ap
 
 ## What was and was not run
 
+This section is history. The Status line above is current; paragraphs below that say a leg was not run are
+marked historical and are superseded by records `20261105-101845..101912-49aec1a`.
+
 Run (local single-unit debug probes, `--backend local`, ngspice 46):
 
 - `20261009-093152-e57ad27` det, ss / -40 C / 1.62 V, enable-gated and supply-ramp: all four rings oscillate; within 1 % of
@@ -36,13 +39,13 @@ Run (local single-unit debug probes, `--backend local`, ngspice 46):
   started from the stopped state, 1024 wake-ups per corner per arm, deterministic vs stationary start, DR-0004
   start-up test run on every wake-up) at all 18 calibrated points (tt/ss/ff x the base and hot PVT points).
 
-NOT run: the 54-unit deterministic envelope (tt/ss/ff x -40/27/125 C x 1.62/1.8/1.98 V, both modes) and the
+**Historical (as of 2026-10-09; superseded by the Status line above and records `20261105-101845..101912-49aec1a`):** NOT run: the 54-unit deterministic envelope (tt/ss/ff x -40/27/125 C x 1.62/1.8/1.98 V, both modes) and the
 transistor noisy leg (32 seeds x 3 PVT points + a noise-off control) - the "first-window vs steady-state bias
 from transistor seeds" acceptance item is therefore **not met** here. Cause: every `klt sim` submit to the batch
 fleet failed - first with `8 instance(s) already running + 1 requested exceeds BATCH_MAX_CONCURRENT_INSTANCES=8`
 (`batch.capacity_wait_s` was not honoured), and, once an instance was obtained, with
 `batch_runner_version_mismatch` (runner klt 0.5.0, client 0.7.0; klt 0.5.0 has no `batch` backend, so no client matches).
-Per the worker rules the grid was not run locally. Re-run when the fleet works:
+Per the worker rules the grid was not run locally. Historical re-run instructions (as of 2026-10-09, written when the fleet did not work; the grid has since run on the fleet, see Status above) - the commands remain valid for re-emitting records:
 
 ```bash
 python3 sim/wake-up-transient/make-requests.py REQDIR
@@ -52,13 +55,13 @@ python3 sim/wake-up-transient/wakeup.py --emit-margin     # new record; earlier 
 python3 sim/wake-up-transient/wakeup.py --check sim/wake-up-transient/records/<id>.json
 ```
 
-**Update 2026-11-05 (batch probe, issue #216).** `make-requests.py` now sets `batch.max_units_per_job = 1` and
+**Historical update, early 2026-11-05 (batch probe, issue #216; superseded by the Status line above and records `20261105-101845..101912-49aec1a`).** `make-requests.py` now sets `batch.max_units_per_job = 1` and
 `batch.max_concurrent_jobs = 4` (the `remote.hosts` field is implemented for local backends only), so every job's bound
 is klt's 120 s per-job overhead plus one unit's `timeout_s` (det 3000 s -> 3120 s, noisy 3400 s -> 3520 s), under the fleet's 3600 s ceiling; the generator
 refuses any request above it. One-unit probe (`det-en-ss-probe`, ss / -40 C / 1.62 V, `KLT_SIM_BACKEND=batch`) on the
 klt 0.9.0 runner (AMI `ami-04591566329422a44`): job `klt-sim-e7e4fa4569fe` started, finished in 24 s, `runner_compatibility: match`,
 unit `pass`, and `environment.remote` is populated in the report. The 54-unit deterministic envelope and the transistor
-noisy leg are **still unrun**; the probe is not a margin result and no record was emitted from it.
+noisy leg were still unrun at the time of this probe; the probe is not a margin result and no record was emitted from it.
 
 ## Margin statement vs DR-0004's 1024-sample start-up window
 
