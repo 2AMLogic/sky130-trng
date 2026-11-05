@@ -163,5 +163,12 @@ class BatchSharding(unittest.TestCase):
             self.assertLessEqual(b["max_concurrent_jobs"], 4, name)
 
 
+class JobIds(unittest.TestCase):
+    def test_sharded_fleet_and_single_job(self):
+        sharded = ("a", {}, {"environment": {"remote": {"fleet": [{"job_id": "j1"}, {"job_id": "j2"}]}}})
+        single = ("b", {}, {"environment": {"remote": {"job_id": "j3"}}})
+        self.assertEqual(w._jobs([sharded, single]), ["j1", "j2", "j3"])
+
+
 if __name__ == "__main__":
     unittest.main()
