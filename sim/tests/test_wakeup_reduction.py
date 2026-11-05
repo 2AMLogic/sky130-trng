@@ -158,7 +158,8 @@ class BatchSharding(unittest.TestCase):
         self.assertTrue(self.reqs)
         for name, r in self.reqs.items():
             b = r["batch"]
-            self.assertLessEqual(b["max_units_per_job"] * r["options"]["timeout_s"], 3600, name)
+            # klt sim_batch bound = per-job overhead (120 s) + units x per-unit timeout
+            self.assertLessEqual(120 + b["max_units_per_job"] * r["options"]["timeout_s"], 3600, name)
             self.assertLessEqual(b["max_concurrent_jobs"], 4, name)
 
 

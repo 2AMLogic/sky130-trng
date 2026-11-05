@@ -87,13 +87,15 @@ MC_SEED = 216
 # The fleet kills any job whose bound (units-per-job x options.timeout_s) exceeds FLEET_CEILING_S, and
 # klt warned that the unsharded 9-unit request bound 27120 s. `klt sim --backend batch` shards via
 # `batch.max_units_per_job` (the `remote.hosts` field is implemented for local backends only), so every
-# unit is its own job: bound == timeout_s. MAX_CONCURRENT_JOBS stays well under BATCH_MAX_CONCURRENT_INSTANCES=8
+# unit is its own job: bound == BATCH_JOB_OVERHEAD_S + timeout_s (klt's sim_batch adds a fixed per-job overhead
+# and rejects a job whose bound is above the ceiling). MAX_CONCURRENT_JOBS stays well under BATCH_MAX_CONCURRENT_INSTANCES=8
 # so other sweeps keep capacity.
 FLEET_CEILING_S = 3600
+BATCH_JOB_OVERHEAD_S = 120  # klt sim_batch._BATCH_JOB_OVERHEAD_S (klt 0.9.1.dev18)
 MAX_UNITS_PER_JOB = 1
 MAX_CONCURRENT_JOBS = 4
 TIMEOUT_DET_S = 3000
-TIMEOUT_NOISY_S = 3500
+TIMEOUT_NOISY_S = 3400  # bound 3520 s; 3500 would give 3620 s > ceiling once overhead is added
 
 
 def batch_block():
@@ -102,8 +104,8 @@ def batch_block():
 
 
 def job_bound_s(req):
-    """Worst-case wall time of one batch job of `req` (units per job x per-unit timeout)."""
-    return MAX_UNITS_PER_JOB * req["options"]["timeout_s"]
+    """Worst-case wall time of one batch job of `req` (klt per-job overhead + units per job x per-unit timeout)."""
+    return BATCH_JOB_OVERHEAD_S + MAX_UNITS_PER_JOB * req["options"]["timeout_s"]
 
 
 def det_meas(anchor):
