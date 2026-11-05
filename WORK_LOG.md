@@ -4,6 +4,11 @@ Chronological record of recently merged pull requests and closed issues.
 
 ### 2026-11-05
 
+- **PR #424**: feat(sim): shard wake-up batch requests under the fleet job ceiling
+- **PR #423**: fix(sim): emit pw2nd diode as PDK subckt, scan all card models, re-pin netlist
+- **PR #420**: fix(sim): make whole-block $-scrub guard linear and collision-only, re-pin netlist
+- **Issue #422** (closed): Assess whether results citing old whole-block netlist hash bd694f2f need re-running after #420 re-pin
+- **Issue #419** (closed): make-netlist.py --check: quadratic and false-positive $-scrub collision guard
 - **PR #418**: docs: record whole-block klt extract rerun on Spot with stage timings
 - **Issue #417** (closed): Bump klayout-tools pin 0.3.0 → 0.8.0
 - **Issue #395** (closed): Measure the whole-block klt extract on current klt with --progress (on Spot) and report to klayout-tools#4594
