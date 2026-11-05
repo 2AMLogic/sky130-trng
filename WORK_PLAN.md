@@ -26,7 +26,6 @@ _None._
 
 Human-approved issues ready for implementation (`loom:issue`).
 
-- **#307**: Whole-block 12-point PVT matrix: run on the klt batch fleet once the runner image matches the client (follow-up of #174)
 - **#314**: Re-pin open_pdks to f6eeac7 (ciel) — fleet retires volare c6d73a3
 
 ## In Progress
@@ -84,7 +83,7 @@ Issues carrying `loom:curated`.
 | Operator merge-risk holds | 0 |
 | Very important | 0 |
 | Important | 2 |
-| Ready (`loom:issue`) | 2 |
+| Ready (`loom:issue`) | 1 |
 | In Progress (`loom:building`) | 4 |
 | PRs awaiting review | 0 |
 | Approved PRs awaiting merge | 1 |
