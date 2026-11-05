@@ -163,6 +163,18 @@ class WholeBlockReduction(unittest.TestCase):
             times = [float(x) for x in re.findall(r"(?:AT|TO)=([0-9.]+)n", e["spice"])]
             self.assertTrue(times and max(times) <= stop, e["name"])
 
+    def test_analog_probe_netlist_partition(self):
+        text = MR.analog_netlist_text()
+        self.assertEqual(text.count("sky130_fd_pr__"), 264)
+        # every port reaches the body under its canonical name (the committed
+        # body still uses cluster names; the probe applies the rename)
+        for port in ("en2", "vddr3", "vdd", "vss", "clk", "ring_bit1"):
+            self.assertRegex(text.split("* device instance", 1)[1], r"(?<!\S)%s(?!\S)" % port)
+        self.assertNotIn("en|en2|g_en", text)
+
+    def test_analog_probe_stop_covers_clock(self):
+        self.assertTrue(MR.ANALOG_PROBE_STOP_NS > P.T0_NS)
+
     def test_error_envelope_stays_unmet(self):
         tmp_path = Path(tempfile.mkdtemp(prefix="wbred-"))
         d = tmp_path / "grid-b"

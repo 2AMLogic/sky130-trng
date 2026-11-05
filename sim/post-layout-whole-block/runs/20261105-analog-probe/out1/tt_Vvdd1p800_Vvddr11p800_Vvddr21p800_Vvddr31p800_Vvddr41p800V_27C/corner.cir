@@ -1,0 +1,23 @@
+* klt sim -- generated corner deck, do not edit
+.lib /opt/pdk/sky130A/libs.tech/combined/sky130.lib.spice tt
+.include /var/tmp/eda-job-klt-sim-52ede9c6e92b/inputs/netlist.cir
+.temp 27.0
+.meas tran i_vdd_probe AVG i(Vvdd) FROM=20n TO=500n
+.meas tran i_vddr1_probe AVG i(Vvddr1) FROM=20n TO=500n
+.meas tran i_vddr2_probe AVG i(Vvddr2) FROM=20n TO=500n
+.meas tran i_vddr3_probe AVG i(Vvddr3) FROM=20n TO=500n
+.meas tran i_vddr4_probe AVG i(Vvddr4) FROM=20n TO=500n
+.meas tran v_ring_bit1_end FIND v(ring_bit1) AT=500n
+.meas tran v_ring_bit2_end FIND v(ring_bit2) AT=500n
+.meas tran v_ring_bit3_end FIND v(ring_bit3) AT=500n
+.meas tran v_ring_bit4_end FIND v(ring_bit4) AT=500n
+.control
+alter Vvdd=1.8
+alter Vvddr1=1.8
+alter Vvddr2=1.8
+alter Vvddr3=1.8
+alter Vvddr4=1.8
+tran 20p 500n
+quit
+.endc
+.end
