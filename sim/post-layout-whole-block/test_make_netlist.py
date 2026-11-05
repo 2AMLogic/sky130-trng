@@ -28,6 +28,52 @@ def raises(lines):
     return False
 
 
+def _canon(text, pins):
+    import json
+    import tempfile
+    with tempfile.TemporaryDirectory() as td:
+        req = Path(td) / "extract.request.json"
+        req.write_text(json.dumps({"pins": ",".join(pins)}))
+        old, mn.EXTRACT_REQUEST = mn.EXTRACT_REQUEST, req
+        try:
+            return mn.canonicalise(text)
+        finally:
+            mn.EXTRACT_REQUEST = old
+
+
+def test_body_rename() -> None:
+    """Issue #435: header AND body use canonical port names."""
+    pins = ["vdd", "en", "bus_wdata[1]", "clk"]
+    mn.UNUSED_BY_DESIGN = frozenset()  # synthetic block: every port is used
+    hdr = ".SUBCKT trng_whole vdd|vddr2 en|en2|g_en A|bus_wdata[1] clk\n"
+    body = ("Xz1 vdd|vddr2 en|en2|g_en A|bus_wdata[1] n$1 sky130_fd_pr__nfet_01v8 W=1\n"
+            "Xz2 clk D|X$31 n$1 sky130_fd_pr__nfet_01v8 W=1\n"
+            "* vdd|vddr2 stays in comments\n.ENDS trng_whole\n")
+    text, mapping = _canon(hdr + body, pins)
+    lines = text.splitlines()
+    assert lines[0] == ".SUBCKT trng_whole vdd en bus_wdata_1_ clk", lines[0]
+    assert lines[1] == "Xz1 vdd en bus_wdata_1_ nz1 sky130_fd_pr__nfet_01v8 W=1", lines[1]
+    assert lines[2] == "Xz2 clk D|Xz31 nz1 sky130_fd_pr__nfet_01v8 W=1", lines[2]
+    assert "* vdd|vddr2 stays in comments" in lines  # comments untouched
+    assert not any("vddr2" in ln or "en2" in ln for ln in lines if not ln.startswith("*"))
+    # a port left unreferenced by the body (clk only in the header) fails
+    unref = body.replace("Xz2 clk ", "Xz2 other ")
+    try:
+        _canon(hdr + unref, pins)
+    except SystemExit as e:
+        assert "clk" in str(e), e
+    else:
+        raise AssertionError("unreferenced port not detected")
+    # a canonical name already used as a distinct body token fails
+    clash = body + "Xz3 vdd n$1 sky130_fd_pr__nfet_01v8 W=1\n"
+    try:
+        _canon(hdr + clash, pins)
+    except SystemExit as e:
+        assert "collide" in str(e), e
+    else:
+        raise AssertionError("canonical-name collision not detected")
+
+
 def main() -> int:
     # a `$` name alone is not a collision (old guard flagged it)
     assert not raises(["XM1 A$1 B$2 vss nfet", "XM2 A$1 vdd pfet"])
@@ -61,6 +107,7 @@ def main() -> int:
     assert not cbc.undefined_models(nl.replace("Dz1", "Xz1").replace(
         "diode_pw2nd_05v5 A=1P P=2U", "sky130_fd_pr__diode_pw2nd_05v5 area=1P perim=2U"
     ).replace("res_missing", "sky130_fd_pr__nfet_01v8"), defined)
+    test_body_rename()
     print("test_make_netlist OK")
     return 0
 

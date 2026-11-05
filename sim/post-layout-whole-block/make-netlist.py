@@ -159,8 +159,60 @@ def check_scrub_collisions(body_lines: list[str]) -> None:
         raise SystemExit(f"$-scrub would collide with existing tokens: {sorted(merged)[:5]}")
 
 
+def _normalise_name(name: str) -> str:
+    """Apply the `$`-scrub and bracket de-index to a net name."""
+    return BRACKET_RE.sub(r"\1_\2_", name.replace("$", "z"))
+
+
+def rename_body_clusters(body: str, header_len: int,
+                         mapping: dict[str, str]) -> str:
+    """Rename whole-token cluster names to canonical ones in the device body.
+
+    ``body`` is already `$`-scrubbed and bracket de-indexed; the first
+    ``header_len`` lines are the (already canonical) ``.SUBCKT`` header and are
+    left alone. Raises SystemExit if a canonical name already exists as a
+    distinct body token (the rename would merge two nets).
+    """
+    rename = {_normalise_name(c): _normalise_name(n)
+              for c, n in mapping.items()}
+    lines = body.split("\n")
+    head, rest = lines[:header_len], lines[header_len:]
+    live = [ln for ln in rest if _scrubbed_line(ln)]
+    present = {t for ln in live for t in ln.split()}
+    clash = sorted(c for k, c in rename.items() if k != c and c in present)
+    if clash:
+        raise SystemExit(
+            f"cluster->canonical rename would collide with existing body "
+            f"tokens: {clash[:5]}")
+    out = [re.sub(r"\S+", lambda m: rename.get(m.group(0), m.group(0)), ln)
+           if _scrubbed_line(ln) else ln for ln in rest]
+    return "\n".join(head + out)
+
+
+# Ports with no device in the layout BY DESIGN: digital/rtl/trng_digital.v reads
+# only bus_wdata[2:0] (CTRL write, ALARM clear), so bus_wdata[31:3] reach no
+# cell. Measured 2026-11-05: exactly these 29 of the 123 ports are absent from
+# the body; every other port (incl. all supplies, clk, enables) must be present.
+UNUSED_BY_DESIGN = frozenset(f"bus_wdata[{i}]" for i in range(3, 32))
+
+
+def check_port_coverage(body: str, header_len: int, ports: list[str]) -> None:
+    """Raise SystemExit unless the ports absent from the body are exactly
+    ``UNUSED_BY_DESIGN`` (a floating supply/clk/enable, or a newly-used
+    bus_wdata bit that the allowlist no longer matches, both fail)."""
+    rest = body.split("\n")[header_len:]
+    present = {t for ln in rest if _scrubbed_line(ln) for t in ln.split()}
+    missing = {p for p in ports if _normalise_name(p) not in present}
+    allowed = UNUSED_BY_DESIGN & set(ports)
+    if missing != allowed:
+        raise SystemExit(
+            f"port coverage mismatch: unconnected (absent from device body) "
+            f"{sorted(missing - allowed)[:5]}; allowlisted but present "
+            f"{sorted(allowed - missing)[:5]}")
+
+
 def canonicalise(text: str) -> tuple[str, dict[str, str]]:
-    """Apply the three transforms; return (netlist text, cluster->canonical map)."""
+    """Apply the transforms; return (netlist text, cluster->canonical map)."""
     pins = json.loads(EXTRACT_REQUEST.read_text())["pins"].split(",")
 
     # The .SUBCKT trng_whole port list spans several `+`-continuation lines;
@@ -207,6 +259,12 @@ def canonicalise(text: str) -> tuple[str, dict[str, str]]:
     body = "\n".join(body_lines2) + "\n"
     check_scrub_collisions(body_lines)
     body = BRACKET_RE.sub(r"\1_\2_", body)
+    # transform 1b (issue #435): rename the extractor's cluster names in the
+    # device body. The header above is canonical, but the body still uses the
+    # cluster tokens, so ports and body nodes would never join. Keys are put
+    # through the same $-scrub and bracket de-index so they match body text.
+    body = rename_body_clusters(body, len(wrapped), mapping)
+    check_port_coverage(body, len(wrapped), pins)
     body = NARROW_NFET_RE.sub(_special_nfet, body)
     body = DIODE_CARD_RE.sub(_diode_to_subckt, body)
     return body, mapping
@@ -252,6 +310,10 @@ def check() -> int:
               "re-run make-netlist.py -o and re-pin the records that cite its hash",
               file=sys.stderr)
         return 1
+    # the committed copy itself must connect every port (issue #435)
+    cl = committed.split("\n")
+    hl = next(i for i, ln in enumerate(cl) if i and not ln.startswith("+"))
+    check_port_coverage(committed, hl, list(mapping.values()))
     dev = len(re.findall(r"^X\S+", re.sub(r"\n\+", " ", text), re.M))
     print(f"check OK: byte-identical, {len(mapping)} ports, {dev} devices")
     return 0
