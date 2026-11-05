@@ -62,8 +62,10 @@ TMAX = "20p"
 #: the repo's established four-point post-layout grid x tt/ss/ff (12 points)
 GRID = [(-40.0, 1.62), (27.0, 1.8), (-40.0, 1.98), (125.0, 1.98)]
 
-#: per-corner wall-clock bound for the batch grid (set from the measured
-#: startup-probe rate, see the record)
+#: per-corner wall-clock bound for the batch grid. NOT re-derived by issue #431
+#: Step 2: DR-0017 requires it to come from a measured gate-level digital run on
+#: the fleet, and no such run exists yet (the 0.057 s/ns analog-only rate does
+#: not size it). See README "Open: digital co-simulation".
 GRID_TIMEOUT_S = 21600
 
 #: digital input high level, fixed at every corner (declared in the record:
@@ -118,6 +120,103 @@ def analog_netlist_text() -> str:
                 ln = re.sub(r"\S+", lambda m: rename.get(m.group(0), m.group(0)), ln)
             out.append(ln)
     return "\n".join(out) + "\n"
+
+
+def digital_netlist_text() -> str:
+    """The complementary partition: devices with composed y < ANALOG_Y_MIN_UM.
+
+    This is the transistor-level view of the digital macro in the flat extract;
+    it is used for the partition check only. The digital half of a (b) run is the
+    gate-level ``layout/trng_digital/trng_digital.routed.v`` (hashed in plan.json).
+    """
+    out: list[str] = []
+    keep = True
+    in_header = True
+    rename = _cluster_to_port()
+    for ln in _netlist_text().splitlines():
+        if ln.startswith("* device instance"):
+            in_header = False
+            keep = float(_DEV_RE.match(ln).group(2)) < ANALOG_Y_MIN_UM
+        elif ln.upper().startswith(".ENDS"):
+            keep = True
+        if keep:
+            if not in_header and not ln.startswith("*"):
+                ln = re.sub(r"\S+", lambda m: rename.get(m.group(0), m.group(0)), ln)
+            out.append(ln)
+    return "\n".join(out) + "\n"
+
+
+def _device_blocks(text: str) -> list[tuple[str, set[str]]]:
+    """[(model, nets)] per ``* device instance`` block of a netlist."""
+    blocks: list[list[str]] = []
+    for ln in text.splitlines():
+        if ln.startswith("* device instance"):
+            blocks.append([])
+        elif blocks and not ln.upper().startswith(".ENDS"):
+            blocks[-1].append(ln[1:] if ln.startswith("+") else ln)
+    res = []
+    for b in blocks:
+        toks = " ".join(b).split()
+        model = next(t for t in toks if t.startswith("sky130_fd_pr__"))
+        nets = {t for t in toks[1:] if "=" not in t and not t.startswith("sky130_fd_pr__")}
+        res.append((model, nets))
+    return res
+
+
+def _sha256_text(text: str) -> str:
+    return hashlib.sha256(text.encode()).hexdigest()
+
+
+def partition_check() -> dict:
+    """Check that analog + digital partitions reproduce the flat whole extract.
+
+    * instance count: every X-instance of the flat extract is in exactly one
+      partition (25 356 = 25 355 transistors + the antenna diode);
+    * port correspondence: the flat ``.SUBCKT`` ports are the canonical ports
+      of ``trng_whole.sim.ports.json``, and each is a boundary_signals() member;
+    * net correspondence: the nets the two partitions share (excluding supplies)
+      are exactly the boundary nets the analog side and digital side both touch.
+
+    Returns the three DR-0017 hashes with the counts. Raises AssertionError on
+    any mismatch (a mismatch must never be recorded as a partition).
+    """
+    flat, ana, dig = _netlist_text(), analog_netlist_text(), digital_netlist_text()
+    fb, ab, db = _device_blocks(flat), _device_blocks(ana), _device_blocks(dig)
+    assert len(ab) + len(db) == len(fb), (len(ab), len(db), len(fb))
+    is_tr = lambda m: not m.startswith("sky130_fd_pr__diode")  # noqa: E731
+    n_tr = lambda blocks: sum(1 for m, _ in blocks if is_tr(m))  # noqa: E731
+    assert n_tr(ab) + n_tr(db) == n_tr(fb)
+    ports = [re.sub(r"_(\d+)_$", r"[\1]", q) for q in _subckt_ports()]
+    declared = sorted(p["canonical"] for p in json.loads(
+        (HERE / "trng_whole.sim.ports.json").read_text())["ports"])
+    assert sorted(ports) == declared, "flat .SUBCKT ports differ from trng_whole.sim.ports.json"
+    base = {re.sub(r"\[\d+\]$", "", p) for p in declared}
+    bs = P.boundary_signals()
+    inter = {n for n, v in bs.items() if v["dir"] == "analog->digital"}  # internal nets, not ports
+    assert base == set(bs) - inter, "boundary_signals() differs from the port list"
+    a_nets = set().union(*(n for _, n in ab))
+    d_nets = set().union(*(n for _, n in db))
+    # internal inter-macro nets keep the extractor's '|'-joined cluster name
+    # (e.g. 'A|a|...|raw_bit|y'); the boundary signal is the segment that names it
+    known = set(P.boundary_signals())
+    norm = lambda n: next((x for x in n.split("|") if x in known), n)  # noqa: E731
+    shared = sorted(norm(n) for n in a_nets & d_nets if n not in ("vdd", "vss"))
+    # the nets both halves touch are exactly the inter-macro and shared-input
+    # boundary signals (clk/rst_n reach both; raw_bit/raw_valid cross)
+    expected = sorted(n for n, v in bs.items() if v["dir"] in ("analog->digital", "tb->both"))
+    assert shared == expected, f"shared nets {shared} != boundary {expected}"
+    return {
+        "flat_whole_netlist_sha256": _sha256_text(flat),
+        "analog_partition_sha256": _sha256_text(ana),
+        "digital_gate_netlist_sha256": sha256_file(REPO / "layout" / "trng_digital" / "trng_digital.routed.v"),
+        "total_instances": len(fb),
+        "analog_transistors": n_tr(ab),
+        "digital_transistors": n_tr(db),
+        "diode_instances": sum(1 for m, _ in fb if not is_tr(m)),
+        "shared_nets": shared,
+        "port_count": len(declared),
+        "analog_y_min_um": ANALOG_Y_MIN_UM,
+    }
 
 
 def _scrub(name: str) -> str:
@@ -380,8 +479,28 @@ def make_request(name: str, outdir: Path, *, processes: list[str], temp_c: float
         "corners": request["corners"],
         "measurement_count": len(meas),
         "vih_fixed": VIH,
+        "provenance": P.PROVENANCE,
+        **_partition_plan(),
         "windows": {"w1_ns": list(W1), "w2_ns": [P.t_edge_ns(2), P.t_stop_ns(cycles) - P.TS_NS]},
     }, indent=2, sort_keys=True) + "\n")
+
+
+_PARTITION: dict | None = None
+
+
+def _partition_plan() -> dict:
+    """DR-0017 plan.json fields: the three hashes + the partition check result.
+
+    Computed once; ``partition_check`` raises (no plan is written) if analog +
+    digital do not reproduce the whole extract.
+    """
+    global _PARTITION
+    if _PARTITION is None:
+        _PARTITION = partition_check()
+    pc = _PARTITION
+    return {k: pc[k] for k in ("flat_whole_netlist_sha256", "analog_partition_sha256",
+                               "digital_gate_netlist_sha256")} | {
+        "partition_check": {k: v for k, v in pc.items() if not k.endswith("_sha256")}}
 
 
 def main(argv: list[str] | None = None) -> int:

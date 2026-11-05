@@ -40,6 +40,8 @@ from model import regmap as rm  # noqa: E402
 
 #: clk begins pulsing here (same convention as every post-layout sampler deck)
 T0_NS = 320.0
+#: rst_n rises here (make-requests.py Vrstn PULSE delay)
+RST_N_RELEASE_NS = 300.0
 #: sample period -- the disclosed compute-budget deviation, stated per record
 TS_NS = 100.0
 #: inputs change this long after each clock edge (settled well before the next)
@@ -150,6 +152,64 @@ def cycle_inputs(cycles: list[dict]) -> list[dict]:
             out.append({"addr": 0, "we": 0, "re": 0, "wdata": 0,
                         "out_ready": c["out_ready"],
                         "raw_valid": 1 if c["op"] == "sample" else 0})
+    return out
+
+
+#: DR-0017 option (b): the simulated detail of each half of the block. Written
+#: into every request/plan and read by the reducer to label the result level.
+PROVENANCE = {"analog": "transistor", "digital": "gate-level"}
+
+
+def boundary_signals() -> dict[str, dict]:
+    """The analog/digital boundary of DR-0017 as data (``{dir, width, domain}``).
+
+    ``dir`` is the signal direction relative to the pair of halves:
+    ``tb->both`` / ``tb->analog`` / ``tb->digital`` (testbench driven),
+    ``analog->digital`` (inter-macro), ``analog->obs`` / ``digital->obs``
+    (observed), ``supply``. ``domain`` names the supply group. Source of truth:
+    ``layout/trng_whole/interface.md`` and ``trng_whole.sim.ports.json``.
+    """
+    s: dict[str, dict] = {}
+
+    def add(name, direction, width, domain):
+        s[name] = {"dir": direction, "width": width, "domain": domain}
+
+    add("raw_bit", "analog->digital", 1, "vdd")
+    add("raw_valid", "analog->digital", 1, "vdd")
+    add("clk", "tb->both", 1, "vdd")
+    add("rst_n", "tb->both", 1, "vdd")
+    for i in range(1, 5):
+        add(f"en{i}", "tb->analog", 1, f"vddr{i}")
+        add(f"ring_bit{i}", "analog->obs", 1, f"vddr{i}")
+        add(f"vddr{i}", "supply", 1, f"vddr{i}")
+    add("bus_addr", "tb->digital", 4, "vdd")
+    add("bus_we", "tb->digital", 1, "vdd")
+    add("bus_re", "tb->digital", 1, "vdd")
+    add("bus_wdata", "tb->digital", 32, "vdd")
+    add("out_ready", "tb->digital", 1, "vdd")
+    add("bus_rdata", "digital->obs", 32, "vdd")
+    add("out_data", "digital->obs", 32, "vdd")
+    for n in ("out_valid", "alarm", "gated", "startup_done"):
+        add(n, "digital->obs", 1, "vdd")
+    add("vdd", "supply", 1, "vdd")
+    add("vss", "supply", 1, "vdd")
+    return s
+
+
+def digital_stimulus(cycles: list[dict]) -> list[dict]:
+    """Per-cycle vectors for the gate-level digital block, no analog sources.
+
+    ``cycle_inputs`` plus the clock/reset times of the whole-block deck, so the
+    digital half can be driven standalone. ``raw_bit`` is not here: it is the
+    analog sampler's output, carried across the boundary at run time.
+    """
+    out = []
+    for k, inp in enumerate(cycle_inputs(cycles)):
+        v = dict(inp)
+        v.update({"cycle": k, "t_edge_ns": t_edge_ns(k),
+                  "clk_start_ns": T0_NS, "ts_ns": TS_NS,
+                  "rst_n_release_ns": RST_N_RELEASE_NS})
+        out.append(v)
     return out
 
 
