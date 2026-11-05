@@ -4,6 +4,10 @@ Chronological record of recently merged pull requests and closed issues.
 
 ### 2026-11-05
 
+- **PR #429**: docs(sim): mark superseded wake-up-transient not-run paragraphs historical
+- **Issue #428** (closed): wake-up-transient README: 'What was and was not run' still says the grid is unrun
+- **PR #427**: feat(sim): wake-up transient PVT envelope and noisy transistor leg from the batch fleet
+- **Issue #216** (closed): Analog wake-up transient: time-to-steady-oscillation and first-window raw-bit bias vs the DR-0004 start-up window
 - **PR #424**: feat(sim): shard wake-up batch requests under the fleet job ceiling
 - **PR #423**: fix(sim): emit pw2nd diode as PDK subckt, scan all card models, re-pin netlist
 - **PR #420**: fix(sim): make whole-block $-scrub guard linear and collision-only, re-pin netlist
