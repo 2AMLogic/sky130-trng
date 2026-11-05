@@ -118,6 +118,32 @@ def run_extract(dest: Path) -> None:
         raise SystemExit(f"klt extract reported {report.get('status')!r}")
 
 
+def _scrubbed_line(ln: str) -> bool:
+    """True for lines the `$`->`z` scrub rewrites (not comments / blanks)."""
+    return bool(ln.strip()) and not ln.lstrip().startswith("*")
+
+
+def check_scrub_collisions(body_lines: list[str]) -> None:
+    """Raise SystemExit if the `$`->`z` scrub would merge distinct tokens.
+
+    A collision is a scrubbed name equal to a token that already exists
+    without `$` on a line the scrub applies to. Both sets are built once.
+    """
+    plain: set[str] = set()
+    scrubbed: set[str] = set()
+    for ln in body_lines:
+        if not _scrubbed_line(ln):
+            continue
+        for t in ln.split():
+            if "$" in t:
+                scrubbed.add(t.replace("$", "z"))
+            else:
+                plain.add(t)
+    merged = scrubbed & plain
+    if merged:
+        raise SystemExit(f"$-scrub would collide with existing tokens: {sorted(merged)[:5]}")
+
+
 def canonicalise(text: str) -> tuple[str, dict[str, str]]:
     """Apply the three transforms; return (netlist text, cluster->canonical map)."""
     pins = json.loads(EXTRACT_REQUEST.read_text())["pins"].split(",")
@@ -164,12 +190,7 @@ def canonicalise(text: str) -> tuple[str, dict[str, str]]:
         else:
             body_lines2.append(ln)
     body = "\n".join(body_lines2) + "\n"
-    scrubbed = {t.replace("$", "z") for ln in body_lines if "$" in ln for t in ln.split()}
-    # collision guard: the scrub may not merge two previously distinct tokens
-    merged = {t for t in body.split() if "$" not in t and t in scrubbed and
-              t not in {u for ln in body_lines if "$" in ln for u in ln.split()}}
-    if merged:
-        raise SystemExit(f"$-scrub would collide with existing tokens: {sorted(merged)[:5]}")
+    check_scrub_collisions(body_lines)
     body = BRACKET_RE.sub(r"\1_\2_", body)
     body = NARROW_NFET_RE.sub(_special_nfet, body)
     return body, mapping
