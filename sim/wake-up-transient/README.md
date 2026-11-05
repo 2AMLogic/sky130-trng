@@ -51,6 +51,14 @@ python3 sim/wake-up-transient/wakeup.py --emit-margin     # new record; earlier 
 python3 sim/wake-up-transient/wakeup.py --check sim/wake-up-transient/records/<id>.json
 ```
 
+**Update 2026-11-05 (batch probe, issue #216).** `make-requests.py` now sets `batch.max_units_per_job = 1` and
+`batch.max_concurrent_jobs = 4` (the `remote.hosts` field is implemented for local backends only), so every job's bound
+is one unit's `timeout_s` (det 3000 s, noisy 3500 s) plus overhead, under the fleet's 3600 s ceiling; the generator
+refuses any request above it. One-unit probe (`det-en-ss-probe`, ss / -40 C / 1.62 V, `KLT_SIM_BACKEND=batch`) on the
+klt 0.9.0 runner (AMI `ami-04591566329422a44`): job `klt-sim-e7e4fa4569fe` started, finished in 24 s, `runner_compatibility: match`,
+unit `pass`, and `environment.remote` is populated in the report. The 54-unit deterministic envelope and the transistor
+noisy leg are **still unrun**; the probe is not a margin result and no record was emitted from it.
+
 ## Margin statement vs DR-0004's 1024-sample start-up window
 
 (Full text and per-corner table: `records/20261009-093500-e57ad27.md`.)
