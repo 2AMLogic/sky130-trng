@@ -2,6 +2,12 @@
 
 Chronological record of recently merged pull requests and closed issues.
 
+### 2026-11-05
+
+- **PR #418**: docs: record whole-block klt extract rerun on Spot with stage timings
+- **Issue #417** (closed): Bump klayout-tools pin 0.3.0 → 0.8.0
+- **Issue #395** (closed): Measure the whole-block klt extract on current klt with --progress (on Spot) and report to klayout-tools#4594
+
 ### 2026-11-04
 
 - **PR #405**: docs(spec): DR-0017 whole-block PVT reduction via gate-level digital behind a boundary
