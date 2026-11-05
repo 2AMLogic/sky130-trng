@@ -12,7 +12,7 @@ ngspice-runnable** netlist body for the ``trng_whole`` cell:
   convention ``layout/bin/pex-netlist.py`` documents for the cell PEX
   libraries. No parasitics: this is the connectivity netlist #173
   extracted, in runnable form.
-* four deterministic, recorded text transforms the raw extract needs to
+* five deterministic, recorded text transforms the raw extract needs to
   run under ngspice (the committed ``trng_whole.layout.spice`` was never
   runnable -- it is an LVS artifact):
 
@@ -89,6 +89,21 @@ def _special_nfet(m: "re.Match[str]") -> str:
     if float(m.group(2)) < NFET_MIN_BIN_W_UM:
         return "sky130_fd_pr__special_nfet_01v8" + m.group(1) + m.group(2)
     return m.group(0)
+
+
+# transform 5: the extractor emits the pw2nd tap diode as a bare-model D card
+# (``Dz1 a c diode_pw2nd_05v5 A=<area>P P=<perim>U``). ngspice has no such
+# model ("could not find a valid modelname", the #386 class); the PDK defines
+# the diode as the SUBCKT ``sky130_fd_pr__diode_pw2nd_05v5 a c mult=1 area=1
+# perim=1`` (continuous/models_diodes.spice; area in m^2, perim in m, which
+# the extractor's explicit P/U suffixes already are), so it becomes an X card.
+DIODE_CARD_RE = re.compile(
+    r"^D(\S+)((?:\n\+ [^\n]*)*?)\n\+ diode_pw2nd_05v5 A=(\S+) P=(\S+)[ \t]*$", re.M)
+
+
+def _diode_to_subckt(m: "re.Match[str]") -> str:
+    return (f"X{m.group(1)}{m.group(2)}\n+ sky130_fd_pr__diode_pw2nd_05v5 "
+            f"area={m.group(3)} perim={m.group(4)}")
 
 
 def sha256_file(path: Path) -> str:
@@ -193,6 +208,7 @@ def canonicalise(text: str) -> tuple[str, dict[str, str]]:
     check_scrub_collisions(body_lines)
     body = BRACKET_RE.sub(r"\1_\2_", body)
     body = NARROW_NFET_RE.sub(_special_nfet, body)
+    body = DIODE_CARD_RE.sub(_diode_to_subckt, body)
     return body, mapping
 
 

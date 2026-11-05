@@ -9,7 +9,13 @@ run, so it is fast and, unlike a whole-netlist parse, can fail on a bad netlist.
 
     check-bin-coverage.py NETLIST[.gz] --pdk <.../sky130A> [--json]
 
-Exit 0 = every card covered, 1 = uncovered cards (count and breakdown printed).
+It also checks EVERY device card of any type (X/D/R/C/M/Q, ``+`` continuations
+joined): the card's model/subckt name must be defined (``.model`` / ``.subckt``)
+in the files ``sky130.lib.spice tt`` includes, or be the netlist's own subckt
+(issue #422: a bare-model ``D`` card the bin scan could not see made it past a
+re-pin and fails ngspice with "could not find a valid modelname").
+
+Exit 0 = every card covered and defined, 1 = uncovered/undefined cards.
 """
 from __future__ import annotations
 
@@ -30,6 +36,65 @@ BIN_FILES = {
 MODEL_RE = re.compile(r"^\.model\s+(\S+)\s+\w+[ \t]*((?:\n[+*].*)*)", re.M | re.I)
 BOUND_RE = re.compile(r"\b([lw]m(?:in|ax))\s*=\s*([0-9.eE+-]+)", re.I)
 CARD_RE = re.compile(r"\b(sky130_fd_pr__\w+)\s+L=([0-9.eE+-]+)\s+W=([0-9.eE+-]+)")
+
+
+DEF_RE = re.compile(r"^\.(?:model|subckt)\s+(\S+)", re.M | re.I)
+INC_RE = re.compile(r"^\.include\s+(\S+)", re.M | re.I)
+PARAM_TOK = re.compile(r"^[A-Za-z_]\w*\s*=")
+
+
+def pdk_defined_names(pdk: Path) -> set[str]:
+    """Names of every .model/.subckt in the files the tt corner of sky130.lib.spice includes."""
+    root = pdk / "libs.tech" / "combined"
+    lib = (root / "sky130.lib.spice").read_text()
+    tt = re.search(r"^\.lib\s+tt\s*$(.*?)^\.endl", lib, re.M | re.S | re.I).group(1)
+    names: set[str] = set()
+    seen: set[Path] = set()
+
+    def walk(text: str, base: Path) -> None:
+        for inc in INC_RE.findall(text):
+            f = base / inc.strip("\"'")
+            if f.exists() and f not in seen:
+                seen.add(f)
+                body = f.read_text()
+                names.update(n.lower() for n in DEF_RE.findall(body))
+                walk(body, f.parent)
+
+    walk(tt, root)
+    return names
+
+
+def card_model(card: str) -> str | None:
+    """Model/subckt token of one logical device card: the last token before the first NAME=value."""
+    toks = card.split()
+    end = len(toks)
+    for i, t in enumerate(toks[1:], 1):
+        if PARAM_TOK.match(t) or (i + 1 < len(toks) and toks[i + 1].startswith("=")):
+            end = i
+            break
+    return toks[end - 1].lower() if end > 2 else None
+
+
+def undefined_models(text: str, defined: set[str]) -> collections.Counter:
+    """Count cards (by first letter + model) whose model is neither in the PDK nor a local subckt."""
+    logical: list[str] = []
+    for ln in text.splitlines():
+        if not ln.strip() or ln.lstrip().startswith("*"):
+            continue
+        if ln.startswith("+") and logical:
+            logical[-1] += " " + ln[1:]
+        else:
+            logical.append(ln)
+    local = {m.lower() for ln in logical if ln.lower().startswith(".subckt")
+             for m in [ln.split()[1]]}
+    bad: collections.Counter = collections.Counter()
+    for card in logical:
+        if card[0] in ".":
+            continue
+        model = card_model(card)
+        if card[0].upper() in "XDQMRC" and model and model not in defined | local:
+            bad[(card[0].upper(), model)] += 1
+    return bad
 
 
 def load_bins(pdk: Path, model: str) -> list[tuple[float, float, float, float]]:
@@ -78,7 +143,11 @@ def main() -> int:
         flag = "UNCOVERED" if (model, l, w) in bad else "ok"
         print(f"  {n:6d}  {model} L={l} W={w}  {flag}")
     print(f"uncovered cards: {sum(bad.values())}")
-    return 1 if bad else 0
+    undef = undefined_models(text, pdk_defined_names(args.pdk))
+    for (kind, model), n in sorted(undef.items()):
+        print(f"  {n:6d}  {kind}-card model {model!r} UNDEFINED in pinned PDK")
+    print(f"undefined-model cards: {sum(undef.values())}")
+    return 1 if bad or undef else 0
 
 
 if __name__ == "__main__":
