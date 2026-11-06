@@ -140,6 +140,8 @@ netlist against the transistor-level digital macro.
 * Full-block 100 ns rate probe on the re-pinned netlist (`965f1e6c...`): one batch job was
   interrupted by spot reclamation at 3279 s, no verdict; re-run needed. See
   `records/20261106-rate-probe-repinned-netlist.md`.
+* Retry of that probe (issue #449): timed out at 3480 s on the same re-pinned netlist, 0 of 9
+  measurements; infeasible verdict confirmed. See `records/20261106b-rate-probe-repinned-timeout.md`.
 * Boundary-load model (DR-0017 option 1 or 2) and the Liberty deck per (T, Vdd)
   point: not chosen yet; to be stated with their source when the co-simulation
   is built.
