@@ -784,16 +784,8 @@ def _sha():
 
 def _store_chunks(rid, reqdir, mine):
     """Copy the raw batch responses + exactly what was submitted to corners/<rid>/ (once per batch of records)."""
-    cdir = HERE / "corners" / rid
-    if cdir.exists():
-        raise SystemExit(f"error: {cdir} exists")
-    cdir.mkdir(parents=True)
-    for nm, pl, rs in mine:
-        with gzip.open(cdir / f"{nm}.klt-sim.json.gz", "wt") as fh:
-            json.dump(rs, fh, indent=1)
-        json.dump(pl, open(cdir / f"{nm}.plan.json", "w"), indent=1)
-        for fn, dst in (("request.json", f"{nm}.request.json"), ("netlist.cir", f"{nm}.netlist.cir")):
-            shutil.copyfile(os.path.join(reqdir, nm, fn), cdir / dst)
+    from evidence_record import write_corner_bundle
+    write_corner_bundle(HERE / "corners" / rid, reqdir, mine, records_dir=HERE / "records", rid=rid)
 
 
 def _read_chunks(rid):
