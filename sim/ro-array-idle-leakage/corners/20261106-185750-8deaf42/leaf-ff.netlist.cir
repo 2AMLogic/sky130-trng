@@ -1,0 +1,82 @@
+* leaf-cell standby sum -- companion to tb_idle.spice (issue #201)
+*
+* The same standby state as tb_idle.spice, but each leaf cell is its own
+* instance with its own current-sense source and its inputs tied to the logic
+* level it sees in the assembled idle state (see tb_idle.spice header):
+*
+*   4 x ro_ring5   en = 0                                   (rail vddr_i)
+*   4 x ro_buf     input = ring output = 1 (Vk), output 0   (rail vdd)  [inverting]
+*   3 x xor2       inputs (0,0) -> out 0                    (rail vdd)  [xa1, xa2, xa3]
+*   6 x sampler_dff  clk = 0, rst_n = Vk, d = 0 (xo, ro1..4) / Vk (valid)
+*
+* The sum of these independent leaf currents is the "leaf-cell sum" the
+* assembled-block standby current is compared against (a larger assembled
+* current is a contention-path signature, DR-0007). Substituted:
+* /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-201/design/sampler_core.spice = absolute path of design/sampler_core.spice.
+*
+* Simulation-derived; provisional until silicon.
+
+.option scale=1u
+*
+* Solver options. The default gmin (1e-12 S, a conductance across every junction) is not negligible against
+* sub-nA standby currents: at ss / -40 C / 1.98 V the default gives 2.7e-10 A on the leaf deck's vdd rail
+* against 1.2e-10 A with gmin = 1e-15 (single-corner local probes). abstol / reltol are tightened to match
+* (currents here are near the 1 pA default abstol). Raising itl1 / gminsteps on top of this made other
+* corners (ff / -40 C) fail to converge, so they are NOT set. A unit that still hits ngspice's nonconvergence
+* fallbacks ('gmin stepping failed', negative rail currents) is reported by klt as status pass; the analysis
+* rejects such units instead of trusting them.
+.options gmin=1e-15 abstol=1e-15 reltol=1e-6
+
+.include "/home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-201/design/sampler_core.spice"
+
+Vk vkn 0 dc 1.8
+
+* rings: one sense source per ring rail, en low
+Vsr1 vkn vddr1 dc 0
+Vsr2 vkn vddr2 dc 0
+Vsr3 vkn vddr3 dc 0
+Vsr4 vkn vddr4 dc 0
+Ven  en 0 dc 0
+xr1 en rn1 vddr1 0 ro_ring5 wstv=0.42 lstv=2 cld=0.5f
+xr2 en rn2 vddr2 0 ro_ring5 wstv=0.44 lstv=2 cld=0.5f
+xr3 en rn3 vddr3 0 ro_ring5 wstv=0.46 lstv=2 cld=0.5f
+xr4 en rn4 vddr4 0 ro_ring5 wstv=0.48 lstv=2 cld=0.5f
+
+* logic section: rail vdd, inputs forced to the assembled idle levels
+Vsvdd vkn vdd dc 0
+Bhi  hi 0 V = v(vkn)
+Vlo  lo 0 dc 0
+xb1 hi ob1 vdd 0 ro_buf
+xb2 hi ob2 vdd 0 ro_buf
+xb3 hi ob3 vdd 0 ro_buf
+xb4 hi ob4 vdd 0 ro_buf
+xa1 lo lo t1 vdd 0 xor2
+xa2 lo lo t2 vdd 0 xor2
+xa3 lo lo xo vdd 0 xor2
+
+* sampler: clk low, reset released
+Vclk clk 0 dc 0
+Brstn rst_n 0 V = v(vkn)
+xsb lo clk rst_n q0 vdd 0 sampler_dff
+xsv hi clk rst_n q1 vdd 0 sampler_dff
+xs1 lo clk rst_n q2 vdd 0 sampler_dff
+xs2 lo clk rst_n q3 vdd 0 sampler_dff
+xs3 lo clk rst_n q4 vdd 0 sampler_dff
+xs4 lo clk rst_n q5 vdd 0 sampler_dff
+*
+* Latch state (clamps). At clk = 0 each sampler_dff's slave latch HOLDS its last sampled value, so the DC
+* operating point is under-determined: besides the two stable states it has an unstable mid-rail solution
+* (s = qb ~ 0.85-0.9 V) on which ngspice can land, drawing uA of crowbar current (observed in un-clamped runs:
+* ff / 27 C / 1.8 V gave 78 uA on the vdd rail; a .nodeset hint and tighter solver options each only moved the
+* problem to another corner). The state is therefore fixed deterministically: an ideal source holds each
+* flip-flop's slave node s at the rail of the stable state it holds after sampling its own idle input once
+* (q = d: xo = 0 -> q = 0, ring bits = 0, valid = 1; so s = !q = Vk for d = 0, s = 0 for d = 1). The
+* master is transparent at clk = 0 (m follows d) and qb = !q follows from q, so s fixes the whole flop.
+* At the true stable state s already sits on that rail, so the clamp supplies ~0 current; each clamp's
+* current is measured (i_cl_*) and the record flags a clamp that supplies a non-negligible share.
+Bcl_xsb xsb.s 0 V = v(vkn)
+Vcl_xsv xsv.s 0 dc 0
+Bcl_xs1 xs1.s 0 V = v(vkn)
+Bcl_xs2 xs2.s 0 V = v(vkn)
+Bcl_xs3 xs3.s 0 V = v(vkn)
+Bcl_xs4 xs4.s 0 V = v(vkn)
