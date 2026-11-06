@@ -37,9 +37,6 @@ import re
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "layout" / "bin"))
-from _hashing import sha256_file  # noqa: E402
-
 NMOS = "sky130_fd_pr__nfet_01v8"
 PMOS = "sky130_fd_pr__pfet_01v8"
 WRAP_N = "vth_wrap_nfet"
@@ -144,6 +141,10 @@ def age_netlist(text: str) -> tuple[str, dict]:
 
 def sha256_text(t: str) -> str:
     return hashlib.sha256(t.encode()).hexdigest()
+
+
+def sha256_file(p: Path) -> str:
+    return hashlib.sha256(Path(p).read_bytes()).hexdigest()
 
 
 def unwrap(aged: str) -> str:
