@@ -150,7 +150,7 @@ def write_corner_bundle(
                 json.dump(plan, fh, indent=1)
             for fn, dst in (("request.json", f"{name}.request.json"), ("netlist.cir", f"{name}.netlist.cir")):
                 shutil.copyfile(reqdir / name / fn, cdir / dst)
-            jobs.append(((resp["environment"].get("remote") or {}).get("job_id")) or "local (single-unit reference run)")
+            jobs.append(((resp.get("environment", {}).get("remote") or {}).get("job_id")) or "local (single-unit reference run)")
     except BaseException:
         shutil.rmtree(cdir, ignore_errors=True)
         raise
