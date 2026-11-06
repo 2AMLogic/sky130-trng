@@ -31,7 +31,6 @@ Without ``--emit-record`` it prints the reduction as JSON.
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import math
 import sys
@@ -42,6 +41,8 @@ BLOCK = HERE.parent
 REPO = BLOCK.parents[1]
 sys.path.insert(0, str(BLOCK))
 sys.path.insert(0, str(REPO / "sim" / "bin"))
+sys.path.insert(0, str(REPO / "layout" / "bin"))
+from _hashing import sha256_file as sha256  # noqa: E402
 import program as P  # noqa: E402
 import importlib.util  # noqa: E402
 
@@ -105,10 +106,6 @@ def expected_points() -> list[tuple[str, float, float]]:
 
 def key(proc: str, temp: float, vdd: float) -> str:
     return f"{proc}/{temp:g}C/{vdd:.2f}V"
-
-
-def sha256(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def is_num(x) -> bool:
