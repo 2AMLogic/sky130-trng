@@ -45,10 +45,13 @@ per-layer sums will NOT reproduce these numbers by design).
 from __future__ import annotations
 
 import gzip
-import hashlib
 import json
 import math
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _hashing import sha256_file  # noqa: E402
 
 SCHEMA_VERSION = 1
 ISSUE = 283
@@ -597,10 +600,6 @@ def _compose_whole():
     sys.modules[spec.name] = mod
     spec.loader.exec_module(mod)
     return mod
-
-
-def sha256_file(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def load_extract(path: Path) -> dict:

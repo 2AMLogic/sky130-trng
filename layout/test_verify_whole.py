@@ -38,7 +38,6 @@ What these guard, because a verdict string alone is not evidence:
 from __future__ import annotations
 
 import gzip
-import hashlib
 import importlib.util
 import json
 import math
@@ -51,6 +50,7 @@ _HERE = Path(__file__).resolve().parent
 _REPO_ROOT = _HERE.parent
 sys.path.insert(0, str(_REPO_ROOT / "design"))
 sys.path.insert(0, str(_HERE / "bin"))
+from _hashing import sha256_file  # noqa: E402
 from _test_check import Checker  # noqa: E402
 import drc_coverage_audit as A  # noqa: E402
 import physical_estimates as PE  # noqa: E402
@@ -61,8 +61,7 @@ _check = _checker.check
 VERIFY = _HERE / "trng_whole" / "verify"
 
 
-def sha(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+sha = sha256_file
 
 
 # --------------------------------------------------------------------------

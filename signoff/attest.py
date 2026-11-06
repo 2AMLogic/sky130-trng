@@ -35,7 +35,12 @@ import hashlib
 import json
 import os
 import sys
+from functools import partial
 from pathlib import Path
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO_ROOT / "layout" / "bin"))
+from _hashing import sha256_file as _sha256_file  # noqa: E402
 
 SCHEMA_VERSION = 1
 ATTEST_DIR = "signoff/attest"
@@ -99,12 +104,7 @@ SELECTORS = {
     "10": ["README.md", "LICENSE", "REPRODUCE.md", ".github/workflows/*"],
 }
 
-def sha256_file(path):
-    h = hashlib.sha256()
-    with open(path, "rb") as f:
-        for chunk in iter(lambda: f.read(1 << 20), b""):
-            h.update(chunk)
-    return "sha256:" + h.hexdigest()
+sha256_file = partial(_sha256_file, prefix=True)  # recorded as "sha256:<hex>"
 
 
 def walk(root):
