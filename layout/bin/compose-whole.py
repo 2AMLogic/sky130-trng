@@ -67,9 +67,11 @@ import os
 import re
 import sys
 import tempfile
+from functools import partial
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _hashing import sha256_file as _sha256_file  # noqa: E402
 from _klt_common import BuildError, run_klt, write_json  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -115,12 +117,7 @@ _LABEL_LAYER = {
 # --------------------------------------------------------------------------
 
 
-def sha256_file(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(1 << 20), b""):
-            digest.update(chunk)
-    return "sha256:" + digest.hexdigest()
+sha256_file = partial(_sha256_file, prefix=True)  # recorded as "sha256:<hex>"
 
 
 def sha256_text(text: str) -> str:
