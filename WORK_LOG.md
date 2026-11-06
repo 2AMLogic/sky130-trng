@@ -4,6 +4,8 @@ Chronological record of recently merged pull requests and closed issues.
 
 ### 2026-11-06
 
+- **PR #453**: refactor: use shared sha256_file helper in sim/ scripts
+- **Issue #452** (closed): Consolidate 12 duplicate sha256 file helpers in sim/ onto layout/bin/_hashing.py
 - **PR #450**: sim: record whole-block 100 ns rate-probe timeout on re-pinned netlist
 - **PR #448**: sim: record interrupted whole-block rate probe on re-pinned netlist
 - **PR #444**: sim: add idle/leakage survey of the gated-off sampler_core across the PVT grid
