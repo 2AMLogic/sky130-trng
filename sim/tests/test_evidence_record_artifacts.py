@@ -281,5 +281,58 @@ class ReservedSummaryKeys(unittest.TestCase):
         self.assertIn(f"`{rec['repo_sha']}`", md)
 
 
+class WriteCornerBundle(unittest.TestCase):
+    """er.write_corner_bundle: shared corner-bundle writer + collision guard (issue #392)."""
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self._tmp.cleanup)
+        self.root = Path(self._tmp.name)
+        self.reqdir = self.root / "req"
+        (self.reqdir / "a").mkdir(parents=True)
+        (self.reqdir / "a" / "request.json").write_text('{"r": 1}')
+        (self.reqdir / "a" / "netlist.cir").write_text("* deck\n")
+        self.rdir = self.root / "records"
+        self.cdir = self.root / "corners" / "rid1"
+        self.chunks = [("a", {"corner": "tt"}, {"environment": {"remote": {"job_id": "job-1"}}})]
+
+    def write(self):
+        return er.write_corner_bundle(self.cdir, self.reqdir, self.chunks, records_dir=self.rdir, rid="rid1")
+
+    def test_writes_bundle_and_returns_jobs(self):
+        import gzip
+        self.assertEqual(self.write(), ["job-1"])
+        self.assertEqual(sorted(p.name for p in self.cdir.iterdir()),
+                         ["a.klt-sim.json.gz", "a.netlist.cir", "a.plan.json", "a.request.json"])
+        with gzip.open(self.cdir / "a.klt-sim.json.gz", "rt") as fh:
+            self.assertEqual(fh.read(), json.dumps(self.chunks[0][2], indent=1))
+        self.assertEqual((self.cdir / "a.plan.json").read_text(), json.dumps({"corner": "tt"}, indent=1))
+
+    def test_local_job_label(self):
+        self.chunks[0] = ("a", {}, {"environment": {}})
+        self.assertEqual(self.write(), ["local (single-unit reference run)"])
+
+    def test_refuses_existing_record_json(self):
+        self.rdir.mkdir()
+        (self.rdir / "rid1.json").write_text("{}")
+        with self.assertRaisesRegex(SystemExit, "rid1 exists"):
+            self.write()
+        self.assertFalse(self.cdir.exists())
+
+    def test_refuses_existing_cdir_untouched(self):
+        self.cdir.mkdir(parents=True)
+        (self.cdir / "keep").write_text("x")
+        with self.assertRaisesRegex(SystemExit, "rid1 exists"):
+            self.write()
+        self.assertEqual([p.name for p in self.cdir.iterdir()], ["keep"])
+
+    def test_missing_netlist_leaves_nothing_behind(self):
+        (self.reqdir / "a" / "netlist.cir").unlink()
+        with self.assertRaises(SystemExit):
+            self.write()
+        self.assertFalse(self.cdir.exists())
+        self.assertFalse(self.rdir.exists())
+
+
 if __name__ == "__main__":
     unittest.main()
