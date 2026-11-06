@@ -4,6 +4,9 @@ Chronological record of recently merged pull requests and closed issues.
 
 ### 2026-11-05
 
+- **PR #438**: sim: add DR-0017 provenance, partition check and obligations to whole-block tooling
+- **PR #436**: fix(sim): rename whole-block netlist body nodes to canonical port names
+- **Issue #435** (closed): make-netlist.py renames only the .SUBCKT port list; whole-block body keeps cluster names (94/123 ports unconnected)
 - **PR #434**: sim: analog-chain-only feasibility probe (DR-0017 Step 1) and port-connectivity finding
 - **PR #432**: docs(spec): accept DR-0017 with the claim-level condition (operator r6-q26)
 - **PR #429**: docs(sim): mark superseded wake-up-transient not-run paragraphs historical
