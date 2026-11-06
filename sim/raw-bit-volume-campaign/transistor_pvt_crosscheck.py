@@ -29,7 +29,6 @@ usable; anything else is reported as incomplete with the reason per row.
 from __future__ import annotations
 
 import argparse
-import hashlib
 import importlib.util
 import json
 import math
@@ -40,6 +39,8 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 REPO_ROOT = HERE.parents[1]
+sys.path.insert(0, str(REPO_ROOT / "layout" / "bin"))
+from _hashing import sha256_file  # noqa: E402
 sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
 from evidence_record import mint_behavioral_record  # noqa: E402
 
@@ -66,10 +67,6 @@ NBITS = 24
 
 def pvt_key(temp, vdd, seed, ts_ns=TS_NS):
     return f"pvt_{temp:g}C_{vdd:g}V_Ts{ts_ns}ns_seed{seed}"
-
-
-def sha256_file(p: Path) -> str:
-    return hashlib.sha256(p.read_bytes()).hexdigest()
 
 
 # ----------------------------------------------------------------------- load

@@ -26,6 +26,7 @@ Output: <run-dir>/electrical-audit.json (+ raw per-corner logs under
 from __future__ import annotations
 
 import argparse, gzip, json, os, re, shutil, subprocess, sys, tempfile
+from functools import partial
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -33,6 +34,8 @@ sys.path.insert(0, str(HERE))
 import electrical as E  # noqa: E402
 
 ROOT = HERE.parents[2]
+sys.path.insert(0, str(ROOT / "layout" / "bin"))
+from _hashing import sha256_file  # noqa: E402
 
 
 def gunzip(src: Path, dst: Path) -> None:
@@ -81,13 +84,7 @@ COVERAGE_DISCLOSURE = [
 ]
 
 
-def sha256(path: Path) -> str:
-    import hashlib
-    h = hashlib.sha256()
-    with open(path, "rb") as f:
-        for chunk in iter(lambda: f.read(1 << 20), b""):
-            h.update(chunk)
-    return "sha256:" + h.hexdigest()
+sha256 = partial(sha256_file, prefix=True)
 
 
 def _materialise(src: Path, dst: Path) -> None:

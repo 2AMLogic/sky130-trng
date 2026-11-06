@@ -80,6 +80,8 @@ from bisect import bisect_right
 REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 SLUG = "ro-array-supply-perturbation"
 sys.path.insert(0, os.path.join(REPO, "sim", "bin"))
+sys.path.insert(0, os.path.join(REPO, "layout", "bin"))
+from _hashing import sha256_file as _sha256  # noqa: E402
 
 NEDGE = 40
 DRIFT_LOCK = 0.1                 # ring cycles slipped over the window below which => locked
@@ -896,15 +898,6 @@ PVTS = None
 def _jload(path):
     with open(path) as fh:
         return json.load(fh)
-
-
-def _sha256(path):
-    import hashlib
-    h = hashlib.sha256()
-    with open(path, "rb") as fh:
-        for blk in iter(lambda: fh.read(1 << 16), b""):
-            h.update(blk)
-    return h.hexdigest()
 
 
 def _provenance(rs):

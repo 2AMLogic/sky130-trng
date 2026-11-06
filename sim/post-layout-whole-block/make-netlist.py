@@ -61,7 +61,6 @@ from __future__ import annotations
 
 import argparse
 import gzip
-import hashlib
 import json
 import re
 import subprocess
@@ -71,6 +70,8 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[1]
+sys.path.insert(0, str(REPO / "layout" / "bin"))
+from _hashing import sha256_file  # noqa: E402
 GDS = REPO / "layout" / "trng_whole" / "trng_whole.gds"
 EXTRACT_REQUEST = REPO / "layout" / "trng_whole" / "verify" / "extract.request.json"
 DEFAULT_OUT = HERE / "trng_whole.sim.spice"
@@ -104,14 +105,6 @@ DIODE_CARD_RE = re.compile(
 def _diode_to_subckt(m: "re.Match[str]") -> str:
     return (f"X{m.group(1)}{m.group(2)}\n+ sky130_fd_pr__diode_pw2nd_05v5 "
             f"area={m.group(3)} perim={m.group(4)}")
-
-
-def sha256_file(path: Path) -> str:
-    h = hashlib.sha256()
-    with open(path, "rb") as fh:
-        for chunk in iter(lambda: fh.read(1 << 20), b""):
-            h.update(chunk)
-    return h.hexdigest()
 
 
 def klt_version() -> str:

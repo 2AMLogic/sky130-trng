@@ -48,6 +48,8 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[1]
+sys.path.insert(0, str(REPO / "layout" / "bin"))
+from _hashing import sha256_file  # noqa: E402
 sys.path.insert(0, str(HERE))
 import program as P  # noqa: E402
 
@@ -241,14 +243,6 @@ def _cluster_to_port() -> dict[str, str]:
 
 def fmt(v: float) -> str:
     return f"{v:.1f}".rstrip("0").rstrip(".") if v != int(v) else f"{int(v)}"
-
-
-def sha256_file(path: Path) -> str:
-    h = hashlib.sha256()
-    with open(path, "rb") as fh:
-        for chunk in iter(lambda: fh.read(1 << 20), b""):
-            h.update(chunk)
-    return h.hexdigest()
 
 
 def pwl_card(sig: str, net: str, points: list[tuple[float, float]]) -> str:

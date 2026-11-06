@@ -25,10 +25,13 @@ import hashlib
 import json
 import re
 import sys
+from functools import partial
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
+sys.path.insert(0, str(REPO_ROOT / "layout" / "bin"))
+from _hashing import sha256_file  # noqa: E402
 from evidence_record import mint_record, new_record_id  # noqa: E402
 
 STUDY = REPO_ROOT / "sim" / "digital-floorplan-compaction"
@@ -44,8 +47,7 @@ def sha256_bytes(b: bytes) -> str:
     return "sha256:" + hashlib.sha256(b).hexdigest()
 
 
-def sha256(p: Path) -> str:
-    return sha256_bytes(p.read_bytes())
+sha256 = partial(sha256_file, prefix=True)
 
 
 def load(p: Path):
