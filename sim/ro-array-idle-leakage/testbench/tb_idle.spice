@@ -1,0 +1,74 @@
+* sampler_core idle / leakage operating point -- rings gated off, sampler idle
+*
+* Issue #201. `.op` supply currents of the COMMITTED pre-layout
+* design/sampler_core.spice (ro_array_core + XOR tree + six sampler_dff) in its
+* STANDBY state:
+*
+*   en1..en4 = 0     all four rings gated off through ro_nand2 (their enable pin)
+*   clk      = 0     sampler clock held low (no edges: no dynamic current)
+*   rst_n    = Vk    reset released (the block's normal idle level; rst_n low is
+*                    a different static state and is not the one measured here)
+*
+* The static state this forces (hand-derived, checked by the xo/ro1 probes in
+* the request): ro_nand2 output n1 = 1 -> n2 = 0 -> n3 = 1 -> n4 = 0 -> ring
+* output = 1; ro_buf INVERTS -> ro1..4 = 0; xor2(0,0) = 0; xor2(0,0) = 0 -> xo = 0.
+* (The request probes v(xo), v(ro1) and the ring node rn1 to confirm this state.)
+*
+* Template for make-requests.py (no .lib / .temp / .op / .control / .end card --
+* `klt sim` owns those). Substituted: @@SAMPLER@@ = absolute path of
+* design/sampler_core.spice. One DC "knob" source, Vk, swept per unit through
+* klt sim `corners.supply_v` (klt sim applies it as `alter Vk=<value>`).
+*
+* Every supply rail has its OWN zero-volt current-sense source, so the standby
+* current is attributed per rail (the four ring rails vddr1..4 vs the logic /
+* sampler rail vdd). The five rails are tied to the same Vk, as in the block.
+*
+* Simulation-derived; provisional until silicon.
+
+.option scale=1u
+*
+* Solver options. The default gmin (1e-12 S, a conductance across every junction) is not negligible against
+* sub-nA standby currents: at ss / -40 C / 1.98 V the default gives 2.7e-10 A on the leaf deck's vdd rail
+* against 1.2e-10 A with gmin = 1e-15 (single-corner local probes). abstol / reltol are tightened to match
+* (currents here are near the 1 pA default abstol). Raising itl1 / gminsteps on top of this made other
+* corners (ff / -40 C) fail to converge, so they are NOT set. A unit that still hits ngspice's nonconvergence
+* fallbacks ('gmin stepping failed', negative rail currents) is reported by klt as status pass; the analysis
+* rejects such units instead of trusting them.
+.options gmin=1e-15 abstol=1e-15 reltol=1e-6
+
+.include "@@SAMPLER@@"
+
+Vk vkn 0 dc 1.8
+
+Vsvdd  vkn vdd   dc 0
+Vsr1   vkn vddr1 dc 0
+Vsr2   vkn vddr2 dc 0
+Vsr3   vkn vddr3 dc 0
+Vsr4   vkn vddr4 dc 0
+
+* logic levels: low = 0, high = Vk (behavioural, no DC current drawn)
+Brstn rst_n 0 V = v(vkn)
+Vclk  clk  0 dc 0
+Ven1  en1  0 dc 0
+Ven2  en2  0 dc 0
+Ven3  en3  0 dc 0
+Ven4  en4  0 dc 0
+
+xdut en1 en2 en3 en4 vddr1 vddr2 vddr3 vddr4 vdd 0 clk rst_n raw_bit raw_valid ring_bit1 ring_bit2 ring_bit3 ring_bit4 sampler_core
+*
+* Latch state (clamps). At clk = 0 each sampler_dff's slave latch HOLDS its last sampled value, so the DC
+* operating point is under-determined: besides the two stable states it has an unstable mid-rail solution
+* (s = qb ~ 0.85-0.9 V) on which ngspice can land, drawing uA of crowbar current (observed in un-clamped runs:
+* ff / 27 C / 1.8 V gave 78 uA on the vdd rail; a .nodeset hint and tighter solver options each only moved the
+* problem to another corner). The state is therefore fixed deterministically: an ideal source holds each
+* flip-flop's slave node s at the rail of the stable state it holds after sampling its own idle input once
+* (q = d: xo = 0 -> q = 0, ring bits = 0, valid = 1; so s = !q = Vk for d = 0, s = 0 for d = 1). The
+* master is transparent at clk = 0 (m follows d) and qb = !q follows from q, so s fixes the whole flop.
+* At the true stable state s already sits on that rail, so the clamp supplies ~0 current; each clamp's
+* current is measured (i_cl_*) and the record flags a clamp that supplies a non-negligible share.
+Bcl_xsb xdut.xsb.s 0 V = v(vkn)
+Vcl_xsv xdut.xsv.s 0 dc 0
+Bcl_xsr1 xdut.xsr1.s 0 V = v(vkn)
+Bcl_xsr2 xdut.xsr2.s 0 V = v(vkn)
+Bcl_xsr3 xdut.xsr3.s 0 V = v(vkn)
+Bcl_xsr4 xdut.xsr4.s 0 V = v(vkn)
