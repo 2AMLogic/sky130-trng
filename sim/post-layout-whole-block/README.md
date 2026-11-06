@@ -137,6 +137,9 @@ netlist against the transistor-level digital macro.
   simulated ns analog-only rate does not size the full block. If the measured
   full-block rate exceeds the 3480 s ceiling, that is recorded as a negative
   result for option (b).
+* Full-block 100 ns rate probe on the re-pinned netlist (`965f1e6c...`): one batch job was
+  interrupted by spot reclamation at 3279 s, no verdict; re-run needed. See
+  `records/20261106-rate-probe-repinned-netlist.md`.
 * Boundary-load model (DR-0017 option 1 or 2) and the Liberty deck per (T, Vdd)
   point: not chosen yet; to be stated with their source when the co-simulation
   is built.
