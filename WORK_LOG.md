@@ -4,6 +4,12 @@ Chronological record of recently merged pull requests and closed issues.
 
 ### 2026-11-06
 
+- **PR #450**: sim: record whole-block 100 ns rate-probe timeout on re-pinned netlist
+- **PR #448**: sim: record interrupted whole-block rate probe on re-pinned netlist
+- **PR #444**: sim: add idle/leakage survey of the gated-off sampler_core across the PVT grid
+- **Issue #449** (closed): Re-run the interrupted 100 ns whole-block rate probe on the re-pinned netlist
+- **Issue #441** (closed): Re-run the 100 ns whole-block rate probe on the re-pinned netlist (965f1e6c) and record it
+- **Issue #201** (closed): Gated-off analog block idle/leakage across the full PVT envelope incl. +125 C, with combined digital standby estimate
 - **PR #443**: refactor(sim): share corner-bundle writer across sim reducers
 - **PR #442**: refactor: share one sha256_file helper across layout/ and signoff/
 - **Issue #392** (closed): Consolidate hand-rolled corner-bundle record minting in four sim reducers into evidence_record
