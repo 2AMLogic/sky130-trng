@@ -37,13 +37,12 @@ Issues currently being built (`loom:building`).
 - **#230**: CI: guard that every test_*.py is wired into a CI workflow and path filter
 - **#371**: Regenerate composite layout cells, trng_digital/trng_whole and pex libraries under klayout-tools 0.8.0
 - **#381**: verify-whole: adapt the whole-block harness to klayout-tools 0.8.0 VNB handling
-- **#435**: make-netlist.py renames only the .SUBCKT port list; whole-block body keeps cluster names (94/123 ports unconnected)
 
 ## PRs Awaiting Review
 
 PRs waiting on Judge (`loom:review-requested`).
 
-- **#436**: fix(sim): rename whole-block netlist body nodes to canonical port names
+_None._
 
 ## Approved (Awaiting Merge)
 
@@ -66,7 +65,6 @@ Issues carrying `loom:curated`.
 - **#371**: Regenerate composite layout cells, trng_digital/trng_whole and pex libraries under klayout-tools 0.8.0 *(curated)*
 - **#381**: verify-whole: adapt the whole-block harness to klayout-tools 0.8.0 VNB handling *(curated)*
 - **#431**: DR-0017 follow-up: analog-chain-only feasibility probe, then gate-level co-simulation generator and reducer for the whole-block PVT matrix *(curated)*
-- **#435**: make-netlist.py renames only the .SUBCKT port list; whole-block body keeps cluster names (94/123 ports unconnected) *(curated)*
 
 ## Proposed (Architect / Hermit)
 
@@ -87,10 +85,10 @@ Issues carrying `loom:curated`.
 | Very important | 0 |
 | Important | 3 |
 | Ready (`loom:issue`) | 1 |
-| In Progress (`loom:building`) | 5 |
-| PRs awaiting review | 1 |
+| In Progress (`loom:building`) | 4 |
+| PRs awaiting review | 0 |
 | Approved PRs awaiting merge | 1 |
-| Curated | 12 |
+| Curated | 11 |
 | Architect / Hermit proposals | 3 |
 | Active epics | 2 |
 <!-- guide:plan-body:end -->
