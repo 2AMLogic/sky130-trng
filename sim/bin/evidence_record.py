@@ -42,6 +42,7 @@ as a second, independent reimplementation of it.
 from __future__ import annotations
 
 import datetime as _dt
+import gzip
 import json
 import os
 import platform
@@ -101,6 +102,59 @@ def _link_noreplace(src: Path, dst: Path) -> None:
     """Publish `src` as `dst` without ever overwriting (hard link, then unlink src)."""
     os.link(src, dst)  # raises FileExistsError if dst exists
     os.unlink(src)
+
+
+def reserve_corner_dir(cdir: Path, records_dir: Path, rid: str) -> None:
+    """Refuse (``SystemExit "error: <rid> exists"``) if ``<records_dir>/<rid>.json`` or `cdir` exists.
+
+    Otherwise creates `records_dir` (if needed) and `cdir`; the `cdir` creation is
+    ``Path.mkdir(exist_ok=False)``, so the check and the claim are one atomic step
+    (not a check-then-write).
+    """
+    cdir, records_dir = Path(cdir), Path(records_dir)
+    if (records_dir / f"{rid}.json").exists():
+        raise SystemExit(f"error: {rid} exists")
+    records_dir.mkdir(parents=True, exist_ok=True)
+    try:
+        cdir.mkdir(parents=True, exist_ok=False)
+    except FileExistsError:
+        raise SystemExit(f"error: {rid} exists") from None
+
+
+def write_corner_bundle(
+    cdir: Path, reqdir: Path, chunks: list[tuple[str, dict, dict]],
+    *, records_dir: Path, rid: str,
+) -> list[str]:
+    """Write the raw ``klt sim`` response bundle for one record under `cdir`.
+
+    chunks = [(name, plan, response)]. Refuses (SystemExit "error: <rid> exists") if
+    ``<records_dir>/<rid>.json`` or `cdir` exists; every source file under
+    ``reqdir/<name>/`` is checked before anything is created, so a missing
+    ``netlist.cir`` leaves nothing behind (and a failed write removes `cdir` again).
+    Writes ``<name>.klt-sim.json.gz`` (indent=1), ``<name>.plan.json``,
+    ``<name>.request.json`` and ``<name>.netlist.cir`` (copied from ``reqdir/<name>/``).
+    Returns the remote job ids (or "local (single-unit reference run)").
+    """
+    cdir, reqdir, records_dir = Path(cdir), Path(reqdir), Path(records_dir)
+    for name, _plan, _resp in chunks:
+        for fn in ("request.json", "netlist.cir"):
+            if not (reqdir / name / fn).is_file():
+                raise SystemExit(f"error: {reqdir / name / fn} is missing")
+    reserve_corner_dir(cdir, records_dir, rid)
+    jobs: list[str] = []
+    try:
+        for name, plan, resp in chunks:
+            with gzip.open(cdir / f"{name}.klt-sim.json.gz", "wt") as fh:
+                json.dump(resp, fh, indent=1)
+            with open(cdir / f"{name}.plan.json", "w") as fh:
+                json.dump(plan, fh, indent=1)
+            for fn, dst in (("request.json", f"{name}.request.json"), ("netlist.cir", f"{name}.netlist.cir")):
+                shutil.copyfile(reqdir / name / fn, cdir / dst)
+            jobs.append(((resp.get("environment", {}).get("remote") or {}).get("job_id")) or "local (single-unit reference run)")
+    except BaseException:
+        shutil.rmtree(cdir, ignore_errors=True)
+        raise
+    return jobs
 
 
 def _check_artifacts(artifacts: list[Path]) -> None:

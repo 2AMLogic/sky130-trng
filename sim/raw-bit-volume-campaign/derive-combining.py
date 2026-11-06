@@ -18,7 +18,7 @@ REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 SLUG = "ro-array-core-combining"
 TB = "sim/ro-array-core-combining/testbench/tb_ro_array_core.spice"
 sys.path.insert(0, os.path.join(REPO, "sim", "bin"))
-from evidence_record import git_short_sha  # noqa: E402
+from evidence_record import git_short_sha, reserve_corner_dir  # noqa: E402
 
 _s = importlib.util.spec_from_file_location("make_requests", os.path.join(os.path.dirname(__file__), "make-requests.py"))
 mr = importlib.util.module_from_spec(_s)
@@ -84,9 +84,7 @@ def main(reqdir, points, sha):
         }
         cdir = os.path.join(REPO, "sim", SLUG, "corners", rid)
         rdir = os.path.join(REPO, "sim", SLUG, "records")
-        if os.path.exists(os.path.join(rdir, rid + ".json")) or os.path.exists(cdir):
-            raise SystemExit(f"error: {rid} exists")
-        os.makedirs(cdir)
+        reserve_corner_dir(cdir, rdir, rid)
         json.dump(resp, open(os.path.join(cdir, "klt-sim.json"), "w"), indent=1)
         json.dump(rec, open(os.path.join(rdir, rid + ".json"), "w"), indent=2)
         L = [f"# {rid} -- {SLUG}", "",
