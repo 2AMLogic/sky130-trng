@@ -923,7 +923,7 @@ def _provenance(rs):
 
 def emit_record(reqdir, sha=None):
     import importlib.util
-    from evidence_record import git_short_sha
+    from evidence_record import git_short_sha, write_corner_bundle
     from pathlib import Path
     spec = importlib.util.spec_from_file_location("make_requests", os.path.join(os.path.dirname(__file__), "make-requests.py"))
     mr = importlib.util.module_from_spec(spec)
@@ -955,17 +955,9 @@ def emit_record(reqdir, sha=None):
         jobs = [(rs.get("environment", {}).get("remote") or {}).get("job_id") for _, _, rs in mine]
         cdir = os.path.join(REPO, "sim", SLUG, "corners", rid)
         rdir = os.path.join(REPO, "sim", SLUG, "records")
-        if os.path.exists(os.path.join(rdir, rid + ".json")) or os.path.exists(cdir):
-            raise SystemExit(f"error: {rid} exists")
-        os.makedirs(cdir)
-        os.makedirs(rdir, exist_ok=True)
+        write_corner_bundle(cdir, reqdir, mine, records_dir=rdir, rid=rid)   # raw response verbatim + exactly what was submitted
         inputs = {}
         for nm, pl, rs in mine:
-            with gzip.open(os.path.join(cdir, f"{nm}.klt-sim.json.gz"), "wt") as fh:   # raw response, verbatim
-                json.dump(rs, fh, indent=1)
-            json.dump(pl, open(os.path.join(cdir, f"{nm}.plan.json"), "w"), indent=1)
-            for fn, dst in (("request.json", f"{nm}.request.json"), ("netlist.cir", f"{nm}.netlist.cir")):
-                shutil.copyfile(os.path.join(reqdir, nm, fn), os.path.join(cdir, dst))   # exactly what was submitted
             inputs[nm] = {"status": "returned", "units": len(pl["units"]), "units_returned": len(rs["corners"]),
                           "request_sha256": _sha256(os.path.join(cdir, f"{nm}.request.json")),
                           "netlist_sha256": _sha256(os.path.join(cdir, f"{nm}.netlist.cir")),

@@ -438,7 +438,7 @@ def render_md(rid, cn, S, jobs, sha, now):
 
 
 def emit_record(reqdir, sha=None):
-    from evidence_record import git_short_sha
+    from evidence_record import git_short_sha, write_corner_bundle
     from pathlib import Path
     sha = sha or git_short_sha(Path(REPO))
     chunks = load_reqdir(reqdir)
@@ -451,18 +451,7 @@ def emit_record(reqdir, sha=None):
         rid = f"{now:%Y%m%d-%H%M%S}-{sha}"
         cdir = os.path.join(REPO, "sim", SLUG, "corners", rid)
         rdir = os.path.join(REPO, "sim", SLUG, "records")
-        if os.path.exists(os.path.join(rdir, rid + ".json")) or os.path.exists(cdir):
-            raise SystemExit(f"error: {rid} exists")
-        os.makedirs(cdir)
-        os.makedirs(rdir, exist_ok=True)
-        jobs = []
-        for nm, pl, rs in mine:
-            with gzip.open(os.path.join(cdir, f"{nm}.klt-sim.json.gz"), "wt") as fh:
-                json.dump(rs, fh, indent=1)
-            json.dump(pl, open(os.path.join(cdir, f"{nm}.plan.json"), "w"), indent=1)
-            for fn, dst in (("request.json", f"{nm}.request.json"), ("netlist.cir", f"{nm}.netlist.cir")):
-                shutil.copyfile(os.path.join(reqdir, nm, fn), os.path.join(cdir, dst))
-            jobs.append(((rs["environment"].get("remote") or {}).get("job_id")) or "local (single-unit reference run)")
+        jobs = write_corner_bundle(cdir, reqdir, mine, records_dir=rdir, rid=rid)
         rec = {"record_id": rid, "slug": SLUG, "claim": CLAIM, "level": "transistor", "status": PROV,
                "seed": {"array": S["seeds_array"], "sampler": S["seeds_sampler"],
                         "rule": "klt monte_carlo.seed of request i = seed0 + i - 1; same seeds at every corner (paired draws)"},

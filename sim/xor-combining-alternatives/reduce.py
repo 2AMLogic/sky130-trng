@@ -56,7 +56,7 @@ from loadmod import load_module  # noqa: E402
 
 OP = load_module("operating_point", REPO / "sim" / "ro-array-operating-point" / "analysis" / "operating-point.py")
 MR = load_module("xor_alt_make_requests", HERE / "make-requests.py")
-from evidence_record import mint_record, new_record_id  # noqa: E402
+from evidence_record import mint_record, new_record_id, write_corner_bundle  # noqa: E402
 
 TOL_W90 = 0.05            # baseline control vs committed w_90
 TOL_T0 = 0.02             # baseline control vs committed loaded ring period
@@ -496,16 +496,9 @@ def emit_record(reqdir, author="loom-builder@sky130-trng"):
         f"Entropy-sizing inputs (`sim/ro-array-sizing/records/`): `{red['sizing_record']}`", "", "---", "",
     ]
     cdir = REPO / "sim" / SLUG / "corners" / rid
-    if cdir.exists():
-        raise ReductionError(f"{cdir} exists")
-    cdir.mkdir(parents=True)
+    # refuses (SystemExit) before touching anything if rid is taken, so the cleanup below never removes another bundle
+    write_corner_bundle(cdir, reqdir, chunks, records_dir=REPO / "sim" / SLUG / "records", rid=rid)
     try:
-        for name, plan, resp in chunks:
-            with gzip.open(cdir / f"{name}.klt-sim.json.gz", "wt") as fh:
-                json.dump(resp, fh, indent=1)
-            json.dump(plan, open(cdir / f"{name}.plan.json", "w"), indent=1)
-            for src, dst in (("request.json", f"{name}.request.json"), ("netlist.cir", f"{name}.netlist.cir")):
-                shutil.copyfile(os.path.join(reqdir, name, src), cdir / dst)
         summary = {
             "record_id": rid, "slug": SLUG, "claim": CLAIM, "level": "transistor",
             "status": "simulation-derived; provisional until silicon",

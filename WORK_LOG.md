@@ -2,6 +2,13 @@
 
 Chronological record of recently merged pull requests and closed issues.
 
+### 2026-11-06
+
+- **PR #443**: refactor(sim): share corner-bundle writer across sim reducers
+- **PR #442**: refactor: share one sha256_file helper across layout/ and signoff/
+- **Issue #392** (closed): Consolidate hand-rolled corner-bundle record minting in four sim reducers into evidence_record
+- **Issue #326** (closed): Consolidate ~18 duplicated sha256 file-hash helpers into one shared helper
+
 ### 2026-11-05
 
 - **PR #438**: sim: add DR-0017 provenance, partition check and obligations to whole-block tooling

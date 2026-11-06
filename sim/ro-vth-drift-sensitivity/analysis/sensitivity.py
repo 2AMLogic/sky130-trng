@@ -48,7 +48,7 @@ sys.path.insert(0, str(REPO / "sim" / "tests"))
 from loadmod import load_module  # noqa: E402
 import aging  # noqa: E402
 import campaign as C  # noqa: E402
-from evidence_record import git_short_sha  # noqa: E402
+from evidence_record import git_short_sha, write_corner_bundle  # noqa: E402
 
 SLUG = C.SLUG
 SENTENCE = "This is a sensitivity bound, not a lifetime prediction."
@@ -472,16 +472,7 @@ def emit_controls(ctldir):
     now = datetime.datetime.now(datetime.timezone.utc)
     rid = f"{now:%Y%m%d-%H%M%S}-{sha}"
     cdir, rdir = SLUGDIR / "corners" / rid, SLUGDIR / "records"
-    if (rdir / f"{rid}.json").exists() or cdir.exists():
-        raise SystemExit(f"error: {rid} exists")
-    cdir.mkdir(parents=True)
-    rdir.mkdir(exist_ok=True)
-    for n in names:
-        with gzip.open(cdir / f"{n}.klt-sim.json.gz", "wt") as fh:
-            json.dump(resps[n], fh, indent=1)
-        json.dump(plans[n], open(cdir / f"{n}.plan.json", "w"), indent=1)
-        for fn, dst in (("request.json", f"{n}.request.json"), ("netlist.cir", f"{n}.netlist.cir")):
-            shutil.copyfile(Path(ctldir) / n / fn, cdir / dst)
+    write_corner_bundle(cdir, ctldir, [(n, plans[n], resps[n]) for n in names], records_dir=rdir, rid=rid)
     info = ctl_info(plans)
     rec = {"record_id": rid, "slug": SLUG, "kind": "controls", "level": "transistor", "status": PROV,
            "claim": "Vth-shift wrapper controls (DC gate-offset probe, zero-shift equivalence, tt/27C/1.8V pilot); gate the full grid. " + SENTENCE,
@@ -735,17 +726,9 @@ def emit_record(reqdir, ctl_rid):
     now = datetime.datetime.now(datetime.timezone.utc)
     rid = f"{now:%Y%m%d-%H%M%S}-{sha}"
     cdir, rdir = SLUGDIR / "corners" / rid, SLUGDIR / "records"
-    if (rdir / f"{rid}.json").exists() or cdir.exists():
-        raise SystemExit(f"error: {rid} exists")
-    cdir.mkdir(parents=True)
-    jobs = []
+    jobs = [(rs.get("environment", {}).get("remote") or {}).get("job_id") for _, _, rs in chunks]
+    write_corner_bundle(cdir, reqdir, chunks, records_dir=rdir, rid=rid)
     for nm, pl, rs in chunks:
-        with gzip.open(cdir / f"{nm}.klt-sim.json.gz", "wt") as fh:
-            json.dump(rs, fh, indent=1)
-        json.dump(pl, open(cdir / f"{nm}.plan.json", "w"), indent=1)
-        for fn, dst in (("request.json", f"{nm}.request.json"), ("netlist.cir", f"{nm}.netlist.cir")):
-            shutil.copyfile(os.path.join(reqdir, nm, fn), cdir / dst)
-        jobs.append((rs.get("environment", {}).get("remote") or {}).get("job_id"))
         for ff in sorted(glob.glob(os.path.join(reqdir, nm, "resp.fail*.json"))):       # whole-request attempts that were superseded
             if os.path.getsize(ff):
                 with gzip.open(cdir / f"{nm}.failed-attempt{ff.split('resp.fail')[1].split('.')[0]}.json.gz", "wt") as fh:
