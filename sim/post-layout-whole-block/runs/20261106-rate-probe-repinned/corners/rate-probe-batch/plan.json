@@ -1,0 +1,73 @@
+{
+  "analog_partition_sha256": "ab2362ec6a80f39d1eecb6f298c07ff81b6a4fb0080115620de0fa33f9413f67",
+  "analysis": {
+    "args": "20p 100n",
+    "kind": "tran"
+  },
+  "corners": {
+    "process": [
+      "tt"
+    ],
+    "supply_v": {
+      "Vvdd": [
+        1.8
+      ],
+      "Vvddr1": [
+        1.8
+      ],
+      "Vvddr2": [
+        1.8
+      ],
+      "Vvddr3": [
+        1.8
+      ],
+      "Vvddr4": [
+        1.8
+      ]
+    },
+    "temperature_c": [
+      27.0
+    ]
+  },
+  "digital_gate_netlist_sha256": "9f3956848e6e75223f75bd154df905fecbb4e988593e78d1a92e347969fbf37f",
+  "flat_whole_netlist_sha256": "965f1e6c29d771d5b8e18a3ea66ccabf93f0a5eb14c3f0c23810f39ae1052c36",
+  "measurement_count": 9,
+  "name": "rate-probe-batch",
+  "netlist_sha256": "c5baf590a7365a5ae6a8eab788c0f6bdb1847b60220173ed139bdcd98f238ab8",
+  "partition_check": {
+    "analog_transistors": 264,
+    "analog_y_min_um": 250.0,
+    "digital_transistors": 25091,
+    "diode_instances": 1,
+    "port_count": 123,
+    "shared_nets": [
+      "clk",
+      "raw_bit",
+      "raw_valid",
+      "rst_n"
+    ],
+    "total_instances": 25356
+  },
+  "program": {
+    "cycles": 6,
+    "t0_ns": 320.0,
+    "t_stop_ns": 970.0,
+    "ts_ns": 100.0
+  },
+  "provenance": {
+    "analog": "transistor",
+    "digital": "gate-level"
+  },
+  "trng_whole_gds_sha256": "af2f8dfe2800599e97d769bdedd14924c9fa3f24fc7e1c4f43ccd72ac5572ddd",
+  "vih_fixed": 1.8,
+  "windows": {
+    "w1_ns": [
+      50.0,
+      250.0
+    ],
+    "w2_ns": [
+      520.0,
+      870.0
+    ]
+  }
+}
