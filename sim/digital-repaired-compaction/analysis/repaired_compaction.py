@@ -16,7 +16,6 @@ unsupported evidence never selects a candidate. Nothing is promoted.
 from __future__ import annotations
 
 import argparse
-import hashlib
 import importlib.util
 import json
 import sys
@@ -25,6 +24,8 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[3]
 STUDY = REPO_ROOT / "sim" / "digital-repaired-compaction"
 sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
+sys.path.insert(0, str(REPO_ROOT / "layout" / "bin"))
+from _hashing import sha256_file  # noqa: E402
 from evidence_record import mint_record, new_record_id  # noqa: E402
 
 _spec = importlib.util.spec_from_file_location(
@@ -43,7 +44,7 @@ def jl(p: Path):
 
 
 def sha(p: Path) -> str:
-    return "sha256:" + hashlib.sha256(p.read_bytes()).hexdigest()
+    return sha256_file(p, prefix=True)
 
 
 def req_diff(a: dict, b: dict, path="") -> list[str]:

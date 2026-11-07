@@ -52,7 +52,6 @@ from __future__ import annotations
 
 import argparse
 import gzip
-import hashlib
 import importlib.util
 import json
 import math
@@ -65,6 +64,8 @@ HERE = Path(__file__).resolve().parent.parent
 REPO = HERE.parent.parent
 SLUG = "ro-array-idle-leakage"
 sys.path.insert(0, str(REPO / "sim" / "bin"))
+sys.path.insert(0, str(REPO / "layout" / "bin"))
+from _hashing import sha256_file  # noqa: E402
 
 SYNTH_OUTPUT = REPO / "sim/digital-synthesis/runs/20260910-001436-a4c3194/50khz-constrained-synthesize-output.json"
 SYNTH_RECORD = "sim/digital-synthesis/records/20260910-001436-a4c3194"
@@ -144,7 +145,7 @@ def digital_leakage_by_view(liberty_dir, counts):
         if missing:
             raise SystemExit(f"error: {path} has no leakage entry for {missing}: wrong Liberty for this netlist")
         out[v] = total
-        sha[v] = hashlib.sha256(path.read_bytes()).hexdigest()
+        sha[v] = sha256_file(path)
     return out, sha
 
 

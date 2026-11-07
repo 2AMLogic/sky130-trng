@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import argparse
 import datetime
-import hashlib
 import json
 import subprocess
 import sys
@@ -19,6 +18,8 @@ sys.path.insert(0, str(HERE))
 import electrical as E  # noqa: E402
 
 ROOT = HERE.parents[2]
+sys.path.insert(0, str(ROOT / "layout" / "bin"))
+from _hashing import sha256_file  # noqa: E402
 
 
 def load(p):
@@ -26,7 +27,7 @@ def load(p):
 
 
 def sha(p):
-    return "sha256:" + hashlib.sha256(Path(p).read_bytes()).hexdigest()
+    return sha256_file(p, prefix=True)
 
 
 def fmt(x, n=3):

@@ -112,7 +112,6 @@ Exit status: ``0`` all requested corners passed and a record was written,
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import os
 import platform
@@ -133,6 +132,8 @@ DEFAULT_PEX_LIB = REPO_ROOT / "layout" / "pex" / "ro_ring5_pex.spice"
 
 sys.path.insert(0, str(REPO_ROOT / "design"))
 sys.path.insert(0, str(SIM_DIR / "bin"))
+sys.path.insert(0, str(REPO_ROOT / "layout" / "bin"))
+from _hashing import sha256_file  # noqa: E402
 import artifact_store  # noqa: E402
 from _pdk_search import (  # noqa: E402
     BUILTIN_SEARCH_ROOTS,
@@ -547,7 +548,7 @@ def netlist_provenance(paths: dict[str, Path]) -> dict[str, dict[str, str]]:
         except ValueError:
             rel = str(path)
         if path.is_file():
-            digest = hashlib.sha256(path.read_bytes()).hexdigest()
+            digest = sha256_file(path)
         else:
             digest = "(missing)"
         out[token] = {"path": rel, "sha256": digest}
