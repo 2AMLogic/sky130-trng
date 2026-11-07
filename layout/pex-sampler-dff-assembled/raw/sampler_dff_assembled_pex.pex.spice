@@ -4,6 +4,7 @@
 * - coupling: vertical overlap (crossover) unconditionally -- where one net's conductor on an adjacent metal level sits directly over another *distinct* net's conductor, that overlap area is charged between the two nets instead of to ground (issue #760) -- plus lateral (same-layer, sidewall) coupling, but only for a net pair naming one of the caller's declared `--critical-net` nets (issue #976): facing-edge length within that layer's own minimum-spacing lookback is charged between the two nets, *additively* (not deducted from either net's substrate fringe term, unlike the vertical case -- a known simplification). Any same-layer pair with neither side named `--critical-net`, and fringe shielding in general, are still not modelled
 * - resistance: single lumped series resistance per net, distributed as a star across that net's device terminals (issue #592) -- not a per-segment, distributed RC ladder, *unless* `--distributed-rc` names this net via `--critical-net` (issue #977, Epic #709 Phase 2b): then the net's terminals are ordered along their approximate physical spread and its total R/C is broken into a chain of per-segment resistors (segment length proportional to inter-terminal distance) with a ground capacitor at each terminal node (proportional to its adjacent segment length/2), instead of one star hub -- still an approximation (terminal position is a device-placement proxy, not true per-segment routing geometry), but a strictly finer-grained one than the single-hub star
 * - frequency: quasi-static -- one frequency-independent R and C per net; no skin effect, no distributed transmission-line behavior
+* - substrate tie: 1e+12 ohm to ground -- the substrate is capacitively floating in transient analysis (DC reference only); see --substrate-tie-ohms
 .GLOBAL vsubs
 
 * cell sampler_dff
@@ -33,20 +34,20 @@
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss
 * device instance $1 r0 *1 0.545,0.21 nfet
 X$1
-+ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y__t1
-+ a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via__t4
++ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y__t5
++ a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via__t3
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss__t0
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss__t5
 + sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
 * device instance $2 r0 *1 5.31,0.21 nfet
 X$2 a|d|tg_d_a__t1
-+ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y__t5
++ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y__t0
 + a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2__t5
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss__t6
 + sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
 * device instance $3 r0 *1 19.835,0.21 nfet
 X$3 a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y__t3
-+ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y__t6
++ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y__t1
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss__t4
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss__t7
 + sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
@@ -57,122 +58,122 @@ X$4 a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y__t2
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss__t8
 + sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
 * device instance $5 r0 *1 29.74,0.21 nfet
-X$5 a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y__t0
-+ a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via__t0
+X$5 a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y__t6
++ a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via__t4
 + a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via__t5
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss__t9
 + sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
 * device instance $6 r0 *1 36.545,0.21 nfet
 X$6
-+ a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y__t2
-+ a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via__t3
++ a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y__t3
++ a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via__t1
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss__t3
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss__t10
 + sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
 * device instance $7 r0 *1 49.03,0.21 nfet
-X$7 a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y__t4
-+ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y__t4
+X$7 a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y__t0
++ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y__t3
 + a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via__t4
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss__t11
 + sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
-* device instance $8 r0 *1 12.315,0.21 nfet
-X$8 \$7__t0 en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n__t0
+* device instance $8 r0 *1 12.565,0.21 nfet
+X$8 \$5__t0 en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n__t1
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss__t1
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss__t12
 + sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.2184 PS=2.62 PD=1.36
-* device instance $9 r0 *1 12.985,0.21 nfet
-X$9 a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y__t1
+* device instance $9 r0 *1 13.235,0.21 nfet
+X$9 a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y__t5
 + a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2__t0
-+ \$7__t1
++ \$5__t1
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss__t14
 + sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.2184 AD=0.3948 PS=1.36 PD=2.62
-* device instance $10 r0 *1 43.175,0.21 nfet
-X$10 \$11__t1 en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n__t1
+* device instance $10 r0 *1 43.425,0.21 nfet
+X$10 \$7__t1 en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n__t0
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss__t2
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss__t13
 + sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.2184 PS=2.62 PD=1.36
-* device instance $11 r0 *1 43.845,0.21 nfet
-X$11 a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y__t3
+* device instance $11 r0 *1 44.095,0.21 nfet
+X$11 a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y__t1
 + a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y__t0
-+ \$11__t0
++ \$7__t0
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss__t15
 + sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.2184 AD=0.3948 PS=1.36 PD=2.62
 * device instance $12 r0 *1 0.545,3.53 pfet
 X$12
-+ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y__t0
-+ a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via__t2
++ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y__t4
++ a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via__t0
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd__t11
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd__t0
 + sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
 * device instance $13 r0 *1 5.31,3.53 pfet
 X$13 a|d|tg_d_a__t0
-+ a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via__t3
-+ a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2__t1
++ a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via__t1
++ a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2__t2
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd__t1
 + sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
 * device instance $14 r0 *1 19.835,3.53 pfet
 X$14 a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y__t0
-+ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y__t5
++ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y__t0
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd__t12
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd__t2
 + sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
 * device instance $15 r0 *1 24.6,3.53 pfet
 X$15 a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y__t1
-+ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y__t2
-+ a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2__t2
++ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y__t1
++ a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2__t3
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd__t3
 + sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
 * device instance $16 r0 *1 29.74,3.53 pfet
-X$16 a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y__t2
-+ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y__t3
-+ a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via__t0
+X$16 a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y__t3
++ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y__t2
++ a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via__t2
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd__t4
 + sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
 * device instance $17 r0 *1 36.545,3.53 pfet
 X$17
-+ a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y__t1
-+ a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via__t2
++ a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y__t2
++ a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via__t0
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd__t13
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd__t5
 + sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
 * device instance $18 r0 *1 49.03,3.53 pfet
-X$18 a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y__t1
-+ a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via__t1
-+ a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via__t1
+X$18 a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y__t2
++ a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via__t2
++ a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via__t3
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd__t6
 + sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
-* device instance $19 r0 *1 12.115,3.74 pfet
+* device instance $19 r0 *1 12.115,4.19 pfet
 X$19 a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y__t4
 + en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n__t2
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd__t14
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd__t7
 + sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
-* device instance $20 r0 *1 13.405,3.74 pfet
+* device instance $20 r0 *1 13.405,4.19 pfet
 X$20
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd__t16
-+ a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2__t3
-+ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y__t3
++ a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2__t1
++ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y__t2
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd__t8
 + sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
-* device instance $21 r0 *1 42.975,3.74 pfet
-X$21 a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y__t2
+* device instance $21 r0 *1 42.975,4.19 pfet
+X$21 a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y__t4
 + en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n__t3
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd__t15
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd__t9
 + sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
-* device instance $22 r0 *1 44.265,3.74 pfet
+* device instance $22 r0 *1 44.265,4.19 pfet
 X$22
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd__t17
-+ a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y__t3
-+ a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y__t0
++ a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y__t1
++ a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y__t3
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd__t10
 + sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
-* device instance _11_t0 r0 *1 0,0 
-R_11_t0 \$11__t0 \$11 12.8
-* device instance _11_t1 r0 *1 0,0 
-R_11_t1 \$11__t1 \$11 12.8
-* device instance _11 r0 *1 0,0 
-C_11 \$11 vsubs 1.15618e-16
+* device instance _5_t0 r0 *1 0,0 
+R_5_t0 \$5__t0 \$5 12.8
+* device instance _5_t1 r0 *1 0,0 
+R_5_t1 \$5__t1 \$5 12.8
+* device instance _5 r0 *1 0,0 
+C_5 \$5 vsubs 1.15618e-16
 * device instance _7_t0 r0 *1 0,0 
 R_7_t0 \$7__t0 \$7 12.8
 * device instance _7_t1 r0 *1 0,0 
@@ -183,104 +184,102 @@ C_7 \$7 vsubs 1.15618e-16
 Ra_b_inv_q_a_inv_q_a_via_s_tg_fbs_b_tg_fbs_b_via_tg_s_b_tg_s_b_via_t0
 + a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via__t0
 + a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via
-+ 204.040461511
++ 65.5799158739
 * device instance a_b_inv_q_a_inv_q_a_via_s_tg_fbs_b_tg_fbs_b_via_tg_s_b_tg_s_b_via_t1 r0 *1 0,0 
 Ra_b_inv_q_a_inv_q_a_via_s_tg_fbs_b_tg_fbs_b_via_tg_s_b_tg_s_b_via_t1
 + a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via__t1
 + a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via
-+ 247.027895104
++ 65.5799158739
 * device instance a_b_inv_q_a_inv_q_a_via_s_tg_fbs_b_tg_fbs_b_via_tg_s_b_tg_s_b_via_t2 r0 *1 0,0 
 Ra_b_inv_q_a_inv_q_a_via_s_tg_fbs_b_tg_fbs_b_via_tg_s_b_tg_s_b_via_t2
 + a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via__t2
 + a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via
-+ 58.0186433859
++ 230.632009296
 * device instance a_b_inv_q_a_inv_q_a_via_s_tg_fbs_b_tg_fbs_b_via_tg_s_b_tg_s_b_via_t3 r0 *1 0,0 
 Ra_b_inv_q_a_inv_q_a_via_s_tg_fbs_b_tg_fbs_b_via_tg_s_b_tg_s_b_via_t3
 + a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via__t3
-+ a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via
-+ 58.0186433859
++ a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via 279.22177483
 * device instance a_b_inv_q_a_inv_q_a_via_s_tg_fbs_b_tg_fbs_b_via_tg_s_b_tg_s_b_via_t4 r0 *1 0,0 
 Ra_b_inv_q_a_inv_q_a_via_s_tg_fbs_b_tg_fbs_b_via_tg_s_b_tg_s_b_via_t4
 + a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via__t4
-+ a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via
-+ 247.027895104
++ a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via 279.22177483
 * device instance a_b_inv_q_a_inv_q_a_via_s_tg_fbs_b_tg_fbs_b_via_tg_s_b_tg_s_b_via_t5 r0 *1 0,0 
 Ra_b_inv_q_a_inv_q_a_via_s_tg_fbs_b_tg_fbs_b_via_tg_s_b_tg_s_b_via_t5
 + a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via__t5
 + a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via
-+ 204.040461511
++ 230.632009296
 * device instance a_b_inv_q_a_inv_q_a_via_s_tg_fbs_b_tg_fbs_b_via_tg_s_b_tg_s_b_via r0 *1 0,0 
 Ca_b_inv_q_a_inv_q_a_via_s_tg_fbs_b_tg_fbs_b_via_tg_s_b_tg_s_b_via
 + a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via vsubs
-+ 3.84792e-15
++ 3.962997e-15
 * device instance a_b_m_east_m_west_nand_m_a_nand_m_a_ext_via_nand_m_a_ext_via2_nand_m_a_stub_tg_d_b_tg_d_b_via_tg_d_b_via2_tg_fbm_b_tg_fbm_b_alt_via_tg_fbm_b_alt_via2_t0 r0 *1 0,0 
 Ra_b_m_east_m_west_nand_m_a_nand_m_a_ext_via_nand_m_a_ext_via2_nand_m_a_stub_tg_d_b_tg_d_b_via_tg_d_b_via2_tg_fbm_b_tg_fbm_b_alt_via_tg_fbm_b_alt_via2_t0
 + a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2__t0
 + a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2
-+ 54.9450724763
++ 60.1829866055
 * device instance a_b_m_east_m_west_nand_m_a_nand_m_a_ext_via_nand_m_a_ext_via2_nand_m_a_stub_tg_d_b_tg_d_b_via_tg_d_b_via2_tg_fbm_b_tg_fbm_b_alt_via_tg_fbm_b_alt_via2_t1 r0 *1 0,0 
 Ra_b_m_east_m_west_nand_m_a_nand_m_a_ext_via_nand_m_a_ext_via2_nand_m_a_stub_tg_d_b_tg_d_b_via_tg_d_b_via2_tg_fbm_b_tg_fbm_b_alt_via_tg_fbm_b_alt_via2_t1
 + a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2__t1
 + a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2
-+ 231.121281915
++ 68.7741894738
 * device instance a_b_m_east_m_west_nand_m_a_nand_m_a_ext_via_nand_m_a_ext_via2_nand_m_a_stub_tg_d_b_tg_d_b_via_tg_d_b_via2_tg_fbm_b_tg_fbm_b_alt_via_tg_fbm_b_alt_via2_t2 r0 *1 0,0 
 Ra_b_m_east_m_west_nand_m_a_nand_m_a_ext_via_nand_m_a_ext_via2_nand_m_a_stub_tg_d_b_tg_d_b_via_tg_d_b_via2_tg_fbm_b_tg_fbm_b_alt_via_tg_fbm_b_alt_via2_t2
 + a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2__t2
 + a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2
-+ 260.17724422
++ 261.497453093
 * device instance a_b_m_east_m_west_nand_m_a_nand_m_a_ext_via_nand_m_a_ext_via2_nand_m_a_stub_tg_d_b_tg_d_b_via_tg_d_b_via2_tg_fbm_b_tg_fbm_b_alt_via_tg_fbm_b_alt_via2_t3 r0 *1 0,0 
 Ra_b_m_east_m_west_nand_m_a_nand_m_a_ext_via_nand_m_a_ext_via2_nand_m_a_stub_tg_d_b_tg_d_b_via_tg_d_b_via2_tg_fbm_b_tg_fbm_b_alt_via_tg_fbm_b_alt_via2_t3
 + a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2__t3
 + a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2
-+ 52.0483618499
++ 291.982605261
 * device instance a_b_m_east_m_west_nand_m_a_nand_m_a_ext_via_nand_m_a_ext_via2_nand_m_a_stub_tg_d_b_tg_d_b_via_tg_d_b_via2_tg_fbm_b_tg_fbm_b_alt_via_tg_fbm_b_alt_via2_t4 r0 *1 0,0 
 Ra_b_m_east_m_west_nand_m_a_nand_m_a_ext_via_nand_m_a_ext_via2_nand_m_a_stub_tg_d_b_tg_d_b_via_tg_d_b_via2_tg_fbm_b_tg_fbm_b_alt_via_tg_fbm_b_alt_via2_t4
 + a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2__t4
 + a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2
-+ 260.45877702
++ 292.98458946
 * device instance a_b_m_east_m_west_nand_m_a_nand_m_a_ext_via_nand_m_a_ext_via2_nand_m_a_stub_tg_d_b_tg_d_b_via_tg_d_b_via2_tg_fbm_b_tg_fbm_b_alt_via_tg_fbm_b_alt_via2_t5 r0 *1 0,0 
 Ra_b_m_east_m_west_nand_m_a_nand_m_a_ext_via_nand_m_a_ext_via2_nand_m_a_stub_tg_d_b_tg_d_b_via_tg_d_b_via2_tg_fbm_b_tg_fbm_b_alt_via_tg_fbm_b_alt_via2_t5
 + a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2__t5
 + a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2
-+ 231.43816252
++ 262.615776106
 * device instance a_b_m_east_m_west_nand_m_a_nand_m_a_ext_via_nand_m_a_ext_via2_nand_m_a_stub_tg_d_b_tg_d_b_via_tg_d_b_via2_tg_fbm_b_tg_fbm_b_alt_via_tg_fbm_b_alt_via2 r0 *1 0,0 
 Ca_b_m_east_m_west_nand_m_a_nand_m_a_ext_via_nand_m_a_ext_via2_nand_m_a_stub_tg_d_b_tg_d_b_via_tg_d_b_via2_tg_fbm_b_tg_fbm_b_alt_via_tg_fbm_b_alt_via2
 + a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2
-+ vsubs 3.815817e-15
++ vsubs 3.896373e-15
 * device instance a_clk_ctrl_ctrlb_inv_clk_a_inv_clk_clk_via_tg_d_ctrl_tg_d_ctrl_via_tg_fbm_ctrlb_tg_fbm_ctrlb_via_tg_fbs_ctrl_tg_fbs_ctrl_via_tg_s_ctrlb_tg_s_ctrlb_via_t0 r0 *1 0,0 
 Ra_clk_ctrl_ctrlb_inv_clk_a_inv_clk_clk_via_tg_d_ctrl_tg_d_ctrl_via_tg_fbm_ctrlb_tg_fbm_ctrlb_via_tg_fbs_ctrl_tg_fbs_ctrl_via_tg_s_ctrlb_tg_s_ctrlb_via_t0
 + a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via__t0
 + a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via
-+ 94.25285816
++ 226.440636508
 * device instance a_clk_ctrl_ctrlb_inv_clk_a_inv_clk_clk_via_tg_d_ctrl_tg_d_ctrl_via_tg_fbm_ctrlb_tg_fbm_ctrlb_via_tg_fbs_ctrl_tg_fbs_ctrl_via_tg_s_ctrlb_tg_s_ctrlb_via_t1 r0 *1 0,0 
 Ra_clk_ctrl_ctrlb_inv_clk_a_inv_clk_clk_via_tg_d_ctrl_tg_d_ctrl_via_tg_fbm_ctrlb_tg_fbm_ctrlb_via_tg_fbs_ctrl_tg_fbs_ctrl_via_tg_s_ctrlb_tg_s_ctrlb_via_t1
 + a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via__t1
 + a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via
-+ 250.855551758
++ 166.275078499
 * device instance a_clk_ctrl_ctrlb_inv_clk_a_inv_clk_clk_via_tg_d_ctrl_tg_d_ctrl_via_tg_fbm_ctrlb_tg_fbm_ctrlb_via_tg_fbs_ctrl_tg_fbs_ctrl_via_tg_s_ctrlb_tg_s_ctrlb_via_t2 r0 *1 0,0 
 Ra_clk_ctrl_ctrlb_inv_clk_a_inv_clk_clk_via_tg_d_ctrl_tg_d_ctrl_via_tg_fbm_ctrlb_tg_fbm_ctrlb_via_tg_fbs_ctrl_tg_fbs_ctrl_via_tg_s_ctrlb_tg_s_ctrlb_via_t2
 + a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via__t2
 + a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via
-+ 145.293871858
++ 390.958614326
 * device instance a_clk_ctrl_ctrlb_inv_clk_a_inv_clk_clk_via_tg_d_ctrl_tg_d_ctrl_via_tg_fbm_ctrlb_tg_fbm_ctrlb_via_tg_fbs_ctrl_tg_fbs_ctrl_via_tg_s_ctrlb_tg_s_ctrlb_via_t3 r0 *1 0,0 
 Ra_clk_ctrl_ctrlb_inv_clk_a_inv_clk_clk_via_tg_d_ctrl_tg_d_ctrl_via_tg_fbm_ctrlb_tg_fbm_ctrlb_via_tg_fbs_ctrl_tg_fbs_ctrl_via_tg_s_ctrlb_tg_s_ctrlb_via_t3
 + a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via__t3
 + a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via
-+ 106.689109875
++ 226.440636508
 * device instance a_clk_ctrl_ctrlb_inv_clk_a_inv_clk_clk_via_tg_d_ctrl_tg_d_ctrl_via_tg_fbm_ctrlb_tg_fbm_ctrlb_via_tg_fbs_ctrl_tg_fbs_ctrl_via_tg_s_ctrlb_tg_s_ctrlb_via_t4 r0 *1 0,0 
 Ra_clk_ctrl_ctrlb_inv_clk_a_inv_clk_clk_via_tg_d_ctrl_tg_d_ctrl_via_tg_fbm_ctrlb_tg_fbm_ctrlb_via_tg_fbs_ctrl_tg_fbs_ctrl_via_tg_s_ctrlb_tg_s_ctrlb_via_t4
 + a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via__t4
 + a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via
-+ 145.293871858
++ 146.893168456
 * device instance a_clk_ctrl_ctrlb_inv_clk_a_inv_clk_clk_via_tg_d_ctrl_tg_d_ctrl_via_tg_fbm_ctrlb_tg_fbm_ctrlb_via_tg_fbs_ctrl_tg_fbs_ctrl_via_tg_s_ctrlb_tg_s_ctrlb_via_t5 r0 *1 0,0 
 Ra_clk_ctrl_ctrlb_inv_clk_a_inv_clk_clk_via_tg_d_ctrl_tg_d_ctrl_via_tg_fbm_ctrlb_tg_fbm_ctrlb_via_tg_fbs_ctrl_tg_fbs_ctrl_via_tg_s_ctrlb_tg_s_ctrlb_via_t5
 + a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via__t5
 + a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via
-+ 53.1369364906
++ 82.8139657037
 * device instance a_clk_ctrl_ctrlb_inv_clk_a_inv_clk_clk_via_tg_d_ctrl_tg_d_ctrl_via_tg_fbm_ctrlb_tg_fbm_ctrlb_via_tg_fbs_ctrl_tg_fbs_ctrl_via_tg_s_ctrlb_tg_s_ctrlb_via r0 *1 0,0 
 Ca_clk_ctrl_ctrlb_inv_clk_a_inv_clk_clk_via_tg_d_ctrl_tg_d_ctrl_via_tg_fbm_ctrlb_tg_fbm_ctrlb_via_tg_fbs_ctrl_tg_fbs_ctrl_via_tg_s_ctrlb_tg_s_ctrlb_via
 + a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via
-+ vsubs 7.213055e-15
++ vsubs 7.524978e-15
 * device instance a_d_tg_d_a_t0 r0 *1 0,0 
 Ra_d_tg_d_a_t0 a|d|tg_d_a__t0 a|d|tg_d_a 207.64565
 * device instance a_d_tg_d_a_t1 r0 *1 0,0 
@@ -290,34 +289,34 @@ Ca_d_tg_d_a a|d|tg_d_a vsubs 6.0717e-16
 * device instance a_inv_mc_a_mb_mnab_y_mpa_y_mpb_y_nand_m_y_tg_s_a_y_t0 r0 *1 0,0 
 Ra_inv_mc_a_mb_mnab_y_mpa_y_mpb_y_nand_m_y_tg_s_a_y_t0
 + a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y__t0
-+ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y 189.921079219
++ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y 26.6433173121
 * device instance a_inv_mc_a_mb_mnab_y_mpa_y_mpb_y_nand_m_y_tg_s_a_y_t1 r0 *1 0,0 
 Ra_inv_mc_a_mb_mnab_y_mpa_y_mpb_y_nand_m_y_tg_s_a_y_t1
 + a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y__t1
-+ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y 128.808394178
++ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y 44.8508293778
 * device instance a_inv_mc_a_mb_mnab_y_mpa_y_mpb_y_nand_m_y_tg_s_a_y_t2 r0 *1 0,0 
 Ra_inv_mc_a_mb_mnab_y_mpa_y_mpb_y_nand_m_y_tg_s_a_y_t2
 + a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y__t2
-+ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y 188.133983991
++ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y 141.085234372
 * device instance a_inv_mc_a_mb_mnab_y_mpa_y_mpb_y_nand_m_y_tg_s_a_y_t3 r0 *1 0,0 
 Ra_inv_mc_a_mb_mnab_y_mpa_y_mpb_y_nand_m_y_tg_s_a_y_t3
 + a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y__t3
-+ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y 119.440616038
++ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y 217.059082598
 * device instance a_inv_mc_a_mb_mnab_y_mpa_y_mpb_y_nand_m_y_tg_s_a_y_t4 r0 *1 0,0 
 Ra_inv_mc_a_mb_mnab_y_mpa_y_mpb_y_nand_m_y_tg_s_a_y_t4
 + a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y__t4
-+ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y 142.710836615
++ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y 167.783594207
 * device instance a_inv_mc_a_mb_mnab_y_mpa_y_mpb_y_nand_m_y_tg_s_a_y_t5 r0 *1 0,0 
 Ra_inv_mc_a_mb_mnab_y_mpa_y_mpb_y_nand_m_y_tg_s_a_y_t5
 + a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y__t5
-+ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y 25.4148600674
++ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y 145.790727379
 * device instance a_inv_mc_a_mb_mnab_y_mpa_y_mpb_y_nand_m_y_tg_s_a_y_t6 r0 *1 0,0 
 Ra_inv_mc_a_mb_mnab_y_mpa_y_mpb_y_nand_m_y_tg_s_a_y_t6
 + a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y__t6
-+ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y 36.3529298905
++ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y 220.037214754
 * device instance a_inv_mc_a_mb_mnab_y_mpa_y_mpb_y_nand_m_y_tg_s_a_y r0 *1 0,0 
 Ca_inv_mc_a_mb_mnab_y_mpa_y_mpb_y_nand_m_y_tg_s_a_y
-+ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y vsubs 4.013475e-15
++ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y vsubs 4.161644e-15
 * device instance a_inv_mc_y_inv_mc_y_via_mc_tg_fbm_a_tg_fbm_a_via_y_t0 r0 *1 0,0 
 Ra_inv_mc_y_inv_mc_y_via_mc_tg_fbm_a_tg_fbm_a_via_y_t0
 + a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y__t0
@@ -341,280 +340,280 @@ Ca_inv_mc_y_inv_mc_y_via_mc_tg_fbm_a_tg_fbm_a_via_y
 Ra_inv_q_y_inv_q_y_via_inv_q_y_via2_nand_s2_a_nand_s2_a_stub_nand_s2_a_via_nand_s2_a_via2_q_y_t0
 + a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y__t0
 + a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y
-+ 194.850123448
++ 236.747864158
 * device instance a_inv_q_y_inv_q_y_via_inv_q_y_via2_nand_s2_a_nand_s2_a_stub_nand_s2_a_via_nand_s2_a_via2_q_y_t1 r0 *1 0,0 
 Ra_inv_q_y_inv_q_y_via_inv_q_y_via2_nand_s2_a_nand_s2_a_stub_nand_s2_a_via_nand_s2_a_via2_q_y_t1
 + a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y__t1
 + a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y
-+ 202.157775401
++ 254.024587343
 * device instance a_inv_q_y_inv_q_y_via_inv_q_y_via2_nand_s2_a_nand_s2_a_stub_nand_s2_a_via_nand_s2_a_via2_q_y_t2 r0 *1 0,0 
 Ra_inv_q_y_inv_q_y_via_inv_q_y_via2_nand_s2_a_nand_s2_a_stub_nand_s2_a_via_nand_s2_a_via2_q_y_t2
 + a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y__t2
 + a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y
-+ 204.258816542
++ 233.614896758
 * device instance a_inv_q_y_inv_q_y_via_inv_q_y_via2_nand_s2_a_nand_s2_a_stub_nand_s2_a_via_nand_s2_a_via2_q_y_t3 r0 *1 0,0 
 Ra_inv_q_y_inv_q_y_via_inv_q_y_via2_nand_s2_a_nand_s2_a_stub_nand_s2_a_via_nand_s2_a_via2_q_y_t3
 + a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y__t3
 + a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y
-+ 215.871984609
++ 241.108451742
 * device instance a_inv_q_y_inv_q_y_via_inv_q_y_via2_nand_s2_a_nand_s2_a_stub_nand_s2_a_via_nand_s2_a_via2_q_y r0 *1 0,0 
 Ca_inv_q_y_inv_q_y_via_inv_q_y_via2_nand_s2_a_nand_s2_a_stub_nand_s2_a_via_nand_s2_a_via2_q_y
 + a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y
-+ vsubs 2.217373e-15
++ vsubs 2.344911e-15
 * device instance a_mnab_y_mpa_y_mpb_y_nand_s2_y_qb_tg_fbs_a_y_t0 r0 *1 0,0 
 Ra_mnab_y_mpa_y_mpb_y_nand_s2_y_qb_tg_fbs_a_y_t0
 + a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y__t0
-+ a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y 67.6227277536
++ a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y 119.850286886
 * device instance a_mnab_y_mpa_y_mpb_y_nand_s2_y_qb_tg_fbs_a_y_t1 r0 *1 0,0 
 Ra_mnab_y_mpa_y_mpb_y_nand_s2_y_qb_tg_fbs_a_y_t1
 + a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y__t1
-+ a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y 108.750076347
++ a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y 88.9484650974
 * device instance a_mnab_y_mpa_y_mpb_y_nand_s2_y_qb_tg_fbs_a_y_t2 r0 *1 0,0 
 Ra_mnab_y_mpa_y_mpb_y_nand_s2_y_qb_tg_fbs_a_y_t2
 + a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y__t2
-+ a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y 101.428926114
++ a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y 102.854507587
 * device instance a_mnab_y_mpa_y_mpb_y_nand_s2_y_qb_tg_fbs_a_y_t3 r0 *1 0,0 
 Ra_mnab_y_mpa_y_mpb_y_nand_s2_y_qb_tg_fbs_a_y_t3
 + a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y__t3
-+ a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y 90.9332423319
++ a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y 73.0356963663
 * device instance a_mnab_y_mpa_y_mpb_y_nand_s2_y_qb_tg_fbs_a_y_t4 r0 *1 0,0 
 Ra_mnab_y_mpa_y_mpb_y_nand_s2_y_qb_tg_fbs_a_y_t4
 + a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y__t4
-+ a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y 120.815827453
++ a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y 104.443944063
 * device instance a_mnab_y_mpa_y_mpb_y_nand_s2_y_qb_tg_fbs_a_y r0 *1 0,0 
 Ca_mnab_y_mpa_y_mpb_y_nand_s2_y_qb_tg_fbs_a_y
-+ a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y vsubs 2.242968e-15
++ a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y vsubs 2.243998e-15
 * device instance clkb_clkb_bridge1_clkb_bridge2_clkb_mid_clkb_w_ctrl_ctrlb_inv_clk_y_tg_d_ctrlb_tg_fbm_ctrl_tg_fbs_ctrlb_tg_s_ctrl_y_t0 r0 *1 0,0 
 Rclkb_clkb_bridge1_clkb_bridge2_clkb_mid_clkb_w_ctrl_ctrlb_inv_clk_y_tg_d_ctrlb_tg_fbm_ctrl_tg_fbs_ctrlb_tg_s_ctrl_y_t0
 + clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y__t0
 + clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y
-+ 161.077076378
++ 159.961351597
 * device instance clkb_clkb_bridge1_clkb_bridge2_clkb_mid_clkb_w_ctrl_ctrlb_inv_clk_y_tg_d_ctrlb_tg_fbm_ctrl_tg_fbs_ctrlb_tg_s_ctrl_y_t1 r0 *1 0,0 
 Rclkb_clkb_bridge1_clkb_bridge2_clkb_mid_clkb_w_ctrl_ctrlb_inv_clk_y_tg_d_ctrlb_tg_fbm_ctrl_tg_fbs_ctrlb_tg_s_ctrl_y_t1
 + clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y__t1
 + clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y
-+ 161.077076378
++ 79.6693888508
 * device instance clkb_clkb_bridge1_clkb_bridge2_clkb_mid_clkb_w_ctrl_ctrlb_inv_clk_y_tg_d_ctrlb_tg_fbm_ctrl_tg_fbs_ctrlb_tg_s_ctrl_y_t2 r0 *1 0,0 
 Rclkb_clkb_bridge1_clkb_bridge2_clkb_mid_clkb_w_ctrl_ctrlb_inv_clk_y_tg_d_ctrlb_tg_fbm_ctrl_tg_fbs_ctrlb_tg_s_ctrl_y_t2
 + clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y__t2
 + clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y
-+ 58.9091767475
++ 141.315403239
 * device instance clkb_clkb_bridge1_clkb_bridge2_clkb_mid_clkb_w_ctrl_ctrlb_inv_clk_y_tg_d_ctrlb_tg_fbm_ctrl_tg_fbs_ctrlb_tg_s_ctrl_y_t3 r0 *1 0,0 
 Rclkb_clkb_bridge1_clkb_bridge2_clkb_mid_clkb_w_ctrl_ctrlb_inv_clk_y_tg_d_ctrlb_tg_fbm_ctrl_tg_fbs_ctrlb_tg_s_ctrl_y_t3
 + clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y__t3
 + clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y
-+ 104.491501524
++ 376.113299304
 * device instance clkb_clkb_bridge1_clkb_bridge2_clkb_mid_clkb_w_ctrl_ctrlb_inv_clk_y_tg_d_ctrlb_tg_fbm_ctrl_tg_fbs_ctrlb_tg_s_ctrl_y_t4 r0 *1 0,0 
 Rclkb_clkb_bridge1_clkb_bridge2_clkb_mid_clkb_w_ctrl_ctrlb_inv_clk_y_tg_d_ctrlb_tg_fbm_ctrl_tg_fbs_ctrlb_tg_s_ctrl_y_t4
 + clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y__t4
 + clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y
-+ 278.105871595
++ 217.842328504
 * device instance clkb_clkb_bridge1_clkb_bridge2_clkb_mid_clkb_w_ctrl_ctrlb_inv_clk_y_tg_d_ctrlb_tg_fbm_ctrl_tg_fbs_ctrlb_tg_s_ctrl_y_t5 r0 *1 0,0 
 Rclkb_clkb_bridge1_clkb_bridge2_clkb_mid_clkb_w_ctrl_ctrlb_inv_clk_y_tg_d_ctrlb_tg_fbm_ctrl_tg_fbs_ctrlb_tg_s_ctrl_y_t5
 + clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y__t5
 + clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y
-+ 118.278697376
++ 217.842328504
 * device instance clkb_clkb_bridge1_clkb_bridge2_clkb_mid_clkb_w_ctrl_ctrlb_inv_clk_y_tg_d_ctrlb_tg_fbm_ctrl_tg_fbs_ctrlb_tg_s_ctrl_y r0 *1 0,0 
 Cclkb_clkb_bridge1_clkb_bridge2_clkb_mid_clkb_w_ctrl_ctrlb_inv_clk_y_tg_d_ctrlb_tg_fbm_ctrl_tg_fbs_ctrlb_tg_s_ctrl_y
 + clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y
-+ vsubs 6.708136e-15
++ vsubs 6.915212e-15
 * device instance en_nand_m_en_nand_m_en_via_nand_s2_en_nand_s2_en_via_rst_n_t0 r0 *1 0,0 
 Ren_nand_m_en_nand_m_en_via_nand_s2_en_nand_s2_en_via_rst_n_t0
 + en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n__t0
-+ en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n 164.82474871
++ en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n 270.193455106
 * device instance en_nand_m_en_nand_m_en_via_nand_s2_en_nand_s2_en_via_rst_n_t1 r0 *1 0,0 
 Ren_nand_m_en_nand_m_en_via_nand_s2_en_nand_s2_en_via_rst_n_t1
 + en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n__t1
-+ en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n 166.94715129
++ en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n 262.552094894
 * device instance en_nand_m_en_nand_m_en_via_nand_s2_en_nand_s2_en_via_rst_n_t2 r0 *1 0,0 
 Ren_nand_m_en_nand_m_en_via_nand_s2_en_nand_s2_en_via_rst_n_t2
 + en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n__t2
-+ en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n 166.94715129
++ en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n 270.193455106
 * device instance en_nand_m_en_nand_m_en_via_nand_s2_en_nand_s2_en_via_rst_n_t3 r0 *1 0,0 
 Ren_nand_m_en_nand_m_en_via_nand_s2_en_nand_s2_en_via_rst_n_t3
 + en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n__t3
-+ en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n 164.82474871
++ en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n 262.552094894
 * device instance en_nand_m_en_nand_m_en_via_nand_s2_en_nand_s2_en_via_rst_n r0 *1 0,0 
 Cen_nand_m_en_nand_m_en_via_nand_s2_en_nand_s2_en_via_rst_n
-+ en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n vsubs 3.866751e-15
++ en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n vsubs 4.172634e-15
 * device instance inv_clk_vdd_inv_mc_vdd_inv_q_vdd_mpa_py_mpb_py_nand_m_vdd_nand_s2_vdd_nwell_vdd_tg_d_vdd_tg_fbm_vdd_tg_fbs_vdd_tg_s_vdd_vdd_t0 r0 *1 0,0 
 Rinv_clk_vdd_inv_mc_vdd_inv_q_vdd_mpa_py_mpb_py_nand_m_vdd_nand_s2_vdd_nwell_vdd_tg_d_vdd_tg_fbm_vdd_tg_fbs_vdd_tg_s_vdd_vdd_t0
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd__t0
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
-+ 156.115471483
++ 155.953980352
 * device instance inv_clk_vdd_inv_mc_vdd_inv_q_vdd_mpa_py_mpb_py_nand_m_vdd_nand_s2_vdd_nwell_vdd_tg_d_vdd_tg_fbm_vdd_tg_fbs_vdd_tg_s_vdd_vdd_t1 r0 *1 0,0 
 Rinv_clk_vdd_inv_mc_vdd_inv_q_vdd_mpa_py_mpb_py_nand_m_vdd_nand_s2_vdd_nwell_vdd_tg_d_vdd_tg_fbm_vdd_tg_fbs_vdd_tg_s_vdd_vdd_t1
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd__t1
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
-+ 125.561886066
++ 125.436466342
 * device instance inv_clk_vdd_inv_mc_vdd_inv_q_vdd_mpa_py_mpb_py_nand_m_vdd_nand_s2_vdd_nwell_vdd_tg_d_vdd_tg_fbm_vdd_tg_fbs_vdd_tg_s_vdd_vdd_t2 r0 *1 0,0 
 Rinv_clk_vdd_inv_mc_vdd_inv_q_vdd_mpa_py_mpb_py_nand_m_vdd_nand_s2_vdd_nwell_vdd_tg_d_vdd_tg_fbm_vdd_tg_fbs_vdd_tg_s_vdd_vdd_t2
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd__t2
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
-+ 32.4295957445
++ 32.4428688067
 * device instance inv_clk_vdd_inv_mc_vdd_inv_q_vdd_mpa_py_mpb_py_nand_m_vdd_nand_s2_vdd_nwell_vdd_tg_d_vdd_tg_fbm_vdd_tg_fbs_vdd_tg_s_vdd_vdd_t3 r0 *1 0,0 
 Rinv_clk_vdd_inv_mc_vdd_inv_q_vdd_mpa_py_mpb_py_nand_m_vdd_nand_s2_vdd_nwell_vdd_tg_d_vdd_tg_fbm_vdd_tg_fbs_vdd_tg_s_vdd_vdd_t3
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd__t3
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
-+ 1.96362993709
++ 2.64952526992
 * device instance inv_clk_vdd_inv_mc_vdd_inv_q_vdd_mpa_py_mpb_py_nand_m_vdd_nand_s2_vdd_nwell_vdd_tg_d_vdd_tg_fbm_vdd_tg_fbs_vdd_tg_s_vdd_vdd_t4 r0 *1 0,0 
 Rinv_clk_vdd_inv_mc_vdd_inv_q_vdd_mpa_py_mpb_py_nand_m_vdd_nand_s2_vdd_nwell_vdd_tg_d_vdd_tg_fbm_vdd_tg_fbs_vdd_tg_s_vdd_vdd_t4
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd__t4
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
-+ 31.0939697461
++ 31.1108099375
 * device instance inv_clk_vdd_inv_mc_vdd_inv_q_vdd_mpa_py_mpb_py_nand_m_vdd_nand_s2_vdd_nwell_vdd_tg_d_vdd_tg_fbm_vdd_tg_fbs_vdd_tg_s_vdd_vdd_t5 r0 *1 0,0 
 Rinv_clk_vdd_inv_mc_vdd_inv_q_vdd_mpa_py_mpb_py_nand_m_vdd_nand_s2_vdd_nwell_vdd_tg_d_vdd_tg_fbm_vdd_tg_fbs_vdd_tg_s_vdd_vdd_t5
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd__t5
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
-+ 74.7252440485
++ 74.6643257628
 * device instance inv_clk_vdd_inv_mc_vdd_inv_q_vdd_mpa_py_mpb_py_nand_m_vdd_nand_s2_vdd_nwell_vdd_tg_d_vdd_tg_fbm_vdd_tg_fbs_vdd_tg_s_vdd_vdd_t6 r0 *1 0,0 
 Rinv_clk_vdd_inv_mc_vdd_inv_q_vdd_mpa_py_mpb_py_nand_m_vdd_nand_s2_vdd_nwell_vdd_tg_d_vdd_tg_fbm_vdd_tg_fbs_vdd_tg_s_vdd_vdd_t6
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd__t6
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
-+ 154.77961812
++ 154.619683667
 * device instance inv_clk_vdd_inv_mc_vdd_inv_q_vdd_mpa_py_mpb_py_nand_m_vdd_nand_s2_vdd_nwell_vdd_tg_d_vdd_tg_fbm_vdd_tg_fbs_vdd_tg_s_vdd_vdd_t7 r0 *1 0,0 
 Rinv_clk_vdd_inv_mc_vdd_inv_q_vdd_mpa_py_mpb_py_nand_m_vdd_nand_s2_vdd_nwell_vdd_tg_d_vdd_tg_fbm_vdd_tg_fbs_vdd_tg_s_vdd_vdd_t7
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd__t7
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
-+ 81.9292375845
++ 81.869429684
 * device instance inv_clk_vdd_inv_mc_vdd_inv_q_vdd_mpa_py_mpb_py_nand_m_vdd_nand_s2_vdd_nwell_vdd_tg_d_vdd_tg_fbm_vdd_tg_fbs_vdd_tg_s_vdd_vdd_t8 r0 *1 0,0 
 Rinv_clk_vdd_inv_mc_vdd_inv_q_vdd_mpa_py_mpb_py_nand_m_vdd_nand_s2_vdd_nwell_vdd_tg_d_vdd_tg_fbm_vdd_tg_fbs_vdd_tg_s_vdd_vdd_t8
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd__t8
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
-+ 73.6579558033
++ 73.6106417658
 * device instance inv_clk_vdd_inv_mc_vdd_inv_q_vdd_mpa_py_mpb_py_nand_m_vdd_nand_s2_vdd_nwell_vdd_tg_d_vdd_tg_fbm_vdd_tg_fbs_vdd_tg_s_vdd_vdd_t9 r0 *1 0,0 
 Rinv_clk_vdd_inv_mc_vdd_inv_q_vdd_mpa_py_mpb_py_nand_m_vdd_nand_s2_vdd_nwell_vdd_tg_d_vdd_tg_fbm_vdd_tg_fbs_vdd_tg_s_vdd_vdd_t9
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd__t9
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
-+ 115.955344378
++ 115.849238054
 * device instance inv_clk_vdd_inv_mc_vdd_inv_q_vdd_mpa_py_mpb_py_nand_m_vdd_nand_s2_vdd_nwell_vdd_tg_d_vdd_tg_fbm_vdd_tg_fbs_vdd_tg_s_vdd_vdd_t10 r0 *1 0,0 
 Rinv_clk_vdd_inv_mc_vdd_inv_q_vdd_mpa_py_mpb_py_nand_m_vdd_nand_s2_vdd_nwell_vdd_tg_d_vdd_tg_fbm_vdd_tg_fbs_vdd_tg_s_vdd_vdd_t10
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd__t10
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
-+ 124.226849023
++ 124.110222967
 * device instance inv_clk_vdd_inv_mc_vdd_inv_q_vdd_mpa_py_mpb_py_nand_m_vdd_nand_s2_vdd_nwell_vdd_tg_d_vdd_tg_fbm_vdd_tg_fbs_vdd_tg_s_vdd_vdd_t11 r0 *1 0,0 
 Rinv_clk_vdd_inv_mc_vdd_inv_q_vdd_mpa_py_mpb_py_nand_m_vdd_nand_s2_vdd_nwell_vdd_tg_d_vdd_tg_fbm_vdd_tg_fbs_vdd_tg_s_vdd_vdd_t11
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd__t11
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
-+ 156.115471483
++ 155.953980352
 * device instance inv_clk_vdd_inv_mc_vdd_inv_q_vdd_mpa_py_mpb_py_nand_m_vdd_nand_s2_vdd_nwell_vdd_tg_d_vdd_tg_fbm_vdd_tg_fbs_vdd_tg_s_vdd_vdd_t12 r0 *1 0,0 
 Rinv_clk_vdd_inv_mc_vdd_inv_q_vdd_mpa_py_mpb_py_nand_m_vdd_nand_s2_vdd_nwell_vdd_tg_d_vdd_tg_fbm_vdd_tg_fbs_vdd_tg_s_vdd_vdd_t12
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd__t12
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
-+ 32.4295957445
++ 32.4428688067
 * device instance inv_clk_vdd_inv_mc_vdd_inv_q_vdd_mpa_py_mpb_py_nand_m_vdd_nand_s2_vdd_nwell_vdd_tg_d_vdd_tg_fbm_vdd_tg_fbs_vdd_tg_s_vdd_vdd_t13 r0 *1 0,0 
 Rinv_clk_vdd_inv_mc_vdd_inv_q_vdd_mpa_py_mpb_py_nand_m_vdd_nand_s2_vdd_nwell_vdd_tg_d_vdd_tg_fbm_vdd_tg_fbs_vdd_tg_s_vdd_vdd_t13
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd__t13
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
-+ 74.7252440485
++ 74.6643257628
 * device instance inv_clk_vdd_inv_mc_vdd_inv_q_vdd_mpa_py_mpb_py_nand_m_vdd_nand_s2_vdd_nwell_vdd_tg_d_vdd_tg_fbm_vdd_tg_fbs_vdd_tg_s_vdd_vdd_t14 r0 *1 0,0 
 Rinv_clk_vdd_inv_mc_vdd_inv_q_vdd_mpa_py_mpb_py_nand_m_vdd_nand_s2_vdd_nwell_vdd_tg_d_vdd_tg_fbm_vdd_tg_fbs_vdd_tg_s_vdd_vdd_t14
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd__t14
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
-+ 81.9292375845
++ 81.869429684
 * device instance inv_clk_vdd_inv_mc_vdd_inv_q_vdd_mpa_py_mpb_py_nand_m_vdd_nand_s2_vdd_nwell_vdd_tg_d_vdd_tg_fbm_vdd_tg_fbs_vdd_tg_s_vdd_vdd_t15 r0 *1 0,0 
 Rinv_clk_vdd_inv_mc_vdd_inv_q_vdd_mpa_py_mpb_py_nand_m_vdd_nand_s2_vdd_nwell_vdd_tg_d_vdd_tg_fbm_vdd_tg_fbs_vdd_tg_s_vdd_vdd_t15
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd__t15
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
-+ 115.955344378
++ 115.849238054
 * device instance inv_clk_vdd_inv_mc_vdd_inv_q_vdd_mpa_py_mpb_py_nand_m_vdd_nand_s2_vdd_nwell_vdd_tg_d_vdd_tg_fbm_vdd_tg_fbs_vdd_tg_s_vdd_vdd_t16 r0 *1 0,0 
 Rinv_clk_vdd_inv_mc_vdd_inv_q_vdd_mpa_py_mpb_py_nand_m_vdd_nand_s2_vdd_nwell_vdd_tg_d_vdd_tg_fbm_vdd_tg_fbs_vdd_tg_s_vdd_vdd_t16
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd__t16
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
-+ 73.6579558033
++ 73.6106417658
 * device instance inv_clk_vdd_inv_mc_vdd_inv_q_vdd_mpa_py_mpb_py_nand_m_vdd_nand_s2_vdd_nwell_vdd_tg_d_vdd_tg_fbm_vdd_tg_fbs_vdd_tg_s_vdd_vdd_t17 r0 *1 0,0 
 Rinv_clk_vdd_inv_mc_vdd_inv_q_vdd_mpa_py_mpb_py_nand_m_vdd_nand_s2_vdd_nwell_vdd_tg_d_vdd_tg_fbm_vdd_tg_fbs_vdd_tg_s_vdd_vdd_t17
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd__t17
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
-+ 124.226849023
++ 124.110222967
 * device instance inv_clk_vdd_inv_mc_vdd_inv_q_vdd_mpa_py_mpb_py_nand_m_vdd_nand_s2_vdd_nwell_vdd_tg_d_vdd_tg_fbm_vdd_tg_fbs_vdd_tg_s_vdd_vdd r0 *1 0,0 
 Cinv_clk_vdd_inv_mc_vdd_inv_q_vdd_mpa_py_mpb_py_nand_m_vdd_nand_s2_vdd_nwell_vdd_tg_d_vdd_tg_fbm_vdd_tg_fbs_vdd_tg_s_vdd_vdd
 + inv_clk_vdd|inv_mc_vdd|inv_q_vdd|mpa_py|mpb_py|nand_m_vdd|nand_s2_vdd|nwell_vdd|tg_d_vdd|tg_fbm_vdd|tg_fbs_vdd|tg_s_vdd|vdd
-+ vsubs 1.2933798e-14
++ vsubs 1.2856827e-14
 * device instance inv_clk_vss_inv_mc_vss_inv_q_vss_nand_m_vss_nand_s2_vss_tg_d_vss_tg_fbm_vss_tg_fbs_vss_tg_s_vss_vss_t0 r0 *1 0,0 
 Rinv_clk_vss_inv_mc_vss_inv_q_vss_nand_m_vss_nand_s2_vss_tg_d_vss_tg_fbm_vss_tg_fbs_vss_tg_s_vss_vss_t0
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss__t0
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss
-+ 173.506093022
++ 176.963569592
 * device instance inv_clk_vss_inv_mc_vss_inv_q_vss_nand_m_vss_nand_s2_vss_tg_d_vss_tg_fbm_vss_tg_fbs_vss_tg_s_vss_vss_t1 r0 *1 0,0 
 Rinv_clk_vss_inv_mc_vss_inv_q_vss_nand_m_vss_nand_s2_vss_tg_d_vss_tg_fbm_vss_tg_fbs_vss_tg_s_vss_vss_t1
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss__t1
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss
-+ 87.8851417147
++ 88.1307399202
 * device instance inv_clk_vss_inv_mc_vss_inv_q_vss_nand_m_vss_nand_s2_vss_tg_d_vss_tg_fbm_vss_tg_fbs_vss_tg_s_vss_vss_t2 r0 *1 0,0 
 Rinv_clk_vss_inv_mc_vss_inv_q_vss_nand_m_vss_nand_s2_vss_tg_d_vss_tg_fbm_vss_tg_fbs_vss_tg_s_vss_vss_t2
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss__t2
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss
-+ 136.606154576
++ 139.937573198
 * device instance inv_clk_vss_inv_mc_vss_inv_q_vss_nand_m_vss_nand_s2_vss_tg_d_vss_tg_fbm_vss_tg_fbs_vss_tg_s_vss_vss_t3 r0 *1 0,0 
 Rinv_clk_vss_inv_mc_vss_inv_q_vss_nand_m_vss_nand_s2_vss_tg_d_vss_tg_fbm_vss_tg_fbs_vss_tg_s_vss_vss_t3
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss__t3
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss
-+ 88.3761709597
++ 89.0914943176
 * device instance inv_clk_vss_inv_mc_vss_inv_q_vss_nand_m_vss_nand_s2_vss_tg_d_vss_tg_fbm_vss_tg_fbs_vss_tg_s_vss_vss_t4 r0 *1 0,0 
 Rinv_clk_vss_inv_mc_vss_inv_q_vss_nand_m_vss_nand_s2_vss_tg_d_vss_tg_fbm_vss_tg_fbs_vss_tg_s_vss_vss_t4
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss__t4
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss
-+ 33.1808465718
++ 34.4023978472
 * device instance inv_clk_vss_inv_mc_vss_inv_q_vss_nand_m_vss_nand_s2_vss_tg_d_vss_tg_fbm_vss_tg_fbs_vss_tg_s_vss_vss_t5 r0 *1 0,0 
 Rinv_clk_vss_inv_mc_vss_inv_q_vss_nand_m_vss_nand_s2_vss_tg_d_vss_tg_fbm_vss_tg_fbs_vss_tg_s_vss_vss_t5
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss__t5
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss
-+ 173.506093022
++ 176.963569592
 * device instance inv_clk_vss_inv_mc_vss_inv_q_vss_nand_m_vss_nand_s2_vss_tg_d_vss_tg_fbm_vss_tg_fbs_vss_tg_s_vss_vss_t6 r0 *1 0,0 
 Rinv_clk_vss_inv_mc_vss_inv_q_vss_nand_m_vss_nand_s2_vss_tg_d_vss_tg_fbm_vss_tg_fbs_vss_tg_s_vss_vss_t6
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss__t6
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss
-+ 138.843065581
++ 141.748225716
 * device instance inv_clk_vss_inv_mc_vss_inv_q_vss_nand_m_vss_nand_s2_vss_tg_d_vss_tg_fbm_vss_tg_fbs_vss_tg_s_vss_vss_t7 r0 *1 0,0 
 Rinv_clk_vss_inv_mc_vss_inv_q_vss_nand_m_vss_nand_s2_vss_tg_d_vss_tg_fbm_vss_tg_fbs_vss_tg_s_vss_vss_t7
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss__t7
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss
-+ 33.1808465718
++ 34.4023978472
 * device instance inv_clk_vss_inv_mc_vss_inv_q_vss_nand_m_vss_nand_s2_vss_tg_d_vss_tg_fbm_vss_tg_fbs_vss_tg_s_vss_vss_t8 r0 *1 0,0 
 Rinv_clk_vss_inv_mc_vss_inv_q_vss_nand_m_vss_nand_s2_vss_tg_d_vss_tg_fbm_vss_tg_fbs_vss_tg_s_vss_vss_t8
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss__t8
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss
-+ 1.48218086906
++ 0.812946028614
 * device instance inv_clk_vss_inv_mc_vss_inv_q_vss_nand_m_vss_nand_s2_vss_tg_d_vss_tg_fbm_vss_tg_fbs_vss_tg_s_vss_vss_t9 r0 *1 0,0 
 Rinv_clk_vss_inv_mc_vss_inv_q_vss_nand_m_vss_nand_s2_vss_tg_d_vss_tg_fbm_vss_tg_fbs_vss_tg_s_vss_vss_t9
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss__t9
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss
-+ 38.8731485598
++ 38.7996968202
 * device instance inv_clk_vss_inv_mc_vss_inv_q_vss_nand_m_vss_nand_s2_vss_tg_d_vss_tg_fbm_vss_tg_fbs_vss_tg_s_vss_vss_t10 r0 *1 0,0 
 Rinv_clk_vss_inv_mc_vss_inv_q_vss_nand_m_vss_nand_s2_vss_tg_d_vss_tg_fbm_vss_tg_fbs_vss_tg_s_vss_vss_t10
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss__t10
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss
-+ 88.3761709597
++ 89.0914943176
 * device instance inv_clk_vss_inv_mc_vss_inv_q_vss_nand_m_vss_nand_s2_vss_tg_d_vss_tg_fbm_vss_tg_fbs_vss_tg_s_vss_vss_t11 r0 *1 0,0 
 Rinv_clk_vss_inv_mc_vss_inv_q_vss_nand_m_vss_nand_s2_vss_tg_d_vss_tg_fbm_vss_tg_fbs_vss_tg_s_vss_vss_t11
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss__t11
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss
-+ 179.19839501
++ 181.360868565
 * device instance inv_clk_vss_inv_mc_vss_inv_q_vss_nand_m_vss_nand_s2_vss_tg_d_vss_tg_fbm_vss_tg_fbs_vss_tg_s_vss_vss_t12 r0 *1 0,0 
 Rinv_clk_vss_inv_mc_vss_inv_q_vss_nand_m_vss_nand_s2_vss_tg_d_vss_tg_fbm_vss_tg_fbs_vss_tg_s_vss_vss_t12
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss__t12
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss
-+ 87.8851417147
++ 88.1307399202
 * device instance inv_clk_vss_inv_mc_vss_inv_q_vss_nand_m_vss_nand_s2_vss_tg_d_vss_tg_fbm_vss_tg_fbs_vss_tg_s_vss_vss_t13 r0 *1 0,0 
 Rinv_clk_vss_inv_mc_vss_inv_q_vss_nand_m_vss_nand_s2_vss_tg_d_vss_tg_fbm_vss_tg_fbs_vss_tg_s_vss_vss_t13
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss__t13
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss
-+ 136.606154576
++ 139.937573198
 * device instance inv_clk_vss_inv_mc_vss_inv_q_vss_nand_m_vss_nand_s2_vss_tg_d_vss_tg_fbm_vss_tg_fbs_vss_tg_s_vss_vss_t14 r0 *1 0,0 
 Rinv_clk_vss_inv_mc_vss_inv_q_vss_nand_m_vss_nand_s2_vss_tg_d_vss_tg_fbm_vss_tg_fbs_vss_tg_s_vss_vss_t14
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss__t14
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss
-+ 83.0112218017
++ 83.1791595641
 * device instance inv_clk_vss_inv_mc_vss_inv_q_vss_nand_m_vss_nand_s2_vss_tg_d_vss_tg_fbm_vss_tg_fbs_vss_tg_s_vss_vss_t15 r0 *1 0,0 
 Rinv_clk_vss_inv_mc_vss_inv_q_vss_nand_m_vss_nand_s2_vss_tg_d_vss_tg_fbm_vss_tg_fbs_vss_tg_s_vss_vss_t15
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss__t15
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss
-+ 141.480074489
++ 144.889153554
 * device instance inv_clk_vss_inv_mc_vss_inv_q_vss_nand_m_vss_nand_s2_vss_tg_d_vss_tg_fbm_vss_tg_fbs_vss_tg_s_vss_vss r0 *1 0,0 
 Cinv_clk_vss_inv_mc_vss_inv_q_vss_nand_m_vss_nand_s2_vss_tg_d_vss_tg_fbm_vss_tg_fbs_vss_tg_s_vss_vss
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss
-+ vsubs 1.1780945e-14
++ vsubs 1.1830268e-14
 * device instance cc_a_b_inv_q_a_inv_q_a_via_s_tg_fbs_b_tg_fbs_b_via_tg_s_b_tg_s_b_via_a_inv_mc_a_mb_mnab_y_mpa_y_mpb_y_nand_m_y_tg_s_a_y r0 *1 0,0 
 Ccc_a_b_inv_q_a_inv_q_a_via_s_tg_fbs_b_tg_fbs_b_via_tg_s_b_tg_s_b_via_a_inv_mc_a_mb_mnab_y_mpa_y_mpb_y_nand_m_y_tg_s_a_y
 + a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via
@@ -622,7 +621,7 @@ Ccc_a_b_inv_q_a_inv_q_a_via_s_tg_fbs_b_tg_fbs_b_via_tg_s_b_tg_s_b_via_a_inv_mc_a
 * device instance cc_a_b_inv_q_a_inv_q_a_via_s_tg_fbs_b_tg_fbs_b_via_tg_s_b_tg_s_b_via_a_mnab_y_mpa_y_mpb_y_nand_s2_y_qb_tg_fbs_a_y r0 *1 0,0 
 Ccc_a_b_inv_q_a_inv_q_a_via_s_tg_fbs_b_tg_fbs_b_via_tg_s_b_tg_s_b_via_a_mnab_y_mpa_y_mpb_y_nand_s2_y_qb_tg_fbs_a_y
 + a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via
-+ a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y 3.3459e-17
++ a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y 3.5935e-17
 * device instance cc_a_b_inv_q_a_inv_q_a_via_s_tg_fbs_b_tg_fbs_b_via_tg_s_b_tg_s_b_via_clkb_clkb_bridge1_clkb_bridge2_clkb_mid_clkb_w_ctrl_ctrlb_inv_clk_y_tg_d_ctrlb_tg_fbm_ctrl_tg_fbs_ctrlb_tg_s_ctrl_y r0 *1 0,0 
 Ccc_a_b_inv_q_a_inv_q_a_via_s_tg_fbs_b_tg_fbs_b_via_tg_s_b_tg_s_b_via_clkb_clkb_bridge1_clkb_bridge2_clkb_mid_clkb_w_ctrl_ctrlb_inv_clk_y_tg_d_ctrlb_tg_fbm_ctrl_tg_fbs_ctrlb_tg_s_ctrl_y
 + a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via
@@ -631,7 +630,7 @@ Ccc_a_b_inv_q_a_inv_q_a_via_s_tg_fbs_b_tg_fbs_b_via_tg_s_b_tg_s_b_via_clkb_clkb_
 * device instance cc_a_b_m_east_m_west_nand_m_a_nand_m_a_ext_via_nand_m_a_ext_via2_nand_m_a_stub_tg_d_b_tg_d_b_via_tg_d_b_via2_tg_fbm_b_tg_fbm_b_alt_via_tg_fbm_b_alt_via2_a_inv_mc_a_mb_mnab_y_mpa_y_mpb_y_nand_m_y_tg_s_a_y r0 *1 0,0 
 Ccc_a_b_m_east_m_west_nand_m_a_nand_m_a_ext_via_nand_m_a_ext_via2_nand_m_a_stub_tg_d_b_tg_d_b_via_tg_d_b_via2_tg_fbm_b_tg_fbm_b_alt_via_tg_fbm_b_alt_via2_a_inv_mc_a_mb_mnab_y_mpa_y_mpb_y_nand_m_y_tg_s_a_y
 + a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2
-+ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y 3.5168e-17
++ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y 2.5818e-17
 * device instance cc_a_b_m_east_m_west_nand_m_a_nand_m_a_ext_via_nand_m_a_ext_via2_nand_m_a_stub_tg_d_b_tg_d_b_via_tg_d_b_via2_tg_fbm_b_tg_fbm_b_alt_via_tg_fbm_b_alt_via2_clkb_clkb_bridge1_clkb_bridge2_clkb_mid_clkb_w_ctrl_ctrlb_inv_clk_y_tg_d_ctrlb_tg_fbm_ctrl_tg_fbs_ctrlb_tg_s_ctrl_y r0 *1 0,0 
 Ccc_a_b_m_east_m_west_nand_m_a_nand_m_a_ext_via_nand_m_a_ext_via2_nand_m_a_stub_tg_d_b_tg_d_b_via_tg_d_b_via2_tg_fbm_b_tg_fbm_b_alt_via_tg_fbm_b_alt_via2_clkb_clkb_bridge1_clkb_bridge2_clkb_mid_clkb_w_ctrl_ctrlb_inv_clk_y_tg_d_ctrlb_tg_fbm_ctrl_tg_fbs_ctrlb_tg_s_ctrl_y
 + a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2
@@ -645,7 +644,7 @@ Ccc_a_clk_ctrl_ctrlb_inv_clk_a_inv_clk_clk_via_tg_d_ctrl_tg_d_ctrl_via_tg_fbm_ct
 Ccc_a_clk_ctrl_ctrlb_inv_clk_a_inv_clk_clk_via_tg_d_ctrl_tg_d_ctrl_via_tg_fbm_ctrlb_tg_fbm_ctrlb_via_tg_fbs_ctrl_tg_fbs_ctrl_via_tg_s_ctrlb_tg_s_ctrlb_via_clkb_clkb_bridge1_clkb_bridge2_clkb_mid_clkb_w_ctrl_ctrlb_inv_clk_y_tg_d_ctrlb_tg_fbm_ctrl_tg_fbs_ctrlb_tg_s_ctrl_y
 + a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via
 + clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y
-+ 4.5968e-17
++ 5.2794e-17
 * device instance cc_a_clk_ctrl_ctrlb_inv_clk_a_inv_clk_clk_via_tg_d_ctrl_tg_d_ctrl_via_tg_fbm_ctrlb_tg_fbm_ctrlb_via_tg_fbs_ctrl_tg_fbs_ctrl_via_tg_s_ctrlb_tg_s_ctrlb_via_inv_clk_vss_inv_mc_vss_inv_q_vss_nand_m_vss_nand_s2_vss_tg_d_vss_tg_fbm_vss_tg_fbs_vss_tg_s_vss_vss r0 *1 0,0 
 Ccc_a_clk_ctrl_ctrlb_inv_clk_a_inv_clk_clk_via_tg_d_ctrl_tg_d_ctrl_via_tg_fbm_ctrlb_tg_fbm_ctrlb_via_tg_fbs_ctrl_tg_fbs_ctrl_via_tg_s_ctrlb_tg_s_ctrlb_via_inv_clk_vss_inv_mc_vss_inv_q_vss_nand_m_vss_nand_s2_vss_tg_d_vss_tg_fbm_vss_tg_fbs_vss_tg_s_vss_vss
 + a|clk|ctrl|ctrlb|inv_clk_a|inv_clk_clk_via|tg_d_ctrl|tg_d_ctrl_via|tg_fbm_ctrlb|tg_fbm_ctrlb_via|tg_fbs_ctrl|tg_fbs_ctrl_via|tg_s_ctrlb|tg_s_ctrlb_via
@@ -664,7 +663,7 @@ Ccc_a_inv_mc_a_mb_mnab_y_mpa_y_mpb_y_nand_m_y_tg_s_a_y_a_inv_mc_y_inv_mc_y_via_m
 Ccc_a_inv_mc_a_mb_mnab_y_mpa_y_mpb_y_nand_m_y_tg_s_a_y_clkb_clkb_bridge1_clkb_bridge2_clkb_mid_clkb_w_ctrl_ctrlb_inv_clk_y_tg_d_ctrlb_tg_fbm_ctrl_tg_fbs_ctrlb_tg_s_ctrl_y
 + a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y
 + clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y
-+ 1.2699e-17
++ 1.3154e-17
 * device instance cc_a_inv_mc_a_mb_mnab_y_mpa_y_mpb_y_nand_m_y_tg_s_a_y_en_nand_m_en_nand_m_en_via_nand_s2_en_nand_s2_en_via_rst_n r0 *1 0,0 
 Ccc_a_inv_mc_a_mb_mnab_y_mpa_y_mpb_y_nand_m_y_tg_s_a_y_en_nand_m_en_nand_m_en_via_nand_s2_en_nand_s2_en_via_rst_n
 + a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y
@@ -677,7 +676,7 @@ Ccc_a_inv_mc_y_inv_mc_y_via_mc_tg_fbm_a_tg_fbm_a_via_y_clkb_clkb_bridge1_clkb_br
 * device instance cc_a_inv_q_y_inv_q_y_via_inv_q_y_via2_nand_s2_a_nand_s2_a_stub_nand_s2_a_via_nand_s2_a_via2_q_y_a_mnab_y_mpa_y_mpb_y_nand_s2_y_qb_tg_fbs_a_y r0 *1 0,0 
 Ccc_a_inv_q_y_inv_q_y_via_inv_q_y_via2_nand_s2_a_nand_s2_a_stub_nand_s2_a_via_nand_s2_a_via2_q_y_a_mnab_y_mpa_y_mpb_y_nand_s2_y_qb_tg_fbs_a_y
 + a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y
-+ a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y 2.9475e-17
++ a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y 1.8232e-17
 * device instance cc_a_inv_q_y_inv_q_y_via_inv_q_y_via2_nand_s2_a_nand_s2_a_stub_nand_s2_a_via_nand_s2_a_via2_q_y_clkb_clkb_bridge1_clkb_bridge2_clkb_mid_clkb_w_ctrl_ctrlb_inv_clk_y_tg_d_ctrlb_tg_fbm_ctrl_tg_fbs_ctrlb_tg_s_ctrl_y r0 *1 0,0 
 Ccc_a_inv_q_y_inv_q_y_via_inv_q_y_via2_nand_s2_a_nand_s2_a_stub_nand_s2_a_via_nand_s2_a_via2_q_y_clkb_clkb_bridge1_clkb_bridge2_clkb_mid_clkb_w_ctrl_ctrlb_inv_clk_y_tg_d_ctrlb_tg_fbm_ctrl_tg_fbs_ctrlb_tg_s_ctrl_y
 + a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|y
@@ -687,16 +686,16 @@ Ccc_a_inv_q_y_inv_q_y_via_inv_q_y_via2_nand_s2_a_nand_s2_a_stub_nand_s2_a_via_na
 Ccc_a_mnab_y_mpa_y_mpb_y_nand_s2_y_qb_tg_fbs_a_y_clkb_clkb_bridge1_clkb_bridge2_clkb_mid_clkb_w_ctrl_ctrlb_inv_clk_y_tg_d_ctrlb_tg_fbm_ctrl_tg_fbs_ctrlb_tg_s_ctrl_y
 + a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y
 + clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y
-+ 8.015e-18
++ 9.494e-18
 * device instance cc_clkb_clkb_bridge1_clkb_bridge2_clkb_mid_clkb_w_ctrl_ctrlb_inv_clk_y_tg_d_ctrlb_tg_fbm_ctrl_tg_fbs_ctrlb_tg_s_ctrl_y_en_nand_m_en_nand_m_en_via_nand_s2_en_nand_s2_en_via_rst_n r0 *1 0,0 
 Ccc_clkb_clkb_bridge1_clkb_bridge2_clkb_mid_clkb_w_ctrl_ctrlb_inv_clk_y_tg_d_ctrlb_tg_fbm_ctrl_tg_fbs_ctrlb_tg_s_ctrl_y_en_nand_m_en_nand_m_en_via_nand_s2_en_nand_s2_en_via_rst_n
 + clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y
-+ en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n 2.38e-17
++ en|nand_m_en|nand_m_en_via|nand_s2_en|nand_s2_en_via|rst_n 8.1768e-17
 * device instance cc_clkb_clkb_bridge1_clkb_bridge2_clkb_mid_clkb_w_ctrl_ctrlb_inv_clk_y_tg_d_ctrlb_tg_fbm_ctrl_tg_fbs_ctrlb_tg_s_ctrl_y_inv_clk_vss_inv_mc_vss_inv_q_vss_nand_m_vss_nand_s2_vss_tg_d_vss_tg_fbm_vss_tg_fbs_vss_tg_s_vss_vss r0 *1 0,0 
 Ccc_clkb_clkb_bridge1_clkb_bridge2_clkb_mid_clkb_w_ctrl_ctrlb_inv_clk_y_tg_d_ctrlb_tg_fbm_ctrl_tg_fbs_ctrlb_tg_s_ctrl_y_inv_clk_vss_inv_mc_vss_inv_q_vss_nand_m_vss_nand_s2_vss_tg_d_vss_tg_fbm_vss_tg_fbs_vss_tg_s_vss_vss
 + clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y
 + inv_clk_vss|inv_mc_vss|inv_q_vss|nand_m_vss|nand_s2_vss|tg_d_vss|tg_fbm_vss|tg_fbs_vss|tg_s_vss|vss
-+ 1.02283e-16
++ 8.5376e-17
 * device instance vsubs_dctie r0 *1 0,0 
 Rvsubs_dctie vsubs 0 1e+12
 .ENDS sampler_dff

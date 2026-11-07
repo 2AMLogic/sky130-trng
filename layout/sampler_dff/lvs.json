@@ -1,14 +1,23 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "engine": "klayout",
-  "layout": "sampler_dff.spice",
+  "layout": {
+    "path": "layout/sampler_dff/sampler_dff.spice",
+    "scope": "repo"
+  },
   "reference": "sampler_dff.ref.spice",
   "top": "SAMPLER_DFF",
   "reference_top": "SAMPLER_DFF",
+  "reference_conversion": {
+    "form": "subckt-call",
+    "deck": "sky130",
+    "device_map": null
+  },
   "parameter_tolerance": null,
   "options": {
     "combine_devices": false,
     "combine_devices_per_circuit": null,
+    "combine_devices_max_attempts": 5,
     "flatten_layout": false,
     "flatten_reference": false,
     "netgen_setup": null,
@@ -16,6 +25,8 @@
     "compare_parameters": null,
     "power_connectivity": null,
     "anchor_top_level_pins": null,
+    "strict_top_level_pin_count": false,
+    "compare_mos_flavour": false,
     "supply_nets": [
       "GND",
       "VCC",
@@ -23,9 +34,11 @@
       "VGND",
       "VPWR",
       "VSS"
-    ]
+    ],
+    "finfet_bulk": null
   },
   "hints_applied": null,
+  "constant_nets_applied": null,
   "status": "match",
   "power_connectivity": {
     "status": "unchecked",
@@ -73,17 +86,17 @@
     "engine": "klayout",
     "engine_version": "0.30.12",
     "netgen_binary": null,
-    "layout_sha256": "85709d8b81166720cbfafd9632e1fe10fdc8518c81c631d99f5a4a552b124f5e",
+    "layout_sha256": "12525b2d4bd2e24d59a69bc879d0be7b133a90d00309740a6281d273d68357a3",
     "reference_sha256": "66009a496f55fac466075bbac7c9a2216dfc2e18e1eb02eda823233534918e2c",
     "extracted_netlist": null
   },
   "provenance": {
-    "klt_version": "0.6.0+g5edb557f91d0",
+    "klt_version": "0.8.0",
     "klayout_version": "0.30.12",
     "pdk": null,
     "deck": null,
     "input": {
-      "content_hash": "sha256:85709d8b81166720cbfafd9632e1fe10fdc8518c81c631d99f5a4a552b124f5e",
+      "content_hash": "sha256:12525b2d4bd2e24d59a69bc879d0be7b133a90d00309740a6281d273d68357a3",
       "role": "netlist"
     },
     "klayout_version_mismatch": false
@@ -121,7 +134,7 @@
       "pin": true
     },
     {
-      "layout": "\\$7",
+      "layout": "\\$5",
       "reference": "MMID",
       "pin": false
     },
@@ -146,7 +159,7 @@
       "pin": true
     },
     {
-      "layout": "\\$11",
+      "layout": "\\$7",
       "reference": "S2MID",
       "pin": false
     },

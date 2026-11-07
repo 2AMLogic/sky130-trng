@@ -1,14 +1,23 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "engine": "klayout",
-  "layout": "sampler_core.spice",
+  "layout": {
+    "path": "layout/sampler_core/sampler_core.spice",
+    "scope": "repo"
+  },
   "reference": "sampler_core.ref.spice",
   "top": "SAMPLER_CORE",
   "reference_top": "SAMPLER_CORE",
+  "reference_conversion": {
+    "form": "subckt-call",
+    "deck": "sky130",
+    "device_map": null
+  },
   "parameter_tolerance": null,
   "options": {
     "combine_devices": false,
     "combine_devices_per_circuit": null,
+    "combine_devices_max_attempts": 5,
     "flatten_layout": true,
     "flatten_reference": true,
     "netgen_setup": null,
@@ -16,6 +25,8 @@
     "compare_parameters": null,
     "power_connectivity": null,
     "anchor_top_level_pins": null,
+    "strict_top_level_pin_count": false,
+    "compare_mos_flavour": false,
     "supply_nets": [
       "GND",
       "VCC",
@@ -23,9 +34,11 @@
       "VGND",
       "VPWR",
       "VSS"
-    ]
+    ],
+    "finfet_bulk": null
   },
   "hints_applied": null,
+  "constant_nets_applied": null,
   "status": "match",
   "power_connectivity": {
     "status": "unchecked",
@@ -75,17 +88,17 @@
     "engine": "klayout",
     "engine_version": "0.30.12",
     "netgen_binary": null,
-    "layout_sha256": "bb9c7902922861cf8a246b12a37aef63f6c0ca33ff3cdb063eddac081e57999c",
+    "layout_sha256": "97815c6681244b7dd63a353a2fca139b69b562b68ba5e4661027f73b9435e426",
     "reference_sha256": "18aa2d10f86fbd1d298b5030c1911e3e680f0fa8bfacf64e484ba0fcfbc2288c",
     "extracted_netlist": null
   },
   "provenance": {
-    "klt_version": "0.6.0+g5edb557f91d0",
+    "klt_version": "0.8.0",
     "klayout_version": "0.30.12",
     "pdk": null,
     "deck": null,
     "input": {
-      "content_hash": "sha256:bb9c7902922861cf8a246b12a37aef63f6c0ca33ff3cdb063eddac081e57999c",
+      "content_hash": "sha256:97815c6681244b7dd63a353a2fca139b69b562b68ba5e4661027f73b9435e426",
       "role": "netlist"
     },
     "klayout_version_mismatch": false
@@ -127,12 +140,12 @@
       "pin": true
     },
     {
-      "layout": "\\$138",
+      "layout": "\\$139",
       "reference": "DUT_A1_S1",
       "pin": false
     },
     {
-      "layout": "\\$136",
+      "layout": "\\$138",
       "reference": "DUT_A1_S2",
       "pin": false
     },
@@ -152,12 +165,12 @@
       "pin": true
     },
     {
-      "layout": "\\$141",
+      "layout": "\\$142",
       "reference": "DUT_A2_S1",
       "pin": false
     },
     {
-      "layout": "\\$139",
+      "layout": "\\$140",
       "reference": "DUT_A2_S2",
       "pin": false
     },
@@ -177,12 +190,12 @@
       "pin": true
     },
     {
-      "layout": "\\$145",
+      "layout": "\\$146",
       "reference": "DUT_A3_S1",
       "pin": false
     },
     {
-      "layout": "\\$142",
+      "layout": "\\$143",
       "reference": "DUT_A3_S2",
       "pin": false
     },
@@ -227,7 +240,7 @@
       "pin": true
     },
     {
-      "layout": "\\$75",
+      "layout": "\\$72",
       "reference": "DUT_R1_G_NM",
       "pin": false
     },
@@ -242,12 +255,12 @@
       "pin": true
     },
     {
-      "layout": "A|G_Y|MNAB_Y|MPA_Y|MPB_Y|N1|S1_A|Y",
+      "layout": "A|G_Y|MNAB_Y|MPA_Y|MPB_Y|N1|S1_A|Y$1",
       "reference": "DUT_R1_N1",
       "pin": true
     },
     {
-      "layout": "A|N2|S1_Y|S2_A|Y$1",
+      "layout": "A|N2|S1_Y|S2_A|Y",
       "reference": "DUT_R1_N2",
       "pin": true
     },
@@ -257,7 +270,7 @@
       "pin": true
     },
     {
-      "layout": "A|N4|S3_Y|S4_A|Y$2",
+      "layout": "A|N4|S3_Y|S4_A|Y",
       "reference": "DUT_R1_N4",
       "pin": true
     },
@@ -302,7 +315,7 @@
       "pin": true
     },
     {
-      "layout": "\\$81",
+      "layout": "\\$79",
       "reference": "DUT_R2_G_NM",
       "pin": false
     },
@@ -317,22 +330,22 @@
       "pin": true
     },
     {
-      "layout": "A|G_Y|MNAB_Y|MPA_Y|MPB_Y|N1|S1_A|Y$1",
+      "layout": "A|G_Y|MNAB_Y|MPA_Y|MPB_Y|N1|S1_A|Y",
       "reference": "DUT_R2_N1",
       "pin": true
     },
     {
-      "layout": "A|N2|S1_Y|S2_A|Y",
+      "layout": "A|N2|S1_Y|S2_A|Y$1",
       "reference": "DUT_R2_N2",
       "pin": true
     },
     {
-      "layout": "A|N3|S2_Y|S3_A|Y$1",
+      "layout": "A|N3|S2_Y|S3_A|Y$3",
       "reference": "DUT_R2_N3",
       "pin": true
     },
     {
-      "layout": "A|N4|S3_Y|S4_A|Y",
+      "layout": "A|N4|S3_Y|S4_A|Y$2",
       "reference": "DUT_R2_N4",
       "pin": true
     },
@@ -377,7 +390,7 @@
       "pin": true
     },
     {
-      "layout": "\\$87",
+      "layout": "\\$88",
       "reference": "DUT_R3_G_NM",
       "pin": false
     },
@@ -402,12 +415,12 @@
       "pin": true
     },
     {
-      "layout": "A|N3|S2_Y|S3_A|Y$2",
+      "layout": "A|N3|S2_Y|S3_A|Y$1",
       "reference": "DUT_R3_N3",
       "pin": true
     },
     {
-      "layout": "A|N4|S3_Y|S4_A|Y$3",
+      "layout": "A|N4|S3_Y|S4_A|Y$1",
       "reference": "DUT_R3_N4",
       "pin": true
     },
@@ -452,7 +465,7 @@
       "pin": true
     },
     {
-      "layout": "\\$93",
+      "layout": "\\$96",
       "reference": "DUT_R4_G_NM",
       "pin": false
     },
@@ -477,12 +490,12 @@
       "pin": true
     },
     {
-      "layout": "A|N3|S2_Y|S3_A|Y$3",
+      "layout": "A|N3|S2_Y|S3_A|Y$2",
       "reference": "DUT_R4_N3",
       "pin": true
     },
     {
-      "layout": "A|N4|S3_Y|S4_A|Y$1",
+      "layout": "A|N4|S3_Y|S4_A|Y$3",
       "reference": "DUT_R4_N4",
       "pin": true
     },
@@ -537,22 +550,22 @@
       "pin": true
     },
     {
-      "layout": "A|INV_Q_Y|INV_Q_Y_VIA|INV_Q_Y_VIA2|NAND_S2_A|NAND_S2_A_STUB|NAND_S2_A_VIA|NAND_S2_A_VIA2|Q|Y$1",
+      "layout": "A|INV_Q_Y|INV_Q_Y_VIA|INV_Q_Y_VIA2|NAND_S2_A|NAND_S2_A_STUB|NAND_S2_A_VIA|NAND_S2_A_VIA2|Q|Y",
       "reference": "RAW_BIT",
       "pin": true
     },
     {
-      "layout": "A|INV_Q_Y|INV_Q_Y_VIA|INV_Q_Y_VIA2|NAND_S2_A|NAND_S2_A_STUB|NAND_S2_A_VIA|NAND_S2_A_VIA2|Q|Y$2",
+      "layout": "A|INV_Q_Y|INV_Q_Y_VIA|INV_Q_Y_VIA2|NAND_S2_A|NAND_S2_A_STUB|NAND_S2_A_VIA|NAND_S2_A_VIA2|Q|Y$1",
       "reference": "RAW_VALID",
       "pin": true
     },
     {
-      "layout": "A|INV_Q_Y|INV_Q_Y_VIA|INV_Q_Y_VIA2|NAND_S2_A|NAND_S2_A_STUB|NAND_S2_A_VIA|NAND_S2_A_VIA2|Q|Y$3",
+      "layout": "A|INV_Q_Y|INV_Q_Y_VIA|INV_Q_Y_VIA2|NAND_S2_A|NAND_S2_A_STUB|NAND_S2_A_VIA|NAND_S2_A_VIA2|Q|Y$2",
       "reference": "RING_BIT1",
       "pin": true
     },
     {
-      "layout": "A|INV_Q_Y|INV_Q_Y_VIA|INV_Q_Y_VIA2|NAND_S2_A|NAND_S2_A_STUB|NAND_S2_A_VIA|NAND_S2_A_VIA2|Q|Y",
+      "layout": "A|INV_Q_Y|INV_Q_Y_VIA|INV_Q_Y_VIA2|NAND_S2_A|NAND_S2_A_STUB|NAND_S2_A_VIA|NAND_S2_A_VIA2|Q|Y$3",
       "reference": "RING_BIT2",
       "pin": true
     },
@@ -597,7 +610,7 @@
       "pin": true
     },
     {
-      "layout": "A|B|M_EAST|M_WEST|NAND_M_A|NAND_M_A_EXT_VIA|NAND_M_A_EXT_VIA2|NAND_M_A_STUB|TG_D_B|TG_D_B_VIA|TG_D_B_VIA2|TG_FBM_B|TG_FBM_B_ALT_VIA|TG_FBM_B_ALT_VIA2",
+      "layout": "A|B|M_EAST|M_WEST|NAND_M_A|NAND_M_A_EXT_VIA|NAND_M_A_EXT_VIA2|NAND_M_A_STUB|TG_D_B|TG_D_B_VIA|TG_D_B_VIA2|TG_FBM_B|TG_FBM_B_ALT_VIA|TG_FBM_B_ALT_VIA2$1",
       "reference": "SB_M",
       "pin": true
     },
@@ -612,7 +625,7 @@
       "pin": true
     },
     {
-      "layout": "\\$17",
+      "layout": "\\$12",
       "reference": "SB_MMID",
       "pin": false
     },
@@ -627,7 +640,7 @@
       "pin": true
     },
     {
-      "layout": "\\$20",
+      "layout": "\\$14",
       "reference": "SB_S2MID",
       "pin": false
     },
@@ -637,7 +650,7 @@
       "pin": true
     },
     {
-      "layout": "A|B|M_EAST|M_WEST|NAND_M_A|NAND_M_A_EXT_VIA|NAND_M_A_EXT_VIA2|NAND_M_A_STUB|TG_D_B|TG_D_B_VIA|TG_D_B_VIA2|TG_FBM_B|TG_FBM_B_ALT_VIA|TG_FBM_B_ALT_VIA2$2",
+      "layout": "A|B|M_EAST|M_WEST|NAND_M_A|NAND_M_A_EXT_VIA|NAND_M_A_EXT_VIA2|NAND_M_A_STUB|TG_D_B|TG_D_B_VIA|TG_D_B_VIA2|TG_FBM_B|TG_FBM_B_ALT_VIA|TG_FBM_B_ALT_VIA2$3",
       "reference": "SR1_M",
       "pin": true
     },
@@ -652,7 +665,7 @@
       "pin": true
     },
     {
-      "layout": "\\$28",
+      "layout": "\\$21",
       "reference": "SR1_MMID",
       "pin": false
     },
@@ -667,7 +680,7 @@
       "pin": true
     },
     {
-      "layout": "\\$31",
+      "layout": "\\$23",
       "reference": "SR1_S2MID",
       "pin": false
     },
@@ -677,7 +690,7 @@
       "pin": true
     },
     {
-      "layout": "A|B|M_EAST|M_WEST|NAND_M_A|NAND_M_A_EXT_VIA|NAND_M_A_EXT_VIA2|NAND_M_A_STUB|TG_D_B|TG_D_B_VIA|TG_D_B_VIA2|TG_FBM_B|TG_FBM_B_ALT_VIA|TG_FBM_B_ALT_VIA2$3",
+      "layout": "A|B|M_EAST|M_WEST|NAND_M_A|NAND_M_A_EXT_VIA|NAND_M_A_EXT_VIA2|NAND_M_A_STUB|TG_D_B|TG_D_B_VIA|TG_D_B_VIA2|TG_FBM_B|TG_FBM_B_ALT_VIA|TG_FBM_B_ALT_VIA2$4",
       "reference": "SR2_M",
       "pin": true
     },
@@ -692,7 +705,7 @@
       "pin": true
     },
     {
-      "layout": "\\$34",
+      "layout": "\\$26",
       "reference": "SR2_MMID",
       "pin": false
     },
@@ -707,7 +720,7 @@
       "pin": true
     },
     {
-      "layout": "\\$38",
+      "layout": "\\$28",
       "reference": "SR2_S2MID",
       "pin": false
     },
@@ -717,7 +730,7 @@
       "pin": true
     },
     {
-      "layout": "A|B|M_EAST|M_WEST|NAND_M_A|NAND_M_A_EXT_VIA|NAND_M_A_EXT_VIA2|NAND_M_A_STUB|TG_D_B|TG_D_B_VIA|TG_D_B_VIA2|TG_FBM_B|TG_FBM_B_ALT_VIA|TG_FBM_B_ALT_VIA2$4",
+      "layout": "A|B|M_EAST|M_WEST|NAND_M_A|NAND_M_A_EXT_VIA|NAND_M_A_EXT_VIA2|NAND_M_A_STUB|TG_D_B|TG_D_B_VIA|TG_D_B_VIA2|TG_FBM_B|TG_FBM_B_ALT_VIA|TG_FBM_B_ALT_VIA2$5",
       "reference": "SR3_M",
       "pin": true
     },
@@ -732,7 +745,7 @@
       "pin": true
     },
     {
-      "layout": "\\$41",
+      "layout": "\\$31",
       "reference": "SR3_MMID",
       "pin": false
     },
@@ -747,7 +760,7 @@
       "pin": true
     },
     {
-      "layout": "\\$44",
+      "layout": "\\$33",
       "reference": "SR3_S2MID",
       "pin": false
     },
@@ -757,7 +770,7 @@
       "pin": true
     },
     {
-      "layout": "A|B|M_EAST|M_WEST|NAND_M_A|NAND_M_A_EXT_VIA|NAND_M_A_EXT_VIA2|NAND_M_A_STUB|TG_D_B|TG_D_B_VIA|TG_D_B_VIA2|TG_FBM_B|TG_FBM_B_ALT_VIA|TG_FBM_B_ALT_VIA2$5",
+      "layout": "A|B|M_EAST|M_WEST|NAND_M_A|NAND_M_A_EXT_VIA|NAND_M_A_EXT_VIA2|NAND_M_A_STUB|TG_D_B|TG_D_B_VIA|TG_D_B_VIA2|TG_FBM_B|TG_FBM_B_ALT_VIA|TG_FBM_B_ALT_VIA2",
       "reference": "SR4_M",
       "pin": true
     },
@@ -772,7 +785,7 @@
       "pin": true
     },
     {
-      "layout": "\\$47",
+      "layout": "\\$36",
       "reference": "SR4_MMID",
       "pin": false
     },
@@ -787,7 +800,7 @@
       "pin": true
     },
     {
-      "layout": "\\$50",
+      "layout": "\\$38",
       "reference": "SR4_S2MID",
       "pin": false
     },
@@ -797,7 +810,7 @@
       "pin": true
     },
     {
-      "layout": "A|B|M_EAST|M_WEST|NAND_M_A|NAND_M_A_EXT_VIA|NAND_M_A_EXT_VIA2|NAND_M_A_STUB|TG_D_B|TG_D_B_VIA|TG_D_B_VIA2|TG_FBM_B|TG_FBM_B_ALT_VIA|TG_FBM_B_ALT_VIA2$1",
+      "layout": "A|B|M_EAST|M_WEST|NAND_M_A|NAND_M_A_EXT_VIA|NAND_M_A_EXT_VIA2|NAND_M_A_STUB|TG_D_B|TG_D_B_VIA|TG_D_B_VIA2|TG_FBM_B|TG_FBM_B_ALT_VIA|TG_FBM_B_ALT_VIA2$2",
       "reference": "SV_M",
       "pin": true
     },
@@ -812,7 +825,7 @@
       "pin": true
     },
     {
-      "layout": "\\$22",
+      "layout": "\\$16",
       "reference": "SV_MMID",
       "pin": false
     },
@@ -827,7 +840,7 @@
       "pin": true
     },
     {
-      "layout": "\\$25",
+      "layout": "\\$18",
       "reference": "SV_S2MID",
       "pin": false
     },
