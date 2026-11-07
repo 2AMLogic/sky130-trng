@@ -2,6 +2,11 @@
 
 Chronological record of recently merged pull requests and closed issues.
 
+### 2026-11-07
+
+- **PR #456**: refactor: use shared sha256_file in remaining sim/ scripts
+- **Issue #455** (closed): Consolidate remaining sim/ file-digest helpers onto _hashing.sha256_file
+
 ### 2026-11-06
 
 - **PR #453**: refactor: use shared sha256_file helper in sim/ scripts
