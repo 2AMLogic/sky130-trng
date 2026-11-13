@@ -110,6 +110,14 @@ name: CI
 #     keep their bytes and the artifacts list format. Covered by the existing
 #     sim/bin/** and sim/tests/** path filters.
 #
+# sim/tests/test_evidence_paths.py (issue #465) -- stdlib-only unit test of the
+#     one path-hygiene rule (sim/bin/evidence_paths.py) both digital harnesses
+#     apply before writing absolute paths into committed evidence: in-repo ->
+#     repo-relative, home/$TMPDIR//tmp -> external marker, anything else
+#     verbatim, containment by Path.relative_to rather than string prefix. Also
+#     pins the consolidation itself -- neither harness may re-fork a private
+#     copy of the rule. No ngspice, no PDK.
+#
 # signoff-check (issue #155) -- the gap-to-T1 tier report staleness gate.
 #     `klt signoff --manifest signoff/block-manifest.json` re-renders this
 #     block's graded T1 item table from the committed evidence envelopes
@@ -363,6 +371,9 @@ jobs:
 
       - name: sim/tests/test_evidence_record_artifacts.py (issues #273/#276/#277 artifact collisions, reserved summary keys, bundle publication integrity)
         run: python3 sim/tests/test_evidence_record_artifacts.py
+
+      - name: sim/tests/test_evidence_paths.py (issue #465 shared evidence path-hygiene rule + no per-harness re-fork)
+        run: python3 sim/tests/test_evidence_paths.py
 
       - name: sim/tests/test_artifact_store.py (issue #347 artifact-store writer + manifest checker, fake klt, fail-closed paths)
         run: python3 sim/tests/test_artifact_store.py
