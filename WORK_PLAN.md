@@ -7,7 +7,7 @@ This roadmap is generated from the current GitHub label state.
 
 Judge-approved PRs under a hold (`loom:blocked` or `loom:operator`) — only a human merge decision is missing.
 
-_None._
+- **#464**: feat: netlist through bounded `klt netlist` instead of a raw xschem call
 
 ## Very Important
 
@@ -37,7 +37,7 @@ Issues currently being built (`loom:building`).
 - **#230**: CI: guard that every test_*.py is wired into a CI workflow and path filter
 - **#371**: Regenerate composite layout cells, trng_digital/trng_whole and pex libraries under klayout-tools 0.8.0
 - **#381**: verify-whole: adapt the whole-block harness to klayout-tools 0.8.0 VNB handling
-- **#446**: Decision record: adopt (or not) an idle-power target for sampler_core from the #201 leakage survey
+- **#460**: Replace raw xschem call and duplicated post-processing in design/netlist.py with klt netlist
 
 ## PRs Awaiting Review
 
@@ -50,6 +50,7 @@ _None._
 PRs that passed review and are queued for Champion auto-merge (`loom:pr`).
 
 - **#388**: fix(verify): strip klt 0.8.0 VNB from abstracted stubs, regenerate whole-block evidence
+- **#464**: feat: netlist through bounded `klt netlist` instead of a raw xschem call
 
 ## Proposed
 
@@ -66,11 +67,12 @@ Issues carrying `loom:curated`.
 - **#371**: Regenerate composite layout cells, trng_digital/trng_whole and pex libraries under klayout-tools 0.8.0 *(curated)*
 - **#381**: verify-whole: adapt the whole-block harness to klayout-tools 0.8.0 VNB handling *(curated)*
 - **#431**: DR-0017 follow-up: analog-chain-only feasibility probe, then gate-level co-simulation generator and reducer for the whole-block PVT matrix *(curated)*
-- **#446**: Decision record: adopt (or not) an idle-power target for sampler_core from the #201 leakage survey *(curated)*
+- **#460**: Replace raw xschem call and duplicated post-processing in design/netlist.py with klt netlist *(curated)*
 
 ## Proposed (Architect / Hermit)
 
-_None._
+- **#463**: Remove stale package.json test/lint/check scripts: npm run check:all passes on 5 of the 26 test files CI runs *(hermit)*
+- **#467**: Consolidate the four drifted DR-0005 lock-proximity implementations in the sim reducers into one shared helper *(hermit)*
 
 ## Epics
 
@@ -81,14 +83,14 @@ _None._
 
 | Bucket | Count |
 |------|-------|
-| Operator merge-risk holds | 0 |
+| Operator merge-risk holds | 1 |
 | Very important | 0 |
 | Important | 3 |
 | Ready (`loom:issue`) | 1 |
 | In Progress (`loom:building`) | 5 |
 | PRs awaiting review | 0 |
-| Approved PRs awaiting merge | 1 |
+| Approved PRs awaiting merge | 2 |
 | Curated | 12 |
-| Architect / Hermit proposals | 0 |
+| Architect / Hermit proposals | 2 |
 | Active epics | 2 |
 <!-- guide:plan-body:end -->
