@@ -10,7 +10,7 @@ re-run is the follow-up once #184 lands.
 |---|---|
 | `testbench/tb_ro_array_supply_perturbation.spice` | circuit-body template: the array, five behavioural supply rails (`vdd`, `vddr1..4`) that read DC "knob" sources for offset / ripple amplitude / ripple frequency, and the negative-control current injector |
 | `make-requests.py` | writes the `klt sim` batch requests (`OUTDIR/<corner>-<group>-<n>/`); one request carries a whole zipped ripple ladder |
-| `ripple.py` | reduction: edge-time analysis, lock detector, DR-0003 criteria, tolerance statement; `--emit-record REQDIR`, `--check RECORD` (replay from the committed raw responses) |
+| `ripple.py` | reduction: edge-time analysis, lock detector, DR-0003 criteria, tolerance statement; `--emit-record REQDIR`, `--check RECORD` (replay from the committed raw responses), `--supersede RECORD` (re-reduce that record's own responses into a correcting record) |
 | `records/<id>.{md,json}` | append-only record per PVT point (one row per unit: corner, ripple amplitude, ripple frequency, verdict) |
 | `corners/<id>/` | per chunk: `*.klt-sim.json.gz` (raw batch response, job id inside), `*.request.json` and `*.netlist.cir` (exactly what was submitted), `*.plan.json` |
 | `../tests/test_ripple_reduction.py` | unit tests on synthetic edge trains, including a train that is locked by construction |
@@ -22,6 +22,55 @@ python3 sim/ro-array-supply-perturbation/ripple.py --emit-record REQDIR
 python3 sim/ro-array-supply-perturbation/ripple.py --check sim/ro-array-supply-perturbation/records/<id>.json
 python3 sim/tests/test_ripple_reduction.py
 ```
+
+## DR-0005 lock-proximity correction (issue #467) -- replay the superseding records
+
+`ripple.py` used to compute its DR-0005 closeness figure with an
+**order-dependent** form (`r = Tj / Ti` in the order the caller passed the
+rings, searching both `p/q` and `q/p`), while its docstring claimed the value
+was order-free. `row_metrics` enumerates pairs in ring-index order rather than
+period order, so the four records below were written with a convention that is
+not DR-0005 section 2's, and it reports **more** margin from the lock rational
+than DR-0005's own definition gives (e.g. span 1.2096 against 4/3 as 10.23 %,
+where DR-0005 fixes it at 9.3 %). The reducer now uses the shared
+`sim/bin/lock_proximity.py`.
+
+`sim/` records are append-only, so the four originals are untouched and each
+has a superseding record that re-reduces its **own committed raw responses**
+(no re-simulation; the `corners/<id>/` bundle is copied byte-for-byte):
+
+| superseded | carries | superseding record | min `close_dr5_pct` |
+|---|---|---|---|
+| `20261009-000459-28d3690` (ff) | order-dependent convention | `20261113-150541-fb302c35` | 5.32 % -> 5.05 % |
+| `20261009-000500-28d3690` (ss) | order-dependent convention | `20261113-150542-fb302c35` | 6.81 % -> 6.37 % |
+| `20261012-111244-8100a6b` (ff, lock-resolution) | order-dependent convention | `20261113-150544-fb302c35` | 5.33 % -> 5.06 % |
+| `20261012-111245-8100a6b` (ss, lock-resolution) | order-dependent convention | `20261113-150546-fb302c35` | 6.81 % -> 6.38 % |
+
+The superseded records differ from a re-reduction **only** in
+`rows[].metrics.pairs[]`'s `close_dr5_pct`, `close_dr5_ratio`, `close_any_pct`,
+`close_any_ratio` and `clean_close_dr5_pct`; every other row and summary field
+is unchanged (`sim/tests/test_ripple_reduction.py` asserts exactly this). No
+verdict, criterion or tolerance statement moves: these fields are reported
+columns, nothing gates on them.
+
+**`--check` on one of the four superseded records now exits 1 ("replay
+DIFFERS") by design** -- the committed record carries the old convention and is
+never edited. Replay the superseding ids instead:
+
+```bash
+python3 sim/ro-array-supply-perturbation/ripple.py --check \
+    sim/ro-array-supply-perturbation/records/20261113-150541-fb302c35.json   # ff
+python3 sim/ro-array-supply-perturbation/ripple.py --check \
+    sim/ro-array-supply-perturbation/records/20261113-150542-fb302c35.json   # ss
+python3 sim/ro-array-supply-perturbation/ripple.py --check \
+    sim/ro-array-supply-perturbation/records/20261113-150544-fb302c35.json   # ff, lock-resolution
+python3 sim/ro-array-supply-perturbation/ripple.py --check \
+    sim/ro-array-supply-perturbation/records/20261113-150546-fb302c35.json   # ss, lock-resolution
+```
+
+A future correction of this shape uses `ripple.py --supersede RECORD.json`,
+which re-reduces that record's own committed responses and mints the new record
+and bundle; it never edits the record it supersedes.
 
 ## Lock-resolution campaign (issue #288, DR-0012 follow-up 5)
 
@@ -88,6 +137,10 @@ fleet's 3600 s job poweroff and returned nothing (see the records' submission hi
 only the packaging changed, not the unit matrix.
 
 ### Lock-resolution results (records `20261012-111244-8100a6b` ff, `20261012-111245-8100a6b` ss)
+
+> Superseded for their DR-0005 closeness columns only by `20261113-150544-fb302c35`
+> (ff) and `20261113-150546-fb302c35` (ss) -- see "DR-0005 lock-proximity
+> correction" above. Every result stated below is unchanged.
 
 All 76 planned rows per corner returned and are usable (50 + 2 `klt sim` batch
 requests, 0 missing). Deterministic, pre-layout, ideal sources; simulation-derived and

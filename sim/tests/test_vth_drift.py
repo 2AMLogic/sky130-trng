@@ -26,7 +26,10 @@ import aging  # noqa: E402
 import campaign as C  # noqa: E402
 import sensitivity as S  # noqa: E402
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, str(REPO / "sim" / "bin"))
 from loadmod import load_module  # noqa: E402
+from recorddiff import field_diff  # noqa: E402
+import lock_proximity as LP  # noqa: E402
 
 
 BRB = load_module("brb_t", REPO / "sim/raw-bit-volume-campaign/behavioral_raw_bit.py")
@@ -173,10 +176,31 @@ class MetricTests(unittest.TestCase):
         c = S.closeness([3.0, 2.9, 2.0, 2.7])
         self.assertEqual(c["pair"], [1, 3])
         self.assertAlmostEqual(c["distance"], 0.0, 12)
-        self.assertIn(c["rational"], ("3/2", "2/3"))
+        self.assertEqual(c["rational"], "3/2")          # issue #467: slower/faster, never "2/3"
         far = S.closeness([2.4e-9, 2.3e-9, 2.2e-9, 2.1e-9])
         self.assertGreater(far["distance"], 0.0)
         self.assertEqual(len(far["pair"]), 2)
+
+    def test_closeness_is_the_shared_dr0005_rule(self):
+        """Issue #467: this analysis used an order-dependent form of its own, and
+        enumerated pairs in ring-index order, so the stored `lock_proximity`
+        carried a convention that is not DR-0005's.  The rule itself is pinned
+        in sim/tests/test_lock_proximity.py; what is asserted here is that
+        sensitivity.py uses it, end to end."""
+        self.assertIs(S.lock_closeness, LP.closeness)
+        T = [2.4e-9, 2.9e-9, 2.1e-9, 2.7e-9]            # deliberately not ascending
+        self.assertAlmostEqual(S.closeness(T)["distance"], S.closeness(list(reversed(T)))["distance"])
+        # every reported rational is written slower/faster
+        for periods in (T, [3.0, 2.9, 2.0, 2.7], [2.4e-9, 2.3e-9, 2.2e-9, 2.1e-9]):
+            p_, q_ = (int(x) for x in S.closeness(periods)["rational"].split("/"))
+            self.assertGreaterEqual(p_, q_)
+
+    def test_dr0005_known_answer_end_to_end(self):
+        # DR-0005 section 2: span 1.2096 against 4/3 -> 9.3 %, whichever ring is first
+        for T in ([1.0, 1.2096, 9.0, 31.0], [1.2096, 1.0, 9.0, 31.0]):
+            c = S.closeness(T)
+            self.assertAlmostEqual(c["distance"] * 100, 9.28, places=1)
+            self.assertEqual(c["rational"], "4/3")
 
     def test_crossing_interpolation(self):
         pts = [{"shift_mv": s, "x": v} for s, v in zip((0, 20, 40, 60), (1.0, 0.9, 0.8, 0.7))]
@@ -355,6 +379,82 @@ class ReplayTests(unittest.TestCase):
         self.assertNotIn("20", rp.label("tt", 27.0, 1.8).replace("27", "").replace("1.8", "").replace("Ts20us", ""))
         self.assertEqual(rp.label("tt", 27.0, 1.8), rp.label("tt", 27.0, 1.8))
         self.assertEqual(BRB.sub_seed(rp.label("tt", 27.0, 1.8)), BRB.sub_seed(rp.label("tt", 27.0, 1.8)))
+
+
+class LockProximityCorrectionTests(unittest.TestCase):
+    """The DR-0005 convention correction and its superseding record (issue #467)."""
+
+    SUPERSEDED = "20261010-175052-7e279ab"
+    SUPERSEDING = "20261113-150554-fb302c35"
+    #: The ONLY fields the DR-0005 convention correction may move -- every one of
+    #: them is the lock-proximity figure or a direct copy of it.  Anything else
+    #: appearing in the diff is a regression, not a correction.
+    LOCK_FIELDS = {
+        "rows[].metrics.lock_proximity.distance",
+        "rows[].metrics.lock_proximity.rational",
+        "rows[].metrics.lock_proximity.meaning",
+        "rows[].delta.lock_distance.abs",
+        "summary.envelope.rows[].points[].lock_distance",
+        "summary.asymmetric[].lock_distance.zero",
+        "summary.asymmetric[].lock_distance.n60",
+        "summary.asymmetric[].lock_distance.p60",
+        "summary.asymmetric[].lock_distance.both60",
+    } | {f"summary.lock_by_shift.{s}.{f}" for s in (0, 20, 40, 60)
+         for f in ("distance", "rational", "pair", "corner", "temp_c", "vdd_v")}
+
+    @classmethod
+    def _rec(cls, rid):
+        return SLUG / "records" / f"{rid}.json"
+
+    def _rereduce(self, rid):
+        rec = json.load(open(self._rec(rid)))
+        chunks = S.load_committed(str(SLUG / "corners" / rid))
+        rows, summ = S.build(chunks, rec["controls_record"])
+        return rec, json.loads(json.dumps(rows, default=str)), json.loads(json.dumps(summ, default=str))
+
+    def test_superseding_record_replays_and_names_its_original(self):
+        rec = json.load(open(self._rec(self.SUPERSEDING)))
+        self.assertEqual(rec["supersedes"], self.SUPERSEDED)
+        self.assertEqual(S.check(str(self._rec(self.SUPERSEDING))), 0)
+        self.assertIn(f"- Supersedes: {self.SUPERSEDED}",
+                      (SLUG / "records" / f"{self.SUPERSEDING}.md").read_text())
+
+    def test_correction_moves_only_the_lock_proximity_fields(self):
+        """Re-reducing the superseded record's own committed responses differs
+        from what is stored ONLY in the lock-proximity fields -- and does differ
+        in at least one of them.  The superseded record itself is never edited,
+        so its own `--check` now reports DIFFER by design."""
+        rec, rows, summ = self._rereduce(self.SUPERSEDED)
+        diff = set(field_diff(rows, rec["rows"], prefix="rows")) | \
+            set(field_diff(summ, json.loads(json.dumps(rec["summary"], default=str)), prefix="summary"))
+        self.assertTrue(diff, "nothing changed; the correction did not reach this record")
+        self.assertEqual(diff - self.LOCK_FIELDS, set(),
+                         "the correction moved fields outside the lock-proximity set")
+        self.assertEqual(S.check(str(self._rec(self.SUPERSEDED))), 1,
+                         "the superseded record must no longer replay; it carries the old convention")
+
+    def test_the_grid_minimum_moved_to_the_dr0005_convention(self):
+        """Issue #467's stated outcome: 6.55 % -> 6.15 %, rational 3/4 -> 4/3."""
+        def grid_min(rid):
+            rec = json.load(open(self._rec(rid)))
+            return min((r["metrics"]["lock_proximity"]["distance"], r["metrics"]["lock_proximity"]["rational"])
+                       for r in rec["rows"] if "lock_proximity" in r.get("metrics", {}))
+        self.assertEqual(len(grid_min(self.SUPERSEDED)), 2)
+        self.assertAlmostEqual(grid_min(self.SUPERSEDED)[0] * 100, 6.55, places=2)
+        self.assertEqual(grid_min(self.SUPERSEDED)[1], "3/4")
+        self.assertAlmostEqual(grid_min(self.SUPERSEDING)[0] * 100, 6.15, places=2)
+        self.assertEqual(grid_min(self.SUPERSEDING)[1], "4/3")
+        # sim/ro-vth-drift-sensitivity/README.md's "stays above 6 %" still holds.
+        self.assertGreater(grid_min(self.SUPERSEDING)[0], 0.06)
+
+    def test_controls_and_behavioral_records_are_not_superseded(self):
+        """They carry no lock-proximity field, so the correction does not reach them."""
+        for rid in ("20261010-164921-7e279ab", "20261010-175419-7e279ab"):
+            with self.subTest(record=rid):
+                body = self._rec(rid).read_text()
+                self.assertNotIn("lock_proximity", body)
+                self.assertIn(json.loads(body).get("supersedes"), (None, "(none)"))
+        self.assertEqual(S.check(str(self._rec("20261010-164921-7e279ab"))), 0)
 
 
 class RecordImmutabilityTests(unittest.TestCase):

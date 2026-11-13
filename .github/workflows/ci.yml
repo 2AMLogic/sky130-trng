@@ -118,6 +118,15 @@ name: CI
 #     pins the consolidation itself -- neither harness may re-fork a private
 #     copy of the rule. No ngspice, no PDK.
 #
+# sim/tests/test_lock_proximity.py (issue #467) -- stdlib-only unit test of the
+#     one DR-0005 lock-proximity rule (sim/bin/lock_proximity.py) all five sim
+#     reducers now use: the slower-over-faster convention DR-0005 section 2
+#     fixes, its symmetry (the property two of the five copies did not have),
+#     DR-0005's own 9.3 % known answer in both argument orders, and exact hits.
+#     Also pins the consolidation itself -- no reducer may re-declare the
+#     rational set -- with a negative control that the detector fires. Covered
+#     by the existing sim/bin/** and sim/tests/** path filters. No ngspice, no PDK.
+#
 # signoff-check (issue #155) -- the gap-to-T1 tier report staleness gate.
 #     `klt signoff --manifest signoff/block-manifest.json` re-renders this
 #     block's graded T1 item table from the committed evidence envelopes
@@ -374,6 +383,9 @@ jobs:
 
       - name: sim/tests/test_evidence_paths.py (issue #465 shared evidence path-hygiene rule + no per-harness re-fork)
         run: python3 sim/tests/test_evidence_paths.py
+
+      - name: sim/tests/test_lock_proximity.py (issue #467 shared DR-0005 lock-proximity rule + no per-reducer re-fork)
+        run: python3 sim/tests/test_lock_proximity.py
 
       - name: sim/tests/test_artifact_store.py (issue #347 artifact-store writer + manifest checker, fake klt, fail-closed paths)
         run: python3 sim/tests/test_artifact_store.py
