@@ -8,6 +8,8 @@ Chronological record of recently merged pull requests and closed issues.
 
 ### 2026-11-13
 
+- **PR #474**: refactor(sim): one shared DR-0005 lock-proximity rule, and correct the two order-dependent reducers
+- **Issue #467** (closed): Consolidate the five DR-0005 lock-proximity implementations in the sim reducers into one shared helper and correct the two order-dependent ones
 - **PR #466**: refactor: one shared evidence path-hygiene rule for both digital harnesses
 - **Issue #465** (closed): Consolidate the two drifted evidence path sanitizers in the digital synthesis and P&R harnesses into one shared helper
 - **PR #458**: docs(spec): DR-0018 adopt <=200 uW worst-corner idle power envelope

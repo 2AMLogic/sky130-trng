@@ -12,6 +12,11 @@ Standard library only; no simulator, no PDK.  Two halves:
 
     ripple.py --emit-record REQDIR            # REQDIR/<corner>-<group>-<n>/{resp.json,plan.json}
     ripple.py --check sim/ro-array-supply-perturbation/records/<id>.json   # replay, writes nothing
+    ripple.py --supersede sim/ro-array-supply-perturbation/records/<id>.json
+                                              # re-reduce THAT record's own committed raw responses with
+                                              # today's reducer and mint a correcting record (+ a verbatim
+                                              # copy of its corner bundle) naming it in `supersedes`.
+                                              # Never edits the superseded record.
 
 What a row is
 -------------
@@ -45,8 +50,11 @@ pair lock          same drift test between ring i and ring j (ring i's cycle cou
                    interpolated at ring j's edge times), p:q in 1:1,2:1,3:2,4:3 and
                    inverses.  A pair counts only if it was NOT already inside the
                    window in the clean run (new lock caused by the ripple).
-closeness          DR-0005's figure: min over rationals of |T_i/T_j / (p/q) - 1|,
-                   for the DR-0005 set {2/1, 3/2, 4/3} and including 1/1.
+closeness          DR-0005's figure (shared sim/bin/lock_proximity.py): min over
+                   rationals of |R / (p/q) - 1| where R is the SLOWER over the
+                   FASTER period of the pair, so R >= 1 and p/q >= 1 and the
+                   value does not depend on the order the two rings are passed
+                   in.  For the DR-0005 set {2/1, 3/2, 4/3} and including 1/1.
 bias               <v(xo)> / vnom over 60 ns..stop (quasi-static rows: / (vnom+dv)).
 
 Tolerance criteria (DR-0003's margins, not new ones)
@@ -81,14 +89,15 @@ REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 SLUG = "ro-array-supply-perturbation"
 sys.path.insert(0, os.path.join(REPO, "sim", "bin"))
 sys.path.insert(0, os.path.join(REPO, "layout", "bin"))
+from lock_proximity import ANY_RATIOS, DR5_RATIOS, closeness  # noqa: E402  (after sys.path)
 from _hashing import sha256_file as _sha256  # noqa: E402
+from request_dir import load_request_dir  # noqa: E402
 
 NEDGE = 40
 DRIFT_LOCK = 0.1                 # ring cycles slipped over the window below which => locked
 LR = "lock-resolution"           # make-requests.py --campaign lr (issue #288): 200/400-edge windows
 RATIOS = [(p, q) for p in range(1, 5) for q in range(1, 5) if math.gcd(p, q) == 1]
-PAIR_RATIOS = [(1, 1), (2, 1), (3, 2), (4, 3)]
-DR5_RATIOS = [(2, 1), (3, 2), (4, 3)]
+PAIR_RATIOS = list(ANY_RATIOS)   # pair_lock's p:q grid (and the "including 1:1" closeness set)
 Q_MARGIN = 1.036                 # DR-0003 sec. 3: Q_array / (M*Q_H0) at the binding corner
 BIAS_BAND = (0.31, 0.53)         # DR-0003 sec. 3
 PROV = "simulation-derived; provisional until silicon"
@@ -152,18 +161,6 @@ def pair_lock(t_i, t_j):
         d = ls_slope(resid) * (len(ks) - 1)
         if best is None or abs(d) < abs(best[2]):
             best = (p, q, d)
-    return best
-
-
-def closeness(Ti, Tj, ratios):
-    """min over (p/q) of |(f_i/f_j) / (p/q) - 1|; f_i/f_j = Tj/Ti.  Order-free."""
-    r = Tj / Ti
-    best = None
-    for p, q in ratios:
-        for x in (p / q, q / p):
-            d = abs(r / x - 1)
-            if best is None or d < best[0]:
-                best = (d, p, q)
     return best
 
 
@@ -266,50 +263,16 @@ def load_reqdir(reqdir):
     return load_reqdir_all(reqdir)[0]
 
 
-def _submit_error(d):
-    """Why a request directory has no usable response: the klt error message if
-    the client wrote one, else a generic not-completed note.  Never raises."""
-    for fn in ("resp.json", "klt.log"):
-        p = os.path.join(d, fn)
-        try:
-            txt = open(p).read()
-        except OSError:
-            continue
-        if not txt.strip():
-            continue
-        try:
-            msg = json.loads(txt).get("error", {}).get("message")
-            if msg:
-                return msg
-        except (ValueError, AttributeError):
-            pass
-        return txt.strip()[-600:]
-    return "no response: request not submitted or submission did not complete"
-
-
 def load_reqdir_all(reqdir):
     """-> (chunks, missing).  chunks = [(name, plan, resp)] for requests with a
     response; missing = [(name, plan, reason)] for requests that were refused,
     failed or never completed, so a record can carry them as explicit rows
-    instead of silently dropping them (issue #288 evidence requirement)."""
-    chunks, missing = [], []
-    for d in sorted(glob.glob(os.path.join(reqdir, "*-*-*"))):
-        nm = os.path.basename(d)
-        if not os.path.isfile(os.path.join(d, "plan.json")):
-            continue
-        plan = json.load(open(os.path.join(d, "plan.json")))
-        resp = os.path.join(d, "resp.json")
-        rs = None
-        if os.path.isfile(resp) and os.path.getsize(resp) > 0:     # a refused/unfinished request leaves it empty
-            try:
-                rs = json.load(open(resp))
-            except ValueError:
-                rs = None
-        if rs is not None and "corners" in rs:
-            chunks.append((nm, plan, rs))
-        else:
-            missing.append((nm, plan, _submit_error(d)))
-    return chunks, missing
+    instead of silently dropping them (issue #288 evidence requirement).
+
+    The walk itself is shared with the other four campaign reducers in
+    sim/bin/request_dir.py, which took this contract as its own (issue #469);
+    the reason-extraction moved there as `submit_error`."""
+    return load_request_dir(reqdir, pattern="*-*-*")
 
 
 def observed_window(meas, nedge):
@@ -740,7 +703,8 @@ def render_md(rid, cn, pvt, rows, summ, jobs, sha, now, claim, supersedes="(none
     return "\n".join(L) + "\n"
 
 
-def render_lr_md(rid, pvt, rows, summ, jobs, sha, now, inputs=None, history=None):
+def render_lr_md(rid, pvt, rows, summ, jobs, sha, now, inputs=None, history=None,
+                 supersedes="(none; extends the #200 records)"):
     inputs = inputs or {}
     nmiss = len(summ["rows_unusable"])
     L = [f"# {rid} -- {SLUG} (lock-resolution, issue #288)", "",
@@ -875,7 +839,7 @@ def render_lr_md(rid, pvt, rows, summ, jobs, sha, now, inputs=None, history=None
           "raw responses and missing-request notes are in `../corners/<id>/` (append-only; the #200 records are "
           "untouched).", "",
           "---", "", "- Author: loom-builder@sky130-trng", f"- Timestamp (UTC): {now.isoformat()}", f"- Repo commit: `{sha}`",
-          "- Supersedes: (none; extends the #200 records)"]
+          f"- Supersedes: {supersedes}"]
     return "\n".join(L) + "\n"
 
 
@@ -1012,11 +976,9 @@ def _replay_equal(a, b, rel=1e-9):
     return a == b
 
 
-def check(recpath):
-    """Replay a record from its committed raw responses (and, for campaign
-    records, the committed `*.missing.json` notes); exit 1 on any difference."""
-    rec = json.load(open(recpath))
-    cdir = os.path.join(REPO, "sim", SLUG, "corners", rec["record_id"])
+def load_bundle(cdir):
+    """A committed `corners/<rid>/` bundle -> (chunks, missing), the same shape
+    `load_reqdir_all` returns for a live request directory."""
     chunks, missing = [], []
     for f in sorted(glob.glob(os.path.join(cdir, "*.klt-sim.json.gz"))):
         nm = os.path.basename(f)[:-len(".klt-sim.json.gz")]
@@ -1025,16 +987,68 @@ def check(recpath):
     for f in sorted(glob.glob(os.path.join(cdir, "*.missing.json"))):
         nm = os.path.basename(f)[:-len(".missing.json")]
         missing.append((nm, _jload(os.path.join(cdir, nm + ".plan.json")), _jload(f)["reason"]))
+    return chunks, missing
+
+
+def rereduce(rec, cdir):
+    """Re-run this record's reduction over its own committed raw responses.
+    Returns (corner-name, rows, summary) -- pure arithmetic, no simulator."""
+    chunks, missing = load_bundle(cdir)
     corner = next(iter({pl["corner"] for _, pl, _ in chunks + missing}))
     rows = build_rows(chunks, missing)[corner]
     if rec.get("campaign") == LR:
         summ = summarize_lr(rows)
     else:
         summ = summarize(rows, rec["pvt"]["vnom"], (0.010, 0.050))
+    return corner, rows, summ
+
+
+def check(recpath):
+    """Replay a record from its committed raw responses (and, for campaign
+    records, the committed `*.missing.json` notes); exit 1 on any difference."""
+    rec = json.load(open(recpath))
+    cdir = os.path.join(REPO, "sim", SLUG, "corners", rec["record_id"])
+    _corner, rows, summ = rereduce(rec, cdir)
     same = (_replay_equal(json.loads(json.dumps(rows, default=str)), rec["rows"])
             and _replay_equal(json.loads(json.dumps(summ, default=str)), rec["summary"]))
     print("replay", "MATCHES" if same else "DIFFERS", recpath)
     return 0 if same else 1
+
+
+def supersede(recpath, sha=None):
+    """Mint a record that supersedes `recpath`, re-reducing its OWN committed raw
+    responses with the current reducer.  No simulation and no edit of the
+    superseded record: its `corners/<old-id>/` bundle is copied byte-for-byte to
+    `corners/<new-id>/` (sim/README.md's correction rule, issue #467)."""
+    from evidence_record import git_short_sha, reserve_corner_dir
+    from pathlib import Path
+    old = json.load(open(recpath))
+    oid = old["record_id"]
+    sdir = os.path.join(REPO, "sim", SLUG)
+    ocdir = os.path.join(sdir, "corners", oid)
+    if not os.path.isdir(ocdir):
+        raise SystemExit(f"error: {ocdir} is missing; cannot re-reduce {oid} without its raw responses")
+    cn, rows, summ = rereduce(old, ocdir)
+    sha = sha or git_short_sha(Path(REPO))
+    now = datetime.datetime.now(datetime.timezone.utc)
+    rid = f"{now:%Y%m%d-%H%M%S}-{sha}"
+    rdir = os.path.join(sdir, "records")
+    cdir = os.path.join(sdir, "corners", rid)
+    reserve_corner_dir(Path(cdir), Path(rdir), rid)      # refuses an id that already exists; claims cdir
+    shutil.copytree(ocdir, cdir, dirs_exist_ok=True)     # raw responses verbatim: a re-reduction, not a re-run
+    rec = dict(old)
+    rec.update(record_id=rid, supersedes=oid, summary=summ, rows=rows, timestamp_utc=now.isoformat())
+    rec["klt_sim"] = dict(old["klt_sim"], responses=f"sim/{SLUG}/corners/{rid}/*.klt-sim.json.gz")
+    json.dump(rec, open(os.path.join(rdir, rid + ".json"), "w"), indent=2, default=str)
+    jobs = old["klt_sim"].get("jobs") or []
+    if old.get("campaign") == LR:
+        md = render_lr_md(rid, old["pvt"], rows, summ, jobs, sha, now, old.get("inputs"),
+                          old.get("submission_history"), supersedes=oid)
+    else:
+        md = render_md(rid, cn, old["pvt"], rows, summ, jobs, sha, now, old["claim"], supersedes=oid)
+    open(os.path.join(rdir, rid + ".md"), "w").write(md)
+    print(rid, "supersedes", oid, "|", cn, "| rows", len(rows))
+    return 0
 
 
 if __name__ == "__main__":
@@ -1043,6 +1057,8 @@ if __name__ == "__main__":
         emit_record(a[1])
     elif len(a) == 2 and a[0] == "--check":
         sys.exit(check(a[1]))
+    elif len(a) == 2 and a[0] == "--supersede":
+        sys.exit(supersede(a[1]))
     else:
         print(__doc__)
         sys.exit(2)
