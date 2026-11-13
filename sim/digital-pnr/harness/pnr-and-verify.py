@@ -63,7 +63,6 @@ from functools import partial
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-HOME = Path.home().resolve()
 sys.path.insert(0, str(REPO_ROOT / "layout" / "bin"))
 from _hashing import sha256_file  # noqa: E402
 sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
@@ -71,6 +70,7 @@ sys.path.insert(0, str(REPO_ROOT / "sim" / "digital-synthesis" / "harness"))
 
 import gate_cosim  # noqa: E402
 from _klt_common import BuildError, run_klt, write_json  # noqa: E402
+from evidence_paths import sanitize_paths  # noqa: E402
 from evidence_record import mint_behavioral_record  # noqa: E402
 
 _ea = importlib.util.spec_from_file_location(
@@ -88,31 +88,6 @@ KLT_OUT = FLOW_DIR / ".klt" / "place-and-route"
 LAYOUT_DIR = REPO_ROOT / "layout" / "trng_digital"
 TOP = "trng_digital"
 DEFAULT_SEED = 20260905
-
-_EXTERNAL = ("<external -- not recorded by absolute location; see this "
-             "record's PDK name/version and deck content_hash instead>")
-
-
-def _sanitize(obj):
-    """Same hygiene rule as synthesize-and-verify.py: in-repo paths are
-    recorded repo-relative, anything else absolute is an external input
-    identified by hash/version, never by location."""
-    if isinstance(obj, str) and obj.startswith("/"):
-        p = Path(obj)
-        for base, fn in ((REPO_ROOT, lambda q: str(q.relative_to(REPO_ROOT))),):
-            try:
-                return fn(p.resolve())
-            except ValueError:
-                pass
-        if str(p).startswith("/tmp/") or str(p).startswith(str(HOME)):
-            return _EXTERNAL
-        return obj
-    if isinstance(obj, dict):
-        return {k: _sanitize(v) for k, v in obj.items()}
-    if isinstance(obj, list):
-        return [_sanitize(v) for v in obj]
-    return obj
-
 
 sha256 = partial(sha256_file, prefix=True)
 
@@ -213,7 +188,7 @@ def main(argv=None) -> int:
 
     def save(name, obj):
         if out_dir:
-            write_json(out_dir / name, _sanitize(obj))
+            write_json(out_dir / name, sanitize_paths(obj))
 
     for tool in (args.klt, "iverilog", "openroad"):
         if shutil.which(tool) is None:
@@ -520,14 +495,14 @@ def main(argv=None) -> int:
     arts = []
     for k, v in reports.items():
         p = stage / f"{k}-output.json"
-        write_json(p, _sanitize(v))
+        write_json(p, sanitize_paths(v))
         shutil.copy2(p, LAYOUT_DIR / f"{k}.json")
         arts.append(p)
     p = stage / "negative-controls.json"
     write_json(p, controls)
     arts.append(p)
     p = stage / "electrical-audit.json"
-    write_json(p, _sanitize({**ea, "request": rel(REQUEST)}))
+    write_json(p, sanitize_paths({**ea, "request": rel(REQUEST)}))
     arts.append(p)
     for lg in sorted(elec_log_dir.glob("*.log.gz")):
         dst = stage / f"electrical-audit-{lg.name}"
@@ -553,7 +528,7 @@ def main(argv=None) -> int:
         summary={"verdict": verdict, "geometry_sha256": geo, "controls": controls,
                  "area": {k: pnr[k] for k in ("die_area_um2", "core_area_um2", "utilization_pct",
                                               "wirelength_um")},
-                 "power_delivery": _sanitize(pnr["power"]),
+                 "power_delivery": sanitize_paths(pnr["power"]),
                  "corners": [{k: r.get(k) for k in ("corner", "worst_slack_ns", "worst_hold_slack_ns",
                                                     "setup_violation_count", "hold_violation_count",
                                                     "clock_skew_ns", "timing_status",
@@ -564,14 +539,14 @@ def main(argv=None) -> int:
                      "kind": "final-route (extracted post-route SPEF)",
                      "reduction": ered, "input_hashes": ea.get("input_hashes"),
                      "coverage_disclosure": ea.get("coverage_disclosure")},
-                 "spef_sta": _sanitize(pnr["spef_sta"]),
+                 "spef_sta": sanitize_paths(pnr["spef_sta"]),
                  "input_hashes": {"request": sha256(REQUEST), "netlist": sha256(netlist_in),
                                   "rtl": sha256(REPO_ROOT / "digital" / "rtl" / "trng_digital.v"),
                                   "testbench": sha256(gate_cosim.TB),
                                   "tool_pins": sha256(PINS)},
                  "gate_cosim": {k: v for k, v in cosim.items()
                                 if k not in ("stimulus_path", "observations_path")},
-                 "pdk": _sanitize(pdk_info), "tool_drift": drift},
+                 "pdk": sanitize_paths(pdk_info), "tool_drift": drift},
         level="gate (post-route: placed-and-routed as-built netlist, extracted parasitics)",
         seeds={"cosim_stimulus_seed": args.seed, "pnr_seed": request["seed"]},
         tools={"klt": prov["klt_version"], "openroad": pnr["engine_version"],
