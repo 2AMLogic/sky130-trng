@@ -13,7 +13,9 @@ import unittest
 HERE = os.path.dirname(os.path.abspath(__file__))
 _p = os.path.join(HERE, "..", "local-mismatch-monte-carlo", "reduce.py")
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(HERE, "..", "bin"))
 from loadmod import load_module  # noqa: E402
+import lock_proximity as LP  # noqa: E402
 mm = load_module("mm_reduce", _p)
 
 
@@ -30,13 +32,28 @@ class TestStats(unittest.TestCase):
 
 
 class TestCloseness(unittest.TestCase):
+    """This reducer's use of the SHARED lock-proximity rule (sim/bin/lock_proximity.py).
+
+    The rule itself -- symmetry, the DR-0005 known answer, exact hits -- is
+    pinned once in sim/tests/test_lock_proximity.py (issue #467); what is
+    tested here is that this reducer uses it rather than a private copy, and
+    the pair/extrapolation behaviour that is reduce.py's own.
+    """
+
+    def test_uses_the_shared_rule(self):
+        self.assertIs(mm.pair_closeness, LP.pair_closeness)
+        self.assertIs(mm.DR5_RATIOS, LP.DR5_RATIOS)
+        self.assertIs(mm.ANY_RATIOS, LP.ANY_RATIOS)
+        self.assertFalse(hasattr(mm, "closeness"),
+                         "reduce.py re-declared a private closeness(); import the shared one")
+
     def test_exact_rational_is_zero(self):
-        d, p, q = mm.closeness(1.0, 1.5, mm.DR5_RATIOS)      # period ratio 1.5 -> 3/2
+        d, p, q = LP.closeness(1.0, 1.5, mm.DR5_RATIOS)      # period ratio 1.5 -> 3/2
         self.assertAlmostEqual(d, 0.0)
         self.assertEqual((p, q), (3, 2))
 
     def test_order_free(self):
-        self.assertAlmostEqual(mm.closeness(1.0, 1.1, mm.ANY_RATIOS)[0], mm.closeness(1.1, 1.0, mm.ANY_RATIOS)[0])
+        self.assertEqual(LP.closeness(1.0, 1.1, mm.ANY_RATIOS), LP.closeness(1.1, 1.0, mm.ANY_RATIOS))
 
     def test_one_to_one_only_in_any(self):
         T = [1.0, 1.02, 3.0, 5.0]           # rings 1,2 are 2 % apart (1:1); no small rational otherwise close
@@ -51,8 +68,9 @@ class TestCloseness(unittest.TestCase):
 
 
     def test_dr0005_figure(self):
-        # DR-0005: ladder span 1.2096 against 4/3 -> 9.3 %
-        self.assertAlmostEqual(mm.closeness(1.0, 1.2096, mm.DR5_RATIOS)[0] * 100, 9.28, places=1)
+        # DR-0005: ladder span 1.2096 against 4/3 -> 9.3 %, in either argument order
+        for a, b in ((1.0, 1.2096), (1.2096, 1.0)):
+            self.assertAlmostEqual(LP.closeness(a, b, mm.DR5_RATIOS)[0] * 100, 9.28, places=1)
 
 
 class TestBias(unittest.TestCase):
