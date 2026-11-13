@@ -5,6 +5,8 @@ Stdlib only, no PDK.
 Fails (exit 1) when:
   * a spec/decision-records/DR-NNNN-*.md file is not linked from the index;
   * an index link to decision-records/ points at a missing file;
+  * an index entry's status word is not one of STATUS_WORDS (a typo or an
+    invented word must not be silently normalised away);
   * a record's `## Status` section and the index disagree on status
     (Proposed vs Accepted/Ratified).  The index must never overstate: an
     index that says Accepted/Ratified for a record still Proposed is the
@@ -40,7 +42,7 @@ def record_status(text):
     m = re.search(r"^## Status\s*\n(.*?)(?=^## |\Z)", text, re.S | re.M)
     if not m:
         return None
-    found = re.search(r"\*\*(Proposed|Accepted|Ratified)\b", m.group(1))
+    found = re.search(r"\*\*(%s)\b" % "|".join(STATUS_WORDS), m.group(1))
     return _norm(found.group(1)) if found else None
 
 
@@ -76,6 +78,10 @@ def check(root):
         idx = entries.get(name)
         if idx is None:
             errs.append("index entry for %s has no **Status** marker" % name)
+            continue
+        if idx.lower() not in {w.lower() for w in STATUS_WORDS}:
+            errs.append("index entry for %s has unknown status **%s** (expected "
+                        "one of %s)" % (name, idx, "/".join(STATUS_WORDS)))
             continue
         rec = record_status((recdir / name).read_text(encoding="utf-8"))
         if rec is None:

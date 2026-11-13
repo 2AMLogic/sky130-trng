@@ -43,7 +43,6 @@ PVT_POINTS = [(-40.0, 1.62), (27.0, 1.80), (-40.0, 1.98)]
 PROCESSES = ["tt", "ss", "ff"]
 # Established steady-state window (sim/ro-array-core-combining/testbench/tb_ro_array_core.spice)
 WIN_FROM, WIN_TO = "60n", "200n"
-PW_WIDTHS = [500, 300, 200, 140, 100, 70, 50, 35, 25]    # ps, tb order; pulse bench swing keys
 # ONE transient serves both benches. The batch fleet's runner (klt 0.5.0) and the client that can talk to it
 # (0.6.0) have no `analysis_steps`, so the pulse-width bench cannot run its committed 0.5p/12n analysis
 # separately from the array bench's 5p/200n one. 5p is the array bench's committed step; it was checked

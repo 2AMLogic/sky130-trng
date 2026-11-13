@@ -78,7 +78,6 @@ DEFAULT_OUT = HERE / "trng_whole.sim.spice"
 COMMITTED_GZ = HERE / "trng_whole.sim.spice.gz"  # the copy actually committed
 PORTS_JSON = HERE / "trng_whole.sim.ports.json"
 
-SUBCKT_RE = re.compile(r"^\.SUBCKT\s+trng_whole\s+(.*)$", re.M)
 BRACKET_RE = re.compile(r"\b([A-Za-z_][A-Za-z0-9_]*)\[(\d+)\]")
 # transform 4: smallest bin of the PDK's scalable nfet_01v8 is wmin = 0.42 um
 NFET_MIN_BIN_W_UM = 0.42

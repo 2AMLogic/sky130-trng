@@ -63,6 +63,27 @@ class T(unittest.TestCase):
                              rec_status={3: "Accepted"})
         self.assertTrue(any("status mismatch" in e and "DR-0003" in e for e in errs), errs)
 
+    def test_unknown_index_status_word_fails(self):
+        # An index word outside STATUS_WORDS used to normalise to "Accepted" and
+        # pass silently against an Accepted record (issue #471).
+        errs = self.run_case(nums=tuple(range(1, 13)) + (14,),
+                             rec_status={3: "Accepted"},
+                             idx_status={3: "Rejected"})
+        self.assertTrue(any("unknown status" in e and "DR-0003" in e for e in errs), errs)
+
+    def test_misspelled_index_status_word_fails(self):
+        errs = self.run_case(nums=tuple(range(1, 13)) + (14,),
+                             rec_status={3: "Accepted"},
+                             idx_status={3: "Propsed"})
+        self.assertTrue(any("unknown status" in e and "DR-0003" in e for e in errs), errs)
+
+    def test_ratified_index_word_is_accepted(self):
+        # Ratified is in STATUS_WORDS and stays equivalent to Accepted.
+        errs = self.run_case(nums=tuple(range(1, 13)) + (14,),
+                             rec_status={3: "Accepted"},
+                             idx_status={3: "Ratified"})
+        self.assertEqual(errs, [])
+
     def test_unlisted_gap_fails(self):
         errs = self.run_case(nums=tuple(range(1, 8)) + tuple(range(9, 13)) + (14,))
         self.assertTrue(any("gap: DR-0008" in e for e in errs), errs)

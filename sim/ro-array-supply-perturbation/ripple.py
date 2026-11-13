@@ -892,7 +892,6 @@ LR_CLAIM = ("Lock-resolution follow-up on the same pre-layout ro_array_core (iss
             "on-frequency rows kept drift-UNRESOLVED and decided, where at all, by detuned neighbours and pull "
             "evidence; current-injection controls at own/+2/+5/+20 % detuning against the clean free-running reference; LOCK, Q "
             "and BIAS reported separately; deterministic, no injected noise, no entropy claim")
-PVTS = None
 
 
 def _jload(path):
