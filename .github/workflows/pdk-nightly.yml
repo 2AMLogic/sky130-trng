@@ -196,6 +196,31 @@ jobs:
           volare fetch --pdk sky130 "${{ steps.pin.outputs.commit }}"
           volare enable --pdk sky130 "${{ steps.pin.outputs.commit }}"
 
+      # Installed BEFORE --pdk and --check below, not after them: since
+      # issue #460 design/netlist.py does not spawn xschem itself, it runs
+      # the export through `klt netlist` (which forces xschem's headless
+      # flags and bounds the run -- a raw call hangs in xschem's Tk event
+      # loop with no timeout). So --check needs klt on PATH, and it needs
+      # the --erc that first ships in klayout-tools 0.9.1; design/pdk.json's
+      # klt_version_min makes netlist.py refuse up front below that, with
+      # EXIT_ENVIRONMENT (3) rather than a misleading STALE or ERC verdict.
+      #
+      # This one install serves both `design/netlist.py` and the
+      # `klt signoff --attest` steps further down (issue #360: T1 item 1
+      # analog is attested by klt, not self-declared). Only this job's pin
+      # moves to 0.9.1 -- ci.yml's signoff grader pin and the layout klt pin
+      # below are independent and deliberately untouched.
+      #
+      # The attestation inventory still declares
+      # `design/netlist.py --check --top <cell>` as each derived netlist's
+      # freshness check, NOT `klt netlist --check`: netlist.py drops klt's
+      # `** klt-netlist-inputs:` provenance line and then normalises paths
+      # and line wrapping on top of klt's output, so a raw re-export still
+      # would not byte-match the committed .spice (measured: 17-45 differing
+      # lines per cell even with every relevant klt flag on).
+      - name: Install klt (klayout-tools) for `netlist --erc` and `signoff --attest`
+        run: pip install --user "klayout-tools==0.9.1"
+
       # Prints the resolved xschem version against design/pdk.json's
       # xschem_version_min, then the resolved PDK install path, source, and
       # open_pdks commit and whether that commit matches design/pdk.json's
@@ -205,28 +230,21 @@ jobs:
       # was meant to make legible and could not: it reported the PDK pin as
       # matching (it was) while the netlister silently emitted a different,
       # unsimulable netlist, so the only visible symptom was four STALE
-      # diffs. The xschem line closes that gap.
-      - name: Resolved xschem + PDK
+      # diffs. The xschem line closes that gap, and the klt line beside it
+      # does the same for the netlister's new front end (issue #460).
+      - name: Resolved xschem + klt + PDK
         run: python3 design/netlist.py --pdk
 
       # Writes nothing: --check exports every TOP_CELLS entry into a temp
       # directory, diffs it against the committed design/*.spice (staleness),
-      # and runs xschem's own ERC over it (connectivity). A connectivity
-      # failure prints with an `ERC` prefix and exits EXIT_ERC (2), distinct
-      # from a staleness failure's `STALE` prefix and EXIT_STALE (1).
+      # and runs xschem's own ERC over it (connectivity, reached through
+      # `klt netlist --erc`). A connectivity failure prints with an `ERC`
+      # prefix and exits EXIT_ERC (2), distinct from a staleness failure's
+      # `STALE` prefix and EXIT_STALE (1). A klt that is missing, too old,
+      # or wedged past its timeout is neither: it exits EXIT_ENVIRONMENT (3)
+      # naming the cell, so a tool failure is never read as a design one.
       - name: design/netlist.py --check
         run: python3 design/netlist.py --check
-
-      # issue #360: T1 item 1 (analog) is attested by klt, not self-declared.
-      # `klt signoff --attest` needs klayout-tools >= 0.8.0; the nightly's
-      # other jobs pin an older klt, so this job gets its own pinned install.
-      # The inventory declares
-      # `design/netlist.py --check --top <cell>` as each derived netlist's
-      # freshness check (not `klt netlist --check`: netlist.py normalises
-      # paths and line wrapping and adds the ERC guard, so a raw re-export
-      # would not byte-match the committed .spice).
-      - name: Install the klt that provides `signoff --attest`
-        run: pip install --user "klayout-tools==0.8.0"
 
       # Always re-attests (exit 0 pass / 3 fail: a stale netlist or ERC defect
       # turns this red and writes nothing) and uploads the envelope.

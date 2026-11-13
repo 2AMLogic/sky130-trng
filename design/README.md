@@ -109,8 +109,8 @@ array's internal combining node `xo`, which never becomes a pin.
 ```bash
 python3 design/netlist.py            # (re-)export every top cell
 python3 design/netlist.py --check    # fail if a committed netlist is stale, or fails ERC
-python3 design/netlist.py --lint     # brace guard only; no xschem, no PDK
-python3 design/netlist.py --pdk      # show the resolved xschem + PDK against their pins
+python3 design/netlist.py --lint     # brace guard only; no xschem, no klt, no PDK
+python3 design/netlist.py --pdk      # show the resolved xschem + klt + PDK against their pins
 python3 design/test_netlist_erc.py   # regression fixture for the --check ERC wiring itself
 python3 design/test_pdk_search.py    # unit test for the shared PDK-search fallback order
 ```
@@ -120,8 +120,8 @@ python3 design/test_pdk_search.py    # unit test for the shared PDK-search fallb
 - **Staleness** — what makes a committed netlist evidence rather than a
   snapshot someone forgot to refresh: it re-exports into a temp directory
   and exits non-zero if the result differs from what is committed.
-- **Connectivity** — xschem's own ERC (electrical rule check, `xschem
-  netlist -erc`) finds no undriven node, open net, or shorted pin anywhere
+- **Connectivity** — xschem's own ERC (electrical rule check, reached here
+  via `klt netlist --erc`) finds no undriven node, open net, or shorted pin anywhere
   in each top cell's instantiated hierarchy. A schematic-level wiring
   defect (e.g. a `lab_pin` placed at the wrong coordinate relative to the
   net it is meant to tag) can produce a netlist that is internally
@@ -139,6 +139,63 @@ python3 design/test_pdk_search.py    # unit test for the shared PDK-search fallb
 
 Run `--check` after any schematic edit; commit the regenerated `.spice`
 files in the same change.
+
+### Tools: xschem through `klt netlist` (issue #460)
+
+`netlist.py` does not spawn `xschem` itself. It shells out to `klt netlist`
+(klayout-tools), which owns that invocation: it always forces `-n -s -q -x
+-r` and bounds the run, escalating SIGTERM to SIGKILL across the whole
+process group on timeout. Those flags matter more than they look — dropping
+`-x` does not fail, it makes xschem initialise its GUI, write a
+plausible-looking netlist, then hang in the Tk event loop where it can stop
+responding to SIGTERM. The hand-rolled call this replaced had no timeout at
+all, so a wedged xschem hung `--check` and the nightly `netlist-check` job
+indefinitely; the bounded run now fails in seconds, naming the cell.
+
+| Needs | Floor | Source of truth |
+|---|---|---|
+| xschem | >= 3.4.7 (hard gate) | `design/pdk.json` `xschem_version_min` |
+| klt (klayout-tools) | >= 0.9.1 (hard gate) | `design/pdk.json` `klt_version_min` |
+
+The klt floor is **0.9.1 because that is the first tagged release whose `klt
+netlist` has `--erc`**, which `--check` depends on for connectivity. Below
+it, `netlist.py` exits `3` (`EXIT_ENVIRONMENT`) naming the floor, rather
+than letting an argparse error from an older klt surface as a stale netlist
+or an ERC finding. It is a **minimum, not an equality pin**, and it is
+distinct from the layout flow's klt pin in `layout/pdk.json`, which is a
+commit pin that moves independently. If the klt on PATH is the layout pin,
+do not upgrade the shared install — use a throwaway environment:
+
+```bash
+uvx --from "klayout-tools==0.9.1" python3 design/netlist.py --check
+```
+
+**klt replaces the xschem call, not the post-processing.** Measured on all
+four top cells, klt's raw output does not reproduce the committed netlists
+under any combination of its flags (even the unreleased `--relative-paths` /
+`--no-provenance-header` leave 17–45 differing lines per cell: different
+continuation wrap points, repo-relative rather than bare schematic paths,
+and a top `.subckt` line missing the top schematic's own parameter block).
+So `_normalize` and its helpers are unchanged and run on klt's output; the
+only thing dropped first is klt's own `** klt-netlist-inputs:` provenance
+comment, which carries the temp rcfile's basename and the netlisting host's
+xschem version and would otherwise churn every committed `.spice` on a tool
+bump (`klayout-tools#5085`: closed upstream, but the
+`--no-provenance-header` flag that closes it is not in a tagged release
+yet). The other gaps are filed too — `klayout-tools#4091` (absolute
+`sch_path`/`sym_path` stamps, open), `klayout-tools#3324` (`--check` cannot
+gate a post-processed netlist, closed by `--block`) and
+`klayout-tools#5439` (`--block` restores the `.subckt` line without the top
+schematic's parameter block, so the block references parameters it never
+declares — which is why this repo does not use `--block`). All four are
+indexed in `docs/friction-ledger.md`.
+
+Because klt owns the run, failures are classified by its structured
+`--format json` report rather than by an exit status: every failure exits
+`1`, and only `error.code == "erc_findings"` is a connectivity defect. A
+timeout, an unresolved symbol or a missing PDK carries no such code and is
+reported as an export failure (exit `3`) naming the cell — so a wedged tool
+is never reported as a `STALE` netlist or an ERC finding.
 
 `--lint` is the guard that can run without a PDK. Every schematic carries a
 `T {...}` free-text header; a literal `{` or `}` inside that block — even a
