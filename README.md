@@ -72,7 +72,7 @@ harder, change it and record why.
 | Quality | designed-for-SP 800-90B (raw access + RCT/APT + entropy-source model); validation deferred to measured silicon | AIS-31 PTG.2 structure |
 | Conditioning | non-vetted CRC-32 LFSR compression, K = 8 (256 raw bits in : one 32-bit word out) | vetted conditioner if the area budget allows |
 | Health tests | continuous RCT + APT on the raw stream; cutoffs re-derived from sky130 noise/leakage corners, not copied from gf180 | — |
-| Power | < 500 µW active; idle target set after a sky130 leakage survey | — |
+| Power | < 500 µW active; idle ≤ 200 µW worst-corner envelope, 125 °C digital term counted as a labelled extrapolation (simulation-derived, pre-layout; [DR-0018](spec/decision-records/DR-0018-idle-power-target.md)) | — |
 | Area | < 0.05 mm² | — |
 | Operating envelope | −40 … +125 °C; supply per sky130 device flavor (1.8 V core, 3.3 V I/O devices available) — confirm before ratification | — |
 | Interface | streaming, mode-selectable raw / conditioned; raw access always available and never gated | — |
