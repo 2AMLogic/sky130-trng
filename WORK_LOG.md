@@ -2,6 +2,11 @@
 
 Chronological record of recently merged pull requests and closed issues.
 
+### 2026-11-13
+
+- **PR #458**: docs(spec): DR-0018 adopt <=200 uW worst-corner idle power envelope
+- **Issue #446** (closed): Decision record: adopt (or not) an idle-power target for sampler_core from the #201 leakage survey
+
 ### 2026-11-07
 
 - **PR #456**: refactor: use shared sha256_file in remaining sim/ scripts
