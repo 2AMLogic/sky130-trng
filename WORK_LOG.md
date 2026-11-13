@@ -8,6 +8,8 @@ Chronological record of recently merged pull requests and closed issues.
 
 ### 2026-11-13
 
+- **PR #479**: fix(post-layout-whole-block): write the port map next to -o, and name both klt builds when --check differs
+- **Issue #478** (closed): make-netlist.py rewrites committed ports.json as a side effect, and its order + --check both diverge from the committed evidence
 - **PR #477**: fix: fail spec-index check on unknown status word; drop 7 dead defs
 - **Issue #471** (closed): Wire the unused STATUS_WORDS into check_spec_index (index status typos pass CI) and remove seven other never-referenced definitions
 - **PR #473**: refactor(sim): one shared request-directory walk; stop the mismatch reducer dropping refused requests
