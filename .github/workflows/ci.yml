@@ -127,6 +127,17 @@ name: CI
 #     rational set -- with a negative control that the detector fires. Covered
 #     by the existing sim/bin/** and sim/tests/** path filters. No ngspice, no PDK.
 #
+# sim/tests/test_request_dir.py (issue #469) -- stdlib-only unit test of the
+#     one request-directory walk (sim/bin/request_dir.py) all five campaign
+#     reducers use: a `klt sim` request with no usable response (absent, empty,
+#     truncated, or carrying no `corners`) is RETURNED to the caller, never
+#     dropped. Pins the local-mismatch reducer's regression specifically -- a
+#     refused Monte Carlo chunk used to vanish and take its draws out of
+#     `n_*_requested`, so a record could read "20/20 array" over 20 of 30
+#     requested draws -- and pins the consolidation itself: no reducer may
+#     re-fork the walk. Replays the committed tt corner bundle back into a
+#     request directory; no ngspice, no PDK, no fleet.
+#
 # signoff-check (issue #155) -- the gap-to-T1 tier report staleness gate.
 #     `klt signoff --manifest signoff/block-manifest.json` re-renders this
 #     block's graded T1 item table from the committed evidence envelopes
@@ -386,6 +397,9 @@ jobs:
 
       - name: sim/tests/test_lock_proximity.py (issue #467 shared DR-0005 lock-proximity rule + no per-reducer re-fork)
         run: python3 sim/tests/test_lock_proximity.py
+
+      - name: sim/tests/test_request_dir.py (issue #469 shared request-directory walk, refused-request completeness policies, no per-reducer re-fork)
+        run: python3 sim/tests/test_request_dir.py
 
       - name: sim/tests/test_artifact_store.py (issue #347 artifact-store writer + manifest checker, fake klt, fail-closed paths)
         run: python3 sim/tests/test_artifact_store.py

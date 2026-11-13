@@ -51,6 +51,7 @@ import aging  # noqa: E402
 import campaign as C  # noqa: E402
 from evidence_record import git_short_sha, write_corner_bundle  # noqa: E402
 from lock_proximity import closeness as lock_closeness, ratio_label  # noqa: E402
+from request_dir import load_request_dir  # noqa: E402
 
 SLUG = C.SLUG
 SENTENCE = "This is a sensitivity bound, not a lifetime prediction."
@@ -158,14 +159,14 @@ def rows_from_response(name: str, plan: dict, resp: dict, floor: float | None) -
     return rows
 
 
-def load_reqdir(reqdir) -> list[tuple[str, dict, dict]]:
-    out = []
-    for d in sorted(glob.glob(os.path.join(reqdir, "*"))):
-        if os.path.isfile(os.path.join(d, "resp.json")) and os.path.isfile(os.path.join(d, "plan.json")) \
-                and os.path.getsize(os.path.join(d, "resp.json")) > 0:
-            out.append((os.path.basename(d), json.load(open(os.path.join(d, "plan.json"))),
-                        json.load(open(os.path.join(d, "resp.json")))))
-    return out
+def load_reqdir(reqdir) -> tuple[list[tuple[str, dict, dict]], list[tuple[str, dict, str]]]:
+    """-> (chunks, missing); the shared walk in sim/bin/request_dir.py.
+
+    This campaign's policy is unchanged (issue #469) and lives in the caller:
+    a request with no usable response contributes no row, and `emit_record`'s
+    coverage-manifest gate then refuses to record the grid as complete.  The
+    `missing` list is only used to say WHY on the way to that refusal."""
+    return load_request_dir(reqdir, pattern="*")
 
 
 def load_committed(cdir, prefix=None) -> list[tuple[str, dict, dict]]:
@@ -721,7 +722,9 @@ def emit_record(reqdir, ctl_rid):
     for k, f in (("generator_sha256", "campaign.py"), ("aging_sha256", "aging.py")):
         if crec["provenance"][k] != aging.sha256_file(SLUGDIR / f):
             raise SystemExit(f"error: {f} changed since the controls record {ctl_rid}; re-run the controls")
-    chunks = load_reqdir(reqdir)
+    chunks, missing = load_reqdir(reqdir)
+    for nm, _, why in missing:
+        print(f"no usable response for {nm}: {why}", file=sys.stderr)
     rows, summ = build(chunks, ctl_rid)
     if summ["coverage_problems"] or summ["pair_problems"] or summ["selection_problems"] or not summ["all_rows_ok"]:
         print("coverage:", summ["coverage_problems"][:10], "selection:", summ["selection_problems"][:10], "pair:", summ["pair_problems"][:10], "all_ok:", summ["all_rows_ok"], file=sys.stderr)

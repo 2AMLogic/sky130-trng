@@ -67,12 +67,10 @@ Simulation-derived; provisional until silicon.
 from __future__ import annotations
 
 import datetime
-import glob
 import gzip
 import hashlib
 import json
 import math
-import os
 import random
 import shutil
 import sys
@@ -85,6 +83,7 @@ sys.path.insert(0, str(REPO / "sim" / "bin"))
 sys.path.insert(0, str(REPO))
 sys.path.insert(0, str(REPO / "sim" / "tests"))
 from loadmod import load_module  # noqa: E402
+from request_dir import load_request_dir  # noqa: E402
 
 PROV = "simulation-derived; provisional until silicon"
 TOLS = (0.01, 0.005)            # settling tolerances (fractional period error); the steady-state
@@ -194,14 +193,12 @@ def committed_periods(temp, vdd):
 
 
 def load_reqdir(reqdir, leg):
-    chunks = []
-    for d in sorted(glob.glob(os.path.join(reqdir, f"{leg}-*"))):
-        resp = os.path.join(d, "resp.json")
-        if not (os.path.isfile(resp) and os.path.getsize(resp) > 0):
-            chunks.append((os.path.basename(d), json.load(open(os.path.join(d, "plan.json"))), None))
-            continue
-        chunks.append((os.path.basename(d), json.load(open(os.path.join(d, "plan.json"))), json.load(open(resp))))
-    return chunks
+    """-> (chunks, missing) for one leg; the shared walk in sim/bin/request_dir.py.
+
+    This leg's policy is unchanged (issue #469): the requests with no usable
+    response are named in the record under `requests_without_response`, rather
+    than being dropped or blocking the record."""
+    return load_request_dir(reqdir, pattern=f"{leg}-*")
 
 
 def det_rows(chunks):
@@ -820,11 +817,12 @@ def det_build(chunks, temp, vdd):
 
 def emit_det(reqdir):
     sha = _sha()
-    chunks = load_reqdir(reqdir, "det")
-    missing = [nm for nm, _, rs in chunks if rs is None]
+    good, absent = load_reqdir(reqdir, "det")
+    missing = [nm for nm, _, _ in absent]
     if missing:
         print("WARNING: no response for", missing, "-- those units are absent from the records", file=sys.stderr)
-    good = [c for c in chunks if c[2] is not None]
+        for nm, _, why in absent:
+            print(f"  {nm}: {why}", file=sys.stderr)
     mr = make_requests()
     n = 0
     store_rid = None
@@ -885,9 +883,12 @@ def noisy_build(chunks, point):
 
 def emit_noisy(reqdir):
     sha = _sha()
-    chunks = load_reqdir(reqdir, "noisy")
-    missing = [nm for nm, _, rs in chunks if rs is None]
-    good = [c for c in chunks if c[2] is not None]
+    good, absent = load_reqdir(reqdir, "noisy")
+    missing = [nm for nm, _, _ in absent]
+    if missing:
+        print("WARNING: no response for", missing, "-- those units are absent from the records", file=sys.stderr)
+        for nm, _, why in absent:
+            print(f"  {nm}: {why}", file=sys.stderr)
     mr = make_requests()
     for n, (point, *_rest) in enumerate(mr.NOISY_POINTS, 1):
         built = noisy_build(good, point)

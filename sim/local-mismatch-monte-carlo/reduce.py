@@ -47,6 +47,7 @@ REPO = os.path.abspath(os.path.join(HERE, "..", ".."))
 SLUG = "local-mismatch-monte-carlo"
 sys.path.insert(0, os.path.join(REPO, "sim", "bin"))
 from lock_proximity import ANY_RATIOS, DR5_RATIOS, pair_closeness  # noqa: E402  (after sys.path)
+from request_dir import load_request_dir  # noqa: E402
 
 NEDGE = 40
 E0 = 3
@@ -199,18 +200,41 @@ def sampler_unit(c, plan):
 
 
 def load_reqdir(reqdir):
-    chunks = []
-    for d in sorted(glob.glob(os.path.join(reqdir, "*-*-*"))):
-        resp = os.path.join(d, "resp.json")
-        if os.path.isfile(resp) and os.path.getsize(resp) > 0:
-            r = json.load(open(resp))
-            if "corners" in r:
-                chunks.append((os.path.basename(d), json.load(open(os.path.join(d, "plan.json"))), r))
-    return chunks
+    """-> (chunks, missing); the shared walk in sim/bin/request_dir.py.
+
+    A refused or unfinished request comes back in `missing`, never dropped on
+    the floor: requests in THIS campaign were refused for fleet capacity and
+    re-submitted by hand (README.md), and a dropped chunk used to take its
+    draws out of the recorded denominator with it (issue #469)."""
+    return load_request_dir(reqdir, pattern="*-*-*")
 
 
-def summarize(corner, chunks):
-    """chunks: [(name, plan, resp)] for ONE corner -> (rows, summary)."""
+def _n_requested(kind, chunks, missing):
+    """Monte Carlo draws the plans ASKED for, over the requests of one kind --
+    counting the requests with no usable response too.
+
+    Taking this from the units that came back instead (`len(arr)`) is what let
+    a refused chunk shrink the record's denominator: three of ten array draws
+    gone still read "20/20" (issue #469)."""
+    n = 0
+    for name, plan, _ in list(chunks) + list(missing):
+        if plan["kind"] != kind:
+            continue
+        mc = plan.get("monte_carlo") or {}
+        if mc.get("n") is None:
+            raise SystemExit(f"{name}: kind {kind} plan carries no monte_carlo.n; "
+                             "cannot say how many draws were requested")
+        n += mc["n"]
+    return n
+
+
+def summarize(corner, chunks, missing=()):
+    """chunks: [(name, plan, resp)] for ONE corner -> (rows, summary).
+
+    missing: [(name, plan, reason)] for requests of this corner that have no
+    usable response.  They contribute no rows, but their draws DO count
+    towards `n_*_requested`, so the record's denominator stays what was asked
+    for rather than what arrived (issue #469)."""
     pvt = chunks[0][1]["pvt"]
     vnom = pvt["vnom"]
     arr, smp, arr0, smp0 = [], [], [], []
@@ -235,8 +259,9 @@ def summarize(corner, chunks):
     T0 = [t * 1e-9 for t in nom_a["T_ns"]]
     good_a = [r for r in arr if r["ok"]]
     good_s = [r for r in smp if r["ok"]]
-    S = {"corner": corner, "pvt": pvt, "n_array_requested": len(arr), "n_array_ok": len(good_a),
-         "n_sampler_requested": len(smp), "n_sampler_ok": len(good_s),
+    S = {"corner": corner, "pvt": pvt,
+         "n_array_requested": _n_requested("arr", chunks, missing), "n_array_ok": len(good_a),
+         "n_sampler_requested": _n_requested("smp", chunks, missing), "n_sampler_ok": len(good_s),
          "seeds": sorted({r["seed"] for r in arr + smp}),
          "seeds_array": sorted({r["seed"] for r in arr}), "seeds_sampler": sorted({r["seed"] for r in smp})}
     # ---- nominal
@@ -339,11 +364,13 @@ def summarize(corner, chunks):
     return arr + smp, S
 
 
-def build(chunks):
-    by = {}
+def build(chunks, missing=()):
+    by, missing_by = {}, {}
     for ch in chunks:
         by.setdefault(ch[1]["corner"], []).append(ch)
-    return {cn: summarize(cn, chs) for cn, chs in by.items()}
+    for ms in missing:
+        missing_by.setdefault(ms[1]["corner"], []).append(ms)
+    return {cn: summarize(cn, chs, missing_by.get(cn, ())) for cn, chs in by.items()}
 
 
 # ---------------------------------------------------------------- rendering
@@ -416,7 +443,20 @@ def emit_record(reqdir, sha=None):
     from evidence_record import git_short_sha, write_corner_bundle
     from pathlib import Path
     sha = sha or git_short_sha(Path(REPO))
-    chunks = load_reqdir(reqdir)
+    chunks, missing = load_reqdir(reqdir)
+    if missing:
+        # Refusing, not recording partial rows: a Monte Carlo set is the unit of
+        # evidence here -- the tail counts in the verdict (draws below DR-0003's
+        # Q margin, below 2 % lock proximity) are read off the whole sample, so a
+        # record over 20 of 30 requested draws is not a weaker version of the
+        # claim, it is a different one.  Same stance as the vth-drift campaign's
+        # "not recording a partial grid as complete" (issue #469).
+        for nm, _, why in missing:
+            print(f"  {nm}: {why}", file=sys.stderr)
+        raise SystemExit(
+            f"error: {len(missing)} of {len(chunks) + len(missing)} requests under {reqdir} have no usable "
+            f"response (listed above); refusing to record a partial Monte Carlo set as complete. "
+            f"Re-submit those requests, then re-run.")
     allc = build(chunks)
     base_now = datetime.datetime.now(datetime.timezone.utc)
     for n, cn in enumerate(sorted(allc), 1):
