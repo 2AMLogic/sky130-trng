@@ -8,6 +8,10 @@ Chronological record of recently merged pull requests and closed issues.
 
 ### 2026-11-13
 
+- **PR #477**: fix: fail spec-index check on unknown status word; drop 7 dead defs
+- **Issue #471** (closed): Wire the unused STATUS_WORDS into check_spec_index (index status typos pass CI) and remove seven other never-referenced definitions
+- **PR #473**: refactor(sim): one shared request-directory walk; stop the mismatch reducer dropping refused requests
+- **Issue #469** (closed): Consolidate the five load_reqdir request-directory loaders: the mismatch reducer silently drops refused requests and still reports a full sample count
 - **PR #474**: refactor(sim): one shared DR-0005 lock-proximity rule, and correct the two order-dependent reducers
 - **Issue #467** (closed): Consolidate the five DR-0005 lock-proximity implementations in the sim reducers into one shared helper and correct the two order-dependent ones
 - **PR #466**: refactor: one shared evidence path-hygiene rule for both digital harnesses
