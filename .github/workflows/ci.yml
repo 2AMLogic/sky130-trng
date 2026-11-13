@@ -118,6 +118,24 @@ name: CI
 #     pins the consolidation itself -- neither harness may re-fork a private
 #     copy of the rule. No ngspice, no PDK.
 #
+# sim/post-layout-whole-block/test_make_netlist.py (issue #478) -- stdlib-only
+#     unit test of the whole-block netlist generator and of the committed
+#     evidence pair it produced. The generator's own `--check` is deliberately
+#     NOT here: it shells out to `klt extract` over the PDK and the committed
+#     GDS, and it is a BYTE compare whose result is specific to the klt build
+#     that produced the committed netlist (the top-level .SUBCKT port order is
+#     not reproducible across klt builds -- klayout-tools#5534,
+#     sim/post-layout-whole-block/records/20261113-ports-order-klt-build.md),
+#     so running it here would be red by construction on whatever klt a runner
+#     installs. What IS checkable with nothing installed is the half that
+#     actually rotted: that an `-o`-directed run writes its port map next to
+#     its own output instead of over the committed trng_whole.sim.ports.json,
+#     and that the committed .spice.gz header port order still equals the
+#     committed ports.json order (the map's own comment declares it does).
+#     Nothing ran either test before, and the side-effect write was found by
+#     hand. The `paths:` filter below lists the two committed evidence files
+#     the second test reads; the scripts themselves are covered by sim/*/*.py.
+#
 # sim/tests/test_lock_proximity.py (issue #467) -- stdlib-only unit test of the
 #     one DR-0005 lock-proximity rule (sim/bin/lock_proximity.py) all five sim
 #     reducers now use: the slower-over-faster convention DR-0005 section 2
@@ -233,6 +251,11 @@ on:
       - "sim/digital-synthesis/harness/**"
       # append-only record rule (issue #232): any change under a records dir
       - "sim/*/records/**"
+      # issue #478: the committed whole-block netlist/port-map pair that
+      # sim/post-layout-whole-block/test_make_netlist.py compares (the two
+      # scripts themselves are covered by sim/*/*.py above)
+      - "sim/post-layout-whole-block/trng_whole.sim.spice.gz"
+      - "sim/post-layout-whole-block/trng_whole.sim.ports.json"
       # issue #347: artifact-store manifests + summaries (checked and append-only)
       - "manifests/**"
       - "sim/*/artifacts/**"
@@ -400,6 +423,9 @@ jobs:
 
       - name: sim/tests/test_request_dir.py (issue #469 shared request-directory walk, refused-request completeness policies, no per-reducer re-fork)
         run: python3 sim/tests/test_request_dir.py
+
+      - name: sim/post-layout-whole-block/test_make_netlist.py (issue #478 generator transforms + committed netlist/port-map pair)
+        run: python3 sim/post-layout-whole-block/test_make_netlist.py
 
       - name: sim/tests/test_artifact_store.py (issue #347 artifact-store writer + manifest checker, fake klt, fail-closed paths)
         run: python3 sim/tests/test_artifact_store.py
