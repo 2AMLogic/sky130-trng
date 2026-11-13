@@ -117,6 +117,13 @@ modified after seeing results. An earlier, interrupted pass of this work had alr
 references under 0.6.0 on the fleet (`ss-smp0-1`, `ff-arr0-1`, `ff-smp0-1`); those were kept because their recorded `netlist_sha256` equals
 that of the regenerated request (same deck, same section). Every Monte Carlo unit comes from the single clean pass described above.
 
+Completeness of the records above rested on the operator noticing that a refused request had to be re-submitted: `reduce.py` used to
+drop a request with no usable response and then take `n_array_requested` / `n_sampler_requested` from the units that came *back*, so a
+set missing a refused chunk would have reported itself as "20/20 array, 30/30 sampler" with no error. It no longer can (issue #469):
+the loader returns refused requests, the requested counts come from the plans' `monte_carlo.n`, and `--emit-record` refuses to write a
+record while any request of the set has no usable response. The three committed records are unaffected — they are the complete set, and
+still replay as `MATCHES` — this closes the gap that let a *future* re-run record a partial set as a whole one.
+
 ## Tool friction
 
 Already filed upstream, hit again here: `2AMLogic/klayout-tools#2948` (batch runner/client version mismatch, runner 0.5.0 vs
