@@ -23,7 +23,8 @@ minted records is not named here, or if the PDK pins in `design/pdk.json`,
 | PDK | sky130A, open_pdks `c6d73a35f524070e85faff4a6a9eef49553ebc2b` | `design/pdk.json`, `sim/pdk.json`, `layout/pdk.json` |
 | PDK install | `volare enable --pdk sky130 c6d73a35f524070e85faff4a6a9eef49553ebc2b` | same files, `install_command` |
 | xschem | >= 3.4.7 (hard gate) | `design/pdk.json` `xschem_version_min` |
-| klt (klayout-tools) | `0.6.0+g5edb557f91d0` | `layout/pdk.json` `klt_version_pin`, `ci_klt_install` |
+| klt (klayout-tools), layout flow | `0.6.0+g5edb557f91d0` | `layout/pdk.json` `klt_version_pin`, `ci_klt_install` |
+| klt (klayout-tools), netlist path | >= 0.9.1 (hard gate) | `design/pdk.json` `klt_version_min`, `ci_klt_install` |
 | KLayout / python klayout | 0.30.12 | `layout/trng_whole/README.md` ("Reproducing") |
 | ngspice | machine-level install; each record stamps the version it ran on | `sim/README.md` ("Quick start") |
 | Python | 3.9+, standard library only for every script here | `sim/README.md` |
@@ -37,7 +38,7 @@ Cold start, once per machine:
 
 ```bash
 volare enable --pdk sky130 c6d73a35f524070e85faff4a6a9eef49553ebc2b
-python3 design/netlist.py --pdk          # xschem + PDK resolved against the pins
+python3 design/netlist.py --pdk          # xschem + klt + PDK resolved against the pins
 python3 sim/bin/corner-run.py --print-env
 ```
 
@@ -46,14 +47,27 @@ python3 sim/bin/corner-run.py --print-env
 Detail: `design/README.md` ("Regenerating the netlists").
 
 ```bash
-python3 design/netlist.py --check       # committed netlists not stale + xschem ERC
-python3 design/netlist.py --lint        # no xschem, no PDK
+python3 design/netlist.py --check       # committed netlists not stale + ERC
+python3 design/netlist.py --lint        # no xschem, no klt, no PDK
 python3 design/test_netlist_erc.py
 python3 design/test_pdk_search.py
 python3 design/test_netlist_xschem_version.py
 ```
 
-Needs xschem >= 3.4.7 and the pinned PDK (except `--lint` and the unit tests).
+Needs xschem >= 3.4.7, klt >= 0.9.1 and the pinned PDK (except `--lint` and the
+unit tests). `netlist.py` does not run xschem itself: it exports through
+`klt netlist`, which forces xschem's headless flags and bounds the run, so a
+wedged xschem fails in seconds instead of hanging `--check` indefinitely.
+`klt netlist --erc` (which `--check` uses for connectivity) first ships in
+klayout-tools 0.9.1; below that the script exits 3 naming the floor, rather
+than reporting a stale netlist or an ERC finding. This floor is **separate
+from the layout klt pin** in the table above and moves independently of it --
+if the klt on PATH is the layout pin, run the netlist steps in a throwaway
+environment instead of upgrading the shared install:
+
+```bash
+uvx --from "klayout-tools==0.9.1" python3 design/netlist.py --check
+```
 
 ## 2. Layout DRC / LVS / extraction (`layout/`)
 

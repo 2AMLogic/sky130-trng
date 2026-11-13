@@ -23,11 +23,14 @@ close on its own (see the module docstring of ``design/netlist.py``,
    committed ``design/xschem/`` without raising -- wiring ERC into
    ``--check`` must not turn a currently-clean tree red.
 
-Needs xschem and the sky130 PDK on the same terms ``design/netlist.py
---check`` does. If either is unavailable this prints a ``SKIP`` line and
-exits 0, degrading the same way ``--check`` is kept off the PR-blocking
+Needs xschem, ``klt`` (klayout-tools, at ``design/pdk.json``'s
+``klt_version_min`` or newer -- ``netlist.py`` reaches xschem through ``klt
+netlist --erc``) and the sky130 PDK, on the same terms ``design/netlist.py
+--check`` does. If any of them is unavailable this prints a ``SKIP`` line
+and exits 0, degrading the same way ``--check`` is kept off the PR-blocking
 path for exactly that reason (see ``.github/workflows/ci.yml`` and
-``.github/workflows/pdk-nightly.yml``).
+``.github/workflows/pdk-nightly.yml``, whose ``netlist-check`` job installs
+klt before running this and so never takes the skip).
 """
 
 from __future__ import annotations
@@ -119,6 +122,20 @@ def check_top_cells_still_pass() -> None:
 def main() -> int:
     if shutil.which(netlist.XSCHEM) is None:
         print(f"SKIP   {netlist.XSCHEM} not found on PATH -- cannot run this test")
+        return 0
+    # netlist.py runs xschem through `klt netlist --erc`, so an absent or
+    # too-old klt makes this fixture unrunnable for a tool reason rather
+    # than a design one -- skip it the same way an absent xschem does.
+    # CI must never reach this branch: pdk-nightly.yml's netlist-check job
+    # installs klt before it gets here, and a silent SKIP would retire the
+    # only regression test proving a broken schematic is still caught.
+    if shutil.which(netlist.KLT) is None:
+        print(f"SKIP   {netlist.KLT} (klayout-tools) not found on PATH -- cannot run this test")
+        return 0
+    try:
+        netlist.check_klt_version()
+    except netlist.ExportError as exc:
+        print(f"SKIP   klt on PATH does not meet the required minimum\n{exc}")
         return 0
     try:
         netlist.find_pdk()

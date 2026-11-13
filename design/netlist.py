@@ -14,8 +14,8 @@ exit ``0``:
    evidence rather than a snapshot someone forgot to refresh -- an evidence
    record that names a ``netlist.sha`` is only meaningful if the netlist
    provably comes from the schematic it claims to.
-2. **Connectivity** -- xschem's own ERC (electrical rule check,
-   ``xschem netlist -erc``) finds no undriven node, open net, or shorted pin
+2. **Connectivity** -- xschem's own ERC (electrical rule check, reached
+   here via ``klt netlist --erc``) finds no undriven node, open net, or shorted pin
    anywhere in each :data:`TOP_CELLS` entry's instantiated hierarchy. A
    schematic-level wiring defect (e.g. a label placed at the wrong
    coordinate relative to the net it is meant to tag) can produce a netlist
@@ -110,6 +110,55 @@ minimum, not an equality pin -- a *newer* xschem that reformats its output
 is still meant to turn ``--check`` red, with "regenerate and commit the
 diff" still the right remedy for that direction. See ``design/pdk.json``'s
 own comment block and issue #151.
+
+Who runs xschem
+---------------
+This module does not spawn ``xschem`` to netlist. It shells out to ``klt
+netlist`` (klayout-tools), which owns that invocation: it always forces
+``-n -s -q -x -r`` and bounds the run, escalating SIGTERM to SIGKILL across
+the whole process group when :data:`NETLIST_TIMEOUT_S` is exceeded. The
+flags matter more than they look -- dropping ``-x`` does not fail, it makes
+xschem initialise its GUI, write a plausible-looking netlist and then hang
+in the Tk event loop, where it can stop responding to SIGTERM. A hand-rolled
+call therefore fails as an idle process and a stale artifact rather than as
+an error, which is what this module used to do, with no timeout at all.
+
+``klt netlist`` is a **replacement for the xschem invocation only**, not for
+the post-processing below it. Measured on all four :data:`TOP_CELLS`, klt's
+raw output does not reproduce the committed netlists under any combination
+of its flags (``--block``, and even the unreleased ``--relative-paths`` /
+``--no-provenance-header``, still leave 17-45 differing lines per cell:
+different continuation wrap points, repo-relative instead of bare schematic
+paths, and a top ``.subckt`` line without the top schematic's own parameter
+block). So :func:`_normalize` and its helpers stay exactly as they were, and
+run on klt's output. The one thing that is dropped first is klt's own
+``** klt-netlist-inputs:`` provenance comment -- see
+:func:`_strip_klt_provenance`. Each gap is filed upstream as generic tool
+friction and indexed in ``docs/friction-ledger.md``:
+
+* ``klayout-tools#5085`` -- no opt-out for the ``** klt-netlist-inputs:``
+  line. Closed upstream, but the ``--no-provenance-header`` flag that closes
+  it is not in a tagged release yet, so :func:`_strip_klt_provenance` is
+  still needed here.
+* ``klayout-tools#4091`` -- the ``** sch_path:``/``** sym_path:`` stamps are
+  absolute, so a committed netlist differs between checkouts. Still open.
+* ``klayout-tools#3324`` -- ``--check`` cannot gate a netlist whose
+  ``.subckt`` wrapper and line wrapping a project normalises. Closed by
+  ``--block``, which this module does not use, because of:
+* ``klayout-tools#5439`` -- ``--block`` restores the ``.subckt`` line
+  without the top schematic's own parameter block, so the emitted block
+  references parameters it never declares. :func:`_schematic_params`
+  restores them here instead.
+
+Because klt owns the run, its failures are classified by the structured
+``--format json`` report rather than by an exit status: every failure exits
+1, and only ``error.code == "erc_findings"`` is a connectivity defect. A
+timeout, an unresolved symbol or a missing PDK carries no such code and is
+raised as :class:`ExportError` (exit :data:`EXIT_ENVIRONMENT`), so a wedged
+tool is never reported as a ``STALE`` netlist or an ERC finding. ``klt
+netlist --erc`` first ships in klayout-tools 0.9.1, which is why
+``design/pdk.json`` carries a ``klt_version_min`` floor beside the xschem
+one -- see :func:`check_klt_version`.
 """
 
 from __future__ import annotations
@@ -157,6 +206,34 @@ TOP_CELLS = (
 )
 
 XSCHEM = "xschem"
+
+#: The klayout-tools CLI. This module never spawns ``xschem`` itself: the
+#: netlist run goes through ``klt netlist``, which owns the xschem
+#: invocation (it always forces ``-n -s -q -x -r``, and bounds the run with
+#: an escalated SIGTERM -> SIGKILL over the whole process group). Omitting
+#: ``-x`` does not fail loudly -- xschem brings up its GUI, writes a
+#: plausible-looking netlist and then hangs in the Tk event loop, where it
+#: can stop responding to SIGTERM -- so a hand-rolled invocation's failure
+#: mode is an idle process and a stale artifact, with no timeout at all.
+#: Letting klt own it is the host rule, and it is why the bound below exists.
+KLT = "klt"
+
+#: Fallback for ``design/pdk.json``'s ``klt_version_min`` when the config
+#: file does not carry one. 0.9.1 is the first tagged klayout-tools release
+#: whose ``klt netlist`` has ``--erc``, which ``--check`` requires.
+DEFAULT_KLT_VERSION_MIN = "0.9.1"
+
+#: ``klt --version`` prints e.g. ``klt 0.9.1``. The numeric release prefix is
+#: all that is captured, so a development build (``0.9.2.dev887+gec7400b``)
+#: compares as ``0.9.2`` rather than failing to parse.
+_KLT_VERSION_RE = re.compile(r"klt\s+v?(\d+(?:\.\d+)*)", re.IGNORECASE)
+
+#: Wall-clock bound handed to ``klt netlist --timeout-s``. A real batch
+#: netlist of the largest top cell here takes well under a second; this is
+#: the hang guard, not a work budget, so it is generous. Exceeding it is an
+#: export failure naming the cell -- never a STALE verdict (which would
+#: blame the schematic for a wedged tool) and never an ERC verdict.
+NETLIST_TIMEOUT_S = 120
 
 #: Fallback for ``design/pdk.json``'s ``xschem_version_min`` when the config
 #: file does not carry one. 3.4.7 is the first xschem release that evaluates
@@ -349,6 +426,76 @@ def check_xschem_version() -> None:
     if _version_tuple(found) < _version_tuple(floor):
         raise ExportError(
             f"xschem {found} is too old to netlist this design "
+            f"(minimum {floor})." + hint
+        )
+
+
+@functools.lru_cache(maxsize=1)
+def klt_version() -> str | None:
+    """Version reported by the ``klt`` on PATH, or ``None`` if unreadable.
+
+    ``None`` covers "no klt on PATH", "it would not run", and "it ran but
+    printed nothing matching :data:`_KLT_VERSION_RE`", for the same reason
+    :func:`xschem_version` collapses those three: none of them establishes
+    that the installed klt meets :func:`klt_version_min`.
+    """
+    exe = shutil.which(KLT)
+    if exe is None:
+        return None
+    try:
+        proc = subprocess.run(
+            [exe, "--version"],
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=60,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return None
+    match = _KLT_VERSION_RE.search(f"{proc.stdout}\n{proc.stderr}")
+    return match.group(1) if match else None
+
+
+def klt_version_min() -> str:
+    """``design/pdk.json``'s ``klt_version_min``, or the built-in default."""
+    configured = _load_config().get("klt_version_min")
+    return str(configured).strip() if configured else DEFAULT_KLT_VERSION_MIN
+
+
+def check_klt_version() -> None:
+    """Raise :class:`ExportError` unless PATH's klt meets the floor.
+
+    A hard gate, on the same terms as :func:`check_xschem_version`, and for
+    a related reason: ``klt netlist --erc`` is what ``--check`` uses to
+    establish connectivity, and it does not exist before klayout-tools
+    0.9.1. An older klt would reject ``--erc`` with an argparse usage error
+    on stderr and exit 2 -- which this module would otherwise have to guess
+    the meaning of, and which reads as neither "stale netlist" nor "broken
+    schematic". Refusing up front with the floor named is the same contract
+    the xschem floor already has: a tool problem is reported as a tool
+    problem (:data:`EXIT_ENVIRONMENT`), never as a design finding.
+    """
+    floor = klt_version_min()
+    found = klt_version()
+    hint = (
+        f"\n  design/pdk.json pins klt_version_min = {floor}; design netlisting\n"
+        "  runs through `klt netlist` rather than a raw xschem call, because klt\n"
+        "  forces xschem's headless flags and bounds the run (a GUI-mode xschem\n"
+        "  hangs in its Tk event loop instead of failing). `klt netlist --erc`,\n"
+        f"  which --check needs for connectivity, first ships in klayout-tools {floor}.\n"
+        "  Install it without touching a shared tool install, e.g.\n"
+        f'    uvx --from "klayout-tools=={floor}" python3 design/netlist.py --check\n'
+        "  A machine where this check is wrong can override the floor in the\n"
+        '  git-ignored design/pdk.local.json: {"klt_version_min": "..."}.'
+    )
+    if found is None:
+        raise ExportError(
+            "could not determine the version of the klt on PATH (klayout-tools), "
+            f"so it cannot be shown to meet the required minimum ({floor})." + hint
+        )
+    if _version_tuple(found) < _version_tuple(floor):
+        raise ExportError(
+            f"klt {found} is too old to netlist this design "
             f"(minimum {floor})." + hint
         )
 
@@ -563,6 +710,42 @@ def _schematic_params(schematic: Path) -> str:
     return " ".join(match.group(1).split())
 
 
+def _klt_report(stream: str) -> dict:
+    """``klt --format json``'s report object, or ``{}`` if the stream is not one.
+
+    Never raises: this is only ever used to make a failure *more* legible,
+    so a klt that printed something unparseable (a Python traceback, a
+    truncated stream) must degrade to "no structured detail" rather than
+    replace the original failure with a :class:`json.JSONDecodeError`.
+    """
+    try:
+        parsed = json.loads(stream)
+    except (ValueError, TypeError):
+        return {}
+    return parsed if isinstance(parsed, dict) else {}
+
+
+#: klt stamps one provenance comment into the netlist it writes, e.g.
+#: ``** klt-netlist-inputs: {"pdk_variant": null, "rcfile": "xschemrc", ...}``.
+#: It is dropped here, before :func:`_normalize`, for the same reason
+#: :func:`_normalize` strips absolute paths: the committed netlists have to
+#: be machine-independent, and that line carries the rcfile's *temp-directory*
+#: basename and the netlisting host's xschem version. Keeping it would make
+#: every committed ``design/*.spice`` churn on a klt or xschem bump and would
+#: have changed all four of them in the commit that introduced klt here.
+#: Filed upstream as klayout-tools#5085, which is closed by a
+#: ``--no-provenance-header`` flag that no tagged release carries yet -- so
+#: this stays until the klt floor can move past the release that ships it.
+#: Deliberately ``count=1`` and anchored: klt writes the line once, and a
+#: broader sweep could eat a legitimate netlist comment.
+_KLT_PROVENANCE_RE = re.compile(r"^\*\* klt-netlist-inputs:.*$\n?", re.MULTILINE)
+
+
+def _strip_klt_provenance(text: str) -> str:
+    """Drop klt's ``** klt-netlist-inputs:`` provenance comment line."""
+    return _KLT_PROVENANCE_RE.sub("", text, count=1)
+
+
 def _normalize(text: str, top_params: str = "") -> str:
     """Make the netlist machine-independent and stable line-for-line."""
     out = []
@@ -689,7 +872,10 @@ def export(top: str, outdir: Path, *, erc: bool = False) -> str:
         )
     # Before any netlisting: a too-old xschem produces an unsimulable
     # netlist, not a differently-formatted one. See check_xschem_version().
+    # klt is checked on the same terms -- it is what actually runs xschem,
+    # and --erc (which --check depends on) has a floor of its own.
     check_xschem_version()
+    check_klt_version()
     pdk = find_pdk()
     symbols = pdk.symbol_dir
     if not symbols.is_dir():
@@ -703,19 +889,21 @@ def export(top: str, outdir: Path, *, erc: bool = False) -> str:
         _write_rcfile(rcfile, symbols, tmpdir)
         env = dict(os.environ)
         env.pop("XSCHEM_LIBRARY_PATH", None)
+        produced = tmpdir / f"{top}.spice"
         cmd = [
-            XSCHEM, "-n", "-q", "-x", "-s", "-r",
+            KLT, "netlist", str(schematic),
+            "-o", str(produced),
             "--rcfile", str(rcfile),
-            "-o", str(tmpdir),
-            "-N", f"{top}.spice",
+            "--timeout-s", str(NETLIST_TIMEOUT_S),
+            "--format", "json",
         ]
         if erc:
-            # The same Tcl call xschem's own GUI "Netlist" toolbar button
-            # runs. Appending it to the same batch-mode invocation walks
-            # ERC over *top*'s full instantiated hierarchy -- no second
-            # xschem invocation, no new flags.
-            cmd += ["--command", "xschem netlist -erc"]
-        cmd.append(str(schematic))
+            # Walks ERC over *top*'s full instantiated hierarchy, the same
+            # reach the raw `xschem netlist -erc` Tcl call had. klt reports
+            # a finding as a structured error and writes NO netlist, where
+            # xschem used to write the electrically-broken one and signal
+            # only through its exit status.
+            cmd.append("--erc")
         proc = subprocess.run(
             cmd,
             capture_output=True,
@@ -724,27 +912,39 @@ def export(top: str, outdir: Path, *, erc: bool = False) -> str:
             env=env,
             check=False,
         )
-        produced = tmpdir / f"{top}.spice"
+        if proc.returncode != 0:
+            # Every klt netlist failure exits 1, so the exit status alone
+            # cannot tell an ERC finding from a timeout or an unresolved
+            # symbol. The discriminator is the structured report's
+            # `error.code`, which is `erc_findings` for an ERC finding and
+            # absent for a timeout -- so anything without that code is an
+            # environment/tool failure, reported as one rather than as a
+            # design defect. klt prints the failure report on stderr and
+            # the success report on stdout; read both rather than assuming.
+            report = _klt_report(proc.stderr) or _klt_report(proc.stdout) or {}
+            error = report.get("error") or {}
+            detail = str(error.get("message") or (proc.stderr or proc.stdout or "")).strip()
+            if erc and error.get("code") == "erc_findings":
+                findings = error.get("findings") or []
+                listed = "\n".join(f"  {line}" for line in findings)
+                raise ErcViolation(
+                    f"klt netlist --erc failed for {top} -- the schematic has "
+                    "a connectivity defect (e.g. an undriven node, open net, "
+                    "or shorted pin), not merely a stale netlist:\n"
+                    f"{listed or detail}"
+                )
+            raise ExportError(
+                f"klt netlist failed for {top} (exit {proc.returncode}); this "
+                "is a tool or environment failure, not a stale netlist and "
+                f"not an ERC finding:\n{detail}"
+            )
         if not produced.is_file():
             raise ExportError(
-                f"xschem produced no netlist for {top}\n"
+                f"klt netlist reported success but wrote no netlist for {top}\n"
                 f"--- stdout ---\n{proc.stdout}\n--- stderr ---\n{proc.stderr}"
             )
-        if erc and proc.returncode != 0:
-            # xschem still writes the (electrically broken) netlist file
-            # even when ERC fails, so the `produced.is_file()` check above
-            # does not catch this -- the signal is the exit code, not
-            # whether a file landed. Every violation class observed so far
-            # (undriven node, at minimum) reports on stderr, so surface
-            # whichever stream has content.
-            detail = (proc.stderr or proc.stdout or "").strip()
-            raise ErcViolation(
-                f"xschem ERC failed for {top} (exit {proc.returncode}) -- "
-                "the schematic has a connectivity defect (e.g. an undriven "
-                "node, open net, or shorted pin), not merely a stale "
-                f"netlist:\n{detail}"
-            )
-        text = _normalize(produced.read_text(), _schematic_params(schematic))
+        text = _normalize(_strip_klt_provenance(produced.read_text()),
+                          _schematic_params(schematic))
     header = (
         f"* {top} -- GENERATED by design/netlist.py from design/xschem/{top}.sch\n"
         "* Do not edit by hand: `python3 design/netlist.py --check` fails if this\n"
@@ -778,7 +978,8 @@ def main(argv: list[str] | None = None) -> int:
         "--pdk", action="store_true",
         help=(
             "print the resolved sky130 install, its open_pdks commit, and the "
-            "resolved xschem version against its required minimum, then exit"
+            "resolved xschem and klt versions against their required "
+            "minimums, then exit"
         ),
     )
     parser.add_argument("--top", action="append", metavar="CELL", help="cell to export (repeatable)")
@@ -804,6 +1005,20 @@ def main(argv: list[str] | None = None) -> int:
         else:
             verdict = "satisfied by the installed xschem"
         print(f"xschem>=  {floor} ({verdict})")
+        # klt is reported beside xschem because it is what actually runs
+        # xschem now; a klt below the floor is the same class of failure as
+        # a too-old xschem, and --pdk exists to make that attributable
+        # before anyone has to read a --check diff to find out.
+        klt_floor = klt_version_min()
+        klt_found = klt_version()
+        print(f"klt       {klt_found or 'unknown'}")
+        if klt_found is None:
+            klt_verdict = "CANNOT VERIFY against the installed klt"
+        elif _version_tuple(klt_found) < _version_tuple(klt_floor):
+            klt_verdict = "TOO OLD -- netlisting will refuse to run"
+        else:
+            klt_verdict = "satisfied by the installed klt"
+        print(f"klt>=     {klt_floor} ({klt_verdict})")
         try:
             pdk = find_pdk()
         except ExportError as exc:

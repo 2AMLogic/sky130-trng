@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Unit test for ``design/netlist.py``'s minimum-xschem-version gate.
+"""Unit test for ``design/netlist.py``'s minimum-tool-version gates.
 
     python3 design/test_netlist_xschem_version.py
 
@@ -28,6 +28,18 @@ equal/not-equal cases: the floor is a minimum, not an equality pin -- a
 newer xschem must be accepted, because a newer xschem whose output
 formatting moves is meant to be caught by ``--check``'s staleness diff, not
 blocked here.
+
+The same file also covers the **klt floor** (issue #460). ``netlist.py`` no
+longer spawns xschem itself -- it runs it through ``klt netlist``, so a
+second tool now sits on the critical path, with its own failure mode. The
+flag ``--check`` depends on for connectivity, ``klt netlist --erc``, first
+ships in klayout-tools 0.9.1; an older klt rejects it with an argparse
+usage error whose exit status (2) collides with nothing meaningful here and
+whose text reads as neither "stale netlist" nor "ERC finding". So
+``check_klt_version()`` refuses up front, exactly as the xschem gate does,
+and these cases are its regression fixture. The klt stub also covers a
+development build (``klt 0.9.2.dev887+gec7400b7d8e5``), which must parse as
+0.9.2 rather than crashing the comparison.
 """
 
 from __future__ import annotations
@@ -158,12 +170,182 @@ def test_floor_is_read_from_committed_config() -> None:
     )
 
 
+def _with_reported_klt(version: str | None, floor: str = "0.9.1"):
+    """Run ``check_klt_version()`` with both inputs stubbed.
+
+    Returns the :class:`netlist.ExportError` message, or ``None`` when the
+    gate let the export proceed.
+    """
+    real_version = netlist.klt_version
+    real_floor = netlist.klt_version_min
+    netlist.klt_version = lambda: version
+    netlist.klt_version_min = lambda: floor
+    try:
+        netlist.check_klt_version()
+        return None
+    except netlist.ExportError as exc:
+        return str(exc)
+    finally:
+        netlist.klt_version = real_version
+        netlist.klt_version_min = real_floor
+
+
+def test_klt_version_regex_parses_real_output() -> None:
+    # `klt --version` prints "klt 0.9.1". A dev build prints
+    # "klt 0.9.2.dev887+gec7400b7d8e5", which must yield an orderable
+    # 0.9.2 rather than a ValueError out of _version_tuple("dev887+...").
+    match = netlist._KLT_VERSION_RE.search("klt 0.9.1")
+    _check(
+        "_KLT_VERSION_RE: parses a tagged release",
+        bool(match) and match.group(1) == "0.9.1",
+        detail=repr(match and match.group(1)),
+    )
+    dev = netlist._KLT_VERSION_RE.search("klt 0.9.2.dev887+gec7400b7d8e5")
+    _check(
+        "_KLT_VERSION_RE: a dev build parses as its numeric release prefix",
+        bool(dev) and dev.group(1) == "0.9.2",
+        detail=repr(dev and dev.group(1)),
+    )
+    _check(
+        "_KLT_VERSION_RE: that prefix is orderable against the floor",
+        bool(dev) and netlist._version_tuple(dev.group(1)) >= (0, 9, 1),
+    )
+
+
+def test_klt_floor_rejects_the_pinned_older_release() -> None:
+    # 0.8.0 is what pdk-nightly.yml's netlist-check job installed before
+    # issue #460, and its `klt netlist` has no --erc at all.
+    message = _with_reported_klt("0.8.0")
+    _check(
+        "check_klt_version: 0.8.0 is rejected against a 0.9.1 floor",
+        message is not None,
+    )
+    _check(
+        "check_klt_version: the rejection names both versions",
+        bool(message) and "0.8.0" in message and "0.9.1" in message,
+        detail=repr(message),
+    )
+    _check(
+        "check_klt_version: the rejection names the uvx install form",
+        bool(message) and 'uvx --from "klayout-tools==0.9.1"' in message,
+        detail=repr(message),
+    )
+
+
+def test_klt_floor_accepts_equal_and_newer() -> None:
+    _check(
+        "check_klt_version: exactly the floor is accepted",
+        _with_reported_klt("0.9.1") is None,
+    )
+    _check(
+        "check_klt_version: a NEWER klt is accepted (minimum, not a pin)",
+        _with_reported_klt("0.9.2") is None,
+    )
+    _check(
+        "check_klt_version: 0.9.10 is accepted against a 0.9.1 floor",
+        _with_reported_klt("0.9.10") is None,
+    )
+
+
+def test_missing_klt_is_refused_not_assumed_ok() -> None:
+    # klt_version() returns None for "not on PATH", "would not run", and
+    # "printed something unrecognisable" alike. All three must fail closed:
+    # proceeding would hit an argparse error from a klt that may not
+    # support --erc, reported as a design finding instead of a tool one.
+    message = _with_reported_klt(None)
+    _check(
+        "check_klt_version: a missing/unreadable klt is refused, not waved through",
+        message is not None,
+    )
+    _check(
+        "check_klt_version: the refusal says the version could not be determined",
+        bool(message) and "could not determine" in message,
+        detail=repr(message),
+    )
+
+
+def test_klt_floor_is_read_from_committed_config() -> None:
+    import json
+
+    committed = json.loads((Path(netlist.DESIGN_DIR) / "pdk.json").read_text())
+    _check(
+        "design/pdk.json: carries a klt_version_min",
+        "klt_version_min" in committed,
+    )
+    floor = committed.get("klt_version_min", "")
+    _check(
+        "design/pdk.json: the klt floor parses as a dotted version",
+        bool(floor) and all(part.isdigit() for part in str(floor).split(".")),
+        detail=repr(floor),
+    )
+    _check(
+        "design/pdk.json: the committed klt floor is at least 0.9.1 (--erc)",
+        bool(floor) and netlist._version_tuple(str(floor)) >= (0, 9, 1),
+        detail=repr(floor),
+    )
+    _check(
+        "klt_version_min(): reads the committed value, not just the default",
+        netlist.klt_version_min() == str(floor),
+        detail=f"{netlist.klt_version_min()!r} != {str(floor)!r}",
+    )
+
+
+def _exit_code_with_klt(version: str | None) -> int:
+    """``main(["--check", ...])`` with xschem faked present and klt stubbed.
+
+    End-to-end rather than a direct call to the gate: the criterion is that
+    a bad klt exits :data:`netlist.EXIT_ENVIRONMENT`, and that depends on
+    ``export()`` calling the gate *before* it reaches the PDK or a
+    subprocess, plus ``main()`` mapping :class:`netlist.ExportError` to that
+    code. Both are easy to break independently of the gate itself. Nothing
+    is spawned: the stubs stop the run before any tool is invoked.
+    """
+    import shutil as _shutil
+
+    real_which = _shutil.which
+    real_xs_version = netlist.xschem_version
+    real_klt_version = netlist.klt_version
+    real_klt_floor = netlist.klt_version_min
+    _shutil.which = lambda name, *a, **k: (
+        "/usr/bin/xschem" if name == netlist.XSCHEM else real_which(name, *a, **k)
+    )
+    netlist.xschem_version = lambda: "3.4.7"
+    netlist.klt_version = lambda: version
+    netlist.klt_version_min = lambda: "0.9.1"
+    try:
+        return netlist.main(["--check", "--top", netlist.TOP_CELLS[0]])
+    finally:
+        _shutil.which = real_which
+        netlist.xschem_version = real_xs_version
+        netlist.klt_version = real_klt_version
+        netlist.klt_version_min = real_klt_floor
+
+
+def test_bad_klt_exits_environment_end_to_end() -> None:
+    _check(
+        "main --check: a missing klt exits EXIT_ENVIRONMENT (3), not STALE (1)",
+        _exit_code_with_klt(None) == netlist.EXIT_ENVIRONMENT,
+        detail=f"got {_exit_code_with_klt(None)}",
+    )
+    _check(
+        "main --check: a too-old klt exits EXIT_ENVIRONMENT (3), not ERC (2)",
+        _exit_code_with_klt("0.8.0") == netlist.EXIT_ENVIRONMENT,
+        detail=f"got {_exit_code_with_klt('0.8.0')}",
+    )
+
+
 def main() -> int:
     test_version_tuple_orders_numerically()
     test_floor_rejects_the_distro_xschem()
     test_floor_accepts_equal_and_newer()
     test_unreadable_version_is_refused_not_assumed_ok()
     test_floor_is_read_from_committed_config()
+    test_klt_version_regex_parses_real_output()
+    test_klt_floor_rejects_the_pinned_older_release()
+    test_klt_floor_accepts_equal_and_newer()
+    test_missing_klt_is_refused_not_assumed_ok()
+    test_klt_floor_is_read_from_committed_config()
+    test_bad_klt_exits_environment_end_to_end()
     return _checker.summary("design/test_netlist_xschem_version.py")
 
 
