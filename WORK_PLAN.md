@@ -38,8 +38,7 @@ Issues currently being built (`loom:building`).
 - **#371**: Regenerate composite layout cells, trng_digital/trng_whole and pex libraries under klayout-tools 0.8.0
 - **#381**: verify-whole: adapt the whole-block harness to klayout-tools 0.8.0 VNB handling
 - **#460**: Replace raw xschem call and duplicated post-processing in design/netlist.py with klt netlist
-- **#467**: Consolidate the five DR-0005 lock-proximity implementations in the sim reducers into one shared helper and correct the two order-dependent ones
-- **#469**: Consolidate the five load_reqdir request-directory loaders: the mismatch reducer silently drops refused requests and still reports a full sample count
+- **#478**: make-netlist.py rewrites committed ports.json as a side effect, and its order + --check both diverge from the committed evidence
 
 ## PRs Awaiting Review
 
@@ -70,13 +69,13 @@ Issues carrying `loom:curated`.
 - **#381**: verify-whole: adapt the whole-block harness to klayout-tools 0.8.0 VNB handling *(curated)*
 - **#431**: DR-0017 follow-up: analog-chain-only feasibility probe, then gate-level co-simulation generator and reducer for the whole-block PVT matrix *(curated)*
 - **#460**: Replace raw xschem call and duplicated post-processing in design/netlist.py with klt netlist *(curated)*
-- **#467**: Consolidate the five DR-0005 lock-proximity implementations in the sim reducers into one shared helper and correct the two order-dependent ones *(curated)*
+- **#478**: make-netlist.py rewrites committed ports.json as a side effect, and its order + --check both diverge from the committed evidence *(curated)*
 
 ## Proposed (Architect / Hermit)
 
 - **#463**: Remove stale package.json test/lint/check scripts: npm run check:all passes on 5 of the 26 test files CI runs *(hermit)*
 - **#470**: Consolidate the eight hand-rolled SPICE continuation-line folders: three behaviours for the same input across layout and sim scripts *(hermit)*
-- **#471**: Wire the unused STATUS_WORDS into check_spec_index (index status typos pass CI) and remove seven other never-referenced definitions *(hermit)*
+- **#475**: Remove the 63-entry pull_request paths filter from ci.yml: 26 entries are redundant and PR-blocking checks read files it does not cover *(hermit)*
 
 ## Epics
 
@@ -91,7 +90,7 @@ Issues carrying `loom:curated`.
 | Very important | 0 |
 | Important | 3 |
 | Ready (`loom:issue`) | 1 |
-| In Progress (`loom:building`) | 7 |
+| In Progress (`loom:building`) | 6 |
 | PRs awaiting review | 0 |
 | Approved PRs awaiting merge | 2 |
 | Curated | 13 |

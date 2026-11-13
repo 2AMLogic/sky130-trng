@@ -91,6 +91,7 @@ sys.path.insert(0, os.path.join(REPO, "sim", "bin"))
 sys.path.insert(0, os.path.join(REPO, "layout", "bin"))
 from lock_proximity import ANY_RATIOS, DR5_RATIOS, closeness  # noqa: E402  (after sys.path)
 from _hashing import sha256_file as _sha256  # noqa: E402
+from request_dir import load_request_dir  # noqa: E402
 
 NEDGE = 40
 DRIFT_LOCK = 0.1                 # ring cycles slipped over the window below which => locked
@@ -262,50 +263,16 @@ def load_reqdir(reqdir):
     return load_reqdir_all(reqdir)[0]
 
 
-def _submit_error(d):
-    """Why a request directory has no usable response: the klt error message if
-    the client wrote one, else a generic not-completed note.  Never raises."""
-    for fn in ("resp.json", "klt.log"):
-        p = os.path.join(d, fn)
-        try:
-            txt = open(p).read()
-        except OSError:
-            continue
-        if not txt.strip():
-            continue
-        try:
-            msg = json.loads(txt).get("error", {}).get("message")
-            if msg:
-                return msg
-        except (ValueError, AttributeError):
-            pass
-        return txt.strip()[-600:]
-    return "no response: request not submitted or submission did not complete"
-
-
 def load_reqdir_all(reqdir):
     """-> (chunks, missing).  chunks = [(name, plan, resp)] for requests with a
     response; missing = [(name, plan, reason)] for requests that were refused,
     failed or never completed, so a record can carry them as explicit rows
-    instead of silently dropping them (issue #288 evidence requirement)."""
-    chunks, missing = [], []
-    for d in sorted(glob.glob(os.path.join(reqdir, "*-*-*"))):
-        nm = os.path.basename(d)
-        if not os.path.isfile(os.path.join(d, "plan.json")):
-            continue
-        plan = json.load(open(os.path.join(d, "plan.json")))
-        resp = os.path.join(d, "resp.json")
-        rs = None
-        if os.path.isfile(resp) and os.path.getsize(resp) > 0:     # a refused/unfinished request leaves it empty
-            try:
-                rs = json.load(open(resp))
-            except ValueError:
-                rs = None
-        if rs is not None and "corners" in rs:
-            chunks.append((nm, plan, rs))
-        else:
-            missing.append((nm, plan, _submit_error(d)))
-    return chunks, missing
+    instead of silently dropping them (issue #288 evidence requirement).
+
+    The walk itself is shared with the other four campaign reducers in
+    sim/bin/request_dir.py, which took this contract as its own (issue #469);
+    the reason-extraction moved there as `submit_error`."""
+    return load_request_dir(reqdir, pattern="*-*-*")
 
 
 def observed_window(meas, nedge):
@@ -889,7 +856,6 @@ LR_CLAIM = ("Lock-resolution follow-up on the same pre-layout ro_array_core (iss
             "on-frequency rows kept drift-UNRESOLVED and decided, where at all, by detuned neighbours and pull "
             "evidence; current-injection controls at own/+2/+5/+20 % detuning against the clean free-running reference; LOCK, Q "
             "and BIAS reported separately; deterministic, no injected noise, no entropy claim")
-PVTS = None
 
 
 def _jload(path):

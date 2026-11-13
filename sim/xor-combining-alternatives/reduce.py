@@ -57,6 +57,7 @@ from loadmod import load_module  # noqa: E402
 OP = load_module("operating_point", REPO / "sim" / "ro-array-operating-point" / "analysis" / "operating-point.py")
 MR = load_module("xor_alt_make_requests", HERE / "make-requests.py")
 from evidence_record import mint_record, new_record_id, write_corner_bundle  # noqa: E402
+from request_dir import load_request_dir  # noqa: E402
 
 TOL_W90 = 0.05            # baseline control vs committed w_90
 TOL_T0 = 0.02             # baseline control vs committed loaded ring period
@@ -331,10 +332,6 @@ def full_reduction(variants_pts: dict) -> dict:
 # ---------------------------------------------------------------------------
 # rendering
 # ---------------------------------------------------------------------------
-def _fmt(x, nd=3):
-    return f"{x:.{nd}f}"
-
-
 def render_body(data: dict, red: dict, jobs: list[str]) -> str:
     L = []
     pv = data["variants"]
@@ -458,19 +455,21 @@ def _mean(pts, f):
 # I/O
 # ---------------------------------------------------------------------------
 def load_reqdir(reqdir):
-    chunks = []
-    for d in sorted(glob.glob(os.path.join(reqdir, "*", "resp.json"))):
-        dd = os.path.dirname(d)
-        plan = json.load(open(os.path.join(dd, "plan.json")))
-        resp = json.load(open(d))
-        chunks.append((plan["name"], plan, resp))
+    """-> chunks; the shared walk in sim/bin/request_dir.py.
+
+    This campaign's policy is unchanged (issue #469): all six variants or
+    nothing, since the comparison between them IS the claim.  A request with
+    no usable response now says so by name instead of surfacing as a bare
+    "found 5" (or, when `resp.json` was present but empty, a JSON decode
+    error)."""
+    chunks, missing = load_request_dir(reqdir, pattern="*", name_from="plan")
+    if missing:
+        raise ReductionError(
+            f"{len(missing)} of {len(chunks) + len(missing)} requests under {reqdir} have no usable response: "
+            + "; ".join(f"{nm}: {why}" for nm, _, why in missing))
     if len(chunks) != 6:
         raise ReductionError(f"expected 6 requests under {reqdir}, found {len(chunks)}")
     return chunks
-
-
-def _data_from_points(pts):
-    return {"variants": pts}
 
 
 def emit_record(reqdir, author="loom-builder@sky130-trng"):

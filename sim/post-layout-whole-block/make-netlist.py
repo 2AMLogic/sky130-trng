@@ -108,7 +108,6 @@ PORTS_SUFFIX = ".ports.json"
 PRODUCING_KLT_VERSION = "0.9.1.dev102+gef1ec19c95f6"
 PRODUCING_KLT_COMMIT = "ef1ec19c95f6"
 
-SUBCKT_RE = re.compile(r"^\.SUBCKT\s+trng_whole\s+(.*)$", re.M)
 BRACKET_RE = re.compile(r"\b([A-Za-z_][A-Za-z0-9_]*)\[(\d+)\]")
 # transform 4: smallest bin of the PDK's scalable nfet_01v8 is wmin = 0.42 um
 NFET_MIN_BIN_W_UM = 0.42

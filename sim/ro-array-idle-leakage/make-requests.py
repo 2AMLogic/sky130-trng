@@ -44,7 +44,6 @@ SENSE = {"vdd": "Vsvdd", "r1": "Vsr1", "r2": "Vsr2", "r3": "Vsr3", "r4": "Vsr4"}
 # leg -> (testbench file, extra state probes (assembled deck only))
 LEGS = {"idle": "tb_idle.spice", "leaf": "tb_idle_leaf.spice"}
 CLAMPS = {"idle": ["xsb", "xsv", "xsr1", "xsr2", "xsr3", "xsr4"], "leaf": ["xsb", "xsv", "xs1", "xs2", "xs3", "xs4"]}
-CLAMP_SRC = {"xsb": "Bcl_xsb", "xsv": "Vcl_xsv"}      # every other flip-flop is a d = 0 (high-s) clamp: Bcl_<inst>
 PROBES = {"idle": [("v_xo", "v(xdut.xo)"), ("v_ro1", "v(xdut.ro1)"), ("v_rn1", "v(xdut.xdut.rn1)")], "leaf": []}
 
 
@@ -55,6 +54,7 @@ def measurements(leg):
     m += [{"name": n, "expr": e} for n, e in PROBES[leg]]
     # current each latch clamp supplies (~0 when the clamp sits on the true stable state), and the latch node itself
     for inst in CLAMPS[leg]:
+        # xsv is the lone Vcl_ source; every other flip-flop is a d = 0 (high-s) clamp: Bcl_<inst>
         src = "Vcl_" + inst if inst == "xsv" else "Bcl_" + inst
         node = ("xdut." if leg == "idle" else "") + inst + ".s"
         m.append({"name": f"i_cl_{inst}", "expr": f"i({src})"})
