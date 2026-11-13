@@ -18,7 +18,7 @@ guard band, or changes a spec. Any such decision is an operator decision record
 | `make-requests.py` | writes `OUTDIR/<name>/{netlist.cir,request.json,plan.json}` (controls or grid) |
 | `coverage-manifest.json` | the 222 required `(deck, corner, T, Vdd, dVtn, d|Vtp|)` keys; `analysis/sensitivity.py --check-manifest` fails if it drifts from the generator |
 | `testbench/tb_dc_gate_offset.spice` | control 1: wrapped + unwrapped reference devices in one DC deck |
-| `analysis/sensitivity.py` | reduction: metrics, matched zero-shift pairing, coverage check, controls/grid records, calibration artifact, `--check` replay |
+| `analysis/sensitivity.py` | reduction: metrics, matched zero-shift pairing, coverage check, controls/grid records, calibration artifact, `--check` replay, `--supersede RECORD` (re-reduce that record's own responses into a correcting record) |
 | `analysis/behavioral_replay.py` | matched-seed behavioral replay through the existing raw-bit min-entropy reduction |
 | `records/<id>.{md,json}` | append-only records (controls, sensitivity, behavioral replay); `records/<id>.calibration.json` is the versioned calibration artifact |
 | `corners/<id>/` | per request: raw `*.klt-sim.json.gz` (job id inside), `*.request.json`, `*.netlist.cir`, `*.plan.json` |
@@ -99,14 +99,58 @@ zero-shift row, only the ring periods move); only the latter resolves the period
 | Record | What |
 |---|---|
 | `records/20261010-164921-7e279ab.*` | controls (PASS): DC gate offset within 1 uV for 0/20/40/60 mV and the asymmetric (60,0)/(0,60) mV pairs, wrapped current equal to the unwrapped device at the shifted gate, zero-shift equivalence (array within 0.1 %; ring period/swing within 0.1 %, `sigma_1` within the 2-sigma band of two noise realizations), tt/27 C/1.8 V pilot monotone (+6.1/+12.8/+20.1 % ring, +5.8/+12.1/+19.0 % array period) |
-| `records/20261010-175052-7e279ab.*` (+ `.calibration.json`) | the 222-row sensitivity grid, matched zero-shift pairing, small-rational approach, DR-0003/DR-0004 view, batch job ids |
-| `records/20261010-175419-7e279ab.*` | matched-seed behavioral replay (108 streams, model output) |
+| `records/20261010-175052-7e279ab.*` (+ `.calibration.json`) | the 222-row sensitivity grid, matched zero-shift pairing, small-rational approach, DR-0003/DR-0004 view, batch job ids. **Superseded for its lock-proximity fields by `20261113-150554-fb302c35`** -- see "DR-0005 lock-proximity correction" below |
+| `records/20261113-150554-fb302c35.*` (+ `.calibration.json`) | the same grid re-reduced under DR-0005's own lock-proximity convention (issue #467); `Supersedes: 20261010-175052-7e279ab`. **Replay this one.** |
+| `records/20261010-175419-7e279ab.*` | matched-seed behavioral replay (108 streams, model output). Carries no lock-proximity field; not superseded |
 
 Headline (see the records for the tables): a 60 mV common-mode shift slows the ring by +9.9 % to +31 %
 across the PVT grid; DR-0003's 1.036 `Q` margin is exhausted within 3-8 mV of common-mode shift at every grid
 point (period term only); the model-derived `H` bound crosses DR-0004's `H = 0.5` evaluation floor within 60 mV
-at 3 of 27 grid points; the closest small-rational approach stays above 6 %. The follow-up decision request is
+at 3 of 27 grid points; the closest small-rational approach stays above 6 % (6.15 % under DR-0005's own
+convention; the superseded record reported 6.55 % -- see below). The follow-up decision request is
 issue #262; nothing in `spec/` is changed here.
+
+## DR-0005 lock-proximity correction (issue #467)
+
+`analysis/sensitivity.py` used to compute `lock_proximity` with an
+**order-dependent** form (`r = periods[j] / periods[i]` in pair-enumeration
+order, searching both `p/q` and `q/p`). DR-0005 section 2 fixes the convention
+as slower period over faster period against a rational written `>= 1`, so the
+old form reported **more** margin from the lock rational than DR-0005's own
+definition gives, and printed the rational upside down (`3/4` where DR-0005
+writes `4/3`). The analysis now uses the shared `sim/bin/lock_proximity.py`.
+
+`sim/` records are append-only, so `20261010-175052-7e279ab` is untouched and
+`20261113-150554-fb302c35` supersedes it, re-reducing the **same committed raw
+responses** (no re-simulation; the `corners/` bundle is copied byte-for-byte)
+with its own `.calibration.json`. All 114 array rows' `lock_proximity.distance`
+move, by up to 0.031; the grid minimum goes **6.55 % -> 6.15 %**, rational
+`3/4` -> `4/3`. The headline statement above ("stays above 6 %") still holds.
+
+The correction reaches **only** the lock-proximity fields --
+`rows[].metrics.lock_proximity.{distance,rational,meaning}`,
+`rows[].delta.lock_distance`, `summary.lock_by_shift`,
+`summary.asymmetric[].lock_distance` and
+`summary.envelope.rows[].points[].lock_distance`. Every other row, delta,
+envelope and summary field is byte-identical (`sim/tests/test_vth_drift.py`
+asserts exactly this). Nothing in the DR-0003 `Q`-margin or DR-0004 `H`-floor
+view changes; `lock_proximity` is a reported column with no gate on it.
+
+**`--check` on `20261010-175052-7e279ab` now exits 1 by design** -- it carries
+the old convention and is never edited. Replay the superseding id:
+
+```bash
+python3 sim/ro-vth-drift-sensitivity/analysis/sensitivity.py --check \
+    sim/ro-vth-drift-sensitivity/records/20261113-150554-fb302c35.json
+```
+
+The controls record `20261010-164921-7e279ab` and the behavioral-replay record
+`20261010-175419-7e279ab` contain no lock-proximity field and are **not**
+superseded; the controls record's own `--check` still passes unchanged.
+
+A future correction of this shape uses `sensitivity.py --supersede RECORD.json`,
+which re-reduces that record's own committed responses into a new record,
+calibration artifact and bundle; it never edits the record it supersedes.
 
 ## Execution notes (what did not go to plan)
 

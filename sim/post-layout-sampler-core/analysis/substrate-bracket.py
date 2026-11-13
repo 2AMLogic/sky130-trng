@@ -61,10 +61,14 @@ as a measurement.
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 RECORDS = REPO_ROOT / "sim" / "post-layout-sampler-core" / "records"
+
+sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
+from lock_proximity import closeness, ratio_label  # noqa: E402  (after sys.path)
 
 # sim/ro-ring-timestep-convergence/: period scatter the transient solver alone
 # manufactures at 5 ps with zero injected noise, as a fraction of T_0. Measured
@@ -236,7 +240,7 @@ def main() -> int:
     # Section 8 asks that the realized ring-period ratios stay clear of the
     # small rationals that mutually injection-lock. Checked here on the FLOAT
     # deck (the pessimistic substrate terminal) in both windows.
-    rationals = {"2/1": 2.0, "3/2": 1.5, "4/3": 4 / 3}
+    # The rational set and the distance convention: sim/bin/lock_proximity.py.
     print()
     print("`wstv` ladder against DR-0003 section 8's injection-lock rationals")
     print("(float deck, all four rings, closest approach over every ring pair):")
@@ -252,14 +256,10 @@ def main() -> int:
                 continue
             spans.append(max(t) / min(t))
             for i in range(4):
-                for j in range(4):
-                    if i == j:
-                        continue
-                    r = t[i] / t[j]
-                    for name, val in rationals.items():
-                        d = abs(r - val) / val
-                        if closest is None or d < closest[0]:
-                            closest = (d, name, temp, vdd, corner)
+                for j in range(i + 1, 4):
+                    d, p_, q_ = closeness(t[i], t[j])
+                    if closest is None or d < closest[0]:
+                        closest = (d, ratio_label(p_, q_), temp, vdd, corner)
         if spans and closest:
             d, name, temp, vdd, corner = closest
             print(

@@ -3,6 +3,7 @@
 
     sensitivity.py --emit-controls CTLDIR            # DC probe + zero-shift equivalence + pilot -> controls record
     sensitivity.py --emit-record REQDIR --controls RID   # full grid -> sensitivity record + calibration artifact
+    sensitivity.py --supersede RECORD.json              # re-reduce that record's own committed responses -> correcting record
     sensitivity.py --check RECORD.json               # replay a record from its committed raw responses
     sensitivity.py --coverage                        # print the required-key manifest summary
     sensitivity.py --check-manifest                  # committed manifest == the generator's
@@ -49,12 +50,12 @@ from loadmod import load_module  # noqa: E402
 import aging  # noqa: E402
 import campaign as C  # noqa: E402
 from evidence_record import git_short_sha, write_corner_bundle  # noqa: E402
+from lock_proximity import closeness as lock_closeness, ratio_label  # noqa: E402
 from request_dir import load_request_dir  # noqa: E402
 
 SLUG = C.SLUG
 SENTENCE = "This is a sensitivity bound, not a lifetime prediction."
 PROV = "simulation-derived; provisional until silicon"
-DR5_RATIOS = [(2, 1), (3, 2), (4, 3)]           # sim/ro-array-supply-perturbation/ripple.py DR5_RATIOS
 CAL_SCHEMA = "vth-drift-calibration/1"
 EQUIV_REL_TOL = 1e-3                              # 0.1 % (issue #254 control 2)
 OFFSET_TOL_V = 1e-6                               # 1 uV (issue #254 control 1)
@@ -100,17 +101,19 @@ def ring_metrics(m: dict, floor: float | None) -> dict:
 
 
 def closeness(periods: list[float]) -> dict:
-    """Closest approach of any pair's frequency ratio to the DR-0005 rational set."""
+    """Closest approach of any ring pair to the DR-0005 rational set.
+
+    The distance and the rational set are the shared ones (sim/bin/lock_proximity.py):
+    the ratio is formed slower-period over faster-period, so it does not depend on
+    the order the pair is enumerated in and the reported rational is always >= 1.
+    """
     best = None
     for i in range(4):
         for j in range(i + 1, 4):
-            r = periods[j] / periods[i]                    # f_i / f_j
-            for p, q in DR5_RATIOS:
-                for x, label in ((p / q, f"{p}/{q}"), (q / p, f"{q}/{p}")):
-                    d = abs(r / x - 1)
-                    if best is None or d < best["distance"]:
-                        best = {"pair": [i + 1, j + 1], "rational": label, "distance": d,
-                                "meaning": "f_i/f_j ~ rational"}
+            d, p, q = lock_closeness(periods[i], periods[j])
+            if best is None or d < best["distance"]:
+                best = {"pair": [i + 1, j + 1], "rational": ratio_label(p, q), "distance": d,
+                        "meaning": "T_slower/T_faster ~ rational"}
     return best
 
 
@@ -491,7 +494,7 @@ def pct(x):
     return "" if x is None else f"{x*100:+.2f}%"
 
 
-def md_grid(rid, rows, env, summ, ctl_rid, jobs, claim):
+def md_grid(rid, rows, env, summ, ctl_rid, jobs, claim, supersedes="(none)"):
     L = [f"# {rid} -- {SLUG}", "", f"**Claim**: {claim}", "", "**Level**: transistor (first-order Vth-offset wrapper; see below)", "",
          f"**{SENTENCE}**", "", f"Controls record: `{ctl_rid}` (PASS required before this record can be minted).", ""]
     L += ["## Scope, model, and why these values", "",
@@ -553,7 +556,7 @@ def md_grid(rid, rows, env, summ, ctl_rid, jobs, claim):
                          f"r{lp['pair'][0]}/r{lp['pair'][1]} {lp['rational']} {lp['distance']*100:.2f}% |")
         L.append("")
     L += ["## Closest approach to a small rational (DR-0005 set 2/1, 3/2, 4/3), common-mode grid minimum per shift", "",
-          "DR-0005 reports a time-zero closest approach of any ring pair to any locking rational of 9.3 % anywhere on its grid (ss / 125 C / 1.98 V); the 0 mV row below is this campaign's own matched baseline. `f_i/f_j ~ p/q`.", "",
+          "DR-0005 reports a time-zero closest approach of any ring pair to any locking rational of 9.3 % anywhere on its grid (ss / 125 C / 1.98 V); the 0 mV row below is this campaign's own matched baseline. `T_slower/T_faster ~ p/q`, DR-0005 section 2's convention (shared `sim/bin/lock_proximity.py`).", "",
           "| shift (mV) | min distance | ring pair | rational | at (corner, T, Vdd) |", "|---|---|---|---|---|"]
     for k_, v_ in summ["lock_by_shift"].items():
         L.append(f"| {k_} | {v_['distance']*100:.2f} % | r{v_['pair'][0]}/r{v_['pair'][1]} | {v_['rational']} | {v_['corner']}, {v_['temp_c']:g} C, {v_['vdd_v']:g} V |")
@@ -585,7 +588,8 @@ def md_grid(rid, rows, env, summ, ctl_rid, jobs, claim):
     L += ["", summ["envelope_statement"], "",
           "No specification is changed or relaxed by this record, and no guard band or lifetime is ratified; any such decision belongs to an "
           "operator decision record (`spec/README.md`). " + SENTENCE, "",
-          "Provisional, simulation-derived. Pre-layout, ideal gate offsets, single noise seed.", ""]
+          "Provisional, simulation-derived. Pre-layout, ideal gate offsets, single noise seed.", "",
+          f"- Supersedes: {supersedes}", ""]
     return "\n".join(L)
 
 
@@ -763,6 +767,57 @@ def emit_record(reqdir, ctl_rid):
     return 0
 
 
+def supersede(recpath):
+    """Mint a record that supersedes `recpath`, re-reducing its OWN committed raw
+    responses with the current analysis.  No simulation and no edit of the
+    superseded record: its `corners/<old-id>/` bundle is copied byte-for-byte to
+    `corners/<new-id>/` (sim/README.md's correction rule, issue #467).
+
+    Only a `kind: sensitivity` grid record can be superseded this way -- a
+    controls record is replayed by `evaluate_controls`, which this does not touch.
+    """
+    from evidence_record import reserve_corner_dir
+    old = json.load(open(recpath))
+    oid = old["record_id"]
+    if old.get("kind") != "sensitivity":
+        raise SystemExit(f"error: {oid} is kind={old.get('kind')!r}; only a sensitivity grid record can be superseded here")
+    ocdir = SLUGDIR / "corners" / oid
+    if not ocdir.is_dir():
+        raise SystemExit(f"error: {ocdir} is missing; cannot re-reduce {oid} without its raw responses")
+    chunks = load_committed(str(ocdir))
+    rows, summ = build(chunks, old["controls_record"])
+    sha = git_short_sha(REPO)
+    now = datetime.datetime.now(datetime.timezone.utc)
+    rid = f"{now:%Y%m%d-%H%M%S}-{sha}"
+    rdir, cdir = SLUGDIR / "records", SLUGDIR / "corners" / rid
+    reserve_corner_dir(cdir, rdir, rid)                  # refuses an id that already exists; claims cdir
+    shutil.copytree(ocdir, cdir, dirs_exist_ok=True)     # raw responses verbatim: a re-reduction, not a re-run
+    cal = calibration_artifact(rid, rows)
+    rec = dict(old)
+    rec.update(record_id=rid, supersedes=oid, summary=summ, rows=rows, timestamp_utc=now.isoformat())
+    # Provenance is re-derived, not copied: this record is produced by TODAY's
+    # generator/wrapper/analysis over the old record's responses, and that is
+    # exactly what `--check` verifies against.  (The superseded record's
+    # `aging_sha256` predates the #455 sha256_file relocation, which is why its
+    # own `--check` already reported "generator hashes: DIFFER" before this
+    # change; `check()` proves independently that the netlists still regenerate
+    # byte-identically from the committed plans.)
+    rec["provenance"] = {"generator_sha256": aging.sha256_file(SLUGDIR / "campaign.py"),
+                         "aging_sha256": aging.sha256_file(SLUGDIR / "aging.py"),
+                         "wrapper_sha256": aging.sha256_text(aging.wrapper_definition()),
+                         "manifest_sha256": aging.sha256_file(SLUGDIR / "coverage-manifest.json"),
+                         "analysis_sha256": aging.sha256_file(HERE / "sensitivity.py")}
+    rec["klt_sim"] = dict(old["klt_sim"], responses=f"sim/{SLUG}/corners/{rid}/*.klt-sim.json.gz")
+    rec["calibration_artifact"] = {"path": f"sim/{SLUG}/records/{rid}.calibration.json", "schema": CAL_SCHEMA,
+                                   "sha256": sha256_json(cal), "n_entries": len(cal["entries"])}
+    (rdir / f"{rid}.json").write_text(json.dumps(rec, indent=2, default=str) + "\n")
+    (rdir / f"{rid}.calibration.json").write_text(json.dumps(cal, indent=2, sort_keys=True) + "\n")
+    (rdir / f"{rid}.md").write_text(md_grid(rid, rows, summ["envelope"], summ, old["controls_record"],
+                                            old["klt_sim"].get("jobs") or [], old["claim"], supersedes=oid))
+    print(rid, "supersedes", oid, "| rows", len(rows), "| cal entries", len(cal["entries"]))
+    return 0
+
+
 def check(recpath):
     """Replay from the committed raw responses; exit 1 on any difference."""
     rec = json.load(open(recpath))
@@ -818,6 +873,10 @@ def main(argv=None):
     ap.add_argument("--emit-record")
     ap.add_argument("--controls")
     ap.add_argument("--check")
+    ap.add_argument("--supersede", metavar="RECORD.json",
+                    help="re-reduce THAT record's own committed raw responses with today's analysis "
+                         "and mint a correcting record (+ a verbatim copy of its corner bundle) naming "
+                         "it in `supersedes`; never edits the superseded record")
     ap.add_argument("--check-manifest", action="store_true")
     ap.add_argument("--write-manifest", action="store_true")
     a = ap.parse_args(argv)
@@ -834,6 +893,8 @@ def main(argv=None):
         return emit_record(a.emit_record, a.controls)
     if a.check:
         return check(a.check)
+    if a.supersede:
+        return supersede(a.supersede)
     ap.print_help()
     return 2
 

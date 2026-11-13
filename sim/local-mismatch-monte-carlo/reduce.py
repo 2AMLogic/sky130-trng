@@ -10,9 +10,10 @@ Pure arithmetic over `klt sim` responses (no simulator). Per corner it derives:
     * per-ring period T_i = (t_42 - t_3) / 39 from 40 rising-edge times
     * per-ring fractional spread (sample std of T_i / mean T_i), and of the
       pooled per-ring deviation from the mismatch-free nominal ladder
-    * per pair: closeness = min over rationals of |(f_i/f_j) / (p/q) - 1|
-      (DR-0005's figure, p/q in {2/1, 3/2, 4/3}; and the same including 1:1, the
-      mutual-lock case of adjacent rings); per draw the minimum over the six pairs
+    * per pair: closeness = min over rationals of |R / (p/q) - 1|, R = slower/faster
+      period ratio >= 1 (DR-0005's figure, shared sim/bin/lock_proximity.py; p/q in
+      {2/1, 3/2, 4/3}; and the same including 1:1, the mutual-lock case of adjacent
+      rings); per draw the minimum over the six pairs
     * Q ratio vs the nominal ladder (DR-0003's 1.036 margin, T0^-3 term only)
     * xo mean level / vnom (DR-0003's 0.31-0.53 bias band) and duty(f) at nine thresholds
   Sampler (kind `smp`, one unit = one mismatch draw of one sampler_dff)
@@ -45,13 +46,12 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, "..", ".."))
 SLUG = "local-mismatch-monte-carlo"
 sys.path.insert(0, os.path.join(REPO, "sim", "bin"))
+from lock_proximity import ANY_RATIOS, DR5_RATIOS, pair_closeness  # noqa: E402  (after sys.path)
 from request_dir import load_request_dir  # noqa: E402
 
 NEDGE = 40
 E0 = 3
 THRS = (30, 35, 40, 45, 50, 55, 60, 65, 70)
-DR5_RATIOS = [(2, 1), (3, 2), (4, 3)]
-ANY_RATIOS = [(1, 1), (2, 1), (3, 2), (4, 3)]
 Q_MARGIN = 1.036                  # DR-0003 sec. 3
 BIAS_BAND = (0.31, 0.53)          # DR-0003 sec. 3 (xo mean level / vnom)
 H_FLOOR = 0.5                     # DR-0004 sec. 2.3
@@ -92,31 +92,6 @@ def quantile(x, q):
 def ring_period(edges):
     """edges: rising-edge times (s) -> mean period (s)."""
     return (edges[-1] - edges[0]) / (len(edges) - 1)
-
-
-def closeness(Ti, Tj, ratios):
-    """min over (p/q) >= 1 of |R / (p/q) - 1| where R = slower/faster period ratio (>= 1): DR-0005's
-    figure (e.g. span 1.2096 against 4/3 -> 9.3 %).  Symmetric in i, j, so a mismatch-induced swap
-    of two rings' order does not change it.  Returns (distance, p, q)."""
-    R = max(Ti, Tj) / min(Ti, Tj)
-    best = None
-    for p, q in ratios:
-        x = max(p, q) / min(p, q)
-        d = abs(R / x - 1)
-        if best is None or d < best[0]:
-            best = (d, max(p, q), min(p, q))
-    return best
-
-
-def pair_closeness(T, ratios):
-    """T: four ring periods -> (min closeness over the six pairs, 'i-j', 'p/q')."""
-    best = None
-    for i in range(len(T)):
-        for j in range(i + 1, len(T)):
-            d, p, q = closeness(T[i], T[j], ratios)
-            if best is None or d < best[0]:
-                best = (d, f"{i + 1}-{j + 1}", f"{p}/{q}")
-    return best
 
 
 def q_ratio(T, T0):
