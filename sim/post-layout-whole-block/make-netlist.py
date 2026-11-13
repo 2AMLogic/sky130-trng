@@ -46,14 +46,29 @@ Usage::
     python3 sim/post-layout-whole-block/make-netlist.py -o OUT.spice
     python3 sim/post-layout-whole-block/make-netlist.py --check
 
+The port map is written NEXT TO the netlist: ``-o OUT.spice`` writes
+``OUT.ports.json``, so only the default output touches the committed
+``trng_whole.sim.ports.json`` (issue #478 -- before that the map path was
+hardcoded, and any ``-o``-directed run overwrote the committed map as a side
+effect).
+
 ``--check`` re-derives the netlist and byte-compares it with the committed
-copy (the extractor's own output is deterministic on one host/klt build;
-its anonymous-net numbering is NOT a cross-host contract -- klayout-tools
-#1063 -- so a different klt build may legitimately produce a different,
-equally valid body; the record pins the klt version that produced the
-committed one). It also asserts the structural invariants: 123 ports, one
-canonical pin per port cluster, and the device count the fresh extract
-reports.
+copy. Both of the extractor's non-contractual orderings make that compare
+klt-build-specific: anonymous-net numbering (klayout-tools#1063) and the
+top-level ``.SUBCKT`` port order (measured 2026-11-13, klayout-tools#5534 --
+identical GDS, deck and ``--pins``, same 50713 device/net lines, header port
+order different). So a different klt build legitimately produces a different,
+equally valid body, and ``--check`` reproduces the committed bytes only under
+``PRODUCING_KLT_VERSION`` below::
+
+    uvx --from "klayout-tools @ git+https://github.com/2AMLogic/klayout-tools@ef1ec19c95f6" \\
+        python3 sim/post-layout-whole-block/make-netlist.py --check
+
+``--check`` also asserts the structural invariants: 123 ports, one canonical
+pin per port cluster, and the device count the fresh extract reports. The
+klt-free half of the same contract -- committed netlist header order equals
+committed ``ports.json`` order, and ``-o`` does not touch the committed map --
+is pinned by ``test_make_netlist.py`` on every pull request.
 
 Standard library only (plus a ``klt`` binary on PATH).
 """
@@ -77,6 +92,21 @@ EXTRACT_REQUEST = REPO / "layout" / "trng_whole" / "verify" / "extract.request.j
 DEFAULT_OUT = HERE / "trng_whole.sim.spice"
 COMMITTED_GZ = HERE / "trng_whole.sim.spice.gz"  # the copy actually committed
 PORTS_JSON = HERE / "trng_whole.sim.ports.json"
+PORTS_SUFFIX = ".ports.json"
+
+# The klt build that produced the committed netlist and port map
+# (records/20261105-body-rename-repin.md). `--check` is a BYTE compare and the
+# top-level `.SUBCKT` port order is not reproducible across klt builds
+# (measured 2026-11-13, klayout-tools#5534; records/20261113-ports-order-klt-build.md),
+# so `--check` only prints OK under this build:
+#
+#   uvx --from "klayout-tools @ git+https://github.com/2AMLogic/klayout-tools@ef1ec19c95f6" \
+#       python3 sim/post-layout-whole-block/make-netlist.py --check
+#
+# Used only in the `--check` failure message, so a reader can tell "ran under a
+# different klt build" from "the committed netlist really is stale".
+PRODUCING_KLT_VERSION = "0.9.1.dev102+gef1ec19c95f6"
+PRODUCING_KLT_COMMIT = "ef1ec19c95f6"
 
 SUBCKT_RE = re.compile(r"^\.SUBCKT\s+trng_whole\s+(.*)$", re.M)
 BRACKET_RE = re.compile(r"\b([A-Za-z_][A-Za-z0-9_]*)\[(\d+)\]")
@@ -111,6 +141,14 @@ def klt_version() -> str:
     out = subprocess.run(["klt", "version", "--format", "json"],
                          capture_output=True, text=True, check=True).stdout
     return json.loads(out)["version"]
+
+
+def _klt_version_or_unknown() -> str:
+    """``klt_version()``, but never the thing that fails an error message."""
+    try:
+        return klt_version()
+    except Exception as exc:  # pragma: no cover - diagnostic path only
+        return f"<unknown: {exc}>"
 
 
 def run_extract(dest: Path) -> None:
@@ -263,6 +301,20 @@ def canonicalise(text: str) -> tuple[str, dict[str, str]]:
     return body, mapping
 
 
+def ports_path_for(dest: Path) -> Path:
+    """The port map that belongs next to the netlist written at ``dest``.
+
+    The map describes the ``.subckt`` header of ONE netlist, so it follows
+    that netlist's path: a trailing ``.spice`` is replaced by
+    ``.ports.json``, any other name just gains the suffix. The default
+    output maps to the committed ``trng_whole.sim.ports.json``, so a bare
+    run is unchanged; an ``-o`` run anywhere else no longer overwrites that
+    committed file as a side effect (issue #478).
+    """
+    base = dest.with_suffix("") if dest.suffix == ".spice" else dest
+    return base.with_name(base.name + PORTS_SUFFIX)
+
+
 def build(dest: Path, ports_dest: Path) -> dict:
     with tempfile.TemporaryDirectory() as td:
         raw = Path(td) / "raw.spice"
@@ -298,10 +350,23 @@ def check() -> int:
         run_extract(raw)
         text, mapping = canonicalise(raw.read_text())
     if text != committed:
-        print("error: re-derived netlist differs from the committed "
-              f"{DEFAULT_OUT.relative_to(REPO)}; a klt/PDK pin may have moved -- "
-              "re-run make-netlist.py -o and re-pin the records that cite its hash",
-              file=sys.stderr)
+        ran = _klt_version_or_unknown()
+        print(f"error: re-derived netlist differs from the committed "
+              f"{DEFAULT_OUT.relative_to(REPO)}.\n"
+              f"  this run used klt:                 {ran}\n"
+              f"  committed netlist produced by klt: "
+              f"{PRODUCING_KLT_VERSION}\n"
+              "A DIFFERENT klt build is the expected cause, not a stale\n"
+              "netlist: this is a byte compare, and the top-level .SUBCKT\n"
+              "port order is not reproducible across klt builds\n"
+              "(klayout-tools#5534; records/20261113-ports-order-klt-build.md).\n"
+              "Reproduce the committed bytes with\n"
+              f'  uvx --from "klayout-tools @ git+https://github.com/'
+              f'2AMLogic/klayout-tools@{PRODUCING_KLT_COMMIT}" \\\n'
+              "      python3 sim/post-layout-whole-block/make-netlist.py --check\n"
+              "Only if that ALSO differs is the committed netlist stale;\n"
+              "then re-run make-netlist.py -o and re-pin the records that\n"
+              "cite its hash.", file=sys.stderr)
         return 1
     # the committed copy itself must connect every port (issue #435)
     cl = committed.split("\n")
@@ -320,7 +385,7 @@ def main(argv: list[str] | None = None) -> int:
     args = ap.parse_args(argv)
     if args.check:
         return check()
-    info = build(args.output, PORTS_JSON)
+    info = build(args.output, ports_path_for(args.output))
     print(json.dumps(info, indent=2))
     return 0
 
