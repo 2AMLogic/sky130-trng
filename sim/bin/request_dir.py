@@ -74,11 +74,13 @@ def submit_error(reqpath):
 
 
 def _read_json(path):
-    """Parsed JSON at ``path``, or None if it is absent, empty or malformed.
+    """Parsed ``resp.json`` at ``path``, or None if absent, empty or malformed.
 
     A refused or still-running request leaves a zero-byte ``resp.json``, and a
     submission killed mid-write leaves a truncated one; neither is a usable
-    response and neither should abort the walk.
+    response and neither should abort the walk -- the request comes back in
+    ``missing`` instead. The *plan* side cannot be read this way, because a
+    plan that reads as None has nowhere to go: see :func:`_read_plan`.
     """
     try:
         if os.path.getsize(path) == 0:
@@ -87,6 +89,46 @@ def _read_json(path):
             return json.load(fh)
     except (OSError, ValueError):
         return None
+
+
+def _read_plan(path):
+    """Parsed ``plan.json`` at ``path``, or None if there is no such file.
+
+    "No file" and "a file I cannot read" are *not* the same answer, and this is
+    the one place in the walk where conflating them loses a request:
+
+    * **no file at all** -- the directory is not a request directory (a
+      ``notes/`` folder beside the requests), and the walk skips it.
+    * **a file that is there but unreadable** -- zero-byte, truncated, not a
+      JSON object -- is a *corrupt request*, not a non-request, so it raises
+      and names the path. All five hand-rolled walks this module replaced did
+      ``json.load(open(plan.json))`` unguarded and so raised here too.
+
+    Skipping the second case would drop the request from *both* of
+    :func:`load_request_dir`'s lists, leaving no caller able to state a policy
+    about it -- and in the local-mismatch reducer the lost plan would also take
+    its requested draws out of the denominator, re-creating the silent
+    "20/20 array" headline over 20 of 30 requested draws that issue #469 exists
+    to remove (PR #473 review).
+    """
+    try:
+        with open(path) as fh:
+            txt = fh.read()
+    except FileNotFoundError:
+        return None                       # not a request directory
+    except OSError as exc:
+        raise ValueError(f"unreadable plan.json at {path}: {exc}") from exc
+    if not txt.strip():
+        raise ValueError(f"unreadable plan.json at {path}: file is empty")
+    try:
+        plan = json.loads(txt)
+    except ValueError as exc:
+        raise ValueError(f"unreadable plan.json at {path}: {exc}") from exc
+    if not isinstance(plan, dict):
+        # Otherwise a plan.json holding `null` would forge the "no such file"
+        # sentinel above and vanish just as silently.
+        raise ValueError(f"unreadable plan.json at {path}: expected a JSON object, got {type(plan).__name__}")
+    return plan
 
 
 def load_request_dir(reqdir, pattern="*", name_from="dirname", require_corners=True):
@@ -99,9 +141,11 @@ def load_request_dir(reqdir, pattern="*", name_from="dirname", require_corners=T
     directory name, so a reduction over them is deterministic.
 
     ``pattern``  glob for the request sub-directories, relative to ``reqdir``
-                 (e.g. ``"*-*-*"``, ``"det-*"``). A matching path without a
-                 ``plan.json`` is not a request directory and is ignored
-                 entirely -- it appears in neither list.
+                 (e.g. ``"*-*-*"``, ``"det-*"``). A matching path that is not a
+                 directory, or a directory with no ``plan.json`` file, is not a
+                 request directory and is ignored entirely -- it appears in
+                 neither list. A ``plan.json`` that *is* there but cannot be
+                 read raises instead of being ignored: see :func:`_read_plan`.
     ``name_from`` ``"dirname"`` to name each request after its directory, or
                  ``"plan"`` to use the plan's own ``name`` field.
     ``require_corners`` treat a parsed response with no ``corners`` key as
@@ -113,7 +157,9 @@ def load_request_dir(reqdir, pattern="*", name_from="dirname", require_corners=T
         raise ValueError(f"name_from must be 'dirname' or 'plan', not {name_from!r}")
     chunks, missing = [], []
     for d in sorted(_glob.glob(os.path.join(reqdir, pattern))):
-        plan = _read_json(os.path.join(d, "plan.json"))
+        if not os.path.isdir(d):
+            continue                      # a stray file beside the requests
+        plan = _read_plan(os.path.join(d, "plan.json"))
         if plan is None:
             continue                      # not a request directory
         name = os.path.basename(d) if name_from == "dirname" else plan["name"]

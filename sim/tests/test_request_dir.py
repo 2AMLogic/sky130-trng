@@ -130,6 +130,35 @@ class LoadRequestDir(TempReqdir):
         self.assertEqual([c[0] for c in chunks], ["tt-arr-1"])
         self.assertEqual(missing, [], "a non-request directory must not be reported as a missing request")
 
+    def test_an_unreadable_plan_raises_instead_of_vanishing(self):
+        # An absent plan.json means "not a request directory" (above); a
+        # plan.json that IS there and cannot be read is a corrupt request, and
+        # skipping it would drop the request from BOTH lists -- no caller could
+        # then state a policy about it (PR #473 review). The five walks this
+        # loader replaced all raised here.
+        for label, payload in (("zero-byte", ""),
+                               ("whitespace", "  \n"),
+                               ("truncated", '{"kind": "arr", "monte_car'),
+                               ("json null", "null"),
+                               ("non-object", "[1, 2]")):
+            with self.subTest(payload=label):
+                root = os.path.join(self.root, label.replace(" ", "-"))
+                d = write_request(root, "tt-arr-1", {"kind": "arr"}, self.GOOD)
+                open(os.path.join(d, "plan.json"), "w").write(payload)
+                with self.assertRaises(ValueError) as cm:
+                    rd.load_request_dir(root)
+                self.assertIn(os.path.join(d, "plan.json"), str(cm.exception),
+                              "the error must name the file it could not read")
+
+    def test_an_unreadable_plan_raises_even_with_a_good_response(self):
+        # The regression shape: the response arrived, so nothing downstream
+        # would ever have noticed the request going missing.
+        d = write_request(self.root, "tt-arr-1", {"kind": "arr"}, self.GOOD)
+        write_request(self.root, "tt-arr-2", {"kind": "arr"}, self.GOOD)
+        open(os.path.join(d, "plan.json"), "w").close()
+        with self.assertRaises(ValueError):
+            rd.load_request_dir(self.root)
+
     def test_stray_file_beside_the_requests_is_ignored(self):
         open(os.path.join(self.root, "README"), "w").write("x")
         write_request(self.root, "tt-arr-1", {"kind": "arr"}, self.GOOD)
@@ -231,6 +260,19 @@ class MismatchSampleCount(TempReqdir):
         # the defect: the headline line used to read "20/20" and "30/30"
         self.assertLess(S["n_array_ok"], S["n_array_requested"])
         self.assertLess(S["n_sampler_ok"], S["n_sampler_requested"])
+
+    def test_an_unreadable_plan_cannot_shrink_the_denominator_silently(self):
+        # The plan carries the requested draws, so a dropped plan takes 10 of
+        # the 30 array draws out of `n_array_requested` with it and the record
+        # reads a complete "20/20 array" with no error -- the issue's own
+        # symptom, reached by a different route (PR #473 review). Measured at
+        # 6055833 as `chunks 6 missing 0  array 20/20`.
+        for payload in ("", '{"kind": "arr", "monte_car'):
+            with self.subTest(payload=payload[:12] or "zero-byte"):
+                req = rebuild_reqdir(BUNDLE, os.path.join(self.root, f"req-{len(payload)}"))
+                open(os.path.join(req, "tt-arr-1", "plan.json"), "w").write(payload)
+                with self.assertRaises(ValueError):
+                    MM.load_reqdir(req)
 
     def test_the_shortfall_is_visible_in_the_rendered_headline(self):
         chunks, missing = MM.load_reqdir(self.reqdir(("tt-arr-1",)))
