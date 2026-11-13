@@ -332,10 +332,6 @@ def full_reduction(variants_pts: dict) -> dict:
 # ---------------------------------------------------------------------------
 # rendering
 # ---------------------------------------------------------------------------
-def _fmt(x, nd=3):
-    return f"{x:.{nd}f}"
-
-
 def render_body(data: dict, red: dict, jobs: list[str]) -> str:
     L = []
     pv = data["variants"]
@@ -474,10 +470,6 @@ def load_reqdir(reqdir):
     if len(chunks) != 6:
         raise ReductionError(f"expected 6 requests under {reqdir}, found {len(chunks)}")
     return chunks
-
-
-def _data_from_points(pts):
-    return {"variants": pts}
 
 
 def emit_record(reqdir, author="loom-builder@sky130-trng"):

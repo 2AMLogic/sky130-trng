@@ -55,7 +55,6 @@ import program as P  # noqa: E402
 
 NETLIST_BODY = HERE / "trng_whole.sim.spice"
 NETLIST_GZ = HERE / "trng_whole.sim.spice.gz"
-OUTROOT = HERE / "corners"
 
 LIB = "libs.tech/combined/sky130.lib.spice"
 PDK = "sky130A"
