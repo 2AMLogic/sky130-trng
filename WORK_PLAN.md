@@ -37,6 +37,7 @@ Issues currently being built (`loom:building`).
 - **#230**: CI: guard that every test_*.py is wired into a CI workflow and path filter
 - **#371**: Regenerate composite layout cells, trng_digital/trng_whole and pex libraries under klayout-tools 0.8.0
 - **#381**: verify-whole: adapt the whole-block harness to klayout-tools 0.8.0 VNB handling
+- **#446**: Decision record: adopt (or not) an idle-power target for sampler_core from the #201 leakage survey
 
 ## PRs Awaiting Review
 
@@ -65,6 +66,7 @@ Issues carrying `loom:curated`.
 - **#371**: Regenerate composite layout cells, trng_digital/trng_whole and pex libraries under klayout-tools 0.8.0 *(curated)*
 - **#381**: verify-whole: adapt the whole-block harness to klayout-tools 0.8.0 VNB handling *(curated)*
 - **#431**: DR-0017 follow-up: analog-chain-only feasibility probe, then gate-level co-simulation generator and reducer for the whole-block PVT matrix *(curated)*
+- **#446**: Decision record: adopt (or not) an idle-power target for sampler_core from the #201 leakage survey *(curated)*
 
 ## Proposed (Architect / Hermit)
 
@@ -83,10 +85,10 @@ _None._
 | Very important | 0 |
 | Important | 3 |
 | Ready (`loom:issue`) | 1 |
-| In Progress (`loom:building`) | 4 |
+| In Progress (`loom:building`) | 5 |
 | PRs awaiting review | 0 |
 | Approved PRs awaiting merge | 1 |
-| Curated | 11 |
+| Curated | 12 |
 | Architect / Hermit proposals | 0 |
 | Active epics | 2 |
 <!-- guide:plan-body:end -->
