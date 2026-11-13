@@ -155,6 +155,12 @@
   Fails closed, manifest-forward only, no history rewrite. Changes no result,
   spec value or existing record.
 
+- [`decision-records/DR-0018-idle-power-target.md`](decision-records/DR-0018-idle-power-target.md)
+  — **Accepted**. Issue #446: idle power of `sampler_core` <= 200 uW as a
+  worst-corner envelope, 125 C digital term counted as the labelled
+  extrapolation (114.9 uW); the 1.5x margin is a stated choice. Simulation-
+  derived, provisional until silicon.
+
 - [`decision-records/DR-0017-whole-block-reduced-work-pvt.md`](decision-records/DR-0017-whole-block-reduced-work-pvt.md)
   — **Proposed**. Issue #404: how the whole-block post-layout PVT campaign
   of #174 is to be reduced. Chooses a transistor-level analog chain with the
