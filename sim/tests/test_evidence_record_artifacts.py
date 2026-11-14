@@ -334,5 +334,54 @@ class WriteCornerBundle(unittest.TestCase):
         self.assertFalse(self.rdir.exists())
 
 
+class ReadCornerBundle(unittest.TestCase):
+    """er.read_corner_bundle: the inverse of write_corner_bundle (issue #497)."""
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self._tmp.cleanup)
+        self.root = Path(self._tmp.name)
+        self.reqdir = self.root / "req"
+        self.rdir = self.root / "records"
+        self.cdir = self.root / "corners" / "rid1"
+
+    def store(self, chunks):
+        for n, _pl, _rs in chunks:
+            d = self.reqdir / n
+            d.mkdir(parents=True)
+            (d / "request.json").write_text('{"r": 1}')
+            (d / "netlist.cir").write_text("* deck\n")
+        er.write_corner_bundle(self.cdir, self.reqdir, chunks, records_dir=self.rdir, rid="rid1")
+
+    def test_roundtrip_sorted_names(self):
+        chunks = [("b", {"corner": "tt"}, {"v": "beta"}), ("a", {"corner": "ff"}, {"v": "alpha"})]
+        self.store(chunks)
+        self.assertEqual(er.read_corner_bundle(self.cdir),
+                         [("a", {"corner": "ff"}, {"v": "alpha"}), ("b", {"corner": "tt"}, {"v": "beta"})])
+
+    def test_prefix_filter(self):
+        self.store([("ctl-1", {}, {"v": 1}), ("ctl-2", {}, {"v": 2}), ("pert-1", {}, {"v": 3})])
+        self.assertEqual([nm for nm, _, _ in er.read_corner_bundle(self.cdir, prefix="ctl-")],
+                         ["ctl-1", "ctl-2"])
+
+    def test_with_missing_pairs_notes_with_plans(self):
+        self.store([("kept", {}, {"v": 1})])
+        (self.cdir / "gone.missing.json").write_text(json.dumps({"request": "gone", "reason": "timeout"}))
+        (self.cdir / "gone.plan.json").write_text(json.dumps({"corner": "gone"}, indent=1))
+        chunks, missing = er.read_corner_bundle(self.cdir, with_missing=True)
+        self.assertEqual([nm for nm, _, _ in chunks], ["kept"])
+        self.assertEqual(missing, [("gone", {"corner": "gone"}, "timeout")])
+        self.assertEqual(er.read_corner_bundle(self.cdir), chunks)  # default hides the notes
+
+    def test_malformed_plan_fails_loudly(self):
+        self.store([("a", {}, {"v": 1})])
+        (self.cdir / "a.plan.json").write_text("{not json")
+        with self.assertRaises(json.JSONDecodeError):
+            er.read_corner_bundle(self.cdir)
+
+    def test_missing_cdir_reads_empty(self):
+        self.assertEqual(er.read_corner_bundle(self.root / "corners" / "nothing"), [])
+
+
 if __name__ == "__main__":
     unittest.main()

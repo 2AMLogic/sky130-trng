@@ -37,8 +37,6 @@ not copied, for the w_90 interpolation rule and the committed-evidence loaders):
 from __future__ import annotations
 
 import argparse
-import glob
-import gzip
 import json
 import math
 import os
@@ -56,7 +54,7 @@ from loadmod import load_module  # noqa: E402
 
 OP = load_module("operating_point", REPO / "sim" / "ro-array-operating-point" / "analysis" / "operating-point.py")
 MR = load_module("xor_alt_make_requests", HERE / "make-requests.py")
-from evidence_record import mint_record, new_record_id, write_corner_bundle  # noqa: E402
+from evidence_record import mint_record, new_record_id, read_corner_bundle, write_corner_bundle  # noqa: E402
 from request_dir import load_request_dir  # noqa: E402
 
 TOL_W90 = 0.05            # baseline control vs committed w_90
@@ -526,11 +524,7 @@ def emit_record(reqdir, author="loom-builder@sky130-trng"):
 def check(recpath):
     rec = json.load(open(recpath))
     cdir = REPO / "sim" / SLUG / "corners" / rec["record_id"]
-    chunks = []
-    for f in sorted(glob.glob(str(cdir / "*.klt-sim.json.gz"))):
-        nm = os.path.basename(f)[:-len(".klt-sim.json.gz")]
-        with gzip.open(f, "rt") as fh:
-            chunks.append((nm, json.load(open(cdir / f"{nm}.plan.json")), json.load(fh)))
+    chunks = read_corner_bundle(cdir)
     pts, _jobs, _rem = jobs_from_responses(chunks)
     red = full_reduction(pts)
     same = (json.loads(json.dumps(red, default=str)) == rec["reduction"]
