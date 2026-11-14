@@ -1315,7 +1315,10 @@ def main(argv: list[str] | None = None) -> int:
                     "save_mode": "netlist"},
     }
     plan = {
-        "name": "gate-model-probe",
+        # The plan's identity is its own directory slug, as in make-requests.py
+        # (which threads `name` from its caller): a hardcoded name made both
+        # requests claim to be the probe. Derived, so it cannot drift again.
+        "name": outdir.resolve().name,
         "issue": 486,
         "realisation": model.manifest["realisation"],
         "netlist_sha256": sha256_text(deck),

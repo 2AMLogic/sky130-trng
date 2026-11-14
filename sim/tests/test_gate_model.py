@@ -459,6 +459,11 @@ endmodule
                 self.assertTrue((out / name).is_file(), name)
             req = json.loads((out / "request.json").read_text())
             self.assertEqual(req["engine"], "ngspice")
+            # The plan names itself after its own output directory; a
+            # hardcoded name made every request claim to be the probe, and
+            # sim/*/corners/ is append-only, so a wrong slug is permanent.
+            plan = json.loads((out / "plan.json").read_text())
+            self.assertEqual(plan["name"], out.name)
             # klt sim owns .lib/.temp/.tran and the .control block: the body
             # must carry NONE of them (comments excepted).
             cards = [ln for ln in (out / "netlist.cir").read_text().splitlines()
