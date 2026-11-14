@@ -270,6 +270,7 @@ class PublicationIntegrity(unittest.TestCase):
         self.assertEqual(snapshot(self.root), before)
 
     def test_two_writers_racing_same_id_one_wins(self):
+        import datetime as dt
         import threading
         rid = "20260101-000003-abc1234"
         barrier = threading.Barrier(2)
@@ -287,10 +288,16 @@ class PublicationIntegrity(unittest.TestCase):
 
         def worker():
             try:
-                results.append(("ok", self.behav(rid=rid, artifacts=[self.art])))
+                results.append(("ok", er.mint_behavioral_record(self.root, "slug", "c", "b", {"k": 2},
+                                                                artifacts=[self.art])))
             except SystemExit as e:
                 results.append(("collision", str(e)))
-        with mock.patch.object(Path, "exists", synced):
+        # One shared patch entered once: per-thread mock.patch.object on the same
+        # target races its own save/restore and can leak a mock into the module
+        # for every test that runs after this one.
+        with mock.patch.object(Path, "exists", synced), \
+                mock.patch.object(er, "new_record_id",
+                                  return_value=(dt.datetime(2026, 1, 1), "abc1234", rid)):
             ts = [threading.Thread(target=worker) for _ in range(2)]
             [t.start() for t in ts]
             [t.join() for t in ts]
