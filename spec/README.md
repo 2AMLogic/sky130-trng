@@ -162,7 +162,7 @@
   derived, provisional until silicon.
 
 - [`decision-records/DR-0017-whole-block-reduced-work-pvt.md`](decision-records/DR-0017-whole-block-reduced-work-pvt.md)
-  — **Proposed**. Issue #404: how the whole-block post-layout PVT campaign
+  — **Accepted**. Issue #404: how the whole-block post-layout PVT campaign
   of #174 is to be reduced. Chooses a transistor-level analog chain with the
   digital section at gate level behind a defined boundary, rather than a
   shorter or split transistor-level program, subject to an explicit
@@ -181,5 +181,10 @@
   adopt a lifetime, a guard band or a re-sizing is left to the operator via that request.
 
 A record's status is meaningful: **Proposed** means drafted and not accepted
-by anyone. Ratification is an operator decision, so no record here declares
-itself Accepted. See the repo README for scope.
+by anyone; **Accepted** means an operator has ratified it, and that record's
+own `## Status` history names the ruling. Ratification is an operator
+decision, never an agent's. Each entry above carries the status of the record
+it links to, and `tools/check_spec_index.py` fails when an entry and a
+record's `status:` front matter disagree, or when that front matter and the
+latest entry of the record's own `## Status` history disagree. See the repo
+README for scope.
