@@ -57,16 +57,6 @@ def req_diff(a: dict, b: dict, path="") -> list[str]:
     return out
 
 
-class _NoExitCodes(type(Path())):
-    """compaction.summarize_run parses `<name> exit <rc>` lines from exit-codes.txt; this study's file
-    uses `<name> pnr-verify exit <rc>` / `<name> audit exit <rc>` lines, so hide it from that helper
-    and parse it here."""
-
-    @property
-    def parent(self):
-        return Path("/nonexistent-exit-codes-dir")
-
-
 def pnr_exit(d: Path):
     ec = d.parent / "exit-codes.txt"
     if ec.exists():
@@ -78,8 +68,7 @@ def pnr_exit(d: Path):
 
 
 def run_summary(d: Path) -> dict:
-    r = C.summarize_run(_NoExitCodes(d))
-    r["exit"] = pnr_exit(d)
+    r = C.summarize_run(d, exit_lookup=pnr_exit)
     es = jl(d / "electrical-summary.json")
     r["electrical"] = es
     rq = d / f"{d.name}.json"
@@ -143,10 +132,10 @@ def main(argv=None) -> int:
         r["request_diff_vs_committed"] = req_diff(committed, json.loads(Path(REPO_ROOT / r["request"]["path"]).read_text())) \
             if r.get("request") else None
     # #226 unrepaired baselines (estimate counts) and their final-route audits (this study)
-    comp226 = {n: C.summarize_run(_NoExitCodes(COMPACT_RUN / n)) for n in ("util40", "util55", "util65")}
+    comp226 = {n: C.summarize_run(COMPACT_RUN / n) for n in ("util40", "util55", "util65")}
 
     # control: repaired 40 % vs the recorded #236 slew0531 candidate
-    ref = C.summarize_run(_NoExitCodes(REPAIR_REF_RUN))
+    ref = C.summarize_run(REPAIR_REF_RUN, exit_lookup=pnr_exit)
     c40 = runs.get("rep40-slew0531", {})
     control = {
         "reference_run": str(REPAIR_REF_RUN.relative_to(REPO_ROOT)),
