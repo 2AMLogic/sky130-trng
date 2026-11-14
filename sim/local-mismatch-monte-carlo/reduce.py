@@ -389,7 +389,7 @@ def render_md(rid, cn, S, jobs):
          f"**Status**: {PROV}. Not a silicon result, not an entropy measurement.", "",
          f"**Batch jobs**: " + ", ".join(f"`{j}`" for j in jobs), ""]
     if "error" in S:
-        L += [f"**ERROR**: {S['error']}"]
+        L += [f"**ERROR**: {S['error']}", ""]
         return L, ""
     A, M, R = S["array"], S["sampler"], S["raw_bit"]
     L += [f"**Samples**: {S['n_array_ok']}/{S['n_array_requested']} array, {S['n_sampler_ok']}/{S['n_sampler_requested']} sampler.", "",
@@ -435,7 +435,7 @@ def render_md(rid, cn, S, jobs):
           f"SP 800-90B MCV on a seeded Bernoulli stream ({BERNOULLI_N} bits, seed {BERNOULLI_SEED}): worst-case p -> H_hat {R['mcv_worst_case']['h_hat_bits']:.4f} "
           f"(p_u99 {R['mcv_worst_case']['p_u_99']:.4f}); nominal p -> H_hat {R['mcv_nominal']['h_hat_bits']:.4f}.", "",
           "H_bias bounds the bit's min-entropy from above (a biased bit cannot exceed it); it is not the jitter-limited entropy of DR-0003. "
-          "The xo duty is measured at the nominal operating point's 40-edge window starting at 60 ns, not over a 20 us sample interval."]
+          "The xo duty is measured at the nominal operating point's 40-edge window starting at 60 ns, not over a 20 us sample interval.", ""]
     return L, ""
 
 
