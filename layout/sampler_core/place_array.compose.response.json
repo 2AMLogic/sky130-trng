@@ -10,7 +10,7 @@
   },
   "dbu_um": 0.001,
   "bbox_um": {
-    "x0": -2.19,
+    "x0": -2.265,
     "y0": -3.585,
     "x1": 328.77,
     "y1": 54.72
@@ -22,14 +22,14 @@
       "source": "cell",
       "generator": null,
       "cell_name": "route_ctrl",
-      "source_path": "/home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-181/layout/sampler_core/route_ctrl.gds",
-      "source_digest": "sha256:a37525d6f186683ea9c167c6a292d024ffd32d22631ed0ecb2eaf7b5a5136607",
+      "source_path": "route_ctrl.gds",
+      "source_digest": "sha256:eb814460c2a3ac6ed8e9af5da74b6b3c6c7281c6f0ee62f4faa4d8393216130c",
       "offset_um": {
         "x": 0.0,
         "y": 0.0
       },
       "bbox_um": {
-        "x0": -2.19,
+        "x0": -2.265,
         "y0": -3.585,
         "x1": 328.77,
         "y1": 7.085
@@ -42,8 +42,8 @@
       "source": "cell",
       "generator": null,
       "cell_name": "ro_array_core",
-      "source_path": "/home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-181/layout/sampler_core/../ro_array_core/ro_array_core.gds",
-      "source_digest": "sha256:862343324eea23aebe7602550b402b4e6eebaa149020401d3dec15dc5274a126",
+      "source_path": "../ro_array_core/ro_array_core.gds",
+      "source_digest": "sha256:edb710e350969bf7b23ced70383e00c20f64e95516ad7462c96df426b49e6585",
       "offset_um": {
         "x": 0.0,
         "y": 23.635
@@ -68,12 +68,20 @@
   },
   "warnings": [],
   "provenance": {
-    "klt_version": "0.6.0+g5edb557f91d0",
+    "klt_version": "0.8.0",
     "klayout_version": "0.30.12",
     "pdk": {
       "name": "sky130A",
-      "source": "search root: ~/.volare",
-      "version": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b"
+      "source": "PDK_ROOT environment variable",
+      "version": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+      "ambiguous_sources": [
+        "search root: ~/.ciel"
+      ],
+      "compatibility": {
+        "status": "mismatch",
+        "package": "open_pdks-sky130",
+        "expected": "open_pdks f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7"
+      }
     },
     "deck": null,
     "input": null

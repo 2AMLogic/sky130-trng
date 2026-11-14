@@ -22,8 +22,8 @@
       "source": "cell",
       "generator": null,
       "cell_name": "core",
-      "source_path": "/home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-181/layout/ro_array_core/core.gds",
-      "source_digest": "sha256:646f100805956a5fa6bcf397bfe7ed9828010a7d812689486b8125eb6dd51307",
+      "source_path": "core.gds",
+      "source_digest": "sha256:3d0a59700f37360e69e33d5c4a09347b8c60b8c23cbb6bafdc3c606c4fb06a67",
       "offset_um": {
         "x": 0.0,
         "y": 0.0
@@ -85,12 +85,20 @@
   },
   "warnings": [],
   "provenance": {
-    "klt_version": "0.6.0+g5edb557f91d0",
+    "klt_version": "0.8.0",
     "klayout_version": "0.30.12",
     "pdk": {
       "name": "sky130A",
-      "source": "search root: ~/.volare",
-      "version": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b"
+      "source": "PDK_ROOT environment variable",
+      "version": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+      "ambiguous_sources": [
+        "search root: ~/.ciel"
+      ],
+      "compatibility": {
+        "status": "mismatch",
+        "package": "open_pdks-sky130",
+        "expected": "open_pdks f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7"
+      }
     },
     "deck": null,
     "input": null

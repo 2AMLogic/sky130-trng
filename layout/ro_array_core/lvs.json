@@ -1,14 +1,23 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "engine": "klayout",
-  "layout": "ro_array_core.spice",
+  "layout": {
+    "path": "layout/ro_array_core/ro_array_core.spice",
+    "scope": "repo"
+  },
   "reference": "ro_array_core.ref.spice",
   "top": "RO_ARRAY_CORE",
   "reference_top": "RO_ARRAY_CORE",
+  "reference_conversion": {
+    "form": "subckt-call",
+    "deck": "sky130",
+    "device_map": null
+  },
   "parameter_tolerance": null,
   "options": {
     "combine_devices": false,
     "combine_devices_per_circuit": null,
+    "combine_devices_max_attempts": 5,
     "flatten_layout": true,
     "flatten_reference": true,
     "netgen_setup": null,
@@ -16,6 +25,8 @@
     "compare_parameters": null,
     "power_connectivity": null,
     "anchor_top_level_pins": null,
+    "strict_top_level_pin_count": false,
+    "compare_mos_flavour": false,
     "supply_nets": [
       "GND",
       "VCC",
@@ -23,9 +34,11 @@
       "VGND",
       "VPWR",
       "VSS"
-    ]
+    ],
+    "finfet_bulk": null
   },
   "hints_applied": null,
+  "constant_nets_applied": null,
   "status": "match",
   "power_connectivity": {
     "status": "unchecked",
@@ -75,17 +88,17 @@
     "engine": "klayout",
     "engine_version": "0.30.12",
     "netgen_binary": null,
-    "layout_sha256": "f9468404812ed7b32958d78798614526aa2cfe6333e4b199385011cd534137a1",
+    "layout_sha256": "3cc4b952d71bf6f91d71a4d75774630cdfbf32d9edeb0ac32732daf538b8ddc3",
     "reference_sha256": "11e1ad4b1f801e605a966c9c8e8be0c6124c1e77fbe725af2a33f312b043c9b0",
     "extracted_netlist": null
   },
   "provenance": {
-    "klt_version": "0.6.0+g5edb557f91d0",
+    "klt_version": "0.8.0",
     "klayout_version": "0.30.12",
     "pdk": null,
     "deck": null,
     "input": {
-      "content_hash": "sha256:f9468404812ed7b32958d78798614526aa2cfe6333e4b199385011cd534137a1",
+      "content_hash": "sha256:3cc4b952d71bf6f91d71a4d75774630cdfbf32d9edeb0ac32732daf538b8ddc3",
       "role": "netlist"
     },
     "klayout_version_mismatch": false
@@ -112,7 +125,7 @@
       "pin": true
     },
     {
-      "layout": "BN|INVB_Y|MN34_G1|MP24_G1|Y",
+      "layout": "BN|INVB_Y|MN34_G1|MP24_G1|Y$1",
       "reference": "A1_BN",
       "pin": true
     },
@@ -122,22 +135,22 @@
       "pin": true
     },
     {
-      "layout": "\\$81",
+      "layout": "\\$82",
       "reference": "A1_S1",
       "pin": false
     },
     {
-      "layout": "\\$79",
+      "layout": "\\$80",
       "reference": "A1_S2",
       "pin": false
     },
     {
-      "layout": "AN|INVA_Y|MN34_G0|MP13_G1|Y$2",
+      "layout": "AN|INVA_Y|MN34_G0|MP13_G1|Y$1",
       "reference": "A2_AN",
       "pin": true
     },
     {
-      "layout": "BN|INVB_Y|MN34_G1|MP24_G1|Y$1",
+      "layout": "BN|INVB_Y|MN34_G1|MP24_G1|Y$2",
       "reference": "A2_BN",
       "pin": true
     },
@@ -147,22 +160,22 @@
       "pin": true
     },
     {
-      "layout": "\\$84",
+      "layout": "\\$85",
       "reference": "A2_S1",
       "pin": false
     },
     {
-      "layout": "\\$82",
+      "layout": "\\$83",
       "reference": "A2_S2",
       "pin": false
     },
     {
-      "layout": "AN|INVA_Y|MN34_G0|MP13_G1|Y$1",
+      "layout": "AN|INVA_Y|MN34_G0|MP13_G1|Y$2",
       "reference": "A3_AN",
       "pin": true
     },
     {
-      "layout": "BN|INVB_Y|MN34_G1|MP24_G1|Y$2",
+      "layout": "BN|INVB_Y|MN34_G1|MP24_G1|Y",
       "reference": "A3_BN",
       "pin": true
     },
@@ -177,7 +190,7 @@
       "pin": false
     },
     {
-      "layout": "\\$86",
+      "layout": "\\$87",
       "reference": "A3_S2",
       "pin": false
     },
@@ -242,7 +255,7 @@
       "pin": true
     },
     {
-      "layout": "\\$5",
+      "layout": "\\$11",
       "reference": "R1_G_NM",
       "pin": false
     },
@@ -257,7 +270,7 @@
       "pin": true
     },
     {
-      "layout": "A|G_Y|MNAB_Y|MPA_Y|MPB_Y|N1|S1_A|Y",
+      "layout": "A|G_Y|MNAB_Y|MPA_Y|MPB_Y|N1|S1_A|Y$1",
       "reference": "R1_N1",
       "pin": true
     },
@@ -317,7 +330,7 @@
       "pin": true
     },
     {
-      "layout": "\\$12",
+      "layout": "\\$20",
       "reference": "R2_G_NM",
       "pin": false
     },
@@ -332,7 +345,7 @@
       "pin": true
     },
     {
-      "layout": "A|G_Y|MNAB_Y|MPA_Y|MPB_Y|N1|S1_A|Y$1",
+      "layout": "A|G_Y|MNAB_Y|MPA_Y|MPB_Y|N1|S1_A|Y",
       "reference": "R2_N1",
       "pin": true
     },
@@ -347,7 +360,7 @@
       "pin": true
     },
     {
-      "layout": "A|N4|S3_Y|S4_A|Y$1",
+      "layout": "A|N4|S3_Y|S4_A|Y$3",
       "reference": "R2_N4",
       "pin": true
     },
@@ -392,7 +405,7 @@
       "pin": true
     },
     {
-      "layout": "\\$19",
+      "layout": "\\$29",
       "reference": "R3_G_NM",
       "pin": false
     },
@@ -422,7 +435,7 @@
       "pin": true
     },
     {
-      "layout": "A|N4|S3_Y|S4_A|Y$2",
+      "layout": "A|N4|S3_Y|S4_A|Y$1",
       "reference": "R3_N4",
       "pin": true
     },
@@ -467,7 +480,7 @@
       "pin": true
     },
     {
-      "layout": "\\$27",
+      "layout": "\\$38",
       "reference": "R4_G_NM",
       "pin": false
     },
@@ -497,7 +510,7 @@
       "pin": true
     },
     {
-      "layout": "A|N4|S3_Y|S4_A|Y$3",
+      "layout": "A|N4|S3_Y|S4_A|Y$2",
       "reference": "R4_N4",
       "pin": true
     },
