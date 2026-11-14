@@ -30,6 +30,9 @@ How the whole-block work is to be reduced (analog at transistor level, digital a
 | `corners/<req>/` | request, plan (input hashes), report, stderr and `submit-attempts.log` for every submission, **including the failed ones** (they are the evidence). `netlist.cir` per request is gitignored (regenerated; sha256 in `plan.json` and the report). |
 | `ir/run-ir.py`, `ir/*.json*` | `klt power` extraction + static IR (see below). |
 | `analysis/reduce-whole-block.py` | the reduction: enumerates the 12 points itself, marks a point MET only on a clean corner + oracle match, everything else UNMET with a reason; mints the record. Tested by `sim/tests/test_whole_block_reduction.py` (complete matrix MET; an omitted point, oracle mismatch, absent measurement, errored corner and klt error envelope are each UNMET). |
+| `make-gate-model.py` | the **gate-level model of the digital half** (DR-0017 option (b), issue #486): every `sky130_fd_sc_hd` instance of `layout/trng_digital/trng_digital.routed.v` becomes one XSPICE event-driven primitive (`d_genlut` / `d_dff`) carrying scalar rise/fall delays reduced from one Liberty deck, with `adc_bridge`/`dac_bridge` at the boundary; emits the model, a manifest, and a runnable `klt sim` request. **Fails closed** on an unknown cell, an output pin with no Liberty `function` and no `ff` group, a multiply-driven or undriven net, or a flop with no `d_dff` mapping -- and writes nothing. Record: `records/20261114-gate-model-realisation.md`. |
+| `analysis/compare-gate-model.py` | the oracle comparison and rate reduction for a gate-model run: decodes each measured level (refusing anything that is not a resolved rail, so an UNKNOWN net can never round to 0), compares every digital response with `program.model_replay()`, and scores the measured s-per-simulated-ns against the pass criterion computed from the same constants. |
+| `sim/tests/test_gate_model.py` | the klt-free unit tests of the generator, run on every pull request: the committed manifest is checked against a fresh parse of the routed netlist (every instance accounted for, histogram, port list, DR-0017 boundary), the Liberty-function to truth-table mapping and the NLDM bilinear interpolation are checked on hand-computed values, and six refusal paths are checked to exit non-zero leaving no output. No klt, no PDK, no ngspice. |
 
 ## The four PVT points
 
@@ -100,6 +103,8 @@ This is a **partial, assumption-loaded** result, not whole-block IR:
 ```bash
 python3 sim/post-layout-whole-block/test_make_netlist.py # generator + committed-pair contract, no klt
 python3 sim/tests/test_whole_block_reduction.py          # reducer contract, no simulator
+python3 sim/tests/test_gate_model.py                     # gate-model generator, no klt/PDK/ngspice
+python3 sim/post-layout-whole-block/make-gate-model.py /tmp/gm --cycles 0   # the gate-level deck
 python3 sim/post-layout-whole-block/make-requests.py /tmp/wb --set controls   # needs the gz netlist only
 python3 sim/post-layout-whole-block/ir/run-ir.py /tmp/wb-ir                    # ~10 s; summary.json must equal committed
 ```
@@ -131,19 +136,50 @@ gate-level `layout/trng_digital/trng_digital.routed.v`). The check is a
 transistor-count and net-name correspondence, not an LVS of the gate-level
 netlist against the transistor-level digital macro.
 
+**Done: the ngspice realisation of the gate-level digital half (issue #486).**
+DR-0017's open choice between event-driven co-simulation and a timed-delay
+netlist is settled as a **timed-delay XSPICE netlist** (`make-gate-model.py`:
+2321 routed instances -> 1808 `d_genlut` + 456 `d_dff` + 57 declared load-only
+no-ops, plus 1 declared polarity inverter), and it is **feasible**: the whole
+committed program (75 cycles, 7870 ns) runs at tt / 27 C / 1.8 V in 76.716 s =
+**0.00975 s per simulated ns**, against a pass criterion of <= 0.3852 s/sim-ns
+stated before the run (**39.5x margin**), with **311 of 311** compared digital
+responses equal to the normative model's. Level of that result, worded
+exactly: **gate-level digital section only**, driven by testbench sources at
+its boundary -- *not* the mixed-level whole block. Record:
+`records/20261114-gate-model-realisation.md`; runs
+`runs/20261114-gate-model-probe/` and `runs/20261114-gate-model-full/`.
+`d_cosim` co-simulation remains the documented fallback.
+
 **Open (not done by this change, so nothing here is claimed for it):**
 
-* Gate-level digital co-simulation behind the boundary and its realisation in
-  ngspice, with a **measured** fleet run and simulated time reached.
-* Hence `GRID_TIMEOUT_S` / `poll_timeout_s` are **not** re-set; the 0.057 s per
-  simulated ns analog-only rate does not size the full block. If the measured
-  full-block rate exceeds the 3480 s ceiling, that is recorded as a negative
-  result for option (b).
+* The **coupled** whole-block deck: the analog partition at transistor level
+  and the gate model behind the boundary in one netlist, including the
+  `raw_bit`/`raw_valid` hand-off (testbench-driven in the standalone run), with
+  a **measured** fleet run and simulated time reached. The gate-level half's
+  rate is now measured, but **linear additivity of the two halves is an
+  extrapolation, not a measurement**, so no whole-block rate is claimed.
+* Hence `GRID_TIMEOUT_S` / `poll_timeout_s` are **not** re-set; neither the
+  0.057 s per simulated ns analog-only rate nor the 0.00975 s/sim-ns
+  gate-level rate sizes the full block. If the measured full-block rate
+  exceeds the 3480 s ceiling, that is recorded as a negative result for
+  option (b).
 * Full-block 100 ns rate probe on the re-pinned netlist (`965f1e6c...`): one batch job was
   interrupted by spot reclamation at 3279 s, no verdict; re-run needed. See
   `records/20261106-rate-probe-repinned-netlist.md`.
 * Retry of that probe (issue #449): timed out at 3480 s on the same re-pinned netlist, 0 of 9
   measurements; infeasible verdict confirmed. See `records/20261106b-rate-probe-repinned-timeout.md`.
 * Boundary-load model (DR-0017 option 1 or 2) and the Liberty deck per (T, Vdd)
-  point: not chosen yet; to be stated with their source when the co-simulation
-  is built.
+  point: **not chosen yet**; to be stated with their source. The gate model
+  declares an `input_load` per `d_genlut` input (the Liberty input-pin
+  capacitance) purely so the cards elaborate -- that is **not** the option 1 /
+  option 2 choice. Two findings from #486 feed this: a `corners.supply_v` axis
+  alone does **not** re-corner the digital half (at gate level the supply
+  enters only through the bridge levels and through *which* Liberty deck is
+  used, so each (T, Vdd) point must move its deck), and sky130A ships 16
+  non-ccsnoise `sky130_fd_sc_hd` decks with **none above 100 C** and no `tt`
+  deck off 1.80 V, so the 125 C / 1.98 V point cannot be served exactly.
+* An independent cross-check of a gate-model response against
+  `sim/digital-sdf-timed-verification/`'s Icarus + SDF run at the same
+  `tt_025C_1v80` corner (a different simulator and a different timing
+  mechanism): available, not wired up.

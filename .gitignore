@@ -127,3 +127,8 @@ sim/post-layout-whole-block/trng_whole.sim.spice
 sim/post-layout-whole-block/corners/*/netlist.cir
 # issue #174: the record's copied submit-attempt logs are evidence (named in the record)
 !sim/post-layout-whole-block/runs/**/*.log
+# issue #486: the gate-level model body and the per-request deck under
+# corners/ are regenerated deterministically by make-gate-model.py (sha256 of
+# both in the request's plan.json); the committed form of the realised model
+# is runs/20261114-gate-model-full/gate-model.cir.gz.
+sim/post-layout-whole-block/corners/*/gate-model.cir
