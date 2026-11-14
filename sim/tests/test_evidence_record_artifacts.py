@@ -84,6 +84,74 @@ def snapshot(root: Path):
     return {str(p.relative_to(root)): p.read_bytes() for p in root.rglob("*") if p.is_file()}
 
 
+class RecordFooterSupersedes(unittest.TestCase):
+    """`record_footer(supersedes=...)` / `mint_record(supersedes=...)`: the
+    correction mechanism the append-only rule requires (issue #504). The
+    default must keep every pre-existing caller's footer byte-for-byte."""
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self._tmp.cleanup)
+        self.tmp = Path(self._tmp.name)
+        use_fake_klt(self, self.tmp)
+        self.root = self.tmp / "repo"
+        self.root.mkdir()
+        self.recs = self.root / "sim" / "slug" / "records"
+
+    def mint(self, supersedes=None, rid="20260101-000000-abc1234"):
+        import datetime as dt
+        kw = {} if supersedes is None else {"supersedes": supersedes}
+        return er.mint_record(self.recs, self.root, rid, ["# h", ""], "body\n",
+                              {"k": 1}, author="t",
+                              now=dt.datetime(2026, 1, 1, tzinfo=dt.timezone.utc),
+                              sha="abc1234", **kw)
+
+    def test_default_footer_names_no_correction(self):
+        import datetime as dt
+        md_path, _ = self.mint()
+        expected = er.record_footer(author="t", now=dt.datetime(2026, 1, 1, tzinfo=dt.timezone.utc),
+                                    sha="abc1234")
+        self.assertEqual(md_path.read_text().splitlines()[-len(expected):], expected)
+        self.assertEqual(md_path.read_text().splitlines()[-1], "- Supersedes: (none)")
+
+    def test_named_supersedes_replaces_the_last_footer_line_only(self):
+        import datetime as dt
+        md_path, _ = self.mint(supersedes="20251231-235959-0000000")
+        lines = md_path.read_text().splitlines()
+        self.assertEqual(lines[-1], "- Supersedes: 20251231-235959-0000000")
+        self.assertEqual(lines[-7:-1],
+                         ["", "---", "", "- Author: t", "- Timestamp (UTC): 2026-01-01T00:00:00+00:00",
+                          "- Repo commit: `abc1234`"])
+        self.assertEqual(lines[-8], "body")  # nothing above the footer moved
+
+    def test_default_mint_record_matches_record_footer_default(self):
+        import datetime as dt
+        md_path, _ = self.mint()
+        self.assertTrue(md_path.read_text().startswith("# h\nbody\n"))
+        self.assertEqual(md_path.read_text().splitlines()[-4:],
+                         list(er.record_footer(author="t", now=dt.datetime(2026, 1, 1, tzinfo=dt.timezone.utc),
+                                               sha="abc1234"))[-4:])
+
+    def test_new_record_id_offset_gives_distinct_ids_same_sha(self):
+        import datetime as dt
+
+        class _FixedClock:
+            class datetime(dt.datetime):
+                @classmethod
+                def now(cls, tz=None):
+                    return dt.datetime(2026, 1, 1, 0, 0, 3, tzinfo=dt.timezone.utc)
+            timedelta = dt.timedelta
+            timezone = dt.timezone
+
+        with mock.patch.object(er, "git_short_sha", return_value="abc1234"):
+            with mock.patch.object(er, "_dt", _FixedClock):
+                _, sha0, rid0 = er.new_record_id(self.root)
+                _, sha1, rid1 = er.new_record_id(self.root, offset=1)
+        self.assertEqual((sha0, sha1), ("abc1234", "abc1234"))
+        self.assertEqual(rid0, "20260101-000003-abc1234")
+        self.assertEqual(rid1, "20260101-000004-abc1234")
+
+
 class PublicationIntegrity(unittest.TestCase):
     """Issue #277: complete bundles, exclusive id reservation, owned cleanup."""
 
