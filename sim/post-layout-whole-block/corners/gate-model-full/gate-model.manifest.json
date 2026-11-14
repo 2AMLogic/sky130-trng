@@ -1,0 +1,914 @@
+{
+  "boundary": {
+    "analog_digital": [
+      "clk",
+      "raw_bit",
+      "raw_valid",
+      "rst_n"
+    ],
+    "observed": [
+      "alarm",
+      "gated",
+      "out_valid",
+      "startup_done",
+      "bus_rdata_31_",
+      "bus_rdata_30_",
+      "bus_rdata_29_",
+      "bus_rdata_28_",
+      "bus_rdata_27_",
+      "bus_rdata_26_",
+      "bus_rdata_25_",
+      "bus_rdata_24_",
+      "bus_rdata_23_",
+      "bus_rdata_22_",
+      "bus_rdata_21_",
+      "bus_rdata_20_",
+      "bus_rdata_19_",
+      "bus_rdata_18_",
+      "bus_rdata_17_",
+      "bus_rdata_16_",
+      "bus_rdata_15_",
+      "bus_rdata_14_",
+      "bus_rdata_13_",
+      "bus_rdata_12_",
+      "bus_rdata_11_",
+      "bus_rdata_10_",
+      "bus_rdata_9_",
+      "bus_rdata_8_",
+      "bus_rdata_7_",
+      "bus_rdata_6_",
+      "bus_rdata_5_",
+      "bus_rdata_4_",
+      "bus_rdata_3_",
+      "bus_rdata_2_",
+      "bus_rdata_1_",
+      "bus_rdata_0_",
+      "out_data_31_",
+      "out_data_30_",
+      "out_data_29_",
+      "out_data_28_",
+      "out_data_27_",
+      "out_data_26_",
+      "out_data_25_",
+      "out_data_24_",
+      "out_data_23_",
+      "out_data_22_",
+      "out_data_21_",
+      "out_data_20_",
+      "out_data_19_",
+      "out_data_18_",
+      "out_data_17_",
+      "out_data_16_",
+      "out_data_15_",
+      "out_data_14_",
+      "out_data_13_",
+      "out_data_12_",
+      "out_data_11_",
+      "out_data_10_",
+      "out_data_9_",
+      "out_data_8_",
+      "out_data_7_",
+      "out_data_6_",
+      "out_data_5_",
+      "out_data_4_",
+      "out_data_3_",
+      "out_data_2_",
+      "out_data_1_",
+      "out_data_0_"
+    ],
+    "source": "program.boundary_signals()",
+    "supplies": [
+      "vdd",
+      "vss"
+    ],
+    "testbench_driven": [
+      "bus_re",
+      "bus_we",
+      "out_ready",
+      "bus_addr_3_",
+      "bus_addr_2_",
+      "bus_addr_1_",
+      "bus_addr_0_",
+      "bus_wdata_31_",
+      "bus_wdata_30_",
+      "bus_wdata_29_",
+      "bus_wdata_28_",
+      "bus_wdata_27_",
+      "bus_wdata_26_",
+      "bus_wdata_25_",
+      "bus_wdata_24_",
+      "bus_wdata_23_",
+      "bus_wdata_22_",
+      "bus_wdata_21_",
+      "bus_wdata_20_",
+      "bus_wdata_19_",
+      "bus_wdata_18_",
+      "bus_wdata_17_",
+      "bus_wdata_16_",
+      "bus_wdata_15_",
+      "bus_wdata_14_",
+      "bus_wdata_13_",
+      "bus_wdata_12_",
+      "bus_wdata_11_",
+      "bus_wdata_10_",
+      "bus_wdata_9_",
+      "bus_wdata_8_",
+      "bus_wdata_7_",
+      "bus_wdata_6_",
+      "bus_wdata_5_",
+      "bus_wdata_4_",
+      "bus_wdata_3_",
+      "bus_wdata_2_",
+      "bus_wdata_1_",
+      "bus_wdata_0_"
+    ]
+  },
+  "cell_histogram": {
+    "sky130_fd_sc_hd__a211oi_1": 1,
+    "sky130_fd_sc_hd__a21o_1": 3,
+    "sky130_fd_sc_hd__a21oi_1": 221,
+    "sky130_fd_sc_hd__a221o_1": 1,
+    "sky130_fd_sc_hd__a221oi_1": 2,
+    "sky130_fd_sc_hd__a222oi_1": 1,
+    "sky130_fd_sc_hd__a22o_1": 11,
+    "sky130_fd_sc_hd__a22oi_1": 39,
+    "sky130_fd_sc_hd__a311o_1": 1,
+    "sky130_fd_sc_hd__a311oi_1": 1,
+    "sky130_fd_sc_hd__a31o_2": 1,
+    "sky130_fd_sc_hd__a31oi_1": 7,
+    "sky130_fd_sc_hd__a32o_1": 1,
+    "sky130_fd_sc_hd__a32oi_1": 6,
+    "sky130_fd_sc_hd__and2_1": 14,
+    "sky130_fd_sc_hd__and3_1": 22,
+    "sky130_fd_sc_hd__and3b_1": 3,
+    "sky130_fd_sc_hd__and4_1": 8,
+    "sky130_fd_sc_hd__and4b_1": 1,
+    "sky130_fd_sc_hd__buf_4": 99,
+    "sky130_fd_sc_hd__bufinv_16": 1,
+    "sky130_fd_sc_hd__clkbuf_1": 2,
+    "sky130_fd_sc_hd__clkinv_1": 10,
+    "sky130_fd_sc_hd__clkinv_2": 3,
+    "sky130_fd_sc_hd__clkinv_4": 1,
+    "sky130_fd_sc_hd__clkinvlp_2": 3,
+    "sky130_fd_sc_hd__dfrtp_1": 424,
+    "sky130_fd_sc_hd__dfstp_1": 32,
+    "sky130_fd_sc_hd__diode_2": 1,
+    "sky130_fd_sc_hd__inv_1": 96,
+    "sky130_fd_sc_hd__inv_4": 1,
+    "sky130_fd_sc_hd__mux2_2": 14,
+    "sky130_fd_sc_hd__mux2i_1": 260,
+    "sky130_fd_sc_hd__nand2_1": 204,
+    "sky130_fd_sc_hd__nand2b_1": 12,
+    "sky130_fd_sc_hd__nand3_1": 39,
+    "sky130_fd_sc_hd__nand3b_1": 4,
+    "sky130_fd_sc_hd__nand4_1": 17,
+    "sky130_fd_sc_hd__nand4b_1": 3,
+    "sky130_fd_sc_hd__nor2_1": 348,
+    "sky130_fd_sc_hd__nor2b_1": 2,
+    "sky130_fd_sc_hd__nor3_1": 64,
+    "sky130_fd_sc_hd__nor3b_1": 5,
+    "sky130_fd_sc_hd__nor4_1": 15,
+    "sky130_fd_sc_hd__nor4b_1": 2,
+    "sky130_fd_sc_hd__o211a_1": 1,
+    "sky130_fd_sc_hd__o211ai_1": 5,
+    "sky130_fd_sc_hd__o21a_1": 19,
+    "sky130_fd_sc_hd__o21ai_0": 146,
+    "sky130_fd_sc_hd__o21ba_2": 1,
+    "sky130_fd_sc_hd__o21bai_1": 2,
+    "sky130_fd_sc_hd__o221ai_1": 23,
+    "sky130_fd_sc_hd__o22ai_1": 17,
+    "sky130_fd_sc_hd__o31a_1": 1,
+    "sky130_fd_sc_hd__o31ai_1": 4,
+    "sky130_fd_sc_hd__o41a_1": 1,
+    "sky130_fd_sc_hd__o41ai_1": 2,
+    "sky130_fd_sc_hd__or2_2": 9,
+    "sky130_fd_sc_hd__or3_1": 20,
+    "sky130_fd_sc_hd__or3b_2": 3,
+    "sky130_fd_sc_hd__or4_1": 1,
+    "sky130_fd_sc_hd__or4b_2": 1,
+    "sky130_fd_sc_hd__xnor2_1": 40,
+    "sky130_fd_sc_hd__xor2_1": 19
+  },
+  "declared_no_op_instances": [
+    {
+      "cell": "sky130_fd_sc_hd__diode_2",
+      "instance": "ANTENNA_1",
+      "pins": {
+        "DIODE": "clk"
+      },
+      "reason": "no output pin in the Liberty cell (antenna tie): contributes input capacitance only"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__clkinvlp_2",
+      "instance": "clkload0",
+      "pins": {
+        "A": "clknet_3_1__leaf_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__inv_4",
+      "instance": "clkload1",
+      "pins": {
+        "A": "clknet_3_2__leaf_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__inv_1",
+      "instance": "clkload10",
+      "pins": {
+        "A": "clknet_leaf_62_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__clkinv_1",
+      "instance": "clkload11",
+      "pins": {
+        "A": "clknet_leaf_63_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__inv_1",
+      "instance": "clkload12",
+      "pins": {
+        "A": "clknet_leaf_64_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__clkinv_4",
+      "instance": "clkload13",
+      "pins": {
+        "A": "clknet_leaf_65_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__clkinv_1",
+      "instance": "clkload14",
+      "pins": {
+        "A": "clknet_leaf_1_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__inv_1",
+      "instance": "clkload15",
+      "pins": {
+        "A": "clknet_leaf_2_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__inv_1",
+      "instance": "clkload16",
+      "pins": {
+        "A": "clknet_leaf_3_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__clkinv_1",
+      "instance": "clkload17",
+      "pins": {
+        "A": "clknet_leaf_4_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__inv_1",
+      "instance": "clkload18",
+      "pins": {
+        "A": "clknet_leaf_6_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__inv_1",
+      "instance": "clkload19",
+      "pins": {
+        "A": "clknet_leaf_55_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__clkinvlp_2",
+      "instance": "clkload2",
+      "pins": {
+        "A": "clknet_3_3__leaf_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__inv_1",
+      "instance": "clkload20",
+      "pins": {
+        "A": "clknet_leaf_60_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__clkinv_1",
+      "instance": "clkload21",
+      "pins": {
+        "A": "clknet_leaf_47_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__clkinv_2",
+      "instance": "clkload22",
+      "pins": {
+        "A": "clknet_leaf_48_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__clkinv_2",
+      "instance": "clkload23",
+      "pins": {
+        "A": "clknet_leaf_49_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__inv_1",
+      "instance": "clkload24",
+      "pins": {
+        "A": "clknet_leaf_50_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__inv_1",
+      "instance": "clkload25",
+      "pins": {
+        "A": "clknet_leaf_51_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__inv_1",
+      "instance": "clkload26",
+      "pins": {
+        "A": "clknet_leaf_41_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__inv_1",
+      "instance": "clkload27",
+      "pins": {
+        "A": "clknet_leaf_43_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__clkinv_2",
+      "instance": "clkload28",
+      "pins": {
+        "A": "clknet_leaf_44_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__inv_1",
+      "instance": "clkload29",
+      "pins": {
+        "A": "clknet_leaf_45_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__buf_4",
+      "instance": "clkload3",
+      "pins": {
+        "A": "clknet_3_5__leaf_clk"
+      },
+      "reason": "output pin X unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__inv_1",
+      "instance": "clkload30",
+      "pins": {
+        "A": "clknet_leaf_46_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__inv_1",
+      "instance": "clkload31",
+      "pins": {
+        "A": "clknet_leaf_53_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__clkinv_1",
+      "instance": "clkload32",
+      "pins": {
+        "A": "clknet_leaf_8_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__inv_1",
+      "instance": "clkload33",
+      "pins": {
+        "A": "clknet_leaf_9_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__inv_1",
+      "instance": "clkload34",
+      "pins": {
+        "A": "clknet_leaf_10_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__inv_1",
+      "instance": "clkload35",
+      "pins": {
+        "A": "clknet_leaf_11_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__inv_1",
+      "instance": "clkload36",
+      "pins": {
+        "A": "clknet_leaf_13_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__clkinv_1",
+      "instance": "clkload37",
+      "pins": {
+        "A": "clknet_leaf_14_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__inv_1",
+      "instance": "clkload38",
+      "pins": {
+        "A": "clknet_leaf_15_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__inv_1",
+      "instance": "clkload39",
+      "pins": {
+        "A": "clknet_leaf_20_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__bufinv_16",
+      "instance": "clkload4",
+      "pins": {
+        "A": "clknet_3_6__leaf_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__inv_1",
+      "instance": "clkload40",
+      "pins": {
+        "A": "clknet_leaf_21_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__inv_1",
+      "instance": "clkload41",
+      "pins": {
+        "A": "clknet_leaf_22_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__inv_1",
+      "instance": "clkload42",
+      "pins": {
+        "A": "clknet_leaf_23_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__inv_1",
+      "instance": "clkload43",
+      "pins": {
+        "A": "clknet_leaf_24_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__inv_1",
+      "instance": "clkload44",
+      "pins": {
+        "A": "clknet_leaf_25_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__clkinv_1",
+      "instance": "clkload45",
+      "pins": {
+        "A": "clknet_leaf_28_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__inv_1",
+      "instance": "clkload46",
+      "pins": {
+        "A": "clknet_leaf_36_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__clkinv_1",
+      "instance": "clkload47",
+      "pins": {
+        "A": "clknet_leaf_38_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__inv_1",
+      "instance": "clkload48",
+      "pins": {
+        "A": "clknet_leaf_39_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__inv_1",
+      "instance": "clkload49",
+      "pins": {
+        "A": "clknet_leaf_40_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__clkinvlp_2",
+      "instance": "clkload5",
+      "pins": {
+        "A": "clknet_3_7__leaf_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__inv_1",
+      "instance": "clkload50",
+      "pins": {
+        "A": "clknet_leaf_27_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__inv_1",
+      "instance": "clkload51",
+      "pins": {
+        "A": "clknet_leaf_29_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__inv_1",
+      "instance": "clkload52",
+      "pins": {
+        "A": "clknet_leaf_31_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__inv_1",
+      "instance": "clkload53",
+      "pins": {
+        "A": "clknet_leaf_32_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__inv_1",
+      "instance": "clkload54",
+      "pins": {
+        "A": "clknet_leaf_33_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__inv_1",
+      "instance": "clkload55",
+      "pins": {
+        "A": "clknet_leaf_35_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__clkinv_1",
+      "instance": "clkload6",
+      "pins": {
+        "A": "clknet_leaf_56_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__inv_1",
+      "instance": "clkload7",
+      "pins": {
+        "A": "clknet_leaf_57_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__inv_1",
+      "instance": "clkload8",
+      "pins": {
+        "A": "clknet_leaf_58_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    },
+    {
+      "cell": "sky130_fd_sc_hd__inv_1",
+      "instance": "clkload9",
+      "pins": {
+        "A": "clknet_leaf_61_clk"
+      },
+      "reason": "output pin Y unconnected in the routed netlist (load-only instance): no reader, so no primitive; input capacitance still loads its driver"
+    }
+  ],
+  "dr_0017_option": "b",
+  "genlut_index_order": "index = sum(bit_k << k), k = position in the A-device input vector (first input is the LSB); measured on ngspice-47 with four one-hot table_values",
+  "liberty_deck": "/home/ubuntu/.ciel/ciel/sky130/versions/f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7/sky130A/libs.ref/sky130_fd_sc_hd/lib/sky130_fd_sc_hd__tt_025C_1v80.lib",
+  "liberty_sha256": "8e78e14442062dba34d414fca6490b2f6b96038d4510d1438ca44fee31487135",
+  "module": "trng_digital",
+  "polarity_inverters": 1,
+  "ports": {
+    "all": [
+      "alarm",
+      "bus_re",
+      "bus_we",
+      "clk",
+      "gated",
+      "out_ready",
+      "out_valid",
+      "raw_bit",
+      "raw_valid",
+      "rst_n",
+      "startup_done",
+      "bus_addr_3_",
+      "bus_addr_2_",
+      "bus_addr_1_",
+      "bus_addr_0_",
+      "bus_rdata_31_",
+      "bus_rdata_30_",
+      "bus_rdata_29_",
+      "bus_rdata_28_",
+      "bus_rdata_27_",
+      "bus_rdata_26_",
+      "bus_rdata_25_",
+      "bus_rdata_24_",
+      "bus_rdata_23_",
+      "bus_rdata_22_",
+      "bus_rdata_21_",
+      "bus_rdata_20_",
+      "bus_rdata_19_",
+      "bus_rdata_18_",
+      "bus_rdata_17_",
+      "bus_rdata_16_",
+      "bus_rdata_15_",
+      "bus_rdata_14_",
+      "bus_rdata_13_",
+      "bus_rdata_12_",
+      "bus_rdata_11_",
+      "bus_rdata_10_",
+      "bus_rdata_9_",
+      "bus_rdata_8_",
+      "bus_rdata_7_",
+      "bus_rdata_6_",
+      "bus_rdata_5_",
+      "bus_rdata_4_",
+      "bus_rdata_3_",
+      "bus_rdata_2_",
+      "bus_rdata_1_",
+      "bus_rdata_0_",
+      "bus_wdata_31_",
+      "bus_wdata_30_",
+      "bus_wdata_29_",
+      "bus_wdata_28_",
+      "bus_wdata_27_",
+      "bus_wdata_26_",
+      "bus_wdata_25_",
+      "bus_wdata_24_",
+      "bus_wdata_23_",
+      "bus_wdata_22_",
+      "bus_wdata_21_",
+      "bus_wdata_20_",
+      "bus_wdata_19_",
+      "bus_wdata_18_",
+      "bus_wdata_17_",
+      "bus_wdata_16_",
+      "bus_wdata_15_",
+      "bus_wdata_14_",
+      "bus_wdata_13_",
+      "bus_wdata_12_",
+      "bus_wdata_11_",
+      "bus_wdata_10_",
+      "bus_wdata_9_",
+      "bus_wdata_8_",
+      "bus_wdata_7_",
+      "bus_wdata_6_",
+      "bus_wdata_5_",
+      "bus_wdata_4_",
+      "bus_wdata_3_",
+      "bus_wdata_2_",
+      "bus_wdata_1_",
+      "bus_wdata_0_",
+      "out_data_31_",
+      "out_data_30_",
+      "out_data_29_",
+      "out_data_28_",
+      "out_data_27_",
+      "out_data_26_",
+      "out_data_25_",
+      "out_data_24_",
+      "out_data_23_",
+      "out_data_22_",
+      "out_data_21_",
+      "out_data_20_",
+      "out_data_19_",
+      "out_data_18_",
+      "out_data_17_",
+      "out_data_16_",
+      "out_data_15_",
+      "out_data_14_",
+      "out_data_13_",
+      "out_data_12_",
+      "out_data_11_",
+      "out_data_10_",
+      "out_data_9_",
+      "out_data_8_",
+      "out_data_7_",
+      "out_data_6_",
+      "out_data_5_",
+      "out_data_4_",
+      "out_data_3_",
+      "out_data_2_",
+      "out_data_1_",
+      "out_data_0_"
+    ],
+    "inputs": [
+      "bus_re",
+      "bus_we",
+      "clk",
+      "out_ready",
+      "raw_bit",
+      "raw_valid",
+      "rst_n",
+      "bus_addr_3_",
+      "bus_addr_2_",
+      "bus_addr_1_",
+      "bus_addr_0_",
+      "bus_wdata_31_",
+      "bus_wdata_30_",
+      "bus_wdata_29_",
+      "bus_wdata_28_",
+      "bus_wdata_27_",
+      "bus_wdata_26_",
+      "bus_wdata_25_",
+      "bus_wdata_24_",
+      "bus_wdata_23_",
+      "bus_wdata_22_",
+      "bus_wdata_21_",
+      "bus_wdata_20_",
+      "bus_wdata_19_",
+      "bus_wdata_18_",
+      "bus_wdata_17_",
+      "bus_wdata_16_",
+      "bus_wdata_15_",
+      "bus_wdata_14_",
+      "bus_wdata_13_",
+      "bus_wdata_12_",
+      "bus_wdata_11_",
+      "bus_wdata_10_",
+      "bus_wdata_9_",
+      "bus_wdata_8_",
+      "bus_wdata_7_",
+      "bus_wdata_6_",
+      "bus_wdata_5_",
+      "bus_wdata_4_",
+      "bus_wdata_3_",
+      "bus_wdata_2_",
+      "bus_wdata_1_",
+      "bus_wdata_0_"
+    ],
+    "outputs": [
+      "alarm",
+      "gated",
+      "out_valid",
+      "startup_done",
+      "bus_rdata_31_",
+      "bus_rdata_30_",
+      "bus_rdata_29_",
+      "bus_rdata_28_",
+      "bus_rdata_27_",
+      "bus_rdata_26_",
+      "bus_rdata_25_",
+      "bus_rdata_24_",
+      "bus_rdata_23_",
+      "bus_rdata_22_",
+      "bus_rdata_21_",
+      "bus_rdata_20_",
+      "bus_rdata_19_",
+      "bus_rdata_18_",
+      "bus_rdata_17_",
+      "bus_rdata_16_",
+      "bus_rdata_15_",
+      "bus_rdata_14_",
+      "bus_rdata_13_",
+      "bus_rdata_12_",
+      "bus_rdata_11_",
+      "bus_rdata_10_",
+      "bus_rdata_9_",
+      "bus_rdata_8_",
+      "bus_rdata_7_",
+      "bus_rdata_6_",
+      "bus_rdata_5_",
+      "bus_rdata_4_",
+      "bus_rdata_3_",
+      "bus_rdata_2_",
+      "bus_rdata_1_",
+      "bus_rdata_0_",
+      "out_data_31_",
+      "out_data_30_",
+      "out_data_29_",
+      "out_data_28_",
+      "out_data_27_",
+      "out_data_26_",
+      "out_data_25_",
+      "out_data_24_",
+      "out_data_23_",
+      "out_data_22_",
+      "out_data_21_",
+      "out_data_20_",
+      "out_data_19_",
+      "out_data_18_",
+      "out_data_17_",
+      "out_data_16_",
+      "out_data_15_",
+      "out_data_14_",
+      "out_data_13_",
+      "out_data_12_",
+      "out_data_11_",
+      "out_data_10_",
+      "out_data_9_",
+      "out_data_8_",
+      "out_data_7_",
+      "out_data_6_",
+      "out_data_5_",
+      "out_data_4_",
+      "out_data_3_",
+      "out_data_2_",
+      "out_data_1_",
+      "out_data_0_"
+    ]
+  },
+  "primitives": {
+    "d_dff": 456,
+    "d_genlut": 1808
+  },
+  "provenance": {
+    "analog": "transistor",
+    "digital": "gate-level"
+  },
+  "realisation": "timed-delay XSPICE netlist (d_genlut / d_dff + adc/dac bridges)",
+  "reductions": {
+    "adc_bridge_in_high_v": 0.9900000000000001,
+    "adc_bridge_in_low_v": 0.81,
+    "c_load": "sum of Liberty input-pin capacitance of the receivers on the net, plus port_load_pf on a net that reaches a module output port",
+    "dac_bridge_out_high_v": 1.8,
+    "dff": "clk_delay/set_delay/reset_delay = 1e-12 s (XSPICE's own floor; it refuses 0), ic = 0; one scalar rise/fall pair per flop covers the CLK->Q and async clear/preset arcs",
+    "input_load": "Liberty input-pin capacitance per d_genlut input -- NOT the DR-0017 boundary-load choice (option 1 vs 2 is open, #431)",
+    "liberty_threshold_pct": 50.0,
+    "min_delay_s": 1e-12,
+    "nldm_reduction": "bilinear interpolation at (slew, C_load), clamped to the table index range, max over every delay arc to the pin",
+    "port_load_pf": 0.0,
+    "slew_ns": 0.1,
+    "supply_axis": "corners.supply_v alone does NOT re-corner the digital half; the Liberty deck must move with the (T, Vdd) point",
+    "supply_v": 1.8
+  },
+  "routed_instances": 2321,
+  "source_netlist": "layout/trng_digital/trng_digital.routed.v",
+  "source_netlist_sha256": "9f3956848e6e75223f75bd154df905fecbb4e988593e78d1a92e347969fbf37f",
+  "widest_genlut_inputs": 6
+}

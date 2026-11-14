@@ -1,0 +1,89 @@
+{
+  "analysis": {
+    "args": "20p 7870n",
+    "kind": "tran"
+  },
+  "corners": {
+    "process": [
+      "tt"
+    ],
+    "temperature_c": [
+      27.0
+    ]
+  },
+  "gate_model_sha256": "abbe277084a8d97a4af35a054e151ebb1faa2d48d4a93bb6f39e9efcce447e51",
+  "issue": 486,
+  "liberty_deck": "/home/ubuntu/.ciel/ciel/sky130/versions/f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7/sky130A/libs.ref/sky130_fd_sc_hd/lib/sky130_fd_sc_hd__tt_025C_1v80.lib",
+  "liberty_sha256": "8e78e14442062dba34d414fca6490b2f6b96038d4510d1438ca44fee31487135",
+  "measurement_count": 749,
+  "name": "gate-model-full",
+  "netlist_sha256": "5b8bd84fb9d2823a96011c81c2a8b862d22c0cabc43c696dc0d49b2feee9fd44",
+  "netlist_source_forced": {
+    "value": "extracted",
+    "why": "klt sim accepts only 'schematic'/'extracted'; this netlist is gate-level, generated from trng_digital.routed.v plus one Liberty deck. Disclosed deviation, not a claim about the netlist's level."
+  },
+  "program": {
+    "cycles": 75,
+    "phases": [
+      {
+        "from": 0,
+        "name": "reset-released register audit: ID, HT_STARTUP, STATUS (EN=0)",
+        "to": 3
+      },
+      {
+        "from": 3,
+        "name": "enable",
+        "to": 4
+      },
+      {
+        "from": 4,
+        "name": "32 samples, no out_ready (register path only)",
+        "to": 36
+      },
+      {
+        "from": 36,
+        "name": "register pops + interleaved reads (first raw word readable)",
+        "to": 42
+      },
+      {
+        "from": 42,
+        "name": "32 samples with out_ready=1 (streaming pops)",
+        "to": 74
+      },
+      {
+        "from": 74,
+        "name": "final STATUS",
+        "to": 75
+      }
+    ],
+    "t0_ns": 320.0,
+    "t_stop_ns": 7870.0,
+    "ts_ns": 100.0
+  },
+  "provenance": {
+    "analog": "transistor",
+    "digital": "gate-level"
+  },
+  "raw_bit_pattern": "1001011100011110010101100011101011010010111001000110111101000011",
+  "realisation": "timed-delay XSPICE netlist (d_genlut / d_dff + adc/dac bridges)",
+  "reductions": {
+    "adc_bridge_in_high_v": 0.9900000000000001,
+    "adc_bridge_in_low_v": 0.81,
+    "c_load": "sum of Liberty input-pin capacitance of the receivers on the net, plus port_load_pf on a net that reaches a module output port",
+    "dac_bridge_out_high_v": 1.8,
+    "dff": "clk_delay/set_delay/reset_delay = 1e-12 s (XSPICE's own floor; it refuses 0), ic = 0; one scalar rise/fall pair per flop covers the CLK->Q and async clear/preset arcs",
+    "input_load": "Liberty input-pin capacitance per d_genlut input -- NOT the DR-0017 boundary-load choice (option 1 vs 2 is open, #431)",
+    "liberty_threshold_pct": 50.0,
+    "min_delay_s": 1e-12,
+    "nldm_reduction": "bilinear interpolation at (slew, C_load), clamped to the table index range, max over every delay arc to the pin",
+    "port_load_pf": 0.0,
+    "slew_ns": 0.1,
+    "supply_axis": "corners.supply_v alone does NOT re-corner the digital half; the Liberty deck must move with the (T, Vdd) point",
+    "supply_v": 1.8
+  },
+  "routed_netlist_sha256": "9f3956848e6e75223f75bd154df905fecbb4e988593e78d1a92e347969fbf37f",
+  "tools": {
+    "ngspice": "ngspice-47"
+  },
+  "vih_fixed": 1.8
+}
