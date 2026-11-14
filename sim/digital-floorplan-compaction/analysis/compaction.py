@@ -21,7 +21,6 @@ from __future__ import annotations
 
 import argparse
 import gzip
-import hashlib
 import json
 import re
 import sys
@@ -31,7 +30,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
 sys.path.insert(0, str(REPO_ROOT / "layout" / "bin"))
-from _hashing import sha256_file  # noqa: E402
+from _hashing import sha256_bytes as _sha256_bytes, sha256_file  # noqa: E402
 from evidence_record import mint_record, new_record_id  # noqa: E402
 
 STUDY = REPO_ROOT / "sim" / "digital-floorplan-compaction"
@@ -43,10 +42,7 @@ TARGET_MM2 = 0.05  # README "Area < 0.05 mm2" row -- unchanged, not relaxed here
 N_CONTROLS = 4
 
 
-def sha256_bytes(b: bytes) -> str:
-    return "sha256:" + hashlib.sha256(b).hexdigest()
-
-
+sha256_bytes = partial(_sha256_bytes, prefix=True)  # recorded as "sha256:<hex>"
 sha256 = partial(sha256_file, prefix=True)
 
 

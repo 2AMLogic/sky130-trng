@@ -7,8 +7,9 @@ re-render alone cannot notice that the DUT, SDF, testbench or oracle changed
 after the simulation ran.  The record's input-hashes.json does pin them; this
 checker compares those pins with the bytes in the working tree.
 
-Read-only, stdlib only, no simulator and no PDK.  Only the *currently cited*
-record is checked; historical records are never compared with today's sources.
+Read-only, no simulator and no PDK; stdlib plus the repo's shared digest helper
+(layout/bin/_hashing.py).  Only the *currently cited* record is checked;
+historical records are never compared with today's sources.
 
     check_signoff_sim_freshness.py [--repo-root DIR] [--manifest PATH] [--item ID]
 
@@ -29,11 +30,14 @@ Pin categories (the declared input contract; unknown keys are rejected):
 """
 import argparse
 import gzip
-import hashlib
 import json
 import re
 import sys
+from functools import partial
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "layout" / "bin"))
+from _hashing import sha256_bytes  # noqa: E402
 
 DEFAULT_ITEM = "7.digital"
 DIGEST = re.compile(r"^sha256:[0-9a-f]{64}$")
@@ -74,8 +78,7 @@ class Usage(Exception):
     pass
 
 
-def sha(data):
-    return "sha256:" + hashlib.sha256(data).hexdigest()
+sha = partial(sha256_bytes, prefix=True)  # recorded as "sha256:<hex>"
 
 
 def load_json(path):

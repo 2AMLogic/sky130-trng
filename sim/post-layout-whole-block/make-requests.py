@@ -39,7 +39,6 @@ Nothing here simulates anything.
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import re
 import shutil
@@ -49,7 +48,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[1]
 sys.path.insert(0, str(REPO / "layout" / "bin"))
-from _hashing import sha256_file  # noqa: E402
+from _hashing import sha256_file, sha256_text  # noqa: E402
 sys.path.insert(0, str(HERE))
 import program as P  # noqa: E402
 
@@ -164,10 +163,6 @@ def _device_blocks(text: str) -> list[tuple[str, set[str]]]:
     return res
 
 
-def _sha256_text(text: str) -> str:
-    return hashlib.sha256(text.encode()).hexdigest()
-
-
 def partition_check() -> dict:
     """Check that analog + digital partitions reproduce the flat whole extract.
 
@@ -207,8 +202,8 @@ def partition_check() -> dict:
     expected = sorted(n for n, v in bs.items() if v["dir"] in ("analog->digital", "tb->both"))
     assert shared == expected, f"shared nets {shared} != boundary {expected}"
     return {
-        "flat_whole_netlist_sha256": _sha256_text(flat),
-        "analog_partition_sha256": _sha256_text(ana),
+        "flat_whole_netlist_sha256": sha256_text(flat),
+        "analog_partition_sha256": sha256_text(ana),
         "digital_gate_netlist_sha256": sha256_file(REPO / "layout" / "trng_digital" / "trng_digital.routed.v"),
         "total_instances": len(fb),
         "analog_transistors": n_tr(ab),

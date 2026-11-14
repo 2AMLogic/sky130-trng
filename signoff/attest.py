@@ -31,7 +31,6 @@ Exit 0: consistent (check) / written (write).  Exit 1: drift.  Exit 2: usage.
 """
 import argparse
 import fnmatch
-import hashlib
 import json
 import os
 import sys
@@ -40,7 +39,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "layout" / "bin"))
-from _hashing import sha256_file as _sha256_file  # noqa: E402
+from _hashing import sha256_file as _sha256_file, sha256_text as _sha256_text  # noqa: E402
 
 SCHEMA_VERSION = 1
 ATTEST_DIR = "signoff/attest"
@@ -105,6 +104,7 @@ SELECTORS = {
 }
 
 sha256_file = partial(_sha256_file, prefix=True)  # recorded as "sha256:<hex>"
+digest = partial(_sha256_text, prefix=True)      # recorded as "sha256:<hex>"
 
 
 def walk(root):
@@ -265,10 +265,6 @@ def manifest_entry(files, key):
 
 def dump(obj):
     return json.dumps(obj, indent=2, sort_keys=False) + "\n"
-
-
-def digest(text):
-    return "sha256:" + hashlib.sha256(text.encode()).hexdigest()
 
 
 def main(argv=None):
