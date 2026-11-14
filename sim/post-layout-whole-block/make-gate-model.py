@@ -118,7 +118,9 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[1]
 sys.path.insert(0, str(HERE))
+sys.path.insert(0, str(REPO / "layout" / "bin"))
 import program as P  # noqa: E402
+from _klt_common import BuildError, libs_ref  # noqa: E402
 
 ROUTED_V = REPO / "layout" / "trng_digital" / "trng_digital.routed.v"
 CELL_PREFIX = "sky130_fd_sc_hd__"
@@ -1211,12 +1213,24 @@ def ngspice_version() -> str:
 
 
 def resolve_liberty(explicit: str | None, corner: str) -> Path:
-    """Resolve the Liberty deck through the repo's documented order.
+    r"""Resolve the Liberty deck through the repo's documented order.
 
     ``--liberty`` wins; otherwise ``klt pdk find --pdk sky130A`` locates the
     install (``sim/README.md`` "PDK resolution order") and the deck is taken
     from its ``libs.ref/sky130_fd_sc_hd/lib/``. The absolute path and its
     sha256 are recorded; a ``~/.ciel`` literal is never hardcoded.
+
+    The resolution goes through ``_klt_common.libs_ref``, i.e. through
+    ``klt pdk find --format json``'s ``assets.libs_ref`` field. It used to
+    scrape klt's human-readable rendering with a ``^\s*libs_ref:\s*(\S+)$``
+    regex, which ``re.search`` resolves to the FIRST match -- so a
+    ``warning: shadowed same-variant install: ...`` line or a second install
+    block carrying a ``libs_ref:`` would silently have won, and klt's own
+    ``compatibility`` / ``ambiguous_roots`` / ``broken_symlinks`` verdicts on
+    the install were discarded unread. Both readings agreed on the host that
+    found this, so it was a fragility rather than a wrong deck; issue #500
+    retired it before it became the latter. The shared reader reports those
+    three fields on stderr when klt flags them.
     """
     if explicit:
         p = Path(explicit).expanduser().resolve()
@@ -1224,14 +1238,10 @@ def resolve_liberty(explicit: str | None, corner: str) -> Path:
             raise GateModelError(f"--liberty {p} does not exist")
         return p
     try:
-        out = subprocess.run(["klt", "pdk", "find", "--pdk", PDK],
-                             capture_output=True, text=True, timeout=300, check=True).stdout
-    except Exception as exc:
+        ref = libs_ref(PDK, klt="klt", timeout=300)
+    except (BuildError, OSError, subprocess.SubprocessError) as exc:
         raise GateModelError(f"klt pdk find --pdk {PDK} failed: {exc}") from exc
-    m = re.search(r"^\s*libs_ref:\s*(\S+)\s*$", out, re.M)
-    if not m:
-        raise GateModelError(f"klt pdk find printed no libs_ref:\n{out}")
-    p = Path(m.group(1)) / "sky130_fd_sc_hd" / "lib" / f"sky130_fd_sc_hd__{corner}.lib"
+    p = ref / "sky130_fd_sc_hd" / "lib" / f"sky130_fd_sc_hd__{corner}.lib"
     if not p.is_file():
         raise GateModelError(f"resolved Liberty deck {p} does not exist")
     return p.resolve()

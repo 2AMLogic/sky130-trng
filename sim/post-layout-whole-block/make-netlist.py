@@ -87,6 +87,7 @@ HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[1]
 sys.path.insert(0, str(REPO / "layout" / "bin"))
 from _hashing import sha256_file  # noqa: E402
+from _klt_common import klt_version  # noqa: E402
 GDS = REPO / "layout" / "trng_whole" / "trng_whole.gds"
 EXTRACT_REQUEST = REPO / "layout" / "trng_whole" / "verify" / "extract.request.json"
 DEFAULT_OUT = HERE / "trng_whole.sim.spice"
@@ -134,12 +135,6 @@ DIODE_CARD_RE = re.compile(
 def _diode_to_subckt(m: "re.Match[str]") -> str:
     return (f"X{m.group(1)}{m.group(2)}\n+ sky130_fd_pr__diode_pw2nd_05v5 "
             f"area={m.group(3)} perim={m.group(4)}")
-
-
-def klt_version() -> str:
-    out = subprocess.run(["klt", "version", "--format", "json"],
-                         capture_output=True, text=True, check=True).stdout
-    return json.loads(out)["version"]
 
 
 def _klt_version_or_unknown() -> str:
