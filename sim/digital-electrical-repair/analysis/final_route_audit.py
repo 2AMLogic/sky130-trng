@@ -36,6 +36,7 @@ import electrical as E  # noqa: E402
 ROOT = HERE.parents[2]
 sys.path.insert(0, str(ROOT / "layout" / "bin"))
 from _hashing import sha256_file  # noqa: E402
+from _klt_common import pdk_root  # noqa: E402
 
 
 def gunzip(src: Path, dst: Path) -> None:
@@ -186,10 +187,7 @@ def main(argv=None):
     pnr = json.loads((rd / "pnr-output.json").read_text())
     corners = [c["name"] for c in pnr["corners"]]
     env = {**os.environ, "PDK": "sky130A"}
-    if "PDK_ROOT" not in env:
-        out = subprocess.run([a.klt, "pdk", "find", "--pdk", "sky130A", "--format", "json"],
-                             capture_output=True, text=True, check=True, cwd=ROOT)
-        env["PDK_ROOT"] = json.loads(out.stdout)["root"]
+    env["PDK_ROOT"] = pdk_root("sky130A", env=env, klt=a.klt, cwd=ROOT)
     res = audit(rd / "trng_digital.def.gz", rd / "trng_digital_route.spef.gz", req, corners,
                 rd / "electrical-audit", env)
     res["request"] = str(req.relative_to(ROOT))

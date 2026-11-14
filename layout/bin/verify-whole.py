@@ -58,7 +58,8 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 from _hashing import sha256_file  # noqa: E402
-from _klt_common import BuildError, run_klt, write_json  # noqa: E402
+from _klt_common import (BuildError, klt_version,  # noqa: E402
+                         pdk_root as klt_pdk_root, run_klt, write_json)
 import drc_coverage_audit as A  # noqa: E402
 import physical_estimates as PE  # noqa: E402
 import verify_whole_lib as V  # noqa: E402
@@ -131,19 +132,15 @@ def klt_env(pdk_root: str | None) -> dict[str, str]:
 
 
 def resolve_pdk_root(klt: str, env: dict[str, str]) -> str:
-    if env.get("PDK_ROOT"):
-        return env["PDK_ROOT"]
-    info = run_klt(["pdk", "find", "--pdk", "sky130A"], env=env, klt=klt)
-    return info["root"]
+    return klt_pdk_root("sky130A", env=env, klt=klt)
 
 
 def tool_pins(klt: str, env: dict[str, str], pdk_root: str) -> dict:
-    ver = run_klt(["version"], env=env, klt=klt)
     pdk_json = load_json(REPO_ROOT / "layout" / "pdk.json")
     lef = Path(pdk_root) / LEF_REL
     lib = Path(pdk_root) / SPICE_REL
     pins = {
-        "klt_version": ver.get("version") or ver.get("klt_version") or ver,
+        "klt_version": klt_version(env=env, klt=klt),
         "klt_pin_expected": pdk_json["klt_version_pin"],
         "klt_pin_source": pdk_json["ci_klt_install"],
         "open_pdks_commit_expected": pdk_json["open_pdks_commit"],
