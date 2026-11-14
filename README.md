@@ -26,7 +26,8 @@ power, IR drop; #174, open), and the composed block is 0.126 mm² against the
 health-test cutoffs have been replayed over simulated raw streams from a
 behavioural model ([record](sim/digital-health-test-parameters/records/20261008-150251-cd45d91.md)),
 which is not a measurement. Spec and decision-record ratification is an
-operator decision; every decision record is still Proposed.
+operator decision; fifteen of the seventeen decision records are still
+Proposed (DR-0017 and DR-0018 are Accepted).
 
 **Built agent-native.** Every specification, decision record, testbench, and
 line of documentation here is produced by AI agents working from a ratified
