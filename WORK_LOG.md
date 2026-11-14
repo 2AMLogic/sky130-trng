@@ -6,6 +6,11 @@ Chronological record of recently merged pull requests and closed issues.
 
 - [2026-09](work_log/WORK_LOG_2026-09.md)
 
+### 2026-11-14
+
+- **PR #489**: feat: generate the digital half's gate-level ngspice model as a timed-delay XSPICE netlist
+- **Issue #486** (closed): Choose and evidence the ngspice realisation of the gate-level digital half (first slice of #431 step 2)
+
 ### 2026-11-13
 
 - **PR #479**: fix(post-layout-whole-block): write the port map next to -o, and name both klt builds when --check differs
@@ -401,10 +406,4 @@ Chronological record of recently merged pull requests and closed issues.
 - **Issue #145** (closed): merge-pr.sh: _check_champion_hold_state_staleness crashes via pipefail+grep -o SIGPIPE-class bug on ordinary PRs
 - **Issue #142** (closed): verify-proposal-refs.sh: false MISSING FILE due to pipefail + grep -q SIGPIPE race
 - **Issue #141** (closed): Remove duplicated carrying() helper: sampler_core scan scripts
-
-### 2026-09-14
-
-- **PR #138**: fix: dedup mint_behavioral_record's rid derivation onto new_record_id
-- **Issue #27** (closed): Compose ro_array_core/sampler_core gates from proven klt primitives, DRC/LVS-clean
-- **Issue #137** (closed): Dedup mint_behavioral_record's rid derivation onto new_record_id (sim/bin/evidence_record.py)
 
