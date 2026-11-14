@@ -43,7 +43,6 @@ from __future__ import annotations
 import argparse
 import copy
 import gzip
-import hashlib
 import importlib.util
 import json
 import os
@@ -57,7 +56,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
-from _hashing import sha256_file  # noqa: E402
+from _hashing import sha256_file, sha256_text  # noqa: E402
 from _klt_common import BuildError, run_klt, write_json  # noqa: E402
 import drc_coverage_audit as A  # noqa: E402
 import physical_estimates as PE  # noqa: E402
@@ -92,10 +91,6 @@ _cw_spec.loader.exec_module(cw)
 # --------------------------------------------------------------------------
 # small helpers
 # --------------------------------------------------------------------------
-
-
-def sha256_text(text: str) -> str:
-    return hashlib.sha256(text.encode()).hexdigest()
 
 
 def rel(path: Path) -> str:
