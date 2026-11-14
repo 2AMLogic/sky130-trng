@@ -136,6 +136,30 @@ name: CI
 #     hand. The `paths:` filter below lists the two committed evidence files
 #     the second test reads; the scripts themselves are covered by sim/*/*.py.
 #
+# sim/tests/test_gate_model.py (issue #486) -- stdlib-only unit test of the
+#     gate-level digital model generator (sim/post-layout-whole-block/make-gate-model.py),
+#     the ngspice realisation DR-0017 option (b) left open. The strong check
+#     needs no PDK: the COMMITTED manifest of the recorded run is compared with
+#     a fresh parse of layout/trng_digital/trng_digital.routed.v, so every one
+#     of the 2321 routed instances must still be accounted for as a primitive,
+#     a declared polarity inverter or a declared load-only no-op, the cell-type
+#     histogram must agree, and the bridged port list must be exactly the
+#     module's bit-expanded port list with the DR-0017 boundary
+#     (clk/raw_bit/raw_valid/rst_n) as program.boundary_signals() defines it.
+#     The two reductions are checked on hand-computed values (the real
+#     a21oi_1 Liberty `function`, and a 2x2 NLDM table's bilinear
+#     interpolation plus its clamping), and six refusal paths must exit
+#     non-zero leaving NO output directory -- including one through the real
+#     CLI as a subprocess, with a passing positive control beside it. Two
+#     MEASURED ngspice facts are pinned here so a refactor cannot drift off
+#     them: d_genlut's table index puts the first connected input in the LSB,
+#     and d_dff's set/reset are active high. A final group regenerates the
+#     model from the real Liberty deck and must reproduce the committed
+#     manifest; it SKIPS when the PDK install is absent, which is why the
+#     correspondence group above does not depend on it. Covered by the
+#     existing sim/tests/**, sim/*/*.py, sim/*/corners/** and
+#     layout/trng_digital/** path filters. No klt, no PDK, no ngspice.
+#
 # sim/tests/test_lock_proximity.py (issue #467) -- stdlib-only unit test of the
 #     one DR-0005 lock-proximity rule (sim/bin/lock_proximity.py) all five sim
 #     reducers now use: the slower-over-faster convention DR-0005 section 2
@@ -426,6 +450,9 @@ jobs:
 
       - name: sim/post-layout-whole-block/test_make_netlist.py (issue #478 generator transforms + committed netlist/port-map pair)
         run: python3 sim/post-layout-whole-block/test_make_netlist.py
+
+      - name: sim/tests/test_gate_model.py (issue #486 gate-level model generator -- routed-netlist correspondence, Liberty truth tables, NLDM interpolation, fail-closed paths)
+        run: python3 sim/tests/test_gate_model.py
 
       - name: sim/tests/test_artifact_store.py (issue #347 artifact-store writer + manifest checker, fake klt, fail-closed paths)
         run: python3 sim/tests/test_artifact_store.py

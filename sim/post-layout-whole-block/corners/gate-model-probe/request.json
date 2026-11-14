@@ -1,0 +1,897 @@
+{
+  "netlist": "netlist.cir",
+  "engine": "ngspice",
+  "backend": "local",
+  "netlist_source": "extracted",
+  "models": {
+    "pdk": "sky130A",
+    "lib": "libs.tech/combined/sky130.lib.spice"
+  },
+  "corners": {
+    "process": [
+      "tt"
+    ],
+    "temperature_c": [
+      27.0
+    ]
+  },
+  "analysis": {
+    "kind": "tran",
+    "args": "20p 970n"
+  },
+  "measurements": [
+    {
+      "name": "rdata_k0_b0",
+      "spice": ".meas tran rdata_k0_b0 FIND v(bus_rdata_0_) AT=470.0n"
+    },
+    {
+      "name": "rdata_k0_b1",
+      "spice": ".meas tran rdata_k0_b1 FIND v(bus_rdata_1_) AT=470.0n"
+    },
+    {
+      "name": "rdata_k0_b2",
+      "spice": ".meas tran rdata_k0_b2 FIND v(bus_rdata_2_) AT=470.0n"
+    },
+    {
+      "name": "rdata_k0_b3",
+      "spice": ".meas tran rdata_k0_b3 FIND v(bus_rdata_3_) AT=470.0n"
+    },
+    {
+      "name": "rdata_k0_b4",
+      "spice": ".meas tran rdata_k0_b4 FIND v(bus_rdata_4_) AT=470.0n"
+    },
+    {
+      "name": "rdata_k0_b5",
+      "spice": ".meas tran rdata_k0_b5 FIND v(bus_rdata_5_) AT=470.0n"
+    },
+    {
+      "name": "rdata_k0_b6",
+      "spice": ".meas tran rdata_k0_b6 FIND v(bus_rdata_6_) AT=470.0n"
+    },
+    {
+      "name": "rdata_k0_b7",
+      "spice": ".meas tran rdata_k0_b7 FIND v(bus_rdata_7_) AT=470.0n"
+    },
+    {
+      "name": "rdata_k0_b8",
+      "spice": ".meas tran rdata_k0_b8 FIND v(bus_rdata_8_) AT=470.0n"
+    },
+    {
+      "name": "rdata_k0_b9",
+      "spice": ".meas tran rdata_k0_b9 FIND v(bus_rdata_9_) AT=470.0n"
+    },
+    {
+      "name": "rdata_k0_b10",
+      "spice": ".meas tran rdata_k0_b10 FIND v(bus_rdata_10_) AT=470.0n"
+    },
+    {
+      "name": "rdata_k0_b11",
+      "spice": ".meas tran rdata_k0_b11 FIND v(bus_rdata_11_) AT=470.0n"
+    },
+    {
+      "name": "rdata_k0_b12",
+      "spice": ".meas tran rdata_k0_b12 FIND v(bus_rdata_12_) AT=470.0n"
+    },
+    {
+      "name": "rdata_k0_b13",
+      "spice": ".meas tran rdata_k0_b13 FIND v(bus_rdata_13_) AT=470.0n"
+    },
+    {
+      "name": "rdata_k0_b14",
+      "spice": ".meas tran rdata_k0_b14 FIND v(bus_rdata_14_) AT=470.0n"
+    },
+    {
+      "name": "rdata_k0_b15",
+      "spice": ".meas tran rdata_k0_b15 FIND v(bus_rdata_15_) AT=470.0n"
+    },
+    {
+      "name": "rdata_k0_b16",
+      "spice": ".meas tran rdata_k0_b16 FIND v(bus_rdata_16_) AT=470.0n"
+    },
+    {
+      "name": "rdata_k0_b17",
+      "spice": ".meas tran rdata_k0_b17 FIND v(bus_rdata_17_) AT=470.0n"
+    },
+    {
+      "name": "rdata_k0_b18",
+      "spice": ".meas tran rdata_k0_b18 FIND v(bus_rdata_18_) AT=470.0n"
+    },
+    {
+      "name": "rdata_k0_b19",
+      "spice": ".meas tran rdata_k0_b19 FIND v(bus_rdata_19_) AT=470.0n"
+    },
+    {
+      "name": "rdata_k0_b20",
+      "spice": ".meas tran rdata_k0_b20 FIND v(bus_rdata_20_) AT=470.0n"
+    },
+    {
+      "name": "rdata_k0_b21",
+      "spice": ".meas tran rdata_k0_b21 FIND v(bus_rdata_21_) AT=470.0n"
+    },
+    {
+      "name": "rdata_k0_b22",
+      "spice": ".meas tran rdata_k0_b22 FIND v(bus_rdata_22_) AT=470.0n"
+    },
+    {
+      "name": "rdata_k0_b23",
+      "spice": ".meas tran rdata_k0_b23 FIND v(bus_rdata_23_) AT=470.0n"
+    },
+    {
+      "name": "rdata_k0_b24",
+      "spice": ".meas tran rdata_k0_b24 FIND v(bus_rdata_24_) AT=470.0n"
+    },
+    {
+      "name": "rdata_k0_b25",
+      "spice": ".meas tran rdata_k0_b25 FIND v(bus_rdata_25_) AT=470.0n"
+    },
+    {
+      "name": "rdata_k0_b26",
+      "spice": ".meas tran rdata_k0_b26 FIND v(bus_rdata_26_) AT=470.0n"
+    },
+    {
+      "name": "rdata_k0_b27",
+      "spice": ".meas tran rdata_k0_b27 FIND v(bus_rdata_27_) AT=470.0n"
+    },
+    {
+      "name": "rdata_k0_b28",
+      "spice": ".meas tran rdata_k0_b28 FIND v(bus_rdata_28_) AT=470.0n"
+    },
+    {
+      "name": "rdata_k0_b29",
+      "spice": ".meas tran rdata_k0_b29 FIND v(bus_rdata_29_) AT=470.0n"
+    },
+    {
+      "name": "rdata_k0_b30",
+      "spice": ".meas tran rdata_k0_b30 FIND v(bus_rdata_30_) AT=470.0n"
+    },
+    {
+      "name": "rdata_k0_b31",
+      "spice": ".meas tran rdata_k0_b31 FIND v(bus_rdata_31_) AT=470.0n"
+    },
+    {
+      "name": "rdata_k1_b0",
+      "spice": ".meas tran rdata_k1_b0 FIND v(bus_rdata_0_) AT=570.0n"
+    },
+    {
+      "name": "rdata_k1_b1",
+      "spice": ".meas tran rdata_k1_b1 FIND v(bus_rdata_1_) AT=570.0n"
+    },
+    {
+      "name": "rdata_k1_b2",
+      "spice": ".meas tran rdata_k1_b2 FIND v(bus_rdata_2_) AT=570.0n"
+    },
+    {
+      "name": "rdata_k1_b3",
+      "spice": ".meas tran rdata_k1_b3 FIND v(bus_rdata_3_) AT=570.0n"
+    },
+    {
+      "name": "rdata_k1_b4",
+      "spice": ".meas tran rdata_k1_b4 FIND v(bus_rdata_4_) AT=570.0n"
+    },
+    {
+      "name": "rdata_k1_b5",
+      "spice": ".meas tran rdata_k1_b5 FIND v(bus_rdata_5_) AT=570.0n"
+    },
+    {
+      "name": "rdata_k1_b6",
+      "spice": ".meas tran rdata_k1_b6 FIND v(bus_rdata_6_) AT=570.0n"
+    },
+    {
+      "name": "rdata_k1_b7",
+      "spice": ".meas tran rdata_k1_b7 FIND v(bus_rdata_7_) AT=570.0n"
+    },
+    {
+      "name": "rdata_k1_b8",
+      "spice": ".meas tran rdata_k1_b8 FIND v(bus_rdata_8_) AT=570.0n"
+    },
+    {
+      "name": "rdata_k1_b9",
+      "spice": ".meas tran rdata_k1_b9 FIND v(bus_rdata_9_) AT=570.0n"
+    },
+    {
+      "name": "rdata_k1_b10",
+      "spice": ".meas tran rdata_k1_b10 FIND v(bus_rdata_10_) AT=570.0n"
+    },
+    {
+      "name": "rdata_k1_b11",
+      "spice": ".meas tran rdata_k1_b11 FIND v(bus_rdata_11_) AT=570.0n"
+    },
+    {
+      "name": "rdata_k1_b12",
+      "spice": ".meas tran rdata_k1_b12 FIND v(bus_rdata_12_) AT=570.0n"
+    },
+    {
+      "name": "rdata_k1_b13",
+      "spice": ".meas tran rdata_k1_b13 FIND v(bus_rdata_13_) AT=570.0n"
+    },
+    {
+      "name": "rdata_k1_b14",
+      "spice": ".meas tran rdata_k1_b14 FIND v(bus_rdata_14_) AT=570.0n"
+    },
+    {
+      "name": "rdata_k1_b15",
+      "spice": ".meas tran rdata_k1_b15 FIND v(bus_rdata_15_) AT=570.0n"
+    },
+    {
+      "name": "rdata_k1_b16",
+      "spice": ".meas tran rdata_k1_b16 FIND v(bus_rdata_16_) AT=570.0n"
+    },
+    {
+      "name": "rdata_k1_b17",
+      "spice": ".meas tran rdata_k1_b17 FIND v(bus_rdata_17_) AT=570.0n"
+    },
+    {
+      "name": "rdata_k1_b18",
+      "spice": ".meas tran rdata_k1_b18 FIND v(bus_rdata_18_) AT=570.0n"
+    },
+    {
+      "name": "rdata_k1_b19",
+      "spice": ".meas tran rdata_k1_b19 FIND v(bus_rdata_19_) AT=570.0n"
+    },
+    {
+      "name": "rdata_k1_b20",
+      "spice": ".meas tran rdata_k1_b20 FIND v(bus_rdata_20_) AT=570.0n"
+    },
+    {
+      "name": "rdata_k1_b21",
+      "spice": ".meas tran rdata_k1_b21 FIND v(bus_rdata_21_) AT=570.0n"
+    },
+    {
+      "name": "rdata_k1_b22",
+      "spice": ".meas tran rdata_k1_b22 FIND v(bus_rdata_22_) AT=570.0n"
+    },
+    {
+      "name": "rdata_k1_b23",
+      "spice": ".meas tran rdata_k1_b23 FIND v(bus_rdata_23_) AT=570.0n"
+    },
+    {
+      "name": "rdata_k1_b24",
+      "spice": ".meas tran rdata_k1_b24 FIND v(bus_rdata_24_) AT=570.0n"
+    },
+    {
+      "name": "rdata_k1_b25",
+      "spice": ".meas tran rdata_k1_b25 FIND v(bus_rdata_25_) AT=570.0n"
+    },
+    {
+      "name": "rdata_k1_b26",
+      "spice": ".meas tran rdata_k1_b26 FIND v(bus_rdata_26_) AT=570.0n"
+    },
+    {
+      "name": "rdata_k1_b27",
+      "spice": ".meas tran rdata_k1_b27 FIND v(bus_rdata_27_) AT=570.0n"
+    },
+    {
+      "name": "rdata_k1_b28",
+      "spice": ".meas tran rdata_k1_b28 FIND v(bus_rdata_28_) AT=570.0n"
+    },
+    {
+      "name": "rdata_k1_b29",
+      "spice": ".meas tran rdata_k1_b29 FIND v(bus_rdata_29_) AT=570.0n"
+    },
+    {
+      "name": "rdata_k1_b30",
+      "spice": ".meas tran rdata_k1_b30 FIND v(bus_rdata_30_) AT=570.0n"
+    },
+    {
+      "name": "rdata_k1_b31",
+      "spice": ".meas tran rdata_k1_b31 FIND v(bus_rdata_31_) AT=570.0n"
+    },
+    {
+      "name": "rdata_k2_b0",
+      "spice": ".meas tran rdata_k2_b0 FIND v(bus_rdata_0_) AT=670.0n"
+    },
+    {
+      "name": "rdata_k2_b1",
+      "spice": ".meas tran rdata_k2_b1 FIND v(bus_rdata_1_) AT=670.0n"
+    },
+    {
+      "name": "rdata_k2_b2",
+      "spice": ".meas tran rdata_k2_b2 FIND v(bus_rdata_2_) AT=670.0n"
+    },
+    {
+      "name": "rdata_k2_b3",
+      "spice": ".meas tran rdata_k2_b3 FIND v(bus_rdata_3_) AT=670.0n"
+    },
+    {
+      "name": "rdata_k2_b4",
+      "spice": ".meas tran rdata_k2_b4 FIND v(bus_rdata_4_) AT=670.0n"
+    },
+    {
+      "name": "rdata_k2_b5",
+      "spice": ".meas tran rdata_k2_b5 FIND v(bus_rdata_5_) AT=670.0n"
+    },
+    {
+      "name": "rdata_k2_b6",
+      "spice": ".meas tran rdata_k2_b6 FIND v(bus_rdata_6_) AT=670.0n"
+    },
+    {
+      "name": "rdata_k2_b7",
+      "spice": ".meas tran rdata_k2_b7 FIND v(bus_rdata_7_) AT=670.0n"
+    },
+    {
+      "name": "rdata_k2_b8",
+      "spice": ".meas tran rdata_k2_b8 FIND v(bus_rdata_8_) AT=670.0n"
+    },
+    {
+      "name": "rdata_k2_b9",
+      "spice": ".meas tran rdata_k2_b9 FIND v(bus_rdata_9_) AT=670.0n"
+    },
+    {
+      "name": "rdata_k2_b10",
+      "spice": ".meas tran rdata_k2_b10 FIND v(bus_rdata_10_) AT=670.0n"
+    },
+    {
+      "name": "rdata_k2_b11",
+      "spice": ".meas tran rdata_k2_b11 FIND v(bus_rdata_11_) AT=670.0n"
+    },
+    {
+      "name": "rdata_k2_b12",
+      "spice": ".meas tran rdata_k2_b12 FIND v(bus_rdata_12_) AT=670.0n"
+    },
+    {
+      "name": "rdata_k2_b13",
+      "spice": ".meas tran rdata_k2_b13 FIND v(bus_rdata_13_) AT=670.0n"
+    },
+    {
+      "name": "rdata_k2_b14",
+      "spice": ".meas tran rdata_k2_b14 FIND v(bus_rdata_14_) AT=670.0n"
+    },
+    {
+      "name": "rdata_k2_b15",
+      "spice": ".meas tran rdata_k2_b15 FIND v(bus_rdata_15_) AT=670.0n"
+    },
+    {
+      "name": "rdata_k2_b16",
+      "spice": ".meas tran rdata_k2_b16 FIND v(bus_rdata_16_) AT=670.0n"
+    },
+    {
+      "name": "rdata_k2_b17",
+      "spice": ".meas tran rdata_k2_b17 FIND v(bus_rdata_17_) AT=670.0n"
+    },
+    {
+      "name": "rdata_k2_b18",
+      "spice": ".meas tran rdata_k2_b18 FIND v(bus_rdata_18_) AT=670.0n"
+    },
+    {
+      "name": "rdata_k2_b19",
+      "spice": ".meas tran rdata_k2_b19 FIND v(bus_rdata_19_) AT=670.0n"
+    },
+    {
+      "name": "rdata_k2_b20",
+      "spice": ".meas tran rdata_k2_b20 FIND v(bus_rdata_20_) AT=670.0n"
+    },
+    {
+      "name": "rdata_k2_b21",
+      "spice": ".meas tran rdata_k2_b21 FIND v(bus_rdata_21_) AT=670.0n"
+    },
+    {
+      "name": "rdata_k2_b22",
+      "spice": ".meas tran rdata_k2_b22 FIND v(bus_rdata_22_) AT=670.0n"
+    },
+    {
+      "name": "rdata_k2_b23",
+      "spice": ".meas tran rdata_k2_b23 FIND v(bus_rdata_23_) AT=670.0n"
+    },
+    {
+      "name": "rdata_k2_b24",
+      "spice": ".meas tran rdata_k2_b24 FIND v(bus_rdata_24_) AT=670.0n"
+    },
+    {
+      "name": "rdata_k2_b25",
+      "spice": ".meas tran rdata_k2_b25 FIND v(bus_rdata_25_) AT=670.0n"
+    },
+    {
+      "name": "rdata_k2_b26",
+      "spice": ".meas tran rdata_k2_b26 FIND v(bus_rdata_26_) AT=670.0n"
+    },
+    {
+      "name": "rdata_k2_b27",
+      "spice": ".meas tran rdata_k2_b27 FIND v(bus_rdata_27_) AT=670.0n"
+    },
+    {
+      "name": "rdata_k2_b28",
+      "spice": ".meas tran rdata_k2_b28 FIND v(bus_rdata_28_) AT=670.0n"
+    },
+    {
+      "name": "rdata_k2_b29",
+      "spice": ".meas tran rdata_k2_b29 FIND v(bus_rdata_29_) AT=670.0n"
+    },
+    {
+      "name": "rdata_k2_b30",
+      "spice": ".meas tran rdata_k2_b30 FIND v(bus_rdata_30_) AT=670.0n"
+    },
+    {
+      "name": "rdata_k2_b31",
+      "spice": ".meas tran rdata_k2_b31 FIND v(bus_rdata_31_) AT=670.0n"
+    },
+    {
+      "name": "odata_k3_b0",
+      "spice": ".meas tran odata_k3_b0 FIND v(out_data_0_) AT=670.0n"
+    },
+    {
+      "name": "odata_k3_b1",
+      "spice": ".meas tran odata_k3_b1 FIND v(out_data_1_) AT=670.0n"
+    },
+    {
+      "name": "odata_k3_b2",
+      "spice": ".meas tran odata_k3_b2 FIND v(out_data_2_) AT=670.0n"
+    },
+    {
+      "name": "odata_k3_b3",
+      "spice": ".meas tran odata_k3_b3 FIND v(out_data_3_) AT=670.0n"
+    },
+    {
+      "name": "odata_k3_b4",
+      "spice": ".meas tran odata_k3_b4 FIND v(out_data_4_) AT=670.0n"
+    },
+    {
+      "name": "odata_k3_b5",
+      "spice": ".meas tran odata_k3_b5 FIND v(out_data_5_) AT=670.0n"
+    },
+    {
+      "name": "odata_k3_b6",
+      "spice": ".meas tran odata_k3_b6 FIND v(out_data_6_) AT=670.0n"
+    },
+    {
+      "name": "odata_k3_b7",
+      "spice": ".meas tran odata_k3_b7 FIND v(out_data_7_) AT=670.0n"
+    },
+    {
+      "name": "odata_k3_b8",
+      "spice": ".meas tran odata_k3_b8 FIND v(out_data_8_) AT=670.0n"
+    },
+    {
+      "name": "odata_k3_b9",
+      "spice": ".meas tran odata_k3_b9 FIND v(out_data_9_) AT=670.0n"
+    },
+    {
+      "name": "odata_k3_b10",
+      "spice": ".meas tran odata_k3_b10 FIND v(out_data_10_) AT=670.0n"
+    },
+    {
+      "name": "odata_k3_b11",
+      "spice": ".meas tran odata_k3_b11 FIND v(out_data_11_) AT=670.0n"
+    },
+    {
+      "name": "odata_k3_b12",
+      "spice": ".meas tran odata_k3_b12 FIND v(out_data_12_) AT=670.0n"
+    },
+    {
+      "name": "odata_k3_b13",
+      "spice": ".meas tran odata_k3_b13 FIND v(out_data_13_) AT=670.0n"
+    },
+    {
+      "name": "odata_k3_b14",
+      "spice": ".meas tran odata_k3_b14 FIND v(out_data_14_) AT=670.0n"
+    },
+    {
+      "name": "odata_k3_b15",
+      "spice": ".meas tran odata_k3_b15 FIND v(out_data_15_) AT=670.0n"
+    },
+    {
+      "name": "odata_k3_b16",
+      "spice": ".meas tran odata_k3_b16 FIND v(out_data_16_) AT=670.0n"
+    },
+    {
+      "name": "odata_k3_b17",
+      "spice": ".meas tran odata_k3_b17 FIND v(out_data_17_) AT=670.0n"
+    },
+    {
+      "name": "odata_k3_b18",
+      "spice": ".meas tran odata_k3_b18 FIND v(out_data_18_) AT=670.0n"
+    },
+    {
+      "name": "odata_k3_b19",
+      "spice": ".meas tran odata_k3_b19 FIND v(out_data_19_) AT=670.0n"
+    },
+    {
+      "name": "odata_k3_b20",
+      "spice": ".meas tran odata_k3_b20 FIND v(out_data_20_) AT=670.0n"
+    },
+    {
+      "name": "odata_k3_b21",
+      "spice": ".meas tran odata_k3_b21 FIND v(out_data_21_) AT=670.0n"
+    },
+    {
+      "name": "odata_k3_b22",
+      "spice": ".meas tran odata_k3_b22 FIND v(out_data_22_) AT=670.0n"
+    },
+    {
+      "name": "odata_k3_b23",
+      "spice": ".meas tran odata_k3_b23 FIND v(out_data_23_) AT=670.0n"
+    },
+    {
+      "name": "odata_k3_b24",
+      "spice": ".meas tran odata_k3_b24 FIND v(out_data_24_) AT=670.0n"
+    },
+    {
+      "name": "odata_k3_b25",
+      "spice": ".meas tran odata_k3_b25 FIND v(out_data_25_) AT=670.0n"
+    },
+    {
+      "name": "odata_k3_b26",
+      "spice": ".meas tran odata_k3_b26 FIND v(out_data_26_) AT=670.0n"
+    },
+    {
+      "name": "odata_k3_b27",
+      "spice": ".meas tran odata_k3_b27 FIND v(out_data_27_) AT=670.0n"
+    },
+    {
+      "name": "odata_k3_b28",
+      "spice": ".meas tran odata_k3_b28 FIND v(out_data_28_) AT=670.0n"
+    },
+    {
+      "name": "odata_k3_b29",
+      "spice": ".meas tran odata_k3_b29 FIND v(out_data_29_) AT=670.0n"
+    },
+    {
+      "name": "odata_k3_b30",
+      "spice": ".meas tran odata_k3_b30 FIND v(out_data_30_) AT=670.0n"
+    },
+    {
+      "name": "odata_k3_b31",
+      "spice": ".meas tran odata_k3_b31 FIND v(out_data_31_) AT=670.0n"
+    },
+    {
+      "name": "odata_k4_b0",
+      "spice": ".meas tran odata_k4_b0 FIND v(out_data_0_) AT=770.0n"
+    },
+    {
+      "name": "odata_k4_b1",
+      "spice": ".meas tran odata_k4_b1 FIND v(out_data_1_) AT=770.0n"
+    },
+    {
+      "name": "odata_k4_b2",
+      "spice": ".meas tran odata_k4_b2 FIND v(out_data_2_) AT=770.0n"
+    },
+    {
+      "name": "odata_k4_b3",
+      "spice": ".meas tran odata_k4_b3 FIND v(out_data_3_) AT=770.0n"
+    },
+    {
+      "name": "odata_k4_b4",
+      "spice": ".meas tran odata_k4_b4 FIND v(out_data_4_) AT=770.0n"
+    },
+    {
+      "name": "odata_k4_b5",
+      "spice": ".meas tran odata_k4_b5 FIND v(out_data_5_) AT=770.0n"
+    },
+    {
+      "name": "odata_k4_b6",
+      "spice": ".meas tran odata_k4_b6 FIND v(out_data_6_) AT=770.0n"
+    },
+    {
+      "name": "odata_k4_b7",
+      "spice": ".meas tran odata_k4_b7 FIND v(out_data_7_) AT=770.0n"
+    },
+    {
+      "name": "odata_k4_b8",
+      "spice": ".meas tran odata_k4_b8 FIND v(out_data_8_) AT=770.0n"
+    },
+    {
+      "name": "odata_k4_b9",
+      "spice": ".meas tran odata_k4_b9 FIND v(out_data_9_) AT=770.0n"
+    },
+    {
+      "name": "odata_k4_b10",
+      "spice": ".meas tran odata_k4_b10 FIND v(out_data_10_) AT=770.0n"
+    },
+    {
+      "name": "odata_k4_b11",
+      "spice": ".meas tran odata_k4_b11 FIND v(out_data_11_) AT=770.0n"
+    },
+    {
+      "name": "odata_k4_b12",
+      "spice": ".meas tran odata_k4_b12 FIND v(out_data_12_) AT=770.0n"
+    },
+    {
+      "name": "odata_k4_b13",
+      "spice": ".meas tran odata_k4_b13 FIND v(out_data_13_) AT=770.0n"
+    },
+    {
+      "name": "odata_k4_b14",
+      "spice": ".meas tran odata_k4_b14 FIND v(out_data_14_) AT=770.0n"
+    },
+    {
+      "name": "odata_k4_b15",
+      "spice": ".meas tran odata_k4_b15 FIND v(out_data_15_) AT=770.0n"
+    },
+    {
+      "name": "odata_k4_b16",
+      "spice": ".meas tran odata_k4_b16 FIND v(out_data_16_) AT=770.0n"
+    },
+    {
+      "name": "odata_k4_b17",
+      "spice": ".meas tran odata_k4_b17 FIND v(out_data_17_) AT=770.0n"
+    },
+    {
+      "name": "odata_k4_b18",
+      "spice": ".meas tran odata_k4_b18 FIND v(out_data_18_) AT=770.0n"
+    },
+    {
+      "name": "odata_k4_b19",
+      "spice": ".meas tran odata_k4_b19 FIND v(out_data_19_) AT=770.0n"
+    },
+    {
+      "name": "odata_k4_b20",
+      "spice": ".meas tran odata_k4_b20 FIND v(out_data_20_) AT=770.0n"
+    },
+    {
+      "name": "odata_k4_b21",
+      "spice": ".meas tran odata_k4_b21 FIND v(out_data_21_) AT=770.0n"
+    },
+    {
+      "name": "odata_k4_b22",
+      "spice": ".meas tran odata_k4_b22 FIND v(out_data_22_) AT=770.0n"
+    },
+    {
+      "name": "odata_k4_b23",
+      "spice": ".meas tran odata_k4_b23 FIND v(out_data_23_) AT=770.0n"
+    },
+    {
+      "name": "odata_k4_b24",
+      "spice": ".meas tran odata_k4_b24 FIND v(out_data_24_) AT=770.0n"
+    },
+    {
+      "name": "odata_k4_b25",
+      "spice": ".meas tran odata_k4_b25 FIND v(out_data_25_) AT=770.0n"
+    },
+    {
+      "name": "odata_k4_b26",
+      "spice": ".meas tran odata_k4_b26 FIND v(out_data_26_) AT=770.0n"
+    },
+    {
+      "name": "odata_k4_b27",
+      "spice": ".meas tran odata_k4_b27 FIND v(out_data_27_) AT=770.0n"
+    },
+    {
+      "name": "odata_k4_b28",
+      "spice": ".meas tran odata_k4_b28 FIND v(out_data_28_) AT=770.0n"
+    },
+    {
+      "name": "odata_k4_b29",
+      "spice": ".meas tran odata_k4_b29 FIND v(out_data_29_) AT=770.0n"
+    },
+    {
+      "name": "odata_k4_b30",
+      "spice": ".meas tran odata_k4_b30 FIND v(out_data_30_) AT=770.0n"
+    },
+    {
+      "name": "odata_k4_b31",
+      "spice": ".meas tran odata_k4_b31 FIND v(out_data_31_) AT=770.0n"
+    },
+    {
+      "name": "odata_k5_b0",
+      "spice": ".meas tran odata_k5_b0 FIND v(out_data_0_) AT=870.0n"
+    },
+    {
+      "name": "odata_k5_b1",
+      "spice": ".meas tran odata_k5_b1 FIND v(out_data_1_) AT=870.0n"
+    },
+    {
+      "name": "odata_k5_b2",
+      "spice": ".meas tran odata_k5_b2 FIND v(out_data_2_) AT=870.0n"
+    },
+    {
+      "name": "odata_k5_b3",
+      "spice": ".meas tran odata_k5_b3 FIND v(out_data_3_) AT=870.0n"
+    },
+    {
+      "name": "odata_k5_b4",
+      "spice": ".meas tran odata_k5_b4 FIND v(out_data_4_) AT=870.0n"
+    },
+    {
+      "name": "odata_k5_b5",
+      "spice": ".meas tran odata_k5_b5 FIND v(out_data_5_) AT=870.0n"
+    },
+    {
+      "name": "odata_k5_b6",
+      "spice": ".meas tran odata_k5_b6 FIND v(out_data_6_) AT=870.0n"
+    },
+    {
+      "name": "odata_k5_b7",
+      "spice": ".meas tran odata_k5_b7 FIND v(out_data_7_) AT=870.0n"
+    },
+    {
+      "name": "odata_k5_b8",
+      "spice": ".meas tran odata_k5_b8 FIND v(out_data_8_) AT=870.0n"
+    },
+    {
+      "name": "odata_k5_b9",
+      "spice": ".meas tran odata_k5_b9 FIND v(out_data_9_) AT=870.0n"
+    },
+    {
+      "name": "odata_k5_b10",
+      "spice": ".meas tran odata_k5_b10 FIND v(out_data_10_) AT=870.0n"
+    },
+    {
+      "name": "odata_k5_b11",
+      "spice": ".meas tran odata_k5_b11 FIND v(out_data_11_) AT=870.0n"
+    },
+    {
+      "name": "odata_k5_b12",
+      "spice": ".meas tran odata_k5_b12 FIND v(out_data_12_) AT=870.0n"
+    },
+    {
+      "name": "odata_k5_b13",
+      "spice": ".meas tran odata_k5_b13 FIND v(out_data_13_) AT=870.0n"
+    },
+    {
+      "name": "odata_k5_b14",
+      "spice": ".meas tran odata_k5_b14 FIND v(out_data_14_) AT=870.0n"
+    },
+    {
+      "name": "odata_k5_b15",
+      "spice": ".meas tran odata_k5_b15 FIND v(out_data_15_) AT=870.0n"
+    },
+    {
+      "name": "odata_k5_b16",
+      "spice": ".meas tran odata_k5_b16 FIND v(out_data_16_) AT=870.0n"
+    },
+    {
+      "name": "odata_k5_b17",
+      "spice": ".meas tran odata_k5_b17 FIND v(out_data_17_) AT=870.0n"
+    },
+    {
+      "name": "odata_k5_b18",
+      "spice": ".meas tran odata_k5_b18 FIND v(out_data_18_) AT=870.0n"
+    },
+    {
+      "name": "odata_k5_b19",
+      "spice": ".meas tran odata_k5_b19 FIND v(out_data_19_) AT=870.0n"
+    },
+    {
+      "name": "odata_k5_b20",
+      "spice": ".meas tran odata_k5_b20 FIND v(out_data_20_) AT=870.0n"
+    },
+    {
+      "name": "odata_k5_b21",
+      "spice": ".meas tran odata_k5_b21 FIND v(out_data_21_) AT=870.0n"
+    },
+    {
+      "name": "odata_k5_b22",
+      "spice": ".meas tran odata_k5_b22 FIND v(out_data_22_) AT=870.0n"
+    },
+    {
+      "name": "odata_k5_b23",
+      "spice": ".meas tran odata_k5_b23 FIND v(out_data_23_) AT=870.0n"
+    },
+    {
+      "name": "odata_k5_b24",
+      "spice": ".meas tran odata_k5_b24 FIND v(out_data_24_) AT=870.0n"
+    },
+    {
+      "name": "odata_k5_b25",
+      "spice": ".meas tran odata_k5_b25 FIND v(out_data_25_) AT=870.0n"
+    },
+    {
+      "name": "odata_k5_b26",
+      "spice": ".meas tran odata_k5_b26 FIND v(out_data_26_) AT=870.0n"
+    },
+    {
+      "name": "odata_k5_b27",
+      "spice": ".meas tran odata_k5_b27 FIND v(out_data_27_) AT=870.0n"
+    },
+    {
+      "name": "odata_k5_b28",
+      "spice": ".meas tran odata_k5_b28 FIND v(out_data_28_) AT=870.0n"
+    },
+    {
+      "name": "odata_k5_b29",
+      "spice": ".meas tran odata_k5_b29 FIND v(out_data_29_) AT=870.0n"
+    },
+    {
+      "name": "odata_k5_b30",
+      "spice": ".meas tran odata_k5_b30 FIND v(out_data_30_) AT=870.0n"
+    },
+    {
+      "name": "odata_k5_b31",
+      "spice": ".meas tran odata_k5_b31 FIND v(out_data_31_) AT=870.0n"
+    },
+    {
+      "name": "alarm_k0",
+      "spice": ".meas tran alarm_k0 FIND v(alarm) AT=370.0n"
+    },
+    {
+      "name": "gated_k0",
+      "spice": ".meas tran gated_k0 FIND v(gated) AT=370.0n"
+    },
+    {
+      "name": "startup_done_k0",
+      "spice": ".meas tran startup_done_k0 FIND v(startup_done) AT=370.0n"
+    },
+    {
+      "name": "out_valid_k0",
+      "spice": ".meas tran out_valid_k0 FIND v(out_valid) AT=370.0n"
+    },
+    {
+      "name": "alarm_k1",
+      "spice": ".meas tran alarm_k1 FIND v(alarm) AT=470.0n"
+    },
+    {
+      "name": "gated_k1",
+      "spice": ".meas tran gated_k1 FIND v(gated) AT=470.0n"
+    },
+    {
+      "name": "startup_done_k1",
+      "spice": ".meas tran startup_done_k1 FIND v(startup_done) AT=470.0n"
+    },
+    {
+      "name": "out_valid_k1",
+      "spice": ".meas tran out_valid_k1 FIND v(out_valid) AT=470.0n"
+    },
+    {
+      "name": "alarm_k2",
+      "spice": ".meas tran alarm_k2 FIND v(alarm) AT=570.0n"
+    },
+    {
+      "name": "gated_k2",
+      "spice": ".meas tran gated_k2 FIND v(gated) AT=570.0n"
+    },
+    {
+      "name": "startup_done_k2",
+      "spice": ".meas tran startup_done_k2 FIND v(startup_done) AT=570.0n"
+    },
+    {
+      "name": "out_valid_k2",
+      "spice": ".meas tran out_valid_k2 FIND v(out_valid) AT=570.0n"
+    },
+    {
+      "name": "alarm_k3",
+      "spice": ".meas tran alarm_k3 FIND v(alarm) AT=670.0n"
+    },
+    {
+      "name": "gated_k3",
+      "spice": ".meas tran gated_k3 FIND v(gated) AT=670.0n"
+    },
+    {
+      "name": "startup_done_k3",
+      "spice": ".meas tran startup_done_k3 FIND v(startup_done) AT=670.0n"
+    },
+    {
+      "name": "out_valid_k3",
+      "spice": ".meas tran out_valid_k3 FIND v(out_valid) AT=670.0n"
+    },
+    {
+      "name": "alarm_k4",
+      "spice": ".meas tran alarm_k4 FIND v(alarm) AT=770.0n"
+    },
+    {
+      "name": "gated_k4",
+      "spice": ".meas tran gated_k4 FIND v(gated) AT=770.0n"
+    },
+    {
+      "name": "startup_done_k4",
+      "spice": ".meas tran startup_done_k4 FIND v(startup_done) AT=770.0n"
+    },
+    {
+      "name": "out_valid_k4",
+      "spice": ".meas tran out_valid_k4 FIND v(out_valid) AT=770.0n"
+    },
+    {
+      "name": "alarm_k5",
+      "spice": ".meas tran alarm_k5 FIND v(alarm) AT=870.0n"
+    },
+    {
+      "name": "gated_k5",
+      "spice": ".meas tran gated_k5 FIND v(gated) AT=870.0n"
+    },
+    {
+      "name": "startup_done_k5",
+      "spice": ".meas tran startup_done_k5 FIND v(startup_done) AT=870.0n"
+    },
+    {
+      "name": "out_valid_k5",
+      "spice": ".meas tran out_valid_k5 FIND v(out_valid) AT=870.0n"
+    },
+    {
+      "name": "t_clk_first",
+      "spice": ".meas tran t_clk_first WHEN v(clk)=0.9 RISE=1"
+    }
+  ],
+  "options": {
+    "timeout_s": 3480,
+    "keep_artifacts": true,
+    "save_mode": "netlist"
+  }
+}
