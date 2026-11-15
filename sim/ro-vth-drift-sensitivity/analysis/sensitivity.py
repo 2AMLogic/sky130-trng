@@ -28,7 +28,6 @@ time-zero records are only read (and compared in the controls), never touched.
 from __future__ import annotations
 
 import argparse
-import datetime
 import glob
 import gzip
 import hashlib
@@ -49,7 +48,7 @@ sys.path.insert(0, str(REPO / "sim" / "tests"))
 from loadmod import load_module  # noqa: E402
 import aging  # noqa: E402
 import campaign as C  # noqa: E402
-from evidence_record import git_short_sha, read_corner_bundle, write_corner_bundle  # noqa: E402
+from evidence_record import git_short_sha, mint_record, new_record_id, read_corner_bundle, write_corner_bundle  # noqa: E402
 from lock_proximity import closeness as lock_closeness, ratio_label  # noqa: E402
 from request_dir import load_request_dir  # noqa: E402
 
@@ -465,9 +464,7 @@ def emit_controls(ctldir):
         ctl[n] = (plans[n], resps[n])
     floor = numerical_floor()
     res = evaluate_controls(ctl, floor)
-    sha = git_short_sha(REPO)
-    now = datetime.datetime.now(datetime.timezone.utc)
-    rid = f"{now:%Y%m%d-%H%M%S}-{sha}"
+    now, sha, rid = new_record_id(REPO)
     cdir, rdir = SLUGDIR / "corners" / rid, SLUGDIR / "records"
     write_corner_bundle(cdir, ctldir, [(n, plans[n], resps[n]) for n in names], records_dir=rdir, rid=rid)
     info = ctl_info(plans)
@@ -487,7 +484,8 @@ def pct(x):
     return "" if x is None else f"{x*100:+.2f}%"
 
 
-def md_grid(rid, rows, env, summ, ctl_rid, jobs, claim, supersedes="(none)"):
+def md_grid(rid, rows, env, summ, ctl_rid, jobs, claim):
+    """The grid record's header lines and body text; mint_record appends the shared footer."""
     L = [f"# {rid} -- {SLUG}", "", f"**Claim**: {claim}", "", "**Level**: transistor (first-order Vth-offset wrapper; see below)", "",
          f"**{SENTENCE}**", "", f"Controls record: `{ctl_rid}` (PASS required before this record can be minted).", ""]
     L += ["## Scope, model, and why these values", "",
@@ -581,9 +579,8 @@ def md_grid(rid, rows, env, summ, ctl_rid, jobs, claim, supersedes="(none)"):
     L += ["", summ["envelope_statement"], "",
           "No specification is changed or relaxed by this record, and no guard band or lifetime is ratified; any such decision belongs to an "
           "operator decision record (`spec/README.md`). " + SENTENCE, "",
-          "Provisional, simulation-derived. Pre-layout, ideal gate offsets, single noise seed.", "",
-          f"- Supersedes: {supersedes}", ""]
-    return "\n".join(L)
+          "Provisional, simulation-derived. Pre-layout, ideal gate offsets, single noise seed.", ""]
+    return L, ""
 
 
 def envelope_statement(env: dict) -> str:
@@ -722,9 +719,7 @@ def emit_record(reqdir, ctl_rid):
     if summ["coverage_problems"] or summ["pair_problems"] or summ["selection_problems"] or not summ["all_rows_ok"]:
         print("coverage:", summ["coverage_problems"][:10], "selection:", summ["selection_problems"][:10], "pair:", summ["pair_problems"][:10], "all_ok:", summ["all_rows_ok"], file=sys.stderr)
         raise SystemExit("error: grid incomplete or has failed rows; not recording a partial grid as complete")
-    sha = git_short_sha(REPO)
-    now = datetime.datetime.now(datetime.timezone.utc)
-    rid = f"{now:%Y%m%d-%H%M%S}-{sha}"
+    now, sha, rid = new_record_id(REPO)
     cdir, rdir = SLUGDIR / "corners" / rid, SLUGDIR / "records"
     jobs = [(rs.get("environment", {}).get("remote") or {}).get("job_id") for _, _, rs in chunks]
     write_corner_bundle(cdir, reqdir, chunks, records_dir=rdir, rid=rid)
@@ -753,9 +748,12 @@ def emit_record(reqdir, ctl_rid):
            "calibration_artifact": {"path": f"sim/{SLUG}/records/{rid}.calibration.json", "schema": CAL_SCHEMA,
                                     "sha256": sha256_json(cal), "n_entries": len(cal["entries"])},
            "rows": rows, "timestamp_utc": now.isoformat()}
-    (rdir / f"{rid}.json").write_text(json.dumps(rec, indent=2, default=str) + "\n")
     cal_path.write_text(json.dumps(cal, indent=2, sort_keys=True) + "\n")
-    (rdir / f"{rid}.md").write_text(md_grid(rid, rows, summ["envelope"], summ, ctl_rid, jobs, claim))
+    header, body = md_grid(rid, rows, summ["envelope"], summ, ctl_rid, jobs, claim)
+    out = mint_record(rdir, REPO, rid, header, body, rec, author="loom-builder@sky130-trng", now=now, sha=sha)
+    if out is None:
+        shutil.rmtree(cdir, ignore_errors=True)
+        raise SystemExit(f"error: record id {rid} already exists; wait a second and re-run")
     print(rid, "rows", len(rows), "cal entries", len(cal["entries"]))
     return 0
 
@@ -779,9 +777,7 @@ def supersede(recpath):
         raise SystemExit(f"error: {ocdir} is missing; cannot re-reduce {oid} without its raw responses")
     chunks = load_committed(str(ocdir))
     rows, summ = build(chunks, old["controls_record"])
-    sha = git_short_sha(REPO)
-    now = datetime.datetime.now(datetime.timezone.utc)
-    rid = f"{now:%Y%m%d-%H%M%S}-{sha}"
+    now, sha, rid = new_record_id(REPO)
     rdir, cdir = SLUGDIR / "records", SLUGDIR / "corners" / rid
     reserve_corner_dir(cdir, rdir, rid)                  # refuses an id that already exists; claims cdir
     shutil.copytree(ocdir, cdir, dirs_exist_ok=True)     # raw responses verbatim: a re-reduction, not a re-run
@@ -803,10 +799,14 @@ def supersede(recpath):
     rec["klt_sim"] = dict(old["klt_sim"], responses=f"sim/{SLUG}/corners/{rid}/*.klt-sim.json.gz")
     rec["calibration_artifact"] = {"path": f"sim/{SLUG}/records/{rid}.calibration.json", "schema": CAL_SCHEMA,
                                    "sha256": sha256_json(cal), "n_entries": len(cal["entries"])}
-    (rdir / f"{rid}.json").write_text(json.dumps(rec, indent=2, default=str) + "\n")
     (rdir / f"{rid}.calibration.json").write_text(json.dumps(cal, indent=2, sort_keys=True) + "\n")
-    (rdir / f"{rid}.md").write_text(md_grid(rid, rows, summ["envelope"], summ, old["controls_record"],
-                                            old["klt_sim"].get("jobs") or [], old["claim"], supersedes=oid))
+    header, body = md_grid(rid, rows, summ["envelope"], summ, old["controls_record"],
+                           old["klt_sim"].get("jobs") or [], old["claim"])
+    out = mint_record(rdir, REPO, rid, header, body, rec, author="loom-builder@sky130-trng",
+                      now=now, sha=sha, supersedes=oid)
+    if out is None:
+        shutil.rmtree(cdir, ignore_errors=True)
+        raise SystemExit(f"error: record id {rid} already exists; wait a second and re-run")
     print(rid, "supersedes", oid, "| rows", len(rows), "| cal entries", len(cal["entries"]))
     return 0
 

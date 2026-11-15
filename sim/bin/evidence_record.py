@@ -68,21 +68,29 @@ def git_short_sha(repo_root: Path) -> str:
         return "unknown"
 
 
-def new_record_id(repo_root: Path) -> tuple[_dt.datetime, str, str]:
+def new_record_id(repo_root: Path, *, offset: int = 0) -> tuple[_dt.datetime, str, str]:
     """Return `(now, sha, rid)` for a fresh record.
 
     `rid` follows the shared `<YYYYMMDD>-<HHMMSS>-<shortsha>` scheme
     `sim/bin/corner-run.py` uses, so reduction records and simulation
-    records sort together.
+    records sort together. `offset` seconds are added to the clock so one
+    run minting several records gets distinct ids (one per loop iteration,
+    as the per-corner reducers do).
     """
-    now = _dt.datetime.now(_dt.timezone.utc)
+    now = _dt.datetime.now(_dt.timezone.utc) + _dt.timedelta(seconds=offset)
     sha = git_short_sha(repo_root)
     rid = f"{now:%Y%m%d-%H%M%S}-{sha}"
     return now, sha, rid
 
 
-def record_footer(*, author: str, now: _dt.datetime, sha: str) -> list[str]:
-    """The shared markdown footer lines appended to every evidence record."""
+def record_footer(*, author: str, now: _dt.datetime, sha: str,
+                  supersedes: str = "(none)") -> list[str]:
+    """The shared markdown footer lines appended to every evidence record.
+
+    `supersedes` names the record id this one corrects (sim/README.md's
+    append-only rule); the default is the no-correction marker, which keeps
+    every pre-existing caller's footer byte-for-byte.
+    """
     return [
         "",
         "---",
@@ -90,7 +98,7 @@ def record_footer(*, author: str, now: _dt.datetime, sha: str) -> list[str]:
         f"- Author: {author}",
         f"- Timestamp (UTC): {now.isoformat()}",
         f"- Repo commit: `{sha}`",
-        "- Supersedes: (none)",
+        f"- Supersedes: {supersedes}",
     ]
 
 
@@ -303,6 +311,7 @@ def mint_record(
     author: str,
     now: _dt.datetime,
     sha: str,
+    supersedes: str = "(none)",
 ) -> tuple[Path, Path] | None:
     """Mint an append-only evidence record under `out_records`.
 
@@ -317,7 +326,8 @@ def mint_record(
     wants (this function writes it as-is -- it does not inject `record_id`/
     `author`/`timestamp_utc`/`repo_sha`, since those are typically
     interleaved with reduction-specific fields at call-site-chosen
-    positions; see each analysis script's `main()`).
+    positions; see each analysis script's `main()`). `supersedes` names the
+    record id this one corrects; the default footer line is unchanged.
 
     Returns `(md_path, json_path)` on success, or `None` (after printing an
     error to stderr) if a record with this `rid` already exists.
@@ -329,7 +339,7 @@ def mint_record(
               file=sys.stderr)
         return None
 
-    footer = record_footer(author=author, now=now, sha=sha)
+    footer = record_footer(author=author, now=now, sha=sha, supersedes=supersedes)
     md_text = "\n".join(header) + body + "\n".join(footer) + "\n"
     json_text = json.dumps(summary, indent=2, default=str) + "\n"  # before any publication
     try:

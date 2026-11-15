@@ -65,6 +65,21 @@ name: CI
 #     klayout-dependent geometry controls left to pdk-nightly. Same
 #     PR-blocking path, same reason: it needs nothing installed.
 #
+# layout/test_klt_common.py (shared klt-reader contract, issue #500)
+#     Pure Python over layout/bin/_klt_common.py's klt_version / pdk_find /
+#     pdk_root / libs_ref / run_klt_rc -- every case drives a FAKE klt whose
+#     response the test writes, which is the only way these negative controls
+#     can exist (a real klt cannot be asked to answer malformedly). Guards the
+#     two defects #500 found, both of which were invisible while each producer
+#     agreed with itself: the version must be read BARE ("0.8.0", not the
+#     `klt --version` banner "klt 0.8.0") because three string-equality pin
+#     gates compare it and every pin in the repo is bare -- a prefixed read
+#     fails a correctly-pinned host unconditionally; and `pdk find` must always
+#     be read as JSON, never scraped from klt's human-readable rendering, where
+#     a first-match `libs_ref:` regex loses to a `warning:` line (the decoy
+#     control is that exact shape). Same PR-blocking path as the checks below:
+#     it needs nothing installed.
+#
 # layout/test_pex_netlist.py (post-layout netlist rewrite unit test, issue #22)
 #     Pure Python over layout/bin/pex-netlist.py's rewrite functions -- no klt,
 #     no KLayout, no PDK, no GDS. That script turns `klt extract --parasitics`
@@ -135,6 +150,27 @@ name: CI
 #     Nothing ran either test before, and the side-effect write was found by
 #     hand. The `paths:` filter below lists the two committed evidence files
 #     the second test reads; the scripts themselves are covered by sim/*/*.py.
+#
+# sim/post-layout-whole-block/test_make_requests.py (issue #488) -- stdlib-only
+#     unit test of the whole-block request generator's driven-input PWL
+#     stimulus shape. A SPICE PWL source interpolates LINEARLY between its
+#     breakpoints, so the pre-#488 change-instants-only breakpoint list emitted
+#     every bus input as a ramp across its whole hold interval instead of a hold
+#     plus an edge: bus_re came out as PWL(0.0n 1.800 640.0n 0.000 970.0n 0.000),
+#     0.928 V at 310 ns, and 344 of 3000 (driven input x capture point) samples
+#     over the full grid program sat more than 10 % off a rail, the worst at
+#     0.905 V. The control here is the half that cannot be eyeballed: every
+#     emitted card is evaluated at every cycle's t_edge+CAPTURE_NS and must land
+#     within 1 mV of a rail, which FAILS on the old shape. Beside it, the
+#     hold/edge pair is asserted on the card text (639.9n at the old value then
+#     640.0n at the new), plus breakpoint hygiene -- t=0 first, t_stop last, no
+#     two breakpoints sharing a formatted timestamp (what an under-wide EDGE_NS
+#     silently produces, since pwl_card writes f"{t:.1f}n"), and a constant
+#     input still emitting exactly two points. Finally GRID_TIMEOUT_S and the
+#     four committed grid requests' timeout_s/poll_timeout_s are pinned, because
+#     the issue's acceptance criteria forbid this fix disturbing them. Covered
+#     by the existing sim/*/*.py and sim/*/corners/** path filters.
+#     No klt, no PDK, no ngspice.
 #
 # sim/tests/test_gate_model.py (issue #486) -- stdlib-only unit test of the
 #     gate-level digital model generator (sim/post-layout-whole-block/make-gate-model.py),
@@ -303,6 +339,7 @@ on:
       # issue #267 restart-matrix reducer, its phase model and the PVT-set source it re-counts
       - "sim/wake-up-transient/**"
       - "sim/raw-bit-volume-campaign/behavioral_raw_bit.py"
+      - "layout/test_klt_common.py"
       - "layout/test_pex_netlist.py"
       - "layout/test_compose_cell.py"
       - "layout/test_compose_whole.py"
@@ -370,6 +407,9 @@ jobs:
 
       - name: design/test_netlist_xschem_version.py (minimum-xschem-version gate)
         run: python3 design/test_netlist_xschem_version.py
+
+      - name: layout/test_klt_common.py (shared klt-reader contract -- bare version spelling, JSON-only pdk find)
+        run: python3 layout/test_klt_common.py
 
       - name: layout/test_pex_netlist.py (post-layout netlist rewrite unit test)
         run: python3 layout/test_pex_netlist.py
@@ -450,6 +490,9 @@ jobs:
 
       - name: sim/post-layout-whole-block/test_make_netlist.py (issue #478 generator transforms + committed netlist/port-map pair)
         run: python3 sim/post-layout-whole-block/test_make_netlist.py
+
+      - name: sim/post-layout-whole-block/test_make_requests.py (issue #488 driven-input PWL holds then switches; capture points at a rail; grid timeouts pinned)
+        run: python3 sim/post-layout-whole-block/test_make_requests.py
 
       - name: sim/tests/test_gate_model.py (issue #486 gate-level model generator -- routed-netlist correspondence, Liberty truth tables, NLDM interpolation, fail-closed paths)
         run: python3 sim/tests/test_gate_model.py

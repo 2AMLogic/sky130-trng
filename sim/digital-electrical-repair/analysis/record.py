@@ -7,9 +7,7 @@
 from __future__ import annotations
 
 import argparse
-import datetime
 import json
-import subprocess
 import sys
 from pathlib import Path
 
@@ -18,6 +16,8 @@ sys.path.insert(0, str(HERE))
 import electrical as E  # noqa: E402
 
 ROOT = HERE.parents[2]
+sys.path.insert(0, str(ROOT / "sim" / "bin"))
+from evidence_record import new_record_id, record_footer  # noqa: E402
 sys.path.insert(0, str(ROOT / "layout" / "bin"))
 from _hashing import sha256_file  # noqa: E402
 
@@ -51,9 +51,7 @@ def main():
     corners = ctl["sum"]["corners"]
     deriv = load(ctl["dir"] / "limit-derivation.json")
     nets = load(ctl["dir"] / "violator-nets.json")
-    sha_head = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=ROOT, capture_output=True, text=True).stdout.strip()
-    ts = datetime.datetime.now(datetime.timezone.utc)
-    rid = ts.strftime("%Y%m%d-%H%M%S") + "-" + sha_head
+    now, sha_head, rid = new_record_id(ROOT)
     L = []
     a_ = L.append
 
@@ -240,13 +238,9 @@ def main():
     a_("- Not established: silicon behaviour; SDF-timed simulation; that the audit's OpenSTA parasitic annotation equals a foundry extraction "
        "(nominal interconnect corner only, as in the rest of the digital chain); per-pin Liberty limits are applied by OpenSTA, but port loading is the OpenSTA default; the choice of `0.531 ns` generalises to this netlist and seed only, "
        "so a netlist or floorplan change needs a re-derivation and a fresh audit. Same verification limits as `sim/digital-pnr/records/20261003-212010-fa76b17.md` (curated deck, not foundry signoff).")
-    a_("\n---\n")
-    a_("- Author: Loom builder (issue #236)")
-    a_(f"- Timestamp (UTC): {ts.isoformat()}")
-    a_(f"- Repo commit: `{sha_head}`")
-    a_("- Supersedes: (none)")
+    L += record_footer(author="Loom builder (issue #236)", now=now, sha=sha_head)
     md = "\n".join(L) + "\n"
-    out = {"record_id": rid, "timestamp_utc": ts.isoformat(), "repo_sha": sha_head, "issue": 236,
+    out = {"record_id": rid, "timestamp_utc": now.isoformat(), "repo_sha": sha_head, "issue": 236,
            "runs": {n: {"dir": str(runs[n]["dir"].relative_to(ROOT)), "candidate_verdict": status(runs[n]),
                         "est_totals": runs[n]["sum"]["estimate_global_route"]["reduction_vs_library"]["totals"],
                         "final_totals": runs[n]["sum"]["final_route"]["reduction"]["totals"],
