@@ -1178,7 +1178,8 @@ def stimulus_cards(cycles: list[dict], vih: float) -> list[str]:
     return cards
 
 
-def measurement_cards(cycles: list[dict]) -> tuple[list[dict], list[str]]:
+def measurement_cards(cycles: list[dict], vih: float,
+                      threshold_pct: float) -> tuple[list[dict], list[str]]:
     """``.meas`` entries for every digital response the model also predicts."""
     inputs = P.cycle_inputs(cycles)
     n = len(cycles)
@@ -1223,15 +1224,23 @@ def measurement_cards(cycles: list[dict]) -> tuple[list[dict], list[str]]:
         t = P.t_edge_ns(k) + P.RDATA_NS
         for sig in ("alarm", "gated", "startup_done", "out_valid"):
             add(f"{sig}_k{k}", f".meas tran {sig}_k{k} FIND v({sig}) AT={t:.1f}n", sig, t)
-    add("t_clk_first", ".meas tran t_clk_first WHEN v(clk)=0.9 RISE=1", "clk")
+    # the 50 % crossing of the clock the Liberty deck measures its delays at.
+    # clk is driven 0..vih (stimulus_cards' Vclk PULSE), so the threshold
+    # tracks vih -- NOT supply_v/2: --supply-v and --vih are independent
+    # knobs that merely coincide today. :3g reproduces the committed card's
+    # bare "0.9" at the pinned defaults (vih 1.8 V, 50 %) byte for byte.
+    clk_threshold_v = vih * threshold_pct / 100.0
+    add("t_clk_first",
+        f".meas tran t_clk_first WHEN v(clk)={clk_threshold_v:.3g} RISE=1", "clk")
     names = [e["name"] for e in meas]
     if len(names) != len(set(names)):
         raise GateModelError("duplicate measurement names")
     return meas, sorted(save)
 
 
-def build_deck(model: GateModel, cycles: list[dict], vih: float) -> tuple[str, list[dict], list[str]]:
-    meas, save = measurement_cards(cycles)
+def build_deck(model: GateModel, cycles: list[dict], vih: float,
+               threshold_pct: float) -> tuple[str, list[dict], list[str]]:
+    meas, save = measurement_cards(cycles, vih, threshold_pct)
     body = list(model.body)
     body += ["", "* ---- directed program stimulus (program.py) ----",
              *stimulus_cards(cycles, vih),
@@ -1343,7 +1352,7 @@ def main(argv: list[str] | None = None) -> int:
     limit = None if args.cycles == 0 else args.cycles
     cycles, phases = P.build_program(limit=limit)
     t_stop = P.t_stop_ns(cycles)
-    deck, meas, save = build_deck(model, cycles, args.vih)
+    deck, meas, save = build_deck(model, cycles, args.vih, threshold_pct)
 
     request = {
         "netlist": "netlist.cir",

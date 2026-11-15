@@ -767,7 +767,40 @@ class TestEmittedStructure(unittest.TestCase):
 
 
 # --------------------------------------------------------------------------
-# 5. against the real Liberty deck (skipped without the PDK)
+# 5. the t_clk_first card tracks vih (issue #496 item 3)
+# --------------------------------------------------------------------------
+
+def short_cycles() -> list[dict]:
+    sys.path.insert(0, str(BLOCK))
+    import program as P  # noqa: E402
+    return P.build_program(limit=4)[0]
+
+
+class TestClkThresholdCard(unittest.TestCase):
+    """The clock's 50 % crossing is ``vih * threshold_pct / 100`` -- NOT
+    ``supply_v / 2``: ``--vih`` and ``--supply-v`` are independent knobs that
+    merely coincide today, and clk is driven 0..vih (issue #496 item 3)."""
+
+    def card(self, vih: float, pct: float = 50.0) -> str:
+        meas, _ = G.measurement_cards(short_cycles(), vih, pct)
+        (card,) = [m["spice"] for m in meas if m["name"] == "t_clk_first"]
+        return card
+
+    def test_committed_defaults_reproduce_the_committed_card(self):
+        # byte-identical to the committed gate-model-full deck, so a
+        # regeneration moves no committed artifact
+        self.assertEqual(self.card(1.8),
+                         ".meas tran t_clk_first WHEN v(clk)=0.9 RISE=1")
+
+    def test_threshold_tracks_vih_not_a_literal(self):
+        self.assertEqual(self.card(1.2),
+                         ".meas tran t_clk_first WHEN v(clk)=0.6 RISE=1")
+        self.assertEqual(self.card(1.8, pct=45.0),
+                         ".meas tran t_clk_first WHEN v(clk)=0.81 RISE=1")
+
+
+# --------------------------------------------------------------------------
+# 7. against the real Liberty deck (skipped without the PDK)
 # --------------------------------------------------------------------------
 
 def real_liberty() -> Path | None:
