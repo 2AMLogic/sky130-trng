@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import sys
 import tempfile
 import unittest
@@ -27,6 +28,56 @@ def use_fake_klt(case, tmp, mode="ok"):
     patcher = mock.patch.dict(os.environ, fake_klt.install(tmp / "bin", mode))
     patcher.start()
     case.addCleanup(patcher.stop)
+
+
+# --- static guard: no hand-rolled record tails outside the minter (issue #515) ---
+
+# A line that names a `<rid>.md` / `<rid>.json` path the way the hand-rolled
+# tails do (f-string or string concat) AND carries a write call on the same
+# line. Doc back-references (`--check sim/<slug>/records/{rid}.json`) and
+# prints never carry both, so they stay unflagged.
+_RID_WRITE_TOKEN = re.compile(r"""\{rid\}\.(?:md|json)|rid \+ "\.(?:md|json)"|f'\{rid\}\.(?:md|json)'""")
+_WRITE_CALL = re.compile(r"\.write_text\(|\.write\(|\bopen\(|json\.dump\(")
+
+# The split shape (`record_json = records_dir / f"{rid}.json"` ... later
+# `record_json.write_text(...)`), which `sim/bin/corner-run.py` uses.
+_RID_BIND = re.compile(
+    r"""^\s*(\w+)\s*=.*(?:\{rid\}\.(?:md|json)|rid \+ "\.(?:md|json)"|f'\{rid\}\.(?:md|json)')""")
+
+# Known hand-rolled tails, allowed only until drained. `sim/bin/corner-run.py`
+# is the `klt sim` record minter with its own `supersedes` handling (#504's
+# reasoning, restated by #515's scope note); the other four are tracked by
+# issue #525. `sensitivity.py` was converted by #515 and must NOT return here.
+ALLOWED_HAND_ROLLED_TAILS = frozenset({
+    "sim/bin/corner-run.py",
+    "sim/digital-electrical-repair/analysis/record.py",
+    "sim/post-layout-ro-ring5-assembled-181/derive.py",
+    "sim/raw-bit-volume-campaign/derive-combining.py",
+    "sim/wake-up-transient/wakeup.py",
+})
+
+
+def hand_rolled_record_tails(root: Path = REPO) -> set[str]:
+    """Sim-relative paths under `sim/` that write a `<rid>.md`/`<rid>.json`
+    record directly instead of going through `mint_record`/`_publish_bundle`.
+
+    `sim/bin/evidence_record.py` is the minter itself; `sim/tests/` mint fake
+    records by design (including this guard's own fixtures).
+    """
+    hits = set()
+    for path in sorted((root / "sim").rglob("*.py")):
+        rel = path.relative_to(root).as_posix()
+        if rel == "sim/bin/evidence_record.py" or rel.startswith("sim/tests/"):
+            continue
+        lines = path.read_text().splitlines()
+        bound = {m.group(1) for line in lines if (m := _RID_BIND.match(line))}
+        for line in lines:
+            direct = _RID_WRITE_TOKEN.search(line) and _WRITE_CALL.search(line)
+            via_bound = any(re.search(rf"\b{name}\s*\.\s*(?:write_text|write)\(", line) for name in bound)
+            if direct or via_bound:
+                hits.add(rel)
+                break
+    return hits
 
 
 def mint(root: Path, artifacts):
@@ -456,6 +507,41 @@ class ReadCornerBundle(unittest.TestCase):
 
     def test_missing_cdir_reads_empty(self):
         self.assertEqual(er.read_corner_bundle(self.root / "corners" / "nothing"), [])
+class NoNewHandRolledRecordTails(unittest.TestCase):
+    """Static guard (issue #515): every `sim/**/*.py` record write must go
+    through `mint_record`/`_publish_bundle`. A direct `<rid>.md`/`<rid>.json`
+    write has no completion boundary (a kill between the two writes strands a
+    JSON-only record that `check_records_append_only.py` then protects from
+    deletion forever -- the #277 boundary) and no shared provenance footer."""
+
+    def test_allowlist_is_exact(self):
+        found = hand_rolled_record_tails()
+        new = sorted(found - ALLOWED_HAND_ROLLED_TAILS)
+        drained = sorted(ALLOWED_HAND_ROLLED_TAILS - found)
+        self.assertFalse(
+            new,
+            "new hand-rolled record tail(s) -- route them through mint_record/"
+            "_publish_bundle (issue #515), or extend ALLOWED_HAND_ROLLED_TAILS "
+            f"in {Path(__file__).name} with a tracked issue: {new}")
+        self.assertFalse(
+            drained,
+            "allowlist entr(y/ies) no longer hand-roll their tails -- remove "
+            f"them from ALLOWED_HAND_ROLLED_TAILS: {drained}")
+
+    def test_detector_flags_a_deliberate_tail_and_passes_references(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            slug = root / "sim" / "slug"
+            slug.mkdir(parents=True)
+            clean = slug / "clean.py"
+            clean.write_text('print(f"--check sim/slug/records/{rid}.json`")\n')
+            dirty = slug / "dirty.py"
+            dirty.write_text('(rdir / f"{rid}.md").write_text(md)\n'
+                             'json.dump(rec, open(os.path.join(rdir, rid + ".json"), "w"))\n')
+            split = slug / "split.py"
+            split.write_text('record_json = records_dir / f"{rid}.json"\n'
+                             'record_json.write_text("{}")\n')
+            self.assertEqual(hand_rolled_record_tails(root), {"sim/slug/dirty.py", "sim/slug/split.py"})
 
 
 if __name__ == "__main__":
