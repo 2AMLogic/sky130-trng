@@ -3,15 +3,18 @@
 append-only records, each compared against the pre-#181 record at the same PVT
 point (sim/post-layout-ro-ring5-assembled/records/, never modified).
 
-    derive.py REQDIR RECORDS_DIR [--sha SHA]
+    derive.py REQDIR RECORDS_DIR
 
 REQDIR holds p1..p4/resp.json (klt sim --format json output, kept alongside
 the record as <id>.klt-sim.json). Derived figures use the template deck's own
 `let` formulas.
 """
-import glob, hashlib, json, os, sys, datetime
+import glob, hashlib, json, os, sys
+from pathlib import Path
 
 REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+sys.path.insert(0, os.path.join(REPO, "sim", "bin"))
+from evidence_record import new_record_id  # noqa: E402
 OLD = os.path.join(REPO, "sim/post-layout-ro-ring5-assembled/records")
 POINTS = [(-40.0, 1.62), (27.0, 1.80), (125.0, 1.98), (-40.0, 1.98)]
 W = ["0p42", "0p44", "0p46", "0p48"]
@@ -41,15 +44,14 @@ KEYS = (["t_asm_wstv" + w for w in W] + ["t_pre_wstv" + w for w in W]
            "i_asm_wstv0p42", "i_asm_wstv0p48", "i_pre_wstv0p42", "i_pre_wstv0p48"])
 
 
-def main(reqdir, outdir, sha):
+def main(reqdir, outdir):
     os.makedirs(outdir, exist_ok=True)
-    now = datetime.datetime.now(datetime.timezone.utc)
     for n, (t, v) in enumerate(POINTS, 1):
         resp = json.load(open(f"{reqdir}/p{n}/resp.json"))
         old = [json.load(open(f)) for f in sorted(glob.glob(OLD + "/*.json"))]
         old = next(o for o in old if o["pvt"] == {"temp_c": t, "vdd_v": v})
         oldc = {c["corner"]: c["measurements"] for c in old["corners"]}
-        rid = (now + datetime.timedelta(seconds=n)).strftime("%Y%m%d-%H%M%S") + "-" + sha
+        now, sha, rid = new_record_id(Path(REPO), offset=n)
         corners, rows = [], []
         for c in resp["corners"]:
             name = c["process"]
@@ -95,4 +97,4 @@ def main(reqdir, outdir, sha):
 
 if __name__ == "__main__":
     a = sys.argv
-    main(a[1], a[2], a[a.index("--sha") + 1] if "--sha" in a else "ae3832e")
+    main(a[1], a[2])
