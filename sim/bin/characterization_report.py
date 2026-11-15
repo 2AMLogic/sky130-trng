@@ -179,6 +179,33 @@ EVIDENCE: dict[str, list[dict]] = {
             "field": "target_status", "op": "eq", "value": "met", "pvt": None,
         },
     ],
+    # DR-0018: idle envelope ratified at <= 200 uW worst-corner. The idle half
+    # is evidenced pre-layout; the 125 C digital Liberty term is a labelled
+    # extrapolation from the ff_100C_1v95 view (no 125 C library corner).
+    # The whole-block active figure (< 500 uW) has no record yet: #308 (gated
+    # on #307) must land one. Its declared path is absent on purpose -- an
+    # absent record renders `not measured`; pointing at the existing
+    # 20261012-042202-dd84c67 whole-block record would render `unmet` and
+    # misreport "not yet measured" as "target failed".
+    "Power": [
+        {
+            "record": "sim/ro-array-idle-leakage/records/20261106-185750-8deaf42.json",
+            "check": "idle: worst-corner combined standby 114.87 uW (analog .op + digital Liberty "
+                     "leakage) <= 200 uW envelope (DR-0018); the 125 C digital term is a LABELLED "
+                     "EXTRAPOLATION from the ff_100C_1v95 view, not a 125 C library corner "
+                     "(38.04 uW without it). Pre-layout sampler_core; provisional until silicon.",
+            "field": "worst.combined_with_hot_extrapolation.value_uw", "op": "le", "value": 200,
+            "pvt": "rows[]",
+        },
+        {
+            "record": "sim/post-layout-whole-block/records/<pending-308>.json",
+            "check": "active: whole-block active power < 500 uW -- NOT MEASURED. No whole-block "
+                     "active-power record exists yet; #308 (gated on #307) must land one. "
+                     "Re-point this entry at the real record id and field when it does.",
+            "field": "active_power_uw", "op": "le", "value": 500,
+            "pvt": None,
+        },
+    ],
     # DR-0010 row 9: the combining deck is the only committed record family run
     # across the temperature/supply grid. The temperature span itself is not a
     # scalar in any record, so the row's PVT coverage lists what was run.
@@ -364,7 +391,7 @@ def pvt_labels(rec: dict, path: str | None) -> list[str]:
             # normalise "ss -40 C 1.62 V" to the dict form "ss -40C 1.62V"
             out.add(_UNIT_GAP.sub(r"\1\2", v))
         elif isinstance(v, dict):
-            corner = next((v[k] for k in ("corner", "proc") if k in v), None)
+            corner = next((v[k] for k in ("corner", "proc", "process") if k in v), None)
             temp = next((v[k] for k in ("temp_c", "temp") if k in v), None)
             vdd = next((v[k] for k in ("vdd_v", "vnom") if k in v), None)
             parts = [str(corner)] if corner is not None else []

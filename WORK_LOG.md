@@ -6,7 +6,15 @@ Chronological record of recently merged pull requests and closed issues.
 
 - [2026-09](work_log/WORK_LOG_2026-09.md)
 
+### 2026-11-15
+
+- **PR #513**: refactor(sim): mint the seven hand-rolled record tails through evidence_record
+- **Issue #504** (closed): Finish the #392 deferral: seven reducers hand-roll the record-minting tail because record_footer cannot say Supersedes
+
 ### 2026-11-14
+
+- **PR #508**: fix(whole-block): hold each driven input's PWL value, then switch over 100 ps
+- **Issue #488** (closed): bug: whole-block deck PWL stimulus ramps between cycles instead of holding, so bus inputs never switch cleanly
 
 - **PR #489**: feat: generate the digital half's gate-level ngspice model as a timed-delay XSPICE netlist
 - **Issue #486** (closed): Choose and evidence the ngspice realisation of the gate-level digital half (first slice of #431 step 2)

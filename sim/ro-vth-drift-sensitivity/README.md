@@ -160,8 +160,8 @@ it (`01309d60`, 2026-10-10). Since then `aging.py`'s bytes have moved by **pure
 refactor, with the behaviour unchanged**: `c52cc9ba` (2026-11-07, #455) replaced
 the in-file `sha256_file` one-liner with a re-export of
 `layout/bin/_hashing.py`'s byte-identical implementation, and the #487
-digest-helper consolidation (PR #492, still open at the time of writing) moves
-them again when it lands. Neither changes what `aging.py` computes.
+digest-helper consolidation (PR #492, merged as `0fd83357`) has since moved
+them a second time. Neither changes what `aging.py` computes.
 
 The consequence is the guard working as designed, not a defect:
 `sensitivity.py --emit-record --controls 20261010-164921-7e279ab` refuses while
@@ -170,14 +170,20 @@ simulation output, and "same generator as the controls" is exactly what the pin
 asserts on that path. The refusal message reports both digests and points here.
 How to read it:
 
-- **Bytes-only move** (the case so far): no evidence is invalid and nothing
-  needs re-running. `--check` is unaffected -- it replays each committed record
-  from its **own** raw responses; the controls record's own `--check` passes,
-  and the documented replay `--check records/20261113-150554-fb302c35.json`
-  passes, including its "netlists regenerate byte-identically" leg. `--supersede`
-  never applied the byte pin, because it re-reduces committed responses rather
-  than admitting fresh simulation. The pin is restored whenever the controls
-  campaign is next re-run for a study extension (after #492 settles).
+- **Bytes-only move** (the case so far): the committed evidence is not
+  invalidated and nothing needs re-running. `--check` replays each committed
+  record from its **own** raw responses, and the byte moves do not touch those
+  replay legs: the controls record's own `--check` passes, and the documented
+  replay `--check records/20261113-150554-fb302c35.json` still reports
+  rows/summary, calibration artifact and "netlists regenerate byte-identically"
+  all MATCH. Its **exit code is not unaffected**, though: for non-controls
+  records `check()` folds the generator-hashes pin into the exit code, so since
+  the #492 merge that replay reports `generator hashes: DIFFER` and exits 1 --
+  a committed record pinned pre-move, tracked as issue #528 (an operator ruling
+  on the superseding record's replay contract, not a study-side fix).
+  `--supersede` never applied the byte pin, because it re-reduces committed
+  responses rather than admitting fresh simulation. The pin is restored whenever
+  the controls campaign is next re-run for a study extension.
 - **Behaviour really changed**: the refusal is the guard doing its job -- re-run
   the controls (`--emit-controls`) and cite the new controls record.
 
