@@ -411,15 +411,27 @@ def parse_liberty_group(lines: list[str]) -> LibGroup:
     return root
 
 
-def extract_cell_blocks(lib_path: Path, wanted: set[str]) -> tuple[dict[str, LibGroup], dict[str, str]]:
-    """Return ({cell_name: parsed group}, library-level attributes).
+def extract_cell_blocks(
+    lib_path: Path, wanted: set[str]
+) -> tuple[dict[str, LibGroup], dict[str, str], dict[str, LibGroup]]:
+    """Return ({cell_name: parsed group}, library attributes, lut templates).
 
     Streams the deck (13 MB for ``tt_025C_1v80``) and parses only the wanted
     ``cell`` blocks, so the whole library is never materialised as an AST.
+
+    The library-level ``lu_table_template`` groups are collected **by name**.
+    They cannot be read from the flat ``header`` dict: ``header`` folds every
+    library-level attribute line in with ``setdefault``, so a template's
+    ``variable_1`` lands there from whichever template appears first in the
+    deck -- for the pinned deck that is ``power_inputs_1``'s
+    ``input_transition_time``, 13 lines before ``del_1_7_7``. NldmTable reads
+    each table's own template by the name in the table group's arg.
     """
     header: dict[str, str] = {}
     blocks: dict[str, LibGroup] = {}
+    templates: dict[str, LibGroup] = {}
     collecting: list[str] | None = None
+    collect_kind = ""                 # "cell" | "lu_table_template"
     depth = 0
     name = ""
     in_library = False
@@ -434,6 +446,14 @@ def extract_cell_blocks(lib_path: Path, wanted: set[str]) -> tuple[dict[str, Lib
                     collecting = [ln]
                     depth = 1
                     name = cand
+                    collect_kind = "cell"
+                continue
+            if g and g.group(1) == "lu_table_template":
+                cand = g.group(2).strip().strip('"')
+                collecting = [ln]
+                depth = 1
+                name = cand
+                collect_kind = "lu_table_template"
                 continue
             if g and g.group(1) == "library":
                 in_library = True
@@ -451,11 +471,15 @@ def extract_cell_blocks(lib_path: Path, wanted: set[str]) -> tuple[dict[str, Lib
             depth += 1          # a group-opener line opens exactly one group
         depth -= ln.count("}")
         if depth <= 0:
-            blocks[name] = parse_liberty_group(collecting)
+            parsed = parse_liberty_group(collecting)
+            if collect_kind == "cell":
+                blocks[name] = parsed
+            else:
+                templates[name] = parsed
             collecting = None
     if collecting is not None:
-        raise GateModelError(f"{lib_path}: unterminated cell block for {name!r}")
-    return blocks, header
+        raise GateModelError(f"{lib_path}: unterminated {collect_kind} block for {name!r}")
+    return blocks, header, templates
 
 
 # --------------------------------------------------------------------------
@@ -619,8 +643,29 @@ def _numbers(s: str) -> list[float]:
 class NldmTable:
     """A Liberty 2-D ``cell_rise``/``cell_fall`` table with bilinear lookup."""
 
-    def __init__(self, group: LibGroup, where: str):
+    #: the only axis spellings ``at(slew, load)`` is validated for: the row
+    #: index must be the input transition (slew), the column the output load.
+    #: These are the axes of the pinned deck's ``del_1_7_7`` and its siblings;
+    #: a template that swaps them would be read transposed, silently.
+    SLEW_AXIS = "input_net_transition"
+    LOAD_AXIS = "total_output_net_capacitance"
+
+    def __init__(self, group: LibGroup, where: str,
+                 templates: dict[str, LibGroup]):
         self.where = where
+        tname = group.args[0] if group.args else ""
+        tmpl = templates.get(tname)
+        if tmpl is None:
+            raise GateModelError(
+                f"{where}: table references lu_table_template {tname!r}, "
+                f"which the deck does not define")
+        v1, v2 = tmpl.attrs.get("variable_1"), tmpl.attrs.get("variable_2")
+        if v1 != self.SLEW_AXIS or v2 != self.LOAD_AXIS:
+            raise GateModelError(
+                f"{where}: lu_table_template {tname!r} indexes "
+                f"({v1!r}, {v2!r}), not ({self.SLEW_AXIS!r}, "
+                f"{self.LOAD_AXIS!r}); at(slew, load) would read it "
+                f"transposed -- refusing")
         i1 = group.calls.get("index_1")
         i2 = group.calls.get("index_2")
         vals = group.calls.get("values")
@@ -661,7 +706,8 @@ class NldmTable:
 class CellModel:
     """One Liberty cell reduced to what the generator needs."""
 
-    def __init__(self, name: str, group: LibGroup):
+    def __init__(self, name: str, group: LibGroup,
+                 templates: dict[str, LibGroup]):
         self.name = name
         self.inputs: list[str] = []
         self.outputs: list[str] = []
@@ -689,8 +735,10 @@ class CellModel:
                     fall = t.first("cell_fall")
                     arcs.append((
                         t.attrs.get("related_pin", "?"), ttype,
-                        NldmTable(rise, f"{name}/{pname}/cell_rise") if rise else None,
-                        NldmTable(fall, f"{name}/{pname}/cell_fall") if fall else None,
+                        NldmTable(rise, f"{name}/{pname}/cell_rise",
+                                  templates) if rise else None,
+                        NldmTable(fall, f"{name}/{pname}/cell_fall",
+                                  templates) if fall else None,
                     ))
                 self.arcs[pname] = arcs
         self.inputs.sort()
@@ -1268,7 +1316,7 @@ def main(argv: list[str] | None = None) -> int:
     liberty = resolve_liberty(args.liberty, args.corner)
     lib_sha = sha256_file(liberty)
     wanted = set(design.cell_histogram())
-    blocks, header = extract_cell_blocks(liberty, wanted)
+    blocks, header, templates = extract_cell_blocks(liberty, wanted)
     absent = sorted(wanted - set(blocks))
     if absent:
         raise GateModelError(
@@ -1286,7 +1334,7 @@ def main(argv: list[str] | None = None) -> int:
         raise GateModelError(
             f"{liberty.name}: input_threshold_pct is {threshold_pct}, not "
             f"{EXPECTED_THRESHOLD_PCT}; the bridge band assumption needs re-deriving")
-    lib = {name: CellModel(name, g) for name, g in blocks.items()}
+    lib = {name: CellModel(name, g, templates) for name, g in blocks.items()}
 
     model = build_gate_model(design, lib, supply_v=args.supply_v, slew_ns=args.slew_ns,
                              port_load_pf=args.port_load_pf, liberty_path=liberty,

@@ -61,7 +61,10 @@ MR = load_module("make_requests_for_gate_model", BLOCK / "make-requests.py")
 # exactly like the real deck (same group nesting, same attribute spellings).
 # --------------------------------------------------------------------------
 
-def liberty(cells: str, threshold: str = "50.000000000") -> str:
+def liberty(cells: str, threshold: str = "50.000000000",
+            templates: str | None = None) -> str:
+    if templates is None:
+        templates = GOOD_TEMPLATES
     return f"""library ("synthetic_hd") {{
     delay_model : "table_lookup";
     time_unit : "1ns";
@@ -69,8 +72,35 @@ def liberty(cells: str, threshold: str = "50.000000000") -> str:
     capacitive_load_unit(1.0000000000, "pf");
     input_threshold_pct_fall : {threshold};
     input_threshold_pct_rise : {threshold};
-{cells}
-}}
+{templates}{cells}}}
+"""
+
+
+#: the library-level LUT templates the synthetic deck's NLDM tables sit on,
+#: shaped like the real deck's. The TRAP is deliberate: power_inputs_1 is a
+#: ``power_lut_template`` (never read for delays) appearing BEFORE del_2_2
+#: with a DIFFERENT variable_1, exactly like ``power_inputs_1`` precedes
+#: ``del_1_7_7`` in sky130_fd_sc_hd__tt_025C_1v80.lib. Library-level
+#: attribute lines fold into the flat ``header`` dict with ``setdefault``,
+#: so header["variable_1"] is power_inputs_1's -- a generator that validated
+#: its delay tables against the flat header would refuse this known-good
+#: deck instead of building it.
+GOOD_TEMPLATES = """    power_lut_template ("power_inputs_1") {
+        variable_1 : "input_transition_time";
+        variable_2 : "total_output_net_capacitance";
+    }
+    lu_table_template ("del_2_2") {
+        variable_1 : "input_net_transition";
+        variable_2 : "total_output_net_capacitance";
+    }
+"""
+
+#: the same template with its two axes transposed -- what at(slew, load)
+#: would silently read back-to-front
+TRANSPOSED_TEMPLATES = """    lu_table_template ("del_2_2") {
+        variable_1 : "total_output_net_capacitance";
+        variable_2 : "input_net_transition";
+    }
 """
 
 
@@ -247,8 +277,8 @@ def build(tmp: Path, verilog: str = SYNTH_V, lib: str = SYNTH_LIB, **kw):
     """Parse + build a gate model from a synthetic pair, in process."""
     v, l = write_pair(tmp, verilog, lib)
     design = G.parse_verilog(v)
-    blocks, header = G.extract_cell_blocks(l, set(design.cell_histogram()))
-    cells = {n: G.CellModel(n, g) for n, g in blocks.items()}
+    blocks, header, templates = G.extract_cell_blocks(l, set(design.cell_histogram()))
+    cells = {n: G.CellModel(n, g, templates) for n, g in blocks.items()}
     kwargs = dict(supply_v=1.8, slew_ns=0.1, port_load_pf=0.0,
                   liberty_path=l, liberty_sha256="0" * 64, threshold_pct=50.0)
     kwargs.update(kw)
@@ -538,13 +568,21 @@ class TestTruthTable(unittest.TestCase):
 
 
 class TestNldmReduction(unittest.TestCase):
-    def table(self):
-        lines = ["cell_rise (\"del_2_2\") {",
+    def templates(self) -> dict:
+        lines = ['lu_table_template ("del_2_2") {',
+                 'variable_1 : "input_net_transition";',
+                 'variable_2 : "total_output_net_capacitance";',
+                 "}"]
+        g = G.parse_liberty_group(lines)
+        return {g.args[0]: g}
+
+    def table(self, tname: str = "del_2_2"):
+        lines = [f'cell_rise ("{tname}") {{',
                  "index_1(\"0.1, 0.5\");",
                  "index_2(\"0.001, 0.009\");",
                  "values(\"1.0, 2.0\", \"3.0, 5.0\");",
                  "}"]
-        return G.NldmTable(G.parse_liberty_group(lines), "test")
+        return G.NldmTable(G.parse_liberty_group(lines), "test", self.templates())
 
     def test_corner_values_are_exact(self):
         t = self.table()
@@ -573,7 +611,34 @@ class TestNldmReduction(unittest.TestCase):
                  "values(\"1.0, 2.0\", \"3.0\");",
                  "}"]
         with self.assertRaises(G.GateModelError):
-            G.NldmTable(G.parse_liberty_group(lines), "bad")
+            G.NldmTable(G.parse_liberty_group(lines), "bad", self.templates())
+
+    def test_transposed_template_axes_are_refused(self):
+        # at(slew, load) brackets index_1 with slew and index_2 with load; a
+        # deck whose template swaps the axes would be read transposed, so it
+        # is refused rather than silently accepted (issue #496 item 2).
+        lines = ['lu_table_template ("del_2_2") {',
+                 'variable_1 : "total_output_net_capacitance";',
+                 'variable_2 : "input_net_transition";',
+                 "}"]
+        g = G.parse_liberty_group(lines)
+        tmpl = {g.args[0]: g}
+        with self.assertRaises(G.GateModelError) as cm:
+            G.NldmTable(self._raw_table(), "test", tmpl)
+        self.assertIn("transposed", str(cm.exception))
+
+    def test_unknown_template_name_is_refused(self):
+        with self.assertRaises(G.GateModelError) as cm:
+            self.table(tname="del_9_9")
+        self.assertIn("does not define", str(cm.exception))
+
+    def _raw_table(self):
+        lines = ["cell_rise (\"del_2_2\") {",
+                 "index_1(\"0.1, 0.5\");",
+                 "index_2(\"0.001, 0.009\");",
+                 "values(\"1.0, 2.0\", \"3.0, 5.0\");",
+                 "}"]
+        return G.parse_liberty_group(lines)
 
     def test_delay_is_the_max_over_arcs_and_floored(self):
         with tempfile.TemporaryDirectory() as td:
@@ -721,8 +786,9 @@ class TestAgainstRealLiberty(unittest.TestCase):
     def test_regenerating_reproduces_the_committed_manifest(self):
         committed = json.loads(COMMITTED_MANIFEST.read_text())
         design = G.parse_verilog(ROUTED_V)
-        blocks, header = G.extract_cell_blocks(REAL_LIB, set(design.cell_histogram()))
-        cells = {n: G.CellModel(n, g) for n, g in blocks.items()}
+        blocks, header, templates = G.extract_cell_blocks(
+            REAL_LIB, set(design.cell_histogram()))
+        cells = {n: G.CellModel(n, g, templates) for n, g in blocks.items()}
         model = G.build_gate_model(
             design, cells,
             supply_v=committed["reductions"]["supply_v"],
