@@ -2,6 +2,12 @@
 
 Sections moved byte-for-byte from [WORK_LOG.md](../WORK_LOG.md) by `loom-daemon work-docs archive`.
 
+### 2026-09-14
+
+- **PR #138**: fix: dedup mint_behavioral_record's rid derivation onto new_record_id
+- **Issue #27** (closed): Compose ro_array_core/sampler_core gates from proven klt primitives, DRC/LVS-clean
+- **Issue #137** (closed): Dedup mint_behavioral_record's rid derivation onto new_record_id (sim/bin/evidence_record.py)
+
 ### 2026-09-13
 
 - **PR #136**: refactor: consolidate lvs-negative-controls.py poc copy onto _klt_common.run_klt
