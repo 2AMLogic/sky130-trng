@@ -303,7 +303,7 @@ def main(argv=None):
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_text(text)
             elif not path.is_file() or path.read_text() != text:
-                print(f"{key}: STALE {rel} (run `python3 signoff/attest.py --write {key}` and regenerate signoff/t1-report.json)", file=sys.stderr)
+                print(f"{key}: STALE {rel} (run `python3 signoff/attest.py --write {key}`, then re-render signoff/t1-report.json on the pinned grader -- see \"Regenerating the report\" in signoff/README.md)", file=sys.stderr)
                 rc = 1
         want = manifest_entry(files, key)
         have = manifest["evidence"].get(key) if manifest else None
