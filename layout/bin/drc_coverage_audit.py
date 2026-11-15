@@ -58,9 +58,12 @@ density, seal-ring or latch-up check.
 from __future__ import annotations
 
 import copy
-import hashlib
 import json
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _hashing import sha256_bytes  # noqa: E402
 
 SCHEMA_VERSION = 1
 DECK = "sky130"
@@ -99,10 +102,6 @@ class AuditError(RuntimeError):
 # --------------------------------------------------------------------------
 
 
-def sha256_bytes(data: bytes) -> str:
-    return hashlib.sha256(data).hexdigest()
-
-
 def ld_key(layer: int, datatype: int) -> str:
     return f"{layer}/{datatype}"
 
@@ -137,7 +136,7 @@ def load_deck_layer_table() -> tuple[str, dict[tuple[int, int], str]]:
     src = decks.deck_source_path(DECK)
     if not src:
         raise AuditError(f"klayout_tools.decks.deck_source_path({DECK!r}) returned nothing")
-    digest = "sha256:" + sha256_bytes(Path(src).read_bytes())
+    digest = sha256_bytes(Path(src).read_bytes(), prefix=True)
     return digest, dict(decks.get_layer_names(DECK))
 
 
