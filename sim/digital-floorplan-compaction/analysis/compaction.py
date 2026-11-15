@@ -87,12 +87,15 @@ def congestion(eng: Path) -> dict:
 
 
 def _exit_from_codes(d: Path):
+    # exit-codes.txt is append-only (run-study.sh re-runs a util with >>), so a
+    # retried run name appears twice: the LAST matching line is the final rc.
+    out = None
     ec = d.parent / "exit-codes.txt"
     if ec.exists():
         for line in ec.read_text().splitlines():
             if line.startswith(d.name + " "):
-                return int(line.split()[2])
-    return None
+                out = int(line.split()[2])
+    return out
 
 
 def summarize_run(d: Path, *, exit_lookup=_exit_from_codes) -> dict:
