@@ -213,6 +213,14 @@ name: CI
 #     sim/tests/**, sim/*/analysis/**, sim/*/records/** and sim/*/*.py path
 #     filters. No ngspice, no PDK.
 #
+#     The step pins python-version 3.12 (not this job's 3.11 default): the
+#     test replays the study's committed records, whose float-derived
+#     rows/summary are interpreter-dependent -- 3.10/3.11 disagree with
+#     3.12/3.13 on the same deck, and the committed evidence replays under
+#     the 3.12 family only (attribution pending, issue #519). The job
+#     default is restored by a second setup-python step right after, so
+#     every other step below still runs on 3.11.
+#
 # signoff-check (issue #155) -- the gap-to-T1 tier report staleness gate.
 #     `klt signoff --manifest signoff/block-manifest.json` re-renders this
 #     block's graded T1 item table from the committed evidence envelopes
@@ -481,8 +489,20 @@ jobs:
       - name: sim/tests/test_request_dir.py (issue #469 shared request-directory walk, refused-request completeness policies, no per-reducer re-fork)
         run: python3 sim/tests/test_request_dir.py
 
-      - name: sim/tests/test_vth_drift.py (issue #254 wrapper/coverage/calibration + #467 superseding-record diff + #498 controls-pin refusal guard)
+      # 3.12, not the job default 3.11: the committed records this test
+      # replays are interpreter-dependent (issue #519) and only replay
+      # under the 3.12 family -- see the comment block above. The second
+      # setup-python below restores 3.11 for the remaining steps.
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: sim/tests/test_vth_drift.py (issue #254 wrapper/coverage/calibration + #467 superseding-record diff + #498 controls-pin refusal guard; interpreter-pinned, see above)
         run: python3 sim/tests/test_vth_drift.py
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
 
       - name: sim/post-layout-whole-block/test_make_netlist.py (issue #478 generator transforms + committed netlist/port-map pair)
         run: python3 sim/post-layout-whole-block/test_make_netlist.py
