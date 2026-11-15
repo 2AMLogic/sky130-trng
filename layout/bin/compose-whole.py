@@ -71,7 +71,7 @@ from functools import partial
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _hashing import sha256_file as _sha256_file  # noqa: E402
+from _hashing import sha256_file as _sha256_file, sha256_text as _sha256_text  # noqa: E402
 from _klt_common import BuildError, run_klt, write_json  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -118,10 +118,7 @@ _LABEL_LAYER = {
 
 
 sha256_file = partial(_sha256_file, prefix=True)  # recorded as "sha256:<hex>"
-
-
-def sha256_text(text: str) -> str:
-    return "sha256:" + hashlib.sha256(text.encode()).hexdigest()
+sha256_text = partial(_sha256_text, prefix=True)  # recorded as "sha256:<hex>"
 
 
 def load_json(path: Path) -> dict:
