@@ -35,18 +35,20 @@ Usage::
     python3 sim/bin/characterization_report.py            # (re)write
     python3 sim/bin/characterization_report.py --check    # exit 1 if stale
 
-Standard library only.
+Standard library only, plus the repo's shared digest helper (layout/bin/_hashing.py).
 """
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import re
 import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPO / "layout" / "bin"))
+from _hashing import sha256_bytes  # noqa: E402
+
 OUT_MD = "signoff/characterization-report.md"
 OUT_JSON = "signoff/characterization-report.json"
 OUT_ENVELOPE = "signoff/characterization-envelope.json"
@@ -251,10 +253,6 @@ EVIDENCE: dict[str, list[dict]] = {
         },
     ],
 }
-
-
-def sha256_bytes(b: bytes) -> str:
-    return hashlib.sha256(b).hexdigest()
 
 
 def parse_spec_table(text: str) -> list[dict]:

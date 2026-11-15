@@ -108,7 +108,6 @@ Nothing here simulates anything.
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import re
 import subprocess
@@ -120,6 +119,7 @@ REPO = HERE.parents[1]
 sys.path.insert(0, str(HERE))
 sys.path.insert(0, str(REPO / "layout" / "bin"))
 import program as P  # noqa: E402
+from _hashing import sha256_file, sha256_text  # noqa: E402
 from _klt_common import BuildError, libs_ref  # noqa: E402
 
 ROUTED_V = REPO / "layout" / "trng_digital" / "trng_digital.routed.v"
@@ -1052,16 +1052,6 @@ def build_gate_model(design: Design, lib: dict[str, CellModel], *, supply_v: flo
 # --------------------------------------------------------------------------
 # Stimulus, request and plan
 # --------------------------------------------------------------------------
-
-def sha256_file(path: Path) -> str:
-    h = hashlib.sha256()
-    h.update(path.read_bytes())
-    return h.hexdigest()
-
-
-def sha256_text(text: str) -> str:
-    return hashlib.sha256(text.encode()).hexdigest()
-
 
 def raw_bits(n: int) -> list[int]:
     if n > len(RAW_BIT_PATTERN):
