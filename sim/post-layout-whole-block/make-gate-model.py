@@ -484,11 +484,12 @@ def _tokenize(expr: str) -> list[tuple[str, str]]:
 class _FuncParser:
     """Recursive-descent parser for a Liberty ``function`` expression.
 
-    Grammar (precedence low to high)::
+    Grammar (precedence low to high; Liberty binds ``^`` TIGHTER than
+    ``&``/``*`/juxtaposition, so ``A ^ B & C`` is ``(A ^ B) & C``)::
 
-        or    := xor (('|' | '+') xor)*
-        xor   := and ('^' and)*
-        and   := not (('&' | '*')? not)*       # juxtaposition is AND
+        or    := and (('|' | '+') and)*
+        and   := xor (('&' | '*')? xor)*       # juxtaposition is AND
+        xor   := not ('^' not)*
         not   := ('!' | '~') not | atom ("'")*
         atom  := ident | '0' | '1' | '(' or ')'
     """
@@ -509,30 +510,30 @@ class _FuncParser:
         return node
 
     def p_or(self):
-        node = self.p_xor()
+        node = self.p_and()
         while self.peek() in (("op", "|"), ("op", "+")):
             self.i += 1
-            node = ("or", node, self.p_xor())
-        return node
-
-    def p_xor(self):
-        node = self.p_and()
-        while self.peek() == ("op", "^"):
-            self.i += 1
-            node = ("xor", node, self.p_and())
+            node = ("or", node, self.p_and())
         return node
 
     def p_and(self):
-        node = self.p_not()
+        node = self.p_xor()
         while True:
             k, v = self.peek()
             if (k, v) in (("op", "&"), ("op", "*")):
                 self.i += 1
-                node = ("and", node, self.p_not())
+                node = ("and", node, self.p_xor())
             elif k == "id" or k == "num" or (k, v) in (("op", "("), ("op", "!"), ("op", "~")):
-                node = ("and", node, self.p_not())  # juxtaposition
+                node = ("and", node, self.p_xor())  # juxtaposition
             else:
                 return node
+
+    def p_xor(self):
+        node = self.p_not()
+        while self.peek() == ("op", "^"):
+            self.i += 1
+            node = ("xor", node, self.p_not())
+        return node
 
     def p_not(self):
         k, v = self.peek()

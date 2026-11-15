@@ -505,6 +505,28 @@ class TestTruthTable(unittest.TestCase):
         self.assertEqual(G.truth_table("A B", ["A", "B"]), "0001")  # juxtaposition
         self.assertEqual(G.truth_table("1", ["A"]), "11")
 
+    def test_xor_binds_tighter_than_and(self):
+        # Liberty's documented precedence: '^' over '&'/juxtaposition, the
+        # opposite of C. Both mixed forms are asserted over all 8 rows so the
+        # two nestings cannot pass by accident (issue #496 item 4).
+        pins = ["A", "B", "C"]
+        # (A ^ B) & C
+        expect = ""
+        for idx in range(8):
+            a, b, c = idx & 1, (idx >> 1) & 1, (idx >> 2) & 1
+            expect += "1" if ((a ^ b) and c) else "0"
+        self.assertEqual(G.truth_table("A ^ B & C", pins), expect)
+        self.assertEqual(G.truth_table("A ^ B & C", pins), "00000110")
+        # A & (B ^ C)
+        expect = ""
+        for idx in range(8):
+            a, b, c = idx & 1, (idx >> 1) & 1, (idx >> 2) & 1
+            expect += "1" if (a and (b ^ c)) else "0"
+        self.assertEqual(G.truth_table("A & B ^ C", pins), expect)
+        self.assertEqual(G.truth_table("A & B ^ C", pins), "00010100")
+        # juxtaposition follows the same precedence as an explicit '&'
+        self.assertEqual(G.truth_table("A B ^ C", pins), "00010100")
+
     def test_function_referencing_an_unknown_pin_is_refused(self):
         with self.assertRaises(G.GateModelError):
             G.truth_table("(A&C)", ["A", "B"])
