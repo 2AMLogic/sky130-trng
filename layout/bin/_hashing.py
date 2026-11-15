@@ -2,9 +2,10 @@
 """Shared SHA-256 digest helpers for this repo's ``layout/``, ``sim/`` and ``signoff/`` scripts.
 
 Replaces six hand-rolled ``sha256_file`` / ``sha`` definitions (issues #452,
-#455) and nine hand-rolled in-memory ``sha256_text`` / ``sha256_bytes`` /
-``digest`` / ``sha`` definitions (issue #487) that had drifted into two output
-formats for the same operation -- including two same-named ``sha256_text``
+#455) and, under issue #487, ten hand-rolled in-memory ``sha256_text`` /
+``sha256_bytes`` / ``digest`` / ``sha`` definitions plus one further
+``sha256_file`` fork -- eleven in all -- that had drifted into two output
+formats for the same operation, including two same-named ``sha256_text``
 functions in this very directory that returned different strings. The formats
 are preserved per call site (recorded digest strings must not change):
 ``prefix=True`` yields ``"sha256:<hex>"``, the default yields a bare ``<hex>``.
