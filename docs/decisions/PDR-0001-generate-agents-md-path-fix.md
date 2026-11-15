@@ -1,9 +1,9 @@
 ---
 dr: PDR-0001-generate-agents-md-path-fix
 title: Fix generate-agents-md.sh's broken relative source path locally, and file the upstream bug separately
-status: Proposed
+status: Accepted
 date: 2026-09-14
-deciders: unratified — Proposed by the Builder on #75; acceptance is a normal PR-review (human/Champion) action, not the spec two-key mechanism — see "Does the two-key mechanism apply?" below
+deciders: Champion direction on issue #523 (2026-11-15) carried the recommendation out; acceptance is recorded through that PR's normal review lifecycle with operator ratification of the docs/decisions ratification hold — not the spec two-key mechanism — see "Does the two-key mechanism apply?" below
 supersedes: n/a
 superseded_by: n/a
 related: "#75 (the issue this record resolves the option-selection for); .loom/scripts/generate-agents-md.sh (the broken script); .loom/install-metadata.json (its manifest entry); ratification/ee-key/SKILL.md, ratification/market-key/SKILL.md, and their rubric.md files (read and found inapplicable to this record's subject matter — see below); spec/README.md and spec/decision-records/DR-0001 (the frontmatter/status convention this record reuses)"
@@ -13,6 +13,18 @@ related: "#75 (the issue this record resolves the option-selection for); .loom/s
 
 ## Status
 
+- 2026-11-15: **Accepted.** The recommended pairing is carried out by issue
+  #523's increment: the two-line local path fix is applied to
+  `.loom/scripts/generate-agents-md.sh` (verified by
+  `./.loom/scripts/generate-agents-md.sh --stdout` printing instead of
+  erroring; pinned in `.loom/resync-ignore` so resync does not clobber it
+  before an upstream fix arrives), and the upstream path-bug report is filed
+  as [rjwalters/loom#13910](https://github.com/rjwalters/loom/issues/13910)
+  — which also confirmed the header's `check-agents-md-sync.sh` claim holds
+  upstream (the script exists in the source repo; it is simply not an
+  installed surface). Acceptance rides that PR's normal review lifecycle;
+  because it touches `docs/decisions/**`, Champion's ratification hold parks
+  it for operator sign-off.
 - 2026-09-14: **Proposed.** Not accepted by anyone. This record exists
   because issue #75's Champion review reframed a three-option, human-deferred
   issue as a decision a Builder should resolve and justify in a PR, per the

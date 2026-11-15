@@ -34,8 +34,15 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SRC="$SCRIPT_DIR/../.loom/CLAUDE.md"
-DEFAULT_OUT="$SCRIPT_DIR/../.loom/AGENTS.md"
+# Installed layout (2AMLogic/sky130-trng): this script lives at .loom/scripts/,
+# directly beside .loom/CLAUDE.md — one level shallower than the Loom source
+# repo's defaults/scripts/ next to defaults/.loom/CLAUDE.md. The upstream
+# relative path ($SCRIPT_DIR/../.loom/...) doubled the .loom/ directory here.
+# Local fix per PDR-0001 (docs/decisions/PDR-0001-generate-agents-md-path-fix.md),
+# pinned in .loom/resync-ignore until rjwalters/loom#13910 lands a
+# layout-aware fix upstream.
+SRC="$SCRIPT_DIR/../CLAUDE.md"
+DEFAULT_OUT="$SCRIPT_DIR/../AGENTS.md"
 
 START_MARKER="<!-- agents-md:include:start -->"
 END_MARKER="<!-- agents-md:include:end -->"
