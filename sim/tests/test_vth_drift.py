@@ -3,7 +3,9 @@
 
 No simulator and no PDK: wrapper generation on text, the coverage manifest, the metric
 derivations on synthetic crossings, fail-closed row handling, the calibration artifact and
-its negative tests (missing key, schema/source-hash mismatch, forced time-zero fallback).
+its negative tests (missing key, schema/source-hash mismatch, forced time-zero fallback),
+and the controls-pin refusal (issue #498): both digests reported at runtime, the
+discriminating checks named, the kind/pass gate still firing first.
 
     python3 sim/tests/test_vth_drift.py
 """
@@ -455,6 +457,80 @@ class LockProximityCorrectionTests(unittest.TestCase):
                 self.assertNotIn("lock_proximity", body)
                 self.assertIn(json.loads(body).get("supersedes"), (None, "(none)"))
         self.assertEqual(S.check(str(self._rec("20261010-164921-7e279ab"))), 0)
+
+
+class ControlsPinRefusalTests(unittest.TestCase):
+    """Issue #498: the controls-pin refusal in emit_record names both digests it
+    compared and the checks that discriminate a bytes-only refactor from a
+    behaviour change, and refuses on exactly the same inputs as the old one-line
+    guard (comparison, accepted ctl_rid set, non-zero exit all unchanged)."""
+
+    OTHER = "not the bytes any pinned file ever had\n"
+
+    def _temp_slugdir(self, *, aging_pin=None, campaign_pin=None):
+        """A temp SLUGDIR holding synthetic campaign.py/aging.py and a PASSing
+        kind: controls record citing the given pins; None pins the file's real
+        current digest.  Every digest is derived at runtime, never a literal."""
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        root = Path(tmp.name)
+        (root / "records").mkdir()
+        (root / "campaign.py").write_text("# synthetic campaign.py for the controls-pin refusal test\n")
+        (root / "aging.py").write_text("# synthetic aging.py for the controls-pin refusal test\n")
+        rid = "20990101-000000-synthpin"
+        rec = {"kind": "controls", "pass": True, "provenance": {
+            "generator_sha256": campaign_pin if campaign_pin is not None else aging.sha256_file(root / "campaign.py"),
+            "aging_sha256": aging_pin if aging_pin is not None else aging.sha256_file(root / "aging.py")}}
+        (root / "records" / f"{rid}.json").write_text(json.dumps(rec))
+        return root, rid
+
+    def _emit(self, root, rid):
+        prev = S.SLUGDIR
+        S.SLUGDIR = root
+        self.addCleanup(setattr, S, "SLUGDIR", prev)
+        with self.assertRaises(SystemExit) as cm:           # the guard raises before load_reqdir
+            S.emit_record("/nonexistent-request-dir", rid)  # so a missing reqdir writes nothing
+        return str(cm.exception.code)
+
+    def test_aging_mismatch_reports_both_digests_and_the_discriminating_checks(self):
+        wrong = aging.sha256_text(self.OTHER)
+        root, rid = self._temp_slugdir(aging_pin=wrong)
+        msg = self._emit(root, rid)
+        self.assertIn(f"pinned by {rid}: {wrong}", msg)
+        self.assertIn(f"current aging.py: {aging.sha256_file(root / 'aging.py')}", msg)
+        self.assertNotIn("current campaign.py:", msg)       # only the failing leg is reported
+        self.assertIn("does not by itself mean the generator's behaviour changed", msg)
+        self.assertIn("sensitivity.py --check RECORD.json", msg)
+        self.assertIn("layout/test_hashing.py", msg)
+        self.assertIn("this study's README.md", msg)         # -> the pin-history section
+        self.assertIn("re-run the controls campaign", msg)   # the behaviour-changed remedy
+        self.assertIn("controls re-run is needed for a bytes-only move", msg)
+
+    def test_matching_pins_pass_the_digest_leg(self):
+        root, rid = self._temp_slugdir()                    # pins = the real current digests
+        msg = self._emit(root, rid)
+        # past the digest leg, the empty synthetic reqdir refuses much later, with
+        # the incomplete-grid message -- pinning "refuses on the same inputs as
+        # before", not just the new wording
+        self.assertNotIn("bytes differ from the digest pinned", msg)
+        self.assertIn("grid incomplete or has failed rows", msg)
+
+    def test_campaign_mismatch_names_campaign_not_aging(self):
+        wrong = aging.sha256_text(self.OTHER)
+        root, rid = self._temp_slugdir(campaign_pin=wrong)
+        msg = self._emit(root, rid)
+        self.assertIn(f"pinned by {rid}: {wrong}", msg)
+        self.assertIn(f"current campaign.py: {aging.sha256_file(root / 'campaign.py')}", msg)
+        self.assertNotIn("current aging.py:", msg)
+
+    def test_non_controls_ctl_rid_is_refused_before_the_digest_leg(self):
+        # a sensitivity record as ctl_rid is refused one check earlier, with the
+        # kind/pass message, never the digest one (real records; read-only)
+        with self.assertRaises(SystemExit) as cm:
+            S.emit_record("/nonexistent-request-dir", "20261113-150554-fb302c35")
+        msg = str(cm.exception.code)
+        self.assertIn("not a PASSing controls record", msg)
+        self.assertNotIn("bytes differ", msg)
 
 
 class RecordImmutabilityTests(unittest.TestCase):
