@@ -270,9 +270,10 @@ def load_reqdir_all(reqdir):
     failed or never completed, so a record can carry them as explicit rows
     instead of silently dropping them (issue #288 evidence requirement).
 
-    The walk itself is shared with the other four campaign reducers in
-    sim/bin/request_dir.py, which took this contract as its own (issue #469);
-    the reason-extraction moved there as `submit_error`."""
+    The walk itself is shared with the other five campaign reducers in
+    sim/bin/request_dir.py, which took this contract as its own (issue #469;
+    idle-leakage joined in #512); the reason-extraction moved there as
+    `submit_error`."""
     return load_request_dir(reqdir, pattern="*-*-*")
 
 

@@ -67,6 +67,7 @@ sys.path.insert(0, str(REPO / "layout" / "bin"))
 sys.path.insert(0, str(REPO / "sim" / "tests"))
 from _hashing import sha256_file  # noqa: E402
 from loadmod import load_module  # noqa: E402
+from request_dir import load_request_dir  # noqa: E402
 
 SYNTH_OUTPUT = REPO / "sim/digital-synthesis/runs/20260910-001436-a4c3194/50khz-constrained-synthesize-output.json"
 SYNTH_RECORD = "sim/digital-synthesis/records/20260910-001436-a4c3194"
@@ -262,17 +263,6 @@ def recommend_idle_target_uw(worst_uw, margin=RECOMMEND_MARGIN):
 
 
 # ----------------------------------------------------------------------------------------------- IO
-def read_reqdir(reqdir):
-    chunks = []
-    for d in sorted(os.listdir(reqdir)):
-        p = Path(reqdir) / d
-        if not (p / "request.json").exists():
-            continue
-        rs = json.load(open(p / "resp.json")) if (p / "resp.json").exists() else None
-        chunks.append((d, json.load(open(p / "plan.json")), rs))
-    return chunks
-
-
 def store_chunks(rid, reqdir, chunks):
     cdir = HERE / "corners" / rid
     if cdir.exists():
@@ -421,9 +411,10 @@ def markdown(rid, rows, fl, wst, rec, p_by_view, jobs, backend, rep):
 
 def emit_record(reqdir, liberty_dir):
     from evidence_record import mint_record, new_record_id
-    chunks = read_reqdir(reqdir)
-    if any(rs is None for _, _, rs in chunks):
-        raise SystemExit("error: a request has no resp.json; run the grid first")
+    chunks, missing = load_request_dir(reqdir, pattern="*")
+    if missing:
+        detail = "; ".join(f"{nm}: {why}" for nm, _, why in missing)
+        raise SystemExit(f"error: {len(missing)} request(s) have no usable response ({detail}); run the grid first")
     rows, fl, wst, p_by_view, lib_sha, bad = reduce_all(chunks, liberty_dir)
     fatal = [b for b in bad if not b[1].startswith("('leaf'")]
     if fatal:
