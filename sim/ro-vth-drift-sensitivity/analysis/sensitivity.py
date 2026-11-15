@@ -48,7 +48,7 @@ sys.path.insert(0, str(REPO / "sim" / "tests"))
 from loadmod import load_module  # noqa: E402
 import aging  # noqa: E402
 import campaign as C  # noqa: E402
-from evidence_record import git_short_sha, mint_record, new_record_id, write_corner_bundle  # noqa: E402
+from evidence_record import mint_record, new_record_id, write_corner_bundle  # noqa: E402
 from lock_proximity import closeness as lock_closeness, ratio_label  # noqa: E402
 from request_dir import load_request_dir  # noqa: E402
 
@@ -432,6 +432,7 @@ def evaluate_controls(ctl: dict[str, tuple[dict, dict]], floor) -> dict:
 
 
 def md_controls(rid, res, info):
+    """The controls record's header lines and body text; mint_record appends the shared footer."""
     L = [f"# {rid} -- {SLUG} (controls)", "", f"**Claim**: the gate-offset wrappers reach the transistor gates with the requested "
          "signed offsets, the zero-shift wrapped decks reproduce the unwrapped decks, and the tt / 27 C / 1.8 V common-mode "
          "pilot moves the ring period monotonically. These controls gate the full grid.", "", f"**Level**: transistor", f"**Verdict**: {'PASS' if res['pass'] else 'FAIL'}", "",
@@ -451,7 +452,7 @@ def md_controls(rid, res, info):
                 L.append(f"| {deck} | {p['shift_mv']:g} | FAILED ({p['status']}) | |")
     L += ["", "## Provenance", "", "```json", json.dumps(info, indent=1), "```", "",
           "Simulation-derived; provisional until silicon.", ""]
-    return "\n".join(L)
+    return L, ""
 
 
 def ctl_info(plans: dict) -> dict:
@@ -480,8 +481,11 @@ def emit_controls(ctldir):
            "seed": "ring5: .option seed=1 (source deck); array: deterministic", "supersedes": "(none)", "pass": res["pass"],
            "controls": res, "provenance": info, "timestamp_utc": now.isoformat(),
            "klt_sim": {"backend": "local", "responses": f"sim/{SLUG}/corners/{rid}/*.klt-sim.json.gz"}}
-    (rdir / f"{rid}.json").write_text(json.dumps(rec, indent=2, default=str) + "\n")
-    (rdir / f"{rid}.md").write_text(md_controls(rid, res, info))
+    header, body = md_controls(rid, res, info)
+    out = mint_record(rdir, REPO, rid, header, body, rec, author="loom-builder@sky130-trng", now=now, sha=sha)
+    if out is None:
+        shutil.rmtree(cdir, ignore_errors=True)
+        raise SystemExit(f"error: record id {rid} already exists; wait a second and re-run")
     print(rid, "PASS" if res["pass"] else "FAIL")
     return 0 if res["pass"] else 1
 
