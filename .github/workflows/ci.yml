@@ -151,6 +151,27 @@ name: CI
 #     hand. The `paths:` filter below lists the two committed evidence files
 #     the second test reads; the scripts themselves are covered by sim/*/*.py.
 #
+# sim/post-layout-whole-block/test_make_requests.py (issue #488) -- stdlib-only
+#     unit test of the whole-block request generator's driven-input PWL
+#     stimulus shape. A SPICE PWL source interpolates LINEARLY between its
+#     breakpoints, so the pre-#488 change-instants-only breakpoint list emitted
+#     every bus input as a ramp across its whole hold interval instead of a hold
+#     plus an edge: bus_re came out as PWL(0.0n 1.800 640.0n 0.000 970.0n 0.000),
+#     0.928 V at 310 ns, and 344 of 3000 (driven input x capture point) samples
+#     over the full grid program sat more than 10 % off a rail, the worst at
+#     0.905 V. The control here is the half that cannot be eyeballed: every
+#     emitted card is evaluated at every cycle's t_edge+CAPTURE_NS and must land
+#     within 1 mV of a rail, which FAILS on the old shape. Beside it, the
+#     hold/edge pair is asserted on the card text (639.9n at the old value then
+#     640.0n at the new), plus breakpoint hygiene -- t=0 first, t_stop last, no
+#     two breakpoints sharing a formatted timestamp (what an under-wide EDGE_NS
+#     silently produces, since pwl_card writes f"{t:.1f}n"), and a constant
+#     input still emitting exactly two points. Finally GRID_TIMEOUT_S and the
+#     four committed grid requests' timeout_s/poll_timeout_s are pinned, because
+#     the issue's acceptance criteria forbid this fix disturbing them. Covered
+#     by the existing sim/*/*.py and sim/*/corners/** path filters.
+#     No klt, no PDK, no ngspice.
+#
 # sim/tests/test_gate_model.py (issue #486) -- stdlib-only unit test of the
 #     gate-level digital model generator (sim/post-layout-whole-block/make-gate-model.py),
 #     the ngspice realisation DR-0017 option (b) left open. The strong check
@@ -469,6 +490,9 @@ jobs:
 
       - name: sim/post-layout-whole-block/test_make_netlist.py (issue #478 generator transforms + committed netlist/port-map pair)
         run: python3 sim/post-layout-whole-block/test_make_netlist.py
+
+      - name: sim/post-layout-whole-block/test_make_requests.py (issue #488 driven-input PWL holds then switches; capture points at a rail; grid timeouts pinned)
+        run: python3 sim/post-layout-whole-block/test_make_requests.py
 
       - name: sim/tests/test_gate_model.py (issue #486 gate-level model generator -- routed-netlist correspondence, Liberty truth tables, NLDM interpolation, fail-closed paths)
         run: python3 sim/tests/test_gate_model.py
