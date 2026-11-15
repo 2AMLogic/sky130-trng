@@ -277,8 +277,8 @@ class MismatchSampleCount(TempReqdir):
     def test_the_shortfall_is_visible_in_the_rendered_headline(self):
         chunks, missing = MM.load_reqdir(self.reqdir(("tt-arr-1",)))
         _rows, S = MM.build(chunks, missing)["tt"]
-        md = MM.render_md("rid", "tt", S, ["job"], "sha", __import__("datetime").datetime.now())
-        self.assertIn("**Samples**: 20/30 array, 60/60 sampler.", md)
+        header, _body = MM.render_md("rid", "tt", S, ["job"])
+        self.assertIn("**Samples**: 20/30 array, 60/60 sampler.", "\n".join(header))
 
     SLUGDIR = ("sim", "local-mismatch-monte-carlo")
 
