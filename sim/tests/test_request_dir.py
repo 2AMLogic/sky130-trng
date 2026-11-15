@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""Unit tests for sim/bin/request_dir.py and the five reducers' completeness
-policies (issue #469).
+"""Unit tests for sim/bin/request_dir.py and the six reducers' completeness
+policies (issue #469; idle-leakage joined in #512).
 
 The shared rule under test: a `klt sim` request with no usable response is
 **returned to the caller**, never dropped on the floor. Each campaign reducer
@@ -370,9 +370,9 @@ class MismatchSampleCount(TempReqdir):
                          "a missing request at another corner must not inflate this corner's denominator")
 
 
-# ---------------------------------------------------------- one walk, five policies
+# ---------------------------------------------------------- one walk, six policies
 class Consolidation(unittest.TestCase):
-    """All five reducers must use the shared walk, not a private copy."""
+    """All six reducers must use the shared walk, not a private copy."""
 
     REDUCERS = {
         "ripple": "sim/ro-array-supply-perturbation/ripple.py",
@@ -380,6 +380,7 @@ class Consolidation(unittest.TestCase):
         "sensitivity": "sim/ro-vth-drift-sensitivity/analysis/sensitivity.py",
         "xor": "sim/xor-combining-alternatives/reduce.py",
         "mismatch": "sim/local-mismatch-monte-carlo/reduce.py",
+        "idle-leakage": "sim/ro-array-idle-leakage/analysis/idle_leakage.py",
     }
     FORKED = ("_submit_error", "_submit_err", "NO_RESPONSE")
 
@@ -403,7 +404,7 @@ class Consolidation(unittest.TestCase):
         `emit_controls` still fetches a FIXED list of control requests by name
         (and already refuses loudly if one is absent), and archives superseded
         `resp.fail*.json` attempts. Neither is a directory walk, and neither is
-        what drifted five ways."""
+        what drifted six ways."""
         for name, rel in self.REDUCERS.items():
             with self.subTest(reducer=name):
                 for n, line in enumerate(open(os.path.join(REPO, rel)), 1):

@@ -21,15 +21,20 @@ place instead of having it fall out of a glob pattern:
   refuses to record a partial grid
 * ``xor-combining-alternatives/reduce.py`` -- refuses unless all 6 came back
 * ``local-mismatch-monte-carlo/reduce.py`` -- refuses to emit a record
+* ``ro-array-idle-leakage/analysis/idle_leakage.py`` -- refuses unless every
+  request has a response, naming each one that does not (issue #512)
 
-Five reducers used to carry five copies of this walk, with five glob patterns
-and five different answers for a request with no response. The
+Six reducers used to carry six copies of this walk, with six glob patterns
+and six different answers for a request with no response. The
 local-mismatch copy dropped such a request silently *and* took its
 ``n_*_requested`` sample counts from the units that came back, so a refused
 Monte Carlo chunk shrank the denominator with it: a record could read
 "30/30 array" while a third of the requested draws were missing, with no error
 and no trace but a short seed list. Issue #469; same consolidation shape as
-#133 and #465.
+#133 and #465 -- though that sweep counted five: the idle-leakage copy named
+its walk ``read_reqdir``, so the name search missed it, and it went on keying
+requests on ``request.json`` and passing an errored response (a ``resp.json``
+with no ``corners`` key) straight through until issue #512 brought it here.
 
 Reading a *committed* corner bundle (``corners/<rid>/*.klt-sim.json.gz``) is a
 different job -- the bundle only ever contains responses that arrived -- and
@@ -101,7 +106,7 @@ def _read_plan(path):
       ``notes/`` folder beside the requests), and the walk skips it.
     * **a file that is there but unreadable** -- zero-byte, truncated, not a
       JSON object -- is a *corrupt request*, not a non-request, so it raises
-      and names the path. All five hand-rolled walks this module replaced did
+      and names the path. All six hand-rolled walks this module replaced did
       ``json.load(open(plan.json))`` unguarded and so raised here too.
 
     Skipping the second case would drop the request from *both* of
