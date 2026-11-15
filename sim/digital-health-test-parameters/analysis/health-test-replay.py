@@ -39,7 +39,6 @@ Usage::
 from __future__ import annotations
 
 import argparse
-import importlib.util
 import json
 import math
 import random
@@ -52,8 +51,10 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO_ROOT / "digital"))
 sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
+sys.path.insert(0, str(REPO_ROOT / "sim" / "tests"))
 
 from evidence_record import mint_behavioral_record  # noqa: E402
+from loadmod import load_module  # noqa: E402
 from model import params  # noqa: E402
 from model.health import (AdaptiveProportionTest, HealthMonitor,  # noqa: E402
                           RepetitionCountTest)
@@ -234,11 +235,7 @@ def verdict(h: float) -> str:
 def _load_battery_module():
     path = (REPO_ROOT / "sim" / "raw-bit-min-entropy" / "analysis"
             / "raw-bit-battery.py")
-    spec = importlib.util.spec_from_file_location("raw_bit_battery", path)
-    mod = importlib.util.module_from_spec(spec)
-    sys.modules["raw_bit_battery"] = mod
-    spec.loader.exec_module(mod)
-    return mod
+    return load_module("raw_bit_battery", path, register=True)
 
 
 def load_streams() -> list[dict]:

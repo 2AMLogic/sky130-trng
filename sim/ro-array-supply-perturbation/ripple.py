@@ -89,9 +89,11 @@ REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 SLUG = "ro-array-supply-perturbation"
 sys.path.insert(0, os.path.join(REPO, "sim", "bin"))
 sys.path.insert(0, os.path.join(REPO, "layout", "bin"))
+sys.path.insert(0, os.path.join(REPO, "sim", "tests"))
 from lock_proximity import ANY_RATIOS, DR5_RATIOS, closeness  # noqa: E402  (after sys.path)
 from _hashing import sha256_file as _sha256  # noqa: E402
 from request_dir import load_request_dir  # noqa: E402
+from loadmod import load_module  # noqa: E402
 
 NEDGE = 40
 DRIFT_LOCK = 0.1                 # ring cycles slipped over the window below which => locked
@@ -878,12 +880,9 @@ def _provenance(rs):
 
 
 def emit_record(reqdir, sha=None):
-    import importlib.util
     from evidence_record import git_short_sha, write_corner_bundle
     from pathlib import Path
-    spec = importlib.util.spec_from_file_location("make_requests", os.path.join(os.path.dirname(__file__), "make-requests.py"))
-    mr = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mr)
+    mr = load_module("make_requests", os.path.join(os.path.dirname(__file__), "make-requests.py"))
     sha = sha or git_short_sha(Path(REPO))
     chunks, missing = load_reqdir_all(reqdir)
     campaigns = {pl.get("campaign") for _, pl, _ in chunks} | {pl.get("campaign") for _, pl, _ in missing}

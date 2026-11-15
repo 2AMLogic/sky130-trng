@@ -16,7 +16,6 @@ unsupported evidence never selects a candidate. Nothing is promoted.
 from __future__ import annotations
 
 import argparse
-import importlib.util
 import json
 import sys
 from pathlib import Path
@@ -25,13 +24,13 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 STUDY = REPO_ROOT / "sim" / "digital-repaired-compaction"
 sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
 sys.path.insert(0, str(REPO_ROOT / "layout" / "bin"))
+sys.path.insert(0, str(REPO_ROOT / "sim" / "tests"))
 from _hashing import sha256_file  # noqa: E402
 from evidence_record import mint_record, new_record_id  # noqa: E402
+from loadmod import load_module  # noqa: E402
 
-_spec = importlib.util.spec_from_file_location(
+C = load_module(
     "compaction", REPO_ROOT / "sim/digital-floorplan-compaction/analysis/compaction.py")
-C = importlib.util.module_from_spec(_spec)
-_spec.loader.exec_module(C)
 
 TARGET = C.TARGET_MM2
 REPAIR_STUDY = REPO_ROOT / "sim" / "digital-electrical-repair"
