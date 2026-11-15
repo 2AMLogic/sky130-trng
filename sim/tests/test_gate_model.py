@@ -54,6 +54,7 @@ from loadmod import load_module  # noqa: E402
 
 G = load_module("make_gate_model", GENERATOR)
 MR = load_module("make_requests_for_gate_model", BLOCK / "make-requests.py")
+CMP = load_module("compare_gate_model", BLOCK / "analysis" / "compare-gate-model.py")
 
 
 # --------------------------------------------------------------------------
@@ -797,6 +798,74 @@ class TestClkThresholdCard(unittest.TestCase):
                          ".meas tran t_clk_first WHEN v(clk)=0.6 RISE=1")
         self.assertEqual(self.card(1.8, pct=45.0),
                          ".meas tran t_clk_first WHEN v(clk)=0.81 RISE=1")
+
+
+# --------------------------------------------------------------------------
+# 6. the reducer refuses incomplete evidence (issue #496 item 1)
+# --------------------------------------------------------------------------
+
+COMMITTED_GATE_PLAN = BLOCK / "corners" / "gate-model-full" / "plan.json"
+COMMITTED_GATE_REPORT = BLOCK / "runs" / "20261114-gate-model-full" / "report.json"
+
+
+class TestReducerMeasurementCompleteness(unittest.TestCase):
+    """``compare()`` must refuse incomplete evidence (issue #496 item 1): a
+    measurement the deck did not produce would otherwise silently decode as
+    0 -- or never be checked at all -- and the verdict would say PASS."""
+
+    def plan(self, measurement_count: int) -> dict:
+        return {
+            "realisation": "test",
+            "reductions": {"supply_v": 1.8},
+            "program": {"cycles": 4, "t_stop_ns": 200.0},
+            "raw_bit_pattern": "0101",
+            "measurement_count": measurement_count,
+        }
+
+    def compare(self, measurements: list[dict], measurement_count: int) -> dict:
+        report = {"corners": [{
+            "corner_id": "tt_test", "status": "pass", "runtime_s": 1.0,
+            "measurements": measurements,
+        }]}
+        return CMP.compare(report, self.plan(measurement_count))
+
+    @staticmethod
+    def word(word: int = 0, drop: set[int] = frozenset()) -> list[dict]:
+        return [{"name": f"rdata_k0_b{b}", "value": 1.8 if (word >> b) & 1 else 0.0}
+                for b in range(32) if b not in drop]
+
+    def test_count_mismatch_is_refused(self):
+        meas = self.word()
+        with self.assertRaises(SystemExit) as cm:
+            self.compare(meas[:-1], measurement_count=len(meas))
+        msg = str(cm.exception)
+        self.assertIn(str(len(meas) - 1), msg)
+        self.assertIn(str(len(meas)), msg)
+
+    def test_word_missing_a_bit_is_refused_not_decoded_as_zero(self):
+        with self.assertRaises(SystemExit) as cm:
+            self.compare(self.word(drop={7}), measurement_count=31)
+        msg = str(cm.exception)
+        self.assertIn("rdata_k0", msg)
+        self.assertIn("[7]", msg)
+
+    def test_a_complete_word_still_decodes(self):
+        n = CMP.P.N_SAMPLES_REG + CMP.P.N_SAMPLES_STREAM
+        rows = CMP.P.model_replay([0, 1, 0, 1] + [0] * (n - 4))
+        expect = rows[1]["model"]["bus_rdata"]
+        result = self.compare(self.word(expect), measurement_count=32)
+        check = next(c for c in result["checks"] if c["measurement"] == "rdata_k0_b*")
+        self.assertTrue(check["match"])
+        self.assertEqual(result["verdict"], "pass")
+
+    def test_committed_full_run_shape_still_passes(self):
+        # the committed 749-measurement run clears both new guards: the count
+        # matches the plan and every word is complete
+        plan = json.loads(COMMITTED_GATE_PLAN.read_text())
+        report = json.loads(COMMITTED_GATE_REPORT.read_text())
+        result = CMP.compare(report, plan)
+        self.assertEqual(result["verdict"], "pass")
+        self.assertEqual(result["checks_matched"], result["checks_total"])
 
 
 # --------------------------------------------------------------------------
