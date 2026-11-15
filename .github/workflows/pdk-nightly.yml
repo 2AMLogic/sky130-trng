@@ -326,8 +326,8 @@ jobs:
       # red: --check diffs verdict fields only, and 0.5.0 both rebuilds the
       # old off-grid/0.22 um-cut geometry and grades it clean on its own
       # older deck (verified 2026-10-07) -- a silent pass on the defect
-      # #181 removed. The grader pin in ci.yml (klayout-tools==0.6.0) is a
-      # separate contract and is unchanged.
+      # #181 removed. The grader pin in ci.yml (klayout-tools==0.8.0, since
+      # issue #363) is a separate contract and is unchanged.
       - name: Install klt (klayout-tools, the layout composition/verification CLI)
         run: |
           set -euo pipefail
