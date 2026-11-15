@@ -29,14 +29,35 @@ they hold against whatever ``points()``/``pwl_card()`` do internally:
   input that never changes still emits exactly the two endpoints;
 * the grid request timeouts this issue must not disturb are unchanged.
 
+Issue #507 adds three assertions of its own:
+
+* every emitted measurement's ``AT=`` **and** ``TO=`` sits within its own
+  request's ``.tran`` stop, checked on generator output across all four
+  ``--set`` groups (drift 1: the two committed startup probes carry nine
+  pre-clip ``.meas`` cards that ``FIND`` at 3970/4570/7770 ns against a 970 ns
+  stop -- a card past its transient end cannot resolve and would read as a
+  block failure rather than a malformed request);
+* a known-stale ledger over the committed ``corners/*/request.json``: every
+  committed request satisfies the same invariant except the two startup probes,
+  whose violations are pinned to exactly those nine cards -- so a *new* corner
+  directory carrying an over-``t_stop`` card, or a regeneration of the startup
+  probes that does not drop the ledger entry, both turn this red;
+* the startup probes' timeouts: the generator emits ``timeout_s`` 3600 for
+  ``startup-probe`` and 3480 / ``poll_timeout_s`` 3700 for
+  ``startup-probe-batch``, while the committed batch pair still carries
+  14400 / 7000 (drift 2, a checked divergence, not an undocumented mismatch).
+
 Pure Python: no klt, no PDK, no ngspice.
 """
 from __future__ import annotations
 
+import contextlib
 import importlib.util
+import io
 import json
 import re
 import sys
+import tempfile
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -193,11 +214,170 @@ def test_grid_timeouts_unchanged() -> None:
         assert d["batch"]["poll_timeout_s"] == 6600, (str(req), d["batch"])
 
 
+# ---------------------------------------------------------------------------
+# Issue #507: no measurement may probe past its own request's .tran stop
+# ---------------------------------------------------------------------------
+
+#: a `.meas` time bound in this deck family's card text: `AT=310.0n`, `TO=250n`
+_BOUND_RES = {key: re.compile(rf"\b{key}=([\d.]+)n\b") for key in ("AT", "TO")}
+
+#: the committed startup-probe requests' known-stale over-`t_stop` cards
+#: (issue #507's ledger). They predate `measurement_cards`'s `add()` clip and
+#: are deliberately NOT regenerated -- dropping this entry requires either a
+#: regeneration of both dirs or a new decision record continuing
+#: `records/20261115a-known-stale-startup-probe-requests.md`.
+KNOWN_STALE_OVER_STOP = {
+    "startup-probe": frozenset(f"{sig}_k{k}" for sig in
+                               ("alarm", "gated", "startup_done") for k in (36, 42, 74)),
+    "startup-probe-batch": frozenset(f"{sig}_k{k}" for sig in
+                                     ("alarm", "gated", "startup_done") for k in (36, 42, 74)),
+}
+
+#: the eight requests the generator emits across the four `--set` groups
+_GENERATED_NAMES = ("analog-probe-batch", "grid-125C-1.98V", "grid-27C-1.80V",
+                    "grid-m40C-1.62V", "grid-m40C-1.98V", "rate-probe-batch",
+                    "startup-probe", "startup-probe-batch")
+
+_generated: list[tuple[str, dict]] | None = None
+
+
+def generated_requests() -> list[tuple[str, dict]]:
+    """``(corner name, request dict)`` for every request the generator emits.
+
+    Runs the real writer (``mr.main``) for all four ``--set`` groups into a
+    throwaway ``tempfile`` directory -- never into ``corners/`` (the generator
+    refuses a non-empty directory, and writing into the repo would dirty
+    tracked paths). Memoized: one generation serves all the #507 tests.
+    """
+    global _generated
+    if _generated is None:
+        out: list[tuple[str, dict]] = []
+        with tempfile.TemporaryDirectory(prefix="test-make-requests-") as tmp:
+            for which in ("controls", "grid", "rate-probe", "analog-probe"):
+                with contextlib.redirect_stdout(io.StringIO()):
+                    rc = mr.main(["--set", which, str(Path(tmp) / which)])
+                assert rc == 0, (which, rc)
+            for p in sorted(Path(tmp).glob("*/*/request.json"),
+                            key=lambda p: p.parent.name):
+                out.append((p.parent.name, json.loads(p.read_text())))
+        _generated = out
+    return _generated
+
+
+def tran_stop_ns(request: dict) -> float:
+    """The request's own ``.tran`` stop (ns), from ``analysis.args``.
+
+    ``args`` is ``f"{TMAX} {analysis_args}"`` (``"20p 970n"``), so the stop is
+    its last whitespace-separated token, with a unit suffix.
+    """
+    tok = request["analysis"]["args"].split()[-1]
+    assert tok.endswith("n"), f".tran stop {tok!r} is not in ns"
+    return float(tok[:-1])
+
+
+def over_stop_violations(request: dict) -> tuple[list[str], int, int]:
+    """``(over-stop names, #AT= visited, #TO= visited)`` for one request.
+
+    ``AT=`` is the instant a ``FIND`` samples at; ``TO=`` is the end of an
+    ``AVG``/``INTEG`` window (``w2`` ends at ``t_stop - TS_NS``). ``WHEN``
+    cards carry neither and are skipped by construction.
+    """
+    stop = tran_stop_ns(request)
+    over: list[str] = []
+    n_at = n_to = 0
+    for m in request["measurements"]:
+        for key, rx in _BOUND_RES.items():
+            mm = rx.search(m["spice"])
+            if mm is None:
+                continue
+            if key == "AT":
+                n_at += 1
+            else:
+                n_to += 1
+            if float(mm.group(1)) > stop:
+                over.append(m["name"])
+    return over, n_at, n_to
+
+
+def test_generated_measurements_within_tran_stop() -> None:
+    """Issue #507 drift 1, on generator output: no measurement's ``AT=`` or
+    ``TO=`` exceeds its own request's ``.tran`` stop.
+
+    All four ``--set`` groups, including the two short probes (100 ns and
+    500 ns) whose stop is far tighter than the startup probe's 970 ns. The
+    visit counts are asserted non-zero so a drifted ``_BOUND_RES`` cannot make
+    the scan pass vacuously.
+    """
+    reqs = generated_requests()
+    assert tuple(n for n, _ in reqs) == _GENERATED_NAMES, [n for n, _ in reqs]
+    n_at_total = n_to_total = 0
+    for name, d in reqs:
+        over, n_at, n_to = over_stop_violations(d)
+        n_at_total += n_at
+        n_to_total += n_to
+        assert not over, (
+            name, f"{len(over)} emitted measurements probe past the request's own "
+            f".tran stop {tran_stop_ns(d)}n", sorted(over))
+    assert n_at_total > 0 and n_to_total > 0, (
+        "the bound scan visited no AT=/TO= token -- it is vacuous",
+        n_at_total, n_to_total)
+
+
+def test_committed_request_ledger() -> None:
+    """Issue #507 recurrence guard over the committed ``corners/*/request.json``.
+
+    Every committed request satisfies the ``AT=``/``TO=`` <= ``.tran`` stop
+    invariant except the two startup probes, whose violations are pinned to
+    exactly the nine pre-clip cards. A *new* corner directory carrying an
+    over-``t_stop`` card turns this red, and regenerating the startup probes
+    later also turns it red until the ledger entry is dropped -- so the ledger
+    cannot go stale silently.
+    """
+    for req in sorted((HERE / "corners").glob("*/request.json")):
+        name = req.parent.name
+        over, _n_at, _n_to = over_stop_violations(json.loads(req.read_text()))
+        assert sorted(over) == sorted(KNOWN_STALE_OVER_STOP.get(name, ())), (
+            name, "committed measurement bounds past the request's own .tran "
+            "stop differ from the known-stale ledger; if the startup probes "
+            "were regenerated, drop the ledger entry in the same change",
+            sorted(over))
+    for name in KNOWN_STALE_OVER_STOP:
+        assert (HERE / "corners" / name / "request.json").exists(), (
+            f"known-stale ledger names {name} but its committed request is gone")
+
+
+def test_startup_probe_timeouts_pinned() -> None:
+    """Issue #507 drift 2: what the generator emits vs what is committed.
+
+    The generator emits ``timeout_s`` 3600 for ``startup-probe`` (local) and
+    3480 / ``poll_timeout_s`` 3700 for ``startup-probe-batch``; the committed
+    batch pair still carries 14400 / 7000. Both sides are pinned so the
+    divergence is a checked, named fact rather than an undocumented mismatch.
+    """
+    gen = dict(generated_requests())
+    assert gen["startup-probe"]["options"]["timeout_s"] == 3600, \
+        gen["startup-probe"]["options"]
+    assert "batch" not in gen["startup-probe"], gen["startup-probe"].get("batch")
+    assert gen["startup-probe-batch"]["options"]["timeout_s"] == 3480, \
+        gen["startup-probe-batch"]["options"]
+    assert gen["startup-probe-batch"]["batch"]["poll_timeout_s"] == 3700, \
+        gen["startup-probe-batch"]["batch"]
+    # the committed pair records the divergence (not regenerated; issue #507)
+    committed = json.loads((HERE / "corners" / "startup-probe" / "request.json").read_text())
+    assert committed["options"]["timeout_s"] == 3600, committed["options"]
+    committed_b = json.loads((HERE / "corners" / "startup-probe-batch" / "request.json").read_text())
+    assert committed_b["options"]["timeout_s"] == 14400, committed_b["options"]
+    assert committed_b["batch"]["poll_timeout_s"] == 7000, committed_b["batch"]
+
+
 def main() -> int:
     test_capture_points_sit_at_a_rail()
     test_change_emits_hold_then_edge()
     test_breakpoint_hygiene()
     test_grid_timeouts_unchanged()
+    test_generated_measurements_within_tran_stop()
+    test_committed_request_ledger()
+    test_startup_probe_timeouts_pinned()
     print("test_make_requests OK")
     return 0
 
