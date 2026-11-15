@@ -24,7 +24,8 @@ related: "#75 (the issue this record resolves the option-selection for); .loom/s
   upstream (the script exists in the source repo; it is simply not an
   installed surface). Acceptance rides that PR's normal review lifecycle;
   because it touches `docs/decisions/**`,
-  Champion's ratification hold parks it for operator sign-off.
+  Champion's ratification hold parks it for operator sign-off: acceptance
+  means this record is ratified by the operator, not by this PR's merge.
 - 2026-09-14: **Proposed.** Not accepted by anyone. This record exists
   because issue #75's Champion review reframed a three-option, human-deferred
   issue as a decision a Builder should resolve and justify in a PR, per the
