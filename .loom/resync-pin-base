@@ -1,0 +1,6 @@
+# .loom/resync-pin-base — upstream fork point of each .loom/resync-ignore pin.
+# Written by `loom-daemon resync-pin add`; read by `loom-daemon resync-pin status`.
+# Columns (tab-separated): pin label, upstream Loom commit, source path at that
+# commit, how the commit was chosen (explicit | install-metadata).
+# Commit this file alongside .loom/resync-ignore. Resync never rewrites it.
+scripts/generate-agents-md.sh	2140ab7c2305ef764e9ead6ee7eec6d3855a8936	defaults/scripts/generate-agents-md.sh	explicit
