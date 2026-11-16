@@ -16,7 +16,6 @@ unsupported evidence never selects a candidate. Nothing is promoted.
 from __future__ import annotations
 
 import argparse
-import importlib.util
 import json
 import sys
 from pathlib import Path
@@ -25,13 +24,13 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 STUDY = REPO_ROOT / "sim" / "digital-repaired-compaction"
 sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
 sys.path.insert(0, str(REPO_ROOT / "layout" / "bin"))
+sys.path.insert(0, str(REPO_ROOT / "sim" / "tests"))
 from _hashing import sha256_file  # noqa: E402
 from evidence_record import mint_record, new_record_id  # noqa: E402
+from loadmod import load_module  # noqa: E402
 
-_spec = importlib.util.spec_from_file_location(
+C = load_module(
     "compaction", REPO_ROOT / "sim/digital-floorplan-compaction/analysis/compaction.py")
-C = importlib.util.module_from_spec(_spec)
-_spec.loader.exec_module(C)
 
 TARGET = C.TARGET_MM2
 REPAIR_STUDY = REPO_ROOT / "sim" / "digital-electrical-repair"
@@ -57,16 +56,6 @@ def req_diff(a: dict, b: dict, path="") -> list[str]:
     return out
 
 
-class _NoExitCodes(type(Path())):
-    """compaction.summarize_run parses `<name> exit <rc>` lines from exit-codes.txt; this study's file
-    uses `<name> pnr-verify exit <rc>` / `<name> audit exit <rc>` lines, so hide it from that helper
-    and parse it here."""
-
-    @property
-    def parent(self):
-        return Path("/nonexistent-exit-codes-dir")
-
-
 def pnr_exit(d: Path):
     ec = d.parent / "exit-codes.txt"
     if ec.exists():
@@ -78,8 +67,7 @@ def pnr_exit(d: Path):
 
 
 def run_summary(d: Path) -> dict:
-    r = C.summarize_run(_NoExitCodes(d))
-    r["exit"] = pnr_exit(d)
+    r = C.summarize_run(d, exit_lookup=pnr_exit)
     es = jl(d / "electrical-summary.json")
     r["electrical"] = es
     rq = d / f"{d.name}.json"
@@ -143,10 +131,10 @@ def main(argv=None) -> int:
         r["request_diff_vs_committed"] = req_diff(committed, json.loads(Path(REPO_ROOT / r["request"]["path"]).read_text())) \
             if r.get("request") else None
     # #226 unrepaired baselines (estimate counts) and their final-route audits (this study)
-    comp226 = {n: C.summarize_run(_NoExitCodes(COMPACT_RUN / n)) for n in ("util40", "util55", "util65")}
+    comp226 = {n: C.summarize_run(COMPACT_RUN / n) for n in ("util40", "util55", "util65")}
 
     # control: repaired 40 % vs the recorded #236 slew0531 candidate
-    ref = C.summarize_run(_NoExitCodes(REPAIR_REF_RUN))
+    ref = C.summarize_run(REPAIR_REF_RUN, exit_lookup=pnr_exit)
     c40 = runs.get("rep40-slew0531", {})
     control = {
         "reference_run": str(REPAIR_REF_RUN.relative_to(REPO_ROOT)),
