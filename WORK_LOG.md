@@ -8,6 +8,10 @@ Chronological record of recently merged pull requests and closed issues.
 
 ### 2026-11-16
 
+- **PR #569**: docs: reword loadmod.py docstring for its sim/bin home
+- **Issue #567** (closed): sim/bin/loadmod.py docstring still tells callers to put sim/tests on sys.path
+- **PR #565**: refactor(sim): move shared loadmod helper to sim/bin, drop tests-dir path inserts
+- **Issue #549** (closed): Move the shared loadmod helper to sim/bin/: 20 production sim scripts now import from the tests directory
 - **PR #563**: fix: apply read_corner_bundle prefix filter to missing notes too
 - **Issue #560** (closed): read_corner_bundle: prefix= filters chunks but not the missing-notes list, and the docstring does not say so
 - **PR #566**: refactor: write_json reuses dumps() for its JSON spelling
