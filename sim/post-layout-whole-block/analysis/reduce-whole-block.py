@@ -42,7 +42,6 @@ REPO = BLOCK.parents[1]
 sys.path.insert(0, str(BLOCK))
 sys.path.insert(0, str(REPO / "sim" / "bin"))
 sys.path.insert(0, str(REPO / "layout" / "bin"))
-sys.path.insert(0, str(REPO / "sim" / "tests"))
 from _hashing import sha256_file as sha256  # noqa: E402
 import program as P  # noqa: E402
 from loadmod import load_module  # noqa: E402

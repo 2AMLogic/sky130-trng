@@ -19,7 +19,6 @@ REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 SLUG = "ro-array-core-combining"
 TB = "sim/ro-array-core-combining/testbench/tb_ro_array_core.spice"
 sys.path.insert(0, os.path.join(REPO, "sim", "bin"))
-sys.path.insert(0, os.path.join(REPO, "sim", "tests"))
 from evidence_record import new_record_id, record_footer, reserve_corner_dir  # noqa: E402
 from loadmod import load_module  # noqa: E402
 

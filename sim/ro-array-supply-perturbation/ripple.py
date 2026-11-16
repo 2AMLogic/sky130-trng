@@ -86,7 +86,6 @@ REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 SLUG = "ro-array-supply-perturbation"
 sys.path.insert(0, os.path.join(REPO, "sim", "bin"))
 sys.path.insert(0, os.path.join(REPO, "layout", "bin"))
-sys.path.insert(0, os.path.join(REPO, "sim", "tests"))
 from lock_proximity import ANY_RATIOS, DR5_RATIOS, closeness  # noqa: E402  (after sys.path)
 from _hashing import sha256_file as _sha256  # noqa: E402
 from request_dir import load_request_dir  # noqa: E402

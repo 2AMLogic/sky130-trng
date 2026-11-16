@@ -55,7 +55,6 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO_ROOT / "digital"))
 sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
-sys.path.insert(0, str(REPO_ROOT / "sim" / "tests"))
 
 from evidence_record import mint_behavioral_record  # noqa: E402
 from loadmod import load_module  # noqa: E402

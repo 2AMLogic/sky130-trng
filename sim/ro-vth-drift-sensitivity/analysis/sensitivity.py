@@ -44,7 +44,6 @@ SLUGDIR = HERE.parent
 REPO = SLUGDIR.parents[1]
 sys.path.insert(0, str(SLUGDIR))
 sys.path.insert(0, str(REPO / "sim" / "bin"))
-sys.path.insert(0, str(REPO / "sim" / "tests"))
 from loadmod import load_module  # noqa: E402
 import aging  # noqa: E402
 import campaign as C  # noqa: E402

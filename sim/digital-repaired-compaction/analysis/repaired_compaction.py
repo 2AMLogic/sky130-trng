@@ -24,7 +24,6 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 STUDY = REPO_ROOT / "sim" / "digital-repaired-compaction"
 sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
 sys.path.insert(0, str(REPO_ROOT / "layout" / "bin"))
-sys.path.insert(0, str(REPO_ROOT / "sim" / "tests"))
 from _hashing import sha256_file  # noqa: E402
 from evidence_record import mint_record, new_record_id  # noqa: E402
 from loadmod import load_module  # noqa: E402
