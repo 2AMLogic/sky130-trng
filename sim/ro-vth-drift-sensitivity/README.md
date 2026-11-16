@@ -167,6 +167,29 @@ python3 sim/ro-vth-drift-sensitivity/analysis/sensitivity.py --check \
     sim/ro-vth-drift-sensitivity/records/20261113-150554-fb302c35.json
 ```
 
+The superseding replay prints `generator hashes: DIFFER` and **exits 0**
+(DR-0019, below): the record pins the `aging.py` bytes that minted it
+(`25607e21...`, pre-#492) and the file has since moved
+(#487/#492 moved the digest helper into `layout/bin/_hashing.py`), but the
+evidence itself reproduces -- rows/summary MATCH, calibration MATCH, netlists
+regenerate byte-identically -- and byte-identical netlist regeneration is the
+discriminator that decides the exit code, per DR-0019.
+
+**Provenance pins are reported, not gated (DR-0019, issue #528).** Operator
+ruling 2026-11-15 (`/fleet:decide` round 20261111-r14, q100, option (b)):
+`check()`'s exit code no longer folds in the file-provenance legs
+(`generator_sha256`, `aging_sha256`). A record's provenance block records
+*which bytes minted it*; it is not an assertion that the tree still carries
+them, and a mismatch is expected drift as the shared digest helper evolves.
+The old contract was already partial -- the record's `analysis_sha256` and
+`manifest_sha256` pins were never gated -- so gating `aging_sha256` alone was
+an accident of which helper got consolidated, not a principle. A stale pin
+stays visible (the `DIFFER` print is retained); the accepted loss is a
+behaviour change that produces byte-identical netlists, guarded behaviourally
+by `layout/test_hashing.py` and by the replay's own rows/summary and
+calibration re-derivation. No record is minted or edited for a byte move;
+see `spec/decision-records/DR-0019-provenance-pin-exit-contract.md`.
+
 The controls record `20261010-164921-7e279ab` and the behavioral-replay record
 `20261010-175419-7e279ab` contain no lock-proximity field and are **not**
 superseded; the controls record's own `--check` still passes unchanged.

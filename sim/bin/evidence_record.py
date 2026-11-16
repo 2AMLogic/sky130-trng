@@ -176,7 +176,8 @@ def read_corner_bundle(
     sorted-name order, one entry per ``<name>.klt-sim.json.gz``; `plan` comes
     from the sibling ``<name>.plan.json`` and is loaded strictly -- these feed
     replay gates that must fail loudly on a malformed plan. ``prefix=`` keeps
-    only names starting with it. With ``with_missing=True`` returns
+    only names starting with it, applied to both the chunk names and the
+    missing-note names. With ``with_missing=True`` returns
     ``(chunks, missing)`` instead, where `missing` is ``[(name, plan, reason)]``
     for the ``<name>.missing.json`` refused/timed-out-attempt notes recorded
     beside the bundle by a campaign runner (this module never writes those).
@@ -194,6 +195,8 @@ def read_corner_bundle(
     missing: list[tuple[str, dict, str]] = []
     for f in sorted(cdir.glob("*.missing.json")):
         nm = f.name[: -len(".missing.json")]
+        if prefix and not nm.startswith(prefix):
+            continue
         with open(f) as fh:
             reason = json.load(fh)["reason"]
         with open(cdir / f"{nm}.plan.json") as pfh:
