@@ -37,8 +37,6 @@ not copied, for the w_90 interpolation rule and the committed-evidence loaders):
 from __future__ import annotations
 
 import argparse
-import glob
-import gzip
 import json
 import math
 import os
@@ -52,11 +50,12 @@ SLUG = "xor-combining-alternatives"
 sys.path.insert(0, str(REPO / "sim" / "bin"))
 sys.path.insert(0, str(REPO / "sim" / "tests"))
 from loadmod import load_module  # noqa: E402
+from replay_equal import replay_equal as _replay_equal  # noqa: E402  (issue #519: one shared replay equality)
 
 
 OP = load_module("operating_point", REPO / "sim" / "ro-array-operating-point" / "analysis" / "operating-point.py")
 MR = load_module("xor_alt_make_requests", HERE / "make-requests.py")
-from evidence_record import mint_record, new_record_id, write_corner_bundle  # noqa: E402
+from evidence_record import mint_record, new_record_id, read_corner_bundle, write_corner_bundle  # noqa: E402
 from request_dir import load_request_dir  # noqa: E402
 
 TOL_W90 = 0.05            # baseline control vs committed w_90
@@ -526,16 +525,15 @@ def emit_record(reqdir, author="loom-builder@sky130-trng"):
 def check(recpath):
     rec = json.load(open(recpath))
     cdir = REPO / "sim" / SLUG / "corners" / rec["record_id"]
-    chunks = []
-    for f in sorted(glob.glob(str(cdir / "*.klt-sim.json.gz"))):
-        nm = os.path.basename(f)[:-len(".klt-sim.json.gz")]
-        with gzip.open(f, "rt") as fh:
-            chunks.append((nm, json.load(open(cdir / f"{nm}.plan.json")), json.load(fh)))
+    chunks = read_corner_bundle(cdir)
     pts, _jobs, _rem = jobs_from_responses(chunks)
     red = full_reduction(pts)
-    same = (json.loads(json.dumps(red, default=str)) == rec["reduction"]
-            and json.loads(json.dumps({v: [dict(temp_c=k[0], vdd_v=k[1], corner=k[2], **p) for k, p in pts[v].items()]
-                                       for v in VARIANTS}, default=str)) == rec["points"])
+    # replay_equal, not ==: builtin float sum() is compensated on CPython >= 3.12
+    # (e.g. reduce.py's `f_ideal = sum(1 / t for t in tr)`), so a record minted on
+    # one side of the split replays ~1-ulp different on the other (issue #519).
+    same = (_replay_equal(json.loads(json.dumps(red, default=str)), rec["reduction"])
+            and _replay_equal(json.loads(json.dumps({v: [dict(temp_c=k[0], vdd_v=k[1], corner=k[2], **p) for k, p in pts[v].items()]
+                                                       for v in VARIANTS}, default=str)), rec["points"]))
     print("replay", "MATCHES" if same else "DIFFERS", recpath)
     return 0 if same else 1
 

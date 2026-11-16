@@ -2,6 +2,34 @@
 
 Sections moved byte-for-byte from [WORK_LOG.md](../WORK_LOG.md) by `loom-daemon work-docs archive`.
 
+### 2026-09-16
+
+- **PR #150**: refactor: remove dead constants in sampler_core data-path-scan
+- **Issue #149** (closed): Remove dead constants in layout/sampler_core/data-path-scan.py
+
+### 2026-09-15
+
+- **PR #148**: docs: fix stale not-yet-composed claims in sampler_tg README
+- **PR #146**: fix: eliminate pipefail+set-e crash in merge-pr.sh champion:hold-state check
+- **PR #144**: fix: eliminate pipefail+SIGPIPE race in verify-proposal-refs.sh full_tree check
+- **PR #143**: refactor: extract carrying() scan-script helper into _geom_common.py
+- **PR #140**: fix: update stale sim/-is-empty comments in design/pdk.json and netlist.py
+- **PR #139**: docs: add PDR-0001 recommending fix for broken generate-agents-md.sh path
+- **Issue #75** (closed): Fix or remove broken generate-agents-md.sh (installed Loom surface, unused + broken path)
+- **Issue #56** (closed): Champion merged PR #54 after its own verdict had just been invalidated by a stale-verdict reconciliation
+- **Issue #34** (closed): Fix stale sim/-is-empty comments in design/pdk.json and design/netlist.py
+- **Issue #22** (closed): sky130-trng layout + DRC/LVS-clean GDS, and post-layout PVT simulation
+- **Issue #147** (closed): Fix stale "not yet composed"/"remains open" claims in layout/sampler_tg/README.md
+- **Issue #145** (closed): merge-pr.sh: _check_champion_hold_state_staleness crashes via pipefail+grep -o SIGPIPE-class bug on ordinary PRs
+- **Issue #142** (closed): verify-proposal-refs.sh: false MISSING FILE due to pipefail + grep -q SIGPIPE race
+- **Issue #141** (closed): Remove duplicated carrying() helper: sampler_core scan scripts
+
+### 2026-09-14
+
+- **PR #138**: fix: dedup mint_behavioral_record's rid derivation onto new_record_id
+- **Issue #27** (closed): Compose ro_array_core/sampler_core gates from proven klt primitives, DRC/LVS-clean
+- **Issue #137** (closed): Dedup mint_behavioral_record's rid derivation onto new_record_id (sim/bin/evidence_record.py)
+
 ### 2026-09-13
 
 - **PR #136**: refactor: consolidate lvs-negative-controls.py poc copy onto _klt_common.run_klt

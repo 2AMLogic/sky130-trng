@@ -72,6 +72,23 @@ are untouched. See `erc-negative-controls.json` for findings and input hashes.
 | N4 | remove the p-tap from one tapcell | `erc.missing_tie` (its substrate box) |
 | N5 | spec: nwell tie declared on VGND | `erc.missing_tie` x43 |
 
+### `klt_version` spelling in the committed summary (issue #500)
+
+The committed `erc-negative-controls.json` records `"klt_version": "klt 0.7.0"`,
+with the `klt ` banner prefix. That is the faithful record of what the run
+read: the generator resolved the version with `klt --version`, whose output is
+the banner `klt 0.7.0` and not the bare `0.7.0`. It was the only one of the
+392 `klt_version` values in this repo's committed evidence spelled that way,
+and `sim/` records are append-only, so the value **stays** — the producer is
+what changed.
+
+`erc-negative-controls.py` now reads the version through
+`_klt_common.klt_version()`, i.e. from `klt version --format json`'s `version`
+field, so a re-run writes the bare `"0.7.0"`. Expect that one field to differ
+from the committed summary on the next regeneration; it is a spelling
+correction, not a tool change, and nothing compares this file's `klt_version`
+against another record's.
+
 ## Coverage limits (not claimed)
 
 - Substrate tie is a caller-asserted region (well assertion), not a drawn layer.

@@ -162,13 +162,24 @@
   derived, provisional until silicon.
 
 - [`decision-records/DR-0017-whole-block-reduced-work-pvt.md`](decision-records/DR-0017-whole-block-reduced-work-pvt.md)
-  — **Proposed**. Issue #404: how the whole-block post-layout PVT campaign
+  — **Accepted**. Issue #404: how the whole-block post-layout PVT campaign
   of #174 is to be reduced. Chooses a transistor-level analog chain with the
   digital section at gate level behind a defined boundary, rather than a
   shorter or split transistor-level program, subject to an explicit
   feasibility gate (#403's 100 ns probe also timed out). Leaves O5d, O7 and
   O8 UNMET and keeps #18 AC3 UNMET. Relaxes no ratified result, spec value or
   existing record; runs no simulation.
+
+- [`decision-records/DR-0019-provenance-pin-exit-contract.md`](decision-records/DR-0019-provenance-pin-exit-contract.md)
+  — **Proposed**. Issue #528's operator ruling (round 20261111-r14, q100):
+  `sensitivity.py --check`'s file-provenance pins (`generator_sha256`,
+  `aging_sha256`) are reported (`generator hashes: MATCH|DIFFER`) but no
+  longer gate the exit code — a pinned file's bytes moving on is expected
+  drift, not a replay failure, and the old fold was already partial
+  (`analysis_sha256` was never gated). Byte-identical netlist regeneration
+  stays the discriminator; the accepted loss is a behaviour change that
+  produces byte-identical netlists, guarded behaviourally by
+  `layout/test_hashing.py`. No record is minted or edited.
 
 ### Open requests for an operator decision record (no record yet)
 
@@ -181,5 +192,11 @@
   adopt a lifetime, a guard band or a re-sizing is left to the operator via that request.
 
 A record's status is meaningful: **Proposed** means drafted and not accepted
-by anyone. Ratification is an operator decision, so no record here declares
-itself Accepted. See the repo README for scope.
+by anyone; **Accepted** means an operator has ratified it, and that record's
+own `## Status` history names the ruling. Ratification is an operator
+decision, never an agent's. Each entry above carries the status of the record
+it links to, and `tools/check_spec_index.py` fails when an entry and a
+record's `status:` front matter disagree, or when that front matter and the
+latest entry of the record's own `## Status` history disagree; histories are
+appended oldest-first, so the latest entry is the last one in the file. See
+the repo README for scope.

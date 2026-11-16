@@ -28,7 +28,6 @@ time-zero records are only read (and compared in the controls), never touched.
 from __future__ import annotations
 
 import argparse
-import datetime
 import glob
 import gzip
 import hashlib
@@ -49,7 +48,8 @@ sys.path.insert(0, str(REPO / "sim" / "tests"))
 from loadmod import load_module  # noqa: E402
 import aging  # noqa: E402
 import campaign as C  # noqa: E402
-from evidence_record import git_short_sha, write_corner_bundle  # noqa: E402
+from replay_equal import replay_equal as _replay_equal  # noqa: E402  (issue #519: one shared replay equality)
+from evidence_record import mint_record, new_record_id, read_corner_bundle, write_corner_bundle  # noqa: E402
 from lock_proximity import closeness as lock_closeness, ratio_label  # noqa: E402
 from request_dir import load_request_dir  # noqa: E402
 
@@ -170,14 +170,7 @@ def load_reqdir(reqdir) -> tuple[list[tuple[str, dict, dict]], list[tuple[str, d
 
 
 def load_committed(cdir, prefix=None) -> list[tuple[str, dict, dict]]:
-    out = []
-    for f in sorted(glob.glob(os.path.join(cdir, "*.klt-sim.json.gz"))):
-        nm = os.path.basename(f)[:-len(".klt-sim.json.gz")]
-        if prefix and not nm.startswith(prefix):
-            continue
-        with gzip.open(f, "rt") as fh:
-            out.append((nm, json.load(open(os.path.join(cdir, nm + ".plan.json"))), json.load(fh)))
-    return out
+    return read_corner_bundle(cdir, prefix=prefix)
 
 
 DELTA_FIELDS = {
@@ -433,6 +426,7 @@ def evaluate_controls(ctl: dict[str, tuple[dict, dict]], floor) -> dict:
 
 
 def md_controls(rid, res, info):
+    """The controls record's header lines and body text; mint_record appends the shared footer."""
     L = [f"# {rid} -- {SLUG} (controls)", "", f"**Claim**: the gate-offset wrappers reach the transistor gates with the requested "
          "signed offsets, the zero-shift wrapped decks reproduce the unwrapped decks, and the tt / 27 C / 1.8 V common-mode "
          "pilot moves the ring period monotonically. These controls gate the full grid.", "", f"**Level**: transistor", f"**Verdict**: {'PASS' if res['pass'] else 'FAIL'}", "",
@@ -452,7 +446,7 @@ def md_controls(rid, res, info):
                 L.append(f"| {deck} | {p['shift_mv']:g} | FAILED ({p['status']}) | |")
     L += ["", "## Provenance", "", "```json", json.dumps(info, indent=1), "```", "",
           "Simulation-derived; provisional until silicon.", ""]
-    return "\n".join(L)
+    return L, ""
 
 
 def ctl_info(plans: dict) -> dict:
@@ -472,9 +466,7 @@ def emit_controls(ctldir):
         ctl[n] = (plans[n], resps[n])
     floor = numerical_floor()
     res = evaluate_controls(ctl, floor)
-    sha = git_short_sha(REPO)
-    now = datetime.datetime.now(datetime.timezone.utc)
-    rid = f"{now:%Y%m%d-%H%M%S}-{sha}"
+    now, sha, rid = new_record_id(REPO)
     cdir, rdir = SLUGDIR / "corners" / rid, SLUGDIR / "records"
     write_corner_bundle(cdir, ctldir, [(n, plans[n], resps[n]) for n in names], records_dir=rdir, rid=rid)
     info = ctl_info(plans)
@@ -483,8 +475,11 @@ def emit_controls(ctldir):
            "seed": "ring5: .option seed=1 (source deck); array: deterministic", "supersedes": "(none)", "pass": res["pass"],
            "controls": res, "provenance": info, "timestamp_utc": now.isoformat(),
            "klt_sim": {"backend": "local", "responses": f"sim/{SLUG}/corners/{rid}/*.klt-sim.json.gz"}}
-    (rdir / f"{rid}.json").write_text(json.dumps(rec, indent=2, default=str) + "\n")
-    (rdir / f"{rid}.md").write_text(md_controls(rid, res, info))
+    header, body = md_controls(rid, res, info)
+    out = mint_record(rdir, REPO, rid, header, body, rec, author="loom-builder@sky130-trng", now=now, sha=sha)
+    if out is None:
+        shutil.rmtree(cdir, ignore_errors=True)
+        raise SystemExit(f"error: record id {rid} already exists; wait a second and re-run")
     print(rid, "PASS" if res["pass"] else "FAIL")
     return 0 if res["pass"] else 1
 
@@ -494,7 +489,8 @@ def pct(x):
     return "" if x is None else f"{x*100:+.2f}%"
 
 
-def md_grid(rid, rows, env, summ, ctl_rid, jobs, claim, supersedes="(none)"):
+def md_grid(rid, rows, env, summ, ctl_rid, jobs, claim):
+    """The grid record's header lines and body text; mint_record appends the shared footer."""
     L = [f"# {rid} -- {SLUG}", "", f"**Claim**: {claim}", "", "**Level**: transistor (first-order Vth-offset wrapper; see below)", "",
          f"**{SENTENCE}**", "", f"Controls record: `{ctl_rid}` (PASS required before this record can be minted).", ""]
     L += ["## Scope, model, and why these values", "",
@@ -588,9 +584,8 @@ def md_grid(rid, rows, env, summ, ctl_rid, jobs, claim, supersedes="(none)"):
     L += ["", summ["envelope_statement"], "",
           "No specification is changed or relaxed by this record, and no guard band or lifetime is ratified; any such decision belongs to an "
           "operator decision record (`spec/README.md`). " + SENTENCE, "",
-          "Provisional, simulation-derived. Pre-layout, ideal gate offsets, single noise seed.", "",
-          f"- Supersedes: {supersedes}", ""]
-    return "\n".join(L)
+          "Provisional, simulation-derived. Pre-layout, ideal gate offsets, single noise seed.", ""]
+    return L, ""
 
 
 def envelope_statement(env: dict) -> str:
@@ -729,9 +724,7 @@ def emit_record(reqdir, ctl_rid):
     if summ["coverage_problems"] or summ["pair_problems"] or summ["selection_problems"] or not summ["all_rows_ok"]:
         print("coverage:", summ["coverage_problems"][:10], "selection:", summ["selection_problems"][:10], "pair:", summ["pair_problems"][:10], "all_ok:", summ["all_rows_ok"], file=sys.stderr)
         raise SystemExit("error: grid incomplete or has failed rows; not recording a partial grid as complete")
-    sha = git_short_sha(REPO)
-    now = datetime.datetime.now(datetime.timezone.utc)
-    rid = f"{now:%Y%m%d-%H%M%S}-{sha}"
+    now, sha, rid = new_record_id(REPO)
     cdir, rdir = SLUGDIR / "corners" / rid, SLUGDIR / "records"
     jobs = [(rs.get("environment", {}).get("remote") or {}).get("job_id") for _, _, rs in chunks]
     write_corner_bundle(cdir, reqdir, chunks, records_dir=rdir, rid=rid)
@@ -760,9 +753,12 @@ def emit_record(reqdir, ctl_rid):
            "calibration_artifact": {"path": f"sim/{SLUG}/records/{rid}.calibration.json", "schema": CAL_SCHEMA,
                                     "sha256": sha256_json(cal), "n_entries": len(cal["entries"])},
            "rows": rows, "timestamp_utc": now.isoformat()}
-    (rdir / f"{rid}.json").write_text(json.dumps(rec, indent=2, default=str) + "\n")
     cal_path.write_text(json.dumps(cal, indent=2, sort_keys=True) + "\n")
-    (rdir / f"{rid}.md").write_text(md_grid(rid, rows, summ["envelope"], summ, ctl_rid, jobs, claim))
+    header, body = md_grid(rid, rows, summ["envelope"], summ, ctl_rid, jobs, claim)
+    out = mint_record(rdir, REPO, rid, header, body, rec, author="loom-builder@sky130-trng", now=now, sha=sha)
+    if out is None:
+        shutil.rmtree(cdir, ignore_errors=True)
+        raise SystemExit(f"error: record id {rid} already exists; wait a second and re-run")
     print(rid, "rows", len(rows), "cal entries", len(cal["entries"]))
     return 0
 
@@ -786,9 +782,7 @@ def supersede(recpath):
         raise SystemExit(f"error: {ocdir} is missing; cannot re-reduce {oid} without its raw responses")
     chunks = load_committed(str(ocdir))
     rows, summ = build(chunks, old["controls_record"])
-    sha = git_short_sha(REPO)
-    now = datetime.datetime.now(datetime.timezone.utc)
-    rid = f"{now:%Y%m%d-%H%M%S}-{sha}"
+    now, sha, rid = new_record_id(REPO)
     rdir, cdir = SLUGDIR / "records", SLUGDIR / "corners" / rid
     reserve_corner_dir(cdir, rdir, rid)                  # refuses an id that already exists; claims cdir
     shutil.copytree(ocdir, cdir, dirs_exist_ok=True)     # raw responses verbatim: a re-reduction, not a re-run
@@ -810,37 +804,116 @@ def supersede(recpath):
     rec["klt_sim"] = dict(old["klt_sim"], responses=f"sim/{SLUG}/corners/{rid}/*.klt-sim.json.gz")
     rec["calibration_artifact"] = {"path": f"sim/{SLUG}/records/{rid}.calibration.json", "schema": CAL_SCHEMA,
                                    "sha256": sha256_json(cal), "n_entries": len(cal["entries"])}
-    (rdir / f"{rid}.json").write_text(json.dumps(rec, indent=2, default=str) + "\n")
     (rdir / f"{rid}.calibration.json").write_text(json.dumps(cal, indent=2, sort_keys=True) + "\n")
-    (rdir / f"{rid}.md").write_text(md_grid(rid, rows, summ["envelope"], summ, old["controls_record"],
-                                            old["klt_sim"].get("jobs") or [], old["claim"], supersedes=oid))
+    header, body = md_grid(rid, rows, summ["envelope"], summ, old["controls_record"],
+                           old["klt_sim"].get("jobs") or [], old["claim"])
+    out = mint_record(rdir, REPO, rid, header, body, rec, author="loom-builder@sky130-trng",
+                      now=now, sha=sha, supersedes=oid)
+    if out is None:
+        shutil.rmtree(cdir, ignore_errors=True)
+        raise SystemExit(f"error: record id {rid} already exists; wait a second and re-run")
     print(rid, "supersedes", oid, "| rows", len(rows), "| cal entries", len(cal["entries"]))
     return 0
 
 
+def _strip_row_sha256(obj):
+    """Drop every `row_sha256` pin from an artifact tree.  The pins are the
+    hash-exact integrity half and are checked separately (against the record's
+    own committed rows); only the re-derived metrics go through the tolerance
+    comparator, because a hash can never absorb the ~1-ulp CPython sum() split."""
+    if isinstance(obj, dict):
+        return {k: _strip_row_sha256(v) for k, v in obj.items() if k != "row_sha256"}
+    if isinstance(obj, list):
+        return [_strip_row_sha256(v) for v in obj]
+    return obj
+
+
+def calibration_leg(rec, cal, cal_committed):
+    """The calibration-artifact half of `check()`: -> (ok, pins_verified).
+
+    Hash-exact integrity half -- both sides are committed bytes, so the
+    interpreter cannot move them and no tolerance is involved:
+      * sha256 of the committed `.calibration.json` equals the record's pin;
+      * every `source_rows.*.row_sha256` under `entries` (NOT `rows` -- the
+        pins live under `entries`; walking the wrong key is a silently vacuous
+        pass, issue #519) equals sha256_json of the matching row in the
+        record's own committed `rows` -- 216 pins on the tip record.
+    Tolerance-compared re-derivation half -- `calibration_artifact()` recomputed
+    from the re-derived rows vs the committed artifact, `row_sha256` fields
+    stripped from both sides, under the shared `replay_equal`
+    (sim/bin/replay_equal.py, gate `|a-b| <= max(1e-9*|v|, 1e-12)`): builtin
+    float `sum()` is naive on CPython <= 3.11 and compensated on >= 3.12, so
+    the same raw responses re-derive ~1-ulp apart across the split.  The gate
+    is only as tight as its terms allow: below ~1e-12 in magnitude the
+    absolute floor is the operative gate (effective relative sensitivity
+    `1e-12/|v|`), and on this artifact that is the sigma fields --
+    `sigma_1_raw`/`sigma_1_corrected` (~1.3-1.4e-12) tolerate a ~70-80 %
+    relative re-derivation drift and `numerical_floor` (~6.5e-13) ~155 %
+    without failing (pinned by test_vth_drift.py's
+    `test_sigma_field_drift_passes_under_the_absolute_floor`).  This is a real
+    relaxation of the guard exactly there, routed as issue #547; it touches
+    the *re-derivation* comparison only -- the integrity pins above stay `==`
+    on a SHA-256, and they are what makes a tampered artifact or row fail
+    closed.
+    """
+    if cal_committed is None:
+        return False, 0
+    ok_sha = sha256_json(cal_committed) == rec["calibration_artifact"]["sha256"]
+    by_key = {r["key"]: r for r in rec["rows"]}
+    pins_ok, n_pins = True, 0
+    entries = cal_committed.get("entries", {})
+    for entry in entries.values():
+        for src in entry.get("source_rows", {}).values():
+            row = by_key.get(src.get("key"))
+            if row is None or sha256_json(row) != src.get("row_sha256"):
+                pins_ok = False
+            n_pins += 1
+    if entries and n_pins == 0:
+        pins_ok = False
+    ok_red = _replay_equal(_strip_row_sha256(json.loads(json.dumps(cal, sort_keys=True, default=str))),
+                           _strip_row_sha256(cal_committed))
+    return ok_sha and pins_ok and ok_red, n_pins
+
+
 def check(recpath):
-    """Replay from the committed raw responses; exit 1 on any difference."""
+    """Replay from the committed raw responses; exit 1 on any difference.
+
+    Float-bearing replay comparisons (controls, rows/summary, the calibration
+    artifact's re-derived metrics) run through the shared `replay_equal`
+    tolerance (sim/bin/replay_equal.py, rel=1e-9): builtin float `sum()` is
+    naive on CPython <= 3.11 and compensated on >= 3.12, so a record minted on
+    one side of the split re-derives ~1-ulp different on the other -- without
+    this, `--check`'s verdict is a function of the interpreter, i.e. "matches,
+    on the version that happened to mint it" (issue #519).  The gate is
+    `max(1e-9*|v|, 1e-12)`: on O(1)-magnitude metrics the guard holds at
+    ~1e-9 relative -- #467's convention correction still fails this check, and
+    a 1e-6-relative tamper on such a field is still reported.  On sub-1e-12
+    magnitudes the absolute floor takes over, so there this *is* a partial
+    relaxation: this study's sigma jitter (~1.3e-12 s) tolerates a ~70-80 %
+    relative drift -- quantified in `calibration_leg` and pinned as a test in
+    `tests/test_vth_drift.py`; whether that floor is tight enough for the
+    entropy claim is issue #547, not decided here.  The integrity pins stay
+    hash-exact -- see `calibration_leg`.
+    """
     rec = json.load(open(recpath))
     cdir = SLUGDIR / "corners" / rec["record_id"]
     if rec.get("kind") == "controls":
-        names = sorted(p.name[:-len(".klt-sim.json.gz")] for p in cdir.glob("*.klt-sim.json.gz"))
-        ctl = {}
-        for n in names:
-            with gzip.open(cdir / f"{n}.klt-sim.json.gz", "rt") as fh:
-                ctl[n] = (json.load(open(cdir / f"{n}.plan.json")), json.load(fh))
+        ctl = {nm: (pl, rs) for nm, pl, rs in read_corner_bundle(cdir)}
         res = evaluate_controls(ctl, numerical_floor())
-        same = json.loads(json.dumps(res, default=str)) == json.loads(json.dumps(rec["controls"], default=str))
+        same = _replay_equal(json.loads(json.dumps(res, default=str)),
+                             json.loads(json.dumps(rec["controls"], default=str)))
         print("controls replay", "MATCHES" if same else "DIFFERS", recpath)
         return 0 if same else 1
     chunks = load_committed(str(cdir))
     rows, summ = build(chunks, rec["controls_record"])
-    ok = json.loads(json.dumps(rows, default=str)) == rec["rows"] and \
-        json.loads(json.dumps(summ, default=str)) == json.loads(json.dumps(rec["summary"], default=str))
+    ok = _replay_equal(json.loads(json.dumps(rows, default=str)), rec["rows"]) and \
+        _replay_equal(json.loads(json.dumps(summ, default=str)),
+                      json.loads(json.dumps(rec["summary"], default=str)))
     cal = calibration_artifact(rec["record_id"], rows)
     calp = Path(rec["calibration_artifact"]["path"])
     calp = REPO / calp
-    ok_cal = calp.is_file() and json.load(open(calp)) == json.loads(json.dumps(cal, sort_keys=True)) \
-        and sha256_json(cal) == rec["calibration_artifact"]["sha256"]
+    cal_committed = json.load(open(calp)) if calp.is_file() else None
+    ok_cal, _n_pins = calibration_leg(rec, cal, cal_committed)
     # each stored request/netlist hash matches what the generator produces now
     ok_gen = True
     for nm, pl, rs in chunks:
@@ -856,7 +929,11 @@ def check(recpath):
     print("replay rows/summary:", "MATCH" if ok else "DIFFER", "| calibration artifact:", "MATCH" if ok_cal else "DIFFER",
           "| netlists regenerate byte-identically:", "YES" if ok_gen else "NO", "| generator hashes:", "MATCH" if prov_ok else "DIFFER",
           "| manifest:", "OK" if manifest_ok else "BAD")
-    return 0 if (ok and ok_cal and ok_gen and prov_ok and manifest_ok) else 1
+    # prov_ok is reported (DIFFER above) but no longer gates the exit: the
+    # record's own analysis/generator bytes moving is expected drift, not a
+    # replay failure -- byte-identical netlist regeneration (ok_gen) is the
+    # discriminator (DR-0019).
+    return 0 if (ok and ok_cal and ok_gen and manifest_ok) else 1
 
 
 def check_manifest():
