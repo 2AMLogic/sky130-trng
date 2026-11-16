@@ -38,9 +38,9 @@ Human-approved issues ready for implementation (`loom:issue`).
 - **#497**: Consolidate the seven hand-rolled corner-bundle readers in six sim studies: the writer half already lives in evidence_record.py
 - **#525**: Four more reducers still hand-roll the record write tail outside mint_record/_publish_bundle
 - **#528**: ro-vth-drift: #492's aging.py move broke the superseding record's --check replay (generator-hashes leg, rc=1) — live on main, unwired
-- **#531**: The #515 hand-rolled-tail guard's detector is spelling-sensitive: 5 of 8 plausible <rid>.md write spellings slip through
 - **#549**: Move the shared loadmod helper to sim/bin/: 20 production sim scripts now import from the tests directory
 - **#553**: write_json re-implements _klt_common.dumps's spelling instead of calling it
+- **#555**: test: make the .meas bound scanner in test_make_requests.py unit-agnostic so a non-ns card cannot be silently skipped
 
 ## In Progress
 
@@ -51,7 +51,6 @@ Issues currently being built (`loom:building`).
 - **#381**: verify-whole: adapt the whole-block harness to klayout-tools 0.8.0 VNB handling
 - **#496**: Harden the gate-model reduction against silent-input defects (four latent paths from #486)
 - **#498**: ro-vth-drift-sensitivity: controls record's aging_sha256 pin invalidated by the #487 digest refactor
-- **#507**: bug: committed whole-block startup-probe requests carry 9 measurements past their own t_stop and timeouts the generator no longer emits
 - **#514**: signoff/README.md's t1-report regeneration command carries no klt version pin, so a host klt silently renders a wrong build block
 - **#523**: Finish PDR-0001's deferred follow-up: generate-agents-md.sh still fails with a doubled .loom/ path
 - **#542**: CI: give every PR one always-reporting verdict check, so main can require it (path-filtered ci.yml has none)
@@ -89,14 +88,13 @@ Issues carrying `loom:curated`.
 - **#460**: Replace raw xschem call and duplicated post-processing in design/netlist.py with klt netlist *(curated)*
 - **#496**: Harden the gate-model reduction against silent-input defects (four latent paths from #486) *(curated)*
 - **#498**: ro-vth-drift-sensitivity: controls record's aging_sha256 pin invalidated by the #487 digest refactor *(curated)*
-- **#507**: bug: committed whole-block startup-probe requests carry 9 measurements past their own t_stop and timeouts the generator no longer emits *(curated)*
 - **#514**: signoff/README.md's t1-report regeneration command carries no klt version pin, so a host klt silently renders a wrong build block *(curated)*
 - **#525**: Four more reducers still hand-roll the record write tail outside mint_record/_publish_bundle *(curated)*
 - **#528**: ro-vth-drift: #492's aging.py move broke the superseding record's --check replay (generator-hashes leg, rc=1) — live on main, unwired *(curated)*
-- **#531**: The #515 hand-rolled-tail guard's detector is spelling-sensitive: 5 of 8 plausible <rid>.md write spellings slip through *(curated)*
 - **#542**: CI: give every PR one always-reporting verdict check, so main can require it (path-filtered ci.yml has none) *(curated)*
 - **#549**: Move the shared loadmod helper to sim/bin/: 20 production sim scripts now import from the tests directory *(curated)*
 - **#553**: write_json re-implements _klt_common.dumps's spelling instead of calling it *(curated)*
+- **#555**: test: make the .meas bound scanner in test_make_requests.py unit-agnostic so a non-ns card cannot be silently skipped *(curated)*
 
 ## Proposed (Architect / Hermit)
 
@@ -121,10 +119,10 @@ Issues carrying `loom:curated`.
 | Very important | 0 |
 | Important | 7 |
 | Ready (`loom:issue`) | 8 |
-| In Progress (`loom:building`) | 9 |
+| In Progress (`loom:building`) | 8 |
 | PRs awaiting review | 0 |
 | Approved PRs awaiting merge | 4 |
-| Curated | 22 |
+| Curated | 21 |
 | Architect / Hermit proposals | 7 |
 | Active epics | 2 |
 <!-- guide:plan-body:end -->
