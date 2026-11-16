@@ -341,7 +341,7 @@ def write_json(path: Path, payload: dict) -> None:
     not have to pre-create it.
     """
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(payload, indent=2, sort_keys=False) + "\n")
+    path.write_text(dumps(payload))
 
 
 def rel(path: Path) -> str:
