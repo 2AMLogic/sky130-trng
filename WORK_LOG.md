@@ -6,6 +6,15 @@ Chronological record of recently merged pull requests and closed issues.
 
 - [2026-09](work_log/WORK_LOG_2026-09.md)
 
+### 2026-11-16
+
+- **PR #516**: refactor(sim): replace inline importlib loader blocks with shared loadmod helper
+- **PR #510**: refactor: replace _NoExitCodes .parent shim with an exit_lookup parameter on summarize_run
+- **PR #544**: docs: drop the uncheckable decision-record count from README; document oldest-first Status history
+- **Issue #509** (closed): Finish the #412 deferral: ~18 inline importlib loader blocks remain in sim scripts, and the shared loadmod helper still lives under sim/tests/
+- **Issue #501** (closed): Remove _NoExitCodes Path subclass: replace the .parent-lying shim with an exit_lookup parameter on compaction.summarize_run
+- **Issue #532** (closed): Two residual uncheckable facts around the decision-record index: README's record count, and the undocumented oldest-first `## Status` ordering
+
 ### 2026-11-15
 
 - **PR #526**: feat(signoff): declare the Power evidence mapping in the characterization report
