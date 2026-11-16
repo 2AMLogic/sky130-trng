@@ -47,7 +47,6 @@ from __future__ import annotations
 
 import argparse
 import hashlib
-import importlib.util
 import json
 import math
 import random
@@ -60,13 +59,13 @@ SLUG = "raw-bit-volume-campaign"
 SLUG_DIR = REPO_ROOT / "sim" / SLUG
 TRANSISTOR_DIR = SLUG_DIR / "transistor"
 sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
+sys.path.insert(0, str(REPO_ROOT / "sim" / "tests"))
 from evidence_record import mint_behavioral_record  # noqa: E402
+from loadmod import load_module  # noqa: E402
 
-_spec = importlib.util.spec_from_file_location(
+rbe = load_module(
     "raw_bit_entropy",
     REPO_ROOT / "sim" / "raw-bit-min-entropy" / "analysis" / "raw-bit-entropy.py")
-rbe = importlib.util.module_from_spec(_spec)
-_spec.loader.exec_module(rbe)
 
 MASTER_SEED = 188
 NBITS = 131072                      # 2**17 >= 1e5 per stream (#188/#197 records; default)
