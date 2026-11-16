@@ -52,6 +52,7 @@ SLUG = "xor-combining-alternatives"
 sys.path.insert(0, str(REPO / "sim" / "bin"))
 sys.path.insert(0, str(REPO / "sim" / "tests"))
 from loadmod import load_module  # noqa: E402
+from replay_equal import replay_equal as _replay_equal  # noqa: E402  (issue #519: one shared replay equality)
 
 
 OP = load_module("operating_point", REPO / "sim" / "ro-array-operating-point" / "analysis" / "operating-point.py")
@@ -533,9 +534,12 @@ def check(recpath):
             chunks.append((nm, json.load(open(cdir / f"{nm}.plan.json")), json.load(fh)))
     pts, _jobs, _rem = jobs_from_responses(chunks)
     red = full_reduction(pts)
-    same = (json.loads(json.dumps(red, default=str)) == rec["reduction"]
-            and json.loads(json.dumps({v: [dict(temp_c=k[0], vdd_v=k[1], corner=k[2], **p) for k, p in pts[v].items()]
-                                       for v in VARIANTS}, default=str)) == rec["points"])
+    # replay_equal, not ==: builtin float sum() is compensated on CPython >= 3.12
+    # (e.g. reduce.py's `f_ideal = sum(1 / t for t in tr)`), so a record minted on
+    # one side of the split replays ~1-ulp different on the other (issue #519).
+    same = (_replay_equal(json.loads(json.dumps(red, default=str)), rec["reduction"])
+            and _replay_equal(json.loads(json.dumps({v: [dict(temp_c=k[0], vdd_v=k[1], corner=k[2], **p) for k, p in pts[v].items()]
+                                                       for v in VARIANTS}, default=str)), rec["points"]))
     print("replay", "MATCHES" if same else "DIFFERS", recpath)
     return 0 if same else 1
 
