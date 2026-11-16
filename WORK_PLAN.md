@@ -35,12 +35,12 @@ Human-approved issues ready for implementation (`loom:issue`).
 
 - **#230**: CI: guard that every test_*.py is wired into a CI workflow and path filter
 - **#314**: Re-pin open_pdks to f6eeac7 (ciel) — fleet retires volare c6d73a3
-- **#497**: Consolidate the seven hand-rolled corner-bundle readers in six sim studies: the writer half already lives in evidence_record.py
 - **#525**: Four more reducers still hand-roll the record write tail outside mint_record/_publish_bundle
 - **#528**: ro-vth-drift: #492's aging.py move broke the superseding record's --check replay (generator-hashes leg, rc=1) — live on main, unwired
 - **#549**: Move the shared loadmod helper to sim/bin/: 20 production sim scripts now import from the tests directory
 - **#553**: write_json re-implements _klt_common.dumps's spelling instead of calling it
 - **#555**: test: make the .meas bound scanner in test_make_requests.py unit-agnostic so a non-ns card cannot be silently skipped
+- **#560**: read_corner_bundle: prefix= filters chunks but not the missing-notes list, and the docstring does not say so
 
 ## In Progress
 
@@ -95,6 +95,7 @@ Issues carrying `loom:curated`.
 - **#549**: Move the shared loadmod helper to sim/bin/: 20 production sim scripts now import from the tests directory *(curated)*
 - **#553**: write_json re-implements _klt_common.dumps's spelling instead of calling it *(curated)*
 - **#555**: test: make the .meas bound scanner in test_make_requests.py unit-agnostic so a non-ns card cannot be silently skipped *(curated)*
+- **#560**: read_corner_bundle: prefix= filters chunks but not the missing-notes list, and the docstring does not say so *(curated)*
 
 ## Proposed (Architect / Hermit)
 
@@ -122,7 +123,7 @@ Issues carrying `loom:curated`.
 | In Progress (`loom:building`) | 8 |
 | PRs awaiting review | 0 |
 | Approved PRs awaiting merge | 4 |
-| Curated | 21 |
+| Curated | 22 |
 | Architect / Hermit proposals | 7 |
 | Active epics | 2 |
 <!-- guide:plan-body:end -->
