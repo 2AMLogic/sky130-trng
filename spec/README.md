@@ -170,6 +170,17 @@
   O8 UNMET and keeps #18 AC3 UNMET. Relaxes no ratified result, spec value or
   existing record; runs no simulation.
 
+- [`decision-records/DR-0019-provenance-pin-exit-contract.md`](decision-records/DR-0019-provenance-pin-exit-contract.md)
+  — **Proposed**. Issue #528's operator ruling (round 20261111-r14, q100):
+  `sensitivity.py --check`'s file-provenance pins (`generator_sha256`,
+  `aging_sha256`) are reported (`generator hashes: MATCH|DIFFER`) but no
+  longer gate the exit code — a pinned file's bytes moving on is expected
+  drift, not a replay failure, and the old fold was already partial
+  (`analysis_sha256` was never gated). Byte-identical netlist regeneration
+  stays the discriminator; the accepted loss is a behaviour change that
+  produces byte-identical netlists, guarded behaviourally by
+  `layout/test_hashing.py`. No record is minted or edited.
+
 ### Open requests for an operator decision record (no record yet)
 
 - **End-of-life Vth-drift envelope** — issue [#262](https://github.com/2AMLogic/sky130-trng/issues/262), from
