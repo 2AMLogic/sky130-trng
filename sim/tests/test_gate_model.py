@@ -49,7 +49,7 @@ ROUTED_V = REPO / "layout" / "trng_digital" / "trng_digital.routed.v"
 #: the committed manifest of the recorded full-program run
 COMMITTED_MANIFEST = BLOCK / "corners" / "gate-model-full" / "gate-model.manifest.json"
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(REPO, "sim", "bin"))
 from loadmod import load_module  # noqa: E402
 
 G = load_module("make_gate_model", GENERATOR)

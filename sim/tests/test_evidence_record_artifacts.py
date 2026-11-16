@@ -32,17 +32,62 @@ def use_fake_klt(case, tmp, mode="ok"):
 
 # --- static guard: no hand-rolled record tails outside the minter (issue #515) ---
 
-# A line that names a `<rid>.md` / `<rid>.json` path the way the hand-rolled
-# tails do (f-string or string concat) AND carries a write call on the same
-# line. Doc back-references (`--check sim/<slug>/records/{rid}.json`) and
-# prints never carry both, so they stay unflagged.
-_RID_WRITE_TOKEN = re.compile(r"""\{rid\}\.(?:md|json)|rid \+ "\.(?:md|json)"|f'\{rid\}\.(?:md|json)'""")
-_WRITE_CALL = re.compile(r"\.write_text\(|\.write\(|\bopen\(|json\.dump\(")
+# The detector walks the AST (issue #531) rather than matching source text, so
+# it does not depend on how the path is spelled (`rid+".md"`, `'{rid}.md'`,
+# `"%s.md" % rid`, `.format(rid)`, `.with_suffix(".md")`, ...). Each path
+# expression is *rendered* to a string with `rid` as a sentinel and every other
+# interpolation as an opaque wildcard (so `f"{outdir}/{rid}.md"` still ends in
+# `<rid>.md`). A write is a record tail only when the rendered path ends in
+# EXACTLY `<rid>.md`/`<rid>.json`: `endswith(".json")` would also flag the
+# legitimate `<rid>.calibration.json` sidecar. Doc back-references, prints and
+# `.exists()` checks never reach a write call, so they stay unflagged.
+_RID, _ANY = "\x00", "\x01"
+_RID_TAIL = re.compile(r"\x00\.(?:md|json)\Z")
+_WRITE_ATTRS = {"write_text", "write_bytes", "write", "open"}
+_PLACEHOLDER = re.compile(r"%[sdr]|\{[^{}]*\}")
 
-# The split shape (`record_json = records_dir / f"{rid}.json"` ... later
-# `record_json.write_text(...)`), which `sim/bin/corner-run.py` uses.
-_RID_BIND = re.compile(
-    r"""^\s*(\w+)\s*=.*(?:\{rid\}\.(?:md|json)|rid \+ "\.(?:md|json)"|f'\{rid\}\.(?:md|json)')""")
+
+def _render(node, bound=frozenset()) -> str:
+    """Render a path expression to a string; `rid` -> _RID, unknown -> _ANY."""
+    import ast
+    if isinstance(node, ast.Constant):
+        return node.value if isinstance(node.value, str) else _ANY
+    if isinstance(node, ast.Name):
+        return _RID if node.id == "rid" else _ANY
+    if isinstance(node, ast.JoinedStr):
+        return "".join(_render(v.value, bound) if isinstance(v, ast.FormattedValue)
+                       else _render(v, bound) for v in node.values)
+    if isinstance(node, ast.BinOp):
+        if isinstance(node.op, ast.Add):
+            return _render(node.left, bound) + _render(node.right, bound)
+        if isinstance(node.op, ast.Div):
+            return _render(node.left, bound) + "/" + _render(node.right, bound)
+        if isinstance(node.op, ast.Mod) and isinstance(node.left, ast.Constant) \
+                and isinstance(node.left.value, str):
+            right = node.right.elts if isinstance(node.right, ast.Tuple) else [node.right]
+            vals = iter(_render(r, bound) for r in right)
+            return _PLACEHOLDER.sub(lambda _m: next(vals, _ANY), node.left.value)
+    if isinstance(node, ast.Call):
+        f = node.func
+        if isinstance(f, ast.Attribute) and f.attr == "format" \
+                and isinstance(f.value, ast.Constant) and isinstance(f.value.value, str):
+            pos = iter(_render(a, bound) for a in node.args)
+            kw = {k.arg: _render(k.value, bound) for k in node.keywords}
+            return _PLACEHOLDER.sub(
+                lambda m: kw.get(m.group(0)[1:-1], _ANY) if m.group(0)[1:-1] in kw
+                else next(pos, _ANY), f.value.value)
+        if isinstance(f, ast.Attribute) and f.attr == "with_suffix" and node.args:
+            return _render(f.value, bound) + _render(node.args[0], bound)
+        if isinstance(f, ast.Attribute) and f.attr == "join" and node.args:  # os.path.join
+            return "/".join(_render(a, bound) for a in node.args)
+        if isinstance(f, ast.Name) and f.id == "Path" and node.args:
+            return _render(node.args[0], bound)
+    return _ANY
+
+
+def _is_tail(node) -> bool:
+    return bool(_RID_TAIL.search(_render(node)))
+
 
 # Known hand-rolled tails, allowed only until drained. `sim/bin/corner-run.py`
 # is the `klt sim` record minter with its own `supersedes` handling (#504's
@@ -62,19 +107,35 @@ def hand_rolled_record_tails(root: Path = REPO) -> set[str]:
     record directly instead of going through `mint_record`/`_publish_bundle`.
 
     `sim/bin/evidence_record.py` is the minter itself; `sim/tests/` mint fake
-    records by design (including this guard's own fixtures).
+    records by design (including this guard's own fixtures). A file that does
+    not parse is skipped.
     """
+    import ast
     hits = set()
     for path in sorted((root / "sim").rglob("*.py")):
         rel = path.relative_to(root).as_posix()
         if rel == "sim/bin/evidence_record.py" or rel.startswith("sim/tests/"):
             continue
-        lines = path.read_text().splitlines()
-        bound = {m.group(1) for line in lines if (m := _RID_BIND.match(line))}
-        for line in lines:
-            direct = _RID_WRITE_TOKEN.search(line) and _WRITE_CALL.search(line)
-            via_bound = any(re.search(rf"\b{name}\s*\.\s*(?:write_text|write)\(", line) for name in bound)
-            if direct or via_bound:
+        try:
+            tree = ast.parse(path.read_text())
+        except (SyntaxError, ValueError, UnicodeDecodeError):
+            continue
+        nodes = list(ast.walk(tree))
+        # The split shape (`record_md = records_dir / f"{rid}.md"` ... later
+        # `record_md.write_text(...)`), which `sim/bin/corner-run.py` uses.
+        bound = {t.id for n in nodes if isinstance(n, ast.Assign) and _is_tail(n.value)
+                 for t in n.targets if isinstance(t, ast.Name)}
+        for n in nodes:
+            if not isinstance(n, ast.Call):
+                continue
+            f = n.func
+            if isinstance(f, ast.Name) and f.id == "open" and n.args:
+                target = n.args[0]
+            elif isinstance(f, ast.Attribute) and f.attr in _WRITE_ATTRS:
+                target = f.value
+            else:
+                continue
+            if _is_tail(target) or (isinstance(target, ast.Name) and target.id in bound):
                 hits.add(rel)
                 break
     return hits
@@ -460,6 +521,70 @@ class WriteCornerBundle(unittest.TestCase):
         self.assertFalse(self.rdir.exists())
 
 
+class ReadCornerBundle(unittest.TestCase):
+    """er.read_corner_bundle: the inverse of write_corner_bundle (issue #497)."""
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self._tmp.cleanup)
+        self.root = Path(self._tmp.name)
+        self.reqdir = self.root / "req"
+        self.rdir = self.root / "records"
+        self.cdir = self.root / "corners" / "rid1"
+
+    def store(self, chunks):
+        for n, _pl, _rs in chunks:
+            d = self.reqdir / n
+            d.mkdir(parents=True)
+            (d / "request.json").write_text('{"r": 1}')
+            (d / "netlist.cir").write_text("* deck\n")
+        er.write_corner_bundle(self.cdir, self.reqdir, chunks, records_dir=self.rdir, rid="rid1")
+
+    def test_roundtrip_sorted_names(self):
+        chunks = [("b", {"corner": "tt"}, {"v": "beta"}), ("a", {"corner": "ff"}, {"v": "alpha"})]
+        self.store(chunks)
+        self.assertEqual(er.read_corner_bundle(self.cdir),
+                         [("a", {"corner": "ff"}, {"v": "alpha"}), ("b", {"corner": "tt"}, {"v": "beta"})])
+
+    def test_prefix_filter(self):
+        self.store([("ctl-1", {}, {"v": 1}), ("ctl-2", {}, {"v": 2}), ("pert-1", {}, {"v": 3})])
+        self.assertEqual([nm for nm, _, _ in er.read_corner_bundle(self.cdir, prefix="ctl-")],
+                         ["ctl-1", "ctl-2"])
+
+    def test_with_missing_pairs_notes_with_plans(self):
+        self.store([("kept", {}, {"v": 1})])
+        (self.cdir / "gone.missing.json").write_text(json.dumps({"request": "gone", "reason": "timeout"}))
+        (self.cdir / "gone.plan.json").write_text(json.dumps({"corner": "gone"}, indent=1))
+        chunks, missing = er.read_corner_bundle(self.cdir, with_missing=True)
+        self.assertEqual([nm for nm, _, _ in chunks], ["kept"])
+        self.assertEqual(missing, [("gone", {"corner": "gone"}, "timeout")])
+        self.assertEqual(er.read_corner_bundle(self.cdir), chunks)  # default hides the notes
+
+    def test_prefix_filters_missing_notes_too(self):
+        self.store([("ctl-1", {}, {"v": 1}), ("pert-1", {}, {"v": 2})])
+        (self.cdir / "ctl-gone.missing.json").write_text(json.dumps({"request": "ctl-gone", "reason": "timeout"}))
+        (self.cdir / "ctl-gone.plan.json").write_text(json.dumps({"corner": "ctl"}, indent=1))
+        (self.cdir / "pert-gone.missing.json").write_text(json.dumps({"request": "pert-gone", "reason": "refused"}))
+        (self.cdir / "pert-gone.plan.json").write_text(json.dumps({"corner": "pert"}, indent=1))
+        chunks, missing = er.read_corner_bundle(self.cdir, prefix="ctl-", with_missing=True)
+        self.assertEqual([nm for nm, _, _ in chunks], ["ctl-1"])
+        self.assertEqual(missing, [("ctl-gone", {"corner": "ctl"}, "timeout")])
+
+    def test_prefix_matching_no_notes_returns_empty_missing(self):
+        self.store([("ctl-1", {}, {"v": 1})])
+        (self.cdir / "pert-gone.missing.json").write_text(json.dumps({"request": "pert-gone", "reason": "timeout"}))
+        (self.cdir / "pert-gone.plan.json").write_text(json.dumps({"corner": "pert"}, indent=1))
+        self.assertEqual(er.read_corner_bundle(self.cdir, prefix="ctl-", with_missing=True),
+                         ([("ctl-1", {}, {"v": 1})], []))
+
+    def test_malformed_plan_fails_loudly(self):
+        self.store([("a", {}, {"v": 1})])
+        (self.cdir / "a.plan.json").write_text("{not json")
+        with self.assertRaises(json.JSONDecodeError):
+            er.read_corner_bundle(self.cdir)
+
+    def test_missing_cdir_reads_empty(self):
+        self.assertEqual(er.read_corner_bundle(self.root / "corners" / "nothing"), [])
 class NoNewHandRolledRecordTails(unittest.TestCase):
     """Static guard (issue #515): every `sim/**/*.py` record write must go
     through `mint_record`/`_publish_bundle`. A direct `<rid>.md`/`<rid>.json`
@@ -481,20 +606,50 @@ class NoNewHandRolledRecordTails(unittest.TestCase):
             "allowlist entr(y/ies) no longer hand-roll their tails -- remove "
             f"them from ALLOWED_HAND_ROLLED_TAILS: {drained}")
 
-    def test_detector_flags_a_deliberate_tail_and_passes_references(self):
+    def _scan(self, files: dict[str, str]) -> set[str]:
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)
             slug = root / "sim" / "slug"
             slug.mkdir(parents=True)
-            clean = slug / "clean.py"
-            clean.write_text('print(f"--check sim/slug/records/{rid}.json`")\n')
-            dirty = slug / "dirty.py"
-            dirty.write_text('(rdir / f"{rid}.md").write_text(md)\n'
-                             'json.dump(rec, open(os.path.join(rdir, rid + ".json"), "w"))\n')
-            split = slug / "split.py"
-            split.write_text('record_json = records_dir / f"{rid}.json"\n'
-                             'record_json.write_text("{}")\n')
-            self.assertEqual(hand_rolled_record_tails(root), {"sim/slug/dirty.py", "sim/slug/split.py"})
+            for name, text in files.items():
+                (slug / name).write_text(text)
+            return {Path(h).name for h in hand_rolled_record_tails(root)}
+
+    def test_detector_flags_every_spelling(self):
+        spellings = [
+            '(rdir / f"{rid}.md").write_text(md)',
+            '(rdir / (rid + ".md")).write_text(md)',
+            '(rdir / (rid+".md")).write_text(md)',
+            "(rdir / (rid + '.md')).write_text(md)",
+            '(rdir / ("%s.md" % rid)).write_text(md)',
+            '(rdir / "{}.md".format(rid)).write_text(md)',
+            '(rdir / rid).with_suffix(".md").write_text(md)',
+            'open(os.path.join(rdir, f"{rid}.md"), "w").write(md)',
+            'open(f"{outdir}/{rid}.md", "w").write(md)',  # unknown interpolation
+            'json.dump(rec, open(os.path.join(rdir, rid + ".json"), "w"))',
+        ]
+        for i, src in enumerate(spellings):
+            with self.subTest(src):
+                self.assertEqual(self._scan({f"v{i}.py": src + "\n"}), {f"v{i}.py"})
+
+    def test_detector_flags_split_bound_write(self):
+        self.assertEqual(
+            self._scan({"split.py": 'record_json = records_dir / f"{rid}.json"\n'
+                                    'record_json.write_text("{}")\n'}), {"split.py"})
+
+    def test_detector_passes_references_and_sidecars(self):
+        clean = {
+            "doc.py": 'print(f"--check sim/slug/records/{rid}.json`")\n',
+            "sidecar.py": 'cal_path = rdir / f"{rid}.calibration.json"\n'
+                          '(rdir / f"{rid}.calibration.json").write_text("{}")\n'
+                          'cal_path.write_text("{}")\n',
+            "heading.py": 'md = f"# {rid} -- slug"\nmint_record(root, md)\n',
+            "bound_reads.py": 'record_md = records_dir / f"{rid}.md"\n'
+                              'if record_md.exists():\n    raise SystemExit(1)\n'
+                              "print(f\"written: {(records_dir / f'{rid}.md')}\")\n",
+            "broken.py": "def (:\n",
+        }
+        self.assertEqual(self._scan(clean), set())
 
 
 if __name__ == "__main__":

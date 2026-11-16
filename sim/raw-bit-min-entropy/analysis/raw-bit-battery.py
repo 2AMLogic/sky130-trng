@@ -82,7 +82,6 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 RECORDS_DIR = REPO_ROOT / "sim" / "raw-bit-min-entropy" / "records"
 
 sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
-sys.path.insert(0, str(REPO_ROOT / "sim" / "tests"))
 from evidence_record import mint_record, new_record_id  # noqa: E402
 from loadmod import load_module  # noqa: E402
 

@@ -33,7 +33,6 @@ SLUGDIR = HERE.parent
 REPO = SLUGDIR.parents[1]
 sys.path.insert(0, str(SLUGDIR))
 sys.path.insert(0, str(REPO / "sim" / "bin"))
-sys.path.insert(0, str(REPO / "sim" / "tests"))
 import campaign as C  # noqa: E402
 from evidence_record import mint_behavioral_record  # noqa: E402
 from loadmod import load_module  # noqa: E402

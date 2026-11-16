@@ -29,7 +29,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 _PATH = REPO_ROOT / "sim" / "digital-section-behavioral" / "harness" / "health-detection-coverage.py"
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(REPO_ROOT, "sim", "bin"))
 from loadmod import load_module  # noqa: E402
 H = load_module("health_detection_coverage", _PATH)
 

@@ -64,7 +64,6 @@ REPO = HERE.parent.parent
 SLUG = "ro-array-idle-leakage"
 sys.path.insert(0, str(REPO / "sim" / "bin"))
 sys.path.insert(0, str(REPO / "layout" / "bin"))
-sys.path.insert(0, str(REPO / "sim" / "tests"))
 from _hashing import sha256_file  # noqa: E402
 from loadmod import load_module  # noqa: E402
 from request_dir import load_request_dir  # noqa: E402
@@ -277,13 +276,8 @@ def store_chunks(rid, reqdir, chunks):
 
 
 def read_stored(rid):
-    cdir = HERE / "corners" / rid
-    out = []
-    for f in sorted(cdir.glob("*.klt-sim.json.gz")):
-        nm = f.name[: -len(".klt-sim.json.gz")]
-        with gzip.open(f, "rt") as fh:
-            out.append((nm, json.load(open(cdir / f"{nm}.plan.json")), json.load(fh)))
-    return out
+    from evidence_record import read_corner_bundle
+    return read_corner_bundle(HERE / "corners" / rid)
 
 
 def default_liberty_dir():
