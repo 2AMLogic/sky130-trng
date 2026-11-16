@@ -849,6 +849,22 @@ class TestReducerMeasurementCompleteness(unittest.TestCase):
         self.assertIn("rdata_k0", msg)
         self.assertIn("[7]", msg)
 
+    def test_duplicate_name_is_refused_even_when_the_list_length_matches(self):
+        # issue #548: the count guard reads the LIST length, but every
+        # check reads the DEDUPLICATED dict -- a repeated name displaces
+        # the entry it duplicates and silently drops its check while the
+        # verdict stays pass. The issue's measured shape: one scalar
+        # entry (alarm_k0) replaced by a duplicate gated_k* name, list
+        # length unchanged -- 311/311 became 310/310, still PASS.
+        meas = self.word()
+        meas[0] = {"name": "gated_k0", "value": 0.0}
+        meas.append({"name": "gated_k0", "value": 0.0})
+        with self.assertRaises(SystemExit) as cm:
+            self.compare(meas, measurement_count=len(meas))
+        msg = str(cm.exception)
+        self.assertIn("duplicate measurement name", msg)
+        self.assertIn("gated_k0", msg)
+
     def test_a_complete_word_still_decodes(self):
         n = CMP.P.N_SAMPLES_REG + CMP.P.N_SAMPLES_STREAM
         rows = CMP.P.model_replay([0, 1, 0, 1] + [0] * (n - 4))
