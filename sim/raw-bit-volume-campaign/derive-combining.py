@@ -12,18 +12,18 @@ top-level .meas results). The raw response is kept at
 sim/ro-array-core-combining/corners/<id>/klt-sim.json. A failed corner is
 recorded with ok=false and its diagnostics -- never dropped.
 """
-import importlib.util, json, os, sys
+import json, os, sys
 from pathlib import Path
 
 REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 SLUG = "ro-array-core-combining"
 TB = "sim/ro-array-core-combining/testbench/tb_ro_array_core.spice"
 sys.path.insert(0, os.path.join(REPO, "sim", "bin"))
+sys.path.insert(0, os.path.join(REPO, "sim", "tests"))
 from evidence_record import new_record_id, record_footer, reserve_corner_dir  # noqa: E402
+from loadmod import load_module  # noqa: E402
 
-_s = importlib.util.spec_from_file_location("make_requests", os.path.join(os.path.dirname(__file__), "make-requests.py"))
-mr = importlib.util.module_from_spec(_s)
-_s.loader.exec_module(mr)
+mr = load_module("make_requests", os.path.join(os.path.dirname(__file__), "make-requests.py"))
 
 
 def derive(m, vdd):

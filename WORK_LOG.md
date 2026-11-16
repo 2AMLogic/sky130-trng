@@ -8,12 +8,15 @@ Chronological record of recently merged pull requests and closed issues.
 
 ### 2026-11-15
 
+- **PR #526**: feat(signoff): declare the Power evidence mapping in the characterization report
 - **PR #527**: fix: mint the controls record through mint_record and guard against new hand-rolled tails
 - **PR #520**: refactor(idle-leakage): read request dirs through the shared request_dir walk
 - **PR #503**: refactor(klt): read the klt version and pdk find through one shared contract
 - **PR #499**: fix(spec): check the decision-record index against front matter, not the first history word
 - **PR #492**: refactor: add sha256_text/sha256_bytes to _hashing and drop nine hand-rolled copies
+- **Issue #536** (closed): test_vth_drift: superseding-record replay check fails at HEAD in a stdlib-only run
 - **Issue #530** (closed): test_vth_drift.py fails on main (provenance generator-hash mismatch), and 8 sim/tests are absent from CI
+- **Issue #485** (closed): Declare an evidence mapping for the Power row in the characterization report
 - **Issue #521** (closed): A fifth private klt invoker remains: run-ir.py's klt_power never inspects the response for an `error` object
 - **Issue #518** (closed): Remove five superseded signal routing-increment sets from layout/ro_array_core-placement-poc/: operator decision on the README's retention choice
 - **Issue #515** (closed): sensitivity.py's controls record is still minted outside mint_record/_publish_bundle, with a footerless md
