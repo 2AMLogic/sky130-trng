@@ -40,7 +40,6 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 _RTL_COSIM_PATH = REPO_ROOT / "sim" / "digital-rtl-equivalence" / "harness" / "rtl-cosim.py"
 sys.path.insert(0, str(REPO_ROOT / "digital"))
 sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
-sys.path.insert(0, str(REPO_ROOT / "sim" / "tests"))
 from loadmod import load_module  # noqa: E402
 
 rtl_cosim = load_module("rtl_cosim", _RTL_COSIM_PATH)

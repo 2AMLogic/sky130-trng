@@ -48,7 +48,6 @@ HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[1]
 SLUG = "xor-combining-alternatives"
 sys.path.insert(0, str(REPO / "sim" / "bin"))
-sys.path.insert(0, str(REPO / "sim" / "tests"))
 from loadmod import load_module  # noqa: E402
 from replay_equal import replay_equal as _replay_equal  # noqa: E402  (issue #519: one shared replay equality)
 
