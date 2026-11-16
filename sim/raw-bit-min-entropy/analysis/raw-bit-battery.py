@@ -71,7 +71,6 @@ from __future__ import annotations
 
 import argparse
 import hashlib
-import importlib.util
 import json
 import math
 import re
@@ -83,13 +82,12 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 RECORDS_DIR = REPO_ROOT / "sim" / "raw-bit-min-entropy" / "records"
 
 sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
+sys.path.insert(0, str(REPO_ROOT / "sim" / "tests"))
 from evidence_record import mint_record, new_record_id  # noqa: E402
+from loadmod import load_module  # noqa: E402
 
-_spec = importlib.util.spec_from_file_location(
+raw_bit_entropy = load_module(
     "raw_bit_entropy", Path(__file__).with_name("raw-bit-entropy.py"))
-assert _spec is not None and _spec.loader is not None
-raw_bit_entropy = importlib.util.module_from_spec(_spec)
-_spec.loader.exec_module(raw_bit_entropy)
 
 ALPHA = 0.01
 Z_99 = 2.5758293035489004
