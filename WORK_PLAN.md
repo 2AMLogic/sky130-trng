@@ -13,7 +13,7 @@ Judge-approved PRs under a hold (`loom:blocked` or `loom:operator`) — only a h
 
 `loom:very-important` (one counts per workspace); every stage takes these first.
 
-- **#488**: bug: whole-block deck PWL stimulus ramps between cycles instead of holding, so bus inputs never switch cleanly
+_None._
 
 ## Important
 
@@ -25,16 +25,14 @@ Judge-approved PRs under a hold (`loom:blocked` or `loom:operator`) — only a h
 - **#372**: Move the layout klt pin (pdk-nightly.yml, pdk.json, REPRODUCE.md) to klayout-tools 0.8.0
 - **#383**: pdk-nightly is red
 - **#431**: DR-0017 follow-up: analog-chain-only feasibility probe, then gate-level co-simulation generator and reducer for the whole-block PVT matrix
-- **#500**: Consolidate the eleven raw `klt` call sites outside `_klt_common`: two spellings of `klt_version` feed string-equality pin gates, and one `pdk find` scrapes klt's text output
 
 ## Ready
 
 Human-approved issues ready for implementation (`loom:issue`).
 
 - **#314**: Re-pin open_pdks to f6eeac7 (ciel) — fleet retires volare c6d73a3
-- **#488**: bug: whole-block deck PWL stimulus ramps between cycles instead of holding, so bus inputs never switch cleanly
-- **#497**: Consolidate the seven hand-rolled corner-bundle readers in six sim studies: the writer half already lives in evidence_record.py
-- **#501**: Remove _NoExitCodes Path subclass: replace the .parent-lying shim with an exit_lookup parameter on compaction.summarize_run
+- **#507**: bug: committed whole-block startup-probe requests carry 9 measurements past their own t_stop and timeouts the generator no longer emits
+- **#535**: Consolidate duplicated rel/load_json/klt_env/_klayout/dumps helpers in layout/bin
 
 ## In Progress
 
@@ -45,17 +43,24 @@ Issues currently being built (`loom:building`).
 - **#371**: Regenerate composite layout cells, trng_digital/trng_whole and pex libraries under klayout-tools 0.8.0
 - **#381**: verify-whole: adapt the whole-block harness to klayout-tools 0.8.0 VNB handling
 - **#460**: Replace raw xschem call and duplicated post-processing in design/netlist.py with klt netlist
-- **#484**: Correct stale decision-record status text in README, spec/README and the Chipalooza proposal
-- **#487**: Consolidate the nine hand-rolled in-memory sha256 helpers onto _hashing: two same-named functions in layout/bin return different formats
-- **#500**: Consolidate the eleven raw `klt` call sites outside `_klt_common`: two spellings of `klt_version` feed string-equality pin gates, and one `pdk find` scrapes klt's text output
+- **#485**: Declare an evidence mapping for the Power row in the characterization report
+- **#493**: Wire layout/test_hashing.py into CI: the shared digest helper's only regression guard has never run on a PR
+- **#496**: Harden the gate-model reduction against silent-input defects (four latent paths from #486)
+- **#497**: Consolidate the seven hand-rolled corner-bundle readers in six sim studies: the writer half already lives in evidence_record.py
+- **#498**: ro-vth-drift-sensitivity: controls record's aging_sha256 pin invalidated by the #487 digest refactor
+- **#501**: Remove _NoExitCodes Path subclass: replace the .parent-lying shim with an exit_lookup parameter on compaction.summarize_run
+- **#509**: Finish the #412 deferral: ~18 inline importlib loader blocks remain in sim scripts, and the shared loadmod helper still lives under sim/tests/
+- **#514**: signoff/README.md's t1-report regeneration command carries no klt version pin, so a host klt silently renders a wrong build block
+- **#523**: Finish PDR-0001's deferred follow-up: generate-agents-md.sh still fails with a doubled .loom/ path
 
 ## PRs Awaiting Review
 
 PRs waiting on Judge (`loom:review-requested`).
 
 - **#483**: docs: roadmap as of 2026-11-13
-- **#499**: fix(spec): check the decision-record index against front matter, not the first history word
-- **#503**: refactor(klt): read the klt version and pdk find through one shared contract
+- **#511**: refactor: one shared corner-bundle reader beside the bundle writer
+- **#534**: ci: wire layout/test_hashing.py into the PR-blocking lint job; refresh the item-10 attestation chain
+- **#537**: fix: make the gate-model evidence pipeline fail closed on incomplete or unvalidated input
 
 ## Approved (Awaiting Merge)
 
@@ -63,6 +68,9 @@ PRs that passed review and are queued for Champion auto-merge (`loom:pr`).
 
 - **#388**: fix(verify): strip klt 0.8.0 VNB from abstracted stubs, regenerate whole-block evidence
 - **#464**: feat: netlist through bounded `klt netlist` instead of a raw xschem call
+- **#524**: docs(signoff): pin the t1-report regeneration command to klayout-tools 0.8.0
+- **#526**: feat(signoff): declare the Power evidence mapping in the characterization report
+- **#529**: fix: generate-agents-md.sh doubled .loom/ path; accept PDR-0001's deferred follow-up
 
 ## Proposed
 
@@ -80,9 +88,14 @@ Issues carrying `loom:curated`.
 - **#381**: verify-whole: adapt the whole-block harness to klayout-tools 0.8.0 VNB handling *(curated)*
 - **#431**: DR-0017 follow-up: analog-chain-only feasibility probe, then gate-level co-simulation generator and reducer for the whole-block PVT matrix *(curated)*
 - **#460**: Replace raw xschem call and duplicated post-processing in design/netlist.py with klt netlist *(curated)*
-- **#484**: Correct stale decision-record status text in README, spec/README and the Chipalooza proposal *(curated)*
 - **#485**: Declare an evidence mapping for the Power row in the characterization report *(curated)*
-- **#488**: bug: whole-block deck PWL stimulus ramps between cycles instead of holding, so bus inputs never switch cleanly *(curated)*
+- **#493**: Wire layout/test_hashing.py into CI: the shared digest helper's only regression guard has never run on a PR *(curated)*
+- **#496**: Harden the gate-model reduction against silent-input defects (four latent paths from #486) *(curated)*
+- **#498**: ro-vth-drift-sensitivity: controls record's aging_sha256 pin invalidated by the #487 digest refactor *(curated)*
+- **#507**: bug: committed whole-block startup-probe requests carry 9 measurements past their own t_stop and timeouts the generator no longer emits *(curated)*
+- **#514**: signoff/README.md's t1-report regeneration command carries no klt version pin, so a host klt silently renders a wrong build block *(curated)*
+- **#519**: sim/: committed-record replay is not reproducible across CPython versions (ro-vth-drift-sensitivity + xor-combining-alternatives; MATCHES on 3.12, DIFFERS on CI's 3.11) *(curated)*
+- **#532**: Two residual uncheckable facts around the decision-record index: README's record count, and the undocumented oldest-first `## Status` ordering *(curated)*
 
 ## Proposed (Architect / Hermit)
 
@@ -93,7 +106,6 @@ Issues carrying `loom:curated`.
 - **#491**: Remove the two byte-identical 15 MB netlist.cir copies under sim/post-layout-whole-block/runs/: #174 already ratified them as regenerated, and .gitignore's pattern misses the runs/ path *(hermit)*
 - **#494**: Stop committing 11 MB of all-null antenna skeleton in layout/trng_digital/erc.json: 98.6% of the repo's largest file records that a check did not run *(hermit)*
 - **#495**: Continue the #173 seam: move ~500 lines of PDK-free verdict logic out of verify-whole.py into verify_whole_lib.py *(hermit)*
-- **#504**: Finish the #392 deferral: seven reducers hand-roll the record-minting tail because record_footer cannot say Supersedes *(hermit)*
 
 ## Epics
 
@@ -105,13 +117,13 @@ Issues carrying `loom:curated`.
 | Bucket | Count |
 |------|-------|
 | Operator merge-risk holds | 1 |
-| Very important | 1 |
-| Important | 7 |
-| Ready (`loom:issue`) | 4 |
-| In Progress (`loom:building`) | 8 |
-| PRs awaiting review | 3 |
-| Approved PRs awaiting merge | 2 |
-| Curated | 15 |
-| Architect / Hermit proposals | 8 |
+| Very important | 0 |
+| Important | 6 |
+| Ready (`loom:issue`) | 3 |
+| In Progress (`loom:building`) | 14 |
+| PRs awaiting review | 4 |
+| Approved PRs awaiting merge | 5 |
+| Curated | 20 |
+| Architect / Hermit proposals | 7 |
 | Active epics | 2 |
 <!-- guide:plan-body:end -->
