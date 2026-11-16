@@ -3,7 +3,7 @@
 sky130-trng ports the gf180-trng ring-oscillator entropy source to SkyWater sky130 to find out what breaks in
 the PDK, the deck and the tools.
 
-Status as of 2026-11-13, `main` @ `9185beff`. Issue and PR numbers are this repo's unless prefixed.
+Status as of 2026-11-16, `main` @ `979f7a5e`. Issue and PR numbers are this repo's unless prefixed.
 [`WORK_PLAN.md`](../WORK_PLAN.md) is a generated snapshot of label state; this file gives the order and why.
 
 ## Where it stands
@@ -34,18 +34,21 @@ The reasons are spelled out in [`signoff/block-manifest.json`](../signoff/block-
 [`signoff/characterization-report.md`](../signoff/characterization-report.md). The three unmet targets are raw
 rate (50 kbps operating point against > 1 Mbps, DR-0003), raw min-entropy (one tt local-mismatch record below
 the 0.5 floor, #221) and area (0.126 mm² composed against < 0.05 mm²). Power is "not measured" because the
-report declares no evidence mapping for it.
+whole-block active-power record does not exist yet: the row's idle half maps to the idle-leakage records and
+is met against DR-0018's 200 µW envelope (#485), the active half points at the record #308 will produce.
 
 Decision records: DR-0017 (reduced-work whole-block PVT) and DR-0018 (idle power envelope) are Accepted; the
-other fifteen are Proposed. DR-0013 exists only in open PR #249.
+other sixteen are Proposed. DR-0013 exists only in open PR #249.
 
 Whole-block PVT (#174, #307): 0 of 12 points have run to a verdict. The flat transistor-level netlist timed out
 at the 3480 s unit ceiling twice on a 100 ns probe
 ([record](../sim/post-layout-whole-block/records/20261106b-rate-probe-repinned-timeout.md)). The analog chain
 alone is feasible (500 ns in 28.7 s,
 [record](../sim/post-layout-whole-block/records/20261105-analog-chain-probe.md)), and the DR-0017 generator,
-partition check and reducer are merged (PR #438). What is missing is the gate-level digital half in ngspice and
-a measured full-block rate.
+partition check and reducer are merged (PR #438). The gate-level digital half now has an ngspice realisation —
+a timed-delay XSPICE netlist, measured feasible (#486,
+[record](../sim/post-layout-whole-block/records/20261114-gate-model-realisation.md)); what is missing is a
+measured full-block rate.
 
 Tool pins are split: `signoff-check` grades on klayout-tools 0.8.0, while `layout/pdk.json` still pins
 `0.6.0+g5edb557f91d0`, and `pdk-nightly` is red on the layout drift guard (#383, parked on #372). Leaf cells are
@@ -53,25 +56,26 @@ regenerated under 0.8.0 (#369, #370 closed); composites are not (#371).
 
 ## Now (can start today)
 
-1. **Correct the stale decision-record status text.** `README.md` says every record is Proposed,
-   `spec/README.md` lists DR-0017 as Proposed, and row E of `docs/chipalooza/challenge-4-proposal.md` says the
-   leakage survey has not run. `tools/check_spec_index.py` passes anyway because it reads the first status word
-   in a record's `## Status` history. Done when the three places and the checker follow the record front matter
-   and `signoff-check` passes. No issue yet.
-2. **Give the characterization report a Power row mapping.** Done when `sim/bin/characterization_report.py`
-   declares `EVIDENCE["Power"]`, the idle check reads the idle-leakage record against DR-0018's 200 µW envelope,
-   the whole-block active check is declared against a record that does not exist yet (so the row
-   stays `not measured`), and the regenerated report and envelope pass their CI byte-diff. No issue yet.
-3. **Choose and evidence the ngspice realisation of the gate-level digital half** (first open item of #431 step
-   2; DR-0017 leaves event-driven co-simulation versus a timed-delay netlist to the follow-up). Done when a
-   generator builds it from `layout/trng_digital/trng_digital.routed.v` for one Liberty corner, a unit test
-   checks instance and port correspondence, and a dated record under `sim/post-layout-whole-block/records/`
-   states the measured wall-clock per simulated nanosecond, or the negative result. Tracked by #431, which still
-   carries a blocked label from before DR-0017 was accepted.
-4. **Get the open_pdks re-pin green** (#314, PR #316). Done when PR #316 passes CI with every pin location at
+The previous snapshot's first three items landed while this file sat in review, each through the issue this
+document's draft filed for it:
+
+- **Decision-record status text follows the record front matter** (#484, closed 2026-11-15): `README.md`,
+  `spec/README.md`, row E of `docs/chipalooza/challenge-4-proposal.md` and `tools/check_spec_index.py` (which
+  now parses record front matter) all agree with the records.
+- **The characterization report declares an evidence mapping for the Power row** (#485, closed 2026-11-15):
+  `EVIDENCE["Power"]` maps the idle check to the idle-leakage records under DR-0018's 200 µW envelope (met);
+  the whole-block active check is declared against a record that does not exist yet, so the row stays
+  `not measured`.
+- **The gate-level digital half has an ngspice realisation** (#486, closed 2026-11-14): a timed-delay XSPICE
+  netlist generated from `layout/trng_digital/trng_digital.routed.v`, measured at 0.00975 s per simulated ns
+  against a pre-stated 0.3852 s/ns pass line
+  ([record](../sim/post-layout-whole-block/records/20261114-gate-model-realisation.md)). The rest of #431
+  step 2 (DR-0017 option (b)) stays in Next.
+
+1. **Get the open_pdks re-pin green** (#314, PR #316). Done when PR #316 passes CI with every pin location at
    `f6eeac7`, ciel provisioning, and a PDK search that reports a revision mismatch instead of using the first
    tree it finds. The PR is open and failing CI.
-5. **Merge the klayout-tools 0.8.0 whole-block verify adaptation** (#381, PR #388, approved); first link of Next.
+2. **Merge the klayout-tools 0.8.0 whole-block verify adaptation** (#381, PR #388, approved); first link of Next.
 
 ## Next (unblocked by a named item)
 
@@ -82,8 +86,9 @@ regenerated under 0.8.0 (#369, #370 closed); composites are not (#371).
   when `pdk-nightly` is green, which closes #383 and the tracker #366. After #371.
 - **Re-qualify reference records under open_pdks `f6eeac7`** (#315). After #314; old records stay append-only.
 - **Finish DR-0017 option (b)** (#431): boundary-load model and Liberty deck per (T, Vdd) point stated with
-  their source, a measured full-block run, and `GRID_TIMEOUT_S` / `poll_timeout_s` set from it. After Now item
-  3. A rate over the 3480 s ceiling is recorded as a negative result and stops there.
+  their source, a measured full-block run, and `GRID_TIMEOUT_S` / `poll_timeout_s` set from it. After the
+  gate-model realisation (#486, landed above). A rate over the 3480 s ceiling is recorded as a negative result
+  and stops there.
 - **Run the 12-point whole-block matrix** (#307): tt/ss/ff at the four ratified (T, Vdd) points, reduced with
   `reduce-whole-block.py --emit-record`. After #431. O5d, O7 and O8 stay UNMET under DR-0017, so this does not
   by itself meet #18 AC3.
@@ -109,7 +114,7 @@ regenerated under 0.8.0 (#369, #370 closed); composites are not (#371).
 
 ## Blocked and waiting
 
-- **Ratification.** Fifteen decision records and the README target table are Proposed. T1 item 5 and the
+- **Ratification.** Sixteen decision records and the README target table are Proposed. T1 item 5 and the
   Chipalooza submission status both wait on it.
 - **Whole-block chain:** #18 (AC3) <- #170 <- #174 <- #307 <- #431.
 - **Held PRs:** #464 (netlist through `klt netlist`, #460) is approved and held; #249 (DR-0013) has changes
@@ -121,7 +126,9 @@ regenerated under 0.8.0 (#369, #370 closed); composites are not (#371).
   cross-checks beyond nominal PVT), #470 (SPICE continuation-line folders).
 - **Upstream:** the klayout-tools issues this repo cites are indexed in [`friction-ledger.md`](friction-ledger.md).
 
-No open issue is ready for a Builder as labelled today: Now items 1 to 3 need an issue or a label fix, 4 and 5 are PRs.
+One open issue is ready for a Builder as labelled today: #314 has carried `loom:issue` with no blocking label
+since 2026-10-28, and its work is already on PR #316, so a Builder picking it up starts from that PR rather
+than a fresh branch. The remaining Now items are the PRs themselves (#316, #388).
 
 ## Not planned
 
