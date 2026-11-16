@@ -33,6 +33,14 @@ gates that compare it, and :func:`pdk_find` / :func:`pdk_root` /
 :func:`run_klt_rc` exposes klt's exit status for the one adopter that
 records it.
 
+Issue #535 moved the last five hand-synced helper forks in here on the same
+terms: :func:`rel` / :func:`load_json` / :func:`klt_env` / :func:`klayout_db`
+(compose-whole.py and verify-whole.py each carried copies that had already
+diverged on failure behaviour -- one side raised :class:`BuildError` with the
+path, the other surfaced a raw traceback) and :func:`dumps` (drc_coverage_audit.py
+and physical_estimates.py kept identical spellings in sync by hand -- one
+copy's docstring said so outright).
+
 Import it the way ``design/netlist.py`` imports ``_pdk_search`` -- these are
 scripts, not an installed package, so the importer puts this file's own
 directory on ``sys.path`` and imports it by bare module name. It lives under
@@ -51,6 +59,8 @@ import os
 import subprocess
 import sys
 from pathlib import Path
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
 class BuildError(RuntimeError):
@@ -332,3 +342,63 @@ def write_json(path: Path, payload: dict) -> None:
     """
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, indent=2, sort_keys=False) + "\n")
+
+
+def rel(path: Path) -> str:
+    """Repo-relative POSIX spelling of *path* (never an absolute home path).
+
+    A path outside the repo (a scratch directory, an output under /tmp)
+    comes back as its absolute POSIX spelling rather than failing.
+    """
+    try:
+        return path.resolve().relative_to(REPO_ROOT).as_posix()
+    except ValueError:
+        return path.as_posix()
+
+
+def load_json(path: Path) -> dict:
+    """Read a JSON input file, failing as a :class:`BuildError` naming it.
+
+    A missing file or an unparsable body is a build failure with the path
+    in the message, not a bare ``FileNotFoundError``/``JSONDecodeError``
+    traceback -- the divergence between the two former copies that
+    motivated the consolidation (issue #535).
+    """
+    try:
+        return json.loads(path.read_text())
+    except FileNotFoundError as exc:
+        raise BuildError(f"missing input: {path}") from exc
+    except json.JSONDecodeError as exc:
+        raise BuildError(f"{path} is not valid JSON: {exc}") from exc
+
+
+def klt_env(pdk_root: str | None = None) -> dict[str, str]:
+    """The environment every klt invocation in this repo runs under.
+
+    The ambient environment with ``PDK`` forced to ``sky130A``, plus
+    ``PDK_ROOT`` set to *pdk_root* when one is given (verify-whole.py's
+    ``--pdk-root`` override for a non-default install location).
+    """
+    env = {**os.environ, "PDK": "sky130A"}
+    if pdk_root:
+        env["PDK_ROOT"] = pdk_root
+    return env
+
+
+def klayout_db():
+    """Import and return ``klayout.db``, failing as a :class:`BuildError`
+    when the python klayout package is missing."""
+    try:
+        import klayout.db as db  # noqa: PLC0415
+    except ImportError as exc:  # pragma: no cover - environment guard
+        raise BuildError("python klayout (klayout.db) is required") from exc
+    return db
+
+
+def dumps(doc: dict) -> str:
+    """The committed-artifact JSON spelling as a string.
+
+    :func:`write_json`'s serialization without the file write: same
+    two-space indent, insertion order preserved, one trailing newline.
+    """
+    return json.dumps(doc, indent=2, sort_keys=False) + "\n"
