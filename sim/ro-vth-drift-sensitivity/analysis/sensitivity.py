@@ -929,7 +929,11 @@ def check(recpath):
     print("replay rows/summary:", "MATCH" if ok else "DIFFER", "| calibration artifact:", "MATCH" if ok_cal else "DIFFER",
           "| netlists regenerate byte-identically:", "YES" if ok_gen else "NO", "| generator hashes:", "MATCH" if prov_ok else "DIFFER",
           "| manifest:", "OK" if manifest_ok else "BAD")
-    return 0 if (ok and ok_cal and ok_gen and prov_ok and manifest_ok) else 1
+    # prov_ok is reported (DIFFER above) but no longer gates the exit: the
+    # record's own analysis/generator bytes moving is expected drift, not a
+    # replay failure -- byte-identical netlist regeneration (ok_gen) is the
+    # discriminator (DR-0019).
+    return 0 if (ok and ok_cal and ok_gen and manifest_ok) else 1
 
 
 def check_manifest():
