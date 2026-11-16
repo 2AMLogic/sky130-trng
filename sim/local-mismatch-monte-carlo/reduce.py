@@ -459,7 +459,7 @@ def emit_record(reqdir, sha=None):
         rows, S = allc[cn]
         mine = [(nm, pl, rs) for nm, pl, rs in chunks if pl["corner"] == cn]
         now, rid_sha, rid = new_record_id(Path(REPO), offset=n)
-        sha = sha or rid_sha          # test seam: inject a fixed short sha for predictable ids
+        sha = sha or rid_sha          # test seam: overrides only the footer sha; ids still come from new_record_id() off repo HEAD
         cdir = os.path.join(REPO, "sim", SLUG, "corners", rid)
         rdir = os.path.join(REPO, "sim", SLUG, "records")
         jobs = write_corner_bundle(cdir, reqdir, mine, records_dir=rdir, rid=rid)

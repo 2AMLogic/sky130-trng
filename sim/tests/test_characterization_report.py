@@ -132,9 +132,12 @@ class Report(unittest.TestCase):
         self.assertFalse(cr.compare([{"detected": 0, "runs": 0}], "all_detected", None)[0])
 
     def test_pvt_label_formats_normalised(self):
-        rec = {"s": ["ss -40 C 1.62 V"], "d": {"proc": "ss", "temp": -40.0, "vnom": 1.62}}
+        rec = {"s": ["ss -40 C 1.62 V"], "d": {"proc": "ss", "temp": -40.0, "vnom": 1.62},
+               "p": {"process": "ff", "temp_c": 125.0, "vdd_v": 1.98}}
         self.assertEqual(cr.pvt_labels(rec, "s[]"), ["ss -40C 1.62V"])
         self.assertEqual(cr.pvt_labels(rec, "d"), ["ss -40C 1.62V"])
+        # the idle-leakage records name the process key `process`, not `proc`
+        self.assertEqual(cr.pvt_labels(rec, "p"), ["ff 125C 1.98V"])
 
     def test_stray_mapping_key_rejected(self):
         t = tempfile.TemporaryDirectory(); self.addCleanup(t.cleanup)
@@ -193,6 +196,29 @@ class Committed(unittest.TestCase):
         health = next(r for r in rep["rows"] if r["parameter"] == "Health tests")
         self.assertEqual(len(health["evidence"]), 3)
         self.assertTrue(all("#221" in e["check"] for e in health["evidence"][:2]))
+
+    def test_power_row_declared_not_measured(self):
+        # DR-0018 idle envelope is evidenced (met on the committed record);
+        # whole-block active power has no record yet (#308), so the row
+        # stays `not measured` (precedence keeps it from being met).
+        rep = cr.build_report(REPO)
+        power = next(r for r in rep["rows"] if r["parameter"] == "Power")
+        self.assertEqual(power["verdict"], "not measured")
+        self.assertEqual(len(power["evidence"]), 2)
+        idle, active = power["evidence"]
+        self.assertEqual(idle["verdict"], "met")
+        self.assertEqual(idle["record_id"], "20261106-185750-8deaf42")
+        self.assertEqual(active["verdict"], "not measured")
+        self.assertIsNone(active["record_id"])
+        self.assertIn("#308", active["check"])
+        # the declared active record path must not exist: an absent record
+        # renders `not measured`; pointing at the existing whole-block
+        # record would render `unmet` instead
+        self.assertFalse((REPO / active["record_path"]).exists())
+        # pvt_labels must read the record's `process` key: 27 corners
+        # (3 process x 3 temp x 3 vdd), each process-prefixed
+        self.assertEqual(len(idle["pvt"]), 27)
+        self.assertIn("ff 125C 1.98V", idle["pvt"])
 
 
 if __name__ == "__main__":
