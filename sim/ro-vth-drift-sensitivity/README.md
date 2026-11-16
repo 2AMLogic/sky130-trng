@@ -66,6 +66,20 @@ python3 sim/ro-vth-drift-sensitivity/analysis/behavioral_replay.py --regenerate-
 python3 sim/tests/test_vth_drift.py
 ```
 
+**What `--check` proves.** A committed record still re-derives, from its own committed raw
+responses alone, to the figures the record stores — and that proof does **not** depend on the
+interpreter running the check. Float-bearing replay comparisons (controls, rows/summary, the
+calibration artifact's re-derived metrics) run through the shared replay equality
+`sim/bin/replay_equal.py` (rel=1e-9 relative): builtin float `sum()` is naive on CPython ≤ 3.11
+and compensated on ≥ 3.12, so the same raw responses re-derive ~1-ulp (≈1e-16 relative) apart
+across that split, and exact equality made `--check` report MATCHES only on the version that
+happened to mint the record (issue #519). Anything above 1e-9 relative is a real change — #467's
+lock-proximity correction still fails `--check`, and a 1e-6-relative tamper is still reported —
+so this is not a relaxation of the guard. The integrity pins stay hash-exact: the committed
+`.calibration.json`'s own sha256 and all 216 `source_rows.*.row_sha256` pins (under its
+`entries`) are compared with `==` on a SHA-256 against the record's own committed rows; no
+tolerance bridges a hash, and a tampered artifact or row still fails closed.
+
 `--emit-record` refuses to mint a grid record unless a PASSing controls record exists, the generator
 hashes match it, every one of the 222 keys is present exactly once, every row is usable, and every
 shifted row has its matched zero-shift row.

@@ -91,6 +91,7 @@ sys.path.insert(0, os.path.join(REPO, "layout", "bin"))
 from lock_proximity import ANY_RATIOS, DR5_RATIOS, closeness  # noqa: E402  (after sys.path)
 from _hashing import sha256_file as _sha256  # noqa: E402
 from request_dir import load_request_dir  # noqa: E402
+from replay_equal import replay_equal as _replay_equal  # noqa: E402  (issue #519: one shared replay equality; sim/tests/test_ripple_reduction.py references it under this name)
 
 NEDGE = 40
 DRIFT_LOCK = 0.1                 # ring cycles slipped over the window below which => locked
@@ -960,20 +961,6 @@ def emit_record(reqdir):
                 if campaign == LR else summ["tolerance_rf_cycle_avg"])
         print(rid, cn, tail, "| detector fires:", summ.get("detector_fires_on_negative_control",
                                                             any(c["flagged"] for c in summ.get("controls", []))))
-
-
-def _replay_equal(a, b, rel=1e-9):
-    """Structural equality where floats match to `rel` (relative) instead of bit-for-bit.
-    Python 3.12 made float `sum()` compensated, so a record emitted on 3.12 replays
-    1-ulp different on 3.11 (the CI interpreter); anything above 1e-9 is a real change."""
-    if isinstance(a, float) or isinstance(b, float):
-        return (isinstance(a, (int, float)) and isinstance(b, (int, float)) and not isinstance(a, bool)
-                and not isinstance(b, bool) and (a == b or math.isclose(a, b, rel_tol=rel, abs_tol=1e-12)))
-    if isinstance(a, dict) and isinstance(b, dict):
-        return a.keys() == b.keys() and all(_replay_equal(a[k], b[k], rel) for k in a)
-    if isinstance(a, list) and isinstance(b, list):
-        return len(a) == len(b) and all(_replay_equal(x, y, rel) for x, y in zip(a, b))
-    return a == b
 
 
 def load_bundle(cdir):
