@@ -73,9 +73,18 @@ calibration artifact's re-derived metrics) run through the shared replay equalit
 `sim/bin/replay_equal.py` (rel=1e-9 relative): builtin float `sum()` is naive on CPython ≤ 3.11
 and compensated on ≥ 3.12, so the same raw responses re-derive ~1-ulp (≈1e-16 relative) apart
 across that split, and exact equality made `--check` report MATCHES only on the version that
-happened to mint the record (issue #519). Anything above 1e-9 relative is a real change — #467's
-lock-proximity correction still fails `--check`, and a 1e-6-relative tamper is still reported —
-so this is not a relaxation of the guard. The integrity pins stay hash-exact: the committed
+happened to mint the record (issue #519). The gate is `|a−b| <= max(1e-9·|v|, 1e-12)`, and it is
+only a ~1e-9 *relative* bound where the relative term dominates: on O(1)-magnitude metrics
+(`lock_proximity.distance` ~6e-2, `q_ring` ~4e-5) the guard is unchanged — #467's lock-proximity
+correction still fails `--check`, and a 1e-6-relative tamper on such a field is still reported.
+Where the floor dominates, this **is** a partial relaxation, stated plainly: any metric below
+~1e-12 in magnitude is guarded by the absolute floor alone (effective relative sensitivity
+`1e-12/|v|`), and this study's headline σ jitter metrics are exactly there — on the tip record,
+`sigma_1_raw`/`sigma_1_corrected` (~1.3–1.4e-12) tolerate a ~70–80 % relative re-derivation
+drift and `numerical_floor` (~6.5e-13) ~155 % without failing. That is the price of an
+interpreter-independent verdict on sub-picosecond quantities; whether the floor is tight enough
+for the entropy claim is routed as issue #547 and deliberately not decided here. The
+integrity pins stay hash-exact: the committed
 `.calibration.json`'s own sha256 and all 216 `source_rows.*.row_sha256` pins (under its
 `entries`) are compared with `==` on a SHA-256 against the record's own committed rows; no
 tolerance bridges a hash, and a tampered artifact or row still fails closed.

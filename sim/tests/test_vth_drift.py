@@ -556,10 +556,12 @@ class CalibrationPinTests(unittest.TestCase):
     def test_rederived_metric_injection_at_the_gate_boundary(self):
         """The measured gate boundary, on the artifact's re-derived half: a
         1e-6-relative metric change is a real change (DIFFER), 1e-12-relative
-        is not (MATCH).  Injected into `lock_proximity.distance` (~0.1 in
-        magnitude): at ~1e-9-magnitude fields like `T_0` the comparator's
-        abs_tol=1e-12 floor dominates any relative change, so the boundary
-        claim only bites on O(1)-magnitude metrics."""
+        is not (MATCH).  Injected into `lock_proximity.distance` (~6e-2 in
+        magnitude) -- the O(1)-magnitude regime where the advertised ~1e-9
+        relative gate actually holds.  It does NOT hold on this artifact's
+        sub-1e-12-magnitude fields (sigma jitter, numerical_floor), where the
+        abs_tol=1e-12 floor is the operative gate; that blind spot is pinned
+        by `test_sigma_field_drift_passes_under_the_absolute_floor` below."""
         rec, cal, cal_committed = self._tip()
         for factor, expect_ok in ((1 + 1e-6, False), (1 + 1e-12, True)):
             with self.subTest(factor=factor):
@@ -567,6 +569,24 @@ class CalibrationPinTests(unittest.TestCase):
                 bad["entries"][self._first_entry(bad)]["lock_proximity"]["distance"] *= factor
                 ok, _n = S.calibration_leg(rec, bad, cal_committed)
                 self.assertEqual(ok, expect_ok)
+
+    def test_sigma_field_drift_passes_under_the_absolute_floor(self):
+        """The floor pinned where it binds, on the artifact's real sigma fields:
+        a ~50 % relative re-derivation drift in `sigma_1_raw` (smallest tip
+        entry ~1.4e-12) still passes the tolerance leg, because below ~1e-12
+        magnitude the comparator's absolute floor IS the gate (effective
+        relative sensitivity 1e-12/|v| ~ 0.7).  Recorded as a tested, visible
+        property so the 1e-9 claim cannot be re-derived from this code; issue
+        #547 routes whether that floor is tight enough for the entropy claim."""
+        rec, cal, cal_committed = self._tip()
+        key = min(cal["entries"], key=lambda k: abs(cal["entries"][k]["sigma_1_raw"]))
+        v = cal["entries"][key]["sigma_1_raw"]
+        self.assertLess(abs(v), 1e-12 * 10)
+        self.assertTrue(S._replay_equal(v, v * 1.5))
+        bad = copy.deepcopy(cal)
+        bad["entries"][key]["sigma_1_raw"] = v * 1.5
+        ok, _n = S.calibration_leg(rec, bad, cal_committed)
+        self.assertTrue(ok)
 
 
 class RecordImmutabilityTests(unittest.TestCase):

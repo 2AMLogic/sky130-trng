@@ -847,12 +847,21 @@ def calibration_leg(rec, cal, cal_committed):
         record's own committed `rows` -- 216 pins on the tip record.
     Tolerance-compared re-derivation half -- `calibration_artifact()` recomputed
     from the re-derived rows vs the committed artifact, `row_sha256` fields
-    stripped from both sides, under the shared `replay_equal` (sim/bin/replay_equal.py,
-    rel=1e-9): builtin float `sum()` is naive on CPython <= 3.11 and compensated
-    on >= 3.12, so the same raw responses re-derive ~1-ulp apart across the
-    split; anything above 1e-9 relative is a real change.  This relaxes the
-    *re-derivation* comparison only -- the integrity pins above stay `==` on a
-    SHA-256, and they are what makes a tampered artifact or row fail closed.
+    stripped from both sides, under the shared `replay_equal`
+    (sim/bin/replay_equal.py, gate `|a-b| <= max(1e-9*|v|, 1e-12)`): builtin
+    float `sum()` is naive on CPython <= 3.11 and compensated on >= 3.12, so
+    the same raw responses re-derive ~1-ulp apart across the split.  The gate
+    is only as tight as its terms allow: below ~1e-12 in magnitude the
+    absolute floor is the operative gate (effective relative sensitivity
+    `1e-12/|v|`), and on this artifact that is the sigma fields --
+    `sigma_1_raw`/`sigma_1_corrected` (~1.3-1.4e-12) tolerate a ~70-80 %
+    relative re-derivation drift and `numerical_floor` (~6.5e-13) ~155 %
+    without failing (pinned by test_vth_drift.py's
+    `test_sigma_field_drift_passes_under_the_absolute_floor`).  This is a real
+    relaxation of the guard exactly there, routed as issue #547; it touches
+    the *re-derivation* comparison only -- the integrity pins above stay `==`
+    on a SHA-256, and they are what makes a tampered artifact or row fail
+    closed.
     """
     if cal_committed is None:
         return False, 0
@@ -882,11 +891,16 @@ def check(recpath):
     naive on CPython <= 3.11 and compensated on >= 3.12, so a record minted on
     one side of the split re-derives ~1-ulp different on the other -- without
     this, `--check`'s verdict is a function of the interpreter, i.e. "matches,
-    on the version that happened to mint it" (issue #519).  Anything above
-    1e-9 relative is a real change, so this is not a relaxation of the guard:
-    #467's convention correction still fails this check, and a 1e-6-relative
-    metric tamper is still reported.  The integrity pins stay hash-exact --
-    see `calibration_leg`.
+    on the version that happened to mint it" (issue #519).  The gate is
+    `max(1e-9*|v|, 1e-12)`: on O(1)-magnitude metrics the guard holds at
+    ~1e-9 relative -- #467's convention correction still fails this check, and
+    a 1e-6-relative tamper on such a field is still reported.  On sub-1e-12
+    magnitudes the absolute floor takes over, so there this *is* a partial
+    relaxation: this study's sigma jitter (~1.3e-12 s) tolerates a ~70-80 %
+    relative drift -- quantified in `calibration_leg` and pinned as a test in
+    `tests/test_vth_drift.py`; whether that floor is tight enough for the
+    entropy claim is issue #547, not decided here.  The integrity pins stay
+    hash-exact -- see `calibration_leg`.
     """
     rec = json.load(open(recpath))
     cdir = SLUGDIR / "corners" / rec["record_id"]
