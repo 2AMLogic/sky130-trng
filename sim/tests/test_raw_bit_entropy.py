@@ -30,9 +30,8 @@ _MODULE_PATH = (
 # The analysis script's filename has a hyphen, so it cannot be `import`ed by
 # module path -- load it explicitly, same workaround this repository's other
 # hyphenated-filename analysis scripts need if ever imported rather than run.
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(REPO_ROOT, "sim", "bin"))
 from loadmod import load_module  # noqa: E402
-sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
 raw_bit_entropy = load_module("raw_bit_entropy", _MODULE_PATH)
 
 

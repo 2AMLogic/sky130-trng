@@ -66,7 +66,6 @@ sys.path.insert(0, str(REPO_ROOT / "layout" / "bin"))
 from _hashing import sha256_file  # noqa: E402
 sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
 sys.path.insert(0, str(REPO_ROOT / "sim" / "digital-synthesis" / "harness"))
-sys.path.insert(0, str(REPO_ROOT / "sim" / "tests"))
 
 import gate_cosim  # noqa: E402
 from _klt_common import BuildError, run_klt, write_json  # noqa: E402

@@ -63,8 +63,8 @@ MET, UNMET, NOT_MEASURED = "met", "unmet", "not measured"
 EVIDENCE: dict[str, list[dict]] = {
     "Raw rate": [{
         "record": "sim/ro-array-operating-point/records/20260825-093740-53f1f7a.json",
-        "check": "chosen sampling period t_s <= 1e-6 s (>= 1 Mbps)",
-        "field": "chosen.t_s_chosen_s", "op": "le", "value": 1e-6,
+        "check": "chosen sampling period t_s < 1e-6 s (> 1 Mbps)",
+        "field": "chosen.t_s_chosen_s", "op": "lt", "value": 1e-6,
         "pvt": "combining.rows[]",
     }],
     # DR-0010 row 3: "not settled by evidence; three non-comparable sources",
@@ -202,7 +202,7 @@ EVIDENCE: dict[str, list[dict]] = {
             "check": "active: whole-block active power < 500 uW -- NOT MEASURED. No whole-block "
                      "active-power record exists yet; #308 (gated on #307) must land one. "
                      "Re-point this entry at the real record id and field when it does.",
-            "field": "active_power_uw", "op": "le", "value": 500,
+            "field": "active_power_uw", "op": "lt", "value": 500,
             "pvt": None,
         },
     ],
@@ -375,6 +375,10 @@ def compare(values: list, op: str, want, missing: int = 0) -> tuple[bool, str]:
             observed = min(values); ok = observed >= want
         elif op == "le":
             observed = max(values); ok = observed <= want
+        elif op == "lt":
+            observed = max(values); ok = observed < want
+        elif op == "gt":
+            observed = min(values); ok = observed > want
         else:
             raise SystemExit(f"unknown op {op!r}")
     except (TypeError, KeyError):

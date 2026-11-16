@@ -7,9 +7,10 @@ precisely -- it walks two JSON-shaped record bodies in parallel and returns the
 dotted paths at which they differ, with list indices collapsed to ``[]`` so a
 per-row/per-pair field reports once rather than 1764 times.
 
-``eq`` is the equality the owning reducer's own replay uses (``ripple.py``
-compares floats to a relative tolerance; ``sensitivity.py`` compares exactly),
-so a "differs" here means exactly what a failed ``--check`` would mean there.
+``eq`` is the equality the owning reducer's own replay uses (all of them share
+``sim/bin/replay_equal.py``, which compares floats to a relative tolerance --
+issue #519), so a "differs" here means exactly what a failed ``--check``
+would mean there.
 
 Shared by sim/tests/test_ripple_reduction.py and sim/tests/test_vth_drift.py.
 Standard library only.

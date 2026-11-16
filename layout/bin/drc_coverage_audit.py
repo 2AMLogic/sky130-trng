@@ -58,12 +58,12 @@ density, seal-ring or latch-up check.
 from __future__ import annotations
 
 import copy
-import json
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _hashing import sha256_bytes  # noqa: E402
+from _klt_common import dumps  # noqa: E402
 
 SCHEMA_VERSION = 1
 DECK = "sky130"
@@ -686,7 +686,3 @@ def controls_markdown(summary: dict, counts_from: str) -> str:
         lines.append(f"| `{r['id']}` | {r['intent']} | {exp} | {obs} | {'yes' if r['passed'] else '**NO**'} |")
     lines += ["", f"All passed: **{'yes' if summary['all_passed'] else 'NO'}**."]
     return "\n".join(lines) + "\n"
-
-
-def dumps(doc: dict) -> str:
-    return json.dumps(doc, indent=2) + "\n"

@@ -49,7 +49,6 @@ REPO = HERE.parents[1]
 SLUG = "wake-up-transient"
 sys.path.insert(0, str(REPO / "sim" / "bin"))
 sys.path.insert(0, str(REPO))
-sys.path.insert(0, str(REPO / "sim" / "tests"))
 from loadmod import load_module  # noqa: E402
 
 FIRST_WINDOW = 1024             # DR-0004 start-up test length = the first window

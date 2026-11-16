@@ -180,6 +180,34 @@ class Report(unittest.TestCase):
         self.assertEqual(cr.main(["--root", str(root), "--check"]), 1)
 
 
+class Compare(unittest.TestCase):
+    """Strict-inequality ops (issue #538): the boundary value itself fails."""
+
+    def test_lt_gt_boundary_cases(self):
+        self.assertTrue(cr.compare([499.9], "lt", 500)[0])
+        self.assertFalse(cr.compare([500.0], "lt", 500)[0])  # the boundary this issue is about
+        self.assertFalse(cr.compare([500.1], "lt", 500)[0])
+        self.assertTrue(cr.compare([501.0], "gt", 500)[0])
+        self.assertFalse(cr.compare([500.0], "gt", 500)[0])
+        self.assertFalse(cr.compare([499.9], "gt", 500)[0])
+
+    def test_lt_gt_worst_value_across_list(self):
+        # lt reduces with max(values) (mirroring le), gt with min(values):
+        # one violating element must fail the whole check
+        self.assertFalse(cr.compare([400.0, 500.1], "lt", 500)[0])
+        self.assertTrue(cr.compare([400.0, 499.9], "lt", 500)[0])
+        self.assertFalse(cr.compare([600.0, 499.9], "gt", 500)[0])
+        self.assertTrue(cr.compare([600.0, 501.0], "gt", 500)[0])
+
+    def test_lt_gt_empty_and_missing_stay_failing(self):
+        self.assertFalse(cr.compare([], "lt", 500)[0])
+        self.assertFalse(cr.compare([1.0], "lt", 500, missing=1)[0])
+
+    def test_unknown_op_still_raises(self):
+        with self.assertRaises(SystemExit):
+            cr.compare([1.0], "lte", 0.5)
+
+
 class Committed(unittest.TestCase):
     def test_every_spec_row_listed_and_committed_report_current(self):
         rep = cr.build_report(REPO)
@@ -219,6 +247,27 @@ class Committed(unittest.TestCase):
         # (3 process x 3 temp x 3 vdd), each process-prefixed
         self.assertEqual(len(idle["pvt"]), 27)
         self.assertIn("ff 125C 1.98V", idle["pvt"])
+
+    def test_strict_targets_graded_strictly(self):
+        # issue #538: a strict README target must not be graded with an
+        # inclusive op, and the Raw rate check text must quote the spec
+        # strictly (`>= 1 Mbps` under a `> 1 Mbps` target was shipped once,
+        # contradicting itself inside the committed artifact)
+        readme = (REPO / "README.md").read_text()
+        raw_rate = next(l for l in readme.splitlines() if l.startswith("| Raw rate |"))
+        self.assertIn("> 1 Mbps", raw_rate)
+        entry = cr.EVIDENCE["Raw rate"][0]
+        self.assertEqual(entry["op"], "lt")
+        self.assertIn("t_s < 1e-6", entry["check"])
+        self.assertIn("(> 1 Mbps)", entry["check"])
+        self.assertNotIn(">= 1 Mbps", entry["check"])
+        self.assertNotIn("t_s <=", entry["check"])
+        # Power: active is strict (`< 500 uW`), idle is inclusive (`<= 200 uW`)
+        idle, active = cr.EVIDENCE["Power"]
+        self.assertEqual(idle["op"], "le")
+        self.assertIn("<= 200 uW", idle["check"])
+        self.assertEqual(active["op"], "lt")
+        self.assertIn("active power < 500 uW", active["check"])
 
 
 if __name__ == "__main__":
