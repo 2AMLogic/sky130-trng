@@ -42,13 +42,12 @@ REPO = BLOCK.parents[1]
 sys.path.insert(0, str(BLOCK))
 sys.path.insert(0, str(REPO / "sim" / "bin"))
 sys.path.insert(0, str(REPO / "layout" / "bin"))
+sys.path.insert(0, str(REPO / "sim" / "tests"))
 from _hashing import sha256_file as sha256  # noqa: E402
 import program as P  # noqa: E402
-import importlib.util  # noqa: E402
+from loadmod import load_module  # noqa: E402
 
-_mr_spec = importlib.util.spec_from_file_location("make_requests", BLOCK / "make-requests.py")
-MR = importlib.util.module_from_spec(_mr_spec)
-_mr_spec.loader.exec_module(MR)
+MR = load_module("make_requests", BLOCK / "make-requests.py")
 
 SLUG = "post-layout-whole-block"
 GRID = [(-40.0, 1.62), (27.0, 1.8), (-40.0, 1.98), (125.0, 1.98)]

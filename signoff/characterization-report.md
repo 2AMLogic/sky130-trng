@@ -35,7 +35,7 @@ Simulation-derived and provisional until measured on silicon. Aggregates committ
 ### Raw rate: unmet
 
 - `sim/ro-array-operating-point/records/20260825-093740-53f1f7a.json`
-  - check: chosen sampling period t_s <= 1e-6 s (>= 1 Mbps)
+  - check: chosen sampling period t_s < 1e-6 s (> 1 Mbps)
   - verdict: unmet (observed 2e-05)
   - record id `20260825-093740-53f1f7a`, level 'transistor (derived)', sha256 `442b600f9b10b8150237951bed8bd5e2ac5837661a6778e9a78b33dcc25caa75`
 

@@ -37,7 +37,6 @@ Usage::
 from __future__ import annotations
 
 import argparse
-import importlib.util
 import json
 import math
 import sys
@@ -46,16 +45,15 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO_ROOT))
 sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
+sys.path.insert(0, str(REPO_ROOT / "sim" / "tests"))
 from digital.model.conditioner import Crc32Conditioner  # noqa: E402
 from digital.model.params import COND_BLOCK_BITS, H_DESIGN  # noqa: E402
 from evidence_record import mint_record, new_record_id  # noqa: E402
+from loadmod import load_module  # noqa: E402
 
-_spec = importlib.util.spec_from_file_location(
+B = load_module(
     "raw_bit_battery",
     REPO_ROOT / "sim" / "raw-bit-min-entropy" / "analysis" / "raw-bit-battery.py")
-assert _spec is not None and _spec.loader is not None
-B = importlib.util.module_from_spec(_spec)
-_spec.loader.exec_module(B)
 
 SLUG = "digital-conditioned-output"
 RECORDS_DIR = REPO_ROOT / "sim" / SLUG / "records"

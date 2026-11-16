@@ -52,6 +52,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _hashing import sha256_file  # noqa: E402
+from _klt_common import dumps  # noqa: E402
 
 SCHEMA_VERSION = 1
 ISSUE = 283
@@ -418,11 +419,6 @@ def build_document(*, gds_rel: str, gds_sha256: str, geometry_sha256: str, geome
                     "inputs IS compared)",
         },
     }
-
-
-def dumps(doc: dict) -> str:
-    """The committed JSON form (matches drc_coverage_audit.dumps)."""
-    return json.dumps(doc, indent=2) + "\n"
 
 
 def _brief_net(entry: dict | None) -> str:
