@@ -8,6 +8,9 @@ Chronological record of recently merged pull requests and closed issues.
 
 ### 2026-11-16
 
+- **PR #511**: refactor: one shared corner-bundle reader beside the bundle writer
+- **Issue #497** (closed): Consolidate the seven hand-rolled corner-bundle readers in six sim studies: the writer half already lives in evidence_record.py
+- **Issue #559** (closed): test_vth_drift.py fails on main: the Nov superseding record's aging_sha256 pin is stale, and CI never runs that test
 - **PR #556**: test: detect hand-rolled record tails via AST path rendering
 - **PR #541**: test: guard .meas AT=/TO= against the request's own .tran stop; ledger the stale startup probes
 - **Issue #531** (closed): The #515 hand-rolled-tail guard's detector is spelling-sensitive: 5 of 8 plausible <rid>.md write spellings slip through
