@@ -560,6 +560,23 @@ class ReadCornerBundle(unittest.TestCase):
         self.assertEqual(missing, [("gone", {"corner": "gone"}, "timeout")])
         self.assertEqual(er.read_corner_bundle(self.cdir), chunks)  # default hides the notes
 
+    def test_prefix_filters_missing_notes_too(self):
+        self.store([("ctl-1", {}, {"v": 1}), ("pert-1", {}, {"v": 2})])
+        (self.cdir / "ctl-gone.missing.json").write_text(json.dumps({"request": "ctl-gone", "reason": "timeout"}))
+        (self.cdir / "ctl-gone.plan.json").write_text(json.dumps({"corner": "ctl"}, indent=1))
+        (self.cdir / "pert-gone.missing.json").write_text(json.dumps({"request": "pert-gone", "reason": "refused"}))
+        (self.cdir / "pert-gone.plan.json").write_text(json.dumps({"corner": "pert"}, indent=1))
+        chunks, missing = er.read_corner_bundle(self.cdir, prefix="ctl-", with_missing=True)
+        self.assertEqual([nm for nm, _, _ in chunks], ["ctl-1"])
+        self.assertEqual(missing, [("ctl-gone", {"corner": "ctl"}, "timeout")])
+
+    def test_prefix_matching_no_notes_returns_empty_missing(self):
+        self.store([("ctl-1", {}, {"v": 1})])
+        (self.cdir / "pert-gone.missing.json").write_text(json.dumps({"request": "pert-gone", "reason": "timeout"}))
+        (self.cdir / "pert-gone.plan.json").write_text(json.dumps({"corner": "pert"}, indent=1))
+        self.assertEqual(er.read_corner_bundle(self.cdir, prefix="ctl-", with_missing=True),
+                         ([("ctl-1", {}, {"v": 1})], []))
+
     def test_malformed_plan_fails_loudly(self):
         self.store([("a", {}, {"v": 1})])
         (self.cdir / "a.plan.json").write_text("{not json")
