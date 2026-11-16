@@ -8,6 +8,12 @@ Chronological record of recently merged pull requests and closed issues.
 
 ### 2026-11-16
 
+- **PR #563**: fix: apply read_corner_bundle prefix filter to missing notes too
+- **Issue #560** (closed): read_corner_bundle: prefix= filters chunks but not the missing-notes list, and the docstring does not say so
+- **PR #566**: refactor: write_json reuses dumps() for its JSON spelling
+- **Issue #553** (closed): write_json re-implements _klt_common.dumps's spelling instead of calling it
+- **PR #564**: spec: DR-0019 provenance pins report, not gate, in sensitivity.py --check
+- **Issue #528** (closed): ro-vth-drift: #492's aging.py move broke the superseding record's --check replay (generator-hashes leg, rc=1) — live on main, unwired
 - **PR #511**: refactor: one shared corner-bundle reader beside the bundle writer
 - **Issue #497** (closed): Consolidate the seven hand-rolled corner-bundle readers in six sim studies: the writer half already lives in evidence_record.py
 - **Issue #559** (closed): test_vth_drift.py fails on main: the Nov superseding record's aging_sha256 pin is stale, and CI never runs that test
