@@ -70,5 +70,36 @@ class Requests(unittest.TestCase):
             self.assertEqual(a, b)
 
 
+class ExitFromCodes(unittest.TestCase):
+    """Regression (issue #501 review): exit-codes.txt is append-only, so a
+    retried run name appears twice; the LAST matching line is the final rc."""
+
+    def setUp(self):
+        self.m = load_module("compaction", STUDY / "analysis" / "compaction.py")
+
+    def test_last_match_wins_on_retry(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as t:
+            run = Path(t) / "util40"
+            run.mkdir()
+            (Path(t) / "exit-codes.txt").write_text(
+                "util40 exit 1 start 2026-01-01T00:00:00Z end 2026-01-01T00:10:00Z\n"
+                "util40 exit 0 start 2026-01-01T01:00:00Z end 2026-01-01T01:10:00Z\n"
+            )
+            self.assertEqual(self.m._exit_from_codes(run), 0)
+
+    def test_single_match_and_missing_file(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as t:
+            run = Path(t) / "util55"
+            run.mkdir()
+            (Path(t) / "exit-codes.txt").write_text(
+                "util40 exit 1 start 2026-01-01T00:00:00Z end 2026-01-01T00:10:00Z\n"
+                "util55 exit 3 start 2026-01-01T01:00:00Z end 2026-01-01T01:10:00Z\n"
+            )
+            self.assertEqual(self.m._exit_from_codes(run), 3)
+            self.assertIsNone(self.m._exit_from_codes(Path(t) / "util65"))
+
+
 if __name__ == "__main__":
     sys.exit(0 if unittest.main(exit=False).result.wasSuccessful() else 1)
