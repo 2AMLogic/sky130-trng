@@ -186,5 +186,6 @@ own `## Status` history names the ruling. Ratification is an operator
 decision, never an agent's. Each entry above carries the status of the record
 it links to, and `tools/check_spec_index.py` fails when an entry and a
 record's `status:` front matter disagree, or when that front matter and the
-latest entry of the record's own `## Status` history disagree. See the repo
-README for scope.
+latest entry of the record's own `## Status` history disagree; histories are
+appended oldest-first, so the latest entry is the last one in the file. See
+the repo README for scope.
