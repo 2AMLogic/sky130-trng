@@ -49,7 +49,7 @@ from loadmod import load_module  # noqa: E402
 import aging  # noqa: E402
 import campaign as C  # noqa: E402
 from replay_equal import replay_equal as _replay_equal  # noqa: E402  (issue #519: one shared replay equality)
-from evidence_record import mint_record, new_record_id, write_corner_bundle  # noqa: E402
+from evidence_record import mint_record, new_record_id, read_corner_bundle, write_corner_bundle  # noqa: E402
 from lock_proximity import closeness as lock_closeness, ratio_label  # noqa: E402
 from request_dir import load_request_dir  # noqa: E402
 
@@ -170,14 +170,7 @@ def load_reqdir(reqdir) -> tuple[list[tuple[str, dict, dict]], list[tuple[str, d
 
 
 def load_committed(cdir, prefix=None) -> list[tuple[str, dict, dict]]:
-    out = []
-    for f in sorted(glob.glob(os.path.join(cdir, "*.klt-sim.json.gz"))):
-        nm = os.path.basename(f)[:-len(".klt-sim.json.gz")]
-        if prefix and not nm.startswith(prefix):
-            continue
-        with gzip.open(f, "rt") as fh:
-            out.append((nm, json.load(open(os.path.join(cdir, nm + ".plan.json"))), json.load(fh)))
-    return out
+    return read_corner_bundle(cdir, prefix=prefix)
 
 
 DELTA_FIELDS = {
@@ -905,11 +898,7 @@ def check(recpath):
     rec = json.load(open(recpath))
     cdir = SLUGDIR / "corners" / rec["record_id"]
     if rec.get("kind") == "controls":
-        names = sorted(p.name[:-len(".klt-sim.json.gz")] for p in cdir.glob("*.klt-sim.json.gz"))
-        ctl = {}
-        for n in names:
-            with gzip.open(cdir / f"{n}.klt-sim.json.gz", "rt") as fh:
-                ctl[n] = (json.load(open(cdir / f"{n}.plan.json")), json.load(fh))
+        ctl = {nm: (pl, rs) for nm, pl, rs in read_corner_bundle(cdir)}
         res = evaluate_controls(ctl, numerical_floor())
         same = _replay_equal(json.loads(json.dumps(res, default=str)),
                              json.loads(json.dumps(rec["controls"], default=str)))

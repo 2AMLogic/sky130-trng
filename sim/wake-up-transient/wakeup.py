@@ -66,7 +66,6 @@ Simulation-derived; provisional until silicon.
 """
 from __future__ import annotations
 
-import gzip
 import hashlib
 import json
 import math
@@ -775,13 +774,8 @@ def _store_chunks(rid, reqdir, mine):
 
 
 def _read_chunks(rid):
-    cdir = HERE / "corners" / rid
-    out = []
-    for f in sorted(cdir.glob("*.klt-sim.json.gz")):
-        nm = f.name[:-len(".klt-sim.json.gz")]
-        with gzip.open(f, "rt") as fh:
-            out.append((nm, json.load(open(cdir / f"{nm}.plan.json")), json.load(fh)))
-    return out
+    from evidence_record import read_corner_bundle
+    return read_corner_bundle(HERE / "corners" / rid)
 
 
 def _backend(mine):

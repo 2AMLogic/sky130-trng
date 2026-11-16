@@ -75,8 +75,6 @@ BIAS  bias_xo inside [0.31, 0.53]: DR-0003 sec. 3 "DC bias at xo stays within
 
 Simulation-derived; provisional until silicon.
 """
-import glob
-import gzip
 import json
 import math
 import os
@@ -965,15 +963,8 @@ def emit_record(reqdir):
 def load_bundle(cdir):
     """A committed `corners/<rid>/` bundle -> (chunks, missing), the same shape
     `load_reqdir_all` returns for a live request directory."""
-    chunks, missing = [], []
-    for f in sorted(glob.glob(os.path.join(cdir, "*.klt-sim.json.gz"))):
-        nm = os.path.basename(f)[:-len(".klt-sim.json.gz")]
-        with gzip.open(f, "rt") as fh:
-            chunks.append((nm, _jload(os.path.join(cdir, nm + ".plan.json")), json.load(fh)))
-    for f in sorted(glob.glob(os.path.join(cdir, "*.missing.json"))):
-        nm = os.path.basename(f)[:-len(".missing.json")]
-        missing.append((nm, _jload(os.path.join(cdir, nm + ".plan.json")), _jload(f)["reason"]))
-    return chunks, missing
+    from evidence_record import read_corner_bundle
+    return read_corner_bundle(cdir, with_missing=True)
 
 
 def rereduce(rec, cdir):
