@@ -65,6 +65,20 @@ name: CI
 #     klayout-dependent geometry controls left to pdk-nightly. Same
 #     PR-blocking path, same reason: it needs nothing installed.
 #
+# layout/test_hashing.py (shared sha256 digest-helper unit test, issue #452)
+#     Pure Python over layout/bin/_hashing.py -- the single definition of
+#     "digest this value" for every recorded sha256 string this repo commits
+#     (layout/, sim/ and signoff/ scripts all import it; issues #452/#455/#487
+#     consolidated eleven hand-rolled copies, which had drifted into two
+#     output formats for the same operation, into it). A changed text encoding,
+#     a flipped prefix default or an altered chunked-file read would silently
+#     move every recorded digest string while every script still runs and
+#     every --check still passes, because --check re-hashes with the same
+#     helper. This pins both output formats (bare hex and "sha256:<hex>"), the
+#     load-bearing UTF-8 encoding, the keyword-only prefix relation, and
+#     file/bytes/text agreement. Same PR-blocking path, same reason: it needs
+#     nothing installed.
+#
 # layout/test_klt_common.py (shared klt-reader contract, issue #500)
 #     Pure Python over layout/bin/_klt_common.py's klt_version / pdk_find /
 #     pdk_root / libs_ref / run_klt_rc -- every case drives a FAKE klt whose
@@ -339,6 +353,7 @@ on:
       # issue #267 restart-matrix reducer, its phase model and the PVT-set source it re-counts
       - "sim/wake-up-transient/**"
       - "sim/raw-bit-volume-campaign/behavioral_raw_bit.py"
+      - "layout/test_hashing.py"
       - "layout/test_klt_common.py"
       - "layout/test_pex_netlist.py"
       - "layout/test_compose_cell.py"
@@ -407,6 +422,9 @@ jobs:
 
       - name: design/test_netlist_xschem_version.py (minimum-xschem-version gate)
         run: python3 design/test_netlist_xschem_version.py
+
+      - name: layout/test_hashing.py (shared sha256 digest-helper unit test)
+        run: python3 layout/test_hashing.py
 
       - name: layout/test_klt_common.py (shared klt-reader contract -- bare version spelling, JSON-only pdk find)
         run: python3 layout/test_klt_common.py

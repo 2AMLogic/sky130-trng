@@ -425,8 +425,9 @@ class LockProximityCorrectionTests(unittest.TestCase):
         in at least one of them.  The superseded record itself is never edited,
         so its own `--check` now reports DIFFER by design."""
         rec, rows, summ = self._rereduce(self.SUPERSEDED)
-        diff = set(field_diff(rows, rec["rows"], prefix="rows")) | \
-            set(field_diff(summ, json.loads(json.dumps(rec["summary"], default=str)), prefix="summary"))
+        diff = set(field_diff(rows, rec["rows"], S._replay_equal, "rows")) | \
+            set(field_diff(summ, json.loads(json.dumps(rec["summary"], default=str)),
+                           S._replay_equal, "summary"))
         self.assertTrue(diff, "nothing changed; the correction did not reach this record")
         self.assertEqual(diff - self.LOCK_FIELDS, set(),
                          "the correction moved fields outside the lock-proximity set")
@@ -455,6 +456,137 @@ class LockProximityCorrectionTests(unittest.TestCase):
                 self.assertNotIn("lock_proximity", body)
                 self.assertIn(json.loads(body).get("supersedes"), (None, "(none)"))
         self.assertEqual(S.check(str(self._rec("20261010-164921-7e279ab"))), 0)
+
+
+class ReplayToleranceTests(unittest.TestCase):
+    """Issue #519: the replay equality and the cross-version property it must keep.
+
+    `sensitivity.py --check` compares floats through the shared `replay_equal`
+    (sim/bin/replay_equal.py, rel=1e-9) instead of exact equality: builtin float
+    `sum()` is naive on CPython <= 3.11 and compensated on >= 3.12, so a record
+    minted on one side of the split re-derives ~1-ulp different on the other and
+    an exact replay verdict was a function of the interpreter.
+    """
+
+    #: Residual operands of `ring_metrics`' sigma construct (`sum(x * x for x in r)`,
+    #: sensitivity.py's `sigma_k` line), sized so the naive and the compensated
+    #: reductions of the same crossings differ.
+    R = [0.0001234567890123, -0.00009876543210987, 0.000045678901234, -0.000012345678901] * 7
+
+    @classmethod
+    def _sigma(cls, s):
+        """`ring_metrics`' sigma line verbatim for k = 1."""
+        return math.sqrt((s / len(cls.R)) / (1 - 1 / 20))
+
+    def test_replay_gate_absorbs_the_cpython_sum_split_and_still_bites(self):
+        """The delta the version split produces -- ~1 ulp in sigma -- is inside the
+        replay gate on any interpreter, while a >= 1e-6 relative change is still a
+        difference and 1e-12 relative is not (the measured gate boundary).
+
+        The naive `+=` reduction and `math.fsum` ARE the two sides the split
+        produces (builtin `sum()` equals the former on <= 3.11 and the latter on
+        >= 3.12), so comparing them here exercises the exact cross-version delta
+        without relying on which interpreter happens to run the test."""
+        s_naive = 0.0
+        for x in self.R:
+            s_naive += x * x
+        s_fsum = math.fsum(x * x for x in self.R)
+        self.assertNotEqual(s_naive, s_fsum)
+        self.assertTrue(S._replay_equal(self._sigma(s_naive), self._sigma(s_fsum)))
+        self.assertFalse(S._replay_equal(self._sigma(s_fsum), self._sigma(s_fsum) * (1 + 1e-6)))
+        self.assertTrue(S._replay_equal(self._sigma(s_fsum), self._sigma(s_fsum) * (1 + 1e-12)))
+
+
+class CalibrationPinTests(unittest.TestCase):
+    """Issue #519: the record<->artifact integrity pins stay hash-exact *and bite*.
+
+    The tolerance comparator reaches only the re-derived metrics.  The artifact's
+    own sha256 pin and every `source_rows.*.row_sha256` (under `cal["entries"]`)
+    are `==` on a SHA-256 against the record's own committed rows -- no tolerance
+    bridges a hash, so a tampered artifact or row still fails closed.
+    """
+
+    TIP = "20261113-150554-fb302c35"
+
+    @classmethod
+    def _tip(cls):
+        rec = json.load(open(SLUG / "records" / f"{cls.TIP}.json"))
+        chunks = S.load_committed(str(SLUG / "corners" / cls.TIP))
+        rows, _summ = S.build(chunks, rec["controls_record"])
+        cal = S.calibration_artifact(cls.TIP, rows)
+        cal_committed = json.load(open(REPO / rec["calibration_artifact"]["path"]))
+        return rec, cal, cal_committed
+
+    @classmethod
+    def _first_entry(cls, cal):
+        return next(iter(cal["entries"]))
+
+    def test_pins_are_actually_walked(self):
+        """Not a vacuous pass: the pin count equals two per entry (ring5 + array)
+        over every committed entry, and the leg passes on committed data."""
+        rec, cal, cal_committed = self._tip()
+        ok, n = S.calibration_leg(rec, cal, cal_committed)
+        self.assertEqual(n, 2 * rec["calibration_artifact"]["n_entries"])
+        self.assertEqual(n, 216)
+        self.assertTrue(ok)
+
+    def test_a_tampered_pinned_row_fails_the_hash_exact_leg(self):
+        rec, cal, cal_committed = self._tip()
+        rec_t = copy.deepcopy(rec)
+        key0 = cal_committed["entries"][self._first_entry(cal_committed)]["source_rows"]["ring5"]["key"]
+        row0 = next(r for r in rec_t["rows"] if r["key"] == key0)
+        fk = next(k for k, v in row0["metrics"].items() if isinstance(v, float) and v != 0.0)
+        row0["metrics"][fk] *= 1 + 1e-6
+        ok, n = S.calibration_leg(rec_t, cal, cal_committed)
+        self.assertEqual(n, 216)
+        self.assertFalse(ok)
+
+    def test_a_corrupted_committed_artifact_fails_the_sha256_pin(self):
+        """Perturb the committed artifact far below the replay gate (1e-12): the
+        tolerance half still passes, so failing can only be the hash-exact
+        sha256 pin biting."""
+        rec, cal, cal_committed = self._tip()
+        bad = copy.deepcopy(cal_committed)
+        e0 = self._first_entry(bad)
+        bad["entries"][e0]["lock_proximity"]["distance"] *= 1 + 1e-12
+        ok, n = S.calibration_leg(rec, cal, bad)
+        self.assertEqual(n, 216)
+        self.assertFalse(ok)
+
+    def test_rederived_metric_injection_at_the_gate_boundary(self):
+        """The measured gate boundary, on the artifact's re-derived half: a
+        1e-6-relative metric change is a real change (DIFFER), 1e-12-relative
+        is not (MATCH).  Injected into `lock_proximity.distance` (~6e-2 in
+        magnitude) -- the O(1)-magnitude regime where the advertised ~1e-9
+        relative gate actually holds.  It does NOT hold on this artifact's
+        sub-1e-12-magnitude fields (sigma jitter, numerical_floor), where the
+        abs_tol=1e-12 floor is the operative gate; that blind spot is pinned
+        by `test_sigma_field_drift_passes_under_the_absolute_floor` below."""
+        rec, cal, cal_committed = self._tip()
+        for factor, expect_ok in ((1 + 1e-6, False), (1 + 1e-12, True)):
+            with self.subTest(factor=factor):
+                bad = copy.deepcopy(cal)
+                bad["entries"][self._first_entry(bad)]["lock_proximity"]["distance"] *= factor
+                ok, _n = S.calibration_leg(rec, bad, cal_committed)
+                self.assertEqual(ok, expect_ok)
+
+    def test_sigma_field_drift_passes_under_the_absolute_floor(self):
+        """The floor pinned where it binds, on the artifact's real sigma fields:
+        a ~50 % relative re-derivation drift in `sigma_1_raw` (smallest tip
+        entry ~1.4e-12) still passes the tolerance leg, because below ~1e-12
+        magnitude the comparator's absolute floor IS the gate (effective
+        relative sensitivity 1e-12/|v| ~ 0.7).  Recorded as a tested, visible
+        property so the 1e-9 claim cannot be re-derived from this code; issue
+        #547 routes whether that floor is tight enough for the entropy claim."""
+        rec, cal, cal_committed = self._tip()
+        key = min(cal["entries"], key=lambda k: abs(cal["entries"][k]["sigma_1_raw"]))
+        v = cal["entries"][key]["sigma_1_raw"]
+        self.assertLess(abs(v), 1e-12 * 10)
+        self.assertTrue(S._replay_equal(v, v * 1.5))
+        bad = copy.deepcopy(cal)
+        bad["entries"][key]["sigma_1_raw"] = v * 1.5
+        ok, _n = S.calibration_leg(rec, bad, cal_committed)
+        self.assertTrue(ok)
 
 
 class RecordImmutabilityTests(unittest.TestCase):

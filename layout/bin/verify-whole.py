@@ -57,8 +57,9 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 from _hashing import sha256_file, sha256_text  # noqa: E402
-from _klt_common import (BuildError, klt_version,  # noqa: E402
-                         pdk_root as klt_pdk_root, run_klt, write_json)
+from _klt_common import (BuildError, dumps, klt_env, klayout_db as _klayout,  # noqa: E402
+                         klt_version, load_json, pdk_root as klt_pdk_root, rel,
+                         run_klt, write_json)
 import drc_coverage_audit as A  # noqa: E402
 import physical_estimates as PE  # noqa: E402
 import verify_whole_lib as V  # noqa: E402
@@ -94,17 +95,6 @@ _cw_spec.loader.exec_module(cw)
 # --------------------------------------------------------------------------
 
 
-def rel(path: Path) -> str:
-    try:
-        return str(Path(path).resolve().relative_to(REPO_ROOT))
-    except ValueError:
-        return str(path)
-
-
-def load_json(path: Path) -> dict:
-    return json.loads(path.read_text())
-
-
 def host_path_hits(text: str) -> list[str]:
     home = str(Path.home())
     hits = []
@@ -117,13 +107,6 @@ def scrub(text: str, replacements: dict[str, str]) -> str:
     for old, new in replacements.items():
         text = text.replace(old, new)
     return text
-
-
-def klt_env(pdk_root: str | None) -> dict[str, str]:
-    env = {**os.environ, "PDK": "sky130A"}
-    if pdk_root:
-        env["PDK_ROOT"] = pdk_root
-    return env
 
 
 def resolve_pdk_root(klt: str, env: dict[str, str]) -> str:
@@ -902,16 +885,16 @@ def publish_baseline(b: dict) -> None:
     run = b["run"]
     files: dict[str, str | bytes] = {}
     files["lvs.ref.spice"] = b["ref_text"]
-    files["drc.request.json"] = json.dumps(b["drc_request"] | {"file": "../trng_whole.gds"}, indent=2) + "\n"
-    files["drc.json"] = json.dumps(b["drc"], indent=2) + "\n"
-    files["extract.request.json"] = json.dumps(sanitized_extract_request(run["extract_request"]), indent=2) + "\n"
-    files["extract.json.gz"] = gzip.compress((json.dumps(run["extract"], indent=2) + "\n").encode(), mtime=0)
+    files["drc.request.json"] = dumps(b["drc_request"] | {"file": "../trng_whole.gds"})
+    files["drc.json"] = dumps(b["drc"])
+    files["extract.request.json"] = dumps(sanitized_extract_request(run["extract_request"]))
+    files["extract.json.gz"] = gzip.compress(dumps(run["extract"]).encode(), mtime=0)
     files["trng_whole.layout.spice"] = run["layout_netlist"].read_text()
-    files["lvs.request.json"] = json.dumps(sanitized_lvs_request(run["lvs_request"]), indent=2) + "\n"
-    files["lvs.json"] = json.dumps(run["lvs"], indent=2) + "\n"
-    files["coverage.json"] = json.dumps(b["coverage"], indent=2) + "\n"
+    files["lvs.request.json"] = dumps(sanitized_lvs_request(run["lvs_request"]))
+    files["lvs.json"] = dumps(run["lvs"])
+    files["coverage.json"] = dumps(b["coverage"])
     files["coverage.md"] = coverage_markdown(b["coverage"])
-    files["verify.json"] = json.dumps(verify_report(b), indent=2) + "\n"
+    files["verify.json"] = dumps(verify_report(b))
     pdk_root = b["pdk_root"]
     for name, content in files.items():
         data = content if isinstance(content, bytes) else content.encode()
@@ -956,12 +939,6 @@ def scrub_host(text: str, pdk_root: str) -> str:
 # --------------------------------------------------------------------------
 # fault controls
 # --------------------------------------------------------------------------
-
-
-def _klayout():
-    import klayout.db as db  # noqa: PLC0415
-
-    return db
 
 
 def swap_texts_everywhere(gds_in: Path, gds_out: Path, a: str, b: str) -> dict:
@@ -1411,7 +1388,7 @@ def run_controls(args, b: dict) -> dict:
 
 def publish_controls(summary: dict, pdk_root: str) -> None:
     CONTROLS_DIR.mkdir(parents=True, exist_ok=True)
-    text = scrub_host(json.dumps(summary, indent=2) + "\n", pdk_root)
+    text = scrub_host(dumps(summary), pdk_root)
     (CONTROLS_DIR / "controls.json").write_text(text)
     md = [
         "# Fault controls (issue #173)",

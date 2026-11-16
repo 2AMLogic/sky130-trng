@@ -6,6 +6,24 @@ Chronological record of recently merged pull requests and closed issues.
 
 - [2026-09](work_log/WORK_LOG_2026-09.md)
 
+### 2026-11-16
+
+- **PR #546**: fix: grade strict spec targets strictly in characterization report (lt/gt)
+- **PR #540**: refactor: consolidate rel/load_json/klt_env/klayout_db/dumps into _klt_common
+- **PR #543**: fix(sim): one shared cross-version replay equality for committed-record checks
+- **PR #534**: ci: wire layout/test_hashing.py into the PR-blocking lint job; refresh the item-10 attestation chain
+- **Issue #538** (closed): characterization_report.compare() has no strict `lt`/`gt`: the Power active check grades a "< 500 uW" target with `le 500`
+- **Issue #535** (closed): Consolidate duplicated rel/load_json/klt_env/_klayout/dumps helpers in layout/bin
+- **Issue #519** (closed): sim/: committed-record replay is not reproducible across CPython versions (ro-vth-drift-sensitivity + xor-combining-alternatives; MATCHES on 3.12, DIFFERS on CI's 3.11)
+- **Issue #552** (closed): CI: revisit concurrency.cancel-in-progress once `CI Result` is a required context
+- **Issue #493** (closed): Wire layout/test_hashing.py into CI: the shared digest helper's only regression guard has never run on a PR
+- **PR #516**: refactor(sim): replace inline importlib loader blocks with shared loadmod helper
+- **PR #510**: refactor: replace _NoExitCodes .parent shim with an exit_lookup parameter on summarize_run
+- **PR #544**: docs: drop the uncheckable decision-record count from README; document oldest-first Status history
+- **Issue #509** (closed): Finish the #412 deferral: ~18 inline importlib loader blocks remain in sim scripts, and the shared loadmod helper still lives under sim/tests/
+- **Issue #501** (closed): Remove _NoExitCodes Path subclass: replace the .parent-lying shim with an exit_lookup parameter on compaction.summarize_run
+- **Issue #532** (closed): Two residual uncheckable facts around the decision-record index: README's record count, and the undocumented oldest-first `## Status` ordering
+
 ### 2026-11-15
 
 - **PR #526**: feat(signoff): declare the Power evidence mapping in the characterization report
