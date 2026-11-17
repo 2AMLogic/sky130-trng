@@ -12,14 +12,14 @@ top-level .meas results). The raw response is kept at
 sim/ro-array-core-combining/corners/<id>/klt-sim.json. A failed corner is
 recorded with ok=false and its diagnostics -- never dropped.
 """
-import json, os, sys
+import json, os, shutil, sys
 from pathlib import Path
 
 REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 SLUG = "ro-array-core-combining"
 TB = "sim/ro-array-core-combining/testbench/tb_ro_array_core.spice"
 sys.path.insert(0, os.path.join(REPO, "sim", "bin"))
-from evidence_record import new_record_id, record_footer, reserve_corner_dir  # noqa: E402
+from evidence_record import mint_record, new_record_id, reserve_corner_dir  # noqa: E402
 from loadmod import load_module  # noqa: E402
 
 mr = load_module("make_requests", os.path.join(os.path.dirname(__file__), "make-requests.py"))
@@ -85,7 +85,6 @@ def main(reqdir, points):
         rdir = os.path.join(REPO, "sim", SLUG, "records")
         reserve_corner_dir(cdir, rdir, rid)
         json.dump(resp, open(os.path.join(cdir, "klt-sim.json"), "w"), indent=1)
-        json.dump(rec, open(os.path.join(rdir, rid + ".json"), "w"), indent=2)
         L = [f"# {rid} -- {SLUG}", "",
              f"**Claim**: {rec['claim']}", "", "**Level**: transistor",
              f"**PVT point**: {t:g} degC, {v:g} V (tt/ss/ff bundled). **Verdict**: {rec['overall']} (klt sim status `{resp['status']}`).",
@@ -102,8 +101,11 @@ def main(reqdir, points):
                 L.append(f"| {c['corner']} | **{c['status']}** | no usable measurements: {c['problems']} |")
         L += ["", "Simulation-derived; provisional until silicon. Derived figures use the deck's own `let` formulas "
               "(recomputed by `derive-combining.py`)."]
-        L += record_footer(author="loom-builder@sky130-trng", now=now, sha=sha)
-        open(os.path.join(rdir, rid + ".md"), "w").write("\n".join(L) + "\n")
+        out = mint_record(Path(rdir), Path(REPO), rid, L, "\n", rec,
+                          author="loom-builder@sky130-trng", now=now, sha=sha)
+        if out is None:
+            shutil.rmtree(cdir, ignore_errors=True)
+            raise SystemExit(f"error: record id {rid} already exists; wait a second and re-run")
         print(rid, rec["overall"], env["remote"]["job_id"])
 
 
