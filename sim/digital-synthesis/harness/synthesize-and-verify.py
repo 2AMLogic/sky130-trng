@@ -50,7 +50,6 @@ import tempfile
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-HOME = Path.home().resolve()
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
 sys.path.insert(0, str(REPO_ROOT / "layout" / "bin"))
@@ -58,57 +57,16 @@ sys.path.insert(0, str(REPO_ROOT / "layout" / "bin"))
 import gate_cosim  # noqa: E402
 import liberty_leakage as ll  # noqa: E402
 from _klt_common import BuildError, run_klt  # noqa: E402
+from evidence_paths import sanitize_paths  # noqa: E402
 from evidence_record import mint_behavioral_record  # noqa: E402
 
 DEFAULT_SEED = 20260905
 
-_EXTERNAL_PATH_MARKER = ("<external -- not recorded by absolute location; "
-                         "see this record's PDK name/version and deck "
-                         "content_hash instead>")
 
-
-def _sanitize_paths(obj, repo_root: Path = REPO_ROOT, home: Path = HOME):
-    """Recursively rewrite absolute-path-shaped strings for permanent,
-    committed evidence.
-
-    ``docs/design-evidence-tiers.md``'s "Provenance hygiene in evidence
-    records" section (`klt env-provenance`'s own reference discipline,
-    already followed by this repo's ``layout/bin/_klt_common.py``, issue
-    #49) is the rule this implements: a path *inside* this repo is recorded
-    repo-relative; a path *outside* it (a PDK install under the operator's
-    home directory, a scratch dir, anything else home-shaped) is not
-    recorded by absolute location at all -- an external input is pinned by
-    **identity** (the PDK name/version and Liberty deck ``content_hash``
-    this same record already carries), not by where it happened to sit on
-    one machine. `klt synthesize`/`klt equiv`'s own JSON responses always
-    resolve to absolute paths regardless of how the request was invoked
-    (verified directly), so this is a necessary post-processing step, not a
-    cwd/invocation trick -- applied only to the copies written into
-    committed artifacts/the record body, never to the live paths this
-    harness itself still needs to open files with.
-    """
-    if isinstance(obj, str) and obj.startswith("/"):
-        p = Path(obj)
-        try:
-            return str(p.resolve().relative_to(repo_root))
-        except ValueError:
-            pass
-        try:
-            p.resolve().relative_to(home)
-            return _EXTERNAL_PATH_MARKER
-        except ValueError:
-            pass
-        return obj
-    if isinstance(obj, dict):
-        return {k: _sanitize_paths(v, repo_root, home) for k, v in obj.items()}
-    if isinstance(obj, list):
-        return [_sanitize_paths(v, repo_root, home) for v in obj]
-    return obj
-
-
-def _display_path(path, repo_root: Path = REPO_ROOT, home: Path = HOME) -> str:
+def _display_path(path) -> str:
     """Sanitized string form of a single path, for inline report text."""
-    return _sanitize_paths(str(path), repo_root, home)
+    return sanitize_paths(str(path))
+
 
 CONFIGS = [
     {
@@ -345,12 +303,12 @@ def main(argv: list[str] | None = None) -> int:
             s = r["synth"]
             stage(r["netlist_path"], f"{label}-trng_digital_synth.v")
             synth_json_path = artifact_stage / f"{label}-synthesize-output.json"
-            synth_json_path.write_text(json.dumps(_sanitize_paths(s), indent=2))
+            synth_json_path.write_text(json.dumps(sanitize_paths(s), indent=2))
             artifacts.append(synth_json_path)
             if r["equiv"] is not None:
                 equiv_json_path = artifact_stage / f"{label}-equiv-output.json"
                 equiv_json_path.write_text(
-                    json.dumps(_sanitize_paths(r["equiv"]), indent=2))
+                    json.dumps(sanitize_paths(r["equiv"]), indent=2))
                 artifacts.append(equiv_json_path)
             co = r["cosim"]
             stage(Path(co["stimulus_path"]), f"{label}-gate-cosim-stimulus.txt")
@@ -367,10 +325,10 @@ def main(argv: list[str] | None = None) -> int:
                 "engine_version": s.get("engine_version"),
                 "netlist_content_hash_input": s["provenance"]["input"]["content_hash"],
                 "deck_content_hash": s["provenance"]["deck"]["content_hash"],
-                "equivalence": _sanitize_paths(r["equiv"]),
+                "equivalence": sanitize_paths(r["equiv"]),
                 "gate_cosim": {k: v for k, v in co.items()
                               if k not in ("stimulus_path", "observations_path")},
-                "klt_provenance": _sanitize_paths(s["provenance"]),
+                "klt_provenance": sanitize_paths(s["provenance"]),
             })
 
         rid = mint_behavioral_record(
@@ -385,7 +343,7 @@ def main(argv: list[str] | None = None) -> int:
                    "program bit-for-bit"),
             body_md=body,
             summary={"configs": summary_configs,
-                    "pdk": _sanitize_paths(pdk_info)},
+                    "pdk": sanitize_paths(pdk_info)},
             level="gate",
             seeds={"cosim_stimulus_seed": args.seed},
             tools={"klt": results[0]["synth"]["provenance"].get("klt_version"),

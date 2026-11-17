@@ -37,8 +37,6 @@ not copied, for the w_90 interpolation rule and the committed-evidence loaders):
 from __future__ import annotations
 
 import argparse
-import glob
-import gzip
 import json
 import math
 import os
@@ -50,13 +48,14 @@ HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[1]
 SLUG = "xor-combining-alternatives"
 sys.path.insert(0, str(REPO / "sim" / "bin"))
-sys.path.insert(0, str(REPO / "sim" / "tests"))
 from loadmod import load_module  # noqa: E402
+from replay_equal import replay_equal as _replay_equal  # noqa: E402  (issue #519: one shared replay equality)
 
 
 OP = load_module("operating_point", REPO / "sim" / "ro-array-operating-point" / "analysis" / "operating-point.py")
 MR = load_module("xor_alt_make_requests", HERE / "make-requests.py")
-from evidence_record import mint_record, new_record_id, write_corner_bundle  # noqa: E402
+from evidence_record import mint_record, new_record_id, read_corner_bundle, write_corner_bundle  # noqa: E402
+from request_dir import load_request_dir  # noqa: E402
 
 TOL_W90 = 0.05            # baseline control vs committed w_90
 TOL_T0 = 0.02             # baseline control vs committed loaded ring period
@@ -331,10 +330,6 @@ def full_reduction(variants_pts: dict) -> dict:
 # ---------------------------------------------------------------------------
 # rendering
 # ---------------------------------------------------------------------------
-def _fmt(x, nd=3):
-    return f"{x:.{nd}f}"
-
-
 def render_body(data: dict, red: dict, jobs: list[str]) -> str:
     L = []
     pv = data["variants"]
@@ -458,19 +453,21 @@ def _mean(pts, f):
 # I/O
 # ---------------------------------------------------------------------------
 def load_reqdir(reqdir):
-    chunks = []
-    for d in sorted(glob.glob(os.path.join(reqdir, "*", "resp.json"))):
-        dd = os.path.dirname(d)
-        plan = json.load(open(os.path.join(dd, "plan.json")))
-        resp = json.load(open(d))
-        chunks.append((plan["name"], plan, resp))
+    """-> chunks; the shared walk in sim/bin/request_dir.py.
+
+    This campaign's policy is unchanged (issue #469): all six variants or
+    nothing, since the comparison between them IS the claim.  A request with
+    no usable response now says so by name instead of surfacing as a bare
+    "found 5" (or, when `resp.json` was present but empty, a JSON decode
+    error)."""
+    chunks, missing = load_request_dir(reqdir, pattern="*", name_from="plan")
+    if missing:
+        raise ReductionError(
+            f"{len(missing)} of {len(chunks) + len(missing)} requests under {reqdir} have no usable response: "
+            + "; ".join(f"{nm}: {why}" for nm, _, why in missing))
     if len(chunks) != 6:
         raise ReductionError(f"expected 6 requests under {reqdir}, found {len(chunks)}")
     return chunks
-
-
-def _data_from_points(pts):
-    return {"variants": pts}
 
 
 def emit_record(reqdir, author="loom-builder@sky130-trng"):
@@ -527,16 +524,15 @@ def emit_record(reqdir, author="loom-builder@sky130-trng"):
 def check(recpath):
     rec = json.load(open(recpath))
     cdir = REPO / "sim" / SLUG / "corners" / rec["record_id"]
-    chunks = []
-    for f in sorted(glob.glob(str(cdir / "*.klt-sim.json.gz"))):
-        nm = os.path.basename(f)[:-len(".klt-sim.json.gz")]
-        with gzip.open(f, "rt") as fh:
-            chunks.append((nm, json.load(open(cdir / f"{nm}.plan.json")), json.load(fh)))
+    chunks = read_corner_bundle(cdir)
     pts, _jobs, _rem = jobs_from_responses(chunks)
     red = full_reduction(pts)
-    same = (json.loads(json.dumps(red, default=str)) == rec["reduction"]
-            and json.loads(json.dumps({v: [dict(temp_c=k[0], vdd_v=k[1], corner=k[2], **p) for k, p in pts[v].items()]
-                                       for v in VARIANTS}, default=str)) == rec["points"])
+    # replay_equal, not ==: builtin float sum() is compensated on CPython >= 3.12
+    # (e.g. reduce.py's `f_ideal = sum(1 / t for t in tr)`), so a record minted on
+    # one side of the split replays ~1-ulp different on the other (issue #519).
+    same = (_replay_equal(json.loads(json.dumps(red, default=str)), rec["reduction"])
+            and _replay_equal(json.loads(json.dumps({v: [dict(temp_c=k[0], vdd_v=k[1], corner=k[2], **p) for k, p in pts[v].items()]
+                                                       for v in VARIANTS}, default=str)), rec["points"]))
     print("replay", "MATCHES" if same else "DIFFERS", recpath)
     return 0 if same else 1
 

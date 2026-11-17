@@ -68,21 +68,29 @@ def git_short_sha(repo_root: Path) -> str:
         return "unknown"
 
 
-def new_record_id(repo_root: Path) -> tuple[_dt.datetime, str, str]:
+def new_record_id(repo_root: Path, *, offset: int = 0) -> tuple[_dt.datetime, str, str]:
     """Return `(now, sha, rid)` for a fresh record.
 
     `rid` follows the shared `<YYYYMMDD>-<HHMMSS>-<shortsha>` scheme
     `sim/bin/corner-run.py` uses, so reduction records and simulation
-    records sort together.
+    records sort together. `offset` seconds are added to the clock so one
+    run minting several records gets distinct ids (one per loop iteration,
+    as the per-corner reducers do).
     """
-    now = _dt.datetime.now(_dt.timezone.utc)
+    now = _dt.datetime.now(_dt.timezone.utc) + _dt.timedelta(seconds=offset)
     sha = git_short_sha(repo_root)
     rid = f"{now:%Y%m%d-%H%M%S}-{sha}"
     return now, sha, rid
 
 
-def record_footer(*, author: str, now: _dt.datetime, sha: str) -> list[str]:
-    """The shared markdown footer lines appended to every evidence record."""
+def record_footer(*, author: str, now: _dt.datetime, sha: str,
+                  supersedes: str = "(none)") -> list[str]:
+    """The shared markdown footer lines appended to every evidence record.
+
+    `supersedes` names the record id this one corrects (sim/README.md's
+    append-only rule); the default is the no-correction marker, which keeps
+    every pre-existing caller's footer byte-for-byte.
+    """
     return [
         "",
         "---",
@@ -90,7 +98,7 @@ def record_footer(*, author: str, now: _dt.datetime, sha: str) -> list[str]:
         f"- Author: {author}",
         f"- Timestamp (UTC): {now.isoformat()}",
         f"- Repo commit: `{sha}`",
-        "- Supersedes: (none)",
+        f"- Supersedes: {supersedes}",
     ]
 
 
@@ -134,6 +142,7 @@ def write_corner_bundle(
     Writes ``<name>.klt-sim.json.gz`` (indent=1), ``<name>.plan.json``,
     ``<name>.request.json`` and ``<name>.netlist.cir`` (copied from ``reqdir/<name>/``).
     Returns the remote job ids (or "local (single-unit reference run)").
+    Read back with :func:`read_corner_bundle`.
     """
     cdir, reqdir, records_dir = Path(cdir), Path(reqdir), Path(records_dir)
     for name, _plan, _resp in chunks:
@@ -155,6 +164,44 @@ def write_corner_bundle(
         shutil.rmtree(cdir, ignore_errors=True)
         raise
     return jobs
+
+
+def read_corner_bundle(
+    cdir: Path, *, prefix: str | None = None, with_missing: bool = False,
+) -> list[tuple[str, dict, dict]] | tuple[list, list]:
+    """Read back a ``corners/<rid>/`` bundle written by :func:`write_corner_bundle`.
+
+    The documented inverse of :func:`write_corner_bundle`, whose docstring is
+    the on-disk layout this walks. Returns ``[(name, plan, response)]`` in
+    sorted-name order, one entry per ``<name>.klt-sim.json.gz``; `plan` comes
+    from the sibling ``<name>.plan.json`` and is loaded strictly -- these feed
+    replay gates that must fail loudly on a malformed plan. ``prefix=`` keeps
+    only names starting with it, applied to both the chunk names and the
+    missing-note names. With ``with_missing=True`` returns
+    ``(chunks, missing)`` instead, where `missing` is ``[(name, plan, reason)]``
+    for the ``<name>.missing.json`` refused/timed-out-attempt notes recorded
+    beside the bundle by a campaign runner (this module never writes those).
+    """
+    cdir = Path(cdir)
+    chunks: list[tuple[str, dict, dict]] = []
+    for f in sorted(cdir.glob("*.klt-sim.json.gz")):
+        nm = f.name[: -len(".klt-sim.json.gz")]
+        if prefix and not nm.startswith(prefix):
+            continue
+        with open(cdir / f"{nm}.plan.json") as pfh, gzip.open(f, "rt") as fh:
+            chunks.append((nm, json.load(pfh), json.load(fh)))
+    if not with_missing:
+        return chunks
+    missing: list[tuple[str, dict, str]] = []
+    for f in sorted(cdir.glob("*.missing.json")):
+        nm = f.name[: -len(".missing.json")]
+        if prefix and not nm.startswith(prefix):
+            continue
+        with open(f) as fh:
+            reason = json.load(fh)["reason"]
+        with open(cdir / f"{nm}.plan.json") as pfh:
+            missing.append((nm, json.load(pfh), reason))
+    return chunks, missing
 
 
 def _check_artifacts(artifacts: list[Path]) -> None:
@@ -267,6 +314,7 @@ def mint_record(
     author: str,
     now: _dt.datetime,
     sha: str,
+    supersedes: str = "(none)",
 ) -> tuple[Path, Path] | None:
     """Mint an append-only evidence record under `out_records`.
 
@@ -281,7 +329,8 @@ def mint_record(
     wants (this function writes it as-is -- it does not inject `record_id`/
     `author`/`timestamp_utc`/`repo_sha`, since those are typically
     interleaved with reduction-specific fields at call-site-chosen
-    positions; see each analysis script's `main()`).
+    positions; see each analysis script's `main()`). `supersedes` names the
+    record id this one corrects; the default footer line is unchanged.
 
     Returns `(md_path, json_path)` on success, or `None` (after printing an
     error to stderr) if a record with this `rid` already exists.
@@ -293,7 +342,7 @@ def mint_record(
               file=sys.stderr)
         return None
 
-    footer = record_footer(author=author, now=now, sha=sha)
+    footer = record_footer(author=author, now=now, sha=sha, supersedes=supersedes)
     md_text = "\n".join(header) + body + "\n".join(footer) + "\n"
     json_text = json.dumps(summary, indent=2, default=str) + "\n"  # before any publication
     try:

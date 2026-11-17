@@ -1,0 +1,88 @@
+{
+ "corner": "ss",
+ "group": "q",
+ "chunk": 1,
+ "pvt": {
+  "proc": "ss",
+  "temp": -40.0,
+  "vnom": 1.62,
+  "stop": "460n",
+  "tmax": "10p",
+  "tr": null,
+  "why": "DR-0002 entropy-binding corner"
+ },
+ "ctl_ring": 2,
+ "units": [
+  {
+   "kind": "baseline",
+   "tone": "-",
+   "dv": 0.0,
+   "ra": 0.0,
+   "rf": 1000000.0,
+   "ri": 0.0
+  },
+  {
+   "kind": "quasistatic",
+   "tone": "-A@10mV",
+   "dv": -0.01,
+   "ra": 0.0,
+   "rf": 1000000.0,
+   "ri": 0.0,
+   "amp": 0.01
+  },
+  {
+   "kind": "quasistatic",
+   "tone": "-0.866A@10mV",
+   "dv": -0.00866,
+   "ra": 0.0,
+   "rf": 1000000.0,
+   "ri": 0.0,
+   "amp": 0.01
+  },
+  {
+   "kind": "quasistatic",
+   "tone": "+0.866A@10mV",
+   "dv": 0.00866,
+   "ra": 0.0,
+   "rf": 1000000.0,
+   "ri": 0.0,
+   "amp": 0.01
+  },
+  {
+   "kind": "quasistatic",
+   "tone": "+A@10mV",
+   "dv": 0.01,
+   "ra": 0.0,
+   "rf": 1000000.0,
+   "ri": 0.0,
+   "amp": 0.01
+  },
+  {
+   "kind": "quasistatic",
+   "tone": "-A@50mV",
+   "dv": -0.05,
+   "ra": 0.0,
+   "rf": 1000000.0,
+   "ri": 0.0,
+   "amp": 0.05
+  },
+  {
+   "kind": "quasistatic",
+   "tone": "-0.866A@50mV",
+   "dv": -0.043301,
+   "ra": 0.0,
+   "rf": 1000000.0,
+   "ri": 0.0,
+   "amp": 0.05
+  },
+  {
+   "kind": "quasistatic",
+   "tone": "+0.866A@50mV",
+   "dv": 0.043301,
+   "ra": 0.0,
+   "rf": 1000000.0,
+   "ri": 0.0,
+   "amp": 0.05
+  }
+ ]
+}

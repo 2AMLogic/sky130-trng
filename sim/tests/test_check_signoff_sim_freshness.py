@@ -11,7 +11,7 @@ import unittest
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(REPO, "sim", "bin"))
 from loadmod import load_module  # noqa: E402
 chk = load_module("chk", REPO / "sim" / "bin" / "check_signoff_sim_freshness.py")
 

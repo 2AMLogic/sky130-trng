@@ -52,7 +52,6 @@ from __future__ import annotations
 
 import argparse
 import gzip
-import importlib.util
 import json
 import math
 import os
@@ -66,6 +65,8 @@ SLUG = "ro-array-idle-leakage"
 sys.path.insert(0, str(REPO / "sim" / "bin"))
 sys.path.insert(0, str(REPO / "layout" / "bin"))
 from _hashing import sha256_file  # noqa: E402
+from loadmod import load_module  # noqa: E402
+from request_dir import load_request_dir  # noqa: E402
 
 SYNTH_OUTPUT = REPO / "sim/digital-synthesis/runs/20260910-001436-a4c3194/50khz-constrained-synthesize-output.json"
 SYNTH_RECORD = "sim/digital-synthesis/records/20260910-001436-a4c3194"
@@ -134,9 +135,7 @@ def needed_views():
 
 def digital_leakage_by_view(liberty_dir, counts):
     """{view: total leakage nW} over `counts`, via the repo's own Liberty summer; plus per-file sha256."""
-    spec = importlib.util.spec_from_file_location("liberty_leakage", REPO / "sim/digital-synthesis/harness/liberty_leakage.py")
-    ll = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(ll)
+    ll = load_module("liberty_leakage", REPO / "sim/digital-synthesis/harness/liberty_leakage.py")
     out, sha = {}, {}
     for v in needed_views():
         path = Path(liberty_dir) / f"{v}.lib"
@@ -263,17 +262,6 @@ def recommend_idle_target_uw(worst_uw, margin=RECOMMEND_MARGIN):
 
 
 # ----------------------------------------------------------------------------------------------- IO
-def read_reqdir(reqdir):
-    chunks = []
-    for d in sorted(os.listdir(reqdir)):
-        p = Path(reqdir) / d
-        if not (p / "request.json").exists():
-            continue
-        rs = json.load(open(p / "resp.json")) if (p / "resp.json").exists() else None
-        chunks.append((d, json.load(open(p / "plan.json")), rs))
-    return chunks
-
-
 def store_chunks(rid, reqdir, chunks):
     cdir = HERE / "corners" / rid
     if cdir.exists():
@@ -288,13 +276,8 @@ def store_chunks(rid, reqdir, chunks):
 
 
 def read_stored(rid):
-    cdir = HERE / "corners" / rid
-    out = []
-    for f in sorted(cdir.glob("*.klt-sim.json.gz")):
-        nm = f.name[: -len(".klt-sim.json.gz")]
-        with gzip.open(f, "rt") as fh:
-            out.append((nm, json.load(open(cdir / f"{nm}.plan.json")), json.load(fh)))
-    return out
+    from evidence_record import read_corner_bundle
+    return read_corner_bundle(HERE / "corners" / rid)
 
 
 def default_liberty_dir():
@@ -422,9 +405,10 @@ def markdown(rid, rows, fl, wst, rec, p_by_view, jobs, backend, rep):
 
 def emit_record(reqdir, liberty_dir):
     from evidence_record import mint_record, new_record_id
-    chunks = read_reqdir(reqdir)
-    if any(rs is None for _, _, rs in chunks):
-        raise SystemExit("error: a request has no resp.json; run the grid first")
+    chunks, missing = load_request_dir(reqdir, pattern="*")
+    if missing:
+        detail = "; ".join(f"{nm}: {why}" for nm, _, why in missing)
+        raise SystemExit(f"error: {len(missing)} request(s) have no usable response ({detail}); run the grid first")
     rows, fl, wst, p_by_view, lib_sha, bad = reduce_all(chunks, liberty_dir)
     fatal = [b for b in bad if not b[1].startswith("('leaf'")]
     if fatal:

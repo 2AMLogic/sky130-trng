@@ -66,13 +66,9 @@ Simulation-derived; provisional until silicon.
 """
 from __future__ import annotations
 
-import datetime
-import glob
-import gzip
 import hashlib
 import json
 import math
-import os
 import random
 import shutil
 import sys
@@ -83,8 +79,8 @@ HERE = Path(__file__).resolve().parent
 SLUG = "wake-up-transient"
 sys.path.insert(0, str(REPO / "sim" / "bin"))
 sys.path.insert(0, str(REPO))
-sys.path.insert(0, str(REPO / "sim" / "tests"))
 from loadmod import load_module  # noqa: E402
+from request_dir import load_request_dir  # noqa: E402
 
 PROV = "simulation-derived; provisional until silicon"
 TOLS = (0.01, 0.005)            # settling tolerances (fractional period error); the steady-state
@@ -194,14 +190,12 @@ def committed_periods(temp, vdd):
 
 
 def load_reqdir(reqdir, leg):
-    chunks = []
-    for d in sorted(glob.glob(os.path.join(reqdir, f"{leg}-*"))):
-        resp = os.path.join(d, "resp.json")
-        if not (os.path.isfile(resp) and os.path.getsize(resp) > 0):
-            chunks.append((os.path.basename(d), json.load(open(os.path.join(d, "plan.json"))), None))
-            continue
-        chunks.append((os.path.basename(d), json.load(open(os.path.join(d, "plan.json"))), json.load(open(resp))))
-    return chunks
+    """-> (chunks, missing) for one leg; the shared walk in sim/bin/request_dir.py.
+
+    This leg's policy is unchanged (issue #469): the requests with no usable
+    response are named in the record under `requests_without_response`, rather
+    than being dropped or blocking the record."""
+    return load_request_dir(reqdir, pattern=f"{leg}-*")
 
 
 def det_rows(chunks):
@@ -246,6 +240,7 @@ def _ns(x, nd=2):
 
 
 def det_md(rid, temp, vdd, rows, summ, jobs, plans, sha, now, claim):
+    from evidence_record import record_footer
     p0 = plans[0]
     L = [f"# {rid} -- {SLUG}", "", f"**Claim**: {claim}", "",
          "**Level**: transistor (pre-layout `design/ro_array_core.spice`; deterministic transient, NO injected noise)",
@@ -291,9 +286,8 @@ def det_md(rid, temp, vdd, rows, summ, jobs, plans, sha, now, claim):
                      f"{_ns(s1.get('t_settle'))} | {_ns(s2.get('t_settle'))} | {swf} | {vcs} | {oks} |")
     L += ["", "\"vs committed period\" compares the final period with `tr1..tr4` of the committed "
           f"`sim/ro-array-core-combining/` record at this PVT point ({summ['committed_combining_record'] or 'none at this point'}), "
-          "an independent deck with a PULSE enable: agreement shows the behavioural-source testbench reproduces the array.", "",
-          "---", "", "- Author: loom-builder@sky130-trng", f"- Timestamp (UTC): {now.isoformat()}", f"- Repo commit: `{sha}`",
-          "- Supersedes: (none)"]
+          "an independent deck with a PULSE enable: agreement shows the behavioural-source testbench reproduces the array."]
+    L += record_footer(author="loom-builder@sky130-trng", now=now, sha=sha)
     return "\n".join(L) + "\n"
 
 
@@ -529,6 +523,7 @@ NOISY_CLAIM = ("First raw bits after an enable release from the stopped state, t
 
 
 def noisy_md(rid, plan, units, ctl, summ, xchk, jobs, sha, now):
+    from evidence_record import record_footer
     L = [f"# {rid} -- {SLUG}", "", f"**Claim**: {NOISY_CLAIM}", "",
          "**Level**: transistor (in-place rings with per-stage `trnoise()`, committed `ro_buf`/`xor2`/`sampler_dff` from "
          "`design/sampler_core.spice`; `testbench/tb_wakeup_raw_bits.spice`)",
@@ -571,8 +566,7 @@ def noisy_md(rid, plan, units, ctl, summ, xchk, jobs, sha, now):
         L += ["", "Negative control (noise off):", ""]
         for u in ctl:
             L.append(f"- seed {u['seed']}: `{''.join('?' if b is None else str(b) for b in u['bits'])}`")
-    L += ["", "---", "", "- Author: loom-builder@sky130-trng", f"- Timestamp (UTC): {now.isoformat()}", f"- Repo commit: `{sha}`",
-          "- Supersedes: (none)"]
+    L += record_footer(author="loom-builder@sky130-trng", now=now, sha=sha)
     return "\n".join(L) + "\n"
 
 
@@ -772,16 +766,6 @@ def margin_md(rows, summ):
 
 
 # ================================================================== emit / check
-def _now_rid(sha, offset=0):
-    now = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(seconds=offset)
-    return now, f"{now:%Y%m%d-%H%M%S}-{sha}"
-
-
-def _sha():
-    from evidence_record import git_short_sha
-    return git_short_sha(REPO)
-
-
 def _store_chunks(rid, reqdir, mine):
     """Copy the raw batch responses + exactly what was submitted to corners/<rid>/ (once per batch of records)."""
     from evidence_record import write_corner_bundle
@@ -789,13 +773,8 @@ def _store_chunks(rid, reqdir, mine):
 
 
 def _read_chunks(rid):
-    cdir = HERE / "corners" / rid
-    out = []
-    for f in sorted(cdir.glob("*.klt-sim.json.gz")):
-        nm = f.name[:-len(".klt-sim.json.gz")]
-        with gzip.open(f, "rt") as fh:
-            out.append((nm, json.load(open(cdir / f"{nm}.plan.json")), json.load(fh)))
-    return out
+    from evidence_record import read_corner_bundle
+    return read_corner_bundle(HERE / "corners" / rid)
 
 
 def _backend(mine):
@@ -819,19 +798,20 @@ def det_build(chunks, temp, vdd):
 
 
 def emit_det(reqdir):
-    sha = _sha()
-    chunks = load_reqdir(reqdir, "det")
-    missing = [nm for nm, _, rs in chunks if rs is None]
+    from evidence_record import new_record_id
+    good, absent = load_reqdir(reqdir, "det")
+    missing = [nm for nm, _, _ in absent]
     if missing:
         print("WARNING: no response for", missing, "-- those units are absent from the records", file=sys.stderr)
-    good = [c for c in chunks if c[2] is not None]
+        for nm, _, why in absent:
+            print(f"  {nm}: {why}", file=sys.stderr)
     mr = make_requests()
     n = 0
     store_rid = None
     for temp in mr.TEMPS:
         for vdd in mr.SUPPLIES:
             n += 1
-            now, rid = _now_rid(sha, n)
+            now, sha, rid = new_record_id(REPO, offset=n)
             rows, _, summ = det_build(good, temp, vdd)
             if not rows:
                 continue
@@ -884,10 +864,13 @@ def noisy_build(chunks, point):
 
 
 def emit_noisy(reqdir):
-    sha = _sha()
-    chunks = load_reqdir(reqdir, "noisy")
-    missing = [nm for nm, _, rs in chunks if rs is None]
-    good = [c for c in chunks if c[2] is not None]
+    from evidence_record import new_record_id
+    good, absent = load_reqdir(reqdir, "noisy")
+    missing = [nm for nm, _, _ in absent]
+    if missing:
+        print("WARNING: no response for", missing, "-- those units are absent from the records", file=sys.stderr)
+        for nm, _, why in absent:
+            print(f"  {nm}: {why}", file=sys.stderr)
     mr = make_requests()
     for n, (point, *_rest) in enumerate(mr.NOISY_POINTS, 1):
         built = noisy_build(good, point)
@@ -895,7 +878,7 @@ def emit_noisy(reqdir):
             print("no data for", point, file=sys.stderr)
             continue
         plan, units, ctl, xchk, summ = built
-        now, rid = _now_rid(sha, 20 + n)
+        now, sha, rid = new_record_id(REPO, offset=20 + n)
         mine = [c for c in good if c[1]["point"] == point]
         _store_chunks(rid, reqdir, mine)
         rec = {"record_id": rid, "slug": SLUG, "leg": "noisy", "claim": NOISY_CLAIM, "level": "transistor", "status": PROV,

@@ -22,7 +22,6 @@ from __future__ import annotations
 import argparse
 import glob
 import hashlib
-import importlib.util
 import json
 import math
 import random
@@ -36,10 +35,9 @@ sys.path.insert(0, str(SLUGDIR))
 sys.path.insert(0, str(REPO / "sim" / "bin"))
 import campaign as C  # noqa: E402
 from evidence_record import mint_behavioral_record  # noqa: E402
+from loadmod import load_module  # noqa: E402
 
-_s = importlib.util.spec_from_file_location("behavioral_raw_bit", REPO / "sim/raw-bit-volume-campaign/behavioral_raw_bit.py")
-brb = importlib.util.module_from_spec(_s)
-_s.loader.exec_module(brb)
+brb = load_module("behavioral_raw_bit", REPO / "sim/raw-bit-volume-campaign/behavioral_raw_bit.py")
 
 SLUG = C.SLUG
 NBITS = 1 << 17                 # same per-stream size as the #188 record

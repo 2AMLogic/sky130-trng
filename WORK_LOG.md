@@ -2,8 +2,91 @@
 
 Chronological record of recently merged pull requests and closed issues.
 
+## Archives
+
+- [2026-09](work_log/WORK_LOG_2026-09.md)
+
+### 2026-11-16
+
+- **PR #537**: fix: make the gate-model evidence pipeline fail closed on incomplete or unvalidated input
+- **Issue #496** (closed): Harden the gate-model reduction against silent-input defects (four latent paths from #486)
+- **PR #551**: ci: unfilter the pull_request trigger and add a CI Result aggregate verdict job
+- **Issue #542** (closed): CI: give every PR one always-reporting verdict check, so main can require it (path-filtered ci.yml has none)
+- **PR #569**: docs: reword loadmod.py docstring for its sim/bin home
+- **Issue #567** (closed): sim/bin/loadmod.py docstring still tells callers to put sim/tests on sys.path
+- **PR #565**: refactor(sim): move shared loadmod helper to sim/bin, drop tests-dir path inserts
+- **Issue #549** (closed): Move the shared loadmod helper to sim/bin/: 20 production sim scripts now import from the tests directory
+- **PR #563**: fix: apply read_corner_bundle prefix filter to missing notes too
+- **Issue #560** (closed): read_corner_bundle: prefix= filters chunks but not the missing-notes list, and the docstring does not say so
+- **PR #566**: refactor: write_json reuses dumps() for its JSON spelling
+- **Issue #553** (closed): write_json re-implements _klt_common.dumps's spelling instead of calling it
+- **PR #564**: spec: DR-0019 provenance pins report, not gate, in sensitivity.py --check
+- **Issue #528** (closed): ro-vth-drift: #492's aging.py move broke the superseding record's --check replay (generator-hashes leg, rc=1) — live on main, unwired
+- **PR #511**: refactor: one shared corner-bundle reader beside the bundle writer
+- **Issue #497** (closed): Consolidate the seven hand-rolled corner-bundle readers in six sim studies: the writer half already lives in evidence_record.py
+- **Issue #559** (closed): test_vth_drift.py fails on main: the Nov superseding record's aging_sha256 pin is stale, and CI never runs that test
+- **PR #556**: test: detect hand-rolled record tails via AST path rendering
+- **PR #541**: test: guard .meas AT=/TO= against the request's own .tran stop; ledger the stale startup probes
+- **Issue #531** (closed): The #515 hand-rolled-tail guard's detector is spelling-sensitive: 5 of 8 plausible <rid>.md write spellings slip through
+- **Issue #507** (closed): bug: committed whole-block startup-probe requests carry 9 measurements past their own t_stop and timeouts the generator no longer emits
+- **PR #546**: fix: grade strict spec targets strictly in characterization report (lt/gt)
+- **PR #540**: refactor: consolidate rel/load_json/klt_env/klayout_db/dumps into _klt_common
+- **PR #543**: fix(sim): one shared cross-version replay equality for committed-record checks
+- **PR #534**: ci: wire layout/test_hashing.py into the PR-blocking lint job; refresh the item-10 attestation chain
+- **Issue #538** (closed): characterization_report.compare() has no strict `lt`/`gt`: the Power active check grades a "< 500 uW" target with `le 500`
+- **Issue #535** (closed): Consolidate duplicated rel/load_json/klt_env/_klayout/dumps helpers in layout/bin
+- **Issue #519** (closed): sim/: committed-record replay is not reproducible across CPython versions (ro-vth-drift-sensitivity + xor-combining-alternatives; MATCHES on 3.12, DIFFERS on CI's 3.11)
+- **Issue #552** (closed): CI: revisit concurrency.cancel-in-progress once `CI Result` is a required context
+- **Issue #493** (closed): Wire layout/test_hashing.py into CI: the shared digest helper's only regression guard has never run on a PR
+- **PR #516**: refactor(sim): replace inline importlib loader blocks with shared loadmod helper
+- **PR #510**: refactor: replace _NoExitCodes .parent shim with an exit_lookup parameter on summarize_run
+- **PR #544**: docs: drop the uncheckable decision-record count from README; document oldest-first Status history
+- **Issue #509** (closed): Finish the #412 deferral: ~18 inline importlib loader blocks remain in sim scripts, and the shared loadmod helper still lives under sim/tests/
+- **Issue #501** (closed): Remove _NoExitCodes Path subclass: replace the .parent-lying shim with an exit_lookup parameter on compaction.summarize_run
+- **Issue #532** (closed): Two residual uncheckable facts around the decision-record index: README's record count, and the undocumented oldest-first `## Status` ordering
+
+### 2026-11-15
+
+- **PR #526**: feat(signoff): declare the Power evidence mapping in the characterization report
+- **PR #527**: fix: mint the controls record through mint_record and guard against new hand-rolled tails
+- **PR #520**: refactor(idle-leakage): read request dirs through the shared request_dir walk
+- **PR #503**: refactor(klt): read the klt version and pdk find through one shared contract
+- **PR #499**: fix(spec): check the decision-record index against front matter, not the first history word
+- **PR #492**: refactor: add sha256_text/sha256_bytes to _hashing and drop nine hand-rolled copies
+- **Issue #536** (closed): test_vth_drift: superseding-record replay check fails at HEAD in a stdlib-only run
+- **Issue #530** (closed): test_vth_drift.py fails on main (provenance generator-hash mismatch), and 8 sim/tests are absent from CI
+- **Issue #485** (closed): Declare an evidence mapping for the Power row in the characterization report
+- **Issue #521** (closed): A fifth private klt invoker remains: run-ir.py's klt_power never inspects the response for an `error` object
+- **Issue #518** (closed): Remove five superseded signal routing-increment sets from layout/ro_array_core-placement-poc/: operator decision on the README's retention choice
+- **Issue #515** (closed): sensitivity.py's controls record is still minted outside mint_record/_publish_bundle, with a footerless md
+- **Issue #512** (closed): Finish the #469 consolidation: idle_leakage.py still hand-rolls a sixth request-directory walk
+- **Issue #506** (closed): make-gate-model.py re-introduced hand-rolled sha256_text/sha256_file after #487 consolidated them
+- **Issue #500** (closed): Consolidate the eleven raw `klt` call sites outside `_klt_common`
+- **Issue #487** (closed): Consolidate the nine hand-rolled in-memory sha256 helpers onto _hashing
+- **Issue #484** (closed): Correct stale decision-record status text in README, spec/README and the Chipalooza proposal
+- **PR #513**: refactor(sim): mint the seven hand-rolled record tails through evidence_record
+- **Issue #504** (closed): Finish the #392 deferral: seven reducers hand-roll the record-minting tail because record_footer cannot say Supersedes
+
+### 2026-11-14
+
+- **PR #508**: fix(whole-block): hold each driven input's PWL value, then switch over 100 ps
+- **Issue #488** (closed): bug: whole-block deck PWL stimulus ramps between cycles instead of holding, so bus inputs never switch cleanly
+
+- **PR #489**: feat: generate the digital half's gate-level ngspice model as a timed-delay XSPICE netlist
+- **Issue #486** (closed): Choose and evidence the ngspice realisation of the gate-level digital half (first slice of #431 step 2)
+
 ### 2026-11-13
 
+- **PR #479**: fix(post-layout-whole-block): write the port map next to -o, and name both klt builds when --check differs
+- **Issue #478** (closed): make-netlist.py rewrites committed ports.json as a side effect, and its order + --check both diverge from the committed evidence
+- **PR #477**: fix: fail spec-index check on unknown status word; drop 7 dead defs
+- **Issue #471** (closed): Wire the unused STATUS_WORDS into check_spec_index (index status typos pass CI) and remove seven other never-referenced definitions
+- **PR #473**: refactor(sim): one shared request-directory walk; stop the mismatch reducer dropping refused requests
+- **Issue #469** (closed): Consolidate the five load_reqdir request-directory loaders: the mismatch reducer silently drops refused requests and still reports a full sample count
+- **PR #474**: refactor(sim): one shared DR-0005 lock-proximity rule, and correct the two order-dependent reducers
+- **Issue #467** (closed): Consolidate the five DR-0005 lock-proximity implementations in the sim reducers into one shared helper and correct the two order-dependent ones
+- **PR #466**: refactor: one shared evidence path-hygiene rule for both digital harnesses
+- **Issue #465** (closed): Consolidate the two drifted evidence path sanitizers in the digital synthesis and P&R harnesses into one shared helper
 - **PR #458**: docs(spec): DR-0018 adopt <=200 uW worst-corner idle power envelope
 - **Issue #446** (closed): Decision record: adopt (or not) an idle-power target for sampler_core from the #201 leakage survey
 
@@ -366,112 +449,3 @@ Chronological record of recently merged pull requests and closed issues.
 - **Issue #36** (closed): layout: compose-cell.py --check has no automated regression guard (nothing runs it)
 - **Issue #151** (closed): pdk-nightly netlist-check has been red since 2026-09-15: xschem version drift emits expr() templates where committed netlists have evaluated values (4 cells STALE)
 
-### 2026-09-16
-
-- **PR #150**: refactor: remove dead constants in sampler_core data-path-scan
-- **Issue #149** (closed): Remove dead constants in layout/sampler_core/data-path-scan.py
-
-### 2026-09-15
-
-- **PR #148**: docs: fix stale not-yet-composed claims in sampler_tg README
-- **PR #146**: fix: eliminate pipefail+set-e crash in merge-pr.sh champion:hold-state check
-- **PR #144**: fix: eliminate pipefail+SIGPIPE race in verify-proposal-refs.sh full_tree check
-- **PR #143**: refactor: extract carrying() scan-script helper into _geom_common.py
-- **PR #140**: fix: update stale sim/-is-empty comments in design/pdk.json and netlist.py
-- **PR #139**: docs: add PDR-0001 recommending fix for broken generate-agents-md.sh path
-- **Issue #75** (closed): Fix or remove broken generate-agents-md.sh (installed Loom surface, unused + broken path)
-- **Issue #56** (closed): Champion merged PR #54 after its own verdict had just been invalidated by a stale-verdict reconciliation
-- **Issue #34** (closed): Fix stale sim/-is-empty comments in design/pdk.json and design/netlist.py
-- **Issue #22** (closed): sky130-trng layout + DRC/LVS-clean GDS, and post-layout PVT simulation
-- **Issue #147** (closed): Fix stale "not yet composed"/"remains open" claims in layout/sampler_tg/README.md
-- **Issue #145** (closed): merge-pr.sh: _check_champion_hold_state_staleness crashes via pipefail+grep -o SIGPIPE-class bug on ordinary PRs
-- **Issue #142** (closed): verify-proposal-refs.sh: false MISSING FILE due to pipefail + grep -q SIGPIPE race
-- **Issue #141** (closed): Remove duplicated carrying() helper: sampler_core scan scripts
-
-### 2026-09-14
-
-- **PR #138**: fix: dedup mint_behavioral_record's rid derivation onto new_record_id
-- **Issue #27** (closed): Compose ro_array_core/sampler_core gates from proven klt primitives, DRC/LVS-clean
-- **Issue #137** (closed): Dedup mint_behavioral_record's rid derivation onto new_record_id (sim/bin/evidence_record.py)
-
-### 2026-09-13
-
-- **PR #136**: refactor: consolidate lvs-negative-controls.py poc copy onto _klt_common.run_klt
-- **PR #134**: Consolidate duplicate run_klt() in synthesize-and-verify.py with layout/bin/_klt_common.py
-- **Issue #135** (closed): Consolidate lvs-negative-controls.py poc copy onto _klt_common.run_klt
-- **Issue #133** (closed): Consolidate duplicate run_klt() in synthesize-and-verify.py with layout/bin/_klt_common.py
-
-### 2026-09-12
-
-- **PR #132**: Extract shared merged()/dbox_region() geometry helpers for ro_array_core scan scripts
-- **PR #130**: refactor: extract merge_spans() interval-merge helper in sampler_core
-- **PR #128**: Fix KeyError in digital-section-campaign.py report for experiment D
-- **PR #127**: fix(layout): refresh sampler_core scan assertions for the post-#113 vdd strap
-- **PR #124**: Extract layout/sampler_core's byte-identical merged() geometry helper
-- **PR #123**: refactor: reuse _klt_common.run_klt in lvs-negative-controls.py
-- **PR #120**: Wire package.json test/lint/check scripts to the real Python test suite
-- **Issue #131** (closed): Extract byte-identical merged()/dbox_region() geometry helpers duplicated in ro_array_core scan scripts
-- **Issue #129** (closed): Deduplicate the interval-merge loop in sampler_core scan scripts
-- **Issue #126** (closed): Fix broken failure-path KeyError in digital-section-campaign.py's report (experiment D)
-- **Issue #125** (closed): layout/sampler_core scan scripts do not reproduce their own committed *-scan.json in this environment
-- **Issue #122** (closed): Extract layout/sampler_core's byte-identical merged() geometry helper
-- **Issue #121** (closed): Consolidate lvs-negative-controls.py's klt plumbing into _klt_common.run_klt
-- **Issue #119** (closed): Wire or remove misleading package.json placeholder test/lint/check scripts
-
-### 2026-09-10
-
-- **PR #118**: Synthesize digital section against sky130_fd_sc_hd, mint first level:gate record
-- **Issue #117** (closed): Synthesize the digital section (digital/rtl/trng_digital.v) against sky130_fd_sc_hd with klt synthesize + klt equiv, and mint the first `level: gate` records (DR-0004's named next increment; proposal row G)
-
-### 2026-09-09
-
-- **Issue #52** (closed): Remove duplication: run_klt/write_json/BuildError copied between compose-cell.py and pex-netlist.py
-
-### 2026-09-08
-
-- **PR #116**: feat(sim): whole-chain substrate bracket, and DR-0003 §8 narrowed to one named blocker
-- **PR #115**: feat(sim): sampler_core's first whole-cell post-layout PVT campaign
-
-### 2026-09-07
-
-- **PR #99**: feat(layout): route sampler_dff's m data-path net, DRC/LVS clean
-- **PR #98**: fix(layout/pex): thread the invoking descriptor into the generated library header
-- **PR #97**: fix(layout/pex): canonicalize klt's own net numbering in --check and re-extract on the pinned klt
-- **PR #95**: feat(layout): route sampler_dff's mb data-path net on met1, DRC-clean
-- **PR #92**: feat(layout,sim): first sampler_dff post-layout PVT campaign and DR-0014 reset-contention re-derivation
-- **PR #90**: refactor: remove unused reg fb from trng_digital.v
-- **PR #89**: feat(layout): promote sampler_dff's d input pin to a real top-level label
-- **PR #87**: fix(layout): correct sampler_nand2 rst_n/data-input pin swap in sampler_dff
-- **PR #86**: feat(layout): route sampler_dff's s data-path net on met2, DRC-clean
-- **PR #85**: feat(layout): route sampler_dff's qb data-path net, DRC-clean
-- **PR #83**: feat(layout): route sampler_dff's q data-path net, DRC-clean
-- **PR #82**: feat(layout): route sampler_dff's mc data-path net, DRC-clean
-- **PR #81**: feat(layout): route sampler_dff's clkb fan-out, DRC-clean
-- **PR #80**: feat(layout): route sampler_dff's five-pin clk fan-out, DRC-clean
-- **PR #79**: feat(layout): route sampler_dff's rst_n fan-out, DRC-clean and merged
-- **PR #78**: feat(layout): place sampler_dff's nine leaf-cell instances, route vdd/vss
-- **PR #77**: refactor(digital): remove unused TrngDigital.run_bits
-- **PR #76**: feat(layout): compose sampler_nand2, the last leaf shape sampler_dff needs
-- **PR #74**: feat(layout): compose sampler_tg, the transmission gate sampler_dff needs
-- **PR #72**: feat(layout,sim): whole-array post-layout PVT campaign and array-scale substrate bracket
-- **PR #114**: feat(layout): extract sampler_core's post-layout parasitics
-- **PR #113**: feat(layout): route sampler_core's vdd strap to a full whole-cell LVS match
-- **PR #112**: feat(layout): route sampler_core's vss inter-block supply strap, DRC-clean
-- **PR #110**: docs(layout): confirm sampler_dff --check regression is klt legs[] tool drift, not recipe drift
-- **PR #108**: feat(layout): route sampler_core's last three data nets and sv's vdd tie
-- **PR #107**: feat(layout): place ro_array_core in sampler_core and route the first two data nets
-- **PR #104**: feat(layout): route sampler_core's shared clk/rst_n fan-out across six sampler_dff instances
-- **PR #103**: feat(layout): route sampler_core's shared vdd/vss bus across six sampler_dff instances
-- **PR #102**: feat(layout): DRC-clean placement proof-of-concept for sampler_core's six-sampler_dff bank
-- **PR #101**: feat(layout,sim): sampler_dff whole-cell (assembled) post-layout extraction and PVT campaign
-- **PR #100**: fix(layout/pex-ring,pex-array): close #96's provenance gap for pex-ring, record pex-array's electrical divergence
-- **Issue #96** (closed): layout/pex-ring, layout/pex-array: klt 0.4.0 evidence vs the 0.3.0 klt_version_pin (the other half of #93's provenance gap)
-- **Issue #94** (closed): layout/bin/pex-netlist.py: generated library banner hardcodes pex.json, so sampler_dff_pex.spice names the wrong descriptor for its own --check
-- **Issue #93** (closed): layout/pex: ro_ring5_pex.spice fails `pex.json --check` on the pinned klt build (0.3.0 vs 0.4.0 provenance gap)
-- **Issue #91** (closed): Rebase feature/issue-84 (PR #87) onto current main: rst_n/q pin-swap fix conflicts with s-net routing (PR #86)
-- **Issue #88** (closed): Remove unused reg fb in trng_digital.v
-- **Issue #84** (closed): sampler_dff wires rst_n and the data input to the swapped sampler_nand2 pins -- an LVS-blocking NMOS series-stack inversion on both NAND2 instances
-- **Issue #73** (closed): Remove unused TrngDigital.run_bits convenience method
-- **Issue #109** (closed): layout/sampler_core: find a viable rung for xo/ro2/ro3 beyond each net's own run (follow-up to #105)
-- **Issue #106** (closed): layout/sampler_dff/cell.json --check no longer reproduces: clkb_mid left unrouted by gen-compose
-- **Issue #105** (closed): layout/sampler_core: route the remaining three data nets (xo, ro2, ro3) and tie sv's d to vdd

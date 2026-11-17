@@ -21,7 +21,6 @@ from __future__ import annotations
 
 import argparse
 import gzip
-import hashlib
 import json
 import re
 import sys
@@ -31,7 +30,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
 sys.path.insert(0, str(REPO_ROOT / "layout" / "bin"))
-from _hashing import sha256_file  # noqa: E402
+from _hashing import sha256_bytes as _sha256_bytes, sha256_file  # noqa: E402
 from evidence_record import mint_record, new_record_id  # noqa: E402
 
 STUDY = REPO_ROOT / "sim" / "digital-floorplan-compaction"
@@ -43,10 +42,7 @@ TARGET_MM2 = 0.05  # README "Area < 0.05 mm2" row -- unchanged, not relaxed here
 N_CONTROLS = 4
 
 
-def sha256_bytes(b: bytes) -> str:
-    return "sha256:" + hashlib.sha256(b).hexdigest()
-
-
+sha256_bytes = partial(_sha256_bytes, prefix=True)  # recorded as "sha256:<hex>"
 sha256 = partial(sha256_file, prefix=True)
 
 
@@ -86,17 +82,24 @@ def congestion(eng: Path) -> dict:
     return out
 
 
-def summarize_run(d: Path) -> dict:
-    r: dict = {"dir": str(d.relative_to(REPO_ROOT))}
-    req = next(iter(sorted(d.glob("util*.json"))), None)
-    verdict = load(d / "verdict.json")
-    pnr = load(d / "pnr-output.json")
-    r["exit"] = None
+def _exit_from_codes(d: Path):
+    # exit-codes.txt is append-only (run-study.sh re-runs a util with >>), so a
+    # retried run name appears twice: the LAST matching line is the final rc.
+    out = None
     ec = d.parent / "exit-codes.txt"
     if ec.exists():
         for line in ec.read_text().splitlines():
             if line.startswith(d.name + " "):
-                r["exit"] = int(line.split()[2])
+                out = int(line.split()[2])
+    return out
+
+
+def summarize_run(d: Path, *, exit_lookup=_exit_from_codes) -> dict:
+    r: dict = {"dir": str(d.relative_to(REPO_ROOT))}
+    req = next(iter(sorted(d.glob("util*.json"))), None)
+    verdict = load(d / "verdict.json")
+    pnr = load(d / "pnr-output.json")
+    r["exit"] = exit_lookup(d)
     stderr = (d / "stderr.log").read_text(errors="replace") if (d / "stderr.log").exists() else ""
     r["stderr_tail"] = stderr.strip().splitlines()[-12:]
     r["completed"] = bool(verdict and "verdict" in verdict)

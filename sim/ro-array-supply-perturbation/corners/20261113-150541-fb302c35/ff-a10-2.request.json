@@ -1,0 +1,730 @@
+{
+  "netlist": "netlist.cir",
+  "engine": "ngspice",
+  "backend": "batch",
+  "netlist_source": "extracted",
+  "models": {
+    "pdk": "sky130A",
+    "lib": "libs.tech/combined/sky130.lib.spice"
+  },
+  "corners": {
+    "process": [
+      "ff"
+    ],
+    "temperature_c": [
+      -40.0
+    ],
+    "supply_v": {
+      "Vdv": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Vra": [
+        0.01,
+        0.01,
+        0.01,
+        0.01,
+        0.01,
+        0.01
+      ],
+      "Vrf": [
+        563521382.5057918,
+        805792918.5453241,
+        339455089.9626019,
+        226303393.30840126,
+        1357820359.8504076,
+        10000000.0
+      ],
+      "Vri": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  },
+  "analysis": {
+    "kind": "tran",
+    "args": "5p 300n uic"
+  },
+  "measurements": [
+    {
+      "name": "t1_3",
+      "spice": ".meas tran t1_3 when v(ro1)=0.99 rise=3"
+    },
+    {
+      "name": "t1_4",
+      "spice": ".meas tran t1_4 when v(ro1)=0.99 rise=4"
+    },
+    {
+      "name": "t1_5",
+      "spice": ".meas tran t1_5 when v(ro1)=0.99 rise=5"
+    },
+    {
+      "name": "t1_6",
+      "spice": ".meas tran t1_6 when v(ro1)=0.99 rise=6"
+    },
+    {
+      "name": "t1_7",
+      "spice": ".meas tran t1_7 when v(ro1)=0.99 rise=7"
+    },
+    {
+      "name": "t1_8",
+      "spice": ".meas tran t1_8 when v(ro1)=0.99 rise=8"
+    },
+    {
+      "name": "t1_9",
+      "spice": ".meas tran t1_9 when v(ro1)=0.99 rise=9"
+    },
+    {
+      "name": "t1_10",
+      "spice": ".meas tran t1_10 when v(ro1)=0.99 rise=10"
+    },
+    {
+      "name": "t1_11",
+      "spice": ".meas tran t1_11 when v(ro1)=0.99 rise=11"
+    },
+    {
+      "name": "t1_12",
+      "spice": ".meas tran t1_12 when v(ro1)=0.99 rise=12"
+    },
+    {
+      "name": "t1_13",
+      "spice": ".meas tran t1_13 when v(ro1)=0.99 rise=13"
+    },
+    {
+      "name": "t1_14",
+      "spice": ".meas tran t1_14 when v(ro1)=0.99 rise=14"
+    },
+    {
+      "name": "t1_15",
+      "spice": ".meas tran t1_15 when v(ro1)=0.99 rise=15"
+    },
+    {
+      "name": "t1_16",
+      "spice": ".meas tran t1_16 when v(ro1)=0.99 rise=16"
+    },
+    {
+      "name": "t1_17",
+      "spice": ".meas tran t1_17 when v(ro1)=0.99 rise=17"
+    },
+    {
+      "name": "t1_18",
+      "spice": ".meas tran t1_18 when v(ro1)=0.99 rise=18"
+    },
+    {
+      "name": "t1_19",
+      "spice": ".meas tran t1_19 when v(ro1)=0.99 rise=19"
+    },
+    {
+      "name": "t1_20",
+      "spice": ".meas tran t1_20 when v(ro1)=0.99 rise=20"
+    },
+    {
+      "name": "t1_21",
+      "spice": ".meas tran t1_21 when v(ro1)=0.99 rise=21"
+    },
+    {
+      "name": "t1_22",
+      "spice": ".meas tran t1_22 when v(ro1)=0.99 rise=22"
+    },
+    {
+      "name": "t1_23",
+      "spice": ".meas tran t1_23 when v(ro1)=0.99 rise=23"
+    },
+    {
+      "name": "t1_24",
+      "spice": ".meas tran t1_24 when v(ro1)=0.99 rise=24"
+    },
+    {
+      "name": "t1_25",
+      "spice": ".meas tran t1_25 when v(ro1)=0.99 rise=25"
+    },
+    {
+      "name": "t1_26",
+      "spice": ".meas tran t1_26 when v(ro1)=0.99 rise=26"
+    },
+    {
+      "name": "t1_27",
+      "spice": ".meas tran t1_27 when v(ro1)=0.99 rise=27"
+    },
+    {
+      "name": "t1_28",
+      "spice": ".meas tran t1_28 when v(ro1)=0.99 rise=28"
+    },
+    {
+      "name": "t1_29",
+      "spice": ".meas tran t1_29 when v(ro1)=0.99 rise=29"
+    },
+    {
+      "name": "t1_30",
+      "spice": ".meas tran t1_30 when v(ro1)=0.99 rise=30"
+    },
+    {
+      "name": "t1_31",
+      "spice": ".meas tran t1_31 when v(ro1)=0.99 rise=31"
+    },
+    {
+      "name": "t1_32",
+      "spice": ".meas tran t1_32 when v(ro1)=0.99 rise=32"
+    },
+    {
+      "name": "t1_33",
+      "spice": ".meas tran t1_33 when v(ro1)=0.99 rise=33"
+    },
+    {
+      "name": "t1_34",
+      "spice": ".meas tran t1_34 when v(ro1)=0.99 rise=34"
+    },
+    {
+      "name": "t1_35",
+      "spice": ".meas tran t1_35 when v(ro1)=0.99 rise=35"
+    },
+    {
+      "name": "t1_36",
+      "spice": ".meas tran t1_36 when v(ro1)=0.99 rise=36"
+    },
+    {
+      "name": "t1_37",
+      "spice": ".meas tran t1_37 when v(ro1)=0.99 rise=37"
+    },
+    {
+      "name": "t1_38",
+      "spice": ".meas tran t1_38 when v(ro1)=0.99 rise=38"
+    },
+    {
+      "name": "t1_39",
+      "spice": ".meas tran t1_39 when v(ro1)=0.99 rise=39"
+    },
+    {
+      "name": "t1_40",
+      "spice": ".meas tran t1_40 when v(ro1)=0.99 rise=40"
+    },
+    {
+      "name": "t1_41",
+      "spice": ".meas tran t1_41 when v(ro1)=0.99 rise=41"
+    },
+    {
+      "name": "t1_42",
+      "spice": ".meas tran t1_42 when v(ro1)=0.99 rise=42"
+    },
+    {
+      "name": "t2_3",
+      "spice": ".meas tran t2_3 when v(ro2)=0.99 rise=3"
+    },
+    {
+      "name": "t2_4",
+      "spice": ".meas tran t2_4 when v(ro2)=0.99 rise=4"
+    },
+    {
+      "name": "t2_5",
+      "spice": ".meas tran t2_5 when v(ro2)=0.99 rise=5"
+    },
+    {
+      "name": "t2_6",
+      "spice": ".meas tran t2_6 when v(ro2)=0.99 rise=6"
+    },
+    {
+      "name": "t2_7",
+      "spice": ".meas tran t2_7 when v(ro2)=0.99 rise=7"
+    },
+    {
+      "name": "t2_8",
+      "spice": ".meas tran t2_8 when v(ro2)=0.99 rise=8"
+    },
+    {
+      "name": "t2_9",
+      "spice": ".meas tran t2_9 when v(ro2)=0.99 rise=9"
+    },
+    {
+      "name": "t2_10",
+      "spice": ".meas tran t2_10 when v(ro2)=0.99 rise=10"
+    },
+    {
+      "name": "t2_11",
+      "spice": ".meas tran t2_11 when v(ro2)=0.99 rise=11"
+    },
+    {
+      "name": "t2_12",
+      "spice": ".meas tran t2_12 when v(ro2)=0.99 rise=12"
+    },
+    {
+      "name": "t2_13",
+      "spice": ".meas tran t2_13 when v(ro2)=0.99 rise=13"
+    },
+    {
+      "name": "t2_14",
+      "spice": ".meas tran t2_14 when v(ro2)=0.99 rise=14"
+    },
+    {
+      "name": "t2_15",
+      "spice": ".meas tran t2_15 when v(ro2)=0.99 rise=15"
+    },
+    {
+      "name": "t2_16",
+      "spice": ".meas tran t2_16 when v(ro2)=0.99 rise=16"
+    },
+    {
+      "name": "t2_17",
+      "spice": ".meas tran t2_17 when v(ro2)=0.99 rise=17"
+    },
+    {
+      "name": "t2_18",
+      "spice": ".meas tran t2_18 when v(ro2)=0.99 rise=18"
+    },
+    {
+      "name": "t2_19",
+      "spice": ".meas tran t2_19 when v(ro2)=0.99 rise=19"
+    },
+    {
+      "name": "t2_20",
+      "spice": ".meas tran t2_20 when v(ro2)=0.99 rise=20"
+    },
+    {
+      "name": "t2_21",
+      "spice": ".meas tran t2_21 when v(ro2)=0.99 rise=21"
+    },
+    {
+      "name": "t2_22",
+      "spice": ".meas tran t2_22 when v(ro2)=0.99 rise=22"
+    },
+    {
+      "name": "t2_23",
+      "spice": ".meas tran t2_23 when v(ro2)=0.99 rise=23"
+    },
+    {
+      "name": "t2_24",
+      "spice": ".meas tran t2_24 when v(ro2)=0.99 rise=24"
+    },
+    {
+      "name": "t2_25",
+      "spice": ".meas tran t2_25 when v(ro2)=0.99 rise=25"
+    },
+    {
+      "name": "t2_26",
+      "spice": ".meas tran t2_26 when v(ro2)=0.99 rise=26"
+    },
+    {
+      "name": "t2_27",
+      "spice": ".meas tran t2_27 when v(ro2)=0.99 rise=27"
+    },
+    {
+      "name": "t2_28",
+      "spice": ".meas tran t2_28 when v(ro2)=0.99 rise=28"
+    },
+    {
+      "name": "t2_29",
+      "spice": ".meas tran t2_29 when v(ro2)=0.99 rise=29"
+    },
+    {
+      "name": "t2_30",
+      "spice": ".meas tran t2_30 when v(ro2)=0.99 rise=30"
+    },
+    {
+      "name": "t2_31",
+      "spice": ".meas tran t2_31 when v(ro2)=0.99 rise=31"
+    },
+    {
+      "name": "t2_32",
+      "spice": ".meas tran t2_32 when v(ro2)=0.99 rise=32"
+    },
+    {
+      "name": "t2_33",
+      "spice": ".meas tran t2_33 when v(ro2)=0.99 rise=33"
+    },
+    {
+      "name": "t2_34",
+      "spice": ".meas tran t2_34 when v(ro2)=0.99 rise=34"
+    },
+    {
+      "name": "t2_35",
+      "spice": ".meas tran t2_35 when v(ro2)=0.99 rise=35"
+    },
+    {
+      "name": "t2_36",
+      "spice": ".meas tran t2_36 when v(ro2)=0.99 rise=36"
+    },
+    {
+      "name": "t2_37",
+      "spice": ".meas tran t2_37 when v(ro2)=0.99 rise=37"
+    },
+    {
+      "name": "t2_38",
+      "spice": ".meas tran t2_38 when v(ro2)=0.99 rise=38"
+    },
+    {
+      "name": "t2_39",
+      "spice": ".meas tran t2_39 when v(ro2)=0.99 rise=39"
+    },
+    {
+      "name": "t2_40",
+      "spice": ".meas tran t2_40 when v(ro2)=0.99 rise=40"
+    },
+    {
+      "name": "t2_41",
+      "spice": ".meas tran t2_41 when v(ro2)=0.99 rise=41"
+    },
+    {
+      "name": "t2_42",
+      "spice": ".meas tran t2_42 when v(ro2)=0.99 rise=42"
+    },
+    {
+      "name": "t3_3",
+      "spice": ".meas tran t3_3 when v(ro3)=0.99 rise=3"
+    },
+    {
+      "name": "t3_4",
+      "spice": ".meas tran t3_4 when v(ro3)=0.99 rise=4"
+    },
+    {
+      "name": "t3_5",
+      "spice": ".meas tran t3_5 when v(ro3)=0.99 rise=5"
+    },
+    {
+      "name": "t3_6",
+      "spice": ".meas tran t3_6 when v(ro3)=0.99 rise=6"
+    },
+    {
+      "name": "t3_7",
+      "spice": ".meas tran t3_7 when v(ro3)=0.99 rise=7"
+    },
+    {
+      "name": "t3_8",
+      "spice": ".meas tran t3_8 when v(ro3)=0.99 rise=8"
+    },
+    {
+      "name": "t3_9",
+      "spice": ".meas tran t3_9 when v(ro3)=0.99 rise=9"
+    },
+    {
+      "name": "t3_10",
+      "spice": ".meas tran t3_10 when v(ro3)=0.99 rise=10"
+    },
+    {
+      "name": "t3_11",
+      "spice": ".meas tran t3_11 when v(ro3)=0.99 rise=11"
+    },
+    {
+      "name": "t3_12",
+      "spice": ".meas tran t3_12 when v(ro3)=0.99 rise=12"
+    },
+    {
+      "name": "t3_13",
+      "spice": ".meas tran t3_13 when v(ro3)=0.99 rise=13"
+    },
+    {
+      "name": "t3_14",
+      "spice": ".meas tran t3_14 when v(ro3)=0.99 rise=14"
+    },
+    {
+      "name": "t3_15",
+      "spice": ".meas tran t3_15 when v(ro3)=0.99 rise=15"
+    },
+    {
+      "name": "t3_16",
+      "spice": ".meas tran t3_16 when v(ro3)=0.99 rise=16"
+    },
+    {
+      "name": "t3_17",
+      "spice": ".meas tran t3_17 when v(ro3)=0.99 rise=17"
+    },
+    {
+      "name": "t3_18",
+      "spice": ".meas tran t3_18 when v(ro3)=0.99 rise=18"
+    },
+    {
+      "name": "t3_19",
+      "spice": ".meas tran t3_19 when v(ro3)=0.99 rise=19"
+    },
+    {
+      "name": "t3_20",
+      "spice": ".meas tran t3_20 when v(ro3)=0.99 rise=20"
+    },
+    {
+      "name": "t3_21",
+      "spice": ".meas tran t3_21 when v(ro3)=0.99 rise=21"
+    },
+    {
+      "name": "t3_22",
+      "spice": ".meas tran t3_22 when v(ro3)=0.99 rise=22"
+    },
+    {
+      "name": "t3_23",
+      "spice": ".meas tran t3_23 when v(ro3)=0.99 rise=23"
+    },
+    {
+      "name": "t3_24",
+      "spice": ".meas tran t3_24 when v(ro3)=0.99 rise=24"
+    },
+    {
+      "name": "t3_25",
+      "spice": ".meas tran t3_25 when v(ro3)=0.99 rise=25"
+    },
+    {
+      "name": "t3_26",
+      "spice": ".meas tran t3_26 when v(ro3)=0.99 rise=26"
+    },
+    {
+      "name": "t3_27",
+      "spice": ".meas tran t3_27 when v(ro3)=0.99 rise=27"
+    },
+    {
+      "name": "t3_28",
+      "spice": ".meas tran t3_28 when v(ro3)=0.99 rise=28"
+    },
+    {
+      "name": "t3_29",
+      "spice": ".meas tran t3_29 when v(ro3)=0.99 rise=29"
+    },
+    {
+      "name": "t3_30",
+      "spice": ".meas tran t3_30 when v(ro3)=0.99 rise=30"
+    },
+    {
+      "name": "t3_31",
+      "spice": ".meas tran t3_31 when v(ro3)=0.99 rise=31"
+    },
+    {
+      "name": "t3_32",
+      "spice": ".meas tran t3_32 when v(ro3)=0.99 rise=32"
+    },
+    {
+      "name": "t3_33",
+      "spice": ".meas tran t3_33 when v(ro3)=0.99 rise=33"
+    },
+    {
+      "name": "t3_34",
+      "spice": ".meas tran t3_34 when v(ro3)=0.99 rise=34"
+    },
+    {
+      "name": "t3_35",
+      "spice": ".meas tran t3_35 when v(ro3)=0.99 rise=35"
+    },
+    {
+      "name": "t3_36",
+      "spice": ".meas tran t3_36 when v(ro3)=0.99 rise=36"
+    },
+    {
+      "name": "t3_37",
+      "spice": ".meas tran t3_37 when v(ro3)=0.99 rise=37"
+    },
+    {
+      "name": "t3_38",
+      "spice": ".meas tran t3_38 when v(ro3)=0.99 rise=38"
+    },
+    {
+      "name": "t3_39",
+      "spice": ".meas tran t3_39 when v(ro3)=0.99 rise=39"
+    },
+    {
+      "name": "t3_40",
+      "spice": ".meas tran t3_40 when v(ro3)=0.99 rise=40"
+    },
+    {
+      "name": "t3_41",
+      "spice": ".meas tran t3_41 when v(ro3)=0.99 rise=41"
+    },
+    {
+      "name": "t3_42",
+      "spice": ".meas tran t3_42 when v(ro3)=0.99 rise=42"
+    },
+    {
+      "name": "t4_3",
+      "spice": ".meas tran t4_3 when v(ro4)=0.99 rise=3"
+    },
+    {
+      "name": "t4_4",
+      "spice": ".meas tran t4_4 when v(ro4)=0.99 rise=4"
+    },
+    {
+      "name": "t4_5",
+      "spice": ".meas tran t4_5 when v(ro4)=0.99 rise=5"
+    },
+    {
+      "name": "t4_6",
+      "spice": ".meas tran t4_6 when v(ro4)=0.99 rise=6"
+    },
+    {
+      "name": "t4_7",
+      "spice": ".meas tran t4_7 when v(ro4)=0.99 rise=7"
+    },
+    {
+      "name": "t4_8",
+      "spice": ".meas tran t4_8 when v(ro4)=0.99 rise=8"
+    },
+    {
+      "name": "t4_9",
+      "spice": ".meas tran t4_9 when v(ro4)=0.99 rise=9"
+    },
+    {
+      "name": "t4_10",
+      "spice": ".meas tran t4_10 when v(ro4)=0.99 rise=10"
+    },
+    {
+      "name": "t4_11",
+      "spice": ".meas tran t4_11 when v(ro4)=0.99 rise=11"
+    },
+    {
+      "name": "t4_12",
+      "spice": ".meas tran t4_12 when v(ro4)=0.99 rise=12"
+    },
+    {
+      "name": "t4_13",
+      "spice": ".meas tran t4_13 when v(ro4)=0.99 rise=13"
+    },
+    {
+      "name": "t4_14",
+      "spice": ".meas tran t4_14 when v(ro4)=0.99 rise=14"
+    },
+    {
+      "name": "t4_15",
+      "spice": ".meas tran t4_15 when v(ro4)=0.99 rise=15"
+    },
+    {
+      "name": "t4_16",
+      "spice": ".meas tran t4_16 when v(ro4)=0.99 rise=16"
+    },
+    {
+      "name": "t4_17",
+      "spice": ".meas tran t4_17 when v(ro4)=0.99 rise=17"
+    },
+    {
+      "name": "t4_18",
+      "spice": ".meas tran t4_18 when v(ro4)=0.99 rise=18"
+    },
+    {
+      "name": "t4_19",
+      "spice": ".meas tran t4_19 when v(ro4)=0.99 rise=19"
+    },
+    {
+      "name": "t4_20",
+      "spice": ".meas tran t4_20 when v(ro4)=0.99 rise=20"
+    },
+    {
+      "name": "t4_21",
+      "spice": ".meas tran t4_21 when v(ro4)=0.99 rise=21"
+    },
+    {
+      "name": "t4_22",
+      "spice": ".meas tran t4_22 when v(ro4)=0.99 rise=22"
+    },
+    {
+      "name": "t4_23",
+      "spice": ".meas tran t4_23 when v(ro4)=0.99 rise=23"
+    },
+    {
+      "name": "t4_24",
+      "spice": ".meas tran t4_24 when v(ro4)=0.99 rise=24"
+    },
+    {
+      "name": "t4_25",
+      "spice": ".meas tran t4_25 when v(ro4)=0.99 rise=25"
+    },
+    {
+      "name": "t4_26",
+      "spice": ".meas tran t4_26 when v(ro4)=0.99 rise=26"
+    },
+    {
+      "name": "t4_27",
+      "spice": ".meas tran t4_27 when v(ro4)=0.99 rise=27"
+    },
+    {
+      "name": "t4_28",
+      "spice": ".meas tran t4_28 when v(ro4)=0.99 rise=28"
+    },
+    {
+      "name": "t4_29",
+      "spice": ".meas tran t4_29 when v(ro4)=0.99 rise=29"
+    },
+    {
+      "name": "t4_30",
+      "spice": ".meas tran t4_30 when v(ro4)=0.99 rise=30"
+    },
+    {
+      "name": "t4_31",
+      "spice": ".meas tran t4_31 when v(ro4)=0.99 rise=31"
+    },
+    {
+      "name": "t4_32",
+      "spice": ".meas tran t4_32 when v(ro4)=0.99 rise=32"
+    },
+    {
+      "name": "t4_33",
+      "spice": ".meas tran t4_33 when v(ro4)=0.99 rise=33"
+    },
+    {
+      "name": "t4_34",
+      "spice": ".meas tran t4_34 when v(ro4)=0.99 rise=34"
+    },
+    {
+      "name": "t4_35",
+      "spice": ".meas tran t4_35 when v(ro4)=0.99 rise=35"
+    },
+    {
+      "name": "t4_36",
+      "spice": ".meas tran t4_36 when v(ro4)=0.99 rise=36"
+    },
+    {
+      "name": "t4_37",
+      "spice": ".meas tran t4_37 when v(ro4)=0.99 rise=37"
+    },
+    {
+      "name": "t4_38",
+      "spice": ".meas tran t4_38 when v(ro4)=0.99 rise=38"
+    },
+    {
+      "name": "t4_39",
+      "spice": ".meas tran t4_39 when v(ro4)=0.99 rise=39"
+    },
+    {
+      "name": "t4_40",
+      "spice": ".meas tran t4_40 when v(ro4)=0.99 rise=40"
+    },
+    {
+      "name": "t4_41",
+      "spice": ".meas tran t4_41 when v(ro4)=0.99 rise=41"
+    },
+    {
+      "name": "t4_42",
+      "spice": ".meas tran t4_42 when v(ro4)=0.99 rise=42"
+    },
+    {
+      "name": "xo_avg",
+      "spice": ".meas tran xo_avg AVG v(xo) from=60n to=300n"
+    },
+    {
+      "name": "xo_max",
+      "spice": ".meas tran xo_max MAX v(xo) from=60n to=300n"
+    },
+    {
+      "name": "xo_min",
+      "spice": ".meas tran xo_min MIN v(xo) from=60n to=300n"
+    },
+    {
+      "name": "txo_a",
+      "spice": ".meas tran txo_a when v(xo)=0.99 rise=2"
+    },
+    {
+      "name": "txo_b",
+      "spice": ".meas tran txo_b when v(xo)=0.99 rise=50"
+    },
+    {
+      "name": "vdd_max",
+      "spice": ".meas tran vdd_max MAX v(vdd) from=20n to=300n"
+    },
+    {
+      "name": "vdd_min",
+      "spice": ".meas tran vdd_min MIN v(vdd) from=20n to=300n"
+    }
+  ],
+  "options": {
+    "timeout_s": 3000,
+    "keep_artifacts": false
+  }
+}

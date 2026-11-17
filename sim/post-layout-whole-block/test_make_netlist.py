@@ -5,12 +5,24 @@ Run directly (no pytest suite in this repo):
 
     python3 sim/post-layout-whole-block/test_make_netlist.py
 
-Also covers the pw2nd diode card rewrite and the all-card-type model check.
+Also covers the pw2nd diode card rewrite, the all-card-type model check, and
+(issue #478) the two things about the committed evidence that need no klt,
+no PDK and no GDS to verify:
+
+* the port map path follows ``-o``, so only the default output writes the
+  committed ``trng_whole.sim.ports.json``;
+* the committed ``trng_whole.sim.spice.gz`` header port order still equals
+  the committed ``trng_whole.sim.ports.json`` order.
 
 Pure Python: no klt, no GDS, no ngspice.
 """
+import contextlib
+import gzip
 import importlib.util
+import io
+import json
 import sys
+import tempfile
 import time
 from pathlib import Path
 
@@ -29,8 +41,6 @@ def raises(lines):
 
 
 def _canon(text, pins):
-    import json
-    import tempfile
     with tempfile.TemporaryDirectory() as td:
         req = Path(td) / "extract.request.json"
         req.write_text(json.dumps({"pins": ",".join(pins)}))
@@ -74,6 +84,128 @@ def test_body_rename() -> None:
         raise AssertionError("canonical-name collision not detected")
 
 
+def _stub_extract(raw_text):
+    """A ``run_extract`` replacement that writes ``raw_text`` and reads no GDS."""
+    def _run(dest):
+        dest.write_text(raw_text)
+    return _run
+
+
+def test_ports_path_follows_output() -> None:
+    """Issue #478: the port map follows -o; only the default output writes
+    the committed trng_whole.sim.ports.json.
+
+    Before this, PORTS_JSON was hardcoded and passed unconditionally, so a
+    run whose netlist went somewhere else still overwrote the committed map
+    -- on a host whose klt orders the .SUBCKT header differently
+    (klayout-tools#5534), with a port order that no longer described the
+    committed netlist.
+    """
+    committed = HERE / "trng_whole.sim.ports.json"
+    before = committed.read_bytes()
+
+    # the derivation itself, including the no-.spice-suffix edge case
+    assert mn.ports_path_for(mn.DEFAULT_OUT) == mn.PORTS_JSON, (
+        "the default output must still write the committed port map")
+    assert mn.ports_path_for(Path("/tmp/scratch.spice")) == Path("/tmp/scratch.ports.json")
+    assert mn.ports_path_for(Path("/tmp/scratch")) == Path("/tmp/scratch.ports.json")
+    assert mn.ports_path_for(Path("/tmp/d.v1/out.cir")) == Path("/tmp/d.v1/out.cir.ports.json")
+
+    # and an end-to-end `-o` run through main(), with the extractor stubbed
+    pins = ["vdd", "en", "bus_wdata[1]", "clk"]
+    raw = (".SUBCKT trng_whole vdd|vddr2 en|en2|g_en A|bus_wdata[1] clk\n"
+           "Xz1 vdd|vddr2 en|en2|g_en A|bus_wdata[1] n$1 sky130_fd_pr__nfet_01v8 W=1\n"
+           "Xz2 clk D|X$31 n$1 sky130_fd_pr__nfet_01v8 W=1\n"
+           ".ENDS trng_whole\n")
+    saved = (mn.EXTRACT_REQUEST, mn.GDS, mn.UNUSED_BY_DESIGN,
+             mn.run_extract, mn.klt_version)
+    with tempfile.TemporaryDirectory() as td:
+        td = Path(td)
+        req = td / "extract.request.json"
+        req.write_text(json.dumps({"pins": ",".join(pins)}))
+        gds = td / "stand-in.gds"
+        gds.write_bytes(b"not a GDS: only sha256_file reads it")
+        try:
+            mn.EXTRACT_REQUEST, mn.GDS = req, gds
+            mn.UNUSED_BY_DESIGN = frozenset()  # synthetic block: every port used
+            mn.run_extract = _stub_extract(raw)
+            mn.klt_version = lambda: "0.0.0+stub"
+            out = td / "scratch.spice"
+            buf = io.StringIO()
+            with contextlib.redirect_stdout(buf):
+                rc = mn.main(["-o", str(out)])
+            assert rc == 0, rc
+            assert json.loads(buf.getvalue())["port_count"] == 4
+            assert out.exists(), "the netlist did not land at -o"
+            side = td / "scratch.ports.json"
+            assert side.exists(), "the port map did not land next to -o"
+            assert not (td / "trng_whole.sim.ports.json").exists()
+            got = json.loads(side.read_text())
+            assert [e["canonical"] for e in got["ports"]] == [
+                "vdd", "en", "bus_wdata[1]", "clk"], got
+        finally:
+            (mn.EXTRACT_REQUEST, mn.GDS, mn.UNUSED_BY_DESIGN,
+             mn.run_extract, mn.klt_version) = saved
+            # restore in `finally`, not after: the pre-fix code overwrites
+            # the tracked map INSIDE main(), so an assertion above can fail
+            # with the committed evidence already damaged. A failing test
+            # must never leave a tracked file rewritten.
+            damaged = committed.read_bytes() != before
+            if damaged:
+                committed.write_bytes(before)
+
+    assert not damaged, (
+        "an -o-directed run rewrote the committed trng_whole.sim.ports.json "
+        "(restored)")
+
+
+def _committed_header_ports() -> list:
+    """The port tokens of the committed netlist's .SUBCKT header, in order."""
+    text = gzip.decompress((HERE / "trng_whole.sim.spice.gz").read_bytes()).decode()
+    lines = text.split("\n")
+    assert lines[0].startswith(".SUBCKT trng_whole "), lines[0][:40]
+    logical, i = [lines[0]], 1
+    while lines[i].startswith("+"):
+        logical.append(lines[i])
+        i += 1
+    joined = " ".join(ln[2:] if ln.startswith("+") else ln for ln in logical)
+    return joined.split()[2:]   # drop ".SUBCKT" and "trng_whole"
+
+
+def test_committed_header_matches_ports_json() -> None:
+    """Issue #478: the committed netlist and port map still agree.
+
+    trng_whole.sim.ports.json's own comment declares "order = .subckt
+    trng_whole port order", so the two committed files are a pair: the map
+    describes THAT netlist's header. Nothing checked that they had not
+    drifted apart, although the check needs no klt, PDK or GDS -- and the
+    way they would drift apart (a stray `-o` run under a klt build that
+    orders the header differently, klayout-tools#5534) rewrote exactly one
+    of the two.
+    """
+    header = _committed_header_ports()
+    doc = json.loads((HERE / "trng_whole.sim.ports.json").read_text())
+    canonical = [mn._normalise_name(e["canonical"]) for e in doc["ports"]]
+    assert len(header) == 123, len(header)
+    assert len(canonical) == 123, len(canonical)
+    assert set(header) == set(canonical), (
+        "committed netlist header and port map describe different port sets: "
+        f"{sorted(set(header) ^ set(canonical))[:5]}")
+    assert header == canonical, (
+        "committed netlist header order != committed ports.json order; first "
+        "divergence at index "
+        f"{next(i for i, (a, b) in enumerate(zip(header, canonical)) if a != b)}")
+    # negative control: the comparison is order-sensitive, not a set compare
+    shuffled = canonical[1:] + canonical[:1]
+    assert set(shuffled) == set(header) and shuffled != header
+
+    # every cluster carries exactly one canonical name as a component label
+    for e in doc["ports"]:
+        parts = e["cluster"].split("|")
+        assert e["canonical"] in parts, e
+    assert len({e["canonical"] for e in doc["ports"]}) == 123
+
+
 def main() -> int:
     # a `$` name alone is not a collision (old guard flagged it)
     assert not raises(["XM1 A$1 B$2 vss nfet", "XM2 A$1 vdd pfet"])
@@ -108,6 +240,8 @@ def main() -> int:
         "diode_pw2nd_05v5 A=1P P=2U", "sky130_fd_pr__diode_pw2nd_05v5 area=1P perim=2U"
     ).replace("res_missing", "sky130_fd_pr__nfet_01v8"), defined)
     test_body_rename()
+    test_ports_path_follows_output()
+    test_committed_header_matches_ports_json()
     print("test_make_netlist OK")
     return 0
 

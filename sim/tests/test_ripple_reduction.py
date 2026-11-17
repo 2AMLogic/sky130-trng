@@ -7,6 +7,7 @@ quiet on data that is not, independent of any SPICE run.
 
     python3 sim/tests/test_ripple_reduction.py
 """
+import json
 import math
 import os
 import sys
@@ -15,7 +16,10 @@ import unittest
 HERE = os.path.dirname(os.path.abspath(__file__))
 _p = os.path.join(HERE, "..", "ro-array-supply-perturbation", "ripple.py")
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(HERE, "..", "bin"))
 from loadmod import load_module  # noqa: E402
+from recorddiff import field_diff  # noqa: E402
+import lock_proximity as LP  # noqa: E402
 rp = load_module("ripple", _p)
 
 
@@ -68,10 +72,31 @@ class Tests(unittest.TestCase):
         c = train(5.2e-9, t0=9e-9)                 # 4% apart: slips ~1.5 cycles
         self.assertGreater(abs(rp.pair_lock(a, c)[2]), 1.0)
 
-    def test_closeness(self):
+    def test_closeness_is_the_shared_dr0005_rule(self):
+        """Issue #467: this reducer used an order-dependent form of its own.
+
+        The rule itself is pinned in sim/tests/test_lock_proximity.py; what is
+        asserted here is that ripple.py uses it, and that the value it now
+        reports is DR-0005's figure whichever way round the pair arrives --
+        which is how the stored `close_dr5_pct` came to carry the other
+        convention (row_metrics enumerates pairs in ring-index order, not
+        period order).
+        """
+        self.assertIs(rp.closeness, LP.closeness)
+        self.assertIs(rp.DR5_RATIOS, LP.DR5_RATIOS)
         d, p, q = rp.closeness(5e-9, 3.75e-9, rp.DR5_RATIOS)     # 4/3 exactly
         self.assertAlmostEqual(d, 0.0, 12)
         self.assertEqual((p, q), (4, 3))
+        self.assertEqual(rp.closeness(5e-9, 4.13e-9, rp.DR5_RATIOS),
+                         rp.closeness(4.13e-9, 5e-9, rp.DR5_RATIOS))
+
+    def test_row_metrics_pair_closeness_does_not_depend_on_ring_order(self):
+        """The end-to-end property, at the level the records are written from."""
+        T = [5.4e-9, 4.8e-9, 5.0e-9, 5.2e-9]                      # deliberately not ascending
+        fwd = self._metrics([train(t) for t in T], [train(t) for t in T])
+        rev = self._metrics([train(t) for t in reversed(T)], [train(t) for t in reversed(T)])
+        self.assertEqual(sorted(p["close_dr5_pct"] for p in fwd["pairs"]),
+                         sorted(p["close_dr5_pct"] for p in rev["pairs"]))
 
     def _metrics(self, edges, clean, f_rip=None, xo=0.8, vnom=1.62, dv=0.0):
         return rp.row_metrics(edges, clean, vnom, dv, xo, f_rip)
@@ -294,11 +319,60 @@ class Tests(unittest.TestCase):
         self.assertIn("< 0.0998 %", side["-"]["bracket_eff"])   # the +0.1 % row lands on the eff - side
         self.assertIn("no point outside", side["+"]["bracket_eff"])   # +0.25 % is within resolution
 
-    def test_legacy_records_replay_unchanged(self):
-        # the #200 records must keep replaying from their committed responses
-        for rid in ("20261009-000459-28d3690", "20261009-000500-28d3690"):
-            p = os.path.join(rp.REPO, "sim", rp.SLUG, "records", rid + ".json")
-            self.assertEqual(rp.check(p), 0, rid)
+    #: superseded record id -> the record that corrects it (issue #467).
+    SUPERSEDED = {
+        "20261009-000459-28d3690": "20261113-150541-fb302c35",
+        "20261009-000500-28d3690": "20261113-150542-fb302c35",
+        "20261012-111244-8100a6b": "20261113-150544-fb302c35",
+        "20261012-111245-8100a6b": "20261113-150546-fb302c35",
+    }
+
+    #: the only fields the DR-0005 convention correction may move.
+    LOCK_FIELDS = {"rows[].metrics.pairs[].close_dr5_pct", "rows[].metrics.pairs[].close_dr5_ratio",
+                   "rows[].metrics.pairs[].close_any_pct", "rows[].metrics.pairs[].close_any_ratio",
+                   "rows[].metrics.pairs[].clean_close_dr5_pct"}
+
+    @staticmethod
+    def _record(rid):
+        return os.path.join(rp.REPO, "sim", rp.SLUG, "records", rid + ".json")
+
+    def test_superseding_records_replay_from_their_committed_responses(self):
+        for old, new in self.SUPERSEDED.items():
+            with self.subTest(record=new):
+                self.assertEqual(rp.check(self._record(new)), 0, new)
+                rec = json.load(open(self._record(new)))
+                self.assertEqual(rec["supersedes"], old)
+
+    def test_correction_moves_only_the_lock_proximity_fields(self):
+        """The #200 records' re-reduction differs from what is stored ONLY in the
+        DR-0005 lock-proximity fields -- and does differ in at least one of them.
+
+        This replaces the old `test_legacy_records_replay_unchanged`: those
+        records are append-only evidence carrying the pre-#467, order-dependent
+        convention, so their own `--check` now reports DIFFERS by design.  What
+        must still hold is that the correction reached nothing else.
+        """
+        for old in self.SUPERSEDED:
+            with self.subTest(record=old):
+                rec = json.load(open(self._record(old)))
+                cdir = os.path.join(rp.REPO, "sim", rp.SLUG, "corners", rec["record_id"])
+                _cn, rows, summ = rp.rereduce(rec, cdir)
+                rt = json.loads(json.dumps(rows, default=str))
+                st = json.loads(json.dumps(summ, default=str))
+                diff = set(field_diff(rt, rec["rows"], rp._replay_equal, "rows")) | \
+                    set(field_diff(st, json.loads(json.dumps(rec["summary"], default=str)),
+                                   rp._replay_equal, "summary"))
+                self.assertTrue(diff, f"{old}: nothing changed; the correction did not reach this record")
+                self.assertEqual(diff - self.LOCK_FIELDS, set(),
+                                 f"{old}: the correction moved fields outside the lock-proximity set")
+
+    def test_a_superseded_record_no_longer_replays(self):
+        """Stated plainly so it is not mistaken for a regression: `--check` on a
+        superseded record exits 1, because the committed record carries the old
+        convention and is never edited (sim/README.md's append-only rule)."""
+        for old in self.SUPERSEDED:
+            with self.subTest(record=old):
+                self.assertEqual(rp.check(self._record(old)), 1, old)
 
 
 if __name__ == "__main__":

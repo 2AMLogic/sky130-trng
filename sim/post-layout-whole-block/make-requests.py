@@ -39,7 +39,6 @@ Nothing here simulates anything.
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import re
 import shutil
@@ -49,13 +48,12 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[1]
 sys.path.insert(0, str(REPO / "layout" / "bin"))
-from _hashing import sha256_file  # noqa: E402
+from _hashing import sha256_file, sha256_text  # noqa: E402
 sys.path.insert(0, str(HERE))
 import program as P  # noqa: E402
 
 NETLIST_BODY = HERE / "trng_whole.sim.spice"
 NETLIST_GZ = HERE / "trng_whole.sim.spice.gz"
-OUTROOT = HERE / "corners"
 
 LIB = "libs.tech/combined/sky130.lib.spice"
 PDK = "sky130A"
@@ -74,6 +72,13 @@ GRID_TIMEOUT_S = 21600
 #: 1.8 V is the sky130 1.8 V device rating; VIH(1.62 V) = 1.05 V accepts it,
 #: and the supply sources themselves -- not these cards -- carry the corner)
 VIH = 1.8
+
+#: PWL edge width for every driven input change (ns) -- the same 100 ps every
+#: PULSE card in this deck family uses. Issue #488: it must stay >= 0.1, since
+#: pwl_card formats breakpoint times as f"{t:.1f}n" and a narrower edge rounds
+#: the hold point and the change onto the SAME timestamp, which is a duplicate
+#: breakpoint rather than an edge. make-gate-model.py's PWL_EDGE_NS is its twin.
+EDGE_NS = 0.1
 
 #: current-window current/power integration windows (ns): W1 rings-running /
 #: digital reset-held (clk has not started; rst_n low until 300 ns); W2 active
@@ -165,10 +170,6 @@ def _device_blocks(text: str) -> list[tuple[str, set[str]]]:
     return res
 
 
-def _sha256_text(text: str) -> str:
-    return hashlib.sha256(text.encode()).hexdigest()
-
-
 def partition_check() -> dict:
     """Check that analog + digital partitions reproduce the flat whole extract.
 
@@ -208,8 +209,8 @@ def partition_check() -> dict:
     expected = sorted(n for n, v in bs.items() if v["dir"] in ("analog->digital", "tb->both"))
     assert shared == expected, f"shared nets {shared} != boundary {expected}"
     return {
-        "flat_whole_netlist_sha256": _sha256_text(flat),
-        "analog_partition_sha256": _sha256_text(ana),
+        "flat_whole_netlist_sha256": sha256_text(flat),
+        "analog_partition_sha256": sha256_text(ana),
         "digital_gate_netlist_sha256": sha256_file(REPO / "layout" / "trng_digital" / "trng_digital.routed.v"),
         "total_instances": len(fb),
         "analog_transistors": n_tr(ab),
@@ -252,17 +253,32 @@ def pwl_card(sig: str, net: str, points: list[tuple[float, float]]) -> str:
 
 
 def input_cards(cycles: list[dict], n_cycles: int) -> list[str]:
-    """One PWL card per driven input pin; value changes at t_edge+SKEW."""
+    """One PWL card per driven input pin; value holds, then switches over
+    EDGE_NS ending at t_edge+SKEW."""
     inputs = P.cycle_inputs(cycles)
     cards = []
 
     def points(get):
-        pts = [(0.0, get(0))]
+        """PWL breakpoints that HOLD between changes, with an EDGE_NS edge.
+
+        A PWL source interpolates **linearly** between its breakpoints, so a
+        points list carrying only the change instants makes every input ramp
+        across the whole hold interval instead of switching at it (issue #488).
+        Measured on this deck before the fix: ``bus_re`` emitted as
+        ``PWL(0.0n 1.800 640.0n 0.000 970.0n 0.000)`` sat at 0.928 V at 310 ns,
+        and across the full 75-cycle grid program 344 of 3000 (driven input x
+        capture point) samples were more than 10 % off a rail, the worst at
+        0.905 V -- essentially mid-rail. So each change gets a hold point one
+        EDGE_NS before it; make-gate-model.py:stimulus_cards does the same.
+        """
+        pts = [(0.0, float(get(0)))]
         for k in range(1, n_cycles):
             prev, cur = get(k - 1), get(k)
             if cur != prev:
-                pts.append((P.t_edge_ns(k) + P.SKEW_NS, float(cur)))
-        pts.append((P.t_stop_ns(cycles), get(n_cycles - 1)))
+                t_change = P.t_edge_ns(k) + P.SKEW_NS
+                pts.append((t_change - EDGE_NS, float(prev)))  # hold
+                pts.append((t_change, float(cur)))             # edge
+        pts.append((P.t_stop_ns(cycles), float(get(n_cycles - 1))))
         return pts
 
     for bit in range(4):
