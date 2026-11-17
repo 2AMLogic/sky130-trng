@@ -36,6 +36,7 @@ import argparse
 import json
 import re
 import sys
+from collections import Counter
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -102,6 +103,22 @@ def compare(report: dict, plan: dict) -> dict:
             f"report carries {n_meas} measurements, plan.json declares "
             f"{int(plan['measurement_count'])}: a measurement the deck did "
             f"not produce must refuse the comparison, not shrink it")
+
+    # completeness is loud, by name too: the checks below all read the
+    # deduplicated dict, so a repeated name displaces the entry it
+    # duplicates -- the count guard above (taken from the list length)
+    # cannot see that, and the displaced measurement's check is silently
+    # dropped while the verdict stays pass.
+    if len(measured) != int(plan["measurement_count"]):
+        duplicates = sorted(name for name, n in
+                            Counter(m["name"] for m in corner["measurements"]).items()
+                            if n > 1)
+        raise SystemExit(
+            f"report carries {len(measured)} distinct measurement names in "
+            f"{n_meas} entries, plan.json declares "
+            f"{int(plan['measurement_count'])}: duplicate measurement "
+            f"name(s) {duplicates} displace the entries they repeat, "
+            f"refusing")
 
     # the oracle: the FULL program replayed through the normative model. The
     # truncated program is a strict prefix of it (program.build_program(limit=k)
