@@ -402,6 +402,9 @@ jobs:
       - name: sim/tests/test_evidence_record_artifacts.py (issues #273/#276/#277 artifact collisions, reserved summary keys, bundle publication integrity)
         run: python3 sim/tests/test_evidence_record_artifacts.py
 
+      - name: sim/tests/test_collision_cleanup.py (issue #525 corners/<rid>/ collision cleanup at the four mint_record emit sites -- the rmtree-scope regression the #515 static guard cannot see; det-leg shared corners/{store_rid}/ bundle preservation included)
+        run: python3 sim/tests/test_collision_cleanup.py
+
       - name: sim/tests/test_evidence_paths.py (issue #465 shared evidence path-hygiene rule + no per-harness re-fork)
         run: python3 sim/tests/test_evidence_paths.py
 
