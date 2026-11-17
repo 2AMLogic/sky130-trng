@@ -44,7 +44,6 @@ Issues currently being built (`loom:building`).
 - **#381**: verify-whole: adapt the whole-block harness to klayout-tools 0.8.0 VNB handling
 - **#514**: signoff/README.md's t1-report regeneration command carries no klt version pin, so a host klt silently renders a wrong build block
 - **#523**: Finish PDR-0001's deferred follow-up: generate-agents-md.sh still fails with a doubled .loom/ path
-- **#525**: Four more reducers still hand-roll the record write tail outside mint_record/_publish_bundle
 
 ## PRs Awaiting Review
 
@@ -78,7 +77,6 @@ Issues carrying `loom:curated`.
 - **#431**: DR-0017 follow-up: analog-chain-only feasibility probe, then gate-level co-simulation generator and reducer for the whole-block PVT matrix *(curated)*
 - **#460**: Replace raw xschem call and duplicated post-processing in design/netlist.py with klt netlist *(curated)*
 - **#514**: signoff/README.md's t1-report regeneration command carries no klt version pin, so a host klt silently renders a wrong build block *(curated)*
-- **#525**: Four more reducers still hand-roll the record write tail outside mint_record/_publish_bundle *(curated)*
 
 ## Proposed (Architect / Hermit)
 
@@ -103,10 +101,10 @@ Issues carrying `loom:curated`.
 | Very important | 0 |
 | Important | 6 |
 | Ready (`loom:issue`) | 2 |
-| In Progress (`loom:building`) | 6 |
+| In Progress (`loom:building`) | 5 |
 | PRs awaiting review | 0 |
 | Approved PRs awaiting merge | 4 |
-| Curated | 14 |
+| Curated | 13 |
 | Architect / Hermit proposals | 7 |
 | Active epics | 2 |
 <!-- guide:plan-body:end -->
