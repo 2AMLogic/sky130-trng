@@ -714,8 +714,28 @@ def emit_record(reqdir, ctl_rid):
     if crec.get("kind") != "controls" or not crec.get("pass"):
         raise SystemExit("error: controls record is not a PASSing controls record; the full grid may not be recorded")
     for k, f in (("generator_sha256", "campaign.py"), ("aging_sha256", "aging.py")):
-        if crec["provenance"][k] != aging.sha256_file(SLUGDIR / f):
-            raise SystemExit(f"error: {f} changed since the controls record {ctl_rid}; re-run the controls")
+        current = aging.sha256_file(SLUGDIR / f)
+        if crec["provenance"][k] != current:
+            # Issue #498: refuse on exactly the same comparison as before, but tell the
+            # reader what actually discriminates a bytes-only refactor from a behaviour
+            # change instead of prescribing a controls re-run for both.  No digest literal
+            # and no commit sha here: both digests are derived, and aging.py's bytes have
+            # moved by pure refactor before (#455) and will move again (#487).
+            raise SystemExit(
+                f"error: {f} bytes differ from the digest pinned by the controls record {ctl_rid}\n"
+                f"  pinned by {ctl_rid}: {crec['provenance'][k]}\n"
+                f"  current {f}: {current}\n"
+                "A byte difference does not by itself mean the generator's behaviour changed: a pure\n"
+                "refactor (e.g. re-exporting a shared sha256 helper) moves the file's bytes with the\n"
+                "behaviour intact. Two checks discriminate the cases:\n"
+                "  - sensitivity.py --check RECORD.json replays a committed record from its own raw\n"
+                "    responses and proves the netlists still regenerate byte-identically from the\n"
+                "    committed plans; if they do, only the bytes moved -- see 'Controls-record aging.py\n"
+                "    pin history' in this study's README.md for the recorded refactor history; no\n"
+                "    controls re-run is needed for a bytes-only move.\n"
+                "  - layout/test_hashing.py is the behavioural guard on the shared digest helper.\n"
+                "If the behaviour really did change, re-run the controls campaign (--emit-controls)\n"
+                "and cite the new controls record here.")
     chunks, missing = load_reqdir(reqdir)
     for nm, _, why in missing:
         print(f"no usable response for {nm}: {why}", file=sys.stderr)
