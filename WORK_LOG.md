@@ -8,6 +8,8 @@ Chronological record of recently merged pull requests and closed issues.
 
 ### 2026-11-17
 
+- **Issue #525** (closed): Four more reducers still hand-roll the record write tail outside mint_record/_publish_bundle
+- **PR #578**: refactor(sim): mint the four remaining reducers through mint_record
 - **Issue #498** (closed): ro-vth-drift-sensitivity: controls record's aging_sha256 pin invalidated by the #487 digest refactor
 - **PR #517**: fix(sim): make the ro-vth-drift controls-pin refusal discriminate bytes from behaviour
 - **Issue #576** (closed): Make the .meas bound-scan visit guard per-card, not per-request
