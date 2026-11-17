@@ -27,7 +27,6 @@ _None._
 - **#372**: Move the layout klt pin (pdk-nightly.yml, pdk.json, REPRODUCE.md) to klayout-tools 0.8.0
 - **#383**: pdk-nightly is red
 - **#431**: DR-0017 follow-up: analog-chain-only feasibility probe, then gate-level co-simulation generator and reducer for the whole-block PVT matrix
-- **#542**: CI: give every PR one always-reporting verdict check, so main can require it (path-filtered ci.yml has none)
 
 ## Ready
 
@@ -35,8 +34,6 @@ Human-approved issues ready for implementation (`loom:issue`).
 
 - **#230**: CI: guard that every test_*.py is wired into a CI workflow and path filter
 - **#314**: Re-pin open_pdks to f6eeac7 (ciel) — fleet retires volare c6d73a3
-- **#525**: Four more reducers still hand-roll the record write tail outside mint_record/_publish_bundle
-- **#555**: test: make the .meas bound scanner in test_make_requests.py unit-agnostic so a non-ns card cannot be silently skipped
 
 ## In Progress
 
@@ -45,11 +42,9 @@ Issues currently being built (`loom:building`).
 - **#221**: Decision record request: local mismatch can cap tt raw-bit H below DR-0004's 0.5 floor; adjacent rings approach 1:1
 - **#371**: Regenerate composite layout cells, trng_digital/trng_whole and pex libraries under klayout-tools 0.8.0
 - **#381**: verify-whole: adapt the whole-block harness to klayout-tools 0.8.0 VNB handling
-- **#496**: Harden the gate-model reduction against silent-input defects (four latent paths from #486)
-- **#498**: ro-vth-drift-sensitivity: controls record's aging_sha256 pin invalidated by the #487 digest refactor
 - **#514**: signoff/README.md's t1-report regeneration command carries no klt version pin, so a host klt silently renders a wrong build block
 - **#523**: Finish PDR-0001's deferred follow-up: generate-agents-md.sh still fails with a doubled .loom/ path
-- **#542**: CI: give every PR one always-reporting verdict check, so main can require it (path-filtered ci.yml has none)
+- **#525**: Four more reducers still hand-roll the record write tail outside mint_record/_publish_bundle
 
 ## PRs Awaiting Review
 
@@ -82,12 +77,8 @@ Issues carrying `loom:curated`.
 - **#381**: verify-whole: adapt the whole-block harness to klayout-tools 0.8.0 VNB handling *(curated)*
 - **#431**: DR-0017 follow-up: analog-chain-only feasibility probe, then gate-level co-simulation generator and reducer for the whole-block PVT matrix *(curated)*
 - **#460**: Replace raw xschem call and duplicated post-processing in design/netlist.py with klt netlist *(curated)*
-- **#496**: Harden the gate-model reduction against silent-input defects (four latent paths from #486) *(curated)*
-- **#498**: ro-vth-drift-sensitivity: controls record's aging_sha256 pin invalidated by the #487 digest refactor *(curated)*
 - **#514**: signoff/README.md's t1-report regeneration command carries no klt version pin, so a host klt silently renders a wrong build block *(curated)*
 - **#525**: Four more reducers still hand-roll the record write tail outside mint_record/_publish_bundle *(curated)*
-- **#542**: CI: give every PR one always-reporting verdict check, so main can require it (path-filtered ci.yml has none) *(curated)*
-- **#555**: test: make the .meas bound scanner in test_make_requests.py unit-agnostic so a non-ns card cannot be silently skipped *(curated)*
 
 ## Proposed (Architect / Hermit)
 
@@ -110,12 +101,12 @@ Issues carrying `loom:curated`.
 |------|-------|
 | Operator merge-risk holds | 3 |
 | Very important | 0 |
-| Important | 7 |
-| Ready (`loom:issue`) | 4 |
-| In Progress (`loom:building`) | 8 |
+| Important | 6 |
+| Ready (`loom:issue`) | 2 |
+| In Progress (`loom:building`) | 6 |
 | PRs awaiting review | 0 |
 | Approved PRs awaiting merge | 4 |
-| Curated | 18 |
+| Curated | 14 |
 | Architect / Hermit proposals | 7 |
 | Active epics | 2 |
 <!-- guide:plan-body:end -->
