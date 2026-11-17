@@ -47,6 +47,16 @@ Issue #507 adds three assertions of its own:
   ``startup-probe-batch``, while the committed batch pair still carries
   14400 / 7000 (drift 2, a checked divergence, not an undocumented mismatch).
 
+Issue #555 hardens the #507 bound scan itself: the ``AT=``/``TO=`` pattern is
+unit-agnostic and the unit suffix is asserted to be ``n`` inside
+``over_stop_violations()`` -- the same fail-loud posture ``tran_stop_ns()``
+already applies to the ``.tran`` stop -- and every request whose measurements
+carry an ``AT=``/``TO=`` bound must visit at least one itself, so a card
+emitted in ``u``/``p``/bare/any other unit turns the tests red instead of
+being silently skipped by an ns-only pattern. The negative control
+``test_bound_scan_flags_non_ns_units`` pins that on synthetic requests, no
+generator edit needed.
+
 Pure Python: no klt, no PDK, no ngspice.
 """
 from __future__ import annotations
@@ -218,8 +228,14 @@ def test_grid_timeouts_unchanged() -> None:
 # Issue #507: no measurement may probe past its own request's .tran stop
 # ---------------------------------------------------------------------------
 
-#: a `.meas` time bound in this deck family's card text: `AT=310.0n`, `TO=250n`
-_BOUND_RES = {key: re.compile(rf"\b{key}=([\d.]+)n\b") for key in ("AT", "TO")}
+#: a `.meas` time bound in this deck family's card text: `AT=310.0n`, `TO=250n`.
+#: Unit-agnostic since issue #555: the value and its unit suffix are captured
+#: separately and the suffix asserted in `over_stop_violations()`, so a bound
+#: in any other unit (or a bare number with no unit at all) is visited and
+#: *flagged* -- never silently skipped the way the old ns-only pattern
+#: (`([\d.]+)n`) skipped it while the cross-request totals stayed non-zero.
+_BOUND_RES = {key: re.compile(rf"\b{key}=\s*([\d.]+)([a-zA-Z]*)\b")
+              for key in ("AT", "TO")}
 
 #: the committed startup-probe requests' known-stale over-`t_stop` cards
 #: (issue #507's ledger). They predate `measurement_cards`'s `add()` clip and
@@ -280,7 +296,10 @@ def over_stop_violations(request: dict) -> tuple[list[str], int, int]:
 
     ``AT=`` is the instant a ``FIND`` samples at; ``TO=`` is the end of an
     ``AVG``/``INTEG`` window (``w2`` ends at ``t_stop - TS_NS``). ``WHEN``
-    cards carry neither and are skipped by construction.
+    cards carry neither and are skipped by construction. The unit suffix is
+    asserted to be ``n`` (issue #555): the generator only emits ns, so any
+    other unit is generator drift the scan must flag rather than skip --
+    same posture as ``tran_stop_ns()`` on the stop side.
     """
     stop = tran_stop_ns(request)
     over: list[str] = []
@@ -290,6 +309,9 @@ def over_stop_violations(request: dict) -> tuple[list[str], int, int]:
             mm = rx.search(m["spice"])
             if mm is None:
                 continue
+            assert mm.group(2) == "n", (
+                f"{m['name']}: bound {mm.group(0)!r} is not in ns -- the "
+                "bound scan must flag units it cannot check, not skip them")
             if key == "AT":
                 n_at += 1
             else:
@@ -305,8 +327,12 @@ def test_generated_measurements_within_tran_stop() -> None:
 
     All four ``--set`` groups, including the two short probes (100 ns and
     500 ns) whose stop is far tighter than the startup probe's 970 ns. The
-    visit counts are asserted non-zero so a drifted ``_BOUND_RES`` cannot make
-    the scan pass vacuously.
+    cross-request visit counts are asserted non-zero so a drifted
+    ``_BOUND_RES`` cannot make the scan pass vacuously, and -- issue #555 --
+    every request whose measurements carry an ``AT=``/``TO=`` bound must
+    visit at least one itself, so a single skipped card cannot hide behind
+    the hundreds of visited ones. Requests whose measurements are all
+    ``WHEN`` cards carry neither bound and are exempt.
     """
     reqs = generated_requests()
     assert tuple(n for n, _ in reqs) == _GENERATED_NAMES, [n for n, _ in reqs]
@@ -318,6 +344,10 @@ def test_generated_measurements_within_tran_stop() -> None:
         assert not over, (
             name, f"{len(over)} emitted measurements probe past the request's own "
             f".tran stop {tran_stop_ns(d)}n", sorted(over))
+        if any(re.search(r"\b(?:AT|TO)=", m["spice"]) for m in d["measurements"]):
+            assert n_at + n_to > 0, (
+                name, "the request carries AT=/TO= bounds but the scan "
+                "visited none -- its unit pattern has drifted")
     assert n_at_total > 0 and n_to_total > 0, (
         "the bound scan visited no AT=/TO= token -- it is vacuous",
         n_at_total, n_to_total)
@@ -370,6 +400,62 @@ def test_startup_probe_timeouts_pinned() -> None:
     assert committed_b["batch"]["poll_timeout_s"] == 7000, committed_b["batch"]
 
 
+# ---------------------------------------------------------------------------
+# Issue #555: the bound scan must fail loud on a unit it cannot check
+# ---------------------------------------------------------------------------
+
+def test_bound_scan_flags_non_ns_units() -> None:
+    """Issue #555 negative control: a non-``n`` unit suffix turns the scan red.
+
+    The pre-#555 ns-only ``_BOUND_RES`` silently skipped ``AT=1.5u``-style
+    cards -- one skipped card among hundreds of visited ones kept the
+    cross-request non-vacuity totals non-zero, so
+    ``test_generated_measurements_within_tran_stop`` kept passing while no
+    longer covering that card. These fixtures call ``over_stop_violations()``
+    directly on synthetic requests, so the fail-loud posture is pinned
+    permanently without editing the generator or any committed request.
+    """
+    def req_with(*cards: str) -> dict:
+        return {"analysis": {"args": "20p 970n"},
+                "measurements": [{"name": "m", "spice": c} for c in cards]}
+
+    # ns bounds still scan -- including whitespace after `=`, which the old
+    # pattern would also have missed
+    over, n_at, n_to = over_stop_violations(
+        req_with(".meas tran m FIND v(out) AT=310.0n"))
+    assert (over, n_at, n_to) == ([], 1, 0), (over, n_at, n_to)
+    over, n_at, n_to = over_stop_violations(
+        req_with(".meas tran m AVG i(Vvdd) FROM=20n TO= 90.0n"))
+    assert (over, n_at, n_to) == ([], 0, 1), (over, n_at, n_to)
+
+    # the check itself still fires on an ns card past the stop
+    over, n_at, n_to = over_stop_violations(
+        req_with(".meas tran m FIND v(out) AT=3970.0n"))
+    assert over == ["m"] and n_at == 1, (over, n_at, n_to)
+
+    # any other unit -- ``u``/``p``, a multi-letter spelling, or a bare number
+    # with no unit at all (what the generator's bare-substitution forms would
+    # emit if someone dropped their pre-formatted `n`) -- is flagged, not
+    # skipped
+    for bad in ("AT=1.5u", "AT=310p", "AT=310ns", "AT=310",
+                "TO=2u", "TO=90.0ns"):
+        card = (f".meas tran m FIND v(out) {bad}" if bad.startswith("AT=")
+                else f".meas tran m AVG i(Vvdd) FROM=20n {bad}")
+        try:
+            over_stop_violations(req_with(card))
+        except AssertionError:
+            continue
+        raise AssertionError(
+            f"bound {bad!r} was silently skipped instead of flagged -- the "
+            "bound scan regressed to ns-only matching")
+
+    # a WHEN card carries neither AT= nor TO=; the scan visits nothing but
+    # must not raise on it (exempt from the per-request visit check)
+    over, n_at, n_to = over_stop_violations(
+        req_with(".meas tran m WHEN v(out_valid)=1.4 RISE=1"))
+    assert (over, n_at, n_to) == ([], 0, 0), (over, n_at, n_to)
+
+
 def main() -> int:
     test_capture_points_sit_at_a_rail()
     test_change_emits_hold_then_edge()
@@ -378,6 +464,7 @@ def main() -> int:
     test_generated_measurements_within_tran_stop()
     test_committed_request_ledger()
     test_startup_probe_timeouts_pinned()
+    test_bound_scan_flags_non_ns_units()
     print("test_make_requests OK")
     return 0
 
