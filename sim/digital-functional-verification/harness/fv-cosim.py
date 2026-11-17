@@ -58,7 +58,6 @@ HOME = Path.home().resolve()
 sys.path.insert(0, str(REPO_ROOT / "digital"))
 sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
 sys.path.insert(0, str(REPO_ROOT / "layout" / "bin"))
-sys.path.insert(0, str(REPO_ROOT / "sim" / "tests"))
 from _hashing import sha256_file  # noqa: E402
 
 from evidence_record import mint_behavioral_record  # noqa: E402

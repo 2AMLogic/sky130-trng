@@ -45,7 +45,6 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO_ROOT))
 sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
-sys.path.insert(0, str(REPO_ROOT / "sim" / "tests"))
 from digital.model.conditioner import Crc32Conditioner  # noqa: E402
 from digital.model.params import COND_BLOCK_BITS, H_DESIGN  # noqa: E402
 from evidence_record import mint_record, new_record_id  # noqa: E402

@@ -49,11 +49,12 @@ ROUTED_V = REPO / "layout" / "trng_digital" / "trng_digital.routed.v"
 #: the committed manifest of the recorded full-program run
 COMMITTED_MANIFEST = BLOCK / "corners" / "gate-model-full" / "gate-model.manifest.json"
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(REPO, "sim", "bin"))
 from loadmod import load_module  # noqa: E402
 
 G = load_module("make_gate_model", GENERATOR)
 MR = load_module("make_requests_for_gate_model", BLOCK / "make-requests.py")
+CMP = load_module("compare_gate_model", BLOCK / "analysis" / "compare-gate-model.py")
 
 
 # --------------------------------------------------------------------------
@@ -61,7 +62,10 @@ MR = load_module("make_requests_for_gate_model", BLOCK / "make-requests.py")
 # exactly like the real deck (same group nesting, same attribute spellings).
 # --------------------------------------------------------------------------
 
-def liberty(cells: str, threshold: str = "50.000000000") -> str:
+def liberty(cells: str, threshold: str = "50.000000000",
+            templates: str | None = None) -> str:
+    if templates is None:
+        templates = GOOD_TEMPLATES
     return f"""library ("synthetic_hd") {{
     delay_model : "table_lookup";
     time_unit : "1ns";
@@ -69,8 +73,35 @@ def liberty(cells: str, threshold: str = "50.000000000") -> str:
     capacitive_load_unit(1.0000000000, "pf");
     input_threshold_pct_fall : {threshold};
     input_threshold_pct_rise : {threshold};
-{cells}
-}}
+{templates}{cells}}}
+"""
+
+
+#: the library-level LUT templates the synthetic deck's NLDM tables sit on,
+#: shaped like the real deck's. The TRAP is deliberate: power_inputs_1 is a
+#: ``power_lut_template`` (never read for delays) appearing BEFORE del_2_2
+#: with a DIFFERENT variable_1, exactly like ``power_inputs_1`` precedes
+#: ``del_1_7_7`` in sky130_fd_sc_hd__tt_025C_1v80.lib. Library-level
+#: attribute lines fold into the flat ``header`` dict with ``setdefault``,
+#: so header["variable_1"] is power_inputs_1's -- a generator that validated
+#: its delay tables against the flat header would refuse this known-good
+#: deck instead of building it.
+GOOD_TEMPLATES = """    power_lut_template ("power_inputs_1") {
+        variable_1 : "input_transition_time";
+        variable_2 : "total_output_net_capacitance";
+    }
+    lu_table_template ("del_2_2") {
+        variable_1 : "input_net_transition";
+        variable_2 : "total_output_net_capacitance";
+    }
+"""
+
+#: the same template with its two axes transposed -- what at(slew, load)
+#: would silently read back-to-front
+TRANSPOSED_TEMPLATES = """    lu_table_template ("del_2_2") {
+        variable_1 : "total_output_net_capacitance";
+        variable_2 : "input_net_transition";
+    }
 """
 
 
@@ -247,8 +278,8 @@ def build(tmp: Path, verilog: str = SYNTH_V, lib: str = SYNTH_LIB, **kw):
     """Parse + build a gate model from a synthetic pair, in process."""
     v, l = write_pair(tmp, verilog, lib)
     design = G.parse_verilog(v)
-    blocks, header = G.extract_cell_blocks(l, set(design.cell_histogram()))
-    cells = {n: G.CellModel(n, g) for n, g in blocks.items()}
+    blocks, header, templates = G.extract_cell_blocks(l, set(design.cell_histogram()))
+    cells = {n: G.CellModel(n, g, templates) for n, g in blocks.items()}
     kwargs = dict(supply_v=1.8, slew_ns=0.1, port_load_pf=0.0,
                   liberty_path=l, liberty_sha256="0" * 64, threshold_pct=50.0)
     kwargs.update(kw)
@@ -505,6 +536,28 @@ class TestTruthTable(unittest.TestCase):
         self.assertEqual(G.truth_table("A B", ["A", "B"]), "0001")  # juxtaposition
         self.assertEqual(G.truth_table("1", ["A"]), "11")
 
+    def test_xor_binds_tighter_than_and(self):
+        # Liberty's documented precedence: '^' over '&'/juxtaposition, the
+        # opposite of C. Both mixed forms are asserted over all 8 rows so the
+        # two nestings cannot pass by accident (issue #496 item 4).
+        pins = ["A", "B", "C"]
+        # (A ^ B) & C
+        expect = ""
+        for idx in range(8):
+            a, b, c = idx & 1, (idx >> 1) & 1, (idx >> 2) & 1
+            expect += "1" if ((a ^ b) and c) else "0"
+        self.assertEqual(G.truth_table("A ^ B & C", pins), expect)
+        self.assertEqual(G.truth_table("A ^ B & C", pins), "00000110")
+        # A & (B ^ C)
+        expect = ""
+        for idx in range(8):
+            a, b, c = idx & 1, (idx >> 1) & 1, (idx >> 2) & 1
+            expect += "1" if (a and (b ^ c)) else "0"
+        self.assertEqual(G.truth_table("A & B ^ C", pins), expect)
+        self.assertEqual(G.truth_table("A & B ^ C", pins), "00010100")
+        # juxtaposition follows the same precedence as an explicit '&'
+        self.assertEqual(G.truth_table("A B ^ C", pins), "00010100")
+
     def test_function_referencing_an_unknown_pin_is_refused(self):
         with self.assertRaises(G.GateModelError):
             G.truth_table("(A&C)", ["A", "B"])
@@ -516,13 +569,21 @@ class TestTruthTable(unittest.TestCase):
 
 
 class TestNldmReduction(unittest.TestCase):
-    def table(self):
-        lines = ["cell_rise (\"del_2_2\") {",
+    def templates(self) -> dict:
+        lines = ['lu_table_template ("del_2_2") {',
+                 'variable_1 : "input_net_transition";',
+                 'variable_2 : "total_output_net_capacitance";',
+                 "}"]
+        g = G.parse_liberty_group(lines)
+        return {g.args[0]: g}
+
+    def table(self, tname: str = "del_2_2"):
+        lines = [f'cell_rise ("{tname}") {{',
                  "index_1(\"0.1, 0.5\");",
                  "index_2(\"0.001, 0.009\");",
                  "values(\"1.0, 2.0\", \"3.0, 5.0\");",
                  "}"]
-        return G.NldmTable(G.parse_liberty_group(lines), "test")
+        return G.NldmTable(G.parse_liberty_group(lines), "test", self.templates())
 
     def test_corner_values_are_exact(self):
         t = self.table()
@@ -551,7 +612,34 @@ class TestNldmReduction(unittest.TestCase):
                  "values(\"1.0, 2.0\", \"3.0\");",
                  "}"]
         with self.assertRaises(G.GateModelError):
-            G.NldmTable(G.parse_liberty_group(lines), "bad")
+            G.NldmTable(G.parse_liberty_group(lines), "bad", self.templates())
+
+    def test_transposed_template_axes_are_refused(self):
+        # at(slew, load) brackets index_1 with slew and index_2 with load; a
+        # deck whose template swaps the axes would be read transposed, so it
+        # is refused rather than silently accepted (issue #496 item 2).
+        lines = ['lu_table_template ("del_2_2") {',
+                 'variable_1 : "total_output_net_capacitance";',
+                 'variable_2 : "input_net_transition";',
+                 "}"]
+        g = G.parse_liberty_group(lines)
+        tmpl = {g.args[0]: g}
+        with self.assertRaises(G.GateModelError) as cm:
+            G.NldmTable(self._raw_table(), "test", tmpl)
+        self.assertIn("transposed", str(cm.exception))
+
+    def test_unknown_template_name_is_refused(self):
+        with self.assertRaises(G.GateModelError) as cm:
+            self.table(tname="del_9_9")
+        self.assertIn("does not define", str(cm.exception))
+
+    def _raw_table(self):
+        lines = ["cell_rise (\"del_2_2\") {",
+                 "index_1(\"0.1, 0.5\");",
+                 "index_2(\"0.001, 0.009\");",
+                 "values(\"1.0, 2.0\", \"3.0, 5.0\");",
+                 "}"]
+        return G.parse_liberty_group(lines)
 
     def test_delay_is_the_max_over_arcs_and_floored(self):
         with tempfile.TemporaryDirectory() as td:
@@ -680,7 +768,108 @@ class TestEmittedStructure(unittest.TestCase):
 
 
 # --------------------------------------------------------------------------
-# 5. against the real Liberty deck (skipped without the PDK)
+# 5. the t_clk_first card tracks vih (issue #496 item 3)
+# --------------------------------------------------------------------------
+
+def short_cycles() -> list[dict]:
+    sys.path.insert(0, str(BLOCK))
+    import program as P  # noqa: E402
+    return P.build_program(limit=4)[0]
+
+
+class TestClkThresholdCard(unittest.TestCase):
+    """The clock's 50 % crossing is ``vih * threshold_pct / 100`` -- NOT
+    ``supply_v / 2``: ``--vih`` and ``--supply-v`` are independent knobs that
+    merely coincide today, and clk is driven 0..vih (issue #496 item 3)."""
+
+    def card(self, vih: float, pct: float = 50.0) -> str:
+        meas, _ = G.measurement_cards(short_cycles(), vih, pct)
+        (card,) = [m["spice"] for m in meas if m["name"] == "t_clk_first"]
+        return card
+
+    def test_committed_defaults_reproduce_the_committed_card(self):
+        # byte-identical to the committed gate-model-full deck, so a
+        # regeneration moves no committed artifact
+        self.assertEqual(self.card(1.8),
+                         ".meas tran t_clk_first WHEN v(clk)=0.9 RISE=1")
+
+    def test_threshold_tracks_vih_not_a_literal(self):
+        self.assertEqual(self.card(1.2),
+                         ".meas tran t_clk_first WHEN v(clk)=0.6 RISE=1")
+        self.assertEqual(self.card(1.8, pct=45.0),
+                         ".meas tran t_clk_first WHEN v(clk)=0.81 RISE=1")
+
+
+# --------------------------------------------------------------------------
+# 6. the reducer refuses incomplete evidence (issue #496 item 1)
+# --------------------------------------------------------------------------
+
+COMMITTED_GATE_PLAN = BLOCK / "corners" / "gate-model-full" / "plan.json"
+COMMITTED_GATE_REPORT = BLOCK / "runs" / "20261114-gate-model-full" / "report.json"
+
+
+class TestReducerMeasurementCompleteness(unittest.TestCase):
+    """``compare()`` must refuse incomplete evidence (issue #496 item 1): a
+    measurement the deck did not produce would otherwise silently decode as
+    0 -- or never be checked at all -- and the verdict would say PASS."""
+
+    def plan(self, measurement_count: int) -> dict:
+        return {
+            "realisation": "test",
+            "reductions": {"supply_v": 1.8},
+            "program": {"cycles": 4, "t_stop_ns": 200.0},
+            "raw_bit_pattern": "0101",
+            "measurement_count": measurement_count,
+        }
+
+    def compare(self, measurements: list[dict], measurement_count: int) -> dict:
+        report = {"corners": [{
+            "corner_id": "tt_test", "status": "pass", "runtime_s": 1.0,
+            "measurements": measurements,
+        }]}
+        return CMP.compare(report, self.plan(measurement_count))
+
+    @staticmethod
+    def word(word: int = 0, drop: set[int] = frozenset()) -> list[dict]:
+        return [{"name": f"rdata_k0_b{b}", "value": 1.8 if (word >> b) & 1 else 0.0}
+                for b in range(32) if b not in drop]
+
+    def test_count_mismatch_is_refused(self):
+        meas = self.word()
+        with self.assertRaises(SystemExit) as cm:
+            self.compare(meas[:-1], measurement_count=len(meas))
+        msg = str(cm.exception)
+        self.assertIn(str(len(meas) - 1), msg)
+        self.assertIn(str(len(meas)), msg)
+
+    def test_word_missing_a_bit_is_refused_not_decoded_as_zero(self):
+        with self.assertRaises(SystemExit) as cm:
+            self.compare(self.word(drop={7}), measurement_count=31)
+        msg = str(cm.exception)
+        self.assertIn("rdata_k0", msg)
+        self.assertIn("[7]", msg)
+
+    def test_a_complete_word_still_decodes(self):
+        n = CMP.P.N_SAMPLES_REG + CMP.P.N_SAMPLES_STREAM
+        rows = CMP.P.model_replay([0, 1, 0, 1] + [0] * (n - 4))
+        expect = rows[1]["model"]["bus_rdata"]
+        result = self.compare(self.word(expect), measurement_count=32)
+        check = next(c for c in result["checks"] if c["measurement"] == "rdata_k0_b*")
+        self.assertTrue(check["match"])
+        self.assertEqual(result["verdict"], "pass")
+
+    def test_committed_full_run_shape_still_passes(self):
+        # the committed 749-measurement run clears both new guards: the count
+        # matches the plan and every word is complete
+        plan = json.loads(COMMITTED_GATE_PLAN.read_text())
+        report = json.loads(COMMITTED_GATE_REPORT.read_text())
+        result = CMP.compare(report, plan)
+        self.assertEqual(result["verdict"], "pass")
+        self.assertEqual(result["checks_matched"], result["checks_total"])
+
+
+# --------------------------------------------------------------------------
+# 7. against the real Liberty deck (skipped without the PDK)
 # --------------------------------------------------------------------------
 
 def real_liberty() -> Path | None:
@@ -699,8 +888,9 @@ class TestAgainstRealLiberty(unittest.TestCase):
     def test_regenerating_reproduces_the_committed_manifest(self):
         committed = json.loads(COMMITTED_MANIFEST.read_text())
         design = G.parse_verilog(ROUTED_V)
-        blocks, header = G.extract_cell_blocks(REAL_LIB, set(design.cell_histogram()))
-        cells = {n: G.CellModel(n, g) for n, g in blocks.items()}
+        blocks, header, templates = G.extract_cell_blocks(
+            REAL_LIB, set(design.cell_histogram()))
+        cells = {n: G.CellModel(n, g, templates) for n, g in blocks.items()}
         model = G.build_gate_model(
             design, cells,
             supply_v=committed["reductions"]["supply_v"],

@@ -43,7 +43,6 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, "..", ".."))
 SLUG = "local-mismatch-monte-carlo"
 sys.path.insert(0, os.path.join(REPO, "sim", "bin"))
-sys.path.insert(0, os.path.join(REPO, "sim", "tests"))
 from loadmod import load_module  # noqa: E402  (after sys.path)
 from lock_proximity import ANY_RATIOS, DR5_RATIOS, pair_closeness  # noqa: E402  (after sys.path)
 from request_dir import load_request_dir  # noqa: E402

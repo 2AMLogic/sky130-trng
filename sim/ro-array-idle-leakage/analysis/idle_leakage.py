@@ -64,7 +64,6 @@ REPO = HERE.parent.parent
 SLUG = "ro-array-idle-leakage"
 sys.path.insert(0, str(REPO / "sim" / "bin"))
 sys.path.insert(0, str(REPO / "layout" / "bin"))
-sys.path.insert(0, str(REPO / "sim" / "tests"))
 from _hashing import sha256_file  # noqa: E402
 from loadmod import load_module  # noqa: E402
 from request_dir import load_request_dir  # noqa: E402

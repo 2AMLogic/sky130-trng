@@ -79,7 +79,6 @@ HERE = Path(__file__).resolve().parent
 SLUG = "wake-up-transient"
 sys.path.insert(0, str(REPO / "sim" / "bin"))
 sys.path.insert(0, str(REPO))
-sys.path.insert(0, str(REPO / "sim" / "tests"))
 from loadmod import load_module  # noqa: E402
 from request_dir import load_request_dir  # noqa: E402
 
