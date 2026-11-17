@@ -6,8 +6,64 @@ Chronological record of recently merged pull requests and closed issues.
 
 - [2026-09](work_log/WORK_LOG_2026-09.md)
 
+### 2026-11-16
+
+- **PR #537**: fix: make the gate-model evidence pipeline fail closed on incomplete or unvalidated input
+- **Issue #496** (closed): Harden the gate-model reduction against silent-input defects (four latent paths from #486)
+- **PR #551**: ci: unfilter the pull_request trigger and add a CI Result aggregate verdict job
+- **Issue #542** (closed): CI: give every PR one always-reporting verdict check, so main can require it (path-filtered ci.yml has none)
+- **PR #569**: docs: reword loadmod.py docstring for its sim/bin home
+- **Issue #567** (closed): sim/bin/loadmod.py docstring still tells callers to put sim/tests on sys.path
+- **PR #565**: refactor(sim): move shared loadmod helper to sim/bin, drop tests-dir path inserts
+- **Issue #549** (closed): Move the shared loadmod helper to sim/bin/: 20 production sim scripts now import from the tests directory
+- **PR #563**: fix: apply read_corner_bundle prefix filter to missing notes too
+- **Issue #560** (closed): read_corner_bundle: prefix= filters chunks but not the missing-notes list, and the docstring does not say so
+- **PR #566**: refactor: write_json reuses dumps() for its JSON spelling
+- **Issue #553** (closed): write_json re-implements _klt_common.dumps's spelling instead of calling it
+- **PR #564**: spec: DR-0019 provenance pins report, not gate, in sensitivity.py --check
+- **Issue #528** (closed): ro-vth-drift: #492's aging.py move broke the superseding record's --check replay (generator-hashes leg, rc=1) — live on main, unwired
+- **PR #511**: refactor: one shared corner-bundle reader beside the bundle writer
+- **Issue #497** (closed): Consolidate the seven hand-rolled corner-bundle readers in six sim studies: the writer half already lives in evidence_record.py
+- **Issue #559** (closed): test_vth_drift.py fails on main: the Nov superseding record's aging_sha256 pin is stale, and CI never runs that test
+- **PR #556**: test: detect hand-rolled record tails via AST path rendering
+- **PR #541**: test: guard .meas AT=/TO= against the request's own .tran stop; ledger the stale startup probes
+- **Issue #531** (closed): The #515 hand-rolled-tail guard's detector is spelling-sensitive: 5 of 8 plausible <rid>.md write spellings slip through
+- **Issue #507** (closed): bug: committed whole-block startup-probe requests carry 9 measurements past their own t_stop and timeouts the generator no longer emits
+- **PR #546**: fix: grade strict spec targets strictly in characterization report (lt/gt)
+- **PR #540**: refactor: consolidate rel/load_json/klt_env/klayout_db/dumps into _klt_common
+- **PR #543**: fix(sim): one shared cross-version replay equality for committed-record checks
+- **PR #534**: ci: wire layout/test_hashing.py into the PR-blocking lint job; refresh the item-10 attestation chain
+- **Issue #538** (closed): characterization_report.compare() has no strict `lt`/`gt`: the Power active check grades a "< 500 uW" target with `le 500`
+- **Issue #535** (closed): Consolidate duplicated rel/load_json/klt_env/_klayout/dumps helpers in layout/bin
+- **Issue #519** (closed): sim/: committed-record replay is not reproducible across CPython versions (ro-vth-drift-sensitivity + xor-combining-alternatives; MATCHES on 3.12, DIFFERS on CI's 3.11)
+- **Issue #552** (closed): CI: revisit concurrency.cancel-in-progress once `CI Result` is a required context
+- **Issue #493** (closed): Wire layout/test_hashing.py into CI: the shared digest helper's only regression guard has never run on a PR
+- **PR #516**: refactor(sim): replace inline importlib loader blocks with shared loadmod helper
+- **PR #510**: refactor: replace _NoExitCodes .parent shim with an exit_lookup parameter on summarize_run
+- **PR #544**: docs: drop the uncheckable decision-record count from README; document oldest-first Status history
+- **Issue #509** (closed): Finish the #412 deferral: ~18 inline importlib loader blocks remain in sim scripts, and the shared loadmod helper still lives under sim/tests/
+- **Issue #501** (closed): Remove _NoExitCodes Path subclass: replace the .parent-lying shim with an exit_lookup parameter on compaction.summarize_run
+- **Issue #532** (closed): Two residual uncheckable facts around the decision-record index: README's record count, and the undocumented oldest-first `## Status` ordering
+
 ### 2026-11-15
 
+- **PR #526**: feat(signoff): declare the Power evidence mapping in the characterization report
+- **PR #527**: fix: mint the controls record through mint_record and guard against new hand-rolled tails
+- **PR #520**: refactor(idle-leakage): read request dirs through the shared request_dir walk
+- **PR #503**: refactor(klt): read the klt version and pdk find through one shared contract
+- **PR #499**: fix(spec): check the decision-record index against front matter, not the first history word
+- **PR #492**: refactor: add sha256_text/sha256_bytes to _hashing and drop nine hand-rolled copies
+- **Issue #536** (closed): test_vth_drift: superseding-record replay check fails at HEAD in a stdlib-only run
+- **Issue #530** (closed): test_vth_drift.py fails on main (provenance generator-hash mismatch), and 8 sim/tests are absent from CI
+- **Issue #485** (closed): Declare an evidence mapping for the Power row in the characterization report
+- **Issue #521** (closed): A fifth private klt invoker remains: run-ir.py's klt_power never inspects the response for an `error` object
+- **Issue #518** (closed): Remove five superseded signal routing-increment sets from layout/ro_array_core-placement-poc/: operator decision on the README's retention choice
+- **Issue #515** (closed): sensitivity.py's controls record is still minted outside mint_record/_publish_bundle, with a footerless md
+- **Issue #512** (closed): Finish the #469 consolidation: idle_leakage.py still hand-rolls a sixth request-directory walk
+- **Issue #506** (closed): make-gate-model.py re-introduced hand-rolled sha256_text/sha256_file after #487 consolidated them
+- **Issue #500** (closed): Consolidate the eleven raw `klt` call sites outside `_klt_common`
+- **Issue #487** (closed): Consolidate the nine hand-rolled in-memory sha256 helpers onto _hashing
+- **Issue #484** (closed): Correct stale decision-record status text in README, spec/README and the Chipalooza proposal
 - **PR #513**: refactor(sim): mint the seven hand-rolled record tails through evidence_record
 - **Issue #504** (closed): Finish the #392 deferral: seven reducers hand-roll the record-minting tail because record_footer cannot say Supersedes
 
@@ -392,26 +448,4 @@ Chronological record of recently merged pull requests and closed issues.
 - **PR #152**: ci: pin xschem to a 3.4.7 floor and surface a red pdk-nightly (#151)
 - **Issue #36** (closed): layout: compose-cell.py --check has no automated regression guard (nothing runs it)
 - **Issue #151** (closed): pdk-nightly netlist-check has been red since 2026-09-15: xschem version drift emits expr() templates where committed netlists have evaluated values (4 cells STALE)
-
-### 2026-09-16
-
-- **PR #150**: refactor: remove dead constants in sampler_core data-path-scan
-- **Issue #149** (closed): Remove dead constants in layout/sampler_core/data-path-scan.py
-
-### 2026-09-15
-
-- **PR #148**: docs: fix stale not-yet-composed claims in sampler_tg README
-- **PR #146**: fix: eliminate pipefail+set-e crash in merge-pr.sh champion:hold-state check
-- **PR #144**: fix: eliminate pipefail+SIGPIPE race in verify-proposal-refs.sh full_tree check
-- **PR #143**: refactor: extract carrying() scan-script helper into _geom_common.py
-- **PR #140**: fix: update stale sim/-is-empty comments in design/pdk.json and netlist.py
-- **PR #139**: docs: add PDR-0001 recommending fix for broken generate-agents-md.sh path
-- **Issue #75** (closed): Fix or remove broken generate-agents-md.sh (installed Loom surface, unused + broken path)
-- **Issue #56** (closed): Champion merged PR #54 after its own verdict had just been invalidated by a stale-verdict reconciliation
-- **Issue #34** (closed): Fix stale sim/-is-empty comments in design/pdk.json and design/netlist.py
-- **Issue #22** (closed): sky130-trng layout + DRC/LVS-clean GDS, and post-layout PVT simulation
-- **Issue #147** (closed): Fix stale "not yet composed"/"remains open" claims in layout/sampler_tg/README.md
-- **Issue #145** (closed): merge-pr.sh: _check_champion_hold_state_staleness crashes via pipefail+grep -o SIGPIPE-class bug on ordinary PRs
-- **Issue #142** (closed): verify-proposal-refs.sh: false MISSING FILE due to pipefail + grep -q SIGPIPE race
-- **Issue #141** (closed): Remove duplicated carrying() helper: sampler_core scan scripts
 

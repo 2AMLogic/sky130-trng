@@ -63,7 +63,6 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import os
 import re
 import sys
 import tempfile
@@ -72,7 +71,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _hashing import sha256_file as _sha256_file, sha256_text as _sha256_text  # noqa: E402
-from _klt_common import BuildError, run_klt, write_json  # noqa: E402
+from _klt_common import (BuildError, klt_env, klayout_db as _klayout,  # noqa: E402
+                         load_json, rel, run_klt, write_json)
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
@@ -121,15 +121,6 @@ sha256_file = partial(_sha256_file, prefix=True)  # recorded as "sha256:<hex>"
 sha256_text = partial(_sha256_text, prefix=True)  # recorded as "sha256:<hex>"
 
 
-def load_json(path: Path) -> dict:
-    try:
-        return json.loads(path.read_text())
-    except FileNotFoundError as exc:
-        raise BuildError(f"missing input: {path}") from exc
-    except json.JSONDecodeError as exc:
-        raise BuildError(f"{path} is not valid JSON: {exc}") from exc
-
-
 def read_text(path: Path) -> str:
     try:
         return path.read_text()
@@ -141,14 +132,6 @@ def require_file(path: Path) -> Path:
     if not path.is_file():
         raise BuildError(f"missing input: {path}")
     return path
-
-
-def rel(path: Path) -> str:
-    """Repo-relative POSIX spelling (never an absolute home path)."""
-    try:
-        return path.resolve().relative_to(REPO_ROOT).as_posix()
-    except ValueError:
-        return path.as_posix()
 
 
 def mirror_point(orientation: str, origin: dict, x: float, y: float):
@@ -345,16 +328,6 @@ def parse_spice_pins(spice_text: str, subckt: str) -> list[dict]:
 # --------------------------------------------------------------------------
 # flat connectivity extraction (pure klayout.db; no klt)
 # --------------------------------------------------------------------------
-
-
-def _klayout():
-    try:
-        import klayout.db as db  # noqa: PLC0415
-    except ImportError as exc:  # pragma: no cover - environment guard
-        raise BuildError(
-            "python klayout (klayout.db) is required for the geometry audits"
-        ) from exc
-    return db
 
 
 def flat_extract(gds_path: Path):
@@ -1467,10 +1440,6 @@ def area_verdict(model: Model, bbox: dict, ana_bbox: dict, dig_bbox: dict) -> di
 # --------------------------------------------------------------------------
 # build / check
 # --------------------------------------------------------------------------
-
-
-def klt_env() -> dict[str, str]:
-    return {**os.environ, "PDK": "sky130A"}
 
 
 def klt_version(env: dict[str, str]) -> dict:

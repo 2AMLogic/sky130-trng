@@ -52,7 +52,6 @@ from __future__ import annotations
 
 import argparse
 import gzip
-import importlib.util
 import json
 import math
 import os
@@ -66,6 +65,7 @@ SLUG = "ro-array-idle-leakage"
 sys.path.insert(0, str(REPO / "sim" / "bin"))
 sys.path.insert(0, str(REPO / "layout" / "bin"))
 from _hashing import sha256_file  # noqa: E402
+from loadmod import load_module  # noqa: E402
 from request_dir import load_request_dir  # noqa: E402
 
 SYNTH_OUTPUT = REPO / "sim/digital-synthesis/runs/20260910-001436-a4c3194/50khz-constrained-synthesize-output.json"
@@ -135,9 +135,7 @@ def needed_views():
 
 def digital_leakage_by_view(liberty_dir, counts):
     """{view: total leakage nW} over `counts`, via the repo's own Liberty summer; plus per-file sha256."""
-    spec = importlib.util.spec_from_file_location("liberty_leakage", REPO / "sim/digital-synthesis/harness/liberty_leakage.py")
-    ll = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(ll)
+    ll = load_module("liberty_leakage", REPO / "sim/digital-synthesis/harness/liberty_leakage.py")
     out, sha = {}, {}
     for v in needed_views():
         path = Path(liberty_dir) / f"{v}.lib"
@@ -278,13 +276,8 @@ def store_chunks(rid, reqdir, chunks):
 
 
 def read_stored(rid):
-    cdir = HERE / "corners" / rid
-    out = []
-    for f in sorted(cdir.glob("*.klt-sim.json.gz")):
-        nm = f.name[: -len(".klt-sim.json.gz")]
-        with gzip.open(f, "rt") as fh:
-            out.append((nm, json.load(open(cdir / f"{nm}.plan.json")), json.load(fh)))
-    return out
+    from evidence_record import read_corner_bundle
+    return read_corner_bundle(HERE / "corners" / rid)
 
 
 def default_liberty_dir():

@@ -61,6 +61,7 @@ sys.path.insert(0, str(REPO_ROOT / "layout" / "bin"))
 from _hashing import sha256_file  # noqa: E402
 
 from evidence_record import mint_behavioral_record  # noqa: E402
+from loadmod import load_module  # noqa: E402
 
 sha256 = partial(sha256_file, prefix=True)
 
@@ -207,10 +208,7 @@ def main(argv=None) -> int:
     san = Sanitizer(libs_ref, work)
 
     # -- program shape (the oracle's own account of what must run) ---------
-    import importlib.util
-    spec = importlib.util.spec_from_file_location("rtl_cosim", RTL_COSIM)
-    rtl_cosim = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(rtl_cosim)
+    rtl_cosim = load_module("rtl_cosim", RTL_COSIM)
     cycles, phases = rtl_cosim.build_program(args.seed)
     n_cycles, n_phases = len(cycles), len(phases)
     expected_tests = n_phases + 2        # drive + one per phase + length

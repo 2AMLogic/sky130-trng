@@ -32,9 +32,6 @@ Pure arithmetic over `klt sim` responses (no simulator). Per corner it derives:
 Simulation-derived; provisional until silicon.
 """
 import datetime
-import glob
-import gzip
-import importlib.util
 import json
 import math
 import os
@@ -46,6 +43,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, "..", ".."))
 SLUG = "local-mismatch-monte-carlo"
 sys.path.insert(0, os.path.join(REPO, "sim", "bin"))
+from loadmod import load_module  # noqa: E402  (after sys.path)
 from lock_proximity import ANY_RATIOS, DR5_RATIOS, pair_closeness  # noqa: E402  (after sys.path)
 from request_dir import load_request_dir  # noqa: E402
 
@@ -142,10 +140,7 @@ def extrapolate_closeness(T_list, n_draws=EXTRAP_DRAWS, seed=EXTRAP_SEED):
 
 def _load_raw_bit_entropy():
     p = os.path.join(REPO, "sim", "raw-bit-min-entropy", "analysis", "raw-bit-entropy.py")
-    spec = importlib.util.spec_from_file_location("raw_bit_entropy", p)
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    return mod
+    return load_module("raw_bit_entropy", p)
 
 
 def mcv_on_bernoulli(p, n=BERNOULLI_N, seed=BERNOULLI_SEED):
@@ -485,13 +480,10 @@ def emit_record(reqdir, sha=None):
 
 
 def check(recpath):
+    from evidence_record import read_corner_bundle
     rec = json.load(open(recpath))
     cdir = os.path.join(REPO, "sim", SLUG, "corners", rec["record_id"])
-    chunks = []
-    for fn in sorted(glob.glob(os.path.join(cdir, "*.klt-sim.json.gz"))):
-        nm = os.path.basename(fn)[:-len(".klt-sim.json.gz")]
-        with gzip.open(fn, "rt") as fh:
-            chunks.append((nm, json.load(open(os.path.join(cdir, nm + ".plan.json"))), json.load(fh)))
+    chunks = read_corner_bundle(cdir)
     rows, S = build(chunks)[rec["summary"]["corner"]]
     same = (json.loads(json.dumps(rows, default=str)) == rec["rows"]
             and json.loads(json.dumps(S, default=str)) == rec["summary"])
