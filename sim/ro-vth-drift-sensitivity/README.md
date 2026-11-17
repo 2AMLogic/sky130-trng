@@ -222,11 +222,14 @@ How to read it:
   replay legs: the controls record's own `--check` passes, and the documented
   replay `--check records/20261113-150554-fb302c35.json` still reports
   rows/summary, calibration artifact and "netlists regenerate byte-identically"
-  all MATCH. Its **exit code is not unaffected**, though: for non-controls
-  records `check()` folds the generator-hashes pin into the exit code, so since
-  the #492 merge that replay reports `generator hashes: DIFFER` and exits 1 --
-  a committed record pinned pre-move, tracked as issue #528 (an operator ruling
-  on the superseding record's replay contract, not a study-side fix).
+  all MATCH. Since DR-0019
+  (`spec/decision-records/DR-0019-provenance-pin-exit-contract.md`, resolving
+  issue #528), the provenance pins are **reported, not gated**: that replay
+  still prints `generator hashes: DIFFER` -- the record pins the pre-#492
+  `aging.py` bytes -- and exits 0, because `check()`'s exit folds only the
+  rows/summary, calibration, netlist-regeneration and manifest legs;
+  byte-identical netlist regeneration (`ok_gen`) is the leg that gates, which
+  is what the refusal message already tells the reader to run.
   `--supersede` never applied the byte pin, because it re-reduces committed
   responses rather than admitting fresh simulation. The pin is restored whenever
   the controls campaign is next re-run for a study extension.

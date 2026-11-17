@@ -532,6 +532,8 @@ class ControlsPinRefusalTests(unittest.TestCase):
         msg = str(cm.exception.code)
         self.assertIn("not a PASSing controls record", msg)
         self.assertNotIn("bytes differ", msg)
+
+
 class ReplayToleranceTests(unittest.TestCase):
     """Issue #519: the replay equality and the cross-version property it must keep.
 
