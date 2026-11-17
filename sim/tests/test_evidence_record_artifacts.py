@@ -91,14 +91,11 @@ def _is_tail(node) -> bool:
 
 # Known hand-rolled tails, allowed only until drained. `sim/bin/corner-run.py`
 # is the `klt sim` record minter with its own `supersedes` handling (#504's
-# reasoning, restated by #515's scope note); the other four are tracked by
-# issue #525. `sensitivity.py` was converted by #515 and must NOT return here.
+# reasoning, restated by #515's scope note). The four #525 reducers were
+# converted through `mint_record` and drained from this list; `sensitivity.py`
+# was converted by #515. Neither may return here.
 ALLOWED_HAND_ROLLED_TAILS = frozenset({
     "sim/bin/corner-run.py",
-    "sim/digital-electrical-repair/analysis/record.py",
-    "sim/post-layout-ro-ring5-assembled-181/derive.py",
-    "sim/raw-bit-volume-campaign/derive-combining.py",
-    "sim/wake-up-transient/wakeup.py",
 })
 
 

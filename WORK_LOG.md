@@ -6,6 +6,20 @@ Chronological record of recently merged pull requests and closed issues.
 
 - [2026-09](work_log/WORK_LOG_2026-09.md)
 
+### 2026-11-17
+
+- **Issue #498** (closed): ro-vth-drift-sensitivity: controls record's aging_sha256 pin invalidated by the #487 digest refactor
+- **PR #517**: fix(sim): make the ro-vth-drift controls-pin refusal discriminate bytes from behaviour
+- **Issue #576** (closed): Make the .meas bound-scan visit guard per-card, not per-request
+- **PR #577**: test: make the .meas bound-scan visit guard per-card, not per-request
+- **Issue #555** (closed): test: make the .meas bound scanner in test_make_requests.py unit-agnostic so a non-ns card cannot be silently skipped
+- **PR #574**: test: fail loud on non-ns .meas bound units in the request bound scan
+- **Issue #573** (closed): test_gate_model: the duplicate-name guard test does not exercise the scalar path it claims to
+- **PR #575**: test: cover the scalar displacement shape the gate-model dedup guard refuses
+- **PR #483**: docs: roadmap as of 2026-11-13
+- **Issue #548** (closed): compare-gate-model: a DUPLICATE measurement name still shrinks the check set past the new count guard
+- **PR #571**: fix: refuse duplicate measurement names the count guard cannot see
+
 ### 2026-11-16
 
 - **PR #537**: fix: make the gate-model evidence pipeline fail closed on incomplete or unvalidated input

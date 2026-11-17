@@ -17,7 +17,7 @@ import electrical as E  # noqa: E402
 
 ROOT = HERE.parents[2]
 sys.path.insert(0, str(ROOT / "sim" / "bin"))
-from evidence_record import new_record_id, record_footer  # noqa: E402
+from evidence_record import mint_record, new_record_id, record_footer  # noqa: E402
 sys.path.insert(0, str(ROOT / "layout" / "bin"))
 from _hashing import sha256_file  # noqa: E402
 
@@ -238,8 +238,6 @@ def main():
     a_("- Not established: silicon behaviour; SDF-timed simulation; that the audit's OpenSTA parasitic annotation equals a foundry extraction "
        "(nominal interconnect corner only, as in the rest of the digital chain); per-pin Liberty limits are applied by OpenSTA, but port loading is the OpenSTA default; the choice of `0.531 ns` generalises to this netlist and seed only, "
        "so a netlist or floorplan change needs a re-derivation and a fresh audit. Same verification limits as `sim/digital-pnr/records/20261003-212010-fa76b17.md` (curated deck, not foundry signoff).")
-    L += record_footer(author="Loom builder (issue #236)", now=now, sha=sha_head)
-    md = "\n".join(L) + "\n"
     out = {"record_id": rid, "timestamp_utc": now.isoformat(), "repo_sha": sha_head, "issue": 236,
            "runs": {n: {"dir": str(runs[n]["dir"].relative_to(ROOT)), "candidate_verdict": status(runs[n]),
                         "est_totals": runs[n]["sum"]["estimate_global_route"]["reduction_vs_library"]["totals"],
@@ -249,11 +247,14 @@ def main():
                                                       "with_margin_ns": deriv["slew_budget_with_margin_ns"]},
            "promoted_geometry": None, "area_target_status": "unmet (unchanged)", "tool_gap_issue": "2AMLogic/klayout-tools#3005"}
     if a.emit:
-        (ROOT / "sim/digital-electrical-repair/records" / f"{rid}.md").write_text(md)
-        (ROOT / "sim/digital-electrical-repair/records" / f"{rid}.json").write_text(json.dumps(out, indent=1) + "\n")
+        result = mint_record(ROOT / "sim/digital-electrical-repair/records", ROOT, rid, L, "\n", out,
+                             author="Loom builder (issue #236)", now=now, sha=sha_head)
+        if result is None:
+            raise SystemExit(f"error: record id {rid} already exists; wait a second and re-run")
         print(rid)
     else:
-        print(md)
+        footer = record_footer(author="Loom builder (issue #236)", now=now, sha=sha_head)
+        print("\n".join(L) + "\n" + "\n".join(footer) + "\n")
 
 
 if __name__ == "__main__":
