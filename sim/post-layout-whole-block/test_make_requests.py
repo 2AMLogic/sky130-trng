@@ -57,6 +57,19 @@ being silently skipped by an ns-only pattern. The negative control
 ``test_bound_scan_flags_non_ns_units`` pins that on synthetic requests, no
 generator edit needed.
 
+Issue #576 closes the granularity gap #555 left in that guard: it was a
+*per-request* presence test ("must visit at least one"), so a single card
+whose bound token ``_BOUND_RES`` cannot reach hid behind the same request's
+other matched bounds. ``assert_every_bound_visited()`` now counts the
+``AT=``/``TO=`` tokens each card's raw text actually carries -- an
+independent pattern, whitespace-tolerant before the ``=`` so
+``AT = 3970.0n`` counts too -- and demands the scan visit exactly that
+many, so the one skipped card fails on its own. The negative control
+``test_per_card_guard_flags_unvisited_bound`` pins the mixed matched +
+unmatchable request as red; a card carrying a duplicated ``AT=`` token
+also turns red, which is deliberate (the scan reads one match per key per
+card, and the generator emits one per key).
+
 Pure Python: no klt, no PDK, no ngspice.
 """
 from __future__ import annotations
@@ -321,6 +334,49 @@ def over_stop_violations(request: dict) -> tuple[list[str], int, int]:
     return over, n_at, n_to
 
 
+#: every shape of bound token the card text could carry, counted straight
+#: off the raw text: ``AT``/``TO`` then optional whitespace then ``=``.
+#: Broader than ``_BOUND_RES`` on purpose (issue #576): the scanner's value
+#: grammar may lag what a future card emits, but a token this counter sees
+#: and the scanner does not visit must turn the suite red, never skip.
+_BOUND_TOKEN_RES = {key: re.compile(rf"\b{key}\s*=") for key in ("AT", "TO")}
+
+
+def assert_every_bound_visited(name: str, request: dict) -> tuple[list[str], int, int]:
+    """Per-card visit guard (#576): the scan visits every bound a card carries.
+
+    ``over_stop_violations()``'s counts are request-level totals, so the
+    pre-#576 guard (``n_at + n_to > 0`` when any card carries a bound) could
+    not see one unmatchable card hiding behind its neighbours. This counts
+    the ``AT=``/``TO=`` tokens per card -- ``_BOUND_TOKEN_RES``, not
+    ``_BOUND_RES`` -- and asserts each one was visited, subsuming that
+    per-request check: a request with only matched cards passes exactly as
+    before, while a single card whose token the pattern cannot reach fails
+    on its own. A card with two ``AT=`` tokens also fails: the scan reads
+    one match per key per card (``rx.search``), and the generator emits one
+    per key. ``WHEN`` cards carry neither token and are exempt.
+
+    Returns ``(over, n_at, n_to)`` unchanged from ``over_stop_violations()``
+    so the caller keeps one scan per request.
+    """
+    over, n_at, n_to = over_stop_violations(request)
+    skipped = []
+    for m in request["measurements"]:
+        present = sum(len(rx.findall(m["spice"]))
+                      for rx in _BOUND_TOKEN_RES.values())
+        if not present:
+            continue
+        visited = sum(1 for rx in _BOUND_RES.values() if rx.search(m["spice"]))
+        if visited < present:
+            skipped.append((m["name"], present, visited))
+    assert not skipped, (
+        name, f"{len(skipped)} measurement card(s) carry AT=/TO= bound "
+        "tokens the bound scan did not visit -- its pattern cannot reach "
+        "them, so those bounds are checked nowhere (name, tokens present, "
+        "tokens visited):", skipped)
+    return over, n_at, n_to
+
+
 def test_generated_measurements_within_tran_stop() -> None:
     """Issue #507 drift 1, on generator output: no measurement's ``AT=`` or
     ``TO=`` exceeds its own request's ``.tran`` stop.
@@ -328,26 +384,23 @@ def test_generated_measurements_within_tran_stop() -> None:
     All four ``--set`` groups, including the two short probes (100 ns and
     500 ns) whose stop is far tighter than the startup probe's 970 ns. The
     cross-request visit counts are asserted non-zero so a drifted
-    ``_BOUND_RES`` cannot make the scan pass vacuously, and -- issue #555 --
-    every request whose measurements carry an ``AT=``/``TO=`` bound must
-    visit at least one itself, so a single skipped card cannot hide behind
-    the hundreds of visited ones. Requests whose measurements are all
-    ``WHEN`` cards carry neither bound and are exempt.
+    ``_BOUND_RES`` cannot make the scan pass vacuously, and -- issue #576,
+    subsuming #555's per-request check -- every card carrying an
+    ``AT=``/``TO=`` token must have that token visited by the scan itself,
+    so a single card whose bound the pattern cannot reach fails on its own
+    instead of hiding behind the hundreds of visited ones. Requests whose
+    measurements are all ``WHEN`` cards carry neither bound and are exempt.
     """
     reqs = generated_requests()
     assert tuple(n for n, _ in reqs) == _GENERATED_NAMES, [n for n, _ in reqs]
     n_at_total = n_to_total = 0
     for name, d in reqs:
-        over, n_at, n_to = over_stop_violations(d)
+        over, n_at, n_to = assert_every_bound_visited(name, d)
         n_at_total += n_at
         n_to_total += n_to
         assert not over, (
             name, f"{len(over)} emitted measurements probe past the request's own "
             f".tran stop {tran_stop_ns(d)}n", sorted(over))
-        if any(re.search(r"\b(?:AT|TO)=", m["spice"]) for m in d["measurements"]):
-            assert n_at + n_to > 0, (
-                name, "the request carries AT=/TO= bounds but the scan "
-                "visited none -- its unit pattern has drifted")
     assert n_at_total > 0 and n_to_total > 0, (
         "the bound scan visited no AT=/TO= token -- it is vacuous",
         n_at_total, n_to_total)
@@ -456,6 +509,72 @@ def test_bound_scan_flags_non_ns_units() -> None:
     assert (over, n_at, n_to) == ([], 0, 0), (over, n_at, n_to)
 
 
+# ---------------------------------------------------------------------------
+# Issue #576: the bound-scan visit guard is per-card, not per-request
+# ---------------------------------------------------------------------------
+
+def test_per_card_guard_flags_unvisited_bound() -> None:
+    """Issue #576 negative control: one unmatchable bound token turns red alone.
+
+    The pre-#576 guard was per-request (``n_at + n_to > 0``): a card whose
+    bound token the scan cannot reach hid behind the request's other
+    matched bounds -- ``AT = 3970.0n`` (whitespace before the ``=``, which
+    ``_BOUND_RES`` cannot match) probed 3000 ns past a 970 ns stop while
+    its neighbour's ``AT=310n`` kept the visit count non-zero. Fixture-based,
+    no generator edit: the same mixed request through
+    ``assert_every_bound_visited()`` must raise instead. Edge cases:
+    ``AT={expr}`` and ``AT=-5n`` (shapes the scanner's value grammar cannot
+    reach) and a duplicated ``AT=`` token (the scan reads one match per key
+    per card) all fail loudly too.
+    """
+    def req_with(*cards: str) -> dict:
+        return {"analysis": {"args": "20p 970n"},
+                "measurements": [{"name": f"m{i}", "spice": c}
+                                 for i, c in enumerate(cards)]}
+
+    # the mixed request from the issue: matched + unmatchable in one scan
+    mixed = req_with(".meas tran m0 FIND v(out) AT=310n",
+                     ".meas tran m1 FIND v(out) AT = 3970.0n")
+    try:
+        assert_every_bound_visited("mixed", mixed)
+    except AssertionError as e:
+        assert "did not visit" in str(e), e
+        assert "('m1', 1, 0)" in str(e), ("the skipped card must be named", e)
+    else:
+        raise AssertionError(
+            "the unmatchable card 'AT = 3970.0n' was silently skipped -- "
+            "the visit guard regressed to per-request granularity")
+
+    # a fully-matched request still passes, per-card, with nothing visited
+    # being a violation only when a token is present (WHEN cards stay exempt)
+    over, n_at, n_to = assert_every_bound_visited(
+        "matched", req_with(".meas tran m0 FIND v(out) AT=310n",
+                            ".meas tran m1 WHEN v(out_valid)=1.4 RISE=1"))
+    assert (over, n_at, n_to) == ([], 1, 0), (over, n_at, n_to)
+
+    # other shapes the scanner's value grammar cannot reach: a substitution
+    # expression or a negative value -- flagged per card, not skipped
+    for bad in (".meas tran m0 FIND v(out) AT={t_clip}",
+                ".meas tran m0 FIND v(out) AT=-5n"):
+        request = req_with(bad, ".meas tran m1 FIND v(out) AT=310n")
+        try:
+            assert_every_bound_visited("edge", request)
+        except AssertionError as e:
+            assert "('m0', 1, 0)" in str(e), (bad, e)
+        else:
+            raise AssertionError(f"card {bad!r} was silently skipped")
+
+    # a duplicated AT= token in one card: the scan reads one match per key
+    # per card, so the second token would go unchecked -- red by design
+    try:
+        assert_every_bound_visited(
+            "dup", req_with(".meas tran m0 FIND v(out) AT=310n AT=320n"))
+    except AssertionError as e:
+        assert "('m0', 2, 1)" in str(e), e
+    else:
+        raise AssertionError("a duplicated AT= token went unflagged")
+
+
 def main() -> int:
     test_capture_points_sit_at_a_rail()
     test_change_emits_hold_then_edge()
@@ -465,6 +584,7 @@ def main() -> int:
     test_committed_request_ledger()
     test_startup_probe_timeouts_pinned()
     test_bound_scan_flags_non_ns_units()
+    test_per_card_guard_flags_unvisited_bound()
     print("test_make_requests OK")
     return 0
 
