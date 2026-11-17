@@ -3,7 +3,7 @@
 sky130-trng ports the gf180-trng ring-oscillator entropy source to SkyWater sky130 to find out what breaks in
 the PDK, the deck and the tools.
 
-Status as of 2026-11-16, `main` @ `979f7a5e`. Issue and PR numbers are this repo's unless prefixed.
+Status as of 2026-11-17, `main` @ `36c920fa`. Issue and PR numbers are this repo's unless prefixed.
 [`WORK_PLAN.md`](../WORK_PLAN.md) is a generated snapshot of label state; this file gives the order and why.
 
 ## Where it stands
@@ -74,7 +74,8 @@ document's draft filed for it:
 
 1. **Get the open_pdks re-pin green** (#314, PR #316). Done when PR #316 passes CI with every pin location at
    `f6eeac7`, ciel provisioning, and a PDK search that reports a revision mismatch instead of using the first
-   tree it finds. The PR is open and failing CI.
+   tree it finds. The PR is open and held (`loom:blocked` since 2026-10-16); at this read it also conflicts
+   with main and has no CI checks reported, because its branch predates the current workflow.
 2. **Merge the klayout-tools 0.8.0 whole-block verify adaptation** (#381, PR #388, approved); first link of Next.
 
 ## Next (unblocked by a named item)
@@ -117,18 +118,23 @@ document's draft filed for it:
 - **Ratification.** Sixteen decision records and the README target table are Proposed. T1 item 5 and the
   Chipalooza submission status both wait on it.
 - **Whole-block chain:** #18 (AC3) <- #170 <- #174 <- #307 <- #431.
-- **Held PRs:** #464 (netlist through `klt netlist`, #460) is approved and held; #249 (DR-0013) has changes
-  requested; #382 is labelled blocked; draft #231 (CI wiring guard, #230) is titled as held for #218, which is
-  closed.
+- **Held PRs:** #464 (netlist through `klt netlist`, #460), #529 (agents-md path fix, #523) and #524 (the
+  t1-report regeneration pin, #514) are approved and held; #316 (the re-pin, #314) and #382 are labelled
+  blocked; #249 (DR-0013) has changes requested; draft #231 (CI wiring guard, #230) is titled as held for
+  #218, which is closed.
 - **Operator-labelled:** #360 (item 1 analog attestation; the row already renders met), #463 and #475 (CI and
-  `package.json` cleanups), #5.
+  `package.json` cleanups), #547 (a test tolerance floor that gates nothing at tiny scales), #494 and #491
+  (oversized or duplicated artifacts checked in), #490 (three copies of one helper), #5.
 - **Labelled blocked:** #347 and #356 (evidence bytes in the artifact store, DR-0016 Proposed), #289 (seeded
-  cross-checks beyond nominal PVT), #470 (SPICE continuation-line folders).
+  cross-checks beyond nominal PVT), #470 (SPICE continuation-line folders), #495 (the verify-whole split along
+  the #173 seam), #502 (the FV-harness klt reader consolidation, coupled to the SDF record re-mint), #533
+  (an agents-md regeneration regression in flattened installs).
 - **Upstream:** the klayout-tools issues this repo cites are indexed in [`friction-ledger.md`](friction-ledger.md).
 
-One open issue is ready for a Builder as labelled today: #314 has carried `loom:issue` with no blocking label
-since 2026-10-28, and its work is already on PR #316, so a Builder picking it up starts from that PR rather
-than a fresh branch. The remaining Now items are the PRs themselves (#316, #388).
+Five open issues carry `loom:issue` with no blocking label as labelled today (2026-11-17): #230, #314 (since
+2026-10-28), #460, #525 and #555. Only #314's work is already on a PR (the held #316), #460's PR #464 is
+approved but held and #230's is draft #231; #525 and #555 have no open PR at all, so a Builder picking either
+starts a fresh branch.
 
 ## Not planned
 
