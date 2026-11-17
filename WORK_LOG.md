@@ -8,6 +8,10 @@ Chronological record of recently merged pull requests and closed issues.
 
 ### 2026-11-16
 
+- **PR #537**: fix: make the gate-model evidence pipeline fail closed on incomplete or unvalidated input
+- **Issue #496** (closed): Harden the gate-model reduction against silent-input defects (four latent paths from #486)
+- **PR #551**: ci: unfilter the pull_request trigger and add a CI Result aggregate verdict job
+- **Issue #542** (closed): CI: give every PR one always-reporting verdict check, so main can require it (path-filtered ci.yml has none)
 - **PR #569**: docs: reword loadmod.py docstring for its sim/bin home
 - **Issue #567** (closed): sim/bin/loadmod.py docstring still tells callers to put sim/tests on sys.path
 - **PR #565**: refactor(sim): move shared loadmod helper to sim/bin, drop tests-dir path inserts
