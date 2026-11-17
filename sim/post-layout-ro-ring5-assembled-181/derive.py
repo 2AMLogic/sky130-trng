@@ -5,16 +5,17 @@ point (sim/post-layout-ro-ring5-assembled/records/, never modified).
 
     derive.py REQDIR RECORDS_DIR
 
-REQDIR holds p1..p4/resp.json (klt sim --format json output, kept alongside
-the record as <id>.klt-sim.json). Derived figures use the template deck's own
-`let` formulas.
+REQDIR holds p1..p4/resp.json (klt sim --format json output, kept under
+corners/<id>/klt-sim.json beside the records). Derived figures use the template
+deck's own `let` formulas.
 """
-import glob, hashlib, json, os, sys
+import glob, hashlib, json, os, shutil, sys
 from pathlib import Path
 
 REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+SLUG = "post-layout-ro-ring5-assembled-181"
 sys.path.insert(0, os.path.join(REPO, "sim", "bin"))
-from evidence_record import new_record_id  # noqa: E402
+from evidence_record import mint_record, new_record_id, reserve_corner_dir  # noqa: E402
 OLD = os.path.join(REPO, "sim/post-layout-ro-ring5-assembled/records")
 POINTS = [(-40.0, 1.62), (27.0, 1.80), (125.0, 1.98), (-40.0, 1.98)]
 W = ["0p42", "0p44", "0p46", "0p48"]
@@ -45,7 +46,7 @@ KEYS = (["t_asm_wstv" + w for w in W] + ["t_pre_wstv" + w for w in W]
 
 
 def main(reqdir, outdir):
-    os.makedirs(outdir, exist_ok=True)
+    outdir = Path(outdir).resolve()
     for n, (t, v) in enumerate(POINTS, 1):
         resp = json.load(open(f"{reqdir}/p{n}/resp.json"))
         old = [json.load(open(f)) for f in sorted(glob.glob(OLD + "/*.json"))]
@@ -74,13 +75,15 @@ def main(reqdir, outdir):
             "compared_against": old["record_id"],
             "klt_sim": {"job_id": env["remote"]["job_id"], "backend": "batch", "remote": env["remote"],
                         "engine_version": env["engine_version"], "models_lib_sha256": env["models_lib_sha256"],
-                        "netlist_sha256": env["netlist_sha256"], "submitter_klt": resp["provenance"]["klt_version"]},
+                        "netlist_sha256": env["netlist_sha256"], "submitter_klt": resp["provenance"]["klt_version"],
+                        "response": f"sim/{SLUG}/corners/{rid}/klt-sim.json"},
             "overall": "PASS" if resp["status"] == "pass" else "FAIL",
             "corners": corners,
             "timestamp_utc": now.isoformat(),
         }
-        json.dump(rec, open(f"{outdir}/{rid}.json", "w"), indent=1)
-        json.dump(resp, open(f"{outdir}/{rid}.klt-sim.json", "w"), indent=1)
+        cdir = Path(REPO) / "sim" / SLUG / "corners" / rid
+        reserve_corner_dir(cdir, Path(outdir), rid)
+        json.dump(resp, open(cdir / "klt-sim.json", "w"), indent=1)
         L = [f"# {rid} -- post-layout-ro-ring5-assembled-181", "",
              f"**PVT**: {t} degC, {v} V. **Verdict**: {rec['overall']} (klt sim status `{resp['status']}`, 3 corners).",
              f"**Compared against (pre-#181, unmodified)**: `{old['record_id']}`.",
@@ -88,7 +91,12 @@ def main(reqdir, outdir):
              "**Library**: `layout/pex-ring/ro_ring5_assembled_pex.spice` (post-#181, re-extracted under #184). The pre-#181 record ran on macOS/ngspice-46 locally; this one on the Linux fleet (ngspice-46); the unchanged pre-layout control reproduces to 0.00 %, so no environment offset is visible.",
              "", "| corner | metric | pre-#181 | post-#181 | delta % |", "|---|---|---|---|---|"]
         L += [f"| {a} | {b} | {c:.6g} | {d:.6g} | {e:+.2f} |" for a, b, c, d, e in rows]
-        open(f"{outdir}/{rid}.md", "w").write("\n".join(L) + "\n")
+        out = mint_record(Path(outdir), Path(REPO), rid, L, "", rec,
+                          author="loom-builder@sky130-trng", now=now, sha=sha,
+                          supersedes=rec["supersedes"])
+        if out is None:
+            shutil.rmtree(cdir, ignore_errors=True)
+            raise SystemExit(f"error: record id {rid} already exists; wait a second and re-run")
         mx = max(rows, key=lambda r: abs(r[4]))
         print(rid, rec["overall"], "max |delta| %.2f%% (%s/%s)" % (abs(mx[4]), mx[0], mx[1]))
         for k in ("t_asm_wstv0p42", "t_asm_wstv0p48", "slowdown_wstv0p42", "swing_frac_asm_ring", "i_asm_wstv0p42"):

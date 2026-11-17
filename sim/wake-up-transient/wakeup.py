@@ -239,8 +239,8 @@ def _ns(x, nd=2):
     return "-" if x is None else f"{x * 1e9:.{nd}f}"
 
 
-def det_md(rid, temp, vdd, rows, summ, jobs, plans, sha, now, claim):
-    from evidence_record import record_footer
+def det_md(rid, temp, vdd, rows, summ, jobs, plans, claim):
+    """The det record's header lines and body text; mint_record appends the shared footer."""
     p0 = plans[0]
     L = [f"# {rid} -- {SLUG}", "", f"**Claim**: {claim}", "",
          "**Level**: transistor (pre-layout `design/ro_array_core.spice`; deterministic transient, NO injected noise)",
@@ -287,8 +287,7 @@ def det_md(rid, temp, vdd, rows, summ, jobs, plans, sha, now, claim):
     L += ["", "\"vs committed period\" compares the final period with `tr1..tr4` of the committed "
           f"`sim/ro-array-core-combining/` record at this PVT point ({summ['committed_combining_record'] or 'none at this point'}), "
           "an independent deck with a PULSE enable: agreement shows the behavioural-source testbench reproduces the array."]
-    L += record_footer(author="loom-builder@sky130-trng", now=now, sha=sha)
-    return "\n".join(L) + "\n"
+    return L, "\n"
 
 
 DET_CLAIM = ("Analog wake-up of the committed pre-layout ro_array_core (issue #216): per-ring first edge, "
@@ -522,8 +521,8 @@ NOISY_CLAIM = ("First raw bits after an enable release from the stopped state, t
                "the phase-diffusion model; Ts = 100 ns compressed sampling")
 
 
-def noisy_md(rid, plan, units, ctl, summ, xchk, jobs, sha, now):
-    from evidence_record import record_footer
+def noisy_md(rid, plan, units, ctl, summ, xchk, jobs):
+    """The noisy record's header lines and body text; mint_record appends the shared footer."""
     L = [f"# {rid} -- {SLUG}", "", f"**Claim**: {NOISY_CLAIM}", "",
          "**Level**: transistor (in-place rings with per-stage `trnoise()`, committed `ro_buf`/`xor2`/`sampler_dff` from "
          "`design/sampler_core.spice`; `testbench/tb_wakeup_raw_bits.spice`)",
@@ -566,8 +565,7 @@ def noisy_md(rid, plan, units, ctl, summ, xchk, jobs, sha, now):
         L += ["", "Negative control (noise off):", ""]
         for u in ctl:
             L.append(f"- seed {u['seed']}: `{''.join('?' if b is None else str(b) for b in u['bits'])}`")
-    L += record_footer(author="loom-builder@sky130-trng", now=now, sha=sha)
-    return "\n".join(L) + "\n"
+    return L, "\n"
 
 
 def noisy_summary(plan, units, ctl, xchk, cal):
@@ -798,7 +796,7 @@ def det_build(chunks, temp, vdd):
 
 
 def emit_det(reqdir):
-    from evidence_record import new_record_id
+    from evidence_record import mint_record, new_record_id
     good, absent = load_reqdir(reqdir, "det")
     missing = [nm for nm, _, _ in absent]
     if missing:
@@ -833,10 +831,15 @@ def emit_det(reqdir):
                                "responses": f"sim/{SLUG}/corners/{store_rid}/*.klt-sim.json.gz"},
                    "corners_dir": store_rid,
                    "supersedes": "(none)", "summary": summ, "rows": rows, "timestamp_utc": now.isoformat(), "repo_sha": sha}
-            (HERE / "records").mkdir(exist_ok=True)
-            json.dump(rec, open(HERE / "records" / f"{rid}.json", "w"), indent=2, default=str)
-            open(HERE / "records" / f"{rid}.md", "w").write(
-                det_md(rid, temp, vdd, rows, summ, _jobs(good), [p for _, p, _ in good], sha, now, DET_CLAIM))
+            header, body = det_md(rid, temp, vdd, rows, summ, _jobs(good), [p for _, p, _ in good], DET_CLAIM)
+            out = mint_record(HERE / "records", REPO, rid, header, body, rec,
+                              author="loom-builder@sky130-trng", now=now, sha=sha)
+            if out is None:
+                # only the first det record's corner bundle belongs to this invocation;
+                # the later records share corners/{store_rid}/, which published records cite
+                if rid == store_rid:
+                    shutil.rmtree(HERE / "corners" / store_rid, ignore_errors=True)
+                raise SystemExit(f"error: record id {rid} already exists; wait a second and re-run")
             print(rid, temp, vdd, summ["units_ok"], "/", summ["units"], "settle en", _ns(summ["t_settle_max_1pct_en_s"]),
                   "ramp", _ns(summ["t_settle_max_1pct_ramp_s"]))
 
@@ -864,7 +867,7 @@ def noisy_build(chunks, point):
 
 
 def emit_noisy(reqdir):
-    from evidence_record import new_record_id
+    from evidence_record import mint_record, new_record_id
     good, absent = load_reqdir(reqdir, "noisy")
     missing = [nm for nm, _, _ in absent]
     if missing:
@@ -896,8 +899,12 @@ def emit_noisy(reqdir):
                "corners_dir": rid,
                "supersedes": "(none)", "summary": summ, "xcheck": xchk, "units": units, "control_units": ctl,
                "timestamp_utc": now.isoformat(), "repo_sha": sha}
-        json.dump(rec, open(HERE / "records" / f"{rid}.json", "w"), indent=2, default=str)
-        open(HERE / "records" / f"{rid}.md", "w").write(noisy_md(rid, plan, units, ctl, summ, xchk, _jobs(mine), sha, now))
+        header, body = noisy_md(rid, plan, units, ctl, summ, xchk, _jobs(mine))
+        out = mint_record(HERE / "records", REPO, rid, header, body, rec,
+                          author="loom-builder@sky130-trng", now=now, sha=sha)
+        if out is None:
+            shutil.rmtree(HERE / "corners" / rid, ignore_errors=True)
+            raise SystemExit(f"error: record id {rid} already exists; wait a second and re-run")
         print(rid, point, summ["n_ok"], "seeds; xcheck", summ["xcheck_inside"], "/", summ["xcheck_total"],
               "; control", summ["control"])
 
