@@ -834,6 +834,14 @@ class TestReducerMeasurementCompleteness(unittest.TestCase):
         return [{"name": f"rdata_k0_b{b}", "value": 1.8 if (word >> b) & 1 else 0.0}
                 for b in range(32) if b not in drop]
 
+    @staticmethod
+    def scalars(values: dict[str, float] | None = None) -> list[dict]:
+        # the four scalar observables of cycle 0, names per _SCALAR_RE in
+        # compare-gate-model.py: <sig>_k0 for alarm/gated/startup_done/out_valid
+        values = values or {}
+        return [{"name": f"{sig}_k0", "value": values.get(sig, 0.0)}
+                for sig in ("alarm", "gated", "startup_done", "out_valid")]
+
     def test_count_mismatch_is_refused(self):
         meas = self.word()
         with self.assertRaises(SystemExit) as cm:
@@ -849,13 +857,15 @@ class TestReducerMeasurementCompleteness(unittest.TestCase):
         self.assertIn("rdata_k0", msg)
         self.assertIn("[7]", msg)
 
-    def test_duplicate_name_is_refused_even_when_the_list_length_matches(self):
+    def test_duplicate_word_bit_is_refused_even_when_the_list_length_matches(self):
         # issue #548: the count guard reads the LIST length, but every
         # check reads the DEDUPLICATED dict -- a repeated name displaces
         # the entry it duplicates and silently drops its check while the
-        # verdict stays pass. The issue's measured shape: one scalar
-        # entry (alarm_k0) replaced by a duplicate gated_k* name, list
-        # length unchanged -- 311/311 became 310/310, still PASS.
+        # verdict stays pass. This fixture is the word path: bit 0 of the
+        # read word is overwritten by a gated_k0 name and a duplicate
+        # gated_k0 is appended, so the list length still matches while
+        # the rdata word silently loses a bit. (The scalar shape the
+        # issue actually measured has its own test below.)
         meas = self.word()
         meas[0] = {"name": "gated_k0", "value": 0.0}
         meas.append({"name": "gated_k0", "value": 0.0})
@@ -864,6 +874,43 @@ class TestReducerMeasurementCompleteness(unittest.TestCase):
         msg = str(cm.exception)
         self.assertIn("duplicate measurement name", msg)
         self.assertIn("gated_k0", msg)
+
+    def test_duplicate_scalar_name_is_refused_the_shape_issue_548_measured(self):
+        # the shape the issue measured: the alarm_k0 scalar entry is
+        # overwritten with a repeated gated_k0 name and the list length
+        # still matches the plan. Unlike a word bit a lost scalar has no
+        # bit-set guard behind it, so without the dedup guard this
+        # fixture compares cleanly -- verdict pass on a silently
+        # shrunken check set (the issue's 311/311 became 310/310 PASS).
+        # The values are the model's own cycle-0/cycle-1 expectations so
+        # the shrunken comparison really would pass under mutation.
+        n = CMP.P.N_SAMPLES_REG + CMP.P.N_SAMPLES_STREAM
+        rows = CMP.P.model_replay([0, 1, 0, 1] + [0] * (n - 4))
+        supply = 1.8
+        model = {sig: rows[0]["model"][sig]
+                 for sig in ("alarm", "gated", "startup_done", "out_valid")}
+        word = self.word(rows[1]["model"]["bus_rdata"])
+        meas = word + self.scalars({sig: supply * bit for sig, bit in model.items()})
+        meas[len(word)] = {"name": "gated_k0", "value": supply * model["gated"]}
+        # meas[len(word)] was alarm_k0; it is now a second gated_k0
+        with self.assertRaises(SystemExit) as cm:
+            self.compare(meas, measurement_count=len(meas))
+        msg = str(cm.exception)
+        self.assertIn("duplicate measurement name", msg)
+        self.assertIn("gated_k0", msg)
+
+    def test_duplicate_displacing_an_entry_no_check_reads_is_still_refused(self):
+        # t_clk_first is measured by the deck but maps to no check in the
+        # reducer, so displacing it is invisible to every check -- the
+        # dedup guard is the only thing that notices.
+        meas = self.word() + self.scalars() + [{"name": "t_clk_first",
+                                                "value": 0.0}]
+        meas[-1] = {"name": "alarm_k0", "value": 0.0}
+        with self.assertRaises(SystemExit) as cm:
+            self.compare(meas, measurement_count=len(meas))
+        msg = str(cm.exception)
+        self.assertIn("duplicate measurement name", msg)
+        self.assertIn("alarm_k0", msg)
 
     def test_a_complete_word_still_decodes(self):
         n = CMP.P.N_SAMPLES_REG + CMP.P.N_SAMPLES_STREAM
