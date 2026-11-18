@@ -41,115 +41,27 @@ public, Apache-2.0.
 
 ## Status of this repository — read this before anything below
 
-**Analog chain and digital section each laid out and verified separately,
-then composed into one routed top-level GDS (`layout/trng_whole/`, issue
-\#172) that has whole-block DRC and mixed-level LVS met within stated coverage
-(issue \#173, not foundry sign-off) but no whole-block post-layout PVT
-(\#174).** The composition is geometry and an
-extraction-based connectivity audit only. Its own verdict is `composed;
-physical sign-off pending (#173 DRC/LVS, #174 characterization)`, written
-before #173 delivered block DRC/LVS (`layout/trng_whole/verify/README.md`);
-#174 is the part still pending. The
-entropy source (an `N = 4`, five-stage,
-free-running ring-oscillator array, XOR-combined) and its sampler are drawn
-as SPICE schematics and characterized across PVT at the transistor level
-(`sim/`). Everything downstream of the raw tap — health tests, conditioner,
-register/streaming interface — now exists as a normative behavioural model
-plus RTL under `digital/`, per
-[DR-0004](../../spec/decision-records/DR-0004-sky130-digital-section-architecture.md)
-(status Proposed, issue #20), verified behaviourally under `sim/digital-*/`.
-That section has since been synthesized (issue #117,
-`sim/digital-synthesis/`) and placed and routed on its own (issue #166, PR
-\#167: `layout/trng_digital/`, `sim/digital-pnr/` — see the scorecard
-below). Issue #172 (PR #176) then placed both unchanged macros in one top cell
-`trng_whole` and routed all 18 whole-block nets. Issue #173 then ran block
-DRC and mixed-level LVS over that composed GDS: **met within stated coverage,
-not foundry sign-off**, with no whole-block post-layout PVT yet (#174; see the
-scorecard). The analog side is further along than this paragraph's first revision
-allowed: `layout/` now holds **nineteen composed cells, every one of them
-`klt drc`-clean (0 violations) and `klt lvs`-matching** its own
-`design/*.spice` subckt — the nine leaf gates (`ro_buf`, plus
-`ro_stage`/`ro_nand2` at all four ring `wstv` widths), all four `ro_ring5`
-rings (22/22 devices and 19/19 nets each), the combining tree's `xor2`
-(12/12 devices, 10/10 nets), the two sampler-specific leaf cells
-(`sampler_tg`, `sampler_nand2` — the sampler's third leaf is `ro_buf`,
-reused unchanged), `sampler_dff` (22/22 devices, 14/14 nets), the whole
-entropy source `ro_array_core`
-(132/132 devices, 96/96 nets), and `sampler_core` itself: the entropy
-source and all six samplers wired together, **264/264 devices, 152/152
-nets, 0 errors** — the entire `.subckt sampler_core` device population in
-one DRC/LVS-clean stream. `layout/README.md` is the current record.
-**Updated since this paragraph was first written**: the assembled
-`sampler_core`'s own post-layout PVT campaign now exists too
-(`sim/post-layout-sampler-core/`, four PVT points x three process corners,
-twelve `PASS`) — ring period slows 2.161-2.504x post-layout, all 120
-captured-value snapshots land within 0.025% of a rail, and reset-held
-sampler outputs stay ≤ 0.403 mV while the rings free-run underneath.
-**Updated again**: the same slug now also carries the tied/float/solo
-shared-substrate bracket at whole-chain scope (eight more records,
-twenty-four more corner runs, all `PASS`), which is the measurement
-DR-0003 §8's `wstv` inter-ring decorrelation gap had been waiting on since
-that record was written — see
-[`spec/decision-records/DR-0009-*.md`](../../spec/decision-records/DR-0009-sampler-core-substrate-bracket-and-wstv-decorrelation.md).
-It narrows §8 rather than closing it, and names the residue precisely:
-shared supply impedance, §8's first-named mechanism, had no
-`vddr1`-`vddr4` distribution layout to be measured on at the time. That
-geometry now exists in `layout/trng_whole/` (four dedicated met5 routes), but
-nobody has measured anything on it yet (#174). What
-the brief's full sign-off bar — post-layout PVT over a DRC/LVS-clean
-**block** GDS — still lacks is foundry-grade DRC/LVS sign-off of the
-composed `trng_whole` stream (#173's block DRC and mixed-level LVS are met
-only within the coverage stated in `layout/trng_whole/verify/README.md`) and a
-whole-block post-layout PVT run over it (#174; see the scorecard below). Each half has its own layout and its own
-post-layout/post-route evidence, and the two are now composed, but neither
-half's evidence is a block result.
-Every decision record cited below (DR-0001,
-DR-0002, DR-0003, DR-0004) carries status **Proposed** — drafted, not yet
-accepted by an operator.
-
-This is still an earlier maturity point than the sibling
-[`gf180-trng`](https://github.com/2AMLogic/gf180-trng) repository's own
-Challenge #3 proposal: the register interface, health tests and conditioner
-now exist here too, but that sibling's were synthesized and power/area-
-characterized. This repository has since composed a whole-block GDS (`layout/trng_whole/`, issue #172), but that GDS has block-level DRC and mixed-level LVS met only within stated coverage (issue #173, not foundry sign-off) and no post-layout PVT (#174). **This document is not a submission-ready
-package the way that sibling document was written to be.** It is this
-issue's own deliverable: an honest, `sim/`-cited snapshot of where this
-design stands against the Challenge #4 brief's assumed structure, naming
-every gap between here and a submittable design rather than glossing over
-it — per this repository's `CLAUDE.md`: "no claim without a testbench" and
-"agents do not relax the ratified spec to make results pass." Layout,
-DRC/LVS-clean GDS, and post-layout PVT simulation — the brief's full
-sign-off bar — are **not** claimed here *for the whole block*: the composed
-GDS has block DRC and mixed-level LVS only within stated coverage (#173, not
-foundry sign-off) and no post-layout PVT exists for it (#174); they are named as explicit follow-up work at the end
-of this document. (Updated since this document's first revision: nine leaf
-cells are DRC/LVS-clean and have been extracted with parasitics and
-simulated over the PVT grid — see §5.3 — all four `ro_ring5` rings are
-now composed DRC/LVS-clean on top of them and parasitic-extracted as whole
-rings, and the combining tree's `xor2` is composed DRC/LVS-clean as well,
-which completes every leaf cell `ro_array_core` instantiates. A floorplan
-for the array now exists, its forward ring→buffer signal chain is really
-routed, its buffer→XOR `a` and `b` legs are now routed for both
-first-stage XORs, its four buffers share a really-routed `vss` bus, and the
-XOR combining tree's inputs are now fully wired — `t1` (`xa1.y`→`xa3.a`)
-and `t2` (`xa2.y`→`xa3.b`) are both really routed, `t2` via a `"metal3"`
-(met2) bridge over two met1 promotion stubs added at the array-composition
-level, resolving the fence of already-routed met1 backbones "Increment 6"
-found blocking it (`layout/ro_array_core-placement-poc/`, DRC-clean at
-every step); `xo` (`xa3.y`) remains exposed as a bare top-level pin.
-Extraction shows the `vss` bus did not change the array's own `vss` net
-topology at all, since sky130's substrate model already ties every
-un-isolated NMOS body to one global node regardless of drawn routing
-(`layout/README.md`'s "Increment 5"), so `vdd` distribution is the array's
-one remaining unwired net, expected to need the same met1-stub-then-met2-bridge
-recipe "Increment 7" proved out for `t2` — `xor2` has no post-layout record
-of its own. That last clause is now superseded: `ro_array_core`'s own `vdd`
-distribution was routed and the array reached a full `klt lvs` match
-(132/132 devices, 96/96 nets), `sampler_dff` did the same (22/22, 14/14),
-and `sampler_core` — the array and all six samplers in one cell — now does
-too (264/264, 152/152, 0 errors), and its own assembled post-layout PVT
-campaign has since landed as well (`sim/post-layout-sampler-core/`, twelve
-`PASS` corner-runs). The digital section has since been placed and routed on its own (issue #166, `layout/trng_digital/`, `sim/digital-pnr/`: klt-deck DRC clean, cell-level LVS match, 16-corner post-route STA with extracted SPEF, routed-netlist functional co-sim); the two macros have since been composed into one routed top cell (issue #172, `layout/trng_whole/`). Block-level DRC and mixed-level LVS over that composed stream have since been delivered within stated coverage (#173, not foundry sign-off), and the macro-internal DRC regression on the current klt deck has been resolved (#181). What keeps the whole-block bar unmet is now whole-block post-layout characterization (#174). Neither a missing digital layout nor a missing composition is the blocker any more.)
+**Current state:** the analog entropy chain (`sampler_core`) and the digital
+section (`trng_digital`) are each laid out and verified separately, then
+composed into one routed top-level GDS,
+[`layout/trng_whole/`](../../layout/trng_whole/README.md) (issue #172):
+whole-block DRC clean and mixed-level LVS matching **within the stated
+coverage** ([`layout/trng_whole/verify/README.md`](../../layout/trng_whole/verify/README.md),
+issue #173, **not foundry sign-off**), and **no whole-block post-layout
+PVT** (#174 attempted, 0 of 12 points MET; follow-ups #307, #308). The
+per-cell DRC/LVS counts and every layout increment are recorded in
+[`layout/README.md`](../../layout/README.md) — the current record; the
+graded 22-row sign-off verdict lives in
+[`signoff/t1-report.json`](../../signoff/t1-report.json) (15 of 22 rows
+met, re-rendered and byte-diffed in CI) and is summarised in
+[`docs/ROADMAP.md`](../ROADMAP.md). Every decision record cited below
+carries status **Proposed** — drafted, not yet accepted by an operator —
+except
+[DR-0018](../../spec/decision-records/DR-0018-idle-power-target.md),
+which is **Accepted**. This document is issue #18's deliverable: an
+honest, `sim/`-cited snapshot of where the design stands against the
+Challenge #4 brief's assumed structure, naming every gap rather than
+glossing over it — it is not a submission-ready package.
 
 ---
 
