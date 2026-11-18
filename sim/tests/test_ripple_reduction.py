@@ -366,6 +366,44 @@ class Tests(unittest.TestCase):
                 self.assertEqual(diff - self.LOCK_FIELDS, set(),
                                  f"{old}: the correction moved fields outside the lock-proximity set")
 
+    @staticmethod
+    def _smallest_nonzero_floats(o, n=2):
+        found = []
+
+        def walk(v):
+            if isinstance(v, dict):
+                for x in v.values():
+                    walk(x)
+            elif isinstance(v, list):
+                for x in v:
+                    walk(x)
+            elif isinstance(v, float) and not isinstance(v, bool) and v != 0.0:
+                found.append(v)
+
+        walk(o)
+        return sorted(found, key=abs)[:n]
+
+    def test_sub_picoscale_committed_fields_are_gated_relatively(self):
+        """DR-0020 (issue #547): the shared comparator has no absolute floor,
+        so the 1e-9 relative bound holds on this study's smallest committed
+        floats too.  The superseding rows carry a `pull_fraction` tone entry
+        at ~2e-15 and a `shift_pct` entry at ~1e-14 -- magnitudes that sat
+        below the 1e-12 absolute floor the comparator carried until DR-0020,
+        whose effective relative gate there was 480x / 90x.  A 1e-6-relative
+        re-derivation drift on such a field must read as a difference; a
+        1e-12-relative one (the cross-`sum()` noise the tolerance exists for)
+        must not."""
+        rec = json.load(open(self._record(self.SUPERSEDED["20261012-111245-8100a6b"])))
+        tiny = self._smallest_nonzero_floats(rec["rows"], 2)
+        self.assertEqual(len(tiny), 2)
+        self.assertLess(abs(tiny[0]), 1e-13)
+        self.assertLess(abs(tiny[1]), 1e-12)
+        for v in tiny:
+            self.assertFalse(rp._replay_equal(v, v * (1 + 1e-6)),
+                             f"{v}: a 1e-6-relative drift must be a difference (no floor, DR-0020)")
+            self.assertTrue(rp._replay_equal(v, v * (1 + 1e-12)),
+                            f"{v}: a 1e-12-relative drift is cross-version noise, not a change")
+
     def test_a_superseded_record_no_longer_replays(self):
         """Stated plainly so it is not mistaken for a regression: `--check` on a
         superseded record exits 1, because the committed record carries the old
