@@ -6,6 +6,11 @@ Chronological record of recently merged pull requests and closed issues.
 
 - [2026-09](work_log/WORK_LOG_2026-09.md)
 
+### 2026-11-18
+
+- **Issue #547** (closed): sim/: replay_equal's abs_tol=1e-12 floor leaves sub-picosecond metrics (sigma_1, numerical_floor) effectively ungated — up to 155% relative change reads MATCH
+- **PR #585**: fix(sim): drop the replay comparator's abs_tol floor -- gate every non-zero float at 1e-9 relative (DR-0020)
+
 ### 2026-11-17
 
 - **Issue #583** (closed): WORK_PLAN's Ready section omits loom:issue items that also carry loom:curated
