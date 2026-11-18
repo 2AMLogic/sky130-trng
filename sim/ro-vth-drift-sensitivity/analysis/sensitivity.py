@@ -860,20 +860,20 @@ def calibration_leg(rec, cal, cal_committed):
     Tolerance-compared re-derivation half -- `calibration_artifact()` recomputed
     from the re-derived rows vs the committed artifact, `row_sha256` fields
     stripped from both sides, under the shared `replay_equal`
-    (sim/bin/replay_equal.py, gate `|a-b| <= max(1e-9*|v|, 1e-12)`): builtin
+    (sim/bin/replay_equal.py, gate `|a-b| <= 1e-9*|v|`, DR-0020): builtin
     float `sum()` is naive on CPython <= 3.11 and compensated on >= 3.12, so
-    the same raw responses re-derive ~1-ulp apart across the split.  The gate
-    is only as tight as its terms allow: below ~1e-12 in magnitude the
-    absolute floor is the operative gate (effective relative sensitivity
-    `1e-12/|v|`), and on this artifact that is the sigma fields --
-    `sigma_1_raw`/`sigma_1_corrected` (~1.3-1.4e-12) tolerate a ~70-80 %
-    relative re-derivation drift and `numerical_floor` (~6.5e-13) ~155 %
-    without failing (pinned by test_vth_drift.py's
-    `test_sigma_field_drift_passes_under_the_absolute_floor`).  This is a real
-    relaxation of the guard exactly there, routed as issue #547; it touches
-    the *re-derivation* comparison only -- the integrity pins above stay `==`
-    on a SHA-256, and they are what makes a tampered artifact or row fail
-    closed.
+    the same raw responses re-derive ~1-ulp (~1e-16 relative) apart across the
+    split, far inside the gate.  There is no absolute floor (DR-0020, issue
+    #547): every non-zero float is bound at the full 1e-9 relative -- this
+    artifact's sub-picosecond fields included (`sigma_1_raw`/
+    `sigma_1_corrected` ~1.3-1.4e-12, `numerical_floor` ~6.5e-13), which sat
+    below the 1e-12 absolute floor the comparator carried until DR-0020
+    removed it and could then drift ~70-155 % relative without failing.
+    Exact equality is the only special case: a field that replays to any
+    non-zero value where the committed artifact has exactly 0.0 reads DIFFERS
+    by design.  This touches the *re-derivation* comparison only -- the
+    integrity pins above stay `==` on a SHA-256, and they are what makes a
+    tampered artifact or row fail closed.
     """
     if cal_committed is None:
         return False, 0
@@ -901,18 +901,17 @@ def check(recpath):
     artifact's re-derived metrics) run through the shared `replay_equal`
     tolerance (sim/bin/replay_equal.py, rel=1e-9): builtin float `sum()` is
     naive on CPython <= 3.11 and compensated on >= 3.12, so a record minted on
-    one side of the split re-derives ~1-ulp different on the other -- without
-    this, `--check`'s verdict is a function of the interpreter, i.e. "matches,
-    on the version that happened to mint it" (issue #519).  The gate is
-    `max(1e-9*|v|, 1e-12)`: on O(1)-magnitude metrics the guard holds at
-    ~1e-9 relative -- #467's convention correction still fails this check, and
-    a 1e-6-relative tamper on such a field is still reported.  On sub-1e-12
-    magnitudes the absolute floor takes over, so there this *is* a partial
-    relaxation: this study's sigma jitter (~1.3e-12 s) tolerates a ~70-80 %
-    relative drift -- quantified in `calibration_leg` and pinned as a test in
-    `tests/test_vth_drift.py`; whether that floor is tight enough for the
-    entropy claim is issue #547, not decided here.  The integrity pins stay
-    hash-exact -- see `calibration_leg`.
+    one side of the split re-derives ~1-ulp (~1e-16 relative) different on the
+    other -- without this, `--check`'s verdict is a function of the
+    interpreter, i.e. "matches, on the version that happened to mint it"
+    (issue #519).  The gate is `|a-b| <= 1e-9*|v|` with no absolute floor
+    (DR-0020, issue #547): every non-zero float is bound at the full 1e-9
+    relative, this study's sub-picosecond sigma jitter (~1.3e-12 s) and
+    `numerical_floor` (~6.5e-13) included -- a 1e-6-relative tamper on any
+    field is still reported, and #467's convention correction still fails
+    this check.  Exact equality is the only special case (0.0 == -0.0; zero
+    versus any non-zero value reads DIFFERS by design).  The integrity pins
+    stay hash-exact -- see `calibration_leg`.
     """
     rec = json.load(open(recpath))
     cdir = SLUGDIR / "corners" / rec["record_id"]

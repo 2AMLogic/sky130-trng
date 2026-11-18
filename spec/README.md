@@ -181,6 +181,19 @@
   produces byte-identical netlists, guarded behaviourally by
   `layout/test_hashing.py`. No record is minted or edited.
 
+- [`decision-records/DR-0020-replay-equality-relative-only.md`](decision-records/DR-0020-replay-equality-relative-only.md)
+  — **Proposed**. Issue #547's operator ruling (round 20261116-r15, q145):
+  the shared `replay_equal` comparator drops its `abs_tol=1e-12` floor —
+  the gate is `|a−b| <= 1e-9·|v|` with exact equality as the only special
+  case, so every non-zero float (the sub-picosecond `sigma_1_raw`/
+  `sigma_1_corrected`/`numerical_floor` and `pull_fraction` metrics
+  included) is bound at the full 1e-9 relative, and zero-versus-tiny
+  (exactly `0.0` on one side, any non-zero value on the other) reads
+  DIFFERS by design. The floor had let a 70–155 % relative drift on those
+  fields read MATCH. Replay evidence in the record: every committed record
+  of the three consumers replays identically before and after (no new
+  DIFFERS), and no record is re-minted or edited.
+
 ### Open requests for an operator decision record (no record yet)
 
 - **End-of-life Vth-drift envelope** — issue [#262](https://github.com/2AMLogic/sky130-trng/issues/262), from

@@ -572,6 +572,25 @@ class ReplayToleranceTests(unittest.TestCase):
         self.assertFalse(S._replay_equal(self._sigma(s_fsum), self._sigma(s_fsum) * (1 + 1e-6)))
         self.assertTrue(S._replay_equal(self._sigma(s_fsum), self._sigma(s_fsum) * (1 + 1e-12)))
 
+    def test_zero_versus_tiny_is_a_difference_no_absolute_floor(self):
+        """DR-0020 (issue #547): the comparator has no absolute floor, so the
+        relative gate does not degrade on small magnitudes.  Exact equality
+        (`a == b`, covering `0.0 == -0.0` and int/float equal values) is the
+        only special case; one side exactly `0.0`, the other any non-zero
+        float -- however tiny, down to the smallest subnormal -- is a
+        DIFFERENCE, so a re-derivation that produces numerical dust where the
+        record committed exactly 0.0 does not slip through.  The float branch's
+        bool exclusion is unchanged (a `False` is not accepted where a `0.0`
+        was committed)."""
+        self.assertFalse(S._replay_equal(0.0, 1e-20))
+        self.assertFalse(S._replay_equal(0.0, 5e-324))
+        self.assertFalse(S._replay_equal(0.0, -1e-300))
+        self.assertFalse(S._replay_equal(1e-20, 0.0))
+        self.assertTrue(S._replay_equal(0.0, -0.0))
+        self.assertTrue(S._replay_equal(0.0, 0))
+        self.assertTrue(S._replay_equal(1.0, 1))
+        self.assertFalse(S._replay_equal(False, 0.0))
+
 
 class CalibrationPinTests(unittest.TestCase):
     """Issue #519: the record<->artifact integrity pins stay hash-exact *and bite*.
@@ -633,11 +652,8 @@ class CalibrationPinTests(unittest.TestCase):
         """The measured gate boundary, on the artifact's re-derived half: a
         1e-6-relative metric change is a real change (DIFFER), 1e-12-relative
         is not (MATCH).  Injected into `lock_proximity.distance` (~6e-2 in
-        magnitude) -- the O(1)-magnitude regime where the advertised ~1e-9
-        relative gate actually holds.  It does NOT hold on this artifact's
-        sub-1e-12-magnitude fields (sigma jitter, numerical_floor), where the
-        abs_tol=1e-12 floor is the operative gate; that blind spot is pinned
-        by `test_sigma_field_drift_passes_under_the_absolute_floor` below."""
+        magnitude); this artifact's sub-picosecond fields are covered by
+        `test_sigma_field_drift_is_detected_by_the_relative_gate` below."""
         rec, cal, cal_committed = self._tip()
         for factor, expect_ok in ((1 + 1e-6, False), (1 + 1e-12, True)):
             with self.subTest(factor=factor):
@@ -646,23 +662,26 @@ class CalibrationPinTests(unittest.TestCase):
                 ok, _n = S.calibration_leg(rec, bad, cal_committed)
                 self.assertEqual(ok, expect_ok)
 
-    def test_sigma_field_drift_passes_under_the_absolute_floor(self):
-        """The floor pinned where it binds, on the artifact's real sigma fields:
-        a ~50 % relative re-derivation drift in `sigma_1_raw` (smallest tip
-        entry ~1.4e-12) still passes the tolerance leg, because below ~1e-12
-        magnitude the comparator's absolute floor IS the gate (effective
-        relative sensitivity 1e-12/|v| ~ 0.7).  Recorded as a tested, visible
-        property so the 1e-9 claim cannot be re-derived from this code; issue
-        #547 routes whether that floor is tight enough for the entropy claim."""
+    def test_sigma_field_drift_is_detected_by_the_relative_gate(self):
+        """The gate bites where it used to be blind, on the artifact's real
+        sigma fields: a 1e-6-relative re-derivation drift in `sigma_1_raw`,
+        `sigma_1_corrected` and `numerical_floor` (smallest tip entries
+        ~1.4e-12, ~1.3e-12 and ~6.5e-13) is a DIFFER, a 1e-12-relative drift
+        is not.  The comparator has no absolute floor (DR-0020, issue #547),
+        so the advertised 1e-9 relative bound holds at every magnitude; these
+        fields used to sit below the removed 1e-12 floor and tolerate a
+        ~70-155 % relative drift under it."""
         rec, cal, cal_committed = self._tip()
-        key = min(cal["entries"], key=lambda k: abs(cal["entries"][k]["sigma_1_raw"]))
-        v = cal["entries"][key]["sigma_1_raw"]
-        self.assertLess(abs(v), 1e-12 * 10)
-        self.assertTrue(S._replay_equal(v, v * 1.5))
-        bad = copy.deepcopy(cal)
-        bad["entries"][key]["sigma_1_raw"] = v * 1.5
-        ok, _n = S.calibration_leg(rec, bad, cal_committed)
-        self.assertTrue(ok)
+        for field in ("sigma_1_raw", "sigma_1_corrected", "numerical_floor"):
+            key = min(cal["entries"], key=lambda k: abs(cal["entries"][k][field]))
+            v = cal["entries"][key][field]
+            with self.subTest(field=field):
+                self.assertLess(abs(v), 1e-11)
+                for factor, expect_ok in ((1 + 1e-6, False), (1 + 1e-12, True)):
+                    bad = copy.deepcopy(cal)
+                    bad["entries"][key][field] = v * factor
+                    ok, _n = S.calibration_leg(rec, bad, cal_committed)
+                    self.assertEqual(ok, expect_ok, (field, factor))
 
 
 class RecordImmutabilityTests(unittest.TestCase):
