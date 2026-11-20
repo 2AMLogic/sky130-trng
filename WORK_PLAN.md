@@ -3,7 +3,7 @@
 This roadmap is generated from the current GitHub label state.
 
 <!-- guide:plan-body:start -->
-_Generated: 2026-11-20T02:22:32Z (snapshot; compare against live labels)_
+_Generated: 2026-11-20T04:31:56Z (snapshot; compare against live labels)_
 ## Operator Attention: Merge-Risk-Hold Pileup
 
 Judge-approved PRs under a hold (`loom:blocked` or `loom:operator`) — only a human merge decision is missing.
@@ -44,13 +44,12 @@ Issues currently being built (`loom:building`).
 - **#381**: verify-whole: adapt the whole-block harness to klayout-tools 0.8.0 VNB handling
 - **#514**: signoff/README.md's t1-report regeneration command carries no klt version pin, so a host klt silently renders a wrong build block
 - **#523**: Finish PDR-0001's deferred follow-up: generate-agents-md.sh still fails with a doubled .loom/ path
-- **#580**: design/netlist.py: no outer bound on the `klt netlist` subprocess, and a pre-release klt passes the floor
 
 ## PRs Awaiting Review
 
 PRs waiting on Judge (`loom:review-requested`).
 
-- **#591**: fix: bound klt netlisting and enforce the tagged version floor
+_None._
 
 ## Approved (Awaiting Merge)
 
@@ -76,7 +75,6 @@ Issues carrying `loom:curated`.
 - **#381**: verify-whole: adapt the whole-block harness to klayout-tools 0.8.0 VNB handling *(curated)*
 - **#431**: DR-0017 follow-up: analog-chain-only feasibility probe, then gate-level co-simulation generator and reducer for the whole-block PVT matrix *(curated)* *(held)*
 - **#514**: signoff/README.md's t1-report regeneration command carries no klt version pin, so a host klt silently renders a wrong build block *(curated)*
-- **#580**: design/netlist.py: no outer bound on the `klt netlist` subprocess, and a pre-release klt passes the floor *(curated)*
 
 ## Proposed (Architect / Hermit)
 
@@ -101,10 +99,10 @@ Issues carrying `loom:curated`.
 | Very important | 0 |
 | Important | 6 |
 | Ready (`loom:issue`, net of holds/building/merge-pending) | 2 |
-| In Progress (`loom:building`) | 6 |
-| PRs awaiting review | 1 |
+| In Progress (`loom:building`) | 5 |
+| PRs awaiting review | 0 |
 | Approved PRs awaiting merge | 3 |
-| Curated | 13 |
+| Curated | 12 |
 | Architect / Hermit proposals | 7 |
 | Active epics | 2 |
 <!-- guide:plan-body:end -->
