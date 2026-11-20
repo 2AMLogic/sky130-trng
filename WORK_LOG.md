@@ -6,6 +6,11 @@ Chronological record of recently merged pull requests and closed issues.
 
 - [2026-09](work_log/WORK_LOG_2026-09.md)
 
+### 2026-11-20
+
+- **Issue #460** (closed): Replace raw xschem call and duplicated post-processing in design/netlist.py with klt netlist
+- **PR #464**: feat: netlist through bounded `klt netlist` instead of a raw xschem call
+
 ### 2026-11-18
 
 - **Issue #587** (closed): Collapse the layered status preamble of challenge-4-proposal.md: ~110 lines of patched-in-place 'updated since' prose duplicate ROADMAP, layout/README and the scorecard
