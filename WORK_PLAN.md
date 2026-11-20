@@ -3,7 +3,7 @@
 This roadmap is generated from the current GitHub label state.
 
 <!-- guide:plan-body:start -->
-_Generated: 2026-11-20T04:31:56Z (snapshot; compare against live labels)_
+_Generated: 2026-11-20T19:10:00Z (snapshot; compare against live labels)_
 ## Operator Attention: Merge-Risk-Hold Pileup
 
 Judge-approved PRs under a hold (`loom:blocked` or `loom:operator`) — only a human merge decision is missing.
@@ -42,7 +42,6 @@ Issues currently being built (`loom:building`).
 - **#221**: Decision record request: local mismatch can cap tt raw-bit H below DR-0004's 0.5 floor; adjacent rings approach 1:1
 - **#371**: Regenerate composite layout cells, trng_digital/trng_whole and pex libraries under klayout-tools 0.8.0
 - **#381**: verify-whole: adapt the whole-block harness to klayout-tools 0.8.0 VNB handling
-- **#514**: signoff/README.md's t1-report regeneration command carries no klt version pin, so a host klt silently renders a wrong build block
 - **#523**: Finish PDR-0001's deferred follow-up: generate-agents-md.sh still fails with a doubled .loom/ path
 
 ## PRs Awaiting Review
@@ -75,6 +74,7 @@ Issues carrying `loom:curated`.
 - **#381**: verify-whole: adapt the whole-block harness to klayout-tools 0.8.0 VNB handling *(curated)*
 - **#431**: DR-0017 follow-up: analog-chain-only feasibility probe, then gate-level co-simulation generator and reducer for the whole-block PVT matrix *(curated)* *(held)*
 - **#514**: signoff/README.md's t1-report regeneration command carries no klt version pin, so a host klt silently renders a wrong build block *(curated)*
+- **#595**: Whole-block PVT (DR-0017 option b): choose and record the boundary-load model and the Liberty deck for each (T, Vdd) point *(curated)*
 
 ## Proposed (Architect / Hermit)
 
@@ -99,10 +99,10 @@ Issues carrying `loom:curated`.
 | Very important | 0 |
 | Important | 6 |
 | Ready (`loom:issue`, net of holds/building/merge-pending) | 2 |
-| In Progress (`loom:building`) | 5 |
+| In Progress (`loom:building`) | 4 |
 | PRs awaiting review | 0 |
 | Approved PRs awaiting merge | 3 |
-| Curated | 12 |
+| Curated | 13 |
 | Architect / Hermit proposals | 7 |
 | Active epics | 2 |
 <!-- guide:plan-body:end -->
