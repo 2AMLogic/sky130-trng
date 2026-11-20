@@ -8,6 +8,8 @@ Chronological record of recently merged pull requests and closed issues.
 
 ### 2026-11-20
 
+- **Issue #580** (closed): design/netlist.py: no outer bound on the `klt netlist` subprocess, and a pre-release klt passes the floor
+- **PR #591**: fix: bound klt netlisting and enforce the tagged version floor
 - **Issue #460** (closed): Replace raw xschem call and duplicated post-processing in design/netlist.py with klt netlist
 - **PR #464**: feat: netlist through bounded `klt netlist` instead of a raw xschem call
 
