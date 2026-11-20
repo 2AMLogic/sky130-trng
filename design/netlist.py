@@ -174,6 +174,7 @@ import subprocess
 import sys
 import tempfile
 from dataclasses import dataclass
+from itertools import zip_longest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -223,10 +224,13 @@ KLT = "klt"
 #: whose ``klt netlist`` has ``--erc``, which ``--check`` requires.
 DEFAULT_KLT_VERSION_MIN = "0.9.1"
 
-#: ``klt --version`` prints e.g. ``klt 0.9.1``. The numeric release prefix is
-#: all that is captured, so a development build (``0.9.2.dev887+gec7400b``)
-#: compares as ``0.9.2`` rather than failing to parse.
-_KLT_VERSION_RE = re.compile(r"klt\s+v?(\d+(?:\.\d+)*)", re.IGNORECASE)
+#: Keep klt's Python distribution version, including any prerelease and
+#: local build identifier, for the floor check and its diagnostic.
+_KLT_VERSION_RE = re.compile(
+    r"\bklt\s+v?(\d+(?:\.\d+)*(?:(?:a|b|rc)\d+)?(?:\.post\d+)?"
+    r"(?:\.dev\d*)?(?:\+[a-z0-9]+(?:\.[a-z0-9]+)*)?)(?=\s|$)",
+    re.IGNORECASE,
+)
 
 #: Wall-clock bound handed to ``klt netlist --timeout-s``. A real batch
 #: netlist of the largest top cell here takes well under a second; this is
@@ -234,6 +238,10 @@ _KLT_VERSION_RE = re.compile(r"klt\s+v?(\d+(?:\.\d+)*)", re.IGNORECASE)
 #: export failure naming the cell -- never a STALE verdict (which would
 #: blame the schematic for a wedged tool) and never an ERC verdict.
 NETLIST_TIMEOUT_S = 120
+
+#: Allow klt to start up, terminate xschem's process group and report its
+#: own timeout before the outer deadline stops a stalled klt process.
+KLT_TIMEOUT_GRACE_S = 10
 
 #: Fallback for ``design/pdk.json``'s ``xschem_version_min`` when the config
 #: file does not carry one. 3.4.7 is the first xschem release that evaluates
@@ -462,6 +470,19 @@ def klt_version_min() -> str:
     return str(configured).strip() if configured else DEFAULT_KLT_VERSION_MIN
 
 
+def _klt_meets_floor(found: str, floor: str) -> bool:
+    """Compare klt's reported version against a dotted release minimum."""
+    release, suffix = re.fullmatch(r"(\d+(?:\.\d+)*)(.*)", found).groups()
+    for actual, required in zip_longest(
+        _version_tuple(release), _version_tuple(floor), fillvalue=0
+    ):
+        if actual != required:
+            return actual > required
+    # At the floor itself, a prerelease precedes the tag. A local build
+    # or post-release (even a .postN.devM build) already meets the floor.
+    return not suffix.lower().startswith(("a", "b", "rc", ".dev"))
+
+
 def check_klt_version() -> None:
     """Raise :class:`ExportError` unless PATH's klt meets the floor.
 
@@ -493,7 +514,7 @@ def check_klt_version() -> None:
             "could not determine the version of the klt on PATH (klayout-tools), "
             f"so it cannot be shown to meet the required minimum ({floor})." + hint
         )
-    if _version_tuple(found) < _version_tuple(floor):
+    if not _klt_meets_floor(found, floor):
         raise ExportError(
             f"klt {found} is too old to netlist this design "
             f"(minimum {floor})." + hint
@@ -904,14 +925,18 @@ def export(top: str, outdir: Path, *, erc: bool = False) -> str:
             # xschem used to write the electrically-broken one and signal
             # only through its exit status.
             cmd.append("--erc")
-        proc = subprocess.run(
-            cmd,
-            capture_output=True,
-            text=True,
-            cwd=tmpdir,
-            env=env,
-            check=False,
-        )
+        try:
+            proc = subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                cwd=tmpdir,
+                env=env,
+                check=False,
+                timeout=NETLIST_TIMEOUT_S + KLT_TIMEOUT_GRACE_S,
+            )
+        except subprocess.TimeoutExpired as exc:
+            raise ExportError(f"klt netlist timed out for {top} after {exc.timeout}s") from exc
         if proc.returncode != 0:
             # Every klt netlist failure exits 1, so the exit status alone
             # cannot tell an ERC finding from a timeout or an unresolved
@@ -1014,7 +1039,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"klt       {klt_found or 'unknown'}")
         if klt_found is None:
             klt_verdict = "CANNOT VERIFY against the installed klt"
-        elif _version_tuple(klt_found) < _version_tuple(klt_floor):
+        elif not _klt_meets_floor(klt_found, klt_floor):
             klt_verdict = "TOO OLD -- netlisting will refuse to run"
         else:
             klt_verdict = "satisfied by the installed klt"

@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
-"""Unit test for ``design/netlist.py``'s minimum-tool-version gates.
+"""Regression tests for ``design/netlist.py``'s tool version gates and timeout.
 
     python3 design/test_netlist_xschem_version.py
 
-Pure Python: no xschem, no PDK install, no ngspice. The real ``xschem
---version`` subprocess is the one thing stubbed out, so this runs on the
-PR-blocking CI path alongside ``design/test_pdk_search.py`` rather than on
-the PDK-gated nightly.
+These tests run on the PR-blocking CI path alongside
+``design/test_pdk_search.py``. Local stand-ins for the tools and PDK let
+the timeout test exercise the real subprocess call.
 
 Why this exists (issue #151). sky130's device symbols carry their
 device-area parameters as ``expr()`` templates over the symbol's own
@@ -37,15 +36,18 @@ ships in klayout-tools 0.9.1; an older klt rejects it with an argparse
 usage error whose exit status (2) collides with nothing meaningful here and
 whose text reads as neither "stale netlist" nor "ERC finding". So
 ``check_klt_version()`` refuses up front, exactly as the xschem gate does,
-and these cases are its regression fixture. The klt stub also covers a
-development build (``klt 0.9.2.dev887+gec7400b7d8e5``), which must parse as
-0.9.2 rather than crashing the comparison.
+and these cases are its regression fixture. A development build must be
+compared against the tagged minimum before the export proceeds.
 """
 
 from __future__ import annotations
 
+import io
 import sys
+import tempfile
+from contextlib import redirect_stderr
 from pathlib import Path
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
@@ -191,25 +193,33 @@ def _with_reported_klt(version: str | None, floor: str = "0.9.1"):
 
 
 def test_klt_version_regex_parses_real_output() -> None:
-    # `klt --version` prints "klt 0.9.1". A dev build prints
-    # "klt 0.9.2.dev887+gec7400b7d8e5", which must yield an orderable
-    # 0.9.2 rather than a ValueError out of _version_tuple("dev887+...").
     match = netlist._KLT_VERSION_RE.search("klt 0.9.1")
     _check(
         "_KLT_VERSION_RE: parses a tagged release",
         bool(match) and match.group(1) == "0.9.1",
         detail=repr(match and match.group(1)),
     )
-    dev = netlist._KLT_VERSION_RE.search("klt 0.9.2.dev887+gec7400b7d8e5")
-    _check(
-        "_KLT_VERSION_RE: a dev build parses as its numeric release prefix",
-        bool(dev) and dev.group(1) == "0.9.2",
-        detail=repr(dev and dev.group(1)),
-    )
-    _check(
-        "_KLT_VERSION_RE: that prefix is orderable against the floor",
-        bool(dev) and netlist._version_tuple(dev.group(1)) >= (0, 9, 1),
-    )
+    for version, accepted in (
+        ("0.9.1.dev887+gec7400b7d8e5", False),
+        ("0.9.1a1", False),
+        ("0.9.1b1", False),
+        ("0.9.1rc1", False),
+        ("0.9.1.0rc1", False),
+        ("0.9.2.dev887+gec7400b7d8e5", True),
+        ("0.9.1+local.dev1", True),
+        ("0.9.1.post1.dev2", True),
+    ):
+        match = netlist._KLT_VERSION_RE.search(f"klt {version}")
+        message = _with_reported_klt(match.group(1) if match else None)
+        if accepted:
+            correct_verdict = message is None
+        else:
+            correct_verdict = message is not None and f"klt {version} is too old" in message
+        _check(
+            f"check_klt_version: {version} against a 0.9.1 floor",
+            correct_verdict,
+            detail=repr(message),
+        )
 
 
 def test_klt_floor_rejects_the_pinned_older_release() -> None:
@@ -334,6 +344,42 @@ def test_bad_klt_exits_environment_end_to_end() -> None:
     )
 
 
+def test_stalled_klt_exits_environment() -> None:
+    top = "ro_ring5"
+    with tempfile.TemporaryDirectory() as tmp:
+        pdk = netlist.Pdk(Path(tmp), "sky130A", "test")
+        pdk.symbol_dir.mkdir(parents=True)
+        klt = Path(tmp) / "klt"
+        # A finite sleep keeps the regression test bounded even if the
+        # production timeout disappears. exec makes the sleeper klt itself.
+        klt.write_text("#!/bin/sh\nexec sleep 2\n")
+        klt.chmod(0o755)
+        stderr = io.StringIO()
+        with (
+            patch.multiple(
+                netlist,
+                KLT=str(klt),
+                XSCHEM=sys.executable,
+                NETLIST_TIMEOUT_S=0.1,
+                KLT_TIMEOUT_GRACE_S=0.1,
+            ),
+            patch.object(netlist, "check_xschem_version"),
+            patch.object(netlist, "check_klt_version"),
+            patch.object(netlist, "find_pdk", return_value=pdk),
+            redirect_stderr(stderr),
+        ):
+            status = netlist.main(["--check", "--top", top])
+    _check(
+        "main --check: a stalled klt exits EXIT_ENVIRONMENT",
+        status == netlist.EXIT_ENVIRONMENT,
+    )
+    _check(
+        "main --check: the export error names the cell and the outer timeout",
+        f"klt netlist timed out for {top} after 0.2s" in stderr.getvalue(),
+        detail=stderr.getvalue(),
+    )
+
+
 def main() -> int:
     test_version_tuple_orders_numerically()
     test_floor_rejects_the_distro_xschem()
@@ -346,6 +392,7 @@ def main() -> int:
     test_missing_klt_is_refused_not_assumed_ok()
     test_klt_floor_is_read_from_committed_config()
     test_bad_klt_exits_environment_end_to_end()
+    test_stalled_klt_exits_environment()
     return _checker.summary("design/test_netlist_xschem_version.py")
 
 
