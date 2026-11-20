@@ -3,12 +3,11 @@
 This roadmap is generated from the current GitHub label state.
 
 <!-- guide:plan-body:start -->
-_Generated: 2026-11-18T20:46:38Z (snapshot; compare against live labels)_
+_Generated: 2026-11-20T02:22:32Z (snapshot; compare against live labels)_
 ## Operator Attention: Merge-Risk-Hold Pileup
 
 Judge-approved PRs under a hold (`loom:blocked` or `loom:operator`) — only a human merge decision is missing.
 
-- **#464**: feat: netlist through bounded `klt netlist` instead of a raw xschem call
 - **#524**: docs(signoff): pin the t1-report regeneration command to klayout-tools 0.8.0
 - **#529**: fix: generate-agents-md.sh doubled .loom/ path; accept PDR-0001's deferred follow-up
 
@@ -45,19 +44,19 @@ Issues currently being built (`loom:building`).
 - **#381**: verify-whole: adapt the whole-block harness to klayout-tools 0.8.0 VNB handling
 - **#514**: signoff/README.md's t1-report regeneration command carries no klt version pin, so a host klt silently renders a wrong build block
 - **#523**: Finish PDR-0001's deferred follow-up: generate-agents-md.sh still fails with a doubled .loom/ path
+- **#580**: design/netlist.py: no outer bound on the `klt netlist` subprocess, and a pre-release klt passes the floor
 
 ## PRs Awaiting Review
 
 PRs waiting on Judge (`loom:review-requested`).
 
-_None._
+- **#591**: fix: bound klt netlisting and enforce the tagged version floor
 
 ## Approved (Awaiting Merge)
 
 PRs that passed review and are queued for Champion auto-merge (`loom:pr`).
 
 - **#388**: fix(verify): strip klt 0.8.0 VNB from abstracted stubs, regenerate whole-block evidence
-- **#464**: feat: netlist through bounded `klt netlist` instead of a raw xschem call — closes #460
 - **#524**: docs(signoff): pin the t1-report regeneration command to klayout-tools 0.8.0 — closes #514
 - **#529**: fix: generate-agents-md.sh doubled .loom/ path; accept PDR-0001's deferred follow-up — closes #523
 
@@ -76,8 +75,8 @@ Issues carrying `loom:curated`.
 - **#371**: Regenerate composite layout cells, trng_digital/trng_whole and pex libraries under klayout-tools 0.8.0 *(curated)*
 - **#381**: verify-whole: adapt the whole-block harness to klayout-tools 0.8.0 VNB handling *(curated)*
 - **#431**: DR-0017 follow-up: analog-chain-only feasibility probe, then gate-level co-simulation generator and reducer for the whole-block PVT matrix *(curated)* *(held)*
-- **#460**: Replace raw xschem call and duplicated post-processing in design/netlist.py with klt netlist *(curated)*
 - **#514**: signoff/README.md's t1-report regeneration command carries no klt version pin, so a host klt silently renders a wrong build block *(curated)*
+- **#580**: design/netlist.py: no outer bound on the `klt netlist` subprocess, and a pre-release klt passes the floor *(curated)*
 
 ## Proposed (Architect / Hermit)
 
@@ -98,13 +97,13 @@ Issues carrying `loom:curated`.
 
 | Bucket | Count |
 |------|-------|
-| Operator merge-risk holds | 3 |
+| Operator merge-risk holds | 2 |
 | Very important | 0 |
 | Important | 6 |
 | Ready (`loom:issue`, net of holds/building/merge-pending) | 2 |
-| In Progress (`loom:building`) | 5 |
-| PRs awaiting review | 0 |
-| Approved PRs awaiting merge | 4 |
+| In Progress (`loom:building`) | 6 |
+| PRs awaiting review | 1 |
+| Approved PRs awaiting merge | 3 |
 | Curated | 13 |
 | Architect / Hermit proposals | 7 |
 | Active epics | 2 |
