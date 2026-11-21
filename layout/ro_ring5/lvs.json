@@ -1,14 +1,23 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "engine": "klayout",
-  "layout": "ro_ring5.spice",
+  "layout": {
+    "path": "layout/ro_ring5/ro_ring5.spice",
+    "scope": "repo"
+  },
   "reference": "ro_ring5.ref.spice",
   "top": "RO_RING5",
   "reference_top": "RO_RING5",
+  "reference_conversion": {
+    "form": "subckt-call",
+    "deck": "sky130",
+    "device_map": null
+  },
   "parameter_tolerance": null,
   "options": {
     "combine_devices": false,
     "combine_devices_per_circuit": null,
+    "combine_devices_max_attempts": 5,
     "flatten_layout": false,
     "flatten_reference": true,
     "netgen_setup": null,
@@ -16,6 +25,8 @@
     "compare_parameters": null,
     "power_connectivity": null,
     "anchor_top_level_pins": null,
+    "strict_top_level_pin_count": false,
+    "compare_mos_flavour": false,
     "supply_nets": [
       "GND",
       "VCC",
@@ -23,9 +34,11 @@
       "VGND",
       "VPWR",
       "VSS"
-    ]
+    ],
+    "finfet_bulk": null
   },
   "hints_applied": null,
+  "constant_nets_applied": null,
   "status": "match",
   "power_connectivity": {
     "status": "unchecked",
@@ -75,17 +88,17 @@
     "engine": "klayout",
     "engine_version": "0.30.12",
     "netgen_binary": null,
-    "layout_sha256": "ff9de338003bd2c8a34d862673c2a9c10826363c1a2910220ff824b60e5b7574",
+    "layout_sha256": "2d87f09b825cc1a4ab16d338feed3a07a95f116134422e5cee55534b9a254ec1",
     "reference_sha256": "f23a902ee809ad068b9e5cafe308116d0cdc200e9b066b67b4bce4a1fca97683",
     "extracted_netlist": null
   },
   "provenance": {
-    "klt_version": "0.6.0+g5edb557f91d0",
+    "klt_version": "0.8.0",
     "klayout_version": "0.30.12",
     "pdk": null,
     "deck": null,
     "input": {
-      "content_hash": "sha256:ff9de338003bd2c8a34d862673c2a9c10826363c1a2910220ff824b60e5b7574",
+      "content_hash": "sha256:2d87f09b825cc1a4ab16d338feed3a07a95f116134422e5cee55534b9a254ec1",
       "role": "netlist"
     },
     "klayout_version_mismatch": false
