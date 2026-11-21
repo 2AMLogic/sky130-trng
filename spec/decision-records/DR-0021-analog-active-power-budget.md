@@ -38,16 +38,16 @@ rings continuously enabled:
 | corner | leg | 100 ns total | 20 us total | delta |
 |---|---|---:|---:|---:|
 | ff / -40 C / 1.98 V | schematic | 519.2 uW | 519.1 uW | -0.1 uW |
-| ff / -40 C / 1.98 V | extracted | 583.6 uW | 577.2 uW | -6.4 uW |
-| ff / +125 C / 1.98 V | schematic | 567.2 uW | 567.4 uW | +0.2 uW |
-| ff / +125 C / 1.98 V | extracted | 603.8 uW | 598.5 uW | -5.3 uW |
+| ff / -40 C / 1.98 V | extracted | 583.6 uW | 577.2 uW | -6.5 uW |
+| ff / +125 C / 1.98 V | schematic | 567.2 uW | 569.1 uW | +1.9 uW |
+| ff / +125 C / 1.98 V | extracted | 603.8 uW | 599.6 uW | -4.1 uW |
 
-(The 125 C rows cite `analysis/active-power-budget.md`, which regenerates
-them from the committed reports; the 100 ns column is the committed
-control records `20260908-050034/053634-ef0db50`. Cross-run agreement is
-anchored on the stimulus-identical 50-250 ns reset-held window: the 20 us
-runs reproduce the controls' totals there to within cross-build
-agreement, ~0.1-0.4 %.)
+(All four 20 us rows are regenerated from the committed reports by
+`analysis/active-power-budget.md` section 3; the 100 ns column is the
+committed control records `20260908-050034/053634-ef0db50`. Cross-run
+agreement is anchored on the stimulus-identical 50-250 ns reset-held
+window: the 20 us runs reproduce the controls' totals there to within
+cross-build agreement, 0.02-0.54 %.)
 
 The candidate cause is therefore **refuted by measurement**: the sampler
 bank's per-sample dynamic charge is a sub-uW term at either rate
@@ -88,9 +88,12 @@ record recommends **P-A**.
 - **P-A (recommended): amend the analog-partition active bound** to a
   measured-worst-corner-derived figure — `< 650 uW` active, analog
   partition, whole-envelope basis `worst extracted total across the
-  12-corner grid` + guardband for silicon-vs-simulation (the current worst
-  is 603.8 uW at ff / 125 C / 1.98 V, extracted; the grid's formal owner
-  is #597). Cost: the Power row moves for the analog partition only;
+  12-corner grid` + guardband for silicon-vs-simulation. The guardband
+  basis is #597's formal grid, whose worst is 602.6 uW at
+  ff / 125 C / 1.98 V, extracted (the earlier same-deck control measured
+  603.8 uW; this issue's 20 us re-rate of the same corner gives 599.6 uW
+  -- all three agree within 0.7 %, and the grid's formal owner is #597).
+  Cost: the Power row moves for the analog partition only;
   whole-block power remains #174's unmeasured row and is NOT claimable
   from these numbers. The justification bar DR-0010 sets ("stronger than
   'the design does not meet it'") is met by the measured refutation
