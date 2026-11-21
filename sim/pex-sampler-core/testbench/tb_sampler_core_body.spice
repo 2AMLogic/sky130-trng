@@ -1,0 +1,104 @@
+* sampler_core schematic-vs-extracted delta body -- TEMPLATE, not a deck.
+*
+* sim/pex-sampler-core/ (issue #597): the circuit body
+* sim/pex-sampler-core/harness/pex-measure.py renders per PVT point and per
+* klt pex leg (schematic / extracted) for submission as a `klt sim` corner
+* request. Substituted tokens (the @@...@@ convention sim/bin/corner-run.py
+* established):
+*   @@DUT@@  absolute path of the leg's DUT netlist:
+*            schematic leg -- the --flatten-schematic copy of
+*              design/sampler_core.spice that klt pex hands the harness;
+*            extracted leg -- the alias-renamed copy of klt pex's own
+*              `klt extract --deck sky130 --pdk sky130A --parasitics`
+*              netlist (see harness/pex-measure.py and net-aliases.json).
+*   @@VDD@@  this PVT point's supply, in volts (all five rails together).
+*   @@THR@@  0.5 x supply, written as a literal -- ngspice `.meas ... WHEN`
+*            thresholds must be literal numbers, so the supply cannot be a
+*            swept rail here (docs/cli/sim.md, ".meas WHEN thresholds must
+*            be literal numbers").
+*
+* The DUT interface differs per leg BY CONSTRUCTION (this is measure-command
+* mode: deck construction is the harness's job):
+*   schematic leg -- the --flatten-schematic copy of design/sampler_core.spice,
+*     18 pins in the design declaration's own order;
+*   extracted leg -- klt pex's `klt extract --deck sky130 --pdk sky130A
+*     --parasitics` netlist (alias-renamed by the harness), 12 pins in the
+*     extractor's own order: the layout labels only the twelve interface
+*     nets with interface names, so the six sampler outputs are internal
+*     nets there (net-aliases.json's six output entries map them to their
+*     design names) and are read one level down (v(xdut.raw_bit), ...).
+* The harness substitutes the XLINE token (line 93) with the instance
+* line in the leg DUT's own pin order, and the OUTPFX token (the .save
+* lines) with the sampler outputs' read prefix
+* (empty on the schematic leg, "xdut." on the extracted leg).
+*
+* Stimulus, timeline and estimators are sim/post-layout-sampler-core/'s own
+* committed whole-cell deck (tb_post_layout_sampler_core.spice) reduced to
+* ONE DUT instance -- this is that deck's pex-delta form, not a new
+* measurement method:
+*   - en1-en4 release together at 5 ns (defined ring start-up state),
+*   - rst_n releases at 300 ns (samplers held in a defined reset state
+*     through the reset-held window; no .ic ladder into the DFF internals),
+*   - clk starts at 320 ns, Ts = 100 ns (the disclosed compute-budget
+*     deviation from DR-0003's Ts = 20 us, same as every sampler_core-scope
+*     deck in this repo),
+*   - ring periods: 10 whole periods from rising edge 3 to 13,
+*   - xo combining: 48 edges from rising edge 2 to 50, swing and average
+*     over 100-800 ns,
+*   - reset-held window 50-250 ns, active window 400-800 ns,
+*   - .tran tmax 5 ps, uic, with .ic on the four ring taps only.
+*
+* No trnoise anywhere: this is a deterministic degradation comparison, not
+* an entropy claim (that stays with sim/raw-bit-min-entropy/ and
+* sim/local-mismatch-monte-carlo/).
+*
+* The .save set is exactly what the .meas cards read: with
+* `options.save_mode: "netlist"` klt sim does NOT emit its own `save all`,
+* so this restriction is what bounds ngspice memory on the extracted leg
+* (the flat extraction carries ~1300 parasitic star-leg nodes; an
+* unrestricted save set exhausted process memory outright during
+* sim/post-layout-sampler-core/'s own development).
+*
+* Simulation-derived; provisional until silicon.
+
+.option scale=1u
+
+* --- leg DUT (the ONE include: klt pex's swap point, and the only file the
+* --- two legs differ by) ----------------------------------------------
+.include "@@DUT@@"
+
+* --- substrate return: hard tie (same physically-motivated choice as
+* --- sim/post-layout-sampler-core/: every composed cell's psub guard ring
+* --- ties to vss, and vss is 0 here). The extracted netlist declares
+* --- `.GLOBAL vsubs` itself; the schematic leg has no vsubs node at all,
+* --- so the tie is inert there and the two bodies stay byte-identical.
+Vsub vsubs 0 dc 0
+
+* --- supplies: four ring-local rails + the shared block rail ------------
+Vddr1 vddr1 0 dc @@VDD@@
+Vddr2 vddr2 0 dc @@VDD@@
+Vddr3 vddr3 0 dc @@VDD@@
+Vddr4 vddr4 0 dc @@VDD@@
+Vdd vdd 0 dc @@VDD@@
+
+* --- control timeline (see header) --------------------------------------
+Ven1 en1 0 PULSE(0 @@VDD@@ 5n 100p 100p 1u 2u)
+Ven2 en2 0 PULSE(0 @@VDD@@ 5n 100p 100p 1u 2u)
+Ven3 en3 0 PULSE(0 @@VDD@@ 5n 100p 100p 1u 2u)
+Ven4 en4 0 PULSE(0 @@VDD@@ 5n 100p 100p 1u 2u)
+Vrst_n rst_n 0 PULSE(0 @@VDD@@ 300n 100p 100p 10u 20u)
+Vclk clk 0 PULSE(0 @@VDD@@ 320n 100p 100p 49.8n 100n)
+
+* --- the DUT, one instance (the XLINE substitution carries the instance
+* --- line in the leg DUT's own pin order) -------------------------------
+@@XLINE@@
+
+* --- ring start-up state (the ro taps only, one level down -- the same
+* --- belt-and-braces .ic sim/post-layout-sampler-core/ carries) ----------
+.ic v(xdut.ro1)=0 v(xdut.ro2)=0 v(xdut.ro3)=0 v(xdut.ro4)=0
+
+* --- saved signal set: exactly what the .meas cards read ----------------
+.save v(xdut.ro1) v(xdut.ro2) v(xdut.ro3) v(xdut.ro4) v(xdut.xo)
+.save v(@@OUTPFX@@raw_bit) v(@@OUTPFX@@raw_valid)
+.save v(@@OUTPFX@@ring_bit1) v(@@OUTPFX@@ring_bit2) v(@@OUTPFX@@ring_bit3) v(@@OUTPFX@@ring_bit4)
+.save i(Vddr1) i(Vddr2) i(Vddr3) i(Vddr4) i(Vdd)
