@@ -142,6 +142,8 @@ def main(argv: list[str] | None = None) -> int:
         ts = ts20u_rows(json.loads(TS20U_REPORTS[t].read_text()))
         data[t] = {"ctrl": ctrl, "ts": ts,
                    "anchor": anchor_delta_pp(ctrl, ts)}
+    plan = json.loads((SLUG / "corners" / "ts20u-m40C-1.98V" /
+                       "plan.json").read_text())
     lines: list[str] = []
     a = lines.append
     a("# sampler_core analog active-power budget (issue #604)")
@@ -154,6 +156,25 @@ def main(argv: list[str] | None = None) -> int:
     a("failing corners are exactly the two ff / 1.98 V temperatures of the")
     a("four-point post-layout PVT grid; the other ten corners of issue #597's")
     a("grid pass extracted and are not re-derived here.")
+    a("")
+    a("## 0. Provenance")
+    a("")
+    a("| comparison leg | netlist | loading | clk period | windows |")
+    a("|---|---|---|---|---|")
+    nl = data[-40.0]["ctrl"]["netlists"]
+    a(f"| 100 ns control (both legs, same deck) | `{nl['RO_RING5']}` + "
+      f"`{nl['PEX_LIB']}` (sha256 in each cited record) | each leg's own "
+      f"buffers/XOR/samplers; outputs unloaded | 100 ns, first edge 320 ns | "
+      f"rst 50-250 ns, act 400-800 ns |")
+    a(f"| 20 us runs (both legs, same deck) | `{plan['design_lib']['path']}` "
+      f"(sha256 `{plan['design_lib']['sha256'][:16]}...`) + "
+      f"`{plan['pex_lib']['path']}` (sha256 `{plan['pex_lib']['sha256'][:16]}...`) | "
+      f"identical to the control deck (netlists inlined verbatim) | 20 us, "
+      f"first edge 320 ns, 49.8 % duty | rst 50-250 ns, act 20.32-40.32 us "
+      f"(one complete settled period; deviations recorded in each "
+      f"corners/ts20u-*/plan.json) |")
+    a("")
+    a("Supply 1.98 V on all rails; process ff; temperatures -40 / +125 C.")
     a("")
     a("## 1. The 100 ns control budget (committed records, reproduced)")
     a("")

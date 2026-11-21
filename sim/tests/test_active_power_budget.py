@@ -57,7 +57,10 @@ def synth_control(tmp: Path, t: float, rings_a: float, block_a: float) -> Path:
          "p_i_block_rst": 0.9 * 1.25 * block_a}
     rec = {"record_id": f"synthetic-{'m40' if t < 0 else 'hot'}",
            "corners": [{"corner": "ff", "ok": True, "measurements": m}],
-           "testbench": "synthetic", "netlists": {},
+           "testbench": "synthetic",
+           "netlists": {"RO_RING5": {"path": "design/sampler_core.spice"},
+                        "PEX_LIB": {"path": "layout/pex-sampler-core/"
+                                            "sampler_core_pex.spice"}},
            "tools": {"ngspice": "synthetic"}}
     p = tmp / f"ctrl-{int(t)}.json"
     p.write_text(json.dumps(rec))
@@ -100,6 +103,13 @@ def main() -> int:
         install(tmp, ctrl, rep)
         R.SLUG = tmp  # redirect the output root
         (tmp / "analysis").mkdir()
+        (tmp / "corners" / "ts20u-m40C-1.98V").mkdir(parents=True)
+        (tmp / "corners" / "ts20u-m40C-1.98V" / "plan.json").write_text(
+            json.dumps({"design_lib": {"path": "design/sampler_core.spice",
+                                       "sha256": "a" * 64},
+                        "pex_lib": {"path": "layout/pex-sampler-core/"
+                                            "sampler_core_pex.spice",
+                                    "sha256": "b" * 64}}))
         out = tmp / "analysis" / "active-power-budget.md"
         rc = R.main([])
         check(rc == 0 and out.is_file(), "budget emitted")
