@@ -429,14 +429,15 @@ def derive_rows(values: dict, vdd: float) -> list[dict]:
     if txb <= txa:
         raise HarnessError("XO crossings must be in increasing time order")
     f_xo = 48.0 / (txb - txa)
-    f_ideal = sum(1.0 / p for p in periods_s)
+    # Keep the reduction reproducible across Python's built-in sum implementations.
+    f_ideal = math.fsum(1.0 / p for p in periods_s)
     emit("xo_edge_retention", f_xo / f_ideal)
     emit("raw_tap_freq_mhz", f_xo / 1e6)
     emit("xo_swing_frac", (_num(values, "xo_max") - _num(values, "xo_min")) / vdd)
     emit("xo_bias_frac", _num(values, "xo_avg") / vdd)
 
     for tag, name in (("a", "active_power_uw"), ("r", "reset_power_uw")):
-        rails = sum(_num(values, f"i{i}{tag}") for i in (1, 2, 3, 4))
+        rails = math.fsum(_num(values, f"i{i}{tag}") for i in (1, 2, 3, 4))
         block = _num(values, f"ib{tag}")
         power_uw = -(rails + block) * vdd * 1e6
         if name == "active_power_uw" and power_uw >= ACTIVE_POWER_MAX_UW:
