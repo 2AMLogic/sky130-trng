@@ -491,6 +491,12 @@ jobs:
       - name: Cited 7.digital SDF record still matches current inputs
         run: python3 sim/bin/check_signoff_sim_freshness.py
 
+      - name: Cited 7.analog PEX report still matches the sampler_core GDS
+        run: python3 sim/bin/check_signoff_sim_freshness.py --item 7.analog
+
+      - name: Replay sampler_core PEX measurements and check rejection cases
+        run: python3 sim/tests/test_pex_sampler_core.py
+
       # issue #320: the 1.digital / 2.analog / 2.digital / 10 (and 1.analog / 9,
       # which grade unmet with a stated reason) citations are artifact-anchored
       # generic envelopes minted by signoff/attest.py from committed inventories.

@@ -47,11 +47,14 @@ therefore comparable", the same default unlimited `klt sim` gives).
 |---|---|
 | `records/20261121-001303-7330672` (run artifacts under `runs/20261121-001303-7330672/`) | `fail` — 130/132 rows pass; `active_power_uw` fails at `ff/-40C/1.98V` and `ff/125C/1.98V` **on both legs** (pre-layout already 519/567 µW; parasitics add 6–13 %). Follow-up: issue #604. Disclosures (`extraction.model` limits, `body_bias: biased`, PDK/deck pins) in the record and its `.md`. |
 
-The layout regeneration chain (#371/#372, klayout-tools 0.8.0) will
-change `layout/sampler_core/sampler_core.gds`; the manifest citation pins
-the GDS content hash, so the graded report goes stale the day the
-regenerated GDS lands and this slug mints a new record then — that
-re-run is part of that chain, not a defect of this one.
+The [corrected summary](records/20261121-041842-fa7dd286.md) gives the power increase at each
+failing corner and the peak reset voltage on each leg. The original
+[input hashes](runs/20261121-001303-7330672/input-hashes.json) identify the harness
+version used by the batch jobs (commit `16d1aef2`).
+
+Signoff CI compares the working `layout/sampler_core/sampler_core.gds`
+with the layout digest in the cited PEX report, including when that report
+fails. The #371/#372 layout regeneration requires a new run and citation.
 
 ## PVT grid
 

@@ -319,9 +319,9 @@ them):**
 - **Provisional**: simulation-derived, provisional until measured on
   silicon; the entropy/health verdicts of the rows that support them
   live in `signoff/characterization-report.md` (item 8), not here.
-- **Freshness**: the citation pins the GDS content hash, so the #371/#372
-  layout regeneration stales this row the day the regenerated GDS lands —
-  minting the replacement record is part of that chain, not a defect.
+- **Freshness**: the signoff CI check compares the current sampler_core GDS with
+  the cited PEX input digest and manifest pin even when the report fails.
+  A GDS change in #371/#372 requires a new PEX report and citation.
 
 ## Digital-partition citations (issue #211) and what stays omitted
 

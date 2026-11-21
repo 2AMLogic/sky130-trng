@@ -352,8 +352,8 @@ def build_request(point: tuple[float, float], processes: list[str], backend: str
     return request_path, request
 
 
-def run_one(klt: str, backend: str, request_path: Path, outdir: Path) -> tuple[tuple[float, float], dict]:
-    """Run one PVT point's klt sim request; return (point, report)."""
+def run_one(klt: str, backend: str, request_path: Path, outdir: Path) -> dict:
+    """Run one PVT point's klt sim request and return its report."""
     stem = request_path.stem.replace("req-", "")
     resp_path = outdir / f"resp-{stem}.json"
     argv = [klt, "sim", str(request_path), "--backend", backend, "--format", "json"]
@@ -375,16 +375,9 @@ def run_one(klt: str, backend: str, request_path: Path, outdir: Path) -> tuple[t
             f"{completed.stderr[-2000:]}"
         )
     try:
-        report = json.loads(completed.stdout)
+        return json.loads(completed.stdout)
     except ValueError as exc:
         raise HarnessError(f"klt sim {request_path.name} stdout is not JSON: {exc}") from exc
-    temp, vdd = parse_stem(stem)
-    return (temp, vdd), report
-
-
-def parse_stem(stem: str) -> tuple[float, float]:
-    temp, vdd = stem.rsplit("-", 1)
-    return float(temp[:-1]), float(vdd[:-1])
 
 
 # ---------------------------------------------------------------------------
@@ -393,8 +386,8 @@ def parse_stem(stem: str) -> tuple[float, float]:
 
 def _num(values: dict, name: str) -> float:
     v = values.get(name)
-    if v is None or not isinstance(v, (int, float)) or not math.isfinite(v):
-        raise ValueError(f"raw measurement {name!r} missing/non-finite")
+    if type(v) not in (int, float) or not math.isfinite(v):
+        raise HarnessError(f"raw measurement {name!r} missing/non-finite")
     return float(v)
 
 
@@ -421,59 +414,77 @@ def derive_rows(values: dict, vdd: float) -> list[dict]:
             entry["message"] = message
         rows.append(entry)
 
-    try:
-        periods_s: list[float] = []
-        for i in (1, 2, 3, 4):
-            ta = _num(values, f"t{i}a")
-            tb = _num(values, f"t{i}b")
-            period = (tb - ta) / 10.0
-            if period <= 0:
-                raise ValueError(f"ring {i} period {period} not positive")
-            periods_s.append(period)
-            emit(f"ring{i}_period_ns", period * 1e9)
-        txa = _num(values, "txa")
-        txb = _num(values, "txb")
-        f_xo = 48.0 / (txb - txa)
-        f_ideal = sum(1.0 / p for p in periods_s)
-        emit("xo_edge_retention", f_xo / f_ideal)
-        emit("raw_tap_freq_mhz", f_xo / 1e6)
-        xo_max = _num(values, "xo_max")
-        xo_min = _num(values, "xo_min")
-        xo_avg = _num(values, "xo_avg")
-        emit("xo_swing_frac", (xo_max - xo_min) / vdd)
-        emit("xo_bias_frac", xo_avg / vdd)
-    except ValueError as exc:
-        for name in ("ring1_period_ns", "ring2_period_ns", "ring3_period_ns", "ring4_period_ns",
-                     "xo_edge_retention", "raw_tap_freq_mhz", "xo_swing_frac", "xo_bias_frac"):
-            emit(name, None, "error", str(exc))
+    periods_s: list[float] = []
+    for i in (1, 2, 3, 4):
+        ta = _num(values, f"t{i}a")
+        tb = _num(values, f"t{i}b")
+        period = (tb - ta) / 10.0
+        if period <= 0:
+            raise HarnessError(f"ring {i} period {period} not positive")
+        periods_s.append(period)
+        emit(f"ring{i}_period_ns", period * 1e9)
+
+    txa = _num(values, "txa")
+    txb = _num(values, "txb")
+    if txb <= txa:
+        raise HarnessError("XO crossings must be in increasing time order")
+    f_xo = 48.0 / (txb - txa)
+    f_ideal = sum(1.0 / p for p in periods_s)
+    emit("xo_edge_retention", f_xo / f_ideal)
+    emit("raw_tap_freq_mhz", f_xo / 1e6)
+    emit("xo_swing_frac", (_num(values, "xo_max") - _num(values, "xo_min")) / vdd)
+    emit("xo_bias_frac", _num(values, "xo_avg") / vdd)
 
     for tag, name in (("a", "active_power_uw"), ("r", "reset_power_uw")):
-        try:
-            rails = sum(_num(values, f"i{i}{tag}") for i in (1, 2, 3, 4))
-            block = _num(values, f"ib{tag}")
-            power_uw = -(rails + block) * vdd * 1e6
-            if name == "active_power_uw" and power_uw > ACTIVE_POWER_MAX_UW:
-                emit(name, power_uw, "fail",
-                     f"{power_uw:.1f} uW exceeds the README Power target's "
-                     f"{ACTIVE_POWER_MAX_UW:g} uW active bound")
-            else:
-                emit(name, power_uw)
-        except ValueError as exc:
-            emit(name, None, "error", str(exc))
+        rails = sum(_num(values, f"i{i}{tag}") for i in (1, 2, 3, 4))
+        block = _num(values, f"ib{tag}")
+        power_uw = -(rails + block) * vdd * 1e6
+        if name == "active_power_uw" and power_uw >= ACTIVE_POWER_MAX_UW:
+            emit(name, power_uw, "fail",
+                 f"{power_uw:g} uW must be below {ACTIVE_POWER_MAX_UW:g} uW")
+        else:
+            emit(name, power_uw)
 
-    try:
-        worst = max(
-            _num(values, n) for n in
-            ("rst_bit", "rst_valid", "rst_r1", "rst_r2", "rst_r3", "rst_r4")
-        )
-        emit("sampler_reset_max_v", worst)
-    except ValueError as exc:
-        emit("sampler_reset_max_v", None, "error", str(exc))
-
+    worst = max(_num(values, n) for n in
+                ("rst_bit", "rst_valid", "rst_r1", "rst_r2", "rst_r3", "rst_r4"))
+    emit("sampler_reset_max_v", worst)
     return rows
 
 
 # ---------------------------------------------------------------------------
+
+def response_corners(report: dict, request: dict, vdd: float) -> list[dict]:
+    """Require one complete response per requested corner before reporting this point."""
+    (temp,) = request["corners"]["temperature_c"]
+    temp_label = str(int(temp)) if float(temp).is_integer() else str(temp)
+    expected = set(request["corners"]["process"])
+    raw_names = {m["name"] for m in request["measurements"]}
+    seen = set()
+    out = []
+    for corner in report["corners"]:
+        proc = corner["process"]
+        corner_id = corner["corner_id"]
+        if (proc not in expected or corner["temperature_c"] != temp
+                or corner_id != f"{proc}/novdd/{temp_label}C"):
+            raise HarnessError(f"unexpected corner {corner_id!r} for {sorted(expected)} at {temp:g}C")
+        if proc in seen:
+            raise HarnessError(f"duplicate corner {corner_id!r}")
+        seen.add(proc)
+        values = {}
+        for m in corner["measurements"]:
+            name = m["name"]
+            if name in values:
+                raise HarnessError(f"{corner_id}: duplicate measurement {name!r}")
+            if name not in raw_names or m["status"] != "pass":
+                raise HarnessError(f"{corner_id}: unexpected or unsuccessful measurement {name!r}")
+            values[name] = m["value"]
+        if missing := raw_names.difference(values):
+            raise HarnessError(f"{corner_id}: missing measurements {sorted(missing)}")
+        out.append({"corner_id": f"{proc}/{temp:g}C/{vdd:g}V", "measurements": derive_rows(values, vdd)})
+    if missing := expected.difference(seen):
+        raise HarnessError(f"missing process corners {sorted(missing)} at {temp:g}C/{vdd:g}V")
+    return out
+
 
 def main(argv: list[str]) -> int:
     if len(argv) < 2:
@@ -503,6 +514,11 @@ def main(argv: list[str]) -> int:
     processes = (os.environ.get("PEX_SAMPLER_CORE_PROCESSES", ",".join(DEFAULT_PROCESSES))
                  .split(","))
 
+    if len(set(processes)) != len(processes) or not all(processes):
+        raise HarnessError("requested processes must be non-empty and unique")
+    if len({(f"{t:g}", f"{v:g}") for t, v in points}) != len(points):
+        raise HarnessError("requested temperature/supply points must have unique artifact names")
+
     source = Path(netlist).resolve()
     if not source.is_file():
         print(f"pex-measure: netlist {netlist} does not exist", file=sys.stderr)
@@ -526,25 +542,15 @@ def main(argv: list[str]) -> int:
 
     requests = [build_request(p, processes, backend, side, timeout_s, artifacts)
                 for p in points]
-    results: dict[tuple[float, float], dict] = {}
-    with concurrent.futures.ThreadPoolExecutor(max_workers=len(requests)) as pool:
-        futures = [pool.submit(run_one, klt, backend, req, artifacts) for req, _ in requests]
-        for future in concurrent.futures.as_completed(futures):
-            point, report = future.result()
-            results[point] = report
-
     corners_out: list[dict] = []
-    for temp, vdd in points:
-        report = results[(temp, vdd)]
-        for corner in report.get("corners", []):
-            proc = corner["corner_id"].split("/")[0]
-            values = {m["name"]: m.get("value") for m in corner.get("measurements", [])}
-            rows = derive_rows(values, vdd)
-            corners_out.append({
-                "corner_id": f"{proc}/{temp:g}C/{vdd:g}V",
-                "measurements": rows,
-            })
-            log(f"derived {len(rows)} rows for {proc}/{temp:g}C/{vdd:g}V")
+    jobs = []
+    with concurrent.futures.ThreadPoolExecutor(max_workers=len(requests)) as pool:
+        futures = [pool.submit(run_one, klt, backend, path, artifacts) for path, _ in requests]
+        for (temp, vdd), (_, request), future in zip(points, requests, futures):
+            report = future.result()
+            corners_out.extend(response_corners(report, request, vdd))
+            remote = report.get("environment", {}).get("remote") or {}
+            jobs.append({"point": f"{temp:g}C/{vdd:g}V", "job_id": remote.get("job_id")})
 
     manifest = {
         "side": side,
@@ -554,11 +560,7 @@ def main(argv: list[str]) -> int:
         "points": list(points),
         "processes": processes,
         "timeout_s": timeout_s,
-        "jobs": [
-            {"point": f"{t:g}C/{v:g}V",
-             "job_id": ((results[(t, v)].get("environment", {}).get("remote") or {}).get("job_id"))}
-            for t, v in points
-        ],
+        "jobs": jobs,
     }
     (artifacts / "harness-manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
 

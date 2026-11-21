@@ -121,8 +121,8 @@
     "                    coupling, no distributed RC) and body_bias",
     "                    (biased, 0 unbiased devices, no --tie-net). The",
     "                    layout-regeneration chain (#371/#372) changes the",
-    "                    GDS and thereby stales this pin -- re-running this",
-    "                    report is part of that chain.",
+    "                    GDS. Signoff CI compares the working GDS digest with",
+    "                    the cited PEX input even for a failing report.",
     "  7.digital          (issue #227) CITED: a native, SDF-annotated `klt",
     "                    functional-verification` report",
     "                    (sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/timed-declared.report.json):",
@@ -293,11 +293,11 @@
     },
     "9": {
       "file": "signoff/attest/9.json",
-      "content_hash": "sha256:04674b8ae14f9270a3c2ed4e979e01c8cdb5ecfc925eb025f0a65fd08febad8a"
+      "content_hash": "sha256:db9fbee335367b0916cece61ae43b70fce5287673eeff9c116fdac3fd779a997"
     },
     "10": {
       "file": "signoff/attest/10.json",
-      "content_hash": "sha256:e29976dc0d147880a0dff3026172cefb6ac33522588e67d2afb5cffc46e8159b"
+      "content_hash": "sha256:114793d55c5e66abf99d093a603cc5fd4f3bbfe851f8b0bef825b5272cd8cea7"
     },
     "8.analog": {
       "file": "signoff/characterization-envelope.json"
