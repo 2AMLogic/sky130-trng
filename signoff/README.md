@@ -50,6 +50,8 @@ no_evidence`) and stays that way until every row is met. The citation is
 unpinned (no provenance block); the `characterization-report-check` CI job
 guards freshness by byte-diffing the envelope with the report.
 
+**Update 2026-11-21 (issue #597): 7.analog cited on a `fail` report — still 7/22 met.** `7.analog` now cites a native `klt pex` report (`sim/pex-sampler-core/`), so the row's reason changes from `no_evidence` to the report's own `fail` status: 130/132 delta rows pass, `active_power_uw` fails the 500 µW bound at the two ff/high-Vdd corners **on both legs** (pre-layout already fails there; design-iteration follow-up is issue #604). See the item 7 analog section below. The met total is unchanged.
+
 **Update 2026-10-09 (issue #227): 7.digital cited, 7/22 met** (see the digital-partition table below). The line that follows is the issue #211 state.
 
 **Update 2026-10-09 (issue #211): 5/22 met.** The digital partition's
@@ -264,6 +266,63 @@ unchanged** — it is the same file, cited unpinned for the same
 no-envelope-hash reason (a pin with no envelope hash to match renders
 `unverifiable_provenance`, per klayout-tools#2182's part-level rule).
 
+## Item 7 analog: cited on the report's own `fail` status (issue #597)
+
+`7.analog` cites `sim/pex-sampler-core/runs/20261121-001303-7330672/pex-report.json`
+— a native `klt pex` schematic-vs-extracted delta report over the whole
+composed `sampler_core` GDS (the same `sha256:e3ff54a9…` 3/11 pin, which
+the manifest citation pins), 11 spec rows × 12 PVT corners (tt/ss/ff ×
+the post-layout four-point grid), pinned to the GDS content hash. It is
+`--measure-command` mode: the spec rows read DUT-internal nets whose
+extracted-leg names are joined multi-label spellings no `.meas` card can
+quote on both legs, so the committed harness (`sim/pex-sampler-core/`)
+measured each leg through `klt sim` batch corner requests and `klt pex`
+computed every delta row itself. Both legs ran on the same batch-fleet
+model library (`models_lib_sha256 48de7c67…` in every committed
+`resp-*.json`; 8 job ids recorded in the record and responses).
+
+**The row grades `unmet` on the report's own status, not `no_evidence`**:
+`status: fail` — 130/132 delta rows pass; `active_power_uw` exceeds the
+README Power target's 500 µW active bound at `ff/-40C/1.98V`
+(519.2 → 585.3 µW) and `ff/125C/1.98V` (567.2 → 602.6 µW), and fails on
+**both** legs (`schematic_failed: 2`) — a pre-layout design condition the
+parasitics add 6–13 % to, not a parasitic-induced regression. Per #597's
+ground rules the failing rows stay failing and the spec row is untouched;
+the bounded design-iteration follow-up is **issue #604**. Every other row
+is limit-free ("measured, therefore comparable"): ring periods slow
++116…+150 % post-layout (consistent with `sim/post-layout-sampler-core/`'s
+committed same-deck control, ~2.2× at −40 C/1.62 V), raw tap rate falls
+44–58 %, and the reset-held outputs stay rail-clean on both legs.
+
+**Disclosures that travel with the citation (the grader does not grade
+them):**
+
+- **`extraction.model` limits** (envelope-verbatim in
+  `pex-report.json`): first-order lumped-RC — one series R per net
+  terminal (star), net-to-ground C for every net's own area/perimeter
+  plus **vertical-overlap coupling C only**; **no lateral same-layer
+  sidewall coupling** (no `--critical-net`), **no distributed RC ladder**
+  (no `--distributed-rc`), quasi-static (one frequency-independent R and
+  C per net, no skin effect or transmission-line behavior). The
+  extracted-side numbers are what this model reports; a finer coupling or
+  ladder model would move them.
+- **`body_bias`: `biased`** — every device body in the extracted netlist
+  has a DC path (`unbiased_device_count: 0`); no `--tie-net` was needed,
+  so the extracted-side numbers carry no synthesized body tie.
+- **PDK/deck provenance**: extraction resolved sky130A via the host
+  search root (open_pdks `f6eeac7…`), not the volare install
+  `sim/pdk.json`/`design/pdk.json` pin (`c6d73a35…`); deck
+  `sha256:f78d2c3c…` (`released: false`) on klt
+  `0.9.3.dev2575+g6bd18bbc8637` (dev build). Each delta is
+  self-consistent (same library both legs); absolute values carry the
+  fleet library pin.
+- **Provisional**: simulation-derived, provisional until measured on
+  silicon; the entropy/health verdicts of the rows that support them
+  live in `signoff/characterization-report.md` (item 8), not here.
+- **Freshness**: the signoff CI check compares the current sampler_core GDS with
+  the cited PEX input digest and manifest pin even when the report fails.
+  A GDS change in #371/#372 requires a new PEX report and citation.
+
 ## Digital-partition citations (issue #211) and what stays omitted
 
 Audit of the `layout/trng_digital/` envelopes against the 0.7.0 grader and
@@ -404,20 +463,22 @@ actually covers, via the manifest's partition-qualified keys.
 
 ## Reading the unmet rows
 
-Every other row is `unmet` with `reason: no_evidence` — no passing,
-gradeable envelope exists for it on this tree. That is an honest
+Every other row is `unmet` — for most with `reason: no_evidence` (no
+passing, gradeable envelope exists for it on this tree). That is an honest
 mechanical statement, not a claim that the underlying work is absent: the
-post-layout campaigns under `sim/` are real measurements, but they are
-minted evidence records driven from `klt extract --parasitics` netlists —
-no `klt sim`/`klt pex`/`klt yield`/`klt sta`/SDF-annotated
-`functional-verification` envelope grades any of them, and item 7 exists
-precisely to refuse a pre-layout sim or clean DRC as post-layout
-evidence. Per-item notes on what exists and why it is not citable are in
-the manifest's `_comment` block; the machine reading of what that means
-for the tracker is the report itself. As evidence lands for an item, its
-citation is added to the manifest and the report regenerated — never by
-citing an envelope that does not actually support the item to make a row
-go green.
+post-layout campaigns under `sim/` are real measurements, and the
+`post-layout-*` ones are minted evidence records driven from `klt
+extract --parasitics` netlists — no `klt sim`/`klt pex`/`klt yield`/`klt
+sta` envelope grades *those*, and item 7 exists precisely to refuse a
+pre-layout sim or clean DRC as post-layout evidence. (The one post-layout
+row that has since crossed that bar is 7.analog: its `klt pex` report is
+cited and grades `unmet` on the report's own `fail` status — see the
+item 7 section above.) Per-item notes on what exists and why it is not
+citable are in the manifest's `_comment` block; the machine reading of
+what that means for the tracker is the report itself. As evidence lands
+for an item, its citation is added to the manifest and the report
+regenerated — never by citing an envelope that does not actually support
+the item to make a row go green.
 
 ## CI
 
