@@ -56,6 +56,36 @@ def write_manifest(root, cite):
         json.dumps({"evidence": {ITEM: {"file": cite}}}))
 
 
+class PexFreshness(unittest.TestCase):
+    def test_failing_report_checks_its_own_layout_digest(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            gds = root / chk.PEX_LAYOUT
+            gds.parent.mkdir(parents=True)
+            gds.write_bytes(b"original GDS")
+            digest = chk.sha(gds.read_bytes())
+            cite = "sim/pex-sampler-core/runs/fixture/pex-report.json"
+            report = root / cite
+            report.parent.mkdir(parents=True)
+            report.write_text(json.dumps({
+                "status": "fail", "layout": {"scope": "repo", "path": chk.PEX_LAYOUT},
+                "provenance": {"input": {"role": "layout", "content_hash": digest}},
+            }))
+            manifest = root / "manifest.json"
+            ev = {"file": cite, "content_hash": digest}
+            manifest.write_text(json.dumps({"evidence": {"7.analog": ev}}))
+            self.assertEqual(chk.check(root, manifest, "7.analog")[0], [])
+
+            gds.write_bytes(b"regenerated GDS")
+            problems, _ = chk.check(root, manifest, "7.analog")
+            self.assertIn(f"DRIFT {chk.PEX_LAYOUT}", problems[0])
+            ev["content_hash"] = chk.sha(gds.read_bytes())
+            manifest.write_text(json.dumps({"evidence": {"7.analog": ev}}))
+            problems, _ = chk.check(root, manifest, "7.analog")
+            self.assertTrue(any("differs from PEX input" in p for p in problems))
+            self.assertTrue(any("DRIFT" in p for p in problems))
+
+
 class Freshness(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()

@@ -1,0 +1,149 @@
+{
+  "netlist": "tb--40c-1.62v.spice",
+  "engine": "ngspice",
+  "backend": "batch",
+  "models": {
+    "pdk": "sky130A",
+    "lib": "libs.tech/combined/sky130.lib.spice"
+  },
+  "corners": {
+    "process": [
+      "tt",
+      "ss",
+      "ff"
+    ],
+    "temperature_c": [
+      -40.0
+    ]
+  },
+  "analysis": {
+    "kind": "tran",
+    "args": "5p 800n uic"
+  },
+  "measurements": [
+    {
+      "name": "t1a",
+      "spice": ".meas tran t1a when v(xdut.ro1)=0.81 rise=3"
+    },
+    {
+      "name": "t1b",
+      "spice": ".meas tran t1b when v(xdut.ro1)=0.81 rise=13"
+    },
+    {
+      "name": "t2a",
+      "spice": ".meas tran t2a when v(xdut.ro2)=0.81 rise=3"
+    },
+    {
+      "name": "t2b",
+      "spice": ".meas tran t2b when v(xdut.ro2)=0.81 rise=13"
+    },
+    {
+      "name": "t3a",
+      "spice": ".meas tran t3a when v(xdut.ro3)=0.81 rise=3"
+    },
+    {
+      "name": "t3b",
+      "spice": ".meas tran t3b when v(xdut.ro3)=0.81 rise=13"
+    },
+    {
+      "name": "t4a",
+      "spice": ".meas tran t4a when v(xdut.ro4)=0.81 rise=3"
+    },
+    {
+      "name": "t4b",
+      "spice": ".meas tran t4b when v(xdut.ro4)=0.81 rise=13"
+    },
+    {
+      "name": "txa",
+      "spice": ".meas tran txa when v(xdut.xo)=0.81 rise=2"
+    },
+    {
+      "name": "txb",
+      "spice": ".meas tran txb when v(xdut.xo)=0.81 rise=50"
+    },
+    {
+      "name": "xo_max",
+      "spice": ".meas tran xo_max max v(xdut.xo) from=100n to=800n"
+    },
+    {
+      "name": "xo_min",
+      "spice": ".meas tran xo_min min v(xdut.xo) from=100n to=800n"
+    },
+    {
+      "name": "xo_avg",
+      "spice": ".meas tran xo_avg avg v(xdut.xo) from=100n to=800n"
+    },
+    {
+      "name": "rst_bit",
+      "spice": ".meas tran rst_bit max v(raw_bit) from=50n to=250n"
+    },
+    {
+      "name": "rst_valid",
+      "spice": ".meas tran rst_valid max v(raw_valid) from=50n to=250n"
+    },
+    {
+      "name": "rst_r1",
+      "spice": ".meas tran rst_r1 max v(ring_bit1) from=50n to=250n"
+    },
+    {
+      "name": "rst_r2",
+      "spice": ".meas tran rst_r2 max v(ring_bit2) from=50n to=250n"
+    },
+    {
+      "name": "rst_r3",
+      "spice": ".meas tran rst_r3 max v(ring_bit3) from=50n to=250n"
+    },
+    {
+      "name": "rst_r4",
+      "spice": ".meas tran rst_r4 max v(ring_bit4) from=50n to=250n"
+    },
+    {
+      "name": "i1r",
+      "spice": ".meas tran i1r avg i(Vddr1) from=50n to=250n"
+    },
+    {
+      "name": "i2r",
+      "spice": ".meas tran i2r avg i(Vddr2) from=50n to=250n"
+    },
+    {
+      "name": "i3r",
+      "spice": ".meas tran i3r avg i(Vddr3) from=50n to=250n"
+    },
+    {
+      "name": "i4r",
+      "spice": ".meas tran i4r avg i(Vddr4) from=50n to=250n"
+    },
+    {
+      "name": "ibr",
+      "spice": ".meas tran ibr avg i(Vdd) from=50n to=250n"
+    },
+    {
+      "name": "i1a",
+      "spice": ".meas tran i1a avg i(Vddr1) from=400n to=800n"
+    },
+    {
+      "name": "i2a",
+      "spice": ".meas tran i2a avg i(Vddr2) from=400n to=800n"
+    },
+    {
+      "name": "i3a",
+      "spice": ".meas tran i3a avg i(Vddr3) from=400n to=800n"
+    },
+    {
+      "name": "i4a",
+      "spice": ".meas tran i4a avg i(Vddr4) from=400n to=800n"
+    },
+    {
+      "name": "iba",
+      "spice": ".meas tran iba avg i(Vdd) from=400n to=800n"
+    }
+  ],
+  "options": {
+    "timeout_s": 3600,
+    "keep_artifacts": false,
+    "save_mode": "netlist"
+  },
+  "batch": {
+    "capacity_wait_s": 600
+  }
+}

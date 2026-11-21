@@ -1,0 +1,77 @@
+{
+  "record_id": "20261121-001303-7330672",
+  "slug": "pex-sampler-core",
+  "level": "transistor (klt pex schematic-vs-extracted delta, post-layout)",
+  "claim": "T1 item 7.analog evidence: a native `klt pex --measure-command` schematic-vs-extracted delta report over the whole composed sampler_core layout (layout/sampler_core/sampler_core.gds, 264 devices / 152 nets), 11 spec rows x 12 PVT corners (tt/ss/ff x 27C/1.8V, -40C/1.62V, -40C/1.98V, 125C/1.98V -- sim/post-layout-sampler-core/'s own four-point grid), both legs measured by the committed harness through `klt sim` corner requests on the batch fleet. 130/132 rows compare clean; the 2 non-pass rows are active_power_uw at ff/-40C/1.98V and ff/125C/1.98V, which fail the README Power target's 500 uW bound on BOTH legs (schematic 519.2/567.2 uW, extracted 585.3/602.6 uW) -- a pre-layout design condition parasitics add 6-13% to, not a parasitic-induced regression; bounded design-iteration follow-up is issue #604. Ring periods slow +116..+150% post-layout, consistent with sim/post-layout-sampler-core/'s committed same-deck control (~2.2x at -40C/1.62V). Simulation-derived; provisional until silicon.",
+  "supersedes": null,
+  "author": "loom-builder@sky130-trng",
+  "timestamp_utc": "2026-11-21T00:13:03+00:00",
+  "repo_sha": "7330672",
+  "tools": {
+    "klt": "klt 0.9.3.dev2575+g6bd18bbc8637 (git 6bd18bbc8637f6d767b3c24e77bd5db7a39e4bbe)",
+    "klayout": "0.30.12",
+    "ngspice": "47 (batch fleet runner, /usr/local/bin/ngspice on the executor)",
+    "python": "3.12.3",
+    "platform": "Linux-7.0.0-43-generic-x86_64-with-glibc2.39"
+  },
+  "pex_invocation": "klt pex layout/sampler_core/sampler_core.gds --deck sky130 --pdk sky130A --measure-command 'python3 sim/pex-sampler-core/harness/pex-measure.py' --reference-netlist design/sampler_core.spice --flatten-schematic --pins en1,en2,en3,en4,vddr1,vddr2,vddr3,vddr4,vdd,vss,clk,rst_n,raw_bit,raw_valid,ring_bit1,ring_bit2,ring_bit3,ring_bit4 --rename-declared-pins --backend batch --wait-for-capacity 600 --measure-timeout-s 7200",
+  "batch_jobs": {
+    "schematic": [
+      {"point": "27C/1.8V", "job_id": "klt-sim-e1950b7d5096"},
+      {"point": "-40C/1.62V", "job_id": "klt-sim-4fd8648992f0"},
+      {"point": "-40C/1.98V", "job_id": "klt-sim-1dd4721ca76f"},
+      {"point": "125C/1.98V", "job_id": "klt-sim-91ea71342cd2"}
+    ],
+    "extracted": [
+      {"point": "27C/1.8V", "job_id": "klt-sim-5a88062845e7"},
+      {"point": "-40C/1.62V", "job_id": "klt-sim-1783a3d03757"},
+      {"point": "-40C/1.98V", "job_id": "klt-sim-4d82868ccefe"},
+      {"point": "125C/1.98V", "job_id": "klt-sim-4b4fc92b7c59"}
+    ]
+  },
+  "result": {
+    "status": "fail",
+    "passed": 130,
+    "failed": 2,
+    "errored": 0,
+    "corner_count": 12,
+    "delta_rows": 132,
+    "schematic_failed": 2,
+    "failing_rows": [
+      {"corner_id": "ff/-40C/1.98V", "spec_row": "active_power_uw", "schematic_value": 519.2, "extracted_value": 585.3, "delta_pct": 12.72},
+      {"corner_id": "ff/125C/1.98V", "spec_row": "active_power_uw", "schematic_value": 567.2, "extracted_value": 602.6, "delta_pct": 6.25}
+    ],
+    "delta_pct_ranges": {
+      "ring1_period_ns": [115.98, 136.82],
+      "ring2_period_ns": [117.18, 140.74],
+      "ring3_period_ns": [118.77, 144.43],
+      "ring4_period_ns": [121.33, 150.22],
+      "xo_edge_retention": [-3.74, 37.3],
+      "raw_tap_freq_mhz": [-58.06, -43.55],
+      "xo_swing_frac": [-15.18, -7.3],
+      "xo_bias_frac": [-20.6, 41.24],
+      "active_power_uw": [5.24, 24.21],
+      "reset_power_uw": [4.86, 27.88],
+      "sampler_reset_max_v": [-96.69, -36.17]
+    }
+  },
+  "disclosures": {
+    "extraction_model": "first-order lumped-RC: one series R per net terminal (star), net-to-ground C for every net's own area/perimeter plus vertical-overlap coupling C unconditionally; NO lateral (same-layer sidewall) coupling (no --critical-net given); quasi-static, one frequency-independent R and C per net; no distributed RC ladder (no --distributed-rc). Verbatim in pex-report.json extraction.model.",
+    "body_bias": "biased -- every device body in the extracted netlist has a DC path (unbiased_device_count 0, no --tie-net needed).",
+    "pdk": "extraction resolved sky130A via the host search root (~/.ciel), open_pdks f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7 -- NOT the volare install sim/pdk.json and design/pdk.json pin (c6d73a35f524...). Both legs of every delta row ran on the SAME fleet model library (models_lib_sha256 48de7c677e2c6e7d09b2559279de9f818be71010a4aa933d728eb4db3b133c84 in every resp-*.json), so each delta is self-consistent; absolute values carry this library pin, not the volare one.",
+    "deck": "curated sky130 deck content sha256:f78d2c3c9e92909b5baff6e00ece15a4158a55ca027a3ca20a96a7c6f10c0f42 on the klt 0.9.3.dev build (deck.released false -- dev build).",
+    "measurement_mode": "measure-command, not testbench: the spec rows read DUT-internal nets the extractor names with joined multi-label spelling no .meas card can quote on both legs; klt pex itself ran the committed harness once per side and computed every delta row (the harness never compares the two sides).",
+    "provisional": "simulation-derived, provisional until measured on silicon; the health-monitor/entropy verdicts live in signoff/characterization-report.md (item 8), not here."
+  },
+  "input_hashes": "runs/20261121-001303-7330672/input-hashes.json",
+  "artifacts": [
+    "sim/pex-sampler-core/runs/20261121-001303-7330672/pex-report.json",
+    "sim/pex-sampler-core/runs/20261121-001303-7330672/input-hashes.json",
+    "sim/pex-sampler-core/runs/20261121-001303-7330672/sampler_core.extracted.spice",
+    "sim/pex-sampler-core/runs/20261121-001303-7330672/pex/schematic-dut.flat.spice",
+    "sim/pex-sampler-core/runs/20261121-001303-7330672/pex/measure/schematic/dut.spice",
+    "sim/pex-sampler-core/runs/20261121-001303-7330672/pex/measure/schematic/harness-manifest.json",
+    "sim/pex-sampler-core/runs/20261121-001303-7330672/pex/measure/extracted/dut.spice",
+    "sim/pex-sampler-core/runs/20261121-001303-7330672/pex/measure/extracted/harness-manifest.json"
+  ]
+}
