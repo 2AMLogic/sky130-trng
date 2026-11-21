@@ -69,19 +69,26 @@ source -- none of them is silently taken):
    pair is the max over both (see 1). ``ic=0``: the real cells power up
    undefined and the deck's reset (``rst_n`` low until 300 ns) establishes the
    state every comparison relies on.
-8. **``input_load`` is the Liberty input-pin capacitance, and is NOT
-   DR-0017's boundary-load choice.** The cards need *some* ``input_load`` to
-   elaborate at all; using the real per-pin capacitance is strictly better
-   than inventing a default. Choosing between DR-0017 option 1 (keep the first
-   receiving cells at transistor level) and option 2 (model the load as
-   Liberty input-pin capacitance at the matching corner) is the rest of #431
-   and is **not** settled here.
+8. **``input_load`` is the Liberty input-pin capacitance -- since #595 this
+   IS DR-0017's boundary-load model, option 2.** The cards need *some*
+   ``input_load`` to elaborate at all; the real per-pin capacitance of the
+   first receiving cells at the mapped deck is the chosen boundary load
+   (``pvt_deck_map.py``, record ``records/20261121-pvt-deck-and-boundary-load.md``).
+   Option 1 (keep the first receiving cells at transistor level) was
+   rejected: it moves instances across the ``partition_check()`` partition.
+   The committed ``corners/gate-model-full`` manifest's ``reductions`` text
+   still says the choice was open -- it predates #595 and is evidence of
+   the #486 run, kept byte-stable; this docstring and every plan.json
+   written since carry the settled statement.
 9. **``vdd``/``vss`` are deck nets, but at gate level the supply enters only
    through 4 and through *which Liberty deck* is chosen.** ``Vvdd``/``Vvss``
    cards are emitted so the two supply nets exist by name (the boundary AC1
    names), but a ``corners.supply_v`` axis alone does **not** re-corner the
-   digital half -- the Liberty deck has to move with the point. Recorded,
-   because the rest of #431 needs it.
+   digital half -- the Liberty deck has to move with the point. Since #595
+   it does: ``--point PROC:TEMP:VDD`` takes the deck from
+   ``pvt_deck_map.py``'s 12-row matrix mapping (pinned by sha256) and
+   derives the bridge supply, the request's temperature and the process
+   corner from the point, refusing any point outside the matrix.
 
 **Fail-closed.** Nothing is written unless every instance maps: an unknown
 cell, an output pin with neither a ``function`` nor an ``ff`` group, an
@@ -92,6 +99,7 @@ bare pin all raise and exit non-zero with no output file.
 Usage::
 
     make-gate-model.py OUTDIR [--liberty PATH] [--supply-v 1.8] [--cycles 6]
+    make-gate-model.py OUTDIR --point PROC:TEMP_C:VDD   (e.g. ss:-40:1.62)
 
 writes, under OUTDIR:
 
@@ -119,6 +127,7 @@ REPO = HERE.parents[1]
 sys.path.insert(0, str(HERE))
 sys.path.insert(0, str(REPO / "layout" / "bin"))
 import program as P  # noqa: E402
+import pvt_deck_map as PVT  # noqa: E402
 from _hashing import sha256_file, sha256_text  # noqa: E402
 from _klt_common import BuildError, libs_ref  # noqa: E402
 
@@ -1260,6 +1269,27 @@ def ngspice_version() -> str:
         return "unavailable"
 
 
+_POINT_RE = re.compile(r"^(tt|ss|ff):(-?\d+(?:\.\d+)?):(\d+(?:\.\d+)?)$")
+
+
+def parse_point(spec: str) -> tuple[str, float, float]:
+    """``(process, temperature_c, supply_v)`` from a ``--point`` argument.
+
+    ``ss:-40:1.62`` -> ``("ss", -40.0, 1.62)``. Raises :class:`GateModelError`
+    on a malformed spec (the message names the expected shape) and
+    :class:`pvt_deck_map.DeckMapError` (also a ``ValueError``) when the point
+    is outside the 12-point matrix -- issue #595's mapping table is the only
+    deck source; no deck is ever picked ad hoc.
+    """
+    m = _POINT_RE.match(spec.strip())
+    if not m:
+        raise GateModelError(
+            f"--point {spec!r} is not PROC:TEMP_C:VDD (e.g. ss:-40:1.62)")
+    proc, temp, vdd = m.group(1), float(m.group(2)), float(m.group(3))
+    PVT.deck_row(proc, temp, vdd)  # fail closed: unmapped points have no deck
+    return proc, temp, vdd
+
+
 def resolve_liberty(explicit: str | None, corner: str) -> Path:
     r"""Resolve the Liberty deck through the repo's documented order.
 
@@ -1304,6 +1334,12 @@ def main(argv: list[str] | None = None) -> int:
                     help="Liberty deck path; default resolves via klt pdk find")
     ap.add_argument("--corner", default="tt_025C_1v80",
                     help="Liberty corner name when --liberty is not given")
+    ap.add_argument("--point", default=None, metavar="PROC:TEMP_C:VDD",
+                    help="a 12-point-matrix point, e.g. ss:-40:1.62 (issue #595): "
+                         "the Liberty deck comes from pvt_deck_map.py and "
+                         "--supply-v/--temp-c/the request's process corner "
+                         "derive from the point; refuses to combine with "
+                         "--liberty/--corner/--supply-v/--temp-c")
     ap.add_argument("--supply-v", type=float, default=1.8)
     ap.add_argument("--temp-c", type=float, default=27.0)
     ap.add_argument("--slew-ns", type=float, default=DEFAULT_SLEW_NS)
@@ -1321,9 +1357,40 @@ def main(argv: list[str] | None = None) -> int:
     if outdir.exists() and any(outdir.iterdir()):
         ap.error(f"{outdir} exists and is not empty; refusing to overwrite")
 
+    # issue #595: --point drives the deck (and the point's own T/V/process)
+    # from the committed matrix mapping; fail closed on an unmapped point
+    # BEFORE any output dir is created. Explicit conflicting knobs refuse.
+    pvt_row = None
+    if args.point is not None:
+        given_argv = argv if argv is not None else sys.argv[1:]
+        given = [f for f in ("--liberty", "--corner", "--supply-v", "--temp-c")
+                 if any(str(a) == f or str(a).startswith(f + "=")
+                        for a in given_argv)]
+        if given:
+            ap.error(f"--point and {'/'.join(given)} are mutually exclusive")
+        try:
+            proc, temp_c, vdd = parse_point(args.point)
+        except ValueError as exc:  # GateModelError | DeckMapError
+            raise GateModelError(str(exc)) from exc
+        pvt_row = PVT.deck_row(proc, temp_c, vdd)
+        args.corner = pvt_row["liberty_corner"]
+        args.supply_v = vdd
+        args.temp_c = temp_c
+        point_process = proc
+    else:
+        point_process = "tt"
+
     design = parse_verilog(args.verilog)
     liberty = resolve_liberty(args.liberty, args.corner)
     lib_sha = sha256_file(liberty)
+    if pvt_row is not None and lib_sha != pvt_row["liberty_sha256"]:
+        # the deck the point maps to is pinned by hash; a different file
+        # under the same corner name means the install is not the PDK the
+        # mapping was derived from (issue #595) -- refuse, never re-map
+        raise GateModelError(
+            f"{liberty.name}: sha256 {lib_sha} != the mapping's pinned "
+            f"{pvt_row['liberty_sha256']} for --point {args.point}; the "
+            "install differs from the PDK pvt_deck_map.py was derived from")
     wanted = set(design.cell_histogram())
     blocks, header, templates = extract_cell_blocks(liberty, wanted)
     absent = sorted(wanted - set(blocks))
@@ -1366,7 +1433,9 @@ def main(argv: list[str] | None = None) -> int:
         # tool gap: klayout-tools#5638.
         "netlist_source": NETLIST_SOURCE,
         "models": {"pdk": PDK, "lib": LIB},
-        "corners": {"process": ["tt"], "temperature_c": [args.temp_c]},
+        # --point (issue #595) puts the matrix point's process corner here;
+        # without it this is the #486 single-corner probe's "tt"
+        "corners": {"process": [point_process], "temperature_c": [args.temp_c]},
         "analysis": {"kind": "tran", "args": f"{TMAX} {t_stop:.0f}n"},
         "measurements": meas,
         "options": {"timeout_s": args.timeout_s, "keep_artifacts": True,
@@ -1402,7 +1471,26 @@ def main(argv: list[str] | None = None) -> int:
         "tools": {"ngspice": ngspice_version()},
         "provenance": P.PROVENANCE,
         "reductions": model.manifest["reductions"],
+        # issue #595: the boundary-load choice (DR-0017 option 2) travels
+        # with every plan this generator writes
+        "boundary_load_option": PVT.boundary_load_block(),
     }
+    if pvt_row is not None:
+        plan["pvt_point"] = {
+            "process": point_process,
+            "temperature_c": args.temp_c,
+            "supply_v": args.supply_v,
+            "liberty_deck": str(liberty),
+            "liberty_sha256": lib_sha,
+            "exact": pvt_row["exact"],
+            "dT_K": pvt_row["dT_K"],
+            "dV_V": pvt_row["dV_V"],
+            "delay_direction": pvt_row["delay_direction"],
+            "est_delay_error_pct": pvt_row["est_delay_error_pct"],
+            "power_direction": pvt_row["power_direction"],
+            "note": pvt_row["note"],
+            "mapping": "sim/post-layout-whole-block/pvt_deck_map.py (issue #595)",
+        }
 
     outdir.mkdir(parents=True, exist_ok=True)
     (outdir / "gate-model.cir").write_text(model.text())
@@ -1417,7 +1505,10 @@ def main(argv: list[str] | None = None) -> int:
           f"{m['primitives']['d_genlut']} d_genlut + {m['primitives']['d_dff']} d_dff "
           f"+ {len(m['declared_no_op_instances'])} declared no-op"
           f" (+{m['polarity_inverters']} polarity inverters)")
-    print(f"  Liberty {liberty.name} sha256 {lib_sha[:16]}...")
+    print(f"  Liberty {liberty.name} sha256 {lib_sha[:16]}..."
+          + (f" [point {point_process} {args.temp_c:.0f}C {args.supply_v:.2f}V, "
+             f"{'exact' if pvt_row['exact'] else pvt_row['delay_direction']} for delay]"
+             if pvt_row is not None else ""))
     print(f"  boundary (analog/digital): {' '.join(m['boundary']['analog_digital'])}")
     print(f"  program {len(cycles)} cycles, t_stop {t_stop:.0f} ns, {len(meas)} measurements")
     return 0
