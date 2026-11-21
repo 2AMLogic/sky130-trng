@@ -32,6 +32,38 @@ def live_rid(src):
 
 RID = live_rid(REPO) or FALLBACK_RID
 
+PEX_ITEM = "7.analog"
+PEX_SLUG = "sim/pex-sampler-core"
+# The PEX record is append-only evidence, so it stays on disk even after the
+# live 7.analog citation moves on; it backs the fixtures in that case.
+PEX_FALLBACK_RID = "20261121-001303-7330672"
+HARNESS_PIN = "sim/pex-sampler-core/harness/pex-measure.py"
+HARNESS_GATE = "sim/tests/test_pex_sampler_core.py::test_recorded_legs_match_every_delta"
+
+
+def pex_rid(src):
+    """Record id the manifest under src currently cites for PEX_ITEM, else None."""
+    ev = json.loads((src / "signoff/block-manifest.json").read_text()).get("evidence", {})
+    cite = ev.get(PEX_ITEM)
+    cite = cite["file"] if isinstance(cite, dict) else cite
+    return Path(cite).parts[3] if isinstance(cite, str) else None
+
+
+def make_pex_tree(dst, src=REPO):
+    """Copy the cited PEX record + every repo file it pins from src into dst."""
+    run = Path(PEX_SLUG) / "runs" / (pex_rid(src) or PEX_FALLBACK_RID)
+    hashes = json.loads((src / run / "input-hashes.json").read_text())
+    rel = [run / "input-hashes.json", run / "pex-report.json"]
+    rel += [Path(k) for k in hashes if not k.startswith("_")]
+    for r in rel:
+        (dst / r).parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy(src / r, dst / r)
+    (dst / "signoff").mkdir()
+    report = json.loads((dst / run / "pex-report.json").read_text())
+    (dst / "signoff/block-manifest.json").write_text(json.dumps(
+        {"evidence": {PEX_ITEM: {"file": f"{run.as_posix()}/pex-report.json",
+                                 "content_hash": report["provenance"]["input"]["content_hash"]}}}))
+
 
 def make_tree(dst, src=REPO, rid=None):
     """Copy the record + every repo file it pins from src into dst.  The record
@@ -57,6 +89,9 @@ def write_manifest(root, cite):
 
 
 class PexFreshness(unittest.TestCase):
+    def run_chk(self, root):
+        return chk.check(root, root / "signoff/block-manifest.json", PEX_ITEM)
+
     def test_failing_report_checks_its_own_layout_digest(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -71,6 +106,8 @@ class PexFreshness(unittest.TestCase):
                 "status": "fail", "layout": {"scope": "repo", "path": chk.PEX_LAYOUT},
                 "provenance": {"input": {"role": "layout", "content_hash": digest}},
             }))
+            (root / "sim/pex-sampler-core/runs/fixture/input-hashes.json").write_text(
+                json.dumps({chk.PEX_LAYOUT: digest}))
             manifest = root / "manifest.json"
             ev = {"file": cite, "content_hash": digest}
             manifest.write_text(json.dumps({"evidence": {"7.analog": ev}}))
@@ -84,6 +121,69 @@ class PexFreshness(unittest.TestCase):
             problems, _ = chk.check(root, manifest, "7.analog")
             self.assertTrue(any("differs from PEX input" in p for p in problems))
             self.assertTrue(any("DRIFT" in p for p in problems))
+
+    def test_real_cited_pex_run_passes(self):
+        problems, notes = chk.check(REPO, REPO / "signoff/block-manifest.json", PEX_ITEM)
+        self.assertEqual(problems, [])
+        if pex_rid(REPO) is None:
+            self.assertTrue(any("no active evidence" in n for n in notes))
+        else:
+            self.assertTrue(any(HARNESS_PIN in n and HARNESS_GATE in n for n in notes), notes)
+
+    def test_drifted_non_layout_pins_fail(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            make_pex_tree(root)
+            for rel in ["design/sampler_core.spice",
+                        "sim/pex-sampler-core/testbench/tb_sampler_core_body.spice",
+                        "sim/pex-sampler-core/net-aliases.json"]:
+                with self.subTest(rel):
+                    p = root / rel
+                    orig = p.read_bytes()
+                    p.write_bytes(orig + b"\n* drift\n")
+                    problems, _ = self.run_chk(root)
+                    self.assertTrue(any(f"DRIFT {rel}" in p for p in problems), problems)
+                    p.write_bytes(orig)
+            self.assertEqual(self.run_chk(root)[0], [])
+
+    def test_missing_pin_file_fails(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            make_pex_tree(root)
+            (root / "sim/pex-sampler-core/net-aliases.json").unlink()
+            problems, _ = self.run_chk(root)
+            self.assertTrue(any("net-aliases.json: cannot read" in p for p in problems), problems)
+
+    def test_drifted_harness_pin_passes_with_note(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            make_pex_tree(root)
+            h = root / HARNESS_PIN
+            h.write_bytes(h.read_bytes() + b"\n# drift\n")
+            problems, notes = self.run_chk(root)
+            self.assertEqual(problems, [])
+            self.assertTrue(any(HARNESS_PIN in n and HARNESS_GATE in n for n in notes), notes)
+
+    def test_harness_exemption_is_exact(self):
+        """Widening the exemption must stay an explicit, reviewed edit."""
+        self.assertEqual(set(chk.PEX_PIN_EXEMPTIONS), {HARNESS_PIN})
+        (reason,) = chk.PEX_PIN_EXEMPTIONS.values()
+        self.assertIn(HARNESS_GATE, reason)
+
+    def test_widened_exemption_does_not_cover_the_harness(self):
+        """The exemption is keyed by exact pin, never by prefix or glob."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            make_pex_tree(root)
+            h = root / HARNESS_PIN
+            h.write_bytes(h.read_bytes() + b"\n# drift\n")
+            saved = chk.PEX_PIN_EXEMPTIONS
+            chk.PEX_PIN_EXEMPTIONS = {f"{PEX_SLUG}/harness/": HARNESS_GATE}
+            try:
+                problems, _ = self.run_chk(root)
+            finally:
+                chk.PEX_PIN_EXEMPTIONS = saved
+            self.assertTrue(any(f"DRIFT {HARNESS_PIN}" in p for p in problems), problems)
 
 
 class Freshness(unittest.TestCase):

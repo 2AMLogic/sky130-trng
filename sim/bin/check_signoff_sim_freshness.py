@@ -6,8 +6,10 @@ unpinned (the native envelope records no input hash), so the signoff-check
 re-render alone cannot notice that the DUT, SDF, testbench or oracle changed
 after the simulation ran.  The record's input-hashes.json does pin them; this
 checker compares those pins with the bytes in the working tree. For 7.analog,
-the pinned grader can return check_failed before checking the layout pin.
-Compare the working sampler_core GDS with the cited PEX envelope directly.
+the pinned grader can return check_failed before checking the layout pin, so
+the working sampler_core GDS is compared with the cited PEX envelope directly,
+and the run's input-hashes.json pins go through the same shared per-pin loop
+(the one measurement-harness pin is exempted narrowly; see PEX_PIN_EXEMPTIONS).
 
 Read-only, no simulator and no PDK; stdlib plus the repo's shared digest helper
 (layout/bin/_hashing.py).  Only the *currently cited* record is checked;
@@ -29,6 +31,11 @@ regenerate signoff/t1-report.json.
   record-local         baseline SDF + oracle trace     re-hashed from the run dir
   derived, not kept    other "derived SDF: ..." pins   present + well-formed only
   external (PDK)       "$PDK_LIBS_REF/..."             present + well-formed only
+
+7.analog pins: repository files (layout, schematic, body template, alias
+map, run-local netlists) are re-hashed through the same categories;
+"_"-prefixed keys are run metadata, not pins; PEX_PIN_EXEMPTIONS names the
+single harness pin whose freshness is gated by its replay test instead.
 """
 import argparse
 import gzip
@@ -44,6 +51,16 @@ from _hashing import sha256_bytes, sha256_file  # noqa: E402
 DEFAULT_ITEM = "7.digital"
 PEX_LAYOUT = "layout/sampler_core/sampler_core.gds"
 DIGEST = re.compile(r"^sha256:[0-9a-f]{64}$")
+# The one 7.analog pin exempt from re-hashing: the PEX measurement harness
+# moved on after the run was recorded (6ffbf4be made the recorded sums
+# reproducible on Python 3.11/3.12) and the run dir is append-only, so the pin
+# cannot be re-minted.  The replay test named as the reason re-validates the
+# recorded evidence through the current harness; every other drifted pin still
+# fails, and widening this map is an explicit, reviewed edit.
+PEX_PIN_EXEMPTIONS = {
+    "sim/pex-sampler-core/harness/pex-measure.py":
+        "sim/tests/test_pex_sampler_core.py::test_recorded_legs_match_every_delta",
+}
 
 # Mandatory repository-file pins: the inputs fv-sdf-cosim.py hashes (routed
 # netlist, compressed SDF, STA report, P&R request, cocotb testbench, the
@@ -150,10 +167,21 @@ def check(root, manifest_path, item=DEFAULT_ITEM):
         notes.append(f"no active evidence cited for {item}; nothing to revalidate")
         return problems, notes
     citation, report, run_dir, hashes_path, record_path = located
-    if item == "7.analog":
-        return check_pex_layout(root, citation, report), notes
     rid = run_dir.name
     tag = f"record {rid}"
+    if item == "7.analog":
+        problems = check_pex_layout(root, citation, report)
+        if not hashes_path.is_file():
+            raise Usage(f"{tag}: {hashes_path.relative_to(root)} is missing")
+        hashes = load_json(hashes_path)
+        if not isinstance(hashes, dict):
+            raise Usage(f"{tag}: input-hashes.json is not an object")
+        for key in sorted(k for k in hashes if k.startswith("_")):
+            notes.append(f"metadata, not a pin: {key}")
+        _check_pins(problems, notes, tag,
+                    {k: v for k, v in hashes.items() if not k.startswith("_")},
+                    root, run_dir, PEX_PIN_EXEMPTIONS)
+        return problems, notes
     for p in (report, hashes_path):
         if not p.is_file():
             raise Usage(f"{tag}: {p.relative_to(root)} is missing")
@@ -181,11 +209,22 @@ def check(root, manifest_path, item=DEFAULT_ITEM):
         if key not in hashes:
             problems.append(f"{tag}: mandatory pin missing: {key}")
 
+    _check_pins(problems, notes, tag, hashes, root, run_dir)
+    return problems, notes
+
+
+def _check_pins(problems, notes, tag, hashes, root, run_dir, exemptions=None):
+    """Shared per-pin loop for 7.digital and 7.analog: compare every pin in
+    hashes with the working tree per its category.  exemptions maps a pin key
+    to a stated reason (its substitute gate); exempt pins are printed as notes
+    instead of being re-hashed."""
     for key, digest in hashes.items():
         if not isinstance(digest, str) or not DIGEST.match(digest):
             problems.append(f"{tag}: malformed digest for {key}: {digest!r}")
             continue
-        if key.startswith("$"):
+        if exemptions and key in exemptions:
+            notes.append(f"{key}: pin not re-hashed; substitute gate {exemptions[key]}")
+        elif key.startswith("$"):
             notes.append(f"external, not revalidated (no PDK here): {key}")
         elif key in RECORD_LOCAL_SDF:
             _cmp(problems, tag, key, digest, run_dir / RECORD_LOCAL_SDF[key], root, gz=True)
@@ -200,7 +239,6 @@ def check(root, manifest_path, item=DEFAULT_ITEM):
             _cmp(problems, tag, key, digest, root / key, root)
         else:
             problems.append(f"{tag}: pin {key!r} is outside the declared input contract")
-    return problems, notes
 
 
 def _cmp(problems, tag, key, digest, path, root, gz=False):
@@ -242,7 +280,7 @@ def main(argv=None):
     if any(n.startswith("no active evidence") for n in notes):
         return 0
     if a.item == "7.analog":
-        print(f"ok: {PEX_LAYOUT} matches the cited 7.analog PEX input and manifest pin")
+        print(f"ok: {a.item} PEX layout digest and cited record's pins match the working tree")
     else:
         print(f"ok: {a.item} cited record's pins match the working tree")
     return 0
