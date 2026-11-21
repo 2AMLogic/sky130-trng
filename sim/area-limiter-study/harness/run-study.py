@@ -188,7 +188,10 @@ def main(argv: list[str] | None = None) -> int:
                   "evidence", file=sys.stderr)
             return 2
 
-    workdir = args.keep or Path(tempfile.mkdtemp(prefix="area-limiter-"))
+    # resolve once: klt runs with cwd = the request's parent, so a relative
+    # --keep would otherwise be re-resolved against that directory
+    workdir = (args.keep or Path(tempfile.mkdtemp(
+        prefix="area-limiter-"))).resolve()
     workdir.mkdir(parents=True, exist_ok=True)
 
     liberty = resolve_liberty()
@@ -274,7 +277,8 @@ def main(argv: list[str] | None = None) -> int:
     # ---- items 2-4 --------------------------------------------------------
     folds = fold_sampler_core.main()
     overhead = composition_overhead.main()
-    combine = combine_options.main()
+    combine = combine_options.main(
+        variant_synth_cells_um2=var_resp["area_um2"])
 
     summary = {
         "item1_attribution": {
@@ -367,28 +371,62 @@ def main(argv: list[str] | None = None) -> int:
                  suite_copy_gate)
     artifacts.append(suite_copy_gate)
 
+    # the success claim is only publishable when this run's own comparisons
+    # support it; the expected depth-4 divergence is reported, not gated
+    d2_ok = (suite_rtl_d2["pass"] and suite_gate_d2["pass"]
+             and suite_gate["gate_matches_rtl"])
+    if not d2_ok:
+        print("error: the depth-2 variant does not match the normative "
+              "model's fifo_depth=2 trace in this run (rtl mismatches "
+              f"{suite_rtl_d2['mismatch_count']}, gate mismatches "
+              f"{suite_gate_d2['mismatch_count']}, gate==rtl "
+              f"{suite_gate['gate_matches_rtl']}); no record minted",
+              file=sys.stderr)
+        return 1
     body = build_record_body(summary, var_resp, base_resp)
-    claim = (
-        "FIFO storage is the largest functional consumer of the committed "
-        "unconstrained trng_digital netlist (10,542.6 um2 of 22,203.8, 47.5%, "
-        "conclusive against the shared/unassigned residual); a depth-2 FIFO "
-        "variant synthesizes at 16,129.2 um2 (-27.4% vs same-tool baseline) "
-        "and, while it diverges from the depth-4 normative model exactly at "
-        "the depth-observable checks, it MATCHES the normative model's own "
-        "fifo_depth=2 parameterisation bit-for-bit over the full 4239-cycle "
-        "directed program (RTL and mapped netlist); a folded sampler_core "
-        "(F1) estimates 218.7 x 81.9 um with ring symmetry intact; "
-        "composition overhead is 37.1% of the committed whole block and 75% "
-        "of it is removable stacking artifact; no combination reaches "
-        "0.05 mm2 -- best estimate 0.060740 mm2 (1.215x), the routed "
-        "digital macro remains the largest limiter"
-    )
+    claim = build_claim(summary, var_resp, base_resp)
     rid = mint_behavioral_record(
         REPO_ROOT, "area-limiter-study", claim, body, summary,
         level="gate", seeds={"suite_stimulus_seed": SEED},
         artifacts=artifacts, tools=tools)
     print(f"record minted: {rid}", file=sys.stderr)
     return 0
+
+
+def build_claim(s: dict, var_resp: dict, base_resp: dict) -> str:
+    """The record's headline, generated from this run's measured values."""
+    rows = s["item1_attribution"]["rows"]
+    total = s["item1_attribution"]["reconciliation"]["area_total_um2"]
+    fifo = rows["fifo_storage_raw"]["area_um2"] + \
+        rows["fifo_storage_cond"]["area_um2"]
+    f1, f2 = s["item2_fold"]["fold_f1"], s["item2_fold"]["fold_f2"]
+    oh = s["item3_composition_overhead"]
+    cb = s["item4_combine"]
+    d2 = s["item1_functional_suite"]["rtl_vs_model_depth2"]
+    delta_pct = s["item1_attribution"]["variant_fifo2"]["delta_pct"]
+    reach = ("a combination reaches 0.05 mm2" if cb["reaches_target"]
+             else "no fixed-pin-edge combination reaches 0.05 mm2")
+    return (
+        f"FIFO storage is the largest functional consumer of the committed "
+        f"unconstrained trng_digital netlist ({fifo:,.1f} um2 of "
+        f"{total:,.1f}, {100.0 * fifo / total:.1f}%, conclusive against the "
+        f"shared/unassigned residual); a depth-2 FIFO variant synthesizes at "
+        f"{var_resp['area_um2']:,.1f} um2 ({delta_pct:+.1f}% vs same-tool "
+        f"baseline) and, while it diverges from the depth-4 normative model "
+        f"at the depth-observable checks, it MATCHES the normative model's "
+        f"own fifo_depth=2 parameterisation bit-for-bit over the full "
+        f"{d2['cycles']}-cycle directed program (RTL and mapped netlist); a "
+        f"folded sampler_core (F1) estimates {f1['width_um']} x "
+        f"{f1['height_um']} um with ring symmetry intact; composition "
+        f"overhead is {oh['non_macro_share_pct']}% of the committed whole "
+        f"block and {oh['removable_by_tighter_floorplan']['share_of_non_macro_pct']:.0f}% "
+        f"of it is removable stacking artifact; {reach} -- best "
+        f"fixed-pin-edge estimate {cb['best_area_mm2']:.6f} mm2 "
+        f"({cb['best_area_mm2'] / cb['target_mm2']:.3f}x), best "
+        f"edge-aligned geometric estimate "
+        f"{cb['best_edge_aligned_area_mm2']:.6f} mm2 (needs a pin-access "
+        f"check); the routed digital macro remains the largest limiter"
+    )
 
 
 def build_record_body(s: dict, var_resp: dict, base_resp: dict) -> str:
@@ -414,6 +452,49 @@ def build_record_body(s: dict, var_resp: dict, base_resp: dict) -> str:
     residual = rows.get("shared", {"area_um2": 0})["area_um2"] + \
         rows.get("unassigned", {"area_um2": 0})["area_um2"]
 
+    n_inst = sum(r["instances"] for r in rows.values())
+    cycles = s["item1_functional_suite"]["rtl_vs_model"]["cycles"]
+    base_total_committed = 22203.7952  # the committed 0.69-post figure
+    ctrl_pct = 100.0 * (base_total_committed - base_resp["area_um2"]) \
+        / base_total_committed
+    rt = s["item2_fold"]["fold_f1"]["routing"]
+    route_tbl = [
+        "F1 added routing, recomputed from the folded net endpoints "
+        "(`fold_f1.routing`; Manhattan length between the moved committed "
+        "port coordinates plus each polyline's own detour excess; vertical "
+        "spans of the ro2/ro3 hauls are unchanged because the array and "
+        "row B move together):",
+        "",
+        "| net | unfolded um (v / h) | folded um (v / h) | delta um |",
+        "|---|---|---|---|",
+    ]
+    for n in rt["nets"]:
+        route_tbl.append(
+            f"| {n['net']} | {n['unfolded_um']} "
+            f"({n['unfolded_vertical_um']} / {n['unfolded_horizontal_um']}) "
+            f"| {n['folded_um']} ({n['folded_vertical_um']} / "
+            f"{n['folded_horizontal_um']}) | {n['delta_um']:+} |")
+    route_tbl += [
+        "",
+        f"Data hauls net {rt['data_nets_net_delta_um']:+} um; supply straps "
+        f"re-tapped at the folded rail end {rt['supply_strap_horizontal_extension_um']:+} um; "
+        f"row risers (vdd, vss, clk, rst_n) {rt['row_risers_um']:+} um; "
+        f"six-to-two-chain saving {rt['rail_and_control_chain_saving_um']:+} "
+        f"um. Gross added {rt['gross_added_um']} um; net "
+        f"{rt['net_total_um']} um. Assumed detours: "
+        + "; ".join(rt["assumed_detours"]) + ". Not modelled: "
+        + rt["not_modelled"] + ".",
+    ]
+    comb_tbl = [
+        "| option | baseline | topology | area mm2 | delta vs baseline mm2 "
+        "| confidence | risk |",
+        "|---|---|---|---|---|---|---|",
+    ]
+    for row in s["item4_combine"]["rows"]:
+        comb_tbl.append(
+            f"| {row['option']} | {row['on_baseline']} | {row['topology']} "
+            f"| {row['area_mm2']:.6f} | {row['delta_vs_baseline_mm2']:+.6f} "
+            f"| {row['confidence']} | {row['risk']} |")
     ph_rtl = s["item1_functional_suite"]["rtl_vs_model"]["per_phase"]
     ph_tbl = ["| suite phase (seed 20260905) | RTL vs model | gate vs model |",
               "|---|---|---|"]
@@ -432,7 +513,7 @@ def build_record_body(s: dict, var_resp: dict, base_resp: dict) -> str:
         "",
         f"Attribution rule, anchors and reconciliation: "
         f"`harness/attribute_digital_area.py` docstring. Every one of the "
-        f"2,320 instances owns exactly one row; rows sum to 22,203.7952 um2 "
+        f"{n_inst:,} instances owns exactly one row; rows sum to {total:.4f} um2 "
         f"against the Liberty deck the committed record pins "
         f"(sha256:8e78e144...). The storage anchors cover 128 distinct "
         f"`raw_mem` and 128 distinct `cond_mem` Q-driven bits.",
@@ -455,7 +536,7 @@ def build_record_body(s: dict, var_resp: dict, base_resp: dict) -> str:
         f"#314; the resolved Liberty deck hashes to the SAME "
         f"sha256:8e78e144... the committed 20260910 record pins, so the "
         f"areas are directly comparable): {base_resp['instance_count']} "
-        f"instances, {base_resp['area_um2']} um2 -- 0.006% below the "
+        f"instances, {base_resp['area_um2']} um2 -- {ctrl_pct:.3f}% below the "
         f"committed 0.69-post figure; per-type attribution of the control "
         f"netlist reconciles identically.",
         "",
@@ -496,7 +577,7 @@ def build_record_body(s: dict, var_resp: dict, base_resp: dict) -> str:
         "(`TrngDigital(fifo_depth=2)` -- the model already parameterises "
         "depth; nothing in `digital/model/` is modified) the variant RTL "
         f"{'MATCHES' if s['item1_functional_suite']['rtl_vs_model_depth2']['pass'] else 'DOES NOT MATCH'} "
-        "the full 4239-cycle directed program "
+        f"the full {cycles}-cycle directed program "
         f"({s['item1_functional_suite']['rtl_vs_model_depth2']['mismatch_count']} "
         "mismatches), and the mapped netlist "
         f"{'matches too' if s['item1_functional_suite']['gate_vs_model_depth2']['pass'] else 'does not'}. "
@@ -514,12 +595,17 @@ def build_record_body(s: dict, var_resp: dict, base_resp: dict) -> str:
         f"{s['item2_fold']['fold_f1']['area_um2']} um2 "
         f"({s['item2_fold']['fold_f1']['delta_area_um2']} um2 vs committed); "
         f"ring-to-ring symmetry survives by construction; "
-        f"{s['item2_fold']['fold_f1']['added_routing_estimate']}.",
+        f"routing recomputed from the folded endpoints: gross added "
+        f"{s['item2_fold']['fold_f1']['routing']['gross_added_um']} um, net "
+        f"{s['item2_fold']['fold_f1']['routing']['net_total_um']} um after "
+        f"the shorter chains and data hauls (table below).",
         f"- F2 (also 2x2 rings): {s['item2_fold']['fold_f2']['width_um']} x "
         f"{s['item2_fold']['fold_f2']['height_um']} um = "
         f"{s['item2_fold']['fold_f2']['area_um2']} um2 -- macro area GROWS "
         f"by {s['item2_fold']['fold_f2']['delta_area_um2']} um2 and the "
         f"vertical ring adjacency is unmeasured; recorded, not recommended.",
+        "",
+        *route_tbl,
         "",
         "## Item 3 -- composition overhead (measured inputs, exact)",
         "",
@@ -542,6 +628,8 @@ def build_record_body(s: dict, var_resp: dict, base_resp: dict) -> str:
         "## Item 4 -- combined options",
         "",
         s["item4_combine"]["verdict_text"],
+        "",
+        *comb_tbl,
         "",
         f"Largest remaining limiter: {s['item4_combine']['largest_remaining_limiter']}.",
         "",

@@ -69,6 +69,132 @@ def current_arrangement() -> dict:
     }
 
 
+def _port_map() -> dict:
+    """Every named port in the committed recipe -> (x, y) in the composed
+    cell's own frame (later stages' declarations win; coordinates agree)."""
+    ports = {}
+    for stage in SAMPLER_CORE["stages"]:
+        for blk in stage["blocks"]:
+            for p in blk["cell"].get("ports", []):
+                ports[p["name"]] = (p["x_um"], p["y_um"])
+    return ports
+
+
+def _polyline_len(pts: list) -> float:
+    return sum(abs(b[0] - a[0]) + abs(b[1] - a[1])
+               for a, b in zip(pts, pts[1:]))
+
+
+def _manhattan(a: tuple, b: tuple) -> float:
+    return abs(a[0] - b[0]) + abs(a[1] - b[1])
+
+
+# F1 placement: row A = sb, sv, sr1 (origins unchanged, y = 0); row B =
+# sr2, sr3, sr4 moved to the row-A x origins 0 / 55.66 / 111.32 at y = one
+# committed row offset; the ring array moves up by one more row offset.
+F1_SAMPLER_MOVE = {          # instance -> (dx, dy) applied to its own ports
+    "sr2": (0.0 - 166.98, ARRAY_OFFSET_Y_UM),
+    "sr3": (55.66 - 222.64, ARRAY_OFFSET_Y_UM),
+    "sr4": (111.32 - 278.3, ARRAY_OFFSET_Y_UM),
+}
+F1_ARRAY_MOVE = (0.0, ARRAY_OFFSET_Y_UM)
+
+# data hauls: (net, array-side port, sampler-side port, sampler instance;
+# None = row A / unmoved), taken from the route_data / route_data2 stages.
+DATA_NETS = (
+    ("ro1", "ro1_esc_m1", "sr1_d_m1", None),
+    ("ro2", "ro2_esc_m1", "sr2_d_m1", "sr2"),
+    ("ro3", "ro3_esc_m1", "sr3_d_m1", "sr3"),
+    ("ro4", "ro4_esc_m1", "sr4_d_m1", "sr4"),
+    ("xo", "xo_dip_w", "sb_d_m1", None),
+)
+# the one detour the folded endpoints force that the unfolded recipe did
+# not need: ro1's array tap now sits above row B, so its descent moves from
+# the committed x = -0.5 lane to the free west margin lane (x = -2.0, the
+# only met2 band clear over the array height, route_data2 comment) and back:
+ASSUMED_DETOUR_RO1_UM = 2 * 1.5
+
+
+def f1_routing() -> dict:
+    """Recompute F1's added routing from the folded net endpoints.
+
+    Each haul's length is modelled as the Manhattan distance between its
+    (moved) endpoints plus the detour excess the committed polyline already
+    carried over its own endpoint Manhattan distance (only ``xo`` has one).
+    """
+    ports = _port_map()
+    waypoints = {}
+    for stage in SAMPLER_CORE["stages"]:
+        for net in stage["connectivity"]:
+            if "waypoints_um" in net and net["net"] in {n[0] for n in DATA_NETS}:
+                waypoints[net["net"]] = net["waypoints_um"]
+    nets = []
+    for name, arr_port, smp_port, inst in DATA_NETS:
+        a0, s0 = ports[arr_port], ports[smp_port]
+        a1 = (a0[0] + F1_ARRAY_MOVE[0], a0[1] + F1_ARRAY_MOVE[1])
+        dx, dy = F1_SAMPLER_MOVE.get(inst, (0.0, 0.0))
+        s1 = (s0[0] + dx, s0[1] + dy)
+        orig = _polyline_len(waypoints[name])
+        excess = orig - _manhattan(a0, s0)
+        folded = _manhattan(a1, s1) + excess
+        assumed = ASSUMED_DETOUR_RO1_UM if name == "ro1" else 0.0
+        nets.append({
+            "net": name,
+            "unfolded_um": round(orig, 3),
+            "unfolded_vertical_um": round(abs(a0[1] - s0[1]), 3),
+            "unfolded_horizontal_um": round(abs(a0[0] - s0[0]), 3),
+            "folded_vertical_um": round(abs(a1[1] - s1[1]), 3),
+            "folded_horizontal_um": round(abs(a1[0] - s1[0]), 3),
+            "retained_detour_excess_um": round(excess, 3),
+            "folded_um": round(folded, 3),
+            "assumed_detour_um": assumed,
+            "delta_um": round(folded - orig + assumed, 3),
+        })
+    data_delta = round(sum(n["delta_um"] for n in nets), 3)
+
+    # supplies / control. Row-B rails and clk/rst_n runs each need a riser to
+    # row A (one row offset per net: vdd, vss, clk, rst_n); the committed
+    # array supply straps land on the sampler rails at x = 213.7 / 218.0,
+    # east of the folded rows' rail end (row A: 111.32 + sampler_dff x1), so
+    # they re-tap row B's rails (same vertical span as before, because the
+    # array and row B move together) and gain the horizontal run to that end.
+    rail_end = SAMPLER_ORIGINS[2] + _bbox(SAMPLER_DFF_RESP)["x1"]
+    strap_east = round(
+        (ports["vdd_rail_tap"][0] - rail_end)
+        + (ports["vss_rail_tap"][0] - rail_end), 3)
+    risers = round(4 * ARRAY_OFFSET_Y_UM, 3)
+    # the six-sampler rail / clk / rst_n chains (4 nets x 5 legs) become two
+    # chains of 2 legs: one 55.66 um leg fewer per net
+    chain_saved = round(-4 * SAMPLER_PITCH_UM, 3)
+    gross_added = round(
+        sum(n["delta_um"] for n in nets if n["delta_um"] > 0)
+        + strap_east + risers, 3)
+    net_total = round(data_delta + strap_east + risers + chain_saved, 3)
+    return {
+        "model": "per-net Manhattan length between the folded endpoints "
+                 "(committed port coordinates; sampler row B moved to the "
+                 "row-A x origins one row offset up, array one more row "
+                 "offset up) plus the committed polyline's own detour excess",
+        "nets": nets,
+        "data_nets_net_delta_um": data_delta,
+        "supply_strap_horizontal_extension_um": strap_east,
+        "row_risers_um": risers,
+        "rail_and_control_chain_saving_um": chain_saved,
+        "gross_added_um": gross_added,
+        "net_total_um": net_total,
+        "assumed_detours": [
+            f"ro1 descends the west margin lane (x = -2.0) instead of the "
+            f"committed x = -0.5 column, +{ASSUMED_DETOUR_RO1_UM} um",
+            "the supply straps re-tap row B's rails at their east end "
+            f"(x = {rail_end:.2f}); a vss/vdd rail extension beyond the row "
+            "end is assumed legal -- no DRC was run",
+        ],
+        "not_modelled": "via counts, layer-change delays, track congestion "
+                        "in the new row-A/row-B gap, and timing/coupling "
+                        "effects of the shorter or longer data hauls",
+    }
+
+
 def fold_f1() -> dict:
     """Samplers in two rows of three; ring array row unchanged on top."""
     dff = _bbox(SAMPLER_DFF_RESP)
@@ -93,6 +219,7 @@ def fold_f1() -> dict:
         "area_um2": round(width * height, 3),
         "row_a_x1": round(row_a_x1, 3),
         "array_offset_y_um": 2 * ARRAY_OFFSET_Y_UM,
+        "routing": f1_routing(),
         "ring_row_unchanged": True,
         "symmetry_verdict": "survives by construction: the four rings keep "
                             "their committed single-row arrangement, pitch and "
@@ -102,11 +229,8 @@ def fold_f1() -> dict:
                           "extra horizontal run per folded row plus two "
                           "vertical risers each (met1/met2, same style as the "
                           "committed strap stages)",
-        "added_routing_estimate": "+~50 um (strap risers) +~24 um (clk lane "
-                                  "riser) +~24 um (rst_n riser) +~120 um "
-                                  "(sr2..sr4 d/q routes lengthen by the "
-                                  "23.635 um row offset) = +~220 um total, no "
-                                  "new routing role",
+        "added_routing_estimate": "see routing (recomputed from the folded "
+                                  "endpoints)",
     }
 
 
