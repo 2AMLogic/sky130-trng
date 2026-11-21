@@ -102,9 +102,17 @@ document's draft filed for it:
 
 - **T1 item 5, both partitions.** Which spec does the grader read as ratified? DR-0010 is the packet for the
   README target table; DR-0004 gates the digital row. The digital STA and functional reports already exist.
-- **T1 item 6.** Which spec rows are statistical, and can the local-mismatch Monte Carlo
-  (`sim/local-mismatch-monte-carlo/`) be expressed as a `klt yield` report with a seed, sample count and
-  negative control?
+- **T1 item 6.** Answered for the analog partition (#598): `sim/local-mismatch-monte-carlo/yield/`
+  carries the campaign as three `klt yield` reports (tt/ss/ff, seed + sample count recorded, the
+  mismatch-free `arr0`/`smp0` control beside them), cited in `signoff/block-manifest.json`. The one
+  statistical spec row is **Raw min-entropy per bit** (ring-pair lock proximity, the `Q_array` margin and
+  the `<v(xo)>/vnom` band are DR-0003/DR-0005 design margins, not target-table rows). The item stays
+  `unmet`/`partial_coverage` on purpose: `H_bias` is only an upper bound on the row quantity, the row
+  states no target yield, and the row is unratified -- the two missing inputs (a target yield,
+  ratification) are named on #3; tt's 60/1800 pairings below the floor stay linked to #221. 6.digital
+  (`not_applicable`, no statistical row) is written down ready in #598's PR description, unapplied until
+  ratification. Follow-up, not blocking: a seeded-defect campaign to feed `klt yield`'s
+  `negative_control` field.
 - **Raw min-entropy below the floor at tt** (#221, DR-0013 in PR #249): amend the floor, the operating point or
   the lock-proximity criterion, or add trim or selection?
 - **Raw rate and area.** Both targets are unmet by the chosen architecture (about 78 kbps ceiling; 2.52x area).
