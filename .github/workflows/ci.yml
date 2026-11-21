@@ -186,6 +186,31 @@ name: CI
 #     runs on every PR since issue #542 removed the path filters.
 #     No klt, no PDK, no ngspice.
 #
+# sim/post-layout-sampler-core/test_make_ts20u_requests.py (issue #604) --
+#     stdlib-only unit test of the Ts = 20 us sampler_core active-power
+#     request generator. The fleet run's honesty rests on three properties
+#     nobody can eyeball in a 460 kB inlined deck: the body must be a
+#     circuit BODY (no .lib/.temp/.tran/.meas/.control/.end, no title card)
+#     with both committed netlists inlined verbatim; the three recorded
+#     stimulus deviations must be in the cards themselves (clk at 20 us with
+#     the control's own 49.8 % duty and 320 ns first edge; en/rst PULSE
+#     widths that never fall inside tstop while keeping the 5 ns / 300 ns
+#     release instants that make the 50-250 ns reset window
+#     stimulus-identical to the committed 100 ns controls; tstep 50p under
+#     the fleet's 3600 s whole-job ceiling); and every measurement window
+#     must sit inside the .tran stop with W_ACT exactly one complete clk
+#     period, edges at both endpoints. Deterministic re-emission is pinned
+#     so a regenerated request can never silently drift from the committed
+#     plan.json hashes. No klt, no PDK, no ngspice.
+#
+# sim/tests/test_active_power_budget.py (issue #604) -- stdlib-only unit
+#     test of the active-power-budget reduction: signed rail sums x 1.98 V,
+#     headroom sign, PASS/FAIL grading that refuses to grade a leg within
+#     the cross-run agreement band of the bound, the W_RST cross-run anchor
+#     delta, verbatim disposition appending, and the two refusal paths
+#     (missing measurement, non-ok ff corner never emit a partial table).
+#     No klt, no PDK, no ngspice.
+#
 # sim/tests/test_gate_model.py (issue #486) -- stdlib-only unit test of the
 #     gate-level digital model generator (sim/post-layout-whole-block/make-gate-model.py),
 #     the ngspice realisation DR-0017 option (b) left open. The strong check
@@ -419,6 +444,12 @@ jobs:
 
       - name: sim/post-layout-whole-block/test_make_requests.py (issue #488 driven-input PWL holds then switches; capture points at a rail; grid timeouts pinned)
         run: python3 sim/post-layout-whole-block/test_make_requests.py
+
+      - name: sim/post-layout-sampler-core/test_make_ts20u_requests.py (issue #604 Ts=20us request generator -- circuit-body shape, recorded stimulus deviations, windows inside tstop, fleet-ceiling fit, determinism)
+        run: python3 sim/post-layout-sampler-core/test_make_ts20u_requests.py
+
+      - name: sim/tests/test_active_power_budget.py (issue #604 budget reduction -- signed rail sums, headroom, anchor delta, verdict band, refusal paths)
+        run: python3 sim/tests/test_active_power_budget.py
 
       - name: sim/tests/test_gate_model.py (issue #486 gate-level model generator -- routed-netlist correspondence, Liberty truth tables, NLDM interpolation, fail-closed paths)
         run: python3 sim/tests/test_gate_model.py
