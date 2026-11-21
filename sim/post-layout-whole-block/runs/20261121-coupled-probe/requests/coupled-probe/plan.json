@@ -1,0 +1,94 @@
+{
+  "analog_partition_sha256": "ab2362ec6a80f39d1eecb6f298c07ff81b6a4fb0080115620de0fa33f9413f67",
+  "analysis": {
+    "args": "20p 100n",
+    "kind": "tran"
+  },
+  "corners": {
+    "process": [
+      "tt"
+    ],
+    "supply_v": {
+      "Vvdd": [
+        1.8
+      ],
+      "Vvddr1": [
+        1.8
+      ],
+      "Vvddr2": [
+        1.8
+      ],
+      "Vvddr3": [
+        1.8
+      ],
+      "Vvddr4": [
+        1.8
+      ]
+    },
+    "temperature_c": [
+      27.0
+    ]
+  },
+  "digital_gate_netlist_sha256": "9f3956848e6e75223f75bd154df905fecbb4e988593e78d1a92e347969fbf37f",
+  "flat_whole_netlist_sha256": "965f1e6c29d771d5b8e18a3ea66ccabf93f0a5eb14c3f0c23810f39ae1052c36",
+  "gate_manifest": "corners/gate-model-full/gate-model.manifest.json",
+  "gate_model_sha256": "abbe277084a8d97a4af35a054e151ebb1faa2d48d4a93bb6f39e9efcce447e51",
+  "liberty_deck": "/home/ubuntu/.ciel/ciel/sky130/versions/f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7/sky130A/libs.ref/sky130_fd_sc_hd/lib/sky130_fd_sc_hd__tt_025C_1v80.lib",
+  "liberty_sha256": "8e78e14442062dba34d414fca6490b2f6b96038d4510d1438ca44fee31487135",
+  "measurement_count": 9,
+  "name": "coupled-probe",
+  "netlist_sha256": "b21d2a5ceea3dfa4466b9b3172c9ea415e0f056076180141909fc0a128c4747c",
+  "partition_check": {
+    "analog_transistors": 264,
+    "analog_y_min_um": 250.0,
+    "digital_transistors": 25091,
+    "diode_instances": 1,
+    "port_count": 123,
+    "shared_nets": [
+      "clk",
+      "raw_bit",
+      "raw_valid",
+      "rst_n"
+    ],
+    "total_instances": 25356
+  },
+  "program": {
+    "cycles": 75,
+    "t0_ns": 320.0,
+    "t_stop_ns": 7870.0,
+    "ts_ns": 100.0
+  },
+  "provenance": {
+    "analog": "transistor",
+    "digital": "gate-level"
+  },
+  "raw_source": "analog_sampler",
+  "realisation": "timed-delay XSPICE netlist (d_genlut / d_dff + adc/dac bridges)",
+  "reductions": {
+    "adc_bridge_in_high_v": 0.9900000000000001,
+    "adc_bridge_in_low_v": 0.81,
+    "c_load": "sum of Liberty input-pin capacitance of the receivers on the net, plus port_load_pf on a net that reaches a module output port",
+    "dac_bridge_out_high_v": 1.8,
+    "dff": "clk_delay/set_delay/reset_delay = 1e-12 s (XSPICE's own floor; it refuses 0), ic = 0; one scalar rise/fall pair per flop covers the CLK->Q and async clear/preset arcs",
+    "input_load": "Liberty input-pin capacitance per d_genlut input -- NOT the DR-0017 boundary-load choice (option 1 vs 2 is open, #431)",
+    "liberty_threshold_pct": 50.0,
+    "min_delay_s": 1e-12,
+    "nldm_reduction": "bilinear interpolation at (slew, C_load), clamped to the table index range, max over every delay arc to the pin",
+    "port_load_pf": 0.0,
+    "slew_ns": 0.1,
+    "supply_axis": "corners.supply_v alone does NOT re-corner the digital half; the Liberty deck must move with the (T, Vdd) point",
+    "supply_v": 1.8
+  },
+  "trng_whole_gds_sha256": "af2f8dfe2800599e97d769bdedd14924c9fa3f24fc7e1c4f43ccd72ac5572ddd",
+  "vih_fixed": 1.8,
+  "windows": {
+    "w1_ns": [
+      50.0,
+      250.0
+    ],
+    "w2_ns": [
+      520.0,
+      7770.0
+    ]
+  }
+}
