@@ -143,11 +143,6 @@ DAC_EDGE_S = 100e-12
 #: delay". It is three orders of magnitude below the smallest cell delay in this
 #: deck (the fastest cell_rise here is ~60 ps), so it is not a modelling choice.
 MIN_DELAY_S = 1e-12
-#: PWL edge width (ns) for a stimulus change: the same 100 ps every PULSE card
-#: in this deck family uses, and the slew operating point the Liberty tables are
-#: reduced at. Without an explicit edge a PWL source ramps linearly across the
-#: whole interval between change points (see stimulus_cards.points).
-PWL_EDGE_NS = 0.1
 #: digital input high level (V). make-requests.py:75 fixes VIH = 1.8 V at every
 #: corner and discloses it as a repo convention, not a published PDK figure.
 VIH = 1.8
@@ -1117,38 +1112,6 @@ def stimulus_cards(cycles: list[dict], vih: float) -> list[str]:
     driven here (standalone), from the committed RAW_BIT_PATTERN.
     """
     inputs = P.cycle_inputs(cycles)
-    n = len(cycles)
-    t_stop = P.t_stop_ns(cycles)
-
-    def pwl(sig: str, pts: list[tuple[float, float]]) -> str:
-        body = " ".join(f"{t:.1f}n {v * vih:.3f}" for t, v in pts)
-        return f"V{sig} {sig} 0 PWL({body})"
-
-    def emit(sig: str, pts: list[tuple[float, float]]) -> list[str]:
-        return wrap_card(pwl(sig, pts))
-
-    def points(get) -> list[tuple[float, float]]:
-        """PWL breakpoints that HOLD between changes, with a 100 ps edge.
-
-        A PWL source interpolates **linearly** between its breakpoints, so a
-        points list that carries only the change instants makes every input
-        ramp over the whole interval instead of switching at it. Measured on
-        this deck: ``bus_re`` emitted as ``PWL(0n 1.8 640n 0)`` sits at
-        0.928 V at 310 ns, inside the adc_bridge dead band, and the whole
-        digital state goes UNKNOWN. So each change gets a hold point one
-        ``PWL_EDGE_NS`` before it. The edge width is the same 100 ps every
-        PULSE card in this deck family uses, and the same operating point
-        ``--slew-ns`` reduces the Liberty tables at.
-        """
-        pts = [(0.0, float(get(0)))]
-        for k in range(1, n):
-            if get(k) != get(k - 1):
-                t_change = P.t_edge_ns(k) + P.SKEW_NS
-                pts.append((t_change - PWL_EDGE_NS, float(get(k - 1))))
-                pts.append((t_change, float(get(k))))
-        pts.append((t_stop, float(get(n - 1))))
-        return pts
-
     cards: list[str] = [
         f"Vrst_n rst_n 0 PULSE(0 {vih} {P.RST_N_RELEASE_NS:.0f}n 100p 100p 10u 20u)",
         f"Vclk clk 0 PULSE(0 {vih} {P.T0_NS:.0f}n 100p 100p 49.8n {P.TS_NS:.0f}n)",
@@ -1164,17 +1127,9 @@ def stimulus_cards(cycles: list[dict], vih: float) -> list[str]:
             bi += 1
         else:
             seq.append(seq[-1] if seq else 0)
-    cards += emit("raw_bit", points(lambda k: seq[k]))
-    for bit in range(4):
-        cards += emit(f"bus_addr_{bit}_",
-                      points(lambda k, b=bit: (inputs[k]["addr"] >> b) & 1))
-    for bit in range(32):
-        cards += emit(f"bus_wdata_{bit}_",
-                      points(lambda k, b=bit: (inputs[k]["wdata"] >> b) & 1))
-    # module port name -> program.cycle_inputs() key
-    for sig, key in (("bus_we", "we"), ("bus_re", "re"),
-                     ("raw_valid", "raw_valid"), ("out_ready", "out_ready")):
-        cards += emit(sig, points(lambda k, kk=key: inputs[k][kk]))
+    cards += wrap_card(P.waveform_card("raw_bit", seq, P.t_stop_ns(cycles), vih))
+    for card in P.input_cards(cycles, len(cycles), vih):
+        cards += wrap_card(card)
     return cards
 
 

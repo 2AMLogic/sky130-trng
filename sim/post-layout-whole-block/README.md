@@ -157,19 +157,21 @@ its boundary -- *not* the mixed-level whole block. Record:
 `runs/20261114-gate-model-probe/` and `runs/20261114-gate-model-full/`.
 `d_cosim` co-simulation remains the documented fallback.
 
-**Open (not done by this change, so nothing here is claimed for it):**
+**Nominal coupled deck (#596).** The 264-transistor analog partition now drives
+the archived routed gate model through the sampler's extracted `raw_bit` and
+`raw_valid` nodes. The two partitions share one clock, reset and pair of logic
+rails. Generate the 100 ns probe or full 7,870 ns request with
+`make-requests.py <empty-dir> --set coupled-probe` or `--set coupled-full`.
+Each produces one tt / 27 °C / 1.8 V batch unit. The full request records the
+sampler at every cycle for replay by `analysis/compare-gate-model.py`.
 
-* The **coupled** whole-block deck: the analog partition at transistor level
-  and the gate model behind the boundary in one netlist, including the
-  `raw_bit`/`raw_valid` hand-off (testbench-driven in the standalone run), with
-  a **measured** fleet run and simulated time reached. The gate-level half's
-  rate is now measured, but **linear additivity of the two halves is an
-  extrapolation, not a measurement**, so no whole-block rate is claimed.
-* Hence `GRID_TIMEOUT_S` / `poll_timeout_s` are **not** re-set; neither the
-  0.057 s per simulated ns analog-only rate nor the 0.00975 s/sim-ns
-  gate-level rate sizes the full block. If the measured full-block rate
-  exceeds the 3480 s ceiling, that is recorded as a negative result for
-  option (b).
+**Open**
+
+* The batch client assigned `klt-sim-9ffb4c91eb0f` and stopped during upload
+  because the submitting host lacked the `batch-runner-submit` profile.
+  The probe and full-program timing are still open. The 12-point matrix (#307)
+  needs a measured rate and a completed digital comparison before its timeouts
+  can be sized. [Criterion and submission evidence](records/20261121-coupled-rate.md).
 * Full-block 100 ns rate probe on the re-pinned netlist (`965f1e6c...`): one batch job was
   interrupted by spot reclamation at 3279 s, no verdict; re-run needed. See
   `records/20261106-rate-probe-repinned-netlist.md`.
