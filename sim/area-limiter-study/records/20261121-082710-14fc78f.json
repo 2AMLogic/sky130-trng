@@ -1,0 +1,1047 @@
+{
+  "record_id": "20261121-082710-14fc78f",
+  "slug": "area-limiter-study",
+  "level": "gate",
+  "claim": "FIFO storage is the largest functional consumer of the committed unconstrained trng_digital netlist (10,542.6 um2 of 22,203.8, 47.5%, conclusive against the shared/unassigned residual); a depth-2 FIFO variant synthesizes at 16,129.2 um2 (-27.4% vs same-tool baseline) and, while it diverges from the depth-4 normative model at the depth-observable checks, it MATCHES the normative model's own fifo_depth=2 parameterisation bit-for-bit over the full 4239-cycle directed program (RTL and mapped netlist); a folded sampler_core (F1) estimates 218.675 x 81.94 um with ring symmetry intact; composition overhead is 37.08% of the committed whole block and 75% of it is removable stacking artifact; no fixed-pin-edge combination reaches 0.05 mm2 -- best fixed-pin-edge estimate 0.060740 mm2 (1.215x), best edge-aligned geometric estimate 0.055898 mm2 (needs a pin-access check); the routed digital macro remains the largest limiter",
+  "seeds": {
+    "suite_stimulus_seed": 20260905
+  },
+  "supersedes": null,
+  "author": "loom-builder@sky130-trng",
+  "timestamp_utc": "2026-11-21T08:27:10.519143+00:00",
+  "repo_sha": "14fc78f",
+  "tools": {
+    "python": "3.12.3",
+    "platform": "Linux-7.0.0-1017-aws-x86_64-with-glibc2.39",
+    "klt": "0.9.3.dev2575+g6bd18bbc8637",
+    "yosys": "0.67+post",
+    "iverilog": "Icarus Verilog version 13.0 (stable) (v13_0)",
+    "open_pdks": "open_pdks f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7",
+    "liberty_deck": "sha256:8e78e14442062dba34d414fca6490b2f6b96038d4510d1438ca44fee31487135"
+  },
+  "artifacts": [
+    "sim/area-limiter-study/runs/20261121-082710-14fc78f/attribution-baseline-committed.json",
+    "sim/area-limiter-study/runs/20261121-082710-14fc78f/attribution-baseline-control.json",
+    "sim/area-limiter-study/runs/20261121-082710-14fc78f/attribution-variant-fifo2.json",
+    "sim/area-limiter-study/runs/20261121-082710-14fc78f/baseline-control.json",
+    "sim/area-limiter-study/runs/20261121-082710-14fc78f/baseline-control-response.json",
+    "sim/area-limiter-study/runs/20261121-082710-14fc78f/variant-fifo2.json",
+    "sim/area-limiter-study/runs/20261121-082710-14fc78f/variant-fifo2-response.json",
+    "sim/area-limiter-study/runs/20261121-082710-14fc78f/suite-rtl.json",
+    "sim/area-limiter-study/runs/20261121-082710-14fc78f/suite-gate.json",
+    "sim/area-limiter-study/runs/20261121-082710-14fc78f/study-summary.json",
+    "sim/area-limiter-study/runs/20261121-082710-14fc78f/variant-fifo2-trng_digital_synth.v",
+    "sim/area-limiter-study/runs/20261121-082710-14fc78f/variant-fifo2-rtl-observations.txt",
+    "sim/area-limiter-study/runs/20261121-082710-14fc78f/variant-fifo2-gate-observations.txt"
+  ],
+  "artifact_manifest": "manifests/artifacts/area-limiter-study-20261121-082710-14fc78f.manifest.json",
+  "item1_attribution": {
+    "rows": {
+      "bus_interface": {
+        "area_um2": 1527.7152,
+        "instances": 151
+      },
+      "conditioner": {
+        "area_um2": 2011.9296,
+        "instances": 209
+      },
+      "control": {
+        "area_um2": 75.072,
+        "instances": 3
+      },
+      "fifo_control": {
+        "area_um2": 322.8096,
+        "instances": 27
+      },
+      "fifo_storage_cond": {
+        "area_um2": 5416.4448,
+        "instances": 416
+      },
+      "fifo_storage_raw": {
+        "area_um2": 5126.1664,
+        "instances": 501
+      },
+      "health_tests": {
+        "area_um2": 2830.2144,
+        "instances": 273
+      },
+      "raw_packer": {
+        "area_um2": 1437.6288,
+        "instances": 152
+      },
+      "shared": {
+        "area_um2": 2974.1024,
+        "instances": 515
+      },
+      "status": {
+        "area_um2": 3.7536,
+        "instances": 1
+      },
+      "stream_output": {
+        "area_um2": 477.9584,
+        "instances": 72
+      }
+    },
+    "reconciliation": {
+      "area_expected_um2": 22203.7952,
+      "area_matches": true,
+      "area_total_um2": 22203.7952,
+      "instances_expected": 2320,
+      "instances_match": true,
+      "instances_total": 2320
+    },
+    "anchors": {
+      "fifo_storage_cond": 128,
+      "fifo_storage_raw": 128
+    },
+    "liberty_sha256": "sha256:8e78e14442062dba34d414fca6490b2f6b96038d4510d1438ca44fee31487135",
+    "baseline_control_same_tool": {
+      "klt": "0.9.3.dev2575+g6bd18bbc8637",
+      "yosys": "0.67+post",
+      "instance_count": 2320,
+      "area_um2": 22202.544,
+      "attribution_reconciles": {
+        "area_expected_um2": 22202.544,
+        "area_matches": true,
+        "area_total_um2": 22202.544,
+        "instances_expected": 2320,
+        "instances_match": true,
+        "instances_total": 2320
+      }
+    },
+    "variant_fifo2": {
+      "instance_count": 1691,
+      "area_um2": 16129.2192,
+      "sequential_area_um2": 8197.8624,
+      "delta_vs_same_tool_baseline_um2": -6073.3248,
+      "delta_pct": -27.35,
+      "attribution_rows": {
+        "bus_interface": {
+          "area_um2": 1523.9616,
+          "instances": 160
+        },
+        "conditioner": {
+          "area_um2": 2028.1952,
+          "instances": 215
+        },
+        "control": {
+          "area_um2": 50.048,
+          "instances": 2
+        },
+        "fifo_control": {
+          "area_um2": 186.4288,
+          "instances": 12
+        },
+        "fifo_storage_cond": {
+          "area_um2": 2429.8304,
+          "instances": 182
+        },
+        "fifo_storage_raw": {
+          "area_um2": 2292.1984,
+          "instances": 183
+        },
+        "health_tests": {
+          "area_um2": 2773.9104,
+          "instances": 253
+        },
+        "raw_packer": {
+          "area_um2": 1423.8656,
+          "instances": 137
+        },
+        "shared": {
+          "area_um2": 2914.0448,
+          "instances": 472
+        },
+        "status": {
+          "area_um2": 3.7536,
+          "instances": 1
+        },
+        "stream_output": {
+          "area_um2": 477.9584,
+          "instances": 73
+        },
+        "unassigned": {
+          "area_um2": 25.024,
+          "instances": 1
+        }
+      },
+      "attribution_reconciliation": {
+        "area_expected_um2": 16129.2192,
+        "area_matches": true,
+        "area_total_um2": 16129.2192,
+        "instances_expected": 1691,
+        "instances_match": true,
+        "instances_total": 1691
+      }
+    }
+  },
+  "item1_functional_suite": {
+    "seed": 20260905,
+    "rtl_vs_model": {
+      "length_ok": true,
+      "cycles": 4239,
+      "mismatch_count": 1108,
+      "first_mismatch_cycle": 185,
+      "pass": false,
+      "per_phase": [
+        {
+          "phase": "post-reset idle + ID/parameter reads",
+          "start": 0,
+          "end": 20,
+          "mismatches": 0,
+          "first_mismatch": null,
+          "match": true
+        },
+        {
+          "phase": "sampling disabled: raw_valid high but CTRL.EN low",
+          "start": 20,
+          "end": 86,
+          "mismatches": 0,
+          "first_mismatch": null,
+          "match": true
+        },
+        {
+          "phase": "enable, run the start-up window with interleaved STATUS reads",
+          "start": 86,
+          "end": 1175,
+          "mismatches": 990,
+          "first_mismatch": 185,
+          "match": false
+        },
+        {
+          "phase": "drain the raw FIFO through RAW_DATA (pop-on-read)",
+          "start": 1175,
+          "end": 1187,
+          "mismatches": 7,
+          "first_mismatch": 1175,
+          "match": false
+        },
+        {
+          "phase": "raw streaming port: out_ready pops while sampling",
+          "start": 1187,
+          "end": 1443,
+          "mismatches": 0,
+          "first_mismatch": null,
+          "match": true
+        },
+        {
+          "phase": "simultaneous register pop and stream pop (register wins)",
+          "start": 1443,
+          "end": 1579,
+          "mismatches": 0,
+          "first_mismatch": null,
+          "match": true
+        },
+        {
+          "phase": "OUT_MODE switch to conditioned (flushes both paths)",
+          "start": 1579,
+          "end": 2614,
+          "mismatches": 4,
+          "first_mismatch": 2353,
+          "match": false
+        },
+        {
+          "phase": "induce an RCT trip with a stuck source",
+          "start": 2614,
+          "end": 2702,
+          "mismatches": 1,
+          "first_mismatch": 2701,
+          "match": false
+        },
+        {
+          "phase": "gated: DATA blocked, RAW_DATA still readable",
+          "start": 2702,
+          "end": 2810,
+          "mismatches": 100,
+          "first_mismatch": 2702,
+          "match": false
+        },
+        {
+          "phase": "write-1-to-clear, then re-run the start-up test",
+          "start": 2810,
+          "end": 4105,
+          "mismatches": 3,
+          "first_mismatch": 2810,
+          "match": false
+        },
+        {
+          "phase": "SOFT_RST, then resume sampling",
+          "start": 4105,
+          "end": 4239,
+          "mismatches": 3,
+          "first_mismatch": 4105,
+          "match": false
+        }
+      ]
+    },
+    "gate_vs_model": {
+      "length_ok": true,
+      "cycles": 4239,
+      "mismatch_count": 1108,
+      "first_mismatch_cycle": 185,
+      "pass": false,
+      "per_phase": [
+        {
+          "phase": "post-reset idle + ID/parameter reads",
+          "start": 0,
+          "end": 20,
+          "mismatches": 0,
+          "first_mismatch": null,
+          "match": true
+        },
+        {
+          "phase": "sampling disabled: raw_valid high but CTRL.EN low",
+          "start": 20,
+          "end": 86,
+          "mismatches": 0,
+          "first_mismatch": null,
+          "match": true
+        },
+        {
+          "phase": "enable, run the start-up window with interleaved STATUS reads",
+          "start": 86,
+          "end": 1175,
+          "mismatches": 990,
+          "first_mismatch": 185,
+          "match": false
+        },
+        {
+          "phase": "drain the raw FIFO through RAW_DATA (pop-on-read)",
+          "start": 1175,
+          "end": 1187,
+          "mismatches": 7,
+          "first_mismatch": 1175,
+          "match": false
+        },
+        {
+          "phase": "raw streaming port: out_ready pops while sampling",
+          "start": 1187,
+          "end": 1443,
+          "mismatches": 0,
+          "first_mismatch": null,
+          "match": true
+        },
+        {
+          "phase": "simultaneous register pop and stream pop (register wins)",
+          "start": 1443,
+          "end": 1579,
+          "mismatches": 0,
+          "first_mismatch": null,
+          "match": true
+        },
+        {
+          "phase": "OUT_MODE switch to conditioned (flushes both paths)",
+          "start": 1579,
+          "end": 2614,
+          "mismatches": 4,
+          "first_mismatch": 2353,
+          "match": false
+        },
+        {
+          "phase": "induce an RCT trip with a stuck source",
+          "start": 2614,
+          "end": 2702,
+          "mismatches": 1,
+          "first_mismatch": 2701,
+          "match": false
+        },
+        {
+          "phase": "gated: DATA blocked, RAW_DATA still readable",
+          "start": 2702,
+          "end": 2810,
+          "mismatches": 100,
+          "first_mismatch": 2702,
+          "match": false
+        },
+        {
+          "phase": "write-1-to-clear, then re-run the start-up test",
+          "start": 2810,
+          "end": 4105,
+          "mismatches": 3,
+          "first_mismatch": 2810,
+          "match": false
+        },
+        {
+          "phase": "SOFT_RST, then resume sampling",
+          "start": 4105,
+          "end": 4239,
+          "mismatches": 3,
+          "first_mismatch": 4105,
+          "match": false
+        }
+      ],
+      "gate_matches_rtl": true
+    },
+    "rtl_vs_model_depth2": {
+      "length_ok": true,
+      "cycles": 4239,
+      "mismatch_count": 0,
+      "first_mismatch_cycle": null,
+      "pass": true,
+      "per_phase": [
+        {
+          "phase": "post-reset idle + ID/parameter reads",
+          "start": 0,
+          "end": 20,
+          "mismatches": 0,
+          "first_mismatch": null,
+          "match": true
+        },
+        {
+          "phase": "sampling disabled: raw_valid high but CTRL.EN low",
+          "start": 20,
+          "end": 86,
+          "mismatches": 0,
+          "first_mismatch": null,
+          "match": true
+        },
+        {
+          "phase": "enable, run the start-up window with interleaved STATUS reads",
+          "start": 86,
+          "end": 1175,
+          "mismatches": 0,
+          "first_mismatch": null,
+          "match": true
+        },
+        {
+          "phase": "drain the raw FIFO through RAW_DATA (pop-on-read)",
+          "start": 1175,
+          "end": 1187,
+          "mismatches": 0,
+          "first_mismatch": null,
+          "match": true
+        },
+        {
+          "phase": "raw streaming port: out_ready pops while sampling",
+          "start": 1187,
+          "end": 1443,
+          "mismatches": 0,
+          "first_mismatch": null,
+          "match": true
+        },
+        {
+          "phase": "simultaneous register pop and stream pop (register wins)",
+          "start": 1443,
+          "end": 1579,
+          "mismatches": 0,
+          "first_mismatch": null,
+          "match": true
+        },
+        {
+          "phase": "OUT_MODE switch to conditioned (flushes both paths)",
+          "start": 1579,
+          "end": 2614,
+          "mismatches": 0,
+          "first_mismatch": null,
+          "match": true
+        },
+        {
+          "phase": "induce an RCT trip with a stuck source",
+          "start": 2614,
+          "end": 2702,
+          "mismatches": 0,
+          "first_mismatch": null,
+          "match": true
+        },
+        {
+          "phase": "gated: DATA blocked, RAW_DATA still readable",
+          "start": 2702,
+          "end": 2810,
+          "mismatches": 0,
+          "first_mismatch": null,
+          "match": true
+        },
+        {
+          "phase": "write-1-to-clear, then re-run the start-up test",
+          "start": 2810,
+          "end": 4105,
+          "mismatches": 0,
+          "first_mismatch": null,
+          "match": true
+        },
+        {
+          "phase": "SOFT_RST, then resume sampling",
+          "start": 4105,
+          "end": 4239,
+          "mismatches": 0,
+          "first_mismatch": null,
+          "match": true
+        }
+      ]
+    },
+    "gate_vs_model_depth2": {
+      "length_ok": true,
+      "cycles": 4239,
+      "mismatch_count": 0,
+      "first_mismatch_cycle": null,
+      "pass": true,
+      "per_phase": [
+        {
+          "phase": "post-reset idle + ID/parameter reads",
+          "start": 0,
+          "end": 20,
+          "mismatches": 0,
+          "first_mismatch": null,
+          "match": true
+        },
+        {
+          "phase": "sampling disabled: raw_valid high but CTRL.EN low",
+          "start": 20,
+          "end": 86,
+          "mismatches": 0,
+          "first_mismatch": null,
+          "match": true
+        },
+        {
+          "phase": "enable, run the start-up window with interleaved STATUS reads",
+          "start": 86,
+          "end": 1175,
+          "mismatches": 0,
+          "first_mismatch": null,
+          "match": true
+        },
+        {
+          "phase": "drain the raw FIFO through RAW_DATA (pop-on-read)",
+          "start": 1175,
+          "end": 1187,
+          "mismatches": 0,
+          "first_mismatch": null,
+          "match": true
+        },
+        {
+          "phase": "raw streaming port: out_ready pops while sampling",
+          "start": 1187,
+          "end": 1443,
+          "mismatches": 0,
+          "first_mismatch": null,
+          "match": true
+        },
+        {
+          "phase": "simultaneous register pop and stream pop (register wins)",
+          "start": 1443,
+          "end": 1579,
+          "mismatches": 0,
+          "first_mismatch": null,
+          "match": true
+        },
+        {
+          "phase": "OUT_MODE switch to conditioned (flushes both paths)",
+          "start": 1579,
+          "end": 2614,
+          "mismatches": 0,
+          "first_mismatch": null,
+          "match": true
+        },
+        {
+          "phase": "induce an RCT trip with a stuck source",
+          "start": 2614,
+          "end": 2702,
+          "mismatches": 0,
+          "first_mismatch": null,
+          "match": true
+        },
+        {
+          "phase": "gated: DATA blocked, RAW_DATA still readable",
+          "start": 2702,
+          "end": 2810,
+          "mismatches": 0,
+          "first_mismatch": null,
+          "match": true
+        },
+        {
+          "phase": "write-1-to-clear, then re-run the start-up test",
+          "start": 2810,
+          "end": 4105,
+          "mismatches": 0,
+          "first_mismatch": null,
+          "match": true
+        },
+        {
+          "phase": "SOFT_RST, then resume sampling",
+          "start": 4105,
+          "end": 4239,
+          "mismatches": 0,
+          "first_mismatch": null,
+          "match": true
+        }
+      ],
+      "gate_matches_rtl": true
+    }
+  },
+  "item2_fold": {
+    "committed_sampler_core": {
+      "sampler_dff_bbox": {
+        "x0": -2.19,
+        "y0": -3.585,
+        "x1": 50.47,
+        "y1": 7.085
+      },
+      "ro_array_core_bbox": {
+        "x0": -0.585,
+        "y0": -3.5100000000000002,
+        "x1": 216.485,
+        "y1": 31.085
+      },
+      "sampler_core_bbox": {
+        "x0": -2.19,
+        "y0": -3.585,
+        "x1": 328.77,
+        "y1": 54.72
+      },
+      "width_um": 330.96,
+      "height_um": 58.305,
+      "area_um2": 19296.623
+    },
+    "fold_f1": {
+      "description": "six samplers folded into two rows of three; ro_array_core ring row geometry unchanged (all four rings in one committed row, 55.3 um pitch)",
+      "width_um": 218.675,
+      "height_um": 81.94,
+      "area_um2": 17918.23,
+      "row_a_x1": 161.79,
+      "array_offset_y_um": 47.27,
+      "routing": {
+        "model": "per-net Manhattan length between the folded endpoints (committed port coordinates; sampler row B moved to the row-A x origins one row offset up, array one more row offset up) plus the committed polyline's own detour excess",
+        "nets": [
+          {
+            "net": "ro1",
+            "unfolded_um": 129.485,
+            "unfolded_vertical_um": 11.0,
+            "unfolded_horizontal_um": 118.485,
+            "folded_vertical_um": 34.635,
+            "folded_horizontal_um": 118.485,
+            "retained_detour_excess_um": 0.0,
+            "folded_um": 153.12,
+            "assumed_detour_um": 3.0,
+            "delta_um": 26.635
+          },
+          {
+            "net": "ro2",
+            "unfolded_um": 199.48,
+            "unfolded_vertical_um": 26.135,
+            "unfolded_horizontal_um": 173.345,
+            "folded_vertical_um": 26.135,
+            "folded_horizontal_um": 6.365,
+            "retained_detour_excess_um": 0.0,
+            "folded_um": 32.5,
+            "assumed_detour_um": 0.0,
+            "delta_um": -166.98
+          },
+          {
+            "net": "ro3",
+            "unfolded_um": 254.64,
+            "unfolded_vertical_um": 26.635,
+            "unfolded_horizontal_um": 228.005,
+            "folded_vertical_um": 26.635,
+            "folded_horizontal_um": 61.025,
+            "retained_detour_excess_um": 0.0,
+            "folded_um": 87.66,
+            "assumed_detour_um": 0.0,
+            "delta_um": -166.98
+          },
+          {
+            "net": "ro4",
+            "unfolded_um": 78.565,
+            "unfolded_vertical_um": 9.0,
+            "unfolded_horizontal_um": 69.565,
+            "folded_vertical_um": 9.0,
+            "folded_horizontal_um": 97.415,
+            "retained_detour_excess_um": 0.0,
+            "folded_um": 106.415,
+            "assumed_detour_um": 0.0,
+            "delta_um": 27.85
+          },
+          {
+            "net": "xo",
+            "unfolded_um": 94.665,
+            "unfolded_vertical_um": 46.5,
+            "unfolded_horizontal_um": 29.835,
+            "folded_vertical_um": 70.135,
+            "folded_horizontal_um": 29.835,
+            "retained_detour_excess_um": 18.33,
+            "folded_um": 118.3,
+            "assumed_detour_um": 0.0,
+            "delta_um": 23.635
+          }
+        ],
+        "data_nets_net_delta_um": -255.84,
+        "supply_strap_horizontal_extension_um": 108.12,
+        "row_risers_um": 94.54,
+        "rail_and_control_chain_saving_um": -222.64,
+        "gross_added_um": 280.78,
+        "net_total_um": -275.82,
+        "assumed_detours": [
+          "ro1 descends the west margin lane (x = -2.0) instead of the committed x = -0.5 column, +3.0 um",
+          "the supply straps re-tap row B's rails at their east end (x = 161.79); a vss/vdd rail extension beyond the row end is assumed legal -- no DRC was run"
+        ],
+        "not_modelled": "via counts, layer-change delays, track congestion in the new row-A/row-B gap, and timing/coupling effects of the shorter or longer data hauls"
+      },
+      "ring_row_unchanged": true,
+      "symmetry_verdict": "survives by construction: the four rings keep their committed single-row arrangement, pitch and per-ring vddr1..vddr4 rails byte-for-byte",
+      "supply_verdict": "vddr1..vddr4 per-ring rails unchanged; the shared vdd/vss straps and the clk/rst_n lanes need one extra horizontal run per folded row plus two vertical risers each (met1/met2, same style as the committed strap stages)",
+      "added_routing_estimate": "see routing (recomputed from the folded endpoints)",
+      "delta_area_um2": -1378.393,
+      "delta_width_um": -112.285,
+      "delta_height_um": 23.635,
+      "area_mm2": 0.017918
+    },
+    "fold_f2": {
+      "description": "samplers 3+3 AND the four rings in a 2x2 grid (equal 55.3 um pitch both axes); buffers and xor tree beside the grid",
+      "width_um": 163.98,
+      "height_um": 137.24,
+      "area_um2": 22504.615,
+      "ring_row_unchanged": false,
+      "symmetry_verdict": "does NOT survive verbatim: every ring gains a vertical neighbour no committed record measures; DR-0003 section 8's decorrelation caveat applies to the new adjacency",
+      "supply_verdict": "vddr rails per ring unchanged, but the rail routing and the well/strap pattern between grid rows are new geometry",
+      "added_routing_estimate": "strap/lane doubling as F1 plus re-plumbed ring-to-xor routes; not derived further -- recorded as the wider/lower-confidence alternative",
+      "delta_area_um2": 3207.992,
+      "delta_width_um": -166.98,
+      "delta_height_um": 78.935,
+      "area_mm2": 0.022505
+    },
+    "basis": "placement dry run: bbox arithmetic over the committed compose geometry (cell.json origins, compose.response.json bboxes); no GDS composed, no DRC/LVS run"
+  },
+  "item3_composition_overhead": {
+    "basis": "axis-aligned decomposition of the committed whole-block bbox (layout/trng_whole/report.json), cut on the committed macro bboxes; measured inputs, exact rectangle arithmetic",
+    "whole_area_um2": 126116.36,
+    "macro_areas_um2": {
+      "trng_digital": 60049.503,
+      "sampler_core": 19296.623,
+      "sum": 79346.125
+    },
+    "non_macro_um2": 46770.235,
+    "non_macro_share_pct": 37.08,
+    "rectangles_um2": {
+      "west_escape_corridor": 717.025,
+      "south_east_corridor": 32091.748,
+      "inter_macro_lane_band": 7522.08,
+      "west_of_analog_strip": 3083.447,
+      "pad_row_strip": 3355.934
+    },
+    "rectangle_sum_um2": 46770.234,
+    "reconciliation_ok": true,
+    "dimensions_um": {
+      "lane_band_gap": 20.005,
+      "pad_strip_height": 10.14,
+      "west_escape_width": 2.15,
+      "analog_overhang_east_of_digital_pins": 130.96
+    },
+    "removable_by_tighter_floorplan": {
+      "rectangles": [
+        "south_east_corridor",
+        "west_of_analog_strip"
+      ],
+      "area_um2": 35175.195,
+      "share_of_non_macro_pct": 75.21,
+      "condition": "the analog row's width and west edge are matched to the digital macro's footprint in a re-stack (folded analog narrower than the digital macro, or an explicit re-stack that aligns west edges)"
+    },
+    "functional_overhead": {
+      "rectangles": [
+        "inter_macro_lane_band",
+        "pad_row_strip",
+        "west_escape_corridor"
+      ],
+      "area_um2": 11595.039,
+      "note": "lanes, boundary pads and the supply escape are contractual composition structure; they scale with width/height rather than vanish"
+    }
+  },
+  "item4_combine": {
+    "target_mm2": 0.05,
+    "variant_synth_cells_um2": 16129.2192,
+    "variant_synth_source": "this run's synthesis",
+    "variant_die_side_um": 165.679,
+    "variant_die_side_40pct_um": 208.856,
+    "restack_assertion": {
+      "width_um": 378.16,
+      "height_um": 333.5,
+      "area_um2": 126116.36,
+      "area_mm2": 0.126116
+    },
+    "rows": [
+      {
+        "option": "committed composition",
+        "on_baseline": "committed 40%",
+        "area_mm2": 0.126116,
+        "topology": "fixed pin edge",
+        "confidence": "composed, verified",
+        "note": "layout/trng_whole/report.json; the only non-estimate row",
+        "risk": "none beyond the committed composition",
+        "delta_vs_baseline_mm2": 0.0,
+        "ratio_to_target": 2.522,
+        "gap_mm2": 0.076116
+      },
+      {
+        "option": "rep65-slew0531 digital, committed analog (estimate B of #251)",
+        "on_baseline": "rep65",
+        "width_um": 330.96,
+        "height_um": 282.84,
+        "area_um2": 93608.726,
+        "area_mm2": 0.093609,
+        "topology": "fixed pin edge",
+        "confidence": "measured inputs, estimated composition",
+        "note": "reproduces #251's 0.093609 mm2",
+        "risk": "none beyond the committed composition",
+        "delta_vs_baseline_mm2": 0.0,
+        "ratio_to_target": 1.872,
+        "gap_mm2": 0.043609
+      },
+      {
+        "option": "rep65 digital + folded analog F1",
+        "on_baseline": "rep65",
+        "width_um": 218.675,
+        "height_um": 306.475,
+        "area_um2": 67018.421,
+        "area_mm2": 0.067018,
+        "topology": "fixed pin edge",
+        "confidence": "estimated",
+        "note": "fold F1 dry-run bbox 218.675 x 81.94 um",
+        "risk": "F1 re-routes the sampler/array data hauls, supply straps and ctrl lanes (fold_f1.routing); needs a composed + DRC/LVS pass",
+        "delta_vs_baseline_mm2": -0.026591,
+        "ratio_to_target": 1.34,
+        "gap_mm2": 0.017018
+      },
+      {
+        "option": "rep65 digital + folded analog F2 (2x2 rings)",
+        "on_baseline": "rep65",
+        "width_um": 200.0,
+        "height_um": 361.775,
+        "area_um2": 72355.0,
+        "area_mm2": 0.072355,
+        "topology": "fixed pin edge",
+        "confidence": "estimated",
+        "note": "fold F2 dry-run bbox 163.98 x 137.24 um: narrower row, taller macro",
+        "risk": "F2 puts a vertical neighbour on every ring (DR-0003 section 8 decorrelation caveat, unmeasured) and grows the macro",
+        "delta_vs_baseline_mm2": -0.021254,
+        "ratio_to_target": 1.447,
+        "gap_mm2": 0.022355
+      },
+      {
+        "option": "variant FIFO-2 digital (die est) + folded analog F1",
+        "on_baseline": "rep65",
+        "width_um": 218.675,
+        "height_um": 277.764,
+        "area_um2": 60740.003,
+        "area_mm2": 0.06074,
+        "topology": "fixed pin edge",
+        "confidence": "estimated",
+        "note": "fold F1 dry-run bbox 218.675 x 81.94 um; die side 165.68 um",
+        "risk": "F1 re-routes the sampler/array data hauls, supply straps and ctrl lanes (fold_f1.routing); needs a composed + DRC/LVS pass; variant digital die is scaled from the synthesized cell-area ratio, not routed; adoption needs the DR-0004 4.4 depth decision (#610)",
+        "delta_vs_baseline_mm2": -0.032869,
+        "ratio_to_target": 1.215,
+        "gap_mm2": 0.01074
+      },
+      {
+        "option": "variant FIFO-2 digital (die est) + folded analog F2 (2x2 rings)",
+        "on_baseline": "rep65",
+        "width_um": 200.0,
+        "height_um": 333.064,
+        "area_um2": 66612.763,
+        "area_mm2": 0.066613,
+        "topology": "fixed pin edge",
+        "confidence": "estimated",
+        "note": "fold F2 dry-run bbox 163.98 x 137.24 um: narrower row, taller macro; die side 165.68 um",
+        "risk": "F2 puts a vertical neighbour on every ring (DR-0003 section 8 decorrelation caveat, unmeasured) and grows the macro; variant digital die is scaled from the synthesized cell-area ratio, not routed; adoption needs the DR-0004 4.4 depth decision (#610)",
+        "delta_vs_baseline_mm2": -0.026996,
+        "ratio_to_target": 1.332,
+        "gap_mm2": 0.016613
+      },
+      {
+        "option": "committed 40% digital + folded analog F1",
+        "on_baseline": "committed 40%",
+        "width_um": 265.875,
+        "height_um": 357.135,
+        "area_um2": 94953.268,
+        "area_mm2": 0.094953,
+        "topology": "fixed pin edge",
+        "confidence": "estimated",
+        "note": "fold F1 dry-run bbox 218.675 x 81.94 um",
+        "risk": "F1 re-routes the sampler/array data hauls, supply straps and ctrl lanes (fold_f1.routing); needs a composed + DRC/LVS pass",
+        "delta_vs_baseline_mm2": -0.031163,
+        "ratio_to_target": 1.899,
+        "gap_mm2": 0.044953
+      },
+      {
+        "option": "committed 40% digital + folded analog F2 (2x2 rings)",
+        "on_baseline": "committed 40%",
+        "width_um": 247.2,
+        "height_um": 412.435,
+        "area_um2": 101953.932,
+        "area_mm2": 0.101954,
+        "topology": "fixed pin edge",
+        "confidence": "estimated",
+        "note": "fold F2 dry-run bbox 163.98 x 137.24 um: narrower row, taller macro",
+        "risk": "F2 puts a vertical neighbour on every ring (DR-0003 section 8 decorrelation caveat, unmeasured) and grows the macro",
+        "delta_vs_baseline_mm2": -0.024162,
+        "ratio_to_target": 2.039,
+        "gap_mm2": 0.051954
+      },
+      {
+        "option": "variant FIFO-2 digital (40% die est) + folded analog F1",
+        "on_baseline": "committed 40%",
+        "width_um": 229.681,
+        "height_um": 320.941,
+        "area_um2": 73714.266,
+        "area_mm2": 0.073714,
+        "topology": "fixed pin edge",
+        "confidence": "estimated",
+        "note": "fold F1 dry-run bbox 218.675 x 81.94 um; die side 208.86 um",
+        "risk": "F1 re-routes the sampler/array data hauls, supply straps and ctrl lanes (fold_f1.routing); needs a composed + DRC/LVS pass; variant digital die is scaled from the synthesized cell-area ratio, not routed; adoption needs the DR-0004 4.4 depth decision (#610)",
+        "delta_vs_baseline_mm2": -0.052402,
+        "ratio_to_target": 1.474,
+        "gap_mm2": 0.023714
+      },
+      {
+        "option": "variant FIFO-2 digital (40% die est) + folded analog F2 (2x2 rings)",
+        "on_baseline": "committed 40%",
+        "width_um": 211.006,
+        "height_um": 376.241,
+        "area_um2": 79389.339,
+        "area_mm2": 0.079389,
+        "topology": "fixed pin edge",
+        "confidence": "estimated",
+        "note": "fold F2 dry-run bbox 163.98 x 137.24 um: narrower row, taller macro; die side 208.86 um",
+        "risk": "F2 puts a vertical neighbour on every ring (DR-0003 section 8 decorrelation caveat, unmeasured) and grows the macro; variant digital die is scaled from the synthesized cell-area ratio, not routed; adoption needs the DR-0004 4.4 depth decision (#610)",
+        "delta_vs_baseline_mm2": -0.046727,
+        "ratio_to_target": 1.588,
+        "gap_mm2": 0.029389
+      },
+      {
+        "option": "rep65 digital + folded analog F1, edge-aligned",
+        "on_baseline": "rep65",
+        "width_um": 220.825,
+        "height_um": 306.475,
+        "area_um2": 67677.342,
+        "area_mm2": 0.067677,
+        "topology": "edge-aligned",
+        "confidence": "geometric estimate (floorplan change)",
+        "note": "west edges aligned: stacking artifacts removed; lane band, pad strip and west escape kept",
+        "risk": "assumes the digital east pin edge can be aligned with the analog row's east edge; the lane band's pin access is unchecked; F1 re-routes the sampler/array data hauls, supply straps and ctrl lanes (fold_f1.routing); needs a composed + DRC/LVS pass",
+        "delta_vs_baseline_mm2": -0.025932,
+        "ratio_to_target": 1.354,
+        "gap_mm2": 0.017677
+      },
+      {
+        "option": "rep65 digital + folded analog F2 (2x2 rings), edge-aligned",
+        "on_baseline": "rep65",
+        "width_um": 196.54,
+        "height_um": 361.775,
+        "area_um2": 71103.258,
+        "area_mm2": 0.071103,
+        "topology": "edge-aligned",
+        "confidence": "geometric estimate (floorplan change)",
+        "note": "west edges aligned: stacking artifacts removed; lane band, pad strip and west escape kept",
+        "risk": "assumes the digital east pin edge can be aligned with the analog row's east edge; the lane band's pin access is unchecked; F2 puts a vertical neighbour on every ring (DR-0003 section 8 decorrelation caveat, unmeasured) and grows the macro",
+        "delta_vs_baseline_mm2": -0.022506,
+        "ratio_to_target": 1.422,
+        "gap_mm2": 0.021103
+      },
+      {
+        "option": "variant FIFO-2 digital (die est) + folded analog F1, edge-aligned",
+        "on_baseline": "rep65",
+        "width_um": 220.825,
+        "height_um": 277.764,
+        "area_um2": 61337.195,
+        "area_mm2": 0.061337,
+        "topology": "edge-aligned",
+        "confidence": "geometric estimate (floorplan change)",
+        "note": "west edges aligned: stacking artifacts removed; lane band, pad strip and west escape kept",
+        "risk": "assumes the digital east pin edge can be aligned with the analog row's east edge; the lane band's pin access is unchecked; F1 re-routes the sampler/array data hauls, supply straps and ctrl lanes (fold_f1.routing); needs a composed + DRC/LVS pass; variant digital die is scaled from the synthesized cell-area ratio, not routed; adoption needs the DR-0004 4.4 depth decision (#610)",
+        "delta_vs_baseline_mm2": -0.032272,
+        "ratio_to_target": 1.227,
+        "gap_mm2": 0.011337
+      },
+      {
+        "option": "variant FIFO-2 digital (die est) + folded analog F2 (2x2 rings), edge-aligned",
+        "on_baseline": "rep65",
+        "width_um": 167.829,
+        "height_um": 333.064,
+        "area_um2": 55897.706,
+        "area_mm2": 0.055898,
+        "topology": "edge-aligned",
+        "confidence": "geometric estimate (floorplan change)",
+        "note": "west edges aligned: stacking artifacts removed; lane band, pad strip and west escape kept",
+        "risk": "assumes the digital east pin edge can be aligned with the analog row's east edge; the lane band's pin access is unchecked; F2 puts a vertical neighbour on every ring (DR-0003 section 8 decorrelation caveat, unmeasured) and grows the macro; variant digital die is scaled from the synthesized cell-area ratio, not routed; adoption needs the DR-0004 4.4 depth decision (#610)",
+        "delta_vs_baseline_mm2": -0.037711,
+        "ratio_to_target": 1.118,
+        "gap_mm2": 0.005898
+      },
+      {
+        "option": "committed 40% digital + folded analog F1, edge-aligned",
+        "on_baseline": "committed 40%",
+        "width_um": 247.2,
+        "height_um": 357.135,
+        "area_um2": 88283.772,
+        "area_mm2": 0.088284,
+        "topology": "edge-aligned",
+        "confidence": "geometric estimate (floorplan change)",
+        "note": "west edges aligned: stacking artifacts removed; lane band, pad strip and west escape kept",
+        "risk": "assumes the digital east pin edge can be aligned with the analog row's east edge; the lane band's pin access is unchecked; F1 re-routes the sampler/array data hauls, supply straps and ctrl lanes (fold_f1.routing); needs a composed + DRC/LVS pass",
+        "delta_vs_baseline_mm2": -0.037832,
+        "ratio_to_target": 1.766,
+        "gap_mm2": 0.038284
+      },
+      {
+        "option": "committed 40% digital + folded analog F2 (2x2 rings), edge-aligned",
+        "on_baseline": "committed 40%",
+        "width_um": 247.2,
+        "height_um": 412.435,
+        "area_um2": 101953.932,
+        "area_mm2": 0.101954,
+        "topology": "edge-aligned",
+        "confidence": "geometric estimate (floorplan change)",
+        "note": "west edges aligned: stacking artifacts removed; lane band, pad strip and west escape kept",
+        "risk": "assumes the digital east pin edge can be aligned with the analog row's east edge; the lane band's pin access is unchecked; F2 puts a vertical neighbour on every ring (DR-0003 section 8 decorrelation caveat, unmeasured) and grows the macro",
+        "delta_vs_baseline_mm2": -0.024162,
+        "ratio_to_target": 2.039,
+        "gap_mm2": 0.051954
+      },
+      {
+        "option": "variant FIFO-2 digital (40% die est) + folded analog F1, edge-aligned",
+        "on_baseline": "committed 40%",
+        "width_um": 220.825,
+        "height_um": 320.941,
+        "area_um2": 70871.883,
+        "area_mm2": 0.070872,
+        "topology": "edge-aligned",
+        "confidence": "geometric estimate (floorplan change)",
+        "note": "west edges aligned: stacking artifacts removed; lane band, pad strip and west escape kept",
+        "risk": "assumes the digital east pin edge can be aligned with the analog row's east edge; the lane band's pin access is unchecked; F1 re-routes the sampler/array data hauls, supply straps and ctrl lanes (fold_f1.routing); needs a composed + DRC/LVS pass; variant digital die is scaled from the synthesized cell-area ratio, not routed; adoption needs the DR-0004 4.4 depth decision (#610)",
+        "delta_vs_baseline_mm2": -0.055244,
+        "ratio_to_target": 1.417,
+        "gap_mm2": 0.020872
+      },
+      {
+        "option": "variant FIFO-2 digital (40% die est) + folded analog F2 (2x2 rings), edge-aligned",
+        "on_baseline": "committed 40%",
+        "width_um": 211.006,
+        "height_um": 376.241,
+        "area_um2": 79389.339,
+        "area_mm2": 0.079389,
+        "topology": "edge-aligned",
+        "confidence": "geometric estimate (floorplan change)",
+        "note": "west edges aligned: stacking artifacts removed; lane band, pad strip and west escape kept",
+        "risk": "assumes the digital east pin edge can be aligned with the analog row's east edge; the lane band's pin access is unchecked; F2 puts a vertical neighbour on every ring (DR-0003 section 8 decorrelation caveat, unmeasured) and grows the macro; variant digital die is scaled from the synthesized cell-area ratio, not routed; adoption needs the DR-0004 4.4 depth decision (#610)",
+        "delta_vs_baseline_mm2": -0.046727,
+        "ratio_to_target": 1.588,
+        "gap_mm2": 0.029389
+      }
+    ],
+    "best_option": "variant FIFO-2 digital (die est) + folded analog F1",
+    "best_area_mm2": 0.06074,
+    "best_topology": "fixed pin edge",
+    "best_shortfall_mm2": 0.01074,
+    "reaches_target": false,
+    "best_edge_aligned_option": "variant FIFO-2 digital (die est) + folded analog F2 (2x2 rings), edge-aligned",
+    "best_edge_aligned_area_mm2": 0.055898,
+    "best_edge_aligned_reaches_target": false,
+    "at_best_width_um": 218.675,
+    "digital_height_budget_to_reach_target_um": 116.56,
+    "hypothetical_restack_at_budget": {
+      "width_um": 218.675,
+      "height_um": 228.65,
+      "area_um2": 50000.0,
+      "area_mm2": 0.05
+    },
+    "verdict_text": "Within the fixed pin-edge topology (digital east pin edge held, as committed) no studied combination reaches 0.05 mm2: the best is 0.060740 mm2 (1.215x target), short by 0.010740 mm2. The best edge-aligned geometric estimate -- a floorplan change that also needs a pin-access check -- is 0.055898 mm2 (variant FIFO-2 digital (die est) + folded analog F2 (2x2 rings), edge-aligned); it does not reach the target. Trade-off, not a requirement: holding the F1 analog width (218.675 um) and dimensions, the digital macro would have to be at most 116.6 um tall (a hypothetical re-stack at that size is 0.050000 mm2) vs the 165.7 um the FIFO-2 variant estimates -- about 49% of its die area; narrowing the analog row or aligning edges relaxes that digital budget.",
+    "largest_remaining_limiter": "the routed digital macro: even with the FIFO-2 variant its estimated die is ~27449 um2 at the achieved 62% utilisation of #251's repaired 65% point -- the largest single contributor of the best row; the analog F1 bbox (17918 um2) is second, the functional composition overhead (lane band + pads + escape, scaling with width) third"
+  }
+}

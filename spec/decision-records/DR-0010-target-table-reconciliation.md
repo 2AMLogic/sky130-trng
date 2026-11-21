@@ -138,6 +138,28 @@ mm² (best compaction estimate, not composed, degraded electrical layout), and
 row stops being a constraint the design is judged against, so the
 justification must be stronger than "the design does not meet it".
 
+Measurement evidence for A-1/A-2 (#599, `sim/area-limiter-study/`, record
+`20261121-082710-14fc78f`, which supersedes `20261121-015523-ca0fcdc5`; the
+older record is kept as append-only history): the options above are now
+measured. FIFO storage is the conclusive leader of the mapped digital netlist
+(10,542.6 of 22,203.8 µm², 47.5%); a depth-2 FIFO variant synthesizes at
+16,129.2 µm² (−27.4%) at the cost of a DR-0004 §4.4 depth change; a folded
+sampler_core (F1, samplers 3+3, ring row unchanged) dry-runs at 218.7 × 81.9
+µm with ring symmetry intact, its added routing recomputed from the folded
+net endpoints; composition overhead is 37.1% of the committed whole block and
+75% of it is removable stacking artifact. Within the fixed pin-edge topology
+the best combination on the `rep65-slew0531` baseline estimates **0.060740
+mm² (1.215× target)** — still short of 0.05 mm², the routed digital macro
+remaining the largest limiter. An edge-aligned re-stack (a floorplan change
+that needs a pin-access check before it is a layout) is a geometric estimate
+of 0.055898 mm² on the best row. Holding the F1 analog dimensions fixed, the
+target would instead need a digital macro of about 116.6 µm per side (about
+49% of the variant's estimated die area): a trade-off between digital and
+analog/floorplan changes, not a statement that any one must change. Evidence
+only: this paragraph changes no option, disposition or the Proposed status of
+this record; the follow-ups it motivates are #609 (the F1 fold), #610 (the
+FIFO-depth decision request) and #611 (the composed-and-verified re-stack).
+
 ## Operator options: power (pending evidence, not pre-decided)
 
 Not decidable now. The array-only worst case (R3, ≈ 473.9 µW) already sits
