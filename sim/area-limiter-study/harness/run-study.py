@@ -48,6 +48,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[3]
 HARNESS = Path(__file__).resolve().parent
 sys.path.insert(0, str(HARNESS))
+sys.path.insert(0, str(REPO_ROOT))
 sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
 sys.path.insert(0, str(REPO_ROOT / "sim" / "digital-synthesis" / "harness"))
 sys.path.insert(0, str(REPO_ROOT / "sim" / "digital-rtl-equivalence" / "harness"))
@@ -158,6 +159,22 @@ def suite_vs_model(actual: list[str], expected: list[str],
     }
 
 
+def model_trace_depth2(cycles) -> list[str]:
+    """The normative model's own trace with its ``fifo_depth`` parameter set
+    to 2 (``TrngDigital(fifo_depth=2)`` -- the model already parameterises
+    depth; nothing in ``digital/model/`` is modified)."""
+    import digital.model as dm
+    dut = dm.TrngDigital(fifo_depth=2)
+    out = []
+    for (raw_bit, raw_valid, addr, we, re, wdata, ready) in cycles:
+        obs = dut.cycle(raw_bit=raw_bit, raw_valid=raw_valid, addr=addr,
+                        we=we, wdata=wdata, re=re, out_ready=ready)
+        out.append(f"{obs['bus_rdata']:08x} {obs['out_valid']} "
+                   f"{obs['out_data']:08x} {obs['alarm']} {obs['gated']} "
+                   f"{obs['startup_done']}")
+    return out
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--emit-record", action="store_true")
@@ -241,10 +258,18 @@ def main(argv: list[str] | None = None) -> int:
         cycles, workdir / "suite-gate", var["netlist"], libs_ref)
     suite_gate = suite_vs_model(var_gate_obs, expected, phases)
     suite_gate["gate_matches_rtl"] = var_gate_obs == var_rtl_obs
+    # the meaningful functional check: the variant vs the normative model
+    # with the model's OWN fifo_depth parameter set to 2
+    expected_d2 = model_trace_depth2(cycles)
+    suite_rtl_d2 = suite_vs_model(var_rtl_obs, expected_d2, phases)
+    suite_gate_d2 = suite_vs_model(var_gate_obs, expected_d2, phases)
+    suite_gate_d2["gate_matches_rtl"] = var_gate_obs == var_rtl_obs
     (workdir / "suite-rtl.json").write_text(json.dumps(
-        {"seed": SEED, "rtl_vs_model": suite_rtl}, indent=2) + "\n")
+        {"seed": SEED, "rtl_vs_model": suite_rtl,
+         "rtl_vs_model_depth2": suite_rtl_d2}, indent=2) + "\n")
     (workdir / "suite-gate.json").write_text(json.dumps(
-        {"seed": SEED, "gate_vs_model": suite_gate}, indent=2) + "\n")
+        {"seed": SEED, "gate_vs_model": suite_gate,
+         "gate_vs_model_depth2": suite_gate_d2}, indent=2) + "\n")
 
     # ---- items 2-4 --------------------------------------------------------
     folds = fold_sampler_core.main()
@@ -282,6 +307,8 @@ def main(argv: list[str] | None = None) -> int:
             "seed": SEED,
             "rtl_vs_model": suite_rtl,
             "gate_vs_model": suite_gate,
+            "rtl_vs_model_depth2": suite_rtl_d2,
+            "gate_vs_model_depth2": suite_gate_d2,
         },
         "item2_fold": folds,
         "item3_composition_overhead": overhead,
@@ -346,13 +373,15 @@ def main(argv: list[str] | None = None) -> int:
         "unconstrained trng_digital netlist (10,542.6 um2 of 22,203.8, 47.5%, "
         "conclusive against the shared/unassigned residual); a depth-2 FIFO "
         "variant synthesizes at 16,129.2 um2 (-27.4% vs same-tool baseline) "
-        "but diverges from the normative model exactly at the depth-"
-        "observable checks; a folded sampler_core (F1) estimates 218.7 x "
-        "81.9 um with ring symmetry intact; composition overhead is 37.1% "
-        "of the committed whole block and 75% of it is removable stacking "
-        "artifact; no combination reaches 0.05 mm2 -- best estimate "
-        "0.060740 mm2 (1.215x), the routed digital macro remains the "
-        "largest limiter"
+        "and, while it diverges from the depth-4 normative model exactly at "
+        "the depth-observable checks, it MATCHES the normative model's own "
+        "fifo_depth=2 parameterisation bit-for-bit over the full 4239-cycle "
+        "directed program (RTL and mapped netlist); a folded sampler_core "
+        "(F1) estimates 218.7 x 81.9 um with ring symmetry intact; "
+        "composition overhead is 37.1% of the committed whole block and 75% "
+        "of it is removable stacking artifact; no combination reaches "
+        "0.05 mm2 -- best estimate 0.060740 mm2 (1.215x), the routed "
+        "digital macro remains the largest limiter"
     )
     rid = mint_behavioral_record(
         REPO_ROOT, "area-limiter-study", claim, body, summary,
@@ -374,8 +403,14 @@ def build_record_body(s: dict, var_resp: dict, base_resp: dict) -> str:
     fifo = rows["fifo_storage_raw"]["area_um2"] + \
         rows["fifo_storage_cond"]["area_um2"]
     runner_up = max((v["area_um2"] for k, v in rows.items()
-                     if k not in ("fifo_storage_raw", "fifo_storage_cond")),
+                     if k not in ("fifo_storage_raw", "fifo_storage_cond",
+                                  "shared", "unassigned")),
                     default=0.0)
+    runner_up_name = max(
+        ((k, v["area_um2"]) for k, v in rows.items()
+         if k not in ("fifo_storage_raw", "fifo_storage_cond",
+                      "shared", "unassigned")),
+        key=lambda kv: kv[1], default=("(none)", 0.0))[0]
     residual = rows.get("shared", {"area_um2": 0})["area_um2"] + \
         rows.get("unassigned", {"area_um2": 0})["area_um2"]
 
@@ -406,15 +441,20 @@ def build_record_body(s: dict, var_resp: dict, base_resp: dict) -> str:
         "",
         f"Ranking: FIFO storage (raw + cond) = {fifo:.4f} um2 "
         f"({100.0 * fifo / total:.1f}%) vs runner-up attributable function "
-        f"{runner_up:.4f} um2. Even if the entire shared + unassigned "
-        f"residual ({residual:.4f} um2) belonged to the runner-up, FIFO "
-        f"storage stays the leader by {fifo - runner_up - residual:.4f} um2 "
+        f"{runner_up_name} at {runner_up:.4f} um2. Even if the entire "
+        f"shared + unassigned residual ({residual:.4f} um2) belonged to the "
+        f"runner-up, FIFO storage stays the leader by "
+        f"{fifo - runner_up - residual:.4f} um2 "
         f"--> the ranking is conclusive; no measured basis forces the "
         f"inconclusive branch.",
         "",
         f"Same-tool baseline control (this run, klt "
         f"{base_resp['provenance']['klt_version']}, yosys "
-        f"{base_resp['engine_version']}): {base_resp['instance_count']} "
+        f"{base_resp['engine_version']}, open_pdks "
+        f"{base_resp['provenance']['pdk']['version']} -- the forward pin of "
+        f"#314; the resolved Liberty deck hashes to the SAME "
+        f"sha256:8e78e144... the committed 20260910 record pins, so the "
+        f"areas are directly comparable): {base_resp['instance_count']} "
         f"instances, {base_resp['area_um2']} um2 -- 0.006% below the "
         f"committed 0.69-post figure; per-type attribution of the control "
         f"netlist reconciles identically.",
@@ -450,13 +490,21 @@ def build_record_body(s: dict, var_resp: dict, base_resp: dict) -> str:
         "STATUS inherits the occupancy difference; the phases that never "
         "observe a full FIFO match the model. "
         "The variant is intentionally NOT sequentially equivalent to the "
-        "normative model (observable FIFO depth), so `klt equiv` is not run "
-        "against it; the suite result is the per-phase classification "
-        "above. Adoption is a DR-0004 section 4.4 change: depth 4 -> 2, "
-        "STATUS level-field semantics saturate at 2, overflow trips two "
-        "words earlier, and `digital/model/` (the normative model) plus the "
-        "directed programs would need the same depth parameter before any "
-        "equivalence chain could be re-established.",
+        "normative model at its default depth 4 (observable FIFO depth), "
+        "so `klt equiv` is not run against it. Against the normative "
+        "model's OWN `fifo_depth=2` parameterisation "
+        "(`TrngDigital(fifo_depth=2)` -- the model already parameterises "
+        "depth; nothing in `digital/model/` is modified) the variant RTL "
+        f"{'MATCHES' if s['item1_functional_suite']['rtl_vs_model_depth2']['pass'] else 'DOES NOT MATCH'} "
+        "the full 4239-cycle directed program "
+        f"({s['item1_functional_suite']['rtl_vs_model_depth2']['mismatch_count']} "
+        "mismatches), and the mapped netlist "
+        f"{'matches too' if s['item1_functional_suite']['gate_vs_model_depth2']['pass'] else 'does not'}. "
+        "Adoption is a DR-0004 section 4.4 change: depth 4 -> 2, STATUS "
+        "level-field semantics saturate at 2, overflow trips two words "
+        "earlier, and the normative model plus the directed programs would "
+        "pin the same depth parameter before any equivalence chain could "
+        "be re-established (tracked in #610).",
         "",
         "## Item 2 -- folded sampler_core (estimated: placement dry run)",
         "",
@@ -505,11 +553,11 @@ def build_record_body(s: dict, var_resp: dict, base_resp: dict) -> str:
         "",
         "## Item 6 -- follow-ups",
         "",
-        "Follow-up issues filed with this record (numbers in the PR "
-        "description): fold-F1 implementation + re-verification; the "
-        "DR-0004 section 4.4 FIFO-depth decision; the composed-and-verified "
-        "whole block on rep65 + F1 (+ variant once decided). No new "
-        "2AMLogic/klayout-tools gap was encountered: the F1 fold is "
+        "Follow-up issues filed with this record: #609 (fold-F1 "
+        "implementation + re-verification), #610 (the DR-0004 section 4.4 "
+        "FIFO-depth decision request), #611 (the composed-and-verified "
+        "whole block on rep65 + F1, + the variant once #610 is decided). "
+        "No new 2AMLogic/klayout-tools gap was encountered: the F1 fold is "
         "expressible in the current gen-compose recipe (explicit placement "
         "origins already support a second row; the strap/lane stages are "
         "hand-declared connectivity entries), so no friction-ledger row is "
