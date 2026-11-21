@@ -1,0 +1,74 @@
+{
+ "analysis": {
+  "args": "5p 80n uic",
+  "kind": "tran"
+ },
+ "backend": "batch",
+ "corners": {
+  "process": [
+   "tt",
+   "ss",
+   "ff"
+  ],
+  "temperature_c": [
+   -40.0
+  ]
+ },
+ "engine": "ngspice",
+ "measurements": [
+  {
+   "name": "vmax_ring",
+   "spice": ".meas tran vmax_ring max v(roA) from=20n to=80n"
+  },
+  {
+   "name": "vmin_ring",
+   "spice": ".meas tran vmin_ring min v(roA) from=20n to=80n"
+  },
+  {
+   "name": "vmax_buf",
+   "spice": ".meas tran vmax_buf max v(robA) from=20n to=80n"
+  },
+  {
+   "name": "vmin_buf",
+   "spice": ".meas tran vmin_buf min v(robA) from=20n to=80n"
+  },
+  {
+   "name": "tc3",
+   "spice": ".meas tran tc3 when v(roA)=0.99 rise=3"
+  },
+  {
+   "name": "tc11",
+   "spice": ".meas tran tc11 when v(roA)=0.99 rise=11"
+  },
+  {
+   "name": "tfall3",
+   "spice": ".meas tran tfall3 when v(roA)=0.99 fall=3"
+  },
+  {
+   "name": "tc4",
+   "spice": ".meas tran tc4 when v(roA)=0.99 rise=4"
+  },
+  {
+   "name": "iddr_run",
+   "spice": ".meas tran iddr_run avg i(VddrA) from=20n to=80n"
+  },
+  {
+   "name": "iddr_stop",
+   "spice": ".meas tran iddr_stop avg i(VddrB) from=20n to=80n"
+  },
+  {
+   "name": "ibuf",
+   "spice": ".meas tran ibuf avg i(Vdd) from=20n to=80n"
+  }
+ ],
+ "models": {
+  "lib": "libs.tech/combined/sky130.lib.spice",
+  "pdk": "sky130A"
+ },
+ "netlist": "netlist.cir",
+ "netlist_source": "extracted",
+ "options": {
+  "keep_artifacts": false,
+  "timeout_s": 3000
+ }
+}

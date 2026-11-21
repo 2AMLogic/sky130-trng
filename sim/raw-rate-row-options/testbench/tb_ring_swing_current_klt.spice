@@ -1,0 +1,67 @@
+* Ring swing, buffered-output swing, and per-ring supply current, klt-sim form -- issue #600
+*
+* Circuit-body TEMPLATE for make-requests.py: no .lib, .temp, .tran, .control
+* or .end card -- `klt sim` owns those (process via the request's
+* corners.process, temperature via corners.temperature_c, analysis via
+* analysis.args = "5p 80n uic"). Tokens (see make-requests.py):
+*
+*   DESIGN token   the text of design/ro_array_core.spice, verbatim (defines
+*                  ro_nand2, ro_stage AND ro_buf; the committed swing deck
+*                  includes the same library via --ro-ring5)
+*   VDD token      the supply of this deck (1.62 / 1.80 / 1.98 V)
+*   RINGA / RINGB  the running / stopped ring instance lines
+*   IC token       the running ring's initial-condition right-hand side
+*
+* DERIVED FROM the committed deterministic deck
+* sim/ro-ring5-swing-and-current/testbench/tb_ro_ring5_swing_current.spice
+* (issue #13) with the same topology and the same purpose: ring A enabled and
+* free-running on its own vddrA, its output driving one ro_buf on the separate
+* block supply so the buffer current never contaminates the ring current, and
+* ring B identical but held stopped (en = 0) for the static-current figure.
+* Deterministic -- no injected sources -- so the swing is the ring's own
+* steady-state excursion and every figure replays bit-exactly per build.
+* Differences from the committed deck, both forced by the klt sim contract
+* (the runner owns the deck's single .control block):
+*
+*   1. the .control measurements become top-level `.meas` cards supplied
+*      through the request's measurements[] (vmax/vmin ring and buffer,
+*      tc3/tc11 for the period, tfall3/tc4 for the duty cycle, and the three
+*      AVG supply currents); tbar = (tc11 - tc3)/8, the swing fractions, the
+*      duty cycle and the sign-flipped currents are recomputed by
+*      sim/raw-rate-row-options/reduce.py with the committed formulas.
+*   2. .temp is dropped (the request carries temperature_c).
+*
+* Configurations (make-requests.py):
+*
+*   sc5   the committed 5-stage geometry itself -- the DETERMINISTIC baseline
+*         control: must reproduce the committed records
+*         sim/ro-ring5-swing-and-current/records/20260825-085{315,402,449,537}-53f1f7a
+*         (loaded tbar, i_ring_run, i_buf, swing fractions) at every point.
+*   sc3   the 3-inversion ring (ro_nand2 + 2 ro_stage): its own LOADED period
+*         (replacing the ring5-ratio estimate the jitter reduction would
+*         otherwise need), its own per-ring supply current for the power-row
+*         arithmetic, and -- the question DR-0002 Sec 2 explicitly leaves open
+*         for any stage count below five -- whether the ring node's reduced
+*         swing still squares back up through ro_buf.
+
+.option scale=1u
+
+@@DESIGN@@
+
+* --- ring A: enabled, free-running ------------------------------------
+VddrA vddrA 0 dc @@VDD@@
+VenA enA 0 dc @@VDD@@
+@@RINGA@@
+
+* --- ring A's output buffer, on the BLOCK supply, not on vddrA ---------
+Vdd vdd 0 dc @@VDD@@
+xbA roA robA vdd 0 ro_buf
+
+* --- ring B: identical geometry, held stopped (en = 0) ------------------
+VddrB vddrB 0 dc @@VDD@@
+VenB enB 0 dc 0
+@@RINGB@@
+
+.ic @@IC@@
+
+.option seed=1
