@@ -1,0 +1,438 @@
+{
+  "netlist": "netlist.cir",
+  "engine": "ngspice",
+  "backend": "batch",
+  "netlist_source": "extracted",
+  "models": {
+    "pdk": "sky130A",
+    "lib": "libs.tech/combined/sky130.lib.spice"
+  },
+  "corners": {
+    "process": [
+      "ff"
+    ],
+    "temperature_c": [
+      -40.0
+    ],
+    "supply_v": {
+      "Vddrp1": [
+        1.98
+      ],
+      "Vddrp2": [
+        1.98
+      ],
+      "Vddrp3": [
+        1.98
+      ],
+      "Vddrp4": [
+        1.98
+      ],
+      "Vddp": [
+        1.98
+      ],
+      "Vddr1": [
+        1.98
+      ],
+      "Vddr2": [
+        1.98
+      ],
+      "Vddr3": [
+        1.98
+      ],
+      "Vddr4": [
+        1.98
+      ],
+      "Vdd": [
+        1.98
+      ]
+    }
+  },
+  "analysis": {
+    "kind": "tran",
+    "args": "50p 40.4u uic"
+  },
+  "measurements": [
+    {
+      "name": "x_ir1_rst",
+      "unit": "A",
+      "spice": ".meas tran x_ir1_rst AVG i(Vddrp1) FROM=50n TO=250n"
+    },
+    {
+      "name": "x_ir1_act",
+      "unit": "A",
+      "spice": ".meas tran x_ir1_act AVG i(Vddrp1) FROM=20.32u TO=40.32u"
+    },
+    {
+      "name": "x_ir1_lo",
+      "unit": "A",
+      "spice": ".meas tran x_ir1_lo AVG i(Vddrp1) FROM=20.32u TO=30.32u"
+    },
+    {
+      "name": "x_ir1_hi",
+      "unit": "A",
+      "spice": ".meas tran x_ir1_hi AVG i(Vddrp1) FROM=30.32u TO=40.32u"
+    },
+    {
+      "name": "x_ir2_rst",
+      "unit": "A",
+      "spice": ".meas tran x_ir2_rst AVG i(Vddrp2) FROM=50n TO=250n"
+    },
+    {
+      "name": "x_ir2_act",
+      "unit": "A",
+      "spice": ".meas tran x_ir2_act AVG i(Vddrp2) FROM=20.32u TO=40.32u"
+    },
+    {
+      "name": "x_ir2_lo",
+      "unit": "A",
+      "spice": ".meas tran x_ir2_lo AVG i(Vddrp2) FROM=20.32u TO=30.32u"
+    },
+    {
+      "name": "x_ir2_hi",
+      "unit": "A",
+      "spice": ".meas tran x_ir2_hi AVG i(Vddrp2) FROM=30.32u TO=40.32u"
+    },
+    {
+      "name": "x_ir3_rst",
+      "unit": "A",
+      "spice": ".meas tran x_ir3_rst AVG i(Vddrp3) FROM=50n TO=250n"
+    },
+    {
+      "name": "x_ir3_act",
+      "unit": "A",
+      "spice": ".meas tran x_ir3_act AVG i(Vddrp3) FROM=20.32u TO=40.32u"
+    },
+    {
+      "name": "x_ir3_lo",
+      "unit": "A",
+      "spice": ".meas tran x_ir3_lo AVG i(Vddrp3) FROM=20.32u TO=30.32u"
+    },
+    {
+      "name": "x_ir3_hi",
+      "unit": "A",
+      "spice": ".meas tran x_ir3_hi AVG i(Vddrp3) FROM=30.32u TO=40.32u"
+    },
+    {
+      "name": "x_ir4_rst",
+      "unit": "A",
+      "spice": ".meas tran x_ir4_rst AVG i(Vddrp4) FROM=50n TO=250n"
+    },
+    {
+      "name": "x_ir4_act",
+      "unit": "A",
+      "spice": ".meas tran x_ir4_act AVG i(Vddrp4) FROM=20.32u TO=40.32u"
+    },
+    {
+      "name": "x_ir4_lo",
+      "unit": "A",
+      "spice": ".meas tran x_ir4_lo AVG i(Vddrp4) FROM=20.32u TO=30.32u"
+    },
+    {
+      "name": "x_ir4_hi",
+      "unit": "A",
+      "spice": ".meas tran x_ir4_hi AVG i(Vddrp4) FROM=30.32u TO=40.32u"
+    },
+    {
+      "name": "x_ib_rst",
+      "unit": "A",
+      "spice": ".meas tran x_ib_rst AVG i(Vddp) FROM=50n TO=250n"
+    },
+    {
+      "name": "x_ib_act",
+      "unit": "A",
+      "spice": ".meas tran x_ib_act AVG i(Vddp) FROM=20.32u TO=40.32u"
+    },
+    {
+      "name": "x_ib_lo",
+      "unit": "A",
+      "spice": ".meas tran x_ib_lo AVG i(Vddp) FROM=20.32u TO=30.32u"
+    },
+    {
+      "name": "x_ib_hi",
+      "unit": "A",
+      "spice": ".meas tran x_ib_hi AVG i(Vddp) FROM=30.32u TO=40.32u"
+    },
+    {
+      "name": "x_r1a",
+      "unit": "s",
+      "spice": ".meas tran x_r1a when v(xarr.ro1)=0.99 rise=3"
+    },
+    {
+      "name": "x_r1b",
+      "unit": "s",
+      "spice": ".meas tran x_r1b when v(xarr.ro1)=0.99 rise=13"
+    },
+    {
+      "name": "x_r2a",
+      "unit": "s",
+      "spice": ".meas tran x_r2a when v(xarr.ro2)=0.99 rise=3"
+    },
+    {
+      "name": "x_r2b",
+      "unit": "s",
+      "spice": ".meas tran x_r2b when v(xarr.ro2)=0.99 rise=13"
+    },
+    {
+      "name": "x_r3a",
+      "unit": "s",
+      "spice": ".meas tran x_r3a when v(xarr.ro3)=0.99 rise=3"
+    },
+    {
+      "name": "x_r3b",
+      "unit": "s",
+      "spice": ".meas tran x_r3b when v(xarr.ro3)=0.99 rise=13"
+    },
+    {
+      "name": "x_r4a",
+      "unit": "s",
+      "spice": ".meas tran x_r4a when v(xarr.ro4)=0.99 rise=3"
+    },
+    {
+      "name": "x_r4b",
+      "unit": "s",
+      "spice": ".meas tran x_r4b when v(xarr.ro4)=0.99 rise=13"
+    },
+    {
+      "name": "x_xo_max",
+      "unit": "V",
+      "spice": ".meas tran x_xo_max MAX v(xarr.xo) FROM=100n TO=40.4u"
+    },
+    {
+      "name": "x_xo_min",
+      "unit": "V",
+      "spice": ".meas tran x_xo_min MIN v(xarr.xo) FROM=100n TO=40.4u"
+    },
+    {
+      "name": "x_xo_avg",
+      "unit": "V",
+      "spice": ".meas tran x_xo_avg AVG v(xarr.xo) FROM=100n TO=40.4u"
+    },
+    {
+      "name": "x_snap_bit",
+      "unit": "V",
+      "spice": ".meas tran x_snap_bit FIND v(praw_bit) AT=35.3u"
+    },
+    {
+      "name": "x_snap_valid",
+      "unit": "V",
+      "spice": ".meas tran x_snap_valid FIND v(praw_valid) AT=35.3u"
+    },
+    {
+      "name": "x_snap_bit1",
+      "unit": "V",
+      "spice": ".meas tran x_snap_bit1 FIND v(pring_bit1) AT=35.3u"
+    },
+    {
+      "name": "x_snap_bit2",
+      "unit": "V",
+      "spice": ".meas tran x_snap_bit2 FIND v(pring_bit2) AT=35.3u"
+    },
+    {
+      "name": "x_snap_bit3",
+      "unit": "V",
+      "spice": ".meas tran x_snap_bit3 FIND v(pring_bit3) AT=35.3u"
+    },
+    {
+      "name": "x_snap_bit4",
+      "unit": "V",
+      "spice": ".meas tran x_snap_bit4 FIND v(pring_bit4) AT=35.3u"
+    },
+    {
+      "name": "s_ir1_rst",
+      "unit": "A",
+      "spice": ".meas tran s_ir1_rst AVG i(Vddr1) FROM=50n TO=250n"
+    },
+    {
+      "name": "s_ir1_act",
+      "unit": "A",
+      "spice": ".meas tran s_ir1_act AVG i(Vddr1) FROM=20.32u TO=40.32u"
+    },
+    {
+      "name": "s_ir1_lo",
+      "unit": "A",
+      "spice": ".meas tran s_ir1_lo AVG i(Vddr1) FROM=20.32u TO=30.32u"
+    },
+    {
+      "name": "s_ir1_hi",
+      "unit": "A",
+      "spice": ".meas tran s_ir1_hi AVG i(Vddr1) FROM=30.32u TO=40.32u"
+    },
+    {
+      "name": "s_ir2_rst",
+      "unit": "A",
+      "spice": ".meas tran s_ir2_rst AVG i(Vddr2) FROM=50n TO=250n"
+    },
+    {
+      "name": "s_ir2_act",
+      "unit": "A",
+      "spice": ".meas tran s_ir2_act AVG i(Vddr2) FROM=20.32u TO=40.32u"
+    },
+    {
+      "name": "s_ir2_lo",
+      "unit": "A",
+      "spice": ".meas tran s_ir2_lo AVG i(Vddr2) FROM=20.32u TO=30.32u"
+    },
+    {
+      "name": "s_ir2_hi",
+      "unit": "A",
+      "spice": ".meas tran s_ir2_hi AVG i(Vddr2) FROM=30.32u TO=40.32u"
+    },
+    {
+      "name": "s_ir3_rst",
+      "unit": "A",
+      "spice": ".meas tran s_ir3_rst AVG i(Vddr3) FROM=50n TO=250n"
+    },
+    {
+      "name": "s_ir3_act",
+      "unit": "A",
+      "spice": ".meas tran s_ir3_act AVG i(Vddr3) FROM=20.32u TO=40.32u"
+    },
+    {
+      "name": "s_ir3_lo",
+      "unit": "A",
+      "spice": ".meas tran s_ir3_lo AVG i(Vddr3) FROM=20.32u TO=30.32u"
+    },
+    {
+      "name": "s_ir3_hi",
+      "unit": "A",
+      "spice": ".meas tran s_ir3_hi AVG i(Vddr3) FROM=30.32u TO=40.32u"
+    },
+    {
+      "name": "s_ir4_rst",
+      "unit": "A",
+      "spice": ".meas tran s_ir4_rst AVG i(Vddr4) FROM=50n TO=250n"
+    },
+    {
+      "name": "s_ir4_act",
+      "unit": "A",
+      "spice": ".meas tran s_ir4_act AVG i(Vddr4) FROM=20.32u TO=40.32u"
+    },
+    {
+      "name": "s_ir4_lo",
+      "unit": "A",
+      "spice": ".meas tran s_ir4_lo AVG i(Vddr4) FROM=20.32u TO=30.32u"
+    },
+    {
+      "name": "s_ir4_hi",
+      "unit": "A",
+      "spice": ".meas tran s_ir4_hi AVG i(Vddr4) FROM=30.32u TO=40.32u"
+    },
+    {
+      "name": "s_ib_rst",
+      "unit": "A",
+      "spice": ".meas tran s_ib_rst AVG i(Vdd) FROM=50n TO=250n"
+    },
+    {
+      "name": "s_ib_act",
+      "unit": "A",
+      "spice": ".meas tran s_ib_act AVG i(Vdd) FROM=20.32u TO=40.32u"
+    },
+    {
+      "name": "s_ib_lo",
+      "unit": "A",
+      "spice": ".meas tran s_ib_lo AVG i(Vdd) FROM=20.32u TO=30.32u"
+    },
+    {
+      "name": "s_ib_hi",
+      "unit": "A",
+      "spice": ".meas tran s_ib_hi AVG i(Vdd) FROM=30.32u TO=40.32u"
+    },
+    {
+      "name": "s_r1a",
+      "unit": "s",
+      "spice": ".meas tran s_r1a when v(xctl.ro1)=0.99 rise=3"
+    },
+    {
+      "name": "s_r1b",
+      "unit": "s",
+      "spice": ".meas tran s_r1b when v(xctl.ro1)=0.99 rise=13"
+    },
+    {
+      "name": "s_r2a",
+      "unit": "s",
+      "spice": ".meas tran s_r2a when v(xctl.ro2)=0.99 rise=3"
+    },
+    {
+      "name": "s_r2b",
+      "unit": "s",
+      "spice": ".meas tran s_r2b when v(xctl.ro2)=0.99 rise=13"
+    },
+    {
+      "name": "s_r3a",
+      "unit": "s",
+      "spice": ".meas tran s_r3a when v(xctl.ro3)=0.99 rise=3"
+    },
+    {
+      "name": "s_r3b",
+      "unit": "s",
+      "spice": ".meas tran s_r3b when v(xctl.ro3)=0.99 rise=13"
+    },
+    {
+      "name": "s_r4a",
+      "unit": "s",
+      "spice": ".meas tran s_r4a when v(xctl.ro4)=0.99 rise=3"
+    },
+    {
+      "name": "s_r4b",
+      "unit": "s",
+      "spice": ".meas tran s_r4b when v(xctl.ro4)=0.99 rise=13"
+    },
+    {
+      "name": "s_xo_max",
+      "unit": "V",
+      "spice": ".meas tran s_xo_max MAX v(xctl.xo) FROM=100n TO=40.4u"
+    },
+    {
+      "name": "s_xo_min",
+      "unit": "V",
+      "spice": ".meas tran s_xo_min MIN v(xctl.xo) FROM=100n TO=40.4u"
+    },
+    {
+      "name": "s_xo_avg",
+      "unit": "V",
+      "spice": ".meas tran s_xo_avg AVG v(xctl.xo) FROM=100n TO=40.4u"
+    },
+    {
+      "name": "s_snap_bit",
+      "unit": "V",
+      "spice": ".meas tran s_snap_bit FIND v(raw_bit) AT=35.3u"
+    },
+    {
+      "name": "s_snap_valid",
+      "unit": "V",
+      "spice": ".meas tran s_snap_valid FIND v(raw_valid) AT=35.3u"
+    },
+    {
+      "name": "s_snap_bit1",
+      "unit": "V",
+      "spice": ".meas tran s_snap_bit1 FIND v(ring_bit1) AT=35.3u"
+    },
+    {
+      "name": "s_snap_bit2",
+      "unit": "V",
+      "spice": ".meas tran s_snap_bit2 FIND v(ring_bit2) AT=35.3u"
+    },
+    {
+      "name": "s_snap_bit3",
+      "unit": "V",
+      "spice": ".meas tran s_snap_bit3 FIND v(ring_bit3) AT=35.3u"
+    },
+    {
+      "name": "s_snap_bit4",
+      "unit": "V",
+      "spice": ".meas tran s_snap_bit4 FIND v(ring_bit4) AT=35.3u"
+    }
+  ],
+  "options": {
+    "timeout_s": 3480,
+    "keep_artifacts": true,
+    "save_mode": "netlist",
+    "ngspice_init": [
+      "set measureprec=12",
+      "set numdgt=12"
+    ]
+  },
+  "batch": {
+    "poll_timeout_s": 3700
+  }
+}

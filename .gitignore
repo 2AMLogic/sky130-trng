@@ -132,3 +132,8 @@ sim/post-layout-whole-block/corners/*/netlist.cir
 # both in the request's plan.json); the committed form of the realised model
 # is runs/20261114-gate-model-full/gate-model.cir.gz.
 sim/post-layout-whole-block/corners/*/gate-model.cir
+# issue #604: the per-request inlined decks (design + PEX libraries + the
+# derived stimulus) are regenerated deterministically by
+# sim/post-layout-sampler-core/make-ts20u-requests.py; the committed form is
+# the request/plan pair plus the sha256 in plan.json (whole-block #174 pattern).
+sim/post-layout-sampler-core/corners/*/netlist.cir

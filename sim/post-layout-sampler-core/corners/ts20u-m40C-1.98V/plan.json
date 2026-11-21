@@ -1,0 +1,130 @@
+{
+  "analysis": {
+    "args": "50p 40.4u uic",
+    "kind": "tran"
+  },
+  "control_records_paired": [
+    "sim/post-layout-sampler-core/records/20260908-050034-ef0db50.json",
+    "sim/post-layout-sampler-core/records/20260908-053634-ef0db50.json"
+  ],
+  "control_template": {
+    "path": "sim/post-layout-sampler-core/testbench/tb_post_layout_sampler_core.spice",
+    "sha256": "1cbd47f389b5cb163f404045041e6fb1b9aef27c684cc9d45fc76b705c818e80"
+  },
+  "corners": {
+    "process": [
+      "ff"
+    ],
+    "supply_v": {
+      "Vdd": [
+        1.98
+      ],
+      "Vddp": [
+        1.98
+      ],
+      "Vddr1": [
+        1.98
+      ],
+      "Vddr2": [
+        1.98
+      ],
+      "Vddr3": [
+        1.98
+      ],
+      "Vddr4": [
+        1.98
+      ],
+      "Vddrp1": [
+        1.98
+      ],
+      "Vddrp2": [
+        1.98
+      ],
+      "Vddrp3": [
+        1.98
+      ],
+      "Vddrp4": [
+        1.98
+      ]
+    },
+    "temperature_c": [
+      -40.0
+    ]
+  },
+  "design_lib": {
+    "path": "design/sampler_core.spice",
+    "sha256": "34a9af2714b7cfd71092c9733fb4007a61747b032eadcf5491ae9db811999b71"
+  },
+  "deviations": [
+    {
+      "control": "100n (49.8n high)",
+      "here": "20u (9.96u high), first edge 320n",
+      "what": "clk period",
+      "why": "DR-0003's ratified operating point; the committed controls' disclosed compute-budget deviation removed"
+    },
+    {
+      "control": "1u / 10u high",
+      "here": "50u / 50u high",
+      "what": "en1-en4 / rst_n PULSE widths",
+      "why": "the control widths fall mid-run at this tstop; release instants (5n / 300n) unchanged so W_RST stimulus is bit-identical to the committed controls"
+    },
+    {
+      "control": "5p",
+      "here": "50p",
+      "what": ".tran tstep",
+      "why": "fleet whole-job ceiling 3600 s; measured on the control deck at ff/-40C/1.98V: -0.56 %/-0.20 % active-total shift (schematic/extracted leg) vs 5p"
+    },
+    {
+      "control": "400-800n (4 clk periods, 0.8-period phase offset)",
+      "here": "20.32-40.32us (exactly 1 complete settled clk period)",
+      "what": "active window",
+      "why": "a 2-period window (tstop 60.4us) exceeds the fleet whole-job ceiling at the cold corner; a period-exact average needs no phase offset"
+    }
+  ],
+  "fleet": {
+    "poll_timeout_s": 3700,
+    "submit": "klt sim --batch-set <both request.json> -o <dir> --wait-for-capacity 600",
+    "unit_timeout_s": 3480,
+    "whole_job_ceiling_s": 3600
+  },
+  "measurement_count": 74,
+  "name": "ts20u-m40C-1.98V",
+  "netlist_sha256": "36342ad55f4ec1c3a290aa455275e2fb03f791011833a66a0d412faf3b5100b9",
+  "pex_lib": {
+    "path": "layout/pex-sampler-core/sampler_core_pex.spice",
+    "sha256": "2aad0267cba9c927a33ab2adfc9f869f962137ac089393a3a79b59d950f05521"
+  },
+  "purpose": "issue #604: sampler_core analog active power at DR-0003's Ts = 20 us, ff / 1.98 V -- the 20 us leg of the 100 ns-vs-20 us sampling-rate comparison",
+  "timing": {
+    "clk_high_s": 9.96e-06,
+    "clk_t0_s": 3.2e-07,
+    "duty": 0.49799999999999994,
+    "en_release_s": 5e-09,
+    "en_width_s": 5e-05,
+    "rst_release_s": 3e-07,
+    "rst_width_s": 5e-05,
+    "ts_s": 2e-05,
+    "tstep": "50p",
+    "tstop": "40.4u",
+    "uic": true
+  },
+  "windows": {
+    "snapshot_s": 3.53e-05,
+    "w_act_s": [
+      2.0320000000000002e-05,
+      4.032e-05
+    ],
+    "w_hi_s": [
+      3.032e-05,
+      4.032e-05
+    ],
+    "w_lo_s": [
+      2.0320000000000002e-05,
+      3.032e-05
+    ],
+    "w_rst_s": [
+      5e-08,
+      2.5e-07
+    ]
+  }
+}
