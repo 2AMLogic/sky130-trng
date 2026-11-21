@@ -194,6 +194,19 @@
   of the three consumers replays identically before and after (no new
   DIFFERS), and no record is re-minted or edited.
 
+- [`decision-records/DR-0021-analog-active-power-budget.md`](decision-records/DR-0021-analog-active-power-budget.md)
+  — **Proposed**. Issue #604: the measured disposition of the ff / 1.98 V
+  analog active-power overrun. The matched 100 ns-vs-20 us fleet runs
+  (`sim/post-layout-sampler-core/corners/ts20u-*/`, both legs per deck)
+  refute the sampling-rate hypothesis — the sampler bank is a sub-uW term
+  at either rate, the overrun is the continuous ring+buffer+XOR current,
+  and no rate, duty-cycle or array-size lever exists inside DR-0003's
+  ratified operating point. Options P-A (amend the analog-partition active
+  bound to a measured-worst-corner-derived `< 650 uW`, recommended),
+  P-B (derogation) and P-C (re-derivation campaign) are laid out for the
+  operator. Amends nothing by itself; every historical verdict stays
+  recorded against the bound in force when it was measured.
+
 ### Open requests for an operator decision record (no record yet)
 
 - **End-of-life Vth-drift envelope** — issue [#262](https://github.com/2AMLogic/sky130-trng/issues/262), from
