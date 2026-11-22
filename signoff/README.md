@@ -455,7 +455,7 @@ python3 signoff/attest.py --check      # what CI runs; read-only
 Tagged 0.8.0 has since shipped both verbs (`klt signoff --attest` and
 `--inventory`: absent from 0.7.0 as of 2026-10-17, present in the
 `0.7.1.dev` build, and the nightly's netlist-check already runs
-`--attest 1` on 0.8.0), so switch these rows to it and drop `attest.py`;
+`--attest 1` on 0.9.1), so switch these rows to it and drop `attest.py`;
 the CI pin no longer holds the switch back (ci.yml grades on 0.8.0 since
 issue #363). Item 9's inventory pins the PDK files, so #314 (open_pdks
 re-pin) and this issue's rows need a `--write` after whichever lands second.
@@ -506,7 +506,7 @@ the item to make a row go green.
 **diverged** from the PDK nightly's composition pin, which since issue
 #181 installs source commit `5edb557f91d0` because no tagged release
 contains it; the nightly's netlist-check attest job separately pins
-0.8.0, matching ci.yml): the grader is a pure JSON
+0.9.1, itself diverged from ci.yml's grader pin): the grader is a pure JSON
 transform with no PDK, so it follows the grader release, while the
 nightly's pin gates the nineteen committed cells' compose-cell `--check`
 reproductions and moves only with a full `--check` re-verification
