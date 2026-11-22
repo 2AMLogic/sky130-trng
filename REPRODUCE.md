@@ -138,6 +138,7 @@ as above, using the testbench named in the record's `claim`.
 | `sim/local-mismatch-monte-carlo/` | `make-requests.py`, `reduce.py`; see its `README.md` |
 | `sim/ro-vth-drift-sensitivity/` | `make-requests.py`, `campaign.py`, `analysis/sensitivity.py`; see its `README.md` |
 | `sim/ro-array-idle-leakage/` | `make-requests.py`, `analysis/idle_leakage.py`; see its `README.md` |
+| `sim/raw-rate-row-options/` | `make-requests.py`, `reduce.py`; see its `README.md` |
 
 ### 3b. Post-layout PVT campaigns
 
