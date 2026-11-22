@@ -2,10 +2,7 @@
 
 Sections moved byte-for-byte from [WORK_LOG.md](../WORK_LOG.md) by `loom-daemon work-docs archive`.
 
-### 2026-09-22
-
-- **PR #88**: feat: vendor shared USB protocol RTL and adapt the UTMI wrapper
-- **Issue #87** (closed): Re-run usb_utmi_phy place-and-route and post-layout PVT against the vendored rtl/common sources (post-#84)
+> Edit 2026-11-22 (#633): six records (`PR #88`, `Issue #87`, `Issue #83`, `Issue #79`, `Issue #78`, `Issue #77`) were removed from the 2026-09-21/22 sections — they were backfilled from `2AMLogic/gf180-usb2-phy`'s history by `e8b0dd38`, not this repository's work. The genuine records for those numbers remain in this file.
 
 ### 2026-09-21
 
@@ -15,10 +12,6 @@ Sections moved byte-for-byte from [WORK_LOG.md](../WORK_LOG.md) by `loom-daemon 
 - **Issue #155** (closed): Commit a klt signoff block manifest so this block's T1 state is graded, not hand-read
 - **Issue #154** (closed): T1 item 11 (power delivery, structural): no klt erc supply spec or report in this repo
 - **Issue #153** (closed): run-pdk-check label does not exist, so both PDK-gated workflows' documented PR opt-in is dead
-- **Issue #83** (closed): T1 item 11 (digital): declare well/substrate ties[] in layout/digital/erc-supply-spec.json and re-run klt erc — upstream klayout-tools#2169 fix is already in the pinned klt
-- **Issue #79** (closed): T1 item 11 digital leg: committed LVS report predates power_connectivity - re-run digital LVS on a klt that computes it
-- **Issue #78** (closed): Commit a klt signoff block manifest so this block's T1 state is graded, not hand-read
-- **Issue #77** (closed): T1 item 11 (power delivery, structural): no klt erc supply spec or report in this repo
 
 ### 2026-09-18
 
