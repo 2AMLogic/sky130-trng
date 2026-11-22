@@ -2,6 +2,31 @@
 
 Sections moved byte-for-byte from [WORK_LOG.md](../WORK_LOG.md) by `loom-daemon work-docs archive`.
 
+### 2026-09-22
+
+- **PR #88**: feat: vendor shared USB protocol RTL and adapt the UTMI wrapper
+- **Issue #87** (closed): Re-run usb_utmi_phy place-and-route and post-layout PVT against the vendored rtl/common sources (post-#84)
+
+### 2026-09-21
+
+- **PR #158**: feat(layout): add T1 item-11 klt erc supply read for sampler_core
+- **PR #157**: feat(signoff): add klt signoff block manifest with CI staleness gate
+- **PR #156**: ci: declare the run-pdk-check label the PDK-gated workflows' PR opt-in documents
+- **Issue #155** (closed): Commit a klt signoff block manifest so this block's T1 state is graded, not hand-read
+- **Issue #154** (closed): T1 item 11 (power delivery, structural): no klt erc supply spec or report in this repo
+- **Issue #153** (closed): run-pdk-check label does not exist, so both PDK-gated workflows' documented PR opt-in is dead
+- **Issue #83** (closed): T1 item 11 (digital): declare well/substrate ties[] in layout/digital/erc-supply-spec.json and re-run klt erc — upstream klayout-tools#2169 fix is already in the pinned klt
+- **Issue #79** (closed): T1 item 11 digital leg: committed LVS report predates power_connectivity - re-run digital LVS on a klt that computes it
+- **Issue #78** (closed): Commit a klt signoff block manifest so this block's T1 state is graded, not hand-read
+- **Issue #77** (closed): T1 item 11 (power delivery, structural): no klt erc supply spec or report in this repo
+
+### 2026-09-18
+
+- **PR #38**: ci(layout): add compose-cell.py --check regression guard to pdk-nightly
+- **PR #152**: ci: pin xschem to a 3.4.7 floor and surface a red pdk-nightly (#151)
+- **Issue #36** (closed): layout: compose-cell.py --check has no automated regression guard (nothing runs it)
+- **Issue #151** (closed): pdk-nightly netlist-check has been red since 2026-09-15: xschem version drift emits expr() templates where committed netlists have evaluated values (4 cells STALE)
+
 ### 2026-09-16
 
 - **PR #150**: refactor: remove dead constants in sampler_core data-path-scan

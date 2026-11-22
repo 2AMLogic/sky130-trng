@@ -39,11 +39,14 @@ def use_fake_klt(case, tmp, mode="ok"):
 # interpolation as an opaque wildcard (so `f"{outdir}/{rid}.md"` still ends in
 # `<rid>.md`). A write is a record tail only when the rendered path ends in
 # EXACTLY `<rid>.md`/`<rid>.json`: `endswith(".json")` would also flag the
-# legitimate `<rid>.calibration.json` sidecar. Doc back-references, prints and
-# `.exists()` checks never reach a write call, so they stay unflagged.
+# legitimate `<rid>.calibration.json` sidecar. Doc back-references, prints,
+# `.exists()` checks and read-only `open()`s (omitted mode or a literal read
+# mode such as `"rb"` -- issue #618) never reach a write call, so they stay
+# unflagged.
 _RID, _ANY = "\x00", "\x01"
 _RID_TAIL = re.compile(r"\x00\.(?:md|json)\Z")
 _WRITE_ATTRS = {"write_text", "write_bytes", "write", "open"}
+_WRITE_MODE_CHARS = frozenset("wax+")
 _PLACEHOLDER = re.compile(r"%[sdr]|\{[^{}]*\}")
 
 
@@ -89,6 +92,27 @@ def _is_tail(node) -> bool:
     return bool(_RID_TAIL.search(_render(node)))
 
 
+def _open_mode(n, mode_index: int):
+    """The `mode` argument of an `open()` call: positional slot `mode_index`
+    (2nd arg for the built-in, 1st for the method), else the `mode=` keyword,
+    else None when omitted."""
+    if len(n.args) > mode_index:
+        return n.args[mode_index]
+    return next((k.value for k in n.keywords if k.arg == "mode"), None)
+
+
+def _mode_implies_write(mode) -> bool:
+    """False only for a mode the AST establishes as read-only: omitted (which
+    reads) or a literal without `w`/`a`/`x`/`+`. Anything else -- a variable,
+    a call result -- is conservatively a write (issue #618)."""
+    import ast
+    if mode is None:
+        return False
+    if isinstance(mode, ast.Constant) and isinstance(mode.value, str):
+        return bool(_WRITE_MODE_CHARS.intersection(mode.value.lower()))
+    return True
+
+
 # Known hand-rolled tails, allowed only until drained. `sim/bin/corner-run.py`
 # is the `klt sim` record minter with its own `supersedes` handling (#504's
 # reasoning, restated by #515's scope note). The four #525 reducers were
@@ -126,12 +150,18 @@ def hand_rolled_record_tails(root: Path = REPO) -> set[str]:
             if not isinstance(n, ast.Call):
                 continue
             f = n.func
+            mode_index = None
             if isinstance(f, ast.Name) and f.id == "open" and n.args:
                 target = n.args[0]
+                mode_index = 1  # open(path, mode, ...)
             elif isinstance(f, ast.Attribute) and f.attr in _WRITE_ATTRS:
                 target = f.value
+                if f.attr == "open":
+                    mode_index = 0  # path.open(mode, ...)
             else:
                 continue
+            if mode_index is not None and not _mode_implies_write(_open_mode(n, mode_index)):
+                continue  # read-only open() of a record path is not a tail
             if _is_tail(target) or (isinstance(target, ast.Name) and target.id in bound):
                 hits.add(rel)
                 break
@@ -628,6 +658,40 @@ class NoNewHandRolledRecordTails(unittest.TestCase):
         for i, src in enumerate(spellings):
             with self.subTest(src):
                 self.assertEqual(self._scan({f"v{i}.py": src + "\n"}), {f"v{i}.py"})
+
+    def test_open_reads_not_flagged(self):
+        """Issue #618: a read-only `open()` of a record path is not a tail."""
+        reads = {
+            "nested.py": 'rec = json.load(open(os.path.join(HERE, "records", rid + ".json")))\n',
+            "pos_r.py": 'open(rdir / f"{rid}.json", "r")\n',
+            "pos_rb.py": 'open(rdir / f"{rid}.md", "rb")\n',
+            "pos_rt.py": 'open(rdir / f"{rid}.json", "rt")\n',
+            "kw_mode.py": 'open(rdir / f"{rid}.json", mode="rb")\n',
+            "attr_none.py": '(rdir / f"{rid}.json").open()\n',
+            "attr_pos.py": '(rdir / f"{rid}.md").open("rb")\n',
+            "attr_kw.py": '(rdir / f"{rid}.json").open(mode="r")\n',
+            "bound_read.py": 'record_json = rdir / f"{rid}.json"\n'
+                             'json.load(open(record_json, "r"))\n',
+        }
+        self.assertEqual(self._scan(reads), set())
+
+    def test_open_write_modes_flagged_across_call_forms(self):
+        """Issue #618: writing/appending/exclusive/updating modes and modes the
+        AST cannot establish as read-only still hit on a record path."""
+        writes = {
+            "w.py": 'open(rdir / f"{rid}.json", "w").write(md)\n',
+            "wb.py": 'json.dump(rec, open(rdir / f"{rid}.json", "wb"))\n',
+            "append.py": 'open(rdir / f"{rid}.md", "a").write(line)\n',
+            "exclusive.py": 'open(rdir / f"{rid}.md", "x").write(md)\n',
+            "update.py": 'open(rdir / f"{rid}.json", "r+").write(data)\n',
+            "kw_mode.py": 'open(rdir / f"{rid}.json", mode="wb").write(md)\n',
+            "attr_pos.py": '(rdir / f"{rid}.json").open("wb").write(md)\n',
+            "attr_kw.py": '(rdir / f"{rid}.md").open(mode="a").write(line)\n',
+            "bound_write.py": 'record_md = rdir / f"{rid}.md"\n'
+                              'open(record_md, "w").write(md)\n',
+            "var_mode.py": 'mode = "r"\nopen(rdir / f"{rid}.json", mode).write(md)\n',
+        }
+        self.assertEqual(self._scan(writes), set(writes))
 
     def test_detector_flags_split_bound_write(self):
         self.assertEqual(
