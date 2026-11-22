@@ -8,6 +8,8 @@ Chronological record of recently merged pull requests and closed issues.
 
 ### 2026-11-22
 
+- **PR #529**: fix: generate-agents-md.sh doubled .loom/ path; accept PDR-0001's deferred follow-up
+- **Issue #523** (closed): Finish PDR-0001's deferred follow-up: generate-agents-md.sh still fails with a doubled .loom/ path
 - **PR #625**: test: guard the shared GDS geometry helpers against forks and compose-whole loaders
 - **Issue #617** (closed): Guard the shared GDS geometry helpers against local copies and compose-whole loaders
 
@@ -474,9 +476,4 @@ Chronological record of recently merged pull requests and closed issues.
 - **PR #163**: chore(signoff): bump signoff grader pin to klayout-tools 0.6.0, re-vendor tiers doc, regenerate t1-report
 - **Issue #161** (closed): T1 item 11: declare sampler_core's well ties in the klt erc supply spec on klayout-tools 0.6.0 and cite 11.analog in the block manifest
 - **Issue #160** (closed): Bump the signoff grader pin to klayout-tools 0.6.0, re-vendor the tiers doc, and regenerate signoff/t1-report.json
-
-### 2026-09-22
-
-- **PR #88**: feat: vendor shared USB protocol RTL and adapt the UTMI wrapper
-- **Issue #87** (closed): Re-run usb_utmi_phy place-and-route and post-layout PVT against the vendored rtl/common sources (post-#84)
 
