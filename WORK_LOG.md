@@ -8,6 +8,14 @@ Chronological record of recently merged pull requests and closed issues.
 
 ### 2026-11-21
 
+- **PR #622**: chore: gitignore daemon-written .loom/account-ranking.codex runtime state
+- **Issue #608** (closed): chore: gitignore the daemon's .loom/account-ranking.* runtime state (breaks check-main-clean for every builder)
+- **PR #616**: refactor: extract the four GDS geometry helpers to _gds_geometry.py
+- **Issue #613** (closed): Remove both dynamic compose-whole loaders by sharing the four GDS geometry helpers
+- **PR #606**: sim(pex): cite a klt pex sampler_core delta report as 7.analog
+- **Issue #597** (closed): T1 item 7 (analog): produce a klt pex schematic-vs-extracted delta report for sampler_core and cite it as 7.analog
+- **PR #603**: docs: regenerate WORK_PLAN.md plan body from live labels via render_plan_body()
+- **Issue #602** (closed): WORK_PLAN.md Important/Ready sections drift: hand-applied Guide deltas under-report ready work
 - **Issue #615** (closed): Duplicate of #608, which tracks the missing ignore rule for Loom’s per-runtime account ranking file.
 
 ### 2026-11-20

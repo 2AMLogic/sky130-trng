@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Contract tests for ``layout/bin/_klt_common.py``'s shared ``klt`` readers
-(issue #500) and the #535 helper consolidation.
+(issue #500) and the #535 / #613 helper consolidations.
 
 Standalone script, following ``layout/test_hashing.py``'s convention:
 
@@ -45,6 +45,10 @@ diverged in the failure direction:
 - ``dumps`` must stay byte-equal to :func:`write_json`'s file content, so a
   string-built artifact and a file-written one can never drift.
 - the five helpers must not grow back as per-script forks in ``layout/bin``.
+- the four GDS geometry helpers must stay in ``_gds_geometry.py``: no
+  per-script fork, and no ``spec_from_file_location`` loader of
+  ``compose-whole.py``, in the three scripts the #613 consolidation touched
+  (#617's guard).
 """
 from __future__ import annotations
 
@@ -534,6 +538,57 @@ def check_the_consolidated_helpers_live_in_one_place() -> None:
                hit is None, hit.group(0) if hit else None)
 
 
+def check_the_gds_geometry_helpers_live_in_one_place() -> None:
+    """Issue #617's regression guard over the #613 consolidation: the four
+    GDS geometry helpers live in _gds_geometry.py and must not grow back as
+    per-script forks, nor be reached again through a spec_from_file_location
+    loader of compose-whole.py -- the two loaders #613 deleted. A docstring
+    may name them; a ``def`` may not, and a loader of any other file is not
+    this guard's business."""
+    bin_dir = Path(__file__).resolve().parent / "bin"
+    shared = (bin_dir / "_gds_geometry.py").read_text()
+    for name in ("flat_extract", "net_labels", "probe",
+                 "canonical_geometry_hash"):
+        _check(f"_gds_geometry.py defines {name}()",
+               re.search(rf"^def {name}\(", shared, re.M) is not None)
+    fork = re.compile(
+        r"^def (flat_extract|net_labels|probe|canonical_geometry_hash)\b", re.M)
+    loader = re.compile(r"spec_from_file_location\([^)]*compose-whole", re.S)
+    for script in ("compose-whole.py", "verify-whole.py",
+                   "physical_estimates.py"):
+        text = (bin_dir / script).read_text()
+        hit = fork.search(text)
+        _check(f"{script} carries no local fork of the geometry helpers",
+               hit is None, hit.group(0) if hit else None)
+        hit = loader.search(text)
+        _check(f"{script} reaches no compose-whole.py loader by path",
+               hit is None, hit.group(0) if hit else None)
+    # Negative controls, so both regexes are shown able to fail: the caught
+    # shapes are the ones #613 deleted; the three near-misses must stay
+    # silent (issue #617's test plan).
+    _check("the fork regex catches a copied top-level helper def",
+           fork.search("def probe(db, l2n, regions, layer_key, x_um, y_um):\n"
+                       "    return set()\n") is not None)
+    _check("the fork regex stays silent on a longer name (probe_clusters)",
+           fork.search("def probe_clusters(path):\n    return path\n") is None)
+    _check("the fork regex stays silent on a prose mention",
+           fork.search("# net_labels, probe and canonical_geometry_hash live\n"
+                       "# in _gds_geometry.py\n") is None)
+    _check("the loader regex catches the one-line verify-whole.py loader",
+           loader.search('_cw_spec = importlib.util.spec_from_file_location('
+                         '"compose_whole", HERE / "compose-whole.py")\n')
+           is not None)
+    _check("the loader regex catches the multiline physical_estimates.py "
+           "loader",
+           loader.search('    spec = importlib.util.spec_from_file_location('
+                         '"physical_estimates_compose_whole",\n'
+                         '                                  here / '
+                         '"compose-whole.py")\n') is not None)
+    _check("the loader regex stays silent on a loader of another file",
+           loader.search('    spec = importlib.util.spec_from_file_location('
+                         '"hashing", here / "_hashing.py")\n') is None)
+
+
 def main() -> int:
     check_klt_version_is_bare()
     check_klt_version_fails_closed()
@@ -555,6 +610,7 @@ def main() -> int:
     check_klayout_db_fails_closed_without_klayout()
     check_dumps_matches_write_json()
     check_the_consolidated_helpers_live_in_one_place()
+    check_the_gds_geometry_helpers_live_in_one_place()
     print(f"\n{sum(_RESULTS)}/{len(_RESULTS)} checks passed")
     return 0 if all(_RESULTS) else 1
 
