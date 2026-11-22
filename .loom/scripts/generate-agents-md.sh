@@ -48,6 +48,11 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # install it is the already-substituted ARTIFACT, so this script resolves
 # {{INSTALL_DATE}} itself (see the tail) instead of de-substituting two
 # checked-in lines on every regeneration.
+#
+# Third local delta under the same pin (#640): the write path copies the
+# existing target's mode onto the temp render before the mv (see the tail),
+# because mktemp's 0600 otherwise tightened .loom/AGENTS.md to owner-only on
+# every regeneration.
 SRC="$SCRIPT_DIR/../CLAUDE.md"
 DEFAULT_OUT="$SCRIPT_DIR/../AGENTS.md"
 
@@ -222,6 +227,21 @@ fi
 if [[ "$MODE" == "stdout" ]]; then
   cat "$render_tmp"
 else
+  # Mode (#640): mktemp creates 0600 and mv carries that onto $OUT, where
+  # the old `emit > "$OUT"` truncated in place and so kept the mode — so a
+  # regeneration tightened the cross-runtime anchor to owner-only. Copy the
+  # existing target's mode; a first-time write gets 644 regardless of umask.
+  # `chmod --reference` is GNU-only and this script also runs on macOS, so
+  # read the mode like archive-transcripts.sh does: GNU `stat -c` first (an
+  # illegal option on BSD, so it fails cleanly there), then BSD `stat -f`,
+  # validating the captured value instead of trusting the exit code.
+  out_mode=""
+  if [[ -f "$OUT" ]]; then
+    out_mode="$(stat -L -c '%a' "$OUT" 2>/dev/null || true)"
+    [[ "$out_mode" =~ ^[0-7]+$ ]] || out_mode="$(stat -L -f '%Lp' "$OUT" 2>/dev/null || true)"
+    [[ "$out_mode" =~ ^[0-7]+$ ]] || out_mode=""
+  fi
+  chmod "${out_mode:-644}" "$render_tmp"
   mv "$render_tmp" "$OUT"
   echo "generate-agents-md: wrote $OUT" >&2
 fi

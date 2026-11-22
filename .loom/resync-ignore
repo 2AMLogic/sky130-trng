@@ -12,6 +12,11 @@
 # already-substituted artifact, not the installer's template. Same upstream
 # thread: rjwalters/loom#13910 (second gap; appending it there is an
 # operator-only follow-up — this repo's credentials cannot post upstream).
+#
+# Third local delta under the same pin (#640): the write path copies the
+# existing target's mode onto the mktemp'd render before the mv (else 644),
+# because mktemp's 0600 tightened .loom/AGENTS.md to owner-only on every
+# regeneration. Same upstream thread: rjwalters/loom#13910.
 # Pin retired when rjwalters/loom#13910 lands a layout-aware fix upstream and
 # the next resync installs it.
 scripts/generate-agents-md.sh
