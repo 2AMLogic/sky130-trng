@@ -1,0 +1,10 @@
+# Installed Loom surfaces hand-patched locally — resync must not clobber.
+#
+# scripts/generate-agents-md.sh: upstream template resolves SRC/DEFAULT_OUT as
+# $SCRIPT_DIR/../.loom/…, which assumes the Loom source layout
+# (defaults/scripts/ next to defaults/.loom/) and breaks in this flattened
+# install (.loom/scripts/ next to .loom/CLAUDE.md) with "source not found".
+# Local two-line fix per docs/decisions/PDR-0001-generate-agents-md-path-fix.md.
+# Pin retired when rjwalters/loom#13910 lands a layout-aware fix upstream and
+# the next resync installs it.
+scripts/generate-agents-md.sh
