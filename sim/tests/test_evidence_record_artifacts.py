@@ -95,16 +95,22 @@ def _is_tail(node) -> bool:
 def _open_mode(n, mode_index: int):
     """The `mode` argument of an `open()` call: positional slot `mode_index`
     (2nd arg for the built-in, 1st for the method), else the `mode=` keyword,
-    else None when omitted."""
+    else None when omitted (which reads). A `**` splat (any keyword whose
+    `arg` is None) may carry `mode`, so its node is returned instead: an
+    unestablishable mode the classifier treats as a write (issue #624)."""
     if len(n.args) > mode_index:
         return n.args[mode_index]
+    splat = next((k.value for k in n.keywords if k.arg is None), None)
+    if splat is not None:
+        return splat
     return next((k.value for k in n.keywords if k.arg == "mode"), None)
 
 
 def _mode_implies_write(mode) -> bool:
     """False only for a mode the AST establishes as read-only: omitted (which
     reads) or a literal without `w`/`a`/`x`/`+`. Anything else -- a variable,
-    a call result -- is conservatively a write (issue #618)."""
+    a call result, a `**` splat -- is conservatively a write (issues #618,
+    #624)."""
     import ast
     if mode is None:
         return False
@@ -670,14 +676,18 @@ class NoNewHandRolledRecordTails(unittest.TestCase):
             "attr_none.py": '(rdir / f"{rid}.json").open()\n',
             "attr_pos.py": '(rdir / f"{rid}.md").open("rb")\n',
             "attr_kw.py": '(rdir / f"{rid}.json").open(mode="r")\n',
+            "enc_kw.py": 'open(rdir / f"{rid}.json", "r", encoding="utf-8")\n',
+            "attr_enc.py": '(rdir / f"{rid}.json").open(encoding="utf-8")\n',
+            "pos_r_splat.py": 'open(rdir / f"{rid}.json", "r", **opts)\n',
             "bound_read.py": 'record_json = rdir / f"{rid}.json"\n'
                              'json.load(open(record_json, "r"))\n',
         }
         self.assertEqual(self._scan(reads), set())
 
     def test_open_write_modes_flagged_across_call_forms(self):
-        """Issue #618: writing/appending/exclusive/updating modes and modes the
-        AST cannot establish as read-only still hit on a record path."""
+        """Issues #618/#624: writing/appending/exclusive/updating modes and
+        modes the AST cannot establish as read-only still hit on a record
+        path."""
         writes = {
             "w.py": 'open(rdir / f"{rid}.json", "w").write(md)\n',
             "wb.py": 'json.dump(rec, open(rdir / f"{rid}.json", "wb"))\n',
@@ -690,6 +700,8 @@ class NoNewHandRolledRecordTails(unittest.TestCase):
             "bound_write.py": 'record_md = rdir / f"{rid}.md"\n'
                               'open(record_md, "w").write(md)\n',
             "var_mode.py": 'mode = "r"\nopen(rdir / f"{rid}.json", mode).write(md)\n',
+            "kwargs_splat.py": 'open(rdir / f"{rid}.json", **opts).write(md)\n',
+            "attr_kwargs_splat.py": '(rdir / f"{rid}.md").open(**opts).write(line)\n',
         }
         self.assertEqual(self._scan(writes), set(writes))
 
