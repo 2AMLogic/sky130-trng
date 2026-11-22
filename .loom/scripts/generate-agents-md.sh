@@ -29,7 +29,8 @@
 #   generate-agents-md.sh <path>       Write to <path> instead of the canonical file
 #
 # Exit codes: 0 = generated; 1 = source missing / empty extraction;
-#             2 = malformed or missing include markers in the source.
+#             2 = malformed or missing include markers in the source;
+#             3 = a {{PLACEHOLDER}} survived rendering (nothing written).
 
 set -euo pipefail
 
@@ -41,6 +42,12 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # Local fix per PDR-0001 (docs/decisions/PDR-0001-generate-agents-md-path-fix.md),
 # pinned in .loom/resync-ignore until rjwalters/loom#13910 lands a
 # layout-aware fix upstream.
+#
+# Second local delta under the same pin (#533): upstream, .loom/AGENTS.md is
+# the TEMPLATE the installer substitutes at install time; in this flattened
+# install it is the already-substituted ARTIFACT, so this script resolves
+# {{INSTALL_DATE}} itself (see the tail) instead of de-substituting two
+# checked-in lines on every regeneration.
 SRC="$SCRIPT_DIR/../CLAUDE.md"
 DEFAULT_OUT="$SCRIPT_DIR/../AGENTS.md"
 
@@ -112,8 +119,9 @@ fi
 
 # Assemble the file: static framing header, the extracted body, static footer.
 # The heredocs are single-quoted so the `{{INSTALL_DATE}}` placeholder and the
-# backticks survive verbatim (substituted at install time by loom-daemon's
-# scaffolding, exactly like the CLAUDE.md template). `{{LOOM_VERSION}}` is
+# backticks survive verbatim to the render step at the tail. Upstream that
+# step belongs to the installer; in this flattened install the generator
+# substitutes the placeholder itself (#533). `{{LOOM_VERSION}}` is
 # deliberately NOT emitted here any more (#8147) — see the header text below.
 emit() {
   cat <<'HEADER'
@@ -172,9 +180,48 @@ Last updated: {{INSTALL_DATE}}
 FOOTER
 }
 
+# {{INSTALL_DATE}} resolution (#533): upstream the placeholder is substituted
+# at install time by loom-daemon's scaffolding, but in a flattened install
+# .loom/AGENTS.md is the already-substituted artifact, so an un-substituting
+# regenerator would quietly de-substitute two checked-in lines. Resolve it
+# here exactly like resync-installed.sh's create_loom_agents_md_if_missing:
+# the recorded install_date out of .loom/install-metadata.json, else today's
+# date (matching a fresh install).
+META="$SCRIPT_DIR/../install-metadata.json"
+install_date=""
+if [[ -f "$META" ]]; then
+  install_date="$(sed -n 's/.*"install_date" *: *"\([^"]*\)".*/\1/p' "$META" 2>/dev/null | head -1 || true)"
+fi
+[[ -n "$install_date" ]] || install_date="$(date +%Y-%m-%d)"
+
+# Single render path (#533): --stdout, <path> and the canonical write all go
+# through one temp file, so the modes cannot diverge. Rendering into a temp
+# (created beside $OUT for the write modes, so the final mv stays on one
+# filesystem) also means a failed render never truncates the artifact — the
+# old `emit > "$OUT"` opened the target for truncation before emit ran.
 if [[ "$MODE" == "stdout" ]]; then
-  emit
+  render_tmp="$(mktemp)"
 else
-  emit > "$OUT"
+  render_tmp="$(mktemp "${OUT}.tmp.XXXXXX")"
+fi
+trap 'rm -f "$render_tmp"' EXIT
+emit | sed -e "s|{{INSTALL_DATE}}|${install_date}|g" > "$render_tmp"
+
+# Backstop (#533): any placeholder that survives rendering must fail loudly
+# instead of writing a quietly-wrong file — a future resync could reintroduce
+# one this script does not substitute ({{LOOM_VERSION}} was removed upstream
+# by #8147 and could return). Uppercase-only, so prose double braces in the
+# extracted body (e.g. a literal `{{workspace}}` outside the markers) cannot
+# trip it.
+survivor="$(grep -o '{{[A-Z_][A-Z0-9_]*}}' "$render_tmp" | head -1 || true)"
+if [[ -n "$survivor" ]]; then
+  echo "generate-agents-md: unsubstituted placeholder ${survivor} in rendered output — nothing written" >&2
+  exit 3
+fi
+
+if [[ "$MODE" == "stdout" ]]; then
+  cat "$render_tmp"
+else
+  mv "$render_tmp" "$OUT"
   echo "generate-agents-md: wrote $OUT" >&2
 fi
