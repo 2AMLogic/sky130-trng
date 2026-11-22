@@ -65,6 +65,16 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 ALIASES_PATH = Path(__file__).resolve().parents[1] / "net-aliases.json"
 TEMPLATE_PATH = Path(__file__).resolve().parents[1] / "testbench" / "tb_sampler_core_body.spice"
 
+# The extracted-netlist rename this harness performs is the same contract
+# layout/bin/pex-netlist.py states for its own output -- since issue #638
+# it is literally the same code (layout/bin/_pex_rewrite.py), so the
+# longest-key-first alias match and the X-card / declared-model /
+# unitless-geometry device-card check can never drift between the library
+# builder and this measurement leg again.
+sys.path.insert(0, str(REPO_ROOT / "layout" / "bin"))
+from _klt_common import BuildError  # noqa: E402
+from _pex_rewrite import join_continuations, rewrite_standalone  # noqa: E402
+
 # design/sampler_core.spice's own .subckt sampler_core pin declaration -- the
 # SCHEMATIC leg's interface, and the body template's instantiation order.
 EXPECTED_PINS = [
@@ -129,70 +139,22 @@ def log(msg: str) -> None:
 # extracted-netlist renaming (joined extractor names -> design-level names)
 # ---------------------------------------------------------------------------
 
-def join_continuations(text: str) -> list[str]:
-    """Fold ngspice ``+`` continuation lines into their logical line."""
-    out: list[str] = []
-    for raw in text.splitlines():
-        if raw.startswith("+"):
-            if not out:
-                raise HarnessError("netlist starts with a continuation line")
-            out[-1] = out[-1].rstrip() + " " + raw[1:].strip()
-        else:
-            out.append(raw.rstrip())
-    return out
-
-
-class Renamer:
-    """The same rename layout/bin/pex-netlist.py performs, read-only here.
-
-    Joined extractor net names (and their ``\\x7c``-escaped spelling) map to
-    the design-level name from ``net-aliases.json``; ``__tN`` star-leg
-    suffixes ride along; ``$`` (ngspice in-line comment character) becomes
-    ``n`` and ``\\`` is dropped, the same sanitization every committed
-    ``layout/pex*/`` library applies. The rename is checked injective so it
-    can never merge two nets, and any ``|``-bearing name with no alias entry
-    is a hard error -- a regenerated layout must never silently measure the
-    wrong net.
-    """
-
-    def __init__(self, aliases: dict[str, str]):
-        # Longest key first, so a `...|y$1`-style name can never be captured
-        # by the shorter `...|y` entry that happens to precede it.
-        self.aliases = sorted(aliases.items(), key=lambda kv: -len(kv[0]))
-        self._seen: dict[str, str] = {}
-
-    def canonical(self, name: str) -> str:
-        for joined, design in self.aliases:
-            escaped = joined.replace("|", "\\x7c")
-            if name == joined or name == design:
-                return design
-            if name.startswith(escaped):
-                return design + name[len(escaped):]
-            if name.startswith(joined):
-                return design + name[len(joined):]
-        if "|" in name or "\\x7c" in name:
-            raise HarnessError(
-                f"net name {name!r} is a joined extractor name with no "
-                "net-aliases.json entry -- re-derive the alias map from "
-                "layout/sampler_core/lvs.json (see net-aliases.json header)"
-            )
-        return name
-
-    def token(self, name: str) -> str:
-        out = self.canonical(name).replace("\\", "").replace("$", "n")
-        previous = self._seen.setdefault(out, name)
-        if previous != name:
-            raise HarnessError(
-                f"rename collision: {previous!r} and {name!r} both rewrite to {out!r}"
-            )
-        return out
+# join_continuations and the alias Renamer live in layout/bin/_pex_rewrite.py
+# since issue #638, shared with layout/bin/pex-netlist.py; BuildError from
+# that module is translated to HarnessError at this harness's boundary so
+# klt pex still sees the single documented failure mode (exit 1, one
+# diagnostic on stderr).
 
 
 def check_dut_interface(text: str, source: str, expected: list[str]) -> list[str]:
     """Assert the DUT declares .subckt sampler_core with exactly `expected`'s
     pin set (order taken from the DUT, never imposed -- the extracted header
     is the extractor's own order) and return that order."""
-    m = SUBCKT_RE.search("\n".join(join_continuations(text)))
+    try:
+        folded = join_continuations(text)
+    except BuildError as exc:
+        raise HarnessError(str(exc)) from exc
+    m = SUBCKT_RE.search("\n".join(folded))
     if not m:
         raise HarnessError(f"{source}: declares no .subckt sampler_core")
     pins = m.group(1).split()
@@ -220,60 +182,29 @@ def rename_extracted_netlist(text: str) -> str:
     """Rewrite the extracted netlist to design-level net names.
 
     Only names move: every device card, geometry value, R/C value and
-    connection is byte-preserved apart from the rename (the same contract
-    layout/bin/pex-netlist.py's rewrite states for its own output). Device
-    cards are additionally checked against the PDK model set the
-    ``--pdk sky130A`` extraction must write, so a future extractor change
-    can never silently mis-scale a deck that runs at ``scale=1u``.
+    connection is byte-preserved apart from the rename -- the same contract
+    layout/bin/pex-netlist.py's rewrite states for its own output, and
+    since issue #638 the same code: layout/bin/_pex_rewrite.py's
+    ``rewrite_standalone`` applies the committed alias map
+    (``net-aliases.json``, from ``klt lvs``'s own net correspondence) and
+    runs ``check_device_card`` on every device card, so a future extractor
+    change -- a raw ``M`` card, an undeclared model, a unit-suffixed
+    geometry value -- can never silently mis-scale a deck that runs at
+    ``scale=1u``.
     """
-    renamer = Renamer(json.loads(ALIASES_PATH.read_text())["aliases"])
-    out: list[str] = []
-    in_cell = False
-    device_cards = 0
-    for line in join_continuations(text):
-        stripped = line.strip()
-        if not stripped:
-            continue
-        if stripped.startswith("*"):
-            out.append(stripped)
-            continue
-        head = stripped.split()[0]
-        upper = head.upper()
-        if upper.startswith(".SUBCKT"):
-            out.append(stripped)
-            in_cell = True
-            continue
-        if upper.startswith(".ENDS"):
-            in_cell = False
-            out.append(stripped)
-            continue
-        if upper.startswith("."):
-            out.append(stripped)  # .GLOBAL vsubs and friends: no names to rename
-            continue
-        if not in_cell:
-            out.append(stripped)
-            continue
-        tokens = stripped.split()
-        kind = head[0].upper()
-        if kind in ("X", "M"):
-            renamed = [renamer.token(t) for t in tokens[:5]] + tokens[5:]
-            model = renamed[5]
-            if model not in EXPECTED_DEVICE_MODELS:
-                raise HarnessError(
-                    f"device card model {model!r} is not one of "
-                    f"{sorted(EXPECTED_DEVICE_MODELS)} -- the extraction "
-                    "did not run with --pdk sky130A"
-                )
-            device_cards += 1
-            out.append(" ".join(renamed))
-        elif kind in ("R", "C"):
-            renamed = [renamer.token(t) for t in tokens[:3]] + tokens[3:]
-            out.append(" ".join(renamed))
-        else:
-            raise HarnessError(f"unhandled element card in extracted netlist: {stripped}")
-    if device_cards == 0:
-        raise HarnessError("extracted netlist carries no device cards")
-    return "\n".join(out) + "\n"
+    aliases = json.loads(ALIASES_PATH.read_text())["aliases"]
+    try:
+        return rewrite_standalone(
+            text,
+            aliases=aliases,
+            expected_models=sorted(EXPECTED_DEVICE_MODELS),
+            remedy=(
+                "re-derive the alias map from layout/sampler_core/lvs.json "
+                "(see net-aliases.json header)"
+            ),
+        )
+    except BuildError as exc:
+        raise HarnessError(str(exc)) from exc
 
 
 # ---------------------------------------------------------------------------
