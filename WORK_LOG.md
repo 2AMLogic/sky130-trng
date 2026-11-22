@@ -6,8 +6,15 @@ Chronological record of recently merged pull requests and closed issues.
 
 - [2026-09](work_log/WORK_LOG_2026-09.md)
 
+### 2026-11-22
+
+- **PR #625**: test: guard the shared GDS geometry helpers against forks and compose-whole loaders
+- **Issue #617** (closed): Guard the shared GDS geometry helpers against local copies and compose-whole loaders
+
 ### 2026-11-21
 
+- **PR #623**: fix: classify open() mode in the record-tail guard so read-only opens pass
+- **Issue #618** (closed): test_evidence_record_artifacts guard flags read-only open() of a record as a hand-rolled tail
 - **PR #622**: chore: gitignore daemon-written .loom/account-ranking.codex runtime state
 - **Issue #608** (closed): chore: gitignore the daemon's .loom/account-ranking.* runtime state (breaks check-main-clean for every builder)
 - **PR #616**: refactor: extract the four GDS geometry helpers to _gds_geometry.py
