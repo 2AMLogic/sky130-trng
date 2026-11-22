@@ -1,19 +1,27 @@
 #!/usr/bin/env python3
 """Unit tests for .loom/scripts/generate-agents-md.sh's {{INSTALL_DATE}}
-substitution (issue #533). Stdlib only; every case stages its own
-.loom/scripts/ + .loom/CLAUDE.md (+ optional .loom/install-metadata.json) in
-a temp tree and never reads or writes the repo's live .loom/.
+substitution (issue #533) and output-mode preservation (issue #640). Stdlib
+only; every case stages its own .loom/scripts/ + .loom/CLAUDE.md (+ optional
+.loom/install-metadata.json) in a temp tree and never reads or writes the
+repo's live .loom/.
 
-The pinned script is a local delta (PDR-0001 + #533, .loom/resync-ignore):
-in this flattened install .loom/AGENTS.md is the already-substituted
-artifact, so the generator must resolve the placeholder itself — the
-recorded install_date from .loom/install-metadata.json, else today's date,
-exactly mirroring resync-installed.sh's create_loom_agents_md_if_missing —
-and must refuse (exit 3, nothing written) when any unknown placeholder
-survives rendering, instead of quietly de-substituting checked-in lines.
+The pinned script is a local delta (PDR-0001 + #533 + #640,
+.loom/resync-ignore): in this flattened install .loom/AGENTS.md is the
+already-substituted artifact, so the generator must resolve the placeholder
+itself — the recorded install_date from .loom/install-metadata.json, else
+today's date, exactly mirroring resync-installed.sh's
+create_loom_agents_md_if_missing — and must refuse (exit 3, nothing written)
+when any unknown placeholder survives rendering, instead of quietly
+de-substituting checked-in lines.
+
+Its temp-file write path must also leave the target's mode alone: mktemp
+creates 0600 and mv carries that onto the target, so an uncorrected
+regeneration tightened the cross-runtime anchor to owner-only.
 """
 import datetime
 import os
+import shutil
+import stat
 import subprocess
 import tempfile
 import unittest
@@ -36,6 +44,26 @@ trailing prose
 """
 
 META_DATE = "2020-02-29"
+
+REAL_STAT = shutil.which("stat")
+
+# Stand-in with BSD stat's CLI shape only: it rejects -c (an illegal option
+# there) and answers `-L -f %Lp <path>` by relaying to the host's real stat,
+# logging every call so a test can pin the order the generator tries.
+BSD_STAT_STUB = """#!/bin/sh
+echo "$*" >> "$0.calls"
+for a in "$@"; do
+  [ "$a" = "-c" ] && { echo "stat: illegal option -- c" >&2; exit 1; }
+done
+[ "$1" = "-L" ] && [ "$2" = "-f" ] && [ "$3" = "%Lp" ] || {
+  echo "stat: unsupported in stub: $*" >&2; exit 2; }
+exec {real_stat} -L -c %a "$4"
+"""
+
+
+def mode_of(path):
+    """Low nine permission bits of *path* as an int (e.g. 0o644)."""
+    return stat.S_IMODE(path.stat().st_mode)
 
 
 def stage(root, script_text=None, meta=None, claude=CLAUDE_MD, sentinel=None):
@@ -136,8 +164,8 @@ class T(unittest.TestCase):
     def test_unknown_placeholder_refuses_and_leaves_output_intact(self):
         # Negative control: seed the generator copy's HEADER with a
         # placeholder the substitution does not know. The run must exit
-        # non-zero naming it on stderr and must NOT write or truncate the
-        # pre-existing output (nor litter .tmp.* files beside it).
+        # non-zero naming it on stderr and must NOT write, truncate or
+        # re-chmod the pre-existing output (nor litter .tmp.* files beside it).
         with tempfile.TemporaryDirectory() as d:
             root = Path(d)
             sentinel = b"PRE-EXISTING ARTIFACT\n"
@@ -148,10 +176,12 @@ class T(unittest.TestCase):
                     "**Installation Date**: {{SOMETHING_ELSE}}"),
                 meta=('{"install_date": "%s"}' % META_DATE).encode(),
                 sentinel=sentinel)
+            os.chmod(agents, 0o664)
             r = self.run_gen(script)
             self.assertNotEqual(r.returncode, 0)
             self.assertIn("{{SOMETHING_ELSE}}", r.stderr)
             self.assertEqual(agents.read_bytes(), sentinel)
+            self.assertEqual(mode_of(agents), 0o664)
             self.assertEqual(list((root / ".loom").glob("*.tmp.*")), [])
 
     def test_readonly_output_dir_fails_without_truncating(self):
@@ -173,6 +203,95 @@ class T(unittest.TestCase):
             self.assertNotEqual(r.returncode, 0)
             self.assertEqual(agents.read_bytes(), sentinel)
             self.assertEqual(list(loom.glob("*.tmp.*")), [])
+
+    def test_regeneration_preserves_644_target_mode(self):
+        # Issue #640: mktemp creates 0600 and mv carries that onto the
+        # target, so a regeneration used to tighten a 644 artifact to 600.
+        with tempfile.TemporaryDirectory() as d:
+            script, agents = stage(
+                Path(d), meta=('{"install_date": "%s"}' % META_DATE).encode(),
+                sentinel=b"OLD\n")
+            os.chmod(agents, 0o644)
+            r = self.run_gen(script)
+            self.assertEqual(r.returncode, 0, r.stderr)
+            self.assertIn("**Installation Date**: " + META_DATE,
+                          agents.read_text())
+            self.assertEqual(mode_of(agents), 0o644)
+
+    def test_regeneration_preserves_664_target_mode(self):
+        # Distinguishes copying the target's mode from a bare `chmod 644`,
+        # which would override a group-writable mode the install chose.
+        with tempfile.TemporaryDirectory() as d:
+            script, agents = stage(
+                Path(d), meta=('{"install_date": "%s"}' % META_DATE).encode(),
+                sentinel=b"OLD\n")
+            os.chmod(agents, 0o664)
+            r = self.run_gen(script)
+            self.assertEqual(r.returncode, 0, r.stderr)
+            self.assertEqual(mode_of(agents), 0o664)
+
+    def test_path_argument_preserves_target_mode(self):
+        # The <path> mode shares the write path, so it must share the fix.
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            script, _ = stage(root, meta=('{"install_date": "%s"}'
+                                          % META_DATE).encode())
+            out = root / "nested" / "out.md"
+            out.parent.mkdir()
+            out.write_bytes(b"OLD\n")
+            os.chmod(out, 0o640)
+            r = self.run_gen(script, str(out))
+            self.assertEqual(r.returncode, 0, r.stderr)
+            self.assertEqual(mode_of(out), 0o640)
+
+    def test_first_time_write_is_644_regardless_of_umask(self):
+        # No target to copy a mode from: the result must be a fixed 644, not
+        # 0666 & ~umask (077 would give 600, 000 would give 666).
+        for umask in (0o077, 0o000):
+            with self.subTest(umask=oct(umask)), \
+                    tempfile.TemporaryDirectory() as d:
+                script, agents = stage(
+                    Path(d), meta=('{"install_date": "%s"}'
+                                   % META_DATE).encode())
+                self.assertFalse(agents.exists())
+                r = subprocess.run(
+                    [str(script)], capture_output=True, text=True,
+                    cwd=str(script.parent.parent),
+                    preexec_fn=lambda u=umask: os.umask(u))
+                self.assertEqual(r.returncode, 0, r.stderr)
+                self.assertEqual(mode_of(agents), 0o644)
+
+    def test_bsd_shaped_stat_fallback_preserves_mode(self):
+        # `chmod --reference` is GNU-only and the script also runs on macOS,
+        # so it reads the mode GNU `stat -c` first, BSD `stat -f` second.
+        # The stub pins that fallback's control flow and call order; it is
+        # shaped like BSD stat's CLI, not evidence of BSD stat's output.
+        if REAL_STAT is None:
+            self.skipTest("no stat on PATH to relay to")
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            script, agents = stage(
+                root, meta=('{"install_date": "%s"}' % META_DATE).encode(),
+                sentinel=b"OLD\n")
+            os.chmod(agents, 0o664)
+            bindir = root / "bin"
+            bindir.mkdir()
+            stub = bindir / "stat"
+            stub.write_text(BSD_STAT_STUB.replace("{real_stat}", REAL_STAT))
+            os.chmod(stub, 0o755)
+            env = dict(os.environ,
+                       PATH="%s:%s" % (bindir, os.environ.get("PATH", "")))
+            r = subprocess.run(
+                [str(script)], capture_output=True, text=True, env=env,
+                cwd=str(script.parent.parent))
+            self.assertEqual(r.returncode, 0, r.stderr)
+            self.assertEqual(mode_of(agents), 0o664)
+            # The script spells $OUT relative to its own directory, `..` and
+            # all, so mirror that spelling rather than the resolved path.
+            out = str(script.parent / ".." / "AGENTS.md")
+            self.assertEqual(
+                (bindir / "stat.calls").read_text().splitlines(),
+                ["-L -c %a " + out, "-L -f %Lp " + out])
 
 
 if __name__ == "__main__":
