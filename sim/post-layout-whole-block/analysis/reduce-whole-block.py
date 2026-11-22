@@ -47,6 +47,12 @@ import program as P  # noqa: E402
 from loadmod import load_module  # noqa: E402
 
 MR = load_module("make_requests", BLOCK / "make-requests.py")
+#: the shared digital-response comparator (#642): the 12-point reducer and
+#: the gate-model checker must score a corner through ONE implementation,
+#: or the unexercised copy drifts (it had: a 1-cycle off-by-one on every
+#: rdata_k*/odata_k*/<sig>_k* check, vdd/2 rounding to 0, and no duplicate
+#: measurement-name guard).
+CGM = load_module("compare_gate_model", HERE / "compare-gate-model.py")
 
 SLUG = "post-layout-whole-block"
 GRID = [(-40.0, 1.62), (27.0, 1.8), (-40.0, 1.98), (125.0, 1.98)]
@@ -114,13 +120,18 @@ def is_num(x) -> bool:
 # per-corner analysis
 # --------------------------------------------------------------------------
 
-def meas_map(corner: dict) -> dict[str, float | None]:
-    return {m["name"]: m["value"] for m in corner.get("measurements", [])}
-
-
 def analyse_corner(corner: dict, vdd: float) -> dict:
     """Return {'problems': [...], 'oracle': {...}, 'power': {...}, 'timing': {...}}."""
-    m = meas_map(corner)
+    measurements = corner.get("measurements", [])
+    # duplicate names displace the entries they repeat in every name-keyed
+    # read below (#548's guard, shared with compare-gate-model.py): a
+    # displaced measurement silently shrinks the oracle instead of failing
+    duplicates = CGM.duplicate_measurement_names(measurements)
+    if duplicates:
+        return {"problems": [f"{len(duplicates)} duplicate measurement name(s) "
+                             f"(first: {duplicates[:3]}) displace the entries they repeat, "
+                             "refusing the oracle"]}
+    m = {e["name"]: e["value"] for e in measurements}
     problems: list[str] = []
     if corner.get("status") != "pass":
         problems.append(f"klt corner status {corner.get('status')!r}")
@@ -143,37 +154,36 @@ def analyse_corner(corner: dict, vdd: float) -> dict:
     if missing or omitted or not m:
         return out
 
-    thr = vdd / 2.0
-    bit = lambda name: 1 if m[name] > thr else 0  # noqa: E731
-
+    # -- digital response, through the SHARED comparator (#642): decode the
+    # transistor deck's sampler strobes rail-bounded (an XSPICE out_undef
+    # X at vdd/2 is a named problem, never a silent 0), replay the
+    # normative model exactly as compare-gate-model.py does, and score the
+    # rdata_k*/odata_k*/<sig>_k* checks with its cycle mapping.
     cycles, _ = P.build_program()
     inputs = P.cycle_inputs(cycles)
-    raw_bits = [bit(f"raw_bit_k{k}") for k, i in enumerate(inputs) if i["raw_valid"]]
-    rows = P.model_replay(raw_bits)
-
+    captured: list[int] = []
     mismatches: list[str] = []
     checks = 0
-
-    def cmp(name: str, got: int, want: int) -> None:
-        nonlocal checks
-        checks += 1
-        if got != want:
-            mismatches.append(f"{name}: transistor {got} != model {want}")
-
     for k, inp in enumerate(inputs):
-        if inp["raw_valid"]:
-            cmp(f"raw_valid_k{k}", bit(f"raw_valid_k{k}"), 1)
-        if inp["re"]:
-            got = sum(bit(f"rdata_k{k}_b{b}") << b for b in range(32))
-            cmp(f"bus_rdata@k{k}", got, rows[k]["model"]["bus_rdata"])
-    for name in m:
-        if name.startswith(("alarm_k", "gated_k", "startup_done_k", "out_valid_k")):
-            sig, kk = name.rsplit("_k", 1)
-            k = int(kk)
-            cmp(f"{sig}@k{k}", bit(name), int(rows[k - 1]["model"][sig]))
-    for k in sorted({int(n.split("_k")[1].split("_")[0]) for n in m if n.startswith("odata_k")}):
-        got = sum(bit(f"odata_k{k}_b{b}") << b for b in range(32))
-        cmp(f"out_data@k{k}", got, rows[k - 1]["model"]["out_data"])
+        if not inp["raw_valid"]:
+            continue
+        checks += 1
+        valid = CGM.decode(m[f"raw_valid_k{k}"], vdd)
+        if valid != 1:
+            mismatches.append(f"raw_valid_k{k}: transistor {valid} != model 1")
+        bit = CGM.decode(m[f"raw_bit_k{k}"], vdd)
+        if bit is None:
+            mismatches.append(f"raw_bit_k{k}: level {m[f'raw_bit_k{k}']!r} V is not a resolved rail")
+            bit = 0  # keep the replay's bit budget; the corner is already UNMET
+        captured.append(bit)
+    rows = P.model_replay(captured)
+    resp, undecodable = CGM.response_checks(m, rows, vdd, len(cycles))
+    compared = [c for c in resp if not c.get("not_compared")]
+    checks += len(compared)
+    mismatches += [f"{c['measurement']}: transistor {c['simulated']} != model {c['model']}"
+                   for c in compared if not c["match"]]
+    mismatches += [f"{u['measurement']}: level {u['value']!r} V is not a resolved rail"
+                   for u in undecodable]
     out["oracle"] = {"checks": checks, "mismatches": mismatches, "match": not mismatches and checks > 0}
     if mismatches or checks == 0:
         problems.append(f"oracle: {len(mismatches)} mismatch(es) in {checks} comparison(s)")
