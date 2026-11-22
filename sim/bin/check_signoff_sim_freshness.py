@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
-"""Freshness guard for the signoff-cited 7.digital SDF verification record (issue #285).
+"""Freshness guard for signoff-cited analog PEX and digital SDF evidence.
 
 signoff/block-manifest.json cites the SDF functional-verification report
 unpinned (the native envelope records no input hash), so the signoff-check
 re-render alone cannot notice that the DUT, SDF, testbench or oracle changed
 after the simulation ran.  The record's input-hashes.json does pin them; this
-checker compares those pins with the bytes in the working tree.
+checker compares those pins with the bytes in the working tree. For 7.analog,
+the pinned grader can return check_failed before checking the layout pin.
+Compare the working sampler_core GDS with the cited PEX envelope directly.
 
-Read-only, stdlib only, no simulator and no PDK.  Only the *currently cited*
-record is checked; historical records are never compared with today's sources.
+Read-only, no simulator and no PDK; stdlib plus the repo's shared digest helper
+(layout/bin/_hashing.py).  Only the *currently cited* record is checked;
+historical records are never compared with today's sources.
 
     check_signoff_sim_freshness.py [--repo-root DIR] [--manifest PATH] [--item ID]
 
@@ -20,7 +23,7 @@ On drift: mint a NEW verification record (never edit hashes of an old one) and
 update the manifest citation, or remove the citation with a stated reason and
 regenerate signoff/t1-report.json.
 
-Pin categories (the declared input contract; unknown keys are rejected):
+7.digital pin categories (unknown keys are rejected):
   repository file      "<repo-relative path>"          re-hashed
   decompressed         "<path> (decompressed)"         gunzip(<path>.gz) re-hashed
   record-local         baseline SDF + oracle trace     re-hashed from the run dir
@@ -29,13 +32,17 @@ Pin categories (the declared input contract; unknown keys are rejected):
 """
 import argparse
 import gzip
-import hashlib
 import json
 import re
 import sys
+from functools import partial
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "layout" / "bin"))
+from _hashing import sha256_bytes, sha256_file  # noqa: E402
+
 DEFAULT_ITEM = "7.digital"
+PEX_LAYOUT = "layout/sampler_core/sampler_core.gds"
 DIGEST = re.compile(r"^sha256:[0-9a-f]{64}$")
 
 # Mandatory repository-file pins: the inputs fv-sdf-cosim.py hashes (routed
@@ -74,8 +81,7 @@ class Usage(Exception):
     pass
 
 
-def sha(data):
-    return "sha256:" + hashlib.sha256(data).hexdigest()
+sha = partial(sha256_bytes, prefix=True)  # recorded as "sha256:<hex>"
 
 
 def load_json(path):
@@ -86,7 +92,7 @@ def load_json(path):
 
 
 def locate(root, manifest_path, item):
-    """(report path, run dir, hashes path, record path) for the cited item, or
+    """Citation and paths (report, run dir, hashes, record) for the cited item, or
     None when the manifest carries no citation for it (the documented recovery
     path: citation removed, nothing active to revalidate)."""
     evidence = load_json(manifest_path).get("evidence", {})
@@ -106,7 +112,33 @@ def locate(root, manifest_path, item):
     if len(parts) < 4 or parts[0] != "sim" or parts[2] != "runs":
         raise Usage(f"{item} citation {cite} is not under sim/<slug>/runs/<record-id>/")
     record = root / "sim" / parts[1] / "records" / f"{parts[3]}.json"
-    return report, run_dir, run_dir / "input-hashes.json", record
+    return ev, report, run_dir, run_dir / "input-hashes.json", record
+
+
+def check_pex_layout(root, citation, report_path):
+    report = load_json(report_path)
+    tag = f"7.analog {report_path.relative_to(root)}"
+    try:
+        layout = report["layout"]
+        if layout["scope"] != "repo" or layout["path"] != PEX_LAYOUT:
+            return [f"{tag}: expected repository layout {PEX_LAYOUT}"]
+        pin = report["provenance"]["input"]
+        role, digest = pin["role"], pin["content_hash"]
+    except (KeyError, TypeError) as exc:
+        raise Usage(f"{tag}: invalid PEX layout or input provenance: {exc}") from exc
+    if role != "layout" or not isinstance(digest, str) or not DIGEST.fullmatch(digest):
+        return [f"{tag}: missing or malformed PEX layout input digest"]
+    problems = []
+    if not isinstance(citation, dict) or citation.get("content_hash") != digest:
+        problems.append(f"{tag}: manifest pin differs from PEX input digest {digest}")
+    try:
+        actual = sha256_file(root / PEX_LAYOUT, prefix=True)
+    except OSError as exc:
+        problems.append(f"{tag}: cannot read {PEX_LAYOUT}: {exc}")
+    else:
+        if actual != digest:
+            problems.append(f"{tag}: DRIFT {PEX_LAYOUT}: recorded {digest}, now {actual}")
+    return problems
 
 
 def check(root, manifest_path, item=DEFAULT_ITEM):
@@ -117,7 +149,9 @@ def check(root, manifest_path, item=DEFAULT_ITEM):
     if located is None:
         notes.append(f"no active evidence cited for {item}; nothing to revalidate")
         return problems, notes
-    report, run_dir, hashes_path, record_path = located
+    citation, report, run_dir, hashes_path, record_path = located
+    if item == "7.analog":
+        return check_pex_layout(root, citation, report), notes
     rid = run_dir.name
     tag = f"record {rid}"
     for p in (report, hashes_path):
@@ -207,7 +241,10 @@ def main(argv=None):
         return 1
     if any(n.startswith("no active evidence") for n in notes):
         return 0
-    print(f"ok: {a.item} cited record's pins match the working tree")
+    if a.item == "7.analog":
+        print(f"ok: {PEX_LAYOUT} matches the cited 7.analog PEX input and manifest pin")
+    else:
+        print(f"ok: {a.item} cited record's pins match the working tree")
     return 0
 
 

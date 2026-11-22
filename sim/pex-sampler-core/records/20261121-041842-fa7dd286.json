@@ -1,0 +1,33 @@
+{
+  "record_id": "20261121-041842-fa7dd286",
+  "slug": "pex-sampler-core",
+  "supersedes": "20261121-001303-7330672",
+  "claim": "Corrected summary of the original eight batch responses and PEX report.",
+  "author": "Loom Doctor",
+  "timestamp_utc": "2026-11-21T04:18:42.538109+00:00",
+  "repo_sha": "fa7dd286",
+  "pex_invocation": "klt pex layout/sampler_core/sampler_core.gds --deck sky130 --pdk sky130A --measure-command 'python3 sim/pex-sampler-core/harness/pex-measure.py' --reference-netlist design/sampler_core.spice --flatten-schematic --pins en1,en2,en3,en4,vddr1,vddr2,vddr3,vddr4,vdd,vss,clk,rst_n,raw_bit,raw_valid,ring_bit1,ring_bit2,ring_bit3,ring_bit4 --rename-declared-pins --backend batch --wait-for-capacity 600 --measure-timeout-s 7200",
+  "source_report": "sim/pex-sampler-core/runs/20261121-001303-7330672/pex-report.json",
+  "source_input_hashes": "sim/pex-sampler-core/runs/20261121-001303-7330672/input-hashes.json",
+  "result": {
+    "status": "fail",
+    "corner_count": 12,
+    "passed": 130,
+    "failed": 2,
+    "errored": 0
+  },
+  "active_power_delta_pct": {
+    "ff/-40C/1.98V": 12.725,
+    "ff/125C/1.98V": 6.247
+  },
+  "peak_sampler_reset_max_v": {
+    "schematic": {
+      "corner_id": "ff/125C/1.98V",
+      "value_v": 0.000640919
+    },
+    "extracted": {
+      "corner_id": "ff/125C/1.98V",
+      "value_v": 0.000409113
+    }
+  }
+}

@@ -22,7 +22,7 @@ PR CI with no klayout, no klt and no PDK; the klayout-dependent geometry and
 the real-geometry fixture controls are separate and are run by
 `verify-whole.py estimates` / `estimates-controls` in the pinned environment.
 
-Why the conductor side is a *flat* extraction: `compose-whole.py
+Why the conductor side is a *flat* extraction: `_gds_geometry
 flat_extract` proves metal-level connectivity only (no device recognition).
 Gate nets are therefore associated to conductor components purely through
 their drawn pin labels -- a component belongs to a gate net only when *every*
@@ -51,7 +51,9 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _gds_geometry import canonical_geometry_hash, flat_extract  # noqa: E402
 from _hashing import sha256_file  # noqa: E402
+from _klt_common import dumps  # noqa: E402
 
 SCHEMA_VERSION = 1
 ISSUE = 283
@@ -60,7 +62,7 @@ ISSUE = 283
 # order for cumulative antenna ratios and the row order of the density table.
 LEVELS = ("li1", "met1", "met2", "met3", "met4", "met5")
 DENSITY_LAYERS = ("poly",) + LEVELS
-# compose-whole.py flat_extract's region keys for each conductor level.
+# _gds_geometry.py flat_extract's region keys for each conductor level.
 FLAT_KEYS = {"li1": "li", "met1": "m1", "met2": "m2", "met3": "m3", "met4": "m4", "met5": "m5"}
 # Deck layer-table names per counted layer (drawing datatypes only).
 DECK_LAYER_NAMES = {"poly": "poly.drawing", "li1": "li1.drawing", "met1": "met1.drawing",
@@ -420,11 +422,6 @@ def build_document(*, gds_rel: str, gds_sha256: str, geometry_sha256: str, geome
     }
 
 
-def dumps(doc: dict) -> str:
-    """The committed JSON form (matches drc_coverage_audit.dumps)."""
-    return json.dumps(doc, indent=2) + "\n"
-
-
 def _brief_net(entry: dict | None) -> str:
     if entry is None:
         return "absent"
@@ -588,20 +585,6 @@ def markdown(doc: dict) -> str:
 # --------------------------------------------------------------------------
 
 
-def _compose_whole():
-    import importlib.util  # noqa: PLC0415
-    import sys  # noqa: PLC0415
-
-    here = Path(__file__).resolve().parent
-    spec = importlib.util.spec_from_file_location("physical_estimates_compose_whole",
-                                                  here / "compose-whole.py")
-    assert spec and spec.loader
-    mod = importlib.util.module_from_spec(spec)
-    sys.modules[spec.name] = mod
-    spec.loader.exec_module(mod)
-    return mod
-
-
 def load_extract(path: Path) -> dict:
     with gzip.open(path) as fh:
         return json.load(fh)
@@ -610,13 +593,12 @@ def load_extract(path: Path) -> dict:
 def conductor_pass(gds: Path, dbu: float) -> dict:
     """Flat conductor components with per-level drawn areas and label sets.
 
-    Reuses compose-whole.py's flat_extract (li1..met5 + mcon/via connectivity,
+    Reuses _gds_geometry.flat_extract (li1..met5 + mcon/via connectivity,
     pin-label text layers). Areas are per level in um2. Anonymous component
     numbering never reaches the document -- components are identified by their
     label sets only, and only aggregate counts of the rest are committed.
     """
-    cw = _compose_whole()
-    _, l2n, regions = cw.flat_extract(gds)
+    _, l2n, regions = flat_extract(gds)
     top = l2n.netlist().top_circuit()
     dbu2 = dbu * dbu
     components, tokens = [], []
@@ -702,8 +684,7 @@ def compute(gds: Path, extract: Path, *, top: str,
 
     table_hash, table = layer_table
     layer_map = layer_map_from_table(table)
-    cw = _compose_whole()
-    geometry_sha256, geometry_counts = cw.canonical_geometry_hash(gds)
+    geometry_sha256, geometry_counts = canonical_geometry_hash(gds)
     gds_sha = sha256_file(gds)
     ext = load_extract(extract)
     matches_gds = (ext.get("provenance", {}).get("input", {}).get("content_hash")

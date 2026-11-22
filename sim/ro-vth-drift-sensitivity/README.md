@@ -66,6 +66,28 @@ python3 sim/ro-vth-drift-sensitivity/analysis/behavioral_replay.py --regenerate-
 python3 sim/tests/test_vth_drift.py
 ```
 
+**What `--check` proves.** A committed record still re-derives, from its own committed raw
+responses alone, to the figures the record stores — and that proof does **not** depend on the
+interpreter running the check. Float-bearing replay comparisons (controls, rows/summary, the
+calibration artifact's re-derived metrics) run through the shared replay equality
+`sim/bin/replay_equal.py` (rel=1e-9 relative): builtin float `sum()` is naive on CPython ≤ 3.11
+and compensated on ≥ 3.12, so the same raw responses re-derive ~1-ulp (≈1e-16 relative) apart
+across that split, and exact equality made `--check` report MATCHES only on the version that
+happened to mint the record (issue #519). The gate is `|a−b| <= 1e-9·|v|` with **no absolute
+floor** (DR-0020, issue #547): every non-zero float is bound at the full 1e-9 relative — this
+study's headline σ jitter metrics included. `sigma_1_raw`/`sigma_1_corrected` (~1.3–1.4e-12)
+and `numerical_floor` (~6.5e-13) sit far below the ~1e-12 absolute floor the comparator carried
+until DR-0020 removed it, which had let a ~70–155 % relative re-derivation drift on exactly
+those fields read MATCH; the 1e-9 relative bound now holds at every magnitude, and #467's
+lock-proximity correction still fails `--check`. Exact equality is the only special case:
+`0.0` equals `-0.0`, and a field that replays to any non-zero value — however tiny — where the
+record committed exactly `0.0` reads DIFFERS by design (a clamp firing vs not is a real change,
+not numerical noise). The
+integrity pins stay hash-exact: the committed
+`.calibration.json`'s own sha256 and all 216 `source_rows.*.row_sha256` pins (under its
+`entries`) are compared with `==` on a SHA-256 against the record's own committed rows; no
+tolerance bridges a hash, and a tampered artifact or row still fails closed.
+
 `--emit-record` refuses to mint a grid record unless a PASSing controls record exists, the generator
 hashes match it, every one of the 222 keys is present exactly once, every row is usable, and every
 shifted row has its matched zero-shift row.
@@ -98,7 +120,7 @@ zero-shift row, only the ring periods move); only the latter resolves the period
 
 | Record | What |
 |---|---|
-| `records/20261010-164921-7e279ab.*` | controls (PASS): DC gate offset within 1 uV for 0/20/40/60 mV and the asymmetric (60,0)/(0,60) mV pairs, wrapped current equal to the unwrapped device at the shifted gate, zero-shift equivalence (array within 0.1 %; ring period/swing within 0.1 %, `sigma_1` within the 2-sigma band of two noise realizations), tt/27 C/1.8 V pilot monotone (+6.1/+12.8/+20.1 % ring, +5.8/+12.1/+19.0 % array period) |
+| `records/20261010-164921-7e279ab.*` | controls (PASS): DC gate offset within 1 uV for 0/20/40/60 mV and the asymmetric (60,0)/(0,60) mV pairs, wrapped current equal to the unwrapped device at the shifted gate, zero-shift equivalence (array within 0.1 %; ring period/swing within 0.1 %, `sigma_1` within the 2-sigma band of two noise realizations), tt/27 C/1.8 V pilot monotone (+6.1/+12.8/+20.1 % ring, +5.8/+12.1/+19.0 % array period). **Its `aging_sha256` pin predates the pure refactors of `aging.py`, so `--emit-record` refuses against it until the controls are re-run** -- see "Controls-record `aging.py` pin history" below |
 | `records/20261010-175052-7e279ab.*` (+ `.calibration.json`) | the 222-row sensitivity grid, matched zero-shift pairing, small-rational approach, DR-0003/DR-0004 view, batch job ids. **Superseded for its lock-proximity fields by `20261113-150554-fb302c35`** -- see "DR-0005 lock-proximity correction" below |
 | `records/20261113-150554-fb302c35.*` (+ `.calibration.json`) | the same grid re-reduced under DR-0005's own lock-proximity convention (issue #467); `Supersedes: 20261010-175052-7e279ab`. **Replay this one.** |
 | `records/20261010-175419-7e279ab.*` | matched-seed behavioral replay (108 streams, model output). Carries no lock-proximity field; not superseded |
@@ -144,6 +166,29 @@ python3 sim/ro-vth-drift-sensitivity/analysis/sensitivity.py --check \
     sim/ro-vth-drift-sensitivity/records/20261113-150554-fb302c35.json
 ```
 
+The superseding replay prints `generator hashes: DIFFER` and **exits 0**
+(DR-0019, below): the record pins the `aging.py` bytes that minted it
+(`25607e21...`, pre-#492) and the file has since moved
+(#487/#492 moved the digest helper into `layout/bin/_hashing.py`), but the
+evidence itself reproduces -- rows/summary MATCH, calibration MATCH, netlists
+regenerate byte-identically -- and byte-identical netlist regeneration is the
+discriminator that decides the exit code, per DR-0019.
+
+**Provenance pins are reported, not gated (DR-0019, issue #528).** Operator
+ruling 2026-11-15 (`/fleet:decide` round 20261111-r14, q100, option (b)):
+`check()`'s exit code no longer folds in the file-provenance legs
+(`generator_sha256`, `aging_sha256`). A record's provenance block records
+*which bytes minted it*; it is not an assertion that the tree still carries
+them, and a mismatch is expected drift as the shared digest helper evolves.
+The old contract was already partial -- the record's `analysis_sha256` and
+`manifest_sha256` pins were never gated -- so gating `aging_sha256` alone was
+an accident of which helper got consolidated, not a principle. A stale pin
+stays visible (the `DIFFER` print is retained); the accepted loss is a
+behaviour change that produces byte-identical netlists, guarded behaviourally
+by `layout/test_hashing.py` and by the replay's own rows/summary and
+calibration re-derivation. No record is minted or edited for a byte move;
+see `spec/decision-records/DR-0019-provenance-pin-exit-contract.md`.
+
 The controls record `20261010-164921-7e279ab` and the behavioral-replay record
 `20261010-175419-7e279ab` contain no lock-proximity field and are **not**
 superseded; the controls record's own `--check` still passes unchanged.
@@ -151,6 +196,52 @@ superseded; the controls record's own `--check` still passes unchanged.
 A future correction of this shape uses `sensitivity.py --supersede RECORD.json`,
 which re-reduces that record's own committed responses into a new record,
 calibration artifact and bundle; it never edits the record it supersedes.
+
+## Controls-record `aging.py` pin history (issue #498)
+
+`records/20261010-164921-7e279ab` is this study's controls record, and its
+`provenance.aging_sha256` pins the `aging.py` bytes as of the commit that minted
+it (`01309d60`, 2026-10-10). Since then `aging.py`'s bytes have moved by **pure
+refactor, with the behaviour unchanged**: `c52cc9ba` (2026-11-07, #455) replaced
+the in-file `sha256_file` one-liner with a re-export of
+`layout/bin/_hashing.py`'s byte-identical implementation, and the #487
+digest-helper consolidation (PR #492, merged as `0fd83357`) has since moved
+them a second time. Neither changes what `aging.py` computes.
+
+The consequence is the guard working as designed, not a defect:
+`sensitivity.py --emit-record --controls 20261010-164921-7e279ab` refuses while
+the file's bytes differ from the pin, because `--emit-record` admits **fresh**
+simulation output, and "same generator as the controls" is exactly what the pin
+asserts on that path. The refusal message reports both digests and points here.
+How to read it:
+
+- **Bytes-only move** (the case so far): the committed evidence is not
+  invalidated and nothing needs re-running. `--check` replays each committed
+  record from its **own** raw responses, and the byte moves do not touch those
+  replay legs: the controls record's own `--check` passes, and the documented
+  replay `--check records/20261113-150554-fb302c35.json` still reports
+  rows/summary, calibration artifact and "netlists regenerate byte-identically"
+  all MATCH. Since DR-0019
+  (`spec/decision-records/DR-0019-provenance-pin-exit-contract.md`, resolving
+  issue #528), the provenance pins are **reported, not gated**: that replay
+  still prints `generator hashes: DIFFER` -- the record pins the pre-#492
+  `aging.py` bytes -- and exits 0, because `check()`'s exit folds only the
+  rows/summary, calibration, netlist-regeneration and manifest legs;
+  byte-identical netlist regeneration (`ok_gen`) is the leg that gates, which
+  is what the refusal message already tells the reader to run.
+  `--supersede` never applied the byte pin, because it re-reduces committed
+  responses rather than admitting fresh simulation. The pin is restored whenever
+  the controls campaign is next re-run for a study extension.
+- **Behaviour really changed**: the refusal is the guard doing its job -- re-run
+  the controls (`--emit-controls`) and cite the new controls record.
+
+The two checks that discriminate the cases are named in the refusal message:
+`analysis/sensitivity.py --check RECORD.json` (proves the netlists still
+regenerate byte-identically from the committed plans) and
+`layout/test_hashing.py` (the behavioural guard on the shared digest helper).
+Changing what the pin covers would weaken a ratified evidence guard to make
+refactors cheaper; that is a `spec/` decision record, not something this study
+changes on its own (issue #498 records the reasoning).
 
 ## Execution notes (what did not go to plan)
 

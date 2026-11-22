@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Contract tests for ``layout/bin/_klt_common.py``'s shared ``klt`` readers
-(issue #500).
+(issue #500) and the #535 / #613 helper consolidations.
 
 Standalone script, following ``layout/test_hashing.py``'s convention:
 
@@ -31,11 +31,30 @@ while every producer happened to agree with itself:
   ``root`` from the JSON response.
 - a malformed response must raise ``BuildError``, never return a wrong answer:
   no ``version`` field, no ``assets.libs_ref``, an ``error`` object.
+
+And the #535 consolidation guards, because the forks it retired had already
+diverged in the failure direction:
+
+- ``load_json`` must fail as a ``BuildError`` naming the path (the
+  compose-whole contract), never resurface as a raw traceback.
+- ``klt_env`` must force ``PDK=sky130A``, honour an explicit ``pdk_root``
+  over the ambient ``$PDK_ROOT``, and inherit the ambient environment
+  otherwise.
+- ``klayout_db`` must fail as a ``BuildError`` when the python klayout
+  package is missing.
+- ``dumps`` must stay byte-equal to :func:`write_json`'s file content, so a
+  string-built artifact and a file-written one can never drift.
+- the five helpers must not grow back as per-script forks in ``layout/bin``.
+- the four GDS geometry helpers must stay in ``_gds_geometry.py``: no
+  per-script fork, and no ``spec_from_file_location`` loader of
+  ``compose-whole.py``, in the three scripts the #613 consolidation touched
+  (#617's guard).
 """
 from __future__ import annotations
 
 import json
 import os
+import re
 import stat
 import sys
 import tempfile
@@ -43,14 +62,21 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent / "bin"))
 from _klt_common import (  # noqa: E402
+    REPO_ROOT,
     BuildError,
     compatibility_status,
+    dumps,
+    klt_env,
+    klayout_db,
     klt_version,
     libs_ref,
     libs_ref_of,
+    load_json,
     pdk_find,
     pdk_root,
+    rel,
     run_klt_rc,
+    write_json,
 )
 
 _RESULTS: list[bool] = []
@@ -387,6 +413,182 @@ def check_the_migrated_sites_no_longer_scrape_text() -> None:
                and 'subprocess.run([args.klt, "pdk"' not in text)
 
 
+def check_rel_spells_repo_relative_posix() -> None:
+    """Under the repo: a relative POSIX path. Outside it: the absolute
+    POSIX spelling, not a ValueError -- a scratch-dir path must not crash
+    a provenance line."""
+    got = rel(REPO_ROOT / "layout" / "bin" / "_klt_common.py")
+    _check("rel() spells a repo file repo-relative",
+           got == "layout/bin/_klt_common.py", got)
+    got = rel(REPO_ROOT / "layout" / "bin" / ".." / "bin" / "_klt_common.py")
+    _check("rel() resolves .. segments (Path.resolve)",
+           got == "layout/bin/_klt_common.py", got)
+    with tempfile.TemporaryDirectory() as t:
+        outside = Path(t) / "x.json"
+        outside.write_text("{}\n")
+        got = rel(outside)
+        _check("rel() falls back to the absolute POSIX spelling outside the repo",
+               got == outside.as_posix(), got)
+
+
+def check_load_json_fails_closed() -> None:
+    """The compose-whole contract: a missing or unparsable input is a
+    BuildError naming the path -- the divergence between the two former
+    copies that motivated the consolidation."""
+    with tempfile.TemporaryDirectory() as t:
+        good = Path(t) / "good.json"
+        good.write_text('{"k": 1}')
+        _check("load_json reads valid JSON", load_json(good) == {"k": 1},
+               load_json(good))
+        _raises("load_json raises on a missing file",
+                lambda: load_json(Path(t) / "nope.json"), "missing input")
+        _raises("load_json names the path on a missing file",
+                lambda: load_json(Path(t) / "nope.json"), "nope.json")
+        bad = Path(t) / "bad.json"
+        bad.write_text("{not json")
+        _raises("load_json raises on invalid JSON",
+                lambda: load_json(bad), "not valid JSON")
+        _raises("load_json names the path on invalid JSON",
+                lambda: load_json(bad), "bad.json")
+
+
+def check_klt_env_sets_the_pdk_and_optional_root() -> None:
+    """PDK=sky130A always; an explicit pdk_root wins over the ambient
+    $PDK_ROOT; no argument inherits the ambient environment untouched."""
+    ambient = os.environ.get("PDK_ROOT")
+    try:
+        os.environ.pop("PDK_ROOT", None)
+        _check("klt_env forces PDK=sky130A",
+               klt_env()["PDK"] == "sky130A", klt_env().get("PDK"))
+        _check("klt_env leaves PDK_ROOT unset with no argument and none ambient",
+               "PDK_ROOT" not in klt_env(), klt_env().get("PDK_ROOT"))
+        os.environ["PDK_ROOT"] = "/ambient/root"
+        _check("klt_env inherits the ambient PDK_ROOT with no argument",
+               klt_env().get("PDK_ROOT") == "/ambient/root", klt_env().get("PDK_ROOT"))
+        _check("an explicit pdk_root wins over the ambient one",
+               klt_env("/preset/root")["PDK_ROOT"] == "/preset/root",
+               klt_env("/preset/root").get("PDK_ROOT"))
+        _check("klt_env keeps the rest of the ambient environment",
+               klt_env().get("PATH") == os.environ.get("PATH"))
+    finally:
+        if ambient is None:
+            os.environ.pop("PDK_ROOT", None)
+        else:
+            os.environ["PDK_ROOT"] = ambient
+
+
+def check_klayout_db_fails_closed_without_klayout() -> None:
+    """A missing python klayout package is a BuildError, not a raw
+    ImportError traceback. The None-in-sys.modules trick makes the import
+    fail without uninstalling anything."""
+    saved = sys.modules.get("klayout.db")
+    sys.modules["klayout.db"] = None
+    try:
+        _raises("klayout_db raises BuildError without the klayout package",
+                klayout_db, "klayout")
+    finally:
+        if saved is None:
+            sys.modules.pop("klayout.db", None)
+        else:
+            sys.modules["klayout.db"] = saved
+    try:
+        import klayout.db  # noqa: PLC0415
+
+        have = True
+    except ImportError:
+        have = False
+    if have:
+        _check("klayout_db hands back the klayout.db module",
+               hasattr(klayout_db(), "Layout"))
+    else:
+        print("SKIP: python klayout not importable "
+              "(the BuildError branch above is the live path here)")
+
+
+def check_dumps_matches_write_json() -> None:
+    """dumps is write_json's serialization without the file write."""
+    doc = {"z": 1, "a": {"nested": [1, 2]}}
+    with tempfile.TemporaryDirectory() as t:
+        p = Path(t) / "x.json"
+        write_json(p, doc)
+        _check("dumps is byte-equal to write_json's file content",
+               dumps(doc) == p.read_text(), dumps(doc)[:40])
+    _check("dumps ends with exactly one trailing newline",
+           dumps(doc).endswith("\n") and not dumps(doc).endswith("\n\n"),
+           repr(dumps(doc)[-4:]))
+    _check("dumps preserves insertion order (no sort_keys)",
+           dumps(doc).index('"z"') < dumps(doc).index('"a"'))
+
+
+def check_the_consolidated_helpers_live_in_one_place() -> None:
+    """Issue #535's regression guard: the five helpers must not grow back
+    as per-script forks in layout/bin. A docstring may name them; a ``def``
+    may not."""
+    bin_dir = Path(__file__).resolve().parent / "bin"
+    shared = (bin_dir / "_klt_common.py").read_text()
+    for name in ("rel", "load_json", "klt_env", "klayout_db", "dumps"):
+        _check(f"_klt_common.py defines {name}()",
+               re.search(rf"^def {name}\(", shared, re.M) is not None)
+    pattern = re.compile(r"^def (rel|load_json|klt_env|_klayout|dumps)\b", re.M)
+    for script in ("compose-whole.py", "verify-whole.py",
+                   "drc_coverage_audit.py", "physical_estimates.py"):
+        text = (bin_dir / script).read_text()
+        hit = pattern.search(text)
+        _check(f"{script} carries no local fork of the five helpers",
+               hit is None, hit.group(0) if hit else None)
+
+
+def check_the_gds_geometry_helpers_live_in_one_place() -> None:
+    """Issue #617's regression guard over the #613 consolidation: the four
+    GDS geometry helpers live in _gds_geometry.py and must not grow back as
+    per-script forks, nor be reached again through a spec_from_file_location
+    loader of compose-whole.py -- the two loaders #613 deleted. A docstring
+    may name them; a ``def`` may not, and a loader of any other file is not
+    this guard's business."""
+    bin_dir = Path(__file__).resolve().parent / "bin"
+    shared = (bin_dir / "_gds_geometry.py").read_text()
+    for name in ("flat_extract", "net_labels", "probe",
+                 "canonical_geometry_hash"):
+        _check(f"_gds_geometry.py defines {name}()",
+               re.search(rf"^def {name}\(", shared, re.M) is not None)
+    fork = re.compile(
+        r"^def (flat_extract|net_labels|probe|canonical_geometry_hash)\b", re.M)
+    loader = re.compile(r"spec_from_file_location\([^)]*compose-whole", re.S)
+    for script in ("compose-whole.py", "verify-whole.py",
+                   "physical_estimates.py"):
+        text = (bin_dir / script).read_text()
+        hit = fork.search(text)
+        _check(f"{script} carries no local fork of the geometry helpers",
+               hit is None, hit.group(0) if hit else None)
+        hit = loader.search(text)
+        _check(f"{script} reaches no compose-whole.py loader by path",
+               hit is None, hit.group(0) if hit else None)
+    # Negative controls, so both regexes are shown able to fail: the caught
+    # shapes are the ones #613 deleted; the three near-misses must stay
+    # silent (issue #617's test plan).
+    _check("the fork regex catches a copied top-level helper def",
+           fork.search("def probe(db, l2n, regions, layer_key, x_um, y_um):\n"
+                       "    return set()\n") is not None)
+    _check("the fork regex stays silent on a longer name (probe_clusters)",
+           fork.search("def probe_clusters(path):\n    return path\n") is None)
+    _check("the fork regex stays silent on a prose mention",
+           fork.search("# net_labels, probe and canonical_geometry_hash live\n"
+                       "# in _gds_geometry.py\n") is None)
+    _check("the loader regex catches the one-line verify-whole.py loader",
+           loader.search('_cw_spec = importlib.util.spec_from_file_location('
+                         '"compose_whole", HERE / "compose-whole.py")\n')
+           is not None)
+    _check("the loader regex catches the multiline physical_estimates.py "
+           "loader",
+           loader.search('    spec = importlib.util.spec_from_file_location('
+                         '"physical_estimates_compose_whole",\n'
+                         '                                  here / '
+                         '"compose-whole.py")\n') is not None)
+    _check("the loader regex stays silent on a loader of another file",
+           loader.search('    spec = importlib.util.spec_from_file_location('
+                         '"hashing", here / "_hashing.py")\n') is None)
+
+
 def main() -> int:
     check_klt_version_is_bare()
     check_klt_version_fails_closed()
@@ -402,6 +604,13 @@ def main() -> int:
     check_against_the_real_klt_response_shape()
     check_the_bare_spelling_is_the_repo_convention()
     check_the_migrated_sites_no_longer_scrape_text()
+    check_rel_spells_repo_relative_posix()
+    check_load_json_fails_closed()
+    check_klt_env_sets_the_pdk_and_optional_root()
+    check_klayout_db_fails_closed_without_klayout()
+    check_dumps_matches_write_json()
+    check_the_consolidated_helpers_live_in_one_place()
+    check_the_gds_geometry_helpers_live_in_one_place()
     print(f"\n{sum(_RESULTS)}/{len(_RESULTS)} checks passed")
     return 0 if all(_RESULTS) else 1
 

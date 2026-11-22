@@ -108,7 +108,6 @@ Nothing here simulates anything.
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import re
 import subprocess
@@ -120,6 +119,7 @@ REPO = HERE.parents[1]
 sys.path.insert(0, str(HERE))
 sys.path.insert(0, str(REPO / "layout" / "bin"))
 import program as P  # noqa: E402
+from _hashing import sha256_file, sha256_text  # noqa: E402
 from _klt_common import BuildError, libs_ref  # noqa: E402
 
 ROUTED_V = REPO / "layout" / "trng_digital" / "trng_digital.routed.v"
@@ -411,15 +411,27 @@ def parse_liberty_group(lines: list[str]) -> LibGroup:
     return root
 
 
-def extract_cell_blocks(lib_path: Path, wanted: set[str]) -> tuple[dict[str, LibGroup], dict[str, str]]:
-    """Return ({cell_name: parsed group}, library-level attributes).
+def extract_cell_blocks(
+    lib_path: Path, wanted: set[str]
+) -> tuple[dict[str, LibGroup], dict[str, str], dict[str, LibGroup]]:
+    """Return ({cell_name: parsed group}, library attributes, lut templates).
 
     Streams the deck (13 MB for ``tt_025C_1v80``) and parses only the wanted
     ``cell`` blocks, so the whole library is never materialised as an AST.
+
+    The library-level ``lu_table_template`` groups are collected **by name**.
+    They cannot be read from the flat ``header`` dict: ``header`` folds every
+    library-level attribute line in with ``setdefault``, so a template's
+    ``variable_1`` lands there from whichever template appears first in the
+    deck -- for the pinned deck that is ``power_inputs_1``'s
+    ``input_transition_time``, 13 lines before ``del_1_7_7``. NldmTable reads
+    each table's own template by the name in the table group's arg.
     """
     header: dict[str, str] = {}
     blocks: dict[str, LibGroup] = {}
+    templates: dict[str, LibGroup] = {}
     collecting: list[str] | None = None
+    collect_kind = ""                 # "cell" | "lu_table_template"
     depth = 0
     name = ""
     in_library = False
@@ -434,6 +446,14 @@ def extract_cell_blocks(lib_path: Path, wanted: set[str]) -> tuple[dict[str, Lib
                     collecting = [ln]
                     depth = 1
                     name = cand
+                    collect_kind = "cell"
+                continue
+            if g and g.group(1) == "lu_table_template":
+                cand = g.group(2).strip().strip('"')
+                collecting = [ln]
+                depth = 1
+                name = cand
+                collect_kind = "lu_table_template"
                 continue
             if g and g.group(1) == "library":
                 in_library = True
@@ -451,11 +471,15 @@ def extract_cell_blocks(lib_path: Path, wanted: set[str]) -> tuple[dict[str, Lib
             depth += 1          # a group-opener line opens exactly one group
         depth -= ln.count("}")
         if depth <= 0:
-            blocks[name] = parse_liberty_group(collecting)
+            parsed = parse_liberty_group(collecting)
+            if collect_kind == "cell":
+                blocks[name] = parsed
+            else:
+                templates[name] = parsed
             collecting = None
     if collecting is not None:
-        raise GateModelError(f"{lib_path}: unterminated cell block for {name!r}")
-    return blocks, header
+        raise GateModelError(f"{lib_path}: unterminated {collect_kind} block for {name!r}")
+    return blocks, header, templates
 
 
 # --------------------------------------------------------------------------
@@ -484,11 +508,12 @@ def _tokenize(expr: str) -> list[tuple[str, str]]:
 class _FuncParser:
     """Recursive-descent parser for a Liberty ``function`` expression.
 
-    Grammar (precedence low to high)::
+    Grammar (precedence low to high; Liberty binds ``^`` TIGHTER than
+    ``&``/``*`/juxtaposition, so ``A ^ B & C`` is ``(A ^ B) & C``)::
 
-        or    := xor (('|' | '+') xor)*
-        xor   := and ('^' and)*
-        and   := not (('&' | '*')? not)*       # juxtaposition is AND
+        or    := and (('|' | '+') and)*
+        and   := xor (('&' | '*')? xor)*       # juxtaposition is AND
+        xor   := not ('^' not)*
         not   := ('!' | '~') not | atom ("'")*
         atom  := ident | '0' | '1' | '(' or ')'
     """
@@ -509,30 +534,30 @@ class _FuncParser:
         return node
 
     def p_or(self):
-        node = self.p_xor()
+        node = self.p_and()
         while self.peek() in (("op", "|"), ("op", "+")):
             self.i += 1
-            node = ("or", node, self.p_xor())
-        return node
-
-    def p_xor(self):
-        node = self.p_and()
-        while self.peek() == ("op", "^"):
-            self.i += 1
-            node = ("xor", node, self.p_and())
+            node = ("or", node, self.p_and())
         return node
 
     def p_and(self):
-        node = self.p_not()
+        node = self.p_xor()
         while True:
             k, v = self.peek()
             if (k, v) in (("op", "&"), ("op", "*")):
                 self.i += 1
-                node = ("and", node, self.p_not())
+                node = ("and", node, self.p_xor())
             elif k == "id" or k == "num" or (k, v) in (("op", "("), ("op", "!"), ("op", "~")):
-                node = ("and", node, self.p_not())  # juxtaposition
+                node = ("and", node, self.p_xor())  # juxtaposition
             else:
                 return node
+
+    def p_xor(self):
+        node = self.p_not()
+        while self.peek() == ("op", "^"):
+            self.i += 1
+            node = ("xor", node, self.p_not())
+        return node
 
     def p_not(self):
         k, v = self.peek()
@@ -618,8 +643,29 @@ def _numbers(s: str) -> list[float]:
 class NldmTable:
     """A Liberty 2-D ``cell_rise``/``cell_fall`` table with bilinear lookup."""
 
-    def __init__(self, group: LibGroup, where: str):
+    #: the only axis spellings ``at(slew, load)`` is validated for: the row
+    #: index must be the input transition (slew), the column the output load.
+    #: These are the axes of the pinned deck's ``del_1_7_7`` and its siblings;
+    #: a template that swaps them would be read transposed, silently.
+    SLEW_AXIS = "input_net_transition"
+    LOAD_AXIS = "total_output_net_capacitance"
+
+    def __init__(self, group: LibGroup, where: str,
+                 templates: dict[str, LibGroup]):
         self.where = where
+        tname = group.args[0] if group.args else ""
+        tmpl = templates.get(tname)
+        if tmpl is None:
+            raise GateModelError(
+                f"{where}: table references lu_table_template {tname!r}, "
+                f"which the deck does not define")
+        v1, v2 = tmpl.attrs.get("variable_1"), tmpl.attrs.get("variable_2")
+        if v1 != self.SLEW_AXIS or v2 != self.LOAD_AXIS:
+            raise GateModelError(
+                f"{where}: lu_table_template {tname!r} indexes "
+                f"({v1!r}, {v2!r}), not ({self.SLEW_AXIS!r}, "
+                f"{self.LOAD_AXIS!r}); at(slew, load) would read it "
+                f"transposed -- refusing")
         i1 = group.calls.get("index_1")
         i2 = group.calls.get("index_2")
         vals = group.calls.get("values")
@@ -660,7 +706,8 @@ class NldmTable:
 class CellModel:
     """One Liberty cell reduced to what the generator needs."""
 
-    def __init__(self, name: str, group: LibGroup):
+    def __init__(self, name: str, group: LibGroup,
+                 templates: dict[str, LibGroup]):
         self.name = name
         self.inputs: list[str] = []
         self.outputs: list[str] = []
@@ -688,8 +735,10 @@ class CellModel:
                     fall = t.first("cell_fall")
                     arcs.append((
                         t.attrs.get("related_pin", "?"), ttype,
-                        NldmTable(rise, f"{name}/{pname}/cell_rise") if rise else None,
-                        NldmTable(fall, f"{name}/{pname}/cell_fall") if fall else None,
+                        NldmTable(rise, f"{name}/{pname}/cell_rise",
+                                  templates) if rise else None,
+                        NldmTable(fall, f"{name}/{pname}/cell_fall",
+                                  templates) if fall else None,
                     ))
                 self.arcs[pname] = arcs
         self.inputs.sort()
@@ -1053,16 +1102,6 @@ def build_gate_model(design: Design, lib: dict[str, CellModel], *, supply_v: flo
 # Stimulus, request and plan
 # --------------------------------------------------------------------------
 
-def sha256_file(path: Path) -> str:
-    h = hashlib.sha256()
-    h.update(path.read_bytes())
-    return h.hexdigest()
-
-
-def sha256_text(text: str) -> str:
-    return hashlib.sha256(text.encode()).hexdigest()
-
-
 def raw_bits(n: int) -> list[int]:
     if n > len(RAW_BIT_PATTERN):
         raise GateModelError(f"RAW_BIT_PATTERN has {len(RAW_BIT_PATTERN)} bits, need {n}")
@@ -1139,7 +1178,8 @@ def stimulus_cards(cycles: list[dict], vih: float) -> list[str]:
     return cards
 
 
-def measurement_cards(cycles: list[dict]) -> tuple[list[dict], list[str]]:
+def measurement_cards(cycles: list[dict], vih: float,
+                      threshold_pct: float) -> tuple[list[dict], list[str]]:
     """``.meas`` entries for every digital response the model also predicts."""
     inputs = P.cycle_inputs(cycles)
     n = len(cycles)
@@ -1184,15 +1224,23 @@ def measurement_cards(cycles: list[dict]) -> tuple[list[dict], list[str]]:
         t = P.t_edge_ns(k) + P.RDATA_NS
         for sig in ("alarm", "gated", "startup_done", "out_valid"):
             add(f"{sig}_k{k}", f".meas tran {sig}_k{k} FIND v({sig}) AT={t:.1f}n", sig, t)
-    add("t_clk_first", ".meas tran t_clk_first WHEN v(clk)=0.9 RISE=1", "clk")
+    # the 50 % crossing of the clock the Liberty deck measures its delays at.
+    # clk is driven 0..vih (stimulus_cards' Vclk PULSE), so the threshold
+    # tracks vih -- NOT supply_v/2: --supply-v and --vih are independent
+    # knobs that merely coincide today. :3g reproduces the committed card's
+    # bare "0.9" at the pinned defaults (vih 1.8 V, 50 %) byte for byte.
+    clk_threshold_v = vih * threshold_pct / 100.0
+    add("t_clk_first",
+        f".meas tran t_clk_first WHEN v(clk)={clk_threshold_v:.3g} RISE=1", "clk")
     names = [e["name"] for e in meas]
     if len(names) != len(set(names)):
         raise GateModelError("duplicate measurement names")
     return meas, sorted(save)
 
 
-def build_deck(model: GateModel, cycles: list[dict], vih: float) -> tuple[str, list[dict], list[str]]:
-    meas, save = measurement_cards(cycles)
+def build_deck(model: GateModel, cycles: list[dict], vih: float,
+               threshold_pct: float) -> tuple[str, list[dict], list[str]]:
+    meas, save = measurement_cards(cycles, vih, threshold_pct)
     body = list(model.body)
     body += ["", "* ---- directed program stimulus (program.py) ----",
              *stimulus_cards(cycles, vih),
@@ -1277,7 +1325,7 @@ def main(argv: list[str] | None = None) -> int:
     liberty = resolve_liberty(args.liberty, args.corner)
     lib_sha = sha256_file(liberty)
     wanted = set(design.cell_histogram())
-    blocks, header = extract_cell_blocks(liberty, wanted)
+    blocks, header, templates = extract_cell_blocks(liberty, wanted)
     absent = sorted(wanted - set(blocks))
     if absent:
         raise GateModelError(
@@ -1295,7 +1343,7 @@ def main(argv: list[str] | None = None) -> int:
         raise GateModelError(
             f"{liberty.name}: input_threshold_pct is {threshold_pct}, not "
             f"{EXPECTED_THRESHOLD_PCT}; the bridge band assumption needs re-deriving")
-    lib = {name: CellModel(name, g) for name, g in blocks.items()}
+    lib = {name: CellModel(name, g, templates) for name, g in blocks.items()}
 
     model = build_gate_model(design, lib, supply_v=args.supply_v, slew_ns=args.slew_ns,
                              port_load_pf=args.port_load_pf, liberty_path=liberty,
@@ -1304,7 +1352,7 @@ def main(argv: list[str] | None = None) -> int:
     limit = None if args.cycles == 0 else args.cycles
     cycles, phases = P.build_program(limit=limit)
     t_stop = P.t_stop_ns(cycles)
-    deck, meas, save = build_deck(model, cycles, args.vih)
+    deck, meas, save = build_deck(model, cycles, args.vih, threshold_pct)
 
     request = {
         "netlist": "netlist.cir",

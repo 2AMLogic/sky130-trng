@@ -44,11 +44,11 @@ SLUGDIR = HERE.parent
 REPO = SLUGDIR.parents[1]
 sys.path.insert(0, str(SLUGDIR))
 sys.path.insert(0, str(REPO / "sim" / "bin"))
-sys.path.insert(0, str(REPO / "sim" / "tests"))
 from loadmod import load_module  # noqa: E402
 import aging  # noqa: E402
 import campaign as C  # noqa: E402
-from evidence_record import git_short_sha, mint_record, new_record_id, write_corner_bundle  # noqa: E402
+from replay_equal import replay_equal as _replay_equal  # noqa: E402  (issue #519: one shared replay equality)
+from evidence_record import mint_record, new_record_id, read_corner_bundle, write_corner_bundle  # noqa: E402
 from lock_proximity import closeness as lock_closeness, ratio_label  # noqa: E402
 from request_dir import load_request_dir  # noqa: E402
 
@@ -169,14 +169,7 @@ def load_reqdir(reqdir) -> tuple[list[tuple[str, dict, dict]], list[tuple[str, d
 
 
 def load_committed(cdir, prefix=None) -> list[tuple[str, dict, dict]]:
-    out = []
-    for f in sorted(glob.glob(os.path.join(cdir, "*.klt-sim.json.gz"))):
-        nm = os.path.basename(f)[:-len(".klt-sim.json.gz")]
-        if prefix and not nm.startswith(prefix):
-            continue
-        with gzip.open(f, "rt") as fh:
-            out.append((nm, json.load(open(os.path.join(cdir, nm + ".plan.json"))), json.load(fh)))
-    return out
+    return read_corner_bundle(cdir, prefix=prefix)
 
 
 DELTA_FIELDS = {
@@ -432,6 +425,7 @@ def evaluate_controls(ctl: dict[str, tuple[dict, dict]], floor) -> dict:
 
 
 def md_controls(rid, res, info):
+    """The controls record's header lines and body text; mint_record appends the shared footer."""
     L = [f"# {rid} -- {SLUG} (controls)", "", f"**Claim**: the gate-offset wrappers reach the transistor gates with the requested "
          "signed offsets, the zero-shift wrapped decks reproduce the unwrapped decks, and the tt / 27 C / 1.8 V common-mode "
          "pilot moves the ring period monotonically. These controls gate the full grid.", "", f"**Level**: transistor", f"**Verdict**: {'PASS' if res['pass'] else 'FAIL'}", "",
@@ -451,7 +445,7 @@ def md_controls(rid, res, info):
                 L.append(f"| {deck} | {p['shift_mv']:g} | FAILED ({p['status']}) | |")
     L += ["", "## Provenance", "", "```json", json.dumps(info, indent=1), "```", "",
           "Simulation-derived; provisional until silicon.", ""]
-    return "\n".join(L)
+    return L, ""
 
 
 def ctl_info(plans: dict) -> dict:
@@ -480,8 +474,11 @@ def emit_controls(ctldir):
            "seed": "ring5: .option seed=1 (source deck); array: deterministic", "supersedes": "(none)", "pass": res["pass"],
            "controls": res, "provenance": info, "timestamp_utc": now.isoformat(),
            "klt_sim": {"backend": "local", "responses": f"sim/{SLUG}/corners/{rid}/*.klt-sim.json.gz"}}
-    (rdir / f"{rid}.json").write_text(json.dumps(rec, indent=2, default=str) + "\n")
-    (rdir / f"{rid}.md").write_text(md_controls(rid, res, info))
+    header, body = md_controls(rid, res, info)
+    out = mint_record(rdir, REPO, rid, header, body, rec, author="loom-builder@sky130-trng", now=now, sha=sha)
+    if out is None:
+        shutil.rmtree(cdir, ignore_errors=True)
+        raise SystemExit(f"error: record id {rid} already exists; wait a second and re-run")
     print(rid, "PASS" if res["pass"] else "FAIL")
     return 0 if res["pass"] else 1
 
@@ -717,8 +714,28 @@ def emit_record(reqdir, ctl_rid):
     if crec.get("kind") != "controls" or not crec.get("pass"):
         raise SystemExit("error: controls record is not a PASSing controls record; the full grid may not be recorded")
     for k, f in (("generator_sha256", "campaign.py"), ("aging_sha256", "aging.py")):
-        if crec["provenance"][k] != aging.sha256_file(SLUGDIR / f):
-            raise SystemExit(f"error: {f} changed since the controls record {ctl_rid}; re-run the controls")
+        current = aging.sha256_file(SLUGDIR / f)
+        if crec["provenance"][k] != current:
+            # Issue #498: refuse on exactly the same comparison as before, but tell the
+            # reader what actually discriminates a bytes-only refactor from a behaviour
+            # change instead of prescribing a controls re-run for both.  No digest literal
+            # and no commit sha here: both digests are derived, and aging.py's bytes have
+            # moved by pure refactor before (#455) and will move again (#487).
+            raise SystemExit(
+                f"error: {f} bytes differ from the digest pinned by the controls record {ctl_rid}\n"
+                f"  pinned by {ctl_rid}: {crec['provenance'][k]}\n"
+                f"  current {f}: {current}\n"
+                "A byte difference does not by itself mean the generator's behaviour changed: a pure\n"
+                "refactor (e.g. re-exporting a shared sha256 helper) moves the file's bytes with the\n"
+                "behaviour intact. Two checks discriminate the cases:\n"
+                "  - sensitivity.py --check RECORD.json replays a committed record from its own raw\n"
+                "    responses and proves the netlists still regenerate byte-identically from the\n"
+                "    committed plans; if they do, only the bytes moved -- see 'Controls-record aging.py\n"
+                "    pin history' in this study's README.md for the recorded refactor history; no\n"
+                "    controls re-run is needed for a bytes-only move.\n"
+                "  - layout/test_hashing.py is the behavioural guard on the shared digest helper.\n"
+                "If the behaviour really did change, re-run the controls campaign (--emit-controls)\n"
+                "and cite the new controls record here.")
     chunks, missing = load_reqdir(reqdir)
     for nm, _, why in missing:
         print(f"no usable response for {nm}: {why}", file=sys.stderr)
@@ -818,29 +835,103 @@ def supersede(recpath):
     return 0
 
 
+def _strip_row_sha256(obj):
+    """Drop every `row_sha256` pin from an artifact tree.  The pins are the
+    hash-exact integrity half and are checked separately (against the record's
+    own committed rows); only the re-derived metrics go through the tolerance
+    comparator, because a hash can never absorb the ~1-ulp CPython sum() split."""
+    if isinstance(obj, dict):
+        return {k: _strip_row_sha256(v) for k, v in obj.items() if k != "row_sha256"}
+    if isinstance(obj, list):
+        return [_strip_row_sha256(v) for v in obj]
+    return obj
+
+
+def calibration_leg(rec, cal, cal_committed):
+    """The calibration-artifact half of `check()`: -> (ok, pins_verified).
+
+    Hash-exact integrity half -- both sides are committed bytes, so the
+    interpreter cannot move them and no tolerance is involved:
+      * sha256 of the committed `.calibration.json` equals the record's pin;
+      * every `source_rows.*.row_sha256` under `entries` (NOT `rows` -- the
+        pins live under `entries`; walking the wrong key is a silently vacuous
+        pass, issue #519) equals sha256_json of the matching row in the
+        record's own committed `rows` -- 216 pins on the tip record.
+    Tolerance-compared re-derivation half -- `calibration_artifact()` recomputed
+    from the re-derived rows vs the committed artifact, `row_sha256` fields
+    stripped from both sides, under the shared `replay_equal`
+    (sim/bin/replay_equal.py, gate `|a-b| <= 1e-9*|v|`, DR-0020): builtin
+    float `sum()` is naive on CPython <= 3.11 and compensated on >= 3.12, so
+    the same raw responses re-derive ~1-ulp (~1e-16 relative) apart across the
+    split, far inside the gate.  There is no absolute floor (DR-0020, issue
+    #547): every non-zero float is bound at the full 1e-9 relative -- this
+    artifact's sub-picosecond fields included (`sigma_1_raw`/
+    `sigma_1_corrected` ~1.3-1.4e-12, `numerical_floor` ~6.5e-13), which sat
+    below the 1e-12 absolute floor the comparator carried until DR-0020
+    removed it and could then drift ~70-155 % relative without failing.
+    Exact equality is the only special case: a field that replays to any
+    non-zero value where the committed artifact has exactly 0.0 reads DIFFERS
+    by design.  This touches the *re-derivation* comparison only -- the
+    integrity pins above stay `==` on a SHA-256, and they are what makes a
+    tampered artifact or row fail closed.
+    """
+    if cal_committed is None:
+        return False, 0
+    ok_sha = sha256_json(cal_committed) == rec["calibration_artifact"]["sha256"]
+    by_key = {r["key"]: r for r in rec["rows"]}
+    pins_ok, n_pins = True, 0
+    entries = cal_committed.get("entries", {})
+    for entry in entries.values():
+        for src in entry.get("source_rows", {}).values():
+            row = by_key.get(src.get("key"))
+            if row is None or sha256_json(row) != src.get("row_sha256"):
+                pins_ok = False
+            n_pins += 1
+    if entries and n_pins == 0:
+        pins_ok = False
+    ok_red = _replay_equal(_strip_row_sha256(json.loads(json.dumps(cal, sort_keys=True, default=str))),
+                           _strip_row_sha256(cal_committed))
+    return ok_sha and pins_ok and ok_red, n_pins
+
+
 def check(recpath):
-    """Replay from the committed raw responses; exit 1 on any difference."""
+    """Replay from the committed raw responses; exit 1 on any difference.
+
+    Float-bearing replay comparisons (controls, rows/summary, the calibration
+    artifact's re-derived metrics) run through the shared `replay_equal`
+    tolerance (sim/bin/replay_equal.py, rel=1e-9): builtin float `sum()` is
+    naive on CPython <= 3.11 and compensated on >= 3.12, so a record minted on
+    one side of the split re-derives ~1-ulp (~1e-16 relative) different on the
+    other -- without this, `--check`'s verdict is a function of the
+    interpreter, i.e. "matches, on the version that happened to mint it"
+    (issue #519).  The gate is `|a-b| <= 1e-9*|v|` with no absolute floor
+    (DR-0020, issue #547): every non-zero float is bound at the full 1e-9
+    relative, this study's sub-picosecond sigma jitter (~1.3e-12 s) and
+    `numerical_floor` (~6.5e-13) included -- a 1e-6-relative tamper on any
+    field is still reported, and #467's convention correction still fails
+    this check.  Exact equality is the only special case (0.0 == -0.0; zero
+    versus any non-zero value reads DIFFERS by design).  The integrity pins
+    stay hash-exact -- see `calibration_leg`.
+    """
     rec = json.load(open(recpath))
     cdir = SLUGDIR / "corners" / rec["record_id"]
     if rec.get("kind") == "controls":
-        names = sorted(p.name[:-len(".klt-sim.json.gz")] for p in cdir.glob("*.klt-sim.json.gz"))
-        ctl = {}
-        for n in names:
-            with gzip.open(cdir / f"{n}.klt-sim.json.gz", "rt") as fh:
-                ctl[n] = (json.load(open(cdir / f"{n}.plan.json")), json.load(fh))
+        ctl = {nm: (pl, rs) for nm, pl, rs in read_corner_bundle(cdir)}
         res = evaluate_controls(ctl, numerical_floor())
-        same = json.loads(json.dumps(res, default=str)) == json.loads(json.dumps(rec["controls"], default=str))
+        same = _replay_equal(json.loads(json.dumps(res, default=str)),
+                             json.loads(json.dumps(rec["controls"], default=str)))
         print("controls replay", "MATCHES" if same else "DIFFERS", recpath)
         return 0 if same else 1
     chunks = load_committed(str(cdir))
     rows, summ = build(chunks, rec["controls_record"])
-    ok = json.loads(json.dumps(rows, default=str)) == rec["rows"] and \
-        json.loads(json.dumps(summ, default=str)) == json.loads(json.dumps(rec["summary"], default=str))
+    ok = _replay_equal(json.loads(json.dumps(rows, default=str)), rec["rows"]) and \
+        _replay_equal(json.loads(json.dumps(summ, default=str)),
+                      json.loads(json.dumps(rec["summary"], default=str)))
     cal = calibration_artifact(rec["record_id"], rows)
     calp = Path(rec["calibration_artifact"]["path"])
     calp = REPO / calp
-    ok_cal = calp.is_file() and json.load(open(calp)) == json.loads(json.dumps(cal, sort_keys=True)) \
-        and sha256_json(cal) == rec["calibration_artifact"]["sha256"]
+    cal_committed = json.load(open(calp)) if calp.is_file() else None
+    ok_cal, _n_pins = calibration_leg(rec, cal, cal_committed)
     # each stored request/netlist hash matches what the generator produces now
     ok_gen = True
     for nm, pl, rs in chunks:
@@ -856,7 +947,11 @@ def check(recpath):
     print("replay rows/summary:", "MATCH" if ok else "DIFFER", "| calibration artifact:", "MATCH" if ok_cal else "DIFFER",
           "| netlists regenerate byte-identically:", "YES" if ok_gen else "NO", "| generator hashes:", "MATCH" if prov_ok else "DIFFER",
           "| manifest:", "OK" if manifest_ok else "BAD")
-    return 0 if (ok and ok_cal and ok_gen and prov_ok and manifest_ok) else 1
+    # prov_ok is reported (DIFFER above) but no longer gates the exit: the
+    # record's own analysis/generator bytes moving is expected drift, not a
+    # replay failure -- byte-identical netlist regeneration (ok_gen) is the
+    # discriminator (DR-0019).
+    return 0 if (ok and ok_cal and ok_gen and manifest_ok) else 1
 
 
 def check_manifest():

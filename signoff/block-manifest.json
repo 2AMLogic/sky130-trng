@@ -70,7 +70,7 @@
     "  1, 2, 9, 10       cited since issue #320 (2026-10-17) -- NOT by an unrelated",
     "                    passing envelope (which would paint these rows green by",
     "                    borrowing), but by artifact-anchored `generic` envelopes",
-    "                    (klayout-tools 0.8.0 grades items 1/2/9/10 only in that",
+    "                    (klayout-tools 0.7.0 grades items 1/2/9/10 only in that",
     "                    form) minted by signoff/attest.py from committed",
     "                    inventories: signoff/attest/<key>.json pins",
     "                    <key>.inventory.json by path + sha256, and the entry",
@@ -87,7 +87,7 @@
     "                    shape), not `klt sim` output.",
     "  5.digital           layout/trng_digital/sta.json exists (16 Liberty",
     "                    corners, all constrained, non-negative setup/hold,",
-    "                    SPEF-annotated) and the pinned 0.8.0 grader would",
+    "                    SPEF-annotated) and the pinned 0.7.0 grader would",
     "                    render the row `met` on it alone. It is deliberately",
     "                    NOT cited: item 5's digital rule is multi-corner STA",
     "                    PLUS a bit-exact functional suite recorded as",
@@ -102,11 +102,27 @@
     "                    ratified spec and DR-0004 (digital section) is",
     "                    `Proposed`. Stays unmet/no_evidence.",
     "  6                  no `klt yield` report exists.",
-    "  7.analog           no `klt pex` report exists -- post-layout",
-    "                    campaigns run from `klt extract --parasitics`",
-    "                    netlists via sim/bin harnesses, which item 7 by",
-    "                    design does not accept (a clean DRC or",
-    "                    pre-layout sim proves nothing post-layout).",
+    "  7.analog           (issue #597) CITED: a native `klt pex` report",
+    "                    (sim/pex-sampler-core/runs/20261121-001303-7330672/",
+    "                    pex-report.json), --measure-command mode: 11 spec",
+    "                    rows x 12 PVT corners (tt/ss/ff x the post-layout",
+    "                    four-point grid) over the same committed GDS 3/11",
+    "                    cite, pinned to its content hash. Grades on the",
+    "                    report's OWN status: `fail` -- 130/132 rows pass;",
+    "                    active_power_uw exceeds the README 500 uW bound at",
+    "                    ff/-40C/1.98V and ff/125C/1.98V on BOTH legs",
+    "                    (schematic 519/567 uW already; parasitics add",
+    "                    6-13%), so the row is a pre-layout design",
+    "                    condition, not a parasitic regression. Failing rows",
+    "                    stay failing; bounded design-iteration follow-up is",
+    "                    issue #604. Disclosures in signoff/README.md:",
+    "                    extraction.model limits (lumped star R, ground +",
+    "                    vertical-overlap C only, quasi-static; no lateral",
+    "                    coupling, no distributed RC) and body_bias",
+    "                    (biased, 0 unbiased devices, no --tie-net). The",
+    "                    layout-regeneration chain (#371/#372) changes the",
+    "                    GDS. Signoff CI compares the working GDS digest with",
+    "                    the cited PEX input even for a failing report.",
     "  7.digital          (issue #227) CITED: a native, SDF-annotated `klt",
     "                    functional-verification` report",
     "                    (sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/timed-declared.report.json):",
@@ -261,7 +277,7 @@
     },
     "1.analog": {
       "file": "signoff/attest/1.analog.json",
-      "content_hash": "sha256:af994a4b2400bc354257c7e4a3dca15b7229365a1f5ed8c2645b159b713857e9"
+      "content_hash": "sha256:cebcaa4f70b6a069924aaffe49d334bf6aa2754cf2007dcdcadd5649ff877a68"
     },
     "1.digital": {
       "file": "signoff/attest/1.digital.json",
@@ -273,21 +289,25 @@
     },
     "2.digital": {
       "file": "signoff/attest/2.digital.json",
-      "content_hash": "sha256:3787bf5de4cd8e26086b96b197dede89cbe1a8c01d571add368e1d597ffebd33"
+      "content_hash": "sha256:2e0b95feadf114d988286e3638bb478e2dbd7472b84aa4198fbdf318e481e1f7"
     },
     "9": {
       "file": "signoff/attest/9.json",
-      "content_hash": "sha256:5796ac7c9ada5cb201164bc6745a30c33b0ff44c58df39b43f932aa5a8ecef35"
+      "content_hash": "sha256:1595fed3af196a6f2b0d6b6fb925357717679bf04b785c4a4eec5c4901aea29c"
     },
     "10": {
       "file": "signoff/attest/10.json",
-      "content_hash": "sha256:90f3ddc62e063bfa207d09f2665641c073e5f662e8b14573c904731d6f1d0115"
+      "content_hash": "sha256:637ea0d733b911e1480cc1a128165ef2da3e934a7e9b43ae34c2030f2d895a4e"
     },
     "8.analog": {
       "file": "signoff/characterization-envelope.json"
     },
     "8.digital": {
       "file": "signoff/characterization-envelope.json"
+    },
+    "7.analog": {
+      "file": "sim/pex-sampler-core/runs/20261121-001303-7330672/pex-report.json",
+      "content_hash": "sha256:e3ff54a9bb15122298f0d5df817612ed1caacb3b045533f9ba86d009036c2004"
     }
   }
 }

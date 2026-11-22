@@ -9,7 +9,7 @@ import unittest
 from pathlib import Path
 
 SCRIPT = Path(__file__).resolve().parents[1] / "bin" / "check_records_append_only.py"
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "bin"))
 from loadmod import load_module  # noqa: E402
 chk = load_module("chk", SCRIPT)
 

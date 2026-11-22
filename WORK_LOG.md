@@ -6,7 +6,122 @@ Chronological record of recently merged pull requests and closed issues.
 
 - [2026-09](work_log/WORK_LOG_2026-09.md)
 
+### 2026-11-22
+
+- **PR #625**: test: guard the shared GDS geometry helpers against forks and compose-whole loaders
+- **Issue #617** (closed): Guard the shared GDS geometry helpers against local copies and compose-whole loaders
+
+### 2026-11-21
+
+- **PR #623**: fix: classify open() mode in the record-tail guard so read-only opens pass
+- **Issue #618** (closed): test_evidence_record_artifacts guard flags read-only open() of a record as a hand-rolled tail
+- **PR #622**: chore: gitignore daemon-written .loom/account-ranking.codex runtime state
+- **Issue #608** (closed): chore: gitignore the daemon's .loom/account-ranking.* runtime state (breaks check-main-clean for every builder)
+- **PR #616**: refactor: extract the four GDS geometry helpers to _gds_geometry.py
+- **Issue #613** (closed): Remove both dynamic compose-whole loaders by sharing the four GDS geometry helpers
+- **PR #606**: sim(pex): cite a klt pex sampler_core delta report as 7.analog
+- **Issue #597** (closed): T1 item 7 (analog): produce a klt pex schematic-vs-extracted delta report for sampler_core and cite it as 7.analog
+- **PR #603**: docs: regenerate WORK_PLAN.md plan body from live labels via render_plan_body()
+- **Issue #602** (closed): WORK_PLAN.md Important/Ready sections drift: hand-applied Guide deltas under-report ready work
+- **Issue #615** (closed): Duplicate of #608, which tracks the missing ignore rule for Loom’s per-runtime account ranking file.
+
+### 2026-11-20
+
+- **Issue #580** (closed): design/netlist.py: no outer bound on the `klt netlist` subprocess, and a pre-release klt passes the floor
+- **PR #591**: fix: bound klt netlisting and enforce the tagged version floor
+- **Issue #460** (closed): Replace raw xschem call and duplicated post-processing in design/netlist.py with klt netlist
+- **PR #464**: feat: netlist through bounded `klt netlist` instead of a raw xschem call
+
+### 2026-11-18
+
+- **Issue #587** (closed): Collapse the layered status preamble of challenge-4-proposal.md: ~110 lines of patched-in-place 'updated since' prose duplicate ROADMAP, layout/README and the scorecard
+- **PR #588**: docs: collapse challenge-4-proposal status preamble to a summary of the recorded artifacts
+- **Issue #547** (closed): sim/: replay_equal's abs_tol=1e-12 floor leaves sub-picosecond metrics (sigma_1, numerical_floor) effectively ungated — up to 155% relative change reads MATCH
+- **PR #585**: fix(sim): drop the replay comparator's abs_tol floor -- gate every non-zero float at 1e-9 relative (DR-0020)
+
+### 2026-11-17
+
+- **Issue #583** (closed): WORK_PLAN's Ready section omits loom:issue items that also carry loom:curated
+
+- **Issue #525** (closed): Four more reducers still hand-roll the record write tail outside mint_record/_publish_bundle
+- **PR #578**: refactor(sim): mint the four remaining reducers through mint_record
+- **Issue #498** (closed): ro-vth-drift-sensitivity: controls record's aging_sha256 pin invalidated by the #487 digest refactor
+- **PR #517**: fix(sim): make the ro-vth-drift controls-pin refusal discriminate bytes from behaviour
+- **Issue #576** (closed): Make the .meas bound-scan visit guard per-card, not per-request
+- **PR #577**: test: make the .meas bound-scan visit guard per-card, not per-request
+- **Issue #555** (closed): test: make the .meas bound scanner in test_make_requests.py unit-agnostic so a non-ns card cannot be silently skipped
+- **PR #574**: test: fail loud on non-ns .meas bound units in the request bound scan
+- **Issue #573** (closed): test_gate_model: the duplicate-name guard test does not exercise the scalar path it claims to
+- **PR #575**: test: cover the scalar displacement shape the gate-model dedup guard refuses
+- **PR #483**: docs: roadmap as of 2026-11-13
+- **Issue #548** (closed): compare-gate-model: a DUPLICATE measurement name still shrinks the check set past the new count guard
+- **PR #571**: fix: refuse duplicate measurement names the count guard cannot see
+
+### 2026-11-16
+
+- **PR #537**: fix: make the gate-model evidence pipeline fail closed on incomplete or unvalidated input
+- **Issue #496** (closed): Harden the gate-model reduction against silent-input defects (four latent paths from #486)
+- **PR #551**: ci: unfilter the pull_request trigger and add a CI Result aggregate verdict job
+- **Issue #542** (closed): CI: give every PR one always-reporting verdict check, so main can require it (path-filtered ci.yml has none)
+- **PR #569**: docs: reword loadmod.py docstring for its sim/bin home
+- **Issue #567** (closed): sim/bin/loadmod.py docstring still tells callers to put sim/tests on sys.path
+- **PR #565**: refactor(sim): move shared loadmod helper to sim/bin, drop tests-dir path inserts
+- **Issue #549** (closed): Move the shared loadmod helper to sim/bin/: 20 production sim scripts now import from the tests directory
+- **PR #563**: fix: apply read_corner_bundle prefix filter to missing notes too
+- **Issue #560** (closed): read_corner_bundle: prefix= filters chunks but not the missing-notes list, and the docstring does not say so
+- **PR #566**: refactor: write_json reuses dumps() for its JSON spelling
+- **Issue #553** (closed): write_json re-implements _klt_common.dumps's spelling instead of calling it
+- **PR #564**: spec: DR-0019 provenance pins report, not gate, in sensitivity.py --check
+- **Issue #528** (closed): ro-vth-drift: #492's aging.py move broke the superseding record's --check replay (generator-hashes leg, rc=1) — live on main, unwired
+- **PR #511**: refactor: one shared corner-bundle reader beside the bundle writer
+- **Issue #497** (closed): Consolidate the seven hand-rolled corner-bundle readers in six sim studies: the writer half already lives in evidence_record.py
+- **Issue #559** (closed): test_vth_drift.py fails on main: the Nov superseding record's aging_sha256 pin is stale, and CI never runs that test
+- **PR #556**: test: detect hand-rolled record tails via AST path rendering
+- **PR #541**: test: guard .meas AT=/TO= against the request's own .tran stop; ledger the stale startup probes
+- **Issue #531** (closed): The #515 hand-rolled-tail guard's detector is spelling-sensitive: 5 of 8 plausible <rid>.md write spellings slip through
+- **Issue #507** (closed): bug: committed whole-block startup-probe requests carry 9 measurements past their own t_stop and timeouts the generator no longer emits
+- **PR #546**: fix: grade strict spec targets strictly in characterization report (lt/gt)
+- **PR #540**: refactor: consolidate rel/load_json/klt_env/klayout_db/dumps into _klt_common
+- **PR #543**: fix(sim): one shared cross-version replay equality for committed-record checks
+- **PR #534**: ci: wire layout/test_hashing.py into the PR-blocking lint job; refresh the item-10 attestation chain
+- **Issue #538** (closed): characterization_report.compare() has no strict `lt`/`gt`: the Power active check grades a "< 500 uW" target with `le 500`
+- **Issue #535** (closed): Consolidate duplicated rel/load_json/klt_env/_klayout/dumps helpers in layout/bin
+- **Issue #519** (closed): sim/: committed-record replay is not reproducible across CPython versions (ro-vth-drift-sensitivity + xor-combining-alternatives; MATCHES on 3.12, DIFFERS on CI's 3.11)
+- **Issue #552** (closed): CI: revisit concurrency.cancel-in-progress once `CI Result` is a required context
+- **Issue #493** (closed): Wire layout/test_hashing.py into CI: the shared digest helper's only regression guard has never run on a PR
+- **PR #516**: refactor(sim): replace inline importlib loader blocks with shared loadmod helper
+- **PR #510**: refactor: replace _NoExitCodes .parent shim with an exit_lookup parameter on summarize_run
+- **PR #544**: docs: drop the uncheckable decision-record count from README; document oldest-first Status history
+- **Issue #509** (closed): Finish the #412 deferral: ~18 inline importlib loader blocks remain in sim scripts, and the shared loadmod helper still lives under sim/tests/
+- **Issue #501** (closed): Remove _NoExitCodes Path subclass: replace the .parent-lying shim with an exit_lookup parameter on compaction.summarize_run
+- **Issue #532** (closed): Two residual uncheckable facts around the decision-record index: README's record count, and the undocumented oldest-first `## Status` ordering
+
+### 2026-11-15
+
+- **PR #526**: feat(signoff): declare the Power evidence mapping in the characterization report
+- **PR #527**: fix: mint the controls record through mint_record and guard against new hand-rolled tails
+- **PR #520**: refactor(idle-leakage): read request dirs through the shared request_dir walk
+- **PR #503**: refactor(klt): read the klt version and pdk find through one shared contract
+- **PR #499**: fix(spec): check the decision-record index against front matter, not the first history word
+- **PR #492**: refactor: add sha256_text/sha256_bytes to _hashing and drop nine hand-rolled copies
+- **Issue #536** (closed): test_vth_drift: superseding-record replay check fails at HEAD in a stdlib-only run
+- **Issue #530** (closed): test_vth_drift.py fails on main (provenance generator-hash mismatch), and 8 sim/tests are absent from CI
+- **Issue #485** (closed): Declare an evidence mapping for the Power row in the characterization report
+- **Issue #521** (closed): A fifth private klt invoker remains: run-ir.py's klt_power never inspects the response for an `error` object
+- **Issue #518** (closed): Remove five superseded signal routing-increment sets from layout/ro_array_core-placement-poc/: operator decision on the README's retention choice
+- **Issue #515** (closed): sensitivity.py's controls record is still minted outside mint_record/_publish_bundle, with a footerless md
+- **Issue #512** (closed): Finish the #469 consolidation: idle_leakage.py still hand-rolls a sixth request-directory walk
+- **Issue #506** (closed): make-gate-model.py re-introduced hand-rolled sha256_text/sha256_file after #487 consolidated them
+- **Issue #500** (closed): Consolidate the eleven raw `klt` call sites outside `_klt_common`
+- **Issue #487** (closed): Consolidate the nine hand-rolled in-memory sha256 helpers onto _hashing
+- **Issue #484** (closed): Correct stale decision-record status text in README, spec/README and the Chipalooza proposal
+- **PR #513**: refactor(sim): mint the seven hand-rolled record tails through evidence_record
+- **Issue #504** (closed): Finish the #392 deferral: seven reducers hand-roll the record-minting tail because record_footer cannot say Supersedes
+
 ### 2026-11-14
+
+- **PR #508**: fix(whole-block): hold each driven input's PWL value, then switch over 100 ps
+- **Issue #488** (closed): bug: whole-block deck PWL stimulus ramps between cycles instead of holding, so bus inputs never switch cleanly
 
 - **PR #489**: feat: generate the digital half's gate-level ngspice model as a timed-delay XSPICE netlist
 - **Issue #486** (closed): Choose and evidence the ngspice realisation of the gate-level digital half (first slice of #431 step 2)
@@ -364,46 +479,4 @@ Chronological record of recently merged pull requests and closed issues.
 
 - **PR #88**: feat: vendor shared USB protocol RTL and adapt the UTMI wrapper
 - **Issue #87** (closed): Re-run usb_utmi_phy place-and-route and post-layout PVT against the vendored rtl/common sources (post-#84)
-
-### 2026-09-21
-
-- **PR #158**: feat(layout): add T1 item-11 klt erc supply read for sampler_core
-- **PR #157**: feat(signoff): add klt signoff block manifest with CI staleness gate
-- **PR #156**: ci: declare the run-pdk-check label the PDK-gated workflows' PR opt-in documents
-- **Issue #155** (closed): Commit a klt signoff block manifest so this block's T1 state is graded, not hand-read
-- **Issue #154** (closed): T1 item 11 (power delivery, structural): no klt erc supply spec or report in this repo
-- **Issue #153** (closed): run-pdk-check label does not exist, so both PDK-gated workflows' documented PR opt-in is dead
-- **Issue #83** (closed): T1 item 11 (digital): declare well/substrate ties[] in layout/digital/erc-supply-spec.json and re-run klt erc — upstream klayout-tools#2169 fix is already in the pinned klt
-- **Issue #79** (closed): T1 item 11 digital leg: committed LVS report predates power_connectivity - re-run digital LVS on a klt that computes it
-- **Issue #78** (closed): Commit a klt signoff block manifest so this block's T1 state is graded, not hand-read
-- **Issue #77** (closed): T1 item 11 (power delivery, structural): no klt erc supply spec or report in this repo
-
-### 2026-09-18
-
-- **PR #38**: ci(layout): add compose-cell.py --check regression guard to pdk-nightly
-- **PR #152**: ci: pin xschem to a 3.4.7 floor and surface a red pdk-nightly (#151)
-- **Issue #36** (closed): layout: compose-cell.py --check has no automated regression guard (nothing runs it)
-- **Issue #151** (closed): pdk-nightly netlist-check has been red since 2026-09-15: xschem version drift emits expr() templates where committed netlists have evaluated values (4 cells STALE)
-
-### 2026-09-16
-
-- **PR #150**: refactor: remove dead constants in sampler_core data-path-scan
-- **Issue #149** (closed): Remove dead constants in layout/sampler_core/data-path-scan.py
-
-### 2026-09-15
-
-- **PR #148**: docs: fix stale not-yet-composed claims in sampler_tg README
-- **PR #146**: fix: eliminate pipefail+set-e crash in merge-pr.sh champion:hold-state check
-- **PR #144**: fix: eliminate pipefail+SIGPIPE race in verify-proposal-refs.sh full_tree check
-- **PR #143**: refactor: extract carrying() scan-script helper into _geom_common.py
-- **PR #140**: fix: update stale sim/-is-empty comments in design/pdk.json and netlist.py
-- **PR #139**: docs: add PDR-0001 recommending fix for broken generate-agents-md.sh path
-- **Issue #75** (closed): Fix or remove broken generate-agents-md.sh (installed Loom surface, unused + broken path)
-- **Issue #56** (closed): Champion merged PR #54 after its own verdict had just been invalidated by a stale-verdict reconciliation
-- **Issue #34** (closed): Fix stale sim/-is-empty comments in design/pdk.json and design/netlist.py
-- **Issue #22** (closed): sky130-trng layout + DRC/LVS-clean GDS, and post-layout PVT simulation
-- **Issue #147** (closed): Fix stale "not yet composed"/"remains open" claims in layout/sampler_tg/README.md
-- **Issue #145** (closed): merge-pr.sh: _check_champion_hold_state_staleness crashes via pipefail+grep -o SIGPIPE-class bug on ordinary PRs
-- **Issue #142** (closed): verify-proposal-refs.sh: false MISSING FILE due to pipefail + grep -q SIGPIPE race
-- **Issue #141** (closed): Remove duplicated carrying() helper: sampler_core scan scripts
 

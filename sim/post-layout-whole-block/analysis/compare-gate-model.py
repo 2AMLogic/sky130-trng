@@ -36,6 +36,7 @@ import argparse
 import json
 import re
 import sys
+from collections import Counter
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -91,6 +92,34 @@ def compare(report: dict, plan: dict) -> dict:
     t_stop_ns = float(plan["program"]["t_stop_ns"])
     measured = {m["name"]: m["value"] for m in corner["measurements"]}
 
+    # completeness is loud, by count: the plan states how many measurements
+    # the deck was GENERATED with, so the report must carry every one. A
+    # dropped entry would otherwise never be noticed below -- an absent name
+    # simply matches no check -- and the run would pass with fewer checked
+    # rows than the run was measured for.
+    n_meas = len(corner["measurements"])
+    if n_meas != int(plan["measurement_count"]):
+        raise SystemExit(
+            f"report carries {n_meas} measurements, plan.json declares "
+            f"{int(plan['measurement_count'])}: a measurement the deck did "
+            f"not produce must refuse the comparison, not shrink it")
+
+    # completeness is loud, by name too: the checks below all read the
+    # deduplicated dict, so a repeated name displaces the entry it
+    # duplicates -- the count guard above (taken from the list length)
+    # cannot see that, and the displaced measurement's check is silently
+    # dropped while the verdict stays pass.
+    if len(measured) != int(plan["measurement_count"]):
+        duplicates = sorted(name for name, n in
+                            Counter(m["name"] for m in corner["measurements"]).items()
+                            if n > 1)
+        raise SystemExit(
+            f"report carries {len(measured)} distinct measurement names in "
+            f"{n_meas} entries, plan.json declares "
+            f"{int(plan['measurement_count'])}: duplicate measurement "
+            f"name(s) {duplicates} displace the entries they repeat, "
+            f"refusing")
+
     # the oracle: the FULL program replayed through the normative model. The
     # truncated program is a strict prefix of it (program.build_program(limit=k)
     # slices the same cycle list) and the model is causal, so rows 0..n-1 are
@@ -110,6 +139,16 @@ def compare(report: dict, plan: dict) -> dict:
         if m:
             rdata_bits.setdefault(int(m.group(1)), {})[int(m.group(2))] = value
     def decode_word(prefix: str, k: int, samples: dict[int, float]):
+        # completeness is loud, by bit set: all 32 bits of a word are
+        # generated as one .meas set with a single timestamp, so a word
+        # legitimately clipped by the t_stop guard is absent as a WHOLE --
+        # a partial word in the report is a dropped result, and an absent
+        # bit would silently decode as 0 below.
+        missing = sorted(set(range(32)) - set(samples))
+        if missing:
+            raise SystemExit(
+                f"{prefix}_k{k}: bit measurements absent for {missing} -- "
+                f"an absent .meas result would decode as 0, refusing")
         word = 0
         bad = False
         for bit, value in samples.items():

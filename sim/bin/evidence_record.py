@@ -142,6 +142,7 @@ def write_corner_bundle(
     Writes ``<name>.klt-sim.json.gz`` (indent=1), ``<name>.plan.json``,
     ``<name>.request.json`` and ``<name>.netlist.cir`` (copied from ``reqdir/<name>/``).
     Returns the remote job ids (or "local (single-unit reference run)").
+    Read back with :func:`read_corner_bundle`.
     """
     cdir, reqdir, records_dir = Path(cdir), Path(reqdir), Path(records_dir)
     for name, _plan, _resp in chunks:
@@ -163,6 +164,44 @@ def write_corner_bundle(
         shutil.rmtree(cdir, ignore_errors=True)
         raise
     return jobs
+
+
+def read_corner_bundle(
+    cdir: Path, *, prefix: str | None = None, with_missing: bool = False,
+) -> list[tuple[str, dict, dict]] | tuple[list, list]:
+    """Read back a ``corners/<rid>/`` bundle written by :func:`write_corner_bundle`.
+
+    The documented inverse of :func:`write_corner_bundle`, whose docstring is
+    the on-disk layout this walks. Returns ``[(name, plan, response)]`` in
+    sorted-name order, one entry per ``<name>.klt-sim.json.gz``; `plan` comes
+    from the sibling ``<name>.plan.json`` and is loaded strictly -- these feed
+    replay gates that must fail loudly on a malformed plan. ``prefix=`` keeps
+    only names starting with it, applied to both the chunk names and the
+    missing-note names. With ``with_missing=True`` returns
+    ``(chunks, missing)`` instead, where `missing` is ``[(name, plan, reason)]``
+    for the ``<name>.missing.json`` refused/timed-out-attempt notes recorded
+    beside the bundle by a campaign runner (this module never writes those).
+    """
+    cdir = Path(cdir)
+    chunks: list[tuple[str, dict, dict]] = []
+    for f in sorted(cdir.glob("*.klt-sim.json.gz")):
+        nm = f.name[: -len(".klt-sim.json.gz")]
+        if prefix and not nm.startswith(prefix):
+            continue
+        with open(cdir / f"{nm}.plan.json") as pfh, gzip.open(f, "rt") as fh:
+            chunks.append((nm, json.load(pfh), json.load(fh)))
+    if not with_missing:
+        return chunks
+    missing: list[tuple[str, dict, str]] = []
+    for f in sorted(cdir.glob("*.missing.json")):
+        nm = f.name[: -len(".missing.json")]
+        if prefix and not nm.startswith(prefix):
+            continue
+        with open(f) as fh:
+            reason = json.load(fh)["reason"]
+        with open(cdir / f"{nm}.plan.json") as pfh:
+            missing.append((nm, json.load(pfh), reason))
+    return chunks, missing
 
 
 def _check_artifacts(artifacts: list[Path]) -> None:

@@ -27,7 +27,7 @@ from model.health import HealthMonitor  # noqa: E402
 
 _PATH = (REPO_ROOT / "sim" / "digital-health-test-parameters" / "analysis"
          / "health-test-replay.py")
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(REPO_ROOT, "sim", "bin"))
 from loadmod import load_module  # noqa: E402
 R = load_module("health_test_replay", _PATH, register=True)
 

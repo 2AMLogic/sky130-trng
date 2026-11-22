@@ -46,7 +46,6 @@ Usage::
 from __future__ import annotations
 
 import argparse
-import importlib.util
 import math
 import random
 import sys
@@ -58,15 +57,14 @@ sys.path.insert(0, str(REPO_ROOT / "digital"))
 sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
 
 from evidence_record import mint_behavioral_record  # noqa: E402
+from loadmod import load_module  # noqa: E402
 from model import lagcount  # noqa: E402
 from model.health import HealthMonitor  # noqa: E402
 from model.params import C_APT, C_RCT, H_DESIGN, STARTUP_SAMPLES, W_APT  # noqa: E402
 
 _BATTERY = REPO_ROOT / "sim" / "raw-bit-min-entropy" / "analysis" / "raw-bit-battery.py"
 sys.path.insert(0, str(_BATTERY.parent))
-_spec = importlib.util.spec_from_file_location("raw_bit_battery", _BATTERY)
-battery = importlib.util.module_from_spec(_spec)
-_spec.loader.exec_module(battery)
+battery = load_module("raw_bit_battery", _BATTERY)
 
 DEFAULT_SEED = 20261011
 DEFAULT_N = 65536
@@ -382,10 +380,8 @@ def false_alarm_run(seed, lags, window, c_override=None, bias_p1=None, n=FA_SAMP
 
 def corner_replay():
     """Lag monitor over the 18 Ts = 20 us sky130 behavioural corner streams (hash-verified loader of the replay analysis)."""
-    spec = importlib.util.spec_from_file_location("health_test_replay", _REPLAY)
-    mod = importlib.util.module_from_spec(spec)
     sys.path.insert(0, str(_REPLAY.parent))
-    spec.loader.exec_module(mod)
+    mod = load_module("health_test_replay", _REPLAY)
     out = []
     for st in mod.load_streams():
         bits = st["bits"]

@@ -52,7 +52,6 @@ from __future__ import annotations
 
 import argparse
 import gzip
-import importlib.util
 import json
 import os
 import re
@@ -72,13 +71,12 @@ import gate_cosim  # noqa: E402
 from _klt_common import BuildError, run_klt, write_json  # noqa: E402
 from evidence_paths import sanitize_paths  # noqa: E402
 from evidence_record import mint_behavioral_record  # noqa: E402
+from loadmod import load_module  # noqa: E402
 
-_ea = importlib.util.spec_from_file_location(
+final_route_audit = load_module(
     "final_route_audit",
-    REPO_ROOT / "sim" / "digital-electrical-repair" / "analysis" / "final_route_audit.py")
-final_route_audit = importlib.util.module_from_spec(_ea)
-sys.modules["final_route_audit"] = final_route_audit
-_ea.loader.exec_module(final_route_audit)
+    REPO_ROOT / "sim" / "digital-electrical-repair" / "analysis" / "final_route_audit.py",
+    register=True)
 electrical = final_route_audit.E
 
 FLOW_DIR = REPO_ROOT / "digital" / "flow" / "place-and-route"
