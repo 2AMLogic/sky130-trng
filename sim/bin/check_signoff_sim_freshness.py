@@ -36,7 +36,7 @@ regenerate signoff/t1-report.json.
 schematic, harness, body template, alias map) must be present, and all non-"_"
 pins (including run-local netlists) are re-hashed through the same categories;
 "_"-prefixed keys are run metadata, not pins; PEX_PIN_EXEMPTIONS narrowly
-exempts the reviewed historical (run id, harness pin, recorded digest) entry
+exempts the reviewed historical (report path, harness pin, recorded digest) entry
 whose freshness is gated by its replay test instead.
 """
 import argparse
@@ -60,7 +60,7 @@ PEX_REQUIRED_FILES = [
     "sim/pex-sampler-core/net-aliases.json",
 ]
 DIGEST = re.compile(r"^sha256:[0-9a-f]{64}$")
-# The one 7.analog pin exempt from re-hashing, qualified by (record_id, pin,
+# The one 7.analog pin exempt from re-hashing, qualified by (report path, pin,
 # recorded_digest): the PEX measurement harness moved on after run
 # 20261121-001303-7330672 was recorded (6ffbf4be made the recorded sums
 # reproducible on Python 3.11/3.12) and the run dir is append-only, so the pin
@@ -70,7 +70,7 @@ DIGEST = re.compile(r"^sha256:[0-9a-f]{64}$")
 # map is an explicit, reviewed edit.
 PEX_PIN_EXEMPTIONS = {
     (
-        "20261121-001303-7330672",
+        "sim/pex-sampler-core/runs/20261121-001303-7330672/pex-report.json",
         "sim/pex-sampler-core/harness/pex-measure.py",
         "sha256:ee46948b819ac1a7e50395d02bdf4523677dd5ae4c150fd11d0ac33748e119ca",
     ): "sim/tests/test_pex_sampler_core.py::test_recorded_legs_match_every_delta",
@@ -196,10 +196,11 @@ def check(root, manifest_path, item=DEFAULT_ITEM):
         for key in PEX_REQUIRED_FILES:
             if key not in pins:
                 problems.append(f"{tag}: mandatory pin missing: {key}")
+        report_path = report.relative_to(root).as_posix()
         exemptions = {
             (pin, expected): reason
-            for (ex_rid, pin, expected), reason in PEX_PIN_EXEMPTIONS.items()
-            if ex_rid == rid
+            for (exempt_report, pin, expected), reason in PEX_PIN_EXEMPTIONS.items()
+            if exempt_report == report_path
         }
         _check_pins(problems, notes, tag, pins, root, run_dir, exemptions)
         return problems, notes
