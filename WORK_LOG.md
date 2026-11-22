@@ -8,6 +8,10 @@ Chronological record of recently merged pull requests and closed issues.
 
 ### 2026-11-22
 
+- **PR #639**: fix: substitute {{INSTALL_DATE}} in generate-agents-md.sh for flattened installs
+- **Issue #533** (closed): generate-agents-md.sh: no-arg run in a flattened install regresses {{INSTALL_DATE}} into the already-substituted .loom/AGENTS.md
+- **PR #634**: docs: name klayout-tools 0.8.0 pin in attest.py docstring
+- **Issue #631** (closed): signoff/attest.py:7 still names the 0.7.0 grader present-tense; CI has graded on 0.8.0 since issue #363
 - **PR #529**: fix: generate-agents-md.sh doubled .loom/ path; accept PDR-0001's deferred follow-up
 - **Issue #523** (closed): Finish PDR-0001's deferred follow-up: generate-agents-md.sh still fails with a doubled .loom/ path
 - **PR #625**: test: guard the shared GDS geometry helpers against forks and compose-whole loaders
