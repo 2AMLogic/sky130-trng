@@ -447,6 +447,42 @@ python3 signoff/attest.py --write      # inventories, envelopes, manifest pins
 python3 signoff/attest.py --check      # what CI runs; read-only
 ```
 
+**Resolving an item-9 merge conflict** (issue #672): item 9's
+`content_hash` is a digest of the *whole* `attest/9.inventory.json`, so it
+moves whenever any inventoried file moves. Two PRs that each touch an
+inventoried `sim/` file therefore write different values into the same six
+lines — `attest/9.json`'s `provenance.input.content_hash`,
+`block-manifest.json`'s `evidence["9"].content_hash`, and the item-9 rows'
+`citation`/`artifact_binding` hashes in `t1-report.json` — and git cannot
+auto-merge them. Nothing semantic is contested, and the hash is
+intentionally committed: the `signoff-check` job re-derives it from the
+PR's own tree on both of its gates — `signoff/attest.py --check` fails on
+a stale or missing envelope/manifest pin, and the "Re-render the committed
+tier report and byte-diff" step fails unless the committed
+`t1-report.json` matches a fresh render — so the cure is regeneration,
+never removal or hand-editing.
+
+When exactly those three files conflict and `attest/9.inventory.json`
+itself merged cleanly (its per-member sha256 lines conflict only when the
+*same* member changed on both sides), do not resolve by hand. Take either
+side of the three files — their content is about to be regenerated —
+then, from the repo root:
+
+```bash
+python3 signoff/attest.py --write 9    # re-mint the envelope + manifest pin
+uvx --from "klayout-tools==0.8.0" klt signoff \
+  --manifest signoff/block-manifest.json \
+  --tiers-doc signoff/design-evidence-tiers.md --format json \
+  > signoff/t1-report.json             # exit 3 expected: tier null, gaps open
+python3 signoff/attest.py --check      # rc 0 — what CI runs
+```
+
+`git add` the regenerated files and commit the merge. The render must use
+the pinned 0.8.0 build — the same pin the `signoff-check` job installs —
+because a different `klt` build stamps a different build/ruleset id into
+the report and the byte-diff gate goes red on an otherwise-correct
+resolution.
+
 Once a klayout-tools release carries `klt signoff --attest`/`--inventory`
 (present in the `0.7.1.dev` development build, absent from 0.7.0 as of
 2026-10-17), switch these rows to it and drop `attest.py`; the CI pin stays at
