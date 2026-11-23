@@ -72,7 +72,7 @@ TEMPLATE_PATH = Path(__file__).resolve().parents[1] / "testbench" / "tb_sampler_
 # unitless-geometry device-card check can never drift between the library
 # builder and this measurement leg again.
 sys.path.insert(0, str(REPO_ROOT / "layout" / "bin"))
-from _klt_common import BuildError  # noqa: E402
+from _klt_common import BuildError, klt_version  # noqa: E402
 from _pex_rewrite import join_continuations, rewrite_standalone  # noqa: E402
 
 # design/sampler_core.spice's own .subckt sampler_core pin declaration -- the
@@ -133,6 +133,25 @@ class HarnessError(Exception):
 
 def log(msg: str) -> None:
     print(f"pex-measure: {msg}", file=sys.stderr)
+
+
+def read_klt_version(klt: str) -> str:
+    """The klt version this run's manifest records, BARE (``"0.8.0"``).
+
+    The shared reader (``_klt_common.klt_version``, issue #500) asks
+    ``klt version --format json`` and fails closed; the ``klt --version``
+    banner spelling #597 regrew here recorded ``"klt 0.9.3..."`` into
+    harness-manifest.json and, worse, failed OPEN -- a klt that exited
+    non-zero left ``""`` in the manifest rather than aborting the run.
+    ``BuildError`` is translated to :class:`HarnessError` at this
+    harness's boundary, the same translation every other shared-module
+    failure here gets, so klt pex still sees its one documented failure
+    mode (exit 1, one diagnostic on stderr).
+    """
+    try:
+        return klt_version(klt=klt)
+    except BuildError as exc:
+        raise HarnessError(str(exc)) from exc
 
 
 # ---------------------------------------------------------------------------
@@ -468,8 +487,8 @@ def main(argv: list[str]) -> int:
     LEG_PIN_ORDER[side] = check_dut_interface(dut.read_text(), str(source), expected)
     log(f"{side} DUT pin order: {LEG_PIN_ORDER[side]}")
 
-    klt_version = subprocess.run([klt, "--version"], capture_output=True, text=True).stdout.strip()
-    log(f"side={side} backend={backend} klt={klt} [{klt_version}] "
+    version = read_klt_version(klt)
+    log(f"side={side} backend={backend} klt={klt} [{version}] "
         f"points={points} processes={processes}")
 
     requests = [build_request(p, processes, backend, side, timeout_s, artifacts)
@@ -487,7 +506,7 @@ def main(argv: list[str]) -> int:
     manifest = {
         "side": side,
         "backend": backend,
-        "klt": klt_version,
+        "klt": version,
         "dut": str(source),
         "points": list(points),
         "processes": processes,
