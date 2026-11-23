@@ -21,6 +21,7 @@ TB = "sim/ro-array-core-combining/testbench/tb_ro_array_core.spice"
 sys.path.insert(0, os.path.join(REPO, "sim", "bin"))
 from evidence_record import mint_record, new_record_id, reserve_corner_dir  # noqa: E402
 from loadmod import load_module  # noqa: E402
+from measurement_names import measurements_by_name  # noqa: E402  (#670: this deck's names are lifted from a template)
 
 mr = load_module("make_requests", os.path.join(os.path.dirname(__file__), "make-requests.py"))
 
@@ -56,7 +57,7 @@ def main(reqdir, points):
         corners = []
         for c in resp["corners"]:
             ok = c["status"] == "pass"
-            raw = {x["name"]: x["value"] for x in c["measurements"] if x.get("value") is not None}
+            raw = measurements_by_name(c)
             try:
                 meas = derive(raw, v)
             except (KeyError, ZeroDivisionError) as e:
