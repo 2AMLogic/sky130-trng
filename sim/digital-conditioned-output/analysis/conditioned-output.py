@@ -38,7 +38,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import math
 import sys
 from pathlib import Path
 
@@ -49,6 +48,7 @@ from digital.model.conditioner import Crc32Conditioner  # noqa: E402
 from digital.model.params import COND_BLOCK_BITS, H_DESIGN  # noqa: E402
 from evidence_record import mint_record, new_record_id  # noqa: E402
 from loadmod import load_module  # noqa: E402
+from replay_equal import replay_diff as _replay_diff  # noqa: E402  (issue #659: one shared replay comparator)
 
 B = load_module(
     "raw_bit_battery",
@@ -301,45 +301,15 @@ def header(rid: str, payload: dict, source_json: Path) -> list[str]:
     ]
 
 
-REPLAY_REL_TOL = 1e-9  # float noise across Python/libm versions is ~1e-15
-
-
 def replay_diff(want, got, path: str = "$") -> list[str]:
-    """Recursive replay comparison of a committed vs a recomputed payload.
-
-    Exact equality for everything that is not a float (ints, strings,
-    verdicts, statuses, word/ones counts, None, bools, keys, list lengths);
-    floats compare with math.isclose(rel_tol=REPLAY_REL_TOL), since trailing
-    digits differ across Python/libm versions. Returns mismatch paths
-    (empty list == reproduces).
-    """
-    if isinstance(want, float) or isinstance(got, float):
-        if (type(want) is float and type(got) is float
-                and math.isclose(want, got, rel_tol=REPLAY_REL_TOL,
-                                 abs_tol=0.0)):
-            return []
-        if (type(want) is float and type(got) is float
-                and math.isnan(want) and math.isnan(got)):
-            return []
-        return [f"{path}: {want!r} != {got!r}"]
-    if type(want) is not type(got):
-        return [f"{path}: type {type(want).__name__} != {type(got).__name__}"]
-    if isinstance(want, dict):
-        if want.keys() != got.keys():
-            return [f"{path}: keys differ "
-                    f"{sorted(set(want) ^ set(got))}"]
-        out: list[str] = []
-        for k in want:
-            out += replay_diff(want[k], got[k], f"{path}.{k}")
-        return out
-    if isinstance(want, list):
-        if len(want) != len(got):
-            return [f"{path}: length {len(want)} != {len(got)}"]
-        out = []
-        for i, (w, g) in enumerate(zip(want, got)):
-            out += replay_diff(w, g, f"{path}[{i}]")
-        return out
-    return [] if want == got else [f"{path}: {want!r} != {got!r}"]
+    """Replay comparison of a committed vs a recomputed payload, delegated to
+    the shared comparator (sim/bin/replay_equal.py, DR-0020 / issue #519).
+    This reducer's two intentional options -- rejecting int/float cross-type
+    pairs (`1` vs `1.0`, pinned by sim/tests/test_conditioned_output.py) and
+    accepting a (NaN, NaN) pair -- are passed through here; everything else,
+    including the relative-only float gate, is the one shared rule. Returns
+    mismatch paths (empty list == reproduces)."""
+    return _replay_diff(want, got, path, strict_types=True, nan_equal=True)
 
 
 def check(record_json: Path) -> int:
