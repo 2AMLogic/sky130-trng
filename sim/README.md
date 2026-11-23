@@ -243,6 +243,14 @@ Two rules from the root `CLAUDE.md` govern everything under this directory:
   deleted after it is written; a correction mints a new record and names the
   one it supersedes via its `Supersedes` field.
 
+  Working-tree disclosure (issues #666, #676): every record writer in
+  `sim/bin/evidence_record.py` -- `mint_behavioral_record()` and `mint_record()`
+  -- records whether the tree differed from the cited `Repo commit` (a
+  `- Working tree:` footer line plus `repo_dirty` / `repo_dirty_paths` JSON
+  keys; `null` / "unknown" when git status fails, never "clean"). A record's own
+  outputs under its `records/` and `runs/` directories are not counted.
+  Records minted before this change carry no such disclosure.
+
   This rule is enforced in CI (issue #232): the `sim-records-append-only`
   job runs `sim/bin/check_records_append_only.py` on every PR and fails if any
   existing `sim/*/records/*` file is modified, deleted or renamed (added
