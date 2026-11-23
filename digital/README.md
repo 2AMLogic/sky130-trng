@@ -55,7 +55,7 @@ Word-addressed; software byte offset is `4 × word`.
 | Word | Byte | Name | Access | Contents |
 |---|---|---|---|---|
 | 0x0 | 0x00 | `CTRL` | RW | `[0]` EN, `[1]` OUT_MODE (0 = raw, 1 = conditioned), `[2]` SOFT_RST (self-clearing) |
-| 0x1 | 0x04 | `STATUS` | RO | `[0]` STARTUP_DONE, `[1]` GATED, `[2]` RAW_TAP_VALID, `[3]` RAW_FIFO_VALID, `[4]` COND_FIFO_VALID, `[5]` ALARM, `[11:8]` raw FIFO level, `[15:12]` conditioned FIFO level, `[16]` RAW_OVF, `[17]` COND_OVF |
+| 0x1 | 0x04 | `STATUS` | RO | `[0]` STARTUP_DONE, `[1]` GATED, `[2]` RAW_TAP_VALID, `[3]` RAW_FIFO_VALID, `[4]` COND_FIFO_VALID, `[5]` ALARM, `[11:8]` raw FIFO level (0..2), `[15:12]` conditioned FIFO level (0..2), `[16]` RAW_OVF, `[17]` COND_OVF |
 | 0x2 | 0x08 | `RAW_DATA` | RO, pops | 32 raw bits, LSB-first. **Never gated** |
 | 0x3 | 0x0C | `DATA` | RO, pops | one conditioned word; reads 0 and does not pop while gated |
 | 0x4 | 0x10 | `ALARM` | RW1C | `[0]` RCT, `[1]` APT, `[2]` STARTUP |
@@ -83,7 +83,7 @@ document.
 | `C_APT` | 824 | formula evaluation at `H` = 0.5 — **provisional** |
 | start-up test | 1024 samples (20.48 ms at 50 kHz) | SP 800-90B §4.3 |
 | conditioner | CRC-32 LFSR, `K` = 8 (256 raw bits → one 32-bit word) | non-vetted; no full-entropy claim |
-| FIFO depth | 4 words per path | area/latency trade, DR-0004 §4.4 |
+| FIFO depth | 2 words per path | operator selection (#610), DR-0004 §4.4; raw fills in 1.28 ms, conditioned in 10.24 ms at 50 kbit/s |
 
 **Every entropy-dependent number here is provisional and
 simulation-derived.** Nothing in this directory has been measured on

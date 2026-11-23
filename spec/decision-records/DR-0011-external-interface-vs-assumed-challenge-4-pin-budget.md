@@ -117,7 +117,7 @@ and `out_data` are fully populated 32-bit words (`HT_*` cutoffs, `ID`,
 
 Derived arithmetic from numbers already in the repository (DR-0003/DR-0004:
 50 kHz sample clock, raw word every 32 samples, conditioned word every 256 raw
-bits, FIFO depth 4); these are sample-count derivations, not simulation
+bits; FIFO depth was 4 when this record was written and is 2 per DR-0004 §4.4 as of #701 -- the rate arithmetic below does not depend on depth); these are sample-count derivations, not simulation
 results.
 
 - Raw word period = 32 clk = 0.64 ms. Conditioned word period = 256 clk =
