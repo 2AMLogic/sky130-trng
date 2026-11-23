@@ -24,9 +24,11 @@ top-level .meas results, see sim/post-layout-ro-ring5-assembled-181/).
 
 Derivation mirrors sim/post-layout-ro-ring5-assembled-181/make-requests.py.
 """
-import argparse, hashlib, json, os, re
+import argparse, json, os, re, sys
 
 REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+sys.path.insert(0, os.path.join(REPO, "layout", "bin"))
+from _hashing import sha256_file, sha256_text  # noqa: E402
 TB = os.path.join(REPO, "sim/raw-bit-min-entropy/testbench/tb_raw_bit_stream.spice")
 SAMPLER = os.path.join(REPO, "design/sampler_core.spice")
 TEMP, VDD, TMAX, NA = 27.0, 1.8, "40p", "2.0e-3"
@@ -105,11 +107,11 @@ def main_pvt(a):
             manifest = {
                 "schema": "raw-bit-pvt-request/1", "key": key, "temp_c": temp, "vdd_v": vdd,
                 "seed": seed, "ts_ns": TS_NS, "nbits": NBITS, "processes": ["tt", "ss", "ff"],
-                "netlist_sha256": hashlib.sha256(open(os.path.join(d, "netlist.cir"), "rb").read()).hexdigest(),
-                "request_sha256": hashlib.sha256(rtext.encode()).hexdigest(),
+                "netlist_sha256": sha256_file(os.path.join(d, "netlist.cir")),
+                "request_sha256": sha256_text(rtext),
                 "testbench": os.path.relpath(TB, REPO),
-                "testbench_sha256": hashlib.sha256(open(TB, "rb").read()).hexdigest(),
-                "sampler_sha256": hashlib.sha256(open(SAMPLER, "rb").read()).hexdigest(),
+                "testbench_sha256": sha256_file(TB),
+                "sampler_sha256": sha256_file(SAMPLER),
             }
             json.dump(manifest, open(os.path.join(d, "manifest.json"), "w"), indent=2, sort_keys=True)
             print(d, f"T={temp:g} Vdd={vdd:g} seed={seed}", len(meas), "measurements")
