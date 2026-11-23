@@ -164,7 +164,8 @@ def sanitize(name: str) -> str:
 def check_device_card(line: str, expected_models: list[str]) -> str:
     """Verify one extracted device card against this repo's contract.
 
-    Returns the card unchanged. Raises :class:`BuildError` if it is not an
+    Returns the card unchanged. Raises :class:`BuildError` if the card has
+    fewer tokens than ``<name> <4 nodes> <model>`` needs, if it is not an
     ``X`` (subcircuit-call) card, if its model is not one the caller
     declares, or if any geometry value carries a unit suffix.
 
@@ -174,8 +175,22 @@ def check_device_card(line: str, expected_models: list[str]) -> str:
     would fail to bind at all (loud), but a wrong model name binds to the
     wrong device and a stray ``U`` suffix mis-scales the device by 1e-6
     under ``.option scale=1u``, and both of those simulate cleanly.
+
+    A card with fewer than the six tokens of ``<name> <4 nodes> <model>``
+    is also rejected (issue #647): such a card -- a hand-edited or
+    truncated netlist, a future extractor writing fewer nodes -- would
+    otherwise raise ``IndexError`` here instead of ``BuildError``, escaping
+    the ``except BuildError`` translation every consumer wraps this in.
     """
     tokens = line.split()
+    if len(tokens) < 6:
+        name = tokens[0] if tokens else repr(line)
+        raise BuildError(
+            f"device card {name} has {len(tokens)} tokens -- an X card is "
+            "<name> <node> <node> <node> <node> <model> [<param=value>...]; "
+            f"pass --pdk to klt extract so it writes the PDK's own device "
+            f"subcircuits (line: {line})"
+        )
     name, model = tokens[0], tokens[5]
     if not name.upper().startswith("X"):
         raise BuildError(

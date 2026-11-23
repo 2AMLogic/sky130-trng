@@ -41,7 +41,7 @@ sys.path.insert(0, str(REPO_ROOT / "layout" / "bin"))
 sys.path.insert(0, str(REPO_ROOT / "digital"))
 
 import liberty_leakage as ll  # noqa: E402
-from _klt_common import run_klt  # noqa: E402
+from _klt_common import BuildError, libs_ref_of, pdk_find, run_klt  # noqa: E402
 from evidence_record import mint_behavioral_record  # noqa: E402
 from model import lagcount  # noqa: E402
 
@@ -78,8 +78,8 @@ def main(argv=None) -> int:
               "so nothing is minted", file=sys.stderr)
         return 2
     env = {**os.environ, "PDK": args.pdk}
-    pdk_info = run_klt(["pdk", "find", "--pdk", args.pdk], env=env, klt=args.klt)
-    libs_ref = Path(pdk_info["assets"]["libs_ref"])
+    pdk_info = pdk_find(args.pdk, env=env, klt=args.klt)
+    libs_ref = libs_ref_of(pdk_info)
 
     work = Path(tempfile.mkdtemp(prefix="lagcount-synth-"))
     src = PROTO.read_text()
@@ -165,4 +165,12 @@ def main(argv=None) -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    # The same `BuildError` -> "error: ..." on stderr, exit 1 spelling
+    # synthesize-and-verify.py uses, so a klt failure (no JSON response,
+    # an `error` object, a flagged PDK install's missing field) stays a
+    # one-line diagnostic rather than a traceback.
+    try:
+        raise SystemExit(main())
+    except BuildError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        raise SystemExit(1)

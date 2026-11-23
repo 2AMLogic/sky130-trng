@@ -56,7 +56,7 @@ sys.path.insert(0, str(REPO_ROOT / "layout" / "bin"))
 
 import gate_cosim  # noqa: E402
 import liberty_leakage as ll  # noqa: E402
-from _klt_common import BuildError, run_klt  # noqa: E402
+from _klt_common import BuildError, libs_ref_of, pdk_find, run_klt  # noqa: E402
 from evidence_paths import sanitize_paths  # noqa: E402
 from evidence_record import mint_behavioral_record  # noqa: E402
 
@@ -145,9 +145,8 @@ def main(argv: list[str] | None = None) -> int:
     # than rebuilt per call.
     env = {**os.environ, "PDK": args.pdk}
 
-    pdk_info = run_klt(["pdk", "find", "--pdk", args.pdk],
-                       env=env, klt=args.klt)
-    libs_ref = Path(pdk_info["assets"]["libs_ref"])
+    pdk_info = pdk_find(args.pdk, env=env, klt=args.klt)
+    libs_ref = libs_ref_of(pdk_info)
 
     tmp = Path(tempfile.mkdtemp(prefix="digital-synthesis-"))
     workdir = args.keep or tmp
