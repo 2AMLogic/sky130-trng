@@ -6,9 +6,30 @@ Chronological record of recently merged pull requests and closed issues.
 
 - [2026-09](work_log/WORK_LOG_2026-09.md)
 
+### 2026-11-23
+
+- **PR #656**: refactor: route idle_leakage bundles via write_corner_bundle
+- **PR #657**: refactor: route sim/ harness klt reads through _klt_common shared readers
+- **PR #626**: fix(sim): re-hash 7.analog PEX run pins via the shared freshness loop
+- **PR #652**: fix: raise BuildError, not IndexError, on a short device card in check_device_card
+- **PR #629**: fix: score open() **kwargs splats as unestablishable write modes
+- **PR #649**: fix(sim): drop the unscoreable last-cycle rdata word from whole-block requests
+- **PR #645**: refactor: share one extracted-netlist renamer between pex-netlist and pex-measure
+- **Issue #655** (closed): Consolidate the last hand-rolled corner-bundle writer in idle_leakage.py onto evidence_record.write_corner_bundle
+- **Issue #653** (closed): Consolidate remaining non-FV sim harness klt/path forks onto _klt_common
+- **Issue #647** (closed): check_device_card: a short device card raises IndexError, not BuildError, breaking pex-measure's single documented failure mode
+- **Issue #646** (closed): make-requests.py emits 32 rdata_k74_b* measurements the shared oracle cannot compare
+- **Issue #638** (closed): Consolidate duplicated extracted-netlist renamer between pex-measure.py and pex-netlist.py
+- **Issue #624** (closed): Record-tail guard treats open(path, **kwargs) as read-only, not as an unestablishable mode
+- **Issue #619** (closed): Extend the 7.analog PEX freshness check to the report's remaining pinned repository inputs
+
 ### 2026-11-22
 
-- Note: removed 48 WORK_LOG records (42 here, 6 in the 2026-09 archive) that the 2026-10-18 Guide document-maintenance backfill (`e8b0dd38`) copied from `2AMLogic/gf180-usb2-phy`'s merged history. Each cited a number that also exists in this repo but resolved to unrelated work (wrong kind and title); the genuine records for those numbers are retained. Audit evidence and rationale: #633.
+- Note: removed 48 WORK_LOG records (42 here, 6 in the 2026-09 archive) that the 2026-10-18 Guide document-maintenance backfill (`e8b0dd38`) copied from `2AMLogic/gf180-usb2-phy`'s merged history. Each cited a number that also exists in this repo but resolved to unrelated work (wrong kind and title); the genuine records for the other 46 numbers are retained. The exceptions, #111 and #159, are PRs that closed without merging, and the log covers merged PRs and closed issues only, so they have no record of their own. Audit evidence and rationale: #633.
+- **PR #643**: fix: preserve target mode when generate-agents-md.sh regenerates AGENTS.md
+- **PR #635**: docs(work-log): remove 48 records backfilled from gf180-usb2-phy
+- **Issue #640** (closed): generate-agents-md.sh's mktemp+mv render path tightens .loom/AGENTS.md from 644 to 600 on every regeneration
+- **Issue #633** (closed): WORK_LOG.md carries three records from another repository's history (#149, #88, #87: USB UTMI PHY titles that do not match the forge)
 - **PR #639**: fix: substitute {{INSTALL_DATE}} in generate-agents-md.sh for flattened installs
 - **Issue #533** (closed): generate-agents-md.sh: no-arg run in a flattened install regresses {{INSTALL_DATE}} into the already-substituted .loom/AGENTS.md
 - **PR #634**: docs: name klayout-tools 0.8.0 pin in attest.py docstring

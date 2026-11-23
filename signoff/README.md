@@ -408,8 +408,8 @@ only) builds those envelopes from committed inventories, as of `43f26fd`,
 | Row | Envelope | Verdict | What the mechanical check establishes |
 |---|---|---|---|
 | `1.digital` | `attest/1.digital.json` | `met` | RTL sha256 equals the input hash pinned by both synthesis outputs and by `tool-pins.json`; the committed 50 kHz synthesized netlist matches the P&R input pin. |
-| `2.analog` | `attest/2.analog.json` | `met` | `sampler_core.gds` is the exact GDS the `3.analog` DRC pin names; `compose` request/response, cell spec and README are committed (documented provenance). |
-| `2.digital` | `attest/2.digital.json` | `met` | `trng_digital.gds` is the `3.digital` pinned GDS; the P&R request, tool pins and record are committed and the record's RTL/netlist hashes match the current tree. |
+| `2.analog` | `attest/2.analog.json` | `met` | `sampler_core.gds` is the exact GDS the `3.analog` DRC pin names; `compose` request/response, cell spec and README are committed (documented provenance); the harness's `layout/bin` helper closure is inventoried (issue #650). |
+| `2.digital` | `attest/2.digital.json` | `met` | `trng_digital.gds` is the `3.digital` pinned GDS; the P&R request, tool pins and record are committed and the record's RTL/netlist hashes match the current tree; the harness's `layout/bin` helper closure is inventoried (issue #650). |
 | `10` | `attest/10.json` | `met` | README points to `REPRODUCE.md` and has the spec section; LICENSE is Apache-2.0; `ci.yml` runs the reproduce checker, the append-only rule and this gate. |
 | `1.analog` | `attest/1.analog.json` | `met` | Not built by `attest.py` (issue #360). `attest/1.analog.inventory.json` is a klt-format inventory (19 `.sch`/`.sym` sources plus the four derived `design/*.spice`, each declaring `python3 design/netlist.py --check --top <cell>` as its freshness check). `klt signoff --attest 1` (klayout-tools 0.9.1, needs xschem and `klt netlist`) runs only in `pdk-nightly.yml` `netlist-check`, which mints the envelope (uploaded as the `attest-1-analog` artifact) and re-attests the committed `attest/1.analog.json` with `--check`, failing on drift. After a deliberate schematic change, dispatch `pdk-nightly` and commit the artifact as `attest/1.analog.json`; then **copy the new envelope's `provenance.input.content_hash` into `block-manifest.json`'s `evidence["1.analog"].content_hash` by hand** — `attest.py` does not own this row, so neither `--write` nor `--check` updates that pin, and a stale pin grades the item `unmet` / `stale_evidence` — then run `attest.py --write` for the rows it does own and re-render the report. |
 | `9` | `attest/9.json` | `met` | Every record-bearing `sim/` family has a committed testbench/harness/script outside `records/`, `runs/`, `corners/` (`sim/ro-ring-timestep-convergence` via `harness/run-convergence.py`), the three `pdk.json` pins agree, and `REPRODUCE.md` states the pin. |
@@ -422,16 +422,27 @@ The grader does not walk the member files: `attest.py --check` (CI,
 `signoff-check`) does, and goes red when any member changed, appeared or
 vanished, or when an envelope/manifest pin differs.
 
-Item 9's inventory also covers its members' import closure into
-`layout/bin` (issue #648): the shared helpers they import at run time —
-`layout/bin/_hashing.py`, `_klt_common.py`, `_pex_rewrite.py` — are
-inventoried, so an edit to one of them moves item 9's hash instead of
-leaving it `pass` over changed harness behaviour.
-`sim/tests/test_signoff_attest.py` recomputes that closure from the
-committed members and fails when a script imports a `layout/bin` module
-the selectors do not pin, so a new helper import needs its selector entry
-and a `--write`. Repo-local imports from anywhere else (for example
-`design/_pdk_search.py`, issue #650) are not inventoried.
+Every inventory that pins a python harness also pins that harness's
+import closure into the shared helper directories `layout/bin/` and
+`design/` (issues #648, #650): the helper modules the harnesses import
+at run time — `layout/bin/_hashing.py`, `_klt_common.py`,
+`_pex_rewrite.py` and `design/_pdk_search.py` (imported by
+`sim/bin/corner-run.py`) for item 9; `_klt_common.py` (imported by
+`compose-cell.py`) for `2.analog`; `_hashing.py` and `_klt_common.py`
+(imported by `pnr-and-verify.py`) for `2.digital` — are members of the
+same item's inventory, so an edit to a helper moves the hash of every
+item whose harness behaviour it can change, instead of leaving the
+envelope `pass` over changed harness behaviour.
+`sim/tests/test_signoff_attest.py` recomputes each item's closure from
+that item's committed members against helper modules discovered from
+the repository tree (never from the selectors), and fails when a
+member script imports a `layout/bin/` or `design/` module its own
+item's selectors do not pin, so a new helper import needs its selector
+entry and a `--write`. Repo-local imports from other directories are
+not traced by that assertion: the `sim/` harnesses a `2.*` harness
+imports (for example `sim/digital-synthesis/harness/gate_cosim.py` and
+`sim/bin/evidence_paths.py`, imported by `pnr-and-verify.py`) are
+item 9 territory, pinned there and not per-item.
 
 Limits, stated plainly: these are presence-and-consistency checks over
 committed files. `2.*` do not re-run the layout generator (that is
@@ -447,10 +458,54 @@ python3 signoff/attest.py --write      # inventories, envelopes, manifest pins
 python3 signoff/attest.py --check      # what CI runs; read-only
 ```
 
+**Resolving an item-9 merge conflict** (issue #672): item 9's
+`content_hash` is a digest of the *whole* `attest/9.inventory.json`, so it
+moves whenever any inventoried file moves. Two PRs that each touch an
+inventoried `sim/` file therefore write different values into the same six
+lines — `attest/9.json`'s `provenance.input.content_hash`,
+`block-manifest.json`'s `evidence["9"].content_hash`, and the item-9 rows'
+`citation`/`artifact_binding` hashes in `t1-report.json` — and git cannot
+auto-merge them. Nothing semantic is contested, and the hash is
+intentionally committed: the `signoff-check` job re-derives it from the
+PR's own tree on both of its gates — `signoff/attest.py --check` fails on
+a stale or missing envelope/manifest pin, and the "Re-render the committed
+tier report and byte-diff" step fails unless the committed
+`t1-report.json` matches a fresh render — so the cure is regeneration,
+never removal or hand-editing.
+
+When exactly those three files conflict and `attest/9.inventory.json`
+itself merged cleanly (its per-member sha256 lines conflict only when the
+*same* member changed on both sides), do not resolve by hand. `attest/9.json` and
+`t1-report.json` are rewritten whole by the steps below, so take either
+side of those two. `block-manifest.json` is **not**: `--write 9` assigns
+only `manifest["evidence"]["9"]` and rewrites the file from the copy it
+loaded (`signoff/attest.py:307-313`), so every other entry survives as
+whatever you kept. Keep the merged file git produced and resolve only the
+`evidence["9"]` conflict hunk in place (either side of that hunk is fine,
+`--write 9` overwrites it). Never `git checkout --ours/--theirs` that path:
+it discards hunks git had already auto-merged from the other side (for
+example a newly cited `7.*` entry), and neither `attest.py --check` nor the
+byte-diff gate would notice. Then, from the repo root:
+
+```bash
+python3 signoff/attest.py --write 9    # re-mint the envelope + manifest pin
+uvx --from "klayout-tools==0.8.0" klt signoff \
+  --manifest signoff/block-manifest.json \
+  --tiers-doc signoff/design-evidence-tiers.md --format json \
+  > signoff/t1-report.json             # exit 3 expected: tier null, gaps open
+python3 signoff/attest.py --check      # rc 0 — what CI runs
+```
+
+`git add` the regenerated files and commit the merge. The render must use
+the pinned 0.8.0 build — the same pin the `signoff-check` job installs —
+because a different `klt` build stamps a different build/ruleset id into
+the report and the byte-diff gate goes red on an otherwise-correct
+resolution.
+
 Once a klayout-tools release carries `klt signoff --attest`/`--inventory`
 (present in the `0.7.1.dev` development build, absent from 0.7.0 as of
 2026-10-17), switch these rows to it and drop `attest.py`; the CI pin stays at
-0.7.0 until then. Item 9's inventory pins the PDK files, so #314 (open_pdks
+0.8.0 until then. Item 9's inventory pins the PDK files, so #314 (open_pdks
 re-pin) and this issue's rows need a `--write` after whichever lands second.
 
 ## Block kind and the partition boundary (the mixed-signal claim)
@@ -494,7 +549,8 @@ the item to make a row go green.
 ## CI
 
 `.github/workflows/ci.yml`'s `signoff-check` job installs the pinned
-`klayout-tools==0.7.0` (since 2026-10-08, issue #164; 0.6.0 from 2026-09-23, issue #160 — deliberately
+`klayout-tools==0.8.0` (since issue #363; 0.7.0 from 2026-10-08, issue #164;
+0.6.0 from 2026-09-23, issue #160 — deliberately
 **diverged** from the PDK nightly's 0.5.0: the grader is a pure JSON
 transform with no PDK, so it follows the grader release, while the
 nightly's pin gates the nineteen committed cells' compose-cell `--check`
