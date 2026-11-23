@@ -99,6 +99,9 @@ SELECTORS = {
         "design/pdk.json",
         "sim/pdk.json",
         "layout/pdk.json",
+        "layout/bin/_hashing.py",
+        "layout/bin/_klt_common.py",
+        "layout/bin/_pex_rewrite.py",
     ],
     "10": ["README.md", "LICENSE", "REPRODUCE.md", ".github/workflows/*"],
 }
