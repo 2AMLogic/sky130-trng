@@ -45,6 +45,7 @@ SLUG = "local-mismatch-monte-carlo"
 sys.path.insert(0, os.path.join(REPO, "sim", "bin"))
 from loadmod import load_module  # noqa: E402  (after sys.path)
 from lock_proximity import ANY_RATIOS, DR5_RATIOS, pair_closeness  # noqa: E402  (after sys.path)
+from replay_equal import replay_equal as _replay_equal  # noqa: E402  (issue #519/#659: one shared replay equality)
 from request_dir import load_request_dir  # noqa: E402
 
 NEDGE = 40
@@ -485,8 +486,8 @@ def check(recpath):
     cdir = os.path.join(REPO, "sim", SLUG, "corners", rec["record_id"])
     chunks = read_corner_bundle(cdir)
     rows, S = build(chunks)[rec["summary"]["corner"]]
-    same = (json.loads(json.dumps(rows, default=str)) == rec["rows"]
-            and json.loads(json.dumps(S, default=str)) == rec["summary"])
+    same = (_replay_equal(json.loads(json.dumps(rows, default=str)), rec["rows"])
+            and _replay_equal(json.loads(json.dumps(S, default=str)), rec["summary"]))
     print("replay", "MATCHES" if same else "DIFFERS", recpath)
     return 0 if same else 1
 

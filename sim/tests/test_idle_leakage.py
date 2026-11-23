@@ -6,11 +6,13 @@
 import os
 import sys
 import unittest
+import math
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, os.path.join(REPO, "sim", "bin"))
 from loadmod import load_module  # noqa: E402
+import replay_equal  # noqa: E402
 m = load_module("idle_leakage", REPO / "sim/ro-array-idle-leakage/analysis/idle_leakage.py")
 
 GRID = [(p, t, v) for p in ("tt", "ss", "ff") for t in (-40.0, 27.0, 125.0) for v in (1.62, 1.8, 1.98)]
@@ -158,6 +160,42 @@ class Recommend(unittest.TestCase):
         self.assertEqual(m.recommend_idle_target_uw(114.9, 1.5), 200.0)
         self.assertEqual(m.recommend_idle_target_uw(30.0, 1.5), 50.0)
         self.assertEqual(m.recommend_idle_target_uw(0.0), None)
+
+
+class ReplayTolerance(unittest.TestCase):
+    """Issue #659: `--check` replays rows through sim/bin/replay_equal.py.
+
+    `build_rows` sums rail currents per row (`i_analog_a`, `i_leaf_sum_a`,
+    `i_clamp_abs_sum_a`); builtin `sum()` is naive on CPython <= 3.11 and
+    compensated on >= 3.12, so the committed record minted on 3.12 failed
+    its own replay under 3.11 semantics (7 float row fields, ~1e-16
+    relative) before this."""
+
+    #: Rail currents (A) sized like the committed rows' sums so the naive
+    #: and compensated reductions of the same list differ.
+    I = [3.2221092576252404e-11, 2.7897720147015124e-11, 1.102857904154225e-11,
+         2.9458375146481663e-12, 1.5563736068430423e-11, 1.0246706872520712e-11,
+         2.918992945173863e-11, 5.165636303946372e-12, 1.382984770761779e-11,
+         1.916910197275156e-11, 3.5405644259766756e-11, 1.523434279086951e-11]
+
+    def test_uses_the_shared_rule(self):
+        self.assertIs(m.replay_equal, replay_equal.replay_equal)
+
+    def test_replay_gate_absorbs_the_cpython_sum_split_and_still_bites(self):
+        s_naive = 0.0
+        for x in self.I:
+            s_naive += x
+        s_fsum = math.fsum(self.I)
+        self.assertNotEqual(s_naive, s_fsum)
+        self.assertTrue(m.replay_equal(s_naive, s_fsum))
+        self.assertFalse(m.replay_equal(s_fsum, s_fsum * (1 + 1e-6)))
+        self.assertTrue(m.replay_equal(s_fsum, s_fsum * (1 + 1e-12)))
+
+    def test_zero_versus_tiny_is_a_difference_no_absolute_floor(self):
+        self.assertFalse(m.replay_equal(0.0, 5e-324))
+        self.assertFalse(m.replay_equal(0.0, 1e-20))
+        self.assertFalse(m.replay_equal(1e-20, 0.0))
+        self.assertTrue(m.replay_equal(0.0, -0.0))
 
 
 if __name__ == "__main__":
