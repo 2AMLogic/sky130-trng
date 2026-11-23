@@ -161,38 +161,61 @@ ALLOWED_SHA256_CONSTRUCTION_SITES = {
 def _sha256_construction_sites(path) -> list[int]:
     """1-based line numbers of every ``hashlib.sha256`` construction in *path*.
 
-    Catches ``hashlib.sha256(...)``, ``__import__("hashlib").sha256(...)``
-    and a bare ``sha256(...)`` bound by ``from hashlib import sha256``;
-    docstrings and comments are not AST nodes, so prose mentions stay silent.
+    Catches ``hashlib.sha256(...)``, ``__import__("hashlib").sha256(...)``,
+    a bare ``sha256(...)`` bound by ``from hashlib import sha256``, and
+    ``hashlib.new("sha256", ...)`` (attribute or ``from hashlib import new``
+    binding, first argument a string constant equal case-insensitively to
+    ``"sha256"``; a non-constant algorithm name is undecidable by AST and
+    stays silent); docstrings and comments are not AST nodes, so prose
+    mentions stay silent.
     """
     tree = ast.parse(Path(path).read_text(), filename=str(path))
-    from_imports = set()
+    from_sha256_imports = set()
+    from_new_imports = set()
     for node in ast.walk(tree):
         if isinstance(node, ast.ImportFrom) and node.module == "hashlib":
             for alias in node.names:
                 if alias.name == "sha256":
-                    from_imports.add(alias.asname or "sha256")
+                    from_sha256_imports.add(alias.asname or "sha256")
+                elif alias.name == "new":
+                    from_new_imports.add(alias.asname or "new")
+
+    def _is_hashlib(value):
+        return (isinstance(value, ast.Name) and value.id == "hashlib") or (
+            isinstance(value, ast.Call) and isinstance(value.func, ast.Name)
+            and value.func.id == "__import__" and len(value.args) == 1
+            and isinstance(value.args[0], ast.Constant) and value.args[0].value == "hashlib")
+
+    def _names_sha256_constant(call):
+        return (call.args and isinstance(call.args[0], ast.Constant)
+                and isinstance(call.args[0].value, str)
+                and call.args[0].value.lower() == "sha256")
+
     lines = []
     for node in ast.walk(tree):
-        if isinstance(node, ast.Attribute) and node.attr == "sha256":
-            value = node.value
-            if isinstance(value, ast.Name) and value.id == "hashlib":
-                lines.append(node.lineno)
-            elif (isinstance(value, ast.Call) and isinstance(value.func, ast.Name)
-                  and value.func.id == "__import__" and len(value.args) == 1
-                  and isinstance(value.args[0], ast.Constant) and value.args[0].value == "hashlib"):
-                lines.append(node.lineno)
-        elif isinstance(node, ast.Name) and from_imports and node.id in from_imports:
+        if isinstance(node, ast.Attribute) and node.attr == "sha256" and _is_hashlib(node.value):
             lines.append(node.lineno)
+        elif isinstance(node, ast.Name) and from_sha256_imports and node.id in from_sha256_imports:
+            lines.append(node.lineno)
+        elif isinstance(node, ast.Call):
+            func = node.func
+            if (isinstance(func, ast.Attribute) and func.attr == "new"
+                    and _is_hashlib(func.value) and _names_sha256_constant(node)):
+                lines.append(node.lineno)
+            elif (isinstance(func, ast.Name) and func.id in from_new_imports
+                    and _names_sha256_constant(node)):
+                lines.append(node.lineno)
     return sorted(lines)
 
 
 def _tracked_non_test_py(repo: Path) -> list[str]:
     """Repo-relative paths of every tracked .py file that is not a test."""
-    out = subprocess.run(["git", "-C", str(repo), "ls-files", "--", "*.py"],
+    out = subprocess.run(["git", "-C", str(repo), "ls-files", "-z", "--", "*.py"],
                          capture_output=True, text=True, check=True)
     rels = []
-    for rel in out.stdout.split():
+    for rel in out.stdout.split("\0"):
+        if not rel:
+            continue
         posix = PurePosixPath(rel)
         if posix.name.startswith("test_") or "tests" in posix.parts:
             continue
@@ -228,6 +251,9 @@ def _no_fork_guard(results):
             "from-import": 'from hashlib import sha256\nd = sha256("x".encode()).hexdigest()\n',
             "from-import-as": 'from hashlib import sha256 as _sha\nd = _sha(b"x").hexdigest()\n',
             "dunder-import": 'd = __import__("hashlib").sha256(b"x").hexdigest()\n',
+            "hashlib-new": 'import hashlib\nd = hashlib.new("sha256", b"x").hexdigest()\n',
+            "hashlib-new-upper": 'import hashlib\nd = hashlib.new("SHA256", b"x").hexdigest()\n',
+            "from-import-new": 'from hashlib import new as h\nd = h("sha256", b"x").hexdigest()\n',
         }
         for name, text in fork_shapes.items():
             p = Path(td) / (name + ".py")
@@ -241,7 +267,8 @@ def _no_fork_guard(results):
             "other-attr": 'import foo\nd = foo.sha256(b"x")\n',
             "local-def": 'def sha256(data):\n    return data\n\nd = sha256(b"x")\n',
             "other-algo": 'import hashlib\nd = hashlib.sha3_256(b"x").hexdigest()\n',
-            "hashlib-new": 'import hashlib\nd = hashlib.new("sha256", b"x").hexdigest()\n',
+            "hashlib-new-md5": 'import hashlib\nd = hashlib.new("md5", b"x").hexdigest()\n',
+            "hashlib-new-var": 'import hashlib\nalgo = "sha256"\nd = hashlib.new(algo, b"x").hexdigest()\n',
         }
         for name, text in near_misses.items():
             p = Path(td) / (name + ".py")
