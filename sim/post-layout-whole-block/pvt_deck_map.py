@@ -59,7 +59,11 @@ values against the install only when a ``libs_ref`` directory is supplied
 from __future__ import annotations
 
 import re
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "layout" / "bin"))
+from _hashing import sha256_file  # noqa: E402
 
 #: DR-0017's boundary-load model, chosen by #595: 2 = Liberty input-pin
 #: capacitance of the receiving cells at the mapped deck.
@@ -313,7 +317,6 @@ def verify_against_disk(libs_ref_dir: Path) -> list[dict]:
     file or hash mismatch -- a PDK version bump must stop generation, not
     silently change which delays every digital result derives from.
     """
-    import hashlib
     checked = []
     for key in matrix_points():
         row = DECK_TABLE[key]
@@ -321,7 +324,7 @@ def verify_against_disk(libs_ref_dir: Path) -> list[dict]:
         if not p.is_file():
             raise DeckMapError(f"pinned deck {row['liberty_deck']} is absent from "
                                f"{Path(libs_ref_dir)} (PDK version bump?)")
-        h = hashlib.sha256(p.read_bytes()).hexdigest()
+        h = sha256_file(p)
         if h != row["liberty_sha256"]:
             raise DeckMapError(
                 f"{row['liberty_deck']}: on-disk sha256 {h} != pinned "
