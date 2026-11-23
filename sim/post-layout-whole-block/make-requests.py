@@ -372,7 +372,17 @@ def nominal_gate_model() -> tuple[str, dict]:
         raise ValueError("nominal model, routed Verilog or Liberty identity differs from the gate record")
     return gate, {"gate_manifest": str(manifest_path), "gate_model_sha256": sha256_text(gate),
                   "liberty_sha256": manifest["liberty_sha256"], "liberty_deck": manifest["liberty_deck"],
-                  "realisation": manifest["realisation"], "reductions": manifest["reductions"],
+                  "realisation": manifest["realisation"],
+                  "reductions": {
+                      **manifest["reductions"],
+                      # the manifest text predates #595 (kept byte-stable as #486
+                      # evidence); in a plan it must agree with boundary_load_option.
+                      # Same wording as make-gate-model.py's plan writer.
+                      "input_load": "Liberty input-pin capacitance per d_genlut input; the "
+                                    "DR-0017 boundary-load choice is settled as option 2 "
+                                    "(#595, see boundary_load_option)",
+                  },
+                  "boundary_load_option": PVT.boundary_load_block(),
                   "raw_source": "analog_sampler"}
 
 
