@@ -92,9 +92,9 @@ module trng_digital #(
     reg [31:0] raw_sr;
     reg [5:0]  raw_count;
 
-    reg [31:0] raw_mem [0:3];
+    reg [31:0] raw_mem [0:1];
     reg [2:0]  raw_level;
-    reg [31:0] cond_mem [0:3];
+    reg [31:0] cond_mem [0:1];
     reg [2:0]  cond_level;
 
     reg [31:0] bus_rdata_r;
@@ -245,7 +245,7 @@ module trng_digital #(
                 raw_sr[raw_count] = bit_in;
                 raw_count = raw_count + 6'd1;
                 if (raw_count == 6'd32) begin
-                    if (raw_level == 3'd4) begin
+                    if (raw_level == 3'd2) begin
                         raw_ovf = 1'b1;
                     end else begin
                         raw_mem[raw_level] = raw_sr;
@@ -260,7 +260,7 @@ module trng_digital #(
                     crc_state  = crc_next(crc_state, bit_in);
                     cond_count = cond_count + 16'd1;
                     if (cond_count == COND_BITS) begin
-                        if (cond_level == 3'd4) begin
+                        if (cond_level == 3'd2) begin
                             cond_ovf = 1'b1;
                         end else begin
                             cond_mem[cond_level] = crc_state;
@@ -366,10 +366,10 @@ module trng_digital #(
                 endcase
                 bus_rdata_r = rd_value;
                 if (popped == 2'd1) begin
-                    for (i = 0; i < 3; i = i + 1) raw_mem[i] = raw_mem[i+1];
+                    for (i = 0; i < 1; i = i + 1) raw_mem[i] = raw_mem[i+1];
                     raw_level = raw_level - 3'd1;
                 end else if (popped == 2'd2) begin
-                    for (i = 0; i < 3; i = i + 1) cond_mem[i] = cond_mem[i+1];
+                    for (i = 0; i < 1; i = i + 1) cond_mem[i] = cond_mem[i+1];
                     cond_level = cond_level - 3'd1;
                 end
             end
@@ -381,12 +381,12 @@ module trng_digital #(
             if (out_ready && sel_valid) begin
                 if (ctrl[1]) begin
                     if (popped != 2'd2) begin
-                        for (i = 0; i < 3; i = i + 1) cond_mem[i] = cond_mem[i+1];
+                        for (i = 0; i < 1; i = i + 1) cond_mem[i] = cond_mem[i+1];
                         cond_level = cond_level - 3'd1;
                     end
                 end else begin
                     if (popped != 2'd1) begin
-                        for (i = 0; i < 3; i = i + 1) raw_mem[i] = raw_mem[i+1];
+                        for (i = 0; i < 1; i = i + 1) raw_mem[i] = raw_mem[i+1];
                         raw_level = raw_level - 3'd1;
                     end
                 end
