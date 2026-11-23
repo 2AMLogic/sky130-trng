@@ -50,6 +50,7 @@ import shutil
 import subprocess
 import sys
 from pathlib import Path
+from typing import NamedTuple
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import artifact_store  # noqa: E402
@@ -108,6 +109,45 @@ def git_dirty_paths(repo_root: Path) -> list[str] | None:
             paths.append(recs[i])  # original path of the rename/copy pair
             i += 1
     return sorted(set(paths))
+
+
+class WorkingTreeState(NamedTuple):
+    """Working-tree disclosure for one record (issue #692).
+
+    `fields` are the JSON keys (`repo_dirty`, plus `repo_dirty_paths` when
+    dirty); `footer_line` is the matching markdown provenance line.
+    """
+    fields: dict
+    footer_line: str
+
+
+def working_tree_state(repo_root: Path) -> WorkingTreeState:
+    """Tri-state working-tree disclosure built on :func:`git_dirty_paths`.
+
+    ``repo_dirty`` is ``True`` / ``False`` / ``None`` (git status could not
+    run -- unknown, never clean). Sample it *before* the record's own outputs
+    are written so they cannot mask divergence from HEAD (issue #666). This
+    is the single implementation shared by :func:`mint_behavioral_record` and
+    by callers of :func:`mint_record` (opt in via its ``worktree=`` argument
+    and merge ``.fields`` into the summary).
+    """
+    dirty_paths = git_dirty_paths(repo_root)
+    if dirty_paths is None:
+        return WorkingTreeState(
+            {"repo_dirty": None},
+            "- Working tree: unknown (git status unavailable; repo_dirty is null)")
+    if not dirty_paths:
+        return WorkingTreeState(
+            {"repo_dirty": False},
+            "- Working tree: clean (matches the cited commit)")
+    n = len(dirty_paths)
+    listed = dirty_paths[:_DIRTY_PATHS_CAP]
+    noun = "path" if n == 1 else "paths"
+    verb = "differs" if n == 1 else "differ"
+    stem = f"- Working tree: dirty ({n} {noun} {verb} from the cited commit"
+    line = (stem + f"; repo_dirty_paths lists the first {_DIRTY_PATHS_CAP})"
+            if n > _DIRTY_PATHS_CAP else stem + ")")
+    return WorkingTreeState({"repo_dirty": True, "repo_dirty_paths": listed}, line)
 
 
 def new_record_id(repo_root: Path, *, offset: int = 0) -> tuple[_dt.datetime, str, str]:
@@ -357,6 +397,7 @@ def mint_record(
     now: _dt.datetime,
     sha: str,
     supersedes: str = "(none)",
+    worktree: WorkingTreeState | None = None,
 ) -> tuple[Path, Path] | None:
     """Mint an append-only evidence record under `out_records`.
 
@@ -374,6 +415,11 @@ def mint_record(
     positions; see each analysis script's `main()`). `supersedes` names the
     record id this one corrects; the default footer line is unchanged.
 
+    `worktree` is opt-in (issue #692): pass :func:`working_tree_state`'s
+    result to append its provenance line to the footer; the caller merges
+    `worktree.fields` into its own `summary`. Left as `None` the footer is
+    byte-for-byte unchanged.
+
     Returns `(md_path, json_path)` on success, or `None` (after printing an
     error to stderr) if a record with this `rid` already exists.
     """
@@ -385,6 +431,8 @@ def mint_record(
         return None
 
     footer = record_footer(author=author, now=now, sha=sha, supersedes=supersedes)
+    if worktree is not None:
+        footer.append(worktree.footer_line)
     md_text = "\n".join(header) + body + "\n".join(footer) + "\n"
     json_text = json.dumps(summary, indent=2, default=str) + "\n"  # before any publication
     try:
@@ -460,22 +508,8 @@ def mint_behavioral_record(
     # own outputs (always untracked at mint time) cannot mask real
     # divergence from HEAD, and a dirty tree is disclosed in the record
     # instead of silently hiding behind the HEAD pin (issue #666).
-    dirty_paths = git_dirty_paths(repo_root)
-    if dirty_paths is None:
-        dirty_fields: dict = {"repo_dirty": None}
-        worktree_line = "- Working tree: unknown (git status unavailable; repo_dirty is null)"
-    elif not dirty_paths:
-        dirty_fields = {"repo_dirty": False}
-        worktree_line = "- Working tree: clean (matches the cited commit)"
-    else:
-        n = len(dirty_paths)
-        listed = dirty_paths[:_DIRTY_PATHS_CAP]
-        dirty_fields = {"repo_dirty": True, "repo_dirty_paths": listed}
-        noun = "path" if n == 1 else "paths"
-        verb = "differs" if n == 1 else "differ"
-        stem = f"- Working tree: dirty ({n} {noun} {verb} from the cited commit"
-        worktree_line = (stem + f"; repo_dirty_paths lists the first {_DIRTY_PATHS_CAP})"
-                         if n > _DIRTY_PATHS_CAP else stem + ")")
+    tree = working_tree_state(repo_root)
+    dirty_fields, worktree_line = tree.fields, tree.footer_line
     records_dir = repo_root / "sim" / slug / "records"
     runs_dir = repo_root / "sim" / slug / "runs" / rid
     md_path = records_dir / f"{rid}.md"
