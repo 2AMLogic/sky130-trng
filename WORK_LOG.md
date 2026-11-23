@@ -15,6 +15,19 @@ Chronological record of recently merged pull requests and closed issues.
 - **PR #629**: fix: score open() **kwargs splats as unestablishable write modes
 - **PR #649**: fix(sim): drop the unscoreable last-cycle rdata word from whole-block requests
 - **PR #645**: refactor: share one extracted-netlist renamer between pex-netlist and pex-measure
+- **PR #685**: signoff: pin each harness's layout/bin and design helper closure in its own T1 inventory
+- **PR #663**: docs: qualify WORK_LOG retention note for unmerged PRs #111 and #159
+- **PR #688**: test: catch hashlib.new("sha256") fork shape in the no-fork guard
+- **PR #686**: fix(ci): correct swapped #216/#289 suite pairings in ci.yml header
+- **PR #675**: docs: add item-9 merge-conflict resolution recipe to signoff README
+- **PR #681**: refactor(sim): consolidate remaining inline sha256 hexdigest sites onto _hashing
+- **PR #678**: test: pin the plan-only reductions.input_load override from #595
+- **PR #662**: ci: run the eight sim/tests suites ci.yml never wired
+- **PR #677**: docs(signoff): correct stale 0.7.0 CI grader pin prose to 0.8.0
+- **PR #664**: fix(sim): replay the five remaining --check reducers through shared replay_equal
+- **PR #651**: fix(signoff): pin item 9's layout/bin import closure in its inventory
+- **PR #607**: feat(sim): map the 12-point PVT matrix to Liberty decks and adopt boundary-load option 2
+- **PR #665**: chore: remove stale npm test/lint/check scripts from package.json
 - **Issue #655** (closed): Consolidate the last hand-rolled corner-bundle writer in idle_leakage.py onto evidence_record.write_corner_bundle
 - **Issue #653** (closed): Consolidate remaining non-FV sim harness klt/path forks onto _klt_common
 - **Issue #647** (closed): check_device_card: a short device card raises IndexError, not BuildError, breaking pex-measure's single documented failure mode
@@ -22,6 +35,20 @@ Chronological record of recently merged pull requests and closed issues.
 - **Issue #638** (closed): Consolidate duplicated extracted-netlist renamer between pex-measure.py and pex-netlist.py
 - **Issue #624** (closed): Record-tail guard treats open(path, **kwargs) as read-only, not as an unestablishable mode
 - **Issue #619** (closed): Extend the 7.analog PEX freshness check to the report's remaining pinned repository inputs
+- **Issue #650** (closed): T1 attestation still leaves two unpinned repo-local imports of attested sources (design/_pdk_search.py; items 2.* own closures)
+- **Issue #637** (closed): Correct the WORK_LOG retention note for unmerged PRs #111 and #159
+- **Issue #683** (closed): test_hashing.py no-fork guard: hashlib.new("sha256", ...) bypasses the AST scan
+- **Issue #680** (closed): ci.yml header comment mis-pairs two of the eight #654 suites with their introducing issues (#216/#289 swapped)
+- **Issue #672** (closed): T1 item-9 attestation hash makes any two concurrent sim/-touching PRs conflict on three generated files
+- **Issue #669** (closed): Consolidate remaining 20 inline/helper sha256 .hexdigest() sites onto _hashing and guard against regrowth in test_hashing.py
+- **Issue #668** (closed): test: pin plan.json's reductions.input_load to the settled boundary-load statement (no assertion guards the #595 fix)
+- **Issue #671** (closed): Five sim/ reducer-replay unit suites are not invoked by any workflow
+- **Issue #654** (closed): Eight sim/tests suites are never run by CI (ci.yml enumerates suites one by one; test_whole_block_reduction.py is one of them)
+- **Issue #674** (closed): signoff/README.md prose still says the CI grader pin is 0.7.0; ci.yml installs 0.8.0
+- **Issue #659** (closed): Consolidate remaining five sim/ --check reducers onto sim/bin/replay_equal.py: four fail under Python 3.11 sum(), one forks replay_diff
+- **Issue #648** (closed): T1 attestation inventories pin sim/ harness source but not its layout/bin import closure
+- **Issue #595** (closed): Whole-block PVT (DR-0017 option b): choose and record the boundary-load model and the Liberty deck for each (T, Vdd) point
+- **Issue #463** (closed): Remove the four stale npm verification scripts from package.json
 
 ### 2026-11-22
 
