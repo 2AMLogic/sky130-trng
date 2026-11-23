@@ -155,7 +155,10 @@ def cycle_inputs(cycles: list[dict]) -> list[dict]:
     return out
 
 
-PWL_EDGE_NS = 0.1  # hold to 100 ps before each change (one formatted time digit)
+# Hold each level to 100 ps before the change. Must stay >= 0.1: `f"{t:.1f}n"` would
+# collapse the hold and the change onto one breakpoint (#488; enforced by
+# test_breakpoint_hygiene). Do not tighten.
+PWL_EDGE_NS = 0.1
 
 
 def waveform_card(name: str, levels: list[int], stop_ns: float, vih: float) -> str:

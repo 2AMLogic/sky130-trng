@@ -6,6 +6,32 @@ Chronological record of recently merged pull requests and closed issues.
 
 - [2026-09](work_log/WORK_LOG_2026-09.md)
 
+### 2026-11-22
+
+- Note: removed 48 WORK_LOG records (42 here, 6 in the 2026-09 archive) that the 2026-10-18 Guide document-maintenance backfill (`e8b0dd38`) copied from `2AMLogic/gf180-usb2-phy`'s merged history. Each cited a number that also exists in this repo but resolved to unrelated work (wrong kind and title); the genuine records for those numbers are retained. Audit evidence and rationale: #633.
+- **PR #639**: fix: substitute {{INSTALL_DATE}} in generate-agents-md.sh for flattened installs
+- **Issue #533** (closed): generate-agents-md.sh: no-arg run in a flattened install regresses {{INSTALL_DATE}} into the already-substituted .loom/AGENTS.md
+- **PR #634**: docs: name klayout-tools 0.8.0 pin in attest.py docstring
+- **Issue #631** (closed): signoff/attest.py:7 still names the 0.7.0 grader present-tense; CI has graded on 0.8.0 since issue #363
+- **PR #529**: fix: generate-agents-md.sh doubled .loom/ path; accept PDR-0001's deferred follow-up
+- **Issue #523** (closed): Finish PDR-0001's deferred follow-up: generate-agents-md.sh still fails with a doubled .loom/ path
+- **PR #625**: test: guard the shared GDS geometry helpers against forks and compose-whole loaders
+- **Issue #617** (closed): Guard the shared GDS geometry helpers against local copies and compose-whole loaders
+
+### 2026-11-21
+
+- **PR #623**: fix: classify open() mode in the record-tail guard so read-only opens pass
+- **Issue #618** (closed): test_evidence_record_artifacts guard flags read-only open() of a record as a hand-rolled tail
+- **PR #622**: chore: gitignore daemon-written .loom/account-ranking.codex runtime state
+- **Issue #608** (closed): chore: gitignore the daemon's .loom/account-ranking.* runtime state (breaks check-main-clean for every builder)
+- **PR #616**: refactor: extract the four GDS geometry helpers to _gds_geometry.py
+- **Issue #613** (closed): Remove both dynamic compose-whole loaders by sharing the four GDS geometry helpers
+- **PR #606**: sim(pex): cite a klt pex sampler_core delta report as 7.analog
+- **Issue #597** (closed): T1 item 7 (analog): produce a klt pex schematic-vs-extracted delta report for sampler_core and cite it as 7.analog
+- **PR #603**: docs: regenerate WORK_PLAN.md plan body from live labels via render_plan_body()
+- **Issue #602** (closed): WORK_PLAN.md Important/Ready sections drift: hand-applied Guide deltas under-report ready work
+- **Issue #615** (closed): Duplicate of #608, which tracks the missing ignore rule for Loom’s per-runtime account ranking file.
+
 ### 2026-11-20
 
 - **Issue #580** (closed): design/netlist.py: no outer bound on the `klt netlist` subprocess, and a pre-release klt passes the floor
@@ -238,7 +264,6 @@ Chronological record of recently merged pull requests and closed issues.
 
 - **PR #329**: sim(whole-block): record fleet startup probe that failed at ngspice parse
 - **PR #328**: fix(sim): correct whole-block stimulus levels, probe measurements and reducer omission handling
-- **Issue #138** (closed): CI: preserve started main verification runs with event-aware concurrency
 
 ### 2026-10-17
 
@@ -246,18 +271,6 @@ Chronological record of recently merged pull requests and closed issues.
 - **Issue #320** (closed): T1 items 1, 2, 9, 10: cite artifact-anchored inventory envelopes for both partitions
 - **PR #322**: feat: map remaining spec rows to evidence and cite item 8 via generic envelope
 - **Issue #321** (closed): T1 item 8: map the four unmapped characterization rows to their committed records, then cite the report
-- **PR #184**: refactor(layout): remove inert BLOCKED_BLOCKS path from gen_analog_layout.py
-- **PR #181**: refactor: route design netlisting through klt netlist
-- **PR #178**: test: use shared start_clock in four remaining cocotb testbenches
-- **Issue #179** (closed): Simplify design/netlist.py: replace raw xschem call with klt netlist
-- **Issue #177** (closed): Remove inert BLOCKED_BLOCKS path from gen_analog_layout.py: empty since #72
-- **Issue #176** (closed): Finish #44: four cocotb testbenches still redefine the shared 12 MHz clock helper
-
-### 2026-10-16
-
-- **PR #173**: chore(sim): remove unused mk_dut.py and fix stale DUT references
-- **PR #172**: Bump Repo Skills 0.24.1 -> 0.24.3
-- **Issue #107** (closed): Remove sim/tools/mk_dut.py: unused, superseded by design/netlist.py
 
 ### 2026-10-15
 
@@ -268,16 +281,6 @@ Chronological record of recently merged pull requests and closed issues.
 - **PR #218**: ci: run volume-model and ripple-reduction tests in PR-blocking job
 - **Issue #217** (closed): CI: run test_raw_bit_volume_model and test_ripple_reduction in the PR-blocking lint job
 - **Issue #162** (closed): README: embed the fleet burndown chart (one line)
-- **PR #170**: docs(records): equivalence-sim attempts on flattened driver incomplete; raise signal-quality timeout
-- **PR #168**: docs(records): driver layout-plan re-run on post-resize netlist fails on m=4
-- **PR #164**: feat(digital): SDF-annotated gate-level regression for T1 item 7.digital (#93)
-- **PR #162**: Regenerate digital physical/evidence chain from current RTL (#131)
-- **PR #149**: feat(rtl): add trim[4:0] integration input to usb_utmi_phy (#115)
-- **Issue #115** (closed): RTL: add trim[4:0] pass-through input port (pin contract, #109)
-
-### 2026-10-14
-
-- **Issue #90** (closed): README: embed the fleet burndown chart (one line)
 
 ### 2026-10-12
 
@@ -313,9 +316,6 @@ Chronological record of recently merged pull requests and closed issues.
 - **PR #275**: Reject colliding artifact basenames before minting behavioral evidence
 - **Issue #273** (closed): Reject colliding artifact basenames before minting behavioral evidence
 - **Issue #278** (closed): Auditor: guard telemetry dispositions and read-only S3 refinement
-- **PR #151**: docs(spec): fix evidence link in decision 0005
-- **Issue #159** (closed): Auditor guard decision: keep detached force-push guard
-- **Issue #156** (closed): Lint: run scripts/test_setup_env.sh from npm run lint so setup-env.sh regressions reach CI
 
 ### 2026-10-10
 
@@ -353,12 +353,6 @@ Chronological record of recently merged pull requests and closed issues.
 - **Issue #239** (closed): Spec: DR-0010 target-table reconciliation packet (rate, area, power rows) for operator ratification
 - **Issue #236** (closed): Digital physical closure: repair and audit low-voltage Liberty slew/capacitance violations
 - **Issue #235** (closed): Auditor guard telemetry: worktree-write-confinement-unresolved-var
-- **PR #153**: fix(verification): current-source records superseding stale #112/#113 carry-forwards (#147)
-- **PR #145**: RTL: add pu_en output derived from TermSelect (#112)
-- **Issue #152** (closed): Build failure on main: pin-contract planned TXOE test is stale
-- **Issue #132** (closed): Decide whether UTMI Reset should reach the vendored RX transforms synchronously
-- **Issue #113** (closed): RTL: add txoe driver-enable output (pin contract, #109)
-- **Issue #112** (closed): RTL: add pu_en output derived from TermSelect (pin contract, #109)
 
 ### 2026-10-09
 
@@ -383,14 +377,6 @@ Chronological record of recently merged pull requests and closed issues.
 - **Issue #211** (closed): Refresh T1 manifest with eligible delivered digital physical evidence
 - **Issue #212** (closed): Refresh current sign-off status and simulated-stream documentation
 - **Issue #200** (closed): Supply-ripple and injection-lock robustness campaign for the RO array (transistor level)
-- **PR #141**: docs(layout): re-measure resized differential_receiver (DRC clean, LVS mismatch)
-- **PR #137**: fix: require full 45-corner evidence before fixed-trim PASS
-- **PR #125**: Add --tool-light mode to setup-env.sh (#117)
-- **Issue #136** (closed): Require complete PVT evidence before fixed-trim analysis can report PASS
-- **Issue #130** (closed): Verify UTMI Reset aborts transmission through stuffing and EOP states
-- **Issue #123** (closed): Characterize RX boundary synchronization with paired-input skew and reset injection
-- **Issue #103** (closed): Re-run differential_receiver layout/DRC/LVS after MP_B1/MN_B1 resize (PR #102)
-- **Issue #95** (closed): signoff: bare evidence keys 3 and 4 grade the analog partition met with no analog layout
 
 ### 2026-10-08
 
@@ -412,14 +398,6 @@ Chronological record of recently merged pull requests and closed issues.
 - **Issue #188** (closed): Raw-bit volume campaign: >=1e5 bits per PVT corner for statistical evidence (current record has 24)
 - **Issue #190** (closed): CI: run sim/tests unit tests (test_raw_bit_entropy, test_digital_section) in the lint job
 - **Issue #189** (closed): Add SP 800-22-style battery and non-MCV SP 800-90B estimators to the raw-bit analysis
-- **PR #122**: Add top-level RX stuffing-error propagation and recovery tests (#118)
-- **PR #121**: Reconcile status docs with superseding verification evidence
-- **PR #111**: Attempt SDF-annotated gate-level regression for T1 item 7.digital (blocked; negative result recorded) (#93)
-- **Issue #120** (closed): Reconcile current PHY status documents with superseding verification evidence
-- **Issue #118** (closed): Verify top-level RX stuffing-error propagation and packet recovery
-- **Issue #108** (closed): Verify RX bit sampling against spec §7 ±0.25% clock tolerance (no test covers host/device rate offset)
-- **Issue #97** (closed): Analog: make differential_receiver resolve 200 mV over the full 0.8-2.5 V common-mode range (spec §4)
-- **Issue #92** (closed): T1 item 5 (digital): mint one multi-corner klt sta envelope on the routed layout and cite it
 
 ### 2026-10-07
 
@@ -455,29 +433,4 @@ Chronological record of recently merged pull requests and closed issues.
 - **PR #163**: chore(signoff): bump signoff grader pin to klayout-tools 0.6.0, re-vendor tiers doc, regenerate t1-report
 - **Issue #161** (closed): T1 item 11: declare sampler_core's well ties in the klt erc supply spec on klayout-tools 0.6.0 and cite 11.analog in the block manifest
 - **Issue #160** (closed): Bump the signoff grader pin to klayout-tools 0.6.0, re-vendor the tiers doc, and regenerate signoff/t1-report.json
-
-### 2026-09-22
-
-- **PR #88**: feat: vendor shared USB protocol RTL and adapt the UTMI wrapper
-- **Issue #87** (closed): Re-run usb_utmi_phy place-and-route and post-layout PVT against the vendored rtl/common sources (post-#84)
-
-### 2026-09-21
-
-- **PR #158**: feat(layout): add T1 item-11 klt erc supply read for sampler_core
-- **PR #157**: feat(signoff): add klt signoff block manifest with CI staleness gate
-- **PR #156**: ci: declare the run-pdk-check label the PDK-gated workflows' PR opt-in documents
-- **Issue #155** (closed): Commit a klt signoff block manifest so this block's T1 state is graded, not hand-read
-- **Issue #154** (closed): T1 item 11 (power delivery, structural): no klt erc supply spec or report in this repo
-- **Issue #153** (closed): run-pdk-check label does not exist, so both PDK-gated workflows' documented PR opt-in is dead
-- **Issue #83** (closed): T1 item 11 (digital): declare well/substrate ties[] in layout/digital/erc-supply-spec.json and re-run klt erc — upstream klayout-tools#2169 fix is already in the pinned klt
-- **Issue #79** (closed): T1 item 11 digital leg: committed LVS report predates power_connectivity - re-run digital LVS on a klt that computes it
-- **Issue #78** (closed): Commit a klt signoff block manifest so this block's T1 state is graded, not hand-read
-- **Issue #77** (closed): T1 item 11 (power delivery, structural): no klt erc supply spec or report in this repo
-
-### 2026-09-18
-
-- **PR #38**: ci(layout): add compose-cell.py --check regression guard to pdk-nightly
-- **PR #152**: ci: pin xschem to a 3.4.7 floor and surface a red pdk-nightly (#151)
-- **Issue #36** (closed): layout: compose-cell.py --check has no automated regression guard (nothing runs it)
-- **Issue #151** (closed): pdk-nightly netlist-check has been red since 2026-09-15: xschem version drift emits expr() templates where committed netlists have evaluated values (4 cells STALE)
 

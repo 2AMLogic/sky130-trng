@@ -68,7 +68,15 @@ sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
 sys.path.insert(0, str(REPO_ROOT / "sim" / "digital-synthesis" / "harness"))
 
 import gate_cosim  # noqa: E402
-from _klt_common import BuildError, run_klt, write_json  # noqa: E402
+from _klt_common import (  # noqa: E402
+    BuildError,
+    libs_ref_of,
+    pdk_find,
+    pdk_root_of,
+    rel,
+    run_klt,
+    write_json,
+)
 from evidence_paths import sanitize_paths  # noqa: E402
 from evidence_record import mint_behavioral_record  # noqa: E402
 from loadmod import load_module  # noqa: E402
@@ -194,12 +202,17 @@ def main(argv=None) -> int:
                   "so nothing is minted", file=sys.stderr)
             return 2
 
+    # One `klt pdk find` (the shared pdk_find, which also surfaces klt's
+    # compatibility / broken_symlinks flags) answers both the root the
+    # flow pins into $PDK_ROOT and the libs_ref the extract step needs --
+    # the single-response contract libs_ref_of/pdk_root_of exist for. An
+    # EMPTY $PDK_ROOT counts as unset, the same reading pdk_root() gives
+    # it (issue #653 retired the double call + `in env` check here).
     env = {**os.environ, "PDK": args.pdk}
-    if "PDK_ROOT" not in env:
-        pk = run_klt_cwd(args.klt, ["pdk", "find", "--pdk", args.pdk], env)
-        env["PDK_ROOT"] = pk["root"]
-    pdk_info = run_klt_cwd(args.klt, ["pdk", "find", "--pdk", args.pdk], env)
-    libs_ref = Path(pdk_info["assets"]["libs_ref"])
+    pdk_info = pdk_find(args.pdk, env=env, klt=args.klt, cwd=REPO_ROOT)
+    if not env.get("PDK_ROOT"):
+        env["PDK_ROOT"] = pdk_root_of(pdk_info, pdk=args.pdk, klt=args.klt)
+    libs_ref = libs_ref_of(pdk_info)
 
     pins = json.loads(PINS.read_text())
     request = json.loads(REQUEST.read_text())
@@ -268,8 +281,6 @@ def main(argv=None) -> int:
     sdf = Path(pnr["spef_sta"]["sdf_path"])
 
     work = Path(tempfile.mkdtemp(prefix="digital-pnr-"))
-    rel = lambda p: str(Path(p).resolve().relative_to(REPO_ROOT)) \
-        if str(Path(p).resolve()).startswith(str(REPO_ROOT)) else str(p)
 
     # 3. DRC ----------------------------------------------------------------
     drc = run_klt_cwd(args.klt, ["drc", rel(gds), "--deck", "sky130"], env)
