@@ -17,9 +17,12 @@
     "REPRODUCE.md",
     "design/pdk.json",
     "sim/pdk.json",
-    "layout/pdk.json"
+    "layout/pdk.json",
+    "layout/bin/_hashing.py",
+    "layout/bin/_klt_common.py",
+    "layout/bin/_pex_rewrite.py"
   ],
-  "member_count": 127,
+  "member_count": 132,
   "members": [
     {
       "path": "REPRODUCE.md",
@@ -40,6 +43,18 @@
     {
       "path": "digital/tb/tb_trng_digital.v",
       "sha256": "sha256:4cddae27bfcaa085e99966640f628c896efc4bfc4080f069e16736091f4d16aa"
+    },
+    {
+      "path": "layout/bin/_hashing.py",
+      "sha256": "sha256:552b29fc1c1921352040cb384e719117d9b7a04abb9dd8ee89b621bc88543b56"
+    },
+    {
+      "path": "layout/bin/_klt_common.py",
+      "sha256": "sha256:449815c2e33195d624996210f7ad4235d236befe841c77b7b0de119196d5f6ec"
+    },
+    {
+      "path": "layout/bin/_pex_rewrite.py",
+      "sha256": "sha256:25735af6f2ecbc134e739e8a60bd5619ad4b514128d04b25a334c992582f13a3"
     },
     {
       "path": "layout/pdk.json",
@@ -338,6 +353,10 @@
       "sha256": "sha256:44b03399f1ca89a4d743d69d398604c3cb90f281dd64949d2276c91da7aef283"
     },
     {
+      "path": "sim/post-layout-whole-block/analysis/deck-axis-sensitivity.py",
+      "sha256": "sha256:1e3881ca1a51098b0789247150cb497a0ad80a23f4a7966d001e27c32b9f895b"
+    },
+    {
       "path": "sim/post-layout-whole-block/analysis/reduce-whole-block.py",
       "sha256": "sha256:6489005c7f7df6a1a8e8e5438511a0597132da6e257113ebf340f63a7e56949d"
     },
@@ -351,7 +370,7 @@
     },
     {
       "path": "sim/post-layout-whole-block/make-gate-model.py",
-      "sha256": "sha256:db2fe8d4d632473f8d4a80e67477a43264d284b87824387103bfe0cfbeceba20"
+      "sha256": "sha256:1b5b9248933b27118736a730b6ff3e5d017124f293629c6ade13de13b984972e"
     },
     {
       "path": "sim/post-layout-whole-block/make-netlist.py",
@@ -359,11 +378,15 @@
     },
     {
       "path": "sim/post-layout-whole-block/make-requests.py",
-      "sha256": "sha256:c6947b48a022396a975b0aa2e0e01012c7ec3b955f1c21fe9a05a9ff39bb4836"
+      "sha256": "sha256:e10f19ef97ea0e2c4a07412b5828ed8ec5204eb4809da8c4fb0b5c3264e2d714"
     },
     {
       "path": "sim/post-layout-whole-block/program.py",
       "sha256": "sha256:3a7fc1098d99a408ed7ea742eea9255514f9130fe5ac959346878b143089a56e"
+    },
+    {
+      "path": "sim/post-layout-whole-block/pvt_deck_map.py",
+      "sha256": "sha256:2a71a54df2fb14e3d2333a484cd91b7ff087f401e46530c28c2cc577c5786dde"
     },
     {
       "path": "sim/post-layout-whole-block/test_make_netlist.py",
@@ -371,7 +394,7 @@
     },
     {
       "path": "sim/post-layout-whole-block/test_make_requests.py",
-      "sha256": "sha256:b70d08c9607b421ba7fdcb83774fd700fcb3ca4c6b534ca027f1f82c37604de1"
+      "sha256": "sha256:40d796b8bc04f97ce26bbeeb53bd7846f17e018a328fc05626f1435b7b6820c6"
     },
     {
       "path": "sim/raw-bit-min-entropy/analysis/raw-bit-battery.py",
