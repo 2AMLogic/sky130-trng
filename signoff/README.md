@@ -464,9 +464,17 @@ never removal or hand-editing.
 
 When exactly those three files conflict and `attest/9.inventory.json`
 itself merged cleanly (its per-member sha256 lines conflict only when the
-*same* member changed on both sides), do not resolve by hand. Take either
-side of the three files — their content is about to be regenerated —
-then, from the repo root:
+*same* member changed on both sides), do not resolve by hand. `attest/9.json` and
+`t1-report.json` are rewritten whole by the steps below, so take either
+side of those two. `block-manifest.json` is **not**: `--write 9` assigns
+only `manifest["evidence"]["9"]` and rewrites the file from the copy it
+loaded (`signoff/attest.py:307-313`), so every other entry survives as
+whatever you kept. Keep the merged file git produced and resolve only the
+`evidence["9"]` conflict hunk in place (either side of that hunk is fine,
+`--write 9` overwrites it). Never `git checkout --ours/--theirs` that path:
+it discards hunks git had already auto-merged from the other side (for
+example a newly cited `7.*` entry), and neither `attest.py --check` nor the
+byte-diff gate would notice. Then, from the repo root:
 
 ```bash
 python3 signoff/attest.py --write 9    # re-mint the envelope + manifest pin
