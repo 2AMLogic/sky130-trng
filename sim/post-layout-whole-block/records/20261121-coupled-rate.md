@@ -39,8 +39,19 @@ run="$block/runs/20261121-coupled-probe"
 python3 "$block/make-requests.py" "$run/requests" --set coupled-probe
 req="$run/requests/coupled-probe/request.json"
 klt sim "$req" --backend batch --dry-run -o "$run/out"
-klt sim "$req" --backend batch -o "$run/out" --report-out "$run/report.json"
+klt sim "$req" --backend batch --submit-only --wait-for-capacity 600 -o "$run/out"
+klt sim "$req" --backend batch --job-status <job_id>   # poll until done
+klt sim "$req" --backend batch --attach <job_id> -o "$run/out" --report-out "$run/report.json"
 ```
+
+The request sets `batch.poll_timeout_s` 3480, a ~58 min foreground poll, so the
+submit is split as in the earlier probes (`20261030-fleet-probe-post-bin-fix.md`,
+`20261103-rate-probe-infeasible.md`). `--wait-for-capacity 600` is required
+because the fleet is vCPU-budgeted and this block has a recorded capacity
+refusal (`runs/20261017-probe-refused-capacity/OUTCOME.md`). If the submitting
+client is killed (as at 952 s in `runs/20261018-probe-attempt/OUTCOME.md`),
+recover with `--attach <job_id>`, never a second submit: the job is already
+running and a re-submit burns another fleet unit.
 
 `klt 0.9.2.dev111+g978f7464fae1` validated exactly one unit. The first live
 invocation (00:36:59–00:37:01) requested the provisioning-script path and exited

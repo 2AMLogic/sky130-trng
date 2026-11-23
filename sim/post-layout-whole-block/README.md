@@ -172,6 +172,8 @@ sampler at every cycle for replay by `analysis/compare-gate-model.py`.
   The probe and full-program timing are still open. The 12-point matrix (#307)
   needs a measured rate and a completed digital comparison before its timeouts
   can be sized. [Criterion and submission evidence](records/20261121-coupled-rate.md).
+  If the measured full-block rate exceeds the 3480 s ceiling, that is recorded as a
+  negative result for option (b) (DR-0017).
 * Full-block 100 ns rate probe on the re-pinned netlist (`965f1e6c...`): one batch job was
   interrupted by spot reclamation at 3279 s, no verdict; re-run needed. See
   `records/20261106-rate-probe-repinned-netlist.md`.

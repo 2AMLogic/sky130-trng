@@ -678,8 +678,22 @@ def test_coupled_request() -> None:
             assert primitives.isdisjoint(noops) and primitives | noops == routed
 
 
+def test_committed_coupled_artifacts_match_generator() -> None:
+    """The committed coupled-probe request.json/plan.json must equal what the
+    generator emits today (a freshly generated plan cannot detect a stale
+    committed one)."""
+    committed = HERE / "runs/20261121-coupled-probe/requests/coupled-probe"
+    with tempfile.TemporaryDirectory(prefix="test-make-requests-coupled-") as tmp:
+        with contextlib.redirect_stdout(io.StringIO()):
+            assert mr.main([str(Path(tmp) / "c"), "--set", "coupled-probe"]) == 0
+        fresh = Path(tmp) / "c" / "coupled-probe"
+        for name in ("request.json", "plan.json"):
+            assert json.loads((fresh / name).read_text()) == json.loads((committed / name).read_text()), name
+
+
 def main() -> int:
     test_coupled_request()
+    test_committed_coupled_artifacts_match_generator()
     test_standalone_waveform_bytes()
     test_capture_points_sit_at_a_rail()
     test_change_emits_hold_then_edge()
