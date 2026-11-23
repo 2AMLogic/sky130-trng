@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Replay the append-only sampler_core PEX evidence and exercise incomplete responses."""
 import json
+import stat
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -12,6 +14,37 @@ from loadmod import load_module
 SLUG = SIM / "pex-sampler-core"
 RUN = SLUG / "runs/20261121-001303-7330672"
 harness = load_module("pex_measure", SLUG / "harness/pex-measure.py")
+
+
+class KltVersionRead(unittest.TestCase):
+    """issue #653: the manifest's ``klt`` value comes from the shared
+    ``_klt_common.klt_version`` reader -- BARE, and fail-closed -- not the
+    ``klt --version`` banner scrape #597 regrew, which recorded a
+    ``"klt "-prefixed`` string and failed OPEN (a failing klt left ``""``
+    in harness-manifest.json instead of aborting the run)."""
+
+    def _fake_klt(self, body):
+        td = tempfile.TemporaryDirectory()
+        self.addCleanup(td.cleanup)
+        exe = Path(td.name) / "klt"
+        exe.write_text("#!/usr/bin/env python3\n"
+                       "import json, sys\n"
+                       "argv = sys.argv[1:]\n" + body)
+        exe.chmod(exe.stat().st_mode | stat.S_IEXEC)
+        return str(exe)
+
+    def test_records_the_bare_version(self):
+        klt = self._fake_klt(
+            'if argv[:1] != ["version"]:\n'
+            '    sys.exit(2)\n'
+            'print(json.dumps({"version": "0.8.0"}))\n')
+        self.assertEqual(harness.read_klt_version(klt), "0.8.0")
+
+    def test_a_failing_klt_version_aborts_the_run(self):
+        klt = self._fake_klt('print("klt 0.9.3")\nsys.exit(1)\n')
+        with self.assertRaisesRegex(harness.HarnessError,
+                                    "no JSON response"):
+            harness.read_klt_version(klt)
 
 
 class SamplerCorePEX(unittest.TestCase):
