@@ -37,7 +37,6 @@ Nothing outside ``sim/area-limiter-study/`` is written.  ``digital/rtl/``,
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import shutil
 import subprocess
@@ -53,12 +52,14 @@ sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
 sys.path.insert(0, str(REPO_ROOT / "sim" / "digital-synthesis" / "harness"))
 sys.path.insert(0, str(REPO_ROOT / "sim" / "digital-rtl-equivalence" / "harness"))
 sys.path.insert(0, str(REPO_ROOT / "sim" / "tests"))
+sys.path.insert(0, str(REPO_ROOT / "layout" / "bin"))
 
 import attribute_digital_area as ada  # noqa: E402
 import combine_options  # noqa: E402
 import composition_overhead  # noqa: E402
 import fold_sampler_core  # noqa: E402
 import gate_cosim  # noqa: E402
+from _hashing import sha256_file  # noqa: E402
 from loadmod import load_module  # noqa: E402
 
 rtl_cosim = load_module(
@@ -76,7 +77,7 @@ def resolve_liberty() -> Path:
         cand = root / "sky130A" / "libs.ref" / "sky130_fd_sc_hd" / "lib" / \
             DECK_BASENAME
         if cand.exists():
-            digest = hashlib.sha256(cand.read_bytes()).hexdigest()
+            digest = sha256_file(cand)
             if digest == ada.DECK_SHA256:
                 return cand
     raise SystemExit(

@@ -44,13 +44,14 @@ No PDK file is written; nothing outside this study's own outputs is touched.
 
 from __future__ import annotations
 
-import hashlib
 import json
 import re
 import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(REPO_ROOT / "layout" / "bin"))
+from _hashing import sha256_file  # noqa: E402
 
 COMMITTED_NETLIST = (REPO_ROOT / "sim" / "digital-synthesis" / "runs" /
                      "20260910-001436-a4c3194" / "unconstrained-trng_digital_synth.v")
@@ -323,7 +324,7 @@ def main(argv: list[str] | None = None) -> int:
                     help="asserted count of Q-driven cond_mem bits")
     args = ap.parse_args(argv)
 
-    digest = hashlib.sha256(args.liberty.read_bytes()).hexdigest()
+    digest = sha256_file(args.liberty)
     if digest != DECK_SHA256:
         print(f"error: liberty sha256 {digest} != pinned {DECK_SHA256}",
               file=sys.stderr)
