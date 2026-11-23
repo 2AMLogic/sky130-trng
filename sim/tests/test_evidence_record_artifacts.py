@@ -631,6 +631,65 @@ class DirtyTreeDisclosure(unittest.TestCase):
         self.assertEqual(set(rec), set(er.RESERVED_BEHAVIORAL_KEYS))
 
 
+class WorkingTreeStateHelper(DirtyTreeDisclosure):
+    """Issue #692: the shared working_tree_state() helper and mint_record's
+    opt-in `worktree=` argument. Reuses DirtyTreeDisclosure's temp repo."""
+
+    # Inherited tests are the behavioral-writer regression suite; skip
+    # re-running them here.
+    for _n in [n for n in dir(DirtyTreeDisclosure) if n.startswith("test_")]:
+        locals()[_n] = None
+    del _n
+
+    def mint_rec(self, repo, rid, **kw):
+        import datetime as dt
+        out = repo / "records"
+        return er.mint_record(out, repo, rid, ["# h\n"], "body\n", {"k": 1},
+                              author="a", now=dt.datetime(2026, 1, 1),
+                              sha="abc1234", **kw)
+
+    def test_helper_clean(self):
+        st = er.working_tree_state(self.repo)
+        self.assertEqual(st.fields, {"repo_dirty": False})
+        self.assertEqual(st.footer_line, "- Working tree: clean (matches the cited commit)")
+
+    def test_helper_dirty(self):
+        (self.repo / "harness.py").write_text("v2\n")
+        st = er.working_tree_state(self.repo)
+        self.assertEqual(st.fields, {"repo_dirty": True, "repo_dirty_paths": ["harness.py"]})
+        self.assertIn("dirty (1 path differs", st.footer_line)
+
+    def test_helper_unknown_is_not_clean(self):
+        notarepo = self.tmp / "notarepo"
+        notarepo.mkdir()
+        st = er.working_tree_state(notarepo)
+        self.assertEqual(st.fields, {"repo_dirty": None})
+        self.assertIn("unknown (git status unavailable", st.footer_line)
+
+    def test_helper_caps_paths_and_names_total(self):
+        cap = er._DIRTY_PATHS_CAP
+        for i in range(cap + 3):
+            (self.repo / f"u{i:03d}.txt").write_text("x")
+        st = er.working_tree_state(self.repo)
+        self.assertEqual(len(st.fields["repo_dirty_paths"]), cap)
+        self.assertIn(f"({cap + 3} paths differ", st.footer_line)
+
+    def test_mint_record_default_footer_unchanged(self):
+        (self.repo / "harness.py").write_text("v2\n")  # dirty, yet no disclosure
+        md, js = self.mint_rec(self.repo, "r1")
+        text = md.read_text()
+        self.assertNotIn("Working tree", text)
+        self.assertTrue(text.endswith("- Supersedes: (none)\n"))
+        self.assertEqual(json.loads(js.read_text()), {"k": 1})
+
+    def test_mint_record_opt_in_appends_line(self):
+        (self.repo / "harness.py").write_text("v2\n")
+        st = er.working_tree_state(self.repo)
+        md, _ = self.mint_rec(self.repo, "r2", worktree=st)
+        self.assertTrue(md.read_text().endswith(
+            "- Supersedes: (none)\n" + st.footer_line + "\n"))
+
+
 class WriteCornerBundle(unittest.TestCase):
     """er.write_corner_bundle: shared corner-bundle writer + collision guard (issue #392)."""
 
