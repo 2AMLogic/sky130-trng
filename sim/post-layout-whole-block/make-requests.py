@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Assemble the whole-block klt sim requests (issue #174).
 
-Writes ``corners/<name>/{netlist.cir,request.json,plan.json}`` for two sets:
+Writes ``<reqdir>/<name>/{netlist.cir,request.json,plan.json}`` for the selected set:
 
 ``--set controls``
     ``startup-probe`` -- the full deck truncated after the first program
@@ -13,6 +13,10 @@ Writes ``corners/<name>/{netlist.cir,request.json,plan.json}`` for two sets:
 
 ``--set rate-probe``
     one short batch unit (issue #403) reporting simulated time reached.
+
+``--set coupled-probe`` / ``--set coupled-full``
+    One nominal batch unit with the transistor sampler driving the archived
+    timed gate model. The 100 ns probe gates the full 7,870 ns run (#596).
 
 ``--set grid``
     one request per (T, Vdd) point of this repo's established four-point
@@ -42,6 +46,7 @@ Nothing here simulates anything.
 from __future__ import annotations
 
 import argparse
+import gzip
 import json
 import re
 import shutil
@@ -57,6 +62,11 @@ sys.path.insert(0, str(HERE))
 import program as P  # noqa: E402
 import pvt_deck_map as PVT  # noqa: E402
 
+sys.path.insert(0, str(REPO / "sim" / "bin"))
+from loadmod import load_module  # noqa: E402
+
+G = load_module("whole_block_gate_model", HERE / "make-gate-model.py")
+
 NETLIST_BODY = HERE / "trng_whole.sim.spice"
 NETLIST_GZ = HERE / "trng_whole.sim.spice.gz"
 
@@ -67,10 +77,8 @@ TMAX = "20p"
 #: the repo's established four-point post-layout grid x tt/ss/ff (12 points)
 GRID = [(-40.0, 1.62), (27.0, 1.8), (-40.0, 1.98), (125.0, 1.98)]
 
-#: per-corner wall-clock bound for the batch grid. NOT re-derived by issue #431
-#: Step 2: DR-0017 requires it to come from a measured gate-level digital run on
-#: the fleet, and no such run exists yet (the 0.057 s/ns analog-only rate does
-#: not size it). See README "Open: digital co-simulation".
+#: Historical flat-grid limits. A completed, checked coupled run is required
+#: to size #307 (records/20261121-coupled-rate.md).
 GRID_TIMEOUT_S = 21600
 
 #: digital input high level, fixed at every corner (declared in the record:
@@ -78,12 +86,7 @@ GRID_TIMEOUT_S = 21600
 #: and the supply sources themselves -- not these cards -- carry the corner)
 VIH = 1.8
 
-#: PWL edge width for every driven input change (ns) -- the same 100 ps every
-#: PULSE card in this deck family uses. Issue #488: it must stay >= 0.1, since
-#: pwl_card formats breakpoint times as f"{t:.1f}n" and a narrower edge rounds
-#: the hold point and the change onto the SAME timestamp, which is a duplicate
-#: breakpoint rather than an edge. make-gate-model.py's PWL_EDGE_NS is its twin.
-EDGE_NS = 0.1
+EDGE_NS = P.PWL_EDGE_NS
 
 #: current-window current/power integration windows (ns): W1 rings-running /
 #: digital reset-held (clk has not started; rst_n low until 300 ns); W2 active
@@ -95,7 +98,6 @@ def _netlist_text() -> str:
     """The committed netlist body (gzip is the committed form; a plain copy wins if present)."""
     if NETLIST_BODY.exists():
         return NETLIST_BODY.read_text()
-    import gzip
     return gzip.decompress(NETLIST_GZ.read_bytes()).decode()
 
 
@@ -251,52 +253,8 @@ def fmt(v: float) -> str:
     return f"{v:.1f}".rstrip("0").rstrip(".") if v != int(v) else f"{int(v)}"
 
 
-def pwl_card(sig: str, net: str, points: list[tuple[float, float]]) -> str:
-    # logical 0/1 -> volts: highs sit at the declared VIH, not at 1.000 V
-    pts = " ".join(f"{t:.1f}n {v * VIH:.3f}" for t, v in points)
-    return f"V{sig} {net} 0 PWL({pts})"
-
-
 def input_cards(cycles: list[dict], n_cycles: int) -> list[str]:
-    """One PWL card per driven input pin; value holds, then switches over
-    EDGE_NS ending at t_edge+SKEW."""
-    inputs = P.cycle_inputs(cycles)
-    cards = []
-
-    def points(get):
-        """PWL breakpoints that HOLD between changes, with an EDGE_NS edge.
-
-        A PWL source interpolates **linearly** between its breakpoints, so a
-        points list carrying only the change instants makes every input ramp
-        across the whole hold interval instead of switching at it (issue #488).
-        Measured on this deck before the fix: ``bus_re`` emitted as
-        ``PWL(0.0n 1.800 640.0n 0.000 970.0n 0.000)`` sat at 0.928 V at 310 ns,
-        and across the full 75-cycle grid program 344 of 3000 (driven input x
-        capture point) samples were more than 10 % off a rail, the worst at
-        0.905 V -- essentially mid-rail. So each change gets a hold point one
-        EDGE_NS before it; make-gate-model.py:stimulus_cards does the same.
-        """
-        pts = [(0.0, float(get(0)))]
-        for k in range(1, n_cycles):
-            prev, cur = get(k - 1), get(k)
-            if cur != prev:
-                t_change = P.t_edge_ns(k) + P.SKEW_NS
-                pts.append((t_change - EDGE_NS, float(prev)))  # hold
-                pts.append((t_change, float(cur)))             # edge
-        pts.append((P.t_stop_ns(cycles), float(get(n_cycles - 1))))
-        return pts
-
-    for bit in range(4):
-        cards.append(pwl_card(f"bus_addr_{bit}_", f"bus_addr_{bit}_",
-                              points(lambda k, b=bit: (inputs[k]["addr"] >> bit) & 1)))
-    for bit in range(32):
-        cards.append(pwl_card(f"bus_wdata_{bit}_", f"bus_wdata_{bit}_",
-                              points(lambda k, b=bit: (inputs[k]["wdata"] >> b) & 1)))
-    cards.append(pwl_card("bus_we", "bus_we", points(lambda k: inputs[k]["we"])))
-    cards.append(pwl_card("bus_re", "bus_re", points(lambda k: inputs[k]["re"])))
-    cards.append(pwl_card("raw_valid", "raw_valid", points(lambda k: inputs[k]["raw_valid"])))
-    cards.append(pwl_card("out_ready", "out_ready", points(lambda k: inputs[k]["out_ready"])))
-    return cards
+    return P.input_cards(cycles, n_cycles, VIH)
 
 
 #: rate-probe (issue #403): .tran stop (ns). Rings start at 5 ns, the clock at
@@ -400,18 +358,68 @@ def measurement_cards(cycles: list[dict]) -> tuple[list[dict], list[str]]:
     return meas, sorted(save)
 
 
+def nominal_gate_model() -> tuple[str, dict]:
+    """Use the measured nominal gate model, with its exact bridges and input loads."""
+    base = Path("corners/gate-model-full")
+    manifest_path = base / "gate-model.manifest.json"
+    manifest = json.loads((HERE / manifest_path).read_text())
+    plan = json.loads((HERE / base / "plan.json").read_text())
+    gate = gzip.decompress((HERE / "runs/20261114-gate-model-full/gate-model.cir.gz").read_bytes()).decode()
+    if (sha256_text(gate) != plan["gate_model_sha256"]
+            or sha256_file(G.ROUTED_V) != manifest["source_netlist_sha256"]
+            or manifest["source_netlist_sha256"] != plan["routed_netlist_sha256"]
+            or manifest["liberty_sha256"] != plan["liberty_sha256"]):
+        raise ValueError("nominal model, routed Verilog or Liberty identity differs from the gate record")
+    return gate, {"gate_manifest": str(manifest_path), "gate_model_sha256": sha256_text(gate),
+                  "liberty_sha256": manifest["liberty_sha256"], "liberty_deck": manifest["liberty_deck"],
+                  "realisation": manifest["realisation"], "reductions": manifest["reductions"],
+                  "raw_source": "analog_sampler"}
+
+
+def coupled_analog() -> tuple[str, list[str]]:
+    """Export each actual extracted sampler cluster as an additional positional port."""
+    analog = analog_netlist_text()
+    header, marker, devices = analog.partition("* device instance")
+    nets = set().union(*(pins for _, pins in _device_blocks(analog)))
+    outputs = [n for n, spec in P.boundary_signals().items() if spec["dir"] == "analog->digital"]
+    pins = []
+    for name in outputs:
+        matches = [net for net in nets if name in net.split("|")]
+        if len(matches) != 1:
+            raise ValueError(f"expected one sampler cluster for {name}, got {matches}")
+        pins.extend(matches)
+    return header + "+ " + " ".join(pins) + "\n" + marker + devices, outputs
+
+
+def coupled_measurements(cycles: list[dict]) -> tuple[list[dict], list[str]]:
+    meas, save = G.measurement_cards(cycles, VIH, G.EXPECTED_THRESHOLD_PCT)
+    for k in range(len(cycles)):
+        t = P.t_edge_ns(k) + P.CAPTURE_NS
+        for signal in ("raw_bit", "raw_valid"):
+            name = f"{signal}_k{k}"
+            meas.append({"name": name, "spice": f".meas tran {name} FIND v({signal}) AT={t:.1f}n"})
+    meas.append({"name": "clk_at_stop",
+                 "spice": f".meas tran clk_at_stop FIND v(clk) AT={P.t_stop_ns(cycles):.0f}n"})
+    return meas, save
+
+
 def deck_body(cycles: list[dict], header: list[str], rate_probe_stop: float | None = None,
-              analog_only: bool = False):
+              analog_only: bool = False, gate: str | None = None):
+    ports = list(_subckt_ports())
+    if gate is not None:
+        analog, outputs = coupled_analog()
+        ports.extend(outputs)
+    else:
+        analog = analog_netlist_text() if analog_only else _netlist_text()
     body = ["* " + line for line in header]
     body += [
         "",
         ".option scale=1u",
         "",
-        *(analog_netlist_text() if analog_only else _netlist_text()).splitlines(),
+        analog.rstrip("\n"),
         "",
         "* ---- supplies (corners.supply_v alters the named sources) ----",
-        "Vvdd vdd 0 dc 1.8",
-        "Vvss vss 0 dc 0",
+        *(gate.splitlines() if gate is not None else ["Vvdd vdd 0 dc 1.8", "Vvss vss 0 dc 0"]),
         "Vvddr1 vddr1 0 dc 1.8",
         "Vvddr2 vddr2 0 dc 1.8",
         "Vvddr3 vddr3 0 dc 1.8",
@@ -424,13 +432,16 @@ def deck_body(cycles: list[dict], header: list[str], rate_probe_stop: float | No
         f"Vrstn rst_n 0 PULSE(0 {VIH} 300n 100p 100p 10u 20u)",
         f"Vclk clk 0 PULSE(0 {VIH} {P.T0_NS:.0f}n 100p 100p 49.8n {P.TS_NS:.0f}n)",
         "* ---- directed program: one PWL card per driven input ----",
-        *input_cards(cycles, len(cycles)),
+        *P.input_cards(cycles, len(cycles), VIH, coupled=gate is not None),
         "* ---- device under test ----",
     ]
-    ports = _subckt_ports()
     body.append("Xw " + " ".join(ports) + " trng_whole")
-    meas, save = (rate_probe_measurements(rate_probe_stop) if rate_probe_stop
-                  else measurement_cards(cycles))
+    if rate_probe_stop is not None:
+        meas, save = rate_probe_measurements(rate_probe_stop)
+    elif gate is not None:
+        meas, save = coupled_measurements(cycles)
+    else:
+        meas, save = measurement_cards(cycles)
     body.append("* ---- saved trace set (memory: only measured nets) ----")
     for i in range(0, len(save), 8):
         body.append(".save " + " ".join(save[i:i + 8]))
@@ -489,11 +500,18 @@ def make_request(name: str, outdir: Path, *, processes: list[str], temp_c: float
                  header: list[str], cycles: list[dict] | None = None,
                  timeout_s: int = 1800, poll_timeout_s: int | None = None,
                  rate_probe_stop: float | None = None,
-                 analog_only: bool = False,
+                 analog_only: bool = False, coupled: bool = False,
                  gate_model_pvt: dict | None = None) -> None:
     if cycles is None:
         cycles, _ = P.build_program()
-    body, meas = deck_body(cycles, header, rate_probe_stop, analog_only)
+    if coupled and (processes != ["tt"] or temp_c != 27.0 or supply != VIH):
+        raise ValueError("the recorded gate model is only for the tt / 27 C / 1.8 V rate experiment")
+    gate, plan_fields = nominal_gate_model() if coupled else (None, {})
+    if coupled:
+        plan_fields["analysis_stop_ns"] = rate_probe_stop or P.t_stop_ns(cycles)
+    else:
+        plan_fields["windows"] = {"w1_ns": list(W1), "w2_ns": [P.t_edge_ns(2), P.t_stop_ns(cycles) - P.TS_NS]}
+    body, meas = deck_body(cycles, header, rate_probe_stop, analog_only, gate)
     outdir.mkdir(parents=True, exist_ok=True)
     (outdir / "netlist.cir").write_text(body)
     request = {
@@ -527,7 +545,7 @@ def make_request(name: str, outdir: Path, *, processes: list[str], temp_c: float
         "vih_fixed": VIH,
         "provenance": P.PROVENANCE,
         **_partition_plan(),
-        "windows": {"w1_ns": list(W1), "w2_ns": [P.t_edge_ns(2), P.t_stop_ns(cycles) - P.TS_NS]},
+        **plan_fields,
     }
     if gate_model_pvt is not None:
         # issue #595: the digital half's deck per process corner of THIS
@@ -558,11 +576,24 @@ def _partition_plan() -> dict:
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("reqdir", type=Path, help="output directory (usually corners/<id>)")
-    ap.add_argument("--set", dest="which", choices=("controls", "grid", "rate-probe", "analog-probe"), required=True)
+    ap.add_argument("--set", dest="which", required=True, choices=(
+        "controls", "grid", "rate-probe", "analog-probe", "coupled-probe", "coupled-full"))
     args = ap.parse_args(argv)
     reqdir: Path = args.reqdir
     if reqdir.exists() and any(reqdir.iterdir()):
         ap.error(f"{reqdir} exists and is not empty; refusing to mix sets")
+    if args.which in ("coupled-probe", "coupled-full"):
+        cycles, _ = P.build_program()
+        probe = args.which == "coupled-probe"
+        stop = RATE_PROBE_STOP_NS if probe else P.t_stop_ns(cycles)
+        make_request(args.which, reqdir / args.which, processes=["tt"], temp_c=27.0,
+                     supply=1.8, backend="batch", analysis_args=f"{stop:.0f}n",
+                     header=[f"DR-0017 nominal coupled rate experiment: {args.which}"],
+                     # 3360 s worker + 120 s batch overhead fits the 3480 s ceiling.
+                     cycles=cycles, timeout_s=3360, poll_timeout_s=3480,
+                     rate_probe_stop=stop if probe else None, coupled=True)
+        print(f"wrote {reqdir / args.which}")
+        return 0
     if args.which == "analog-probe":
         # issue #431 Step 1 (DR-0017 feasibility gate): analog chain only
         # (rings + sampler, 264 transistors), digital absent; one batch unit.
