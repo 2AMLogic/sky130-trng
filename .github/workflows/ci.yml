@@ -289,13 +289,14 @@ name: CI
 #     verify` needs the broker and is an out-of-band step. The signoff-check
 #     pin below deliberately stays klayout-tools==0.8.0.
 #
-# sim/tests/test_health_detection_coverage.py, test_idle_leakage.py,
-# test_mismatch_reduction.py, test_raw_bit_pvt_crosscheck.py,
-# test_vth_drift.py, test_wakeup_reduction.py, test_whole_block_reduction.py,
-# test_xor_alternatives.py (issue #654) -- eight stdlib-only suites that
-#     existed only as local runs until #654 wired them in: each was added
-#     by the PR that introduced its subject (issues #300, #201, #215,
-#     #216, #254, #289, #174, #282 respectively) without a matching step
+# sim/tests/test_health_detection_coverage.py (#300),
+# test_idle_leakage.py (#201), test_mismatch_reduction.py (#215),
+# test_raw_bit_pvt_crosscheck.py (#289), test_vth_drift.py (#254),
+# test_wakeup_reduction.py (#216), test_whole_block_reduction.py (#174),
+# test_xor_alternatives.py (#282) (issue #654) -- eight stdlib-only suites
+#     that existed only as local runs until #654 wired them in: each was added
+#     by the PR that introduced its subject (the issue number after each suite;
+#     same pairing as its step name below) without a matching step
 #     here, so a change whose only coverage was one of these suites
 #     regressed with CI fully green -- exactly what happened on PR #649,
 #     whose reduce-whole-block.py change is covered only by
