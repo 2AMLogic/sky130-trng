@@ -461,6 +461,60 @@ def test_startup_probe_timeouts_pinned() -> None:
     assert committed_b["batch"]["poll_timeout_s"] == 7000, committed_b["batch"]
 
 
+def test_final_cycle_read_emits_no_rdata_measurement() -> None:
+    """Issue #646: the deck must not collect a measurement nothing can score.
+
+    A read's data is latched at the edge that ENDS cycle k and observed
+    during cycle k+1, so a read in the last cycle has no cycle to be
+    observed in and no model row to compare with. ``make-gate-model.py``
+    has always guarded its rdata set with ``k + 1 < n``; before #646 this
+    generator emitted the word anyway -- 32 cards the shared oracle
+    structurally skips while the reducer's ``required`` contract demands
+    their presence, i.e. collected, required, never compared.
+
+    The committed program's last cycle is the final STATUS read, so the
+    guard bites on it: ``rdata_k74_b*`` is gone, every earlier read keeps
+    its full 32-bit word, and the grid program's card count drops
+    610 -> 578.
+    """
+    cycles, _ = P.build_program()
+    n = len(cycles)
+    inputs = P.cycle_inputs(cycles)
+    assert inputs[n - 1]["re"], "the committed program's last cycle is a read"
+    cards, _save = mr.measurement_cards(cycles)
+    names = {c["name"] for c in cards}
+    for bit in range(32):
+        assert f"rdata_k{n - 1}_b{bit}" not in names
+    for k, inp in enumerate(inputs[:-1]):
+        if inp["re"]:
+            got = sum(1 for b in range(32) if f"rdata_k{k}_b{b}" in names)
+            assert got == 32, (k, got)
+
+
+def test_last_cycle_without_read_changes_nothing() -> None:
+    """Issue #646 edge cases: the guard must bite only on a last-cycle read.
+
+    The committed program truncated to 43 cycles ends on a streaming
+    sample and its last read sits in cycle 41 = n-2: no card changes
+    against the pre-#646 generator (417 cards), and the n-2 read still
+    emits its full 32-bit word -- it is observed in cycle n-1, which
+    exists.
+    """
+    cycles, _ = P.build_program(43)
+    n = len(cycles)
+    assert cycles[n - 1]["op"] == "sample", cycles[n - 1]["op"]
+    inputs = P.cycle_inputs(cycles)
+    assert inputs[n - 2]["re"], "cycle n-2 is a read in this truncation"
+    cards, _save = mr.measurement_cards(cycles)
+    names = {c["name"] for c in cards}
+    assert len(cards) == 417, len(cards)
+    for k, inp in enumerate(inputs):
+        if inp["re"]:
+            expected = 32 if k + 1 < n else 0
+            got = sum(1 for b in range(32) if f"rdata_k{k}_b{b}" in names)
+            assert got == expected, (k, got)
+
+
 # ---------------------------------------------------------------------------
 # Issue #555: the bound scan must fail loud on a unit it cannot check
 # ---------------------------------------------------------------------------
@@ -702,6 +756,8 @@ def main() -> int:
     test_generated_measurements_within_tran_stop()
     test_committed_request_ledger()
     test_startup_probe_timeouts_pinned()
+    test_final_cycle_read_emits_no_rdata_measurement()
+    test_last_cycle_without_read_changes_nothing()
     test_bound_scan_flags_non_ns_units()
     test_per_card_guard_flags_unvisited_bound()
     print("test_make_requests OK")

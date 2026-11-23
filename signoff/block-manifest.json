@@ -102,11 +102,27 @@
     "                    ratified spec and DR-0004 (digital section) is",
     "                    `Proposed`. Stays unmet/no_evidence.",
     "  6                  no `klt yield` report exists.",
-    "  7.analog           no `klt pex` report exists -- post-layout",
-    "                    campaigns run from `klt extract --parasitics`",
-    "                    netlists via sim/bin harnesses, which item 7 by",
-    "                    design does not accept (a clean DRC or",
-    "                    pre-layout sim proves nothing post-layout).",
+    "  7.analog           (issue #597) CITED: a native `klt pex` report",
+    "                    (sim/pex-sampler-core/runs/20261121-001303-7330672/",
+    "                    pex-report.json), --measure-command mode: 11 spec",
+    "                    rows x 12 PVT corners (tt/ss/ff x the post-layout",
+    "                    four-point grid) over the same committed GDS 3/11",
+    "                    cite, pinned to its content hash. Grades on the",
+    "                    report's OWN status: `fail` -- 130/132 rows pass;",
+    "                    active_power_uw exceeds the README 500 uW bound at",
+    "                    ff/-40C/1.98V and ff/125C/1.98V on BOTH legs",
+    "                    (schematic 519/567 uW already; parasitics add",
+    "                    6-13%), so the row is a pre-layout design",
+    "                    condition, not a parasitic regression. Failing rows",
+    "                    stay failing; bounded design-iteration follow-up is",
+    "                    issue #604. Disclosures in signoff/README.md:",
+    "                    extraction.model limits (lumped star R, ground +",
+    "                    vertical-overlap C only, quasi-static; no lateral",
+    "                    coupling, no distributed RC) and body_bias",
+    "                    (biased, 0 unbiased devices, no --tie-net). The",
+    "                    layout-regeneration chain (#371/#372) changes the",
+    "                    GDS. Signoff CI compares the working GDS digest with",
+    "                    the cited PEX input even for a failing report.",
     "  7.digital          (issue #227) CITED: a native, SDF-annotated `klt",
     "                    functional-verification` report",
     "                    (sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/timed-declared.report.json):",
@@ -273,21 +289,25 @@
     },
     "2.digital": {
       "file": "signoff/attest/2.digital.json",
-      "content_hash": "sha256:2e0b95feadf114d988286e3638bb478e2dbd7472b84aa4198fbdf318e481e1f7"
+      "content_hash": "sha256:c94a4454086e66ae8a577334519a6746b268a58c36f9f06460fa9787130e2680"
     },
     "9": {
       "file": "signoff/attest/9.json",
-      "content_hash": "sha256:629b3c44bde8d33b69c3153389add1d57abb45a0353b90b6d3260251802aa16d"
+      "content_hash": "sha256:618cdd8e67dfdd096cab9f9cefa27c123cdb99774ba396184eab68e7ebd84452"
     },
     "10": {
       "file": "signoff/attest/10.json",
-      "content_hash": "sha256:7c8e62461d35d80bb7e4db9e09e731487b7cf7c091d149f424f62f43d23a9c82"
+      "content_hash": "sha256:b573d134e1c38c2334b152d6d73634f54d48e57c8ed69cb8fb66ba394b0d1f26"
     },
     "8.analog": {
       "file": "signoff/characterization-envelope.json"
     },
     "8.digital": {
       "file": "signoff/characterization-envelope.json"
+    },
+    "7.analog": {
+      "file": "sim/pex-sampler-core/runs/20261121-001303-7330672/pex-report.json",
+      "content_hash": "sha256:e3ff54a9bb15122298f0d5df817612ed1caacb3b045533f9ba86d009036c2004"
     }
   }
 }

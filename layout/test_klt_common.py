@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Contract tests for ``layout/bin/_klt_common.py``'s shared ``klt`` readers
-(issue #500) and the #535 helper consolidation.
+(issue #500) and the #535 / #613 helper consolidations.
 
 Standalone script, following ``layout/test_hashing.py``'s convention:
 
@@ -45,6 +45,15 @@ diverged in the failure direction:
 - ``dumps`` must stay byte-equal to :func:`write_json`'s file content, so a
   string-built artifact and a file-written one can never drift.
 - the five helpers must not grow back as per-script forks in ``layout/bin``.
+- the four GDS geometry helpers must stay in ``_gds_geometry.py``: no
+  per-script fork, and no ``spec_from_file_location`` loader of
+  ``compose-whole.py``, in the three scripts the #613 consolidation touched
+  (#617's guard).
+- the non-FV ``sim/`` harnesses must reach klt through the shared readers:
+  no raw ``klt --version`` argv, no direct ``["pdk", "find", ...]`` call,
+  no ``startswith(str(REPO_ROOT))`` ``rel()`` fork, anywhere under
+  ``layout/`` or ``sim/`` outside the named #502 carve-outs (#653's guard,
+  after #597 regrew the banner read in sim/pex-sampler-core unnoticed).
 """
 from __future__ import annotations
 
@@ -70,6 +79,7 @@ from _klt_common import (  # noqa: E402
     load_json,
     pdk_find,
     pdk_root,
+    pdk_root_of,
     rel,
     run_klt_rc,
     write_json,
@@ -253,6 +263,29 @@ def check_pdk_root_reads_root_from_the_response() -> None:
                 lambda: pdk_root("sky130A", env=env, klt=klt), "'root'")
 
 
+def check_pdk_root_of_reads_one_response() -> None:
+    """``pdk_root_of`` is ``root``'s single-response reader (issue #653),
+    the mirror of :func:`libs_ref_of`: the P&R harness needs the root AND
+    other fields of the same ``klt pdk find`` response, so it must not
+    fork a second subprocess per field -- and a missing ``root`` must be
+    a BuildError, not a raw ``KeyError``."""
+    got = pdk_root_of(_PDK_RESPONSE)
+    _check("pdk_root_of reads root from a fetched response",
+           got == "/fake/.ciel", got)
+    _raises("pdk_root_of names the klt and pdk it was asked for",
+            lambda: pdk_root_of({}, pdk="sky130A", klt="/x/klt"),
+            "/x/klt pdk find --pdk sky130A")
+    _check("pdk_root() and pdk_root_of agree on the response's root",
+           pdk_root_of(_PDK_RESPONSE) == _PDK_RESPONSE["root"])
+    for label, response in {
+        "no root": {},
+        "non-string root": {"root": None},
+        "empty root": {"root": ""},
+    }.items():
+        _raises(f"pdk_root_of raises on {label}",
+                lambda response=response: pdk_root_of(response), "'root'")
+
+
 def check_pdk_find_names_the_pdk_it_was_asked_for() -> None:
     body = ('print(json.dumps({"root": "/r", "asked": argv}))')
     with tempfile.TemporaryDirectory() as t:
@@ -409,6 +442,96 @@ def check_the_migrated_sites_no_longer_scrape_text() -> None:
                and 'subprocess.run([args.klt, "pdk"' not in text)
 
 
+def check_sim_harnesses_share_the_klt_readers() -> None:
+    """Issue #653's regression guard: #500/#535 consolidated the klt
+    readers into ``_klt_common``, and #597 then regrew the retired
+    ``klt --version`` banner read in sim/pex-sampler-core unnoticed,
+    because the no-fork guards covered ``layout/bin`` and four named files
+    only. This scans every non-test ``.py`` under ``layout/`` and ``sim/``
+    for the three fork shapes:
+
+    - a raw ``[klt, "--version"]`` / ``[args.klt, "--version"]`` argv (the
+      banner read, which fails open; the shared ``klt_version()`` asks
+      ``klt version --format json`` and fails closed);
+    - a direct ``["pdk", "find", ...]`` argv (bypasses ``pdk_find``'s
+      compatibility / broken_symlinks warnings and the fail-closed
+      ``libs_ref_of`` / ``pdk_root_of`` field reads);
+    - a ``startswith(str(REPO_ROOT))`` ``rel()`` fork (crashes with a
+      ValueError on a sibling directory sharing the repo's name prefix).
+
+    Sole carve-outs: ``_klt_common.py`` itself (the shared home) and
+    #502's two functional-verification harnesses, which stay hand-rolled
+    until the freshness-pinned 7.digital SDF record is re-minted under
+    #372. ``design/netlist.py``'s minimum-floor ``--version`` probe is
+    outside the scan roots (and returns ``str | None`` by design, #316);
+    ngspice's own ``--version`` reads do not match the klt-shaped regex.
+    """
+    repo = Path(__file__).resolve().parent.parent
+    exempt = {
+        "layout/bin/_klt_common.py",
+        "sim/digital-functional-verification/harness/fv-cosim.py",
+        "sim/digital-sdf-timed-verification/harness/fv-sdf-cosim.py",
+    }
+    version_fork = re.compile(r'\[\s*(?:args\.)?klt\s*,\s*"--version"\s*\]')
+    pdk_find_fork = re.compile(r'\[\s*"pdk"\s*,\s*"find"\s*,')
+    rel_fork = re.compile(r"startswith\(str\(REPO_ROOT\)\)")
+    forks = (("klt --version argv", version_fork),
+             ("direct pdk find argv", pdk_find_fork),
+             ("startswith rel() fork", rel_fork))
+    seen: set[str] = set()
+    for root in ("layout", "sim"):
+        for path in sorted((repo / root).rglob("*.py")):
+            relpath = path.relative_to(repo).as_posix()
+            if relpath in exempt or path.name.startswith("test_"):
+                continue
+            seen.add(relpath)
+            text = path.read_text()
+            for label, pattern in forks:
+                hit = pattern.search(text)
+                _check(f"{relpath} carries no {label}",
+                       hit is None, hit.group(0) if hit else None)
+    targets = ("sim/pex-sampler-core/harness/pex-measure.py",
+               "sim/digital-pnr/harness/pnr-and-verify.py",
+               "sim/digital-synthesis/harness/synthesize-and-verify.py",
+               "sim/digital-synthesis/harness/synthesize-lagcount-prototype.py")
+    _check("the scan covers the four harnesses #653 migrated",
+           all(t in seen for t in targets),
+           sorted(t for t in targets if t not in seen))
+    # The carve-outs must stay honest: an exempt file that no longer
+    # carries its fork makes the exemption list stale (#372's landing
+    # must shrink it, not leave a hole the next fork can hide in).
+    for relpath in ("sim/digital-functional-verification/harness/fv-cosim.py",
+                    "sim/digital-sdf-timed-verification/harness/fv-sdf-cosim.py"):
+        text = (repo / relpath).read_text()
+        _check(f"{relpath} still carries the fork its exemption names "
+               "(else shrink the exemption)",
+               version_fork.search(text) is not None)
+    # Negative controls (#617's convention): each regex must be shown able
+    # to fail, and stay silent on the legitimate near-misses that share a
+    # token but not a shape.
+    _check("the version regex catches the #597 regrowth shape",
+           version_fork.search('subprocess.run([klt, "--version"], '
+                               'capture_output=True, text=True)') is not None)
+    _check("the version regex catches the args.klt spelling the FV pair uses",
+           version_fork.search('subprocess.run([args.klt, "--version"])')
+           is not None)
+    _check("the version regex stays silent on ngspice --version",
+           version_fork.search('subprocess.run(["ngspice", "--version"])')
+           is None)
+    _check("the version regex stays silent on the shared version subcommand",
+           version_fork.search('run_klt(["version"], env=env, klt=klt)')
+           is None)
+    _check("the pdk-find regex catches a direct run_klt call",
+           pdk_find_fork.search('run_klt(["pdk", "find", "--pdk", pdk], '
+                                'env=env)') is not None)
+    _check("the pdk-find regex stays silent on prose mentioning klt pdk find",
+           pdk_find_fork.search("# klt pdk find --format json is the "
+                                "documented spelling") is None)
+    _check("the rel-fork regex catches the retired lambda's guard",
+           rel_fork.search("if str(Path(p).resolve()).startswith(str(REPO_ROOT))"
+                           " else str(p)") is not None)
+
+
 def check_rel_spells_repo_relative_posix() -> None:
     """Under the repo: a relative POSIX path. Outside it: the absolute
     POSIX spelling, not a ValueError -- a scratch-dir path must not crash
@@ -419,12 +542,22 @@ def check_rel_spells_repo_relative_posix() -> None:
     got = rel(REPO_ROOT / "layout" / "bin" / ".." / "bin" / "_klt_common.py")
     _check("rel() resolves .. segments (Path.resolve)",
            got == "layout/bin/_klt_common.py", got)
+    _check("rel() accepts a str and spells it identically",
+           rel(str(REPO_ROOT / "layout" / "bin" / "_klt_common.py"))
+           == "layout/bin/_klt_common.py")
     with tempfile.TemporaryDirectory() as t:
         outside = Path(t) / "x.json"
         outside.write_text("{}\n")
         got = rel(outside)
         _check("rel() falls back to the absolute POSIX spelling outside the repo",
                got == outside.as_posix(), got)
+    # The exact fork #653 retired: `startswith(str(REPO_ROOT))` guarding a
+    # bare relative_to, which CRASHED on a sibling directory sharing the
+    # repo's name prefix (the string prefix matched, the subpath relation
+    # did not). The shared helper must return the absolute spelling.
+    sibling = REPO_ROOT.parent / f"{REPO_ROOT.name}-study" / "req.json"
+    _check("rel() does not crash on a sibling dir sharing the repo's prefix",
+           rel(sibling) == sibling.as_posix(), rel(sibling))
 
 
 def check_load_json_fails_closed() -> None:
@@ -534,6 +667,57 @@ def check_the_consolidated_helpers_live_in_one_place() -> None:
                hit is None, hit.group(0) if hit else None)
 
 
+def check_the_gds_geometry_helpers_live_in_one_place() -> None:
+    """Issue #617's regression guard over the #613 consolidation: the four
+    GDS geometry helpers live in _gds_geometry.py and must not grow back as
+    per-script forks, nor be reached again through a spec_from_file_location
+    loader of compose-whole.py -- the two loaders #613 deleted. A docstring
+    may name them; a ``def`` may not, and a loader of any other file is not
+    this guard's business."""
+    bin_dir = Path(__file__).resolve().parent / "bin"
+    shared = (bin_dir / "_gds_geometry.py").read_text()
+    for name in ("flat_extract", "net_labels", "probe",
+                 "canonical_geometry_hash"):
+        _check(f"_gds_geometry.py defines {name}()",
+               re.search(rf"^def {name}\(", shared, re.M) is not None)
+    fork = re.compile(
+        r"^def (flat_extract|net_labels|probe|canonical_geometry_hash)\b", re.M)
+    loader = re.compile(r"spec_from_file_location\([^)]*compose-whole", re.S)
+    for script in ("compose-whole.py", "verify-whole.py",
+                   "physical_estimates.py"):
+        text = (bin_dir / script).read_text()
+        hit = fork.search(text)
+        _check(f"{script} carries no local fork of the geometry helpers",
+               hit is None, hit.group(0) if hit else None)
+        hit = loader.search(text)
+        _check(f"{script} reaches no compose-whole.py loader by path",
+               hit is None, hit.group(0) if hit else None)
+    # Negative controls, so both regexes are shown able to fail: the caught
+    # shapes are the ones #613 deleted; the three near-misses must stay
+    # silent (issue #617's test plan).
+    _check("the fork regex catches a copied top-level helper def",
+           fork.search("def probe(db, l2n, regions, layer_key, x_um, y_um):\n"
+                       "    return set()\n") is not None)
+    _check("the fork regex stays silent on a longer name (probe_clusters)",
+           fork.search("def probe_clusters(path):\n    return path\n") is None)
+    _check("the fork regex stays silent on a prose mention",
+           fork.search("# net_labels, probe and canonical_geometry_hash live\n"
+                       "# in _gds_geometry.py\n") is None)
+    _check("the loader regex catches the one-line verify-whole.py loader",
+           loader.search('_cw_spec = importlib.util.spec_from_file_location('
+                         '"compose_whole", HERE / "compose-whole.py")\n')
+           is not None)
+    _check("the loader regex catches the multiline physical_estimates.py "
+           "loader",
+           loader.search('    spec = importlib.util.spec_from_file_location('
+                         '"physical_estimates_compose_whole",\n'
+                         '                                  here / '
+                         '"compose-whole.py")\n') is not None)
+    _check("the loader regex stays silent on a loader of another file",
+           loader.search('    spec = importlib.util.spec_from_file_location('
+                         '"hashing", here / "_hashing.py")\n') is None)
+
+
 def main() -> int:
     check_klt_version_is_bare()
     check_klt_version_fails_closed()
@@ -542,6 +726,7 @@ def main() -> int:
     check_libs_ref_fails_closed()
     check_pdk_root_short_circuits_a_preset_root()
     check_pdk_root_reads_root_from_the_response()
+    check_pdk_root_of_reads_one_response()
     check_pdk_find_names_the_pdk_it_was_asked_for()
     check_run_klt_rc_reports_the_exit_status()
     check_compatibility_status_accepts_both_klt_spellings()
@@ -549,12 +734,14 @@ def main() -> int:
     check_against_the_real_klt_response_shape()
     check_the_bare_spelling_is_the_repo_convention()
     check_the_migrated_sites_no_longer_scrape_text()
+    check_sim_harnesses_share_the_klt_readers()
     check_rel_spells_repo_relative_posix()
     check_load_json_fails_closed()
     check_klt_env_sets_the_pdk_and_optional_root()
     check_klayout_db_fails_closed_without_klayout()
     check_dumps_matches_write_json()
     check_the_consolidated_helpers_live_in_one_place()
+    check_the_gds_geometry_helpers_live_in_one_place()
     print(f"\n{sum(_RESULTS)}/{len(_RESULTS)} checks passed")
     return 0 if all(_RESULTS) else 1
 
