@@ -528,7 +528,13 @@ jobs:
     name: Signoff tier-report staleness gate (klt signoff --manifest)
     runs-on: ubuntu-latest
     steps:
+      # fetch-depth: 2 ensures the synthetic PR merge ref (`refs/pull/N/merge`)
+      # has its first parent `HEAD^1` (the base branch tip) available locally so
+      # `attest.py --check-pr --base-ref HEAD^1` can verify DR-0021 contract
+      # item 1 (PRs must not edit item-9's committed aggregate artifacts).
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
 
       - uses: actions/setup-python@v5
         with:
@@ -573,17 +579,34 @@ jobs:
       - name: Replay sampler_core PEX measurements and check rejection cases
         run: python3 sim/tests/test_pex_sampler_core.py
 
-      # issue #320: the 1.digital / 2.analog / 2.digital / 10 (and 1.analog / 9,
-      # which grade unmet with a stated reason) citations are artifact-anchored
-      # generic envelopes minted by signoff/attest.py from committed inventories.
-      # --check fails when an inventoried file changed, appeared or vanished, or
-      # when an envelope / manifest pin no longer matches; the re-render below
-      # then cannot be reached with a stale pin. stdlib only.
+      # issues #320, #697 (DR-0021): the 1.digital / 2.analog / 2.digital / 9 / 10
+      # citations are artifact-anchored generic envelopes minted by signoff/attest.py
+      # from committed inventories.
+      #   * Items 1.digital, 2.analog, 2.digital, 10 keep full committed-bytes
+      #     freshness checks at PR time.
+      #   * Item 9's aggregate bytes are regenerated serially on `main` by
+      #     `.github/workflows/attest-main.yml` so concurrent `sim/` PRs do not
+      #     conflict on the item-9 hash chain. At PR time, `--check-pr` still
+      #     requires fresh `build(root, "9")` to pass (`status == "pass"`,
+      #     selectors, `check_9` family coverage, PDK pins), verifies committed
+      #     item-9 chain integrity (`member_count == len(members)` + hash pins),
+      #     and enforces that the PR did not edit item-9's committed files.
       - name: sim/tests/test_signoff_attest.py (attestation generator + negative controls)
         run: python3 sim/tests/test_signoff_attest.py
 
-      - name: signoff/attest.py --check (inventories + envelopes + manifest pins fresh)
-        run: python3 signoff/attest.py --check
+      - name: signoff/attest.py --check-pr (items 1/2/10 byte-fresh; item 9 fresh pass + chain integrity + PR immutability)
+        if: github.event_name == 'pull_request'
+        run: |
+          if git rev-parse --verify HEAD^1 >/dev/null 2>&1; then
+            python3 signoff/attest.py --check-pr --base-ref HEAD^1
+          else
+            echo "::error::expected PR merge ref with HEAD^1 parent" >&2
+            exit 1
+          fi
+
+      - name: signoff/attest.py --check-pr (items 1/2/10 byte-fresh; item 9 fresh pass + chain integrity; full item-9 freshness gated by attest-main)
+        if: github.event_name != 'pull_request'
+        run: python3 signoff/attest.py --check-pr
 
       # Verbatim the command documented in signoff/README.md -- the report
       # embeds the --tiers-doc label and the evidence paths relative to

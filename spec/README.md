@@ -194,6 +194,18 @@
   of the three consumers replays identically before and after (no new
   DIFFERS), and no record is re-minted or edited.
 
+- [`decision-records/DR-0021-attest-aggregate-regeneration.md`](decision-records/DR-0021-attest-aggregate-regeneration.md)
+  — **Proposed**. Issue #697: moves T1 item-9 aggregate attestation
+  regeneration (`9.inventory.json`, `9.json`, `block-manifest.json`
+  `evidence["9"]`, `t1-report.json`) from per-PR commits to a serialized
+  post-merge workflow on `main` (`.github/workflows/attest-main.yml`), after
+  measuring 38–48 % signoff-conflict CI job-minutes and 33 % conflict-caused
+  Judge passes across PR #605 and PR #614 and confirming `main` is unprotected.
+  PRs keep fresh `build(root, "9")` validation, helper-closure checking,
+  stale-count/chain-integrity guards, PR item-9 immutability, and full
+  committed-bytes `--check` for items 1/2/10; a `main` SHA is signoff-valid
+  iff `attest-main` is `success` on that exact SHA.
+
 ### Open requests for an operator decision record (no record yet)
 
 - **End-of-life Vth-drift envelope** — issue [#262](https://github.com/2AMLogic/sky130-trng/issues/262), from
