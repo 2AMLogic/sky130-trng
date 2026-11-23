@@ -447,11 +447,15 @@ python3 signoff/attest.py --write      # inventories, envelopes, manifest pins
 python3 signoff/attest.py --check      # what CI runs; read-only
 ```
 
-Once a klayout-tools release carries `klt signoff --attest`/`--inventory`
-(present in the `0.7.1.dev` development build, absent from 0.7.0 as of
-2026-10-17), switch these rows to it and drop `attest.py`; the CI pin stays at
-0.8.0 until then. Item 9's inventory pins the PDK files, so #314 (open_pdks
-re-pin) and this issue's rows need a `--write` after whichever lands second.
+Tagged `klayout-tools` 0.9.1 carries `klt signoff --attest`/`--inventory`
+(the 0.7.0 release this report was rendered on predates them). `1.analog`
+already attests through it: `klt signoff --attest 1` (klt 0.9.1) runs only
+in `pdk-nightly.yml` `netlist-check`. `1.digital`, `2.analog`, `2.digital`,
+`9` and `10` still build their envelopes with `attest.py`; whether
+`--attest` could replace it for those rows is not evaluated here. The CI
+pin stays at 0.8.0 until that migration. Item 9's inventory pins the PDK
+files, so #314 (open_pdks re-pin) and this issue's rows need a `--write`
+after whichever lands second.
 
 ## Block kind and the partition boundary (the mixed-signal claim)
 
