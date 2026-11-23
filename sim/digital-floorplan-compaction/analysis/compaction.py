@@ -82,15 +82,20 @@ def congestion(eng: Path) -> dict:
     return out
 
 
-def _exit_from_codes(d: Path):
+def _exit_from_codes(d: Path, *, step: str | None = None):
     # exit-codes.txt is append-only (run-study.sh re-runs a util with >>), so a
     # retried run name appears twice: the LAST matching line is the final rc.
+    # step=None matches the bare "<name> exit <rc>" lines; a step matches the
+    # "<name> <step> exit <rc>" lines (e.g. pnr-verify) and ignores the
+    # other steps' lines (e.g. audit) in the same append-only file.
     out = None
     ec = d.parent / "exit-codes.txt"
+    want = [d.name, step, "exit"] if step else [d.name, "exit"]
     if ec.exists():
         for line in ec.read_text().splitlines():
-            if line.startswith(d.name + " "):
-                out = int(line.split()[2])
+            t = line.split()
+            if len(t) > len(want) and t[: len(want)] == want:
+                out = int(t[len(want)])
     return out
 
 
