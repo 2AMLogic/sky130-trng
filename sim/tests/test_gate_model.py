@@ -495,6 +495,22 @@ endmodule
             # sim/*/corners/ is append-only, so a wrong slug is permanent.
             plan = json.loads((out / "plan.json").read_text())
             self.assertEqual(plan["name"], out.name)
+            # issue #668: the #595 fix overrides exactly one prose key at
+            # the plan layer. The manifest's pre-#595 wording ("option 1
+            # vs 2 is open, #431") stays byte-stable as #486 evidence, so
+            # every plan must state the settled choice instead.
+            self.assertEqual(plan["boundary_load_option"]["option"], 2)
+            self.assertIn("option 2", plan["reductions"]["input_load"])
+            self.assertNotIn("is open", plan["reductions"]["input_load"])
+            # The complement the override exists to preserve: the emitted
+            # manifest's wording of that field must still be the historical
+            # #486 value, byte for byte (only that field -- the synthetic
+            # circuit's counts and hashes differ by construction).
+            emitted_manifest = json.loads(
+                (out / "gate-model.manifest.json").read_text())
+            committed_manifest = json.loads(COMMITTED_MANIFEST.read_text())
+            self.assertEqual(emitted_manifest["reductions"]["input_load"],
+                             committed_manifest["reductions"]["input_load"])
             # klt sim owns .lib/.temp/.tran and the .control block: the body
             # must carry NONE of them (comments excepted).
             cards = [ln for ln in (out / "netlist.cir").read_text().splitlines()
