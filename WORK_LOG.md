@@ -8,6 +8,20 @@ Chronological record of recently merged pull requests and closed issues.
 
 ### 2026-11-23
 
+- **PR #704**: docs: version-qualify the no-verb claim for signoff items 1/2/9/10
+- **PR #695**: fix: report corner-run repo dirty state as tri-state when git status fails
+- **PR #694**: docs: retire superseded 7/22 count and 0.7.0 grader claims in signoff README
+- **PR #689**: docs(signoff): restate T1 summary against the committed 0.8.0 report
+- **PR #673**: fix(sim): refuse repeated measurement names in the template-lifted reducers
+- **PR #667**: feat(evidence): disclose working-tree state in behavioral records
+- **PR #605**: feat(sim): couple the transistor sampler to the routed gate model
+- **Issue #700** (closed): sim/: reconcile compare_gate_model.duplicate_measurement_names() with sim/bin/measurement_names.py once PR #644 lands
+- **Issue #696** (closed): signoff/README.md: 'klayout-tools has no verb behind these four items' is stale for item 1 on the 0.8.0 grader
+- **Issue #691** (closed): signoff/README.md: dated 7/22 update line and two per-item 0.7.0 render claims are stale after #687
+- **Issue #687** (closed): signoff/README.md T1 summary still says the report was rendered on klt 0.7.0; the committed report records v0.8.0
+- **Issue #670** (closed): sim/: ten reducers still dedupe corner measurements into a name-keyed dict with no duplicate-name guard (#548's silent displacement, outside the two whole-block sites)
+- **Issue #666** (closed): evidence_record: mint_behavioral_record pins repo_sha from HEAD with no dirty-tree disclosure, so a record can cite a revision that cannot produce it
+- **Issue #475** (closed): Remove the 63-entry pull_request paths filter from ci.yml: 26 entries are redundant and PR-blocking checks read files it does not cover
 - **PR #656**: refactor: route idle_leakage bundles via write_corner_bundle
 - **PR #657**: refactor: route sim/ harness klt reads through _klt_common shared readers
 - **PR #626**: fix(sim): re-hash 7.analog PEX run pins via the shared freshness loop
