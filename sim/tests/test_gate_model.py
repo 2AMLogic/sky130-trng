@@ -495,6 +495,22 @@ endmodule
             # sim/*/corners/ is append-only, so a wrong slug is permanent.
             plan = json.loads((out / "plan.json").read_text())
             self.assertEqual(plan["name"], out.name)
+            # issue #668: the #595 fix overrides exactly one prose key at
+            # the plan layer. The manifest's pre-#595 wording ("option 1
+            # vs 2 is open, #431") stays byte-stable as #486 evidence, so
+            # every plan must state the settled choice instead.
+            self.assertEqual(plan["boundary_load_option"]["option"], 2)
+            self.assertIn("option 2", plan["reductions"]["input_load"])
+            self.assertNotIn("is open", plan["reductions"]["input_load"])
+            # The complement the override exists to preserve: the emitted
+            # manifest's wording of that field must still be the historical
+            # #486 value, byte for byte (only that field -- the synthetic
+            # circuit's counts and hashes differ by construction).
+            emitted_manifest = json.loads(
+                (out / "gate-model.manifest.json").read_text())
+            committed_manifest = json.loads(COMMITTED_MANIFEST.read_text())
+            self.assertEqual(emitted_manifest["reductions"]["input_load"],
+                             committed_manifest["reductions"]["input_load"])
             # klt sim owns .lib/.temp/.tran and the .control block: the body
             # must carry NONE of them (comments excepted).
             cards = [ln for ln in (out / "netlist.cir").read_text().splitlines()
@@ -964,6 +980,85 @@ class TestAgainstRealLiberty(unittest.TestCase):
             threshold_pct=committed["reductions"]["liberty_threshold_pct"])
         self.assertEqual(model.manifest, committed,
                          "the committed manifest is not what the generator now emits")
+
+
+# --------------------------------------------------------------------------
+# 8. --point: the deck comes from the matrix mapping (issue #595)
+# --------------------------------------------------------------------------
+
+PVT = load_module("pvt_deck_map", BLOCK / "pvt_deck_map.py")
+
+
+class TestPointFlag(unittest.TestCase):
+    """``--point PROC:TEMP:VDD`` resolves its deck from ``pvt_deck_map.py``
+    and fails closed everywhere else. These paths are klt-free: the
+    malformed and unmapped refusals fire before any PDK resolution."""
+
+    def test_parse_point(self):
+        self.assertEqual(G.parse_point("ss:-40:1.62"), ("ss", -40.0, 1.62))
+        self.assertEqual(G.parse_point("tt:27:1.8"), ("tt", 27.0, 1.8))
+        # malformed -> GateModelError; well-formed but unmapped -> a
+        # DeckMapError raised from make-gate-model's own pvt_deck_map
+        # import -- a ValueError under either module identity
+        for bad in ("ss:-40", "ls:-40:1.62", "ss:-40C:1.62", "", "ss:40:1"):
+            with self.assertRaises((G.GateModelError, ValueError), msg=bad):
+                G.parse_point(bad)
+
+    def test_unmapped_point_exits_non_zero_and_writes_nothing(self):
+        with tempfile.TemporaryDirectory(prefix="gm-point-") as tmp:
+            out = Path(tmp) / "out"
+            with self.assertRaises(G.GateModelError) as cm:
+                G.main([str(out), "--point", "tt:-40:1.65", "--cycles", "4"])
+            self.assertIn("no Liberty deck mapping", str(cm.exception))
+            self.assertFalse(out.exists(), "an unmapped point wrote output")
+
+    def test_point_refuses_explicit_corner_knobs(self):
+        for extra in (["--supply-v", "1.62"], ["--supply-v=1.62"],
+                      ["--temp-c", "-40"], ["--corner", "ss_n40C_1v60"],
+                      ["--liberty", "/dev/null"]):
+            with tempfile.TemporaryDirectory(prefix="gm-point-") as tmp:
+                with self.assertRaises(SystemExit, msg=extra):
+                    G.main([str(Path(tmp) / "out"), "--point", "ss:-40:1.62",
+                            "--cycles", "4", *extra])
+
+
+@unittest.skipUnless(REAL_LIB is not None,
+                     "needs the pinned sky130A PDK install (klt pdk find)")
+class TestPvtDeckRowsAgainstPdk(unittest.TestCase):
+    """Every row of the committed matrix-to-deck mapping names the deck file
+    on disk and pins its sha256 (issue #595 AC: "rows carry sha256 that
+    matches the file on disk")."""
+
+    def test_all_12_rows_hash_match_disk(self):
+        for key in PVT.matrix_points():
+            row = PVT.DECK_TABLE[key]
+            deck = G.resolve_liberty(None, row["liberty_corner"])
+            self.assertEqual(
+                G.sha256_file(deck), row["liberty_sha256"],
+                f"{key}: {deck} does not match the pinned hash -- a PDK "
+                "bump must re-derive pvt_deck_map.py, not be ignored")
+
+    def test_point_run_carries_the_mapping_in_plan_and_request(self):
+        with tempfile.TemporaryDirectory(prefix="gm-point-run-") as tmp:
+            out = Path(tmp) / "ss-m40-1v62"
+            rc = G.main([str(out), "--point", "ss:-40:1.62", "--cycles", "4"])
+            self.assertEqual(rc, 0)
+            plan = json.loads((out / "plan.json").read_text())
+            request = json.loads((out / "request.json").read_text())
+            # the point drives the request's process corner and temperature
+            self.assertEqual(request["corners"]["process"], ["ss"])
+            self.assertEqual(request["corners"]["temperature_c"], [-40.0])
+            # the plan carries the boundary-load option and the mapping row
+            self.assertEqual(plan["boundary_load_option"]["option"], 2)
+            pvt = plan["pvt_point"]
+            self.assertEqual((pvt["process"], pvt["temperature_c"],
+                              pvt["supply_v"]), ("ss", -40.0, 1.62))
+            want = PVT.deck_row("ss", -40.0, 1.62)
+            self.assertEqual(pvt["liberty_sha256"], want["liberty_sha256"])
+            self.assertEqual(pvt["liberty_deck"].endswith(want["liberty_deck"]), True)
+            self.assertEqual(pvt["delay_direction"], want["delay_direction"])
+            # the deck the netlist was actually reduced from is the mapped one
+            self.assertEqual(plan["liberty_sha256"], want["liberty_sha256"])
 
 
 if __name__ == "__main__":

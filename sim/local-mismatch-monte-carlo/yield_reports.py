@@ -31,6 +31,7 @@ Run under the pinned toolchain (the host `klt` carries no `klt_yield_native`):
 """
 import json
 import os
+from pathlib import Path
 import shutil
 import subprocess
 import sys
@@ -68,7 +69,7 @@ def derive(rid):
     committed record (the same guarantee `reduce.py --check` gives) or if the
     derived pairings disagree with the record's own raw-bit statistics.
     """
-    rec = json.load(open(os.path.join(HERE, "records", rid + ".json")))
+    rec = json.loads(Path(HERE, "records", rid + ".json").read_text())
     chunks = read_corner_bundle(__import__("pathlib").Path(os.path.join(HERE, "corners", rid)))
     by = red.build(chunks)
     corner = rec["summary"]["corner"]

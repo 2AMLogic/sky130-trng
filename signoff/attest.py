@@ -4,7 +4,7 @@
 Item 1 analog is NOT built here: `klt signoff --attest 1` mints it where xschem
 exists (issue #360; .github/workflows/pdk-nightly.yml, netlist-check).
 
-klayout-tools 0.7.0 grades these four items only from an opt-in `generic`
+klayout-tools 0.8.0 (the CI pin since issue #363) grades these four items only from an opt-in `generic`
 envelope that (a) declares `"t1_item": <id>`, (b) names the audited artifact in
 `provenance.input.path` + `provenance.input.content_hash`, and (c) is cited by a
 manifest entry pinning the same hash.  The artifact each envelope pins is the
@@ -75,6 +75,7 @@ SELECTORS = {
         "layout/sampler_core/compose.request.json",
         "layout/sampler_core/compose.response.json",
         "layout/bin/compose-cell.py",
+        "layout/bin/_klt_common.py",
     ],
     "2.digital": [
         "layout/trng_digital/trng_digital.gds",
@@ -83,6 +84,8 @@ SELECTORS = {
         "digital/flow/place-and-route/pnr-trng-digital-50khz.json",
         "digital/flow/place-and-route/tool-pins.json",
         "sim/digital-pnr/harness/pnr-and-verify.py",
+        "layout/bin/_hashing.py",
+        "layout/bin/_klt_common.py",
         "sim/digital-pnr/records/*.json",
     ],
     "9": [
@@ -97,8 +100,12 @@ SELECTORS = {
         "digital/tb/cocotb/*",
         "REPRODUCE.md",
         "design/pdk.json",
+        "design/_pdk_search.py",
         "sim/pdk.json",
         "layout/pdk.json",
+        "layout/bin/_hashing.py",
+        "layout/bin/_klt_common.py",
+        "layout/bin/_pex_rewrite.py",
     ],
     "10": ["README.md", "LICENSE", "REPRODUCE.md", ".github/workflows/*"],
 }

@@ -283,7 +283,21 @@ def pdk_root(
     preset = source.get("PDK_ROOT")
     if preset:
         return preset
-    response = pdk_find(pdk, env=env, klt=klt, cwd=cwd)
+    return pdk_root_of(pdk_find(pdk, env=env, klt=klt, cwd=cwd), pdk=pdk, klt=klt)
+
+
+def pdk_root_of(response: dict, *, pdk: str = "<pdk>", klt: str = "klt") -> str:
+    """``root`` out of an already-fetched :func:`pdk_find` response.
+
+    Separate from :func:`pdk_root` for the same reason :func:`libs_ref_of`
+    is separate from :func:`libs_ref`: a caller which needs *other* fields
+    of the same response too (the P&R harness reads ``assets.libs_ref`` and
+    the version/variant pins alongside the root) reads one response rather
+    than invoking ``klt pdk find`` twice to get two fields out of it.
+
+    A missing or non-string field is fatal here rather than a ``KeyError``
+    that fails later and somewhere else.
+    """
     root = response.get("root")
     if not isinstance(root, str) or not root:
         raise BuildError(
@@ -344,12 +358,20 @@ def write_json(path: Path, payload: dict) -> None:
     path.write_text(dumps(payload))
 
 
-def rel(path: Path) -> str:
+def rel(path: Path | str) -> str:
     """Repo-relative POSIX spelling of *path* (never an absolute home path).
 
     A path outside the repo (a scratch directory, an output under /tmp)
-    comes back as its absolute POSIX spelling rather than failing.
+    comes back as its absolute POSIX spelling rather than failing. *path*
+    is normalised with ``Path(path)`` first, so a ``str`` (out of argv or
+    a JSON payload) and the same path as a :class:`Path` spell identically
+    -- the prefix-matching fork this replaced (``startswith(str(REPO_ROOT))``
+    guarding a bare ``relative_to`` #653 retired) crashed with a
+    ``ValueError`` on a sibling directory sharing the repo's name prefix;
+    the ``try``/``except ValueError`` here is what makes an outside-repo
+    path a spelling, not a crash.
     """
+    path = Path(path)
     try:
         return path.resolve().relative_to(REPO_ROOT).as_posix()
     except ValueError:

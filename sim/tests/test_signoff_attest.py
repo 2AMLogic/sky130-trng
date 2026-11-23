@@ -2,6 +2,7 @@
 """Test for signoff/attest.py (issue #320): the artifact-anchored generic
 envelopes cited for T1 items 1, 2, 9, 10.  Stdlib only.  Fixture trees hold
 only the inventoried files, so no simulator, PDK or klt is needed."""
+import ast
 import contextlib
 import io
 import json
@@ -41,6 +42,44 @@ def make_tree(dst):
         (dst / p.relative_to(REPO)).mkdir(parents=True, exist_ok=True)
 
 
+def imported_modules(path):
+    names = set()
+    for node in ast.walk(ast.parse(path.read_text())):
+        if isinstance(node, ast.Import):
+            names.update(alias.name.split(".")[0] for alias in node.names)
+        elif isinstance(node, ast.ImportFrom) and node.level == 0 and node.module:
+            names.add(node.module.split(".")[0])
+    return names
+
+
+HELPER_DIRS = ("layout/bin", "design")
+
+
+def helper_candidates(root):
+    """Importable .py modules under the helper dirs, keyed by stem, discovered
+    from the repository tree -- never from a selector or an inventory -- so
+    removing a selector and regenerating cannot shrink the closure the test
+    asserts (issue #650)."""
+    cands = {}
+    for d in HELPER_DIRS:
+        for p in (root / d).glob("*.py"):
+            cands.setdefault(p.stem, []).append(p.relative_to(root).as_posix())
+    return cands
+
+
+def helper_closure(root, scripts):
+    """The helper-dir modules `scripts` import, followed through those modules' own imports."""
+    cands = helper_candidates(root)
+    closure, queue = set(), list(scripts)
+    while queue:
+        for name in imported_modules(root / queue.pop()) & set(cands):
+            for tgt in cands[name]:
+                if tgt not in closure:
+                    closure.add(tgt)
+                    queue.append(tgt)
+    return closure
+
+
 class AttestTest(unittest.TestCase):
     def setUp(self):
         self.tmp = Path(tempfile.mkdtemp())
@@ -68,9 +107,24 @@ class AttestTest(unittest.TestCase):
         rc, err = run(self.tmp, "--check")
         self.assertEqual(rc, 0, err)
 
+    def test_each_inventory_pins_the_helper_import_closure_of_its_members(self):
+        for key in attest.ROWS:
+            with self.subTest(key=key):
+                inv = json.loads((REPO / f"signoff/attest/{key}.inventory.json").read_text())
+                pinned = {m["path"] for m in inv["members"]}
+                closure = helper_closure(REPO, {p for p in pinned if p.endswith(".py")})
+                self.assertEqual(closure - pinned, set(), key)
+
     def test_negative_control_edited_inventoried_file_is_stale(self):
         for rel, key in (("digital/rtl/trng_digital.v", "1.digital"),
-                         ("layout/sampler_core/sampler_core.gds", "2.analog")):
+                         ("layout/sampler_core/sampler_core.gds", "2.analog"),
+                         ("layout/bin/_hashing.py", "9"),
+                         ("layout/bin/_klt_common.py", "9"),
+                         ("layout/bin/_pex_rewrite.py", "9"),
+                         ("design/_pdk_search.py", "9"),
+                         ("layout/bin/_klt_common.py", "2.analog"),
+                         ("layout/bin/_hashing.py", "2.digital"),
+                         ("layout/bin/_klt_common.py", "2.digital")):
             with self.subTest(rel=rel):
                 p = self.tmp / rel
                 orig = p.read_bytes()

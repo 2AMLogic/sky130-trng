@@ -304,13 +304,13 @@
         "command": null,
         "kind": "generic",
         "check_status": "pass",
-        "content_hash": "sha256:c3c4463447aec3ab1006162d2d1a4cd5a62d4db3a5bd712d29d764a49294902f",
+        "content_hash": "sha256:673a3d67e0c5d66f6835c703241e9b1e38e0eb97bf38cb32e227797d9ab27c33",
         "input_verified": true,
         "exit_status": 0,
         "artifact_binding": {
           "t1_item": 2,
           "path": "signoff/attest/2.analog.inventory.json",
-          "content_hash": "sha256:c3c4463447aec3ab1006162d2d1a4cd5a62d4db3a5bd712d29d764a49294902f",
+          "content_hash": "sha256:673a3d67e0c5d66f6835c703241e9b1e38e0eb97bf38cb32e227797d9ab27c33",
           "input_verified": true,
           "source": "signoff/attest.py"
         }
@@ -331,13 +331,13 @@
         "command": null,
         "kind": "generic",
         "check_status": "pass",
-        "content_hash": "sha256:2e0b95feadf114d988286e3638bb478e2dbd7472b84aa4198fbdf318e481e1f7",
+        "content_hash": "sha256:67f3502031f7fdb03c31fdfbab2e4edf3343e2ebc4dd5e83df8fda59e7d7be45",
         "input_verified": true,
         "exit_status": 0,
         "artifact_binding": {
           "t1_item": 2,
           "path": "signoff/attest/2.digital.inventory.json",
-          "content_hash": "sha256:2e0b95feadf114d988286e3638bb478e2dbd7472b84aa4198fbdf318e481e1f7",
+          "content_hash": "sha256:67f3502031f7fdb03c31fdfbab2e4edf3343e2ebc4dd5e83df8fda59e7d7be45",
           "input_verified": true,
           "source": "signoff/attest.py"
         }
@@ -730,7 +730,7 @@
         "A `klt pex` citation is only as good as the **device-body bias** of the netlist it ran on (#1983). A device body left on an anonymous, deck-synthesized net has no DC bias path at all, which makes a resimulation of that extracted netlist *physically wrong, not merely imprecise* (`docs/cli/extract.md` \u2192 \"Coverage\") \u2014 the run converges and reports numbers, and those numbers are not comparable to the schematic leg they are being diffed against. A `klt pex` report states the condition in its own `body_bias` block (`docs/cli/pex.md`), and `klt signoff` surfaces it verbatim on this item's citation (`citation.body_bias`). **It does not grade on it**: an item-7 citation whose `body_bias.status` is `\"unbiased\"` still renders `met`, because the condition is a deck-coverage property some PDKs produce on every layout they extract, not a defect this command can adjudicate. So a claim citing item 7 must read that field and state whether its post-layout numbers were measured on a properly-biased netlist \u2014 claimant-enforced, exactly like item 3's DRC-coverage disclosure. The same discipline applies upstream at item 4: `klt lvs`'s `body_verification` block says whether the compare verified the body ties at all, and `\"unchecked\"` (a pre-extracted netlist) is not `\"verified\"`."
       ],
       "status": "unmet",
-      "reason": "no_evidence",
+      "reason": "check_failed",
       "graded_by_build": true,
       "citation": null
     },
@@ -795,13 +795,13 @@
         "command": null,
         "kind": "generic",
         "check_status": "pass",
-        "content_hash": "sha256:e700531216834239e04d6e34f46ccca8f08cfc39cf8e367f08a4b99fe11688d7",
+        "content_hash": "sha256:199ac1c5c95f5c698a01f258e869559adde217f0ae659a3dde9c2006cd318b7a",
         "input_verified": true,
         "exit_status": 0,
         "artifact_binding": {
           "t1_item": 9,
           "path": "signoff/attest/9.inventory.json",
-          "content_hash": "sha256:e700531216834239e04d6e34f46ccca8f08cfc39cf8e367f08a4b99fe11688d7",
+          "content_hash": "sha256:199ac1c5c95f5c698a01f258e869559adde217f0ae659a3dde9c2006cd318b7a",
           "input_verified": true,
           "source": "signoff/attest.py"
         }
@@ -822,13 +822,13 @@
         "command": null,
         "kind": "generic",
         "check_status": "pass",
-        "content_hash": "sha256:e700531216834239e04d6e34f46ccca8f08cfc39cf8e367f08a4b99fe11688d7",
+        "content_hash": "sha256:199ac1c5c95f5c698a01f258e869559adde217f0ae659a3dde9c2006cd318b7a",
         "input_verified": true,
         "exit_status": 0,
         "artifact_binding": {
           "t1_item": 9,
           "path": "signoff/attest/9.inventory.json",
-          "content_hash": "sha256:e700531216834239e04d6e34f46ccca8f08cfc39cf8e367f08a4b99fe11688d7",
+          "content_hash": "sha256:199ac1c5c95f5c698a01f258e869559adde217f0ae659a3dde9c2006cd318b7a",
           "input_verified": true,
           "source": "signoff/attest.py"
         }
@@ -849,13 +849,13 @@
         "command": null,
         "kind": "generic",
         "check_status": "pass",
-        "content_hash": "sha256:7c8e62461d35d80bb7e4db9e09e731487b7cf7c091d149f424f62f43d23a9c82",
+        "content_hash": "sha256:c58afa565bcf68196740ee0b4b23bae250242b8304a19d57219c5805ac24fa00",
         "input_verified": true,
         "exit_status": 0,
         "artifact_binding": {
           "t1_item": 10,
           "path": "signoff/attest/10.inventory.json",
-          "content_hash": "sha256:7c8e62461d35d80bb7e4db9e09e731487b7cf7c091d149f424f62f43d23a9c82",
+          "content_hash": "sha256:c58afa565bcf68196740ee0b4b23bae250242b8304a19d57219c5805ac24fa00",
           "input_verified": true,
           "source": "signoff/attest.py"
         }
@@ -876,13 +876,13 @@
         "command": null,
         "kind": "generic",
         "check_status": "pass",
-        "content_hash": "sha256:7c8e62461d35d80bb7e4db9e09e731487b7cf7c091d149f424f62f43d23a9c82",
+        "content_hash": "sha256:c58afa565bcf68196740ee0b4b23bae250242b8304a19d57219c5805ac24fa00",
         "input_verified": true,
         "exit_status": 0,
         "artifact_binding": {
           "t1_item": 10,
           "path": "signoff/attest/10.inventory.json",
-          "content_hash": "sha256:7c8e62461d35d80bb7e4db9e09e731487b7cf7c091d149f424f62f43d23a9c82",
+          "content_hash": "sha256:c58afa565bcf68196740ee0b4b23bae250242b8304a19d57219c5805ac24fa00",
           "input_verified": true,
           "source": "signoff/attest.py"
         }

@@ -2,6 +2,24 @@
 
 Sections moved byte-for-byte from [WORK_LOG.md](../WORK_LOG.md) by `loom-daemon work-docs archive`.
 
+> Edit 2026-11-22 (#633): six records (`PR #88`, `Issue #87`, `Issue #83`, `Issue #79`, `Issue #78`, `Issue #77`) were removed from the 2026-09-21/22 sections — they were backfilled from `2AMLogic/gf180-usb2-phy`'s history by `e8b0dd38`, not this repository's work. The genuine records for those numbers remain in this file.
+
+### 2026-09-21
+
+- **PR #158**: feat(layout): add T1 item-11 klt erc supply read for sampler_core
+- **PR #157**: feat(signoff): add klt signoff block manifest with CI staleness gate
+- **PR #156**: ci: declare the run-pdk-check label the PDK-gated workflows' PR opt-in documents
+- **Issue #155** (closed): Commit a klt signoff block manifest so this block's T1 state is graded, not hand-read
+- **Issue #154** (closed): T1 item 11 (power delivery, structural): no klt erc supply spec or report in this repo
+- **Issue #153** (closed): run-pdk-check label does not exist, so both PDK-gated workflows' documented PR opt-in is dead
+
+### 2026-09-18
+
+- **PR #38**: ci(layout): add compose-cell.py --check regression guard to pdk-nightly
+- **PR #152**: ci: pin xschem to a 3.4.7 floor and surface a red pdk-nightly (#151)
+- **Issue #36** (closed): layout: compose-cell.py --check has no automated regression guard (nothing runs it)
+- **Issue #151** (closed): pdk-nightly netlist-check has been red since 2026-09-15: xschem version drift emits expr() templates where committed netlists have evaluated values (4 cells STALE)
+
 ### 2026-09-16
 
 - **PR #150**: refactor: remove dead constants in sampler_core data-path-scan

@@ -131,11 +131,27 @@
     "                     >= 0.8.0 `not_applicable` entry is written down ready",
     "                     in issue #598's PR description and deliberately NOT",
     "                     applied while the spec records are Proposed.",
-    "  7.analog           no `klt pex` report exists -- post-layout",
-    "                    campaigns run from `klt extract --parasitics`",
-    "                    netlists via sim/bin harnesses, which item 7 by",
-    "                    design does not accept (a clean DRC or",
-    "                    pre-layout sim proves nothing post-layout).",
+    "  7.analog           (issue #597) CITED: a native `klt pex` report",
+    "                    (sim/pex-sampler-core/runs/20261121-001303-7330672/",
+    "                    pex-report.json), --measure-command mode: 11 spec",
+    "                    rows x 12 PVT corners (tt/ss/ff x the post-layout",
+    "                    four-point grid) over the same committed GDS 3/11",
+    "                    cite, pinned to its content hash. Grades on the",
+    "                    report's OWN status: `fail` -- 130/132 rows pass;",
+    "                    active_power_uw exceeds the README 500 uW bound at",
+    "                    ff/-40C/1.98V and ff/125C/1.98V on BOTH legs",
+    "                    (schematic 519/567 uW already; parasitics add",
+    "                    6-13%), so the row is a pre-layout design",
+    "                    condition, not a parasitic regression. Failing rows",
+    "                    stay failing; bounded design-iteration follow-up is",
+    "                    issue #604. Disclosures in signoff/README.md:",
+    "                    extraction.model limits (lumped star R, ground +",
+    "                    vertical-overlap C only, quasi-static; no lateral",
+    "                    coupling, no distributed RC) and body_bias",
+    "                    (biased, 0 unbiased devices, no --tie-net). The",
+    "                    layout-regeneration chain (#371/#372) changes the",
+    "                    GDS. Signoff CI compares the working GDS digest with",
+    "                    the cited PEX input even for a failing report.",
     "  7.digital          (issue #227) CITED: a native, SDF-annotated `klt",
     "                    functional-verification` report",
     "                    (sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/timed-declared.report.json):",
@@ -298,19 +314,19 @@
     },
     "2.analog": {
       "file": "signoff/attest/2.analog.json",
-      "content_hash": "sha256:c3c4463447aec3ab1006162d2d1a4cd5a62d4db3a5bd712d29d764a49294902f"
+      "content_hash": "sha256:673a3d67e0c5d66f6835c703241e9b1e38e0eb97bf38cb32e227797d9ab27c33"
     },
     "2.digital": {
       "file": "signoff/attest/2.digital.json",
-      "content_hash": "sha256:2e0b95feadf114d988286e3638bb478e2dbd7472b84aa4198fbdf318e481e1f7"
+      "content_hash": "sha256:67f3502031f7fdb03c31fdfbab2e4edf3343e2ebc4dd5e83df8fda59e7d7be45"
     },
     "9": {
       "file": "signoff/attest/9.json",
-      "content_hash": "sha256:e700531216834239e04d6e34f46ccca8f08cfc39cf8e367f08a4b99fe11688d7"
+      "content_hash": "sha256:199ac1c5c95f5c698a01f258e869559adde217f0ae659a3dde9c2006cd318b7a"
     },
     "10": {
       "file": "signoff/attest/10.json",
-      "content_hash": "sha256:7c8e62461d35d80bb7e4db9e09e731487b7cf7c091d149f424f62f43d23a9c82"
+      "content_hash": "sha256:c58afa565bcf68196740ee0b4b23bae250242b8304a19d57219c5805ac24fa00"
     },
     "8.analog": {
       "file": "signoff/characterization-envelope.json"
@@ -321,20 +337,30 @@
     "6.analog": [
       {
         "file": "sim/local-mismatch-monte-carlo/yield/20261009-111127-e57ad27/klt-yield.json",
-        "rows": ["raw_min_entropy_per_bit"],
+        "rows": [
+          "raw_min_entropy_per_bit"
+        ],
         "content_hash": "sha256:22188713550161633dd762ed06b82b85bc3de2a605a7397aae4bdfce9f050eb5"
       },
       {
         "file": "sim/local-mismatch-monte-carlo/yield/20261009-111126-e57ad27/klt-yield.json",
-        "rows": ["raw_min_entropy_per_bit"],
+        "rows": [
+          "raw_min_entropy_per_bit"
+        ],
         "content_hash": "sha256:3f9c87405f23f767add41d9a669d552bad394c1756cc76a094bf36df192ae4bc"
       },
       {
         "file": "sim/local-mismatch-monte-carlo/yield/20261009-111125-e57ad27/klt-yield.json",
-        "rows": ["raw_min_entropy_per_bit"],
+        "rows": [
+          "raw_min_entropy_per_bit"
+        ],
         "content_hash": "sha256:e0e57a2bea8e140e0b866ca6e38b4c95a5c4683be74b0601ac7bfc45f0d76846"
       }
-    ]
+    ],
+    "7.analog": {
+      "file": "sim/pex-sampler-core/runs/20261121-001303-7330672/pex-report.json",
+      "content_hash": "sha256:e3ff54a9bb15122298f0d5df817612ed1caacb3b045533f9ba86d009036c2004"
+    }
   },
   "spec_rows": {
     "6.analog": [
