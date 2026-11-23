@@ -50,6 +50,19 @@ no_evidence`) and stays that way until every row is met. The citation is
 unpinned (no provenance block); the `characterization-report-check` CI job
 guards freshness by byte-diffing the envelope with the report.
 
+**Current state (measured 2026-11-23 off the committed
+`t1-report.json`):** the committed report was rendered on the tagged
+`klayout-tools==0.8.0` grader — its `build` block records `version`
+`0.8.0`, `git_tag` `v0.8.0`, `is_release: true` — and reads: **22 T1 rows
+(11 checklist items × 2 partitions), 15 met — items 1, 2, 3, 4, 9, 10 and
+11 on both partitions, plus item 7 (post-layout verification) on the
+digital partition — so this block is 15/22 of the way to T1.** The unmet
+T1 rows are items 5, 6 and 8 on both partitions plus item 7 on the analog
+partition. `tier` is `null` until every rendered item is `met`; three
+placeholder rows for T2/T3/T4 render `unmet / tier_not_supported` after
+the 22 T1 rows (25 rows total). Read the *report*, not this summary — it
+is the mechanical ground truth.
+
 **Update 2026-11-21 (issue #597): 7.analog cited on a `fail` report.** `7.analog` now cites a native `klt pex` report (`sim/pex-sampler-core/`), so the row's reason changes from `no_evidence` to the report's own `fail` status: 130/132 delta rows pass, `active_power_uw` fails the 500 µW bound at the two ff/high-Vdd corners **on both legs** (pre-layout already fails there; design-iteration follow-up is issue #604). See the item 7 analog section below. The met total is unchanged.
 
 **Update 2026-10-09 (issue #227): 7.digital cited, 7/22 met** (see the digital-partition table below). The line that follows is the issue #211 state.
@@ -57,26 +70,26 @@ guards freshness by byte-diffing the envelope with the report.
 **Update 2026-10-09 (issue #211): 5/22 met.** The digital partition's
 delivered physical evidence (`layout/trng_digital/`, issue #166) is now
 cited: **item 3 digital** (`drc.json`) and **item 4 digital** (`lvs.json`)
-render `met` on the pinned `klayout-tools==0.7.0` grader. Item 11 analog,
-item 3 analog and item 4 analog are unchanged. The paragraph below is the
-0.7.0 re-render (issue #164) and is superseded for the totals by this one.
+rendered `met` on the then-pinned `klayout-tools==0.7.0` grader. Item 11
+analog, item 3 analog and item 4 analog are unchanged. The paragraph below
+records the 0.7.0 re-render (issue #164) and is superseded for the totals
+by this one.
 
-At `origin/main`, re-rendered on the tagged grader `klayout-tools==0.7.0`
-(2026-10-08, issue #164), the report reads: **22 T1 rows rendered
-(11 checklist items × 2 partitions), 3 met — item 3 (DRC clean), item 4
-(LVS clean) and item 11 (power delivery, structural), analog partition
-only — so this block is 3/22 of the way to T1.** Issue #164 is closed by
-this change: klayout-tools 0.7.0 carries the LVS supply-pairing fix
-(klayout-tools#2405/#2431), and `11.analog` now renders `met` with
+*History:* at `origin/main` as of 2026-10-08, re-rendered on the tagged
+grader `klayout-tools==0.7.0` (issue #164), the report read: **22 T1 rows
+rendered (11 checklist items × 2 partitions), 3 met — item 3 (DRC clean),
+item 4 (LVS clean) and item 11 (power delivery, structural), analog
+partition only — so this block was 3/22 of the way to T1.** Issue #164 was
+closed by this change: klayout-tools 0.7.0 carried the LVS supply-pairing
+fix (klayout-tools#2405/#2431), and `11.analog` rendered `met` with
 `power_delivery` populated (`supply_nets` vddr1..vddr4, vdd, vss;
 `ties_checked_by_well_assertion` naming all six ties). Against the 0.6.0
-report only item 11 changed verdict; every other row is byte-identical,
-and the vendored checklist is unchanged (`doc_drift: false`). `tier` is
-`null` until every rendered item is `met`. The report records its `build`
-identity (`v0.7.0`, `is_release: true`) and pins the governing checklist
-by `source_doc_content_hash`; three placeholder rows for T2/T3/T4 render
-`tier_not_supported` after the 22 T1 rows (25 rows total). Read the
-*report*, not this summary — it is the mechanical ground truth.
+report only item 11 changed verdict; every other row was byte-identical,
+and the vendored checklist was unchanged (`doc_drift: false`). `tier` was
+`null` until every rendered item was `met`. That render recorded its
+`build` identity (`v0.7.0`, `is_release: true`) and pinned the governing
+checklist by `source_doc_content_hash`; three placeholder rows for T2/T3/T4
+rendered `tier_not_supported` after the 22 T1 rows (25 rows total).
 
 *History:* on `klayout-tools==0.6.0` (2026-09-23, issues #160/#161) the
 report read 2/22 with item 11 `unmet` (`lvs_supply_unproven`).
