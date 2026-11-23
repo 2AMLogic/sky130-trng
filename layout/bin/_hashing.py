@@ -9,6 +9,10 @@ formats for the same operation, including two same-named ``sha256_text``
 functions in this very directory that returned different strings. The formats
 are preserved per call site (recorded digest strings must not change):
 ``prefix=True`` yields ``"sha256:<hex>"``, the default yields a bare ``<hex>``.
+Issue #669 added ``sha256_json`` (the one canonical-JSON digest) and moved the
+remaining inline/helper ``hashlib.sha256(...).hexdigest()`` call sites in
+``sim/`` onto these helpers; ``layout/test_hashing.py`` guards the whole repo
+against a regrown construction site.
 
 ``hashlib.sha256`` is constructed in exactly one place here (``_new``) and
 formatted in exactly one place (``_fmt``), so "digest this value" has one
@@ -27,6 +31,7 @@ Import it the way ``_klt_common`` is imported -- put this file's directory on
 from __future__ import annotations
 
 import hashlib
+import json
 from pathlib import Path
 
 _CHUNK = 1 << 20
@@ -59,6 +64,19 @@ def sha256_text(text: str, *, prefix: bool = False) -> str:
     With ``prefix=True`` the digest is returned as ``"sha256:<hex>"``.
     """
     return sha256_bytes(text.encode(), prefix=prefix)
+
+
+def sha256_json(obj, *, prefix: bool = False) -> str:
+    """SHA-256 of ``obj`` serialized as canonical JSON, as hex.
+
+    The ``json.dumps`` spelling is load-bearing: it is the shared
+    producer/consumer serialization for integrity pins (``row_sha256`` /
+    ``calibration_artifact.sha256``), so a producer (``sensitivity.py``) and
+    its verifier (``behavioral_raw_bit.py``) hash one definition instead of
+    two copies that can drift apart.  With ``prefix=True`` the digest is
+    returned as ``"sha256:<hex>"``.
+    """
+    return sha256_text(json.dumps(obj, sort_keys=True, default=str), prefix=prefix)
 
 
 def sha256_file(path, *, prefix: bool = False) -> str:

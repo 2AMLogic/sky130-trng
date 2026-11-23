@@ -59,8 +59,10 @@ SLUG = "raw-bit-volume-campaign"
 SLUG_DIR = REPO_ROOT / "sim" / SLUG
 TRANSISTOR_DIR = SLUG_DIR / "transistor"
 sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
+sys.path.insert(0, str(REPO_ROOT / "layout" / "bin"))
 from evidence_record import mint_behavioral_record  # noqa: E402
 from loadmod import load_module  # noqa: E402
+from _hashing import sha256_json, sha256_text  # noqa: E402
 
 rbe = load_module(
     "raw_bit_entropy",
@@ -109,10 +111,6 @@ VTH_DRIFT_SLUG = "ro-vth-drift-sensitivity"
 VTH_DRIFT_SCHEMA = "vth-drift-calibration/1"
 
 
-def _row_sha256(row) -> str:
-    return hashlib.sha256(json.dumps(row, sort_keys=True, default=str).encode()).hexdigest()
-
-
 def calibration_from_artifact(artifact, temp: float, vdd: float, corner: str, shift_mv) -> dict:
     """Calibration for one (PVT point, corner, (dVtn, d|Vtp|) mV) from an EXPLICIT versioned artifact
     (sim/ro-vth-drift-sensitivity/, issue #254). Never falls back to the historical time-zero records:
@@ -140,7 +138,7 @@ def calibration_from_artifact(artifact, temp: float, vdd: float, corner: str, sh
         if src["key"] != want_key:
             raise SystemExit(f"error: artifact entry {key!r} cites source row {src['key']!r}, expected {want_key!r}")
         row = by_key.get(src["key"])
-        if row is None or _row_sha256(row) != src["row_sha256"]:
+        if row is None or sha256_json(row) != src["row_sha256"]:
             raise SystemExit(f"error: source-hash mismatch for {src['key']!r} in record {art['source_record']}")
     return {
         "temp_c": temp, "vdd_v": vdd, "corner": corner, "shift_mv": [dvn, dvp],
@@ -374,7 +372,7 @@ def run_campaign(outdir: Path, points=PVT_POINTS_BASE, nbits: int = NBITS) -> li
                 st = stats(bits, label)
                 rows.append({"corner": corner, "temp_c": temp, "vdd_v": vdd, "ts_s": ts,
                              "ts_name": ts_name, "seed_label": label, "seed": sub_seed(label),
-                             "file": fname, "sha256_hex": hashlib.sha256(hx.encode()).hexdigest(),
+                             "file": fname, "sha256_hex": sha256_text(hx),
                              "calibration": {k: cal[k] for k in ("periods_s", "sigma", "combining_record", "jitter_record", "combining_job_id", "jitter_job_id")},
                              **st})
     return rows
@@ -662,7 +660,7 @@ def main(argv=None) -> int:
         for r in rec["streams"]:
             cal = calibration(r["temp_c"], r["vdd_v"], r["corner"])
             bits = stream(cal["periods_s"], cal["sigma"][1], r["ts_s"], r.get("n", NBITS), random.Random(r["seed"]))
-            ok = hashlib.sha256(pack_hex(bits).encode()).hexdigest() == r["sha256_hex"]
+            ok = sha256_text(pack_hex(bits)) == r["sha256_hex"]
             bad += not ok
             print(("OK  " if ok else "FAIL"), r["file"])
         return 1 if bad else 0
