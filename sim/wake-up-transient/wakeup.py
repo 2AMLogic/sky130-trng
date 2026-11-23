@@ -80,6 +80,7 @@ SLUG = "wake-up-transient"
 sys.path.insert(0, str(REPO / "sim" / "bin"))
 sys.path.insert(0, str(REPO))
 from loadmod import load_module  # noqa: E402
+from replay_equal import replay_equal as _replay_equal  # noqa: E402  (issue #519/#659: one shared replay equality)
 from request_dir import load_request_dir  # noqa: E402
 
 PROV = "simulation-derived; provisional until silicon"
@@ -930,19 +931,20 @@ def check(path):
     if leg == "det":
         chunks = _read_chunks(rec["corners_dir"])
         rows, _, summ = det_build(chunks, rec["pvt"]["temp_c"], rec["pvt"]["vdd_v"])
-        same = json.loads(json.dumps(rows, default=str)) == rec["rows"] and json.loads(json.dumps(summ, default=str)) == rec["summary"]
+        same = (_replay_equal(json.loads(json.dumps(rows, default=str)), rec["rows"])
+                and _replay_equal(json.loads(json.dumps(summ, default=str)), rec["summary"]))
     elif leg == "noisy":
         chunks = _read_chunks(rec["corners_dir"])
         point = chunks[0][1]["point"]
         _, units, ctl, xchk, summ = noisy_build(chunks, point)
-        same = (json.loads(json.dumps(units, default=str)) == rec["units"]
-                and json.loads(json.dumps(xchk, default=str)) == rec["xcheck"]
-                and json.loads(json.dumps(summ, default=str)) == rec["summary"])
+        same = (_replay_equal(json.loads(json.dumps(units, default=str)), rec["units"])
+                and _replay_equal(json.loads(json.dumps(xchk, default=str)), rec["xcheck"])
+                and _replay_equal(json.loads(json.dumps(summ, default=str)), rec["summary"]))
     elif leg == "restart-matrix":
         return load_module("restart_matrix", HERE / "restart_matrix.py").check(path)
     elif leg == "margin":
         rows = margin_compute()
-        same = json.loads(json.dumps(rows, default=str)) == rec["rows"]
+        same = _replay_equal(json.loads(json.dumps(rows, default=str)), rec["rows"])
     else:
         raise SystemExit("unknown record leg")
     print("replay", "MATCHES" if same else "DIFFERS", path)
