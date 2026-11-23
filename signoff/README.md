@@ -527,10 +527,12 @@ resolution.
 `klt signoff --attest`/`--inventory` is already in a release: klayout-tools
 0.9.1 documents it for items 1, 8, 9 and 10 (from `--inventory`) and item 2
 (from `--input STREAM`), and `1.analog` uses it. Still pending is migrating the
-rows `attest.py` owns to it and dropping `attest.py`; that needs a grader pin
-bump past 0.8.0 (the CI pin stays at 0.8.0 until then) and a check that the
-`--attest`-minted envelopes match the committed ones, neither of which has been
-done. Item 9's inventory pins the PDK files, so #314 (open_pdks
+rows `attest.py` owns to it and dropping `attest.py`; that needs a check that the
+`--attest`-minted envelopes match the committed ones, which has not been done.
+No grader pin bump is a prerequisite: the CI grader pin stays at 0.8.0, which
+already accepts these `generic` envelopes (`--describe-grader` on 0.8.0:
+`generic: 1, 2, 8, 9, 10`), and `1.analog`, minted by klt 0.9.1, is already
+graded `met` by that 0.8.0 grader. Item 9's inventory pins the PDK files, so #314 (open_pdks
 re-pin) and this issue's rows need a `--write` after whichever lands second.
 
 ## Block kind and the partition boundary (the mixed-signal claim)
