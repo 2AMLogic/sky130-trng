@@ -87,6 +87,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
 import program as P  # noqa: E402
+import pvt_deck_map as PVT  # noqa: E402
 
 spec = importlib.util.spec_from_file_location("make_requests", HERE / "make-requests.py")
 mr = importlib.util.module_from_spec(spec)
@@ -629,6 +630,136 @@ def test_per_card_guard_flags_unvisited_bound() -> None:
         raise AssertionError("a duplicated AT= token went unflagged")
 
 
+# ---------------------------------------------------------------------------
+# Issue #595: the matrix-to-deck mapping and the boundary-load option
+# ---------------------------------------------------------------------------
+
+def test_pvt_deck_table_covers_the_matrix() -> None:
+    """The 12-point matrix is mapped exhaustively, each row to the nearest
+    shipped deck under the declared rule (min |dV| first, tie-break |dT|),
+    and every row's direction/estimate fields are self-consistent.
+
+    klt-free: the shipped-deck list is committed in ``pvt_deck_map.py``;
+    the PDK-gated disk check of the pinned sha256 values lives in
+    ``sim/tests/test_gate_model.py``.
+    """
+    points = {(proc, t, v) for proc in PVT.MATRIX_PROCESSES for (t, v) in mr.GRID}
+    assert set(PVT.matrix_points()) == points, "mapped points != tt/ss/ff x GRID"
+    assert len(PVT.matrix_points()) == 12
+    for key in PVT.matrix_points():
+        row = PVT.DECK_TABLE[key]
+        proc, temp, vdd = key
+        # the named deck is a shipped deck of the same process corner
+        assert row["liberty_deck"] in PVT.SHIPPED_DECKS, row["liberty_deck"]
+        dproc, dtemp, dvdd = PVT.deck_corner(row["liberty_deck"])
+        assert dproc == proc, (row["liberty_deck"], proc)
+        # the nearest-deck rule: no shipped deck of this process is closer
+        # in |dV|, or equal in |dV| and closer in |dT|
+        best = min(
+            (abs(PVT.deck_corner(d)[2] - vdd), abs(PVT.deck_corner(d)[1] - temp), d)
+            for d in PVT.SHIPPED_DECKS if PVT.deck_corner(d)[0] == proc)
+        assert (abs(dvdd - vdd), abs(dtemp - temp), row["liberty_deck"]) == best, (
+            f"{key}: {row['liberty_deck']} is not the nearest shipped deck "
+            f"under the |dV|-first rule ({best[2]} is)")
+        # sha256 pins are full hex; directions use the declared vocabulary
+        assert re.fullmatch(r"[0-9a-f]{64}", row["liberty_sha256"]), key
+        assert row["delay_direction"] in ("pessimistic", "optimistic", "mixed", "none")
+        assert row["power_direction"] in ("pessimistic", "optimistic", "mixed", "none")
+        est, ddir = row["est_delay_error_pct"], row["delay_direction"]
+        if ddir == "pessimistic":
+            assert est > 0, (key, est)
+        elif ddir == "optimistic":
+            assert est < 0, (key, est)
+        elif ddir == "none":
+            assert abs(est) <= 0.1, (key, est)
+        # the axes the row declares are the deck's own characterisation axes
+        assert row["dT_K"] == round(dtemp - temp, 1), key
+        assert row["dV_V"] == round(dvdd - vdd, 2), key
+        if row["exact"]:
+            assert abs(row["dT_K"]) <= 2.0 and row["dV_V"] == 0.0, key
+    # the nominal point is served exactly; the 125 C point is not
+    assert PVT.DECK_TABLE[("tt", 27.0, 1.8)]["exact"] is True
+    assert PVT.DECK_TABLE[("tt", 125.0, 1.98)]["exact"] is False
+
+
+def test_pvt_deck_map_fails_closed() -> None:
+    """An unmapped point raises -- both the direct lookup and grid
+    generation itself, which must leave no half-written corner dir."""
+    for bad in (("tt", 125.0, 1.62), ("tt", -40.0, 1.65), ("ls", 27.0, 1.8)):
+        try:
+            PVT.deck_row(*bad)
+        except PVT.DeckMapError as e:
+            assert "no Liberty deck mapping" in str(e), e
+        else:
+            raise AssertionError(f"deck_row{bad} did not fail closed")
+    try:
+        PVT.plan_entry(["tt"], -40.0, 1.98)
+    except PVT.DeckMapError as e:
+        raise AssertionError(f"a mapped point refused: {e}")
+    # an unmapped grid point: patch GRID, generation must fail with nothing
+    # written (the writer refuses a non-empty dir, so also assert no dir)
+    with tempfile.TemporaryDirectory(prefix="test-pvt-grid-") as tmp:
+        real_grid = mr.GRID
+        mr.GRID = list(real_grid) + [(125.0, 1.62)]
+        try:
+            try:
+                mr.main(["--set", "grid", str(Path(tmp) / "grid")])
+            except PVT.DeckMapError as e:
+                assert "tt/125.0C/1.62V" in str(e), e
+            else:
+                raise AssertionError("grid generation did not fail on an unmapped point")
+            # the four valid points may have been written before the loop
+            # reached the unmapped one; the unmapped point's dir must NOT be
+            assert not (Path(tmp) / "grid" / "grid-125C-1.62V").exists(), \
+                "a request was written for the unmapped point"
+        finally:
+            mr.GRID = real_grid
+
+
+_grid_plans: list[dict] | None = None
+
+
+def grid_plans() -> list[dict]:
+    """``plan.json`` of the four grid requests, generated into a throwaway
+    dir (memoized; the #507 suite generates the same thing for
+    ``request.json``, this serves the #595 plan fields)."""
+    global _grid_plans
+    if _grid_plans is None:
+        with tempfile.TemporaryDirectory(prefix="test-grid-plans-") as tmp:
+            with contextlib.redirect_stdout(io.StringIO()):
+                rc = mr.main(["--set", "grid", str(Path(tmp) / "grid")])
+            assert rc == 0, rc
+            _grid_plans = [json.loads(p.read_text())
+                           for p in sorted(Path(tmp).glob("grid/grid-*/plan.json"))]
+    assert len(_grid_plans) == 4, [p["name"] for p in _grid_plans]
+    return _grid_plans
+
+
+def test_grid_plans_carry_gate_model_pvt() -> None:
+    """Every grid request's plan records the boundary-load option and one
+    deck row per process corner, deck hash included (issue #595 AC)."""
+    for plan in grid_plans():
+        g = plan["gate_model_pvt"]
+        blk = g["boundary_load"]
+        assert blk["option"] == 2, (plan["name"], blk)
+        assert "Liberty input-pin capacitance" in blk["source"]
+        assert blk["record"].endswith("20261121-pvt-deck-and-boundary-load.md")
+        assert set(g["decks"]) == {"tt", "ss", "ff"}, plan["name"]
+        for proc, row in g["decks"].items():
+            assert row["liberty_deck"].endswith(".lib"), (plan["name"], proc)
+            assert re.fullmatch(r"[0-9a-f]{64}", row["liberty_sha256"])
+            assert row["delay_direction"] in ("pessimistic", "optimistic", "mixed", "none")
+            assert row["power_direction"] in ("pessimistic", "optimistic", "mixed", "none")
+            # the row IS the committed table's row for that point
+            t, v = plan["corners"]["temperature_c"][0], plan["corners"]["supply_v"]["Vvdd"][0]
+            want = PVT.deck_row(proc, t, v)
+            assert row["liberty_sha256"] == want["liberty_sha256"], (plan["name"], proc)
+            assert row["delay_direction"] == want["delay_direction"], (plan["name"], proc)
+        # the four plans cover the four (T, Vdd) points of GRID
+        assert (plan["corners"]["temperature_c"][0],
+                plan["corners"]["supply_v"]["Vvdd"][0]) in mr.GRID
+
+
 def main() -> int:
     test_capture_points_sit_at_a_rail()
     test_change_emits_hold_then_edge()
@@ -641,6 +772,9 @@ def main() -> int:
     test_last_cycle_without_read_changes_nothing()
     test_bound_scan_flags_non_ns_units()
     test_per_card_guard_flags_unvisited_bound()
+    test_pvt_deck_table_covers_the_matrix()
+    test_pvt_deck_map_fails_closed()
+    test_grid_plans_carry_gate_model_pvt()
     print("test_make_requests OK")
     return 0
 
