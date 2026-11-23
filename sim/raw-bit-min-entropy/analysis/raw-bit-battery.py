@@ -84,6 +84,7 @@ RECORDS_DIR = REPO_ROOT / "sim" / "raw-bit-min-entropy" / "records"
 sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
 from evidence_record import mint_record, new_record_id  # noqa: E402
 from loadmod import load_module  # noqa: E402
+from replay_equal import replay_equal  # noqa: E402  (issue #519/#659: one shared replay equality)
 
 raw_bit_entropy = load_module(
     "raw_bit_entropy", Path(__file__).with_name("raw-bit-entropy.py"))
@@ -927,23 +928,24 @@ def check_volume_record(record_json: Path) -> int:
         return 1
     got = json.loads(json.dumps(payload))
     rc = 0
-    if got != want:
+    if not replay_equal(got, want):
         rc = 1
         diffs = [r["source_file"] for r, w in zip(got["per_stream"],
-                 want.get("per_stream", [])) if r != w]
+                 want.get("per_stream", [])) if not replay_equal(r, w)]
         print("CHECK FAILED: analysis payload differs"
               + (f" (streams: {', '.join(diffs)})" if diffs else ""),
               file=sys.stderr)
+    # The markdown is rendered from the committed payload; the recomputed
+    # payload is tied to it by the replay comparison above (float-tolerant),
+    # so the markdown is compared against render(want) only -- a 1-ulp
+    # re-derivation shift can straddle a :.4f rounding midpoint and would
+    # false-diff here (same rule as conditioned-output.py).
     if render_volume(want, caveats) not in md_text:
         rc = 1
         print("CHECK FAILED: committed markdown tables differ from the "
               "committed payload or source caveats", file=sys.stderr)
-    if render_volume(payload, caveats) not in md_text:
-        rc = 1
-        print("CHECK FAILED: recomputed tables differ from committed markdown",
-              file=sys.stderr)
     if rc == 0:
-        print(f"CHECK OK: {record_json.name} reproduces byte-for-byte "
+        print(f"CHECK OK: {record_json.name} reproduces "
               f"({len(got['per_stream'])} streams)")
     return rc
 

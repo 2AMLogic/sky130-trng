@@ -17,9 +17,12 @@
     "REPRODUCE.md",
     "design/pdk.json",
     "sim/pdk.json",
-    "layout/pdk.json"
+    "layout/pdk.json",
+    "layout/bin/_hashing.py",
+    "layout/bin/_klt_common.py",
+    "layout/bin/_pex_rewrite.py"
   ],
-  "member_count": 129,
+  "member_count": 134,
   "members": [
     {
       "path": "REPRODUCE.md",
@@ -40,6 +43,18 @@
     {
       "path": "digital/tb/tb_trng_digital.v",
       "sha256": "sha256:4cddae27bfcaa085e99966640f628c896efc4bfc4080f069e16736091f4d16aa"
+    },
+    {
+      "path": "layout/bin/_hashing.py",
+      "sha256": "sha256:552b29fc1c1921352040cb384e719117d9b7a04abb9dd8ee89b621bc88543b56"
+    },
+    {
+      "path": "layout/bin/_klt_common.py",
+      "sha256": "sha256:449815c2e33195d624996210f7ad4235d236befe841c77b7b0de119196d5f6ec"
+    },
+    {
+      "path": "layout/bin/_pex_rewrite.py",
+      "sha256": "sha256:25735af6f2ecbc134e739e8a60bd5619ad4b514128d04b25a334c992582f13a3"
     },
     {
       "path": "layout/pdk.json",
@@ -87,7 +102,7 @@
     },
     {
       "path": "sim/bin/replay_equal.py",
-      "sha256": "sha256:fbd5d2f3db802c151b9f48f1594270a9401b1736fe542aad5ee589195e485583"
+      "sha256": "sha256:af12495745d6ea322469e0807ce500bdff4db7f365ec55fa882dc9ff125ac39d"
     },
     {
       "path": "sim/bin/request_dir.py",
@@ -95,7 +110,7 @@
     },
     {
       "path": "sim/digital-conditioned-output/analysis/conditioned-output.py",
-      "sha256": "sha256:af2219c179ed9924cd17b7a0a3f384beff6fe68b303b9d3bd2bd4a7824281db1"
+      "sha256": "sha256:56c5da85f74ea0c6f7402b20689afd389bb3f8beadf9c8f3b06eb365c28f1e60"
     },
     {
       "path": "sim/digital-conditioner-equivalence/harness/conditioner-equivalence.py",
@@ -243,7 +258,7 @@
     },
     {
       "path": "sim/local-mismatch-monte-carlo/reduce.py",
-      "sha256": "sha256:e02cbb062ee9f2362ecfafae5dab68e9a5cb0f5d7988c8af30cb283e80e03030"
+      "sha256": "sha256:7a1a55bc5885039df3d6a5c7883c4316e21a364f66bc6fe836e20016eaf46d55"
     },
     {
       "path": "sim/local-mismatch-monte-carlo/testbench/tb_ro_array_mismatch.spice",
@@ -338,6 +353,10 @@
       "sha256": "sha256:1a411ef27ba3f0b32ae09307544deac101de38a853cfb7d09f880fb8cdb5a38c"
     },
     {
+      "path": "sim/post-layout-whole-block/analysis/deck-axis-sensitivity.py",
+      "sha256": "sha256:1e3881ca1a51098b0789247150cb497a0ad80a23f4a7966d001e27c32b9f895b"
+    },
+    {
       "path": "sim/post-layout-whole-block/analysis/reduce-whole-block.py",
       "sha256": "sha256:af685e09684bb8bd1af5e4558ae636b4d956414de2be881289bbc90415f4e138"
     },
@@ -351,7 +370,7 @@
     },
     {
       "path": "sim/post-layout-whole-block/make-gate-model.py",
-      "sha256": "sha256:4a8805cd295c4b34d99193881b4f1b543a7ecc2e55e1905ed8ed000dcaba9a6c"
+      "sha256": "sha256:a07ca886dc824334388bf5152a831cc304210ca2f1448a4e99685f3e04ab042e"
     },
     {
       "path": "sim/post-layout-whole-block/make-netlist.py",
@@ -359,11 +378,15 @@
     },
     {
       "path": "sim/post-layout-whole-block/make-requests.py",
-      "sha256": "sha256:127a527a25aac1241ffbd53847e7c3d2d18f7463a9d2c560fd976da4d6cbe571"
+      "sha256": "sha256:19a6080886f146597f60f84eba039c49f1fd3e65b2b69cecbdb1b3d4e35f061c"
     },
     {
       "path": "sim/post-layout-whole-block/program.py",
       "sha256": "sha256:1b970b0483c2a37c8ce20fa97690370e1c3183a91d06f345b990a2c41911bd06"
+    },
+    {
+      "path": "sim/post-layout-whole-block/pvt_deck_map.py",
+      "sha256": "sha256:2a71a54df2fb14e3d2333a484cd91b7ff087f401e46530c28c2cc577c5786dde"
     },
     {
       "path": "sim/post-layout-whole-block/runs/20261121-coupled-probe/requests/coupled-probe/plan.json",
@@ -379,11 +402,11 @@
     },
     {
       "path": "sim/post-layout-whole-block/test_make_requests.py",
-      "sha256": "sha256:831f7d9ff8d4e88400a2213f9f207ed30775a1442b9b89dbb03128d459ef233c"
+      "sha256": "sha256:caad6be23294a12ec9881f7163574e9c44230bd9194bc8791a03d83200bda782"
     },
     {
       "path": "sim/raw-bit-min-entropy/analysis/raw-bit-battery.py",
-      "sha256": "sha256:7d62b1436a172b375dae60979f1045e238eff8a4a91061ac146aae1d739c91f5"
+      "sha256": "sha256:10e9a26f6f6647740c00fef884bc50d02c9db4f183a9069f19688ef548a22b6a"
     },
     {
       "path": "sim/raw-bit-min-entropy/analysis/raw-bit-entropy.py",
@@ -415,7 +438,7 @@
     },
     {
       "path": "sim/ro-array-idle-leakage/analysis/idle_leakage.py",
-      "sha256": "sha256:013240ca6d22d465421907037784b884d7d943aa7bbd88bba0479c03d439d66a"
+      "sha256": "sha256:831b36597db30fd50baacb92ac43eb18b0f8cacc75c2d4fe2d0e6b144018f0c7"
     },
     {
       "path": "sim/ro-array-idle-leakage/make-requests.py",
@@ -519,7 +542,7 @@
     },
     {
       "path": "sim/wake-up-transient/wakeup.py",
-      "sha256": "sha256:714c8ece566c06366e0e3101a07ffc0af4a5c0a1a2d347474ed14d8cd9525d92"
+      "sha256": "sha256:0d23dc079e844d91f95d18be99d8e543ad0d54dc731573f868c041a277a42a23"
     },
     {
       "path": "sim/xor-combining-alternatives/make-requests.py",

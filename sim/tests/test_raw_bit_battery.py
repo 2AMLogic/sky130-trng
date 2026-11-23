@@ -15,6 +15,7 @@ from __future__ import annotations
 import hashlib
 import io
 import json
+import math
 import random
 import sys
 import tempfile
@@ -27,6 +28,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 _PATH = REPO_ROOT / "sim" / "raw-bit-min-entropy" / "analysis" / "raw-bit-battery.py"
 sys.path.insert(0, os.path.join(REPO_ROOT, "sim", "bin"))
 from loadmod import load_module  # noqa: E402
+import replay_equal  # noqa: E402
 B = load_module("raw_bit_battery", _PATH)
 
 
@@ -411,6 +413,41 @@ class TestVolumeAdapter(unittest.TestCase):
         f.write_text(("00" + f.read_text()[2:]))
         self.assertNotEqual(self.check(rec)[0], 0)
         self.assertEqual(len(list(B.RECORDS_DIR.glob("*.json"))), 1)
+
+
+class ReplayTolerance(unittest.TestCase):
+    """Issue #659: `--check` replays the payload through sim/bin/replay_equal.py.
+
+    The battery's chi-square and estimator constructs are float `sum()`s;
+    builtin `sum()` is naive on CPython <= 3.11 and compensated on >= 3.12,
+    so the committed volume record minted on 3.12 failed its own replay on
+    all 18/18 streams under 3.11 semantics before this."""
+
+    def test_uses_the_shared_rule(self):
+        self.assertIs(B.replay_equal, replay_equal.replay_equal)
+
+    def test_replay_gate_absorbs_the_cpython_sum_split_and_still_bites(self):
+        # `t_longest_run`'s chi construct (m = 8): counts against the table's
+        # inexact decimal probabilities, sized so the naive and compensated
+        # reductions of the same terms differ.
+        nb = 831
+        counts = [195, 314, 175, 147]
+        _, _, _, probs = B._LONGEST[8]
+        terms = [(c - nb * p) ** 2 / (nb * p) for c, p in zip(counts, probs)]
+        chi_naive = 0.0
+        for t in terms:
+            chi_naive += t
+        chi_fsum = math.fsum(terms)
+        self.assertNotEqual(chi_naive, chi_fsum)
+        self.assertTrue(B.replay_equal(chi_naive, chi_fsum))
+        self.assertFalse(B.replay_equal(chi_fsum, chi_fsum * (1 + 1e-6)))
+        self.assertTrue(B.replay_equal(chi_fsum, chi_fsum * (1 + 1e-12)))
+
+    def test_zero_versus_tiny_is_a_difference_no_absolute_floor(self):
+        self.assertFalse(B.replay_equal(0.0, 5e-324))
+        self.assertFalse(B.replay_equal(0.0, 1e-20))
+        self.assertFalse(B.replay_equal(1e-20, 0.0))
+        self.assertTrue(B.replay_equal(0.0, -0.0))
 
 
 if __name__ == "__main__":
