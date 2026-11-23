@@ -24,7 +24,10 @@ Writes ``<reqdir>/<name>/{netlist.cir,request.json,plan.json}`` for the selected
     (125 C, 1.98 V) -- each bundling the ``tt``/``ss``/``ff`` process axis
     (4 requests x 3 corners = the full 12-point matrix), ``backend: batch``:
     a ``klt sim`` corners request goes to the batch fleet; this is never a
-    hand-launched local ngspice grid.
+    hand-launched local ngspice grid. Since issue #595 each request's
+    ``plan.json`` also carries ``gate_model_pvt``: the Liberty deck
+    (path + sha256, per process corner) the digital half's gate model uses
+    at that point plus the boundary-load option, from ``pvt_deck_map.py``.
 
 The deck body is::
 
@@ -54,8 +57,10 @@ HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[1]
 sys.path.insert(0, str(REPO / "layout" / "bin"))
 from _hashing import sha256_file, sha256_text  # noqa: E402
+from _klt_common import libs_ref  # noqa: E402
 sys.path.insert(0, str(HERE))
 import program as P  # noqa: E402
+import pvt_deck_map as PVT  # noqa: E402
 
 sys.path.insert(0, str(REPO / "sim" / "bin"))
 from loadmod import load_module  # noqa: E402
@@ -465,12 +470,38 @@ def _subckt_ports() -> list[str]:
     return _SUBCKT_PORTS
 
 
+_UNSET = object()
+_LIBS_REF: Path | None | object = _UNSET
+
+
+def _best_effort_libs_ref() -> Path | None:
+    """The PDK's ``libs.ref`` when the install is resolvable, else None.
+
+    Only the deck sha256 verification and the absolute deck path in
+    ``plan.json.gate_model_pvt`` need it (issue #595): with None the plan
+    records the install-relative path and the committed table's sha256 --
+    equal to the on-disk hash whenever the install matches the pin, which
+    ``pvt_deck_map.verify_against_disk`` checks wherever the PDK exists
+    (real runs, the PDK-gated test). Best-effort so CI's klt-free unit
+    tests keep generating the grid set; a RESOLVED install with a wrong
+    hash still fails closed inside ``plan_entry``.
+    """
+    global _LIBS_REF
+    if _LIBS_REF is _UNSET:
+        try:
+            _LIBS_REF = libs_ref(PDK, klt="klt", timeout=120)
+        except Exception:
+            _LIBS_REF = None
+    return _LIBS_REF  # type: ignore[return-value]
+
+
 def make_request(name: str, outdir: Path, *, processes: list[str], temp_c: float,
                  supply: float, backend: str, analysis_args: str,
                  header: list[str], cycles: list[dict] | None = None,
                  timeout_s: int = 1800, poll_timeout_s: int | None = None,
                  rate_probe_stop: float | None = None,
-                 analog_only: bool = False, coupled: bool = False) -> None:
+                 analog_only: bool = False, coupled: bool = False,
+                 gate_model_pvt: dict | None = None) -> None:
     if cycles is None:
         cycles, _ = P.build_program()
     if coupled and (processes != ["tt"] or temp_c != 27.0 or supply != VIH):
@@ -502,7 +533,7 @@ def make_request(name: str, outdir: Path, *, processes: list[str], temp_c: float
     if poll_timeout_s is not None:
         request["batch"] = {"poll_timeout_s": poll_timeout_s}
     (outdir / "request.json").write_text(json.dumps(request, indent=2) + "\n")
-    (outdir / "plan.json").write_text(json.dumps({
+    plan = {
         "name": name,
         "netlist_sha256": sha256_file(outdir / "netlist.cir"),
         "trng_whole_gds_sha256": sha256_file(REPO / "layout" / "trng_whole" / "trng_whole.gds"),
@@ -515,7 +546,13 @@ def make_request(name: str, outdir: Path, *, processes: list[str], temp_c: float
         "provenance": P.PROVENANCE,
         **_partition_plan(),
         **plan_fields,
-    }, indent=2, sort_keys=True) + "\n")
+    }
+    if gate_model_pvt is not None:
+        # issue #595: the digital half's deck per process corner of THIS
+        # request plus the boundary-load option, one block per request
+        plan["gate_model_pvt"] = gate_model_pvt
+    (outdir / "plan.json").write_text(json.dumps(
+        plan, indent=2, sort_keys=True) + "\n")
 
 
 _PARTITION: dict | None = None
@@ -615,9 +652,16 @@ def main(argv: list[str] | None = None) -> int:
             f"post-layout-whole-block 12-point matrix: {temp:.0f} C, {supply:.2f} V x tt/ss/ff (issue #174)",
             f"the repo's established four-point post-layout grid; klt sim owns .lib/.temp/.tran",
         ]
+        # issue #595: each request's plan records the digital half's Liberty
+        # deck per process corner and the boundary-load option (option 2).
+        # Unmapped points fail closed here; a resolved-but-changed install
+        # fails closed inside plan_entry's sha256 check.
+        gate_pvt = PVT.plan_entry(["tt", "ss", "ff"], temp, supply,
+                                  libs_ref_dir=_best_effort_libs_ref())
         make_request(name, reqdir / name, processes=["tt", "ss", "ff"],
                      temp_c=temp, supply=supply, backend="batch", timeout_s=GRID_TIMEOUT_S, poll_timeout_s=6600,
-                     analysis_args=f"{P.t_stop_ns(P.build_program()[0]):.0f}n", header=hdr)
+                     analysis_args=f"{P.t_stop_ns(P.build_program()[0]):.0f}n", header=hdr,
+                     gate_model_pvt=gate_pvt)
         print(f"wrote {reqdir/name}")
     return 0
 

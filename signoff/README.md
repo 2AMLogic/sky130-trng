@@ -422,6 +422,17 @@ The grader does not walk the member files: `attest.py --check` (CI,
 `signoff-check`) does, and goes red when any member changed, appeared or
 vanished, or when an envelope/manifest pin differs.
 
+Item 9's inventory also covers its members' import closure into
+`layout/bin` (issue #648): the shared helpers they import at run time —
+`layout/bin/_hashing.py`, `_klt_common.py`, `_pex_rewrite.py` — are
+inventoried, so an edit to one of them moves item 9's hash instead of
+leaving it `pass` over changed harness behaviour.
+`sim/tests/test_signoff_attest.py` recomputes that closure from the
+committed members and fails when a script imports a `layout/bin` module
+the selectors do not pin, so a new helper import needs its selector entry
+and a `--write`. Repo-local imports from anywhere else (for example
+`design/_pdk_search.py`, issue #650) are not inventoried.
+
 Limits, stated plainly: these are presence-and-consistency checks over
 committed files. `2.*` do not re-run the layout generator (that is
 `pdk-nightly`'s `layout-check`); `9` checks that a testbench source exists per

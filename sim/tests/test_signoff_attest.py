@@ -2,6 +2,7 @@
 """Test for signoff/attest.py (issue #320): the artifact-anchored generic
 envelopes cited for T1 items 1, 2, 9, 10.  Stdlib only.  Fixture trees hold
 only the inventoried files, so no simulator, PDK or klt is needed."""
+import ast
 import contextlib
 import io
 import json
@@ -41,6 +42,28 @@ def make_tree(dst):
         (dst / p.relative_to(REPO)).mkdir(parents=True, exist_ok=True)
 
 
+def imported_modules(path):
+    names = set()
+    for node in ast.walk(ast.parse(path.read_text())):
+        if isinstance(node, ast.Import):
+            names.update(alias.name.split(".")[0] for alias in node.names)
+        elif isinstance(node, ast.ImportFrom) and node.level == 0 and node.module:
+            names.add(node.module.split(".")[0])
+    return names
+
+
+def layout_bin_closure(root, scripts):
+    """The layout/bin modules `scripts` import, followed through those modules' own imports."""
+    helpers = {p.stem for p in (root / "layout" / "bin").glob("*.py")}
+    closure, queue = set(), list(scripts)
+    while queue:
+        for name in imported_modules(root / queue.pop()) & helpers:
+            if name not in closure:
+                closure.add(name)
+                queue.append(f"layout/bin/{name}.py")
+    return {f"layout/bin/{name}.py" for name in closure}
+
+
 class AttestTest(unittest.TestCase):
     def setUp(self):
         self.tmp = Path(tempfile.mkdtemp())
@@ -68,9 +91,18 @@ class AttestTest(unittest.TestCase):
         rc, err = run(self.tmp, "--check")
         self.assertEqual(rc, 0, err)
 
+    def test_item_9_pins_the_layout_bin_import_closure_of_its_members(self):
+        inv = json.loads((REPO / "signoff/attest/9.inventory.json").read_text())
+        pinned = {m["path"] for m in inv["members"]}
+        closure = layout_bin_closure(REPO, {p for p in pinned if p.endswith(".py")})
+        self.assertEqual(closure - pinned, set())
+
     def test_negative_control_edited_inventoried_file_is_stale(self):
         for rel, key in (("digital/rtl/trng_digital.v", "1.digital"),
-                         ("layout/sampler_core/sampler_core.gds", "2.analog")):
+                         ("layout/sampler_core/sampler_core.gds", "2.analog"),
+                         ("layout/bin/_hashing.py", "9"),
+                         ("layout/bin/_klt_common.py", "9"),
+                         ("layout/bin/_pex_rewrite.py", "9")):
             with self.subTest(rel=rel):
                 p = self.tmp / rel
                 orig = p.read_bytes()
