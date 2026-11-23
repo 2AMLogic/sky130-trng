@@ -408,8 +408,8 @@ only) builds those envelopes from committed inventories, as of `43f26fd`,
 | Row | Envelope | Verdict | What the mechanical check establishes |
 |---|---|---|---|
 | `1.digital` | `attest/1.digital.json` | `met` | RTL sha256 equals the input hash pinned by both synthesis outputs and by `tool-pins.json`; the committed 50 kHz synthesized netlist matches the P&R input pin. |
-| `2.analog` | `attest/2.analog.json` | `met` | `sampler_core.gds` is the exact GDS the `3.analog` DRC pin names; `compose` request/response, cell spec and README are committed (documented provenance). |
-| `2.digital` | `attest/2.digital.json` | `met` | `trng_digital.gds` is the `3.digital` pinned GDS; the P&R request, tool pins and record are committed and the record's RTL/netlist hashes match the current tree. |
+| `2.analog` | `attest/2.analog.json` | `met` | `sampler_core.gds` is the exact GDS the `3.analog` DRC pin names; `compose` request/response, cell spec and README are committed (documented provenance); the harness's `layout/bin` helper closure is inventoried (issue #650). |
+| `2.digital` | `attest/2.digital.json` | `met` | `trng_digital.gds` is the `3.digital` pinned GDS; the P&R request, tool pins and record are committed and the record's RTL/netlist hashes match the current tree; the harness's `layout/bin` helper closure is inventoried (issue #650). |
 | `10` | `attest/10.json` | `met` | README points to `REPRODUCE.md` and has the spec section; LICENSE is Apache-2.0; `ci.yml` runs the reproduce checker, the append-only rule and this gate. |
 | `1.analog` | `attest/1.analog.json` | `met` | Not built by `attest.py` (issue #360). `attest/1.analog.inventory.json` is a klt-format inventory (19 `.sch`/`.sym` sources plus the four derived `design/*.spice`, each declaring `python3 design/netlist.py --check --top <cell>` as its freshness check). `klt signoff --attest 1` (klayout-tools 0.9.1, needs xschem and `klt netlist`) runs only in `pdk-nightly.yml` `netlist-check`, which mints the envelope (uploaded as the `attest-1-analog` artifact) and re-attests the committed `attest/1.analog.json` with `--check`, failing on drift. After a deliberate schematic change, dispatch `pdk-nightly` and commit the artifact as `attest/1.analog.json`; then **copy the new envelope's `provenance.input.content_hash` into `block-manifest.json`'s `evidence["1.analog"].content_hash` by hand** — `attest.py` does not own this row, so neither `--write` nor `--check` updates that pin, and a stale pin grades the item `unmet` / `stale_evidence` — then run `attest.py --write` for the rows it does own and re-render the report. |
 | `9` | `attest/9.json` | `met` | Every record-bearing `sim/` family has a committed testbench/harness/script outside `records/`, `runs/`, `corners/` (`sim/ro-ring-timestep-convergence` via `harness/run-convergence.py`), the three `pdk.json` pins agree, and `REPRODUCE.md` states the pin. |
@@ -422,16 +422,27 @@ The grader does not walk the member files: `attest.py --check` (CI,
 `signoff-check`) does, and goes red when any member changed, appeared or
 vanished, or when an envelope/manifest pin differs.
 
-Item 9's inventory also covers its members' import closure into
-`layout/bin` (issue #648): the shared helpers they import at run time —
-`layout/bin/_hashing.py`, `_klt_common.py`, `_pex_rewrite.py` — are
-inventoried, so an edit to one of them moves item 9's hash instead of
-leaving it `pass` over changed harness behaviour.
-`sim/tests/test_signoff_attest.py` recomputes that closure from the
-committed members and fails when a script imports a `layout/bin` module
-the selectors do not pin, so a new helper import needs its selector entry
-and a `--write`. Repo-local imports from anywhere else (for example
-`design/_pdk_search.py`, issue #650) are not inventoried.
+Every inventory that pins a python harness also pins that harness's
+import closure into the shared helper directories `layout/bin/` and
+`design/` (issues #648, #650): the helper modules the harnesses import
+at run time — `layout/bin/_hashing.py`, `_klt_common.py`,
+`_pex_rewrite.py` and `design/_pdk_search.py` (imported by
+`sim/bin/corner-run.py`) for item 9; `_klt_common.py` (imported by
+`compose-cell.py`) for `2.analog`; `_hashing.py` and `_klt_common.py`
+(imported by `pnr-and-verify.py`) for `2.digital` — are members of the
+same item's inventory, so an edit to a helper moves the hash of every
+item whose harness behaviour it can change, instead of leaving the
+envelope `pass` over changed harness behaviour.
+`sim/tests/test_signoff_attest.py` recomputes each item's closure from
+that item's committed members against helper modules discovered from
+the repository tree (never from the selectors), and fails when a
+member script imports a `layout/bin/` or `design/` module its own
+item's selectors do not pin, so a new helper import needs its selector
+entry and a `--write`. Repo-local imports from other directories are
+not traced by that assertion: the `sim/` harnesses a `2.*` harness
+imports (for example `sim/digital-synthesis/harness/gate_cosim.py` and
+`sim/bin/evidence_paths.py`, imported by `pnr-and-verify.py`) are
+item 9 territory, pinned there and not per-item.
 
 Limits, stated plainly: these are presence-and-consistency checks over
 committed files. `2.*` do not re-run the layout generator (that is
