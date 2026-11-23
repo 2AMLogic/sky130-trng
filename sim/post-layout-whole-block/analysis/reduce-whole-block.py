@@ -163,7 +163,10 @@ def analyse_corner(corner: dict, vdd: float) -> dict:
     for k, inp in enumerate(inputs):
         if inp["raw_valid"]:
             cmp(f"raw_valid_k{k}", bit(f"raw_valid_k{k}"), 1)
-        if inp["re"]:
+        # a read in the LAST cycle has no cycle k+1 for its rdata word to be
+        # observed in: the deck does not measure it (#646, same guard as
+        # make-requests.py / make-gate-model.py), so there is nothing to read
+        if inp["re"] and k + 1 < len(inputs):
             got = sum(bit(f"rdata_k{k}_b{b}") << b for b in range(32))
             cmp(f"bus_rdata@k{k}", got, rows[k]["model"]["bus_rdata"])
     for name in m:
