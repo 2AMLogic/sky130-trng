@@ -25,7 +25,7 @@ Chronological record of recently merged pull requests and closed issues.
 
 ### 2026-11-22
 
-- Note: removed 48 WORK_LOG records (42 here, 6 in the 2026-09 archive) that the 2026-10-18 Guide document-maintenance backfill (`e8b0dd38`) copied from `2AMLogic/gf180-usb2-phy`'s merged history. Each cited a number that also exists in this repo but resolved to unrelated work (wrong kind and title); the genuine records for those numbers are retained. Audit evidence and rationale: #633.
+- Note: removed 48 WORK_LOG records (42 here, 6 in the 2026-09 archive) that the 2026-10-18 Guide document-maintenance backfill (`e8b0dd38`) copied from `2AMLogic/gf180-usb2-phy`'s merged history. Each cited a number that also exists in this repo but resolved to unrelated work (wrong kind and title); the genuine records for the other 46 numbers are retained. The exceptions, #111 and #159, are PRs that closed without merging, and the log covers merged PRs and closed issues only, so they have no record of their own. Audit evidence and rationale: #633.
 - **PR #643**: fix: preserve target mode when generate-agents-md.sh regenerates AGENTS.md
 - **PR #635**: docs(work-log): remove 48 records backfilled from gf180-usb2-phy
 - **Issue #640** (closed): generate-agents-md.sh's mktemp+mv render path tightens .loom/AGENTS.md from 644 to 600 on every regeneration
