@@ -450,7 +450,7 @@ python3 signoff/attest.py --check      # what CI runs; read-only
 Once a klayout-tools release carries `klt signoff --attest`/`--inventory`
 (present in the `0.7.1.dev` development build, absent from 0.7.0 as of
 2026-10-17), switch these rows to it and drop `attest.py`; the CI pin stays at
-0.7.0 until then. Item 9's inventory pins the PDK files, so #314 (open_pdks
+0.8.0 until then. Item 9's inventory pins the PDK files, so #314 (open_pdks
 re-pin) and this issue's rows need a `--write` after whichever lands second.
 
 ## Block kind and the partition boundary (the mixed-signal claim)
@@ -494,7 +494,8 @@ the item to make a row go green.
 ## CI
 
 `.github/workflows/ci.yml`'s `signoff-check` job installs the pinned
-`klayout-tools==0.7.0` (since 2026-10-08, issue #164; 0.6.0 from 2026-09-23, issue #160 — deliberately
+`klayout-tools==0.8.0` (since issue #363; 0.7.0 from 2026-10-08, issue #164;
+0.6.0 from 2026-09-23, issue #160 — deliberately
 **diverged** from the PDK nightly's 0.5.0: the grader is a pure JSON
 transform with no PDK, so it follows the grader release, while the
 nightly's pin gates the nineteen committed cells' compose-cell `--check`
