@@ -50,7 +50,7 @@ no_evidence`) and stays that way until every row is met. The citation is
 unpinned (no provenance block); the `characterization-report-check` CI job
 guards freshness by byte-diffing the envelope with the report.
 
-**Update 2026-11-21 (issue #597): 7.analog cited on a `fail` report — still 7/22 met.** `7.analog` now cites a native `klt pex` report (`sim/pex-sampler-core/`), so the row's reason changes from `no_evidence` to the report's own `fail` status: 130/132 delta rows pass, `active_power_uw` fails the 500 µW bound at the two ff/high-Vdd corners **on both legs** (pre-layout already fails there; design-iteration follow-up is issue #604). See the item 7 analog section below. The met total is unchanged.
+**Update 2026-11-21 (issue #597): 7.analog cited on a `fail` report.** `7.analog` now cites a native `klt pex` report (`sim/pex-sampler-core/`), so the row's reason changes from `no_evidence` to the report's own `fail` status: 130/132 delta rows pass, `active_power_uw` fails the 500 µW bound at the two ff/high-Vdd corners **on both legs** (pre-layout already fails there; design-iteration follow-up is issue #604). See the item 7 analog section below. The met total is unchanged.
 
 **Update 2026-10-09 (issue #227): 7.digital cited, 7/22 met** (see the digital-partition table below). The line that follows is the issue #211 state.
 
@@ -325,16 +325,17 @@ them):**
 
 ## Digital-partition citations (issue #211) and what stays omitted
 
-Audit of the `layout/trng_digital/` envelopes against the 0.7.0 grader and
-the vendored item rules (no new simulation; existing artifacts only):
+Audit of the `layout/trng_digital/` envelopes against the 0.7.0 grader
+then in force and the vendored item rules (no new simulation; existing
+artifacts only):
 
 | Row | Decision | Why |
 |---|---|---|
 | `3.digital` | **cited** `drc.json`, pin `sha256:c65e1581…` | `klt drc` `status: clean`, 0 violations, deck `sky130` (`sha256:ef7800eb…`). The pin is `provenance.input.content_hash`, the sha256 of the committed `trng_digital.gds`. |
 | `4.digital` | **cited** `lvs.json`, pin `sha256:93fdea04…` | `status: match`, engine `klayout` 0.30.12, `power_connectivity.status: match`. The pin is the sha256 of the extracted `trng_digital.layout.abstract.spice` that was compared (`environment.layout_sha256`). |
 | `5.digital` | **not cited** | `sta.json` (16 Liberty corners, all `constrained`, non-negative setup/hold, SPEF-annotated) would grade `met` on its own, but item 5's digital rule is multi-corner STA *plus* a bit-exact functional suite. Native `klt functional-verification` reports now exist (issue #222, `sim/digital-functional-verification/records/20261009-120511-d9f51a4`; functional/unit-delay on the RTL and the routed netlist, not SDF-timed), so both halves of the evidence are present. The row is **still not cited**: item 5's note requires a ratified specification and DR-0004 (the digital section) is `Proposed`; that condition is unmet and stays explicitly unmet. |
-| `7.digital` | **cited** `sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/timed-declared.report.json`, unpinned | Issue #227: native `klt functional-verification` run of the routed netlist with the post-route SDF back-annotated (`environment.sdf.annotated: true`, 13/13 tests, byte-identical to the independent oracle). Renders `met` on the 0.7.0 grader, which checks only the envelope kind and an annotated `sdf` object. **Disclosures that travel with the citation (the grader does not grade them):** `sdf.partial: true` -- Icarus 13.0 drops all 455 SDF `TIMINGCHECK` sections, so setup/hold are *not* simulated; 39 zero-delay bit-selected-input `INTERCONNECT` entries were removed before annotation (the tool cannot resolve them under Icarus); one SDF corner only (`tt_025C_1v80`), **not a PVT sweep**; the SDF carries zero wire delay; DR-0004 is `Proposed`, so the result is provisional; the 16-corner STA (item 5 evidence) is neither replaced nor superseded. Cited unpinned because a pin renders `unverifiable_provenance` (the envelope records no input hash); every input is hashed in the record's `input-hashes.json`. Annotation/timing controls (mistargeted SDF, SDF removed, exact +137 ps arc shift, +15000 ns shift, 5 ns clock) are in the same record. |
-| `11.digital` | **cited** `[erc.json, pnr.json, lvs.json]`, pins `sha256:c65e1581…` (GDS) / `9d2b8aed…` (P&R input netlist) / `93fdea04…` | Native `klt erc --findings-only` (klt 0.7.0) on the committed routed GDS: VPWR and VGND one island each, zero findings, stackup covers every PDN strap layer (met1/met4/met5) and DEF special-net layer (met1–met5), drawn-nwell tie (43 wells, 704 tapcells) and a 704-box native-substrate tie both `checked`, nothing `skipped`; `pnr.json` `power.pdn` true with tapcell `sky130_fd_sc_hd__tapvpwrvgnd_1`; `lvs.json` `power_connectivity: match`. Five isolated negative controls plus a clean baseline (disconnection, short, missing well tie, missing substrate tie, wrong-net tie) are all detected. Spec, generator, controls, reproduction and limits: `layout/trng_digital/ERC.md`. |
+| `7.digital` | **cited** `sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/timed-declared.report.json`, unpinned | Issue #227: native `klt functional-verification` run of the routed netlist with the post-route SDF back-annotated (`environment.sdf.annotated: true`, 13/13 tests, byte-identical to the independent oracle). Rendered `met` on the 0.7.0 grader at citation time, which checked only the envelope kind and an annotated `sdf` object; the committed 0.8.0 report renders the row `met` unchanged (part of its `t1_met_count` 15). **Disclosures that travel with the citation (the grader does not grade them):** `sdf.partial: true` -- Icarus 13.0 drops all 455 SDF `TIMINGCHECK` sections, so setup/hold are *not* simulated; 39 zero-delay bit-selected-input `INTERCONNECT` entries were removed before annotation (the tool cannot resolve them under Icarus); one SDF corner only (`tt_025C_1v80`), **not a PVT sweep**; the SDF carries zero wire delay; DR-0004 is `Proposed`, so the result is provisional; the 16-corner STA (item 5 evidence) is neither replaced nor superseded. Cited unpinned because a pin renders `unverifiable_provenance` (the envelope records no input hash); every input is hashed in the record's `input-hashes.json`. Annotation/timing controls (mistargeted SDF, SDF removed, exact +137 ps arc shift, +15000 ns shift, 5 ns clock) are in the same record. |
+| `11.digital` | **cited** `[erc.json, pnr.json, lvs.json]`, pins `sha256:c65e1581…` (GDS) / `9d2b8aed…` (P&R input netlist) / `93fdea04…` | Native `klt erc --findings-only` (klt 0.7.0 at audit time) on the committed routed GDS: VPWR and VGND one island each, zero findings, stackup covers every PDN strap layer (met1/met4/met5) and DEF special-net layer (met1–met5), drawn-nwell tie (43 wells, 704 tapcells) and a 704-box native-substrate tie both `checked`, nothing `skipped`; `pnr.json` `power.pdn` true with tapcell `sky130_fd_sc_hd__tapvpwrvgnd_1`; `lvs.json` `power_connectivity: match`. Five isolated negative controls plus a clean baseline (disconnection, short, missing well tie, missing substrate tie, wrong-net tie) are all detected. Spec, generator, controls, reproduction and limits: `layout/trng_digital/ERC.md`. |
 | `pnr.json` | not a citation | No T1 row grades a `place-and-route` envelope by itself; it is the PDN provenance for 11.digital and the layout provenance for item 2. |
 | `1, 2, 6, 8, 9, 10` | unchanged | No klt verb / no aggregated artifact, as before. |
 
@@ -400,10 +401,11 @@ prints `status: match`.
 ## Items 1, 2, 9, 10 attestation (issue #320)
 
 klayout-tools has no verb behind these four items, and the 0.7.0 grader
-accepts them only from an opt-in artifact-anchored `generic` envelope
-(`--describe-grader`: `generic: 1, 2, 8, 9, 10`). `signoff/attest.py` (stdlib
-only) builds those envelopes from committed inventories, as of `43f26fd`,
-2026-10-17 (klt 0.7.0, open_pdks `c6d73a35f524`):
+in force then accepted them only from an opt-in artifact-anchored `generic`
+envelope (`--describe-grader` on 0.7.0: `generic: 1, 2, 8, 9, 10`).
+`signoff/attest.py` (stdlib only) builds those envelopes from committed
+inventories, as of `43f26fd`, 2026-10-17 (klt 0.7.0, open_pdks
+`c6d73a35f524`):
 
 | Row | Envelope | Verdict | What the mechanical check establishes |
 |---|---|---|---|
