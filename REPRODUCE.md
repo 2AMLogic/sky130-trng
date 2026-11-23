@@ -154,6 +154,7 @@ Same runner, against the extracted netlists from section 2 (`layout/pex/`,
 | `sim/post-layout-sampler-dff/` | `testbench/tb_post_layout_sampler_dff.spice`, `testbench/tb_post_layout_sampler_setup.spice` |
 | `sim/post-layout-sampler-dff-assembled/` | `testbench/tb_post_layout_sampler_dff_assembled.spice` |
 | `sim/post-layout-sampler-core/` | `testbench/tb_post_layout_sampler_core.spice`, `analysis/substrate-bracket.py` |
+| `sim/pex-sampler-core/` | `harness/pex-measure.py` (the `klt pex --measure-command` harness; invocation recorded in each record's `pex_invocation`), `testbench/tb_sampler_core_body.spice`, `net-aliases.json`; 12 corners per leg (27C/1.8V, -40C/1.62V, -40C/1.98V, 125C/1.98V x tt/ss/ff); see its `README.md` |
 | `sim/post-layout-parasitic-impact/` | `analysis/parasitic-impact.py` (reduction over the records above) |
 
 ### 3c. Raw-bit and entropy campaigns

@@ -180,6 +180,9 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--emit-record", action="store_true")
     ap.add_argument("--keep", type=Path, default=None,
                     help="keep run artifacts here (default: a tempdir)")
+    ap.add_argument("--supersedes", default=None,
+                    help="record id this run's record corrects; written to "
+                         "the record's Supersedes field")
     args = ap.parse_args(argv)
 
     for tool in ("klt", "yosys", "iverilog"):
@@ -388,9 +391,27 @@ def main(argv: list[str] | None = None) -> int:
     rid = mint_behavioral_record(
         REPO_ROOT, "area-limiter-study", claim, body, summary,
         level="gate", seeds={"suite_stimulus_seed": SEED},
-        artifacts=artifacts, tools=tools)
+        artifacts=artifacts, tools=tools, supersedes=args.supersedes)
     print(f"record minted: {rid}", file=sys.stderr)
     return 0
+
+
+def ranking_margin(rows: dict) -> tuple[float, float, float, float, str]:
+    """(fifo, runner_up, residual, margin, runner_up_name) for the ranking.
+
+    margin = fifo - runner_up - residual: what FIFO storage keeps over the
+    runner-up even if the whole shared/unassigned residual were the
+    runner-up's. The ranking is conclusive only when margin > 0.
+    """
+    skip = ("fifo_storage_raw", "fifo_storage_cond", "shared", "unassigned")
+    fifo = rows["fifo_storage_raw"]["area_um2"] + \
+        rows["fifo_storage_cond"]["area_um2"]
+    name, runner_up = max(((k, v["area_um2"]) for k, v in rows.items()
+                           if k not in skip),
+                          key=lambda kv: kv[1], default=("(none)", 0.0))
+    residual = rows.get("shared", {"area_um2": 0})["area_um2"] + \
+        rows.get("unassigned", {"area_um2": 0})["area_um2"]
+    return fifo, runner_up, residual, fifo - runner_up - residual, name
 
 
 def build_claim(s: dict, var_resp: dict, base_resp: dict) -> str:
@@ -404,13 +425,19 @@ def build_claim(s: dict, var_resp: dict, base_resp: dict) -> str:
     cb = s["item4_combine"]
     d2 = s["item1_functional_suite"]["rtl_vs_model_depth2"]
     delta_pct = s["item1_attribution"]["variant_fifo2"]["delta_pct"]
+    margin = ranking_margin(rows)[3]
+    lead = ("conclusive against the shared/unassigned residual"
+            if margin > 0 else
+            "INCONCLUSIVE: the shared/unassigned residual could change the "
+            "winner")
+    leader = ("is the largest functional consumer" if margin > 0 else
+              "leads the attributable functional consumers")
     reach = ("a combination reaches 0.05 mm2" if cb["reaches_target"]
              else "no fixed-pin-edge combination reaches 0.05 mm2")
     return (
-        f"FIFO storage is the largest functional consumer of the committed "
+        f"FIFO storage {leader} of the committed "
         f"unconstrained trng_digital netlist ({fifo:,.1f} um2 of "
-        f"{total:,.1f}, {100.0 * fifo / total:.1f}%, conclusive against the "
-        f"shared/unassigned residual); a depth-2 FIFO variant synthesizes at "
+        f"{total:,.1f}, {100.0 * fifo / total:.1f}%, {lead}); a depth-2 FIFO variant synthesizes at "
         f"{var_resp['area_um2']:,.1f} um2 ({delta_pct:+.1f}% vs same-tool "
         f"baseline) and, while it diverges from the depth-4 normative model "
         f"at the depth-observable checks, it MATCHES the normative model's "
@@ -438,19 +465,17 @@ def build_record_body(s: dict, var_resp: dict, base_resp: dict) -> str:
     for name, r in order:
         tbl.append(f"| {name} | {r['instances']} | {r['area_um2']:.4f} | "
                    f"{100.0 * r['area_um2'] / total:.1f}% |")
-    fifo = rows["fifo_storage_raw"]["area_um2"] + \
-        rows["fifo_storage_cond"]["area_um2"]
-    runner_up = max((v["area_um2"] for k, v in rows.items()
-                     if k not in ("fifo_storage_raw", "fifo_storage_cond",
-                                  "shared", "unassigned")),
-                    default=0.0)
-    runner_up_name = max(
-        ((k, v["area_um2"]) for k, v in rows.items()
-         if k not in ("fifo_storage_raw", "fifo_storage_cond",
-                      "shared", "unassigned")),
-        key=lambda kv: kv[1], default=("(none)", 0.0))[0]
-    residual = rows.get("shared", {"area_um2": 0})["area_um2"] + \
-        rows.get("unassigned", {"area_um2": 0})["area_um2"]
+    fifo, runner_up, residual, margin, runner_up_name = ranking_margin(rows)
+    if margin > 0:
+        margin_phrase = "FIFO storage stays the leader by"
+        verdict = ("--> the ranking is conclusive; no measured basis forces "
+                   "the inconclusive branch.")
+    else:
+        margin_phrase = "FIFO storage's margin over the runner-up would be"
+        verdict = ("--> the ranking is INCONCLUSIVE: the residual could "
+                   "change the winner, so FIFO storage is not asserted as "
+                   "the leader; adopt the variant on the measured rationale "
+                   "above, not on the ranking.")
 
     n_inst = sum(r["instances"] for r in rows.values())
     cycles = s["item1_functional_suite"]["rtl_vs_model"]["cycles"]
@@ -524,10 +549,9 @@ def build_record_body(s: dict, var_resp: dict, base_resp: dict) -> str:
         f"({100.0 * fifo / total:.1f}%) vs runner-up attributable function "
         f"{runner_up_name} at {runner_up:.4f} um2. Even if the entire "
         f"shared + unassigned residual ({residual:.4f} um2) belonged to the "
-        f"runner-up, FIFO storage stays the leader by "
-        f"{fifo - runner_up - residual:.4f} um2 "
-        f"--> the ranking is conclusive; no measured basis forces the "
-        f"inconclusive branch.",
+        f"runner-up, {margin_phrase} "
+        f"{margin:.4f} um2 "
+        f"{verdict}",
         "",
         f"Same-tool baseline control (this run, klt "
         f"{base_resp['provenance']['klt_version']}, yosys "

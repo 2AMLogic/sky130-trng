@@ -34,7 +34,9 @@ action, not something a record self-declares.
 ## Records
 
 - [`PDR-0001-generate-agents-md-path-fix.md`](PDR-0001-generate-agents-md-path-fix.md)
-  — **Proposed**. Recommends the local-fix option (of three considered) for
+  — **Accepted**. Recommends the local-fix option (of three considered) for
   issue #75's broken `.loom/scripts/generate-agents-md.sh` relative path,
   and records why the two-key ratification mechanism used for circuit-spec
-  rows does not apply to this kind of record.
+  rows does not apply to this kind of record. Carried out 2026-11-15 by
+  issue #523: local fix applied (with a `.loom/resync-ignore` pin), upstream
+  report filed as [rjwalters/loom#13910](https://github.com/rjwalters/loom/issues/13910).

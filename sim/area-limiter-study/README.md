@@ -2,9 +2,12 @@
 
 Area-row evidence study (issue #599): what limits the whole-block layout
 against the unchanged `< 0.05 mm2` target, measured per structural option
-DR-0010 names. One append-only record under `records/` (raw artifacts in
-the fleet artifact store; manifest committed under
-`manifests/artifacts/`).
+DR-0010 names. Two append-only records under `records/`: the **current** one is
+`20261121-082710-14fc78f`, which supersedes `20261121-015523-ca0fcdc5`
+(that record's folded-F1 routing figure, +~220 um, was recomputed from the
+folded endpoints as net -275.82 um; read the first only as history). Raw
+artifacts are in the fleet artifact store; manifest committed under
+`manifests/artifacts/`.
 
 * **Item 1 (measured, `level: gate`)**: functional area attribution of the
   committed unconstrained `trng_digital` netlist — every one of the 2320
