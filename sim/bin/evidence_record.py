@@ -68,6 +68,48 @@ def git_short_sha(repo_root: Path) -> str:
         return "unknown"
 
 
+# Cap on the record's repo_dirty_paths list (issue #666): the JSON carries at
+# most this many paths; the markdown footer always names the untruncated total.
+_DIRTY_PATHS_CAP = 20
+
+
+def git_dirty_paths(repo_root: Path) -> list[str] | None:
+    """Sorted repo-relative paths whose content differs from HEAD (staged,
+    unstaged, or non-ignored untracked), or ``None`` when git status cannot
+    run -- the caller must record that as *unknown*, never as clean
+    (issue #666).
+
+    ``--porcelain -z`` keeps paths with spaces or other unusual characters
+    unquoted and NUL-delimited. A rename/copy entry carries a second NUL
+    field (the original path); it is listed too, since that path also
+    differs from HEAD.
+    """
+    try:
+        out = subprocess.run(
+            ["git", "-C", str(repo_root), "status", "--porcelain", "-z",
+             "--untracked-files=all"],
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout
+    except Exception:
+        return None
+    paths: list[str] = []
+    recs = out.split("\0")
+    i = 0
+    while i < len(recs):
+        rec = recs[i]
+        i += 1
+        if not rec:
+            continue  # trailing NUL / empty record
+        code, path = rec[:2], rec[3:]
+        paths.append(path)
+        if ("R" in code or "C" in code) and i < len(recs):
+            paths.append(recs[i])  # original path of the rename/copy pair
+            i += 1
+    return sorted(set(paths))
+
+
 def new_record_id(repo_root: Path, *, offset: int = 0) -> tuple[_dt.datetime, str, str]:
     """Return `(now, sha, rid)` for a fresh record.
 
@@ -358,7 +400,8 @@ def mint_record(
 # summary may not use any of these names (issue #276).
 RESERVED_BEHAVIORAL_KEYS = (
     "record_id", "slug", "level", "claim", "seeds", "supersedes", "author",
-    "timestamp_utc", "repo_sha", "tools", "artifacts", "artifact_manifest",
+    "timestamp_utc", "repo_sha", "repo_dirty", "repo_dirty_paths", "tools",
+    "artifacts", "artifact_manifest",
 )
 
 
@@ -412,6 +455,27 @@ def mint_behavioral_record(
                          "value through the matching mint_behavioral_record argument")
 
     now, sha, rid = new_record_id(repo_root)
+    # Working-tree state at pin time, sampled once here -- before the
+    # artifact store or publication writes anything -- so this invocation's
+    # own outputs (always untracked at mint time) cannot mask real
+    # divergence from HEAD, and a dirty tree is disclosed in the record
+    # instead of silently hiding behind the HEAD pin (issue #666).
+    dirty_paths = git_dirty_paths(repo_root)
+    if dirty_paths is None:
+        dirty_fields: dict = {"repo_dirty": None}
+        worktree_line = "- Working tree: unknown (git status unavailable; repo_dirty is null)"
+    elif not dirty_paths:
+        dirty_fields = {"repo_dirty": False}
+        worktree_line = "- Working tree: clean (matches the cited commit)"
+    else:
+        n = len(dirty_paths)
+        listed = dirty_paths[:_DIRTY_PATHS_CAP]
+        dirty_fields = {"repo_dirty": True, "repo_dirty_paths": listed}
+        noun = "path" if n == 1 else "paths"
+        verb = "differs" if n == 1 else "differ"
+        stem = f"- Working tree: dirty ({n} {noun} {verb} from the cited commit"
+        worktree_line = (stem + f"; repo_dirty_paths lists the first {_DIRTY_PATHS_CAP})"
+                         if n > _DIRTY_PATHS_CAP else stem + ")")
     records_dir = repo_root / "sim" / slug / "records"
     runs_dir = repo_root / "sim" / slug / "runs" / rid
     md_path = records_dir / f"{rid}.md"
@@ -474,6 +538,7 @@ def mint_behavioral_record(
         f"- Author: {author}",
         f"- Timestamp (UTC): {now.isoformat()}",
         f"- Repo commit: `{sha}`",
+        worktree_line,
         f"- Tools: {json.dumps(tool_block)}",
     ]
     if stored:
@@ -499,6 +564,7 @@ def mint_behavioral_record(
         "author": author,
         "timestamp_utc": now.isoformat(),
         "repo_sha": sha,
+        **dirty_fields,
         "tools": tool_block,
         "artifacts": stored,
         "artifact_manifest": manifest_rel if stored else None,
