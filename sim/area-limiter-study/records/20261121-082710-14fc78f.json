@@ -2,7 +2,7 @@
   "record_id": "20261121-082710-14fc78f",
   "slug": "area-limiter-study",
   "level": "gate",
-  "claim": "FIFO storage is the largest functional consumer of the committed unconstrained trng_digital netlist (10,542.6 um2 of 22,203.8, 47.5%, conclusive against the shared/unassigned residual); a depth-2 FIFO variant synthesizes at 16,129.2 um2 (-27.4% vs same-tool baseline) and, while it diverges from the depth-4 normative model at the depth-observable checks, it MATCHES the normative model's own fifo_depth=2 parameterisation bit-for-bit over the full 4239-cycle directed program (RTL and mapped netlist); a folded sampler_core (F1) estimates 218.675 x 81.94 um with ring symmetry intact; composition overhead is 37.08% of the committed whole block and 75% of it is removable stacking artifact; no fixed-pin-edge combination reaches 0.05 mm2 -- best fixed-pin-edge estimate 0.060740 mm2 (1.215x), best edge-aligned geometric estimate 0.055898 mm2 (needs a pin-access check); the routed digital macro remains the largest limiter",
+  "claim": "FIFO storage is the largest functional consumer of the committed unconstrained trng_digital netlist (10,542.6 um2 of 22,203.8, 47.5%, conclusive against the shared/unassigned residual); a depth-2 FIFO variant synthesizes at 16,129.2 um2 (-27.4% vs same-tool baseline) and, while it diverges from the depth-4 normative model at the depth-observable checks, it MATCHES the normative model's own fifo_depth=2 parameterisation bit-for-bit over the full 4239-cycle directed program (RTL and mapped netlist); a folded sampler_core (F1) estimates 218.675 x 81.94 um with ring symmetry intact; composition overhead is 37.08% of the committed whole block and 75% of it sits in the two stacking-artifact rectangles (an occupancy share, not a recovered area: across the study's own same-macro fixed-pin-edge vs edge-aligned estimates the recovery is -659 to +10,715 um2, positive only when the analog row is no wider than the digital macro; geometric estimate); no fixed-pin-edge combination reaches 0.05 mm2 -- best fixed-pin-edge estimate 0.060740 mm2 (1.215x), best edge-aligned geometric estimate 0.055898 mm2 (needs a pin-access check); the routed digital macro remains the largest limiter",
   "seeds": {
     "suite_stimulus_seed": 20260905
   },
@@ -732,6 +732,7 @@
       ],
       "area_um2": 35175.195,
       "share_of_non_macro_pct": 75.21,
+      "interpretation": "occupancy share of the overhead sitting in the two named stacking-artifact rectangles; NOT a recovered area -- recovery depends on the before/after floorplan (see item4_combine fixed-vs-edge-aligned rows)",
       "condition": "the analog row's width and west edge are matched to the digital macro's footprint in a re-stack (folded analog narrower than the digital macro, or an explicit re-stack that aligns west edges)"
     },
     "functional_overhead": {

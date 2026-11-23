@@ -396,6 +396,33 @@ def main(argv: list[str] | None = None) -> int:
     return 0
 
 
+def aligned_recovery_um2(cb: dict) -> tuple[float, float]:
+    """(min, max) area recovered going fixed-pin-edge -> edge-aligned.
+
+    Pairs every edge-aligned row with the fixed-pin-edge row of the same
+    macros/baseline (label + ", edge-aligned"): the study's own measurement
+    of deleting the two stacking-artifact rectangles. Can be negative.
+    """
+    fixed = {r["option"]: r["area_mm2"] for r in cb["rows"]
+             if r["topology"] == "fixed pin edge"}
+    d = [round((fixed[r["option"][:-len(", edge-aligned")]] - r["area_mm2"])
+               * 1e6, 0)
+         for r in cb["rows"] if r["topology"] == "edge-aligned"]
+    return min(d), max(d)
+
+
+def overhead_share_phrase(oh: dict, cb: dict) -> str:
+    """The qualified statement of the 'removable' share, used at every site."""
+    lo, hi = aligned_recovery_um2(cb)
+    sh = oh["removable_by_tighter_floorplan"]["share_of_non_macro_pct"]
+    return (f"{sh:.0f}% of it sits in the two stacking-artifact rectangles "
+            f"(an occupancy share, not a recovered area: across the study's "
+            f"own same-macro fixed-pin-edge vs edge-aligned estimates the "
+            f"recovery is {lo:+,.0f} to {hi:+,.0f} um2, positive only when "
+            f"the analog row is no wider than the digital macro; geometric "
+            f"estimate)")
+
+
 def ranking_margin(rows: dict) -> tuple[float, float, float, float, str]:
     """(fifo, runner_up, residual, margin, runner_up_name) for the ranking.
 
@@ -446,8 +473,7 @@ def build_claim(s: dict, var_resp: dict, base_resp: dict) -> str:
         f"folded sampler_core (F1) estimates {f1['width_um']} x "
         f"{f1['height_um']} um with ring symmetry intact; composition "
         f"overhead is {oh['non_macro_share_pct']}% of the committed whole "
-        f"block and {oh['removable_by_tighter_floorplan']['share_of_non_macro_pct']:.0f}% "
-        f"of it is removable stacking artifact; {reach} -- best "
+        f"block and {overhead_share_phrase(oh, cb)}; {reach} -- best "
         f"fixed-pin-edge estimate {cb['best_area_mm2']:.6f} mm2 "
         f"({cb['best_area_mm2'] / cb['target_mm2']:.3f}x), best "
         f"edge-aligned geometric estimate "
@@ -637,14 +663,21 @@ def build_record_body(s: dict, var_resp: dict, base_resp: dict) -> str:
         f"um2 = {s['item3_composition_overhead']['non_macro_share_pct']}% of "
         f"the committed whole block. Rectangles: "
         + json.dumps(s["item3_composition_overhead"]["rectangles_um2"])
-        + f". Removable by a tighter floorplan: "
+        + f". Occupied by the two stacking-artifact rectangles: "
         f"{s['item3_composition_overhead']['removable_by_tighter_floorplan']['area_um2']} "
         f"um2 "
         f"({s['item3_composition_overhead']['removable_by_tighter_floorplan']['share_of_non_macro_pct']}% "
-        f"of the overhead) -- the south-east corridor exists because the "
+        f"of the overhead; an occupancy share, NOT recovered area -- "
+        f"measured recovery across the study's same-macro fixed-vs-edge-aligned "
+        f"estimates is "
+        f"{aligned_recovery_um2(s['item4_combine'])[0]:+,.0f} to "
+        f"{aligned_recovery_um2(s['item4_combine'])[1]:+,.0f} um2, because "
+        f"the aligned re-stack re-charges escape + max(digital side, analog "
+        f"width) across the full height) -- the south-east corridor exists because the "
         f"330.96 um analog row overhangs the digital macro's east pin edge "
         f"by 130.96 um, and the west-of-analog strip because west edges do "
-        f"not align; both vanish when a re-stack matches widths/edges. "
+        f"not align; both rectangles disappear when a re-stack matches widths/edges, "
+        f"but most of their area is re-absorbed by the re-stack. "
         f"Lane band + pads + escape "
         f"({s['item3_composition_overhead']['functional_overhead']['area_um2']} "
         f"um2) are functional and scale with width/height.",

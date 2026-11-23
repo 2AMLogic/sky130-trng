@@ -98,6 +98,11 @@ def main() -> dict:
             "rectangles": list(STACKING_ARTIFACTS),
             "area_um2": removable,
             "share_of_non_macro_pct": round(100.0 * removable / non_macro, 2),
+            "interpretation": "occupancy share of the overhead sitting in "
+                              "the two named stacking-artifact rectangles; "
+                              "NOT a recovered area -- recovery depends on "
+                              "the before/after floorplan (see "
+                              "item4_combine fixed-vs-edge-aligned rows)",
             "condition": "the analog row's width and west edge are matched "
                          "to the digital macro's footprint in a re-stack "
                          "(folded analog narrower than the digital macro, or "

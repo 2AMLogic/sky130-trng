@@ -147,7 +147,7 @@ measured. FIFO storage is the conclusive leader of the mapped digital netlist
 sampler_core (F1, samplers 3+3, ring row unchanged) dry-runs at 218.7 × 81.9
 µm with ring symmetry intact, its added routing recomputed from the folded
 net endpoints; composition overhead is 37.1% of the committed whole block and
-75% of it is removable stacking artifact. Within the fixed pin-edge topology
+75% of it sits in the two stacking-artifact rectangles (an occupancy share, not a recovered area: across the study's own same-macro fixed-pin-edge vs edge-aligned estimates the recovery is -659 to +10,715 um2, positive only when the analog row is no wider than the digital macro; geometric estimate). Within the fixed pin-edge topology
 the best combination on the `rep65-slew0531` baseline estimates **0.060740
 mm² (1.215× target)** — still short of 0.05 mm², the routed digital macro
 remaining the largest limiter. An edge-aligned re-stack (a floorplan change
