@@ -418,9 +418,11 @@ behind items 2, 9 and 10, and the grader accepts them only from an opt-in
 artifact-anchored `generic` envelope (`--describe-grader` on 0.8.0:
 `generic: 1, 2, 8, 9, 10`). Item 1 is not verb-less: 0.8.0 lists a
 `synthesize` envelope kind for item 1, and the `1.analog` row below uses the
-native `klt signoff --attest 1` (klt 0.9.1). The `1.digital` row below is
-still a `generic` envelope; the audit that built it ran on 0.7.0, before
-0.8.0.
+native `klt signoff --attest 1` (klt 0.9.1). Both item-1 rows are `generic`
+envelopes (`kind: generic` in `attest/1.analog.json` and
+`attest/1.digital.json`); they differ in who minted them: `1.analog` by
+`klt signoff --attest 1`, `1.digital` by the stdlib `signoff/attest.py`, from an
+audit that ran on 0.7.0, before 0.8.0.
 `signoff/attest.py` (stdlib only) builds those envelopes from committed
 inventories, as of `43f26fd`, 2026-10-17 (klt 0.7.0, open_pdks
 `c6d73a35f524`):
@@ -522,10 +524,13 @@ because a different `klt` build stamps a different build/ruleset id into
 the report and the byte-diff gate goes red on an otherwise-correct
 resolution.
 
-Once a klayout-tools release carries `klt signoff --attest`/`--inventory`
-(present in the `0.7.1.dev` development build, absent from 0.7.0 as of
-2026-10-17), switch these rows to it and drop `attest.py`; the CI pin stays at
-0.8.0 until then. Item 9's inventory pins the PDK files, so #314 (open_pdks
+`klt signoff --attest`/`--inventory` is already in a release: klayout-tools
+0.9.1 documents it for items 1, 8, 9 and 10 (from `--inventory`) and item 2
+(from `--input STREAM`), and `1.analog` uses it. Still pending is migrating the
+rows `attest.py` owns to it and dropping `attest.py`; that needs a grader pin
+bump past 0.8.0 (the CI pin stays at 0.8.0 until then) and a check that the
+`--attest`-minted envelopes match the committed ones, neither of which has been
+done. Item 9's inventory pins the PDK files, so #314 (open_pdks
 re-pin) and this issue's rows need a `--write` after whichever lands second.
 
 ## Block kind and the partition boundary (the mixed-signal claim)
