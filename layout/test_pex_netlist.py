@@ -47,6 +47,7 @@ from __future__ import annotations
 
 import copy
 import importlib.util
+import re
 import sys
 from pathlib import Path
 
@@ -197,6 +198,53 @@ def check_missing_alias_is_an_error() -> None:
         lambda: _rewrite(aliases={}),
         "rewrite_cell: joined name with no alias is an error",
         "no net_aliases entry",
+    )
+
+
+def check_prefix_overlapping_aliases_match_longest_key_first() -> None:
+    """Issue #638's prefix-order gap: alias keys where one is a strict
+    prefix of another must match LONGEST first, whatever order the alias
+    map's keys arrive in.
+
+    In sampler_core, ``a|inv_q_y|...|q|y`` (raw_bit) is a strict prefix of
+    ``...|q|y$1``..``y$5`` (raw_valid, ring_bit1..4). The pre-#638 library
+    builder matched keys in JSON dict order, so an alphabetically sorted
+    alias map (``y`` sorts before ``y$1`` -- e.g. after a
+    ``json.dumps(..., sort_keys=True)`` regeneration) silently rewrote five
+    ports onto ``raw_bitn1``..``raw_bitn5`` with no injectivity collision
+    to catch it. The shared renamer is key-order independent."""
+    short_key = "a|inv_q_y|q|y"
+    long_key = "a|inv_q_y|q|y$1"
+    # json.dumps(..., sort_keys=True) order: "y" < "y$1", short key first.
+    sorted_order = {short_key: "raw_bit", long_key: "raw_valid"}
+    # The order layout/pex-sampler-core/pex.json happens to list: y$5..y$1
+    # before y, long key first.
+    insertion_order = {long_key: "raw_valid", short_key: "raw_bit"}
+    for label, aliases in (("sorted", sorted_order), ("insertion", insertion_order)):
+        _check(
+            f"canonicalize({label} key order): `...|q|y$1` maps to its own "
+            "alias, not the prefix-sharing `...|q|y` entry",
+            pex.canonicalize(long_key, aliases) == "raw_valid",
+            pex.canonicalize(long_key, aliases),
+        )
+        _check(
+            f"canonicalize({label} key order): a `...|y$1__tN` leg node "
+            "rides its own hub",
+            pex.canonicalize(long_key + "__t0", aliases) == "raw_valid__t0",
+            pex.canonicalize(long_key + "__t0", aliases),
+        )
+        _check(
+            f"canonicalize({label} key order): the shorter `...|q|y` still "
+            "maps to its own alias",
+            pex.canonicalize(short_key, aliases) == "raw_bit",
+            pex.canonicalize(short_key, aliases),
+        )
+    _check(
+        "Renamer: key order never changes a token's rewrite",
+        pex.Renamer(sorted_order).token(long_key + "__t2")
+        == pex.Renamer(insertion_order).token(long_key + "__t2")
+        == "raw_valid__t2",
+        "raw_valid__t2",
     )
 
 
@@ -570,10 +618,58 @@ def check_anonymous_base() -> None:
         )
 
 
+def check_the_extracted_netlist_rewriters_live_in_one_place() -> None:
+    """Issue #638's regression guard: the extracted-netlist rewrite helpers
+    live in ``layout/bin/_pex_rewrite.py`` and must not grow back as
+    per-script forks in ``layout/bin/pex-netlist.py`` or
+    ``sim/pex-sampler-core/harness/pex-measure.py`` -- the two copies #638
+    consolidated had each silently dropped one of the other's corruption
+    guards. A docstring may name the helpers; a ``def`` or ``class`` may
+    not, and the re-export ``import`` in pex-netlist.py is not a fork."""
+    bin_dir = Path(__file__).resolve().parent / "bin"
+    shared = (bin_dir / "_pex_rewrite.py").read_text()
+    for name in ("join_continuations", "canonicalize", "sanitize",
+                 "check_device_card", "rename_card", "rewrite_cell",
+                 "rewrite_standalone"):
+        _check(f"_pex_rewrite.py defines {name}()",
+               re.search(rf"^def {name}\(", shared, re.M) is not None)
+    _check("_pex_rewrite.py defines the Renamer class",
+           re.search(r"^class Renamer\b", shared, re.M) is not None)
+    fork = re.compile(
+        r"^(?:def (?:join_continuations|canonicalize|sanitize|check_device_card"
+        r"|rename_card|rewrite_cell|rewrite_standalone)\b|class Renamer\b)",
+        re.M,
+    )
+    harness = (_REPO_ROOT / "sim" / "pex-sampler-core" / "harness"
+               / "pex-measure.py").read_text()
+    for label, text in (
+        ("pex-netlist.py", (bin_dir / "pex-netlist.py").read_text()),
+        ("pex-measure.py", harness),
+    ):
+        hit = fork.search(text)
+        _check(f"{label} carries no local fork of the rewrite helpers",
+               hit is None, hit.group(0) if hit else None)
+    # Negative controls, so the regex is shown able to fail: the caught
+    # shapes are the forks #638 deleted; prose and re-export imports must
+    # stay silent.
+    _check("the fork regex catches a copied helper def",
+           fork.search("def sanitize(name: str) -> str:\n"
+                       "    return name.replace('\\\\', '')\n") is not None)
+    _check("the fork regex catches a copied Renamer class",
+           fork.search("class Renamer:\n    pass\n") is not None)
+    _check("the fork regex stays silent on a prose mention",
+           fork.search("# join_continuations and sanitize live in "
+                       "_pex_rewrite.py\n") is None)
+    _check("the fork regex stays silent on the re-export import",
+           fork.search("from _pex_rewrite import sanitize, canonicalize"
+                       "  # noqa: F401\n") is None)
+
+
 def main() -> int:
     check_device_card_contract()
     check_joined_net_rename()
     check_missing_alias_is_an_error()
+    check_prefix_overlapping_aliases_match_longest_key_first()
     check_rename_cannot_merge_two_nets()
     check_passthrough_of_parasitic_values()
     check_continuation_lines_are_folded()
@@ -585,6 +681,7 @@ def main() -> int:
     check_canonicalization_absorbs_pure_renumbering()
     check_canonicalization_still_sees_real_change()
     check_canonicalization_cannot_merge_two_nets()
+    check_the_extracted_netlist_rewriters_live_in_one_place()
 
     return _checker.summary("layout/test_pex_netlist.py")
 
