@@ -45,6 +45,7 @@ REPO = SLUGDIR.parents[1]
 sys.path.insert(0, str(SLUGDIR))
 sys.path.insert(0, str(REPO / "sim" / "bin"))
 from loadmod import load_module  # noqa: E402
+from measurement_names import measurements_by_name  # noqa: E402  (#670: the array deck's names are lifted from a template)
 import aging  # noqa: E402
 import campaign as C  # noqa: E402
 from replay_equal import replay_equal as _replay_equal  # noqa: E402  (issue #519: one shared replay equality)
@@ -135,7 +136,7 @@ def rows_from_response(name: str, plan: dict, resp: dict, floor: float | None) -
         dvn_v, dvp_v = sv.get("Vdvn", 0.0), sv.get("Vdvp", 0.0)
         dvn, dvp = round(dvn_v * 1e3, 6), round(dvp_v * 1e3, 6)
         key = C.key_str(deck, c["process"], c["temperature_c"], vdd, dvn, dvp)
-        meas = {x["name"]: x["value"] for x in c["measurements"] if x.get("value") is not None}
+        meas = measurements_by_name(c)
         meas["_vdd"] = vdd
         problems = []
         if c["status"] != "pass":
@@ -292,7 +293,7 @@ def cal_key(corner, temp, vdd, dvn, dvp) -> str:
 
 # ------------------------------------------------------------------------- controls
 def _m(corner_entry):
-    return {x["name"]: x["value"] for x in corner_entry["measurements"] if x.get("value") is not None}
+    return measurements_by_name(corner_entry)
 
 
 def _hist_record(slug, pred):
