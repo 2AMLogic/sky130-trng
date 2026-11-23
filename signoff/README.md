@@ -413,9 +413,14 @@ prints `status: match`.
 
 ## Items 1, 2, 9, 10 attestation (issue #320)
 
-klayout-tools has no verb behind these four items, and the 0.7.0 grader
-in force then accepted them only from an opt-in artifact-anchored `generic`
-envelope (`--describe-grader` on 0.7.0: `generic: 1, 2, 8, 9, 10`).
+As of the pinned `klayout-tools==0.8.0` grader, klayout-tools has no verb
+behind items 2, 9 and 10, and the grader accepts them only from an opt-in
+artifact-anchored `generic` envelope (`--describe-grader` on 0.8.0:
+`generic: 1, 2, 8, 9, 10`). Item 1 is not verb-less: 0.8.0 lists a
+`synthesize` envelope kind for item 1, and the `1.analog` row below uses the
+native `klt signoff --attest 1` (klt 0.9.1). The `1.digital` row below is
+still a `generic` envelope; the audit that built it ran on 0.7.0, before
+0.8.0.
 `signoff/attest.py` (stdlib only) builds those envelopes from committed
 inventories, as of `43f26fd`, 2026-10-17 (klt 0.7.0, open_pdks
 `c6d73a35f524`):
