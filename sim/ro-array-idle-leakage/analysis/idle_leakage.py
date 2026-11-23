@@ -65,6 +65,7 @@ sys.path.insert(0, str(REPO / "sim" / "bin"))
 sys.path.insert(0, str(REPO / "layout" / "bin"))
 from _hashing import sha256_file  # noqa: E402
 from loadmod import load_module  # noqa: E402
+from replay_equal import replay_equal  # noqa: E402  (issue #519/#659: one shared replay equality)
 from request_dir import load_request_dir  # noqa: E402
 
 SYNTH_OUTPUT = REPO / "sim/digital-synthesis/runs/20260910-001436-a4c3194/50khz-constrained-synthesize-output.json"
@@ -438,7 +439,7 @@ def emit_record(reqdir, liberty_dir):
 def check(record_json, liberty_dir):
     rec = json.load(open(record_json))
     rows, fl, wst, *_ = reduce_all(read_stored(rec["corners_dir"]), liberty_dir)
-    if json.loads(json.dumps(rows)) != rec["rows"]:
+    if not replay_equal(json.loads(json.dumps(rows)), rec["rows"]):
         raise SystemExit("MISMATCH: recomputed rows differ from the record")
     print("OK: recomputed rows match", record_json)
 
