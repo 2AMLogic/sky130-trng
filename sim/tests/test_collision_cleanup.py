@@ -38,6 +38,7 @@ import evidence_record as er  # noqa: E402
 w = load_module("wakeup", REPO / "sim/wake-up-transient/wakeup.py")
 d181 = load_module("derive181", REPO / "sim/post-layout-ro-ring5-assembled-181/derive.py")
 dcomb = load_module("derive_combining", REPO / "sim/raw-bit-volume-campaign/derive-combining.py")
+idle = load_module("idle_leakage", REPO / "sim/ro-array-idle-leakage/analysis/idle_leakage.py")
 
 NOW = datetime(2099, 1, 1, 0, 0, 0, tzinfo=timezone.utc)
 SHA = "abc1234"
@@ -255,6 +256,117 @@ class DeriveCombiningCollision(CollisionSandbox):
         cdir = sb / "sim" / "ro-array-core-combining" / "corners" / rid
         self.assertFalse(cdir.exists(), "reserved corner bundle left behind")
         self.assertEqual([p.name for p in rdir.iterdir()], [f"{rid}.md"])
+
+
+class IdleLeakageCollision(CollisionSandbox):
+    """idle_leakage.emit_record: delegates to write_corner_bundle + cleans up on collision (issue #655)."""
+
+    def _stage(self, sb):
+        ll_dst = sb / "sim" / "digital-synthesis" / "harness" / "liberty_leakage.py"
+        ll_dst.parent.mkdir(parents=True)
+        ll_dst.symlink_to(REPO / "sim" / "digital-synthesis" / "harness" / "liberty_leakage.py")
+        lib_dir = sb / "liberty"
+        lib_dir.mkdir(parents=True)
+        lib_text = (
+            'library (x) {\n  leakage_power_unit : "1nW";\n'
+            '  cell ("inv_1") { cell_leakage_power : 1.0; }\n}\n'
+        )
+        for view in idle.needed_views():
+            (lib_dir / f"{view}.lib").write_text(lib_text)
+        synth = sb / "synth.json"
+        synth.write_text(json.dumps({"instance_counts_by_type": {"inv_1": 10}}))
+        reqdir = sb / "req"
+        for leg in ("idle", "leaf"):
+            for proc in ("tt", "ss", "ff"):
+                d = reqdir / f"{leg}-{proc}"
+                d.mkdir(parents=True)
+                (d / "request.json").write_text('{"r": 1}\n')
+                (d / "netlist.cir").write_text("* deck\n")
+                (d / "plan.json").write_text(json.dumps({"leg": leg, "process": proc}))
+                corners = []
+                for temp in (-40.0, 27.0, 125.0):
+                    for vdd in (1.62, 1.8, 1.98):
+                        scale = 10.0 if temp == 125.0 else (2.0 if temp == 27.0 else 1.0)
+                        meas = ([{"name": f"i_{r}", "value": 1e-10 * scale} for r in idle.RAILS]
+                                + [{"name": "v_xo", "value": 0.0},
+                                   {"name": "v_ro1", "value": 0.0},
+                                   {"name": "v_rn1", "value": vdd}])
+                        corners.append({"process": proc, "temperature_c": temp,
+                                        "supply_v": {"Vk": vdd}, "status": "pass",
+                                        "measurements": meas, "diagnostics": []})
+                remote = ({"fleet": [{"job_id": "j-tt-0"}, {"job_id": "j-tt-1"}]}
+                          if (leg, proc) == ("idle", "tt") else {"job_id": f"j-{leg}-{proc}"})
+                resp = {"status": "pass",
+                        "environment": {"remote": remote, "engine_version": "ngspice-46",
+                                        "models_lib_sha256": "aa" * 16, "netlist_sha256": "bb" * 16},
+                        "provenance": {"klt_version": "0.8.0"}, "corners": corners}
+                (d / "resp.json").write_text(json.dumps(resp))
+        return reqdir, lib_dir, synth
+
+    @contextmanager
+    def _patched(self, sb, synth):
+        real = (idle.HERE, idle.REPO, idle.SYNTH_OUTPUT)
+        idle.HERE = sb
+        idle.REPO = sb
+        idle.SYNTH_OUTPUT = synth
+        try:
+            yield
+        finally:
+            idle.HERE, idle.REPO, idle.SYNTH_OUTPUT = real
+
+    def test_collision_removes_own_corner_bundle(self):
+        sb = self.sandbox()
+        reqdir, lib_dir, synth = self._stage(sb)
+        rid = self.seed_collision(sb / "records", fake_new_id(0))
+        with self._patched(sb, synth), deterministic_ids():
+            with self.assertRaises(SystemExit) as cm:
+                idle.emit_record(str(reqdir), lib_dir)
+        self.assertIn("already exists", str(cm.exception))
+        self.assertFalse((sb / "corners" / rid).exists(), "reserved corner bundle left behind")
+        self.assertEqual([p.name for p in (sb / "records").iterdir()], [f"{rid}.md"])
+
+    def test_missing_netlist_leaves_no_corner_dir(self):
+        sb = self.sandbox()
+        reqdir, lib_dir, synth = self._stage(sb)
+        (reqdir / "leaf-tt" / "netlist.cir").unlink()
+        rid = fake_new_id(0)
+        with self._patched(sb, synth), deterministic_ids():
+            with self.assertRaises(SystemExit):
+                idle.emit_record(str(reqdir), lib_dir)
+        self.assertFalse((sb / "corners" / rid).exists(), "partial corner bundle left behind")
+        self.assertFalse((sb / "records").exists())
+
+    def test_existing_cdir_or_record_json_refused_untouched(self):
+        sb = self.sandbox()
+        reqdir, lib_dir, synth = self._stage(sb)
+        rid = fake_new_id(0)
+        cdir = sb / "corners" / rid
+        cdir.mkdir(parents=True)
+        (cdir / "keep").write_text("x")
+        with self._patched(sb, synth), deterministic_ids():
+            with self.assertRaisesRegex(SystemExit, f"{rid} exists"):
+                idle.emit_record(str(reqdir), lib_dir)
+        self.assertEqual([p.name for p in cdir.iterdir()], ["keep"])
+
+        shutil.rmtree(cdir)
+        (sb / "records").mkdir(parents=True, exist_ok=True)
+        (sb / "records" / f"{rid}.json").write_text("{}")
+        with self._patched(sb, synth), deterministic_ids():
+            with self.assertRaisesRegex(SystemExit, f"{rid} exists"):
+                idle.emit_record(str(reqdir), lib_dir)
+        self.assertFalse(cdir.exists())
+
+    def test_emit_and_check_roundtrip_preserves_fleet_jobs(self):
+        sb = self.sandbox()
+        reqdir, lib_dir, synth = self._stage(sb)
+        rid = fake_new_id(0)
+        with self._patched(sb, synth), deterministic_ids():
+            idle.emit_record(str(reqdir), lib_dir)
+            idle.check(sb / "records" / f"{rid}.json", lib_dir)
+        rec = json.loads((sb / "records" / f"{rid}.json").read_text())
+        self.assertEqual(rec["klt_sim"]["jobs"],
+                         ["j-idle-ff", "j-idle-ss", "j-tt-0", "j-tt-1",
+                          "j-leaf-ff", "j-leaf-ss", "j-leaf-tt"])
 
 
 if __name__ == "__main__":
