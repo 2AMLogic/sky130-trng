@@ -447,13 +447,12 @@ python3 signoff/attest.py --write      # inventories, envelopes, manifest pins
 python3 signoff/attest.py --check      # what CI runs; read-only
 ```
 
-Tagged `klayout-tools` 0.9.1 carries `klt signoff --attest`/`--inventory`
-(the 0.7.0 release this report was rendered on predates them). `1.analog`
-already attests through it: `klt signoff --attest 1` (klt 0.9.1) runs only
-in `pdk-nightly.yml` `netlist-check`. `1.digital`, `2.analog`, `2.digital`,
-`9` and `10` still build their envelopes with `attest.py`; whether
-`--attest` could replace it for those rows is not evaluated here. The CI
-pin stays at 0.8.0 until that migration. Item 9's inventory pins the PDK
+Tagged `klayout-tools` carries `klt signoff --attest`/`--inventory` as of
+0.8.0, the release CI pins. `1.analog` already attests through it: `klt
+signoff --attest 1` runs only in `pdk-nightly.yml` `netlist-check`.
+`1.digital`, `2.analog`, `2.digital`, `9` and `10` still build their
+envelopes with `attest.py`; whether `--attest` could replace it for those
+rows is not evaluated here. The CI pin is 0.8.0. Item 9's inventory pins the PDK
 files, so #314 (open_pdks re-pin) and this issue's rows need a `--write`
 after whichever lands second.
 
