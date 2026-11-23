@@ -2,9 +2,11 @@
   "schema_version": 1,
   "kind": "generic",
   "t1_item": 2,
-  "status": "pass",
+  "status": "fail",
   "source": "signoff/attest.py",
-  "failures": [],
+  "failures": [
+    "P&R record input_hashes.rtl != current RTL sha256 (P&R stale vs RTL)"
+  ],
   "provenance": {
     "input": {
       "path": "signoff/attest/2.digital.inventory.json",
