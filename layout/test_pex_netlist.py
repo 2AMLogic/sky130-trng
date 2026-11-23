@@ -137,6 +137,12 @@ def check_device_card_contract() -> None:
         "is not a subcircuit call",
     )
     _raises(
+        lambda: pex.check_device_card("X$1 d g", MODELS),
+        "check_device_card: a card too short to carry a model is an error, "
+        "not an IndexError",
+        "has 3 tokens",
+    )
+    _raises(
         lambda: pex.check_device_card(
             "X$1 d g s b sky130_fd_pr__nfet_01v8_lvt L=2 W=0.42", MODELS
         ),
