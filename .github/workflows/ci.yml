@@ -254,6 +254,19 @@ name: CI
 #     re-fork the walk. Replays the committed tt corner bundle back into a
 #     request directory; no ngspice, no PDK, no fleet.
 #
+# tools/test_generate_agents_md.py (issue #533) -- stdlib-only unit test of
+#     the pinned .loom/scripts/generate-agents-md.sh generator's local
+#     install-date substitution. In this flattened install .loom/AGENTS.md is
+#     the already-substituted artifact, not the installer's template, so the
+#     generator must resolve {{INSTALL_DATE}} itself (recorded install_date
+#     from .loom/install-metadata.json, today fallback, mirroring
+#     resync-installed.sh) and refuse — exit 3, nothing written — when an
+#     unknown placeholder survives rendering. Nothing in the repo invokes
+#     the script, so a regression here is otherwise invisible until a manual
+#     run quietly de-substitutes two checked-in lines; every case stages its
+#     own .loom/ tree in a temp dir and never touches the live one. No
+#     install, pure bash+python: it belongs on the PR-blocking path.
+#
 # signoff-check (issue #155) -- the gap-to-T1 tier report staleness gate.
 #     `klt signoff --manifest signoff/block-manifest.json` re-renders this
 #     block's graded T1 item table from the committed evidence envelopes
@@ -388,6 +401,9 @@ jobs:
 
       - name: tools/test_check_friction_ledger.py (friction ledger checker negative controls)
         run: python3 tools/test_check_friction_ledger.py
+
+      - name: tools/test_generate_agents_md.py (issue #533 AGENTS.md generator install-date substitution, fallback, surviving-placeholder refusal)
+        run: python3 tools/test_generate_agents_md.py
 
       - name: sim/tests/test_raw_bit_entropy.py (raw-bit entropy estimator unit test)
         run: python3 sim/tests/test_raw_bit_entropy.py

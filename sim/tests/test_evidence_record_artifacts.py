@@ -95,16 +95,22 @@ def _is_tail(node) -> bool:
 def _open_mode(n, mode_index: int):
     """The `mode` argument of an `open()` call: positional slot `mode_index`
     (2nd arg for the built-in, 1st for the method), else the `mode=` keyword,
-    else None when omitted."""
+    else None when omitted (which reads). A `**` splat (any keyword whose
+    `arg` is None) may carry `mode`, so its node is returned instead: an
+    unestablishable mode the classifier treats as a write (issue #624)."""
     if len(n.args) > mode_index:
         return n.args[mode_index]
+    splat = next((k.value for k in n.keywords if k.arg is None), None)
+    if splat is not None:
+        return splat
     return next((k.value for k in n.keywords if k.arg == "mode"), None)
 
 
 def _mode_implies_write(mode) -> bool:
     """False only for a mode the AST establishes as read-only: omitted (which
     reads) or a literal without `w`/`a`/`x`/`+`. Anything else -- a variable,
-    a call result -- is conservatively a write (issue #618)."""
+    a call result, a `**` splat -- is conservatively a write (issues #618,
+    #624)."""
     import ast
     if mode is None:
         return False
@@ -670,14 +676,18 @@ class NoNewHandRolledRecordTails(unittest.TestCase):
             "attr_none.py": '(rdir / f"{rid}.json").open()\n',
             "attr_pos.py": '(rdir / f"{rid}.md").open("rb")\n',
             "attr_kw.py": '(rdir / f"{rid}.json").open(mode="r")\n',
+            "enc_kw.py": 'open(rdir / f"{rid}.json", "r", encoding="utf-8")\n',
+            "attr_enc.py": '(rdir / f"{rid}.json").open(encoding="utf-8")\n',
+            "pos_r_splat.py": 'open(rdir / f"{rid}.json", "r", **opts)\n',
             "bound_read.py": 'record_json = rdir / f"{rid}.json"\n'
                              'json.load(open(record_json, "r"))\n',
         }
         self.assertEqual(self._scan(reads), set())
 
     def test_open_write_modes_flagged_across_call_forms(self):
-        """Issue #618: writing/appending/exclusive/updating modes and modes the
-        AST cannot establish as read-only still hit on a record path."""
+        """Issues #618/#624: writing/appending/exclusive/updating modes and
+        modes the AST cannot establish as read-only still hit on a record
+        path."""
         writes = {
             "w.py": 'open(rdir / f"{rid}.json", "w").write(md)\n',
             "wb.py": 'json.dump(rec, open(rdir / f"{rid}.json", "wb"))\n',
@@ -690,6 +700,8 @@ class NoNewHandRolledRecordTails(unittest.TestCase):
             "bound_write.py": 'record_md = rdir / f"{rid}.md"\n'
                               'open(record_md, "w").write(md)\n',
             "var_mode.py": 'mode = "r"\nopen(rdir / f"{rid}.json", mode).write(md)\n',
+            "kwargs_splat.py": 'open(rdir / f"{rid}.json", **opts).write(md)\n',
+            "attr_kwargs_splat.py": '(rdir / f"{rid}.md").open(**opts).write(line)\n',
         }
         self.assertEqual(self._scan(writes), set(writes))
 
@@ -709,6 +721,138 @@ class NoNewHandRolledRecordTails(unittest.TestCase):
                               'if record_md.exists():\n    raise SystemExit(1)\n'
                               "print(f\"written: {(records_dir / f'{rid}.md')}\")\n",
             "broken.py": "def (:\n",
+        }
+        self.assertEqual(self._scan(clean), set())
+
+
+# --- static guard: no direct *.klt-sim.json.gz bundle I/O outside evidence_record.py (issue #655) ---
+
+_BUNDLE_GZ_SUFFIX = ".klt-sim.json.gz"
+_BUNDLE_GZ_CALL_NAMES = frozenset({"open", "GzipFile", "copy", "copy2", "copyfile", "glob", "iglob"})
+_BUNDLE_GZ_ATTRS = frozenset({
+    "open", "GzipFile",
+    "read_text", "read_bytes", "write_text", "write_bytes",
+    "copy", "copy2", "copyfile",
+    "glob", "rglob", "iglob",
+})
+_BUNDLE_GZ_SELF_ATTRS = frozenset({"open", "read_text", "read_bytes", "write_text", "write_bytes"})
+_BUNDLE_GZ_PATH_KWS = frozenset({"file", "filename", "src", "dst", "pathname"})
+_BUNDLE_GZ_IO_MODULES = frozenset({"gzip", "io", "builtins", "codecs", "shutil", "glob"})
+
+
+def _is_bundle_gz(node) -> bool:
+    return _render(node).endswith(_BUNDLE_GZ_SUFFIX)
+
+
+def hand_rolled_corner_bundle_io(root: Path = REPO) -> set[str]:
+    """Sim-relative paths under `sim/` that read, write, copy, or glob
+    `*.klt-sim.json.gz` corner-bundle files directly instead of delegating to
+    `evidence_record.write_corner_bundle` / `read_corner_bundle` (issue #655).
+
+    `sim/bin/evidence_record.py` is the canonical bundle reader/writer; test
+    modules (`sim/tests/` and `test_*.py`) stage synthetic bundles by design.
+    """
+    import ast
+    hits = set()
+    for path in sorted((root / "sim").rglob("*.py")):
+        rel = path.relative_to(root).as_posix()
+        if rel == "sim/bin/evidence_record.py" or rel.startswith("sim/tests/") or path.name.startswith("test_"):
+            continue
+        try:
+            tree = ast.parse(path.read_text())
+        except (SyntaxError, ValueError, UnicodeDecodeError):
+            continue
+        nodes = list(ast.walk(tree))
+        call_names = set(_BUNDLE_GZ_CALL_NAMES)
+        for n in nodes:
+            if isinstance(n, ast.ImportFrom) and n.module in _BUNDLE_GZ_IO_MODULES:
+                for alias in n.names:
+                    if alias.name in _BUNDLE_GZ_CALL_NAMES:
+                        call_names.add(alias.asname or alias.name)
+        bound = {
+            t.id
+            for n in nodes
+            if isinstance(n, ast.Assign) and _is_bundle_gz(n.value)
+            for t in n.targets
+            if isinstance(t, ast.Name)
+        } | {
+            n.target.id
+            for n in nodes
+            if isinstance(n, ast.AnnAssign) and isinstance(n.target, ast.Name)
+            and n.value is not None and _is_bundle_gz(n.value)
+        }
+        for n in nodes:
+            if not isinstance(n, ast.Call):
+                continue
+            f = n.func
+            targets = []
+            if isinstance(f, ast.Name) and f.id in call_names:
+                targets.extend(n.args[:2])
+                targets.extend(k.value for k in n.keywords if k.arg in _BUNDLE_GZ_PATH_KWS)
+            elif isinstance(f, ast.Attribute) and f.attr in _BUNDLE_GZ_ATTRS:
+                targets.extend(n.args[:2])
+                targets.extend(k.value for k in n.keywords if k.arg in _BUNDLE_GZ_PATH_KWS)
+                if f.attr in _BUNDLE_GZ_SELF_ATTRS:
+                    targets.append(f.value)
+            else:
+                continue
+            if any(_is_bundle_gz(t) or (isinstance(t, ast.Name) and t.id in bound) for t in targets):
+                hits.add(rel)
+                break
+    return hits
+
+
+class NoHandRolledCornerBundleIO(unittest.TestCase):
+    """Static guard (issue #655): no non-test `sim/**/*.py` outside
+    `sim/bin/evidence_record.py` may open, copy, or glob `*.klt-sim.json.gz`
+    corner bundles directly -- all corner-bundle writes/reads must go through
+    `write_corner_bundle` / `read_corner_bundle`."""
+
+    def test_no_direct_corner_bundle_io_outside_evidence_record(self):
+        found = sorted(hand_rolled_corner_bundle_io())
+        self.assertFalse(
+            found,
+            "hand-rolled *.klt-sim.json.gz corner-bundle I/O outside "
+            "sim/bin/evidence_record.py -- delegate to write_corner_bundle / "
+            f"read_corner_bundle instead (issues #392, #497, #655): {found}")
+
+    def _scan(self, files: dict[str, str]) -> set[str]:
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            for rel, text in files.items():
+                p = root / rel
+                p.parent.mkdir(parents=True, exist_ok=True)
+                p.write_text(text)
+            return hand_rolled_corner_bundle_io(root)
+
+    def test_detector_flags_direct_writer_and_reader_spellings(self):
+        spellings = [
+            'with gzip.open(cdir / f"{nm}.klt-sim.json.gz", "wt") as fh:\n    pass',
+            'with gzip.open(os.path.join(cdir, nm + ".klt-sim.json.gz"), "rt") as fh:\n    pass',
+            'gzip.open(filename=f"{cdir}/{nm}.klt-sim.json.gz", mode="wt")',
+            'from gzip import open as gzopen\ngzopen("%s.klt-sim.json.gz" % nm, "wt")',
+            'open((cdir / nm).with_suffix(".klt-sim.json.gz"), "rb")',
+            '(cdir / "{}.klt-sim.json.gz".format(nm)).write_bytes(b"")',
+            '(cdir / f"{nm}.klt-sim.json.gz").read_bytes()',
+            'shutil.copyfile(src, cdir / f"{nm}.klt-sim.json.gz")',
+            'for f in sorted(cdir.glob("*.klt-sim.json.gz")):\n    gzip.open(f, "rt")',
+            'gz = cdir / f"{nm}.klt-sim.json.gz"\ngzip.open(gz, "wt")',
+        ]
+        for i, src in enumerate(spellings):
+            rel = f"sim/slug/v{i}.py"
+            with self.subTest(src):
+                self.assertEqual(self._scan({rel: src + "\n"}), {rel})
+
+    def test_detector_passes_provenance_strings_non_bundle_files_and_exclusions(self):
+        clean = {
+            "sim/slug/prov.py": 'rec = {"responses": f"sim/{SLUG}/corners/{rid}/*.klt-sim.json.gz"}\n',
+            "sim/slug/plan.py": 'json.dump(pl, open(cdir / f"{nm}.plan.json", "w"))\n',
+            "sim/slug/raw_json.py": 'json.dump(resp, open(cdir / "klt-sim.json", "w"))\n',
+            "sim/slug/exists.py": 'ok = (cdir / f"{nm}.klt-sim.json.gz").exists()\n',
+            "sim/slug/broken.py": "def (:\n",
+            "sim/bin/evidence_record.py": 'gzip.open(cdir / f"{nm}.klt-sim.json.gz", "wt")\n',
+            "sim/tests/test_helper.py": 'gzip.open(cdir / "a.klt-sim.json.gz", "rt")\n',
+            "sim/slug/test_local.py": 'gzip.open(cdir / "a.klt-sim.json.gz", "rt")\n',
         }
         self.assertEqual(self._scan(clean), set())
 
