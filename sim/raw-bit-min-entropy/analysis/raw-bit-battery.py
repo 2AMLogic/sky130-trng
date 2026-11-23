@@ -70,7 +70,6 @@ difference and never mints or writes anything.
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import math
 import re
@@ -82,8 +81,10 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 RECORDS_DIR = REPO_ROOT / "sim" / "raw-bit-min-entropy" / "records"
 
 sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
+sys.path.insert(0, str(REPO_ROOT / "layout" / "bin"))
 from evidence_record import mint_record, new_record_id  # noqa: E402
 from loadmod import load_module  # noqa: E402
+from _hashing import sha256_bytes, sha256_text  # noqa: E402
 from replay_equal import replay_equal  # noqa: E402  (issue #519/#659: one shared replay equality)
 
 raw_bit_entropy = load_module(
@@ -588,7 +589,7 @@ def load_stream(path: Path, n: int, sha256_hex: str) -> list[int]:
     except OSError as exc:
         raise VolumeInputError(f"cannot read {path}: {exc}") from exc
     text = raw[:-1] if raw.endswith("\n") else raw
-    digest = hashlib.sha256(text.encode()).hexdigest()
+    digest = sha256_text(text)
     if digest != sha256_hex:
         raise VolumeInputError(
             f"{path.name}: sha256 mismatch (declared {sha256_hex}, got {digest})")
@@ -630,7 +631,7 @@ def load_volume_source(source_json: Path) -> tuple[dict, list[tuple[dict, list[i
             raise VolumeInputError(f"manifest file {row['file']!r} is not a bare name")
         streams.append((row, load_stream(runs_dir / row["file"], row["n"],
                                          row["sha256_hex"])))
-    return rec, streams, hashlib.sha256(raw).hexdigest()
+    return rec, streams, sha256_bytes(raw)
 
 
 def source_caveats(source_json: Path) -> list[str]:

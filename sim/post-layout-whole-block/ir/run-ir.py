@@ -29,13 +29,15 @@ Usage: run-ir.py OUTDIR      (writes OUTDIR/spec.json, OUTDIR/response.json)
 from __future__ import annotations
 
 import gzip
-import hashlib
 import json
 import subprocess
 import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(REPO / "layout" / "bin"))
+from _hashing import sha256_file  # noqa: E402
+
 GDS = REPO / "layout" / "trng_whole" / "trng_whole.gds"
 IFACE = REPO / "layout" / "trng_whole" / "interface.json"
 
@@ -109,10 +111,9 @@ def main(argv: list[str]) -> int:
     for name, doc in (("response.pads-only.json.gz", base), ("response.ring-loads.json.gz", solved)):
         with gzip.GzipFile(outdir / name, "wb", mtime=0) as fh:   # ~25 MB plain; gzip is the committed form
             fh.write((json.dumps(doc, indent=1) + "\n").encode())
-    sha = lambda p: hashlib.sha256(Path(p).read_bytes()).hexdigest()
     summary = {
-        "gds": str(GDS.relative_to(REPO)), "gds_sha256": sha(GDS), "top": "trng_whole",
-        "specs": {p.name: sha(p) for p in (p0, p1)},
+        "gds": str(GDS.relative_to(REPO)), "gds_sha256": sha256_file(GDS), "top": "trng_whole",
+        "specs": {p.name: sha256_file(p) for p in (p0, p1)},
         "ring_current_a_assumed": RING_I_A,
         "ring_current_source": "DR-0003 max per-ring running supply current (ff/-40C/1.98V), NOT a whole-block measurement",
         "islands": {n["net"]: [{k: i[k] for k in ("island_id", "node_count", "edge_count", "unsolved_reason")}
