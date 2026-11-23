@@ -18,12 +18,12 @@ What it found (and the mapping's direction column leans on):
 
 * **Both sensitivities have the same sign** -- this library gets FASTER
   warm (temperature inversion at 1.8 V-class supplies: the tt pair moves
-  library-mean delay -4.4 % over 125 K) and faster at high supply (the ff
+  library-mean delay -4.4 % over 75 K) and faster at high supply (the ff
   pair -26.6 % over 0.30 V). So for every matrix point the two axes' deck
   errors push delay the SAME way or one dominates; no point's net delay
   direction is left "mixed" by opposing axes.
 * Voltage dominates: roughly -89 %/V (ff) to -154 %/V (ss) against
-  -0.036..-0.111 %/K -- which is why the mapping's nearest-deck rule
+  -0.059..-0.124 %/K -- which is why the mapping's nearest-deck rule
   minimises |dV| first and only tie-breaks on |dT|.
 * Leakage rises steeply with both axes (library-mean ``cell_leakage_power``
   x9335 over the ss -40 C -> 100 C pair at 1.60 V), so a cold/low-V deck

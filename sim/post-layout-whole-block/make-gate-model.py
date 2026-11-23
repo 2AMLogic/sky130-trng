@@ -1326,7 +1326,8 @@ def resolve_liberty(explicit: str | None, corner: str) -> Path:
 
 
 def main(argv: list[str] | None = None) -> int:
-    ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    ap = argparse.ArgumentParser(description=__doc__.splitlines()[0],
+                                 allow_abbrev=False)
     ap.add_argument("outdir", type=Path, help="output directory (must be empty or absent)")
     ap.add_argument("--verilog", type=Path, default=ROUTED_V,
                     help="routed structural netlist (default: the committed one)")
@@ -1470,7 +1471,14 @@ def main(argv: list[str] | None = None) -> int:
         },
         "tools": {"ngspice": ngspice_version()},
         "provenance": P.PROVENANCE,
-        "reductions": model.manifest["reductions"],
+        "reductions": {
+            **model.manifest["reductions"],
+            # the manifest text predates #595 (kept byte-stable as #486
+            # evidence); in a plan it must agree with boundary_load_option
+            "input_load": "Liberty input-pin capacitance per d_genlut input; the "
+                          "DR-0017 boundary-load choice is settled as option 2 "
+                          "(#595, see boundary_load_option)",
+        },
         # issue #595: the boundary-load choice (DR-0017 option 2) travels
         # with every plan this generator writes
         "boundary_load_option": PVT.boundary_load_block(),

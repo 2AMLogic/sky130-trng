@@ -214,7 +214,9 @@ guarantees.
   `reductions` commentary still says the option-1-vs-2 choice "is open,
   #431" -- it predates this record and is evidence of the #486 run, kept
   byte-stable on purpose (regenerating it would falsify what that run
-  recorded); every plan written since carries the settled statement.
+  recorded); every `plan.json` written since overrides that one `reductions.input_load`
+  entry at plan level (the manifest text is untouched), so a plan carries the
+  settled statement only, next to `boundary_load_option`.
 * The six committed legacy `plan.json` files under `corners/` predate
   `gate_model_pvt` and are not regenerated (#507 convention); the next run
   writes a fresh corner directory.

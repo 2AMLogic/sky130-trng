@@ -6,16 +6,20 @@
   "t1_item_count": 22,
   "build_t1_item_count": 22,
   "t1_met_count": 15,
+  "unmet_reason_counts": {
+    "check_failed": 3,
+    "no_evidence": 4
+  },
   "source_doc": "signoff/design-evidence-tiers.md",
   "source_doc_content_hash": "sha256:63eeec72e3d849761cf32dcf091af5728b069b1515e32bb3138e9454303671e5",
   "build": {
-    "version": "0.8.0",
-    "package_version": "0.8.0",
-    "git_commit": "c572046be644e0407f693f2410f3abb799d68a3a",
-    "git_tag": "v0.8.0",
+    "version": "0.9.3.dev3899+gf75645b4d393",
+    "package_version": "0.9.3.dev3899+gf75645b4d393",
+    "git_commit": "f75645b4d393dec4ab57b6d737084372ba5a3162",
+    "git_tag": null,
     "dirty": false,
-    "is_release": true,
-    "grading_ruleset_id": "sha256:46c446d84423b7399ee1cf957b3d49801ae4f42a0bda53da92f435776cf977c4"
+    "is_release": false,
+    "grading_ruleset_id": "sha256:1b2239d3c432b66a0cee5cc9a7f7c2d3ff0730f81dca501fbe5022c2e9ba0057"
   },
   "items": [
     {
@@ -331,13 +335,13 @@
         "command": null,
         "kind": "generic",
         "check_status": "pass",
-        "content_hash": "sha256:2e0b95feadf114d988286e3638bb478e2dbd7472b84aa4198fbdf318e481e1f7",
+        "content_hash": "sha256:c94a4454086e66ae8a577334519a6746b268a58c36f9f06460fa9787130e2680",
         "input_verified": true,
         "exit_status": 0,
         "artifact_binding": {
           "t1_item": 2,
           "path": "signoff/attest/2.digital.inventory.json",
-          "content_hash": "sha256:2e0b95feadf114d988286e3638bb478e2dbd7472b84aa4198fbdf318e481e1f7",
+          "content_hash": "sha256:c94a4454086e66ae8a577334519a6746b268a58c36f9f06460fa9787130e2680",
           "input_verified": true,
           "source": "signoff/attest.py"
         }
@@ -693,9 +697,34 @@
         "A `klt pex` citation is only as good as the **device-body bias** of the netlist it ran on (#1983). A device body left on an anonymous, deck-synthesized net has no DC bias path at all, which makes a resimulation of that extracted netlist *physically wrong, not merely imprecise* (`docs/cli/extract.md` \u2192 \"Coverage\") \u2014 the run converges and reports numbers, and those numbers are not comparable to the schematic leg they are being diffed against. A `klt pex` report states the condition in its own `body_bias` block (`docs/cli/pex.md`), and `klt signoff` surfaces it verbatim on this item's citation (`citation.body_bias`). **It does not grade on it**: an item-7 citation whose `body_bias.status` is `\"unbiased\"` still renders `met`, because the condition is a deck-coverage property some PDKs produce on every layout they extract, not a defect this command can adjudicate. So a claim citing item 7 must read that field and state whether its post-layout numbers were measured on a properly-biased netlist \u2014 claimant-enforced, exactly like item 3's DRC-coverage disclosure. The same discipline applies upstream at item 4: `klt lvs`'s `body_verification` block says whether the compare verified the body ties at all, and `\"unchecked\"` (a pre-extracted netlist) is not `\"verified\"`."
       ],
       "status": "unmet",
-      "reason": "no_evidence",
+      "reason": "check_failed",
       "graded_by_build": true,
-      "citation": null
+      "citation": null,
+      "detail": {
+        "cited_evidence": {
+          "file": "sim/pex-sampler-core/runs/20261121-001303-7330672/pex-report.json",
+          "command": null,
+          "kind": "pex",
+          "check_status": "fail",
+          "content_hash": "sha256:e3ff54a9bb15122298f0d5df817612ed1caacb3b045533f9ba86d009036c2004",
+          "input_verified": true,
+          "exit_status": 0,
+          "pex_inputs": [
+            {
+              "role": "reference_netlist",
+              "path": "design/sampler_core.spice",
+              "sha256": "sha256:34a9af2714b7cfd71092c9733fb4007a61747b032eadcf5491ae9db811999b71",
+              "status": "verified"
+            }
+          ],
+          "body_bias": {
+            "status": "biased",
+            "unbiased_device_count": 0,
+            "unbiased_nets": []
+          }
+        },
+        "content_hash_pin": "verified"
+      }
     },
     {
       "tier": "T1",
@@ -729,7 +758,18 @@
       "status": "unmet",
       "reason": "check_failed",
       "graded_by_build": true,
-      "citation": null
+      "citation": null,
+      "detail": {
+        "cited_evidence": {
+          "file": "signoff/characterization-envelope.json",
+          "command": null,
+          "kind": "generic",
+          "check_status": "fail",
+          "content_hash": null,
+          "input_verified": null,
+          "exit_status": 0
+        }
+      }
     },
     {
       "tier": "T1",
@@ -741,7 +781,18 @@
       "status": "unmet",
       "reason": "check_failed",
       "graded_by_build": true,
-      "citation": null
+      "citation": null,
+      "detail": {
+        "cited_evidence": {
+          "file": "signoff/characterization-envelope.json",
+          "command": null,
+          "kind": "generic",
+          "check_status": "fail",
+          "content_hash": null,
+          "input_verified": null,
+          "exit_status": 0
+        }
+      }
     },
     {
       "tier": "T1",
@@ -758,13 +809,13 @@
         "command": null,
         "kind": "generic",
         "check_status": "pass",
-        "content_hash": "sha256:6f6cd934bc0c03555dcd1037d8778b0e050aa5289417ea572f77229760891c46",
+        "content_hash": "sha256:c8522696eb6f2ea485266a1fce4feb13f71852592bc88f2bfbae50491870adf2",
         "input_verified": true,
         "exit_status": 0,
         "artifact_binding": {
           "t1_item": 9,
           "path": "signoff/attest/9.inventory.json",
-          "content_hash": "sha256:6f6cd934bc0c03555dcd1037d8778b0e050aa5289417ea572f77229760891c46",
+          "content_hash": "sha256:c8522696eb6f2ea485266a1fce4feb13f71852592bc88f2bfbae50491870adf2",
           "input_verified": true,
           "source": "signoff/attest.py"
         }
@@ -785,13 +836,13 @@
         "command": null,
         "kind": "generic",
         "check_status": "pass",
-        "content_hash": "sha256:6f6cd934bc0c03555dcd1037d8778b0e050aa5289417ea572f77229760891c46",
+        "content_hash": "sha256:c8522696eb6f2ea485266a1fce4feb13f71852592bc88f2bfbae50491870adf2",
         "input_verified": true,
         "exit_status": 0,
         "artifact_binding": {
           "t1_item": 9,
           "path": "signoff/attest/9.inventory.json",
-          "content_hash": "sha256:6f6cd934bc0c03555dcd1037d8778b0e050aa5289417ea572f77229760891c46",
+          "content_hash": "sha256:c8522696eb6f2ea485266a1fce4feb13f71852592bc88f2bfbae50491870adf2",
           "input_verified": true,
           "source": "signoff/attest.py"
         }
@@ -812,13 +863,13 @@
         "command": null,
         "kind": "generic",
         "check_status": "pass",
-        "content_hash": "sha256:7c8e62461d35d80bb7e4db9e09e731487b7cf7c091d149f424f62f43d23a9c82",
+        "content_hash": "sha256:b573d134e1c38c2334b152d6d73634f54d48e57c8ed69cb8fb66ba394b0d1f26",
         "input_verified": true,
         "exit_status": 0,
         "artifact_binding": {
           "t1_item": 10,
           "path": "signoff/attest/10.inventory.json",
-          "content_hash": "sha256:7c8e62461d35d80bb7e4db9e09e731487b7cf7c091d149f424f62f43d23a9c82",
+          "content_hash": "sha256:b573d134e1c38c2334b152d6d73634f54d48e57c8ed69cb8fb66ba394b0d1f26",
           "input_verified": true,
           "source": "signoff/attest.py"
         }
@@ -839,13 +890,13 @@
         "command": null,
         "kind": "generic",
         "check_status": "pass",
-        "content_hash": "sha256:7c8e62461d35d80bb7e4db9e09e731487b7cf7c091d149f424f62f43d23a9c82",
+        "content_hash": "sha256:b573d134e1c38c2334b152d6d73634f54d48e57c8ed69cb8fb66ba394b0d1f26",
         "input_verified": true,
         "exit_status": 0,
         "artifact_binding": {
           "t1_item": 10,
           "path": "signoff/attest/10.inventory.json",
-          "content_hash": "sha256:7c8e62461d35d80bb7e4db9e09e731487b7cf7c091d149f424f62f43d23a9c82",
+          "content_hash": "sha256:b573d134e1c38c2334b152d6d73634f54d48e57c8ed69cb8fb66ba394b0d1f26",
           "input_verified": true,
           "source": "signoff/attest.py"
         }

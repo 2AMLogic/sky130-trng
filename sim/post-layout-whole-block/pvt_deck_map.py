@@ -31,7 +31,7 @@ The single source of truth for two things DR-0017 left to a follow-up and
    ``analysis/deck-axis-sensitivity.py`` and the record) make the voltage
    term dominate: at n40C, going 1.65 -> 1.95 V moves the library-mean delay
    -26.6 % (ff, ~-89 %/V) while 25 C -> 100 C at 1.80 V moves it only -4.4 %
-   (tt, ~-0.04 %/K). Both sensitivities have the SAME sign -- this library
+   (tt, -4.44 %/75 K = -0.059 %/K). Both sensitivities have the SAME sign -- this library
    is faster warm AND faster at high supply (temperature inversion at 1.8 V,
    confirmed on tt, ss and ff pairs) -- so every row's net direction is
    established, none is "mixed": delay direction from the linearised

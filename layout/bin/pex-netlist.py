@@ -163,6 +163,14 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _klt_common import BuildError, run_klt, write_json  # noqa: E402
+from _pex_rewrite import (  # noqa: F401 -- re-exports, issue #638
+    Renamer,
+    canonicalize,
+    check_device_card,
+    join_continuations,
+    rewrite_cell,
+    sanitize,
+)
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
@@ -175,10 +183,6 @@ CHECK_FIELDS = (
     "device_counts",
     "parasitics",
 )
-
-#: Geometry parameters a device card may carry, all of which must be
-#: unitless for this library's `.option scale=1u` contract to hold.
-_GEOM_PARAMS = ("L", "W", "AS", "AD", "PS", "PD", "NRD", "NRS")
 
 #: An extractor-anonymous net, optionally with its per-terminal leg suffix:
 #: `\$3` (the hub) and `\$3__t0` (one leg). The digits are KLayout's own
@@ -293,157 +297,11 @@ def canonical_parasitics(parasitics: dict) -> dict:
 # Netlist rewriting
 # --------------------------------------------------------------------------
 
-
-def join_continuations(text: str) -> list[str]:
-    """Fold ngspice ``+`` continuation lines into their logical line."""
-    out: list[str] = []
-    for raw in text.splitlines():
-        if raw.startswith("+"):
-            if not out:
-                raise BuildError("netlist starts with a continuation line")
-            out[-1] = out[-1].rstrip() + " " + raw[1:].strip()
-        else:
-            out.append(raw.rstrip())
-    return out
-
-
-def canonicalize(name: str, aliases: dict[str, str]) -> str:
-    """Rename a joined net name (and its ``\\x7c``-escaped spelling)."""
-    for joined, canonical in aliases.items():
-        escaped = joined.replace("|", "\\x7c")
-        if name == joined or name == canonical:
-            return canonical
-        if name.startswith(escaped):
-            return canonical + name[len(escaped) :]
-        if name.startswith(joined):
-            return canonical + name[len(joined) :]
-    if "|" in name or "\\x7c" in name:
-        raise BuildError(
-            f"net name {name!r} is a joined extractor name with no "
-            "net_aliases entry -- add one to the cell's descriptor entry"
-        )
-    return name
-
-
-def sanitize(name: str) -> str:
-    """Strip characters no ngspice deck should have to quote.
-
-    The extractor names an unlabelled internal net after its own device
-    index (``\\$3``, escaped) and its device instances the same way
-    (``M$3``). ``$`` is an ngspice in-line comment character and ``\\`` is
-    an escape, so both are replaced -- ``$`` by ``n`` (giving ``n3`` /
-    ``Mn3``), ``\\`` dropped. ``rewrite_cell`` asserts the mapping stays
-    injective per cell, so a rename can never silently merge two nets.
-    """
-    return name.replace("\\", "").replace("$", "n")
-
-
-def check_device_card(line: str, expected_models: list[str]) -> str:
-    """Verify one extracted device card against this library's contract.
-
-    Returns the card unchanged. Raises :class:`BuildError` if it is not an
-    ``X`` (subcircuit-call) card, if its model is not one the descriptor
-    declares, or if any geometry value carries a unit suffix.
-
-    See this module's docstring: ``klt extract --pdk`` already emits exactly
-    the form this repo's decks need, so the job here is to *hold* that
-    contract, not to re-implement it. All three failure modes would
-    otherwise be silent -- an ``M`` card would fail to bind at all (loud),
-    but a wrong model name binds to the wrong device and a stray ``U``
-    suffix mis-scales the device by 1e-6 under ``.option scale=1u``, and
-    both of those simulate cleanly.
-    """
-    tokens = line.split()
-    name, model = tokens[0], tokens[5]
-    if not name.upper().startswith("X"):
-        raise BuildError(
-            f"device card {name} is not a subcircuit call -- pass --pdk to "
-            f"klt extract so it writes the PDK's own device subcircuits "
-            f"(line: {line})"
-        )
-    if model not in expected_models:
-        raise BuildError(
-            f"device card {name} names model {model!r}, which is not in the "
-            f"descriptor's expect_device_models {expected_models}"
-        )
-    for token in tokens[6:]:
-        key, _, value = token.partition("=")
-        if key.upper() not in _GEOM_PARAMS:
-            raise BuildError(f"unexpected device parameter {token!r} on {name}")
-        if not re.fullmatch(r"[0-9]*\.?[0-9]+(?:[eE][-+]?[0-9]+)?", value):
-            raise BuildError(
-                f"device parameter {token!r} on {name} is not a bare unitless "
-                "number -- this library's .option scale=1u contract requires "
-                "unsuffixed geometry (klt extract --pdk emits it that way)"
-            )
-    return line
-
-
-def rewrite_cell(
-    netlist_text: str,
-    *,
-    core_name: str,
-    aliases: dict[str, str],
-    expected_models: list[str],
-) -> tuple[list[str], list[str]]:
-    """Rewrite one extracted cell into ``<core_name>`` + its port list.
-
-    Returns ``(lines, ports)``. Comment lines from the extractor's own
-    parasitic-model preamble are dropped (they are reproduced once, at the
-    top of the library, instead of once per cell); its per-device provenance
-    comments are kept.
-    """
-    renames: dict[str, str] = {}
-
-    def rename(token: str) -> str:
-        out = sanitize(canonicalize(token, aliases))
-        previous = renames.setdefault(out, token)
-        if previous != token:
-            raise BuildError(
-                f"{core_name}: names {previous!r} and {token!r} both rewrite "
-                f"to {out!r} -- renaming would merge two distinct nets"
-            )
-        return out
-
-    lines: list[str] = []
-    ports: list[str] = []
-    in_cell = False
-    for line in join_continuations(netlist_text):
-        stripped = line.strip()
-        if not stripped:
-            continue
-        upper = stripped.upper()
-        if upper.startswith(".SUBCKT"):
-            in_cell = True
-            ports = [rename(tok) for tok in stripped.split()[2:]]
-            lines.append(f".subckt {core_name} {' '.join(ports)}")
-            continue
-        if upper.startswith(".ENDS"):
-            in_cell = False
-            lines.append(f".ends {core_name}")
-            continue
-        if not in_cell:
-            continue  # extractor preamble comments, reproduced library-wide
-        if stripped.startswith("*"):
-            lines.append(stripped)
-            continue
-        tokens = stripped.split()
-        head = tokens[0].upper()
-        if head.startswith(("X", "M")):
-            # A device card's trailing tokens are the model name and
-            # `PARAM=value` geometry, not node names -- only the instance
-            # name and its four terminals go through the renamer.
-            renamed = [rename(tok) for tok in tokens[:5]] + tokens[5:]
-            lines.append(check_device_card(" ".join(renamed), expected_models))
-        elif head[0] in "RC":
-            # `<name> <node> <node> <value>` -- the value is not a name.
-            renamed = [rename(tok) for tok in tokens[:3]] + tokens[3:]
-            lines.append(" ".join(renamed))
-        else:
-            raise BuildError(f"unhandled element card in extracted netlist: {stripped}")
-    if not ports:
-        raise BuildError(f"{core_name}: no .SUBCKT line in the extracted netlist")
-    return lines, ports
+# join_continuations / canonicalize / sanitize / check_device_card /
+# rewrite_cell -- and the standalone single-cell driver rewrite_standalone
+# -- live in _pex_rewrite.py since issue #638, shared with
+# sim/pex-sampler-core/harness/pex-measure.py; they are re-exported above
+# so this module's importers (layout/test_pex_netlist.py) are unchanged.
 
 
 def wrapper_lines(cell: dict, core_name: str, core_ports: list[str]) -> list[str]:

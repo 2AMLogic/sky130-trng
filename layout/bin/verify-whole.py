@@ -43,7 +43,6 @@ from __future__ import annotations
 import argparse
 import copy
 import gzip
-import importlib.util
 import json
 import os
 import re
@@ -56,6 +55,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
+from _gds_geometry import flat_extract, net_labels, probe  # noqa: E402
 from _hashing import sha256_file, sha256_text  # noqa: E402
 from _klt_common import (BuildError, dumps, klt_env, klayout_db as _klayout,  # noqa: E402
                          klt_version, load_json, pdk_root as klt_pdk_root, rel,
@@ -82,12 +82,6 @@ NOT_SIGNOFF = (
     "density runset, no parasitic extraction, no electrical or entropy characterisation. "
     "Provisional until silicon."
 )
-
-_cw_spec = importlib.util.spec_from_file_location("compose_whole", HERE / "compose-whole.py")
-assert _cw_spec and _cw_spec.loader
-cw = importlib.util.module_from_spec(_cw_spec)
-sys.modules["compose_whole"] = cw
-_cw_spec.loader.exec_module(cw)
 
 
 # --------------------------------------------------------------------------
@@ -1044,11 +1038,11 @@ def bridge_pads(gds_in: Path, gds_out: Path, a_um: tuple[float, float], b_um: tu
 
 def probe_clusters(gds: Path, points: dict[str, tuple[float, float, str]]) -> dict:
     """Metal-level cluster id and labels under named points (independent of klt)."""
-    db, l2n, regions = cw.flat_extract(gds)
+    db, l2n, regions = flat_extract(gds)
     out = {}
     for name, (x, y, layer) in points.items():
-        net = cw.probe(db, l2n, regions, layer, x, y)
-        out[name] = None if net is None else {"cluster": net.cluster_id, "labels": sorted(cw.net_labels(net))}
+        net = probe(db, l2n, regions, layer, x, y)
+        out[name] = None if net is None else {"cluster": net.cluster_id, "labels": sorted(net_labels(net))}
     return out
 
 
