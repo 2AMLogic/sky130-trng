@@ -289,6 +289,24 @@ name: CI
 #     verify` needs the broker and is an out-of-band step. The signoff-check
 #     pin below deliberately stays klayout-tools==0.8.0.
 #
+# sim/tests/test_health_detection_coverage.py, test_idle_leakage.py,
+# test_mismatch_reduction.py, test_raw_bit_pvt_crosscheck.py,
+# test_vth_drift.py, test_wakeup_reduction.py, test_whole_block_reduction.py,
+# test_xor_alternatives.py (issue #654) -- eight stdlib-only suites that
+#     existed only as local runs until #654 wired them in: each was added
+#     by the PR that introduced its subject (issues #300, #201, #215,
+#     #216, #254, #289, #174, #282 respectively) without a matching step
+#     here, so a change whose only coverage was one of these suites
+#     regressed with CI fully green -- exactly what happened on PR #649,
+#     whose reduce-whole-block.py change is covered only by
+#     test_whole_block_reduction.py, which CI never ran. All eight load
+#     their subject via sim/bin/loadmod.py and finish in under 2 s each;
+#     no ngspice, no PDK, no network, no klt. The one tool-dependent case
+#     among them -- test_health_detection_coverage's RTL-vs-model check,
+#     guarded by @unittest.skipUnless(shutil.which("iverilog") and
+#     shutil.which("vvp"), ...) -- SKIPS (an explicit skip, not a silent
+#     pass) on a runner without iverilog/vvp, which CI does not install.
+#
 # sim/bin/check_records_append_only.py (sim/ + measurements/ append-only record rule, issues #232/#269)
 #     Pure Python + git. `sim/` results and `measurements/` silicon evidence are
 #     append-only (sim/README.md, measurements/README.md): the job diffs
@@ -444,6 +462,30 @@ jobs:
 
       - name: sim/bin/check_artifact_manifests.py (issue #347 manifests valid, artifact: URIs only, no stored object committed)
         run: python3 sim/bin/check_artifact_manifests.py check --tree HEAD
+
+      - name: sim/tests/test_health_detection_coverage.py (issue #300 health-test detection coverage harness; iverilog/vvp case skips in CI)
+        run: python3 sim/tests/test_health_detection_coverage.py
+
+      - name: sim/tests/test_idle_leakage.py (issue #201 RO-array idle-leakage analysis unit test)
+        run: python3 sim/tests/test_idle_leakage.py
+
+      - name: sim/tests/test_mismatch_reduction.py (issue #215 local-mismatch Monte Carlo reduction unit test)
+        run: python3 sim/tests/test_mismatch_reduction.py
+
+      - name: sim/tests/test_raw_bit_pvt_crosscheck.py (issue #289 transistor PVT crosscheck + make-requests --pvt checks)
+        run: python3 sim/tests/test_raw_bit_pvt_crosscheck.py
+
+      - name: sim/tests/test_vth_drift.py (issue #254 Vth-drift sensitivity study unit test)
+        run: python3 sim/tests/test_vth_drift.py
+
+      - name: sim/tests/test_wakeup_reduction.py (issue #216 wake-up transient reduction unit test)
+        run: python3 sim/tests/test_wakeup_reduction.py
+
+      - name: sim/tests/test_whole_block_reduction.py (issue #174 whole-block coverage-honesty reduction unit test)
+        run: python3 sim/tests/test_whole_block_reduction.py
+
+      - name: sim/tests/test_xor_alternatives.py (issue #282 XOR-combining alternatives study unit test)
+        run: python3 sim/tests/test_xor_alternatives.py
 
   sim-records-append-only:
     name: sim/ + measurements/ append-only evidence rule (no edit/delete/rename of committed records or raw artifacts)
