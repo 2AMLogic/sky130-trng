@@ -70,7 +70,6 @@ difference and never mints or writes anything.
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import math
 import re
@@ -82,8 +81,11 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 RECORDS_DIR = REPO_ROOT / "sim" / "raw-bit-min-entropy" / "records"
 
 sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
+sys.path.insert(0, str(REPO_ROOT / "layout" / "bin"))
 from evidence_record import mint_record, new_record_id  # noqa: E402
 from loadmod import load_module  # noqa: E402
+from _hashing import sha256_bytes, sha256_text  # noqa: E402
+from replay_equal import replay_equal  # noqa: E402  (issue #519/#659: one shared replay equality)
 
 raw_bit_entropy = load_module(
     "raw_bit_entropy", Path(__file__).with_name("raw-bit-entropy.py"))
@@ -587,7 +589,7 @@ def load_stream(path: Path, n: int, sha256_hex: str) -> list[int]:
     except OSError as exc:
         raise VolumeInputError(f"cannot read {path}: {exc}") from exc
     text = raw[:-1] if raw.endswith("\n") else raw
-    digest = hashlib.sha256(text.encode()).hexdigest()
+    digest = sha256_text(text)
     if digest != sha256_hex:
         raise VolumeInputError(
             f"{path.name}: sha256 mismatch (declared {sha256_hex}, got {digest})")
@@ -629,7 +631,7 @@ def load_volume_source(source_json: Path) -> tuple[dict, list[tuple[dict, list[i
             raise VolumeInputError(f"manifest file {row['file']!r} is not a bare name")
         streams.append((row, load_stream(runs_dir / row["file"], row["n"],
                                          row["sha256_hex"])))
-    return rec, streams, hashlib.sha256(raw).hexdigest()
+    return rec, streams, sha256_bytes(raw)
 
 
 def source_caveats(source_json: Path) -> list[str]:
@@ -927,23 +929,24 @@ def check_volume_record(record_json: Path) -> int:
         return 1
     got = json.loads(json.dumps(payload))
     rc = 0
-    if got != want:
+    if not replay_equal(got, want):
         rc = 1
         diffs = [r["source_file"] for r, w in zip(got["per_stream"],
-                 want.get("per_stream", [])) if r != w]
+                 want.get("per_stream", [])) if not replay_equal(r, w)]
         print("CHECK FAILED: analysis payload differs"
               + (f" (streams: {', '.join(diffs)})" if diffs else ""),
               file=sys.stderr)
+    # The markdown is rendered from the committed payload; the recomputed
+    # payload is tied to it by the replay comparison above (float-tolerant),
+    # so the markdown is compared against render(want) only -- a 1-ulp
+    # re-derivation shift can straddle a :.4f rounding midpoint and would
+    # false-diff here (same rule as conditioned-output.py).
     if render_volume(want, caveats) not in md_text:
         rc = 1
         print("CHECK FAILED: committed markdown tables differ from the "
               "committed payload or source caveats", file=sys.stderr)
-    if render_volume(payload, caveats) not in md_text:
-        rc = 1
-        print("CHECK FAILED: recomputed tables differ from committed markdown",
-              file=sys.stderr)
     if rc == 0:
-        print(f"CHECK OK: {record_json.name} reproduces byte-for-byte "
+        print(f"CHECK OK: {record_json.name} reproduces "
               f"({len(got['per_stream'])} streams)")
     return rc
 

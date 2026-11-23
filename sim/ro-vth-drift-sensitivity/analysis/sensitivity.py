@@ -30,7 +30,6 @@ from __future__ import annotations
 import argparse
 import glob
 import gzip
-import hashlib
 import json
 import math
 import os
@@ -44,10 +43,12 @@ SLUGDIR = HERE.parent
 REPO = SLUGDIR.parents[1]
 sys.path.insert(0, str(SLUGDIR))
 sys.path.insert(0, str(REPO / "sim" / "bin"))
+sys.path.insert(0, str(REPO / "layout" / "bin"))
 from loadmod import load_module  # noqa: E402
 from measurement_names import measurements_by_name  # noqa: E402  (#670: the array deck's names are lifted from a template)
 import aging  # noqa: E402
 import campaign as C  # noqa: E402
+from _hashing import sha256_json  # noqa: E402  (issue #669: the one canonical-JSON digest, verified byte-identically by behavioral_raw_bit.py)
 from replay_equal import replay_equal as _replay_equal  # noqa: E402  (issue #519: one shared replay equality)
 from evidence_record import mint_record, new_record_id, read_corner_bundle, write_corner_bundle  # noqa: E402
 from lock_proximity import closeness as lock_closeness, ratio_label  # noqa: E402
@@ -72,10 +73,6 @@ T_S_DR0003 = 20e-6
 
 AS = load_module("array_sizing", REPO / "sim/ro-array-sizing/analysis/array-sizing.py")
 DC = load_module("derive_combining", REPO / "sim/raw-bit-volume-campaign/derive-combining.py")
-
-
-def sha256_json(obj) -> str:
-    return hashlib.sha256(json.dumps(obj, sort_keys=True, default=str).encode()).hexdigest()
 
 
 # --------------------------------------------------------------------------- metrics

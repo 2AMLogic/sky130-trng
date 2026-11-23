@@ -25,7 +25,6 @@ Exit:   0 ok, 1 violation, 2 usage/git error.
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import re
 import subprocess
@@ -33,6 +32,9 @@ import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPO / "layout" / "bin"))
+from _hashing import sha256_bytes  # noqa: E402
+
 MANIFEST_DIR = "manifests/artifacts"
 STAGING_DIR = ".artifact-staging"
 MANIFEST_RE = re.compile(r"^manifests/artifacts/[^/]+\.manifest\.json$")
@@ -154,7 +156,7 @@ def check_tree(repo: Path, tree: str) -> list[str]:
         blob = _git(repo, "cat-file", "blob", oid, text=False)
         if blob.returncode != 0:
             raise RuntimeError(f"git cat-file for {path} failed")
-        digest = hashlib.sha256(blob.stdout).hexdigest()
+        digest = sha256_bytes(blob.stdout)
         for manifest in stored.get((digest, size), []):
             problems.append(f"{path}: bytes are committed but {manifest} says they are stored "
                             f"in the artifact store (sha256 {digest[:16]}...); remove the file")

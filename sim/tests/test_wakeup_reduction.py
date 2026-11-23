@@ -13,6 +13,7 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, os.path.join(REPO, "sim", "bin"))
 from loadmod import load_module  # noqa: E402
+import replay_equal  # noqa: E402
 w = load_module("wakeup", REPO / "sim/wake-up-transient/wakeup.py")
 
 
@@ -168,6 +169,42 @@ class JobIds(unittest.TestCase):
         sharded = ("a", {}, {"environment": {"remote": {"fleet": [{"job_id": "j1"}, {"job_id": "j2"}]}}})
         single = ("b", {}, {"environment": {"remote": {"job_id": "j3"}}})
         self.assertEqual(w._jobs([sharded, single]), ["j1", "j2", "j3"])
+
+
+class ReplayTolerance(unittest.TestCase):
+    """Issue #659: `--check` replays the det/noisy/margin legs through
+    sim/bin/replay_equal.py.
+
+    `det_ring`'s reference window and `window_mean` are float `sum()`s;
+    builtin `sum()` is naive on CPython <= 3.11 and compensated on >= 3.12,
+    so the noisy-leg records minted on 3.12 failed their own replay under
+    3.11 semantics (xcheck and summary float leaves) before this."""
+
+    #: Ring periods (s) sized like `det_ring`'s reference-window sums so the
+    #: naive and compensated reductions of the same list differ.
+    P = [2.4737964627091892e-09, 2.5044229225295953e-09, 2.486995516654808e-09,
+         2.5103920038596196e-09, 2.5125720304108055e-09, 2.4565528859239815e-09,
+         2.4513167991554875e-09, 2.533746908209646e-09, 2.4759354014328007e-09,
+         2.4734330961046696e-09]
+
+    def test_uses_the_shared_rule(self):
+        self.assertIs(w._replay_equal, replay_equal.replay_equal)
+
+    def test_replay_gate_absorbs_the_cpython_sum_split_and_still_bites(self):
+        s_naive = 0.0
+        for x in self.P:
+            s_naive += x
+        s_fsum = math.fsum(self.P)
+        self.assertNotEqual(s_naive, s_fsum)
+        self.assertTrue(w._replay_equal(s_naive, s_fsum))
+        self.assertFalse(w._replay_equal(s_fsum, s_fsum * (1 + 1e-6)))
+        self.assertTrue(w._replay_equal(s_fsum, s_fsum * (1 + 1e-12)))
+
+    def test_zero_versus_tiny_is_a_difference_no_absolute_floor(self):
+        self.assertFalse(w._replay_equal(0.0, 5e-324))
+        self.assertFalse(w._replay_equal(0.0, 1e-20))
+        self.assertFalse(w._replay_equal(1e-20, 0.0))
+        self.assertTrue(w._replay_equal(0.0, -0.0))
 
 
 if __name__ == "__main__":
