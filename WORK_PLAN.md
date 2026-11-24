@@ -54,17 +54,14 @@ Issues currently being built (`loom:building`).
 - **#692**: corner-run repo_state() reports dirty: false when git status cannot run, and mint_record has no working-tree disclosure
 - **#697**: Committed signoff attestation artifacts serialize every concurrent sim/ PR into a merge-conflict treadmill
 - **#701**: Adopt two-word raw and conditioned FIFOs in DR-0004 and prove the production RTL and mapped netlists
-- **#713**: friction-ledger: klayout-tools#5490 row says "open" but the issue closed 2026-11-22 (and may change item-6 row coverage)
-- **#724**: Remove dead pre-#435 body-rename workaround and duplicate scrub helpers in sim/post-layout-whole-block/
-- **#729**: docs: align remaining item-6 row-coverage prose in local-mismatch README and ROADMAP
+- **#749**: ro_array_core recipe no longer rebuilds: 0.8.0 leaf regens moved the taps its declared ports name (compose-cell --check red)
+- **#755**: layout/sampler_core/README.md's latest-increment paragraph quotes 8399 polygons and the 0.3.0 klt pin; committed GDS measures 8408 on 0.6.0+g5edb557f91d0
 
 ## PRs Awaiting Review
 
 PRs waiting on Judge (`loom:review-requested`).
 
-- **#725**: refactor: drop dead pre-#435 body-rename workaround from whole-block request assembly
-- **#727**: docs: mark klayout-tools#5490 closed in the friction ledger
-- **#730**: docs: name ratification as item 6's sole gate in mismatch README and ROADMAP
+- **#756**: docs(layout): align sampler_core README latest-increment stats with committed evidence
 
 ## Approved (Awaiting Merge)
 
@@ -103,15 +100,12 @@ Issues carrying `loom:curated`.
 - **#692**: corner-run repo_state() reports dirty: false when git status cannot run, and mint_record has no working-tree disclosure *(curated)*
 - **#697**: Committed signoff attestation artifacts serialize every concurrent sim/ PR into a merge-conflict treadmill *(curated)*
 - **#701**: Adopt two-word raw and conditioned FIFOs in DR-0004 and prove the production RTL and mapped netlists *(curated)*
-- **#713**: friction-ledger: klayout-tools#5490 row says "open" but the issue closed 2026-11-22 (and may change item-6 row coverage) *(curated)*
-- **#729**: docs: align remaining item-6 row-coverage prose in local-mismatch README and ROADMAP *(curated)*
+- **#749**: ro_array_core recipe no longer rebuilds: 0.8.0 leaf regens moved the taps its declared ports name (compose-cell --check red) *(curated)*
+- **#755**: layout/sampler_core/README.md's latest-increment paragraph quotes 8399 polygons and the 0.3.0 klt pin; committed GDS measures 8408 on 0.6.0+g5edb557f91d0 *(curated)*
 
 ## Proposed (Architect / Hermit)
 
 - **#470**: Consolidate the eight hand-rolled SPICE continuation-line folders: three behaviours for the same input across layout and sim scripts *(hermit)*
-- **#490**: Consolidate the three copies of merged(): the cross-directory carve-out rationale is measurably false *(hermit)*
-- **#491**: Remove the two byte-identical 15 MB netlist.cir copies under sim/post-layout-whole-block/runs/: #174 already ratified them as regenerated, and .gitignore's pattern misses the runs/ path *(hermit)*
-- **#494**: Stop committing 11 MB of all-null antenna skeleton in layout/trng_digital/erc.json: 98.6% of the repo's largest file records that a check did not run *(hermit)*
 - **#495**: Continue the #173 seam: move ~500 lines of PDK-free verdict logic out of verify-whole.py into verify_whole_lib.py *(hermit)*
 
 ## Epics
@@ -127,10 +121,10 @@ Issues carrying `loom:curated`.
 | Very important | 0 |
 | Important | 7 |
 | Ready (`loom:issue`) | 2 |
-| In Progress (`loom:building`) | 13 |
-| PRs awaiting review | 3 |
+| In Progress (`loom:building`) | 12 |
+| PRs awaiting review | 1 |
 | Approved PRs awaiting merge | 8 |
 | Curated | 22 |
-| Architect / Hermit proposals | 5 |
+| Architect / Hermit proposals | 2 |
 | Active epics | 2 |
 <!-- guide:plan-body:end -->
