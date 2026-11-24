@@ -12,6 +12,7 @@ Judge-approved PRs under a hold (`loom:blocked` or `loom:operator`) — only a h
 - **#620**: feat(sim): raw-rate row options evidence -- sample-before-combine and 3-inversion ring study
 - **#628**: sim: measured sampler_core active-power budget at Ts=20us; DR-0021 corrected to measured values
 - **#684**: docs(signoff): correct stale klt signoff --attest availability prose and grader-pin cross-ref
+- **#711**: feat(digital): two-word FIFOs with RTL and mapped-netlist equivalence evidence
 
 ## Very Important
 
@@ -50,21 +51,17 @@ Issues currently being built (`loom:building`).
 - **#600**: Raw rate row (> 1 Mbps): evidence study of sample-before-combine and higher-jitter ring options against the rate, power and area rows
 - **#604**: Design iteration: sampler_core analog active power exceeds the 500 uW target at ff/high-Vdd corners (pre-layout already; post-layout adds +6-13%)
 - **#642**: Consolidate parallel whole-block digital-oracle comparator out of reduce-whole-block.py onto compare-gate-model.py
-- **#676**: evidence_record: mint_record / record_footer still emit an unqualified repo_sha pin, so most sim records keep the #666 defect
 - **#679**: Two more stale klt-pin/verb-availability prose claims survive #674 (pdk-nightly.yml comment, signoff/README.md attest note)
 - **#692**: corner-run repo_state() reports dirty: false when git status cannot run, and mint_record has no working-tree disclosure
 - **#697**: Committed signoff attestation artifacts serialize every concurrent sim/ PR into a merge-conflict treadmill
 - **#701**: Adopt two-word raw and conditioned FIFOs in DR-0004 and prove the production RTL and mapped netlists
-- **#705**: signoff/README.md: item-1 attestation provenance phrasing — stale "once a release carries --attest" paragraph, and the generic-envelope contrast
 
 ## PRs Awaiting Review
 
 PRs waiting on Judge (`loom:review-requested`).
 
-- **#707**: feat: disclose working-tree state in mint_record records
+- **#644**: fix(sim): score whole-block corners through the shared gate-model comparator
 - **#709**: feat(signoff): regenerate item-9 attestation aggregate on main (DR-0021)
-- **#710**: docs: reframe signoff item-1 prose around minting tool and released --attest
-- **#711**: feat(digital): two-word FIFOs with RTL and mapped-netlist equivalence evidence
 
 ## Approved (Awaiting Merge)
 
@@ -76,6 +73,7 @@ PRs that passed review and are queued for Champion auto-merge (`loom:pr`).
 - **#620**: feat(sim): raw-rate row options evidence -- sample-before-combine and 3-inversion ring study
 - **#628**: sim: measured sampler_core active-power budget at Ts=20us; DR-0021 corrected to measured values
 - **#684**: docs(signoff): correct stale klt signoff --attest availability prose and grader-pin cross-ref
+- **#711**: feat(digital): two-word FIFOs with RTL and mapped-netlist equivalence evidence
 
 ## Proposed
 
@@ -98,12 +96,11 @@ Issues carrying `loom:curated`.
 - **#599**: Area row (< 0.05 mm2): measure each structural option DR-0010 names, starting from the repaired 65 % floorplan, and find what limits the layout *(curated)*
 - **#600**: Raw rate row (> 1 Mbps): evidence study of sample-before-combine and higher-jitter ring options against the rate, power and area rows *(curated)*
 - **#604**: Design iteration: sampler_core analog active power exceeds the 500 uW target at ff/high-Vdd corners (pre-layout already; post-layout adds +6-13%) *(curated)*
-- **#676**: evidence_record: mint_record / record_footer still emit an unqualified repo_sha pin, so most sim records keep the #666 defect *(curated)*
 - **#679**: Two more stale klt-pin/verb-availability prose claims survive #674 (pdk-nightly.yml comment, signoff/README.md attest note) *(curated)*
 - **#692**: corner-run repo_state() reports dirty: false when git status cannot run, and mint_record has no working-tree disclosure *(curated)*
 - **#697**: Committed signoff attestation artifacts serialize every concurrent sim/ PR into a merge-conflict treadmill *(curated)*
+- **#698**: RunStudySh self-test writes a fake run directory into the tracked, append-only sim/*/runs/ evidence trees *(curated)*
 - **#701**: Adopt two-word raw and conditioned FIFOs in DR-0004 and prove the production RTL and mapped netlists *(curated)*
-- **#705**: signoff/README.md: item-1 attestation provenance phrasing — stale "once a release carries --attest" paragraph, and the generic-envelope contrast *(curated)*
 
 ## Proposed (Architect / Hermit)
 
@@ -122,14 +119,14 @@ Issues carrying `loom:curated`.
 
 | Bucket | Count |
 |------|-------|
-| Operator merge-risk holds | 5 |
+| Operator merge-risk holds | 6 |
 | Very important | 0 |
 | Important | 7 |
 | Ready (`loom:issue`) | 2 |
-| In Progress (`loom:building`) | 14 |
-| PRs awaiting review | 4 |
-| Approved PRs awaiting merge | 6 |
-| Curated | 23 |
+| In Progress (`loom:building`) | 12 |
+| PRs awaiting review | 2 |
+| Approved PRs awaiting merge | 7 |
+| Curated | 22 |
 | Architect / Hermit proposals | 5 |
 | Active epics | 2 |
 <!-- guide:plan-body:end -->
