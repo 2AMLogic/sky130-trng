@@ -701,6 +701,13 @@ def test_coupled_request() -> None:
             assert request["options"]["timeout_s"] + 120 <= 3480
             assert request["batch"]["poll_timeout_s"] <= 3480
             assert plan["analysis_stop_ns"] == stop and plan["provenance"] == P.PROVENANCE
+            # issue #682: the settled DR-0017 option 2 travels with the plan
+            assert plan["boundary_load_option"] == mr.PVT.boundary_load_block()
+            assert plan["boundary_load_option"]["option"] == 2
+            assert "settled as option 2" in plan["reductions"]["input_load"]
+            assert "is open" not in plan["reductions"]["input_load"]
+            nominal = mr.PVT.plan_entry(["tt"], 27.0, 1.8)
+            assert nominal["decks"]["tt"]["exact"] and nominal["decks"]["tt"]["liberty_sha256"] == plan["liberty_sha256"]
             assert not assert_every_bound_visited(mode, request)[0]
             assert sum(c.startswith("V") and " PWL(" in c for c in deck.splitlines()) == 39
             check_sampler_path(deck)
@@ -742,8 +749,15 @@ def test_committed_coupled_artifacts_match_generator() -> None:
         with contextlib.redirect_stdout(io.StringIO()):
             assert mr.main([str(Path(tmp) / "c"), "--set", "coupled-probe"]) == 0
         fresh = Path(tmp) / "c" / "coupled-probe"
-        for name in ("request.json", "plan.json"):
-            assert json.loads((fresh / name).read_text()) == json.loads((committed / name).read_text()), name
+        assert json.loads((fresh / "request.json").read_text()) == json.loads((committed / "request.json").read_text())
+        # plan.json is historical evidence (byte-stable): the current plan differs
+        # by exactly two intentional metadata changes (issue #682).
+        expected = json.loads((committed / "plan.json").read_text())
+        expected["reductions"]["input_load"] = (
+            "Liberty input-pin capacitance per d_genlut input; the DR-0017 "
+            "boundary-load choice is settled as option 2 (#595, see boundary_load_option)")
+        expected["boundary_load_option"] = mr.PVT.boundary_load_block()
+        assert json.loads((fresh / "plan.json").read_text()) == expected
 
 
 # ---------------------------------------------------------------------------
