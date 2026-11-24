@@ -53,7 +53,7 @@ sys.path.insert(0, os.path.join(REPO, "sim", "bin"))
 from loadmod import load_module  # noqa: E402
 
 G = load_module("make_gate_model", GENERATOR)
-MR = load_module("make_requests_for_gate_model", BLOCK / "make-requests.py")
+MN = load_module("make_netlist_for_gate_model", BLOCK / "make-netlist.py")
 CMP = load_module("compare_gate_model", BLOCK / "analysis" / "compare-gate-model.py")
 
 
@@ -340,17 +340,18 @@ class TestRoutedNetlistCorrespondence(unittest.TestCase):
                 self.assertRegex(net, r"^[A-Za-z_][A-Za-z0-9_]*$",
                                  "net name is not a flat SPICE identifier")
 
-    def test_netname_agrees_with_make_requests_scrub(self):
-        # make-requests.py owns the port spelling the whole-block deck's .meas
-        # cards use. netname() must not diverge from it on any port bit, or the
-        # two decks would address different nets by the same name.
+    def test_netname_agrees_with_make_netlist(self):
+        # make-netlist.py owns the port spelling of the committed
+        # trng_whole.sim.spice.gz body. netname() must not diverge from it on
+        # any port bit, or the two decks would address different nets by the
+        # same name.
         for name, direction, msb, lsb in self.design.ports:
             if msb is None:
-                self.assertEqual(G.netname(name), MR._scrub(name))
+                self.assertEqual(G.netname(name), MN._normalise_name(name))
             else:
                 for i in range(min(msb, lsb), max(msb, lsb) + 1):
                     tok = f"{name}[{i}]"
-                    self.assertEqual(G.netname(tok), MR._scrub(tok))
+                    self.assertEqual(G.netname(tok), MN._normalise_name(tok))
 
     def test_committed_manifest_accounts_for_every_routed_instance(self):
         m = json.loads(COMMITTED_MANIFEST.read_text())

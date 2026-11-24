@@ -224,7 +224,7 @@ class WholeBlockReduction(unittest.TestCase):
         text = MR.analog_netlist_text()
         self.assertEqual(text.count("sky130_fd_pr__"), 264)
         # every port reaches the body under its canonical name (the committed
-        # body still uses cluster names; the probe applies the rename)
+        # body has carried canonical names since #435's body rename)
         for port in ("en2", "vddr3", "vdd", "vss", "clk", "ring_bit1"):
             self.assertRegex(text.split("* device instance", 1)[1], r"(?<!\S)%s(?!\S)" % port)
         self.assertNotIn("en|en2|g_en", text)
