@@ -8,6 +8,16 @@ Chronological record of recently merged pull requests and closed issues.
 
 ### 2026-11-24
 
+- **PR #728**: docs(signoff): state ratification as item 6's sole gate; row is covered
+- **PR #723**: refactor: share sim/bin duplicate_measurement_names in whole-block
+- **PR #722**: ci: run unwired sim/tests suites and guard suite coverage
+- **PR #721**: test(sim): keep RunStudySh self-test run dirs out of the checkout
+- **PR #644**: fix(sim): score whole-block corners through the shared gate-model comparator
+- **Issue #726** (closed): signoff: item 6 comments say klayout-tools#5490 withholds row coverage; the committed report shows the row covered
+- **Issue #717** (closed): Two sim/tests/ suites are never run by CI (test_yield_reports.py, test_corner_run_repo_state.py)
+- **Issue #698** (closed): RunStudySh self-test writes a fake run directory into the tracked, append-only sim/*/runs/ evidence trees
+- **Issue #690** (closed): signoff of #670/#642: two copies of duplicate_measurement_names() once PR #644 and #673 both land
+- **Issue #642** (closed): Consolidate parallel whole-block digital-oracle comparator out of reduce-whole-block.py onto compare-gate-model.py
 - **PR #614**: feat(sim,signoff): reduce local-mismatch Monte Carlo into klt yield reports for T1 item 6
 - **Issue #598** (closed): T1 item 6: reduce the committed local-mismatch Monte Carlo into klt yield reports and record the item-6 verdict (6.analog)
 - **PR #707**: feat: disclose working-tree state in mint_record records
