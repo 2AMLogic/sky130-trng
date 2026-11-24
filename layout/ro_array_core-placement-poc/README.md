@@ -15,7 +15,11 @@
 >    `signal8`/`signal9` *are* a chain and become the promoted cell's
 >    `t2bridge`/`vddstub`/`vddbus` stages. The five superseded `signal*` file
 >    sets stay here as this directory's append-only record of how the routing
->    was found.
+>    was found — frozen against the pre-`93d026cc` leaf cells (`xor2` at its
+>    `17.585 µm` height, `xa*` bbox bottom `11.085`, as the pocket arithmetic
+>    below quotes; `ro_buf` as of pre-`3d10475b`), each `*_poc.gds` embedding
+>    the leaves it was composed from, so these responses are history of those
+>    runs, not evidence about the current `layout/xor2/` or `layout/ro_buf/`.
 > 2. **The two still-open items this directory's own list called
 >    not-a-separate-deliverable are closed there.** `ring1..4`'s and
 >    `xa1..3`'s own `vss` taps are drawn (`layout/ro_array_core/`'s
