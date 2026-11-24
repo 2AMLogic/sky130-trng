@@ -18,11 +18,15 @@ floor fails the spec row; a sample above it does not prove the row. The candidat
 statistical row ("Raw min-entropy per bit", README target table -- DRAFT, its
 decision records Proposed) fixes H0 = 0.5 bit/sample and states NO target yield,
 so none is added here: `klt yield` can only report the estimates (status
-"reported", never "fail"), and `klt signoff` item 6 stays unmet on the row
-(unratified, no target yield) rather than rendering met on a bias-only pass
-(issue #598; klayout-tools#5490). At tt / 27 C / 1.8 V, 60 of the 1800 pairings
-sit below the floor (worst H_bias 0.472, p = 0.279) -- the row finding tracked in
-issue #221, recorded here, not tuned.
+"reported", never "fail"). `klt signoff` item 6 stays unmet on the row for
+unratification alone (issue #598): the row is covered -- these untagged
+reports assert the manifest's rows, and klayout-tools#5490 only ever
+affected tagged measurements -- so ratifying the row would render the item
+met on estimates that carry no yield claim and no negative control, which
+the ratification decision (issue #3) should weigh. At tt / 27 C / 1.8 V,
+60 of the 1800 pairings sit below the floor (worst H_bias 0.472,
+p = 0.279) -- the row finding tracked in issue #221, recorded here, not
+tuned.
 
 Run under the pinned toolchain (the host `klt` carries no `klt_yield_native`):
 
