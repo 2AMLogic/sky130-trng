@@ -110,9 +110,12 @@ the spec row as written (min 0.5 bit, DR-0004 sec. 2.3); the row states no targe
 and none is invented, so `klt yield` can only *report* the estimates (status `reported`,
 never `fail`) -- which is why T1 item 6 analog stays `unmet`/`partial_coverage` when
 these reports are cited in `signoff/block-manifest.json`: the row is unratified (README
-target table DRAFT, decision records Proposed) and a yield citation with no
-`target_yield` contributes no row coverage (klayout-tools#5490). The two missing inputs
--- a target yield on the row, and ratification -- are named on #3. The reports' own
+target table DRAFT, decision records Proposed), and that alone gates it. The row IS
+covered -- the committed `signoff/t1-report.json` reads `uncovered_rows: []` because
+these untagged reports assert the manifest's rows (klayout-tools#5490 only ever
+affected `spec_row`-tagged measurements) -- so ratifying the row on #3 would render
+the item met on estimates that carry no yield claim and no negative control, which
+that decision should weigh. The reports' own
 findings stand either way: **tt 60/1800 pairings below the floor** (empirical 0.9667,
 exact CI [0.9573, 0.9745] at 95%; the design response is #221 / DR-0013 / PR #249, not
 touched here), ss and ff 0/1800 (empirical 1.0, bounded below at 0.998); sample size

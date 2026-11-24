@@ -108,8 +108,11 @@ document's draft filed for it:
   statistical spec row is **Raw min-entropy per bit** (ring-pair lock proximity, the `Q_array` margin and
   the `<v(xo)>/vnom` band are DR-0003/DR-0005 design margins, not target-table rows). The item stays
   `unmet`/`partial_coverage` on purpose: `H_bias` is only an upper bound on the row quantity, the row
-  states no target yield, and the row is unratified -- the two missing inputs (a target yield,
-  ratification) are named on #3; tt's 60/1800 pairings below the floor stay linked to #221. 6.digital
+  states no target yield (the reports run `status: reported`, making no yield claim), and the row is
+  unratified -- ratification, named on #3, is the single gate on the committed untagged citations
+  (they assert the manifest's rows, `uncovered_rows: []`; klayout-tools#5490 only ever affected
+  `spec_row`-tagged measurements, and no negative control is declared); tt's 60/1800
+  pairings below the floor stay linked to #221. 6.digital
   (`not_applicable`, no statistical row) is written down ready in #598's PR description, unapplied until
   ratification. Follow-up, not blocking: a seeded-defect campaign to feed `klt yield`'s
   `negative_control` field.
