@@ -8,6 +8,9 @@ Chronological record of recently merged pull requests and closed issues.
 
 ### 2026-11-24
 
+- **PR #744**: docs(erc): attribute antenna_verdict to the gate records in the prune table
+- **PR #742**: layout: regenerate xor2 y-escape-scan JSON and refresh README windows
+- **PR #741**: docs(erc): correct the committed-prune record's account of the discarded gates[] data
 - **PR #737**: layout: prune the inert antenna arrays from trng_digital erc.json (-98.6%)
 - **PR #736**: refactor: consolidate the three merged() copies into layout/bin/_geom_common.py
 - **PR #734**: chore(sim): untrack regenerated 15 MB netlist.cir decks under runs/ and widen the corners ignore glob
@@ -15,6 +18,9 @@ Chronological record of recently merged pull requests and closed issues.
 - **PR #730**: docs: name ratification as item 6's sole gate in mismatch README and ROADMAP
 - **PR #727**: docs: mark klayout-tools#5490 closed in the friction ledger
 - **PR #725**: refactor: drop dead pre-#435 body-rename workaround from whole-block request assembly
+- **Issue #743** (closed): layout/trng_digital/ERC.md: the prune record attributes the per-gate antenna_verdict field to the level records
+- **Issue #739** (closed): layout/trng_digital/ERC.md: the committed-prune record says gates[] areas are null, but the native report carries 5,624 real gate areas
+- **Issue #735** (closed): xor2-y-escape-scan.json is stale against the regenerated xor2.gds (93d026cc missed it)
 - **Issue #738** (closed): One netlist.cir under sim/post-layout-whole-block/runs/ is now tracked-but-ignored by the widened #491 glob
 - **Issue #732** (closed): Consolidate duplicated stream-battery reduction, detail tables, and hex-codec forks across raw-bit-battery, conditioned-output, and behavioral_raw_bit
 - **Issue #729** (closed): docs: align remaining item-6 row-coverage prose in local-mismatch README and ROADMAP
