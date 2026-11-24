@@ -8,6 +8,9 @@ Chronological record of recently merged pull requests and closed issues.
 
 ### 2026-11-24
 
+- **PR #753**: docs(layout): align xor2 and ro_array_core README stats with committed evidence
+- **PR #750**: docs(layout): pin ro_array_core and PoC compose evidence to the leaf regens it predates
+- **PR #747**: docs(erc): state the per-entry id in the prune table coverage rows
 - **PR #744**: docs(erc): attribute antenna_verdict to the gate records in the prune table
 - **PR #742**: layout: regenerate xor2 y-escape-scan JSON and refresh README windows
 - **PR #741**: docs(erc): correct the committed-prune record's account of the discarded gates[] data
@@ -18,6 +21,9 @@ Chronological record of recently merged pull requests and closed issues.
 - **PR #730**: docs: name ratification as item 6's sole gate in mismatch README and ROADMAP
 - **PR #727**: docs: mark klayout-tools#5490 closed in the friction ledger
 - **PR #725**: refactor: drop dead pre-#435 body-rename workaround from whole-block request assembly
+- **Issue #751** (closed): Stale extent/klt-pin prose in layout/xor2/README.md and layout/ro_array_core/README.md survives the 0.8.0 leaf regens
+- **Issue #746** (closed): layout/trng_digital/ERC.md: the prune table's coverage rows present an incomplete object as the whole discarded entry (id omitted)
+- **Issue #745** (closed): Committed PoC compose responses still carry xor2's pre-93d026cc block bbox (17.585 µm, now 17.710 µm)
 - **Issue #743** (closed): layout/trng_digital/ERC.md: the prune record attributes the per-gate antenna_verdict field to the level records
 - **Issue #739** (closed): layout/trng_digital/ERC.md: the committed-prune record says gates[] areas are null, but the native report carries 5,624 real gate areas
 - **Issue #735** (closed): xor2-y-escape-scan.json is stale against the regenerated xor2.gds (93d026cc missed it)
