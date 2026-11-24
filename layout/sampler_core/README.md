@@ -287,10 +287,13 @@ via needed" technique `sv_d_vdd_tie` used for `vdd`.
 | `klt lvs` vs. `design/sampler_core.spice`'s own `.subckt sampler_core` | **mismatch, unchanged** — 138/264 devices, 100/152 nets. `vss` was already merged for LVS purposes too; the remaining mismatch is `vdd` (still two nets) plus top-level pin promotion, neither touched by this increment | `lvs.json`, `sampler_core.ref.spice` |
 | `vss-strap-scan.py` | **12/12 claims hold** | `vss-strap-scan.json` |
 
-Cell extent unchanged at `x0=-2.19 x1=328.77 y0=-3.585 y1=54.72` µm; 8399
-polygons (from 8386), density essentially unchanged (`klt stats`). Generated
-on `klt 0.3.0+gc6dbf66c53c6` against open_pdks
-`c6d73a35f524070e85faff4a6a9eef49553ebc2b` — `layout/pdk.json`'s own pin.
+Cell extent unchanged at `x0=-2.19 x1=328.77 y0=-3.585 y1=54.72` µm; 8408
+polygons, density essentially unchanged (`klt stats`: 22.6% raw / 20.0%
+merged). This increment itself measured 8399 polygons (from 8386) on
+`klt 0.3.0+gc6dbf66c53c6`; the committed artifacts were regenerated since
+(#181) and now measure 8408. Generated on `klt 0.6.0+g5edb557f91d0`
+against open_pdks `c6d73a35f524070e85faff4a6a9eef49553ebc2b` —
+`layout/pdk.json`'s own pin.
 
 ### The `sb`→`sv` attempt, and why it moved east
 
