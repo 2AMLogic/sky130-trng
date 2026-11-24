@@ -77,9 +77,9 @@
     "                    here pins the same hash. `attest.py --check` (CI) walks",
     "                    the inventoried files. Verdicts: 1.digital, 2.analog,",
     "                    2.digital, 9, 10 met; 1.analog (schematic->netlist",
-    "                    freshness needs xschem, gated only by pdk-nightly) is",
-    "                    cited with status `fail` and renders unmet/check_failed",
-    "                    with the reason in the envelope.",
+    "                    freshness needs xschem) is minted by `klt signoff",
+    "                    --attest 1` in pdk-nightly netlist-check and renders",
+    "                    met (issue #360).",
     "                    See signoff/README.md \"Items 1, 2, 9, 10 attestation\".",
     "                    Switch to `klt signoff --attest` once a release has it.",
     "  5.analog           no `klt sim` envelope exists -- sim/ campaigns are",
@@ -101,12 +101,64 @@
     "                    are still NOT cited: item 5's own note requires a",
     "                    ratified spec and DR-0004 (digital section) is",
     "                    `Proposed`. Stays unmet/no_evidence.",
-    "  6                  no `klt yield` report exists.",
-    "  7.analog           no `klt pex` report exists -- post-layout",
-    "                    campaigns run from `klt extract --parasitics`",
-    "                    netlists via sim/bin harnesses, which item 7 by",
-    "                    design does not accept (a clean DRC or",
-    "                    pre-layout sim proves nothing post-layout).",
+    "  6                  (issue #598) CITED for the analog partition: three",
+    "                     `klt yield` reports, one per PVT point of the committed",
+    "                     local-mismatch Monte Carlo (tt/ss/ff under",
+    "                     sim/local-mismatch-monte-carlo/yield/<record-id>/,",
+    "                     sample sets derived from the committed raw responses",
+    "                     by yield_reports.py on reduce.py's own functions,",
+    "                     byte-replayable with its --check). Each measures",
+    "                     H_bias -- reduce.py's per-pairing STATIC-BIAS UPPER",
+    "                     BOUND on the raw bit's min-entropy (deterministic",
+    "                     transient per draw, no noise), NOT the measured row",
+    "                     quantity -- against the spec row as written (min 0.5",
+    "                     bit, DR-0004 sec. 2.3), which states no target yield;",
+    "                     none was invented, so klt yield can only REPORT the",
+    "                     estimates (run status \\\"reported\\\", never \\\"fail\\\").",
+    "                     Item 6 therefore stays unmet/partial_coverage on",
+    "                     the unratified row alone (README target table DRAFT,",
+    "                     decision records Proposed; spec_rows declares the",
+    "                     row unratified). The row IS covered: uncovered_rows",
+    "                     reads empty because the committed reports carry no",
+    "                     spec_row tag, so their rows are the manifest-",
+    "                     asserted ones (klayout-tools#5490 only ever affected",
+    "                     tagged measurements), and flipping ratified to true",
+    "                     with nothing else changed renders the item met.",
+    "                     Ratification -- the decision lives on issue #3 -- is",
+    "                     the single missing input. Caveat for that decision:",
+    "                     the campaigns supply estimates only; they make no",
+    "                     yield claim (run status \\\"reported\\\") and declare no",
+    "                     negative control. The reports' own findings stand",
+    "                     either way: tt 60/1800 pairings below the floor (worst",
+    "                     H_bias 0.472, p 0.279; the design response is issue",
+    "                     #221 / DR-0013 / PR #249, not touched here), ss and ff",
+    "                     0/1800 (empirical 1.0 bounded below at 0.998); sample",
+    "                     size sufficient at every corner (n 1800 vs required",
+    "                     1238/183). 6.digital: no statistical row; the klt",
+    "                     >= 0.8.0 `not_applicable` entry is written down ready",
+    "                     in issue #598's PR description and deliberately NOT",
+    "                     applied while the spec records are Proposed.",
+    "  7.analog           (issue #597) CITED: a native `klt pex` report",
+    "                    (sim/pex-sampler-core/runs/20261121-001303-7330672/",
+    "                    pex-report.json), --measure-command mode: 11 spec",
+    "                    rows x 12 PVT corners (tt/ss/ff x the post-layout",
+    "                    four-point grid) over the same committed GDS 3/11",
+    "                    cite, pinned to its content hash. Grades on the",
+    "                    report's OWN status: `fail` -- 130/132 rows pass;",
+    "                    active_power_uw exceeds the README 500 uW bound at",
+    "                    ff/-40C/1.98V and ff/125C/1.98V on BOTH legs",
+    "                    (schematic 519/567 uW already; parasitics add",
+    "                    6-13%), so the row is a pre-layout design",
+    "                    condition, not a parasitic regression. Failing rows",
+    "                    stay failing; bounded design-iteration follow-up is",
+    "                    issue #604. Disclosures in signoff/README.md:",
+    "                    extraction.model limits (lumped star R, ground +",
+    "                    vertical-overlap C only, quasi-static; no lateral",
+    "                    coupling, no distributed RC) and body_bias",
+    "                    (biased, 0 unbiased devices, no --tie-net). The",
+    "                    layout-regeneration chain (#371/#372) changes the",
+    "                    GDS. Signoff CI compares the working GDS digest with",
+    "                    the cited PEX input even for a failing report.",
     "  7.digital          (issue #227) CITED: a native, SDF-annotated `klt",
     "                    functional-verification` report",
     "                    (sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/timed-declared.report.json):",
@@ -261,7 +313,7 @@
     },
     "1.analog": {
       "file": "signoff/attest/1.analog.json",
-      "content_hash": "sha256:6a8cf1b9c080dee0841229093ec30bb50030697f5c1e360af441353d72c8d152"
+      "content_hash": "sha256:cebcaa4f70b6a069924aaffe49d334bf6aa2754cf2007dcdcadd5649ff877a68"
     },
     "1.digital": {
       "file": "signoff/attest/1.digital.json",
@@ -269,25 +321,60 @@
     },
     "2.analog": {
       "file": "signoff/attest/2.analog.json",
-      "content_hash": "sha256:cb3211a67c339b168d19eed88607aef2a56ef5fb6e6b7bf34c26b92d87df7399"
+      "content_hash": "sha256:78c8fd73d2b4ce2139a83dd88c19bd68630e61e33b439aa7a842327e201e39b4"
     },
     "2.digital": {
       "file": "signoff/attest/2.digital.json",
-      "content_hash": "sha256:e61b71b92c0a96067aa35d803a78db4573fd540908581315872d6870e6a47257"
+      "content_hash": "sha256:67f3502031f7fdb03c31fdfbab2e4edf3343e2ebc4dd5e83df8fda59e7d7be45"
     },
     "9": {
       "file": "signoff/attest/9.json",
-      "content_hash": "sha256:2698356b3d83a03817849556f336361159beeacfb432bae8bd83738b664f3d96"
+      "content_hash": "sha256:07155cc1a8dea6010087a6fc38e0fc15161610df00d46d42059fdec6d853a89c"
     },
     "10": {
       "file": "signoff/attest/10.json",
-      "content_hash": "sha256:79d643dfdc2df73b67e0a1c94b40bb57ccdf138750e3dae313f0b9a55471540c"
+      "content_hash": "sha256:5ac9bceab23cc7892a18f66d2f53389a8ef305984ab53a979eec0b53583b6541"
     },
     "8.analog": {
       "file": "signoff/characterization-envelope.json"
     },
     "8.digital": {
       "file": "signoff/characterization-envelope.json"
+    },
+    "6.analog": [
+      {
+        "file": "sim/local-mismatch-monte-carlo/yield/20261009-111127-e57ad27/klt-yield.json",
+        "rows": [
+          "raw_min_entropy_per_bit"
+        ],
+        "content_hash": "sha256:22188713550161633dd762ed06b82b85bc3de2a605a7397aae4bdfce9f050eb5"
+      },
+      {
+        "file": "sim/local-mismatch-monte-carlo/yield/20261009-111126-e57ad27/klt-yield.json",
+        "rows": [
+          "raw_min_entropy_per_bit"
+        ],
+        "content_hash": "sha256:3f9c87405f23f767add41d9a669d552bad394c1756cc76a094bf36df192ae4bc"
+      },
+      {
+        "file": "sim/local-mismatch-monte-carlo/yield/20261009-111125-e57ad27/klt-yield.json",
+        "rows": [
+          "raw_min_entropy_per_bit"
+        ],
+        "content_hash": "sha256:e0e57a2bea8e140e0b866ca6e38b4c95a5c4683be74b0601ac7bfc45f0d76846"
+      }
+    ],
+    "7.analog": {
+      "file": "sim/pex-sampler-core/runs/20261121-001303-7330672/pex-report.json",
+      "content_hash": "sha256:e3ff54a9bb15122298f0d5df817612ed1caacb3b045533f9ba86d009036c2004"
     }
+  },
+  "spec_rows": {
+    "6.analog": [
+      {
+        "id": "raw_min_entropy_per_bit",
+        "ratified": false
+      }
+    ]
   }
 }

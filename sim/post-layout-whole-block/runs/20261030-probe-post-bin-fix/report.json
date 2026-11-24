@@ -1,0 +1,4142 @@
+{
+  "schema_version": 3,
+  "netlist": {
+    "path": "sim/post-layout-whole-block/runs/20261030-probe-post-bin-fix/corners/startup-probe-batch/netlist.cir",
+    "scope": "repo"
+  },
+  "status": "error",
+  "corner_count": 1,
+  "passed": 0,
+  "failed": 0,
+  "errored": 1,
+  "inconclusive": 0,
+  "diagnostic_counts": {
+    "by_code": {
+      "timeout": 1,
+      "measurement": 127
+    },
+    "by_severity": {
+      "error": 128
+    },
+    "corners_with_diagnostics": 1
+  },
+  "metrics": {
+    "sim__corner__count": 1,
+    "sim__corner__passed_count": 0,
+    "sim__corner__failed_count": 0,
+    "sim__corner__errored_count": 1,
+    "sim__corner__inconclusive_count": 0
+  },
+  "environment": {
+    "engine": "ngspice",
+    "engine_version": null,
+    "ngspice_binary": "/usr/local/bin/ngspice",
+    "engine_build": {
+      "version_banner": "******\n** ngspice-42 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2023, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Sun Mar 31 20:15:14 UTC 2024\n******",
+      "binary_sha256": "820658317b0b54035208da41936fd6871ce924036e5ea4113a4168b821b7fc45",
+      "probe": "ok",
+      "reason": null
+    },
+    "models_lib": {
+      "path": null,
+      "scope": "external"
+    },
+    "models_lib_sha256": "48de7c677e2c6e7d09b2559279de9f818be71010a4aa933d728eb4db3b133c84",
+    "models_lib_sha256_scope": "client",
+    "netlist_sha256": "69d598b34a468e538ae9b299a8f688175da44a9c9caf74940a4901fe89cf29aa",
+    "netlist_closure": [
+      {
+        "path": "sim/post-layout-whole-block/runs/20261030-probe-post-bin-fix/corners/startup-probe-batch/netlist.cir",
+        "scope": "repo",
+        "sha256": "69d598b34a468e538ae9b299a8f688175da44a9c9caf74940a4901fe89cf29aa"
+      }
+    ],
+    "netlist_identity": "sha256:31d88eef272de190fa6ffd9a3b2cc0dfcd9a6f0e28397867bb39f12436fb5bfc",
+    "netlist_source": "extracted",
+    "remote": {
+      "provider": "aws-batch-fleet",
+      "job_id": "klt-sim-2c6cc3324669",
+      "region": "us-east-1",
+      "instance_id": "i-0087a6e309a1d4552",
+      "instance_type": "c7i.8xlarge",
+      "availability_zone": "us-east-1a",
+      "ami_id": "ami-0fe7e8c2bb10dc45a",
+      "lifecycle": "spot",
+      "spot": true,
+      "state": "failed",
+      "exit_code": "4",
+      "concurrency": "2",
+      "physical_cores": "16",
+      "elapsed_seconds": 3489,
+      "client_submitted_at": null,
+      "client_launched_at": null,
+      "client_status_terminal_at": "2026-10-30T01:23:27.621637Z",
+      "client_collected_at": "2026-10-30T01:23:28.312516Z",
+      "runner_klt_version": "0.8.0",
+      "client_klt_version": "0.8.1.dev750+g3707af127575",
+      "runner_compatibility": "match",
+      "worker_environment": {
+        "capture": "ok",
+        "simulator": {
+          "requested_binary": "ngspice",
+          "binary_source": "PATH",
+          "selected_path": "/usr/local/bin/ngspice",
+          "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+          "version_probe": "ok"
+        },
+        "pdk": {
+          "variant": "sky130A",
+          "root": "/opt/pdk",
+          "stamp_scheme": "sources-sha256",
+          "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+          "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+          "models_staged": false,
+          "stamp_scope": "executed"
+        },
+        "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+        "omp_num_threads": null,
+        "image_manifest": null,
+        "model_inputs": null,
+        "diagnostics": [],
+        "pdk_stamp_comparison": {
+          "status": "not_comparable",
+          "reason": "client_stamp_unavailable"
+        },
+        "engine_build_comparison": {
+          "status": "mismatch",
+          "warning": "the worker's ngspice --version banner differs from the local binary's; build options (e.g. FFT linkage) may differ, so results derived from them can differ from a local run"
+        }
+      },
+      "runner_model_inputs": null
+    },
+    "engine_host": "worker",
+    "client_ngspice_binary": "/usr/bin/ngspice",
+    "backend": {
+      "resolved": "batch",
+      "source": "flag",
+      "requested": "batch"
+    },
+    "timeout_budget_hint": {
+      "max_unit_runtime_s": 3480.66,
+      "timeout_s": 3480,
+      "suggested_timeout_s": 7020,
+      "units_timed_out": 1,
+      "message": "The longest unit ran 3480.66s against options.timeout_s=3480s; 1 unit(s) timed out. This is a per-unit time budget, not a netlist problem: raise options.timeout_s (for example to 7020s) and re-run."
+    }
+  },
+  "coverage": {
+    "corners_simulated": 1,
+    "measurements_declared": 127,
+    "measurements_with_limits": 0,
+    "unrecognized_limit_keys": [],
+    "schema_version": 1,
+    "known": true,
+    "checked": [],
+    "skipped": [
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"alarm_k2\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"alarm_k3\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"alarm_k5\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"gated_k2\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"gated_k3\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"gated_k5\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"i_vdd_w1\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"i_vdd_w2\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"i_vddr1_w1\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"i_vddr1_w2\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"i_vddr2_w1\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"i_vddr2_w2\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"i_vddr3_w1\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"i_vddr3_w2\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"i_vddr4_w1\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"i_vddr4_w2\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"i_vss_w2\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"q_vdd_w2\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"q_vddr1_w2\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"q_vddr2_w2\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"q_vddr3_w2\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"q_vddr4_w2\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"raw_bit_k4\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"raw_bit_k5\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"raw_valid_k4\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"raw_valid_k5\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b0\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b1\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b10\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b11\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b12\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b13\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b14\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b15\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b16\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b17\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b18\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b19\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b2\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b20\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b21\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b22\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b23\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b24\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b25\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b26\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b27\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b28\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b29\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b3\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b30\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b31\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b4\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b5\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b6\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b7\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b8\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b9\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b0\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b1\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b10\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b11\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b12\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b13\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b14\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b15\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b16\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b17\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b18\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b19\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b2\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b20\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b21\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b22\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b23\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b24\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b25\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b26\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b27\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b28\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b29\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b3\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b30\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b31\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b4\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b5\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b6\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b7\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b8\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b9\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b0\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b1\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b10\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b11\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b12\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b13\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b14\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b15\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b16\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b17\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b18\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b19\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b2\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b20\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b21\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b22\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b23\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b24\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b25\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b26\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b27\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b28\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b29\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b3\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b30\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b31\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b4\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b5\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b6\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b7\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b8\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b9\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"startup_done_k2\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"startup_done_k3\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"startup_done_k5\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"t_clk_first\"]/observation",
+        "reason": "unavailable_measurement"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"t_out_valid_first\"]/observation",
+        "reason": "unavailable_measurement"
+      }
+    ],
+    "inapplicable": [
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"alarm_k2\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"alarm_k3\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"alarm_k5\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"gated_k2\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"gated_k3\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"gated_k5\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"i_vdd_w1\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"i_vdd_w2\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"i_vddr1_w1\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"i_vddr1_w2\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"i_vddr2_w1\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"i_vddr2_w2\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"i_vddr3_w1\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"i_vddr3_w2\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"i_vddr4_w1\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"i_vddr4_w2\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"i_vss_w2\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"q_vdd_w2\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"q_vddr1_w2\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"q_vddr2_w2\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"q_vddr3_w2\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"q_vddr4_w2\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"raw_bit_k4\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"raw_bit_k5\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"raw_valid_k4\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"raw_valid_k5\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b0\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b1\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b10\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b11\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b12\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b13\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b14\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b15\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b16\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b17\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b18\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b19\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b2\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b20\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b21\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b22\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b23\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b24\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b25\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b26\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b27\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b28\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b29\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b3\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b30\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b31\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b4\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b5\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b6\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b7\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b8\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k0_b9\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b0\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b1\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b10\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b11\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b12\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b13\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b14\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b15\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b16\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b17\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b18\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b19\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b2\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b20\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b21\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b22\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b23\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b24\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b25\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b26\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b27\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b28\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b29\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b3\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b30\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b31\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b4\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b5\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b6\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b7\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b8\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k1_b9\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b0\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b1\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b10\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b11\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b12\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b13\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b14\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b15\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b16\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b17\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b18\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b19\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b2\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b20\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b21\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b22\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b23\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b24\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b25\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b26\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b27\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b28\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b29\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b3\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b30\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b31\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b4\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b5\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b6\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b7\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b8\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"rdata_k2_b9\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"startup_done_k2\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"startup_done_k3\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"startup_done_k5\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"t_clk_first\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"t_out_valid_first\"]/limits",
+        "reason": "characterization_without_limits"
+      }
+    ],
+    "unknown": [],
+    "nothing_checked": true,
+    "nothing_checked_reasons": [
+      "characterization_without_limits",
+      "unavailable_measurement"
+    ]
+  },
+  "provenance": {
+    "klt_version": "0.8.1.dev750+g3707af127575",
+    "klt_git_commit": "3707af12757505335b906d089ad8b592960de227",
+    "klt_reinstall_spec": "klayout-tools @ git+https://github.com/2AMLogic/klayout-tools@3707af12757505335b906d089ad8b592960de227",
+    "klayout_version": "0.30.12",
+    "pdk": {
+      "name": "sky130A",
+      "source": "search root: ~/.ciel",
+      "version": "open_pdks f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7",
+      "ambiguous_sources": [
+        "search root: ~/.volare"
+      ]
+    },
+    "deck": {
+      "name": "sky130.lib.spice",
+      "content_hash": "sha256:48de7c677e2c6e7d09b2559279de9f818be71010a4aa933d728eb4db3b133c84",
+      "released": false
+    },
+    "input": {
+      "content_hash": "sha256:69d598b34a468e538ae9b299a8f688175da44a9c9caf74940a4901fe89cf29aa",
+      "role": "netlist"
+    }
+  },
+  "measurements": [
+    {
+      "name": "raw_bit_k4",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "raw_valid_k4",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "raw_bit_k5",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "raw_valid_k5",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k0_b0",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k0_b1",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k0_b2",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k0_b3",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k0_b4",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k0_b5",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k0_b6",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k0_b7",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k0_b8",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k0_b9",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k0_b10",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k0_b11",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k0_b12",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k0_b13",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k0_b14",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k0_b15",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k0_b16",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k0_b17",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k0_b18",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k0_b19",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k0_b20",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k0_b21",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k0_b22",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k0_b23",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k0_b24",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k0_b25",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k0_b26",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k0_b27",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k0_b28",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k0_b29",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k0_b30",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k0_b31",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k1_b0",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k1_b1",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k1_b2",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k1_b3",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k1_b4",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k1_b5",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k1_b6",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k1_b7",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k1_b8",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k1_b9",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k1_b10",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k1_b11",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k1_b12",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k1_b13",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k1_b14",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k1_b15",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k1_b16",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k1_b17",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k1_b18",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k1_b19",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k1_b20",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k1_b21",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k1_b22",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k1_b23",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k1_b24",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k1_b25",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k1_b26",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k1_b27",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k1_b28",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k1_b29",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k1_b30",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k1_b31",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k2_b0",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k2_b1",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k2_b2",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k2_b3",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k2_b4",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k2_b5",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k2_b6",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k2_b7",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k2_b8",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k2_b9",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k2_b10",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k2_b11",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k2_b12",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k2_b13",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k2_b14",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k2_b15",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k2_b16",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k2_b17",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k2_b18",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k2_b19",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k2_b20",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k2_b21",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k2_b22",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k2_b23",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k2_b24",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k2_b25",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k2_b26",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k2_b27",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k2_b28",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k2_b29",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k2_b30",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "rdata_k2_b31",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "alarm_k2",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "gated_k2",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "startup_done_k2",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "alarm_k3",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "gated_k3",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "startup_done_k3",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "alarm_k5",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "gated_k5",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "startup_done_k5",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "t_out_valid_first",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "i_vdd_w1",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "i_vdd_w2",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "q_vdd_w2",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "i_vddr1_w1",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "i_vddr1_w2",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "q_vddr1_w2",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "i_vddr2_w1",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "i_vddr2_w2",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "q_vddr2_w2",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "i_vddr3_w1",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "i_vddr3_w2",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "q_vddr3_w2",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "i_vddr4_w1",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "i_vddr4_w2",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "q_vddr4_w2",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "i_vss_w2",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    },
+    {
+      "name": "t_clk_first",
+      "unit": null,
+      "limits": null,
+      "status": "error",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": null,
+        "margin": null
+      }
+    }
+  ],
+  "corners": [
+    {
+      "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+      "process": "tt",
+      "supply_v": {
+        "Vvdd": 1.8,
+        "Vvddr1": 1.8,
+        "Vvddr2": 1.8,
+        "Vvddr3": 1.8,
+        "Vvddr4": 1.8
+      },
+      "temperature_c": 27.0,
+      "status": "error",
+      "runtime_s": 3480.66,
+      "engine_exit_code": null,
+      "engine_killed_by_signal": null,
+      "measurements": [
+        {
+          "name": "raw_bit_k4",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "raw_valid_k4",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "raw_bit_k5",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "raw_valid_k5",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k0_b0",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k0_b1",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k0_b2",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k0_b3",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k0_b4",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k0_b5",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k0_b6",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k0_b7",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k0_b8",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k0_b9",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k0_b10",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k0_b11",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k0_b12",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k0_b13",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k0_b14",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k0_b15",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k0_b16",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k0_b17",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k0_b18",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k0_b19",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k0_b20",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k0_b21",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k0_b22",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k0_b23",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k0_b24",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k0_b25",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k0_b26",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k0_b27",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k0_b28",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k0_b29",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k0_b30",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k0_b31",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k1_b0",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k1_b1",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k1_b2",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k1_b3",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k1_b4",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k1_b5",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k1_b6",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k1_b7",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k1_b8",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k1_b9",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k1_b10",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k1_b11",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k1_b12",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k1_b13",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k1_b14",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k1_b15",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k1_b16",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k1_b17",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k1_b18",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k1_b19",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k1_b20",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k1_b21",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k1_b22",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k1_b23",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k1_b24",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k1_b25",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k1_b26",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k1_b27",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k1_b28",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k1_b29",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k1_b30",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k1_b31",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k2_b0",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k2_b1",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k2_b2",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k2_b3",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k2_b4",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k2_b5",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k2_b6",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k2_b7",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k2_b8",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k2_b9",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k2_b10",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k2_b11",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k2_b12",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k2_b13",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k2_b14",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k2_b15",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k2_b16",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k2_b17",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k2_b18",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k2_b19",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k2_b20",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k2_b21",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k2_b22",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k2_b23",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k2_b24",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k2_b25",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k2_b26",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k2_b27",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k2_b28",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k2_b29",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k2_b30",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "rdata_k2_b31",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "alarm_k2",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "gated_k2",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "startup_done_k2",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "alarm_k3",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "gated_k3",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "startup_done_k3",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "alarm_k5",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "gated_k5",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "startup_done_k5",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "t_out_valid_first",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "i_vdd_w1",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "i_vdd_w2",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "q_vdd_w2",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "i_vddr1_w1",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "i_vddr1_w2",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "q_vddr1_w2",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "i_vddr2_w1",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "i_vddr2_w2",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "q_vddr2_w2",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "i_vddr3_w1",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "i_vddr3_w2",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "q_vddr3_w2",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "i_vddr4_w1",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "i_vddr4_w2",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "q_vddr4_w2",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "i_vss_w2",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        },
+        {
+          "name": "t_clk_first",
+          "value": null,
+          "unit": null,
+          "status": "error",
+          "margin": null
+        }
+      ],
+      "diagnostics": [
+        {
+          "severity": "error",
+          "code": "timeout",
+          "message": "ngspice did not complete within 3480s, killed"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'raw_bit_k4' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'raw_valid_k4' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'raw_bit_k5' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'raw_valid_k5' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k0_b0' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k0_b1' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k0_b2' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k0_b3' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k0_b4' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k0_b5' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k0_b6' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k0_b7' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k0_b8' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k0_b9' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k0_b10' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k0_b11' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k0_b12' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k0_b13' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k0_b14' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k0_b15' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k0_b16' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k0_b17' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k0_b18' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k0_b19' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k0_b20' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k0_b21' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k0_b22' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k0_b23' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k0_b24' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k0_b25' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k0_b26' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k0_b27' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k0_b28' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k0_b29' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k0_b30' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k0_b31' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k1_b0' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k1_b1' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k1_b2' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k1_b3' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k1_b4' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k1_b5' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k1_b6' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k1_b7' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k1_b8' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k1_b9' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k1_b10' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k1_b11' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k1_b12' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k1_b13' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k1_b14' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k1_b15' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k1_b16' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k1_b17' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k1_b18' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k1_b19' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k1_b20' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k1_b21' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k1_b22' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k1_b23' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k1_b24' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k1_b25' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k1_b26' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k1_b27' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k1_b28' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k1_b29' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k1_b30' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k1_b31' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k2_b0' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k2_b1' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k2_b2' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k2_b3' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k2_b4' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k2_b5' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k2_b6' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k2_b7' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k2_b8' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k2_b9' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k2_b10' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k2_b11' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k2_b12' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k2_b13' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k2_b14' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k2_b15' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k2_b16' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k2_b17' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k2_b18' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k2_b19' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k2_b20' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k2_b21' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k2_b22' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k2_b23' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k2_b24' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k2_b25' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k2_b26' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k2_b27' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k2_b28' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k2_b29' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k2_b30' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'rdata_k2_b31' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'alarm_k2' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'gated_k2' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'startup_done_k2' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'alarm_k3' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'gated_k3' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'startup_done_k3' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'alarm_k5' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'gated_k5' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'startup_done_k5' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 't_out_valid_first' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'i_vdd_w1' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'i_vdd_w2' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'q_vdd_w2' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'i_vddr1_w1' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'i_vddr1_w2' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'q_vddr1_w2' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'i_vddr2_w1' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'i_vddr2_w2' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'q_vddr2_w2' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'i_vddr3_w1' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'i_vddr3_w2' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'q_vddr3_w2' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'i_vddr4_w1' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'i_vddr4_w2' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'q_vddr4_w2' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 'i_vss_w2' produced no value"
+        },
+        {
+          "severity": "error",
+          "code": "measurement",
+          "message": "measurement 't_clk_first' produced no value"
+        }
+      ],
+      "artifacts": {
+        "log": "/home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-386/sim/post-layout-whole-block/runs/20261030-probe-post-bin-fix/out1/tt_Vvdd1p800_Vvddr11p800_Vvddr21p800_Vvddr31p800_Vvddr41p800V_27C/ngspice.log",
+        "raw": null,
+        "waveform": null,
+        "deck": "/home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-386/sim/post-layout-whole-block/runs/20261030-probe-post-bin-fix/out1/tt_Vvdd1p800_Vvddr11p800_Vvddr21p800_Vvddr31p800_Vvddr41p800V_27C/corner.cir"
+      },
+      "monte_carlo": null
+    }
+  ]
+}

@@ -66,14 +66,9 @@ Simulation-derived; provisional until silicon.
 """
 from __future__ import annotations
 
-import datetime
-import glob
-import gzip
 import hashlib
-import importlib.util
 import json
 import math
-import os
 import random
 import shutil
 import sys
@@ -84,6 +79,9 @@ HERE = Path(__file__).resolve().parent
 SLUG = "wake-up-transient"
 sys.path.insert(0, str(REPO / "sim" / "bin"))
 sys.path.insert(0, str(REPO))
+from loadmod import load_module  # noqa: E402
+from replay_equal import replay_equal as _replay_equal  # noqa: E402  (issue #519/#659: one shared replay equality)
+from request_dir import load_request_dir  # noqa: E402
 
 PROV = "simulation-derived; provisional until silicon"
 TOLS = (0.01, 0.005)            # settling tolerances (fractional period error); the steady-state
@@ -102,15 +100,8 @@ XCHK_REPS = 1000                # model replicates for the noisy-leg cross-check
 XCHK_PERIOD_UNC = 0.002         # relative ring-period uncertainty used to randomise the model's mean phase
 
 
-def _load(name, path):
-    spec = importlib.util.spec_from_file_location(name, path)
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    return mod
-
-
 def make_requests():
-    return _load("wakeup_make_requests", HERE / "make-requests.py")
+    return load_module("wakeup_make_requests", HERE / "make-requests.py")
 
 
 # ======================================================================= det
@@ -200,14 +191,12 @@ def committed_periods(temp, vdd):
 
 
 def load_reqdir(reqdir, leg):
-    chunks = []
-    for d in sorted(glob.glob(os.path.join(reqdir, f"{leg}-*"))):
-        resp = os.path.join(d, "resp.json")
-        if not (os.path.isfile(resp) and os.path.getsize(resp) > 0):
-            chunks.append((os.path.basename(d), json.load(open(os.path.join(d, "plan.json"))), None))
-            continue
-        chunks.append((os.path.basename(d), json.load(open(os.path.join(d, "plan.json"))), json.load(open(resp))))
-    return chunks
+    """-> (chunks, missing) for one leg; the shared walk in sim/bin/request_dir.py.
+
+    This leg's policy is unchanged (issue #469): the requests with no usable
+    response are named in the record under `requests_without_response`, rather
+    than being dropped or blocking the record."""
+    return load_request_dir(reqdir, pattern=f"{leg}-*")
 
 
 def det_rows(chunks):
@@ -251,7 +240,8 @@ def _ns(x, nd=2):
     return "-" if x is None else f"{x * 1e9:.{nd}f}"
 
 
-def det_md(rid, temp, vdd, rows, summ, jobs, plans, sha, now, claim):
+def det_md(rid, temp, vdd, rows, summ, jobs, plans, claim):
+    """The det record's header lines and body text; mint_record appends the shared footer."""
     p0 = plans[0]
     L = [f"# {rid} -- {SLUG}", "", f"**Claim**: {claim}", "",
          "**Level**: transistor (pre-layout `design/ro_array_core.spice`; deterministic transient, NO injected noise)",
@@ -297,10 +287,8 @@ def det_md(rid, temp, vdd, rows, summ, jobs, plans, sha, now, claim):
                      f"{_ns(s1.get('t_settle'))} | {_ns(s2.get('t_settle'))} | {swf} | {vcs} | {oks} |")
     L += ["", "\"vs committed period\" compares the final period with `tr1..tr4` of the committed "
           f"`sim/ro-array-core-combining/` record at this PVT point ({summ['committed_combining_record'] or 'none at this point'}), "
-          "an independent deck with a PULSE enable: agreement shows the behavioural-source testbench reproduces the array.", "",
-          "---", "", "- Author: loom-builder@sky130-trng", f"- Timestamp (UTC): {now.isoformat()}", f"- Repo commit: `{sha}`",
-          "- Supersedes: (none)"]
-    return "\n".join(L) + "\n"
+          "an independent deck with a PULSE enable: agreement shows the behavioural-source testbench reproduces the array."]
+    return L, "\n"
 
 
 DET_CLAIM = ("Analog wake-up of the committed pre-layout ro_array_core (issue #216): per-ring first edge, "
@@ -482,7 +470,7 @@ def det_calibration(temp, vdd, proc):
 
 
 def calibration(temp, vdd, proc):
-    vc = _load("behavioral_raw_bit", REPO / "sim/raw-bit-volume-campaign/behavioral_raw_bit.py")
+    vc = load_module("behavioral_raw_bit", REPO / "sim/raw-bit-volume-campaign/behavioral_raw_bit.py")
     base = vc.calibration(temp, vdd, proc)
     det = det_calibration(temp, vdd, proc)
     cal = {"temp_c": temp, "vdd_v": vdd, "corner": proc, "sigma1": base["sigma"][1],
@@ -534,7 +522,8 @@ NOISY_CLAIM = ("First raw bits after an enable release from the stopped state, t
                "the phase-diffusion model; Ts = 100 ns compressed sampling")
 
 
-def noisy_md(rid, plan, units, ctl, summ, xchk, jobs, sha, now):
+def noisy_md(rid, plan, units, ctl, summ, xchk, jobs):
+    """The noisy record's header lines and body text; mint_record appends the shared footer."""
     L = [f"# {rid} -- {SLUG}", "", f"**Claim**: {NOISY_CLAIM}", "",
          "**Level**: transistor (in-place rings with per-stage `trnoise()`, committed `ro_buf`/`xor2`/`sampler_dff` from "
          "`design/sampler_core.spice`; `testbench/tb_wakeup_raw_bits.spice`)",
@@ -577,9 +566,7 @@ def noisy_md(rid, plan, units, ctl, summ, xchk, jobs, sha, now):
         L += ["", "Negative control (noise off):", ""]
         for u in ctl:
             L.append(f"- seed {u['seed']}: `{''.join('?' if b is None else str(b) for b in u['bits'])}`")
-    L += ["", "---", "", "- Author: loom-builder@sky130-trng", f"- Timestamp (UTC): {now.isoformat()}", f"- Repo commit: `{sha}`",
-          "- Supersedes: (none)"]
-    return "\n".join(L) + "\n"
+    return L, "\n"
 
 
 def noisy_summary(plan, units, ctl, xchk, cal):
@@ -618,7 +605,7 @@ MARGIN_CLAIM = ("Margin of DR-0004's 1024-sample start-up window (20.48 ms at DR
 
 
 def margin_compute():
-    vc = _load("behavioral_raw_bit", REPO / "sim/raw-bit-volume-campaign/behavioral_raw_bit.py")
+    vc = load_module("behavioral_raw_bit", REPO / "sim/raw-bit-volume-campaign/behavioral_raw_bit.py")
     points = list(vc.PVT_POINTS_BASE) + list(vc.PVT_POINTS_HOT)
     tau = 0.5 * TS
     rows = []
@@ -699,7 +686,9 @@ def margin_md(rows, summ):
     L = ["## Margin statement (DR-0004 start-up window, 1024 samples = 20.48 ms at 50 kbps)", ""]
     ae, ar = summ["analog_settle_worst_en"], summ["analog_settle_worst_ramp"]
     L += [f"1. **Analog settling** (transistor, deterministic, {summ['det_units_ok']}/{summ['det_units']} units run settled in-window "
-          "(ONLY those units: the full 54-unit tt/ss/ff x -40/27/125 C x 1.62/1.8/1.98 V envelope grid needs the batch fleet; see README); records "
+          + (("(the full 54-unit tt/ss/ff x -40/27/125 C x 1.62/1.8/1.98 V envelope, both modes, run on the batch fleet, plus earlier single-corner probes); records ")
+          if summ["det_units"] >= 54 else
+          "(ONLY those units: the full 54-unit tt/ss/ff x -40/27/125 C x 1.62/1.8/1.98 V envelope grid needs the batch fleet; see README); records ")
           + ", ".join(f"`{x}`" for x in summ["det_records"]) + "):",
           f"   - enable-gated wake: every ring within 1 % of its final period by **{_ns(ae['t_s'])} ns** after the enable "
           f"(worst at {ae['pvt']['temp_c']:g} C / {ae['pvt']['vdd_v']:g} V, `{ae['record']}`) = {ae['fraction_of_one_ts'] * 100:.4f} % of one "
@@ -719,6 +708,13 @@ def margin_md(rows, summ):
         v = km[k]
         L.append(f"| <= {e:.4g} ({k}) | >= {-math.log2(0.5 + e):.4g} bit | {v['worst_corner']} | {v['worst_samples']} | "
                  + (f"{v['margin_x']:.2f}x" if v.get("margin_x") else ("-" if v["worst_samples"] is None else "inf")) + " |")
+    nz = [r for r in noisy_records() if r.get("summary", {}).get("n_units", 0) >= 32]
+    if nz:
+        L += ["", "   Transistor cross-check of that stationarity (injected-trnoise seeds from the same reset state; "
+              "Ts = 100 ns compressed; raw-bit and per-ring first-window disagreement vs the phase-diffusion model's 99 % band): "
+              + "; ".join(f"`{r['record_id']}` {r['summary']['n_units']} seeds at {r['pvt']['temp_c']:g} C / {r['pvt']['vdd_v']:g} V "
+                          f"inside band {r['summary']['xcheck_inside']}/{r['summary']['xcheck_total']}" for r in nz)
+              + ". Any row outside the band is reported in that record, not dropped."]
     worst40 = km["2^-40"]["worst_samples"]
     adequate = worst40 is not None and worst40 < STARTUP_SAMPLES
     L += ["", f"3. **DR-0004 start-up test on every simulated wake-up** ({NMC} per corner per arm, digital/model HealthMonitor): "
@@ -769,38 +765,15 @@ def margin_md(rows, summ):
 
 
 # ================================================================== emit / check
-def _now_rid(sha, offset=0):
-    now = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(seconds=offset)
-    return now, f"{now:%Y%m%d-%H%M%S}-{sha}"
-
-
-def _sha():
-    from evidence_record import git_short_sha
-    return git_short_sha(REPO)
-
-
 def _store_chunks(rid, reqdir, mine):
     """Copy the raw batch responses + exactly what was submitted to corners/<rid>/ (once per batch of records)."""
-    cdir = HERE / "corners" / rid
-    if cdir.exists():
-        raise SystemExit(f"error: {cdir} exists")
-    cdir.mkdir(parents=True)
-    for nm, pl, rs in mine:
-        with gzip.open(cdir / f"{nm}.klt-sim.json.gz", "wt") as fh:
-            json.dump(rs, fh, indent=1)
-        json.dump(pl, open(cdir / f"{nm}.plan.json", "w"), indent=1)
-        for fn, dst in (("request.json", f"{nm}.request.json"), ("netlist.cir", f"{nm}.netlist.cir")):
-            shutil.copyfile(os.path.join(reqdir, nm, fn), cdir / dst)
+    from evidence_record import write_corner_bundle
+    write_corner_bundle(HERE / "corners" / rid, reqdir, mine, records_dir=HERE / "records", rid=rid)
 
 
 def _read_chunks(rid):
-    cdir = HERE / "corners" / rid
-    out = []
-    for f in sorted(cdir.glob("*.klt-sim.json.gz")):
-        nm = f.name[:-len(".klt-sim.json.gz")]
-        with gzip.open(f, "rt") as fh:
-            out.append((nm, json.load(open(cdir / f"{nm}.plan.json")), json.load(fh)))
-    return out
+    from evidence_record import read_corner_bundle
+    return read_corner_bundle(HERE / "corners" / rid)
 
 
 def _backend(mine):
@@ -809,7 +782,12 @@ def _backend(mine):
 
 
 def _jobs(mine):
-    return [rs["environment"].get("remote", {}).get("job_id") for _, _, rs in mine if rs]
+    """Fleet job ids, one per shard: a sharded batch run reports `remote.fleet[]`, a single job `remote.job_id`."""
+    out = []
+    for _, _, rs in mine:
+        remote = (rs or {}).get("environment", {}).get("remote") or {}
+        out += [f["job_id"] for f in remote.get("fleet", []) if f.get("job_id")] or [remote.get("job_id")]
+    return out
 
 
 def det_build(chunks, temp, vdd):
@@ -819,19 +797,20 @@ def det_build(chunks, temp, vdd):
 
 
 def emit_det(reqdir):
-    sha = _sha()
-    chunks = load_reqdir(reqdir, "det")
-    missing = [nm for nm, _, rs in chunks if rs is None]
+    from evidence_record import mint_record, new_record_id
+    good, absent = load_reqdir(reqdir, "det")
+    missing = [nm for nm, _, _ in absent]
     if missing:
         print("WARNING: no response for", missing, "-- those units are absent from the records", file=sys.stderr)
-    good = [c for c in chunks if c[2] is not None]
+        for nm, _, why in absent:
+            print(f"  {nm}: {why}", file=sys.stderr)
     mr = make_requests()
     n = 0
     store_rid = None
     for temp in mr.TEMPS:
         for vdd in mr.SUPPLIES:
             n += 1
-            now, rid = _now_rid(sha, n)
+            now, sha, rid = new_record_id(REPO, offset=n)
             rows, _, summ = det_build(good, temp, vdd)
             if not rows:
                 continue
@@ -853,10 +832,15 @@ def emit_det(reqdir):
                                "responses": f"sim/{SLUG}/corners/{store_rid}/*.klt-sim.json.gz"},
                    "corners_dir": store_rid,
                    "supersedes": "(none)", "summary": summ, "rows": rows, "timestamp_utc": now.isoformat(), "repo_sha": sha}
-            (HERE / "records").mkdir(exist_ok=True)
-            json.dump(rec, open(HERE / "records" / f"{rid}.json", "w"), indent=2, default=str)
-            open(HERE / "records" / f"{rid}.md", "w").write(
-                det_md(rid, temp, vdd, rows, summ, _jobs(good), [p for _, p, _ in good], sha, now, DET_CLAIM))
+            header, body = det_md(rid, temp, vdd, rows, summ, _jobs(good), [p for _, p, _ in good], DET_CLAIM)
+            out = mint_record(HERE / "records", REPO, rid, header, body, rec,
+                              author="loom-builder@sky130-trng", now=now, sha=sha)
+            if out is None:
+                # only the first det record's corner bundle belongs to this invocation;
+                # the later records share corners/{store_rid}/, which published records cite
+                if rid == store_rid:
+                    shutil.rmtree(HERE / "corners" / store_rid, ignore_errors=True)
+                raise SystemExit(f"error: record id {rid} already exists; wait a second and re-run")
             print(rid, temp, vdd, summ["units_ok"], "/", summ["units"], "settle en", _ns(summ["t_settle_max_1pct_en_s"]),
                   "ramp", _ns(summ["t_settle_max_1pct_ramp_s"]))
 
@@ -884,10 +868,13 @@ def noisy_build(chunks, point):
 
 
 def emit_noisy(reqdir):
-    sha = _sha()
-    chunks = load_reqdir(reqdir, "noisy")
-    missing = [nm for nm, _, rs in chunks if rs is None]
-    good = [c for c in chunks if c[2] is not None]
+    from evidence_record import mint_record, new_record_id
+    good, absent = load_reqdir(reqdir, "noisy")
+    missing = [nm for nm, _, _ in absent]
+    if missing:
+        print("WARNING: no response for", missing, "-- those units are absent from the records", file=sys.stderr)
+        for nm, _, why in absent:
+            print(f"  {nm}: {why}", file=sys.stderr)
     mr = make_requests()
     for n, (point, *_rest) in enumerate(mr.NOISY_POINTS, 1):
         built = noisy_build(good, point)
@@ -895,7 +882,7 @@ def emit_noisy(reqdir):
             print("no data for", point, file=sys.stderr)
             continue
         plan, units, ctl, xchk, summ = built
-        now, rid = _now_rid(sha, 20 + n)
+        now, sha, rid = new_record_id(REPO, offset=20 + n)
         mine = [c for c in good if c[1]["point"] == point]
         _store_chunks(rid, reqdir, mine)
         rec = {"record_id": rid, "slug": SLUG, "leg": "noisy", "claim": NOISY_CLAIM, "level": "transistor", "status": PROV,
@@ -913,8 +900,12 @@ def emit_noisy(reqdir):
                "corners_dir": rid,
                "supersedes": "(none)", "summary": summ, "xcheck": xchk, "units": units, "control_units": ctl,
                "timestamp_utc": now.isoformat(), "repo_sha": sha}
-        json.dump(rec, open(HERE / "records" / f"{rid}.json", "w"), indent=2, default=str)
-        open(HERE / "records" / f"{rid}.md", "w").write(noisy_md(rid, plan, units, ctl, summ, xchk, _jobs(mine), sha, now))
+        header, body = noisy_md(rid, plan, units, ctl, summ, xchk, _jobs(mine))
+        out = mint_record(HERE / "records", REPO, rid, header, body, rec,
+                          author="loom-builder@sky130-trng", now=now, sha=sha)
+        if out is None:
+            shutil.rmtree(HERE / "corners" / rid, ignore_errors=True)
+            raise SystemExit(f"error: record id {rid} already exists; wait a second and re-run")
         print(rid, point, summ["n_ok"], "seeds; xcheck", summ["xcheck_inside"], "/", summ["xcheck_total"],
               "; control", summ["control"])
 
@@ -940,19 +931,20 @@ def check(path):
     if leg == "det":
         chunks = _read_chunks(rec["corners_dir"])
         rows, _, summ = det_build(chunks, rec["pvt"]["temp_c"], rec["pvt"]["vdd_v"])
-        same = json.loads(json.dumps(rows, default=str)) == rec["rows"] and json.loads(json.dumps(summ, default=str)) == rec["summary"]
+        same = (_replay_equal(json.loads(json.dumps(rows, default=str)), rec["rows"])
+                and _replay_equal(json.loads(json.dumps(summ, default=str)), rec["summary"]))
     elif leg == "noisy":
         chunks = _read_chunks(rec["corners_dir"])
         point = chunks[0][1]["point"]
         _, units, ctl, xchk, summ = noisy_build(chunks, point)
-        same = (json.loads(json.dumps(units, default=str)) == rec["units"]
-                and json.loads(json.dumps(xchk, default=str)) == rec["xcheck"]
-                and json.loads(json.dumps(summ, default=str)) == rec["summary"])
+        same = (_replay_equal(json.loads(json.dumps(units, default=str)), rec["units"])
+                and _replay_equal(json.loads(json.dumps(xchk, default=str)), rec["xcheck"])
+                and _replay_equal(json.loads(json.dumps(summ, default=str)), rec["summary"]))
     elif leg == "restart-matrix":
-        return _load("restart_matrix", HERE / "restart_matrix.py").check(path)
+        return load_module("restart_matrix", HERE / "restart_matrix.py").check(path)
     elif leg == "margin":
         rows = margin_compute()
-        same = json.loads(json.dumps(rows, default=str)) == rec["rows"]
+        same = _replay_equal(json.loads(json.dumps(rows, default=str)), rec["rows"])
     else:
         raise SystemExit("unknown record leg")
     print("replay", "MATCHES" if same else "DIFFERS", path)

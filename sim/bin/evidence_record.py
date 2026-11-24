@@ -42,6 +42,7 @@ as a second, independent reimplementation of it.
 from __future__ import annotations
 
 import datetime as _dt
+import gzip
 import json
 import os
 import platform
@@ -67,30 +68,123 @@ def git_short_sha(repo_root: Path) -> str:
         return "unknown"
 
 
-def new_record_id(repo_root: Path) -> tuple[_dt.datetime, str, str]:
+# Cap on the record's repo_dirty_paths list (issue #666): the JSON carries at
+# most this many paths; the markdown footer always names the untruncated total.
+_DIRTY_PATHS_CAP = 20
+
+
+def git_dirty_paths(repo_root: Path) -> list[str] | None:
+    """Sorted repo-relative paths whose content differs from HEAD (staged,
+    unstaged, or non-ignored untracked), or ``None`` when git status cannot
+    run -- the caller must record that as *unknown*, never as clean
+    (issue #666).
+
+    ``--porcelain -z`` keeps paths with spaces or other unusual characters
+    unquoted and NUL-delimited. A rename/copy entry carries a second NUL
+    field (the original path); it is listed too, since that path also
+    differs from HEAD.
+    """
+    try:
+        out = subprocess.run(
+            ["git", "-C", str(repo_root), "status", "--porcelain", "-z",
+             "--untracked-files=all"],
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout
+    except Exception:
+        return None
+    paths: list[str] = []
+    recs = out.split("\0")
+    i = 0
+    while i < len(recs):
+        rec = recs[i]
+        i += 1
+        if not rec:
+            continue  # trailing NUL / empty record
+        code, path = rec[:2], rec[3:]
+        paths.append(path)
+        if ("R" in code or "C" in code) and i < len(recs):
+            paths.append(recs[i])  # original path of the rename/copy pair
+            i += 1
+    return sorted(set(paths))
+
+
+def worktree_disclosure(repo_root: Path,
+                        exclude: tuple[Path, ...] = ()) -> tuple[dict, str]:
+    """Sample the working tree once; return ``(json_fields, footer_line)``.
+
+    ``json_fields`` is ``{"repo_dirty": ...}`` (plus ``repo_dirty_paths``,
+    capped at ``_DIRTY_PATHS_CAP``, when dirty); ``repo_dirty`` is ``None`` --
+    never ``False`` -- when git status cannot run (issue #666/#676). Paths at
+    or under any ``exclude`` entry (repo-relative or absolute) are ignored, so
+    a writer's own outputs do not count as divergence from HEAD.
+    """
+    dirty_paths = git_dirty_paths(repo_root)
+    if dirty_paths is not None and exclude:
+        root = repo_root.resolve()
+        prefixes = []
+        for e in exclude:
+            e = Path(e)
+            try:
+                prefixes.append(e.resolve().relative_to(root).as_posix().rstrip("/") + "/")
+            except ValueError:
+                continue  # outside the repo: cannot appear in git status
+        dirty_paths = [p for p in dirty_paths
+                       if not any(p.startswith(x) for x in prefixes)]
+    if dirty_paths is None:
+        return ({"repo_dirty": None},
+                "- Working tree: unknown (git status unavailable; repo_dirty is null)")
+    if not dirty_paths:
+        return {"repo_dirty": False}, "- Working tree: clean (matches the cited commit)"
+    n = len(dirty_paths)
+    listed = dirty_paths[:_DIRTY_PATHS_CAP]
+    noun = "path" if n == 1 else "paths"
+    verb = "differs" if n == 1 else "differ"
+    stem = f"- Working tree: dirty ({n} {noun} {verb} from the cited commit"
+    line = (stem + f"; repo_dirty_paths lists the first {_DIRTY_PATHS_CAP})"
+            if n > _DIRTY_PATHS_CAP else stem + ")")
+    return {"repo_dirty": True, "repo_dirty_paths": listed}, line
+
+
+def new_record_id(repo_root: Path, *, offset: int = 0) -> tuple[_dt.datetime, str, str]:
     """Return `(now, sha, rid)` for a fresh record.
 
     `rid` follows the shared `<YYYYMMDD>-<HHMMSS>-<shortsha>` scheme
     `sim/bin/corner-run.py` uses, so reduction records and simulation
-    records sort together.
+    records sort together. `offset` seconds are added to the clock so one
+    run minting several records gets distinct ids (one per loop iteration,
+    as the per-corner reducers do).
     """
-    now = _dt.datetime.now(_dt.timezone.utc)
+    now = _dt.datetime.now(_dt.timezone.utc) + _dt.timedelta(seconds=offset)
     sha = git_short_sha(repo_root)
     rid = f"{now:%Y%m%d-%H%M%S}-{sha}"
     return now, sha, rid
 
 
-def record_footer(*, author: str, now: _dt.datetime, sha: str) -> list[str]:
-    """The shared markdown footer lines appended to every evidence record."""
-    return [
+def record_footer(*, author: str, now: _dt.datetime, sha: str,
+                  supersedes: str = "(none)",
+                  worktree_line: str | None = None) -> list[str]:
+    """The shared markdown footer lines appended to every evidence record.
+
+    `supersedes` names the record id this one corrects (sim/README.md's
+    append-only rule); the default is the no-correction marker, which keeps
+    every pre-existing caller's footer byte-for-byte. `worktree_line`, when
+    given, is inserted right after the `Repo commit` line (issue #676); the
+    default `None` leaves the footer unchanged.
+    """
+    lines = [
         "",
         "---",
         "",
         f"- Author: {author}",
         f"- Timestamp (UTC): {now.isoformat()}",
         f"- Repo commit: `{sha}`",
-        "- Supersedes: (none)",
     ]
+    if worktree_line is not None:
+        lines.append(worktree_line)
+    lines.append(f"- Supersedes: {supersedes}")
+    return lines
 
 
 class RecordCollision(Exception):
@@ -101,6 +195,98 @@ def _link_noreplace(src: Path, dst: Path) -> None:
     """Publish `src` as `dst` without ever overwriting (hard link, then unlink src)."""
     os.link(src, dst)  # raises FileExistsError if dst exists
     os.unlink(src)
+
+
+def reserve_corner_dir(cdir: Path, records_dir: Path, rid: str) -> None:
+    """Refuse (``SystemExit "error: <rid> exists"``) if ``<records_dir>/<rid>.json`` or `cdir` exists.
+
+    Otherwise creates `records_dir` (if needed) and `cdir`; the `cdir` creation is
+    ``Path.mkdir(exist_ok=False)``, so the check and the claim are one atomic step
+    (not a check-then-write).
+    """
+    cdir, records_dir = Path(cdir), Path(records_dir)
+    if (records_dir / f"{rid}.json").exists():
+        raise SystemExit(f"error: {rid} exists")
+    records_dir.mkdir(parents=True, exist_ok=True)
+    try:
+        cdir.mkdir(parents=True, exist_ok=False)
+    except FileExistsError:
+        raise SystemExit(f"error: {rid} exists") from None
+
+
+def write_corner_bundle(
+    cdir: Path, reqdir: Path, chunks: list[tuple[str, dict, dict]],
+    *, records_dir: Path, rid: str,
+) -> list[str]:
+    """Write the raw ``klt sim`` response bundle for one record under `cdir`.
+
+    chunks = [(name, plan, response)]. Refuses (SystemExit "error: <rid> exists") if
+    ``<records_dir>/<rid>.json`` or `cdir` exists; every source file under
+    ``reqdir/<name>/`` is checked before anything is created, so a missing
+    ``netlist.cir`` leaves nothing behind (and a failed write removes `cdir` again).
+    Writes ``<name>.klt-sim.json.gz`` (indent=1), ``<name>.plan.json``,
+    ``<name>.request.json`` and ``<name>.netlist.cir`` (copied from ``reqdir/<name>/``).
+    Returns the remote job ids (or "local (single-unit reference run)").
+    Read back with :func:`read_corner_bundle`.
+    """
+    cdir, reqdir, records_dir = Path(cdir), Path(reqdir), Path(records_dir)
+    for name, _plan, _resp in chunks:
+        for fn in ("request.json", "netlist.cir"):
+            if not (reqdir / name / fn).is_file():
+                raise SystemExit(f"error: {reqdir / name / fn} is missing")
+    reserve_corner_dir(cdir, records_dir, rid)
+    jobs: list[str] = []
+    try:
+        for name, plan, resp in chunks:
+            with gzip.open(cdir / f"{name}.klt-sim.json.gz", "wt") as fh:
+                json.dump(resp, fh, indent=1)
+            with open(cdir / f"{name}.plan.json", "w") as fh:
+                json.dump(plan, fh, indent=1)
+            for fn, dst in (("request.json", f"{name}.request.json"), ("netlist.cir", f"{name}.netlist.cir")):
+                shutil.copyfile(reqdir / name / fn, cdir / dst)
+            jobs.append(((resp.get("environment", {}).get("remote") or {}).get("job_id")) or "local (single-unit reference run)")
+    except BaseException:
+        shutil.rmtree(cdir, ignore_errors=True)
+        raise
+    return jobs
+
+
+def read_corner_bundle(
+    cdir: Path, *, prefix: str | None = None, with_missing: bool = False,
+) -> list[tuple[str, dict, dict]] | tuple[list, list]:
+    """Read back a ``corners/<rid>/`` bundle written by :func:`write_corner_bundle`.
+
+    The documented inverse of :func:`write_corner_bundle`, whose docstring is
+    the on-disk layout this walks. Returns ``[(name, plan, response)]`` in
+    sorted-name order, one entry per ``<name>.klt-sim.json.gz``; `plan` comes
+    from the sibling ``<name>.plan.json`` and is loaded strictly -- these feed
+    replay gates that must fail loudly on a malformed plan. ``prefix=`` keeps
+    only names starting with it, applied to both the chunk names and the
+    missing-note names. With ``with_missing=True`` returns
+    ``(chunks, missing)`` instead, where `missing` is ``[(name, plan, reason)]``
+    for the ``<name>.missing.json`` refused/timed-out-attempt notes recorded
+    beside the bundle by a campaign runner (this module never writes those).
+    """
+    cdir = Path(cdir)
+    chunks: list[tuple[str, dict, dict]] = []
+    for f in sorted(cdir.glob("*.klt-sim.json.gz")):
+        nm = f.name[: -len(".klt-sim.json.gz")]
+        if prefix and not nm.startswith(prefix):
+            continue
+        with open(cdir / f"{nm}.plan.json") as pfh, gzip.open(f, "rt") as fh:
+            chunks.append((nm, json.load(pfh), json.load(fh)))
+    if not with_missing:
+        return chunks
+    missing: list[tuple[str, dict, str]] = []
+    for f in sorted(cdir.glob("*.missing.json")):
+        nm = f.name[: -len(".missing.json")]
+        if prefix and not nm.startswith(prefix):
+            continue
+        with open(f) as fh:
+            reason = json.load(fh)["reason"]
+        with open(cdir / f"{nm}.plan.json") as pfh:
+            missing.append((nm, json.load(pfh), reason))
+    return chunks, missing
 
 
 def _check_artifacts(artifacts: list[Path]) -> None:
@@ -213,6 +399,7 @@ def mint_record(
     author: str,
     now: _dt.datetime,
     sha: str,
+    supersedes: str = "(none)",
 ) -> tuple[Path, Path] | None:
     """Mint an append-only evidence record under `out_records`.
 
@@ -227,11 +414,27 @@ def mint_record(
     wants (this function writes it as-is -- it does not inject `record_id`/
     `author`/`timestamp_utc`/`repo_sha`, since those are typically
     interleaved with reduction-specific fields at call-site-chosen
-    positions; see each analysis script's `main()`).
+    positions; see each analysis script's `main()`). `supersedes` names the
+    record id this one corrects; the default footer line is unchanged.
+
+    Discloses working-tree state (issue #676): a `- Working tree:` footer line
+    and `repo_dirty` / `repo_dirty_paths` keys appended to a copy of `summary`
+    (a caller summary already holding either key raises `SystemExit`).
 
     Returns `(md_path, json_path)` on success, or `None` (after printing an
     error to stderr) if a record with this `rid` already exists.
     """
+    clash = sorted(set(summary or {}) & {"repo_dirty", "repo_dirty_paths"})
+    if clash:
+        raise SystemExit(f"error: summary keys {clash} collide with writer-owned working-tree "
+                         "disclosure fields; mint_record writes them itself")
+    # Sample once at entry. The record's own outputs (out_records and the
+    # sibling runs/ dir) are excluded so a multi-record loop does not mark
+    # record n+1 dirty because of record n (issue #676).
+    dirty_fields, worktree_line = worktree_disclosure(
+        repo_root, exclude=(out_records, out_records.parent / "runs"))
+    summary = {**summary, **dirty_fields}
+
     md_path = out_records / f"{rid}.md"
     json_path = out_records / f"{rid}.json"
     if md_path.exists() or json_path.exists():
@@ -239,7 +442,8 @@ def mint_record(
               file=sys.stderr)
         return None
 
-    footer = record_footer(author=author, now=now, sha=sha)
+    footer = record_footer(author=author, now=now, sha=sha, supersedes=supersedes,
+                           worktree_line=worktree_line)
     md_text = "\n".join(header) + body + "\n".join(footer) + "\n"
     json_text = json.dumps(summary, indent=2, default=str) + "\n"  # before any publication
     try:
@@ -255,7 +459,8 @@ def mint_record(
 # summary may not use any of these names (issue #276).
 RESERVED_BEHAVIORAL_KEYS = (
     "record_id", "slug", "level", "claim", "seeds", "supersedes", "author",
-    "timestamp_utc", "repo_sha", "tools", "artifacts", "artifact_manifest",
+    "timestamp_utc", "repo_sha", "repo_dirty", "repo_dirty_paths", "tools",
+    "artifacts", "artifact_manifest",
 )
 
 
@@ -309,6 +514,12 @@ def mint_behavioral_record(
                          "value through the matching mint_behavioral_record argument")
 
     now, sha, rid = new_record_id(repo_root)
+    # Working-tree state at pin time, sampled once here -- before the
+    # artifact store or publication writes anything -- so this invocation's
+    # own outputs (always untracked at mint time) cannot mask real
+    # divergence from HEAD, and a dirty tree is disclosed in the record
+    # instead of silently hiding behind the HEAD pin (issue #666).
+    dirty_fields, worktree_line = worktree_disclosure(repo_root)
     records_dir = repo_root / "sim" / slug / "records"
     runs_dir = repo_root / "sim" / slug / "runs" / rid
     md_path = records_dir / f"{rid}.md"
@@ -371,6 +582,7 @@ def mint_behavioral_record(
         f"- Author: {author}",
         f"- Timestamp (UTC): {now.isoformat()}",
         f"- Repo commit: `{sha}`",
+        worktree_line,
         f"- Tools: {json.dumps(tool_block)}",
     ]
     if stored:
@@ -396,6 +608,7 @@ def mint_behavioral_record(
         "author": author,
         "timestamp_utc": now.isoformat(),
         "repo_sha": sha,
+        **dirty_fields,
         "tools": tool_block,
         "artifacts": stored,
         "artifact_manifest": manifest_rel if stored else None,

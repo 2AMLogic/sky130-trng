@@ -37,7 +37,6 @@ from __future__ import annotations
 
 import gzip
 import hashlib
-import importlib.util
 import json
 import math
 import random
@@ -49,7 +48,10 @@ HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[1]
 SLUG = "wake-up-transient"
 sys.path.insert(0, str(REPO / "sim" / "bin"))
+sys.path.insert(0, str(REPO / "layout" / "bin"))
+from _hashing import sha256_text  # noqa: E402
 sys.path.insert(0, str(REPO))
+from loadmod import load_module  # noqa: E402
 
 FIRST_WINDOW = 1024             # DR-0004 start-up test length = the first window
 MIN_ROWS = 1000                 # spec/silicon-characterization-plan.md: 1000 independent restarts
@@ -85,13 +87,6 @@ class MatrixError(ValueError):
     """A restart matrix that the reduction refuses (malformed, ragged, undersized or non-binary)."""
 
 
-def _load(name, path):
-    spec = importlib.util.spec_from_file_location(name, path)
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    return mod
-
-
 _ENTROPY = None
 
 
@@ -99,7 +94,7 @@ def mcv_estimate(bits):
     """The repository's MCV estimator (raw-bit-entropy.py), loaded once."""
     global _ENTROPY
     if _ENTROPY is None:
-        _ENTROPY = _load("raw_bit_entropy", REPO / "sim/raw-bit-min-entropy/analysis/raw-bit-entropy.py")
+        _ENTROPY = load_module("raw_bit_entropy", REPO / "sim/raw-bit-min-entropy/analysis/raw-bit-entropy.py")
     return _ENTROPY.mcv_estimate(bits)
 
 
@@ -285,12 +280,12 @@ def summary_text(s, title="restart matrix"):
 
 # ================================================================= behavioural record
 def wakeup_module():
-    return _load("wakeup", HERE / "wakeup.py")
+    return load_module("wakeup", HERE / "wakeup.py")
 
 
 def record_points():
     """The 18 calibrated points: process corners x behavioral_raw_bit.PVT_SETS['all'] (re-counted at run time)."""
-    vc = _load("behavioral_raw_bit", REPO / "sim/raw-bit-volume-campaign/behavioral_raw_bit.py")
+    vc = load_module("behavioral_raw_bit", REPO / "sim/raw-bit-volume-campaign/behavioral_raw_bit.py")
     return [(proc, t, v) for (t, v) in vc.PVT_SETS["all"] for proc in CORNERS]
 
 
@@ -323,12 +318,12 @@ def compute_entry(w, cal, proc, temp, vdd, arm):
                        if arm == "deterministic" else "uniform random ring phases (stationary reference)"),
              "seed_policy": {"master_seed": MASTER_SEED, "rule": SEED_RULE, "per_restart": True,
                              "first_seed": seeds[0], "last_seed": seeds[-1],
-                             "seeds_sha256": hashlib.sha256(canonical(seeds).encode()).hexdigest(),
+                             "seeds_sha256": sha256_text(canonical(seeds)),
                              "full_list": f"{VALUES_ARTIFACT}[{entry_key(proc, temp, vdd, arm)}].seeds"},
              "calibration": {k: cal.get(k) for k in CAL_KEYS},
              "model_caveats": MODEL_BOUNDARY, "status": PROV,
              "reduction": summary,
-             "values_sha256": hashlib.sha256(canonical(values).encode()).hexdigest()}
+             "values_sha256": sha256_text(canonical(values))}
     return entry, values
 
 
@@ -431,7 +426,7 @@ def emit_record():
                           "min_cols": MIN_COLS, "h_floor": H_FLOOR, "alpha": ALPHA, "ts_s": 20e-6},
              "points": len(entries) // len(ARMS), "arms": list(ARMS),
              "seed_policy": {"master_seed": MASTER_SEED, "rule": SEED_RULE},
-             "values_artifact": VALUES_ARTIFACT, "body_sha256": hashlib.sha256(body.encode()).hexdigest(),
+             "values_artifact": VALUES_ARTIFACT, "body_sha256": sha256_text(body),
              "generation_runtime_s": round(runtime, 1), "entries": entries,
              "model": "sim/wake-up-transient/wakeup.py wake_stream/calibration (phase-diffusion model of "
                       "sim/raw-bit-volume-campaign/)"},
@@ -470,7 +465,7 @@ def check(path, only=None, provenance=True):
             ok = False
     else:
         body = record_body(recomputed)
-        same_body = (hashlib.sha256(body.encode()).hexdigest() == rec["body_sha256"]
+        same_body = (sha256_text(body) == rec["body_sha256"]
                      and body.rstrip("\n") in path.with_suffix(".md").read_text())
         print("replay", "MATCHES" if same_body else "DIFFERS", "record body (markdown summary)")
         ok &= same_body

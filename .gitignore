@@ -62,7 +62,6 @@ flow/build/
 .loom/claims/
 .loom/locks/
 .loom/signals/
-.loom/sweep-dispatch-tap/
 .loom/status/
 .loom/retry-state/
 .loom/exit-codes/
@@ -99,6 +98,7 @@ flow/build/
 .loom/api-keys-*/
 .loom/account-health.json
 .loom/account-health.lock
+.loom/account-ranking.codex
 .loom/CANARY
 .loom/*.log
 .loom/*.sock
@@ -113,7 +113,7 @@ flow/build/
 .loom/gh-config-by-owner/
 .loom/gh-config-by-owner.*/
 .loom/gh-config-by-owner-*/
-.loom-local/
+/.loom-local/
 # <<< loom-managed <<<
 # issue #236: retained OpenROAD logs and per-corner audit logs are committed evidence.
 !sim/digital-electrical-repair/runs/**/*.log
@@ -125,6 +125,13 @@ flow/build/
 # regenerated deterministically (make-netlist.py / make-requests.py); the
 # committed form is trng_whole.sim.spice.gz and the sha256 in plan.json/records.
 sim/post-layout-whole-block/trng_whole.sim.spice
-sim/post-layout-whole-block/corners/*/netlist.cir
+# issue #491: the same regenerated deck also lands under runs/<slug>/corners/
+# (operator ruling, option a); **/corners/ covers it at any run depth.
+sim/post-layout-whole-block/**/corners/*/netlist.cir
 # issue #174: the record's copied submit-attempt logs are evidence (named in the record)
 !sim/post-layout-whole-block/runs/**/*.log
+# issue #486: the gate-level model body and the per-request deck under
+# corners/ are regenerated deterministically by make-gate-model.py (sha256 of
+# both in the request's plan.json); the committed form of the realised model
+# is runs/20261114-gate-model-full/gate-model.cir.gz.
+sim/post-layout-whole-block/corners/*/gate-model.cir

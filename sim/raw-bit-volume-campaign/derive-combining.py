@@ -4,7 +4,7 @@
 records, in the same JSON shape the 20260825-0945*/0947*/0948* records use, so
 behavioral_raw_bit.calibration() consumes them unchanged.
 
-    derive-combining.py REQDIR [--points 125:1.62,125:1.8,125:1.98] [--sha SHA]
+    derive-combining.py REQDIR [--points 125:1.62,125:1.8,125:1.98]
 
 REQDIR holds p1..pN/resp.json in the order of --points. The deck's own `let`
 figures are recomputed here with the deck's formulas (klt sim `expr` cannot read
@@ -12,17 +12,18 @@ top-level .meas results). The raw response is kept at
 sim/ro-array-core-combining/corners/<id>/klt-sim.json. A failed corner is
 recorded with ok=false and its diagnostics -- never dropped.
 """
-import datetime, importlib.util, json, os, sys
+import json, os, shutil, sys
+from pathlib import Path
 
 REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 SLUG = "ro-array-core-combining"
 TB = "sim/ro-array-core-combining/testbench/tb_ro_array_core.spice"
 sys.path.insert(0, os.path.join(REPO, "sim", "bin"))
-from evidence_record import git_short_sha  # noqa: E402
+from evidence_record import mint_record, new_record_id, reserve_corner_dir  # noqa: E402
+from loadmod import load_module  # noqa: E402
+from measurement_names import measurements_by_name  # noqa: E402  (#670: this deck's names are lifted from a template)
 
-_s = importlib.util.spec_from_file_location("make_requests", os.path.join(os.path.dirname(__file__), "make-requests.py"))
-mr = importlib.util.module_from_spec(_s)
-_s.loader.exec_module(mr)
+mr = load_module("make_requests", os.path.join(os.path.dirname(__file__), "make-requests.py"))
 
 
 def derive(m, vdd):
@@ -49,15 +50,14 @@ def derive(m, vdd):
     return d
 
 
-def main(reqdir, points, sha):
-    now = datetime.datetime.now(datetime.timezone.utc)
+def main(reqdir, points):
     for n, (t, v) in enumerate(points, 1):
         resp = json.load(open(f"{reqdir}/p{n}/resp.json"))
-        rid = (now + datetime.timedelta(seconds=n)).strftime("%Y%m%d-%H%M%S") + "-" + sha
+        now, sha, rid = new_record_id(Path(REPO), offset=n)
         corners = []
         for c in resp["corners"]:
             ok = c["status"] == "pass"
-            raw = {x["name"]: x["value"] for x in c["measurements"] if x.get("value") is not None}
+            raw = measurements_by_name(c)
             try:
                 meas = derive(raw, v)
             except (KeyError, ZeroDivisionError) as e:
@@ -84,11 +84,8 @@ def main(reqdir, points, sha):
         }
         cdir = os.path.join(REPO, "sim", SLUG, "corners", rid)
         rdir = os.path.join(REPO, "sim", SLUG, "records")
-        if os.path.exists(os.path.join(rdir, rid + ".json")) or os.path.exists(cdir):
-            raise SystemExit(f"error: {rid} exists")
-        os.makedirs(cdir)
+        reserve_corner_dir(cdir, rdir, rid)
         json.dump(resp, open(os.path.join(cdir, "klt-sim.json"), "w"), indent=1)
-        json.dump(rec, open(os.path.join(rdir, rid + ".json"), "w"), indent=2)
         L = [f"# {rid} -- {SLUG}", "",
              f"**Claim**: {rec['claim']}", "", "**Level**: transistor",
              f"**PVT point**: {t:g} degC, {v:g} V (tt/ss/ff bundled). **Verdict**: {rec['overall']} (klt sim status `{resp['status']}`).",
@@ -104,13 +101,16 @@ def main(reqdir, points, sha):
             else:
                 L.append(f"| {c['corner']} | **{c['status']}** | no usable measurements: {c['problems']} |")
         L += ["", "Simulation-derived; provisional until silicon. Derived figures use the deck's own `let` formulas "
-              "(recomputed by `derive-combining.py`).", "", "---", "", "- Author: loom-builder@sky130-trng",
-              f"- Timestamp (UTC): {now.isoformat()}", f"- Repo commit: `{sha}`", "- Supersedes: (none)"]
-        open(os.path.join(rdir, rid + ".md"), "w").write("\n".join(L) + "\n")
+              "(recomputed by `derive-combining.py`)."]
+        out = mint_record(Path(rdir), Path(REPO), rid, L, "\n", rec,
+                          author="loom-builder@sky130-trng", now=now, sha=sha)
+        if out is None:
+            shutil.rmtree(cdir, ignore_errors=True)
+            raise SystemExit(f"error: record id {rid} already exists; wait a second and re-run")
         print(rid, rec["overall"], env["remote"]["job_id"])
 
 
 if __name__ == "__main__":
     a = sys.argv
     pts = mr.parse_points(a[a.index("--points") + 1]) if "--points" in a else mr.HOT_POINTS
-    main(a[1], pts, a[a.index("--sha") + 1] if "--sha" in a else git_short_sha(__import__("pathlib").Path(REPO)))
+    main(a[1], pts)

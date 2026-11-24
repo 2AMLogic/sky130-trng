@@ -21,8 +21,6 @@ from __future__ import annotations
 
 import argparse
 import glob
-import hashlib
-import importlib.util
 import json
 import math
 import random
@@ -34,12 +32,13 @@ SLUGDIR = HERE.parent
 REPO = SLUGDIR.parents[1]
 sys.path.insert(0, str(SLUGDIR))
 sys.path.insert(0, str(REPO / "sim" / "bin"))
+sys.path.insert(0, str(REPO / "layout" / "bin"))
 import campaign as C  # noqa: E402
 from evidence_record import mint_behavioral_record  # noqa: E402
+from loadmod import load_module  # noqa: E402
+from _hashing import sha256_file, sha256_text  # noqa: E402
 
-_s = importlib.util.spec_from_file_location("behavioral_raw_bit", REPO / "sim/raw-bit-volume-campaign/behavioral_raw_bit.py")
-brb = importlib.util.module_from_spec(_s)
-_s.loader.exec_module(brb)
+brb = load_module("behavioral_raw_bit", REPO / "sim/raw-bit-volume-campaign/behavioral_raw_bit.py")
 
 SLUG = C.SLUG
 NBITS = 1 << 17                 # same per-stream size as the #188 record
@@ -76,7 +75,7 @@ def run(art: Path, nbits: int):
                     bits, cal, lab, seed = one_stream(art, c, t, v, (s, s), nbits)
                     st = brb.stats(bits, lab + f":{s}")
                     row = {"corner": c, "temp_c": t, "vdd_v": v, "shift_mv": [s, s], "n": nbits, "ts_s": TS, "seed_label": lab, "seed": seed,
-                           "sha256_hex": hashlib.sha256(brb.pack_hex(bits).encode()).hexdigest(),
+                           "sha256_hex": sha256_text(brb.pack_hex(bits)),
                            "calibration": {k: cal[k] for k in ("periods_s", "sigma", "q_ring", "combining_record", "combining_job_id", "jitter_job_id")},
                            **{k: st[k] for k in ("p_hat", "p_u_99", "h_hat_bits", "z_monobit", "autocorr", "best_context_len",
                                                  "best_context_acc", "best_context_acc_shuffled_null", "h_context_min_bits")}}
@@ -146,13 +145,13 @@ def main(argv=None) -> int:
     if a.regenerate_check:
         rec = json.loads(Path(a.regenerate_check).read_text())
         art = REPO / rec["calibration_artifact"]["path"]
-        if hashlib.sha256(art.read_bytes()).hexdigest() != rec["calibration_artifact"]["file_sha256"]:
+        if sha256_file(art) != rec["calibration_artifact"]["file_sha256"]:
             print("FAIL calibration artifact bytes changed")
             return 1
         bad = 0
         for r in rec["streams"]:
             bits, _, _, _ = one_stream(art, r["corner"], r["temp_c"], r["vdd_v"], tuple(r["shift_mv"]), r["n"])
-            ok = hashlib.sha256(brb.pack_hex(bits).encode()).hexdigest() == r["sha256_hex"]
+            ok = sha256_text(brb.pack_hex(bits)) == r["sha256_hex"]
             bad += not ok
             if not ok:
                 print("FAIL", r["corner"], r["temp_c"], r["vdd_v"], r["shift_mv"])
@@ -160,7 +159,7 @@ def main(argv=None) -> int:
         return 1 if bad else 0
     art = Path(a.artifact) if a.artifact else latest_artifact()
     rows = run(art, a.nbits)
-    art_sha = hashlib.sha256(art.read_bytes()).hexdigest()
+    art_sha = sha256_file(art)
     md, summ = body(rows, art, art_sha, a.nbits)
     print(md)
     if not a.emit_record:

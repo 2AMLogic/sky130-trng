@@ -83,6 +83,30 @@ CHUNK = 8                      # seeds per request
 CTL_SEEDS = 4                  # negative control: NA = 0, these many seeds, at the first NOISY_POINT
 MC_SEED = 216
 
+# ---- batch sharding (issue #216)
+# The fleet kills any job whose bound (units-per-job x options.timeout_s) exceeds FLEET_CEILING_S, and
+# klt warned that the unsharded 9-unit request bound 27120 s. `klt sim --backend batch` shards via
+# `batch.max_units_per_job` (the `remote.hosts` field is implemented for local backends only), so every
+# unit is its own job: bound == BATCH_JOB_OVERHEAD_S + timeout_s (klt's sim_batch adds a fixed per-job overhead
+# and rejects a job whose bound is above the ceiling). MAX_CONCURRENT_JOBS stays well under BATCH_MAX_CONCURRENT_INSTANCES=8
+# so other sweeps keep capacity.
+FLEET_CEILING_S = 3600
+BATCH_JOB_OVERHEAD_S = 120  # klt sim_batch._BATCH_JOB_OVERHEAD_S (klt 0.9.1.dev18)
+MAX_UNITS_PER_JOB = 1
+MAX_CONCURRENT_JOBS = 4
+TIMEOUT_DET_S = 3000
+TIMEOUT_NOISY_S = 3400  # bound 3520 s; 3500 would give 3620 s > ceiling once overhead is added
+
+
+def batch_block():
+    return {"capacity_wait_s": 3600, "max_units_per_job": MAX_UNITS_PER_JOB,
+            "max_concurrent_jobs": MAX_CONCURRENT_JOBS}
+
+
+def job_bound_s(req):
+    """Worst-case wall time of one batch job of `req` (klt per-job overhead + units per job x per-unit timeout)."""
+    return BATCH_JOB_OVERHEAD_S + MAX_UNITS_PER_JOB * req["options"]["timeout_s"]
+
 
 def det_meas(anchor):
     m = []
@@ -137,6 +161,8 @@ def noisy_meas():
 
 
 def write(outdir, name, body, req, plan):
+    if job_bound_s(req) > FLEET_CEILING_S:
+        raise SystemExit(f"{name}: job bound {job_bound_s(req)} s exceeds the {FLEET_CEILING_S} s fleet ceiling")
     d = os.path.join(outdir, name)
     os.makedirs(d, exist_ok=True)
     open(os.path.join(d, "netlist.cir"), "w").write(body)
@@ -168,8 +194,8 @@ def main():
                                 "supply_v": {"Vk": sups, "Vm": [mc["vm"]] * len(sups)}},
                     "analysis": {"kind": "tran", "args": f"{TMAX_DET} {stop:.6g}"},
                     "measurements": det_meas(mc["anchor"]),
-                    "options": {"timeout_s": 3000, "keep_artifacts": False},
-                    "batch": {"capacity_wait_s": 3600},
+                    "options": {"timeout_s": TIMEOUT_DET_S, "keep_artifacts": False},
+                    "batch": batch_block(),
                 }
                 plan = {"leg": "det", "mode": mode, "process": proc, "temps": temps, "supplies": sups,
                         "anchor_s": mc["anchor"], "ten_s": TEN, "tramp_s": TRAMP, "nedge": NEDGE,
@@ -198,8 +224,8 @@ def main():
                     "analysis": {"kind": "tran",
                                  "args": f"{TMAX_NOISY} {STOP_NOISY:.6g} uic"},
                     "measurements": noisy_meas(),
-                    "options": {"timeout_s": 6000, "keep_artifacts": False},
-                    "batch": {"capacity_wait_s": 3600},
+                    "options": {"timeout_s": TIMEOUT_NOISY_S, "keep_artifacts": False},
+                    "batch": batch_block(),
                 }
                 plan = {"leg": "noisy", "point": name, "process": proc, "temp": temp, "vdd": vdd, "why": why,
                         "ten_s": TEN_NOISY, "ts_s": TS_NOISY, "nbits": NBITS_NOISY, "na": na, "tmax": TMAX_NOISY,

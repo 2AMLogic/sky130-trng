@@ -78,6 +78,7 @@ OUT_RECORDS = REPO_ROOT / "sim" / "post-layout-parasitic-impact" / "records"
 
 sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
 from evidence_record import mint_record, new_record_id  # noqa: E402
+from lock_proximity import closeness_ratio, ratio_label  # noqa: E402
 
 WIDTHS = ["0p42", "0p44", "0p46", "0p48"]
 WIDTH_UM = {"0p42": 0.42, "0p44": 0.44, "0p46": 0.46, "0p48": 0.48}
@@ -85,11 +86,6 @@ WIDTH_UM = {"0p42": 0.42, "0p44": 0.44, "0p46": 0.46, "0p48": 0.48}
 DECK_TIED = "tb_post_layout_ro_ring5.spice"
 DECK_FLOAT = "tb_post_layout_substrate_float.spice"
 DECK_SOLO = "tb_post_layout_substrate_float_solo.spice"
-
-#: The small rationals DR-0003 section 8 names as the mutual-injection-lock
-#: hazard a `wstv` ladder has to stay clear of.
-LOCK_RATIOS = {"4/3": 4 / 3, "3/2": 3 / 2, "2/1": 2.0}
-
 
 def load_points() -> dict[tuple, dict[str, dict]]:
     """{(temp, vdd, corner): {deck filename: measurements}} plus record ids."""
@@ -153,14 +149,13 @@ def reduce_all(points: dict, floor_frac: float) -> dict:
         for i, wi in enumerate(WIDTHS):
             for wj in WIDTHS[i + 1 :]:
                 ratios[f"{wi}/{wj}"] = t_pex[wi] / t_pex[wj]
-        closest = min(
-            (
-                (abs(r - v) / v, name, label, r)
-                for name, r in ratios.items()
-                for label, v in LOCK_RATIOS.items()
-            ),
-            key=lambda t: t[0],
-        )
+        # The small rationals DR-0003 section 8 names as the mutual-injection-lock
+        # hazard a `wstv` ladder has to stay clear of: sim/bin/lock_proximity.py.
+        closest = None
+        for name, r in ratios.items():
+            d, p_, q_ = closeness_ratio(r)
+            if closest is None or d < closest[0]:
+                closest = (d, name, ratio_label(p_, q_), r)
 
         t_tied1, t_solo1, t_float1 = (
             tied["t_pex_wstv0p42"],

@@ -5,16 +5,19 @@ Synthetic inputs only -- no simulator, no PDK, no fleet.
 
     python3 sim/tests/test_mismatch_reduction.py
 """
-import importlib.util
 import math
 import os
+import sys
 import unittest
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 _p = os.path.join(HERE, "..", "local-mismatch-monte-carlo", "reduce.py")
-_s = importlib.util.spec_from_file_location("mm_reduce", _p)
-mm = importlib.util.module_from_spec(_s)
-_s.loader.exec_module(mm)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(HERE, "..", "bin"))
+from loadmod import load_module  # noqa: E402
+import lock_proximity as LP  # noqa: E402
+import replay_equal  # noqa: E402
+mm = load_module("mm_reduce", _p)
 
 
 class TestStats(unittest.TestCase):
@@ -30,13 +33,28 @@ class TestStats(unittest.TestCase):
 
 
 class TestCloseness(unittest.TestCase):
+    """This reducer's use of the SHARED lock-proximity rule (sim/bin/lock_proximity.py).
+
+    The rule itself -- symmetry, the DR-0005 known answer, exact hits -- is
+    pinned once in sim/tests/test_lock_proximity.py (issue #467); what is
+    tested here is that this reducer uses it rather than a private copy, and
+    the pair/extrapolation behaviour that is reduce.py's own.
+    """
+
+    def test_uses_the_shared_rule(self):
+        self.assertIs(mm.pair_closeness, LP.pair_closeness)
+        self.assertIs(mm.DR5_RATIOS, LP.DR5_RATIOS)
+        self.assertIs(mm.ANY_RATIOS, LP.ANY_RATIOS)
+        self.assertFalse(hasattr(mm, "closeness"),
+                         "reduce.py re-declared a private closeness(); import the shared one")
+
     def test_exact_rational_is_zero(self):
-        d, p, q = mm.closeness(1.0, 1.5, mm.DR5_RATIOS)      # period ratio 1.5 -> 3/2
+        d, p, q = LP.closeness(1.0, 1.5, mm.DR5_RATIOS)      # period ratio 1.5 -> 3/2
         self.assertAlmostEqual(d, 0.0)
         self.assertEqual((p, q), (3, 2))
 
     def test_order_free(self):
-        self.assertAlmostEqual(mm.closeness(1.0, 1.1, mm.ANY_RATIOS)[0], mm.closeness(1.1, 1.0, mm.ANY_RATIOS)[0])
+        self.assertEqual(LP.closeness(1.0, 1.1, mm.ANY_RATIOS), LP.closeness(1.1, 1.0, mm.ANY_RATIOS))
 
     def test_one_to_one_only_in_any(self):
         T = [1.0, 1.02, 3.0, 5.0]           # rings 1,2 are 2 % apart (1:1); no small rational otherwise close
@@ -51,8 +69,9 @@ class TestCloseness(unittest.TestCase):
 
 
     def test_dr0005_figure(self):
-        # DR-0005: ladder span 1.2096 against 4/3 -> 9.3 %
-        self.assertAlmostEqual(mm.closeness(1.0, 1.2096, mm.DR5_RATIOS)[0] * 100, 9.28, places=1)
+        # DR-0005: ladder span 1.2096 against 4/3 -> 9.3 %, in either argument order
+        for a, b in ((1.0, 1.2096), (1.2096, 1.0)):
+            self.assertAlmostEqual(LP.closeness(a, b, mm.DR5_RATIOS)[0] * 100, 9.28, places=1)
 
 
 class TestBias(unittest.TestCase):
@@ -121,6 +140,39 @@ class TestUnits(unittest.TestCase):
         row = mm.sampler_unit({"status": "pass", "measurements": [
             {"name": "vtrip_up", "value": 0.86}, {"name": "vtrip_dn", "value": 0.82}]}, self.PLAN)
         self.assertAlmostEqual(row["vtrip_v"], 0.84)
+
+
+class ReplayToleranceTests(unittest.TestCase):
+    """Issue #659: `--check` replays rows/summary through sim/bin/replay_equal.py.
+
+    This reducer's `mean`/`std`/`q_ratio` are float `sum()`s; builtin `sum()`
+    is naive on CPython <= 3.11 and compensated on >= 3.12, so a record
+    minted on one side of the split re-derives ~1-ulp different on the other
+    and an exact replay verdict was a function of the interpreter (all three
+    committed records printed DIFFERS under naive `sum()` before this)."""
+
+    #: Crossings sized so the naive and compensated reductions of the same
+    #: list differ -- the two sides the version split produces.
+    R = [0.0001234567890123, -0.00009876543210987, 0.000045678901234, -0.000012345678901] * 7
+
+    def test_uses_the_shared_rule(self):
+        self.assertIs(mm._replay_equal, replay_equal.replay_equal)
+
+    def test_replay_gate_absorbs_the_cpython_sum_split_and_still_bites(self):
+        s_naive = 0.0
+        for x in self.R:
+            s_naive += x
+        s_fsum = math.fsum(self.R)
+        self.assertNotEqual(s_naive, s_fsum)
+        self.assertTrue(mm._replay_equal(s_naive, s_fsum))
+        self.assertFalse(mm._replay_equal(s_fsum, s_fsum * (1 + 1e-6)))
+        self.assertTrue(mm._replay_equal(s_fsum, s_fsum * (1 + 1e-12)))
+
+    def test_zero_versus_tiny_is_a_difference_no_absolute_floor(self):
+        self.assertFalse(mm._replay_equal(0.0, 5e-324))
+        self.assertFalse(mm._replay_equal(0.0, 1e-20))
+        self.assertFalse(mm._replay_equal(1e-20, 0.0))
+        self.assertTrue(mm._replay_equal(0.0, -0.0))
 
 
 if __name__ == "__main__":

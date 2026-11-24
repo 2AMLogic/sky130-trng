@@ -1,99 +1,83 @@
 {
   "schema_version": 1,
-  "key": "1.analog",
+  "kind": "t1-attestation-inventory",
   "t1_item": 1,
-  "partition": "analog",
-  "claim": "committed schematics plus the netlist derived from them",
-  "selectors": [
-    "design/xschem/*",
-    "design/sampler_core.spice",
-    "design/netlist.py"
+  "description": "Analog partition: xschem schematics/symbols and the SPICE netlists design/netlist.py derives from them. Each derived netlist is attested by design/netlist.py --check (staleness + xschem ERC; xschem >= design/pdk.json xschem_version_min, pinned PDK) -- run only where xschem exists (pdk-nightly.yml netlist-check).",
+  "sources": [
+    "design/xschem/ro_array_core.sch",
+    "design/xschem/ro_array_core.sym",
+    "design/xschem/ro_buf.sch",
+    "design/xschem/ro_buf.sym",
+    "design/xschem/ro_nand2.sch",
+    "design/xschem/ro_nand2.sym",
+    "design/xschem/ro_ring11.sch",
+    "design/xschem/ro_ring11.sym",
+    "design/xschem/ro_ring5.sch",
+    "design/xschem/ro_ring5.sym",
+    "design/xschem/ro_stage.sch",
+    "design/xschem/ro_stage.sym",
+    "design/xschem/sampler_core.sch",
+    "design/xschem/sampler_core.sym",
+    "design/xschem/sampler_dff.sch",
+    "design/xschem/sampler_dff.sym",
+    "design/xschem/trng_top.sch",
+    "design/xschem/xor2.sch",
+    "design/xschem/xor2.sym",
+    "design/netlist.py",
+    "design/pdk.json"
   ],
-  "member_count": 21,
-  "members": [
+  "derived": [
     {
-      "path": "design/netlist.py",
-      "sha256": "sha256:0e51b762d340a3f1f0201a1c76e1b91d6a9c0f2b46e1518d5504c6d02d9b8b7a"
+      "path": "design/ro_array_core.spice",
+      "generator": "python3 design/netlist.py",
+      "check": {
+        "argv": [
+          "python3",
+          "design/netlist.py",
+          "--check",
+          "--top",
+          "ro_array_core"
+        ]
+      }
+    },
+    {
+      "path": "design/ro_ring5.spice",
+      "generator": "python3 design/netlist.py",
+      "check": {
+        "argv": [
+          "python3",
+          "design/netlist.py",
+          "--check",
+          "--top",
+          "ro_ring5"
+        ]
+      }
     },
     {
       "path": "design/sampler_core.spice",
-      "sha256": "sha256:34a9af2714b7cfd71092c9733fb4007a61747b032eadcf5491ae9db811999b71"
+      "generator": "python3 design/netlist.py",
+      "check": {
+        "argv": [
+          "python3",
+          "design/netlist.py",
+          "--check",
+          "--top",
+          "sampler_core"
+        ]
+      }
     },
     {
-      "path": "design/xschem/ro_array_core.sch",
-      "sha256": "sha256:1d37a32538102e5de418eeb3ead1eb4eebe03a383233bdde8084f999f5089163"
-    },
-    {
-      "path": "design/xschem/ro_array_core.sym",
-      "sha256": "sha256:f50b91f1f0f59569694f70033e6068f730c1b13e07ab5c76789d4fa95bb47981"
-    },
-    {
-      "path": "design/xschem/ro_buf.sch",
-      "sha256": "sha256:7ca4cbab7fb6877a0ce6d7e3e743eba3c0b3556ce78b32876171fd715d091c5c"
-    },
-    {
-      "path": "design/xschem/ro_buf.sym",
-      "sha256": "sha256:4a73adbef70d58a1e3a69515e59793d3cc5d15df2b51f0c4fff8aa2347922b3e"
-    },
-    {
-      "path": "design/xschem/ro_nand2.sch",
-      "sha256": "sha256:9e9bee48cc009a32497a77d1faae22e3afad0931cfcfdee25adb645534012343"
-    },
-    {
-      "path": "design/xschem/ro_nand2.sym",
-      "sha256": "sha256:1eb606446f910b47ab86ee353c664fab926a221b1cf2407a8f017ee9339bd904"
-    },
-    {
-      "path": "design/xschem/ro_ring11.sch",
-      "sha256": "sha256:f3b2e31215af0cbc43ec96075552dc1c60828227ed53f7f9c61f2e2c7e09657d"
-    },
-    {
-      "path": "design/xschem/ro_ring11.sym",
-      "sha256": "sha256:70725b06010fd510696920ce82bbe2dc0c1d3add39e081facaea4f0cbf611148"
-    },
-    {
-      "path": "design/xschem/ro_ring5.sch",
-      "sha256": "sha256:ab9638d58472a434894e79be8b77a72a45c6c047cd187269d484f9a12c29f678"
-    },
-    {
-      "path": "design/xschem/ro_ring5.sym",
-      "sha256": "sha256:802157eee20249f9f4935a7e3e66570e7bb20c858696c5f6a09b3211faeabe6d"
-    },
-    {
-      "path": "design/xschem/ro_stage.sch",
-      "sha256": "sha256:586cdfa3d2c06e93baac61af7d07420b68799cd835be9b65461c1b9300ad6656"
-    },
-    {
-      "path": "design/xschem/ro_stage.sym",
-      "sha256": "sha256:d9f54da01844e6230bdcba39afd32346dffab191e98af301da848ad49d5a9f62"
-    },
-    {
-      "path": "design/xschem/sampler_core.sch",
-      "sha256": "sha256:0c30444dfe4c826e5de6fa8a91e45a75d46f134894b314880892247a17054019"
-    },
-    {
-      "path": "design/xschem/sampler_core.sym",
-      "sha256": "sha256:c92f9663bc8fd80bdcbfa0b155db53bca80f4fdc1f6e77ad4c3a0af0da783b79"
-    },
-    {
-      "path": "design/xschem/sampler_dff.sch",
-      "sha256": "sha256:9b1da1e0cdb9a4ae6ac400b26c128cddc98554e9a0d4036278716f31e5186eff"
-    },
-    {
-      "path": "design/xschem/sampler_dff.sym",
-      "sha256": "sha256:fb4f4aec6592821f2b2d32eb7d85bb73f22820bd98d971a499e2b70df3f33d85"
-    },
-    {
-      "path": "design/xschem/trng_top.sch",
-      "sha256": "sha256:78aaa0bfeeed5299b564d823cdb7d3f21411f39805e48285dac9c01d294c568c"
-    },
-    {
-      "path": "design/xschem/xor2.sch",
-      "sha256": "sha256:0746b1ca951a2d5e215298da4bd6620bd34df89844ca71320521cc440f7b6a31"
-    },
-    {
-      "path": "design/xschem/xor2.sym",
-      "sha256": "sha256:0e01f5394cfb068f6013ce31b22487c82206cd8c2c70f9d14b5cdf4e4e5b1ea8"
+      "path": "design/trng_top.spice",
+      "generator": "python3 design/netlist.py",
+      "check": {
+        "argv": [
+          "python3",
+          "design/netlist.py",
+          "--check",
+          "--top",
+          "trng_top"
+        ]
+      }
     }
   ]
 }

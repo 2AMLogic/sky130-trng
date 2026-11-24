@@ -98,7 +98,11 @@ Generated on `klt 0.8.0` / KLayout 0.30.12 against open_pdks
 `c6d73a35f524070e85faff4a6a9eef49553ebc2b` — `layout/pdk.json`'s own pin
 (each artifact's `provenance` block is the authoritative per-file record;
 `layout/pdk.json`'s `klt_version_pin` still names `0.6.0+g5edb557f91d0`
-pending the #372 pin move).
+pending the #372 pin move). The 0.8.0 regen also records, in
+`compose.response.json`, a declared `pdk.compatibility` status of `mismatch`
+(expected open_pdks `f6eeac7d…` vs. the project's pinned `c6d73a35…`) and an
+`ambiguous_sources` entry for `~/.ciel`; that mismatch is owned by #372's pin
+move, not by this re-measurement.
 
 ## Six stages, and why the PoC's nine requests collapse to six
 

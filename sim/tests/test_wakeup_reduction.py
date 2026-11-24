@@ -3,16 +3,18 @@
 
     python3 sim/tests/test_wakeup_reduction.py
 """
-import importlib.util
 import math
 import random
+import sys
+import os
 import unittest
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-_spec = importlib.util.spec_from_file_location("wakeup", REPO / "sim/wake-up-transient/wakeup.py")
-w = importlib.util.module_from_spec(_spec)
-_spec.loader.exec_module(w)
+sys.path.insert(0, os.path.join(REPO, "sim", "bin"))
+from loadmod import load_module  # noqa: E402
+import replay_equal  # noqa: E402
+w = load_module("wakeup", REPO / "sim/wake-up-transient/wakeup.py")
 
 
 def edge_train(p_final, n, first=1.0e-9, slow=0.0, tau=3.0):
@@ -136,6 +138,73 @@ class StartupTest(unittest.TestCase):
         r = w.startup_test([rng.getrandbits(1) for _ in range(1024)])
         self.assertTrue(r["passed"])
         self.assertIsNone(r["first_trip_index"])
+
+
+class BatchSharding(unittest.TestCase):
+    """Every generated request must stay under the fleet's whole-job ceiling (issue #216)."""
+
+    @classmethod
+    def setUpClass(cls):
+        import json
+        import subprocess
+        import tempfile
+        cls.reqs = {}
+        with tempfile.TemporaryDirectory() as d:
+            subprocess.run([sys.executable, "-I", str(REPO / "sim/wake-up-transient/make-requests.py"), d],
+                           check=True, capture_output=True)
+            for name in os.listdir(d):
+                cls.reqs[name] = json.load(open(os.path.join(d, name, "request.json")))
+
+    def test_job_bound_under_ceiling(self):
+        self.assertTrue(self.reqs)
+        for name, r in self.reqs.items():
+            b = r["batch"]
+            # klt sim_batch bound = per-job overhead (120 s) + units x per-unit timeout
+            self.assertLessEqual(120 + b["max_units_per_job"] * r["options"]["timeout_s"], 3600, name)
+            self.assertLessEqual(b["max_concurrent_jobs"], 4, name)
+
+
+class JobIds(unittest.TestCase):
+    def test_sharded_fleet_and_single_job(self):
+        sharded = ("a", {}, {"environment": {"remote": {"fleet": [{"job_id": "j1"}, {"job_id": "j2"}]}}})
+        single = ("b", {}, {"environment": {"remote": {"job_id": "j3"}}})
+        self.assertEqual(w._jobs([sharded, single]), ["j1", "j2", "j3"])
+
+
+class ReplayTolerance(unittest.TestCase):
+    """Issue #659: `--check` replays the det/noisy/margin legs through
+    sim/bin/replay_equal.py.
+
+    `det_ring`'s reference window and `window_mean` are float `sum()`s;
+    builtin `sum()` is naive on CPython <= 3.11 and compensated on >= 3.12,
+    so the noisy-leg records minted on 3.12 failed their own replay under
+    3.11 semantics (xcheck and summary float leaves) before this."""
+
+    #: Ring periods (s) sized like `det_ring`'s reference-window sums so the
+    #: naive and compensated reductions of the same list differ.
+    P = [2.4737964627091892e-09, 2.5044229225295953e-09, 2.486995516654808e-09,
+         2.5103920038596196e-09, 2.5125720304108055e-09, 2.4565528859239815e-09,
+         2.4513167991554875e-09, 2.533746908209646e-09, 2.4759354014328007e-09,
+         2.4734330961046696e-09]
+
+    def test_uses_the_shared_rule(self):
+        self.assertIs(w._replay_equal, replay_equal.replay_equal)
+
+    def test_replay_gate_absorbs_the_cpython_sum_split_and_still_bites(self):
+        s_naive = 0.0
+        for x in self.P:
+            s_naive += x
+        s_fsum = math.fsum(self.P)
+        self.assertNotEqual(s_naive, s_fsum)
+        self.assertTrue(w._replay_equal(s_naive, s_fsum))
+        self.assertFalse(w._replay_equal(s_fsum, s_fsum * (1 + 1e-6)))
+        self.assertTrue(w._replay_equal(s_fsum, s_fsum * (1 + 1e-12)))
+
+    def test_zero_versus_tiny_is_a_difference_no_absolute_floor(self):
+        self.assertFalse(w._replay_equal(0.0, 5e-324))
+        self.assertFalse(w._replay_equal(0.0, 1e-20))
+        self.assertFalse(w._replay_equal(1e-20, 0.0))
+        self.assertTrue(w._replay_equal(0.0, -0.0))
 
 
 if __name__ == "__main__":

@@ -4,9 +4,9 @@
 reusing that harness's own stimulus generator and behavioural-model trace
 functions rather than re-deriving them (``rtl-cosim.py``'s hyphenated
 filename makes it an executable script, not an importable module by name --
-loaded here via :mod:`importlib.util`, the standard way to reuse a
-hyphenated script's functions without renaming a file every other record
-already cites).
+loaded here via the repo's shared ``sim/tests/loadmod.py`` helper, the
+standard way to reuse a hyphenated script's functions without renaming a
+file every other record already cites).
 
 Compiles the same testbench (`digital/tb/tb_trng_digital.v`, unmodified --
 it names only `trng_digital`'s ports, which the mapped netlist's top module
@@ -31,7 +31,6 @@ table is the sibling-repo precedent this mirrors):
 
 from __future__ import annotations
 
-import importlib.util
 import subprocess
 import sys
 from pathlib import Path
@@ -39,12 +38,11 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[3]
 
 _RTL_COSIM_PATH = REPO_ROOT / "sim" / "digital-rtl-equivalence" / "harness" / "rtl-cosim.py"
-_spec = importlib.util.spec_from_file_location("rtl_cosim", _RTL_COSIM_PATH)
-assert _spec is not None and _spec.loader is not None
-rtl_cosim = importlib.util.module_from_spec(_spec)
 sys.path.insert(0, str(REPO_ROOT / "digital"))
 sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
-_spec.loader.exec_module(rtl_cosim)
+from loadmod import load_module  # noqa: E402
+
+rtl_cosim = load_module("rtl_cosim", _RTL_COSIM_PATH)
 
 build_program = rtl_cosim.build_program
 model_trace = rtl_cosim.model_trace

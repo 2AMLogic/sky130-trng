@@ -1,0 +1,750 @@
+#!/usr/bin/env python3
+"""Contract tests for ``layout/bin/_klt_common.py``'s shared ``klt`` readers
+(issue #500) and the #535 / #613 helper consolidations.
+
+Standalone script, following ``layout/test_hashing.py``'s convention:
+
+    python3 layout/test_klt_common.py
+
+No real ``klt``, no PDK: every case drives a fake ``klt`` shell script whose
+response is written by the test, which is what lets the negative controls
+exist at all (a real ``klt`` cannot be asked to emit a malformed response).
+
+What these guard, because the two defects behind #500 were both invisible
+while every producer happened to agree with itself:
+
+- ``klt_version`` must return the BARE version (``"0.8.0"``), never the
+  ``klt --version`` banner spelling (``"klt 0.8.0"``). Three string-equality
+  pin gates compare ``klt_version`` across producers, and 391 of the 392
+  committed ``klt_version`` values are bare -- so a prefixed read makes a
+  correctly-pinned host fail the gate unconditionally (the #372 trap).
+- ``pdk_find`` must always request ``--format json``. The outlier it replaces
+  scraped ``klt pdk find``'s human-readable rendering with
+  ``re.search(r"^\\s*libs_ref:\\s*(\\S+)\\s*$", out, re.M)``, which takes the
+  FIRST match -- so a ``warning:`` line or a second install block bearing a
+  ``libs_ref:`` silently won. The decoy control below is that exact shape.
+- ``pdk_find`` must hand back the whole response, so ``compatibility`` /
+  ``ambiguous_roots`` / ``broken_symlinks`` -- which the text scrape discarded
+  -- reach the caller that is picking a Liberty deck.
+- ``pdk_root`` must honour a preset ``$PDK_ROOT`` without invoking klt at all
+  (the short-circuit ``verify-whole.py`` established), and must otherwise read
+  ``root`` from the JSON response.
+- a malformed response must raise ``BuildError``, never return a wrong answer:
+  no ``version`` field, no ``assets.libs_ref``, an ``error`` object.
+
+And the #535 consolidation guards, because the forks it retired had already
+diverged in the failure direction:
+
+- ``load_json`` must fail as a ``BuildError`` naming the path (the
+  compose-whole contract), never resurface as a raw traceback.
+- ``klt_env`` must force ``PDK=sky130A``, honour an explicit ``pdk_root``
+  over the ambient ``$PDK_ROOT``, and inherit the ambient environment
+  otherwise.
+- ``klayout_db`` must fail as a ``BuildError`` when the python klayout
+  package is missing.
+- ``dumps`` must stay byte-equal to :func:`write_json`'s file content, so a
+  string-built artifact and a file-written one can never drift.
+- the five helpers must not grow back as per-script forks in ``layout/bin``.
+- the four GDS geometry helpers must stay in ``_gds_geometry.py``: no
+  per-script fork, and no ``spec_from_file_location`` loader of
+  ``compose-whole.py``, in the three scripts the #613 consolidation touched
+  (#617's guard).
+- the non-FV ``sim/`` harnesses must reach klt through the shared readers:
+  no raw ``klt --version`` argv, no direct ``["pdk", "find", ...]`` call,
+  no ``startswith(str(REPO_ROOT))`` ``rel()`` fork, anywhere under
+  ``layout/`` or ``sim/`` outside the named #502 carve-outs (#653's guard,
+  after #597 regrew the banner read in sim/pex-sampler-core unnoticed).
+"""
+from __future__ import annotations
+
+import json
+import os
+import re
+import stat
+import sys
+import tempfile
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent / "bin"))
+from _klt_common import (  # noqa: E402
+    REPO_ROOT,
+    BuildError,
+    compatibility_status,
+    dumps,
+    klt_env,
+    klayout_db,
+    klt_version,
+    libs_ref,
+    libs_ref_of,
+    load_json,
+    pdk_find,
+    pdk_root,
+    pdk_root_of,
+    rel,
+    run_klt_rc,
+    write_json,
+)
+
+_RESULTS: list[bool] = []
+
+
+def _check(name, ok, detail=None) -> bool:
+    ok = bool(ok)
+    print(("PASS" if ok else "FAIL") + ": " + name + ("" if ok or detail is None
+                                                      else f"  [{detail!r}]"))
+    _RESULTS.append(ok)
+    return ok
+
+
+def _raises(name, fn, needle) -> bool:
+    try:
+        got = fn()
+    except BuildError as exc:
+        return _check(name, needle in str(exc), str(exc))
+    return _check(name, False, f"no BuildError; returned {got!r}")
+
+
+def _fake_klt(directory: Path, body: str) -> str:
+    """Write an executable fake ``klt`` whose Python *body* prints a response.
+
+    *body* runs with ``argv`` bound to klt's arguments and may print anything
+    and exit with any status -- the point of a fake is to be able to answer
+    wrongly.
+    """
+    exe = directory / "klt"
+    exe.write_text("#!/usr/bin/env python3\n"
+                   "import json, sys\n"
+                   "argv = sys.argv[1:]\n"
+                   + body)
+    exe.chmod(exe.stat().st_mode | stat.S_IEXEC)
+    return str(exe)
+
+
+# ``klt version --format json``'s real shape, and the banner that is NOT it.
+_VERSION_OK = """
+if argv[:1] != ["version"]:
+    sys.exit(2)
+print(json.dumps({"version": "0.8.0", "schema_version": 1}))
+"""
+
+# The real ``klt pdk find --format json`` response shape, including the three
+# fields the text scrape discarded.
+_PDK_RESPONSE = {
+    "root": "/fake/.ciel",
+    "resolved_via": "search root: ~/.ciel",
+    "assets": {"libs_ref": "/fake/.ciel/sky130A/libs.ref",
+               "libs_tech": "/fake/.ciel/sky130A/libs.tech"},
+    "compatibility": "mismatch",
+    "ambiguous_roots": ["/fake/.volare"],
+    "broken_symlinks": ["/fake/.ciel/sky130A/libs.ref/dangling"],
+}
+
+# A fake that REFUSES to answer unless --format json was requested, and whose
+# text rendering carries a decoy ``libs_ref:`` warning line ahead of the real
+# one -- the exact shape that defeats a first-match regex scrape.
+_PDK_JSON_ONLY = """
+if argv[:2] != ["pdk", "find"]:
+    sys.exit(2)
+if "--format" not in argv or argv[argv.index("--format") + 1] != "json":
+    print("root: /fake/.ciel")
+    print("warning: shadowed same-variant install: libs_ref: /DECOY/libs.ref")
+    print("assets:")
+    print("  libs_ref: /fake/.ciel/sky130A/libs.ref")
+    sys.exit(0)
+print(json.dumps(%s))
+""" % json.dumps(_PDK_RESPONSE)
+
+
+def check_klt_version_is_bare() -> None:
+    """The bare spelling, from the JSON response -- never the banner."""
+    with tempfile.TemporaryDirectory() as t:
+        klt = _fake_klt(Path(t), _VERSION_OK)
+        got = klt_version(env=dict(os.environ), klt=klt)
+        _check("klt_version returns the bare version", got == "0.8.0", got)
+        _check("klt_version never returns the 'klt ' banner prefix",
+               not got.startswith("klt "), got)
+        _check("klt_version's result is what a bare pin compares equal to",
+               got == "0.8.0" and got != "klt 0.8.0", got)
+        _check("klt_version defaults env to the ambient environment",
+               klt_version(klt=klt) == "0.8.0")
+
+
+def check_klt_version_fails_closed() -> None:
+    cases = {
+        "no version field": ('print(json.dumps({"schema_version": 1}))',
+                             "no 'version'"),
+        "non-string version": ('print(json.dumps({"version": 80}))',
+                               "no 'version'"),
+        "empty version": ('print(json.dumps({"version": ""}))', "no 'version'"),
+        "error object": ('print(json.dumps({"error": {"message": "boom"}}))',
+                         "boom"),
+        "not JSON at all": ('print("klt 0.8.0")', "no JSON response"),
+    }
+    for label, (body, needle) in cases.items():
+        with tempfile.TemporaryDirectory() as t:
+            klt = _fake_klt(Path(t), body)
+            _raises(f"klt_version raises on {label}",
+                    lambda klt=klt: klt_version(env=dict(os.environ), klt=klt),
+                    needle)
+
+
+def check_pdk_find_always_asks_for_json() -> None:
+    """The defect: the outlier omitted --format json and scraped the text."""
+    with tempfile.TemporaryDirectory() as t:
+        klt = _fake_klt(Path(t), _PDK_JSON_ONLY)
+        got = pdk_find("sky130A", env=dict(os.environ), klt=klt)
+        _check("pdk_find requested --format json (fake refuses otherwise)",
+               got.get("root") == "/fake/.ciel", got)
+        _check("pdk_find hands back compatibility",
+               got.get("compatibility") == "mismatch", got.get("compatibility"))
+        _check("pdk_find hands back ambiguous_roots",
+               got.get("ambiguous_roots") == ["/fake/.volare"])
+        _check("pdk_find hands back broken_symlinks",
+               got.get("broken_symlinks") == ["/fake/.ciel/sky130A/libs.ref/dangling"])
+
+
+def check_libs_ref_is_not_fooled_by_a_decoy() -> None:
+    """A first-match ``libs_ref:`` scrape would have returned /DECOY."""
+    with tempfile.TemporaryDirectory() as t:
+        klt = _fake_klt(Path(t), _PDK_JSON_ONLY)
+        got = libs_ref("sky130A", env=dict(os.environ), klt=klt)
+        _check("libs_ref reads assets.libs_ref from the JSON response",
+               got == Path("/fake/.ciel/sky130A/libs.ref"), got)
+        _check("libs_ref is not the decoy a first-match text scrape would take",
+               "DECOY" not in str(got), got)
+        _check("libs_ref returns a Path", isinstance(got, Path), type(got))
+
+
+def check_libs_ref_fails_closed() -> None:
+    cases = {
+        "no assets": ('print(json.dumps({"root": "/fake"}))', "assets.libs_ref"),
+        "assets without libs_ref":
+            ('print(json.dumps({"root": "/fake", "assets": {"libs_tech": "/x"}}))',
+             "assets.libs_ref"),
+        "non-string libs_ref":
+            ('print(json.dumps({"assets": {"libs_ref": None}}))', "assets.libs_ref"),
+    }
+    for label, (body, needle) in cases.items():
+        with tempfile.TemporaryDirectory() as t:
+            klt = _fake_klt(Path(t), body)
+            _raises(f"libs_ref raises on {label}",
+                    lambda klt=klt: libs_ref("sky130A", env=dict(os.environ),
+                                             klt=klt),
+                    needle)
+
+
+def check_pdk_root_short_circuits_a_preset_root() -> None:
+    """A preset $PDK_ROOT wins without invoking klt at all."""
+    with tempfile.TemporaryDirectory() as t:
+        # a fake that fails every invocation: reaching it at all is the failure
+        klt = _fake_klt(Path(t), 'sys.exit(1)')
+        env = {**os.environ, "PDK_ROOT": "/preset/root"}
+        got = pdk_root("sky130A", env=env, klt=klt)
+        _check("pdk_root returns a preset $PDK_ROOT without running klt",
+               got == "/preset/root", got)
+
+        env_empty = {**os.environ, "PDK_ROOT": ""}
+        _raises("pdk_root treats an EMPTY $PDK_ROOT as unset and asks klt",
+                lambda: pdk_root("sky130A", env=env_empty, klt=klt),
+                "no JSON response")
+
+
+def check_pdk_root_reads_root_from_the_response() -> None:
+    with tempfile.TemporaryDirectory() as t:
+        klt = _fake_klt(Path(t), _PDK_JSON_ONLY)
+        env = {k: v for k, v in os.environ.items() if k != "PDK_ROOT"}
+        got = pdk_root("sky130A", env=env, klt=klt)
+        _check("pdk_root reads root from the JSON response",
+               got == "/fake/.ciel", got)
+    with tempfile.TemporaryDirectory() as t:
+        klt = _fake_klt(Path(t), 'print(json.dumps({"assets": {}}))')
+        env = {k: v for k, v in os.environ.items() if k != "PDK_ROOT"}
+        _raises("pdk_root raises when the response carries no root",
+                lambda: pdk_root("sky130A", env=env, klt=klt), "'root'")
+
+
+def check_pdk_root_of_reads_one_response() -> None:
+    """``pdk_root_of`` is ``root``'s single-response reader (issue #653),
+    the mirror of :func:`libs_ref_of`: the P&R harness needs the root AND
+    other fields of the same ``klt pdk find`` response, so it must not
+    fork a second subprocess per field -- and a missing ``root`` must be
+    a BuildError, not a raw ``KeyError``."""
+    got = pdk_root_of(_PDK_RESPONSE)
+    _check("pdk_root_of reads root from a fetched response",
+           got == "/fake/.ciel", got)
+    _raises("pdk_root_of names the klt and pdk it was asked for",
+            lambda: pdk_root_of({}, pdk="sky130A", klt="/x/klt"),
+            "/x/klt pdk find --pdk sky130A")
+    _check("pdk_root() and pdk_root_of agree on the response's root",
+           pdk_root_of(_PDK_RESPONSE) == _PDK_RESPONSE["root"])
+    for label, response in {
+        "no root": {},
+        "non-string root": {"root": None},
+        "empty root": {"root": ""},
+    }.items():
+        _raises(f"pdk_root_of raises on {label}",
+                lambda response=response: pdk_root_of(response), "'root'")
+
+
+def check_pdk_find_names_the_pdk_it_was_asked_for() -> None:
+    body = ('print(json.dumps({"root": "/r", "asked": argv}))')
+    with tempfile.TemporaryDirectory() as t:
+        klt = _fake_klt(Path(t), body)
+        got = pdk_find("sky130B", env=dict(os.environ), klt=klt)
+        _check("pdk_find passes `pdk find --pdk <pdk>`",
+               got["asked"][:4] == ["pdk", "find", "--pdk", "sky130B"],
+               got["asked"])
+
+
+def check_run_klt_rc_reports_the_exit_status() -> None:
+    """``run_klt_rc`` exists so a caller recording klt's exit code can adopt
+    the shared contract without losing it (erc-negative-controls.py's
+    ``klt_exit`` field)."""
+    body = ('print(json.dumps({"erc_status": "fail", "erc_finding_count": 2}))\n'
+            'sys.exit(3)\n')
+    with tempfile.TemporaryDirectory() as t:
+        klt = _fake_klt(Path(t), body)
+        rc, resp = run_klt_rc(["erc", "x.gds", "s.json", "--findings-only"],
+                              env=dict(os.environ), klt=klt)
+        _check("run_klt_rc hands back klt's exit status", rc == 3, rc)
+        _check("run_klt_rc hands back the parsed response",
+               resp["erc_finding_count"] == 2, resp)
+
+    # an `error` object is still fatal, which is the divergence #133 retired
+    with tempfile.TemporaryDirectory() as t:
+        klt = _fake_klt(Path(t),
+                        'print(json.dumps({"error": {"message": "bad deck"}}))\n'
+                        'sys.exit(3)\n')
+        _raises("run_klt_rc still refuses a response carrying an error object",
+                lambda: run_klt_rc(["erc", "x.gds"], env=dict(os.environ),
+                                   klt=klt),
+                "bad deck")
+
+
+def check_compatibility_status_accepts_both_klt_spellings() -> None:
+    """klt reports ``compatibility`` as a bare string on older builds and as a
+    dict with a ``status`` since 0.9.x. Reading the dict form as a string
+    compares a dict against ``"match"`` -- never equal -- so every HEALTHY
+    install would be reported as flagged. This host's klt uses the dict
+    form, which is how that false alarm was found."""
+    cases = {
+        "bare string (the shape the issue's text rendering showed)":
+            ({"compatibility": "match"}, "match"),
+        "dict with status (klt 0.9.x, this host)":
+            ({"compatibility": {"status": "match", "package": "open_pdks-sky130",
+                                "expected": {"value": "open_pdks f6eeac7"},
+                                "installed": {"value": "open_pdks f6eeac7"}}},
+             "match"),
+        "dict reporting a real mismatch":
+            ({"compatibility": {"status": "mismatch"}}, "mismatch"),
+        "bare string reporting a real mismatch":
+            ({"compatibility": "mismatch"}, "mismatch"),
+        "absent": ({}, None),
+        "dict without a status": ({"compatibility": {"package": "x"}}, None),
+        "a shape that is neither": ({"compatibility": 7}, None),
+    }
+    for label, (response, want) in cases.items():
+        got = compatibility_status(response)
+        _check(f"compatibility_status reads {label}", got == want, got)
+
+    _check("a healthy dict-form install is NOT reported as flagged",
+           compatibility_status({"compatibility": {"status": "match"}}) == "match")
+
+
+def check_pdk_find_warns_only_on_actionable_flags(capsys=None) -> None:
+    """``ambiguous_roots`` is non-empty on every healthy call from a host that
+    has both ~/.ciel and ~/.volare, so it must not warn; a broken symlink and
+    a real compatibility mismatch must."""
+    import subprocess as sp
+    runner = Path(__file__).resolve().parent / "bin"
+
+    def stderr_of(payload: dict) -> str:
+        with tempfile.TemporaryDirectory() as t:
+            klt = _fake_klt(Path(t), "print(json.dumps(%s))" % json.dumps(payload))
+            code = ("import sys; sys.path.insert(0, %r)\n"
+                    "from _klt_common import pdk_find\n"
+                    "pdk_find('sky130A', klt=%r)\n" % (str(runner), klt))
+            r = sp.run([sys.executable, "-c", code], capture_output=True, text=True)
+            return r.stderr
+
+    healthy = {"root": "/r", "compatibility": {"status": "match"},
+               "ambiguous_roots": [{"root": "/home/u/.volare"}],
+               "broken_symlinks": []}
+    out = stderr_of(healthy)
+    _check("a healthy install (with a shadowed root) warns about nothing",
+           out.strip() == "", out)
+
+    out = stderr_of({**healthy, "compatibility": {"status": "mismatch"}})
+    _check("a compatibility mismatch warns", "compatibility 'mismatch'" in out, out)
+
+    out = stderr_of({**healthy, "broken_symlinks": ["/r/dangling"]})
+    _check("a broken symlink warns", "broken_symlinks" in out, out)
+
+
+def check_against_the_real_klt_response_shape() -> None:
+    """The fakes above encode an ASSUMPTION about klt's response. Check that
+    assumption against the real tool where one is installed, so a fake that
+    has drifted from klt cannot keep the suite green on its own terms.
+
+    Skipped (not failed) with no klt and no PDK, which is the CI path."""
+    import shutil
+    import subprocess as sp
+    if shutil.which("klt") is None:
+        print("SKIP: no klt on PATH (expected on the PR-blocking CI path)")
+        return
+    r = sp.run(["klt", "pdk", "find", "--pdk", "sky130A", "--format", "json"],
+               capture_output=True, text=True)
+    try:
+        real = json.loads(r.stdout)
+    except json.JSONDecodeError:
+        print(f"SKIP: no PDK install to resolve (klt exit {r.returncode})")
+        return
+    _check("the real response carries a string 'root'",
+           isinstance(real.get("root"), str) and real["root"], real.get("root"))
+    _check("the real response carries assets.libs_ref, and libs_ref_of reads it",
+           libs_ref_of(real) == Path(real["assets"]["libs_ref"]))
+    _check("compatibility_status reads the real response's compatibility",
+           compatibility_status(real) in ("match", "mismatch", None),
+           real.get("compatibility"))
+    _check("the real response carries the three fields the text scrape dropped",
+           all(k in real for k in ("compatibility", "ambiguous_roots",
+                                   "broken_symlinks")),
+           sorted(real))
+
+
+def check_the_bare_spelling_is_the_repo_convention() -> None:
+    """``klt_version`` returns the spelling this repo's pins are written in."""
+    repo = Path(__file__).resolve().parent.parent
+    pdk_json = json.loads((repo / "layout" / "pdk.json").read_text())
+    pin = pdk_json["klt_version_pin"]
+    _check("layout/pdk.json's klt_version_pin is bare, as klt_version() returns",
+           not pin.startswith("klt "), pin)
+
+
+def check_the_migrated_sites_no_longer_scrape_text() -> None:
+    """Defect 2's regression guard: the resolver this consolidated must not
+    grow a text scrape back. A ``libs_ref:``-matching regex over klt's
+    human-readable rendering is the exact shape that was retired -- it took
+    the first match, so a ``warning:`` line could win."""
+    repo = Path(__file__).resolve().parent.parent
+    for rel in ("sim/post-layout-whole-block/make-gate-model.py",
+                "sim/digital-electrical-repair/analysis/final_route_audit.py",
+                "sim/digital-electrical-repair/analysis/derive_limits.py",
+                "layout/bin/verify-whole.py"):
+        text = (repo / rel).read_text()
+        # the regex form, not the prose: a docstring may name the retired shape
+        code = "\n".join(ln for ln in text.splitlines()
+                          if "libs_ref:" in ln and "re.search" in ln)
+        _check(f"{rel} does not regex-scrape a libs_ref: line", not code, code)
+        _check(f"{rel} runs no raw `klt pdk find` subprocess",
+               'subprocess.run([a.klt, "pdk"' not in text
+               and 'subprocess.run(["klt", "pdk"' not in text
+               and 'subprocess.run([args.klt, "pdk"' not in text)
+
+
+def check_sim_harnesses_share_the_klt_readers() -> None:
+    """Issue #653's regression guard: #500/#535 consolidated the klt
+    readers into ``_klt_common``, and #597 then regrew the retired
+    ``klt --version`` banner read in sim/pex-sampler-core unnoticed,
+    because the no-fork guards covered ``layout/bin`` and four named files
+    only. This scans every non-test ``.py`` under ``layout/`` and ``sim/``
+    for the three fork shapes:
+
+    - a raw ``[klt, "--version"]`` / ``[args.klt, "--version"]`` argv (the
+      banner read, which fails open; the shared ``klt_version()`` asks
+      ``klt version --format json`` and fails closed);
+    - a direct ``["pdk", "find", ...]`` argv (bypasses ``pdk_find``'s
+      compatibility / broken_symlinks warnings and the fail-closed
+      ``libs_ref_of`` / ``pdk_root_of`` field reads);
+    - a ``startswith(str(REPO_ROOT))`` ``rel()`` fork (crashes with a
+      ValueError on a sibling directory sharing the repo's name prefix).
+
+    Sole carve-outs: ``_klt_common.py`` itself (the shared home) and
+    #502's two functional-verification harnesses, which stay hand-rolled
+    until the freshness-pinned 7.digital SDF record is re-minted under
+    #372. ``design/netlist.py``'s minimum-floor ``--version`` probe is
+    outside the scan roots (and returns ``str | None`` by design, #316);
+    ngspice's own ``--version`` reads do not match the klt-shaped regex.
+    """
+    repo = Path(__file__).resolve().parent.parent
+    exempt = {
+        "layout/bin/_klt_common.py",
+        "sim/digital-functional-verification/harness/fv-cosim.py",
+        "sim/digital-sdf-timed-verification/harness/fv-sdf-cosim.py",
+    }
+    version_fork = re.compile(r'\[\s*(?:args\.)?klt\s*,\s*"--version"\s*\]')
+    pdk_find_fork = re.compile(r'\[\s*"pdk"\s*,\s*"find"\s*,')
+    rel_fork = re.compile(r"startswith\(str\(REPO_ROOT\)\)")
+    forks = (("klt --version argv", version_fork),
+             ("direct pdk find argv", pdk_find_fork),
+             ("startswith rel() fork", rel_fork))
+    seen: set[str] = set()
+    for root in ("layout", "sim"):
+        for path in sorted((repo / root).rglob("*.py")):
+            relpath = path.relative_to(repo).as_posix()
+            if relpath in exempt or path.name.startswith("test_"):
+                continue
+            seen.add(relpath)
+            text = path.read_text()
+            for label, pattern in forks:
+                hit = pattern.search(text)
+                _check(f"{relpath} carries no {label}",
+                       hit is None, hit.group(0) if hit else None)
+    targets = ("sim/pex-sampler-core/harness/pex-measure.py",
+               "sim/digital-pnr/harness/pnr-and-verify.py",
+               "sim/digital-synthesis/harness/synthesize-and-verify.py",
+               "sim/digital-synthesis/harness/synthesize-lagcount-prototype.py")
+    _check("the scan covers the four harnesses #653 migrated",
+           all(t in seen for t in targets),
+           sorted(t for t in targets if t not in seen))
+    # The carve-outs must stay honest: an exempt file that no longer
+    # carries its fork makes the exemption list stale (#372's landing
+    # must shrink it, not leave a hole the next fork can hide in).
+    for relpath in ("sim/digital-functional-verification/harness/fv-cosim.py",
+                    "sim/digital-sdf-timed-verification/harness/fv-sdf-cosim.py"):
+        text = (repo / relpath).read_text()
+        _check(f"{relpath} still carries the fork its exemption names "
+               "(else shrink the exemption)",
+               version_fork.search(text) is not None)
+    # Negative controls (#617's convention): each regex must be shown able
+    # to fail, and stay silent on the legitimate near-misses that share a
+    # token but not a shape.
+    _check("the version regex catches the #597 regrowth shape",
+           version_fork.search('subprocess.run([klt, "--version"], '
+                               'capture_output=True, text=True)') is not None)
+    _check("the version regex catches the args.klt spelling the FV pair uses",
+           version_fork.search('subprocess.run([args.klt, "--version"])')
+           is not None)
+    _check("the version regex stays silent on ngspice --version",
+           version_fork.search('subprocess.run(["ngspice", "--version"])')
+           is None)
+    _check("the version regex stays silent on the shared version subcommand",
+           version_fork.search('run_klt(["version"], env=env, klt=klt)')
+           is None)
+    _check("the pdk-find regex catches a direct run_klt call",
+           pdk_find_fork.search('run_klt(["pdk", "find", "--pdk", pdk], '
+                                'env=env)') is not None)
+    _check("the pdk-find regex stays silent on prose mentioning klt pdk find",
+           pdk_find_fork.search("# klt pdk find --format json is the "
+                                "documented spelling") is None)
+    _check("the rel-fork regex catches the retired lambda's guard",
+           rel_fork.search("if str(Path(p).resolve()).startswith(str(REPO_ROOT))"
+                           " else str(p)") is not None)
+
+
+def check_rel_spells_repo_relative_posix() -> None:
+    """Under the repo: a relative POSIX path. Outside it: the absolute
+    POSIX spelling, not a ValueError -- a scratch-dir path must not crash
+    a provenance line."""
+    got = rel(REPO_ROOT / "layout" / "bin" / "_klt_common.py")
+    _check("rel() spells a repo file repo-relative",
+           got == "layout/bin/_klt_common.py", got)
+    got = rel(REPO_ROOT / "layout" / "bin" / ".." / "bin" / "_klt_common.py")
+    _check("rel() resolves .. segments (Path.resolve)",
+           got == "layout/bin/_klt_common.py", got)
+    _check("rel() accepts a str and spells it identically",
+           rel(str(REPO_ROOT / "layout" / "bin" / "_klt_common.py"))
+           == "layout/bin/_klt_common.py")
+    with tempfile.TemporaryDirectory() as t:
+        outside = Path(t) / "x.json"
+        outside.write_text("{}\n")
+        got = rel(outside)
+        _check("rel() falls back to the absolute POSIX spelling outside the repo",
+               got == outside.as_posix(), got)
+    # The exact fork #653 retired: `startswith(str(REPO_ROOT))` guarding a
+    # bare relative_to, which CRASHED on a sibling directory sharing the
+    # repo's name prefix (the string prefix matched, the subpath relation
+    # did not). The shared helper must return the absolute spelling.
+    sibling = REPO_ROOT.parent / f"{REPO_ROOT.name}-study" / "req.json"
+    _check("rel() does not crash on a sibling dir sharing the repo's prefix",
+           rel(sibling) == sibling.as_posix(), rel(sibling))
+
+
+def check_load_json_fails_closed() -> None:
+    """The compose-whole contract: a missing or unparsable input is a
+    BuildError naming the path -- the divergence between the two former
+    copies that motivated the consolidation."""
+    with tempfile.TemporaryDirectory() as t:
+        good = Path(t) / "good.json"
+        good.write_text('{"k": 1}')
+        _check("load_json reads valid JSON", load_json(good) == {"k": 1},
+               load_json(good))
+        _raises("load_json raises on a missing file",
+                lambda: load_json(Path(t) / "nope.json"), "missing input")
+        _raises("load_json names the path on a missing file",
+                lambda: load_json(Path(t) / "nope.json"), "nope.json")
+        bad = Path(t) / "bad.json"
+        bad.write_text("{not json")
+        _raises("load_json raises on invalid JSON",
+                lambda: load_json(bad), "not valid JSON")
+        _raises("load_json names the path on invalid JSON",
+                lambda: load_json(bad), "bad.json")
+
+
+def check_klt_env_sets_the_pdk_and_optional_root() -> None:
+    """PDK=sky130A always; an explicit pdk_root wins over the ambient
+    $PDK_ROOT; no argument inherits the ambient environment untouched."""
+    ambient = os.environ.get("PDK_ROOT")
+    try:
+        os.environ.pop("PDK_ROOT", None)
+        _check("klt_env forces PDK=sky130A",
+               klt_env()["PDK"] == "sky130A", klt_env().get("PDK"))
+        _check("klt_env leaves PDK_ROOT unset with no argument and none ambient",
+               "PDK_ROOT" not in klt_env(), klt_env().get("PDK_ROOT"))
+        os.environ["PDK_ROOT"] = "/ambient/root"
+        _check("klt_env inherits the ambient PDK_ROOT with no argument",
+               klt_env().get("PDK_ROOT") == "/ambient/root", klt_env().get("PDK_ROOT"))
+        _check("an explicit pdk_root wins over the ambient one",
+               klt_env("/preset/root")["PDK_ROOT"] == "/preset/root",
+               klt_env("/preset/root").get("PDK_ROOT"))
+        _check("klt_env keeps the rest of the ambient environment",
+               klt_env().get("PATH") == os.environ.get("PATH"))
+    finally:
+        if ambient is None:
+            os.environ.pop("PDK_ROOT", None)
+        else:
+            os.environ["PDK_ROOT"] = ambient
+
+
+def check_klayout_db_fails_closed_without_klayout() -> None:
+    """A missing python klayout package is a BuildError, not a raw
+    ImportError traceback. The None-in-sys.modules trick makes the import
+    fail without uninstalling anything."""
+    saved = sys.modules.get("klayout.db")
+    sys.modules["klayout.db"] = None
+    try:
+        _raises("klayout_db raises BuildError without the klayout package",
+                klayout_db, "klayout")
+    finally:
+        if saved is None:
+            sys.modules.pop("klayout.db", None)
+        else:
+            sys.modules["klayout.db"] = saved
+    try:
+        import klayout.db  # noqa: PLC0415
+
+        have = True
+    except ImportError:
+        have = False
+    if have:
+        _check("klayout_db hands back the klayout.db module",
+               hasattr(klayout_db(), "Layout"))
+    else:
+        print("SKIP: python klayout not importable "
+              "(the BuildError branch above is the live path here)")
+
+
+def check_dumps_matches_write_json() -> None:
+    """dumps is write_json's serialization without the file write."""
+    doc = {"z": 1, "a": {"nested": [1, 2]}}
+    with tempfile.TemporaryDirectory() as t:
+        p = Path(t) / "x.json"
+        write_json(p, doc)
+        _check("dumps is byte-equal to write_json's file content",
+               dumps(doc) == p.read_text(), dumps(doc)[:40])
+    _check("dumps ends with exactly one trailing newline",
+           dumps(doc).endswith("\n") and not dumps(doc).endswith("\n\n"),
+           repr(dumps(doc)[-4:]))
+    _check("dumps preserves insertion order (no sort_keys)",
+           dumps(doc).index('"z"') < dumps(doc).index('"a"'))
+
+
+def check_the_consolidated_helpers_live_in_one_place() -> None:
+    """Issue #535's regression guard: the five helpers must not grow back
+    as per-script forks in layout/bin. A docstring may name them; a ``def``
+    may not."""
+    bin_dir = Path(__file__).resolve().parent / "bin"
+    shared = (bin_dir / "_klt_common.py").read_text()
+    for name in ("rel", "load_json", "klt_env", "klayout_db", "dumps"):
+        _check(f"_klt_common.py defines {name}()",
+               re.search(rf"^def {name}\(", shared, re.M) is not None)
+    pattern = re.compile(r"^def (rel|load_json|klt_env|_klayout|dumps)\b", re.M)
+    for script in ("compose-whole.py", "verify-whole.py",
+                   "drc_coverage_audit.py", "physical_estimates.py"):
+        text = (bin_dir / script).read_text()
+        hit = pattern.search(text)
+        _check(f"{script} carries no local fork of the five helpers",
+               hit is None, hit.group(0) if hit else None)
+
+
+def check_the_gds_geometry_helpers_live_in_one_place() -> None:
+    """Issue #617's regression guard over the #613 consolidation: the four
+    GDS geometry helpers live in _gds_geometry.py and must not grow back as
+    per-script forks, nor be reached again through a spec_from_file_location
+    loader of compose-whole.py -- the two loaders #613 deleted. A docstring
+    may name them; a ``def`` may not, and a loader of any other file is not
+    this guard's business."""
+    bin_dir = Path(__file__).resolve().parent / "bin"
+    shared = (bin_dir / "_gds_geometry.py").read_text()
+    for name in ("flat_extract", "net_labels", "probe",
+                 "canonical_geometry_hash"):
+        _check(f"_gds_geometry.py defines {name}()",
+               re.search(rf"^def {name}\(", shared, re.M) is not None)
+    fork = re.compile(
+        r"^def (flat_extract|net_labels|probe|canonical_geometry_hash)\b", re.M)
+    loader = re.compile(r"spec_from_file_location\([^)]*compose-whole", re.S)
+    for script in ("compose-whole.py", "verify-whole.py",
+                   "physical_estimates.py"):
+        text = (bin_dir / script).read_text()
+        hit = fork.search(text)
+        _check(f"{script} carries no local fork of the geometry helpers",
+               hit is None, hit.group(0) if hit else None)
+        hit = loader.search(text)
+        _check(f"{script} reaches no compose-whole.py loader by path",
+               hit is None, hit.group(0) if hit else None)
+    # Negative controls, so both regexes are shown able to fail: the caught
+    # shapes are the ones #613 deleted; the three near-misses must stay
+    # silent (issue #617's test plan).
+    _check("the fork regex catches a copied top-level helper def",
+           fork.search("def probe(db, l2n, regions, layer_key, x_um, y_um):\n"
+                       "    return set()\n") is not None)
+    _check("the fork regex stays silent on a longer name (probe_clusters)",
+           fork.search("def probe_clusters(path):\n    return path\n") is None)
+    _check("the fork regex stays silent on a prose mention",
+           fork.search("# net_labels, probe and canonical_geometry_hash live\n"
+                       "# in _gds_geometry.py\n") is None)
+    _check("the loader regex catches the one-line verify-whole.py loader",
+           loader.search('_cw_spec = importlib.util.spec_from_file_location('
+                         '"compose_whole", HERE / "compose-whole.py")\n')
+           is not None)
+    _check("the loader regex catches the multiline physical_estimates.py "
+           "loader",
+           loader.search('    spec = importlib.util.spec_from_file_location('
+                         '"physical_estimates_compose_whole",\n'
+                         '                                  here / '
+                         '"compose-whole.py")\n') is not None)
+    _check("the loader regex stays silent on a loader of another file",
+           loader.search('    spec = importlib.util.spec_from_file_location('
+                         '"hashing", here / "_hashing.py")\n') is None)
+
+
+def main() -> int:
+    check_klt_version_is_bare()
+    check_klt_version_fails_closed()
+    check_pdk_find_always_asks_for_json()
+    check_libs_ref_is_not_fooled_by_a_decoy()
+    check_libs_ref_fails_closed()
+    check_pdk_root_short_circuits_a_preset_root()
+    check_pdk_root_reads_root_from_the_response()
+    check_pdk_root_of_reads_one_response()
+    check_pdk_find_names_the_pdk_it_was_asked_for()
+    check_run_klt_rc_reports_the_exit_status()
+    check_compatibility_status_accepts_both_klt_spellings()
+    check_pdk_find_warns_only_on_actionable_flags()
+    check_against_the_real_klt_response_shape()
+    check_the_bare_spelling_is_the_repo_convention()
+    check_the_migrated_sites_no_longer_scrape_text()
+    check_sim_harnesses_share_the_klt_readers()
+    check_rel_spells_repo_relative_posix()
+    check_load_json_fails_closed()
+    check_klt_env_sets_the_pdk_and_optional_root()
+    check_klayout_db_fails_closed_without_klayout()
+    check_dumps_matches_write_json()
+    check_the_consolidated_helpers_live_in_one_place()
+    check_the_gds_geometry_helpers_live_in_one_place()
+    print(f"\n{sum(_RESULTS)}/{len(_RESULTS)} checks passed")
+    return 0 if all(_RESULTS) else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

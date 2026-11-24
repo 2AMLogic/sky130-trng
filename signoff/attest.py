@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
-"""Artifact-anchored `generic` envelopes for T1 items 1, 2, 9 and 10 (issue #320).
+"""Artifact-anchored `generic` envelopes for T1 items 1 (digital), 2, 9 and 10 (issue #320).
 
-klayout-tools 0.7.0 grades these four items only from an opt-in `generic`
+Item 1 analog is NOT built here: `klt signoff --attest 1` mints it where xschem
+exists (issue #360; .github/workflows/pdk-nightly.yml, netlist-check).
+
+klayout-tools 0.8.0 (the CI pin since issue #363) grades these four items only from an opt-in `generic`
 envelope that (a) declares `"t1_item": <id>`, (b) names the audited artifact in
 `provenance.input.path` + `provenance.input.content_hash`, and (c) is cited by a
 manifest entry pinning the same hash.  The artifact each envelope pins is the
@@ -28,11 +31,15 @@ Exit 0: consistent (check) / written (write).  Exit 1: drift.  Exit 2: usage.
 """
 import argparse
 import fnmatch
-import hashlib
 import json
 import os
 import sys
+from functools import partial
 from pathlib import Path
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO_ROOT / "layout" / "bin"))
+from _hashing import sha256_file as _sha256_file, sha256_text as _sha256_text  # noqa: E402
 
 SCHEMA_VERSION = 1
 ATTEST_DIR = "signoff/attest"
@@ -41,7 +48,6 @@ SKIP_SUFFIXES = (".pyc",)
 
 # key -> (t1 item, partition or None, one-line claim)
 ROWS = {
-    "1.analog": (1, "analog", "committed schematics plus the netlist derived from them"),
     "1.digital": (1, "digital", "committed RTL plus the synthesized netlist derived from it"),
     "2.analog": (2, "analog", "committed GDS with documented provenance"),
     "2.digital": (2, "digital", "committed routed GDS from a committed P&R flow"),
@@ -52,7 +58,6 @@ ROWS = {
 # Selectors: repo-relative file or fnmatch glob on the posix relpath; a leading
 # "!" removes matches (unit tests are not testbenches).
 SELECTORS = {
-    "1.analog": ["design/xschem/*", "design/sampler_core.spice", "design/netlist.py"],
     "1.digital": [
         "digital/rtl/trng_digital.v",
         "digital/flow/unconstrained/synthesize-trng-digital.json",
@@ -70,6 +75,7 @@ SELECTORS = {
         "layout/sampler_core/compose.request.json",
         "layout/sampler_core/compose.response.json",
         "layout/bin/compose-cell.py",
+        "layout/bin/_klt_common.py",
     ],
     "2.digital": [
         "layout/trng_digital/trng_digital.gds",
@@ -78,6 +84,8 @@ SELECTORS = {
         "digital/flow/place-and-route/pnr-trng-digital-50khz.json",
         "digital/flow/place-and-route/tool-pins.json",
         "sim/digital-pnr/harness/pnr-and-verify.py",
+        "layout/bin/_hashing.py",
+        "layout/bin/_klt_common.py",
         "sim/digital-pnr/records/*.json",
     ],
     "9": [
@@ -92,26 +100,18 @@ SELECTORS = {
         "digital/tb/cocotb/*",
         "REPRODUCE.md",
         "design/pdk.json",
+        "design/_pdk_search.py",
         "sim/pdk.json",
         "layout/pdk.json",
+        "layout/bin/_hashing.py",
+        "layout/bin/_klt_common.py",
+        "layout/bin/_pex_rewrite.py",
     ],
     "10": ["README.md", "LICENSE", "REPRODUCE.md", ".github/workflows/*"],
 }
 
-ANALOG_FRESHNESS_FAILURE = (
-    "netlist_freshness_unverified: design/sampler_core.spice is derived from "
-    "design/xschem/*.sch by `design/netlist.py`, which needs xschem; the "
-    "schematic->netlist diff is gated only by .github/workflows/pdk-nightly.yml "
-    "(netlist-check), so no stdlib check here can establish it"
-)
-
-
-def sha256_file(path):
-    h = hashlib.sha256()
-    with open(path, "rb") as f:
-        for chunk in iter(lambda: f.read(1 << 20), b""):
-            h.update(chunk)
-    return "sha256:" + h.hexdigest()
+sha256_file = partial(_sha256_file, prefix=True)  # recorded as "sha256:<hex>"
+digest = partial(_sha256_text, prefix=True)      # recorded as "sha256:<hex>"
 
 
 def walk(root):
@@ -144,17 +144,6 @@ def load_json(root, rel):
 
 # ---------------------------------------------------------------- row checks
 # Each returns a list of failure strings (empty = every check passed).
-
-def check_1_analog(root, members):
-    fails = [ANALOG_FRESHNESS_FAILURE]
-    names = {m["path"] for m in members}
-    head = (root / "design/sampler_core.spice").read_text().splitlines()[:4]
-    if not any("design/xschem/sampler_core.sch" in l for l in head):
-        fails.append("design/sampler_core.spice header does not name design/xschem/sampler_core.sch")
-    if "design/xschem/sampler_core.sch" not in names:
-        fails.append("schematic design/xschem/sampler_core.sch not inventoried")
-    return fails
-
 
 def check_1_digital(root, members):
     fails = []
@@ -235,7 +224,7 @@ def check_10(root, members):
 
 
 CHECKS = {
-    "1.analog": check_1_analog, "1.digital": check_1_digital,
+    "1.digital": check_1_digital,
     "2.analog": check_2_analog, "2.digital": check_2_digital,
     "9": check_9, "10": check_10,
 }
@@ -283,10 +272,6 @@ def manifest_entry(files, key):
 
 def dump(obj):
     return json.dumps(obj, indent=2, sort_keys=False) + "\n"
-
-
-def digest(text):
-    return "sha256:" + hashlib.sha256(text.encode()).hexdigest()
 
 
 def main(argv=None):

@@ -32,10 +32,14 @@ model with a different parameter set, or the wrong number of nets.
 from __future__ import annotations
 
 import argparse
-import hashlib
 import re
 import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "layout" / "bin"))
+# both re-exported: campaign.py / make-requests.py / analysis/sensitivity.py call
+# aging.sha256_file and aging.sha256_text
+from _hashing import sha256_file, sha256_text  # noqa: E402,F401
 
 NMOS = "sky130_fd_pr__nfet_01v8"
 PMOS = "sky130_fd_pr__pfet_01v8"
@@ -137,14 +141,6 @@ def age_netlist(text: str) -> tuple[str, dict]:
            "wrapper_sha256": sha256_text(wrapper_definition()),
            "source_sha256": sha256_text(text), "aged_sha256": sha256_text(aged)}
     return aged, rep
-
-
-def sha256_text(t: str) -> str:
-    return hashlib.sha256(t.encode()).hexdigest()
-
-
-def sha256_file(p: Path) -> str:
-    return hashlib.sha256(Path(p).read_bytes()).hexdigest()
 
 
 def unwrap(aged: str) -> str:

@@ -61,16 +61,19 @@ What it does (all inputs are read from the committed macro artifacts)
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
-import os
 import re
 import sys
 import tempfile
+from functools import partial
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _klt_common import BuildError, run_klt, write_json  # noqa: E402
+from _gds_geometry import (canonical_geometry_hash, flat_extract,  # noqa: E402
+                           net_labels, probe)
+from _hashing import sha256_file as _sha256_file, sha256_text as _sha256_text  # noqa: E402
+from _klt_common import (BuildError, klt_env, klayout_db as _klayout,  # noqa: E402
+                         load_json, rel, run_klt, write_json)
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
@@ -87,27 +90,6 @@ _LAYER_KEY = {
     (71, 20): "m4",
     (72, 20): "m5",
 }
-_STACK = (
-    ("li", (67, 20)),
-    ("mcon", (67, 44)),
-    ("m1", (68, 20)),
-    ("v1", (68, 44)),
-    ("m2", (69, 20)),
-    ("v2", (69, 44)),
-    ("m3", (70, 20)),
-    ("v3", (70, 44)),
-    ("m4", (71, 20)),
-    ("v4", (71, 44)),
-    ("m5", (72, 20)),
-)
-_LABEL_LAYER = {
-    "li": (67, 5),
-    "m1": (68, 5),
-    "m2": (69, 5),
-    "m3": (70, 5),
-    "m4": (71, 5),
-    "m5": (72, 5),
-}
 
 
 # --------------------------------------------------------------------------
@@ -115,25 +97,8 @@ _LABEL_LAYER = {
 # --------------------------------------------------------------------------
 
 
-def sha256_file(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(1 << 20), b""):
-            digest.update(chunk)
-    return "sha256:" + digest.hexdigest()
-
-
-def sha256_text(text: str) -> str:
-    return "sha256:" + hashlib.sha256(text.encode()).hexdigest()
-
-
-def load_json(path: Path) -> dict:
-    try:
-        return json.loads(path.read_text())
-    except FileNotFoundError as exc:
-        raise BuildError(f"missing input: {path}") from exc
-    except json.JSONDecodeError as exc:
-        raise BuildError(f"{path} is not valid JSON: {exc}") from exc
+sha256_file = partial(_sha256_file, prefix=True)  # recorded as "sha256:<hex>"
+sha256_text = partial(_sha256_text, prefix=True)  # recorded as "sha256:<hex>"
 
 
 def read_text(path: Path) -> str:
@@ -147,14 +112,6 @@ def require_file(path: Path) -> Path:
     if not path.is_file():
         raise BuildError(f"missing input: {path}")
     return path
-
-
-def rel(path: Path) -> str:
-    """Repo-relative POSIX spelling (never an absolute home path)."""
-    try:
-        return path.resolve().relative_to(REPO_ROOT).as_posix()
-    except ValueError:
-        return path.as_posix()
 
 
 def mirror_point(orientation: str, origin: dict, x: float, y: float):
@@ -349,106 +306,10 @@ def parse_spice_pins(spice_text: str, subckt: str) -> list[dict]:
 
 
 # --------------------------------------------------------------------------
-# flat connectivity extraction (pure klayout.db; no klt)
+# flat connectivity extraction (pure klayout.db; no klt) -- flat_extract,
+# net_labels, probe and canonical_geometry_hash live in _gds_geometry.py
+# (issue #613); the composer imports them by name above.
 # --------------------------------------------------------------------------
-
-
-def _klayout():
-    try:
-        import klayout.db as db  # noqa: PLC0415
-    except ImportError as exc:  # pragma: no cover - environment guard
-        raise BuildError(
-            "python klayout (klayout.db) is required for the geometry audits"
-        ) from exc
-    return db
-
-
-def flat_extract(gds_path: Path):
-    """Metal-stack connectivity of a GDS, flattened. Returns (db, l2n, regions).
-
-    Connectivity is li1/mcon/met1/via/met2/via2/met3/via3/met4/via4/met5 plus
-    the pin-label layers of each metal; there is no device extraction and no
-    substrate/well model, so this proves *metal-level* terminal connectivity
-    and label identity only (it is not LVS and does not stand in for it).
-    """
-    db = _klayout()
-    layout = db.Layout()
-    layout.read(str(gds_path))
-    top = layout.top_cell()
-    top.flatten(True)
-    l2n = db.LayoutToNetlist(db.RecursiveShapeIterator(layout, top, []))
-    regions = {}
-    for key, (num, dt) in _STACK:
-        if layout.find_layer(num, dt) is not None:
-            regions[key] = l2n.make_layer(layout.layer(num, dt), key)
-    for lower, upper in zip(_STACK, _STACK[1:]):
-        if lower[0] in regions and upper[0] in regions:
-            l2n.connect(regions[lower[0]], regions[upper[0]])
-    for key in regions:
-        l2n.connect(regions[key])
-    for key, (num, dt) in _LABEL_LAYER.items():
-        if key in regions and layout.find_layer(num, dt) is not None:
-            text = l2n.make_text_layer(layout.layer(num, dt), "t_" + key)
-            l2n.connect(regions[key], text)
-    l2n.extract_netlist()
-    return db, l2n, regions
-
-
-def net_labels(net) -> set[str]:
-    return {tok for tok in re.split(r"[,|]", net.expanded_name()) if tok}
-
-
-def probe(db, l2n, regions, layer_key: str, x_um: float, y_um: float):
-    """The extracted net under a point on one metal layer, or None."""
-    if layer_key not in regions:
-        return None
-    return l2n.probe_net(regions[layer_key], db.DPoint(x_um, y_um))
-
-
-def canonical_geometry_hash(gds_path: Path) -> tuple[str, dict]:
-    """Order- and timestamp-independent hash of a GDS stream's drawn geometry.
-
-    For every (layer, datatype): the merged flat polygons, sorted; plus every
-    text label (layer, datatype, string, position), sorted. The GDS header's
-    timestamps and the cell/instance ordering of the stream do not enter it.
-    Returns (hash, {"polygons": N, "labels": N, "layers": N}).
-    """
-    db = _klayout()
-    layout = db.Layout()
-    layout.read(str(gds_path))
-    top = layout.top_cell()
-    digest = hashlib.sha256()
-    n_poly = n_lab = n_layers = 0
-    infos = sorted(
-        (layout.get_info(i).layer, layout.get_info(i).datatype, i)
-        for i in layout.layer_indexes()
-    )
-    for num, dt, idx in infos:
-        region = db.Region(top.begin_shapes_rec(idx))
-        region.merge()
-        polys = sorted(poly.to_s() for poly in region.each())
-        labels = []
-        for it in top.begin_shapes_rec(idx):
-            shape = it.shape()
-            if shape.is_text():
-                point = it.trans().trans(db.Point(shape.text.trans.disp))
-                labels.append(f"{shape.text_string}@{point.x},{point.y}")
-        labels.sort()
-        if not polys and not labels:
-            continue
-        n_layers += 1
-        n_poly += len(polys)
-        n_lab += len(labels)
-        digest.update(f"L{num}/{dt}\n".encode())
-        for poly in polys:
-            digest.update(poly.encode() + b"\n")
-        for label in labels:
-            digest.update(b"T" + label.encode() + b"\n")
-    return "sha256:" + digest.hexdigest(), {
-        "polygons": n_poly,
-        "labels": n_lab,
-        "layers": n_layers,
-    }
 
 
 def drawn_bbox_um(gds_path: Path) -> dict:
@@ -1473,10 +1334,6 @@ def area_verdict(model: Model, bbox: dict, ana_bbox: dict, dig_bbox: dict) -> di
 # --------------------------------------------------------------------------
 # build / check
 # --------------------------------------------------------------------------
-
-
-def klt_env() -> dict[str, str]:
-    return {**os.environ, "PDK": "sky130A"}
 
 
 def klt_version(env: dict[str, str]) -> dict:

@@ -13,23 +13,25 @@ input at alpha = 0.01; short input must be INSUFFICIENT, never PASS.
 from __future__ import annotations
 
 import hashlib
-import importlib.util
 import io
 import json
+import math
 import random
 import sys
 import tempfile
+import os
 import unittest
 from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 _PATH = REPO_ROOT / "sim" / "raw-bit-min-entropy" / "analysis" / "raw-bit-battery.py"
-_spec = importlib.util.spec_from_file_location("raw_bit_battery", _PATH)
-assert _spec is not None and _spec.loader is not None
-B = importlib.util.module_from_spec(_spec)
-sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
-_spec.loader.exec_module(B)
+sys.path.insert(0, os.path.join(REPO_ROOT, "sim", "bin"))
+from loadmod import load_module  # noqa: E402
+import replay_equal  # noqa: E402
+B = load_module("raw_bit_battery", _PATH)
+brb = load_module("behavioral_raw_bit",
+                  REPO_ROOT / "sim/raw-bit-volume-campaign/behavioral_raw_bit.py")
 
 
 def ideal(n, seed=1):
@@ -207,11 +209,6 @@ class TestRecordCaveat(unittest.TestCase):
             self.assertEqual(c["battery"]["verdict"], "INSUFFICIENT")
 
 
-def pack(bits):
-    return "".join(f"{int(''.join(map(str, bits[i:i + 8])), 2):02x}"
-                   for i in range(0, len(bits), 8))
-
-
 class TestVolumeAdapter(unittest.TestCase):
     N = 5120  # 10 segments of 512 (SEGMENT_LEN patched below)
 
@@ -234,7 +231,7 @@ class TestVolumeAdapter(unittest.TestCase):
         self.streams = []
         for i, ts in enumerate(("Ts20us", "Ts100ns")):
             bits = ideal(self.N, seed=10 + i)
-            text = pack(bits)
+            text = brb.pack_hex(bits)
             name = f"bits_tt_{ts}.hex.txt"
             (self.runs / name).write_text(text + "\n")
             self.streams.append({
@@ -284,10 +281,10 @@ class TestVolumeAdapter(unittest.TestCase):
         row = self.streams[0]
         bits = B.load_stream(self.runs / row["file"], row["n"], row["sha256_hex"])
         self.assertEqual(len(bits), self.N)
-        self.assertEqual(pack(bits) + "\n", (self.runs / row["file"]).read_text())
+        self.assertEqual(brb.pack_hex(bits) + "\n", (self.runs / row["file"]).read_text())
         # same text without the newline hashes identically (newline excluded)
         f = self.runs / "nonl.txt"
-        f.write_text(pack(bits))
+        f.write_text(brb.pack_hex(bits))
         self.assertEqual(B.load_stream(f, row["n"], row["sha256_hex"]), bits)
 
     def test_rejections(self):
@@ -413,6 +410,41 @@ class TestVolumeAdapter(unittest.TestCase):
         f.write_text(("00" + f.read_text()[2:]))
         self.assertNotEqual(self.check(rec)[0], 0)
         self.assertEqual(len(list(B.RECORDS_DIR.glob("*.json"))), 1)
+
+
+class ReplayTolerance(unittest.TestCase):
+    """Issue #659: `--check` replays the payload through sim/bin/replay_equal.py.
+
+    The battery's chi-square and estimator constructs are float `sum()`s;
+    builtin `sum()` is naive on CPython <= 3.11 and compensated on >= 3.12,
+    so the committed volume record minted on 3.12 failed its own replay on
+    all 18/18 streams under 3.11 semantics before this."""
+
+    def test_uses_the_shared_rule(self):
+        self.assertIs(B.replay_equal, replay_equal.replay_equal)
+
+    def test_replay_gate_absorbs_the_cpython_sum_split_and_still_bites(self):
+        # `t_longest_run`'s chi construct (m = 8): counts against the table's
+        # inexact decimal probabilities, sized so the naive and compensated
+        # reductions of the same terms differ.
+        nb = 831
+        counts = [195, 314, 175, 147]
+        _, _, _, probs = B._LONGEST[8]
+        terms = [(c - nb * p) ** 2 / (nb * p) for c, p in zip(counts, probs)]
+        chi_naive = 0.0
+        for t in terms:
+            chi_naive += t
+        chi_fsum = math.fsum(terms)
+        self.assertNotEqual(chi_naive, chi_fsum)
+        self.assertTrue(B.replay_equal(chi_naive, chi_fsum))
+        self.assertFalse(B.replay_equal(chi_fsum, chi_fsum * (1 + 1e-6)))
+        self.assertTrue(B.replay_equal(chi_fsum, chi_fsum * (1 + 1e-12)))
+
+    def test_zero_versus_tiny_is_a_difference_no_absolute_floor(self):
+        self.assertFalse(B.replay_equal(0.0, 5e-324))
+        self.assertFalse(B.replay_equal(0.0, 1e-20))
+        self.assertFalse(B.replay_equal(1e-20, 0.0))
+        self.assertTrue(B.replay_equal(0.0, -0.0))
 
 
 if __name__ == "__main__":

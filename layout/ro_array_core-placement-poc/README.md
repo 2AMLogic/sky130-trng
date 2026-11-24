@@ -852,15 +852,30 @@ reaches the cell boundary touching nothing:
 | Direction | Legal window (block-local µm) | Width |
 |---|---|---|
 | north | `x ∈ [1.340, 2.690]` | 1.350 |
-| south | `x ∈ [6.310, 7.770]` | 1.460 |
-| east | `y ∈ [2.580, 3.595]` | 1.015 |
+| south | `x ∈ [6.915, 7.770]` | 0.855 |
+| east | `y ∈ [2.580, 3.745]` | 1.165 |
 | west | `y ∈ [12.160, 13.840]` | 1.680 |
+
+(Windows re-measured against the current `layout/xor2/xor2.gds`, whose
+klayout-tools 0.8.0 regeneration (`93d026cc`) moved the cell's internal met1
+edges by up to `0.52 µm` (two internal met1 tabs, `y ∈ [6.60, 7.02]` →
+`[6.08, 6.50]`; the lower/upper met1 pad edges moved `0.15 µm`, `3.82 → 3.97`
+and `11.76 → 11.61`); the committed `xor2-y-escape-scan.json` is the
+regenerated output. North and west are unchanged by that regen. East widened
+`+0.15 µm` (`3.595 → 3.745`) because the lower met1 pad edge moved
+`3.82 → 3.97`. South narrowed `−0.605 µm` (`x ∈ [6.310, 7.770] → [6.915,
+7.770]`) because `y`'s own horizontal li1 trunk moved up `0.20 µm`
+(`y ∈ [4.515, 4.685]` → `[4.715, 4.885]`), bringing `x ∈ [6.310, 6.915)`
+inside the `0.225 µm` met1 halo (`0.085` half-stub + `0.14` spacing) of the
+stationary `y = 4.915` met1 bar above it.)
 
 One window per direction, and the first probe's `(4.5, 8.0)` tap is in none
 of them for the direction it escaped: **the tap coordinate was never the
-bug, the escape direction was** — `(4.5, 8.0)` is genuinely on `y`, as is
-the `(3.84, 4.6)` approximation the coordinate table below has carried
-since Increment 2. This increment taps `(1.55, 13.0)` instead — the centre
+bug, the escape direction was** — `(4.5, 8.0)` is genuinely on `y`. The
+`(3.84, 4.6)` approximation the coordinate table below has carried since
+Increment 2 was on `y` in the pre-`93d026cc` GDS this increment ran
+against; in the regenerated `layout/xor2/xor2.gds` it is `0.115 µm` below
+`y`'s li1 trunk and no longer on-net. This increment taps `(1.55, 13.0)` instead — the centre
 of `mp13`'s own `U0_S1` source pad (`x ∈ [1.340, 1.760]`,
 `y ∈ [12.160, 13.840]`), the west half of the pad pair the cell's own
 `"core"` stage links across the top gap — which sits in the north window
@@ -1023,10 +1038,13 @@ else below is still open.
   hold").
 - **`xor2`'s `y`/`vdd`/`vss` tap coordinates below are approximate, not
   tool-declared.** **`y` is resolved as of Increment 6**: the table's own
-  `y (-> t1) approx (10.725, 17.185)` (block-local `(3.84, 4.6)`) is
-  confirmed *on-net* — it and the tap Increment 6 actually routed from,
-  local `(1.55, 13.0)`, are points on the same single li1 component `klt
-  components` reports as `xor2`'s `y`. Being on-net is not the same as
+  `y (-> t1) approx (10.725, 17.185)` (block-local `(3.84, 4.6)`) was
+  confirmed *on-net* in the pre-`93d026cc` GDS Increment 6 ran against —
+  it and the tap Increment 6 actually routed from, local `(1.55, 13.0)`,
+  were points on the same single li1 component `klt components` reports as
+  `xor2`'s `y`. After `93d026cc` moved `y`'s horizontal li1 trunk up
+  `0.20 µm`, `(3.84, 4.6)` is `0.115 µm` off-net in the current GDS, while
+  `(4.5, 8.0)`, `(1.55, 13.0)` and `(7.6, 3.0)` remain on `y`. Being on-net is not the same as
   being escapable, though: only four windows on that component have a legal
   met1 escape at all, and the approximation above is in none of them (see
   Increment 6, finding 2, and `xor2-y-escape-scan.json`). `vdd`/`vss`

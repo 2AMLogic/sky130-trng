@@ -35,10 +35,11 @@ import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-sys.path.insert(0, str(HERE))
-import electrical as E  # noqa: E402
-
 ROOT = HERE.parents[2]
+sys.path.insert(0, str(HERE))
+sys.path.insert(0, str(ROOT / "layout" / "bin"))
+import electrical as E  # noqa: E402
+from _klt_common import pdk_root  # noqa: E402
 
 
 def lib_default_max_transition(lib: Path) -> float:
@@ -94,10 +95,7 @@ def main():
     pnr = json.loads((rd / "pnr-output.json").read_text())
     corners = [c["name"] for c in pnr["corners"]]
     env = dict(os.environ, PDK="sky130A")
-    if "PDK_ROOT" not in env:
-        env["PDK_ROOT"] = json.loads(subprocess.run(
-            [a.klt, "pdk", "find", "--pdk", "sky130A", "--format", "json"],
-            capture_output=True, text=True, check=True, cwd=ROOT).stdout)["root"]
+    env["PDK_ROOT"] = pdk_root("sky130A", env=env, klt=a.klt, cwd=ROOT)
     ref = Path(env["PDK_ROOT"]) / "sky130A/libs.ref/sky130_fd_sc_hd"
     tmp = ROOT / f".derive-tmp-{rd.name}"
     tmp.mkdir(exist_ok=True)

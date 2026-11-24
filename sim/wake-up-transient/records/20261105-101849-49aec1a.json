@@ -1,0 +1,3930 @@
+{
+  "record_id": "20261105-101849-49aec1a",
+  "slug": "wake-up-transient",
+  "leg": "det",
+  "claim": "Analog wake-up of the committed pre-layout ro_array_core (issue #216): per-ring first edge, time-to-steady-oscillation (every later period within 1 % / 0.5 % of the final period) and late-window swing, after an enable release from the stopped state and after a 0 -> Vdd supply ramp with the enables tied to the rail; deterministic, no injected noise",
+  "level": "transistor",
+  "status": "simulation-derived; provisional until silicon",
+  "seed": "N/A (deterministic transient, no injected noise)",
+  "pvt": {
+    "temp_c": 27.0,
+    "vdd_v": 1.8
+  },
+  "process_corners": [
+    "ff",
+    "ss",
+    "tt"
+  ],
+  "testbench": "sim/wake-up-transient/testbench/tb_wakeup_array.spice (mode ramp: tb_wakeup_array_ramp.spice) (via sim/wake-up-transient/make-requests.py)",
+  "criteria": {
+    "settle_tolerances": [
+      0.01,
+      0.005
+    ],
+    "nref_periods": 10,
+    "swing_min": 0.9
+  },
+  "requests_without_response": [],
+  "klt_sim": {
+    "jobs": [
+      "klt-sim-9b8071458f5a",
+      "klt-sim-923b26f1102e",
+      "klt-sim-8af0100cafab",
+      "klt-sim-6929dfbe73cf",
+      "klt-sim-b47d0e8f5487",
+      "klt-sim-b437ab53a964",
+      "klt-sim-5d159b54873d",
+      "klt-sim-2dadfc42f869",
+      "klt-sim-ef12248145db",
+      "klt-sim-526fed233dbb",
+      "klt-sim-72c3d134e1e3",
+      "klt-sim-3d23786fb1e1",
+      "klt-sim-fa106c4e3070",
+      "klt-sim-4caa437e2198",
+      "klt-sim-bad83e94f627",
+      "klt-sim-f7473ce8bb32",
+      "klt-sim-b981b4dc917b",
+      "klt-sim-f38d03705da4",
+      "klt-sim-2b7515518043",
+      "klt-sim-d95fa08da3fb",
+      "klt-sim-a86d4f564dc9",
+      "klt-sim-f231a19ede94",
+      "klt-sim-8d3bc606796c",
+      "klt-sim-95a0632b52a4",
+      "klt-sim-9e0c65074537",
+      "klt-sim-9280c5df2679",
+      "klt-sim-acfce8e55ff6",
+      "klt-sim-75e846330a75",
+      "klt-sim-e0cf9a5ac21a",
+      "klt-sim-2faf864833f7",
+      "klt-sim-203b2e9c9f4f",
+      "klt-sim-eab1f17c6f1a",
+      "klt-sim-d8ca2ca64ca6",
+      "klt-sim-82a85f790af1",
+      "klt-sim-7ff47593b591",
+      "klt-sim-0cf326e800ca",
+      "klt-sim-63e25ec9b806",
+      "klt-sim-745ed8036d44",
+      "klt-sim-ba2293644a44",
+      "klt-sim-d0bd857d0d32",
+      "klt-sim-ac91516ba61f",
+      "klt-sim-26f6e0827796",
+      "klt-sim-0af959d554b9",
+      "klt-sim-7f0d7efe4c87",
+      "klt-sim-d35c8604dba6",
+      "klt-sim-f514db4de9e2",
+      "klt-sim-37cbc82c7417",
+      "klt-sim-562a3d2e3662",
+      "klt-sim-b4259ee65e46",
+      "klt-sim-efc83d8e44a8",
+      "klt-sim-12c33196df87",
+      "klt-sim-3e75d4f9bd5f",
+      "klt-sim-496f8c8d4604",
+      "klt-sim-2a178d8cbbdf"
+    ],
+    "backend": "batch",
+    "remote": [
+      {
+        "fleet": [
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-9b8071458f5a",
+            "region": "us-east-1",
+            "instance_id": "i-020dbbabcc0878e5a",
+            "instance_type": "m7i.4xlarge",
+            "availability_zone": "us-east-1c",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "1",
+            "physical_cores": "8",
+            "elapsed_seconds": 24,
+            "client_submitted_at": "2026-11-05T08:41:39.319369Z",
+            "client_launched_at": "2026-11-05T08:43:02.314603Z",
+            "client_status_terminal_at": "2026-11-05T08:44:05.573829Z",
+            "client_collected_at": "2026-11-05T08:44:06.929049Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          },
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-923b26f1102e",
+            "region": "us-east-1",
+            "instance_id": "i-09240e835e1ecbec6",
+            "instance_type": "m7i.4xlarge",
+            "availability_zone": "us-east-1c",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "1",
+            "physical_cores": "8",
+            "elapsed_seconds": 25,
+            "client_submitted_at": "2026-11-05T08:41:39.320238Z",
+            "client_launched_at": "2026-11-05T08:43:00.493595Z",
+            "client_status_terminal_at": "2026-11-05T08:44:03.425417Z",
+            "client_collected_at": "2026-11-05T08:44:04.477149Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          },
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-8af0100cafab",
+            "region": "us-east-1",
+            "instance_id": "i-028a0cd98c1797e04",
+            "instance_type": "m7i.4xlarge",
+            "availability_zone": "us-east-1c",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "1",
+            "physical_cores": "8",
+            "elapsed_seconds": 24,
+            "client_submitted_at": "2026-11-05T08:41:39.321348Z",
+            "client_launched_at": "2026-11-05T08:43:02.722249Z",
+            "client_status_terminal_at": "2026-11-05T08:44:05.852051Z",
+            "client_collected_at": "2026-11-05T08:44:07.082336Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          },
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-6929dfbe73cf",
+            "region": "us-east-1",
+            "instance_id": "i-0b22e5b2746c31473",
+            "instance_type": "m7i.4xlarge",
+            "availability_zone": "us-east-1c",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "1",
+            "physical_cores": "8",
+            "elapsed_seconds": 25,
+            "client_submitted_at": "2026-11-05T08:41:39.322326Z",
+            "client_launched_at": "2026-11-05T08:43:02.425934Z",
+            "client_status_terminal_at": "2026-11-05T08:44:05.586888Z",
+            "client_collected_at": "2026-11-05T08:44:06.834892Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          },
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-b47d0e8f5487",
+            "region": "us-east-1",
+            "instance_id": "i-0415f280795f8200c",
+            "instance_type": "m6i.4xlarge",
+            "availability_zone": "us-east-1b",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "1",
+            "physical_cores": "8",
+            "elapsed_seconds": 30,
+            "client_submitted_at": "2026-11-05T08:44:04.487403Z",
+            "client_launched_at": "2026-11-05T08:44:36.844006Z",
+            "client_status_terminal_at": "2026-11-05T08:45:39.714195Z",
+            "client_collected_at": "2026-11-05T08:45:40.617313Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8375C CPU @ 2.90GHz",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          },
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-b437ab53a964",
+            "region": "us-east-1",
+            "instance_id": "i-08bd0fdbbf6aae8e4",
+            "instance_type": "c7i.4xlarge",
+            "availability_zone": "us-east-1d",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "1",
+            "physical_cores": "8",
+            "elapsed_seconds": 25,
+            "client_submitted_at": "2026-11-05T08:44:06.838858Z",
+            "client_launched_at": "2026-11-05T08:44:36.397962Z",
+            "client_status_terminal_at": "2026-11-05T08:45:39.171527Z",
+            "client_collected_at": "2026-11-05T08:45:40.069519Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          },
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-5d159b54873d",
+            "region": "us-east-1",
+            "instance_id": "i-0d1ae8ddf1a3f578d",
+            "instance_type": "m7i.4xlarge",
+            "availability_zone": "us-east-1c",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "1",
+            "physical_cores": "8",
+            "elapsed_seconds": 26,
+            "client_submitted_at": "2026-11-05T08:44:06.932001Z",
+            "client_launched_at": "2026-11-05T08:44:37.773377Z",
+            "client_status_terminal_at": "2026-11-05T08:45:40.357615Z",
+            "client_collected_at": "2026-11-05T08:45:41.239930Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          },
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-2dadfc42f869",
+            "region": "us-east-1",
+            "instance_id": "i-0e111eb0514d2ffb2",
+            "instance_type": "c7i.4xlarge",
+            "availability_zone": "us-east-1d",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "1",
+            "physical_cores": "8",
+            "elapsed_seconds": 26,
+            "client_submitted_at": "2026-11-05T08:44:07.112663Z",
+            "client_launched_at": "2026-11-05T08:44:36.424502Z",
+            "client_status_terminal_at": "2026-11-05T08:45:39.563367Z",
+            "client_collected_at": "2026-11-05T08:45:40.463672Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          },
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-ef12248145db",
+            "region": "us-east-1",
+            "instance_id": "i-0865be40b3fdc9423",
+            "instance_type": "c7i.8xlarge",
+            "availability_zone": "us-east-1a",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "2",
+            "physical_cores": "16",
+            "elapsed_seconds": 27,
+            "client_submitted_at": "2026-11-05T08:45:40.076612Z",
+            "client_launched_at": "2026-11-05T08:46:00.779597Z",
+            "client_status_terminal_at": "2026-11-05T08:47:03.194477Z",
+            "client_collected_at": "2026-11-05T08:47:04.055692Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          }
+        ],
+        "max_concurrent_jobs": 4,
+        "job_ceiling": {
+          "basis": "conservative_serial_bound",
+          "unit_count": 9,
+          "per_unit_timeout_s": 3000,
+          "overhead_s": 120.0,
+          "job_bound_s": 27120.0,
+          "max_job_seconds": 3600.0,
+          "max_job_seconds_source": "fleet_config",
+          "exceeds_ceiling": true,
+          "check": "warn",
+          "max_units_per_job": 1,
+          "recommended_hosts": 9,
+          "warning": "batch job bound 27120s (options.timeout_s 3000s x 9 units + 120s; a conservative fully-serial upper bound, not a runtime estimate) exceeds the fleet's whole-job ceiling of 3600s (max_job_seconds from fleet_config); a job still running at the ceiling is killed and every unit is reported batch_job_timeout. Set request.remote.hosts to at least 9 to run one job per shard of at most 1 units, each within the ceiling",
+          "split": true,
+          "effective_hosts": 9
+        }
+      },
+      {
+        "fleet": [
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-526fed233dbb",
+            "region": "us-east-1",
+            "instance_id": "i-0383b3fd85a9181eb",
+            "instance_type": "m7i.4xlarge",
+            "availability_zone": "us-east-1d",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "1",
+            "physical_cores": "8",
+            "elapsed_seconds": 26,
+            "client_submitted_at": "2026-11-05T08:47:04.641522Z",
+            "client_launched_at": "2026-11-05T08:48:40.914184Z",
+            "client_status_terminal_at": "2026-11-05T08:49:43.344103Z",
+            "client_collected_at": "2026-11-05T08:49:44.182874Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          },
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-72c3d134e1e3",
+            "region": "us-east-1",
+            "instance_id": "i-0330553d13fc0f788",
+            "instance_type": "c7i.8xlarge",
+            "availability_zone": "us-east-1a",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "2",
+            "physical_cores": "16",
+            "elapsed_seconds": 28,
+            "client_submitted_at": "2026-11-05T08:47:04.643278Z",
+            "client_launched_at": "2026-11-05T08:47:58.895719Z",
+            "client_status_terminal_at": "2026-11-05T08:49:01.246796Z",
+            "client_collected_at": "2026-11-05T08:49:02.154818Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          },
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-3d23786fb1e1",
+            "region": "us-east-1",
+            "instance_id": "i-0f0a69c9e0a87641f",
+            "instance_type": "m7i.4xlarge",
+            "availability_zone": "us-east-1d",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "1",
+            "physical_cores": "8",
+            "elapsed_seconds": 26,
+            "client_submitted_at": "2026-11-05T08:47:04.644178Z",
+            "client_launched_at": "2026-11-05T08:47:54.962837Z",
+            "client_status_terminal_at": "2026-11-05T08:48:57.271068Z",
+            "client_collected_at": "2026-11-05T08:48:57.995558Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          },
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-fa106c4e3070",
+            "region": "us-east-1",
+            "instance_id": "i-0d0e5a3c34558b292",
+            "instance_type": "m7i.4xlarge",
+            "availability_zone": "us-east-1d",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "1",
+            "physical_cores": "8",
+            "elapsed_seconds": 24,
+            "client_submitted_at": "2026-11-05T08:47:04.644805Z",
+            "client_launched_at": "2026-11-05T08:48:25.777946Z",
+            "client_status_terminal_at": "2026-11-05T08:49:28.020658Z",
+            "client_collected_at": "2026-11-05T08:49:28.854901Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          },
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-4caa437e2198",
+            "region": "us-east-1",
+            "instance_id": "i-09c0743b58e718546",
+            "instance_type": "c7i.8xlarge",
+            "availability_zone": "us-east-1a",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "2",
+            "physical_cores": "16",
+            "elapsed_seconds": 25,
+            "client_submitted_at": "2026-11-05T08:48:58.002857Z",
+            "client_launched_at": "2026-11-05T08:49:51.347898Z",
+            "client_status_terminal_at": "2026-11-05T08:50:53.687683Z",
+            "client_collected_at": "2026-11-05T08:50:54.419952Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          },
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-bad83e94f627",
+            "region": "us-east-1",
+            "instance_id": "i-09497d8485015eed1",
+            "instance_type": "c7i.8xlarge",
+            "availability_zone": "us-east-1a",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "2",
+            "physical_cores": "16",
+            "elapsed_seconds": 25,
+            "client_submitted_at": "2026-11-05T08:49:02.157970Z",
+            "client_launched_at": "2026-11-05T08:49:43.600248Z",
+            "client_status_terminal_at": "2026-11-05T08:50:45.870335Z",
+            "client_collected_at": "2026-11-05T08:50:46.664487Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          },
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-f7473ce8bb32",
+            "region": "us-east-1",
+            "instance_id": "i-08f0cf201d1a318f7",
+            "instance_type": "c7i.8xlarge",
+            "availability_zone": "us-east-1a",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "2",
+            "physical_cores": "16",
+            "elapsed_seconds": 26,
+            "client_submitted_at": "2026-11-05T08:49:28.858172Z",
+            "client_launched_at": "2026-11-05T08:49:50.910048Z",
+            "client_status_terminal_at": "2026-11-05T08:50:53.147397Z",
+            "client_collected_at": "2026-11-05T08:50:53.996088Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          },
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-b981b4dc917b",
+            "region": "us-east-1",
+            "instance_id": "i-0ad280dad52a15b72",
+            "instance_type": "c7i.8xlarge",
+            "availability_zone": "us-east-1f",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "2",
+            "physical_cores": "16",
+            "elapsed_seconds": 25,
+            "client_submitted_at": "2026-11-05T08:49:44.186002Z",
+            "client_launched_at": "2026-11-05T08:50:07.870240Z",
+            "client_status_terminal_at": "2026-11-05T08:51:10.110333Z",
+            "client_collected_at": "2026-11-05T08:51:10.895515Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          },
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-f38d03705da4",
+            "region": "us-east-1",
+            "instance_id": "i-07ff681ffde6f114c",
+            "instance_type": "c7i.8xlarge",
+            "availability_zone": "us-east-1a",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "2",
+            "physical_cores": "16",
+            "elapsed_seconds": 25,
+            "client_submitted_at": "2026-11-05T08:50:46.667695Z",
+            "client_launched_at": "2026-11-05T08:52:15.762610Z",
+            "client_status_terminal_at": "2026-11-05T08:53:17.816672Z",
+            "client_collected_at": "2026-11-05T08:53:18.515666Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          }
+        ],
+        "max_concurrent_jobs": 4,
+        "job_ceiling": {
+          "basis": "conservative_serial_bound",
+          "unit_count": 9,
+          "per_unit_timeout_s": 3000,
+          "overhead_s": 120.0,
+          "job_bound_s": 27120.0,
+          "max_job_seconds": 3600.0,
+          "max_job_seconds_source": "fleet_config",
+          "exceeds_ceiling": true,
+          "check": "warn",
+          "max_units_per_job": 1,
+          "recommended_hosts": 9,
+          "warning": "batch job bound 27120s (options.timeout_s 3000s x 9 units + 120s; a conservative fully-serial upper bound, not a runtime estimate) exceeds the fleet's whole-job ceiling of 3600s (max_job_seconds from fleet_config); a job still running at the ceiling is killed and every unit is reported batch_job_timeout. Set request.remote.hosts to at least 9 to run one job per shard of at most 1 units, each within the ceiling",
+          "split": true,
+          "effective_hosts": 9
+        }
+      },
+      {
+        "fleet": [
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-2b7515518043",
+            "region": "us-east-1",
+            "instance_id": "i-00ad182fdfc1d84eb",
+            "instance_type": "c7i.8xlarge",
+            "availability_zone": "us-east-1a",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "2",
+            "physical_cores": "16",
+            "elapsed_seconds": 27,
+            "client_submitted_at": "2026-11-05T08:53:19.123676Z",
+            "client_launched_at": "2026-11-05T08:53:39.936601Z",
+            "client_status_terminal_at": "2026-11-05T08:54:42.248107Z",
+            "client_collected_at": "2026-11-05T08:54:43.144908Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          },
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-d95fa08da3fb",
+            "region": "us-east-1",
+            "instance_id": "i-0092f84f413df31cb",
+            "instance_type": "c7i.8xlarge",
+            "availability_zone": "us-east-1a",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "2",
+            "physical_cores": "16",
+            "elapsed_seconds": 26,
+            "client_submitted_at": "2026-11-05T08:53:19.124444Z",
+            "client_launched_at": "2026-11-05T08:53:40.182126Z",
+            "client_status_terminal_at": "2026-11-05T08:54:42.476841Z",
+            "client_collected_at": "2026-11-05T08:54:43.316250Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          },
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-a86d4f564dc9",
+            "region": "us-east-1",
+            "instance_id": "i-0c37c9d45a03de79a",
+            "instance_type": "c7i.8xlarge",
+            "availability_zone": "us-east-1a",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "2",
+            "physical_cores": "16",
+            "elapsed_seconds": 26,
+            "client_submitted_at": "2026-11-05T08:53:19.125716Z",
+            "client_launched_at": "2026-11-05T08:53:40.195193Z",
+            "client_status_terminal_at": "2026-11-05T08:54:42.462823Z",
+            "client_collected_at": "2026-11-05T08:54:43.359916Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          },
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-f231a19ede94",
+            "region": "us-east-1",
+            "instance_id": "i-08392d7d6c266cf0a",
+            "instance_type": "c7i.8xlarge",
+            "availability_zone": "us-east-1a",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "2",
+            "physical_cores": "16",
+            "elapsed_seconds": 25,
+            "client_submitted_at": "2026-11-05T08:53:19.126918Z",
+            "client_launched_at": "2026-11-05T08:53:39.970395Z",
+            "client_status_terminal_at": "2026-11-05T08:54:42.223442Z",
+            "client_collected_at": "2026-11-05T08:54:43.124041Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          },
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-8d3bc606796c",
+            "region": "us-east-1",
+            "instance_id": "i-0a8cbcca732501b50",
+            "instance_type": "c7i.8xlarge",
+            "availability_zone": "us-east-1a",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "2",
+            "physical_cores": "16",
+            "elapsed_seconds": 25,
+            "client_submitted_at": "2026-11-05T08:54:43.132030Z",
+            "client_launched_at": "2026-11-05T08:55:05.799144Z",
+            "client_status_terminal_at": "2026-11-05T08:56:08.098051Z",
+            "client_collected_at": "2026-11-05T08:56:08.923512Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          },
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-95a0632b52a4",
+            "region": "us-east-1",
+            "instance_id": "i-090a9e9ea374b6c60",
+            "instance_type": "m7i.4xlarge",
+            "availability_zone": "us-east-1d",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "1",
+            "physical_cores": "8",
+            "elapsed_seconds": 36,
+            "client_submitted_at": "2026-11-05T08:54:43.147528Z",
+            "client_launched_at": "2026-11-05T08:55:03.243213Z",
+            "client_status_terminal_at": "2026-11-05T08:56:05.474347Z",
+            "client_collected_at": "2026-11-05T08:56:06.315403Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          },
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-9e0c65074537",
+            "region": "us-east-1",
+            "instance_id": "i-05d7b19f0bc9d888c",
+            "instance_type": "m7i.4xlarge",
+            "availability_zone": "us-east-1d",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "1",
+            "physical_cores": "8",
+            "elapsed_seconds": 25,
+            "client_submitted_at": "2026-11-05T08:54:43.320074Z",
+            "client_launched_at": "2026-11-05T08:55:03.581720Z",
+            "client_status_terminal_at": "2026-11-05T08:56:05.769164Z",
+            "client_collected_at": "2026-11-05T08:56:06.645257Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          },
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-9280c5df2679",
+            "region": "us-east-1",
+            "instance_id": "i-0e6f61dd16cf7c24a",
+            "instance_type": "c7i.8xlarge",
+            "availability_zone": "us-east-1a",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "2",
+            "physical_cores": "16",
+            "elapsed_seconds": 35,
+            "client_submitted_at": "2026-11-05T08:54:43.364028Z",
+            "client_launched_at": "2026-11-05T08:55:05.827341Z",
+            "client_status_terminal_at": "2026-11-05T08:56:07.948662Z",
+            "client_collected_at": "2026-11-05T08:56:08.887617Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          },
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-acfce8e55ff6",
+            "region": "us-east-1",
+            "instance_id": "i-02e80b0f507cef922",
+            "instance_type": "m7i.4xlarge",
+            "availability_zone": "us-east-1d",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "1",
+            "physical_cores": "8",
+            "elapsed_seconds": 25,
+            "client_submitted_at": "2026-11-05T08:56:06.318480Z",
+            "client_launched_at": "2026-11-05T08:56:25.603530Z",
+            "client_status_terminal_at": "2026-11-05T08:57:27.862159Z",
+            "client_collected_at": "2026-11-05T08:57:28.713728Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          }
+        ],
+        "max_concurrent_jobs": 4,
+        "job_ceiling": {
+          "basis": "conservative_serial_bound",
+          "unit_count": 9,
+          "per_unit_timeout_s": 3000,
+          "overhead_s": 120.0,
+          "job_bound_s": 27120.0,
+          "max_job_seconds": 3600.0,
+          "max_job_seconds_source": "fleet_config",
+          "exceeds_ceiling": true,
+          "check": "warn",
+          "max_units_per_job": 1,
+          "recommended_hosts": 9,
+          "warning": "batch job bound 27120s (options.timeout_s 3000s x 9 units + 120s; a conservative fully-serial upper bound, not a runtime estimate) exceeds the fleet's whole-job ceiling of 3600s (max_job_seconds from fleet_config); a job still running at the ceiling is killed and every unit is reported batch_job_timeout. Set request.remote.hosts to at least 9 to run one job per shard of at most 1 units, each within the ceiling",
+          "split": true,
+          "effective_hosts": 9
+        }
+      },
+      {
+        "fleet": [
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-75e846330a75",
+            "region": "us-east-1",
+            "instance_id": "i-068242c512f7a7f5a",
+            "instance_type": "c7i.8xlarge",
+            "availability_zone": "us-east-1a",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "2",
+            "physical_cores": "16",
+            "elapsed_seconds": 49,
+            "client_submitted_at": "2026-11-05T08:57:29.307372Z",
+            "client_launched_at": "2026-11-05T08:59:06.782384Z",
+            "client_status_terminal_at": "2026-11-05T09:00:08.672592Z",
+            "client_collected_at": "2026-11-05T09:00:09.363272Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          },
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-e0cf9a5ac21a",
+            "region": "us-east-1",
+            "instance_id": "i-0a4595cff4ace5471",
+            "instance_type": "c7i.8xlarge",
+            "availability_zone": "us-east-1a",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "2",
+            "physical_cores": "16",
+            "elapsed_seconds": 46,
+            "client_submitted_at": "2026-11-05T08:57:29.305732Z",
+            "client_launched_at": "2026-11-05T08:57:50.974441Z",
+            "client_status_terminal_at": "2026-11-05T08:58:53.150975Z",
+            "client_collected_at": "2026-11-05T08:58:53.922077Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          },
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-2faf864833f7",
+            "region": "us-east-1",
+            "instance_id": "i-03be417a60f0ce127",
+            "instance_type": "m7i.4xlarge",
+            "availability_zone": "us-east-1c",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "1",
+            "physical_cores": "8",
+            "elapsed_seconds": 45,
+            "client_submitted_at": "2026-11-05T08:57:29.308164Z",
+            "client_launched_at": "2026-11-05T08:57:53.961219Z",
+            "client_status_terminal_at": "2026-11-05T08:58:56.092810Z",
+            "client_collected_at": "2026-11-05T08:58:56.804934Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          },
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-203b2e9c9f4f",
+            "region": "us-east-1",
+            "instance_id": "i-056f5f73cb8d8721c",
+            "instance_type": "c7i.8xlarge",
+            "availability_zone": "us-east-1a",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "2",
+            "physical_cores": "16",
+            "elapsed_seconds": 49,
+            "client_submitted_at": "2026-11-05T08:57:29.308894Z",
+            "client_launched_at": "2026-11-05T08:58:59.801821Z",
+            "client_status_terminal_at": "2026-11-05T09:00:01.801647Z",
+            "client_collected_at": "2026-11-05T09:00:02.518100Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          },
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-eab1f17c6f1a",
+            "region": "us-east-1",
+            "instance_id": "i-0ad630dd439291be5",
+            "instance_type": "m7i.4xlarge",
+            "availability_zone": "us-east-1f",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "1",
+            "physical_cores": "8",
+            "elapsed_seconds": 51,
+            "client_submitted_at": "2026-11-05T08:58:53.928995Z",
+            "client_launched_at": "2026-11-05T09:00:11.279901Z",
+            "client_status_terminal_at": "2026-11-05T09:01:13.269354Z",
+            "client_collected_at": "2026-11-05T09:01:13.957310Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          },
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-d8ca2ca64ca6",
+            "region": "us-east-1",
+            "instance_id": "i-0cadaaf968d9361b2",
+            "instance_type": "c7i.4xlarge",
+            "availability_zone": "us-east-1b",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "1",
+            "physical_cores": "8",
+            "elapsed_seconds": 50,
+            "client_submitted_at": "2026-11-05T08:58:56.807707Z",
+            "client_launched_at": "2026-11-05T09:00:44.033961Z",
+            "client_status_terminal_at": "2026-11-05T09:02:16.580135Z",
+            "client_collected_at": "2026-11-05T09:02:17.267278Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          },
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-82a85f790af1",
+            "region": "us-east-1",
+            "instance_id": "i-00b41406f7f1ab73b",
+            "instance_type": "m7i.4xlarge",
+            "availability_zone": "us-east-1a",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "1",
+            "physical_cores": "8",
+            "elapsed_seconds": 49,
+            "client_submitted_at": "2026-11-05T09:00:02.521196Z",
+            "client_launched_at": "2026-11-05T09:00:34.802840Z",
+            "client_status_terminal_at": "2026-11-05T09:01:36.707358Z",
+            "client_collected_at": "2026-11-05T09:01:37.382426Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          },
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-7ff47593b591",
+            "region": "us-east-1",
+            "instance_id": "i-0fcfc20aa108d595c",
+            "instance_type": "m6i.4xlarge",
+            "availability_zone": "us-east-1b",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "1",
+            "physical_cores": "8",
+            "elapsed_seconds": 54,
+            "client_submitted_at": "2026-11-05T09:00:09.366072Z",
+            "client_launched_at": "2026-11-05T09:00:36.491354Z",
+            "client_status_terminal_at": "2026-11-05T09:02:09.107684Z",
+            "client_collected_at": "2026-11-05T09:02:09.831865Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8375C CPU @ 2.90GHz",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          },
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-0cf326e800ca",
+            "region": "us-east-1",
+            "instance_id": "i-0984573a14dcc597c",
+            "instance_type": "m7i.4xlarge",
+            "availability_zone": "us-east-1c",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "1",
+            "physical_cores": "8",
+            "elapsed_seconds": 47,
+            "client_submitted_at": "2026-11-05T09:01:13.959889Z",
+            "client_launched_at": "2026-11-05T09:02:07.961737Z",
+            "client_status_terminal_at": "2026-11-05T09:03:10.038704Z",
+            "client_collected_at": "2026-11-05T09:03:10.744087Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          }
+        ],
+        "max_concurrent_jobs": 4,
+        "job_ceiling": {
+          "basis": "conservative_serial_bound",
+          "unit_count": 9,
+          "per_unit_timeout_s": 3000,
+          "overhead_s": 120.0,
+          "job_bound_s": 27120.0,
+          "max_job_seconds": 3600.0,
+          "max_job_seconds_source": "fleet_config",
+          "exceeds_ceiling": true,
+          "check": "warn",
+          "max_units_per_job": 1,
+          "recommended_hosts": 9,
+          "warning": "batch job bound 27120s (options.timeout_s 3000s x 9 units + 120s; a conservative fully-serial upper bound, not a runtime estimate) exceeds the fleet's whole-job ceiling of 3600s (max_job_seconds from fleet_config); a job still running at the ceiling is killed and every unit is reported batch_job_timeout. Set request.remote.hosts to at least 9 to run one job per shard of at most 1 units, each within the ceiling",
+          "split": true,
+          "effective_hosts": 9
+        }
+      },
+      {
+        "fleet": [
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-63e25ec9b806",
+            "region": "us-east-1",
+            "instance_id": "i-01d6aa8e5eaa6ed72",
+            "instance_type": "m7i.4xlarge",
+            "availability_zone": "us-east-1f",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "1",
+            "physical_cores": "8",
+            "elapsed_seconds": 45,
+            "client_submitted_at": "2026-11-05T09:03:11.258490Z",
+            "client_launched_at": "2026-11-05T09:03:31.073318Z",
+            "client_status_terminal_at": "2026-11-05T09:04:33.440633Z",
+            "client_collected_at": "2026-11-05T09:04:34.279283Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          },
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-745ed8036d44",
+            "region": "us-east-1",
+            "instance_id": "i-06b6072714b8d1f89",
+            "instance_type": "c7i.8xlarge",
+            "availability_zone": "us-east-1a",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "2",
+            "physical_cores": "16",
+            "elapsed_seconds": 49,
+            "client_submitted_at": "2026-11-05T09:03:11.260589Z",
+            "client_launched_at": "2026-11-05T09:03:30.908869Z",
+            "client_status_terminal_at": "2026-11-05T09:04:33.174821Z",
+            "client_collected_at": "2026-11-05T09:04:33.926687Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          },
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-ba2293644a44",
+            "region": "us-east-1",
+            "instance_id": "i-0859f0b5abe03b858",
+            "instance_type": "m7i.4xlarge",
+            "availability_zone": "us-east-1d",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "1",
+            "physical_cores": "8",
+            "elapsed_seconds": 45,
+            "client_submitted_at": "2026-11-05T09:03:11.262241Z",
+            "client_launched_at": "2026-11-05T09:03:31.159210Z",
+            "client_status_terminal_at": "2026-11-05T09:04:33.480036Z",
+            "client_collected_at": "2026-11-05T09:04:34.253255Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          },
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-d0bd857d0d32",
+            "region": "us-east-1",
+            "instance_id": "i-0a1c8f7e3481773fc",
+            "instance_type": "m7i.4xlarge",
+            "availability_zone": "us-east-1d",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "1",
+            "physical_cores": "8",
+            "elapsed_seconds": 51,
+            "client_submitted_at": "2026-11-05T09:03:11.259823Z",
+            "client_launched_at": "2026-11-05T09:03:31.185221Z",
+            "client_status_terminal_at": "2026-11-05T09:05:04.172463Z",
+            "client_collected_at": "2026-11-05T09:05:04.896491Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          },
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-ac91516ba61f",
+            "region": "us-east-1",
+            "instance_id": "i-032a623ce231b507c",
+            "instance_type": "m7i.4xlarge",
+            "availability_zone": "us-east-1d",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "1",
+            "physical_cores": "8",
+            "elapsed_seconds": 48,
+            "client_submitted_at": "2026-11-05T09:04:33.933398Z",
+            "client_launched_at": "2026-11-05T09:05:22.417396Z",
+            "client_status_terminal_at": "2026-11-05T09:06:24.604615Z",
+            "client_collected_at": "2026-11-05T09:06:25.376704Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          },
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-26f6e0827796",
+            "region": "us-east-1",
+            "instance_id": "i-050692cff4e42bf38",
+            "instance_type": "m7i.4xlarge",
+            "availability_zone": "us-east-1f",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "1",
+            "physical_cores": "8",
+            "elapsed_seconds": 46,
+            "client_submitted_at": "2026-11-05T09:04:34.256407Z",
+            "client_launched_at": "2026-11-05T09:05:26.210410Z",
+            "client_status_terminal_at": "2026-11-05T09:06:28.396936Z",
+            "client_collected_at": "2026-11-05T09:06:29.174284Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          },
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-0af959d554b9",
+            "region": "us-east-1",
+            "instance_id": "i-00687cf527634b329",
+            "instance_type": "m7i.4xlarge",
+            "availability_zone": "us-east-1b",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "1",
+            "physical_cores": "8",
+            "elapsed_seconds": 49,
+            "client_submitted_at": "2026-11-05T09:04:34.282979Z",
+            "client_launched_at": "2026-11-05T09:05:06.673726Z",
+            "client_status_terminal_at": "2026-11-05T09:06:39.566436Z",
+            "client_collected_at": "2026-11-05T09:06:40.326528Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          },
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-7f0d7efe4c87",
+            "region": "us-east-1",
+            "instance_id": "i-03e435bb5c75bc27a",
+            "instance_type": "m7i.4xlarge",
+            "availability_zone": "us-east-1f",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "1",
+            "physical_cores": "8",
+            "elapsed_seconds": 50,
+            "client_submitted_at": "2026-11-05T09:05:04.899904Z",
+            "client_launched_at": "2026-11-05T09:05:25.925901Z",
+            "client_status_terminal_at": "2026-11-05T09:06:58.967828Z",
+            "client_collected_at": "2026-11-05T09:06:59.738827Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          },
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-d35c8604dba6",
+            "region": "us-east-1",
+            "instance_id": "i-04099f0f1425d3932",
+            "instance_type": "c7i.8xlarge",
+            "availability_zone": "us-east-1a",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "2",
+            "physical_cores": "16",
+            "elapsed_seconds": 45,
+            "client_submitted_at": "2026-11-05T09:06:25.379871Z",
+            "client_launched_at": "2026-11-05T09:06:45.844294Z",
+            "client_status_terminal_at": "2026-11-05T09:07:47.865468Z",
+            "client_collected_at": "2026-11-05T09:07:48.560563Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          }
+        ],
+        "max_concurrent_jobs": 4,
+        "job_ceiling": {
+          "basis": "conservative_serial_bound",
+          "unit_count": 9,
+          "per_unit_timeout_s": 3000,
+          "overhead_s": 120.0,
+          "job_bound_s": 27120.0,
+          "max_job_seconds": 3600.0,
+          "max_job_seconds_source": "fleet_config",
+          "exceeds_ceiling": true,
+          "check": "warn",
+          "max_units_per_job": 1,
+          "recommended_hosts": 9,
+          "warning": "batch job bound 27120s (options.timeout_s 3000s x 9 units + 120s; a conservative fully-serial upper bound, not a runtime estimate) exceeds the fleet's whole-job ceiling of 3600s (max_job_seconds from fleet_config); a job still running at the ceiling is killed and every unit is reported batch_job_timeout. Set request.remote.hosts to at least 9 to run one job per shard of at most 1 units, each within the ceiling",
+          "split": true,
+          "effective_hosts": 9
+        }
+      },
+      {
+        "fleet": [
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-f514db4de9e2",
+            "region": "us-east-1",
+            "instance_id": "i-0d3a16165295340b3",
+            "instance_type": "m7i.4xlarge",
+            "availability_zone": "us-east-1f",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "1",
+            "physical_cores": "8",
+            "elapsed_seconds": 45,
+            "client_submitted_at": "2026-11-05T09:07:49.021875Z",
+            "client_launched_at": "2026-11-05T09:09:18.378168Z",
+            "client_status_terminal_at": "2026-11-05T09:10:20.530393Z",
+            "client_collected_at": "2026-11-05T09:10:21.242099Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          },
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-37cbc82c7417",
+            "region": "us-east-1",
+            "instance_id": "i-0e7a166bfe6456b6a",
+            "instance_type": "m7i.4xlarge",
+            "availability_zone": "us-east-1f",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "1",
+            "physical_cores": "8",
+            "elapsed_seconds": 46,
+            "client_submitted_at": "2026-11-05T09:07:49.023342Z",
+            "client_launched_at": "2026-11-05T09:09:30.098945Z",
+            "client_status_terminal_at": "2026-11-05T09:10:32.216090Z",
+            "client_collected_at": "2026-11-05T09:10:32.924015Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          },
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-562a3d2e3662",
+            "region": "us-east-1",
+            "instance_id": "i-02f5771627e8ce8a9",
+            "instance_type": "m7i.4xlarge",
+            "availability_zone": "us-east-1d",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "1",
+            "physical_cores": "8",
+            "elapsed_seconds": 47,
+            "client_submitted_at": "2026-11-05T09:07:49.024504Z",
+            "client_launched_at": "2026-11-05T09:09:05.759527Z",
+            "client_status_terminal_at": "2026-11-05T09:10:07.987733Z",
+            "client_collected_at": "2026-11-05T09:10:08.727380Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          },
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-b4259ee65e46",
+            "region": "us-east-1",
+            "instance_id": "i-01ecb917a251bfb9e",
+            "instance_type": "m7i.4xlarge",
+            "availability_zone": "us-east-1f",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "1",
+            "physical_cores": "8",
+            "elapsed_seconds": 46,
+            "client_submitted_at": "2026-11-05T09:07:49.023925Z",
+            "client_launched_at": "2026-11-05T09:09:25.025965Z",
+            "client_status_terminal_at": "2026-11-05T09:10:27.259889Z",
+            "client_collected_at": "2026-11-05T09:10:27.974565Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          },
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-efc83d8e44a8",
+            "region": "us-east-1",
+            "instance_id": "i-0b67623d003d61e1f",
+            "instance_type": "c7i.8xlarge",
+            "availability_zone": "us-east-1a",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "2",
+            "physical_cores": "16",
+            "elapsed_seconds": 48,
+            "client_submitted_at": "2026-11-05T09:10:08.734425Z",
+            "client_launched_at": "2026-11-05T09:11:46.114031Z",
+            "client_status_terminal_at": "2026-11-05T09:12:48.293192Z",
+            "client_collected_at": "2026-11-05T09:12:49.067646Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          },
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-12c33196df87",
+            "region": "us-east-1",
+            "instance_id": "i-016bf1efd9077b74d",
+            "instance_type": "m7i.4xlarge",
+            "availability_zone": "us-east-1c",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "1",
+            "physical_cores": "8",
+            "elapsed_seconds": 46,
+            "client_submitted_at": "2026-11-05T09:10:21.245327Z",
+            "client_launched_at": "2026-11-05T09:11:16.933623Z",
+            "client_status_terminal_at": "2026-11-05T09:12:19.252044Z",
+            "client_collected_at": "2026-11-05T09:12:20.100722Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          },
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-3e75d4f9bd5f",
+            "region": "us-east-1",
+            "instance_id": "i-045c8a2e8cb829f14",
+            "instance_type": "m7i.4xlarge",
+            "availability_zone": "us-east-1f",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "1",
+            "physical_cores": "8",
+            "elapsed_seconds": 47,
+            "client_submitted_at": "2026-11-05T09:10:27.977968Z",
+            "client_launched_at": "2026-11-05T09:11:13.025842Z",
+            "client_status_terminal_at": "2026-11-05T09:12:15.165681Z",
+            "client_collected_at": "2026-11-05T09:12:15.939703Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          },
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-496f8c8d4604",
+            "region": "us-east-1",
+            "instance_id": "i-06f8099ca6b47da14",
+            "instance_type": "c7i.4xlarge",
+            "availability_zone": "us-east-1d",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "1",
+            "physical_cores": "8",
+            "elapsed_seconds": 47,
+            "client_submitted_at": "2026-11-05T09:10:32.926557Z",
+            "client_launched_at": "2026-11-05T09:12:07.790975Z",
+            "client_status_terminal_at": "2026-11-05T09:13:10.141593Z",
+            "client_collected_at": "2026-11-05T09:13:10.924986Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          },
+          {
+            "provider": "aws-batch-fleet",
+            "job_id": "klt-sim-2a178d8cbbdf",
+            "region": "us-east-1",
+            "instance_id": "i-007646a1dc855a3a9",
+            "instance_type": "c7i.8xlarge",
+            "availability_zone": "us-east-1a",
+            "ami_id": "ami-04591566329422a44",
+            "lifecycle": "spot",
+            "spot": true,
+            "state": "done",
+            "exit_code": "0",
+            "concurrency": "2",
+            "physical_cores": "16",
+            "elapsed_seconds": 46,
+            "client_submitted_at": "2026-11-05T09:12:15.943200Z",
+            "client_launched_at": "2026-11-05T09:13:03.043098Z",
+            "client_status_terminal_at": "2026-11-05T09:14:05.173680Z",
+            "client_collected_at": "2026-11-05T09:14:05.970129Z",
+            "runner_klt_version": "0.9.0",
+            "client_klt_version": "0.9.1.dev17+gd76e6fe1cb7a",
+            "runner_compatibility": "match",
+            "worker_environment": {
+              "capture": "ok",
+              "simulator": {
+                "requested_binary": "ngspice",
+                "binary_source": "PATH",
+                "selected_path": "/usr/local/bin/ngspice",
+                "version_banner": "******\n** ngspice-46 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2025, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Thu Oct  1 23:51:59 UTC 2026\n******\n",
+                "version_probe": "ok"
+              },
+              "pdk": {
+                "variant": "sky130A",
+                "root": "/opt/pdk",
+                "stamp_scheme": "sources-sha256",
+                "stamp_sha256": "d5ac52956829da3fee35d0b307d4e6cb83ae0e6535b56dba2eefed61cdffaf9b",
+                "stamp_text": "open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+                "models_staged": false,
+                "stamp_scope": "executed"
+              },
+              "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+              "omp_num_threads": null,
+              "image_manifest": null,
+              "model_inputs": null,
+              "diagnostics": [],
+              "pdk_stamp_comparison": {
+                "status": "not_comparable",
+                "reason": "client_stamp_unavailable"
+              },
+              "engine_build_comparison": {
+                "status": "match"
+              }
+            },
+            "runner_model_inputs": null,
+            "resumed": false
+          }
+        ],
+        "max_concurrent_jobs": 4,
+        "job_ceiling": {
+          "basis": "conservative_serial_bound",
+          "unit_count": 9,
+          "per_unit_timeout_s": 3000,
+          "overhead_s": 120.0,
+          "job_bound_s": 27120.0,
+          "max_job_seconds": 3600.0,
+          "max_job_seconds_source": "fleet_config",
+          "exceeds_ceiling": true,
+          "check": "warn",
+          "max_units_per_job": 1,
+          "recommended_hosts": 9,
+          "warning": "batch job bound 27120s (options.timeout_s 3000s x 9 units + 120s; a conservative fully-serial upper bound, not a runtime estimate) exceeds the fleet's whole-job ceiling of 3600s (max_job_seconds from fleet_config); a job still running at the ceiling is killed and every unit is reported batch_job_timeout. Set request.remote.hosts to at least 9 to run one job per shard of at most 1 units, each within the ceiling",
+          "split": true,
+          "effective_hosts": 9
+        }
+      }
+    ],
+    "engine_version": "46",
+    "models_lib_sha256": "48de7c677e2c6e7d09b2559279de9f818be71010a4aa933d728eb4db3b133c84",
+    "submitter_klt": "0.9.1.dev17+gd76e6fe1cb7a",
+    "responses": "sim/wake-up-transient/corners/20261105-101845-49aec1a/*.klt-sim.json.gz"
+  },
+  "corners_dir": "20261105-101845-49aec1a",
+  "supersedes": "(none)",
+  "summary": {
+    "units": 6,
+    "units_ok": 6,
+    "failed_units": [],
+    "t_settle_max_1pct_en_s": 5.5862e-09,
+    "t_settle_max_1pct_ramp_s": 2.47137e-09,
+    "t_settle_max_0.5pct_en_s": 5.5862e-09,
+    "t_settle_max_0.5pct_ramp_s": 2.47137e-09,
+    "t_first_edge_max_en_s": 1.96125e-09,
+    "vdd_at_first_edge_ramp_v": [
+      0.9111942000000002,
+      1.0073664
+    ],
+    "committed_combining_record": "20260825-094718-53f1f7a"
+  },
+  "rows": [
+    {
+      "process": "ff",
+      "temp_c": 27.0,
+      "vdd_v": 1.8,
+      "mode": "en",
+      "status": "pass",
+      "corner_id": "ff/Vk=1.800_Vm=0.000V/27C",
+      "rings": [
+        {
+          "ring": 1,
+          "edges_recorded": 41,
+          "t_first_abs": 6.37454e-09,
+          "late_swing_frac": 1.038624888888889,
+          "started": true,
+          "t_first_edge": 1.37454e-09,
+          "settle_0.01": {
+            "t_settle": 3.84812e-09,
+            "k_settle": 1,
+            "p_ref": 2.4117799999999993e-09,
+            "first_period_err": 0.02562422774879991
+          },
+          "settle_0.005": {
+            "t_settle": 3.84812e-09,
+            "k_settle": 1,
+            "p_ref": 2.4117799999999993e-09,
+            "first_period_err": 0.02562422774879991
+          },
+          "p_ref": 2.4117799999999993e-09,
+          "late_floor_pct": 0.376485417409711,
+          "ok": true
+        },
+        {
+          "ring": 2,
+          "edges_recorded": 41,
+          "t_first_abs": 6.31368e-09,
+          "late_swing_frac": 1.015693388888889,
+          "started": true,
+          "t_first_edge": 1.31368e-09,
+          "settle_0.01": {
+            "t_settle": 3.65829e-09,
+            "k_settle": 1,
+            "p_ref": 2.273069999999999e-09,
+            "first_period_err": 0.0314728538936333
+          },
+          "settle_0.005": {
+            "t_settle": 3.65829e-09,
+            "k_settle": 1,
+            "p_ref": 2.273069999999999e-09,
+            "first_period_err": 0.0314728538936333
+          },
+          "p_ref": 2.273069999999999e-09,
+          "late_floor_pct": 0.19489061049604572,
+          "ok": true
+        },
+        {
+          "ring": 3,
+          "edges_recorded": 41,
+          "t_first_abs": 6.26237e-09,
+          "late_swing_frac": 1.0533915,
+          "started": true,
+          "t_first_edge": 1.26237e-09,
+          "settle_0.01": {
+            "t_settle": 3.47393e-09,
+            "k_settle": 1,
+            "p_ref": 2.1464100000000007e-09,
+            "first_period_err": 0.030353008045992613
+          },
+          "settle_0.005": {
+            "t_settle": 3.47393e-09,
+            "k_settle": 1,
+            "p_ref": 2.1464100000000007e-09,
+            "first_period_err": 0.030353008045992613
+          },
+          "p_ref": 2.1464100000000007e-09,
+          "late_floor_pct": 0.2939792490718851,
+          "ok": true
+        },
+        {
+          "ring": 4,
+          "edges_recorded": 41,
+          "t_first_abs": 6.21028e-09,
+          "late_swing_frac": 1.0178973333333334,
+          "started": true,
+          "t_first_edge": 1.21028e-09,
+          "settle_0.01": {
+            "t_settle": 3.312e-09,
+            "k_settle": 1,
+            "p_ref": 2.0304400000000003e-09,
+            "first_period_err": 0.03510569137723829
+          },
+          "settle_0.005": {
+            "t_settle": 3.312e-09,
+            "k_settle": 1,
+            "p_ref": 2.0304400000000003e-09,
+            "first_period_err": 0.03510569137723829
+          },
+          "p_ref": 2.0304400000000003e-09,
+          "late_floor_pct": 0.12017099741945536,
+          "ok": true
+        }
+      ],
+      "ok": true,
+      "t_settle_max_1pct": 3.84812e-09,
+      "t_settle_max_0.5pct": 3.84812e-09,
+      "request": "det-en-ff",
+      "p_ref_vs_committed_pct": [
+        -0.017535837572579815,
+        0.017204365420675494,
+        -0.10188034156206616,
+        0.01921134947415748
+      ]
+    },
+    {
+      "process": "ss",
+      "temp_c": 27.0,
+      "vdd_v": 1.8,
+      "mode": "en",
+      "status": "pass",
+      "corner_id": "ss/Vk=1.800_Vm=0.000V/27C",
+      "rings": [
+        {
+          "ring": 1,
+          "edges_recorded": 41,
+          "t_first_abs": 6.96125e-09,
+          "late_swing_frac": 1.0420424444444443,
+          "started": true,
+          "t_first_edge": 1.96125e-09,
+          "settle_0.01": {
+            "t_settle": 5.5862e-09,
+            "k_settle": 1,
+            "p_ref": 3.5789000000000005e-09,
+            "first_period_err": 0.012867082064321078
+          },
+          "settle_0.005": {
+            "t_settle": 5.5862e-09,
+            "k_settle": 1,
+            "p_ref": 3.5789000000000005e-09,
+            "first_period_err": 0.012867082064321078
+          },
+          "p_ref": 3.5789000000000005e-09,
+          "late_floor_pct": 0.27662130822329045,
+          "ok": true
+        },
+        {
+          "ring": 2,
+          "edges_recorded": 41,
+          "t_first_abs": 6.86597e-09,
+          "late_swing_frac": 1.022013,
+          "started": true,
+          "t_first_edge": 1.86597e-09,
+          "settle_0.01": {
+            "t_settle": 5.30059e-09,
+            "k_settle": 1,
+            "p_ref": 3.380000000000001e-09,
+            "first_period_err": 0.01615976331360902
+          },
+          "settle_0.005": {
+            "t_settle": 5.30059e-09,
+            "k_settle": 1,
+            "p_ref": 3.380000000000001e-09,
+            "first_period_err": 0.01615976331360902
+          },
+          "p_ref": 3.380000000000001e-09,
+          "late_floor_pct": 0.14792899408320181,
+          "ok": true
+        },
+        {
+          "ring": 3,
+          "edges_recorded": 41,
+          "t_first_abs": 6.78509e-09,
+          "late_swing_frac": 1.0420731666666667,
+          "started": true,
+          "t_first_edge": 1.78509e-09,
+          "settle_0.01": {
+            "t_settle": 5.03373e-09,
+            "k_settle": 1,
+            "p_ref": 3.2002800000000013e-09,
+            "first_period_err": 0.015111177771944373
+          },
+          "settle_0.005": {
+            "t_settle": 5.03373e-09,
+            "k_settle": 1,
+            "p_ref": 3.2002800000000013e-09,
+            "first_period_err": 0.015111177771944373
+          },
+          "p_ref": 3.2002800000000013e-09,
+          "late_floor_pct": 0.32872123689184907,
+          "ok": true
+        },
+        {
+          "ring": 4,
+          "edges_recorded": 41,
+          "t_first_abs": 6.70775e-09,
+          "late_swing_frac": 1.0233349444444444,
+          "started": true,
+          "t_first_edge": 1.70775e-09,
+          "settle_0.01": {
+            "t_settle": 4.79948e-09,
+            "k_settle": 1,
+            "p_ref": 3.0398200000000016e-09,
+            "first_period_err": 0.017076669013296186
+          },
+          "settle_0.005": {
+            "t_settle": 4.79948e-09,
+            "k_settle": 1,
+            "p_ref": 3.0398200000000016e-09,
+            "first_period_err": 0.017076669013296186
+          },
+          "p_ref": 3.0398200000000016e-09,
+          "late_floor_pct": 0.10461145725715326,
+          "ok": true
+        }
+      ],
+      "ok": true,
+      "t_settle_max_1pct": 5.5862e-09,
+      "t_settle_max_0.5pct": 5.5862e-09,
+      "request": "det-en-ss",
+      "p_ref_vs_committed_pct": [
+        -0.06550792657079585,
+        -0.0014200981760859044,
+        -0.1488899400071797,
+        0.0008224238806198159
+      ]
+    },
+    {
+      "process": "tt",
+      "temp_c": 27.0,
+      "vdd_v": 1.8,
+      "mode": "en",
+      "status": "pass",
+      "corner_id": "tt/Vk=1.800_Vm=0.000V/27C",
+      "rings": [
+        {
+          "ring": 1,
+          "edges_recorded": 41,
+          "t_first_abs": 6.61685e-09,
+          "late_swing_frac": 1.0403867777777775,
+          "started": true,
+          "t_first_edge": 1.61685e-09,
+          "settle_0.01": {
+            "t_settle": 4.55654e-09,
+            "k_settle": 1,
+            "p_ref": 2.88219e-09,
+            "first_period_err": 0.019950107383621463
+          },
+          "settle_0.005": {
+            "t_settle": 4.55654e-09,
+            "k_settle": 1,
+            "p_ref": 2.88219e-09,
+            "first_period_err": 0.019950107383621463
+          },
+          "p_ref": 2.88219e-09,
+          "late_floor_pct": 0.264035334242263,
+          "ok": true
+        },
+        {
+          "ring": 2,
+          "edges_recorded": 41,
+          "t_first_abs": 6.54176e-09,
+          "late_swing_frac": 1.020432611111111,
+          "started": true,
+          "t_first_edge": 1.54176e-09,
+          "settle_0.01": {
+            "t_settle": 4.32655e-09,
+            "k_settle": 1,
+            "p_ref": 2.7180799999999998e-09,
+            "first_period_err": 0.024543059806922507
+          },
+          "settle_0.005": {
+            "t_settle": 4.32655e-09,
+            "k_settle": 1,
+            "p_ref": 2.7180799999999998e-09,
+            "first_period_err": 0.024543059806922507
+          },
+          "p_ref": 2.7180799999999998e-09,
+          "late_floor_pct": 0.16997292206266668,
+          "ok": true
+        },
+        {
+          "ring": 3,
+          "edges_recorded": 41,
+          "t_first_abs": 6.47802e-09,
+          "late_swing_frac": 1.0574245,
+          "started": true,
+          "t_first_edge": 1.47802e-09,
+          "settle_0.01": {
+            "t_settle": 4.10723e-09,
+            "k_settle": 1,
+            "p_ref": 2.5684500000000006e-09,
+            "first_period_err": 0.023656290759017873
+          },
+          "settle_0.005": {
+            "t_settle": 4.10723e-09,
+            "k_settle": 1,
+            "p_ref": 2.5684500000000006e-09,
+            "first_period_err": 0.023656290759017873
+          },
+          "p_ref": 2.5684500000000006e-09,
+          "late_floor_pct": 0.25501761762960484,
+          "ok": true
+        },
+        {
+          "ring": 4,
+          "edges_recorded": 41,
+          "t_first_abs": 6.41533e-09,
+          "late_swing_frac": 1.018901888888889,
+          "started": true,
+          "t_first_edge": 1.41533e-09,
+          "settle_0.01": {
+            "t_settle": 3.91455e-09,
+            "k_settle": 1,
+            "p_ref": 2.4348899999999996e-09,
+            "first_period_err": 0.026420084685550682
+          },
+          "settle_0.005": {
+            "t_settle": 3.91455e-09,
+            "k_settle": 1,
+            "p_ref": 2.4348899999999996e-09,
+            "first_period_err": 0.026420084685550682
+          },
+          "p_ref": 2.4348899999999996e-09,
+          "late_floor_pct": 0.11869119344178891,
+          "ok": true
+        }
+      ],
+      "ok": true,
+      "t_settle_max_1pct": 4.55654e-09,
+      "t_settle_max_0.5pct": 4.55654e-09,
+      "request": "det-en-tt",
+      "p_ref_vs_committed_pct": [
+        -0.0416870130734992,
+        0.006254806082606201,
+        -0.17070616850936027,
+        0.009734446756870518
+      ]
+    },
+    {
+      "process": "ff",
+      "temp_c": 27.0,
+      "vdd_v": 1.8,
+      "mode": "ramp",
+      "status": "pass",
+      "corner_id": "ff/Vk=1.800_Vm=1.000V/27C",
+      "rings": [
+        {
+          "ring": 1,
+          "edges_recorded": 41,
+          "t_first_abs": 5.06219e-07,
+          "vdd_at_first_edge": 0.9111942000000002,
+          "late_swing_frac": 1.0377010555555555,
+          "started": true,
+          "t_first_edge": 1.06105e-09,
+          "settle_0.01": {
+            "t_settle": 1.06105e-09,
+            "k_settle": 0,
+            "p_ref": 2.4123899999999994e-09,
+            "first_period_err": -4.14526672715132e-05
+          },
+          "settle_0.005": {
+            "t_settle": 1.06105e-09,
+            "k_settle": 0,
+            "p_ref": 2.4123899999999994e-09,
+            "first_period_err": -4.14526672715132e-05
+          },
+          "p_ref": 2.4123899999999994e-09,
+          "late_floor_pct": 0.3850952789555384,
+          "ok": true
+        },
+        {
+          "ring": 2,
+          "edges_recorded": 41,
+          "t_first_abs": 5.07247e-07,
+          "vdd_at_first_edge": 0.9130446,
+          "late_swing_frac": 1.0153803888888888,
+          "started": true,
+          "t_first_edge": 7.27256e-10,
+          "settle_0.01": {
+            "t_settle": 7.27256e-10,
+            "k_settle": 0,
+            "p_ref": 2.2733100000000003e-09,
+            "first_period_err": -3.783030031101475e-05
+          },
+          "settle_0.005": {
+            "t_settle": 7.27256e-10,
+            "k_settle": 0,
+            "p_ref": 2.2733100000000003e-09,
+            "first_period_err": -3.783030031101475e-05
+          },
+          "p_ref": 2.2733100000000003e-09,
+          "late_floor_pct": 0.15791950943757627,
+          "ok": true
+        },
+        {
+          "ring": 3,
+          "edges_recorded": 41,
+          "t_first_abs": 5.0784e-07,
+          "vdd_at_first_edge": 0.9141119999999999,
+          "late_swing_frac": 1.0521464444444444,
+          "started": true,
+          "t_first_edge": 3.31076e-10,
+          "settle_0.01": {
+            "t_settle": 3.31076e-10,
+            "k_settle": 0,
+            "p_ref": 2.1480700000000004e-09,
+            "first_period_err": 0.0007374061366713924
+          },
+          "settle_0.005": {
+            "t_settle": 3.31076e-10,
+            "k_settle": 0,
+            "p_ref": 2.1480700000000004e-09,
+            "first_period_err": 0.0007374061366713924
+          },
+          "p_ref": 2.1480700000000004e-09,
+          "late_floor_pct": 0.2900277923905348,
+          "ok": true
+        },
+        {
+          "ring": 4,
+          "edges_recorded": 41,
+          "t_first_abs": 5.08753e-07,
+          "vdd_at_first_edge": 0.9157554,
+          "late_swing_frac": 1.0113244666666665,
+          "started": true,
+          "t_first_edge": 1.7988e-09,
+          "settle_0.01": {
+            "t_settle": 1.7988e-09,
+            "k_settle": 0,
+            "p_ref": 2.0306200000000006e-09,
+            "first_period_err": -7.879366892893369e-05
+          },
+          "settle_0.005": {
+            "t_settle": 1.7988e-09,
+            "k_settle": 0,
+            "p_ref": 2.0306200000000006e-09,
+            "first_period_err": -7.879366892893369e-05
+          },
+          "p_ref": 2.0306200000000006e-09,
+          "late_floor_pct": 0.1319793954551507,
+          "ok": true
+        }
+      ],
+      "ok": true,
+      "t_settle_max_1pct": 1.7988e-09,
+      "t_settle_max_0.5pct": 1.7988e-09,
+      "request": "det-ramp-ff"
+    },
+    {
+      "process": "ss",
+      "temp_c": 27.0,
+      "vdd_v": 1.8,
+      "mode": "ramp",
+      "status": "pass",
+      "corner_id": "ss/Vk=1.800_Vm=1.000V/27C",
+      "rings": [
+        {
+          "ring": 1,
+          "edges_recorded": 41,
+          "t_first_abs": 5.58997e-07,
+          "vdd_at_first_edge": 1.0061946,
+          "late_swing_frac": 1.0512880555555555,
+          "started": true,
+          "t_first_edge": 1.70188e-09,
+          "settle_0.01": {
+            "t_settle": 1.70188e-09,
+            "k_settle": 0,
+            "p_ref": 3.5777e-09,
+            "first_period_err": 0.0002906895491516792
+          },
+          "settle_0.005": {
+            "t_settle": 1.70188e-09,
+            "k_settle": 0,
+            "p_ref": 3.5777e-09,
+            "first_period_err": 0.0002906895491516792
+          },
+          "p_ref": 3.5777e-09,
+          "late_floor_pct": 0.2599435391453797,
+          "ok": true
+        },
+        {
+          "ring": 2,
+          "edges_recorded": 41,
+          "t_first_abs": 5.59263e-07,
+          "vdd_at_first_edge": 1.0066734000000002,
+          "late_swing_frac": 1.0173649444444444,
+          "started": true,
+          "t_first_edge": 2.39148e-09,
+          "settle_0.01": {
+            "t_settle": 2.39148e-09,
+            "k_settle": 0,
+            "p_ref": 3.380000000000001e-09,
+            "first_period_err": -0.0008431952662726339
+          },
+          "settle_0.005": {
+            "t_settle": 2.39148e-09,
+            "k_settle": 0,
+            "p_ref": 3.380000000000001e-09,
+            "first_period_err": -0.0008431952662726339
+          },
+          "p_ref": 3.380000000000001e-09,
+          "late_floor_pct": 0.11834319526620174,
+          "ok": true
+        },
+        {
+          "ring": 3,
+          "edges_recorded": 41,
+          "t_first_abs": 5.59314e-07,
+          "vdd_at_first_edge": 1.0067652,
+          "late_swing_frac": 1.0607127777777776,
+          "started": true,
+          "t_first_edge": 6.86626e-11,
+          "settle_0.01": {
+            "t_settle": 6.86626e-11,
+            "k_settle": 0,
+            "p_ref": 3.2039899999999994e-09,
+            "first_period_err": -0.0023447638725462294
+          },
+          "settle_0.005": {
+            "t_settle": 6.86626e-11,
+            "k_settle": 0,
+            "p_ref": 3.2039899999999994e-09,
+            "first_period_err": -0.0023447638725462294
+          },
+          "p_ref": 3.2039899999999994e-09,
+          "late_floor_pct": 0.34300980964375727,
+          "ok": true
+        },
+        {
+          "ring": 4,
+          "edges_recorded": 41,
+          "t_first_abs": 5.59648e-07,
+          "vdd_at_first_edge": 1.0073664,
+          "late_swing_frac": 1.0134444777777778,
+          "started": true,
+          "t_first_edge": 1.06819e-09,
+          "settle_0.01": {
+            "t_settle": 1.06819e-09,
+            "k_settle": 0,
+            "p_ref": 3.0400699999999994e-09,
+            "first_period_err": -9.86819382431392e-06
+          },
+          "settle_0.005": {
+            "t_settle": 1.06819e-09,
+            "k_settle": 0,
+            "p_ref": 3.0400699999999994e-09,
+            "first_period_err": -9.86819382431392e-06
+          },
+          "p_ref": 3.0400699999999994e-09,
+          "late_floor_pct": 0.11282634939362435,
+          "ok": true
+        }
+      ],
+      "ok": true,
+      "t_settle_max_1pct": 2.39148e-09,
+      "t_settle_max_0.5pct": 2.39148e-09,
+      "request": "det-ramp-ss"
+    },
+    {
+      "process": "tt",
+      "temp_c": 27.0,
+      "vdd_v": 1.8,
+      "mode": "ramp",
+      "status": "pass",
+      "corner_id": "tt/Vk=1.800_Vm=1.000V/27C",
+      "rings": [
+        {
+          "ring": 1,
+          "edges_recorded": 41,
+          "t_first_abs": 5.24569e-07,
+          "vdd_at_first_edge": 0.9442242000000002,
+          "late_swing_frac": 1.0589134444444444,
+          "started": true,
+          "t_first_edge": 2.47137e-09,
+          "settle_0.01": {
+            "t_settle": 2.47137e-09,
+            "k_settle": 0,
+            "p_ref": 2.88327e-09,
+            "first_period_err": 0.0006936568548903121
+          },
+          "settle_0.005": {
+            "t_settle": 2.47137e-09,
+            "k_settle": 0,
+            "p_ref": 2.88327e-09,
+            "first_period_err": 0.0006936568548903121
+          },
+          "p_ref": 2.88327e-09,
+          "late_floor_pct": 0.3561927949861876,
+          "ok": true
+        },
+        {
+          "ring": 2,
+          "edges_recorded": 41,
+          "t_first_abs": 5.25187e-07,
+          "vdd_at_first_edge": 0.9453366000000002,
+          "late_swing_frac": 1.0189625555555555,
+          "started": true,
+          "t_first_edge": 1.25318e-09,
+          "settle_0.01": {
+            "t_settle": 1.25318e-09,
+            "k_settle": 0,
+            "p_ref": 2.7182899999999993e-09,
+            "first_period_err": 1.4715133411336012e-05
+          },
+          "settle_0.005": {
+            "t_settle": 1.25318e-09,
+            "k_settle": 0,
+            "p_ref": 2.7182899999999993e-09,
+            "first_period_err": 1.4715133411336012e-05
+          },
+          "p_ref": 2.7182899999999993e-09,
+          "late_floor_pct": 0.15855556250423675,
+          "ok": true
+        },
+        {
+          "ring": 3,
+          "edges_recorded": 41,
+          "t_first_abs": 5.25519e-07,
+          "vdd_at_first_edge": 0.9459342,
+          "late_swing_frac": 1.0580515555555556,
+          "started": true,
+          "t_first_edge": 2.1416e-10,
+          "settle_0.01": {
+            "t_settle": 2.1416e-10,
+            "k_settle": 0,
+            "p_ref": 2.5726199999999997e-09,
+            "first_period_err": 0.0002448865359050423
+          },
+          "settle_0.005": {
+            "t_settle": 2.1416e-10,
+            "k_settle": 0,
+            "p_ref": 2.5726199999999997e-09,
+            "first_period_err": 0.0002448865359050423
+          },
+          "p_ref": 2.5726199999999997e-09,
+          "late_floor_pct": 0.38948620472489814,
+          "ok": true
+        },
+        {
+          "ring": 4,
+          "edges_recorded": 41,
+          "t_first_abs": 5.26108e-07,
+          "vdd_at_first_edge": 0.9469944,
+          "late_swing_frac": 1.0136895944444444,
+          "started": true,
+          "t_first_edge": 1.63674e-09,
+          "settle_0.01": {
+            "t_settle": 1.63674e-09,
+            "k_settle": 0,
+            "p_ref": 2.4351099999999995e-09,
+            "first_period_err": -6.570545067763334e-05
+          },
+          "settle_0.005": {
+            "t_settle": 1.63674e-09,
+            "k_settle": 0,
+            "p_ref": 2.4351099999999995e-09,
+            "first_period_err": -6.570545067763334e-05
+          },
+          "p_ref": 2.4351099999999995e-09,
+          "late_floor_pct": 0.1318215604223183,
+          "ok": true
+        }
+      ],
+      "ok": true,
+      "t_settle_max_1pct": 2.47137e-09,
+      "t_settle_max_0.5pct": 2.47137e-09,
+      "request": "det-ramp-tt"
+    }
+  ],
+  "timestamp_utc": "2026-11-05T10:18:49.362184+00:00",
+  "repo_sha": "49aec1a"
+}

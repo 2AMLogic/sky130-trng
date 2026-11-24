@@ -16,34 +16,26 @@ unsupported evidence never selects a candidate. Nothing is promoted.
 from __future__ import annotations
 
 import argparse
-import hashlib
-import importlib.util
 import json
 import sys
+from functools import partial
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 STUDY = REPO_ROOT / "sim" / "digital-repaired-compaction"
 sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
 from evidence_record import mint_record, new_record_id  # noqa: E402
+from loadmod import load_module  # noqa: E402
 
-_spec = importlib.util.spec_from_file_location(
+C = load_module(
     "compaction", REPO_ROOT / "sim/digital-floorplan-compaction/analysis/compaction.py")
-C = importlib.util.module_from_spec(_spec)
-_spec.loader.exec_module(C)
 
 TARGET = C.TARGET_MM2
 REPAIR_STUDY = REPO_ROOT / "sim" / "digital-electrical-repair"
 REPAIR_REF_RUN = REPAIR_STUDY / "runs" / "20261010-cand1" / "slew0531"
 COMPACT_RUN = REPO_ROOT / "sim/digital-floorplan-compaction/runs/20261009-202126-760b4d3"
 
-
-def jl(p: Path):
-    return json.loads(p.read_text()) if p.exists() else None
-
-
-def sha(p: Path) -> str:
-    return "sha256:" + hashlib.sha256(p.read_bytes()).hexdigest()
+pnr_exit = partial(C._exit_from_codes, step="pnr-verify")
 
 
 def req_diff(a: dict, b: dict, path="") -> list[str]:
@@ -56,38 +48,18 @@ def req_diff(a: dict, b: dict, path="") -> list[str]:
     return out
 
 
-class _NoExitCodes(type(Path())):
-    """compaction.summarize_run parses `<name> exit <rc>` lines from exit-codes.txt; this study's file
-    uses `<name> pnr-verify exit <rc>` / `<name> audit exit <rc>` lines, so hide it from that helper
-    and parse it here."""
-
-    @property
-    def parent(self):
-        return Path("/nonexistent-exit-codes-dir")
-
-
-def pnr_exit(d: Path):
-    ec = d.parent / "exit-codes.txt"
-    if ec.exists():
-        for line in ec.read_text().splitlines():
-            t = line.split()
-            if len(t) > 3 and t[0] == d.name and t[1] == "pnr-verify":
-                return int(t[3])
-    return None
-
-
 def run_summary(d: Path) -> dict:
-    r = C.summarize_run(_NoExitCodes(d))
-    r["exit"] = pnr_exit(d)
-    es = jl(d / "electrical-summary.json")
+    r = C.summarize_run(d, exit_lookup=pnr_exit)
+    es = C.load(d / "electrical-summary.json")
     r["electrical"] = es
     rq = d / f"{d.name}.json"
     if not rq.exists():
         rq = STUDY / "requests" / f"{d.name}.json"
     if rq.exists():
-        r["request"] = {"path": str(rq.relative_to(REPO_ROOT)), "sha256": sha(rq),
-                        "max_transition_ns": json.loads(rq.read_text())["constraints"].get("max_transition_ns"),
-                        "utilization_pct": json.loads(rq.read_text())["floorplan"]["utilization_pct"]}
+        req_doc = C.load(rq)
+        r["request"] = {"path": str(rq.relative_to(REPO_ROOT)), "sha256": C.sha256(rq),
+                        "max_transition_ns": req_doc["constraints"].get("max_transition_ns"),
+                        "utilization_pct": req_doc["floorplan"]["utilization_pct"]}
     return r
 
 
@@ -126,7 +98,7 @@ def main(argv=None) -> int:
     ap.add_argument("--emit-record", action="store_true")
     args = ap.parse_args(argv)
     run_dir = STUDY / "runs" / args.run
-    whole = jl(C.WHOLE)
+    whole = C.load(C.WHOLE)
     base = C.baseline()
     base["area"] = C.area_model(base["die_w_um"], base["die_h_um"], whole)
     committed = json.loads(C.COMMITTED_REQUEST.read_text())
@@ -142,16 +114,16 @@ def main(argv=None) -> int:
         r["request_diff_vs_committed"] = req_diff(committed, json.loads(Path(REPO_ROOT / r["request"]["path"]).read_text())) \
             if r.get("request") else None
     # #226 unrepaired baselines (estimate counts) and their final-route audits (this study)
-    comp226 = {n: C.summarize_run(_NoExitCodes(COMPACT_RUN / n)) for n in ("util40", "util55", "util65")}
+    comp226 = {n: C.summarize_run(COMPACT_RUN / n) for n in ("util40", "util55", "util65")}
 
     # control: repaired 40 % vs the recorded #236 slew0531 candidate
-    ref = C.summarize_run(_NoExitCodes(REPAIR_REF_RUN))
+    ref = C.summarize_run(REPAIR_REF_RUN, exit_lookup=pnr_exit)
     c40 = runs.get("rep40-slew0531", {})
     control = {
         "reference_run": str(REPAIR_REF_RUN.relative_to(REPO_ROOT)),
         "geometry_byte_identical": c40.get("geometry_sha256") == ref.get("geometry_sha256"),
         "request_byte_identical": bool(c40.get("request")) and
-        c40["request"]["sha256"] == sha(REPAIR_STUDY / "requests" / "slew0531.json"),
+        c40["request"]["sha256"] == C.sha256(REPAIR_STUDY / "requests" / "slew0531.json"),
         "die_area_equal": (c40.get("pnr") or {}).get("die_area_um2") == (ref.get("pnr") or {}).get("die_area_um2"),
         "std_cell_area_equal": (c40.get("congestion") or {}).get("design__instance__area__stdcell") ==
         (ref.get("congestion") or {}).get("design__instance__area__stdcell"),
@@ -171,7 +143,7 @@ def main(argv=None) -> int:
 
     L: list[str] = []
     a = L.append
-    pins = jl(C.PINS)
+    pins = C.load(C.PINS)
     sel_txt = (f"`{best}`" if best else "none")
     a(f"# Repaired floorplan compaction -- 16-corner electrical closure -- issue #251")
     a("")
@@ -194,7 +166,7 @@ def main(argv=None) -> int:
     a(f"- klt `{(runs.get('rep40-slew0531', {}).get('pnr') or {}).get('klt_version')}` (tool-pins.json build, worktree venv; "
       "no host tool changed); OpenROAD "
       f"`{(runs.get('rep40-slew0531', {}).get('pnr') or {}).get('openroad')}`.")
-    a(f"- committed request `{C.COMMITTED_REQUEST.relative_to(REPO_ROOT)}` {sha(C.COMMITTED_REQUEST)}")
+    a(f"- committed request `{C.COMMITTED_REQUEST.relative_to(REPO_ROOT)}` {C.sha256(C.COMMITTED_REQUEST)}")
     a("- fixed in every run: netlist (same file), seed 20260905, 20000 ns clock, 4000 ns IO delays, aspect ratio 1.0, 5 um core "
       "margin, IO layers, sky130hd power preset, route stage, SPEF+SDF; no `set_load`/`set_driving_cell` (not in the request schema).")
     a("- varied: `floorplan.utilization_pct` (40/55/65) and `constraints.max_transition_ns`.")
@@ -375,8 +347,9 @@ def main(argv=None) -> int:
         return 0
     now, shaid, rid = new_record_id(REPO_ROOT)
     summary = {"record_id": rid, "timestamp_utc": now.isoformat(), "repo_sha": shaid, **summary}
-    mint_record(STUDY / "records", REPO_ROOT, rid, L, "", summary, author="Loom builder (issue #251)", now=now, sha=shaid)
-    return 0
+    res = mint_record(STUDY / "records", REPO_ROOT, rid, L, "", summary,
+                      author="Loom builder (issue #251)", now=now, sha=shaid)
+    return 0 if res else 1
 
 
 if __name__ == "__main__":

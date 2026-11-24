@@ -1,0 +1,45 @@
+{
+ "corner": "ff",
+ "group": "lr",
+ "chunk": 22,
+ "pvt": {
+  "proc": "ff",
+  "temp": -40.0,
+  "vnom": 1.98,
+  "stop": "300n",
+  "tmax": "5p",
+  "tr": null,
+  "why": "fast corner (DR-0003 combining-binding corner)"
+ },
+ "ctl_ring": 2,
+ "units": [
+  {
+   "kind": "tone",
+   "tone": "f4+0.25%",
+   "dv": 0.0,
+   "ra": 0.005,
+   "rf": 734370364.401534,
+   "ri": 0.0,
+   "detune": 0.0025
+  },
+  {
+   "kind": "tone",
+   "tone": "f4-0.25%",
+   "dv": 0.0,
+   "ra": 0.005,
+   "rf": 730707669.317237,
+   "ri": 0.0,
+   "detune": -0.0025
+  },
+  {
+   "kind": "control",
+   "tone": "ctl:own@10uA",
+   "dv": 0.0,
+   "ra": 0.0,
+   "rf": 661334984.0254534,
+   "ri": 0.01
+  }
+ ],
+ "campaign": "lock-resolution",
+ "nedge": 200
+}

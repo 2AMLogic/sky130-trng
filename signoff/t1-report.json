@@ -5,7 +5,7 @@
   "tier": null,
   "t1_item_count": 22,
   "build_t1_item_count": 22,
-  "t1_met_count": 14,
+  "t1_met_count": 15,
   "source_doc": "signoff/design-evidence-tiers.md",
   "source_doc_content_hash": "sha256:63eeec72e3d849761cf32dcf091af5728b069b1515e32bb3138e9454303671e5",
   "build": {
@@ -25,10 +25,242 @@
       "partition": "analog",
       "text": "committed schematic sources (or generator) plus the netlist derived from them, regenerated on design change.",
       "notes": [],
-      "status": "unmet",
-      "reason": "check_failed",
+      "status": "met",
+      "reason": null,
       "graded_by_build": true,
-      "citation": null
+      "citation": {
+        "file": "signoff/attest/1.analog.json",
+        "command": null,
+        "kind": "generic",
+        "check_status": "pass",
+        "content_hash": "sha256:cebcaa4f70b6a069924aaffe49d334bf6aa2754cf2007dcdcadd5649ff877a68",
+        "input_verified": true,
+        "exit_status": 0,
+        "artifact_binding": {
+          "t1_item": 1,
+          "path": null,
+          "content_hash": "sha256:cebcaa4f70b6a069924aaffe49d334bf6aa2754cf2007dcdcadd5649ff877a68",
+          "input_verified": true,
+          "members": [
+            {
+              "path": {
+                "path": "design/netlist.py",
+                "scope": "repo"
+              },
+              "content_hash": "sha256:d0fde55935dedf4da0b358aac7d7444299130416c05a66cb46c79c0477ad3b29",
+              "status": "verified"
+            },
+            {
+              "path": {
+                "path": "design/pdk.json",
+                "scope": "repo"
+              },
+              "content_hash": "sha256:290cbb5c7b9e33bec0c6712aa6a0ab836d7e1e1b93cd4c12d31da6999fcf3e93",
+              "status": "verified"
+            },
+            {
+              "path": {
+                "path": "design/ro_array_core.spice",
+                "scope": "repo"
+              },
+              "content_hash": "sha256:aed8b59124438c27a2547f40bad0d0abfdb1ade28ed53671be437bd12bd12e44",
+              "status": "verified"
+            },
+            {
+              "path": {
+                "path": "design/ro_ring5.spice",
+                "scope": "repo"
+              },
+              "content_hash": "sha256:19dccb82a3e9a1239d509a03e645954f79a857ab3b11e41a2a53faa105b58ea4",
+              "status": "verified"
+            },
+            {
+              "path": {
+                "path": "design/sampler_core.spice",
+                "scope": "repo"
+              },
+              "content_hash": "sha256:34a9af2714b7cfd71092c9733fb4007a61747b032eadcf5491ae9db811999b71",
+              "status": "verified"
+            },
+            {
+              "path": {
+                "path": "design/trng_top.spice",
+                "scope": "repo"
+              },
+              "content_hash": "sha256:3d1ecc97b757f961c5f9fa7b63555132723bc87be373e9e5c3cbd1f18bde6a3b",
+              "status": "verified"
+            },
+            {
+              "path": {
+                "path": "design/xschem/ro_array_core.sch",
+                "scope": "repo"
+              },
+              "content_hash": "sha256:1d37a32538102e5de418eeb3ead1eb4eebe03a383233bdde8084f999f5089163",
+              "status": "verified"
+            },
+            {
+              "path": {
+                "path": "design/xschem/ro_array_core.sym",
+                "scope": "repo"
+              },
+              "content_hash": "sha256:f50b91f1f0f59569694f70033e6068f730c1b13e07ab5c76789d4fa95bb47981",
+              "status": "verified"
+            },
+            {
+              "path": {
+                "path": "design/xschem/ro_buf.sch",
+                "scope": "repo"
+              },
+              "content_hash": "sha256:7ca4cbab7fb6877a0ce6d7e3e743eba3c0b3556ce78b32876171fd715d091c5c",
+              "status": "verified"
+            },
+            {
+              "path": {
+                "path": "design/xschem/ro_buf.sym",
+                "scope": "repo"
+              },
+              "content_hash": "sha256:4a73adbef70d58a1e3a69515e59793d3cc5d15df2b51f0c4fff8aa2347922b3e",
+              "status": "verified"
+            },
+            {
+              "path": {
+                "path": "design/xschem/ro_nand2.sch",
+                "scope": "repo"
+              },
+              "content_hash": "sha256:9e9bee48cc009a32497a77d1faae22e3afad0931cfcfdee25adb645534012343",
+              "status": "verified"
+            },
+            {
+              "path": {
+                "path": "design/xschem/ro_nand2.sym",
+                "scope": "repo"
+              },
+              "content_hash": "sha256:1eb606446f910b47ab86ee353c664fab926a221b1cf2407a8f017ee9339bd904",
+              "status": "verified"
+            },
+            {
+              "path": {
+                "path": "design/xschem/ro_ring11.sch",
+                "scope": "repo"
+              },
+              "content_hash": "sha256:f3b2e31215af0cbc43ec96075552dc1c60828227ed53f7f9c61f2e2c7e09657d",
+              "status": "verified"
+            },
+            {
+              "path": {
+                "path": "design/xschem/ro_ring11.sym",
+                "scope": "repo"
+              },
+              "content_hash": "sha256:70725b06010fd510696920ce82bbe2dc0c1d3add39e081facaea4f0cbf611148",
+              "status": "verified"
+            },
+            {
+              "path": {
+                "path": "design/xschem/ro_ring5.sch",
+                "scope": "repo"
+              },
+              "content_hash": "sha256:ab9638d58472a434894e79be8b77a72a45c6c047cd187269d484f9a12c29f678",
+              "status": "verified"
+            },
+            {
+              "path": {
+                "path": "design/xschem/ro_ring5.sym",
+                "scope": "repo"
+              },
+              "content_hash": "sha256:802157eee20249f9f4935a7e3e66570e7bb20c858696c5f6a09b3211faeabe6d",
+              "status": "verified"
+            },
+            {
+              "path": {
+                "path": "design/xschem/ro_stage.sch",
+                "scope": "repo"
+              },
+              "content_hash": "sha256:586cdfa3d2c06e93baac61af7d07420b68799cd835be9b65461c1b9300ad6656",
+              "status": "verified"
+            },
+            {
+              "path": {
+                "path": "design/xschem/ro_stage.sym",
+                "scope": "repo"
+              },
+              "content_hash": "sha256:d9f54da01844e6230bdcba39afd32346dffab191e98af301da848ad49d5a9f62",
+              "status": "verified"
+            },
+            {
+              "path": {
+                "path": "design/xschem/sampler_core.sch",
+                "scope": "repo"
+              },
+              "content_hash": "sha256:0c30444dfe4c826e5de6fa8a91e45a75d46f134894b314880892247a17054019",
+              "status": "verified"
+            },
+            {
+              "path": {
+                "path": "design/xschem/sampler_core.sym",
+                "scope": "repo"
+              },
+              "content_hash": "sha256:c92f9663bc8fd80bdcbfa0b155db53bca80f4fdc1f6e77ad4c3a0af0da783b79",
+              "status": "verified"
+            },
+            {
+              "path": {
+                "path": "design/xschem/sampler_dff.sch",
+                "scope": "repo"
+              },
+              "content_hash": "sha256:9b1da1e0cdb9a4ae6ac400b26c128cddc98554e9a0d4036278716f31e5186eff",
+              "status": "verified"
+            },
+            {
+              "path": {
+                "path": "design/xschem/sampler_dff.sym",
+                "scope": "repo"
+              },
+              "content_hash": "sha256:fb4f4aec6592821f2b2d32eb7d85bb73f22820bd98d971a499e2b70df3f33d85",
+              "status": "verified"
+            },
+            {
+              "path": {
+                "path": "design/xschem/trng_top.sch",
+                "scope": "repo"
+              },
+              "content_hash": "sha256:78aaa0bfeeed5299b564d823cdb7d3f21411f39805e48285dac9c01d294c568c",
+              "status": "verified"
+            },
+            {
+              "path": {
+                "path": "design/xschem/xor2.sch",
+                "scope": "repo"
+              },
+              "content_hash": "sha256:0746b1ca951a2d5e215298da4bd6620bd34df89844ca71320521cc440f7b6a31",
+              "status": "verified"
+            },
+            {
+              "path": {
+                "path": "design/xschem/xor2.sym",
+                "scope": "repo"
+              },
+              "content_hash": "sha256:0e01f5394cfb068f6013ce31b22487c82206cd8c2c70f9d14b5cdf4e4e5b1ea8",
+              "status": "verified"
+            },
+            {
+              "path": {
+                "path": "signoff/attest/1.analog.inventory.json",
+                "scope": "repo"
+              },
+              "content_hash": "sha256:af994a4b2400bc354257c7e4a3dca15b7229365a1f5ed8c2645b159b713857e9",
+              "status": "verified"
+            }
+          ],
+          "summary": "T1 item 1 (Design sources): 29/29 attestation checks passed (klt signoff --attest)",
+          "source": "signoff/attest/1.analog.inventory.json",
+          "attestation": {
+            "producer": "klt signoff --attest",
+            "inventory_schema_version": 1,
+            "check_count": 29,
+            "passed_count": 29
+          }
+        }
+      }
     },
     {
       "tier": "T1",
@@ -72,13 +304,13 @@
         "command": null,
         "kind": "generic",
         "check_status": "pass",
-        "content_hash": "sha256:cb3211a67c339b168d19eed88607aef2a56ef5fb6e6b7bf34c26b92d87df7399",
+        "content_hash": "sha256:78c8fd73d2b4ce2139a83dd88c19bd68630e61e33b439aa7a842327e201e39b4",
         "input_verified": true,
         "exit_status": 0,
         "artifact_binding": {
           "t1_item": 2,
           "path": "signoff/attest/2.analog.inventory.json",
-          "content_hash": "sha256:cb3211a67c339b168d19eed88607aef2a56ef5fb6e6b7bf34c26b92d87df7399",
+          "content_hash": "sha256:78c8fd73d2b4ce2139a83dd88c19bd68630e61e33b439aa7a842327e201e39b4",
           "input_verified": true,
           "source": "signoff/attest.py"
         }
@@ -99,13 +331,13 @@
         "command": null,
         "kind": "generic",
         "check_status": "pass",
-        "content_hash": "sha256:e61b71b92c0a96067aa35d803a78db4573fd540908581315872d6870e6a47257",
+        "content_hash": "sha256:67f3502031f7fdb03c31fdfbab2e4edf3343e2ebc4dd5e83df8fda59e7d7be45",
         "input_verified": true,
         "exit_status": 0,
         "artifact_binding": {
           "t1_item": 2,
           "path": "signoff/attest/2.digital.inventory.json",
-          "content_hash": "sha256:e61b71b92c0a96067aa35d803a78db4573fd540908581315872d6870e6a47257",
+          "content_hash": "sha256:67f3502031f7fdb03c31fdfbab2e4edf3343e2ebc4dd5e83df8fda59e7d7be45",
           "input_verified": true,
           "source": "signoff/attest.py"
         }
@@ -439,9 +671,46 @@
       "text": "any accuracy, offset, or matching spec row is statistical; a corner matrix (or STA corner sweep) cannot validate it. This applies to whichever spec rows are actually statistical, regardless of block kind \u2014 most digital spec rows (functional correctness, Fmax, timing closure) are not, and a block whose spec has no statistical row must say so explicitly rather than omit the item. Where it does apply, MC runs need a recorded seed, sample count, a deterministic negative control, and results combined with (not instead of) process corners (#344). A `klt yield` JSON report \u2014 a yield estimate with its confidence interval, sample-size verdict, and Cpk/sigma-to-spec against the row's own limits \u2014 is the machine-checkable evidence for this item (`klt signoff`'s tier-verdict mode grades it the same way it grades the deterministic items above).",
       "notes": [],
       "status": "unmet",
-      "reason": "no_evidence",
+      "reason": "partial_coverage",
       "graded_by_build": true,
-      "citation": null
+      "citation": null,
+      "citations_graded": [
+        {
+          "citation": "sim/local-mismatch-monte-carlo/yield/20261009-111127-e57ad27/klt-yield.json",
+          "rows": [
+            "raw_min_entropy_per_bit"
+          ],
+          "status": "met",
+          "reason": null
+        },
+        {
+          "citation": "sim/local-mismatch-monte-carlo/yield/20261009-111126-e57ad27/klt-yield.json",
+          "rows": [
+            "raw_min_entropy_per_bit"
+          ],
+          "status": "met",
+          "reason": null
+        },
+        {
+          "citation": "sim/local-mismatch-monte-carlo/yield/20261009-111125-e57ad27/klt-yield.json",
+          "rows": [
+            "raw_min_entropy_per_bit"
+          ],
+          "status": "met",
+          "reason": null
+        }
+      ],
+      "detail": {
+        "failed_rows": [],
+        "uncovered_rows": [],
+        "declared_gaps": [],
+        "unratified_rows": [
+          "raw_min_entropy_per_bit"
+        ],
+        "row_sources": {
+          "raw_min_entropy_per_bit": "asserted"
+        }
+      }
     },
     {
       "tier": "T1",
@@ -465,7 +734,7 @@
         "A `klt pex` citation is only as good as the **device-body bias** of the netlist it ran on (#1983). A device body left on an anonymous, deck-synthesized net has no DC bias path at all, which makes a resimulation of that extracted netlist *physically wrong, not merely imprecise* (`docs/cli/extract.md` \u2192 \"Coverage\") \u2014 the run converges and reports numbers, and those numbers are not comparable to the schematic leg they are being diffed against. A `klt pex` report states the condition in its own `body_bias` block (`docs/cli/pex.md`), and `klt signoff` surfaces it verbatim on this item's citation (`citation.body_bias`). **It does not grade on it**: an item-7 citation whose `body_bias.status` is `\"unbiased\"` still renders `met`, because the condition is a deck-coverage property some PDKs produce on every layout they extract, not a defect this command can adjudicate. So a claim citing item 7 must read that field and state whether its post-layout numbers were measured on a properly-biased netlist \u2014 claimant-enforced, exactly like item 3's DRC-coverage disclosure. The same discipline applies upstream at item 4: `klt lvs`'s `body_verification` block says whether the compare verified the body ties at all, and `\"unchecked\"` (a pre-extracted netlist) is not `\"verified\"`."
       ],
       "status": "unmet",
-      "reason": "no_evidence",
+      "reason": "check_failed",
       "graded_by_build": true,
       "citation": null
     },
@@ -530,13 +799,13 @@
         "command": null,
         "kind": "generic",
         "check_status": "pass",
-        "content_hash": "sha256:2698356b3d83a03817849556f336361159beeacfb432bae8bd83738b664f3d96",
+        "content_hash": "sha256:07155cc1a8dea6010087a6fc38e0fc15161610df00d46d42059fdec6d853a89c",
         "input_verified": true,
         "exit_status": 0,
         "artifact_binding": {
           "t1_item": 9,
           "path": "signoff/attest/9.inventory.json",
-          "content_hash": "sha256:2698356b3d83a03817849556f336361159beeacfb432bae8bd83738b664f3d96",
+          "content_hash": "sha256:07155cc1a8dea6010087a6fc38e0fc15161610df00d46d42059fdec6d853a89c",
           "input_verified": true,
           "source": "signoff/attest.py"
         }
@@ -557,13 +826,13 @@
         "command": null,
         "kind": "generic",
         "check_status": "pass",
-        "content_hash": "sha256:2698356b3d83a03817849556f336361159beeacfb432bae8bd83738b664f3d96",
+        "content_hash": "sha256:07155cc1a8dea6010087a6fc38e0fc15161610df00d46d42059fdec6d853a89c",
         "input_verified": true,
         "exit_status": 0,
         "artifact_binding": {
           "t1_item": 9,
           "path": "signoff/attest/9.inventory.json",
-          "content_hash": "sha256:2698356b3d83a03817849556f336361159beeacfb432bae8bd83738b664f3d96",
+          "content_hash": "sha256:07155cc1a8dea6010087a6fc38e0fc15161610df00d46d42059fdec6d853a89c",
           "input_verified": true,
           "source": "signoff/attest.py"
         }
@@ -584,13 +853,13 @@
         "command": null,
         "kind": "generic",
         "check_status": "pass",
-        "content_hash": "sha256:79d643dfdc2df73b67e0a1c94b40bb57ccdf138750e3dae313f0b9a55471540c",
+        "content_hash": "sha256:5ac9bceab23cc7892a18f66d2f53389a8ef305984ab53a979eec0b53583b6541",
         "input_verified": true,
         "exit_status": 0,
         "artifact_binding": {
           "t1_item": 10,
           "path": "signoff/attest/10.inventory.json",
-          "content_hash": "sha256:79d643dfdc2df73b67e0a1c94b40bb57ccdf138750e3dae313f0b9a55471540c",
+          "content_hash": "sha256:5ac9bceab23cc7892a18f66d2f53389a8ef305984ab53a979eec0b53583b6541",
           "input_verified": true,
           "source": "signoff/attest.py"
         }
@@ -611,13 +880,13 @@
         "command": null,
         "kind": "generic",
         "check_status": "pass",
-        "content_hash": "sha256:79d643dfdc2df73b67e0a1c94b40bb57ccdf138750e3dae313f0b9a55471540c",
+        "content_hash": "sha256:5ac9bceab23cc7892a18f66d2f53389a8ef305984ab53a979eec0b53583b6541",
         "input_verified": true,
         "exit_status": 0,
         "artifact_binding": {
           "t1_item": 10,
           "path": "signoff/attest/10.inventory.json",
-          "content_hash": "sha256:79d643dfdc2df73b67e0a1c94b40bb57ccdf138750e3dae313f0b9a55471540c",
+          "content_hash": "sha256:5ac9bceab23cc7892a18f66d2f53389a8ef305984ab53a979eec0b53583b6541",
           "input_verified": true,
           "source": "signoff/attest.py"
         }

@@ -112,7 +112,6 @@ Exit status: ``0`` all requested corners passed and a record was written,
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import os
 import platform
@@ -133,7 +132,10 @@ DEFAULT_PEX_LIB = REPO_ROOT / "layout" / "pex" / "ro_ring5_pex.spice"
 
 sys.path.insert(0, str(REPO_ROOT / "design"))
 sys.path.insert(0, str(SIM_DIR / "bin"))
+sys.path.insert(0, str(REPO_ROOT / "layout" / "bin"))
+from _hashing import sha256_file  # noqa: E402
 import artifact_store  # noqa: E402
+from evidence_record import git_dirty_paths  # noqa: E402
 from _pdk_search import (  # noqa: E402
     BUILTIN_SEARCH_ROOTS,
     PdkSearchError,
@@ -326,8 +328,17 @@ def git(*args: str) -> str:
 def repo_state() -> dict:
     sha = git("rev-parse", "--short", "HEAD") or "unknown"
     branch = git("rev-parse", "--abbrev-ref", "HEAD") or "unknown"
-    dirty = bool(git("status", "--porcelain"))
+    # Tri-state (issue #692): True / False / None. None means `git status`
+    # could not run -- unknown, never reported as clean (or as dirty).
+    paths = git_dirty_paths(REPO_ROOT)
+    dirty = None if paths is None else bool(paths)
     return {"sha": sha, "branch": branch, "dirty": dirty}
+
+
+def _dirty_suffix(dirty: bool | None) -> str:
+    if dirty is None:
+        return " (working tree state unknown: git status unavailable)"
+    return " (dirty working tree)" if dirty else ""
 
 
 def default_author() -> str:
@@ -547,7 +558,7 @@ def netlist_provenance(paths: dict[str, Path]) -> dict[str, dict[str, str]]:
         except ValueError:
             rel = str(path)
         if path.is_file():
-            digest = hashlib.sha256(path.read_bytes()).hexdigest()
+            digest = sha256_file(path)
         else:
             digest = "(missing)"
         out[token] = {"path": rel, "sha256": digest}
@@ -695,7 +706,7 @@ def write_record(
         "",
         "## Repo state",
         "",
-        f"- commit: `{state['sha']}`{' (dirty working tree)' if state['dirty'] else ''}",
+        f"- commit: `{state['sha']}`{_dirty_suffix(state['dirty'])}",
         f"- branch: `{state['branch']}`",
         "",
         "## Corner matrix run",

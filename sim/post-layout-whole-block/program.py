@@ -40,6 +40,8 @@ from model import regmap as rm  # noqa: E402
 
 #: clk begins pulsing here (same convention as every post-layout sampler deck)
 T0_NS = 320.0
+#: rst_n rises here (make-requests.py Vrstn PULSE delay)
+RST_N_RELEASE_NS = 300.0
 #: sample period -- the disclosed compute-budget deviation, stated per record
 TS_NS = 100.0
 #: inputs change this long after each clock edge (settled well before the next)
@@ -153,23 +155,122 @@ def cycle_inputs(cycles: list[dict]) -> list[dict]:
     return out
 
 
-def model_replay(captured_bits: list[int]) -> list[dict]:
+# Hold each level to 100 ps before the change. Must stay >= 0.1: `f"{t:.1f}n"` would
+# collapse the hold and the change onto one breakpoint (#488; enforced by
+# test_breakpoint_hygiene). Do not tighten.
+PWL_EDGE_NS = 0.1
+
+
+def waveform_card(name: str, levels: list[int], stop_ns: float, vih: float) -> str:
+    """Hold each logical value, then switch over the final 100 ps of its edge."""
+    points = [(0.0, levels[0])]
+    for k in range(1, len(levels)):
+        if levels[k] != levels[k - 1]:
+            change = t_edge_ns(k) + SKEW_NS
+            points.extend(((change - PWL_EDGE_NS, levels[k - 1]), (change, levels[k])))
+    points.append((stop_ns, levels[-1]))
+    text = " ".join(f"{t:.1f}n {value * vih:.3f}" for t, value in points)
+    return f"V{name} {name} 0 PWL({text})"
+
+
+def input_cards(cycles: list[dict], n_cycles: int, vih: float, *, coupled: bool = False) -> list[str]:
+    inputs = cycle_inputs(cycles)[:n_cycles]
+    stop = t_stop_ns(cycles)
+    cards = []
+    for key, width in (("addr", 4), ("wdata", 32)):
+        for bit in range(width):
+            levels = [(row[key] >> bit) & 1 for row in inputs]
+            cards.append(waveform_card(f"bus_{key}_{bit}_", levels, stop, vih))
+    directions = boundary_signals()
+    for name, key in (("bus_we", "we"), ("bus_re", "re"), ("raw_valid", "raw_valid"),
+                      ("out_ready", "out_ready")):
+        if not coupled or directions[name]["dir"] == "tb->digital":
+            cards.append(waveform_card(name, [row[key] for row in inputs], stop, vih))
+    return cards
+
+
+#: DR-0017 option (b): the simulated detail of each half of the block. Written
+#: into every request/plan and read by the reducer to label the result level.
+PROVENANCE = {"analog": "transistor", "digital": "gate-level"}
+
+
+def boundary_signals() -> dict[str, dict]:
+    """The analog/digital boundary of DR-0017 as data (``{dir, width, domain}``).
+
+    ``dir`` is the signal direction relative to the pair of halves:
+    ``tb->both`` / ``tb->analog`` / ``tb->digital`` (testbench driven),
+    ``analog->digital`` (inter-macro), ``analog->obs`` / ``digital->obs``
+    (observed), ``supply``. ``domain`` names the supply group. Source of truth:
+    ``layout/trng_whole/interface.md`` and ``trng_whole.sim.ports.json``.
+    """
+    s: dict[str, dict] = {}
+
+    def add(name, direction, width, domain):
+        s[name] = {"dir": direction, "width": width, "domain": domain}
+
+    add("raw_bit", "analog->digital", 1, "vdd")
+    add("raw_valid", "analog->digital", 1, "vdd")
+    add("clk", "tb->both", 1, "vdd")
+    add("rst_n", "tb->both", 1, "vdd")
+    for i in range(1, 5):
+        add(f"en{i}", "tb->analog", 1, f"vddr{i}")
+        add(f"ring_bit{i}", "analog->obs", 1, f"vddr{i}")
+        add(f"vddr{i}", "supply", 1, f"vddr{i}")
+    add("bus_addr", "tb->digital", 4, "vdd")
+    add("bus_we", "tb->digital", 1, "vdd")
+    add("bus_re", "tb->digital", 1, "vdd")
+    add("bus_wdata", "tb->digital", 32, "vdd")
+    add("out_ready", "tb->digital", 1, "vdd")
+    add("bus_rdata", "digital->obs", 32, "vdd")
+    add("out_data", "digital->obs", 32, "vdd")
+    for n in ("out_valid", "alarm", "gated", "startup_done"):
+        add(n, "digital->obs", 1, "vdd")
+    add("vdd", "supply", 1, "vdd")
+    add("vss", "supply", 1, "vdd")
+    return s
+
+
+def digital_stimulus(cycles: list[dict]) -> list[dict]:
+    """Per-cycle vectors for the gate-level digital block, no analog sources.
+
+    ``cycle_inputs`` plus the clock/reset times of the whole-block deck, so the
+    digital half can be driven standalone. ``raw_bit`` is not here: it is the
+    analog sampler's output, carried across the boundary at run time.
+    """
+    out = []
+    for k, inp in enumerate(cycle_inputs(cycles)):
+        v = dict(inp)
+        v.update({"cycle": k, "t_edge_ns": t_edge_ns(k),
+                  "clk_start_ns": T0_NS, "ts_ns": TS_NS,
+                  "rst_n_release_ns": RST_N_RELEASE_NS})
+        out.append(v)
+    return out
+
+
+def model_replay(captured_bits: list[int], *, captured_valid: list[int] | None = None) -> list[dict]:
     """Replay the program through the normative model.
 
     ``captured_bits[k]`` is the raw_bit the transistor run latched at edge
     ``k+1`` (the program's k-th sample cycle). Returns one row per cycle
-    with every observable output the deck measured.
+    with every observable output the deck measured. For coupled replay the
+    measured valid vector selects the edges that consumed a captured bit.
     """
     from model.digital_top import TrngDigital  # noqa: E402  (repo model)
     cycles, phases = build_program()
     inputs = cycle_inputs(cycles)
+    if captured_valid is not None:
+        for inp, valid in zip(inputs, captured_valid, strict=True):
+            inp["raw_valid"] = valid
+        if sum(captured_valid) != len(captured_bits):
+            raise ValueError("expected one captured bit per asserted sampler strobe")
     dut = TrngDigital()
     rows = []
     bit_i = 0
     for k, inp in enumerate(inputs):
         # the DUT samples its inputs at the edge that ENDS cycle k; the
-        # model's cycle() returns the outputs visible DURING the next cycle,
-        # exactly what the deck's capture windows measure.
+        # model's cycle() returns the start-of-cycle registers visible
+        # DURING cycle k (digital_top.cycle() observes before applying the
+        # edge), exactly what the deck's capture windows measure.
         raw_bit = captured_bits[bit_i] if inp["raw_valid"] else 0
         if inp["raw_valid"]:
             bit_i += 1
@@ -178,7 +279,8 @@ def model_replay(captured_bits: list[int]) -> list[dict]:
                         wdata=inp["wdata"], out_ready=inp["out_ready"])
         rows.append({"cycle": k, "phase": next(p for p in phases if p[1] <= k < p[2])[0],
                      "inputs": inp, "model": out})
-    assert bit_i == N_SAMPLES_REG + N_SAMPLES_STREAM, "program bit budget drifted"
+    if captured_valid is None:
+        assert bit_i == N_SAMPLES_REG + N_SAMPLES_STREAM, "program bit budget drifted"
     return rows
 
 

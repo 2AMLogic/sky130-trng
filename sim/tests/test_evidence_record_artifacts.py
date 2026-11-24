@@ -9,6 +9,8 @@ from __future__ import annotations
 
 import json
 import os
+import re
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -27,6 +29,150 @@ def use_fake_klt(case, tmp, mode="ok"):
     patcher = mock.patch.dict(os.environ, fake_klt.install(tmp / "bin", mode))
     patcher.start()
     case.addCleanup(patcher.stop)
+
+
+# --- static guard: no hand-rolled record tails outside the minter (issue #515) ---
+
+# The detector walks the AST (issue #531) rather than matching source text, so
+# it does not depend on how the path is spelled (`rid+".md"`, `'{rid}.md'`,
+# `"%s.md" % rid`, `.format(rid)`, `.with_suffix(".md")`, ...). Each path
+# expression is *rendered* to a string with `rid` as a sentinel and every other
+# interpolation as an opaque wildcard (so `f"{outdir}/{rid}.md"` still ends in
+# `<rid>.md`). A write is a record tail only when the rendered path ends in
+# EXACTLY `<rid>.md`/`<rid>.json`: `endswith(".json")` would also flag the
+# legitimate `<rid>.calibration.json` sidecar. Doc back-references, prints,
+# `.exists()` checks and read-only `open()`s (omitted mode or a literal read
+# mode such as `"rb"` -- issue #618) never reach a write call, so they stay
+# unflagged.
+_RID, _ANY = "\x00", "\x01"
+_RID_TAIL = re.compile(r"\x00\.(?:md|json)\Z")
+_WRITE_ATTRS = {"write_text", "write_bytes", "write", "open"}
+_WRITE_MODE_CHARS = frozenset("wax+")
+_PLACEHOLDER = re.compile(r"%[sdr]|\{[^{}]*\}")
+
+
+def _render(node, bound=frozenset()) -> str:
+    """Render a path expression to a string; `rid` -> _RID, unknown -> _ANY."""
+    import ast
+    if isinstance(node, ast.Constant):
+        return node.value if isinstance(node.value, str) else _ANY
+    if isinstance(node, ast.Name):
+        return _RID if node.id == "rid" else _ANY
+    if isinstance(node, ast.JoinedStr):
+        return "".join(_render(v.value, bound) if isinstance(v, ast.FormattedValue)
+                       else _render(v, bound) for v in node.values)
+    if isinstance(node, ast.BinOp):
+        if isinstance(node.op, ast.Add):
+            return _render(node.left, bound) + _render(node.right, bound)
+        if isinstance(node.op, ast.Div):
+            return _render(node.left, bound) + "/" + _render(node.right, bound)
+        if isinstance(node.op, ast.Mod) and isinstance(node.left, ast.Constant) \
+                and isinstance(node.left.value, str):
+            right = node.right.elts if isinstance(node.right, ast.Tuple) else [node.right]
+            vals = iter(_render(r, bound) for r in right)
+            return _PLACEHOLDER.sub(lambda _m: next(vals, _ANY), node.left.value)
+    if isinstance(node, ast.Call):
+        f = node.func
+        if isinstance(f, ast.Attribute) and f.attr == "format" \
+                and isinstance(f.value, ast.Constant) and isinstance(f.value.value, str):
+            pos = iter(_render(a, bound) for a in node.args)
+            kw = {k.arg: _render(k.value, bound) for k in node.keywords}
+            return _PLACEHOLDER.sub(
+                lambda m: kw.get(m.group(0)[1:-1], _ANY) if m.group(0)[1:-1] in kw
+                else next(pos, _ANY), f.value.value)
+        if isinstance(f, ast.Attribute) and f.attr == "with_suffix" and node.args:
+            return _render(f.value, bound) + _render(node.args[0], bound)
+        if isinstance(f, ast.Attribute) and f.attr == "join" and node.args:  # os.path.join
+            return "/".join(_render(a, bound) for a in node.args)
+        if isinstance(f, ast.Name) and f.id == "Path" and node.args:
+            return _render(node.args[0], bound)
+    return _ANY
+
+
+def _is_tail(node) -> bool:
+    return bool(_RID_TAIL.search(_render(node)))
+
+
+def _open_mode(n, mode_index: int):
+    """The `mode` argument of an `open()` call: positional slot `mode_index`
+    (2nd arg for the built-in, 1st for the method), else the `mode=` keyword,
+    else None when omitted (which reads). A `**` splat (any keyword whose
+    `arg` is None) may carry `mode`, so its node is returned instead: an
+    unestablishable mode the classifier treats as a write (issue #624)."""
+    if len(n.args) > mode_index:
+        return n.args[mode_index]
+    splat = next((k.value for k in n.keywords if k.arg is None), None)
+    if splat is not None:
+        return splat
+    return next((k.value for k in n.keywords if k.arg == "mode"), None)
+
+
+def _mode_implies_write(mode) -> bool:
+    """False only for a mode the AST establishes as read-only: omitted (which
+    reads) or a literal without `w`/`a`/`x`/`+`. Anything else -- a variable,
+    a call result, a `**` splat -- is conservatively a write (issues #618,
+    #624)."""
+    import ast
+    if mode is None:
+        return False
+    if isinstance(mode, ast.Constant) and isinstance(mode.value, str):
+        return bool(_WRITE_MODE_CHARS.intersection(mode.value.lower()))
+    return True
+
+
+# Known hand-rolled tails, allowed only until drained. `sim/bin/corner-run.py`
+# is the `klt sim` record minter with its own `supersedes` handling (#504's
+# reasoning, restated by #515's scope note). The four #525 reducers were
+# converted through `mint_record` and drained from this list; `sensitivity.py`
+# was converted by #515. Neither may return here.
+ALLOWED_HAND_ROLLED_TAILS = frozenset({
+    "sim/bin/corner-run.py",
+})
+
+
+def hand_rolled_record_tails(root: Path = REPO) -> set[str]:
+    """Sim-relative paths under `sim/` that write a `<rid>.md`/`<rid>.json`
+    record directly instead of going through `mint_record`/`_publish_bundle`.
+
+    `sim/bin/evidence_record.py` is the minter itself; `sim/tests/` mint fake
+    records by design (including this guard's own fixtures). A file that does
+    not parse is skipped.
+    """
+    import ast
+    hits = set()
+    for path in sorted((root / "sim").rglob("*.py")):
+        rel = path.relative_to(root).as_posix()
+        if rel == "sim/bin/evidence_record.py" or rel.startswith("sim/tests/"):
+            continue
+        try:
+            tree = ast.parse(path.read_text())
+        except (SyntaxError, ValueError, UnicodeDecodeError):
+            continue
+        nodes = list(ast.walk(tree))
+        # The split shape (`record_md = records_dir / f"{rid}.md"` ... later
+        # `record_md.write_text(...)`), which `sim/bin/corner-run.py` uses.
+        bound = {t.id for n in nodes if isinstance(n, ast.Assign) and _is_tail(n.value)
+                 for t in n.targets if isinstance(t, ast.Name)}
+        for n in nodes:
+            if not isinstance(n, ast.Call):
+                continue
+            f = n.func
+            mode_index = None
+            if isinstance(f, ast.Name) and f.id == "open" and n.args:
+                target = n.args[0]
+                mode_index = 1  # open(path, mode, ...)
+            elif isinstance(f, ast.Attribute) and f.attr in _WRITE_ATTRS:
+                target = f.value
+                if f.attr == "open":
+                    mode_index = 0  # path.open(mode, ...)
+            else:
+                continue
+            if mode_index is not None and not _mode_implies_write(_open_mode(n, mode_index)):
+                continue  # read-only open() of a record path is not a tail
+            if _is_tail(target) or (isinstance(target, ast.Name) and target.id in bound):
+                hits.add(rel)
+                break
+    return hits
 
 
 def mint(root: Path, artifacts):
@@ -82,6 +228,81 @@ class ArtifactCollision(unittest.TestCase):
 
 def snapshot(root: Path):
     return {str(p.relative_to(root)): p.read_bytes() for p in root.rglob("*") if p.is_file()}
+
+
+class RecordFooterSupersedes(unittest.TestCase):
+    """`record_footer(supersedes=...)` / `mint_record(supersedes=...)`: the
+    correction mechanism the append-only rule requires (issue #504). The
+    default must keep every pre-existing caller's footer byte-for-byte."""
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self._tmp.cleanup)
+        self.tmp = Path(self._tmp.name)
+        use_fake_klt(self, self.tmp)
+        self.root = self.tmp / "repo"
+        self.root.mkdir()
+        self.recs = self.root / "sim" / "slug" / "records"
+
+    def mint(self, supersedes=None, rid="20260101-000000-abc1234"):
+        import datetime as dt
+        kw = {} if supersedes is None else {"supersedes": supersedes}
+        return er.mint_record(self.recs, self.root, rid, ["# h", ""], "body\n",
+                              {"k": 1}, author="t",
+                              now=dt.datetime(2026, 1, 1, tzinfo=dt.timezone.utc),
+                              sha="abc1234", **kw)
+
+    def test_default_footer_names_no_correction(self):
+        import datetime as dt
+        md_path, _ = self.mint()
+        # self.root is not a git repo here, so mint_record discloses "unknown" (#676).
+        expected = er.record_footer(author="t", now=dt.datetime(2026, 1, 1, tzinfo=dt.timezone.utc),
+                                    sha="abc1234", worktree_line="- Working tree: unknown (git status unavailable; repo_dirty is null)")
+        self.assertEqual(md_path.read_text().splitlines()[-len(expected):], expected)
+        self.assertEqual(md_path.read_text().splitlines()[-1], "- Supersedes: (none)")
+
+    def test_named_supersedes_replaces_the_last_footer_line_only(self):
+        import datetime as dt
+        md_path, _ = self.mint(supersedes="20251231-235959-0000000")
+        lines = md_path.read_text().splitlines()
+        self.assertEqual(lines[-1], "- Supersedes: 20251231-235959-0000000")
+        self.assertEqual(lines[-8:-2],
+                         ["", "---", "", "- Author: t", "- Timestamp (UTC): 2026-01-01T00:00:00+00:00",
+                          "- Repo commit: `abc1234`"])
+        self.assertEqual(lines[-2], "- Working tree: unknown (git status unavailable; repo_dirty is null)")
+        self.assertEqual(lines[-9], "body")  # nothing above the footer moved
+
+    def test_default_mint_record_matches_record_footer_default(self):
+        import datetime as dt
+        md_path, _ = self.mint()
+        self.assertTrue(md_path.read_text().startswith("# h\nbody\n"))
+        self.assertEqual(md_path.read_text().splitlines()[-4:],
+                         list(er.record_footer(author="t", now=dt.datetime(2026, 1, 1, tzinfo=dt.timezone.utc),
+                                               sha="abc1234", worktree_line="- Working tree: unknown (git status unavailable; repo_dirty is null)"))[-4:])
+        # ...and the default record_footer() itself is byte-for-byte unchanged.
+        self.assertEqual(er.record_footer(author="t", now=dt.datetime(2026, 1, 1, tzinfo=dt.timezone.utc),
+                                          sha="abc1234"),
+                         ["", "---", "", "- Author: t", "- Timestamp (UTC): 2026-01-01T00:00:00+00:00",
+                          "- Repo commit: `abc1234`", "- Supersedes: (none)"])
+
+    def test_new_record_id_offset_gives_distinct_ids_same_sha(self):
+        import datetime as dt
+
+        class _FixedClock:
+            class datetime(dt.datetime):
+                @classmethod
+                def now(cls, tz=None):
+                    return dt.datetime(2026, 1, 1, 0, 0, 3, tzinfo=dt.timezone.utc)
+            timedelta = dt.timedelta
+            timezone = dt.timezone
+
+        with mock.patch.object(er, "git_short_sha", return_value="abc1234"):
+            with mock.patch.object(er, "_dt", _FixedClock):
+                _, sha0, rid0 = er.new_record_id(self.root)
+                _, sha1, rid1 = er.new_record_id(self.root, offset=1)
+        self.assertEqual((sha0, sha1), ("abc1234", "abc1234"))
+        self.assertEqual(rid0, "20260101-000003-abc1234")
+        self.assertEqual(rid1, "20260101-000004-abc1234")
 
 
 class PublicationIntegrity(unittest.TestCase):
@@ -202,6 +423,7 @@ class PublicationIntegrity(unittest.TestCase):
         self.assertEqual(snapshot(self.root), before)
 
     def test_two_writers_racing_same_id_one_wins(self):
+        import datetime as dt
         import threading
         rid = "20260101-000003-abc1234"
         barrier = threading.Barrier(2)
@@ -219,10 +441,16 @@ class PublicationIntegrity(unittest.TestCase):
 
         def worker():
             try:
-                results.append(("ok", self.behav(rid=rid, artifacts=[self.art])))
+                results.append(("ok", er.mint_behavioral_record(self.root, "slug", "c", "b", {"k": 2},
+                                                                artifacts=[self.art])))
             except SystemExit as e:
                 results.append(("collision", str(e)))
-        with mock.patch.object(Path, "exists", synced):
+        # One shared patch entered once: per-thread mock.patch.object on the same
+        # target races its own save/restore and can leak a mock into the module
+        # for every test that runs after this one.
+        with mock.patch.object(Path, "exists", synced), \
+                mock.patch.object(er, "new_record_id",
+                                  return_value=(dt.datetime(2026, 1, 1), "abc1234", rid)):
             ts = [threading.Thread(target=worker) for _ in range(2)]
             [t.start() for t in ts]
             [t.join() for t in ts]
@@ -265,7 +493,9 @@ class ReservedSummaryKeys(unittest.TestCase):
     def test_reserved_set_covers_writer_json_fields(self):
         rid = self.mint({})
         rec = json.loads((self.root / "sim" / "slug" / "records" / f"{rid}.json").read_text())
-        self.assertEqual(set(rec), set(er.RESERVED_BEHAVIORAL_KEYS))
+        # repo_dirty_paths is conditional (issue #666): a mint whose tree is
+        # clean -- or unknown, like this non-repo fixture -- omits it.
+        self.assertEqual(set(rec), set(er.RESERVED_BEHAVIORAL_KEYS) - {"repo_dirty_paths"})
 
     def test_ordinary_summary_shape_and_provenance_agree(self):
         rid = self.mint({"verdict": "PASS", "n": 3})
@@ -279,6 +509,581 @@ class ReservedSummaryKeys(unittest.TestCase):
         self.assertIn(f"# {rid} -- slug", md)
         self.assertIn("**Level**: behavioral", md)
         self.assertIn(f"`{rec['repo_sha']}`", md)
+
+
+class MintRecordDirtyDisclosure(unittest.TestCase):
+    """Issue #676: mint_record discloses working-tree state like
+    mint_behavioral_record, and the default record_footer stays unchanged."""
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self._tmp.cleanup)
+        self.repo = Path(self._tmp.name) / "repo"
+        self.repo.mkdir()
+        g = ["git", "-C", str(self.repo)]
+        subprocess.run(g + ["-c", "init.defaultBranch=main", "init", "-q"], check=True)
+        (self.repo / "f.py").write_text("v1\n")
+        subprocess.run(g + ["add", "-A"], check=True)
+        subprocess.run(g + ["-c", "user.email=t@example.com", "-c", "user.name=t",
+                            "commit", "-qm", "base"], check=True)
+        self.recs = self.repo / "sim" / "slug" / "records"
+
+    def mint(self, rid="20260101-000000-abc1234", summary=None, repo=None):
+        import datetime as dt
+        return er.mint_record(self.recs, repo or self.repo, rid, ["# h", ""], "body\n",
+                              {"k": 1} if summary is None else summary, author="t",
+                              now=dt.datetime(2026, 1, 1, tzinfo=dt.timezone.utc),
+                              sha="abc1234")
+
+    def test_clean(self):
+        md, js = self.mint()
+        rec = json.loads(js.read_text())
+        self.assertIs(rec["repo_dirty"], False)
+        self.assertNotIn("repo_dirty_paths", rec)
+        self.assertEqual(list(rec)[0], "k")  # caller keys first, writer keys appended
+        self.assertIn("- Working tree: clean (matches the cited commit)", md.read_text())
+
+    def test_dirty_tracked_file(self):
+        (self.repo / "f.py").write_text("v2\n")
+        md, js = self.mint()
+        rec = json.loads(js.read_text())
+        self.assertIs(rec["repo_dirty"], True)
+        self.assertEqual(rec["repo_dirty_paths"], ["f.py"])
+        self.assertIn("- Working tree: dirty (1 path differs from the cited commit)",
+                      md.read_text())
+
+    def test_unknown_when_not_git(self):
+        plain = Path(self._tmp.name) / "plain"
+        plain.mkdir()
+        self.recs = plain / "sim" / "slug" / "records"
+        md, js = self.mint(repo=plain)
+        self.assertIsNone(json.loads(js.read_text())["repo_dirty"])
+        self.assertIn("- Working tree: unknown", md.read_text())
+
+    def test_path_cap(self):
+        n = er._DIRTY_PATHS_CAP + 3
+        for i in range(n):
+            (self.repo / f"u{i:02d}.txt").write_text("x")
+        md, js = self.mint()
+        rec = json.loads(js.read_text())
+        self.assertEqual(len(rec["repo_dirty_paths"]), er._DIRTY_PATHS_CAP)
+        self.assertIn(f"({n} paths differ", md.read_text())
+
+    def test_summary_key_clash_raises_and_writes_nothing(self):
+        for key in ("repo_dirty", "repo_dirty_paths"):
+            with self.assertRaises(SystemExit):
+                self.mint(summary={key: 1})
+        self.assertFalse(self.recs.exists())
+
+    def test_caller_summary_not_mutated(self):
+        summary = {"k": 1}
+        self.mint(summary=summary)
+        self.assertEqual(summary, {"k": 1})
+
+    def test_back_to_back_mints_do_not_self_dirty(self):
+        (self.repo / "sim" / "slug" / "runs" / "r0").mkdir(parents=True)
+        (self.repo / "sim" / "slug" / "runs" / "r0" / "a.txt").write_text("x")
+        _, j0 = self.mint(rid="20260101-000000-abc1234")
+        _, j1 = self.mint(rid="20260101-000001-abc1234")
+        self.assertIs(json.loads(j0.read_text())["repo_dirty"], False)
+        self.assertIs(json.loads(j1.read_text())["repo_dirty"], False)
+
+    def test_unrelated_dirt_still_counts_alongside_own_outputs(self):
+        self.mint(rid="20260101-000000-abc1234")
+        (self.repo / "f.py").write_text("v2\n")
+        _, js = self.mint(rid="20260101-000001-abc1234")
+        self.assertEqual(json.loads(js.read_text())["repo_dirty_paths"], ["f.py"])
+
+    def test_record_footer_worktree_line_opt_in(self):
+        import datetime as dt
+        now = dt.datetime(2026, 1, 1, tzinfo=dt.timezone.utc)
+        base = er.record_footer(author="t", now=now, sha="abc1234")
+        withl = er.record_footer(author="t", now=now, sha="abc1234", worktree_line="- W")
+        self.assertEqual(withl[:6], base[:6])
+        self.assertEqual(withl[6:], ["- W", base[6]])
+
+
+class DirtyTreeDisclosure(unittest.TestCase):
+    """Issue #666: mint_behavioral_record discloses the working-tree state the
+    record was minted from, so a dirty tree cannot hide behind a clean HEAD
+    pin. Each test mints from a real temporary git repository with a committed
+    baseline."""
+
+    RID = "20260101-000000-abc1234"
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self._tmp.cleanup)
+        self.tmp = Path(self._tmp.name)
+        use_fake_klt(self, self.tmp)
+        self.repo = self.tmp / "repo"
+        self.repo.mkdir()
+        subprocess.run(
+            ["git", "-C", str(self.repo), "-c", "init.defaultBranch=main", "init", "-q"],
+            check=True)
+        (self.repo / "harness.py").write_text("v1\n")
+        subprocess.run(["git", "-C", str(self.repo), "add", "-A"], check=True)
+        subprocess.run(["git", "-C", str(self.repo), "-c", "user.email=t@example.com",
+                        "-c", "user.name=t", "commit", "-qm", "base"], check=True)
+
+    def mint(self, artifacts=None, repo=None, summary=None):
+        import datetime as dt
+        with mock.patch.object(
+                er, "new_record_id",
+                return_value=(dt.datetime(2026, 1, 1), "abc1234", self.RID)):
+            return er.mint_behavioral_record(repo or self.repo, "slug", "c", "b",
+                                             summary if summary is not None else {"k": 1},
+                                             artifacts=artifacts)
+
+    def rec(self, repo, rid):
+        d = repo / "sim" / "slug" / "records"
+        return json.loads((d / f"{rid}.json").read_text()), (d / f"{rid}.md").read_text()
+
+    def test_clean_tree_is_recorded_clean(self):
+        rid = self.mint()
+        rec, md = self.rec(self.repo, rid)
+        self.assertIs(rec["repo_dirty"], False)
+        self.assertNotIn("repo_dirty_paths", rec)
+        self.assertIn("- Working tree: clean (matches the cited commit)", md)
+
+    def test_clean_mint_publishing_artifacts_stays_clean(self):
+        art = self.tmp / "src" / "a.txt"  # outside the repo, like real run dirs
+        art.parent.mkdir()
+        art.write_text("data")
+        rid = self.mint(artifacts=[art])
+        rec, md = self.rec(self.repo, rid)
+        self.assertIs(rec["repo_dirty"], False)
+        self.assertNotIn("repo_dirty_paths", rec)
+        self.assertIn("- Working tree: clean (matches the cited commit)", md)
+        self.assertTrue((self.repo / "manifests/artifacts" /
+                         f"slug-{rid}.manifest.json").is_file())
+
+    def test_unstaged_change_is_disclosed(self):
+        (self.repo / "harness.py").write_text("v2\n")
+        rid = self.mint()
+        rec, md = self.rec(self.repo, rid)
+        self.assertIs(rec["repo_dirty"], True)
+        self.assertEqual(rec["repo_dirty_paths"], ["harness.py"])
+        self.assertIn("- Working tree: dirty (1 path differs from the cited commit)", md)
+
+    def test_staged_change_is_disclosed(self):
+        (self.repo / "harness.py").write_text("v2\n")
+        subprocess.run(["git", "-C", str(self.repo), "add", "harness.py"], check=True)
+        rid = self.mint()
+        rec, _ = self.rec(self.repo, rid)
+        self.assertIs(rec["repo_dirty"], True)
+        self.assertEqual(rec["repo_dirty_paths"], ["harness.py"])
+
+    def test_untracked_paths_with_directory_and_space_are_disclosed(self):
+        (self.repo / "new dir").mkdir()
+        (self.repo / "new dir" / "notes with space.txt").write_text("x")
+        (self.repo / "top level.txt").write_text("y")
+        rid = self.mint()
+        rec, md = self.rec(self.repo, rid)
+        self.assertIs(rec["repo_dirty"], True)
+        self.assertEqual(rec["repo_dirty_paths"],
+                         ["new dir/notes with space.txt", "top level.txt"])
+        self.assertIn("- Working tree: dirty (2 paths differ from the cited commit)", md)
+
+    def test_rename_lists_both_sides(self):
+        subprocess.run(["git", "-C", str(self.repo), "mv", "harness.py", "moved.py"],
+                       check=True)
+        rid = self.mint()
+        rec, _ = self.rec(self.repo, rid)
+        self.assertEqual(rec["repo_dirty_paths"], ["harness.py", "moved.py"])
+
+    def test_path_list_is_capped_and_footer_names_the_total(self):
+        cap = er._DIRTY_PATHS_CAP
+        for i in range(cap + 5):
+            (self.repo / f"u{i:03d}.txt").write_text("x")
+        rid = self.mint()
+        rec, md = self.rec(self.repo, rid)
+        self.assertIs(rec["repo_dirty"], True)
+        self.assertEqual(len(rec["repo_dirty_paths"]), cap)
+        self.assertEqual(rec["repo_dirty_paths"], sorted(rec["repo_dirty_paths"]))
+        self.assertEqual(rec["repo_dirty_paths"][0], "u000.txt")
+        self.assertIn(f"- Working tree: dirty ({cap + 5} paths differ from the cited "
+                      f"commit; repo_dirty_paths lists the first {cap})", md)
+
+    def test_git_status_failure_is_unknown_not_clean(self):
+        notarepo = self.tmp / "notarepo"
+        notarepo.mkdir()
+        rid = self.mint(repo=notarepo)
+        rec, md = self.rec(notarepo, rid)
+        self.assertIsNone(rec["repo_dirty"])
+        self.assertNotIn("repo_dirty_paths", rec)
+        self.assertIn("- Working tree: unknown (git status unavailable; "
+                      "repo_dirty is null)", md)
+
+    def test_dirty_fields_are_writer_owned(self):
+        for key in ("repo_dirty", "repo_dirty_paths"):
+            with self.subTest(key=key):
+                with self.assertRaises(SystemExit) as cm:
+                    er.mint_behavioral_record(self.repo, "slug", "c", "b", {key: "forged"})
+                self.assertIn(key, str(cm.exception))
+        self.assertFalse((self.repo / "sim").exists())  # refused before any output
+
+    def test_dirty_mint_emits_the_full_reserved_field_set(self):
+        (self.repo / "harness.py").write_text("v2\n")
+        rid = self.mint(summary={})
+        rec, _ = self.rec(self.repo, rid)
+        self.assertEqual(set(rec), set(er.RESERVED_BEHAVIORAL_KEYS))
+
+
+class WriteCornerBundle(unittest.TestCase):
+    """er.write_corner_bundle: shared corner-bundle writer + collision guard (issue #392)."""
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self._tmp.cleanup)
+        self.root = Path(self._tmp.name)
+        self.reqdir = self.root / "req"
+        (self.reqdir / "a").mkdir(parents=True)
+        (self.reqdir / "a" / "request.json").write_text('{"r": 1}')
+        (self.reqdir / "a" / "netlist.cir").write_text("* deck\n")
+        self.rdir = self.root / "records"
+        self.cdir = self.root / "corners" / "rid1"
+        self.chunks = [("a", {"corner": "tt"}, {"environment": {"remote": {"job_id": "job-1"}}})]
+
+    def write(self):
+        return er.write_corner_bundle(self.cdir, self.reqdir, self.chunks, records_dir=self.rdir, rid="rid1")
+
+    def test_writes_bundle_and_returns_jobs(self):
+        import gzip
+        self.assertEqual(self.write(), ["job-1"])
+        self.assertEqual(sorted(p.name for p in self.cdir.iterdir()),
+                         ["a.klt-sim.json.gz", "a.netlist.cir", "a.plan.json", "a.request.json"])
+        with gzip.open(self.cdir / "a.klt-sim.json.gz", "rt") as fh:
+            self.assertEqual(fh.read(), json.dumps(self.chunks[0][2], indent=1))
+        self.assertEqual((self.cdir / "a.plan.json").read_text(), json.dumps({"corner": "tt"}, indent=1))
+
+    def test_local_job_label(self):
+        self.chunks[0] = ("a", {}, {"environment": {}})
+        self.assertEqual(self.write(), ["local (single-unit reference run)"])
+
+    def test_refuses_existing_record_json(self):
+        self.rdir.mkdir()
+        (self.rdir / "rid1.json").write_text("{}")
+        with self.assertRaisesRegex(SystemExit, "rid1 exists"):
+            self.write()
+        self.assertFalse(self.cdir.exists())
+
+    def test_refuses_existing_cdir_untouched(self):
+        self.cdir.mkdir(parents=True)
+        (self.cdir / "keep").write_text("x")
+        with self.assertRaisesRegex(SystemExit, "rid1 exists"):
+            self.write()
+        self.assertEqual([p.name for p in self.cdir.iterdir()], ["keep"])
+
+    def test_missing_netlist_leaves_nothing_behind(self):
+        (self.reqdir / "a" / "netlist.cir").unlink()
+        with self.assertRaises(SystemExit):
+            self.write()
+        self.assertFalse(self.cdir.exists())
+        self.assertFalse(self.rdir.exists())
+
+
+class ReadCornerBundle(unittest.TestCase):
+    """er.read_corner_bundle: the inverse of write_corner_bundle (issue #497)."""
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self._tmp.cleanup)
+        self.root = Path(self._tmp.name)
+        self.reqdir = self.root / "req"
+        self.rdir = self.root / "records"
+        self.cdir = self.root / "corners" / "rid1"
+
+    def store(self, chunks):
+        for n, _pl, _rs in chunks:
+            d = self.reqdir / n
+            d.mkdir(parents=True)
+            (d / "request.json").write_text('{"r": 1}')
+            (d / "netlist.cir").write_text("* deck\n")
+        er.write_corner_bundle(self.cdir, self.reqdir, chunks, records_dir=self.rdir, rid="rid1")
+
+    def test_roundtrip_sorted_names(self):
+        chunks = [("b", {"corner": "tt"}, {"v": "beta"}), ("a", {"corner": "ff"}, {"v": "alpha"})]
+        self.store(chunks)
+        self.assertEqual(er.read_corner_bundle(self.cdir),
+                         [("a", {"corner": "ff"}, {"v": "alpha"}), ("b", {"corner": "tt"}, {"v": "beta"})])
+
+    def test_prefix_filter(self):
+        self.store([("ctl-1", {}, {"v": 1}), ("ctl-2", {}, {"v": 2}), ("pert-1", {}, {"v": 3})])
+        self.assertEqual([nm for nm, _, _ in er.read_corner_bundle(self.cdir, prefix="ctl-")],
+                         ["ctl-1", "ctl-2"])
+
+    def test_with_missing_pairs_notes_with_plans(self):
+        self.store([("kept", {}, {"v": 1})])
+        (self.cdir / "gone.missing.json").write_text(json.dumps({"request": "gone", "reason": "timeout"}))
+        (self.cdir / "gone.plan.json").write_text(json.dumps({"corner": "gone"}, indent=1))
+        chunks, missing = er.read_corner_bundle(self.cdir, with_missing=True)
+        self.assertEqual([nm for nm, _, _ in chunks], ["kept"])
+        self.assertEqual(missing, [("gone", {"corner": "gone"}, "timeout")])
+        self.assertEqual(er.read_corner_bundle(self.cdir), chunks)  # default hides the notes
+
+    def test_prefix_filters_missing_notes_too(self):
+        self.store([("ctl-1", {}, {"v": 1}), ("pert-1", {}, {"v": 2})])
+        (self.cdir / "ctl-gone.missing.json").write_text(json.dumps({"request": "ctl-gone", "reason": "timeout"}))
+        (self.cdir / "ctl-gone.plan.json").write_text(json.dumps({"corner": "ctl"}, indent=1))
+        (self.cdir / "pert-gone.missing.json").write_text(json.dumps({"request": "pert-gone", "reason": "refused"}))
+        (self.cdir / "pert-gone.plan.json").write_text(json.dumps({"corner": "pert"}, indent=1))
+        chunks, missing = er.read_corner_bundle(self.cdir, prefix="ctl-", with_missing=True)
+        self.assertEqual([nm for nm, _, _ in chunks], ["ctl-1"])
+        self.assertEqual(missing, [("ctl-gone", {"corner": "ctl"}, "timeout")])
+
+    def test_prefix_matching_no_notes_returns_empty_missing(self):
+        self.store([("ctl-1", {}, {"v": 1})])
+        (self.cdir / "pert-gone.missing.json").write_text(json.dumps({"request": "pert-gone", "reason": "timeout"}))
+        (self.cdir / "pert-gone.plan.json").write_text(json.dumps({"corner": "pert"}, indent=1))
+        self.assertEqual(er.read_corner_bundle(self.cdir, prefix="ctl-", with_missing=True),
+                         ([("ctl-1", {}, {"v": 1})], []))
+
+    def test_malformed_plan_fails_loudly(self):
+        self.store([("a", {}, {"v": 1})])
+        (self.cdir / "a.plan.json").write_text("{not json")
+        with self.assertRaises(json.JSONDecodeError):
+            er.read_corner_bundle(self.cdir)
+
+    def test_missing_cdir_reads_empty(self):
+        self.assertEqual(er.read_corner_bundle(self.root / "corners" / "nothing"), [])
+class NoNewHandRolledRecordTails(unittest.TestCase):
+    """Static guard (issue #515): every `sim/**/*.py` record write must go
+    through `mint_record`/`_publish_bundle`. A direct `<rid>.md`/`<rid>.json`
+    write has no completion boundary (a kill between the two writes strands a
+    JSON-only record that `check_records_append_only.py` then protects from
+    deletion forever -- the #277 boundary) and no shared provenance footer."""
+
+    def test_allowlist_is_exact(self):
+        found = hand_rolled_record_tails()
+        new = sorted(found - ALLOWED_HAND_ROLLED_TAILS)
+        drained = sorted(ALLOWED_HAND_ROLLED_TAILS - found)
+        self.assertFalse(
+            new,
+            "new hand-rolled record tail(s) -- route them through mint_record/"
+            "_publish_bundle (issue #515), or extend ALLOWED_HAND_ROLLED_TAILS "
+            f"in {Path(__file__).name} with a tracked issue: {new}")
+        self.assertFalse(
+            drained,
+            "allowlist entr(y/ies) no longer hand-roll their tails -- remove "
+            f"them from ALLOWED_HAND_ROLLED_TAILS: {drained}")
+
+    def _scan(self, files: dict[str, str]) -> set[str]:
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            slug = root / "sim" / "slug"
+            slug.mkdir(parents=True)
+            for name, text in files.items():
+                (slug / name).write_text(text)
+            return {Path(h).name for h in hand_rolled_record_tails(root)}
+
+    def test_detector_flags_every_spelling(self):
+        spellings = [
+            '(rdir / f"{rid}.md").write_text(md)',
+            '(rdir / (rid + ".md")).write_text(md)',
+            '(rdir / (rid+".md")).write_text(md)',
+            "(rdir / (rid + '.md')).write_text(md)",
+            '(rdir / ("%s.md" % rid)).write_text(md)',
+            '(rdir / "{}.md".format(rid)).write_text(md)',
+            '(rdir / rid).with_suffix(".md").write_text(md)',
+            'open(os.path.join(rdir, f"{rid}.md"), "w").write(md)',
+            'open(f"{outdir}/{rid}.md", "w").write(md)',  # unknown interpolation
+            'json.dump(rec, open(os.path.join(rdir, rid + ".json"), "w"))',
+        ]
+        for i, src in enumerate(spellings):
+            with self.subTest(src):
+                self.assertEqual(self._scan({f"v{i}.py": src + "\n"}), {f"v{i}.py"})
+
+    def test_open_reads_not_flagged(self):
+        """Issue #618: a read-only `open()` of a record path is not a tail."""
+        reads = {
+            "nested.py": 'rec = json.load(open(os.path.join(HERE, "records", rid + ".json")))\n',
+            "pos_r.py": 'open(rdir / f"{rid}.json", "r")\n',
+            "pos_rb.py": 'open(rdir / f"{rid}.md", "rb")\n',
+            "pos_rt.py": 'open(rdir / f"{rid}.json", "rt")\n',
+            "kw_mode.py": 'open(rdir / f"{rid}.json", mode="rb")\n',
+            "attr_none.py": '(rdir / f"{rid}.json").open()\n',
+            "attr_pos.py": '(rdir / f"{rid}.md").open("rb")\n',
+            "attr_kw.py": '(rdir / f"{rid}.json").open(mode="r")\n',
+            "enc_kw.py": 'open(rdir / f"{rid}.json", "r", encoding="utf-8")\n',
+            "attr_enc.py": '(rdir / f"{rid}.json").open(encoding="utf-8")\n',
+            "pos_r_splat.py": 'open(rdir / f"{rid}.json", "r", **opts)\n',
+            "bound_read.py": 'record_json = rdir / f"{rid}.json"\n'
+                             'json.load(open(record_json, "r"))\n',
+        }
+        self.assertEqual(self._scan(reads), set())
+
+    def test_open_write_modes_flagged_across_call_forms(self):
+        """Issues #618/#624: writing/appending/exclusive/updating modes and
+        modes the AST cannot establish as read-only still hit on a record
+        path."""
+        writes = {
+            "w.py": 'open(rdir / f"{rid}.json", "w").write(md)\n',
+            "wb.py": 'json.dump(rec, open(rdir / f"{rid}.json", "wb"))\n',
+            "append.py": 'open(rdir / f"{rid}.md", "a").write(line)\n',
+            "exclusive.py": 'open(rdir / f"{rid}.md", "x").write(md)\n',
+            "update.py": 'open(rdir / f"{rid}.json", "r+").write(data)\n',
+            "kw_mode.py": 'open(rdir / f"{rid}.json", mode="wb").write(md)\n',
+            "attr_pos.py": '(rdir / f"{rid}.json").open("wb").write(md)\n',
+            "attr_kw.py": '(rdir / f"{rid}.md").open(mode="a").write(line)\n',
+            "bound_write.py": 'record_md = rdir / f"{rid}.md"\n'
+                              'open(record_md, "w").write(md)\n',
+            "var_mode.py": 'mode = "r"\nopen(rdir / f"{rid}.json", mode).write(md)\n',
+            "kwargs_splat.py": 'open(rdir / f"{rid}.json", **opts).write(md)\n',
+            "attr_kwargs_splat.py": '(rdir / f"{rid}.md").open(**opts).write(line)\n',
+        }
+        self.assertEqual(self._scan(writes), set(writes))
+
+    def test_detector_flags_split_bound_write(self):
+        self.assertEqual(
+            self._scan({"split.py": 'record_json = records_dir / f"{rid}.json"\n'
+                                    'record_json.write_text("{}")\n'}), {"split.py"})
+
+    def test_detector_passes_references_and_sidecars(self):
+        clean = {
+            "doc.py": 'print(f"--check sim/slug/records/{rid}.json`")\n',
+            "sidecar.py": 'cal_path = rdir / f"{rid}.calibration.json"\n'
+                          '(rdir / f"{rid}.calibration.json").write_text("{}")\n'
+                          'cal_path.write_text("{}")\n',
+            "heading.py": 'md = f"# {rid} -- slug"\nmint_record(root, md)\n',
+            "bound_reads.py": 'record_md = records_dir / f"{rid}.md"\n'
+                              'if record_md.exists():\n    raise SystemExit(1)\n'
+                              "print(f\"written: {(records_dir / f'{rid}.md')}\")\n",
+            "broken.py": "def (:\n",
+        }
+        self.assertEqual(self._scan(clean), set())
+
+
+# --- static guard: no direct *.klt-sim.json.gz bundle I/O outside evidence_record.py (issue #655) ---
+
+_BUNDLE_GZ_SUFFIX = ".klt-sim.json.gz"
+_BUNDLE_GZ_CALL_NAMES = frozenset({"open", "GzipFile", "copy", "copy2", "copyfile", "glob", "iglob"})
+_BUNDLE_GZ_ATTRS = frozenset({
+    "open", "GzipFile",
+    "read_text", "read_bytes", "write_text", "write_bytes",
+    "copy", "copy2", "copyfile",
+    "glob", "rglob", "iglob",
+})
+_BUNDLE_GZ_SELF_ATTRS = frozenset({"open", "read_text", "read_bytes", "write_text", "write_bytes"})
+_BUNDLE_GZ_PATH_KWS = frozenset({"file", "filename", "src", "dst", "pathname"})
+_BUNDLE_GZ_IO_MODULES = frozenset({"gzip", "io", "builtins", "codecs", "shutil", "glob"})
+
+
+def _is_bundle_gz(node) -> bool:
+    return _render(node).endswith(_BUNDLE_GZ_SUFFIX)
+
+
+def hand_rolled_corner_bundle_io(root: Path = REPO) -> set[str]:
+    """Sim-relative paths under `sim/` that read, write, copy, or glob
+    `*.klt-sim.json.gz` corner-bundle files directly instead of delegating to
+    `evidence_record.write_corner_bundle` / `read_corner_bundle` (issue #655).
+
+    `sim/bin/evidence_record.py` is the canonical bundle reader/writer; test
+    modules (`sim/tests/` and `test_*.py`) stage synthetic bundles by design.
+    """
+    import ast
+    hits = set()
+    for path in sorted((root / "sim").rglob("*.py")):
+        rel = path.relative_to(root).as_posix()
+        if rel == "sim/bin/evidence_record.py" or rel.startswith("sim/tests/") or path.name.startswith("test_"):
+            continue
+        try:
+            tree = ast.parse(path.read_text())
+        except (SyntaxError, ValueError, UnicodeDecodeError):
+            continue
+        nodes = list(ast.walk(tree))
+        call_names = set(_BUNDLE_GZ_CALL_NAMES)
+        for n in nodes:
+            if isinstance(n, ast.ImportFrom) and n.module in _BUNDLE_GZ_IO_MODULES:
+                for alias in n.names:
+                    if alias.name in _BUNDLE_GZ_CALL_NAMES:
+                        call_names.add(alias.asname or alias.name)
+        bound = {
+            t.id
+            for n in nodes
+            if isinstance(n, ast.Assign) and _is_bundle_gz(n.value)
+            for t in n.targets
+            if isinstance(t, ast.Name)
+        } | {
+            n.target.id
+            for n in nodes
+            if isinstance(n, ast.AnnAssign) and isinstance(n.target, ast.Name)
+            and n.value is not None and _is_bundle_gz(n.value)
+        }
+        for n in nodes:
+            if not isinstance(n, ast.Call):
+                continue
+            f = n.func
+            targets = []
+            if isinstance(f, ast.Name) and f.id in call_names:
+                targets.extend(n.args[:2])
+                targets.extend(k.value for k in n.keywords if k.arg in _BUNDLE_GZ_PATH_KWS)
+            elif isinstance(f, ast.Attribute) and f.attr in _BUNDLE_GZ_ATTRS:
+                targets.extend(n.args[:2])
+                targets.extend(k.value for k in n.keywords if k.arg in _BUNDLE_GZ_PATH_KWS)
+                if f.attr in _BUNDLE_GZ_SELF_ATTRS:
+                    targets.append(f.value)
+            else:
+                continue
+            if any(_is_bundle_gz(t) or (isinstance(t, ast.Name) and t.id in bound) for t in targets):
+                hits.add(rel)
+                break
+    return hits
+
+
+class NoHandRolledCornerBundleIO(unittest.TestCase):
+    """Static guard (issue #655): no non-test `sim/**/*.py` outside
+    `sim/bin/evidence_record.py` may open, copy, or glob `*.klt-sim.json.gz`
+    corner bundles directly -- all corner-bundle writes/reads must go through
+    `write_corner_bundle` / `read_corner_bundle`."""
+
+    def test_no_direct_corner_bundle_io_outside_evidence_record(self):
+        found = sorted(hand_rolled_corner_bundle_io())
+        self.assertFalse(
+            found,
+            "hand-rolled *.klt-sim.json.gz corner-bundle I/O outside "
+            "sim/bin/evidence_record.py -- delegate to write_corner_bundle / "
+            f"read_corner_bundle instead (issues #392, #497, #655): {found}")
+
+    def _scan(self, files: dict[str, str]) -> set[str]:
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            for rel, text in files.items():
+                p = root / rel
+                p.parent.mkdir(parents=True, exist_ok=True)
+                p.write_text(text)
+            return hand_rolled_corner_bundle_io(root)
+
+    def test_detector_flags_direct_writer_and_reader_spellings(self):
+        spellings = [
+            'with gzip.open(cdir / f"{nm}.klt-sim.json.gz", "wt") as fh:\n    pass',
+            'with gzip.open(os.path.join(cdir, nm + ".klt-sim.json.gz"), "rt") as fh:\n    pass',
+            'gzip.open(filename=f"{cdir}/{nm}.klt-sim.json.gz", mode="wt")',
+            'from gzip import open as gzopen\ngzopen("%s.klt-sim.json.gz" % nm, "wt")',
+            'open((cdir / nm).with_suffix(".klt-sim.json.gz"), "rb")',
+            '(cdir / "{}.klt-sim.json.gz".format(nm)).write_bytes(b"")',
+            '(cdir / f"{nm}.klt-sim.json.gz").read_bytes()',
+            'shutil.copyfile(src, cdir / f"{nm}.klt-sim.json.gz")',
+            'for f in sorted(cdir.glob("*.klt-sim.json.gz")):\n    gzip.open(f, "rt")',
+            'gz = cdir / f"{nm}.klt-sim.json.gz"\ngzip.open(gz, "wt")',
+        ]
+        for i, src in enumerate(spellings):
+            rel = f"sim/slug/v{i}.py"
+            with self.subTest(src):
+                self.assertEqual(self._scan({rel: src + "\n"}), {rel})
+
+    def test_detector_passes_provenance_strings_non_bundle_files_and_exclusions(self):
+        clean = {
+            "sim/slug/prov.py": 'rec = {"responses": f"sim/{SLUG}/corners/{rid}/*.klt-sim.json.gz"}\n',
+            "sim/slug/plan.py": 'json.dump(pl, open(cdir / f"{nm}.plan.json", "w"))\n',
+            "sim/slug/raw_json.py": 'json.dump(resp, open(cdir / "klt-sim.json", "w"))\n',
+            "sim/slug/exists.py": 'ok = (cdir / f"{nm}.klt-sim.json.gz").exists()\n',
+            "sim/slug/broken.py": "def (:\n",
+            "sim/bin/evidence_record.py": 'gzip.open(cdir / f"{nm}.klt-sim.json.gz", "wt")\n',
+            "sim/tests/test_helper.py": 'gzip.open(cdir / "a.klt-sim.json.gz", "rt")\n',
+            "sim/slug/test_local.py": 'gzip.open(cdir / "a.klt-sim.json.gz", "rt")\n',
+        }
+        self.assertEqual(self._scan(clean), set())
 
 
 if __name__ == "__main__":

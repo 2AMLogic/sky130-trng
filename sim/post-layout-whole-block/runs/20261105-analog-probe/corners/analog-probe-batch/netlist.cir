@@ -1,0 +1,1639 @@
+* post-layout-whole-block analog-chain probe (issue #431)
+* .tran stop 500 ns: rings + sampler transistor-level, digital absent
+* devices with composed y >= 250 um only
+
+.option scale=1u
+
+.SUBCKT trng_whole bus_wdata_1_ bus_wdata_0_ startup_done bus_addr_2_ bus_wdata_2_ bus_addr_0_ bus_addr_3_ out_ready
++ clk bus_we bus_rdata_15_ bus_rdata_17_ bus_rdata_18_ bus_rdata_19_ bus_rdata_21_ bus_rdata_23_
++ bus_rdata_24_ bus_rdata_25_ bus_rdata_27_ bus_rdata_29_ bus_rdata_31_ bus_rdata_7_ bus_re gated
++ bus_rdata_0_ bus_rdata_10_ bus_rdata_11_ bus_rdata_13_ bus_rdata_14_ bus_rdata_16_ bus_rdata_1_ bus_rdata_20_
++ bus_rdata_22_ bus_rdata_26_ bus_rdata_28_ bus_rdata_2_ bus_rdata_30_ bus_rdata_3_ bus_rdata_4_ bus_rdata_5_
++ bus_rdata_6_ bus_rdata_8_ bus_rdata_9_ bus_addr_1_ bus_rdata_12_ rst_n vss vdd
++ alarm out_data_0_ out_data_10_ out_data_11_ out_data_12_ out_data_13_ out_data_14_ out_data_15_
++ out_data_16_ out_data_17_ out_data_18_ out_data_19_ out_data_1_ out_data_20_ out_data_21_ out_data_22_
++ out_data_23_ out_data_24_ out_data_25_ out_data_26_ out_data_27_ out_data_28_ out_data_29_ out_data_2_
++ out_data_30_ out_data_31_ out_data_3_ out_data_4_ out_data_5_ out_data_6_ out_data_7_ out_data_8_
++ out_data_9_ out_valid ring_bit1 ring_bit2 ring_bit3 ring_bit4 en1 en2
++ en3 en4 vddr1 vddr2 vddr3 vddr4 bus_wdata_9_ bus_wdata_8_
++ bus_wdata_7_ bus_wdata_6_ bus_wdata_5_ bus_wdata_4_ bus_wdata_3_ bus_wdata_31_ bus_wdata_30_ bus_wdata_29_
++ bus_wdata_28_ bus_wdata_27_ bus_wdata_26_ bus_wdata_25_ bus_wdata_24_ bus_wdata_23_ bus_wdata_22_ bus_wdata_21_
++ bus_wdata_20_ bus_wdata_19_ bus_wdata_18_ bus_wdata_17_ bus_wdata_16_ bus_wdata_15_ bus_wdata_14_ bus_wdata_13_
++ bus_wdata_12_ bus_wdata_11_ bus_wdata_10_
+* device instance $12459 r0 *1 6.625,268.85 nfet
+Xz12459 \z12545
++ ring_bit4
++ a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.2184 PS=2.62 PD=1.36
+* device instance $12460 r0 *1 7.295,268.85 nfet
+Xz12460
++ vss
++ rst_n
++ \z12545
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.2184 AD=0.3948 PS=1.36 PD=2.62
+* device instance $12461 r0 *1 37.485,268.85 nfet
+Xz12461 \z12550
++ a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2
++ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.2184 PS=2.62 PD=1.36
+* device instance $12462 r0 *1 38.155,268.85 nfet
+Xz12462
++ vss
++ rst_n
++ \z12550
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.2184 AD=0.3948 PS=1.36 PD=2.62
+* device instance $12463 r0 *1 62.285,268.85 nfet
+Xz12463 \z12552
++ ring_bit3
++ a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|yz1
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.2184 PS=2.62 PD=1.36
+* device instance $12464 r0 *1 62.955,268.85 nfet
+Xz12464
++ vss
++ rst_n
++ \z12552
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.2184 AD=0.3948 PS=1.36 PD=2.62
+* device instance $12465 r0 *1 93.145,268.85 nfet
+Xz12465 \z12557
++ a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2z1
++ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|yz1
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.2184 PS=2.62 PD=1.36
+* device instance $12466 r0 *1 93.815,268.85 nfet
+Xz12466
++ vss
++ rst_n
++ \z12557
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.2184 AD=0.3948 PS=1.36 PD=2.62
+* device instance $12493 r0 *1 117.945,268.85 nfet
+Xz12493 \z12558
++ ring_bit2
++ a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|yz2
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.2184 PS=2.62 PD=1.36
+* device instance $12494 r0 *1 118.615,268.85 nfet
+Xz12494
++ vss
++ rst_n
++ \z12558
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.2184 AD=0.3948 PS=1.36 PD=2.62
+* device instance $12511 r0 *1 148.805,268.85 nfet
+Xz12511 \z12563
++ a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2z2
++ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|yz2
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.2184 PS=2.62 PD=1.36
+* device instance $12512 r0 *1 149.475,268.85 nfet
+Xz12512
++ vss
++ rst_n
++ \z12563
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.2184 AD=0.3948 PS=1.36 PD=2.62
+* device instance $12535 r0 *1 173.605,268.85 nfet
+Xz12535 \z12565
++ ring_bit1
++ a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|yz3
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.2184 PS=2.62 PD=1.36
+* device instance $12536 r0 *1 174.275,268.85 nfet
+Xz12536
++ vss
++ rst_n
++ \z12565
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.2184 AD=0.3948 PS=1.36 PD=2.62
+* device instance $12553 r0 *1 204.465,268.85 nfet
+Xz12553 \z12570
++ a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2z3
++ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|yz3
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.2184 PS=2.62 PD=1.36
+* device instance $12554 r0 *1 205.135,268.85 nfet
+Xz12554
++ vss
++ rst_n
++ \z12570
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.2184 AD=0.3948 PS=1.36 PD=2.62
+* device instance $12555 r0 *1 229.265,268.85 nfet
+Xz12555 \z12572
++ B|B2|a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|raw_valid|y
++ a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|yz4
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.2184 PS=2.62 PD=1.36
+* device instance $12556 r0 *1 229.935,268.85 nfet
+Xz12556
++ vss
++ rst_n
++ \z12572
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.2184 AD=0.3948 PS=1.36 PD=2.62
+* device instance $12557 r0 *1 260.125,268.85 nfet
+Xz12557 \z12576
++ a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2z4
++ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|yz4
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.2184 PS=2.62 PD=1.36
+* device instance $12558 r0 *1 260.795,268.85 nfet
+Xz12558
++ vss
++ rst_n
++ \z12576
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.2184 AD=0.3948 PS=1.36 PD=2.62
+* device instance $12559 r0 *1 284.925,268.85 nfet
+Xz12559 \z12577
++ A|a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|raw_bit|y
++ a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|yz5
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.2184 PS=2.62 PD=1.36
+* device instance $12560 r0 *1 285.595,268.85 nfet
+Xz12560
++ vss
++ rst_n
++ \z12577
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.2184 AD=0.3948 PS=1.36 PD=2.62
+* device instance $12561 r0 *1 315.785,268.85 nfet
+Xz12561 \z12581
++ a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2z5
++ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|yz5
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.2184 PS=2.62 PD=1.36
+* device instance $12562 r0 *1 316.455,268.85 nfet
+Xz12562
++ vss
++ rst_n
++ \z12581
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.2184 AD=0.3948 PS=1.36 PD=2.62
+* device instance $12563 r0 *1 1.44,268.85 nfet
+Xz12563 a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_viaz2
++ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y
++ a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12564 r0 *1 13.925,268.85 nfet
+Xz12564
++ vss
++ a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_viaz2
++ ring_bit4
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12565 r0 *1 20.73,268.85 nfet
+Xz12565 a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_viaz2
++ clk
++ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12566 r0 *1 25.87,268.85 nfet
+Xz12566
++ a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2
++ clk
++ a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12567 r0 *1 30.635,268.85 nfet
+Xz12567
++ vss
++ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y
++ a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12568 r0 *1 45.16,268.85 nfet
+Xz12568
++ a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2
++ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y
++ a|b|d|invb_a|mn12_g1|mp24_g0|ro4|ro4_esc|sr4_d_stub|tg_d_a|y
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12569 r0 *1 49.925,268.85 nfet
+Xz12569
++ vss
++ clk
++ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12570 r0 *1 57.1,268.85 nfet
+Xz12570 a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via
++ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|yz1
++ a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|yz1
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12571 r0 *1 69.585,268.85 nfet
+Xz12571
++ vss
++ a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via
++ ring_bit3
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12572 r0 *1 76.39,268.85 nfet
+Xz12572 a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via
++ clk
++ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|yz1
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12573 r0 *1 81.53,268.85 nfet
+Xz12573
++ a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2z1
++ clk
++ a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|yz1
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12574 r0 *1 86.295,268.85 nfet
+Xz12574
++ vss
++ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|yz1
++ a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|yz1
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12575 r0 *1 100.82,268.85 nfet
+Xz12575
++ a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2z1
++ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|yz1
++ a|d|inva_a|mn12_g0|mp13_g0|ro3|ro3_esc_e|ro3_esc_w|ro3_hop|sr3_d_stub|tg_d_a|y
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12576 r0 *1 105.585,268.85 nfet
+Xz12576
++ vss
++ clk
++ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|yz1
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12577 r0 *1 112.76,268.85 nfet
+Xz12577 a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_viaz3
++ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|yz2
++ a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|yz2
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12578 r0 *1 125.245,268.85 nfet
+Xz12578
++ vss
++ a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_viaz3
++ ring_bit2
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12579 r0 *1 132.05,268.85 nfet
+Xz12579 a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_viaz3
++ clk
++ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|yz2
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12580 r0 *1 137.19,268.85 nfet
+Xz12580
++ a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2z2
++ clk
++ a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|yz2
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12581 r0 *1 141.955,268.85 nfet
+Xz12581
++ vss
++ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|yz2
++ a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|yz2
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12582 r0 *1 156.48,268.85 nfet
+Xz12582
++ a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2z2
++ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|yz2
++ a|b|d|invb_a|mn12_g1|mp24_g0|ro2|ro2_esc|sr2_d_stub|tg_d_a|y
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12583 r0 *1 161.245,268.85 nfet
+Xz12583
++ vss
++ clk
++ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|yz2
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12584 r0 *1 168.42,268.85 nfet
+Xz12584 a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_viaz4
++ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|yz3
++ a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|yz3
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12585 r0 *1 180.905,268.85 nfet
+Xz12585
++ vss
++ a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_viaz4
++ ring_bit1
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12586 r0 *1 187.71,268.85 nfet
+Xz12586 a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_viaz4
++ clk
++ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|yz3
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12587 r0 *1 192.85,268.85 nfet
+Xz12587
++ a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2z3
++ clk
++ a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|yz3
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12588 r0 *1 197.615,268.85 nfet
+Xz12588
++ vss
++ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|yz3
++ a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|yz3
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12589 r0 *1 212.14,268.85 nfet
+Xz12589
++ a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2z3
++ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|yz3
++ a|d|inva_a|mn12_g0|mp13_g0|ro1|ro1_esc|sr1_d_stub|tg_d_a|y
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12590 r0 *1 216.905,268.85 nfet
+Xz12590
++ vss
++ clk
++ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|yz3
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12591 r0 *1 224.08,268.85 nfet
+Xz12591 a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_viaz1
++ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|yz4
++ a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|yz4
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12592 r0 *1 236.565,268.85 nfet
+Xz12592
++ vss
++ a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_viaz1
++ B|B2|a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|raw_valid|y
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12593 r0 *1 243.37,268.85 nfet
+Xz12593 a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_viaz1
++ clk
++ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|yz4
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12594 r0 *1 248.51,268.85 nfet
+Xz12594
++ a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2z4
++ clk
++ a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|yz4
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12595 r0 *1 253.275,268.85 nfet
+Xz12595
++ vss
++ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|yz4
++ a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|yz4
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12596 r0 *1 267.8,268.85 nfet
+Xz12596
++ a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2z4
++ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|yz4
++ vdd
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12597 r0 *1 272.565,268.85 nfet
+Xz12597
++ vss
++ clk
++ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|yz4
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12598 r0 *1 279.74,268.85 nfet
+Xz12598 a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_viaz5
++ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|yz5
++ a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|yz5
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12599 r0 *1 292.225,268.85 nfet
+Xz12599
++ vss
++ a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_viaz5
++ A|a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|raw_bit|y
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12600 r0 *1 299.03,268.85 nfet
+Xz12600 a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_viaz5
++ clk
++ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|yz5
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12601 r0 *1 304.17,268.85 nfet
+Xz12601
++ a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2z5
++ clk
++ a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|yz5
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12602 r0 *1 308.935,268.85 nfet
+Xz12602
++ vss
++ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|yz5
++ a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|yz5
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12603 r0 *1 323.46,268.85 nfet
+Xz12603
++ a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2z5
++ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|yz5
++ a|d|sb_d_stub|tg_d_a|xo|xo_dip|xo_hop|xo_stub|y
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12604 r0 *1 328.225,268.85 nfet
+Xz12604
++ vss
++ clk
++ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|yz5
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12605 r0 *1 114.01,292.485 nfet
+Xz12605
++ vss
++ a|g_a|rn4|ro|s4_y|y
++ a|b|d|invb_a|mn12_g1|mp24_g0|ro4|ro4_esc|sr4_d_stub|tg_d_a|y
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12606 r0 *1 123.07,292.485 nfet
+Xz12606 ny a|n4|s3_y|s4_a|yz3 a|g_a|rn4|ro|s4_y|y
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12607 r0 *1 125.435,292.485 nfet
+Xz12607
++ vss
++ vddr4 ny
++ vss
++ sky130_fd_pr__nfet_01v8 L=2 W=0.48 AS=0.2016 AD=0.2016 PS=1.8 PD=1.8
+* device instance $12608 r0 *1 131.245,292.485 nfet
+Xz12608 nyz1 a|n3|s2_y|s3_a|y a|n4|s3_y|s4_a|yz3
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12609 r0 *1 133.61,292.485 nfet
+Xz12609
++ vss
++ vddr4 nyz1
++ vss
++ sky130_fd_pr__nfet_01v8 L=2 W=0.48 AS=0.2016 AD=0.2016 PS=1.8 PD=1.8
+* device instance $12610 r0 *1 139.42,292.485 nfet
+Xz12610 nyz2 a|n2|s1_y|s2_a|y a|n3|s2_y|s3_a|y
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12611 r0 *1 141.785,292.485 nfet
+Xz12611
++ vss
++ vddr4 nyz2
++ vss
++ sky130_fd_pr__nfet_01v8 L=2 W=0.48 AS=0.2016 AD=0.2016 PS=1.8 PD=1.8
+* device instance $12612 r0 *1 147.595,292.485 nfet
+Xz12612 nyz3 a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y a|n2|s1_y|s2_a|y
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12613 r0 *1 149.96,292.485 nfet
+Xz12613
++ vss
++ vddr4 nyz3
++ vss
++ sky130_fd_pr__nfet_01v8 L=2 W=0.48 AS=0.2016 AD=0.2016 PS=1.8 PD=1.8
+* device instance $12614 r0 *1 156.225,292.485 nfet
+Xz12614 \z12606 a|g_a|rn4|ro|s4_y|y a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.2184 PS=2.62 PD=1.36
+* device instance $12615 r0 *1 156.895,292.485 nfet
+Xz12615 nyz4 en4 \z12606
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.2184 AD=0.3948 PS=1.36 PD=2.62
+* device instance $12616 r0 *1 159.26,292.485 nfet
+Xz12616
++ vss
++ vddr4 nyz4
++ vss
++ sky130_fd_pr__nfet_01v8 L=2 W=0.48 AS=0.2016 AD=0.2016 PS=1.8 PD=1.8
+* device instance $12617 r0 *1 169.31,292.485 nfet
+Xz12617
++ vss
++ a|g_a|rn3|ro|s4_y|y
++ a|d|inva_a|mn12_g0|mp13_g0|ro3|ro3_esc_e|ro3_esc_w|ro3_hop|sr3_d_stub|tg_d_a|y
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12618 r0 *1 178.37,292.485 nfet
+Xz12618 nyz5 a|n4|s3_y|s4_a|y a|g_a|rn3|ro|s4_y|y
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12619 r0 *1 180.735,292.485 nfet
+Xz12619
++ vss
++ vddr3 nyz5
++ vss
++ sky130_fd_pr__nfet_01v8 L=2 W=0.46 AS=0.1932 AD=0.1932 PS=1.76 PD=1.76
+* device instance $12620 r0 *1 186.545,292.485 nfet
+Xz12620 nyz6 a|n3|s2_y|s3_a|yz1 a|n4|s3_y|s4_a|y
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12621 r0 *1 188.91,292.485 nfet
+Xz12621
++ vss
++ vddr3 nyz6
++ vss
++ sky130_fd_pr__nfet_01v8 L=2 W=0.46 AS=0.1932 AD=0.1932 PS=1.76 PD=1.76
+* device instance $12622 r0 *1 194.72,292.485 nfet
+Xz12622 nyz7 a|n2|s1_y|s2_a|yz2 a|n3|s2_y|s3_a|yz1
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12623 r0 *1 197.085,292.485 nfet
+Xz12623
++ vss
++ vddr3 nyz7
++ vss
++ sky130_fd_pr__nfet_01v8 L=2 W=0.46 AS=0.1932 AD=0.1932 PS=1.76 PD=1.76
+* device instance $12624 r0 *1 202.895,292.485 nfet
+Xz12624 nyz8 a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|yz1 a|n2|s1_y|s2_a|yz2
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12625 r0 *1 205.26,292.485 nfet
+Xz12625
++ vss
++ vddr3 nyz8
++ vss
++ sky130_fd_pr__nfet_01v8 L=2 W=0.46 AS=0.1932 AD=0.1932 PS=1.76 PD=1.76
+* device instance $12626 r0 *1 211.525,292.485 nfet
+Xz12626 \z12613 a|g_a|rn3|ro|s4_y|y a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|yz1
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.2184 PS=2.62 PD=1.36
+* device instance $12627 r0 *1 212.195,292.485 nfet
+Xz12627 nyz9 en3 \z12613
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.2184 AD=0.3948 PS=1.36 PD=2.62
+* device instance $12628 r0 *1 214.56,292.485 nfet
+Xz12628
++ vss
++ vddr3 nyz9
++ vss
++ sky130_fd_pr__nfet_01v8 L=2 W=0.46 AS=0.1932 AD=0.1932 PS=1.76 PD=1.76
+* device instance $12629 r0 *1 224.61,292.485 nfet
+Xz12629
++ vss
++ a|g_a|rn2|ro|s4_y|y
++ a|b|d|invb_a|mn12_g1|mp24_g0|ro2|ro2_esc|sr2_d_stub|tg_d_a|y
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12630 r0 *1 233.67,292.485 nfet
+Xz12630 nyz10 a|n4|s3_y|s4_a|yz1 a|g_a|rn2|ro|s4_y|y
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12631 r0 *1 236.035,292.485 nfet
+Xz12631
++ vss
++ vddr2 nyz10
++ vss
++ sky130_fd_pr__nfet_01v8 L=2 W=0.44 AS=0.1848 AD=0.1848 PS=1.72 PD=1.72
+* device instance $12632 r0 *1 241.845,292.485 nfet
+Xz12632 nyz11 a|n3|s2_y|s3_a|yz2 a|n4|s3_y|s4_a|yz1
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12633 r0 *1 244.21,292.485 nfet
+Xz12633
++ vss
++ vddr2 nyz11
++ vss
++ sky130_fd_pr__nfet_01v8 L=2 W=0.44 AS=0.1848 AD=0.1848 PS=1.72 PD=1.72
+* device instance $12634 r0 *1 249.21,310.18 nfet
+Xz12634
++ vss
++ a|b|b3|invb_a|mn12_g1|mp24_g0|t2|y bn|invb_y|mn34_g1|mp24_g1|y
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12635 r0 *1 250.02,292.485 nfet
+Xz12635 nyz12 a|n2|s1_y|s2_a|yz1 a|n3|s2_y|s3_a|yz2
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12636 r0 *1 252.385,292.485 nfet
+Xz12636
++ vss
++ vddr2 nyz12
++ vss
++ sky130_fd_pr__nfet_01v8 L=2 W=0.44 AS=0.1848 AD=0.1848 PS=1.72 PD=1.72
+* device instance $12637 r0 *1 255.38,307.86 nfet
+Xz12637 \z12661 a|b|b3|invb_a|mn12_g1|mp24_g0|t2|y
++ vss
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.2184 PS=2.62 PD=1.36
+* device instance $12638 r0 *1 256.05,307.86 nfet
+Xz12638 a|d|sb_d_stub|tg_d_a|xo|xo_dip|xo_hop|xo_stub|y
++ a|inva_a|mn12_g0|mp13_g0|t1|y \z12661
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.2184 AD=0.3948 PS=1.36 PD=2.62
+* device instance $12639 r0 *1 258.195,292.485 nfet
+Xz12639 nyz13 a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|yz2 a|n2|s1_y|s2_a|yz1
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12640 r0 *1 260.56,292.485 nfet
+Xz12640
++ vss
++ vddr2 nyz13
++ vss
++ sky130_fd_pr__nfet_01v8 L=2 W=0.44 AS=0.1848 AD=0.1848 PS=1.72 PD=1.72
+* device instance $12641 r0 *1 262.38,307.86 nfet
+Xz12641 \z12663 bn|invb_y|mn34_g1|mp24_g1|y
++ vss
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.2184 PS=2.62 PD=1.36
+* device instance $12642 r0 *1 263.05,307.86 nfet
+Xz12642 a|d|sb_d_stub|tg_d_a|xo|xo_dip|xo_hop|xo_stub|y
++ an|inva_y|mn34_g0|mp13_g1|y \z12663
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.2184 AD=0.3948 PS=1.36 PD=2.62
+* device instance $12643 r0 *1 266.825,292.485 nfet
+Xz12643 \z12619 a|g_a|rn2|ro|s4_y|y a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|yz2
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.2184 PS=2.62 PD=1.36
+* device instance $12644 r0 *1 267.495,292.485 nfet
+Xz12644 nyz14 en2 \z12619
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.2184 AD=0.3948 PS=1.36 PD=2.62
+* device instance $12645 r0 *1 267.385,310.18 nfet
+Xz12645
++ vss
++ a|inva_a|mn12_g0|mp13_g0|t1|y an|inva_y|mn34_g0|mp13_g1|y
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12646 r0 *1 269.86,292.485 nfet
+Xz12646
++ vss
++ vddr2 nyz14
++ vss
++ sky130_fd_pr__nfet_01v8 L=2 W=0.44 AS=0.1848 AD=0.1848 PS=1.72 PD=1.72
+* device instance $12647 r0 *1 278.18,310.18 nfet
+Xz12647
++ vss
++ a|b|d|invb_a|mn12_g1|mp24_g0|ro4|ro4_esc|sr4_d_stub|tg_d_a|y
++ bn|invb_y|mn34_g1|mp24_g1|yz1
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12648 r0 *1 279.91,292.485 nfet
+Xz12648
++ vss
++ a|g_a|rn1|ro|s4_y|y
++ a|d|inva_a|mn12_g0|mp13_g0|ro1|ro1_esc|sr1_d_stub|tg_d_a|y
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12649 r0 *1 284.35,307.86 nfet
+Xz12649 \z12664 a|b|d|invb_a|mn12_g1|mp24_g0|ro4|ro4_esc|sr4_d_stub|tg_d_a|y
++ vss
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.2184 PS=2.62 PD=1.36
+* device instance $12650 r0 *1 285.02,307.86 nfet
+Xz12650 a|b|b3|invb_a|mn12_g1|mp24_g0|t2|y
++ a|d|inva_a|mn12_g0|mp13_g0|ro3|ro3_esc_e|ro3_esc_w|ro3_hop|sr3_d_stub|tg_d_a|y
++ \z12664
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.2184 AD=0.3948 PS=1.36 PD=2.62
+* device instance $12651 r0 *1 288.97,292.485 nfet
+Xz12651 nyz15 a|n4|s3_y|s4_a|yz2 a|g_a|rn1|ro|s4_y|y
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12652 r0 *1 291.335,292.485 nfet
+Xz12652
++ vss
++ vddr1 nyz15
++ vss
++ sky130_fd_pr__nfet_01v8 L=2 W=0.42 AS=0.1764 AD=0.1764 PS=1.68 PD=1.68
+* device instance $12653 r0 *1 291.35,307.86 nfet
+Xz12653 \z12665 bn|invb_y|mn34_g1|mp24_g1|yz1
++ vss
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.2184 PS=2.62 PD=1.36
+* device instance $12654 r0 *1 292.02,307.86 nfet
+Xz12654 a|b|b3|invb_a|mn12_g1|mp24_g0|t2|y an|inva_y|mn34_g0|mp13_g1|yz1
++ \z12665
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.2184 AD=0.3948 PS=1.36 PD=2.62
+* device instance $12655 r0 *1 296.355,310.18 nfet
+Xz12655
++ vss
++ a|d|inva_a|mn12_g0|mp13_g0|ro3|ro3_esc_e|ro3_esc_w|ro3_hop|sr3_d_stub|tg_d_a|y
++ an|inva_y|mn34_g0|mp13_g1|yz1
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12656 r0 *1 297.145,292.485 nfet
+Xz12656 nyz16 a|n3|s2_y|s3_a|yz3 a|n4|s3_y|s4_a|yz2
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12657 r0 *1 299.51,292.485 nfet
+Xz12657
++ vss
++ vddr1 nyz16
++ vss
++ sky130_fd_pr__nfet_01v8 L=2 W=0.42 AS=0.1764 AD=0.1764 PS=1.68 PD=1.68
+* device instance $12658 r0 *1 305.32,292.485 nfet
+Xz12658 nyz17 a|n2|s1_y|s2_a|yz3 a|n3|s2_y|s3_a|yz3
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12659 r0 *1 307.685,292.485 nfet
+Xz12659
++ vss
++ vddr1 nyz17
++ vss
++ sky130_fd_pr__nfet_01v8 L=2 W=0.42 AS=0.1764 AD=0.1764 PS=1.68 PD=1.68
+* device instance $12660 r0 *1 307.15,310.18 nfet
+Xz12660
++ vss
++ a|b|d|invb_a|mn12_g1|mp24_g0|ro2|ro2_esc|sr2_d_stub|tg_d_a|y
++ bn|invb_y|mn34_g1|mp24_g1|yz2
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12661 r0 *1 313.32,307.86 nfet
+Xz12661 \z12666 a|b|d|invb_a|mn12_g1|mp24_g0|ro2|ro2_esc|sr2_d_stub|tg_d_a|y
++ vss
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.2184 PS=2.62 PD=1.36
+* device instance $12662 r0 *1 313.99,307.86 nfet
+Xz12662 a|inva_a|mn12_g0|mp13_g0|t1|y
++ a|d|inva_a|mn12_g0|mp13_g0|ro1|ro1_esc|sr1_d_stub|tg_d_a|y \z12666
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.2184 AD=0.3948 PS=1.36 PD=2.62
+* device instance $12663 r0 *1 313.495,292.485 nfet
+Xz12663 nyz18 a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|yz3 a|n2|s1_y|s2_a|yz3
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $12664 r0 *1 315.86,292.485 nfet
+Xz12664
++ vss
++ vddr1 nyz18
++ vss
++ sky130_fd_pr__nfet_01v8 L=2 W=0.42 AS=0.1764 AD=0.1764 PS=1.68 PD=1.68
+* device instance $12665 r0 *1 320.32,307.86 nfet
+Xz12665 \z12667 bn|invb_y|mn34_g1|mp24_g1|yz2
++ vss
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.2184 PS=2.62 PD=1.36
+* device instance $12666 r0 *1 320.99,307.86 nfet
+Xz12666 a|inva_a|mn12_g0|mp13_g0|t1|y an|inva_y|mn34_g0|mp13_g1|yz2 \z12667
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.2184 AD=0.3948 PS=1.36 PD=2.62
+* device instance $12667 r0 *1 322.125,292.485 nfet
+Xz12667 \z12626 a|g_a|rn1|ro|s4_y|y a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|yz3
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.2184 PS=2.62 PD=1.36
+* device instance $12668 r0 *1 322.795,292.485 nfet
+Xz12668 nyz19 en1 \z12626
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.84 AS=0.2184 AD=0.3948 PS=1.36 PD=2.62
+* device instance $12669 r0 *1 325.16,292.485 nfet
+Xz12669
++ vss
++ vddr1 nyz19
++ vss
++ sky130_fd_pr__nfet_01v8 L=2 W=0.42 AS=0.1764 AD=0.1764 PS=1.68 PD=1.68
+* device instance $12670 r0 *1 325.325,310.18 nfet
+Xz12670
++ vss
++ a|d|inva_a|mn12_g0|mp13_g0|ro1|ro1_esc|sr1_d_stub|tg_d_a|y
++ an|inva_y|mn34_g0|mp13_g1|yz2
++ vss
++ sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 AS=0.1974 AD=0.1974 PS=1.78 PD=1.78
+* device instance $25214 r0 *1 1.44,272.17 pfet
+Xz25214 a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_viaz2
++ clk
++ a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25215 r0 *1 6.205,272.38 pfet
+Xz25215 a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y
++ ring_bit4
++ vdd
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25216 r0 *1 7.495,272.38 pfet
+Xz25216
++ vdd
++ rst_n
++ a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|y
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25217 r0 *1 13.925,272.17 pfet
+Xz25217
++ vdd
++ a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_viaz2
++ ring_bit4
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25218 r0 *1 20.73,272.17 pfet
+Xz25218 a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_viaz2
++ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y
++ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25219 r0 *1 25.87,272.17 pfet
+Xz25219
++ a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2
++ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y
++ a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25220 r0 *1 30.635,272.17 pfet
+Xz25220
++ vdd
++ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y
++ a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|y
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25221 r0 *1 37.065,272.38 pfet
+Xz25221 a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y
++ a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2
++ vdd
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25222 r0 *1 38.355,272.38 pfet
+Xz25222
++ vdd
++ rst_n
++ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|y
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25223 r0 *1 45.16,272.17 pfet
+Xz25223
++ a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2
++ clk
++ a|b|d|invb_a|mn12_g1|mp24_g0|ro4|ro4_esc|sr4_d_stub|tg_d_a|y
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25224 r0 *1 49.925,272.17 pfet
+Xz25224
++ vdd
++ clk
++ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|y
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25225 r0 *1 57.1,272.17 pfet
+Xz25225 a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via
++ clk
++ a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|yz1
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25226 r0 *1 61.865,272.38 pfet
+Xz25226 a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|yz1
++ ring_bit3
++ vdd
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25227 r0 *1 63.155,272.38 pfet
+Xz25227
++ vdd
++ rst_n
++ a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|yz1
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25228 r0 *1 69.585,272.17 pfet
+Xz25228
++ vdd
++ a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via
++ ring_bit3
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25229 r0 *1 76.39,272.17 pfet
+Xz25229 a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_via
++ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|yz1
++ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|yz1
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25230 r0 *1 81.53,272.17 pfet
+Xz25230
++ a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2z1
++ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|yz1
++ a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|yz1
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25231 r0 *1 86.295,272.17 pfet
+Xz25231
++ vdd
++ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|yz1
++ a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|yz1
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25232 r0 *1 92.725,272.38 pfet
+Xz25232 a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|yz1
++ a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2z1
++ vdd
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25233 r0 *1 94.015,272.38 pfet
+Xz25233
++ vdd
++ rst_n
++ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|yz1
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25234 r0 *1 100.82,272.17 pfet
+Xz25234
++ a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2z1
++ clk
++ a|d|inva_a|mn12_g0|mp13_g0|ro3|ro3_esc_e|ro3_esc_w|ro3_hop|sr3_d_stub|tg_d_a|y
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25235 r0 *1 105.585,272.17 pfet
+Xz25235
++ vdd
++ clk
++ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|yz1
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25238 r0 *1 112.76,272.17 pfet
+Xz25238 a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_viaz3
++ clk
++ a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|yz2
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25239 r0 *1 117.525,272.38 pfet
+Xz25239 a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|yz2
++ ring_bit2
++ vdd
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25240 r0 *1 118.815,272.38 pfet
+Xz25240
++ vdd
++ rst_n
++ a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|yz2
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25243 r0 *1 125.245,272.17 pfet
+Xz25243
++ vdd
++ a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_viaz3
++ ring_bit2
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25244 r0 *1 132.05,272.17 pfet
+Xz25244 a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_viaz3
++ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|yz2
++ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|yz2
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25245 r0 *1 137.19,272.17 pfet
+Xz25245
++ a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2z2
++ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|yz2
++ a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|yz2
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25246 r0 *1 141.955,272.17 pfet
+Xz25246
++ vdd
++ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|yz2
++ a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|yz2
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25249 r0 *1 148.385,272.38 pfet
+Xz25249 a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|yz2
++ a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2z2
++ vdd
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25250 r0 *1 149.675,272.38 pfet
+Xz25250
++ vdd
++ rst_n
++ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|yz2
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25251 r0 *1 156.48,272.17 pfet
+Xz25251
++ a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2z2
++ clk
++ a|b|d|invb_a|mn12_g1|mp24_g0|ro2|ro2_esc|sr2_d_stub|tg_d_a|y
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25252 r0 *1 161.245,272.17 pfet
+Xz25252
++ vdd
++ clk
++ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|yz2
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25253 r0 *1 168.42,272.17 pfet
+Xz25253 a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_viaz4
++ clk
++ a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|yz3
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25254 r0 *1 173.185,272.38 pfet
+Xz25254 a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|yz3
++ ring_bit1
++ vdd
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25255 r0 *1 174.475,272.38 pfet
+Xz25255
++ vdd
++ rst_n
++ a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|yz3
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25258 r0 *1 180.905,272.17 pfet
+Xz25258
++ vdd
++ a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_viaz4
++ ring_bit1
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25259 r0 *1 187.71,272.17 pfet
+Xz25259 a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_viaz4
++ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|yz3
++ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|yz3
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25262 r0 *1 192.85,272.17 pfet
+Xz25262
++ a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2z3
++ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|yz3
++ a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|yz3
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25263 r0 *1 197.615,272.17 pfet
+Xz25263
++ vdd
++ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|yz3
++ a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|yz3
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25264 r0 *1 204.045,272.38 pfet
+Xz25264 a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|yz3
++ a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2z3
++ vdd
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25265 r0 *1 205.335,272.38 pfet
+Xz25265
++ vdd
++ rst_n
++ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|yz3
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25266 r0 *1 212.14,272.17 pfet
+Xz25266
++ a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2z3
++ clk
++ a|d|inva_a|mn12_g0|mp13_g0|ro1|ro1_esc|sr1_d_stub|tg_d_a|y
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25267 r0 *1 216.905,272.17 pfet
+Xz25267
++ vdd
++ clk
++ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|yz3
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25268 r0 *1 224.08,272.17 pfet
+Xz25268 a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_viaz1
++ clk
++ a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|yz4
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25269 r0 *1 228.845,272.38 pfet
+Xz25269 a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|yz4
++ B|B2|a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|raw_valid|y
++ vdd
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25270 r0 *1 230.135,272.38 pfet
+Xz25270
++ vdd
++ rst_n
++ a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|yz4
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25271 r0 *1 236.565,272.17 pfet
+Xz25271
++ vdd
++ a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_viaz1
++ B|B2|a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|raw_valid|y
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25272 r0 *1 243.37,272.17 pfet
+Xz25272 a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_viaz1
++ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|yz4
++ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|yz4
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25273 r0 *1 248.51,272.17 pfet
+Xz25273
++ a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2z4
++ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|yz4
++ a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|yz4
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25274 r0 *1 253.275,272.17 pfet
+Xz25274
++ vdd
++ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|yz4
++ a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|yz4
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25275 r0 *1 259.705,272.38 pfet
+Xz25275 a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|yz4
++ a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2z4
++ vdd
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25276 r0 *1 260.995,272.38 pfet
+Xz25276
++ vdd
++ rst_n
++ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|yz4
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25277 r0 *1 267.8,272.17 pfet
+Xz25277
++ a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2z4
++ clk
++ vdd
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25278 r0 *1 272.565,272.17 pfet
+Xz25278
++ vdd
++ clk
++ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|yz4
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25279 r0 *1 279.74,272.17 pfet
+Xz25279 a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_viaz5
++ clk
++ a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|yz5
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25280 r0 *1 284.505,272.38 pfet
+Xz25280 a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|yz5
++ A|a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|raw_bit|y
++ vdd
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25281 r0 *1 285.795,272.38 pfet
+Xz25281
++ vdd
++ rst_n
++ a|mnab_y|mpa_y|mpb_y|nand_s2_y|qb|tg_fbs_a|yz5
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25282 r0 *1 292.225,272.17 pfet
+Xz25282
++ vdd
++ a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_viaz5
++ A|a|inv_q_y|inv_q_y_via|inv_q_y_via2|nand_s2_a|nand_s2_a_stub|nand_s2_a_via|nand_s2_a_via2|q|raw_bit|y
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25283 r0 *1 299.03,272.17 pfet
+Xz25283 a|b|inv_q_a|inv_q_a_via|s|tg_fbs_b|tg_fbs_b_via|tg_s_b|tg_s_b_viaz5
++ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|yz5
++ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|yz5
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25284 r0 *1 304.17,272.17 pfet
+Xz25284
++ a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2z5
++ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|yz5
++ a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|yz5
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25285 r0 *1 308.935,272.17 pfet
+Xz25285
++ vdd
++ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|yz5
++ a|inv_mc_y|inv_mc_y_via|mc|tg_fbm_a|tg_fbm_a_via|yz5
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25286 r0 *1 315.365,272.38 pfet
+Xz25286 a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|yz5
++ a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2z5
++ vdd
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25287 r0 *1 316.655,272.38 pfet
+Xz25287
++ vdd
++ rst_n
++ a|inv_mc_a|mb|mnab_y|mpa_y|mpb_y|nand_m_y|tg_s_a|yz5
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25288 r0 *1 323.46,272.17 pfet
+Xz25288
++ a|b|m_east|m_west|nand_m_a|nand_m_a_ext_via|nand_m_a_ext_via2|nand_m_a_stub|tg_d_b|tg_d_b_via|tg_d_b_via2|tg_fbm_b|tg_fbm_b_alt_via|tg_fbm_b_alt_via2z5
++ clk
++ a|d|sb_d_stub|tg_d_a|xo|xo_dip|xo_hop|xo_stub|y
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25289 r0 *1 328.225,272.17 pfet
+Xz25289
++ vdd
++ clk
++ clkb|clkb_bridge1|clkb_bridge2|clkb_mid|clkb_w|ctrl|ctrlb|inv_clk_y|tg_d_ctrlb|tg_fbm_ctrl|tg_fbs_ctrlb|tg_s_ctrl|yz5
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25290 r0 *1 114.01,295.805 pfet
+Xz25290
++ vdd
++ a|g_a|rn4|ro|s4_y|y
++ a|b|d|invb_a|mn12_g1|mp24_g0|ro4|ro4_esc|sr4_d_stub|tg_d_a|y
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25291 r0 *1 123.27,296.015 pfet
+Xz25291 py a|n4|s3_y|s4_a|yz3 a|g_a|rn4|ro|s4_y|y
++ vddr4
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25292 r0 *1 125.435,296.015 pfet
+Xz25292 vddr4
++ vss
++ py vddr4
++ sky130_fd_pr__pfet_01v8 L=2 W=0.48 AS=0.2016 AD=0.2016 PS=1.8 PD=1.8
+* device instance $25293 r0 *1 131.445,296.015 pfet
+Xz25293 pyz1 a|n3|s2_y|s3_a|y a|n4|s3_y|s4_a|yz3
++ vddr4
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25294 r0 *1 133.61,296.015 pfet
+Xz25294 vddr4
++ vss
++ pyz1 vddr4
++ sky130_fd_pr__pfet_01v8 L=2 W=0.48 AS=0.2016 AD=0.2016 PS=1.8 PD=1.8
+* device instance $25295 r0 *1 139.62,296.015 pfet
+Xz25295 pyz2 a|n2|s1_y|s2_a|y a|n3|s2_y|s3_a|y
++ vddr4
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25296 r0 *1 141.785,296.015 pfet
+Xz25296 vddr4
++ vss
++ pyz2 vddr4
++ sky130_fd_pr__pfet_01v8 L=2 W=0.48 AS=0.2016 AD=0.2016 PS=1.8 PD=1.8
+* device instance $25297 r0 *1 147.795,296.015 pfet
+Xz25297 pyz3 a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y a|n2|s1_y|s2_a|y
++ vddr4
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25298 r0 *1 149.96,296.015 pfet
+Xz25298 vddr4
++ vss
++ pyz3 vddr4
++ sky130_fd_pr__pfet_01v8 L=2 W=0.48 AS=0.2016 AD=0.2016 PS=1.8 PD=1.8
+* device instance $25299 r0 *1 155.805,296.015 pfet
+Xz25299 a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y a|g_a|rn4|ro|s4_y|y
++ mpa_py|mpb_py|mph_py|py
++ vddr4
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25300 r0 *1 157.095,296.015 pfet
+Xz25300 mpa_py|mpb_py|mph_py|py en4 a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|y
++ vddr4
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25301 r0 *1 159.26,296.015 pfet
+Xz25301 vddr4
++ vss
++ mpa_py|mpb_py|mph_py|py
++ vddr4
++ sky130_fd_pr__pfet_01v8 L=2 W=0.48 AS=0.2016 AD=0.2016 PS=1.8 PD=1.8
+* device instance $25302 r0 *1 169.31,295.805 pfet
+Xz25302
++ vdd
++ a|g_a|rn3|ro|s4_y|y
++ a|d|inva_a|mn12_g0|mp13_g0|ro3|ro3_esc_e|ro3_esc_w|ro3_hop|sr3_d_stub|tg_d_a|y
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25303 r0 *1 178.57,296.015 pfet
+Xz25303 pyz4 a|n4|s3_y|s4_a|y a|g_a|rn3|ro|s4_y|y
++ vddr3
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25304 r0 *1 180.735,296.015 pfet
+Xz25304 vddr3
++ vss
++ pyz4 vddr3
++ sky130_fd_pr__pfet_01v8 L=2 W=0.46 AS=0.1932 AD=0.1932 PS=1.76 PD=1.76
+* device instance $25305 r0 *1 186.745,296.015 pfet
+Xz25305 pyz5 a|n3|s2_y|s3_a|yz1 a|n4|s3_y|s4_a|y
++ vddr3
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25306 r0 *1 188.91,296.015 pfet
+Xz25306 vddr3
++ vss
++ pyz5 vddr3
++ sky130_fd_pr__pfet_01v8 L=2 W=0.46 AS=0.1932 AD=0.1932 PS=1.76 PD=1.76
+* device instance $25307 r0 *1 194.92,296.015 pfet
+Xz25307 pyz6 a|n2|s1_y|s2_a|yz2 a|n3|s2_y|s3_a|yz1
++ vddr3
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25308 r0 *1 197.085,296.015 pfet
+Xz25308 vddr3
++ vss
++ pyz6 vddr3
++ sky130_fd_pr__pfet_01v8 L=2 W=0.46 AS=0.1932 AD=0.1932 PS=1.76 PD=1.76
+* device instance $25309 r0 *1 203.095,296.015 pfet
+Xz25309 pyz7 a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|yz1 a|n2|s1_y|s2_a|yz2
++ vddr3
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25310 r0 *1 205.26,296.015 pfet
+Xz25310 vddr3
++ vss
++ pyz7 vddr3
++ sky130_fd_pr__pfet_01v8 L=2 W=0.46 AS=0.1932 AD=0.1932 PS=1.76 PD=1.76
+* device instance $25311 r0 *1 211.105,296.015 pfet
+Xz25311 a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|yz1 a|g_a|rn3|ro|s4_y|y
++ mpa_py|mpb_py|mph_py|pyz1
++ vddr3
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25312 r0 *1 212.395,296.015 pfet
+Xz25312 mpa_py|mpb_py|mph_py|pyz1 en3
++ a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|yz1
++ vddr3
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25313 r0 *1 214.56,296.015 pfet
+Xz25313 vddr3
++ vss
++ mpa_py|mpb_py|mph_py|pyz1
++ vddr3
++ sky130_fd_pr__pfet_01v8 L=2 W=0.46 AS=0.1932 AD=0.1932 PS=1.76 PD=1.76
+* device instance $25314 r0 *1 224.61,295.805 pfet
+Xz25314
++ vdd
++ a|g_a|rn2|ro|s4_y|y
++ a|b|d|invb_a|mn12_g1|mp24_g0|ro2|ro2_esc|sr2_d_stub|tg_d_a|y
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25315 r0 *1 233.87,296.015 pfet
+Xz25315 pyz8 a|n4|s3_y|s4_a|yz1 a|g_a|rn2|ro|s4_y|y
++ vddr2
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25316 r0 *1 236.035,296.015 pfet
+Xz25316 vddr2
++ vss
++ pyz8 vddr2
++ sky130_fd_pr__pfet_01v8 L=2 W=0.44 AS=0.1848 AD=0.1848 PS=1.72 PD=1.72
+* device instance $25317 r0 *1 242.045,296.015 pfet
+Xz25317 pyz9 a|n3|s2_y|s3_a|yz2 a|n4|s3_y|s4_a|yz1
++ vddr2
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25318 r0 *1 244.21,296.015 pfet
+Xz25318 vddr2
++ vss
++ pyz9 vddr2
++ sky130_fd_pr__pfet_01v8 L=2 W=0.44 AS=0.1848 AD=0.1848 PS=1.72 PD=1.72
+* device instance $25319 r0 *1 249.21,313.5 pfet
+Xz25319
++ vdd
++ a|b|b3|invb_a|mn12_g1|mp24_g0|t2|y bn|invb_y|mn34_g1|mp24_g1|y
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25320 r0 *1 250.22,296.015 pfet
+Xz25320 pyz10 a|n2|s1_y|s2_a|yz1 a|n3|s2_y|s3_a|yz2
++ vddr2
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25321 r0 *1 252.385,296.015 pfet
+Xz25321 vddr2
++ vss
++ pyz10 vddr2
++ sky130_fd_pr__pfet_01v8 L=2 W=0.44 AS=0.1848 AD=0.1848 PS=1.72 PD=1.72
+* device instance $25322 r0 *1 255.58,317.86 pfet
+Xz25322 mid a|b|b3|invb_a|mn12_g1|mp24_g0|t2|y
++ vdd
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=1.68 AS=0.7896 AD=0.4368 PS=4.3 PD=2.2
+* device instance $25323 r0 *1 256.25,317.86 pfet
+Xz25323 a|d|sb_d_stub|tg_d_a|xo|xo_dip|xo_hop|xo_stub|y
++ bn|invb_y|mn34_g1|mp24_g1|y mid
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=1.68 AS=0.4368 AD=0.7896 PS=2.2 PD=4.3
+* device instance $25324 r0 *1 258.395,296.015 pfet
+Xz25324 pyz11 a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|yz2 a|n2|s1_y|s2_a|yz1
++ vddr2
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25325 r0 *1 260.56,296.015 pfet
+Xz25325 vddr2
++ vss
++ pyz11 vddr2
++ sky130_fd_pr__pfet_01v8 L=2 W=0.44 AS=0.1848 AD=0.1848 PS=1.72 PD=1.72
+* device instance $25326 r0 *1 262.73,317.86 pfet
+Xz25326 mid an|inva_y|mn34_g0|mp13_g1|y
++ a|d|sb_d_stub|tg_d_a|xo|xo_dip|xo_hop|xo_stub|y
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=1.68 AS=0.7896 AD=0.4368 PS=4.3 PD=2.2
+* device instance $25327 r0 *1 263.4,317.86 pfet
+Xz25327
++ vdd
++ a|inva_a|mn12_g0|mp13_g0|t1|y mid
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=1.68 AS=0.4368 AD=0.7896 PS=2.2 PD=4.3
+* device instance $25328 r0 *1 266.405,296.015 pfet
+Xz25328 a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|yz2 a|g_a|rn2|ro|s4_y|y
++ mpa_py|mpb_py|mph_py|pyz2
++ vddr2
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25329 r0 *1 267.385,313.5 pfet
+Xz25329
++ vdd
++ a|inva_a|mn12_g0|mp13_g0|t1|y an|inva_y|mn34_g0|mp13_g1|y
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25330 r0 *1 267.695,296.015 pfet
+Xz25330 mpa_py|mpb_py|mph_py|pyz2 en2
++ a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|yz2
++ vddr2
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25331 r0 *1 269.86,296.015 pfet
+Xz25331 vddr2
++ vss
++ mpa_py|mpb_py|mph_py|pyz2
++ vddr2
++ sky130_fd_pr__pfet_01v8 L=2 W=0.44 AS=0.1848 AD=0.1848 PS=1.72 PD=1.72
+* device instance $25332 r0 *1 278.18,313.5 pfet
+Xz25332
++ vdd
++ a|b|d|invb_a|mn12_g1|mp24_g0|ro4|ro4_esc|sr4_d_stub|tg_d_a|y
++ bn|invb_y|mn34_g1|mp24_g1|yz1
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25333 r0 *1 279.91,295.805 pfet
+Xz25333
++ vdd
++ a|g_a|rn1|ro|s4_y|y
++ a|d|inva_a|mn12_g0|mp13_g0|ro1|ro1_esc|sr1_d_stub|tg_d_a|y
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25334 r0 *1 284.55,317.86 pfet
+Xz25334 midz1 a|b|d|invb_a|mn12_g1|mp24_g0|ro4|ro4_esc|sr4_d_stub|tg_d_a|y
++ vdd
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=1.68 AS=0.7896 AD=0.4368 PS=4.3 PD=2.2
+* device instance $25335 r0 *1 285.22,317.86 pfet
+Xz25335 a|b|b3|invb_a|mn12_g1|mp24_g0|t2|y bn|invb_y|mn34_g1|mp24_g1|yz1 midz1
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=1.68 AS=0.4368 AD=0.7896 PS=2.2 PD=4.3
+* device instance $25336 r0 *1 289.17,296.015 pfet
+Xz25336 pyz12 a|n4|s3_y|s4_a|yz2 a|g_a|rn1|ro|s4_y|y
++ vddr1
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25337 r0 *1 291.335,296.015 pfet
+Xz25337 vddr1
++ vss
++ pyz12 vddr1
++ sky130_fd_pr__pfet_01v8 L=2 W=0.42 AS=0.1764 AD=0.1764 PS=1.68 PD=1.68
+* device instance $25338 r0 *1 291.7,317.86 pfet
+Xz25338 midz1 an|inva_y|mn34_g0|mp13_g1|yz1 a|b|b3|invb_a|mn12_g1|mp24_g0|t2|y
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=1.68 AS=0.7896 AD=0.4368 PS=4.3 PD=2.2
+* device instance $25339 r0 *1 292.37,317.86 pfet
+Xz25339
++ vdd
++ a|d|inva_a|mn12_g0|mp13_g0|ro3|ro3_esc_e|ro3_esc_w|ro3_hop|sr3_d_stub|tg_d_a|y
++ midz1
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=1.68 AS=0.4368 AD=0.7896 PS=2.2 PD=4.3
+* device instance $25340 r0 *1 296.355,313.5 pfet
+Xz25340
++ vdd
++ a|d|inva_a|mn12_g0|mp13_g0|ro3|ro3_esc_e|ro3_esc_w|ro3_hop|sr3_d_stub|tg_d_a|y
++ an|inva_y|mn34_g0|mp13_g1|yz1
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25341 r0 *1 297.345,296.015 pfet
+Xz25341 pyz13 a|n3|s2_y|s3_a|yz3 a|n4|s3_y|s4_a|yz2
++ vddr1
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25342 r0 *1 299.51,296.015 pfet
+Xz25342 vddr1
++ vss
++ pyz13 vddr1
++ sky130_fd_pr__pfet_01v8 L=2 W=0.42 AS=0.1764 AD=0.1764 PS=1.68 PD=1.68
+* device instance $25343 r0 *1 305.52,296.015 pfet
+Xz25343 pyz14 a|n2|s1_y|s2_a|yz3 a|n3|s2_y|s3_a|yz3
++ vddr1
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25344 r0 *1 307.685,296.015 pfet
+Xz25344 vddr1
++ vss
++ pyz14 vddr1
++ sky130_fd_pr__pfet_01v8 L=2 W=0.42 AS=0.1764 AD=0.1764 PS=1.68 PD=1.68
+* device instance $25345 r0 *1 307.15,313.5 pfet
+Xz25345
++ vdd
++ a|b|d|invb_a|mn12_g1|mp24_g0|ro2|ro2_esc|sr2_d_stub|tg_d_a|y
++ bn|invb_y|mn34_g1|mp24_g1|yz2
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25346 r0 *1 313.52,317.86 pfet
+Xz25346 midz2 a|b|d|invb_a|mn12_g1|mp24_g0|ro2|ro2_esc|sr2_d_stub|tg_d_a|y
++ vdd
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=1.68 AS=0.7896 AD=0.4368 PS=4.3 PD=2.2
+* device instance $25347 r0 *1 314.19,317.86 pfet
+Xz25347 a|inva_a|mn12_g0|mp13_g0|t1|y bn|invb_y|mn34_g1|mp24_g1|yz2 midz2
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=1.68 AS=0.4368 AD=0.7896 PS=2.2 PD=4.3
+* device instance $25348 r0 *1 313.695,296.015 pfet
+Xz25348 pyz15 a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|yz3 a|n2|s1_y|s2_a|yz3
++ vddr1
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25349 r0 *1 315.86,296.015 pfet
+Xz25349 vddr1
++ vss
++ pyz15 vddr1
++ sky130_fd_pr__pfet_01v8 L=2 W=0.42 AS=0.1764 AD=0.1764 PS=1.68 PD=1.68
+* device instance $25350 r0 *1 320.67,317.86 pfet
+Xz25350 midz2 an|inva_y|mn34_g0|mp13_g1|yz2 a|inva_a|mn12_g0|mp13_g0|t1|y
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=1.68 AS=0.7896 AD=0.4368 PS=4.3 PD=2.2
+* device instance $25351 r0 *1 321.34,317.86 pfet
+Xz25351
++ vdd
++ a|d|inva_a|mn12_g0|mp13_g0|ro1|ro1_esc|sr1_d_stub|tg_d_a|y midz2
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=1.68 AS=0.4368 AD=0.7896 PS=2.2 PD=4.3
+* device instance $25352 r0 *1 321.705,296.015 pfet
+Xz25352 a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|yz3 a|g_a|rn1|ro|s4_y|y
++ mpa_py|mpb_py|mph_py|pyz3
++ vddr1
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25353 r0 *1 322.995,296.015 pfet
+Xz25353 mpa_py|mpb_py|mph_py|pyz3 en1
++ a|g_y|mnab_y|mpa_y|mpb_y|n1|s1_a|yz3
++ vddr1
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+* device instance $25354 r0 *1 325.16,296.015 pfet
+Xz25354 vddr1
++ vss
++ mpa_py|mpb_py|mph_py|pyz3
++ vddr1
++ sky130_fd_pr__pfet_01v8 L=2 W=0.42 AS=0.1764 AD=0.1764 PS=1.68 PD=1.68
+* device instance $25355 r0 *1 325.325,313.5 pfet
+Xz25355
++ vdd
++ a|d|inva_a|mn12_g0|mp13_g0|ro1|ro1_esc|sr1_d_stub|tg_d_a|y
++ an|inva_y|mn34_g0|mp13_g1|yz2
++ vdd
++ sky130_fd_pr__pfet_01v8 L=0.15 W=0.84 AS=0.3948 AD=0.3948 PS=2.62 PD=2.62
+.ENDS trng_whole
+
+* ---- supplies (corners.supply_v alters the named sources) ----
+Vvdd vdd 0 dc 1.8
+Vvss vss 0 dc 0
+Vvddr1 vddr1 0 dc 1.8
+Vvddr2 vddr2 0 dc 1.8
+Vvddr3 vddr3 0 dc 1.8
+Vvddr4 vddr4 0 dc 1.8
+* ---- enables, reset, clock (fixed 1.8 V digital levels; see header) ----
+Ven1 en1 0 PULSE(0 1.8 5n 100p 100p 1u 2u)
+Ven2 en2 0 PULSE(0 1.8 5n 100p 100p 1u 2u)
+Ven3 en3 0 PULSE(0 1.8 5n 100p 100p 1u 2u)
+Ven4 en4 0 PULSE(0 1.8 5n 100p 100p 1u 2u)
+Vrstn rst_n 0 PULSE(0 1.8 300n 100p 100p 10u 20u)
+Vclk clk 0 PULSE(0 1.8 320n 100p 100p 49.8n 100n)
+* ---- directed program: one PWL card per driven input ----
+Vbus_addr_0_ bus_addr_0_ 0 PWL(0.0n 0.000 540.0n 1.800 640.0n 0.000 970.0n 0.000)
+Vbus_addr_1_ bus_addr_1_ 0 PWL(0.0n 1.800 440.0n 0.000 970.0n 0.000)
+Vbus_addr_2_ bus_addr_2_ 0 PWL(0.0n 0.000 970.0n 0.000)
+Vbus_addr_3_ bus_addr_3_ 0 PWL(0.0n 1.800 540.0n 0.000 970.0n 0.000)
+Vbus_wdata_0_ bus_wdata_0_ 0 PWL(0.0n 0.000 640.0n 1.800 740.0n 0.000 970.0n 0.000)
+Vbus_wdata_1_ bus_wdata_1_ 0 PWL(0.0n 0.000 970.0n 0.000)
+Vbus_wdata_2_ bus_wdata_2_ 0 PWL(0.0n 0.000 970.0n 0.000)
+Vbus_wdata_3_ bus_wdata_3_ 0 PWL(0.0n 0.000 970.0n 0.000)
+Vbus_wdata_4_ bus_wdata_4_ 0 PWL(0.0n 0.000 970.0n 0.000)
+Vbus_wdata_5_ bus_wdata_5_ 0 PWL(0.0n 0.000 970.0n 0.000)
+Vbus_wdata_6_ bus_wdata_6_ 0 PWL(0.0n 0.000 970.0n 0.000)
+Vbus_wdata_7_ bus_wdata_7_ 0 PWL(0.0n 0.000 970.0n 0.000)
+Vbus_wdata_8_ bus_wdata_8_ 0 PWL(0.0n 0.000 970.0n 0.000)
+Vbus_wdata_9_ bus_wdata_9_ 0 PWL(0.0n 0.000 970.0n 0.000)
+Vbus_wdata_10_ bus_wdata_10_ 0 PWL(0.0n 0.000 970.0n 0.000)
+Vbus_wdata_11_ bus_wdata_11_ 0 PWL(0.0n 0.000 970.0n 0.000)
+Vbus_wdata_12_ bus_wdata_12_ 0 PWL(0.0n 0.000 970.0n 0.000)
+Vbus_wdata_13_ bus_wdata_13_ 0 PWL(0.0n 0.000 970.0n 0.000)
+Vbus_wdata_14_ bus_wdata_14_ 0 PWL(0.0n 0.000 970.0n 0.000)
+Vbus_wdata_15_ bus_wdata_15_ 0 PWL(0.0n 0.000 970.0n 0.000)
+Vbus_wdata_16_ bus_wdata_16_ 0 PWL(0.0n 0.000 970.0n 0.000)
+Vbus_wdata_17_ bus_wdata_17_ 0 PWL(0.0n 0.000 970.0n 0.000)
+Vbus_wdata_18_ bus_wdata_18_ 0 PWL(0.0n 0.000 970.0n 0.000)
+Vbus_wdata_19_ bus_wdata_19_ 0 PWL(0.0n 0.000 970.0n 0.000)
+Vbus_wdata_20_ bus_wdata_20_ 0 PWL(0.0n 0.000 970.0n 0.000)
+Vbus_wdata_21_ bus_wdata_21_ 0 PWL(0.0n 0.000 970.0n 0.000)
+Vbus_wdata_22_ bus_wdata_22_ 0 PWL(0.0n 0.000 970.0n 0.000)
+Vbus_wdata_23_ bus_wdata_23_ 0 PWL(0.0n 0.000 970.0n 0.000)
+Vbus_wdata_24_ bus_wdata_24_ 0 PWL(0.0n 0.000 970.0n 0.000)
+Vbus_wdata_25_ bus_wdata_25_ 0 PWL(0.0n 0.000 970.0n 0.000)
+Vbus_wdata_26_ bus_wdata_26_ 0 PWL(0.0n 0.000 970.0n 0.000)
+Vbus_wdata_27_ bus_wdata_27_ 0 PWL(0.0n 0.000 970.0n 0.000)
+Vbus_wdata_28_ bus_wdata_28_ 0 PWL(0.0n 0.000 970.0n 0.000)
+Vbus_wdata_29_ bus_wdata_29_ 0 PWL(0.0n 0.000 970.0n 0.000)
+Vbus_wdata_30_ bus_wdata_30_ 0 PWL(0.0n 0.000 970.0n 0.000)
+Vbus_wdata_31_ bus_wdata_31_ 0 PWL(0.0n 0.000 970.0n 0.000)
+Vbus_we bus_we 0 PWL(0.0n 0.000 640.0n 1.800 740.0n 0.000 970.0n 0.000)
+Vbus_re bus_re 0 PWL(0.0n 1.800 640.0n 0.000 970.0n 0.000)
+Vraw_valid raw_valid 0 PWL(0.0n 0.000 740.0n 1.800 970.0n 1.800)
+Vout_ready out_ready 0 PWL(0.0n 0.000 970.0n 0.000)
+* ---- device under test ----
+Xw bus_wdata_1_ bus_wdata_0_ startup_done bus_addr_2_ bus_wdata_2_ bus_addr_0_ bus_addr_3_ out_ready clk bus_we bus_rdata_15_ bus_rdata_17_ bus_rdata_18_ bus_rdata_19_ bus_rdata_21_ bus_rdata_23_ bus_rdata_24_ bus_rdata_25_ bus_rdata_27_ bus_rdata_29_ bus_rdata_31_ bus_rdata_7_ bus_re gated bus_rdata_0_ bus_rdata_10_ bus_rdata_11_ bus_rdata_13_ bus_rdata_14_ bus_rdata_16_ bus_rdata_1_ bus_rdata_20_ bus_rdata_22_ bus_rdata_26_ bus_rdata_28_ bus_rdata_2_ bus_rdata_30_ bus_rdata_3_ bus_rdata_4_ bus_rdata_5_ bus_rdata_6_ bus_rdata_8_ bus_rdata_9_ bus_addr_1_ bus_rdata_12_ rst_n vss vdd alarm out_data_0_ out_data_10_ out_data_11_ out_data_12_ out_data_13_ out_data_14_ out_data_15_ out_data_16_ out_data_17_ out_data_18_ out_data_19_ out_data_1_ out_data_20_ out_data_21_ out_data_22_ out_data_23_ out_data_24_ out_data_25_ out_data_26_ out_data_27_ out_data_28_ out_data_29_ out_data_2_ out_data_30_ out_data_31_ out_data_3_ out_data_4_ out_data_5_ out_data_6_ out_data_7_ out_data_8_ out_data_9_ out_valid ring_bit1 ring_bit2 ring_bit3 ring_bit4 en1 en2 en3 en4 vddr1 vddr2 vddr3 vddr4 bus_wdata_9_ bus_wdata_8_ bus_wdata_7_ bus_wdata_6_ bus_wdata_5_ bus_wdata_4_ bus_wdata_3_ bus_wdata_31_ bus_wdata_30_ bus_wdata_29_ bus_wdata_28_ bus_wdata_27_ bus_wdata_26_ bus_wdata_25_ bus_wdata_24_ bus_wdata_23_ bus_wdata_22_ bus_wdata_21_ bus_wdata_20_ bus_wdata_19_ bus_wdata_18_ bus_wdata_17_ bus_wdata_16_ bus_wdata_15_ bus_wdata_14_ bus_wdata_13_ bus_wdata_12_ bus_wdata_11_ bus_wdata_10_ trng_whole
+* ---- saved trace set (memory: only measured nets) ----
+.save i(Vvdd) i(Vvddr1) i(Vvddr2) i(Vvddr3) i(Vvddr4) i(Vvss) ring_bit1 ring_bit2
+.save ring_bit3 ring_bit4 vdd vddr1 vddr2 vddr3 vddr4 vss

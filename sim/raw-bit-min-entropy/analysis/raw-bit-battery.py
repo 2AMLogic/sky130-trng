@@ -70,8 +70,6 @@ difference and never mints or writes anything.
 from __future__ import annotations
 
 import argparse
-import hashlib
-import importlib.util
 import json
 import math
 import re
@@ -83,13 +81,14 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 RECORDS_DIR = REPO_ROOT / "sim" / "raw-bit-min-entropy" / "records"
 
 sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
+sys.path.insert(0, str(REPO_ROOT / "layout" / "bin"))
 from evidence_record import mint_record, new_record_id  # noqa: E402
+from loadmod import load_module  # noqa: E402
+from _hashing import sha256_bytes, sha256_text  # noqa: E402
+from replay_equal import replay_equal  # noqa: E402  (issue #519/#659: one shared replay equality)
 
-_spec = importlib.util.spec_from_file_location(
+raw_bit_entropy = load_module(
     "raw_bit_entropy", Path(__file__).with_name("raw-bit-entropy.py"))
-assert _spec is not None and _spec.loader is not None
-raw_bit_entropy = importlib.util.module_from_spec(_spec)
-_spec.loader.exec_module(raw_bit_entropy)
 
 ALPHA = 0.01
 Z_99 = 2.5758293035489004
@@ -590,7 +589,7 @@ def load_stream(path: Path, n: int, sha256_hex: str) -> list[int]:
     except OSError as exc:
         raise VolumeInputError(f"cannot read {path}: {exc}") from exc
     text = raw[:-1] if raw.endswith("\n") else raw
-    digest = hashlib.sha256(text.encode()).hexdigest()
+    digest = sha256_text(text)
     if digest != sha256_hex:
         raise VolumeInputError(
             f"{path.name}: sha256 mismatch (declared {sha256_hex}, got {digest})")
@@ -632,7 +631,7 @@ def load_volume_source(source_json: Path) -> tuple[dict, list[tuple[dict, list[i
             raise VolumeInputError(f"manifest file {row['file']!r} is not a bare name")
         streams.append((row, load_stream(runs_dir / row["file"], row["n"],
                                          row["sha256_hex"])))
-    return rec, streams, hashlib.sha256(raw).hexdigest()
+    return rec, streams, sha256_bytes(raw)
 
 
 def source_caveats(source_json: Path) -> list[str]:
@@ -655,8 +654,15 @@ def source_caveats(source_json: Path) -> list[str]:
     return out
 
 
-def analyse_stream(bits: list[int]) -> dict:
-    """Full-stream battery + estimators and the segmented battery."""
+def analyse_stream(bits: list[int], segment_len: int | None = None) -> dict:
+    """Full-stream battery + estimators and the segmented battery.
+
+    `segment_len=None` segments with this module's `SEGMENT_LEN` read at call
+    time (so patching `B.SEGMENT_LEN` in tests keeps working, like
+    `run_battery`); the conditioned-output renderer passes its own policy.
+    """
+    if segment_len is None:
+        segment_len = SEGMENT_LEN
     est = entropy_estimates(bits)
     h = est["h_min_bits"]
     ties = [k for k, v in est["estimators"].items()
@@ -664,7 +670,7 @@ def analyse_stream(bits: list[int]) -> dict:
     est["binding_ties"] = ties
     return {"n": len(bits),
             "single_sequence": run_battery(bits),
-            "segmented": run_battery(bits, segment_len=SEGMENT_LEN),
+            "segmented": run_battery(bits, segment_len=segment_len),
             "estimators": est}
 
 
@@ -733,6 +739,60 @@ def volume_payload(source_json: Path, compare_rels: list[str] | None = None) -> 
 def _failed(block: dict) -> str:
     f = [k for k, v in block["tests"].items() if v["status"] == "FAIL"]
     return ", ".join(f) if f else "-"
+
+
+def format_binding(est: dict) -> str:
+    """`binding_estimator` with its binding-tie annotation (shared renderer)."""
+    bind = est["binding_estimator"] or "-"
+    if len(est["binding_ties"]) > 1:
+        bind += " (tie: " + ", ".join(est["binding_ties"]) + ")"
+    return bind
+
+
+def render_detail_tables(grp: list[dict], *, est_heading: str,
+                         seq_heading: str, seg_heading: str,
+                         key: str | None = None) -> list[str]:
+    """The three per-group detail tables shared by the volume and
+    conditioned-output renderers.
+
+    `key=None` reads the reduction dict straight off each row (volume
+    records); `key="conditioned"` reads it from `r["conditioned"]`
+    (conditioned-output records). Headings differ per caller; columns, cell
+    formatting and INSUFFICIENT fallbacks are pinned here.
+    """
+    def red(r: dict) -> dict:
+        return r if key is None else r[key]
+
+    out = ["", est_heading, "",
+           "| corner | T (C) | Vdd (V) | " + " | ".join(ESTIMATOR_MIN_N) + " |",
+           "|---|---|---|" + "---|" * len(ESTIMATOR_MIN_N)]
+    for r in grp:
+        ev = red(r)["estimators"]["estimators"]
+        cells = [f"{ev[k]['h_bits']:.4f}" if ev[k]["status"] == "OK"
+                 else "INSUFFICIENT" for k in ESTIMATOR_MIN_N]
+        out.append(f"| {r['corner']} | {r['temp_c']:g} | {r['vdd_v']:g} | "
+                   + " | ".join(cells) + " |")
+    out += ["", seq_heading, "",
+            "| corner | T (C) | Vdd (V) | " + " | ".join(BATTERY) + " |",
+            "|---|---|---|" + "---|" * len(BATTERY)]
+    for r in grp:
+        t = red(r)["single_sequence"]["tests"]
+        cells = [("%.4g%s" % (t[k]["p_values"][0],
+                              "" if t[k]["status"] == "PASS" else " F"))
+                 if "p_values" in t[k] else "INSUFFICIENT" for k in BATTERY]
+        out.append(f"| {r['corner']} | {r['temp_c']:g} | {r['vdd_v']:g} | "
+                   + " | ".join(cells) + " |")
+    out += ["", seg_heading, "",
+            "| corner | T (C) | Vdd (V) | " + " | ".join(BATTERY) + " |",
+            "|---|---|---|" + "---|" * len(BATTERY)]
+    for r in grp:
+        t = red(r)["segmented"]["tests"]
+        cells = [("%.4f%s" % (t[k]["proportion"],
+                              "" if t[k]["status"] == "PASS" else " F"))
+                 if "proportion" in t[k] else "INSUFFICIENT" for k in BATTERY]
+        out.append(f"| {r['corner']} | {r['temp_c']:g} | {r['vdd_v']:g} | "
+                   + " | ".join(cells) + " |")
+    return out
 
 
 def render_shift(sh: dict) -> list[str]:
@@ -812,46 +872,19 @@ def render_volume(payload: dict, caveats: list[str]) -> str:
         for r in grp:
             e = r["estimators"]
             h = e["h_min_bits"]
-            bind = e["binding_estimator"] or "-"
-            if len(e["binding_ties"]) > 1:
-                bind += " (tie: " + ", ".join(e["binding_ties"]) + ")"
             out.append(
                 f"| {r['corner']} | {r['temp_c']:g} | {r['vdd_v']:g} | "
                 f"{r['seed']} | {r['n']} | {r['single_sequence']['verdict']} | "
                 f"{_failed(r['single_sequence'])} | {r['segmented']['verdict']} | "
                 f"{_failed(r['segmented'])} | "
-                f"{'-' if h is None else f'{h:.4f}'} | {bind} | "
+                f"{'-' if h is None else f'{h:.4f}'} | {format_binding(e)} | "
                 f"`{r['source_file']}` | `{r['source_sha256_hex']}` |")
-        out += ["", "### 90B estimators (bit/sample, full stream)", "",
-                "| corner | T (C) | Vdd (V) | " + " | ".join(ESTIMATOR_MIN_N) + " |",
-                "|---|---|---|" + "---|" * len(ESTIMATOR_MIN_N)]
-        for r in grp:
-            ev = r["estimators"]["estimators"]
-            cells = [f"{ev[k]['h_bits']:.4f}" if ev[k]["status"] == "OK"
-                     else "INSUFFICIENT" for k in ESTIMATOR_MIN_N]
-            out.append(f"| {r['corner']} | {r['temp_c']:g} | {r['vdd_v']:g} | "
-                       + " | ".join(cells) + " |")
-        out += ["", "### Single-sequence p-values (full stream)", "",
-                "| corner | T (C) | Vdd (V) | " + " | ".join(BATTERY) + " |",
-                "|---|---|---|" + "---|" * len(BATTERY)]
-        for r in grp:
-            t = r["single_sequence"]["tests"]
-            cells = [("%.4g%s" % (t[k]["p_values"][0],
-                                  "" if t[k]["status"] == "PASS" else " F"))
-                     if "p_values" in t[k] else "INSUFFICIENT" for k in BATTERY]
-            out.append(f"| {r['corner']} | {r['temp_c']:g} | {r['vdd_v']:g} | "
-                       + " | ".join(cells) + " |")
-        out += ["", "### Segmented pass proportions "
-                f"(passing segments / {pol['count']}; F = below criterion)", "",
-                "| corner | T (C) | Vdd (V) | " + " | ".join(BATTERY) + " |",
-                "|---|---|---|" + "---|" * len(BATTERY)]
-        for r in grp:
-            t = r["segmented"]["tests"]
-            cells = [("%.4f%s" % (t[k]["proportion"],
-                                  "" if t[k]["status"] == "PASS" else " F"))
-                     if "proportion" in t[k] else "INSUFFICIENT" for k in BATTERY]
-            out.append(f"| {r['corner']} | {r['temp_c']:g} | {r['vdd_v']:g} | "
-                       + " | ".join(cells) + " |")
+        out += render_detail_tables(
+            grp,
+            est_heading="### 90B estimators (bit/sample, full stream)",
+            seq_heading="### Single-sequence p-values (full stream)",
+            seg_heading=("### Segmented pass proportions (passing segments / "
+                         f"{pol['count']}; F = below criterion)"))
         out.append("")
     if "min_h_shift" in payload:
         out += render_shift(payload["min_h_shift"])
@@ -930,23 +963,24 @@ def check_volume_record(record_json: Path) -> int:
         return 1
     got = json.loads(json.dumps(payload))
     rc = 0
-    if got != want:
+    if not replay_equal(got, want):
         rc = 1
         diffs = [r["source_file"] for r, w in zip(got["per_stream"],
-                 want.get("per_stream", [])) if r != w]
+                 want.get("per_stream", [])) if not replay_equal(r, w)]
         print("CHECK FAILED: analysis payload differs"
               + (f" (streams: {', '.join(diffs)})" if diffs else ""),
               file=sys.stderr)
+    # The markdown is rendered from the committed payload; the recomputed
+    # payload is tied to it by the replay comparison above (float-tolerant),
+    # so the markdown is compared against render(want) only -- a 1-ulp
+    # re-derivation shift can straddle a :.4f rounding midpoint and would
+    # false-diff here (same rule as conditioned-output.py).
     if render_volume(want, caveats) not in md_text:
         rc = 1
         print("CHECK FAILED: committed markdown tables differ from the "
               "committed payload or source caveats", file=sys.stderr)
-    if render_volume(payload, caveats) not in md_text:
-        rc = 1
-        print("CHECK FAILED: recomputed tables differ from committed markdown",
-              file=sys.stderr)
     if rc == 0:
-        print(f"CHECK OK: {record_json.name} reproduces byte-for-byte "
+        print(f"CHECK OK: {record_json.name} reproduces "
               f"({len(got['per_stream'])} streams)")
     return rc
 

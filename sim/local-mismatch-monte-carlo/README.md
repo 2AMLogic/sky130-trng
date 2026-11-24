@@ -14,8 +14,10 @@ entropy measurement.
 | `testbench/tb_sampler_dff_offset.spice` | circuit-body template: one `sampler_dff`, D driven by a slow triangle while a 10 ns clock samples it; the D value at which Q flips going up and going down is the decision threshold |
 | `make-requests.py` | writes the `klt sim` requests (`OUTDIR/<corner>-<kind>-<n>/`): `arr` / `smp` carry a `monte_carlo` block (`vary: "mismatch"`, section `<corner>_mm`); `arr0` / `smp0` are one-unit mismatch-free controls on the plain section |
 | `reduce.py` | reduction (standard library only): periods, spread, pair proximity, Q ratio, bias, sampler offset, raw-bit bias, min-entropy bound; `--emit-record REQDIR`, `--check RECORD` (replay from the committed raw responses) |
+| `yield_reports.py` | `klt yield` reduction of the same raw responses into per-PVT-point sample sets + reports (issue #598); `--check` byte-replay. Run under `uvx --from "klayout-tools[yield]==0.8.0" python ...` (the host `klt` carries no `klt_yield_native`) |
 | `records/<id>.{md,json}` | append-only record per PVT point (one row per Monte Carlo unit, with the per-sample seeds) |
 | `corners/<id>/` | per chunk: `*.klt-sim.json.gz` (raw batch response, job id inside), `*.request.json` and `*.netlist.cir` (exactly what was submitted), `*.plan.json` |
+| `yield/<id>/` | the `klt yield` evidence per PVT point (issue #598): `samples.json` (the derived sample set, `h_bias_bit` over all 1800 pairings, limits `min 0.5` bit from the spec row as written, no target yield -- none exists on the row) and `klt-yield.json` (the pinned-0.8.0 report); cited as T1 item 6 analog in `signoff/block-manifest.json` |
 | `../tests/test_mismatch_reduction.py` | unit tests on synthetic inputs |
 
 ```bash
@@ -23,6 +25,8 @@ python3 sim/local-mismatch-monte-carlo/make-requests.py REQDIR
 uvx --from "klayout-tools==0.8.0" klt sim REQDIR/<d>/request.json -o REQDIR/<d>/out --format json > REQDIR/<d>/resp.json   # KLT_SIM_BACKEND=batch
 python3 sim/local-mismatch-monte-carlo/reduce.py --emit-record REQDIR
 python3 sim/local-mismatch-monte-carlo/reduce.py --check sim/local-mismatch-monte-carlo/records/<id>.json
+uvx --from "klayout-tools[yield]==0.8.0" python sim/local-mismatch-monte-carlo/yield_reports.py          # emit
+uvx --from "klayout-tools[yield]==0.8.0" python sim/local-mismatch-monte-carlo/yield_reports.py --check  # byte replay
 python3 sim/tests/test_mismatch_reduction.py
 ```
 
@@ -93,6 +97,35 @@ Bernoulli stream at the worst-case `p` (100000 bits, seed 215) and agrees (tt 0.
 - No spec value was changed. Following the issue, the bias and proximity results above are raised as a decision-record
   request rather than acted on here.
 
+## `klt yield` reduction (issue #598, T1 item 6)
+
+`yield_reports.py` re-reduces the committed raw responses of this campaign into one
+`klt yield` sample set + report per PVT point under `yield/<record-id>/`, importing
+`reduce.py`'s own `duty_at`/`h_bias` (nothing is copied) and refusing to write if the raw
+responses no longer replay to the committed record or the derived pairings disagree with
+its `raw_bit` statistics. The one measurement, `h_bias_bit`, is **H_bias -- the
+static-bias UPPER bound on the raw bit's min-entropy, not the measured row quantity**:
+a sample below the floor fails the row, a sample above it does not prove it. Limits are
+the spec row as written (min 0.5 bit, DR-0004 sec. 2.3); the row states no target yield
+and none is invented, so `klt yield` can only *report* the estimates (status `reported`,
+never `fail`) -- which is why T1 item 6 analog stays `unmet`/`partial_coverage` when
+these reports are cited in `signoff/block-manifest.json`: the row is unratified (README
+target table DRAFT, decision records Proposed), and that alone gates it. The row IS
+covered -- the committed `signoff/t1-report.json` reads `uncovered_rows: []` because
+these untagged reports assert the manifest's rows (klayout-tools#5490 only ever
+affected `spec_row`-tagged measurements) -- so ratifying the row on #3 would render
+the item met on estimates that carry no yield claim and no negative control, which
+that decision should weigh. The reports' own
+findings stand either way: **tt 60/1800 pairings below the floor** (empirical 0.9667,
+exact CI [0.9573, 0.9745] at 95%; the design response is #221 / DR-0013 / PR #249, not
+touched here), ss and ff 0/1800 (empirical 1.0, bounded below at 0.998); sample size
+`sufficient` at every corner (n 1800 vs required 1238 at tt / 183 at ss, ff). The
+campaign's deterministic negative control -- the mismatch-free `arr0`/`smp0` units,
+mismatch absent, statistic clean -- is recorded in each record and in the sample set's
+`derivation` block; it is not a seeded-defect variant, so it is deliberately not fed to
+`klt yield`'s `negative_control` field (which requires a known-bad variant that must show
+up as degraded yield); a defect-injection campaign is follow-up work.
+
 ## Limits and caveats
 
 - **Pre-layout, ideal sources**, as the cited records; no wire parasitics, no supply impedance.
@@ -116,6 +149,13 @@ Some requests were refused with `BATCH_MAX_CONCURRENT_INSTANCES` (fleet at capac
 modified after seeing results. An earlier, interrupted pass of this work had already completed three of the one-unit mismatch-free
 references under 0.6.0 on the fleet (`ss-smp0-1`, `ff-arr0-1`, `ff-smp0-1`); those were kept because their recorded `netlist_sha256` equals
 that of the regenerated request (same deck, same section). Every Monte Carlo unit comes from the single clean pass described above.
+
+Completeness of the records above rested on the operator noticing that a refused request had to be re-submitted: `reduce.py` used to
+drop a request with no usable response and then take `n_array_requested` / `n_sampler_requested` from the units that came *back*, so a
+set missing a refused chunk would have reported itself as "20/20 array, 30/30 sampler" with no error. It no longer can (issue #469):
+the loader returns refused requests, the requested counts come from the plans' `monte_carlo.n`, and `--emit-record` refuses to write a
+record while any request of the set has no usable response. The three committed records are unaffected — they are the complete set, and
+still replay as `MATCHES` — this closes the gap that let a *future* re-run record a partial set as a whole one.
 
 ## Tool friction
 

@@ -67,6 +67,7 @@ directed stimulus program against each mapped netlist via Icarus + the
 | `digital-electrical-repair/` | isolated study of the unrepaired Liberty max-slew / max-capacitance violations in the routed `trng_digital` macro (1167 pin rows over 16 corners of the in-flow global-route estimate): constraint-driven repair requests run through the unchanged `digital-pnr/` chain, then a final-route OpenSTA audit per corner. Edits nothing in `digital/flow/`, `layout/trng_digital/` or `layout/trng_whole/`; no geometry is promoted; the 0.05 mm2 area target is untouched | #236 |
 | `digital-functional-verification/` | native `klt functional-verification` (cocotb + Icarus) of `trng_digital`: the directed program and independent model of `digital-rtl-equivalence/` against the RTL and the routed netlist, with four negative controls and single-point mutants. Functional / unit-delay only, NOT SDF-timed evidence | #222 |
 | `digital-sdf-timed-verification/` | SDF-annotated, routed-netlist verification of `trng_digital` through `klt functional-verification`: sky130_fd_sc_hd timing cell models with `trng_digital.sdf.gz` back-annotated, declared-timing and stress baselines plus SDF/arc-shift controls. One SDF corner (`tt_025C_1v80`), no setup/hold timing checks (Icarus), provisional | #227 |
+| `pex-sampler-core/` | T1 item 7.analog evidence: native `klt pex --measure-command` schematic-vs-extracted delta reports for the whole composed `sampler_core` layout — 11 spec rows x 12 PVT corners (tt/ss/ff x the post-layout four-point grid), both legs measured by the committed harness through `klt sim` batch corner requests. Power row fails at the two ff/high-Vdd corners on both legs (issue #604); `extraction.model` limits and `body_bias: biased` disclosed | #597 |
 
 **Whole-block post-layout verification (issue #18): none recorded yet
 (re-checked 2026-10-07).** The post-layout slugs (`post-layout-*`) cover the
@@ -149,6 +150,7 @@ Issue #200 then perturbed the supply, which every record above holds ideal and q
 | `xor-combining-alternatives/` | evidence for DR-0010's rate row (`klt sim` batch, 18 jobs = 2 variants x DR-0003's 9 PVT points): the committed minimum-width `xor2` (control, reproduces the committed `w_90` within +-5 % and loaded ring period within +-2 %) against one 2x-device-width variant in the unchanged balanced depth-2 `N = 4` tree -- `w_90`, four loaded ring periods, root swing / edge retention / DC level, ring and XOR+buffer current, power, XOR device-area proxy, first-stage input load and root sampler load (separately), per-point `N_max_combine`, entropy replay and raw-rate ceiling. Does not choose or amend the rate target | #282 |
 | `local-mismatch-monte-carlo/` | local device-mismatch Monte Carlo (`klt sim` `monte_carlo`, `*_mm` sections) of the committed pre-layout `ro_array_core` (30 draws/corner: per-ring period spread, ring-pair proximity, `Q` ratio, combining-node bias) and of the `sampler_dff` decision offset (60 draws/corner), propagated to raw-bit bias and an `H_bias` min-entropy bound against DR-0004's H = 0.5 floor, at tt/27 C/1.8 V, ss/-40 C/1.62 V and ff/-40 C/1.98 V | #215 |
 | `wake-up-transient/` | analog wake-up transient of the committed pre-layout `ro_array_core` against DR-0004's 1024-sample start-up window: enable-gated and supply-ramp settling, first-window raw bits, and a behavioural start-up margin at 18 calibrated PVT points. **PARTIAL**: the 54-unit PVT grid and transistor noisy leg were not run (batch fleet rejected the submits); only single-corner local probes are committed. Also the restart-matrix reduction for the C5 silicon restart dataset (`restart_matrix.py`) and its behavioural 1000 x 2048 known-answer record at the 18 points (analysis path only; provisional until silicon) | #216, #267 |
+| `ro-array-idle-leakage/` | idle / leakage survey of the gated-off pre-layout `sampler_core`: `.op` standby supply current over tt/ss/ff x -40/27/125 C x 1.62/1.8/1.98 V (27 units, fleet backend), a leaf-cell-sum cross-check, the library's digital leakage mapped to each corner by a fixed rule, worst-leakage corners, and a **recommended** (not ratified) idle-target value. Simulation-derived; provisional until silicon | #201 |
 
 `sim/tests/test_raw_bit_entropy.py` is the fast, always-runnable unit-test
 suite behind that record's reduction step (standard library only, no
@@ -240,6 +242,14 @@ Two rules from the root `CLAUDE.md` govern everything under this directory:
 - **`sim/` results are append-only evidence.** A record is never edited or
   deleted after it is written; a correction mints a new record and names the
   one it supersedes via its `Supersedes` field.
+
+  Working-tree disclosure (issues #666, #676): every record writer in
+  `sim/bin/evidence_record.py` -- `mint_behavioral_record()` and `mint_record()`
+  -- records whether the tree differed from the cited `Repo commit` (a
+  `- Working tree:` footer line plus `repo_dirty` / `repo_dirty_paths` JSON
+  keys; `null` / "unknown" when git status fails, never "clean"). A record's own
+  outputs under its `records/` and `runs/` directories are not counted.
+  Records minted before this change carry no such disclosure.
 
   This rule is enforced in CI (issue #232): the `sim-records-append-only`
   job runs `sim/bin/check_records_append_only.py` on every PR and fails if any

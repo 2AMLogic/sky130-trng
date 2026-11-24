@@ -1,0 +1,170 @@
+* Wake-up raw bits -- first samples after enable, noise-injected, many seeds
+*
+* Issue #216. The issue #21 raw-bit topology (sim/raw-bit-min-entropy/testbench/
+* tb_raw_bit_stream.spice), lifted verbatim except for the start-up: four rings
+* of the committed N = 4 array built IN PLACE from the committed ro_nand2/ro_stage
+* primitives with a trnoise() source in series with every stage input (the only
+* transient-noise mechanism this ngspice-46 build offers; see that deck's header),
+* followed by the committed ro_buf / xor2 combining tree / six sampler_dff
+* instances from design/sampler_core.spice, unmodified.
+*
+* What is different from #21 (and why this is a WAKE-UP deck)
+* -----------------------------------------------------------
+* #21 starts the rings oscillating at t = 0 through an asymmetry-breaking `.ic`
+* under `uic`, with every enable held high. Here the rings start STOPPED: en1..en4
+* are low until 2e-08, and every ring's internal nodes carry the `.ic` of the
+* stopped state the enable-gated NAND forces (NAND output high, then alternating
+* down the chain, ring output high). That is the state a real disabled ring sits
+* in, it is the SAME for all four rings and for every seed, and it is a
+* consistent DC state of the en = 0 circuit, so the first 2e-08 is quiet
+* (checked by the roN_pre / roN_prelo measurements). At 2e-08 the enables rise
+* 0 -> VDD over 100 ps and the rings start from that common deterministic phase:
+* the worst case for the first samples, because nothing but the injected noise
+* accumulated since the enable separates one wake-up from the next.
+*
+* The enable is a BEHAVIOURAL source (B-element), not a PULSE/PWL: the #21 header
+* records that in this ngspice build a PULSE/PWL control edge anywhere in a circuit
+* that also carries trnoise() sources fails with "Timestep too small". A B-source
+* contributes no breakpoint. The sample clock is behavioural for the same reason
+* (see the note at the clock).
+*
+* Sample clock and read-out
+* -------------------------
+* Ts = 1e-07 s (the #21 compressed interval; DR-0003's Ts is 20 us and a
+* transistor-level run of that is ~2400 s per bit -- see
+* sim/raw-bit-volume-campaign/README.md -- so the 20 us statement of this
+* campaign comes from the calibrated behavioural leg, wakeup.py). Rising clock
+* edges sit at TEN + (k + 1/2) Ts, k = 0, 1, ..., so the first sample is captured
+* Ts/2 after the enable; make-requests.py reads raw_bit / raw_valid / ring_bit1..4
+* 0.25 Ts after each capturing edge, inside clk's high (latched) phase, as #21 does.
+* rst_n is held high and the six samplers start from #21's reset-state `.ic`.
+*
+* Seeds: no `.option seed` here. klt sim's `monte_carlo` block writes a distinct
+* `.options seed=` per sample before the netlist is read, and the trnoise()
+* sources draw from it. The sky130 mismatch switch is not set, so the samples
+* differ ONLY in their noise realisation.
+*
+* TEMPLATE for make-requests.py: /home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-216/design/sampler_core.spice (design/sampler_core.spice),
+* 1.62, 2.0e-3 (trnoise rms, V), 2e-08, 1e-07 are substituted; no .lib,
+* .temp, .tran, .control or .end card (klt sim owns those).
+*
+* Simulation-derived; provisional until silicon.
+
+.option scale=1u
+
+.include "/home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-216/design/sampler_core.spice"
+
+Vdd vdd 0 dc 1.62
+Vddr1 vddr1 0 dc 1.62
+Vddr2 vddr2 0 dc 1.62
+Vddr3 vddr3 0 dc 1.62
+Vddr4 vddr4 0 dc 1.62
+Vrstn rst_n 0 dc 1.62
+Bhalf half 0 V = 0.5*v(vdd)
+
+* enables: low until TEN, then 0 -> VDD over 100 ps (behavioural: no breakpoint)
+Ben1 en1 0 V = 1.62*min(max((time-2e-08)/100e-12, 0), 1)
+Ben2 en2 0 V = 1.62*min(max((time-2e-08)/100e-12, 0), 1)
+Ben3 en3 0 V = 1.62*min(max((time-2e-08)/100e-12, 0), 1)
+Ben4 en4 0 V = 1.62*min(max((time-2e-08)/100e-12, 0), 1)
+
+* Rings: lifted from tb_raw_bit_stream.spice; the only change is the `.ic`, which
+* is the en = 0 stopped state (roNraw high) instead of #21's oscillation kick.
+* --- ring 1, wstv = 0.42 (DR-0003 ladder) ---
+xg1 gA1 en1 n11 vddr1 0 ro_nand2 wstv=0.42
+VnA1 gA1 ro1raw 0 dc 0 trnoise(2.0e-3 2e-10 0 0)
+x11 gB1 n21 vddr1 0 ro_stage wstv=0.42
+VnB1 gB1 n11 0 dc 0 trnoise(2.0e-3 2e-10 0 0)
+x21 gC1 n31 vddr1 0 ro_stage wstv=0.42
+VnC1 gC1 n21 0 dc 0 trnoise(2.0e-3 2e-10 0 0)
+x31 gD1 n41 vddr1 0 ro_stage wstv=0.42
+VnD1 gD1 n31 0 dc 0 trnoise(2.0e-3 2e-10 0 0)
+x41 gE1 ro1raw vddr1 0 ro_stage wstv=0.42
+VnE1 gE1 n41 0 dc 0 trnoise(2.0e-3 2e-10 0 0)
+.ic v(ro1raw)=1.62 v(n11)=1.62 v(n21)=0 v(n31)=1.62 v(n41)=0
+
+* --- ring 2, wstv = 0.44 ---
+xg2 gA2 en2 n12 vddr2 0 ro_nand2 wstv=0.44
+VnA2 gA2 ro2raw 0 dc 0 trnoise(2.0e-3 2e-10 0 0)
+x12 gB2 n22 vddr2 0 ro_stage wstv=0.44
+VnB2 gB2 n12 0 dc 0 trnoise(2.0e-3 2e-10 0 0)
+x22 gC2 n32 vddr2 0 ro_stage wstv=0.44
+VnC2 gC2 n22 0 dc 0 trnoise(2.0e-3 2e-10 0 0)
+x32 gD2 n42 vddr2 0 ro_stage wstv=0.44
+VnD2 gD2 n32 0 dc 0 trnoise(2.0e-3 2e-10 0 0)
+x42 gE2 ro2raw vddr2 0 ro_stage wstv=0.44
+VnE2 gE2 n42 0 dc 0 trnoise(2.0e-3 2e-10 0 0)
+.ic v(ro2raw)=1.62 v(n12)=1.62 v(n22)=0 v(n32)=1.62 v(n42)=0
+
+* --- ring 3, wstv = 0.46 ---
+xg3 gA3 en3 n13 vddr3 0 ro_nand2 wstv=0.46
+VnA3 gA3 ro3raw 0 dc 0 trnoise(2.0e-3 2e-10 0 0)
+x13 gB3 n23 vddr3 0 ro_stage wstv=0.46
+VnB3 gB3 n13 0 dc 0 trnoise(2.0e-3 2e-10 0 0)
+x23 gC3 n33 vddr3 0 ro_stage wstv=0.46
+VnC3 gC3 n23 0 dc 0 trnoise(2.0e-3 2e-10 0 0)
+x33 gD3 n43 vddr3 0 ro_stage wstv=0.46
+VnD3 gD3 n33 0 dc 0 trnoise(2.0e-3 2e-10 0 0)
+x43 gE3 ro3raw vddr3 0 ro_stage wstv=0.46
+VnE3 gE3 n43 0 dc 0 trnoise(2.0e-3 2e-10 0 0)
+.ic v(ro3raw)=1.62 v(n13)=1.62 v(n23)=0 v(n33)=1.62 v(n43)=0
+
+* --- ring 4, wstv = 0.48 ---
+xg4 gA4 en4 n14 vddr4 0 ro_nand2 wstv=0.48
+VnA4 gA4 ro4raw 0 dc 0 trnoise(2.0e-3 2e-10 0 0)
+x14 gB4 n24 vddr4 0 ro_stage wstv=0.48
+VnB4 gB4 n14 0 dc 0 trnoise(2.0e-3 2e-10 0 0)
+x24 gC4 n34 vddr4 0 ro_stage wstv=0.48
+VnC4 gC4 n24 0 dc 0 trnoise(2.0e-3 2e-10 0 0)
+x34 gD4 n44 vddr4 0 ro_stage wstv=0.48
+VnD4 gD4 n34 0 dc 0 trnoise(2.0e-3 2e-10 0 0)
+x44 gE4 ro4raw vddr4 0 ro_stage wstv=0.48
+VnE4 gE4 n44 0 dc 0 trnoise(2.0e-3 2e-10 0 0)
+.ic v(ro4raw)=1.62 v(n14)=1.62 v(n24)=0 v(n34)=1.62 v(n44)=0
+
+* --- buffers + XOR combining tree, exactly as design/ro_array_core.spice wires them ---
+xb1 ro1raw ro1 vdd 0 ro_buf
+xb2 ro2raw ro2 vdd 0 ro_buf
+xb3 ro3raw ro3 vdd 0 ro_buf
+xb4 ro4raw ro4 vdd 0 ro_buf
+xa1 ro1 ro2 t1 vdd 0 xor2
+xa2 ro3 ro4 t2 vdd 0 xor2
+xa3 t1 t2 xo vdd 0 xor2
+
+* --- sample clock: rising edges at TEN + (k + 1/2) Ts, 50 % duty, 100 ps edges ---
+* Behavioural too, for the same reason as the enable: a PULSE clock with its first
+* edge at TEN + Ts/2 aborted ("Timestep too small ... trouble with node ben4#branch")
+* exactly AT that first edge in a local single-unit probe -- the trnoise()/breakpoint
+* interaction #21 documents, now hit by the clock itself. #21's own PULSE clock
+* happens to survive it; this deck does not rely on that. ph = phase in [0,1)
+* measured from the first rising edge; clk is high for ph in [0, 1/2).
+Bclk clk 0 V = time < 2e-08+0.5*1e-07 ? 0 : 1.62*min(max(1e-07*(((time-2e-08-0.5*1e-07)/1e-07) - floor((time-2e-08-0.5*1e-07)/1e-07))/100e-12, 0), 1)*min(max(1e-07*(0.5 - (((time-2e-08-0.5*1e-07)/1e-07) - floor((time-2e-08-0.5*1e-07)/1e-07)))/100e-12, 0), 1)
+
+* --- the committed sampler_dff, unmodified, at every tap design/sampler_core.spice defines ---
+xsb xo clk rst_n raw_bit vdd 0 sampler_dff
+xsv vdd clk rst_n raw_valid vdd 0 sampler_dff
+xsr1 ro1 clk rst_n ring_bit1 vdd 0 sampler_dff
+xsr2 ro2 clk rst_n ring_bit2 vdd 0 sampler_dff
+xsr3 ro3 clk rst_n ring_bit3 vdd 0 sampler_dff
+xsr4 ro4 clk rst_n ring_bit4 vdd 0 sampler_dff
+
+* The six sampler_dff instances also need explicit .ic values for their own
+* internal nodes -- see this file's own header ("START-UP" section) for why
+* and for what was tried before landing here. Values below are the
+* reset-state operating point ngspice's own DC solver produced for
+* sampler_dff at rst_n = 0, i.e. every instance starts as if a reset pulse
+* had just released at t = 0, even though rst_n itself never moves.
+.ic v(xsb.m)=0 v(xsb.mb)=1.62 v(xsb.mmid)=0 v(xsb.mc)=0 v(xsb.s)=1.62
++ v(xsb.qb)=1.62 v(xsb.s2mid)=0 v(xsb.clkb)=1.62
++ v(xsv.m)=0 v(xsv.mb)=1.62 v(xsv.mmid)=0 v(xsv.mc)=0 v(xsv.s)=1.62
++ v(xsv.qb)=1.62 v(xsv.s2mid)=0 v(xsv.clkb)=1.62
++ v(xsr1.m)=0 v(xsr1.mb)=1.62 v(xsr1.mmid)=0 v(xsr1.mc)=0 v(xsr1.s)=1.62
++ v(xsr1.qb)=1.62 v(xsr1.s2mid)=0 v(xsr1.clkb)=1.62
++ v(xsr2.m)=0 v(xsr2.mb)=1.62 v(xsr2.mmid)=0 v(xsr2.mc)=0 v(xsr2.s)=1.62
++ v(xsr2.qb)=1.62 v(xsr2.s2mid)=0 v(xsr2.clkb)=1.62
++ v(xsr3.m)=0 v(xsr3.mb)=1.62 v(xsr3.mmid)=0 v(xsr3.mc)=0 v(xsr3.s)=1.62
++ v(xsr3.qb)=1.62 v(xsr3.s2mid)=0 v(xsr3.clkb)=1.62
++ v(xsr4.m)=0 v(xsr4.mb)=1.62 v(xsr4.mmid)=0 v(xsr4.mc)=0 v(xsr4.s)=1.62
++ v(xsr4.qb)=1.62 v(xsr4.s2mid)=0 v(xsr4.clkb)=1.62
++ v(raw_bit)=0 v(raw_valid)=0
++ v(ring_bit1)=0 v(ring_bit2)=0 v(ring_bit3)=0 v(ring_bit4)=0

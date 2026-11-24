@@ -1,0 +1,122 @@
+{
+  "netlist": "netlist.cir",
+  "engine": "ngspice",
+  "backend": "batch",
+  "netlist_source": "extracted",
+  "models": {
+    "pdk": "sky130A",
+    "lib": "libs.tech/combined/sky130.lib.spice"
+  },
+  "corners": {
+    "process": [
+      "tt"
+    ],
+    "temperature_c": [
+      -40.0,
+      27.0,
+      125.0
+    ],
+    "supply_v": {
+      "Vk": [
+        1.62,
+        1.8,
+        1.98
+      ]
+    }
+  },
+  "analysis": {
+    "kind": "op",
+    "args": ""
+  },
+  "measurements": [
+    {
+      "name": "i_vdd",
+      "expr": "i(Vsvdd)"
+    },
+    {
+      "name": "i_r1",
+      "expr": "i(Vsr1)"
+    },
+    {
+      "name": "i_r2",
+      "expr": "i(Vsr2)"
+    },
+    {
+      "name": "i_r3",
+      "expr": "i(Vsr3)"
+    },
+    {
+      "name": "i_r4",
+      "expr": "i(Vsr4)"
+    },
+    {
+      "name": "v_xo",
+      "expr": "v(xdut.xo)"
+    },
+    {
+      "name": "v_ro1",
+      "expr": "v(xdut.ro1)"
+    },
+    {
+      "name": "v_rn1",
+      "expr": "v(xdut.xdut.rn1)"
+    },
+    {
+      "name": "i_cl_xsb",
+      "expr": "i(Bcl_xsb)"
+    },
+    {
+      "name": "v_s_xsb",
+      "expr": "v(xdut.xsb.s)"
+    },
+    {
+      "name": "i_cl_xsv",
+      "expr": "i(Vcl_xsv)"
+    },
+    {
+      "name": "v_s_xsv",
+      "expr": "v(xdut.xsv.s)"
+    },
+    {
+      "name": "i_cl_xsr1",
+      "expr": "i(Bcl_xsr1)"
+    },
+    {
+      "name": "v_s_xsr1",
+      "expr": "v(xdut.xsr1.s)"
+    },
+    {
+      "name": "i_cl_xsr2",
+      "expr": "i(Bcl_xsr2)"
+    },
+    {
+      "name": "v_s_xsr2",
+      "expr": "v(xdut.xsr2.s)"
+    },
+    {
+      "name": "i_cl_xsr3",
+      "expr": "i(Bcl_xsr3)"
+    },
+    {
+      "name": "v_s_xsr3",
+      "expr": "v(xdut.xsr3.s)"
+    },
+    {
+      "name": "i_cl_xsr4",
+      "expr": "i(Bcl_xsr4)"
+    },
+    {
+      "name": "v_s_xsr4",
+      "expr": "v(xdut.xsr4.s)"
+    }
+  ],
+  "options": {
+    "timeout_s": 300,
+    "keep_artifacts": false
+  },
+  "batch": {
+    "capacity_wait_s": 3600,
+    "max_units_per_job": 9,
+    "max_concurrent_jobs": 2
+  }
+}

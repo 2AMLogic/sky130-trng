@@ -13,12 +13,14 @@ import unittest
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
 from loadmod import load_module  # noqa: E402
 m = load_module("behavioral_raw_bit", REPO_ROOT / "sim/raw-bit-volume-campaign/behavioral_raw_bit.py")
 
 mr = load_module("make_requests", REPO_ROOT / "sim/raw-bit-volume-campaign/make-requests.py")
 dc = load_module("derive_combining", REPO_ROOT / "sim/raw-bit-volume-campaign/derive-combining.py")
+rb = load_module("raw_bit_battery",
+                 REPO_ROOT / "sim/raw-bit-min-entropy/analysis/raw-bit-battery.py")
 
 PER = [2.88e-9, 2.72e-9, 2.57e-9, 2.43e-9]
 
@@ -32,7 +34,10 @@ HOT = unittest.skipUnless(
 class ModelTests(unittest.TestCase):
     def test_hex_roundtrip(self):
         bits = [random.Random(1).randint(0, 1) for _ in range(64)]
-        self.assertEqual(m.unpack_hex(m.pack_hex(bits)), bits)
+        self.assertEqual(rb.decode_packed_hex(m.pack_hex(bits)), bits)
+
+    def test_dead_unpack_hex_fork_removed(self):
+        self.assertFalse(hasattr(m, "unpack_hex"))
 
     def test_deterministic_given_seed(self):
         a = m.stream(PER, 3e-12, 20e-6, 512, random.Random(5))

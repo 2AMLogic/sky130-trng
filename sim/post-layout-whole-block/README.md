@@ -14,17 +14,28 @@ for most attempts (klayout-tools#2917), and the one local single-corner probe
 that the host rules allow did not finish. Nothing in this slug was computed by
 a hand-launched ngspice grid.
 
+How the whole-block work is to be reduced (analog at transistor level, digital at gate level; digital-current, IR and `Ts` rows stay UNMET): `spec/decision-records/DR-0017-whole-block-reduced-work-pvt.md` (Accepted 2026-11-05, #404).
+
 ## What is in the slug
 
 | Path | What |
 |---|---|
-| `make-netlist.py` | `klt extract --deck sky130 --pdk sky130A` over the committed GDS, then three recorded text transforms (port canonicalisation, `$` scrubbing, bracket de-indexing). **Connectivity netlist: devices and nets of the layout, no extracted parasitics (no R/C).** The extract takes more than 10 minutes on this host; `--check` was not re-run this pass (it would re-run the whole extract). |
-| `trng_whole.sim.spice.gz`, `trng_whole.sim.ports.json` | its output (plain-text sha256 `75d561b85975d56999a5148d743bf13844aca36970c505e28d588b7045620502`, 25 355 X-instances of `sky130_fd_pr__{nfet,pfet}_01v8`, 123 ports) and the port-order map. The plain 15 MB copy is gitignored; `make-requests.py` reads the gz. |
+| `make-netlist.py` | `klt extract --deck sky130 --pdk sky130A` over the committed GDS, then recorded text transforms (port canonicalisation of header AND device body, `$` scrubbing, bracket de-indexing; #435). **Connectivity netlist: devices and nets of the layout, no extracted parasitics (no R/C).** The port map follows `-o` (`OUT.spice` -> `OUT.ports.json`, #478), so only a default-output run writes the committed map. `--check` is a byte compare and reproduces only under the klt build that produced the committed netlist, `0.9.1.dev102+gef1ec19c95f6` (see the next row); on any other build it reports the port-order difference and names both builds. |
+| `trng_whole.sim.spice.gz`, `trng_whole.sim.ports.json` | its output (plain-text sha256 `965f1e6c29d771d5b8e18a3ea66ccabf93f0a5eb14c3f0c23810f39ae1052c36`, 25 355 X-instances of `sky130_fd_pr__{nfet,pfet,special_nfet}_01v8` + 1 `sky130_fd_pr__diode_pw2nd_05v5` X-instance, 123 ports) and the port-order map. The plain 15 MB copy is gitignored; `make-requests.py` reads the gz. **Produced by klt `0.9.1.dev102+gef1ec19c95f6`**; the top-level `.SUBCKT` port order is a klt-build artefact (klayout-tools#5534), so `--check` reproduces these bytes only under that build: `uvx --from "klayout-tools @ git+https://github.com/2AMLogic/klayout-tools@ef1ec19c95f6" python3 sim/post-layout-whole-block/make-netlist.py --check` -> `check OK: byte-identical, 123 ports, 25356 devices`. Record: `records/20261113-ports-order-klt-build.md` (#478). |
+| `test_make_netlist.py` | the klt-free unit tests, run on every pull request (`.github/workflows/ci.yml`): the `$`-scrub collision guard, the pw2nd diode card rewrite, the all-card-type model check, the #435 body rename, and (#478) that the port map follows `-o` and that the committed header order still equals the committed `ports.json` order. No klt, no PDK, no GDS, no ngspice. |
+| `check-bin-coverage.py` | scans every device card of a flat netlist against the pinned PDK's model bins (control: pre-fix netlist reports 1760 uncovered, committed reports 0). Record: `records/20261029-bin-coverage-scan.md` (issue #386). |
+| `records/20261030-fleet-probe-post-bin-fix.md` | one-unit fleet probe after the bin fix: ngspice gets past parse, then times out at 3480 s in analysis (issue #386, `runs/20261030-probe-post-bin-fix/`). |
 | `program.py` | the one directed bus program (75 cycles, `Ts = 100 ns`, `T0 = 320 ns`): ID / HT_STARTUP / STATUS reads with `EN=0`, `CTRL.EN` write, 32 raw samples, `STATUS`/`RAW_DATA`/`ID`/`DATA`/`ALARM`/`STATUS` reads, 32 samples with `out_ready=1`, final `STATUS`; plus `model_replay()` which replays it through the normative model `digital/model/`. |
-| `make-requests.py` | emits the `klt sim` requests: `--set controls` (startup probe, local + batch) and `--set grid` (four requests, one per (T, Vdd) point, each bundling `tt`/`ss`/`ff` = the 12-point matrix, `backend: batch`, `save_mode: netlist`, 610 measurements each). |
+| `make-requests.py` | emits the `klt sim` requests: `--set controls` (startup probe, local + batch) and `--set grid` (four requests, one per (T, Vdd) point, each bundling `tt`/`ss`/`ff` = the 12-point matrix, `backend: batch`, `save_mode: netlist`, 578 measurements each). Each driven input's `PWL` card **holds its value and then switches over `EDGE_NS` = 0.1 ns** ending at `t_edge(k) + SKEW_NS`; a breakpoint list carrying only the change instants makes a `PWL` source ramp across the whole hold interval instead (#488, `records/20261114b-pwl-hold-point-stimulus-fix.md`). The committed `corners/*/plan.json` predate that fix and are **not** regenerated -- the next run writes a fresh corner directory, and no committed report has a measurement. Since #595 each grid request's `plan.json` also carries `gate_model_pvt`: the boundary-load option (2) plus the digital half's Liberty deck (path + sha256 + error directions, one row per process corner) from `pvt_deck_map.py`, with an unmapped point failing generation closed. (#646: a read in the LAST cycle no longer emits its 32 `rdata_k74_b*` cards -- fresh requests carry 578 measurements, and the committed plans' `measurement_count: 610` predates that guard, same not-regenerated rule.) |
+| `test_make_requests.py` | the klt-free unit tests of the request generator's driven-input stimulus, run on every pull request (`.github/workflows/ci.yml`): every emitted `PWL` card evaluated at every cycle's `t_edge + CAPTURE_NS` must sit within 1 mV of a rail (the #488 control -- it fails on the pre-fix change-instants-only shape, where 344 of 3000 samples were >10 % off a rail), the hold/edge pair is asserted on the card text, breakpoint hygiene is checked (`t=0` first, `t_stop` last, no two breakpoints sharing a `f"{t:.1f}n"` timestamp, a constant input still two points), and `GRID_TIMEOUT_S` plus the committed grid requests' timeouts are pinned; (#507) every emitted measurement's `AT=`/`TO=` must sit within its own request's `.tran` stop across all four `--set` groups, the committed startup probes' nine over-`t_stop` cards are pinned in a known-stale ledger over `corners/*/request.json`, and the startup-probe timeouts (generator 3600 / 3480 + poll 3700 vs the committed batch pair's 14400 / 7000) are pinned (`records/20261115a-known-stale-startup-probe-requests.md`); (#646) a read in the last cycle emits no `rdata_k74_b*` measurement (card count 610 -> 578), earlier reads keep all 32 bits each, and a truncation whose last cycle is not a read changes nothing; (#595) the matrix-to-deck table covers tt/ss/ff x `GRID` exactly, every row IS the nearest shipped deck under the |dV|-first rule with self-consistent direction/estimate fields, an unmapped point fails `deck_row` and grid generation closed, and every generated grid plan carries `gate_model_pvt`. No klt, no PDK, no ngspice. |
 | `corners/<req>/` | request, plan (input hashes), report, stderr and `submit-attempts.log` for every submission, **including the failed ones** (they are the evidence). `netlist.cir` per request is gitignored (regenerated; sha256 in `plan.json` and the report). |
 | `ir/run-ir.py`, `ir/*.json*` | `klt power` extraction + static IR (see below). |
 | `analysis/reduce-whole-block.py` | the reduction: enumerates the 12 points itself, marks a point MET only on a clean corner + oracle match, everything else UNMET with a reason; mints the record. Tested by `sim/tests/test_whole_block_reduction.py` (complete matrix MET; an omitted point, oracle mismatch, absent measurement, errored corner and klt error envelope are each UNMET). |
+| `make-gate-model.py` | the **gate-level model of the digital half** (DR-0017 option (b), issue #486): every `sky130_fd_sc_hd` instance of `layout/trng_digital/trng_digital.routed.v` becomes one XSPICE event-driven primitive (`d_genlut` / `d_dff`) carrying scalar rise/fall delays reduced from one Liberty deck, with `adc_bridge`/`dac_bridge` at the boundary; emits the model, a manifest, and a runnable `klt sim` request. **Fails closed** on an unknown cell, an output pin with no Liberty `function` and no `ff` group, a multiply-driven or undriven net, or a flop with no `d_dff` mapping -- and writes nothing. Record: `records/20261114-gate-model-realisation.md`. Since #595: `--point PROC:TEMP_C:VDD` takes the Liberty deck from `pvt_deck_map.py` (sha256-pinned, unmapped points refused) and derives the bridge supply, temperature and process corner from the point; every plan carries the boundary-load option (2). |
+| `analysis/compare-gate-model.py` | the oracle comparison and rate reduction for a gate-model run: decodes each measured level (refusing anything that is not a resolved rail, so an UNKNOWN net can never round to 0), compares every digital response with `program.model_replay()`, and scores the measured s-per-simulated-ns against the pass criterion computed from the same constants. |
+| `pvt_deck_map.py` | the single source of truth for #595's two choices: the boundary-load option (2, Liberty input-pin capacitance of the receiving cells at the mapped deck) and the 12-row matrix-to-deck mapping -- each row a named deck, its pinned sha256, dT/dV, and the delay/power error directions under the declared nearest-deck rule (min \|dV\| first, tie-break \|dT\|). `deck_row`/`plan_entry` fail closed on unmapped points and on a PDK whose decks hash differently. Record: `records/20261121-pvt-deck-and-boundary-load.md`. |
+| `analysis/deck-axis-sensitivity.py` | the #595 direction evidence, pure Liberty parsing over the cell types the routed netlist uses: per-axis delay and `cell_leakage_power` ratios between deck pairs that isolate temperature (fixed V) and supply (fixed T). Finding: both sensitivities have the same sign (faster warm AND faster at high V -- temperature inversion), so every mapped row's net delay direction is established. Run on request (needs the PDK), not a CI test. |
+| `sim/tests/test_gate_model.py` | the klt-free unit tests of the generator, run on every pull request: the committed manifest is checked against a fresh parse of the routed netlist (every instance accounted for, histogram, port list, DR-0017 boundary), the Liberty-function to truth-table mapping and the NLDM bilinear interpolation are checked on hand-computed values, and six refusal paths are checked to exit non-zero leaving no output; (#595) `--point` parsing/refusal paths are klt-free, and against the PDK all 12 pinned deck hashes match disk and a `--point` run carries the mapping in its plan and request. No klt, no PDK, no ngspice (the PDK-gated class skips without it). |
 
 ## The four PVT points
 
@@ -93,10 +104,103 @@ This is a **partial, assumption-loaded** result, not whole-block IR:
 ## Reproduce (representative, isolated output)
 
 ```bash
+python3 sim/post-layout-whole-block/test_make_netlist.py # generator + committed-pair contract, no klt
 python3 sim/tests/test_whole_block_reduction.py          # reducer contract, no simulator
+python3 sim/tests/test_gate_model.py                     # gate-model generator, no klt/PDK/ngspice
+python3 sim/post-layout-whole-block/make-gate-model.py /tmp/gm --cycles 0   # the gate-level deck
 python3 sim/post-layout-whole-block/make-requests.py /tmp/wb --set controls   # needs the gz netlist only
 python3 sim/post-layout-whole-block/ir/run-ir.py /tmp/wb-ir                    # ~10 s; summary.json must equal committed
 ```
 
 `klt sim` needs **absolute** `-o`/request paths (relative `-o` makes ngspice
 never start; klayout-tools#2892/#2939).
+
+## DR-0017 option (b): provenance, partition, and what is still open (issue #431 Step 2)
+
+Level of any result produced under option (b), worded verbatim wherever it is
+reported: **mixed-level (analog transistor / digital gate-level),
+connectivity-only extract (no R/C)**. `program.PROVENANCE` carries it; every
+`plan.json` records it and the reducer writes it at matrix and point level.
+`i_vdd_*`, `i_vss_w2` and `digital_delta_i_a` are `mixed`;
+`digital_dynamic_power_w_estimate` is `gate-level`. The reducer's `obligations`
+section lists O1-O8; **O5d, O7, O8 are forced UNMET** and `ac3_claimable` is
+`false` (#18 AC3 stays UNMET). A reduction with no recorded provenance marks
+every point and every row UNMET.
+
+Partition: `make-requests.py` splits the flat `trng_whole.sim.spice.gz` extract
+at composed y = 250 um (analog macro above, digital macro below; empty band
+240-260 um) and `partition_check()` asserts, before any `plan.json` is written:
+25 356 instances = 264 analog transistors + 25 091 digital transistors + the
+antenna diode; the flat `.SUBCKT` ports equal `trng_whole.sim.ports.json`
+(123); the nets both halves touch are exactly `clk`, `rst_n`, `raw_bit`,
+`raw_valid` (+ `vdd`/`vss`). `plan.json` records `flat_whole_netlist_sha256`,
+`analog_partition_sha256` and `digital_gate_netlist_sha256` (the routed
+gate-level `layout/trng_digital/trng_digital.routed.v`) -- true of every
+`plan.json` the generator writes since #431, but **not** of the six committed
+ones (`grid-m40C-1.62V`, `grid-27C-1.80V`, `grid-m40C-1.98V`,
+`grid-125C-1.98V`, `startup-probe`, `startup-probe-batch`), which predate
+those fields and are not regenerated (#507,
+`records/20261115a-known-stale-startup-probe-requests.md`). The check is a
+transistor-count and net-name correspondence, not an LVS of the gate-level
+netlist against the transistor-level digital macro.
+
+**Done: the ngspice realisation of the gate-level digital half (issue #486).**
+DR-0017's open choice between event-driven co-simulation and a timed-delay
+netlist is settled as a **timed-delay XSPICE netlist** (`make-gate-model.py`:
+2321 routed instances -> 1808 `d_genlut` + 456 `d_dff` + 57 declared load-only
+no-ops, plus 1 declared polarity inverter), and it is **feasible**: the whole
+committed program (75 cycles, 7870 ns) runs at tt / 27 C / 1.8 V in 76.716 s =
+**0.00975 s per simulated ns**, against a pass criterion of <= 0.3852 s/sim-ns
+stated before the run (**39.5x margin**), with **311 of 311** compared digital
+responses equal to the normative model's. Level of that result, worded
+exactly: **gate-level digital section only**, driven by testbench sources at
+its boundary -- *not* the mixed-level whole block. Record:
+`records/20261114-gate-model-realisation.md`; runs
+`runs/20261114-gate-model-probe/` and `runs/20261114-gate-model-full/`.
+`d_cosim` co-simulation remains the documented fallback.
+
+**Nominal coupled deck (#596).** The 264-transistor analog partition now drives
+the archived routed gate model through the sampler's extracted `raw_bit` and
+`raw_valid` nodes. The two partitions share one clock, reset and pair of logic
+rails. Generate the 100 ns probe or full 7,870 ns request with
+`make-requests.py <empty-dir> --set coupled-probe` or `--set coupled-full`.
+Each produces one tt / 27 °C / 1.8 V batch unit. The full request records the
+sampler at every cycle for replay by `analysis/compare-gate-model.py`.
+
+**Done: the boundary-load model and the per-point Liberty deck (issue #595).**
+DR-0017's two remaining per-point choices are made, recorded
+(`records/20261121-pvt-deck-and-boundary-load.md`) and executable: the
+boundary load is **option 2** (the Liberty input-pin capacitance of the
+receiving cells at the mapped deck; option 1 would have moved instances
+across the `partition_check()` partition, and extracted net capacitance does
+not exist -- the committed extract is connectivity-only), and every one of
+the 12 matrix points maps to **one named deck, pinned by sha256**, in
+`pvt_deck_map.py` -- nearest deck under a declared |dV|-first rule, with the
+delay and power error direction stated per row. Canary finding on the way:
+this library is *faster* warm (temperature inversion) *and* faster at high
+supply, so both axes err the same way and every row's net direction is
+established (`analysis/deck-axis-sensitivity.py`); the worst-served point is
+ss / 125 C / 1.98 V (~+52 % delay, deck 165 K cold and 0.22 V low) and the
+only strongly optimistic one is tt / -40 C / 1.62 V (~-20 %). `--set grid`
+plans carry `gate_model_pvt` per request; `make-gate-model.py --point
+PROC:TEMP:VDD` takes its deck from the table and fails closed on any
+unmapped point.
+
+**Open**
+
+* The batch client assigned `klt-sim-9ffb4c91eb0f` and stopped during upload
+  because the submitting host lacked the `batch-runner-submit` profile.
+  The probe and full-program timing are still open. The 12-point matrix (#307)
+  needs a measured rate and a completed digital comparison before its timeouts
+  can be sized. [Criterion and submission evidence](records/20261121-coupled-rate.md).
+  If the measured full-block rate exceeds the 3480 s ceiling, that is recorded as a
+  negative result for option (b) (DR-0017).
+* Full-block 100 ns rate probe on the re-pinned netlist (`965f1e6c...`): one batch job was
+  interrupted by spot reclamation at 3279 s, no verdict; re-run needed. See
+  `records/20261106-rate-probe-repinned-netlist.md`.
+* Retry of that probe (issue #449): timed out at 3480 s on the same re-pinned netlist, 0 of 9
+  measurements; infeasible verdict confirmed. See `records/20261106b-rate-probe-repinned-timeout.md`.
+* An independent cross-check of a gate-model response against
+  `sim/digital-sdf-timed-verification/`'s Icarus + SDF run at the same
+  `tt_025C_1v80` corner (a different simulator and a different timing
+  mechanism): available, not wired up.
