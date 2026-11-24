@@ -105,8 +105,10 @@ against another record's.
 - `--findings-only`: the antenna half did not run (`status: not_checked`;
   the native run records it as `coverage.skipped` reason `findings_only` —
   in the committed prune those reason codes survive in
-  `coverage.nothing_checked_reasons`); `gates[]` areas are null in the
-  native report and no `active_layer` is declared, so no gate-area claim is
+  `coverage.nothing_checked_reasons`); every per-level antenna data field
+  in `gates[]` is null with `verdict: "unchecked"` (the per-gate
+  `gate_area_um2` values are populated, not null — discarded by the prune
+  below), and no `active_layer` is declared, so no gate-area claim is
   made. DRC/antenna are separate items.
 - Matching is by labels (VPWR/VGND on met1 cell pins and met3/met5 top text).
   The pnr.json `power_connectivity`/instance pin correctness comes from item 4's
@@ -134,6 +136,12 @@ stdout `klt erc` wrote (the native formatting round-trips
 | `coverage.skipped` | 33,744 | `{"reason": "findings_only"}` |
 | `coverage.inapplicable` | 5,624 | `{"reason": "gate_reference_level"}` |
 
+The `gates` row's "every entry" column describes the level records only:
+each of the 5,624 gate records also carried per-gate fields — `gate_id`
+(5,624 non-null), `net` (2,244 non-null) and a real `gate_area_um2` float
+(5,624 populated, 423 distinct values) — which the prune discarded along
+with the inert level records. Regenerable via steps 2 + 2b above.
+
 That was 16,452,974 B → 238,415 B (−98.6%), and the three facts the arrays
 restated are still carried by the scalars the envelope keeps:
 `findings_only: true`, `coverage.nothing_checked: true`,
@@ -141,7 +149,12 @@ restated are still carried by the scalars the envelope keeps:
 `gate_count: 5624`. The arrays are emptied to `[]`, not dropped:
 `klt signoff`'s erc shape check requires `gates` to be a list, and the
 common coverage validator requires all four work lists (`checked`/`skipped`/
-`inapplicable`/`unknown`) present.
+`inapplicable`/`unknown`) present. A reader of the committed `erc.json`
+alone therefore sees `coverage.skipped: []`, `coverage.inapplicable: []`
+and `gates: []`, with the truth carried only by `gate_count: 5624`,
+`coverage.nothing_checked_reasons` and this section — no in-band prune
+marker exists, by design (adding a key would break the byte-identity of
+the surviving keys the prune preserves).
 
 Why pruning and not gzip, per the operator ruling of 2026-11-23 (issue
 #494): the ruling preferred committing the report gzipped — which keeps the
