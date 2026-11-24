@@ -8,6 +8,8 @@ Chronological record of recently merged pull requests and closed issues.
 
 ### 2026-11-24
 
+- **PR #756**: docs(layout): align sampler_core README latest-increment stats with committed evidence
+- **Issue #755** (closed): layout/sampler_core/README.md's latest-increment paragraph quotes 8399 polygons and the 0.3.0 klt pin; committed GDS measures 8408 on 0.6.0+g5edb557f91d0
 - **PR #753**: docs(layout): align xor2 and ro_array_core README stats with committed evidence
 - **PR #750**: docs(layout): pin ro_array_core and PoC compose evidence to the leaf regens it predates
 - **PR #747**: docs(erc): state the per-entry id in the prune table coverage rows
