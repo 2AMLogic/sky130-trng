@@ -101,7 +101,36 @@
     "                    are still NOT cited: item 5's own note requires a",
     "                    ratified spec and DR-0004 (digital section) is",
     "                    `Proposed`. Stays unmet/no_evidence.",
-    "  6                  no `klt yield` report exists.",
+    "  6                  (issue #598) CITED for the analog partition: three",
+    "                     `klt yield` reports, one per PVT point of the committed",
+    "                     local-mismatch Monte Carlo (tt/ss/ff under",
+    "                     sim/local-mismatch-monte-carlo/yield/<record-id>/,",
+    "                     sample sets derived from the committed raw responses",
+    "                     by yield_reports.py on reduce.py's own functions,",
+    "                     byte-replayable with its --check). Each measures",
+    "                     H_bias -- reduce.py's per-pairing STATIC-BIAS UPPER",
+    "                     BOUND on the raw bit's min-entropy (deterministic",
+    "                     transient per draw, no noise), NOT the measured row",
+    "                     quantity -- against the spec row as written (min 0.5",
+    "                     bit, DR-0004 sec. 2.3), which states no target yield;",
+    "                     none was invented, so klt yield can only REPORT the",
+    "                     estimates (run status \\\"reported\\\", never \\\"fail\\\").",
+    "                     Item 6 therefore stays unmet/partial_coverage: the row",
+    "                     is declared unratified in spec_rows (README target",
+    "                     table DRAFT, decision records Proposed) and a yield",
+    "                     citation with no target_yield contributes no row",
+    "                     coverage (klayout-tools#5490) -- the two missing",
+    "                     inputs (a target yield on the row, ratification) are",
+    "                     named on issue #3. The reports' own findings stand",
+    "                     either way: tt 60/1800 pairings below the floor (worst",
+    "                     H_bias 0.472, p 0.279; the design response is issue",
+    "                     #221 / DR-0013 / PR #249, not touched here), ss and ff",
+    "                     0/1800 (empirical 1.0 bounded below at 0.998); sample",
+    "                     size sufficient at every corner (n 1800 vs required",
+    "                     1238/183). 6.digital: no statistical row; the klt",
+    "                     >= 0.8.0 `not_applicable` entry is written down ready",
+    "                     in issue #598's PR description and deliberately NOT",
+    "                     applied while the spec records are Proposed.",
     "  7.analog           (issue #597) CITED: a native `klt pex` report",
     "                    (sim/pex-sampler-core/runs/20261121-001303-7330672/",
     "                    pex-report.json), --measure-command mode: 11 spec",
@@ -293,7 +322,7 @@
     },
     "9": {
       "file": "signoff/attest/9.json",
-      "content_hash": "sha256:9684b653543099f5f19ebf3004e41d1006f781faf2107f078760a759c8ba3402"
+      "content_hash": "sha256:419eec9c920311b29e24565afd88d35cd0f739085d207ec19bf1995bb5eb4183"
     },
     "10": {
       "file": "signoff/attest/10.json",
@@ -305,9 +334,40 @@
     "8.digital": {
       "file": "signoff/characterization-envelope.json"
     },
+    "6.analog": [
+      {
+        "file": "sim/local-mismatch-monte-carlo/yield/20261009-111127-e57ad27/klt-yield.json",
+        "rows": [
+          "raw_min_entropy_per_bit"
+        ],
+        "content_hash": "sha256:22188713550161633dd762ed06b82b85bc3de2a605a7397aae4bdfce9f050eb5"
+      },
+      {
+        "file": "sim/local-mismatch-monte-carlo/yield/20261009-111126-e57ad27/klt-yield.json",
+        "rows": [
+          "raw_min_entropy_per_bit"
+        ],
+        "content_hash": "sha256:3f9c87405f23f767add41d9a669d552bad394c1756cc76a094bf36df192ae4bc"
+      },
+      {
+        "file": "sim/local-mismatch-monte-carlo/yield/20261009-111125-e57ad27/klt-yield.json",
+        "rows": [
+          "raw_min_entropy_per_bit"
+        ],
+        "content_hash": "sha256:e0e57a2bea8e140e0b866ca6e38b4c95a5c4683be74b0601ac7bfc45f0d76846"
+      }
+    ],
     "7.analog": {
       "file": "sim/pex-sampler-core/runs/20261121-001303-7330672/pex-report.json",
       "content_hash": "sha256:e3ff54a9bb15122298f0d5df817612ed1caacb3b045533f9ba86d009036c2004"
     }
+  },
+  "spec_rows": {
+    "6.analog": [
+      {
+        "id": "raw_min_entropy_per_bit",
+        "ratified": false
+      }
+    ]
   }
 }

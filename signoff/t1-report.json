@@ -667,9 +667,46 @@
       "text": "any accuracy, offset, or matching spec row is statistical; a corner matrix (or STA corner sweep) cannot validate it. This applies to whichever spec rows are actually statistical, regardless of block kind \u2014 most digital spec rows (functional correctness, Fmax, timing closure) are not, and a block whose spec has no statistical row must say so explicitly rather than omit the item. Where it does apply, MC runs need a recorded seed, sample count, a deterministic negative control, and results combined with (not instead of) process corners (#344). A `klt yield` JSON report \u2014 a yield estimate with its confidence interval, sample-size verdict, and Cpk/sigma-to-spec against the row's own limits \u2014 is the machine-checkable evidence for this item (`klt signoff`'s tier-verdict mode grades it the same way it grades the deterministic items above).",
       "notes": [],
       "status": "unmet",
-      "reason": "no_evidence",
+      "reason": "partial_coverage",
       "graded_by_build": true,
-      "citation": null
+      "citation": null,
+      "citations_graded": [
+        {
+          "citation": "sim/local-mismatch-monte-carlo/yield/20261009-111127-e57ad27/klt-yield.json",
+          "rows": [
+            "raw_min_entropy_per_bit"
+          ],
+          "status": "met",
+          "reason": null
+        },
+        {
+          "citation": "sim/local-mismatch-monte-carlo/yield/20261009-111126-e57ad27/klt-yield.json",
+          "rows": [
+            "raw_min_entropy_per_bit"
+          ],
+          "status": "met",
+          "reason": null
+        },
+        {
+          "citation": "sim/local-mismatch-monte-carlo/yield/20261009-111125-e57ad27/klt-yield.json",
+          "rows": [
+            "raw_min_entropy_per_bit"
+          ],
+          "status": "met",
+          "reason": null
+        }
+      ],
+      "detail": {
+        "failed_rows": [],
+        "uncovered_rows": [],
+        "declared_gaps": [],
+        "unratified_rows": [
+          "raw_min_entropy_per_bit"
+        ],
+        "row_sources": {
+          "raw_min_entropy_per_bit": "asserted"
+        }
+      }
     },
     {
       "tier": "T1",
@@ -758,13 +795,13 @@
         "command": null,
         "kind": "generic",
         "check_status": "pass",
-        "content_hash": "sha256:9684b653543099f5f19ebf3004e41d1006f781faf2107f078760a759c8ba3402",
+        "content_hash": "sha256:419eec9c920311b29e24565afd88d35cd0f739085d207ec19bf1995bb5eb4183",
         "input_verified": true,
         "exit_status": 0,
         "artifact_binding": {
           "t1_item": 9,
           "path": "signoff/attest/9.inventory.json",
-          "content_hash": "sha256:9684b653543099f5f19ebf3004e41d1006f781faf2107f078760a759c8ba3402",
+          "content_hash": "sha256:419eec9c920311b29e24565afd88d35cd0f739085d207ec19bf1995bb5eb4183",
           "input_verified": true,
           "source": "signoff/attest.py"
         }
@@ -785,13 +822,13 @@
         "command": null,
         "kind": "generic",
         "check_status": "pass",
-        "content_hash": "sha256:9684b653543099f5f19ebf3004e41d1006f781faf2107f078760a759c8ba3402",
+        "content_hash": "sha256:419eec9c920311b29e24565afd88d35cd0f739085d207ec19bf1995bb5eb4183",
         "input_verified": true,
         "exit_status": 0,
         "artifact_binding": {
           "t1_item": 9,
           "path": "signoff/attest/9.inventory.json",
-          "content_hash": "sha256:9684b653543099f5f19ebf3004e41d1006f781faf2107f078760a759c8ba3402",
+          "content_hash": "sha256:419eec9c920311b29e24565afd88d35cd0f739085d207ec19bf1995bb5eb4183",
           "input_verified": true,
           "source": "signoff/attest.py"
         }
