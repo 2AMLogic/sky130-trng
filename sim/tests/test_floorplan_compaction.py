@@ -190,14 +190,22 @@ class RunStudySh(unittest.TestCase):
                     "sim/digital-repaired-compaction/bin/run-study.sh"):
             subprocess.run(["bash", "-n", str(ROOT / rel)], check=True)
 
+    @staticmethod
+    def _tree(d):
+        if not d.exists():
+            return None
+        return sorted((str(p.relative_to(d)), p.is_dir(), p.lstat().st_size, p.lstat().st_mtime_ns)
+                      for p in d.rglob("*"))
+
     def _stubbed_run(self, script, study_rel, rid, name):
         import os
         import shutil
         import subprocess
         import tempfile
         with tempfile.TemporaryDirectory() as t:
-            log = Path(t) / "calls.log"
-            bindir = Path(t) / "bin"
+            tmp_root = Path(t)
+            log = tmp_root / "calls.log"
+            bindir = tmp_root / "bin"
             bindir.mkdir()
             (bindir / "klt").write_text("#!/bin/sh\necho fake-klt 0.0.0-test\n")
             (bindir / "python3").write_text(
@@ -206,13 +214,20 @@ class RunStudySh(unittest.TestCase):
                 "exit 0\n")
             (bindir / "klt").chmod(0o755)
             (bindir / "python3").chmod(0o755)
-            rdir = ROOT / study_rel / "runs" / rid
-            self.addCleanup(shutil.rmtree, rdir, ignore_errors=True)
+            for rel in ("sim/digital-electrical-repair/bin/run-study.sh",
+                        "sim/digital-repaired-compaction/bin/run-study.sh"):
+                (tmp_root / rel).parent.mkdir(parents=True)
+                shutil.copy2(ROOT / rel, tmp_root / rel)
+            rdir = tmp_root / study_rel / "runs" / rid
+            checkout_rdir = ROOT / study_rel / "runs" / rid
+            before = self._tree(checkout_rdir)
             env = {**os.environ, "PATH": f"{bindir}{os.pathsep}{os.environ['PATH']}"}
-            subprocess.run(["bash", str(ROOT / script), str(bindir / "klt"), rid, name],
-                           cwd=ROOT, env=env, check=True, capture_output=True, text=True)
+            subprocess.run(["bash", str(tmp_root / script), str(bindir / "klt"), rid, name],
+                           cwd=tmp_root, env=env, check=True, capture_output=True, text=True)
+            self.assertEqual(self._tree(checkout_rdir), before,
+                             msg=f"stubbed run touched the checkout run dir: {checkout_rdir}")
             calls = log.read_text().splitlines()
-            out_dir = ROOT / study_rel / "runs" / rid / name
+            out_dir = rdir / name
             self.assertTrue(any("sim/digital-pnr/harness/pnr-and-verify.py" in c
                                 and f"--request {study_rel}/requests/{name}.json" in c
                                 and f"--out-dir {out_dir}" in c for c in calls),
