@@ -475,6 +475,15 @@ jobs:
       - name: sim/tests/test_gate_model.py (issue #486 gate-level model generator -- routed-netlist correspondence, Liberty truth tables, NLDM interpolation, fail-closed paths)
         run: python3 sim/tests/test_gate_model.py
 
+      - name: sim/tests/test_corner_run_repo_state.py (issue #717 corner-run repo-state unit test; previously not run by CI)
+        run: python3 sim/tests/test_corner_run_repo_state.py
+
+      - name: sim/tests/test_yield_reports.py (issue #717 yield-report unit test; previously not run by CI)
+        run: python3 sim/tests/test_yield_reports.py
+
+      - name: sim/tests/test_ci_suite_coverage.py (issue #717 every sim/tests/test_*.py is run by a ci.yml run: line)
+        run: python3 sim/tests/test_ci_suite_coverage.py
+
       - name: sim/tests/test_artifact_store.py (issue #347 artifact-store writer + manifest checker, fake klt, fail-closed paths)
         run: python3 sim/tests/test_artifact_store.py
 
