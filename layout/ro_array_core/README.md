@@ -72,9 +72,10 @@ left open that is not a whole separate deliverable — are now drawn (stages
 | `vss-tap-scan.py` | **all 12 taps clear** before any `vss` metal was drawn | `vss-tap-scan.json` |
 
 Cell extent `217.07 x 34.72 µm` (`klt stats`: `x` -0.585..216.485, `y`
--3.635..31.085), 3356 polygons, 26.8% density. Generated on
-`klt 0.3.0+gc6dbf66c53c6` / KLayout 0.30.12 against open_pdks
-`c6d73a35f524070e85faff4a6a9eef49553ebc2b` — `layout/pdk.json`'s own pin.
+-3.635..31.085), 3356 polygons, 26.5% raw polygon density (24.4%
+merged). Generated on `klt 0.6.0+g5edb557f91d0` / KLayout 0.30.12
+against open_pdks `c6d73a35f524070e85faff4a6a9eef49553ebc2b` —
+`layout/pdk.json`'s own pin.
 
 ## Six stages, and why the PoC's nine requests collapse to six
 
