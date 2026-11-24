@@ -848,9 +848,15 @@ reaches the cell boundary touching nothing:
 | Direction | Legal window (block-local µm) | Width |
 |---|---|---|
 | north | `x ∈ [1.340, 2.690]` | 1.350 |
-| south | `x ∈ [6.310, 7.770]` | 1.460 |
-| east | `y ∈ [2.580, 3.595]` | 1.015 |
+| south | `x ∈ [6.915, 7.770]` | 0.855 |
+| east | `y ∈ [2.580, 3.745]` | 1.165 |
 | west | `y ∈ [12.160, 13.840]` | 1.680 |
+
+(Windows re-measured against the current `layout/xor2/xor2.gds`, whose
+klayout-tools 0.8.0 regeneration (`93d026cc`) moved the cell's internal met1
+edges by up to `0.15 µm`; the committed `xor2-y-escape-scan.json` is the
+regenerated output. North and west are unchanged by that regen; south
+narrowed and east widened.)
 
 One window per direction, and the first probe's `(4.5, 8.0)` tap is in none
 of them for the direction it escaped: **the tap coordinate was never the
