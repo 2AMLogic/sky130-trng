@@ -21,9 +21,16 @@ command every other cell under `layout/` is:
 ```bash
 volare enable --pdk sky130 c6d73a35f524070e85faff4a6a9eef49553ebc2b   # layout/pdk.json
 # klt's shared install churns between (and within) sessions -- pin it, per
-# layout/README.md's "Correcting the curation note":
+# layout/README.md's "Correcting the curation note". The current evidence
+# was generated on klt 0.8.0 / KLayout 0.30.12 (the provenance block in
+# each artifact); compose-cell.py resolves `klt` from $PATH, so the venv's
+# bin MUST come first or an ambient shared install silently runs instead
+# (observed: klt 0.9.3.dev rebuilt this cell with 24 phantom diff.space.1
+# findings from an unreleased deck):
 #   python3 -m venv /tmp/klt-venv && /tmp/klt-venv/bin/pip install \
-#     "git+https://github.com/2AMLogic/klayout-tools@c6dbf66c53c6e9a73c4f5ae5e41a98e8fe414252"
+#     "klayout-tools==0.8.0" "klayout==0.30.12" volare
+#   volare enable --pdk sky130 c6d73a35f524070e85faff4a6a9eef49553ebc2b
+#   export PATH=/tmp/klt-venv/bin:$PATH PDK_ROOT=~/.volare
 python3 layout/bin/compose-cell.py layout/ro_array_core/cell.json           # rebuild in place
 python3 layout/bin/compose-cell.py layout/ro_array_core/cell.json --check   # verify, don't overwrite
 
@@ -34,22 +41,36 @@ python3 vss-tap-scan.py            # -> vss-tap-scan.json        (all_taps_clear
 python3 lvs-negative-controls.py   # -> lvs-negative-controls.json (both controls -> mismatch)
 ```
 
-> **Rebuild status (2026-11-24, issue #745): the `--check` above currently
-> fails against the current leaf cells.** This directory's evidence was last
-> generated in `3588d770` (2026-10-07); both 2026-10-27 klayout-tools-0.8.0
-> leaf regens postdate it — `3d10475b` (`ro_buf`) and `93d026cc` (`xor2`,
-> whose bbox grew `17.585` → `17.710` µm tall). Both moved internal geometry
-> at the exact tap coordinates the recipe's declared `blocks[].cell.ports[]`
-> name, so re-composition unrouted 10 of the `core` stage's 12 nets
-> (measured on klt `0.6.0+g5edb557f91d0` / KLayout `0.30.12` / open_pdks
-> `c6d73a35...`, the committed provenance pin): `rn1`-`rn4` on `buf.a`'s
-> `li1.space.1` pad clearance, `ro1`-`ro4`/`t1` on `xa*.a`'s met1 escape
-> (`xor2`'s `a`/`b` li1 pads moved `6.81` → `6.29`), `b3` on `xa3.b`'s pad
-> clearance. Repairing that means re-measuring the taps and re-routing —
-> tracked in #749; until it lands, the committed responses and GDS below are
-> the record of the `3588d770`-era build, and the `pdk-nightly` layout-check
-> job's red runs on `main` include this same failure (with further
-> same-class failures in the ring and sampler cells, see #749).
+> **Re-measured against the 2026-10-27 leaf regens (issues #745/#749).**
+> This directory's pre-repair evidence dated to `3588d770` (2026-10-07);
+> the klayout-tools-0.8.0 leaf regens `3d10475b` (`ro_buf`) and `93d026cc`
+> (`xor2`, whose bbox grew `17.585` → `17.710` µm tall) moved geometry at
+> the exact tap coordinates the recipe's declared `blocks[].cell.ports[]`
+> named, un-routing 10 of the `core` stage's 12 nets (measured on klt
+> `0.6.0+g5edb557f91d0` while filing #749: `rn1`-`rn4` on `buf.a`'s
+> `li1.space.1` pad clearance, `ro1`-`ro4`/`t1` on `xa*.a`'s met1 escape,
+> `b3` on `xa3.b`'s pad clearance — the same failure class the
+> `pdk-nightly` layout-check job was running red on `main` for, together
+> with the ring and sampler cells). The repair re-measured every affected
+> tap against the current leaf GDS (`klayout.db` point-in-polygon on the
+> named pin's drawn pad, klt `0.8.0` / KLayout `0.30.12` / open_pdks
+> `c6d73a35...`, the committed provenance pin) and moved the declarations:
+>
+> | declared tap | was | now | measured on the current leaf GDS |
+> |---|---|---|---|
+> | `ring1..4` `en` | (3.685, 1.975) | **(3.55, 2.2)** | inside the `en` li1 pad, bbox (3.500..4.120) × (1.390..3.010) µm; `en` labels (67/5) sit at y 2.2 |
+> | `ring1..4` `vddr` | (0.0, 4.4) | **(0.0, 4.85)** | inside the met1 `vddr` rail, bbox (-2.085..2.085) × (1.18..4.935) µm — the regen grew the rail from y 4.4 to 4.935 |
+> | `buf1..4` `a` | (0.545, 1.7) | **(0.545, 2.35)** | inside the `a` li1 pad, bbox (0.460..0.630) × (1.180..2.350) µm — the tap sits at the pad top, clear of `ro_buf`'s own li1 |
+> | `xa1..3` `a` | (-3.44, 6.81) | **(-3.44, 6.29)** | inside the `a` li1 pad, bbox (-3.650..-3.230) × (6.080..6.500) µm |
+> | `xa1..3` `b` | (14.735, 6.81) | **(14.735, 6.29)** | inside the `b` li1 pad, bbox (14.525..14.945) × (6.080..6.500) µm — `xor2`'s own promoted pins moved 6.81 → 6.29 (`93d026cc`) |
+>
+> The `core` stage's `ro1`-`ro4`/`t1` waypoints follow the same move: their
+> final y is `12.585 + 6.29 = 18.875` µm (was `12.585 + 6.81 = 19.395`),
+> the re-measured `xa*` pad row, and `rn1`-`rn4` gained a
+> `[buf origin + 0.545, 1.7]` entry pointing the router at the new `buf.a`
+> pad x. Netlist intent is untouched (no `design/`/`spec/` change, no
+> waiver): extract/LVS still report 132/132 devices and 96/96 nets, and
+> both committed evidence scripts still pass on the rebuilt GDS.
 
 and that `ring1..4`'s and `xa1..3`'s own `vss` taps — the one item the PoC
 left open that is not a whole separate deliverable — are now drawn (stages
@@ -72,10 +93,16 @@ left open that is not a whole separate deliverable — are now drawn (stages
 | `vss-tap-scan.py` | **all 12 taps clear** before any `vss` metal was drawn | `vss-tap-scan.json` |
 
 Cell extent `217.07 x 34.72 µm` (`klt stats`: `x` -0.585..216.485, `y`
--3.635..31.085), 3356 polygons, 26.5% raw polygon density (24.4%
-merged). Generated on `klt 0.6.0+g5edb557f91d0` / KLayout 0.30.12
-against open_pdks `c6d73a35f524070e85faff4a6a9eef49553ebc2b` —
-`layout/pdk.json`'s own pin.
+-3.635..31.085), 3937 polygons, 34.1% drawn density (31.8% merged).
+Generated on `klt 0.8.0` / KLayout 0.30.12 against open_pdks
+`c6d73a35f524070e85faff4a6a9eef49553ebc2b` — `layout/pdk.json`'s own pin
+(each artifact's `provenance` block is the authoritative per-file record;
+`layout/pdk.json`'s `klt_version_pin` still names `0.6.0+g5edb557f91d0`
+pending the #372 pin move). The 0.8.0 regen also records, in
+`compose.response.json`, a declared `pdk.compatibility` status of `mismatch`
+(expected open_pdks `f6eeac7d…` vs. the project's pinned `c6d73a35…`) and an
+`ambiguous_sources` entry for `~/.ciel`; that mismatch is owned by #372's pin
+move, not by this re-measurement.
 
 ## Six stages, and why the PoC's nine requests collapse to six
 
