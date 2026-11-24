@@ -8,6 +8,8 @@ Chronological record of recently merged pull requests and closed issues.
 
 ### 2026-11-23
 
+- **PR #710**: docs: reframe signoff item-1 prose around minting tool and released --attest
+- **Issue #705** (closed): signoff/README.md: item-1 attestation provenance phrasing — stale "once a release carries --attest" paragraph, and the generic-envelope contrast
 - **PR #704**: docs: version-qualify the no-verb claim for signoff items 1/2/9/10
 - **PR #699**: fix: record settled DR-0017 option 2 in newly generated coupled plans
 - **PR #695**: fix: report corner-run repo dirty state as tri-state when git status fails
