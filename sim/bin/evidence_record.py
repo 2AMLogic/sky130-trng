@@ -110,6 +110,43 @@ def git_dirty_paths(repo_root: Path) -> list[str] | None:
     return sorted(set(paths))
 
 
+def worktree_disclosure(repo_root: Path,
+                        exclude: tuple[Path, ...] = ()) -> tuple[dict, str]:
+    """Sample the working tree once; return ``(json_fields, footer_line)``.
+
+    ``json_fields`` is ``{"repo_dirty": ...}`` (plus ``repo_dirty_paths``,
+    capped at ``_DIRTY_PATHS_CAP``, when dirty); ``repo_dirty`` is ``None`` --
+    never ``False`` -- when git status cannot run (issue #666/#676). Paths at
+    or under any ``exclude`` entry (repo-relative or absolute) are ignored, so
+    a writer's own outputs do not count as divergence from HEAD.
+    """
+    dirty_paths = git_dirty_paths(repo_root)
+    if dirty_paths is not None and exclude:
+        root = repo_root.resolve()
+        prefixes = []
+        for e in exclude:
+            e = Path(e)
+            try:
+                prefixes.append(e.resolve().relative_to(root).as_posix().rstrip("/") + "/")
+            except ValueError:
+                continue  # outside the repo: cannot appear in git status
+        dirty_paths = [p for p in dirty_paths
+                       if not any(p.startswith(x) for x in prefixes)]
+    if dirty_paths is None:
+        return ({"repo_dirty": None},
+                "- Working tree: unknown (git status unavailable; repo_dirty is null)")
+    if not dirty_paths:
+        return {"repo_dirty": False}, "- Working tree: clean (matches the cited commit)"
+    n = len(dirty_paths)
+    listed = dirty_paths[:_DIRTY_PATHS_CAP]
+    noun = "path" if n == 1 else "paths"
+    verb = "differs" if n == 1 else "differ"
+    stem = f"- Working tree: dirty ({n} {noun} {verb} from the cited commit"
+    line = (stem + f"; repo_dirty_paths lists the first {_DIRTY_PATHS_CAP})"
+            if n > _DIRTY_PATHS_CAP else stem + ")")
+    return {"repo_dirty": True, "repo_dirty_paths": listed}, line
+
+
 def new_record_id(repo_root: Path, *, offset: int = 0) -> tuple[_dt.datetime, str, str]:
     """Return `(now, sha, rid)` for a fresh record.
 
@@ -126,22 +163,28 @@ def new_record_id(repo_root: Path, *, offset: int = 0) -> tuple[_dt.datetime, st
 
 
 def record_footer(*, author: str, now: _dt.datetime, sha: str,
-                  supersedes: str = "(none)") -> list[str]:
+                  supersedes: str = "(none)",
+                  worktree_line: str | None = None) -> list[str]:
     """The shared markdown footer lines appended to every evidence record.
 
     `supersedes` names the record id this one corrects (sim/README.md's
     append-only rule); the default is the no-correction marker, which keeps
-    every pre-existing caller's footer byte-for-byte.
+    every pre-existing caller's footer byte-for-byte. `worktree_line`, when
+    given, is inserted right after the `Repo commit` line (issue #676); the
+    default `None` leaves the footer unchanged.
     """
-    return [
+    lines = [
         "",
         "---",
         "",
         f"- Author: {author}",
         f"- Timestamp (UTC): {now.isoformat()}",
         f"- Repo commit: `{sha}`",
-        f"- Supersedes: {supersedes}",
     ]
+    if worktree_line is not None:
+        lines.append(worktree_line)
+    lines.append(f"- Supersedes: {supersedes}")
+    return lines
 
 
 class RecordCollision(Exception):
@@ -374,9 +417,24 @@ def mint_record(
     positions; see each analysis script's `main()`). `supersedes` names the
     record id this one corrects; the default footer line is unchanged.
 
+    Discloses working-tree state (issue #676): a `- Working tree:` footer line
+    and `repo_dirty` / `repo_dirty_paths` keys appended to a copy of `summary`
+    (a caller summary already holding either key raises `SystemExit`).
+
     Returns `(md_path, json_path)` on success, or `None` (after printing an
     error to stderr) if a record with this `rid` already exists.
     """
+    clash = sorted(set(summary or {}) & {"repo_dirty", "repo_dirty_paths"})
+    if clash:
+        raise SystemExit(f"error: summary keys {clash} collide with writer-owned working-tree "
+                         "disclosure fields; mint_record writes them itself")
+    # Sample once at entry. The record's own outputs (out_records and the
+    # sibling runs/ dir) are excluded so a multi-record loop does not mark
+    # record n+1 dirty because of record n (issue #676).
+    dirty_fields, worktree_line = worktree_disclosure(
+        repo_root, exclude=(out_records, out_records.parent / "runs"))
+    summary = {**summary, **dirty_fields}
+
     md_path = out_records / f"{rid}.md"
     json_path = out_records / f"{rid}.json"
     if md_path.exists() or json_path.exists():
@@ -384,7 +442,8 @@ def mint_record(
               file=sys.stderr)
         return None
 
-    footer = record_footer(author=author, now=now, sha=sha, supersedes=supersedes)
+    footer = record_footer(author=author, now=now, sha=sha, supersedes=supersedes,
+                           worktree_line=worktree_line)
     md_text = "\n".join(header) + body + "\n".join(footer) + "\n"
     json_text = json.dumps(summary, indent=2, default=str) + "\n"  # before any publication
     try:
@@ -460,22 +519,7 @@ def mint_behavioral_record(
     # own outputs (always untracked at mint time) cannot mask real
     # divergence from HEAD, and a dirty tree is disclosed in the record
     # instead of silently hiding behind the HEAD pin (issue #666).
-    dirty_paths = git_dirty_paths(repo_root)
-    if dirty_paths is None:
-        dirty_fields: dict = {"repo_dirty": None}
-        worktree_line = "- Working tree: unknown (git status unavailable; repo_dirty is null)"
-    elif not dirty_paths:
-        dirty_fields = {"repo_dirty": False}
-        worktree_line = "- Working tree: clean (matches the cited commit)"
-    else:
-        n = len(dirty_paths)
-        listed = dirty_paths[:_DIRTY_PATHS_CAP]
-        dirty_fields = {"repo_dirty": True, "repo_dirty_paths": listed}
-        noun = "path" if n == 1 else "paths"
-        verb = "differs" if n == 1 else "differ"
-        stem = f"- Working tree: dirty ({n} {noun} {verb} from the cited commit"
-        worktree_line = (stem + f"; repo_dirty_paths lists the first {_DIRTY_PATHS_CAP})"
-                         if n > _DIRTY_PATHS_CAP else stem + ")")
+    dirty_fields, worktree_line = worktree_disclosure(repo_root)
     records_dir = repo_root / "sim" / slug / "records"
     runs_dir = repo_root / "sim" / slug / "runs" / rid
     md_path = records_dir / f"{rid}.md"

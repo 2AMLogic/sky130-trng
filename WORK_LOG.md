@@ -8,6 +8,25 @@ Chronological record of recently merged pull requests and closed issues.
 
 ### 2026-11-23
 
+- **PR #704**: docs: version-qualify the no-verb claim for signoff items 1/2/9/10
+- **PR #699**: fix: record settled DR-0017 option 2 in newly generated coupled plans
+- **PR #695**: fix: report corner-run repo dirty state as tri-state when git status fails
+- **PR #694**: docs: retire superseded 7/22 count and 0.7.0 grader claims in signoff README
+- **PR #689**: docs(signoff): restate T1 summary against the committed 0.8.0 report
+- **PR #673**: fix(sim): refuse repeated measurement names in the template-lifted reducers
+- **PR #667**: feat(evidence): disclose working-tree state in behavioral records
+- **PR #660**: refactor(sim): deduplicate repaired-compaction runner/reducer helpers onto compaction.py and run-study.sh
+- **PR #605**: feat(sim): couple the transistor sampler to the routed gate model
+- **Issue #700** (closed): sim/: reconcile compare_gate_model.duplicate_measurement_names() with sim/bin/measurement_names.py once PR #644 lands
+- **Issue #696** (closed): signoff/README.md: 'klayout-tools has no verb behind these four items' is stale for item 1 on the 0.8.0 grader
+- **Issue #691** (closed): signoff/README.md: dated 7/22 update line and two per-item 0.7.0 render claims are stale after #687
+- **Issue #687** (closed): signoff/README.md T1 summary still says the report was rendered on klt 0.7.0; the committed report records v0.8.0
+- **Issue #682** (closed): Gate-model manifest still records the DR-0017 boundary-load choice as open after #595 ratified option 2
+- **Issue #670** (closed): sim/: ten reducers still dedupe corner measurements into a name-keyed dict with no duplicate-name guard
+- **Issue #666** (closed): evidence_record: mint_behavioral_record pins repo_sha from HEAD with no dirty-tree disclosure
+- **Issue #658** (closed): Consolidate duplicated repaired-compaction runner/reducer helpers onto compaction.py and run-study.sh
+- **Issue #475** (closed): Remove the 63-entry pull_request paths filter from ci.yml
+
 - **PR #656**: refactor: route idle_leakage bundles via write_corner_bundle
 - **PR #657**: refactor: route sim/ harness klt reads through _klt_common shared readers
 - **PR #626**: fix(sim): re-hash 7.analog PEX run pins via the shared freshness loop
@@ -474,11 +493,4 @@ Chronological record of recently merged pull requests and closed issues.
 - **PR #167**: Place and route the DR-0004 digital section with physical sign-off evidence
 - **Issue #168** (closed): Deduplicate the remaining LVS negative-control logic across live and PoC scripts
 - **Issue #166** (closed): Place and route the DR-0004 digital section with reproducible physical sign-off evidence
-
-### 2026-09-23
-
-- **PR #165**: feat(signoff): declare sampler_core well/substrate ties in the erc supply spec and cite 11.analog
-- **PR #163**: chore(signoff): bump signoff grader pin to klayout-tools 0.6.0, re-vendor tiers doc, regenerate t1-report
-- **Issue #161** (closed): T1 item 11: declare sampler_core's well ties in the klt erc supply spec on klayout-tools 0.6.0 and cite 11.analog in the block manifest
-- **Issue #160** (closed): Bump the signoff grader pin to klayout-tools 0.6.0, re-vendor the tiers doc, and regenerate signoff/t1-report.json
 
