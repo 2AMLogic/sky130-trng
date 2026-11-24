@@ -6,6 +6,13 @@ Chronological record of recently merged pull requests and closed issues.
 
 - [2026-09](work_log/WORK_LOG_2026-09.md)
 
+### 2026-11-24
+
+- **PR #614**: feat(sim,signoff): reduce local-mismatch Monte Carlo into klt yield reports for T1 item 6
+- **Issue #598** (closed): T1 item 6: reduce the committed local-mismatch Monte Carlo into klt yield reports and record the item-6 verdict (6.analog)
+- **PR #707**: feat: disclose working-tree state in mint_record records
+- **Issue #676** (closed): evidence_record: mint_record / record_footer still emit an unqualified repo_sha pin, so most sim records keep the #666 defect
+
 ### 2026-11-23
 
 - **PR #710**: docs: reframe signoff item-1 prose around minting tool and released --attest
