@@ -73,6 +73,19 @@ def decode(value: float | None, supply_v: float) -> int | None:
     return None
 
 
+def duplicate_measurement_names(measurements: list[dict]) -> list[str]:
+    """Sorted names that appear more than once in a measurement list.
+
+    Every name-keyed read of the list (``{m["name"]: m["value"]}`` and
+    friends) lets a repeat displace the entry it duplicates while the
+    list-length count stays honest, so callers guard on this before
+    deduplicating (#548 hardened the gate-model report this way; #642
+    shares the guard with the 12-point reducer).
+    """
+    return sorted(name for name, n in
+                  Counter(m["name"] for m in measurements).items() if n > 1)
+
+
 def digital_budget_s_per_ns(t_stop_ns: float) -> float:
     """The budget this slice is measured against, stated before the run.
 
@@ -298,9 +311,7 @@ def compare(report: dict, plan: dict) -> dict:
     # cannot see that, and the displaced measurement's check is silently
     # dropped while the verdict stays pass.
     if len(measured) != int(plan["measurement_count"]):
-        duplicates = sorted(name for name, n in
-                            Counter(m["name"] for m in corner["measurements"]).items()
-                            if n > 1)
+        duplicates = duplicate_measurement_names(corner["measurements"])
         raise SystemExit(
             f"report carries {len(measured)} distinct measurement names in "
             f"{n_meas} entries, plan.json declares "
