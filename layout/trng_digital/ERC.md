@@ -132,15 +132,16 @@ stdout `klt erc` wrote (the native formatting round-trips
 
 | Array | Native entries | Every entry |
 |---|---|---|
-| `gates` | 5,624 gates × 7 levels = 39,368 level records | `antenna_verdict: "unchecked"`, all six data fields `null` |
+| `gates` (per-gate records) | 5,624 | `antenna_verdict: "unchecked"` |
+| `gates` (per-level records) | 5,624 gates × 7 levels = 39,368 | `verdict: "unchecked"`, all six data fields `null` |
 | `coverage.skipped` | 33,744 | `reason: "findings_only"`, per-entry `id` `antenna:[<gate>,<layer>]` (unique per entry) |
 | `coverage.inapplicable` | 5,624 | `reason: "gate_reference_level"`, per-entry `id` `antenna:[<gate>,<layer>]` (unique per entry) |
 
-The `gates` row's "every entry" column describes the level records only:
-each of the 5,624 gate records also carried per-gate fields — `gate_id`
-(5,624 non-null), `net` (2,244 non-null) and a real `gate_area_um2` float
-(5,624 populated, 423 distinct values) — which the prune discarded along
-with the inert level records. Regenerable via steps 2 + 2b above.
+Each of the 5,624 gate records also carried per-gate fields beyond
+`antenna_verdict` — `gate_id` (5,624 non-null), `net` (2,244 non-null) and
+a real `gate_area_um2` float (5,624 populated, 423 distinct values) — which
+the prune discarded along with the inert level records. Regenerable via
+steps 2 + 2b above.
 
 That was 16,452,974 B → 238,415 B (−98.6%), and the three facts the arrays
 restated are still carried by the scalars the envelope keeps:
