@@ -189,27 +189,17 @@ _CONN_RE = re.compile(r"\.(\w+)\s*\(\s*([^)]*?)\s*\)")
 _ASSIGN_RE = re.compile(r"\bassign\s+([^=;]+?)\s*=\s*([^;]+?)\s*;")
 
 
-def scrub(name: str) -> str:
-    """``name[i]`` -> ``name_i_`` and ``$`` -> ``z``: make-requests.py's convention.
-
-    Kept byte-identical to ``make-requests.py:_scrub`` so a net that is a port
-    of the whole-block extract carries the same spelling in both decks and the
-    same ``.meas`` cards address it. Use :func:`netname` for netlist-body
-    tokens; this one exists so the agreement can be asserted in the tests.
-    """
-    return re.sub(r"\b([A-Za-z_][A-Za-z0-9_]*)\[(\d+)\]", r"\1_\2_", name.replace("$", "z"))
-
-
 def netname(token: str) -> str:
     """A routed-netlist net/instance token as a flat, bracket-free SPICE name.
 
-    Agrees with :func:`scrub` (and so with ``make-requests.py:_scrub``) on
-    every plain ``name[i]`` token, and additionally handles the two forms
-    ``_scrub`` does not: Yosys **escaped identifiers** (``\raw_mem[3] [30]``,
-    where the escape ends at the space and ``[30]`` is a bit-select on it) and
-    the resulting multi-dimensional names (``raw_mem[3][30]`` ->
-    ``raw_mem_3__30_``). 576 connections in the committed netlist use the
-    escaped form, so this is load-bearing, not defensive.
+    Agrees with ``make-netlist.py:_normalise_name`` (the live owner of the
+    committed ``trng_whole.sim.spice.gz`` names) on every plain ``name[i]``
+    token, and additionally handles the two forms it does not: Yosys
+    **escaped identifiers** (``\raw_mem[3] [30]``, where the escape ends at
+    the space and ``[30]`` is a bit-select on it) and the resulting
+    multi-dimensional names (``raw_mem[3][30]`` -> ``raw_mem_3__30_``).
+    576 connections in the committed netlist use the escaped form, so this
+    is load-bearing, not defensive.
     """
     t = token.strip()
     if t.startswith("\\"):
