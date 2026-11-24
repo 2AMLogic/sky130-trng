@@ -210,10 +210,6 @@ def pack_hex(bits: list[int]) -> str:
     return "".join(f"{int(''.join(map(str, bits[i:i + 8])), 2):02x}" for i in range(0, len(bits), 8))
 
 
-def unpack_hex(h: str) -> list[int]:
-    return [int(c) for byte in bytes.fromhex(h) for c in f"{byte:08b}"]
-
-
 def stats(bits: list[int], seed_label: str) -> dict:
     est = rbe.mcv_estimate(bits)
     n = len(bits)
@@ -436,17 +432,6 @@ def build_body(rows, xc, rob, point_set="base", nbits: int = NBITS) -> tuple[str
                  "cross-check covers all six PVT points. The sensitivity table (period-uncertainty draws) is "
                  "unchanged from #188: it stays at 2^17 samples per draw and was not re-run at 2^20.")
         L.append("")
-        L.append("| T (C) | Vdd | combining record | combining batch job | jitter record (local run, no batch job) |")
-        L.append("|---|---|---|---|---|")
-        seen = set()
-        for r in rows:
-            c = r["calibration"]
-            key = (r["temp_c"], r["vdd_v"])
-            if key in seen:
-                continue
-            seen.add(key)
-            L.append(f"| {r['temp_c']:g} | {r['vdd_v']:g} | `{c['combining_record']}` | `{c['combining_job_id']}` | `{c['jitter_record']}` |")
-        L.append("")
     if point_set == "hot":
         L.append("## Scope of this record (issue #197)")
         L.append("")
@@ -457,6 +442,7 @@ def build_body(rows, xc, rob, point_set="base", nbits: int = NBITS) -> tuple[str
                  "125 degC `ro-ring-jitter-accumulation` ring5 records. The jitter cross-check below covers "
                  "ALL six PVT points (the three #188 points are recomputed and expected to match that record).")
         L.append("")
+    if point_set in ("all", "hot"):
         L.append("| T (C) | Vdd | combining record | combining batch job | jitter record (local run, no batch job) |")
         L.append("|---|---|---|---|---|")
         seen = set()
