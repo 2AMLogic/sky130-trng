@@ -133,8 +133,8 @@ stdout `klt erc` wrote (the native formatting round-trips
 | Array | Native entries | Every entry |
 |---|---|---|
 | `gates` | 5,624 gates × 7 levels = 39,368 level records | `antenna_verdict: "unchecked"`, all six data fields `null` |
-| `coverage.skipped` | 33,744 | `{"reason": "findings_only"}` |
-| `coverage.inapplicable` | 5,624 | `{"reason": "gate_reference_level"}` |
+| `coverage.skipped` | 33,744 | `reason: "findings_only"`, per-entry `id` `antenna:[<gate>,<layer>]` (unique per entry) |
+| `coverage.inapplicable` | 5,624 | `reason: "gate_reference_level"`, per-entry `id` `antenna:[<gate>,<layer>]` (unique per entry) |
 
 The `gates` row's "every entry" column describes the level records only:
 each of the 5,624 gate records also carried per-gate fields — `gate_id`
