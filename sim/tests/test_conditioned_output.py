@@ -109,6 +109,19 @@ class TestAnalysis(unittest.TestCase):
         self.assertLess(a["estimators"]["h_min_bits"], 0.1)
 
 
+class TestSharedReduction(unittest.TestCase):
+    def test_no_local_fork_of_shared_helpers(self):
+        self.assertFalse(hasattr(C, "_failed"))
+        for name in ("analyse_stream", "format_binding", "render_detail_tables"):
+            self.assertTrue(hasattr(C.B, name), name)
+
+    def test_analyse_conditioned_matches_shared_reduction(self):
+        bits = C.condition_stream(ideal(131072, seed=11))
+        want = {"ones": sum(bits),
+                **C.B.analyse_stream(bits, segment_len=C.SEGMENT_LEN)}
+        self.assertEqual(C.analyse_conditioned(bits), want)
+
+
 class TestReplayDiff(unittest.TestCase):
     def test_float_noise_tolerated(self):
         a = {"p": 0.12345678990242483, "xs": [1.0, 2.5]}
