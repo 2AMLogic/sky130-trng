@@ -24,6 +24,13 @@ structurally -- f-strings over ``range()`` indices and disjoint literal
 names -- and were measured duplicate-free instead of guarded; see the #670
 PR's per-campaign evidence.
 
+The whole-block analysis scripts (``sim/post-layout-whole-block/analysis/
+compare-gate-model.py`` and, via its re-export, ``reduce-whole-block.py``,
+issues #642/#690) call :func:`duplicate_measurement_names` directly rather
+than :func:`measurements_by_name`: they act on the returned list (raising
+``SystemExit`` with ``plan.json`` context or scoring the 12-point corner
+``UNMET`` without aborting the remaining corners).
+
 Uniqueness is judged over the FULL measurements list, BEFORE any
 ``value is not None`` filtering: a repeated name is a deck/report defect
 whether or not the displaced entry happened to carry a value, and which of

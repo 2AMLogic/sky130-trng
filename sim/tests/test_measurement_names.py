@@ -38,6 +38,7 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO / "sim" / "bin"))
 sys.path.insert(0, str(REPO / "sim" / "tests"))
+from loadmod import load_module  # noqa: E402
 import measurement_names as MN  # noqa: E402
 
 
@@ -134,6 +135,18 @@ class DuplicateHelper(unittest.TestCase):
     def test_unique_and_empty_give_no_duplicates(self):
         self.assertEqual(MN.duplicate_measurement_names([{"name": "a", "value": 1}]), [])
         self.assertEqual(MN.duplicate_measurement_names([]), [])
+        self.assertEqual(MN.duplicate_measurement_names(None), [])
+
+    def test_whole_block_caller_gets_returned_list_not_a_raise(self):
+        wb = REPO / "sim" / "post-layout-whole-block"
+        cgm = load_module("wb_cgm_probe", wb / "analysis" / "compare-gate-model.py")
+        rwb = load_module("wb_reduce_probe", wb / "analysis" / "reduce-whole-block.py")
+        self.assertIs(cgm.duplicate_measurement_names, MN.duplicate_measurement_names)
+        self.assertEqual(cgm.duplicate_measurement_names([]), [])
+        quad = [{"name": "i_vdd_w2", "value": -3e-6}] * 4 + [{"name": "clk_at_stop", "value": 0.0}]
+        self.assertEqual(cgm.duplicate_measurement_names(quad), ["i_vdd_w2"])
+        res = rwb.analyse_corner({"status": "pass", "measurements": quad}, 1.8)
+        self.assertTrue(any("duplicate measurement name" in p for p in res["problems"]))
 
 
 class Consolidation(unittest.TestCase):
@@ -143,7 +156,10 @@ class Consolidation(unittest.TestCase):
     measurement names verbatim out of a committed template deck (issue #670's
     measured split: the other six sites' generators build names structurally,
     from f-strings over ``range()`` indices and disjoint literal names, and
-    are documented in the PR instead).
+    are documented in the PR instead).  The two whole-block analysis scripts
+    (#642, consolidated in #690) share ``duplicate_measurement_names`` rather
+    than ``measurements_by_name`` because they act on the returned list
+    (raising ``SystemExit`` with plan context or marking the corner ``UNMET``).
     """
 
     GUARDED = {
@@ -152,8 +168,20 @@ class Consolidation(unittest.TestCase):
         "post-layout-ro-ring5-assembled-181": REPO / "sim" / "post-layout-ro-ring5-assembled-181" / "derive.py",
     }
 
+    WHOLE_BLOCK = {
+        "whole-block gate-model comparator": (
+            REPO / "sim" / "post-layout-whole-block" / "analysis" / "compare-gate-model.py"
+        ),
+        "whole-block 12-point reducer": (
+            REPO / "sim" / "post-layout-whole-block" / "analysis" / "reduce-whole-block.py"
+        ),
+    }
+
     #: the dedupe the guarded files must no longer spell out unguarded.
     BARE_DEDUPE = re.compile(r'[emx]\["name"\]\s*:\s*[emx]\["value"\]')
+    #: a local duplicate-name helper or Counter fork that whole-block scripts must not carry.
+    DUPLICATE_FORK = re.compile(r"(?m)^\s*def\s+duplicate_measurement_names\b|\bCounter\s*\(")
+    DEF_DUPLICATE_HELPER = re.compile(r"(?m)^\s*def\s+duplicate_measurement_names\b")
 
     def test_each_guarded_file_imports_the_shared_module(self):
         for slug, path in self.GUARDED.items():
@@ -176,6 +204,42 @@ class Consolidation(unittest.TestCase):
             probe = Path(td) / "probe.py"
             probe.write_text('m = {x["name"]: x["value"] for x in c["measurements"]}\n')
             self.assertIsNotNone(self.BARE_DEDUPE.search(probe.read_text()))
+
+    def test_whole_block_sites_delegate_to_the_shared_helper(self):
+        cgm_text = self.WHOLE_BLOCK["whole-block gate-model comparator"].read_text()
+        rwb_text = self.WHOLE_BLOCK["whole-block 12-point reducer"].read_text()
+        self.assertRegex(
+            cgm_text,
+            r"(?m)^from measurement_names import .*\bduplicate_measurement_names\b",
+            "compare-gate-model.py does not import duplicate_measurement_names from measurement_names",
+        )
+        self.assertRegex(
+            rwb_text,
+            r"(?m)(?:\bCGM\.duplicate_measurement_names\s*\(|^from measurement_names import .*\bduplicate_measurement_names\b)",
+            "reduce-whole-block.py does not reach the shared duplicate_measurement_names helper",
+        )
+
+    def test_no_whole_block_file_forks_duplicate_measurement_names(self):
+        for slug, path in self.WHOLE_BLOCK.items():
+            with self.subTest(site=slug):
+                text = path.read_text()
+                m = self.DUPLICATE_FORK.search(text)
+                self.assertIsNone(
+                    m, f"{path.name} carries its own duplicate-name fork ({m and m.group(0)!r} "
+                    f"at offset {m and m.start()}); delegate to sim/bin/measurement_names")
+
+    def test_shared_module_is_the_sole_duplicate_measurement_names_definition(self):
+        defs = [
+            p.relative_to(REPO).as_posix()
+            for p in sorted((REPO / "sim").rglob("*.py"))
+            if self.DEF_DUPLICATE_HELPER.search(p.read_text())
+        ]
+        self.assertEqual(defs, ["sim/bin/measurement_names.py"])
+
+    def test_the_whole_block_detector_would_catch_a_third_fork(self):
+        fork_def = "def " + "duplicate_measurement_names(ms):\n    return []\n"
+        self.assertIsNotNone(self.DUPLICATE_FORK.search(fork_def))
+        self.assertIsNotNone(self.DUPLICATE_FORK.search('Counter(m["name"] for m in ms)\n'))
 
 
 if __name__ == "__main__":
