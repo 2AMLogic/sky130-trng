@@ -37,7 +37,6 @@ import json
 import math
 import re
 import sys
-from collections import Counter
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -48,6 +47,7 @@ import program as P  # noqa: E402
 
 sys.path.insert(0, str(REPO / "digital"))
 sys.path.insert(0, str(REPO / "sim" / "bin"))
+from measurement_names import duplicate_measurement_names  # noqa: E402  (#690: shared with sim/bin/measurement_names.py; re-exported for reduce-whole-block.py)
 
 #: a measured level must be this close (V) to vss or to the supply to decode
 LEVEL_TOL = 0.05
@@ -71,19 +71,6 @@ def decode(value: float | None, supply_v: float) -> int | None:
     if abs(value - supply_v) <= LEVEL_TOL:
         return 1
     return None
-
-
-def duplicate_measurement_names(measurements: list[dict]) -> list[str]:
-    """Sorted names that appear more than once in a measurement list.
-
-    Every name-keyed read of the list (``{m["name"]: m["value"]}`` and
-    friends) lets a repeat displace the entry it duplicates while the
-    list-length count stays honest, so callers guard on this before
-    deduplicating (#548 hardened the gate-model report this way; #642
-    shares the guard with the 12-point reducer).
-    """
-    return sorted(name for name, n in
-                  Counter(m["name"] for m in measurements).items() if n > 1)
 
 
 def digital_budget_s_per_ns(t_stop_ns: float) -> float:
