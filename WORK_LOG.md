@@ -8,6 +8,21 @@ Chronological record of recently merged pull requests and closed issues.
 
 ### 2026-11-24
 
+- **PR #737**: layout: prune the inert antenna arrays from trng_digital erc.json (-98.6%)
+- **PR #736**: refactor: consolidate the three merged() copies into layout/bin/_geom_common.py
+- **PR #734**: chore(sim): untrack regenerated 15 MB netlist.cir decks under runs/ and widen the corners ignore glob
+- **PR #733**: refactor: deduplicate stream-battery reduction, detail tables, and hex codec forks
+- **PR #730**: docs: name ratification as item 6's sole gate in mismatch README and ROADMAP
+- **PR #727**: docs: mark klayout-tools#5490 closed in the friction ledger
+- **PR #725**: refactor: drop dead pre-#435 body-rename workaround from whole-block request assembly
+- **Issue #738** (closed): One netlist.cir under sim/post-layout-whole-block/runs/ is now tracked-but-ignored by the widened #491 glob
+- **Issue #732** (closed): Consolidate duplicated stream-battery reduction, detail tables, and hex-codec forks across raw-bit-battery, conditioned-output, and behavioral_raw_bit
+- **Issue #729** (closed): docs: align remaining item-6 row-coverage prose in local-mismatch README and ROADMAP
+- **Issue #724** (closed): Remove dead pre-#435 body-rename workaround and duplicate scrub helpers in sim/post-layout-whole-block/
+- **Issue #713** (closed): friction-ledger: klayout-tools#5490 row says "open" but the issue closed 2026-11-22
+- **Issue #494** (closed): Stop committing 11 MB of all-null antenna skeleton in layout/trng_digital/erc.json
+- **Issue #491** (closed): Remove the two byte-identical 15 MB netlist.cir copies under sim/post-layout-whole-block/runs/
+- **Issue #490** (closed): Consolidate the three copies of merged(): the cross-directory carve-out rationale is measurably false
 - **PR #728**: docs(signoff): state ratification as item 6's sole gate; row is covered
 - **PR #723**: refactor: share sim/bin duplicate_measurement_names in whole-block
 - **PR #722**: ci: run unwired sim/tests suites and guard suite coverage
