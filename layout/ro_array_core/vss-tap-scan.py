@@ -62,7 +62,7 @@ import klayout.db as db
 
 HERE = pathlib.Path(__file__).resolve().parent
 
-sys.path.insert(0, str(HERE))
+sys.path.insert(0, str(HERE.parent / "bin"))
 from _geom_common import dbox_region, merged  # noqa: E402
 
 GDS = HERE / "vddbus.gds"

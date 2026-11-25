@@ -16,17 +16,22 @@
     "digital/tb/cocotb/*",
     "REPRODUCE.md",
     "design/pdk.json",
+    "design/_pdk_search.py",
     "sim/pdk.json",
     "layout/pdk.json",
     "layout/bin/_hashing.py",
     "layout/bin/_klt_common.py",
     "layout/bin/_pex_rewrite.py"
   ],
-  "member_count": 132,
+  "member_count": 137,
   "members": [
     {
       "path": "REPRODUCE.md",
       "sha256": "sha256:bf2852d2e6b6afb2220c9015de9978340a8687df08e733c4b07fd354579a131c"
+    },
+    {
+      "path": "design/_pdk_search.py",
+      "sha256": "sha256:5977ef72e074d53c17e35029ce1a8424104465c8b3476125e4d25ab9771ffea5"
     },
     {
       "path": "design/pdk.json",
@@ -82,7 +87,7 @@
     },
     {
       "path": "sim/bin/corner-run.py",
-      "sha256": "sha256:977cf573402c793b10edbf22d289f375c6996bb1cf586c9333f28710ab4dfa66"
+      "sha256": "sha256:50f27196728bc874ac94d3443f06b749857a8d8c10ce6b188103dc9178377358"
     },
     {
       "path": "sim/bin/evidence_paths.py",
@@ -90,7 +95,7 @@
     },
     {
       "path": "sim/bin/evidence_record.py",
-      "sha256": "sha256:916a8824b9ce2e05412f3bfa481b7aa6aeba4dccda531e450b15825af19b0c9a"
+      "sha256": "sha256:66bb5f6e48ffda811f7ef4bf14064b57d155b4c589aaac20ad342b14c3870d54"
     },
     {
       "path": "sim/bin/loadmod.py",
@@ -99,6 +104,10 @@
     {
       "path": "sim/bin/lock_proximity.py",
       "sha256": "sha256:587c10e946e65bf355527eb7b4993deba24183e912a70250f010fde0b87779b8"
+    },
+    {
+      "path": "sim/bin/measurement_names.py",
+      "sha256": "sha256:235cc1b4975b80321c44d6a2abc0e8d38866f6b441f988da4e093b10c3dfbfb4"
     },
     {
       "path": "sim/bin/replay_equal.py",
@@ -110,7 +119,7 @@
     },
     {
       "path": "sim/digital-conditioned-output/analysis/conditioned-output.py",
-      "sha256": "sha256:56c5da85f74ea0c6f7402b20689afd389bb3f8beadf9c8f3b06eb365c28f1e60"
+      "sha256": "sha256:50d4270136c32e33921c604b31d946421b85ccf0268affb596c223e6efd86ee3"
     },
     {
       "path": "sim/digital-conditioner-equivalence/harness/conditioner-equivalence.py",
@@ -142,7 +151,7 @@
     },
     {
       "path": "sim/digital-electrical-repair/bin/run-study.sh",
-      "sha256": "sha256:bb84a3bb067565c1dc13e7ac869c27e755805bb3198f71dab62df312caaf5c30"
+      "sha256": "sha256:786e104fd248fa89f5cb821f255ae16b434777b0470f5a8b8a4a08258c969488"
     },
     {
       "path": "sim/digital-electrical-repair/requests/control.json",
@@ -162,7 +171,7 @@
     },
     {
       "path": "sim/digital-floorplan-compaction/analysis/compaction.py",
-      "sha256": "sha256:0bb88118ebf69db9f90df81a6bce2a525dd7017bb9b59e129187c51570c1937a"
+      "sha256": "sha256:9c335760f721d6dae6b4982638c42cf36ea7ab171e949fa2909089af3331d014"
     },
     {
       "path": "sim/digital-floorplan-compaction/bin/run-study.sh",
@@ -198,11 +207,11 @@
     },
     {
       "path": "sim/digital-repaired-compaction/analysis/repaired_compaction.py",
-      "sha256": "sha256:2793183418be36b9b22a7674f180ec8a62b63af623a5af65ff7ff0e49ccdac0e"
+      "sha256": "sha256:57b83598c285f862b05137cf3da35a27e966ed8fcca445f2471654fe81bcdf3a"
     },
     {
       "path": "sim/digital-repaired-compaction/bin/run-study.sh",
-      "sha256": "sha256:d6179e6b4ac93f8df0625ad7166d787579eae27b814fe64e98ecdcdf16919462"
+      "sha256": "sha256:1dbc73290d48d4e8e4484e8929469f013d08d3ac0ffca6647add42cbc8a5ef08"
     },
     {
       "path": "sim/digital-repaired-compaction/requests/rep40-slew0531.json",
@@ -269,6 +278,10 @@
       "sha256": "sha256:391655a3c568f86a5ef3bb168f8b439578528318aafb365a6c0dc0b4b2149ff6"
     },
     {
+      "path": "sim/local-mismatch-monte-carlo/yield_reports.py",
+      "sha256": "sha256:0c01b6023de7eb038c7e7d57a6b981180528e19c01e3cf066e0a095e2a0829b5"
+    },
+    {
       "path": "sim/pdk.json",
       "sha256": "sha256:2e0e374968d8936fda206ffa0c85097e8efe96c2d6efc6fcf268d1260b9ddf64"
     },
@@ -298,7 +311,7 @@
     },
     {
       "path": "sim/post-layout-ro-ring5-assembled-181/derive.py",
-      "sha256": "sha256:4b5fbf89f94afa3bdd10cc44845a06ad8b7633f5426c62343cc373441aaf97c3"
+      "sha256": "sha256:89da92bf960efcae2354cd7d0444b06a449360c328f2a408318f61cd3b2fe8f6"
     },
     {
       "path": "sim/post-layout-ro-ring5-assembled-181/make-requests.py",
@@ -350,7 +363,7 @@
     },
     {
       "path": "sim/post-layout-whole-block/analysis/compare-gate-model.py",
-      "sha256": "sha256:44b03399f1ca89a4d743d69d398604c3cb90f281dd64949d2276c91da7aef283"
+      "sha256": "sha256:b66d637ee54570bb16016206aab366391e97deb24065be7d76a0cc56cb279222"
     },
     {
       "path": "sim/post-layout-whole-block/analysis/deck-axis-sensitivity.py",
@@ -358,7 +371,7 @@
     },
     {
       "path": "sim/post-layout-whole-block/analysis/reduce-whole-block.py",
-      "sha256": "sha256:6489005c7f7df6a1a8e8e5438511a0597132da6e257113ebf340f63a7e56949d"
+      "sha256": "sha256:af685e09684bb8bd1af5e4558ae636b4d956414de2be881289bbc90415f4e138"
     },
     {
       "path": "sim/post-layout-whole-block/check-bin-coverage.py",
@@ -370,7 +383,7 @@
     },
     {
       "path": "sim/post-layout-whole-block/make-gate-model.py",
-      "sha256": "sha256:1b5b9248933b27118736a730b6ff3e5d017124f293629c6ade13de13b984972e"
+      "sha256": "sha256:1cd50251a69d8aff0145f0cef628a4810a192ac2103fdae6bd3b5db3a79047d3"
     },
     {
       "path": "sim/post-layout-whole-block/make-netlist.py",
@@ -378,15 +391,23 @@
     },
     {
       "path": "sim/post-layout-whole-block/make-requests.py",
-      "sha256": "sha256:e10f19ef97ea0e2c4a07412b5828ed8ec5204eb4809da8c4fb0b5c3264e2d714"
+      "sha256": "sha256:e13d9bd7e4842efca42ca1571f727130f0d086fec6a9685b1dc40cabf9ba4646"
     },
     {
       "path": "sim/post-layout-whole-block/program.py",
-      "sha256": "sha256:3a7fc1098d99a408ed7ea742eea9255514f9130fe5ac959346878b143089a56e"
+      "sha256": "sha256:1b970b0483c2a37c8ce20fa97690370e1c3183a91d06f345b990a2c41911bd06"
     },
     {
       "path": "sim/post-layout-whole-block/pvt_deck_map.py",
       "sha256": "sha256:4b8fa418b93234a0b5a6db4b9c431f8b0f4f91ba6b8acb7d28b6366897c7954b"
+    },
+    {
+      "path": "sim/post-layout-whole-block/runs/20261121-coupled-probe/requests/coupled-probe/plan.json",
+      "sha256": "sha256:ebfd015fb41e60ea8f568cb1544f445d0ba8ba3f516646de3acecde9e69b87e1"
+    },
+    {
+      "path": "sim/post-layout-whole-block/runs/20261121-coupled-probe/requests/coupled-probe/request.json",
+      "sha256": "sha256:c02cf27fda00c820f31cb0a560b697312c90e8dbf9dac1d1cabee1a0192590d4"
     },
     {
       "path": "sim/post-layout-whole-block/test_make_netlist.py",
@@ -394,11 +415,11 @@
     },
     {
       "path": "sim/post-layout-whole-block/test_make_requests.py",
-      "sha256": "sha256:40d796b8bc04f97ce26bbeeb53bd7846f17e018a328fc05626f1435b7b6820c6"
+      "sha256": "sha256:feaa440361da893be132ce61f1b0d854a123c4eaecb6ac64b7cf3e0fcd7e746b"
     },
     {
       "path": "sim/raw-bit-min-entropy/analysis/raw-bit-battery.py",
-      "sha256": "sha256:5d2e3d297db61222a75c4cac516c5112fd42a180acd05e13920e5e269de20dae"
+      "sha256": "sha256:bf09ebad328240a83b602d26e9026a3930e2da4d25b6dbf117e4699fa956730a"
     },
     {
       "path": "sim/raw-bit-min-entropy/analysis/raw-bit-entropy.py",
@@ -410,11 +431,11 @@
     },
     {
       "path": "sim/raw-bit-volume-campaign/behavioral_raw_bit.py",
-      "sha256": "sha256:db505cd81a4e2bbb5993a68fc74d8b35b2a77933f4e9ed0145c0e9ba7545c1b7"
+      "sha256": "sha256:eade84f46bdaf8468b71839d7684b138e737ac00c093282da8a80ab7f0344fd2"
     },
     {
       "path": "sim/raw-bit-volume-campaign/derive-combining.py",
-      "sha256": "sha256:6f49db8ab6a889360049c296cdef5ef146f4fb64736214ac7c33c6327d721c01"
+      "sha256": "sha256:5b950b174a1a24a0f387976a4b3d5c50419bc1ed8cc27b8866028004eafa9c48"
     },
     {
       "path": "sim/raw-bit-volume-campaign/make-requests.py",
@@ -498,7 +519,7 @@
     },
     {
       "path": "sim/ro-vth-drift-sensitivity/analysis/sensitivity.py",
-      "sha256": "sha256:7280ad204d1a4081f0c767005363ffad31120cf12e469a4b51609dd142a2fc04"
+      "sha256": "sha256:7397b69679530d04ba96f98e602dae55a00b6f8b6964ea87dbb54866d4d6eaef"
     },
     {
       "path": "sim/ro-vth-drift-sensitivity/campaign.py",

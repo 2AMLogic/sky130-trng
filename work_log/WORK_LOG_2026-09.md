@@ -4,6 +4,13 @@ Sections moved byte-for-byte from [WORK_LOG.md](../WORK_LOG.md) by `loom-daemon 
 
 > Edit 2026-11-22 (#633): six records (`PR #88`, `Issue #87`, `Issue #83`, `Issue #79`, `Issue #78`, `Issue #77`) were removed from the 2026-09-21/22 sections — they were backfilled from `2AMLogic/gf180-usb2-phy`'s history by `e8b0dd38`, not this repository's work. The genuine records for those numbers remain in this file.
 
+### 2026-09-23
+
+- **PR #165**: feat(signoff): declare sampler_core well/substrate ties in the erc supply spec and cite 11.analog
+- **PR #163**: chore(signoff): bump signoff grader pin to klayout-tools 0.6.0, re-vendor tiers doc, regenerate t1-report
+- **Issue #161** (closed): T1 item 11: declare sampler_core's well ties in the klt erc supply spec on klayout-tools 0.6.0 and cite 11.analog in the block manifest
+- **Issue #160** (closed): Bump the signoff grader pin to klayout-tools 0.6.0, re-vendor the tiers doc, and regenerate signoff/t1-report.json
+
 ### 2026-09-21
 
 - **PR #158**: feat(layout): add T1 item-11 klt erc supply read for sampler_core
