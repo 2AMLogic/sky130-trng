@@ -11,9 +11,10 @@ Judge-approved PRs under a hold (`loom:blocked` or `loom:operator`) — only a h
 - **#612**: sim/area-limiter-study: measure the area row's structural options (FIFO storage leads at 47.5%, best combination 0.0607 mm2)
 - **#620**: feat(sim): raw-rate row options evidence -- sample-before-combine and 3-inversion ring study
 - **#628**: sim: measured sampler_core active-power budget at Ts=20us; DR-0021 corrected to measured values
-- **#684**: docs(signoff): correct stale klt signoff --attest availability prose and grader-pin cross-ref
+- **#684**: docs(signoff): drop the rottable grader-pin value from the pdk-nightly.yml cross-reference
 - **#709**: feat(signoff): regenerate item-9 attestation aggregate on main (DR-0021)
 - **#711**: feat(digital): two-word FIFOs with RTL and mapped-netlist equivalence evidence
+- **#763**: docs: drop rotted no-tagged-release claim about pinned klt commit
 
 ## Very Important
 
@@ -55,7 +56,7 @@ Issues currently being built (`loom:building`).
 - **#697**: Committed signoff attestation artifacts serialize every concurrent sim/ PR into a merge-conflict treadmill
 - **#701**: Adopt two-word raw and conditioned FIFOs in DR-0004 and prove the production RTL and mapped netlists
 - **#749**: ro_array_core recipe no longer rebuilds: 0.8.0 leaf regens moved the taps its declared ports name (compose-cell --check red)
-- **#755**: layout/sampler_core/README.md's latest-increment paragraph quotes 8399 polygons and the 0.3.0 klt pin; committed GDS measures 8408 on 0.6.0+g5edb557f91d0
+- **#762**: pdk-nightly.yml's klt install comment still claims no tagged release contains commit 5edb557f91d0 — four releases now do
 
 ## PRs Awaiting Review
 
@@ -72,10 +73,10 @@ PRs that passed review and are queued for Champion auto-merge (`loom:pr`).
 - **#612**: sim/area-limiter-study: measure the area row's structural options (FIFO storage leads at 47.5%, best combination 0.0607 mm2)
 - **#620**: feat(sim): raw-rate row options evidence -- sample-before-combine and 3-inversion ring study
 - **#628**: sim: measured sampler_core active-power budget at Ts=20us; DR-0021 corrected to measured values
-- **#684**: docs(signoff): correct stale klt signoff --attest availability prose and grader-pin cross-ref
+- **#684**: docs(signoff): drop the rottable grader-pin value from the pdk-nightly.yml cross-reference
 - **#709**: feat(signoff): regenerate item-9 attestation aggregate on main (DR-0021)
 - **#711**: feat(digital): two-word FIFOs with RTL and mapped-netlist equivalence evidence
-- **#756**: docs(layout): align sampler_core README latest-increment stats with committed evidence
+- **#763**: docs: drop rotted no-tagged-release claim about pinned klt commit
 
 ## Proposed
 
@@ -102,7 +103,7 @@ Issues carrying `loom:curated`.
 - **#697**: Committed signoff attestation artifacts serialize every concurrent sim/ PR into a merge-conflict treadmill *(curated)*
 - **#701**: Adopt two-word raw and conditioned FIFOs in DR-0004 and prove the production RTL and mapped netlists *(curated)*
 - **#749**: ro_array_core recipe no longer rebuilds: 0.8.0 leaf regens moved the taps its declared ports name (compose-cell --check red) *(curated)*
-- **#755**: layout/sampler_core/README.md's latest-increment paragraph quotes 8399 polygons and the 0.3.0 klt pin; committed GDS measures 8408 on 0.6.0+g5edb557f91d0 *(curated)*
+- **#762**: pdk-nightly.yml's klt install comment still claims no tagged release contains commit 5edb557f91d0 — four releases now do *(curated)*
 
 ## Proposed (Architect / Hermit)
 
@@ -118,7 +119,7 @@ Issues carrying `loom:curated`.
 
 | Bucket | Count |
 |------|-------|
-| Operator merge-risk holds | 7 |
+| Operator merge-risk holds | 8 |
 | Very important | 0 |
 | Important | 7 |
 | Ready (`loom:issue`) | 2 |
