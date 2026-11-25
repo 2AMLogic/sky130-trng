@@ -125,7 +125,9 @@ flow/build/
 # regenerated deterministically (make-netlist.py / make-requests.py); the
 # committed form is trng_whole.sim.spice.gz and the sha256 in plan.json/records.
 sim/post-layout-whole-block/trng_whole.sim.spice
-sim/post-layout-whole-block/corners/*/netlist.cir
+# issue #491: the same regenerated deck also lands under runs/<slug>/corners/
+# (operator ruling, option a); **/corners/ covers it at any run depth.
+sim/post-layout-whole-block/**/corners/*/netlist.cir
 # issue #174: the record's copied submit-attempt logs are evidence (named in the record)
 !sim/post-layout-whole-block/runs/**/*.log
 # issue #486: the gate-level model body and the per-request deck under

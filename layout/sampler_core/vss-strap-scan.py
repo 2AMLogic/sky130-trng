@@ -40,7 +40,7 @@ import klayout.db as db
 HERE = pathlib.Path(__file__).resolve().parent
 ARRAY_CELL_JSON = HERE.parent / "ro_array_core" / "cell.json"
 
-sys.path.insert(0, str(HERE))
+sys.path.insert(0, str(HERE.parent / "bin"))
 from _geom_common import carrying, merge_spans, merged  # noqa: E402
 
 MET1 = (68, 20)

@@ -40,6 +40,9 @@ GDS = pathlib.Path(__file__).with_name("..") / "xor2" / "xor2.gds"
 CELL = "xor2"
 OUT = pathlib.Path(__file__).with_name("xor2-y-escape-scan.json")
 
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent / "bin"))
+from _geom_common import merged  # noqa: E402
+
 # The array request's own routing width, and sky130's met1 minimum spacing
 # (``m1.space`` = 0.14 um).  A stub is legal only if its drawn extent plus
 # that spacing halo touches no other net's met1.
@@ -62,20 +65,14 @@ DIRECTIONS = {
 }
 
 
-def merged_region(layout: db.Layout, cell: db.Cell, layer: int, datatype: int) -> db.Region:
-    region = db.Region(cell.begin_shapes_rec(layout.layer(layer, datatype)))
-    region.merge()
-    return region
-
-
 def main() -> int:
     layout = db.Layout()
     layout.read(str(GDS.resolve()))
     cell = layout.cell(CELL)
     dbu = layout.dbu
 
-    li = merged_region(layout, cell, 67, 20)
-    m1 = merged_region(layout, cell, 68, 20)
+    li = merged(layout, cell, (67, 20))
+    m1 = merged(layout, cell, (68, 20))
     bbox = cell.dbbox()
 
     seed = db.Point(int(round(Y_SEED_UM[0] / dbu)), int(round(Y_SEED_UM[1] / dbu)))

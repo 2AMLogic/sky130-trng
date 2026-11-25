@@ -304,13 +304,13 @@
         "command": null,
         "kind": "generic",
         "check_status": "pass",
-        "content_hash": "sha256:c3c4463447aec3ab1006162d2d1a4cd5a62d4db3a5bd712d29d764a49294902f",
+        "content_hash": "sha256:9f2c9accb593dfd8a043c7a8ae9fb50052539be2e39bf9090cd94bfd69c722a7",
         "input_verified": true,
         "exit_status": 0,
         "artifact_binding": {
           "t1_item": 2,
           "path": "signoff/attest/2.analog.inventory.json",
-          "content_hash": "sha256:c3c4463447aec3ab1006162d2d1a4cd5a62d4db3a5bd712d29d764a49294902f",
+          "content_hash": "sha256:9f2c9accb593dfd8a043c7a8ae9fb50052539be2e39bf9090cd94bfd69c722a7",
           "input_verified": true,
           "source": "signoff/attest.py"
         }
@@ -331,13 +331,13 @@
         "command": null,
         "kind": "generic",
         "check_status": "pass",
-        "content_hash": "sha256:c94a4454086e66ae8a577334519a6746b268a58c36f9f06460fa9787130e2680",
+        "content_hash": "sha256:67f3502031f7fdb03c31fdfbab2e4edf3343e2ebc4dd5e83df8fda59e7d7be45",
         "input_verified": true,
         "exit_status": 0,
         "artifact_binding": {
           "t1_item": 2,
           "path": "signoff/attest/2.digital.inventory.json",
-          "content_hash": "sha256:c94a4454086e66ae8a577334519a6746b268a58c36f9f06460fa9787130e2680",
+          "content_hash": "sha256:67f3502031f7fdb03c31fdfbab2e4edf3343e2ebc4dd5e83df8fda59e7d7be45",
           "input_verified": true,
           "source": "signoff/attest.py"
         }
@@ -667,9 +667,46 @@
       "text": "any accuracy, offset, or matching spec row is statistical; a corner matrix (or STA corner sweep) cannot validate it. This applies to whichever spec rows are actually statistical, regardless of block kind \u2014 most digital spec rows (functional correctness, Fmax, timing closure) are not, and a block whose spec has no statistical row must say so explicitly rather than omit the item. Where it does apply, MC runs need a recorded seed, sample count, a deterministic negative control, and results combined with (not instead of) process corners (#344). A `klt yield` JSON report \u2014 a yield estimate with its confidence interval, sample-size verdict, and Cpk/sigma-to-spec against the row's own limits \u2014 is the machine-checkable evidence for this item (`klt signoff`'s tier-verdict mode grades it the same way it grades the deterministic items above).",
       "notes": [],
       "status": "unmet",
-      "reason": "no_evidence",
+      "reason": "partial_coverage",
       "graded_by_build": true,
-      "citation": null
+      "citation": null,
+      "citations_graded": [
+        {
+          "citation": "sim/local-mismatch-monte-carlo/yield/20261009-111127-e57ad27/klt-yield.json",
+          "rows": [
+            "raw_min_entropy_per_bit"
+          ],
+          "status": "met",
+          "reason": null
+        },
+        {
+          "citation": "sim/local-mismatch-monte-carlo/yield/20261009-111126-e57ad27/klt-yield.json",
+          "rows": [
+            "raw_min_entropy_per_bit"
+          ],
+          "status": "met",
+          "reason": null
+        },
+        {
+          "citation": "sim/local-mismatch-monte-carlo/yield/20261009-111125-e57ad27/klt-yield.json",
+          "rows": [
+            "raw_min_entropy_per_bit"
+          ],
+          "status": "met",
+          "reason": null
+        }
+      ],
+      "detail": {
+        "failed_rows": [],
+        "uncovered_rows": [],
+        "declared_gaps": [],
+        "unratified_rows": [
+          "raw_min_entropy_per_bit"
+        ],
+        "row_sources": {
+          "raw_min_entropy_per_bit": "asserted"
+        }
+      }
     },
     {
       "tier": "T1",
@@ -758,13 +795,13 @@
         "command": null,
         "kind": "generic",
         "check_status": "pass",
-        "content_hash": "sha256:44a118d914918ea7a9c267546be60b15bcc60c2d8ee829e562042749022406e8",
+        "content_hash": "sha256:2c0c35fce9bc7847666bfb41804cb953b9fb7538b685736cd2dc6d3c51952f1c",
         "input_verified": true,
         "exit_status": 0,
         "artifact_binding": {
           "t1_item": 9,
           "path": "signoff/attest/9.inventory.json",
-          "content_hash": "sha256:44a118d914918ea7a9c267546be60b15bcc60c2d8ee829e562042749022406e8",
+          "content_hash": "sha256:2c0c35fce9bc7847666bfb41804cb953b9fb7538b685736cd2dc6d3c51952f1c",
           "input_verified": true,
           "source": "signoff/attest.py"
         }
@@ -785,13 +822,13 @@
         "command": null,
         "kind": "generic",
         "check_status": "pass",
-        "content_hash": "sha256:44a118d914918ea7a9c267546be60b15bcc60c2d8ee829e562042749022406e8",
+        "content_hash": "sha256:2c0c35fce9bc7847666bfb41804cb953b9fb7538b685736cd2dc6d3c51952f1c",
         "input_verified": true,
         "exit_status": 0,
         "artifact_binding": {
           "t1_item": 9,
           "path": "signoff/attest/9.inventory.json",
-          "content_hash": "sha256:44a118d914918ea7a9c267546be60b15bcc60c2d8ee829e562042749022406e8",
+          "content_hash": "sha256:2c0c35fce9bc7847666bfb41804cb953b9fb7538b685736cd2dc6d3c51952f1c",
           "input_verified": true,
           "source": "signoff/attest.py"
         }
@@ -812,13 +849,13 @@
         "command": null,
         "kind": "generic",
         "check_status": "pass",
-        "content_hash": "sha256:48d2c74068b25bf7c9d829a1b1ded39012bd532aa923c87f5e6c3c35a4eebc6d",
+        "content_hash": "sha256:3b7f9bc3df80e309ddd6f4b8dfadc3c8d108754f4ba5e1ed6d3c44fe3c588449",
         "input_verified": true,
         "exit_status": 0,
         "artifact_binding": {
           "t1_item": 10,
           "path": "signoff/attest/10.inventory.json",
-          "content_hash": "sha256:48d2c74068b25bf7c9d829a1b1ded39012bd532aa923c87f5e6c3c35a4eebc6d",
+          "content_hash": "sha256:3b7f9bc3df80e309ddd6f4b8dfadc3c8d108754f4ba5e1ed6d3c44fe3c588449",
           "input_verified": true,
           "source": "signoff/attest.py"
         }
@@ -839,13 +876,13 @@
         "command": null,
         "kind": "generic",
         "check_status": "pass",
-        "content_hash": "sha256:48d2c74068b25bf7c9d829a1b1ded39012bd532aa923c87f5e6c3c35a4eebc6d",
+        "content_hash": "sha256:3b7f9bc3df80e309ddd6f4b8dfadc3c8d108754f4ba5e1ed6d3c44fe3c588449",
         "input_verified": true,
         "exit_status": 0,
         "artifact_binding": {
           "t1_item": 10,
           "path": "signoff/attest/10.inventory.json",
-          "content_hash": "sha256:48d2c74068b25bf7c9d829a1b1ded39012bd532aa923c87f5e6c3c35a4eebc6d",
+          "content_hash": "sha256:3b7f9bc3df80e309ddd6f4b8dfadc3c8d108754f4ba5e1ed6d3c44fe3c588449",
           "input_verified": true,
           "source": "signoff/attest.py"
         }

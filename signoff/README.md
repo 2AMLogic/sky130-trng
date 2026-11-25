@@ -50,33 +50,46 @@ no_evidence`) and stays that way until every row is met. The citation is
 unpinned (no provenance block); the `characterization-report-check` CI job
 guards freshness by byte-diffing the envelope with the report.
 
-**Update 2026-11-21 (issue #597): 7.analog cited on a `fail` report — still 7/22 met.** `7.analog` now cites a native `klt pex` report (`sim/pex-sampler-core/`), so the row's reason changes from `no_evidence` to the report's own `fail` status: 130/132 delta rows pass, `active_power_uw` fails the 500 µW bound at the two ff/high-Vdd corners **on both legs** (pre-layout already fails there; design-iteration follow-up is issue #604). See the item 7 analog section below. The met total is unchanged.
+**Current state (measured 2026-11-23 off the committed
+`t1-report.json`):** the committed report was rendered on the tagged
+`klayout-tools==0.8.0` grader — its `build` block records `version`
+`0.8.0`, `git_tag` `v0.8.0`, `is_release: true` — and reads: **22 T1 rows
+(11 checklist items × 2 partitions), 15 met — items 1, 2, 3, 4, 9, 10 and
+11 on both partitions, plus item 7 (post-layout verification) on the
+digital partition — so this block is 15/22 of the way to T1.** The unmet
+T1 rows are items 5, 6 and 8 on both partitions plus item 7 on the analog
+partition. `tier` is `null` until every rendered item is `met`; three
+placeholder rows for T2/T3/T4 render `unmet / tier_not_supported` after
+the 22 T1 rows (25 rows total). Read the *report*, not this summary — it
+is the mechanical ground truth.
+
+**Update 2026-11-21 (issue #597): 7.analog cited on a `fail` report.** `7.analog` now cites a native `klt pex` report (`sim/pex-sampler-core/`), so the row's reason changes from `no_evidence` to the report's own `fail` status: 130/132 delta rows pass, `active_power_uw` fails the 500 µW bound at the two ff/high-Vdd corners **on both legs** (pre-layout already fails there; design-iteration follow-up is issue #604). See the item 7 analog section below. The met total is unchanged.
 
 **Update 2026-10-09 (issue #227): 7.digital cited, 7/22 met** (see the digital-partition table below). The line that follows is the issue #211 state.
 
 **Update 2026-10-09 (issue #211): 5/22 met.** The digital partition's
 delivered physical evidence (`layout/trng_digital/`, issue #166) is now
 cited: **item 3 digital** (`drc.json`) and **item 4 digital** (`lvs.json`)
-render `met` on the pinned `klayout-tools==0.7.0` grader. Item 11 analog,
-item 3 analog and item 4 analog are unchanged. The paragraph below is the
-0.7.0 re-render (issue #164) and is superseded for the totals by this one.
+rendered `met` on the then-pinned `klayout-tools==0.7.0` grader. Item 11
+analog, item 3 analog and item 4 analog are unchanged. The paragraph below
+records the 0.7.0 re-render (issue #164) and is superseded for the totals
+by this one.
 
-At `origin/main`, re-rendered on the tagged grader `klayout-tools==0.7.0`
-(2026-10-08, issue #164), the report reads: **22 T1 rows rendered
-(11 checklist items × 2 partitions), 3 met — item 3 (DRC clean), item 4
-(LVS clean) and item 11 (power delivery, structural), analog partition
-only — so this block is 3/22 of the way to T1.** Issue #164 is closed by
-this change: klayout-tools 0.7.0 carries the LVS supply-pairing fix
-(klayout-tools#2405/#2431), and `11.analog` now renders `met` with
+*History:* at `origin/main` as of 2026-10-08, re-rendered on the tagged
+grader `klayout-tools==0.7.0` (issue #164), the report read: **22 T1 rows
+rendered (11 checklist items × 2 partitions), 3 met — item 3 (DRC clean),
+item 4 (LVS clean) and item 11 (power delivery, structural), analog
+partition only — so this block was 3/22 of the way to T1.** Issue #164 was
+closed by this change: klayout-tools 0.7.0 carried the LVS supply-pairing
+fix (klayout-tools#2405/#2431), and `11.analog` rendered `met` with
 `power_delivery` populated (`supply_nets` vddr1..vddr4, vdd, vss;
 `ties_checked_by_well_assertion` naming all six ties). Against the 0.6.0
-report only item 11 changed verdict; every other row is byte-identical,
-and the vendored checklist is unchanged (`doc_drift: false`). `tier` is
-`null` until every rendered item is `met`. The report records its `build`
-identity (`v0.7.0`, `is_release: true`) and pins the governing checklist
-by `source_doc_content_hash`; three placeholder rows for T2/T3/T4 render
-`tier_not_supported` after the 22 T1 rows (25 rows total). Read the
-*report*, not this summary — it is the mechanical ground truth.
+report only item 11 changed verdict; every other row was byte-identical,
+and the vendored checklist was unchanged (`doc_drift: false`). `tier` was
+`null` until every rendered item was `met`. That render recorded its
+`build` identity (`v0.7.0`, `is_release: true`) and pinned the governing
+checklist by `source_doc_content_hash`; three placeholder rows for T2/T3/T4
+rendered `tier_not_supported` after the 22 T1 rows (25 rows total).
 
 *History:* on `klayout-tools==0.6.0` (2026-09-23, issues #160/#161) the
 report read 2/22 with item 11 `unmet` (`lvs_supply_unproven`).
@@ -325,16 +338,17 @@ them):**
 
 ## Digital-partition citations (issue #211) and what stays omitted
 
-Audit of the `layout/trng_digital/` envelopes against the 0.7.0 grader and
-the vendored item rules (no new simulation; existing artifacts only):
+Audit of the `layout/trng_digital/` envelopes against the 0.7.0 grader
+then in force and the vendored item rules (no new simulation; existing
+artifacts only):
 
 | Row | Decision | Why |
 |---|---|---|
 | `3.digital` | **cited** `drc.json`, pin `sha256:c65e1581…` | `klt drc` `status: clean`, 0 violations, deck `sky130` (`sha256:ef7800eb…`). The pin is `provenance.input.content_hash`, the sha256 of the committed `trng_digital.gds`. |
 | `4.digital` | **cited** `lvs.json`, pin `sha256:93fdea04…` | `status: match`, engine `klayout` 0.30.12, `power_connectivity.status: match`. The pin is the sha256 of the extracted `trng_digital.layout.abstract.spice` that was compared (`environment.layout_sha256`). |
 | `5.digital` | **not cited** | `sta.json` (16 Liberty corners, all `constrained`, non-negative setup/hold, SPEF-annotated) would grade `met` on its own, but item 5's digital rule is multi-corner STA *plus* a bit-exact functional suite. Native `klt functional-verification` reports now exist (issue #222, `sim/digital-functional-verification/records/20261009-120511-d9f51a4`; functional/unit-delay on the RTL and the routed netlist, not SDF-timed), so both halves of the evidence are present. The row is **still not cited**: item 5's note requires a ratified specification and DR-0004 (the digital section) is `Proposed`; that condition is unmet and stays explicitly unmet. |
-| `7.digital` | **cited** `sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/timed-declared.report.json`, unpinned | Issue #227: native `klt functional-verification` run of the routed netlist with the post-route SDF back-annotated (`environment.sdf.annotated: true`, 13/13 tests, byte-identical to the independent oracle). Renders `met` on the 0.7.0 grader, which checks only the envelope kind and an annotated `sdf` object. **Disclosures that travel with the citation (the grader does not grade them):** `sdf.partial: true` -- Icarus 13.0 drops all 455 SDF `TIMINGCHECK` sections, so setup/hold are *not* simulated; 39 zero-delay bit-selected-input `INTERCONNECT` entries were removed before annotation (the tool cannot resolve them under Icarus); one SDF corner only (`tt_025C_1v80`), **not a PVT sweep**; the SDF carries zero wire delay; DR-0004 is `Proposed`, so the result is provisional; the 16-corner STA (item 5 evidence) is neither replaced nor superseded. Cited unpinned because a pin renders `unverifiable_provenance` (the envelope records no input hash); every input is hashed in the record's `input-hashes.json`. Annotation/timing controls (mistargeted SDF, SDF removed, exact +137 ps arc shift, +15000 ns shift, 5 ns clock) are in the same record. |
-| `11.digital` | **cited** `[erc.json, pnr.json, lvs.json]`, pins `sha256:c65e1581…` (GDS) / `9d2b8aed…` (P&R input netlist) / `93fdea04…` | Native `klt erc --findings-only` (klt 0.7.0) on the committed routed GDS: VPWR and VGND one island each, zero findings, stackup covers every PDN strap layer (met1/met4/met5) and DEF special-net layer (met1–met5), drawn-nwell tie (43 wells, 704 tapcells) and a 704-box native-substrate tie both `checked`, nothing `skipped`; `pnr.json` `power.pdn` true with tapcell `sky130_fd_sc_hd__tapvpwrvgnd_1`; `lvs.json` `power_connectivity: match`. Five isolated negative controls plus a clean baseline (disconnection, short, missing well tie, missing substrate tie, wrong-net tie) are all detected. Spec, generator, controls, reproduction and limits: `layout/trng_digital/ERC.md`. |
+| `7.digital` | **cited** `sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/timed-declared.report.json`, unpinned | Issue #227: native `klt functional-verification` run of the routed netlist with the post-route SDF back-annotated (`environment.sdf.annotated: true`, 13/13 tests, byte-identical to the independent oracle). Rendered `met` on the 0.7.0 grader at citation time, which checked only the envelope kind and an annotated `sdf` object; the committed 0.8.0 report renders the row `met` unchanged (part of its `t1_met_count` 15). **Disclosures that travel with the citation (the grader does not grade them):** `sdf.partial: true` -- Icarus 13.0 drops all 455 SDF `TIMINGCHECK` sections, so setup/hold are *not* simulated; 39 zero-delay bit-selected-input `INTERCONNECT` entries were removed before annotation (the tool cannot resolve them under Icarus); one SDF corner only (`tt_025C_1v80`), **not a PVT sweep**; the SDF carries zero wire delay; DR-0004 is `Proposed`, so the result is provisional; the 16-corner STA (item 5 evidence) is neither replaced nor superseded. Cited unpinned because a pin renders `unverifiable_provenance` (the envelope records no input hash); every input is hashed in the record's `input-hashes.json`. Annotation/timing controls (mistargeted SDF, SDF removed, exact +137 ps arc shift, +15000 ns shift, 5 ns clock) are in the same record. |
+| `11.digital` | **cited** `[erc.json, pnr.json, lvs.json]`, pins `sha256:c65e1581…` (GDS) / `9d2b8aed…` (P&R input netlist) / `93fdea04…` | Native `klt erc --findings-only` (klt 0.7.0 at audit time) on the committed routed GDS: VPWR and VGND one island each, zero findings, stackup covers every PDN strap layer (met1/met4/met5) and DEF special-net layer (met1–met5), drawn-nwell tie (43 wells, 704 tapcells) and a 704-box native-substrate tie both `checked`, nothing `skipped`; `pnr.json` `power.pdn` true with tapcell `sky130_fd_sc_hd__tapvpwrvgnd_1`; `lvs.json` `power_connectivity: match`. Five isolated negative controls plus a clean baseline (disconnection, short, missing well tie, missing substrate tie, wrong-net tie) are all detected. Spec, generator, controls, reproduction and limits: `layout/trng_digital/ERC.md`. |
 | `pnr.json` | not a citation | No T1 row grades a `place-and-route` envelope by itself; it is the PDN provenance for 11.digital and the layout provenance for item 2. |
 | `1, 2, 6, 8, 9, 10` | unchanged | No klt verb / no aggregated artifact, as before. |
 
@@ -399,17 +413,25 @@ prints `status: match`.
 
 ## Items 1, 2, 9, 10 attestation (issue #320)
 
-klayout-tools has no verb behind these four items, and the 0.7.0 grader
-accepts them only from an opt-in artifact-anchored `generic` envelope
-(`--describe-grader`: `generic: 1, 2, 8, 9, 10`). `signoff/attest.py` (stdlib
-only) builds those envelopes from committed inventories, as of `43f26fd`,
-2026-10-17 (klt 0.7.0, open_pdks `c6d73a35f524`):
+As of the pinned `klayout-tools==0.8.0` grader, klayout-tools has no verb
+behind items 2, 9 and 10, and the grader accepts them only from an opt-in
+artifact-anchored `generic` envelope (`--describe-grader` on 0.8.0:
+`generic: 1, 2, 8, 9, 10`). Item 1 is not verb-less: 0.8.0 lists a
+`synthesize` envelope kind for item 1, and the `1.analog` row below uses the
+native `klt signoff --attest 1` (klt 0.9.1). Both item-1 rows are `generic`
+envelopes (`kind: generic` in `attest/1.analog.json` and
+`attest/1.digital.json`); they differ in who minted them: `1.analog` by
+`klt signoff --attest 1`, `1.digital` by the stdlib `signoff/attest.py`, from an
+audit that ran on 0.7.0, before 0.8.0.
+`signoff/attest.py` (stdlib only) builds those envelopes from committed
+inventories, as of `43f26fd`, 2026-10-17 (klt 0.7.0, open_pdks
+`c6d73a35f524`):
 
 | Row | Envelope | Verdict | What the mechanical check establishes |
 |---|---|---|---|
 | `1.digital` | `attest/1.digital.json` | `met` | RTL sha256 equals the input hash pinned by both synthesis outputs and by `tool-pins.json`; the committed 50 kHz synthesized netlist matches the P&R input pin. |
-| `2.analog` | `attest/2.analog.json` | `met` | `sampler_core.gds` is the exact GDS the `3.analog` DRC pin names; `compose` request/response, cell spec and README are committed (documented provenance). |
-| `2.digital` | `attest/2.digital.json` | `met` | `trng_digital.gds` is the `3.digital` pinned GDS; the P&R request, tool pins and record are committed and the record's RTL/netlist hashes match the current tree. |
+| `2.analog` | `attest/2.analog.json` | `met` | `sampler_core.gds` is the exact GDS the `3.analog` DRC pin names; `compose` request/response, cell spec and README are committed (documented provenance); the harness's `layout/bin` helper closure is inventoried (issue #650). |
+| `2.digital` | `attest/2.digital.json` | `met` | `trng_digital.gds` is the `3.digital` pinned GDS; the P&R request, tool pins and record are committed and the record's RTL/netlist hashes match the current tree; the harness's `layout/bin` helper closure is inventoried (issue #650). |
 | `10` | `attest/10.json` | `met` | README points to `REPRODUCE.md` and has the spec section; LICENSE is Apache-2.0; `ci.yml` runs the reproduce checker, the append-only rule and this gate. |
 | `1.analog` | `attest/1.analog.json` | `met` | Not built by `attest.py` (issue #360). `attest/1.analog.inventory.json` is a klt-format inventory (19 `.sch`/`.sym` sources plus the four derived `design/*.spice`, each declaring `python3 design/netlist.py --check --top <cell>` as its freshness check). `klt signoff --attest 1` (klayout-tools 0.9.1, needs xschem and `klt netlist`) runs only in `pdk-nightly.yml` `netlist-check`, which mints the envelope (uploaded as the `attest-1-analog` artifact) and re-attests the committed `attest/1.analog.json` with `--check`, failing on drift. After a deliberate schematic change, dispatch `pdk-nightly` and commit the artifact as `attest/1.analog.json`; then **copy the new envelope's `provenance.input.content_hash` into `block-manifest.json`'s `evidence["1.analog"].content_hash` by hand** — `attest.py` does not own this row, so neither `--write` nor `--check` updates that pin, and a stale pin grades the item `unmet` / `stale_evidence` — then run `attest.py --write` for the rows it does own and re-render the report. |
 | `9` | `attest/9.json` | `met` | Every record-bearing `sim/` family has a committed testbench/harness/script outside `records/`, `runs/`, `corners/` (`sim/ro-ring-timestep-convergence` via `harness/run-convergence.py`), the three `pdk.json` pins agree, and `REPRODUCE.md` states the pin. |
@@ -422,16 +444,27 @@ The grader does not walk the member files: `attest.py --check` (CI,
 `signoff-check`) does, and goes red when any member changed, appeared or
 vanished, or when an envelope/manifest pin differs.
 
-Item 9's inventory also covers its members' import closure into
-`layout/bin` (issue #648): the shared helpers they import at run time —
-`layout/bin/_hashing.py`, `_klt_common.py`, `_pex_rewrite.py` — are
-inventoried, so an edit to one of them moves item 9's hash instead of
-leaving it `pass` over changed harness behaviour.
-`sim/tests/test_signoff_attest.py` recomputes that closure from the
-committed members and fails when a script imports a `layout/bin` module
-the selectors do not pin, so a new helper import needs its selector entry
-and a `--write`. Repo-local imports from anywhere else (for example
-`design/_pdk_search.py`, issue #650) are not inventoried.
+Every inventory that pins a python harness also pins that harness's
+import closure into the shared helper directories `layout/bin/` and
+`design/` (issues #648, #650): the helper modules the harnesses import
+at run time — `layout/bin/_hashing.py`, `_klt_common.py`,
+`_pex_rewrite.py` and `design/_pdk_search.py` (imported by
+`sim/bin/corner-run.py`) for item 9; `_klt_common.py` (imported by
+`compose-cell.py`) for `2.analog`; `_hashing.py` and `_klt_common.py`
+(imported by `pnr-and-verify.py`) for `2.digital` — are members of the
+same item's inventory, so an edit to a helper moves the hash of every
+item whose harness behaviour it can change, instead of leaving the
+envelope `pass` over changed harness behaviour.
+`sim/tests/test_signoff_attest.py` recomputes each item's closure from
+that item's committed members against helper modules discovered from
+the repository tree (never from the selectors), and fails when a
+member script imports a `layout/bin/` or `design/` module its own
+item's selectors do not pin, so a new helper import needs its selector
+entry and a `--write`. Repo-local imports from other directories are
+not traced by that assertion: the `sim/` harnesses a `2.*` harness
+imports (for example `sim/digital-synthesis/harness/gate_cosim.py` and
+`sim/bin/evidence_paths.py`, imported by `pnr-and-verify.py`) are
+item 9 territory, pinned there and not per-item.
 
 Limits, stated plainly: these are presence-and-consistency checks over
 committed files. `2.*` do not re-run the layout generator (that is
@@ -491,10 +524,15 @@ because a different `klt` build stamps a different build/ruleset id into
 the report and the byte-diff gate goes red on an otherwise-correct
 resolution.
 
-Once a klayout-tools release carries `klt signoff --attest`/`--inventory`
-(present in the `0.7.1.dev` development build, absent from 0.7.0 as of
-2026-10-17), switch these rows to it and drop `attest.py`; the CI pin stays at
-0.8.0 until then. Item 9's inventory pins the PDK files, so #314 (open_pdks
+`klt signoff --attest`/`--inventory` is already in a release: klayout-tools
+0.9.1 documents it for items 1, 8, 9 and 10 (from `--inventory`) and item 2
+(from `--input STREAM`), and `1.analog` uses it. Still pending is migrating the
+rows `attest.py` owns to it and dropping `attest.py`; that needs a check that the
+`--attest`-minted envelopes match the committed ones, which has not been done.
+No grader pin bump is a prerequisite: the CI grader pin stays at 0.8.0, which
+already accepts these `generic` envelopes (`--describe-grader` on 0.8.0:
+`generic: 1, 2, 8, 9, 10`), and `1.analog`, minted by klt 0.9.1, is already
+graded `met` by that 0.8.0 grader. Item 9's inventory pins the PDK files, so #314 (open_pdks
 re-pin) and this issue's rows need a `--write` after whichever lands second.
 
 ## Block kind and the partition boundary (the mixed-signal claim)

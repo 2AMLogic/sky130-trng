@@ -53,7 +53,7 @@ sys.path.insert(0, os.path.join(REPO, "sim", "bin"))
 from loadmod import load_module  # noqa: E402
 
 G = load_module("make_gate_model", GENERATOR)
-MR = load_module("make_requests_for_gate_model", BLOCK / "make-requests.py")
+MN = load_module("make_netlist_for_gate_model", BLOCK / "make-netlist.py")
 CMP = load_module("compare_gate_model", BLOCK / "analysis" / "compare-gate-model.py")
 
 
@@ -340,17 +340,18 @@ class TestRoutedNetlistCorrespondence(unittest.TestCase):
                 self.assertRegex(net, r"^[A-Za-z_][A-Za-z0-9_]*$",
                                  "net name is not a flat SPICE identifier")
 
-    def test_netname_agrees_with_make_requests_scrub(self):
-        # make-requests.py owns the port spelling the whole-block deck's .meas
-        # cards use. netname() must not diverge from it on any port bit, or the
-        # two decks would address different nets by the same name.
+    def test_netname_agrees_with_make_netlist(self):
+        # make-netlist.py owns the port spelling of the committed
+        # trng_whole.sim.spice.gz body. netname() must not diverge from it on
+        # any port bit, or the two decks would address different nets by the
+        # same name.
         for name, direction, msb, lsb in self.design.ports:
             if msb is None:
-                self.assertEqual(G.netname(name), MR._scrub(name))
+                self.assertEqual(G.netname(name), MN._normalise_name(name))
             else:
                 for i in range(min(msb, lsb), max(msb, lsb) + 1):
                     tok = f"{name}[{i}]"
-                    self.assertEqual(G.netname(tok), MR._scrub(tok))
+                    self.assertEqual(G.netname(tok), MN._normalise_name(tok))
 
     def test_committed_manifest_accounts_for_every_routed_instance(self):
         m = json.loads(COMMITTED_MANIFEST.read_text())
@@ -947,6 +948,67 @@ class TestReducerMeasurementCompleteness(unittest.TestCase):
         self.assertEqual(result["checks_matched"], result["checks_total"])
 
 
+class TestCoupledReplay(unittest.TestCase):
+    def setUp(self):
+        # Actual standalone output voltages. Overlay sampler inputs for an
+        # offline comparison test, then perturb them independently of the outputs.
+        self.report = json.loads(COMMITTED_GATE_REPORT.read_text())
+        self.plan = json.loads(COMMITTED_GATE_PLAN.read_text())
+        self.plan["name"] = "coupled-full"
+        self.plan["raw_source"] = "analog_sampler"
+        # Simulate the report envelope for these offline comparator tests.
+        supply = {name: 1.8 for name in ("Vvdd", "Vvddr1", "Vvddr2", "Vvddr3", "Vvddr4")}
+        self.plan["corners"]["supply_v"] = {name: [v] for name, v in supply.items()}
+        self.report["corners"][0]["supply_v"] = supply
+        self.report["environment"]["backend"]["resolved"] = "batch"
+        bits = iter(self.plan.pop("raw_bit_pattern"))
+        inputs = CMP.P.cycle_inputs(CMP.P.build_program()[0])
+        self.samples = self.report["corners"][0]["measurements"]
+        for k, row in enumerate(inputs):
+            valid = row["raw_valid"]
+            bit = int(next(bits)) if valid else 0
+            for sig, level in (("raw_valid", valid), ("raw_bit", bit)):
+                self.samples.append({"name": f"{sig}_k{k}", "value": level * 1.8})
+        self.samples.append({"name": "clk_at_stop", "value": 0.0})
+        self.plan["measurement_count"] = len(self.samples)
+
+    def sample(self, name):
+        return next(m for m in self.samples if m["name"] == name)
+
+    def test_replay_uses_captured_bits(self):
+        result = CMP.compare(self.report, self.plan)
+        self.assertEqual((result["checks_matched"], result["checks_total"]), (311, 311))
+        self.assertEqual(result["verdict"], "pass")
+        sample = self.sample("raw_bit_k4")
+        sample["value"] = 1.8 - sample["value"]
+        result = CMP.compare(self.report, self.plan)
+        self.assertEqual(result["verdict"], "fail")
+        self.assertTrue(result["mismatches"])
+        self.assertTrue(result["pass_criterion"]["within_budget"])
+
+    def test_refuses_unrelated_deck(self):
+        self.report["environment"]["netlist_sha256"] = "different"
+        with self.assertRaisesRegex(SystemExit, "differs from the coupled deck"):
+            CMP.compare(self.report, self.plan)
+
+    def test_unexpected_valid_in_idle_cycle_is_reported(self):
+        self.sample("raw_valid_k36")["value"] = 1.8
+        result = CMP.compare(self.report, self.plan)
+        self.assertEqual(result["valid_mismatches"], [36])
+        self.assertEqual(result["verdict"], "fail")
+
+    def test_missing_or_unresolved_evidence_cannot_pass(self):
+        self.sample("raw_valid_k1")["value"] = 0.9
+        self.samples.remove(self.sample("gated_k0"))
+        self.sample("clk_at_stop")["value"] = None
+        result = CMP.compare(self.report, self.plan)
+        self.assertEqual(result["checks_total"], 0)
+        self.assertIn("gated_k0", result["missing_measurements"])
+        self.assertIn("raw_valid_k1", [m["measurement"] for m in result["level_decode"]["undecodable"]])
+        self.assertIsNone(result["rate"]["simulated_ns"])
+        self.assertEqual(result["verdict"], "fail")
+
+
 # --------------------------------------------------------------------------
 # 7. against the real Liberty deck (skipped without the PDK)
 # --------------------------------------------------------------------------
@@ -976,9 +1038,13 @@ class TestAgainstRealLiberty(unittest.TestCase):
             slew_ns=committed["reductions"]["slew_ns"],
             port_load_pf=committed["reductions"]["port_load_pf"],
             liberty_path=REAL_LIB,
-            liberty_sha256=committed["liberty_sha256"],
+            liberty_sha256=G.sha256_file(REAL_LIB),
             threshold_pct=committed["reductions"]["liberty_threshold_pct"])
-        self.assertEqual(model.manifest, committed,
+        # The recorded installation directory is host-specific. Check the live
+        # path and compare the library filename, content hash and all model data.
+        self.assertEqual(model.manifest["liberty_deck"], str(REAL_LIB))
+        self.assertEqual(REAL_LIB.name, Path(committed["liberty_deck"]).name)
+        self.assertEqual(model.manifest, {**committed, "liberty_deck": str(REAL_LIB)},
                          "the committed manifest is not what the generator now emits")
 
 

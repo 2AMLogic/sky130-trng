@@ -5,7 +5,7 @@ The two deliberate faults (:func:`perturb_width`, :func:`perturb_topology`),
 their descriptions (:data:`CONTROLS`), the LVS request and the report loop
 were byte-identical in ``layout/ro_array_core/lvs-negative-controls.py`` and
 ``layout/ro_array_core-placement-poc/lvs-negative-controls.py``. Extracted
-per issue #168, following this directory's ``_geom_common.py`` (issue #131)
+per issue #168, following ``layout/bin/_geom_common.py`` (issues #131/#490)
 and ``layout/bin/_klt_common.py`` (issues #49/#52): the controls are defined
 once, so changing one copy can no longer silently weaken the other
 directory's evidence check.

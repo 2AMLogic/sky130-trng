@@ -75,6 +75,8 @@ Pure Python: no klt, no PDK, no ngspice.
 from __future__ import annotations
 
 import contextlib
+import gzip
+import hashlib
 import importlib.util
 import io
 import json
@@ -229,12 +231,18 @@ def test_grid_timeouts_unchanged() -> None:
     Both the source constant and the four committed grid ``request.json`` files
     (which is what a re-submit would actually use).
     """
-    assert mr.GRID_TIMEOUT_S == 21600, mr.GRID_TIMEOUT_S
+    # #596 has no coupled fleet rate yet. Pin newly generated requests separately
+    # from the archived flat grid, which retains the settings it was filed with.
+    assert mr.GRID_TIMEOUT_S == 21600
+    for name, request in generated_requests():
+        if name.startswith("grid-"):
+            assert request["options"]["timeout_s"] == mr.GRID_TIMEOUT_S
+            assert request["batch"]["poll_timeout_s"] == 6600
     grids = sorted((HERE / "corners").glob("grid-*/request.json"))
     assert len(grids) == 4, [str(p) for p in grids]
     for req in grids:
         d = json.loads(req.read_text())
-        assert d["options"]["timeout_s"] == mr.GRID_TIMEOUT_S, (str(req), d["options"])
+        assert d["options"]["timeout_s"] == 21600, (str(req), d["options"])
         assert d["batch"]["poll_timeout_s"] == 6600, (str(req), d["batch"])
 
 
@@ -630,6 +638,128 @@ def test_per_card_guard_flags_unvisited_bound() -> None:
         raise AssertionError("a duplicated AT= token went unflagged")
 
 
+def test_standalone_waveform_bytes() -> None:
+    # SHA-256 of all returned lines at 7330672f, including the final LF.
+    for count, request_hash, gate_hash in (
+        (6, "d9d8ae12bab9f3d0898a2c95f6409ff65e329961bf97dbec3e0a6aa022f1f276",
+         "656f1a1faf32cea1dd71d27c4dd9f4764e19304170eaa4d31b347307f8893a3f"),
+        (75, "6fe44c0b0bab82a0b81f6eb83a052c3042d4b16d2145e7f81d2da07bf2a9333d",
+         "d16a420004f83722abf1e03af3e11e7509e8bf1a3a47add9c86eed2a36a0b0c9"),
+    ):
+        cycles, _ = P.build_program(count)
+        for cards, expected in ((mr.input_cards(cycles, count), request_hash),
+                                (mr.G.stimulus_cards(cycles, 1.8), gate_hash)):
+            assert hashlib.sha256(("\n".join(cards) + "\n").encode()).hexdigest() == expected
+
+
+def check_sampler_path(deck: str) -> None:
+    # Resolve the Xw call positionally through the actual .SUBCKT declaration.
+    cards = deck.replace("\n+", " ").splitlines()
+    header = next(c for c in cards if c.startswith(".SUBCKT trng_whole "))
+    formals = header.split()[2:]
+    actuals = next(c.split()[1:-1] for c in cards if c.startswith("Xw "))
+    assert len(formals) == len(actuals)
+    analog = cards[cards.index(header):
+                   next(i for i, c in enumerate(cards) if c.startswith(".ENDS"))]
+    bridge = next(c for c in cards if c.startswith("Aadc_boundary "))
+    src, dst = (v.split() for v in re.findall(r"\[([^\]]+)\]", bridge))
+    assert "adc_b" == bridge.split()[-1] and ".model adc_b adc_bridge(" in deck
+    for name in ("raw_bit", "raw_valid"):
+        pin = formals[actuals.index(name)]
+        assert name in pin.split("|")
+        assert any(c.startswith("Xz") and pin in (c.split()[1], c.split()[3])
+                   for c in analog)  # sampler MOS drain or source
+        digital = dst[src.index(name)]
+        assert digital == "dn_" + name
+        assert any(digital in c.replace("[", " ").replace("]", " ").split()[1:-2]
+                   for c in cards if c.startswith("A_"))
+        assert not any(c[0:1].upper() in ("V", "I", "B", "E", "G", "F", "H")
+                       and name in c.split()[1:3] for c in cards)
+    for name in ("clk", "rst_n", "vdd", "vss"):
+        assert formals[actuals.index(name)] == name
+        if name in ("clk", "rst_n"):
+            assert dst[src.index(name)] == "dn_" + name
+        assert sum(c.startswith("V") and c.split()[1] == name for c in cards) == 1
+
+
+def test_coupled_request() -> None:
+    def digest(data: bytes) -> str:
+        return hashlib.sha256(data).hexdigest()
+
+    with tempfile.TemporaryDirectory() as tmp:
+        for mode, stop in (("coupled-probe", 100), ("coupled-full", 7870)):
+            out = Path(tmp) / mode
+            assert mr.main([str(out), "--set", mode]) == 0
+            base = out / mode
+            deck = (base / "netlist.cir").read_text()
+            plan = json.loads((base / "plan.json").read_text())
+            request = json.loads((base / "request.json").read_text())
+            assert request["backend"] == "batch" and request["corners"]["process"] == ["tt"]
+            assert tran_stop_ns(request) == stop
+            assert request["corners"]["temperature_c"] == [27.0]
+            assert all(axis == [1.8] for axis in request["corners"]["supply_v"].values())
+            assert request["options"]["timeout_s"] + 120 <= 3480
+            assert request["batch"]["poll_timeout_s"] <= 3480
+            assert plan["analysis_stop_ns"] == stop and plan["provenance"] == P.PROVENANCE
+            # issue #682: the settled DR-0017 option 2 travels with the plan
+            assert plan["boundary_load_option"] == mr.PVT.boundary_load_block()
+            assert plan["boundary_load_option"]["option"] == 2
+            assert "settled as option 2" in plan["reductions"]["input_load"]
+            assert "is open" not in plan["reductions"]["input_load"]
+            nominal = mr.PVT.plan_entry(["tt"], 27.0, 1.8)
+            assert nominal["decks"]["tt"]["exact"] and nominal["decks"]["tt"]["liberty_sha256"] == plan["liberty_sha256"]
+            assert not assert_every_bound_visited(mode, request)[0]
+            assert sum(c.startswith("V") and " PWL(" in c for c in deck.splitlines()) == 39
+            check_sampler_path(deck)
+            for broken in (deck.replace(" raw_bit raw_valid trng_whole", " nc raw_valid trng_whole"),
+                           deck + "Vfake raw_valid 0 DC 0\n"):
+                try:
+                    check_sampler_path(broken)
+                except (AssertionError, ValueError):
+                    continue
+                raise AssertionError("disconnected sampler or synthetic driver passed")
+            assert plan["netlist_sha256"] == digest(deck.encode())
+            assert plan["flat_whole_netlist_sha256"] == digest(gzip.decompress(mr.NETLIST_GZ.read_bytes()))
+            analog = mr.analog_netlist_text()
+            assert plan["analog_partition_sha256"] == digest(analog.encode())
+            # Exporting the sampler changes the formal pin list only.
+            assert analog[analog.index("* device instance"):] in deck
+            gate = gzip.decompress((HERE / "runs/20261114-gate-model-full/gate-model.cir.gz").read_bytes())
+            assert plan["gate_model_sha256"] == digest(gate)
+            assert gate.decode() in deck
+            assert plan["digital_gate_netlist_sha256"] == digest(mr.G.ROUTED_V.read_bytes())
+            pc = plan["partition_check"]
+            assert (pc["analog_transistors"], pc["digital_transistors"], pc["diode_instances"],
+                    pc["total_instances"]) == (264, 25091, 1, 25356)
+            manifest = json.loads((HERE / plan["gate_manifest"]).read_text())
+            assert manifest["source_netlist_sha256"] == plan["digital_gate_netlist_sha256"]
+            routed = {name for _, name, _ in mr.G.parse_verilog(mr.G.ROUTED_V).instances}
+            primitives = {m[1] for m in re.finditer(r"^A(\S+) .* m\1$", deck, re.MULTILINE)}
+            noops = {n["instance"] for n in manifest["declared_no_op_instances"]}
+            assert len(routed) == manifest["routed_instances"] == 2321
+            assert primitives.isdisjoint(noops) and primitives | noops == routed
+
+
+def test_committed_coupled_artifacts_match_generator() -> None:
+    """The committed coupled-probe request.json/plan.json must equal what the
+    generator emits today (a freshly generated plan cannot detect a stale
+    committed one)."""
+    committed = HERE / "runs/20261121-coupled-probe/requests/coupled-probe"
+    with tempfile.TemporaryDirectory(prefix="test-make-requests-coupled-") as tmp:
+        with contextlib.redirect_stdout(io.StringIO()):
+            assert mr.main([str(Path(tmp) / "c"), "--set", "coupled-probe"]) == 0
+        fresh = Path(tmp) / "c" / "coupled-probe"
+        assert json.loads((fresh / "request.json").read_text()) == json.loads((committed / "request.json").read_text())
+        # plan.json is historical evidence (byte-stable): the current plan differs
+        # by exactly two intentional metadata changes (issue #682).
+        expected = json.loads((committed / "plan.json").read_text())
+        expected["reductions"]["input_load"] = (
+            "Liberty input-pin capacitance per d_genlut input; the DR-0017 "
+            "boundary-load choice is settled as option 2 (#595, see boundary_load_option)")
+        expected["boundary_load_option"] = mr.PVT.boundary_load_block()
+        assert json.loads((fresh / "plan.json").read_text()) == expected
+
+
 # ---------------------------------------------------------------------------
 # Issue #595: the matrix-to-deck mapping and the boundary-load option
 # ---------------------------------------------------------------------------
@@ -761,6 +891,9 @@ def test_grid_plans_carry_gate_model_pvt() -> None:
 
 
 def main() -> int:
+    test_coupled_request()
+    test_committed_coupled_artifacts_match_generator()
+    test_standalone_waveform_bytes()
     test_capture_points_sit_at_a_rail()
     test_change_emits_hold_then_edge()
     test_breakpoint_hygiene()

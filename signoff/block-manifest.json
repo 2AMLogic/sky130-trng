@@ -101,7 +101,43 @@
     "                    are still NOT cited: item 5's own note requires a",
     "                    ratified spec and DR-0004 (digital section) is",
     "                    `Proposed`. Stays unmet/no_evidence.",
-    "  6                  no `klt yield` report exists.",
+    "  6                  (issue #598) CITED for the analog partition: three",
+    "                     `klt yield` reports, one per PVT point of the committed",
+    "                     local-mismatch Monte Carlo (tt/ss/ff under",
+    "                     sim/local-mismatch-monte-carlo/yield/<record-id>/,",
+    "                     sample sets derived from the committed raw responses",
+    "                     by yield_reports.py on reduce.py's own functions,",
+    "                     byte-replayable with its --check). Each measures",
+    "                     H_bias -- reduce.py's per-pairing STATIC-BIAS UPPER",
+    "                     BOUND on the raw bit's min-entropy (deterministic",
+    "                     transient per draw, no noise), NOT the measured row",
+    "                     quantity -- against the spec row as written (min 0.5",
+    "                     bit, DR-0004 sec. 2.3), which states no target yield;",
+    "                     none was invented, so klt yield can only REPORT the",
+    "                     estimates (run status \\\"reported\\\", never \\\"fail\\\").",
+    "                     Item 6 therefore stays unmet/partial_coverage on",
+    "                     the unratified row alone (README target table DRAFT,",
+    "                     decision records Proposed; spec_rows declares the",
+    "                     row unratified). The row IS covered: uncovered_rows",
+    "                     reads empty because the committed reports carry no",
+    "                     spec_row tag, so their rows are the manifest-",
+    "                     asserted ones (klayout-tools#5490 only ever affected",
+    "                     tagged measurements), and flipping ratified to true",
+    "                     with nothing else changed renders the item met.",
+    "                     Ratification -- the decision lives on issue #3 -- is",
+    "                     the single missing input. Caveat for that decision:",
+    "                     the campaigns supply estimates only; they make no",
+    "                     yield claim (run status \\\"reported\\\") and declare no",
+    "                     negative control. The reports' own findings stand",
+    "                     either way: tt 60/1800 pairings below the floor (worst",
+    "                     H_bias 0.472, p 0.279; the design response is issue",
+    "                     #221 / DR-0013 / PR #249, not touched here), ss and ff",
+    "                     0/1800 (empirical 1.0 bounded below at 0.998); sample",
+    "                     size sufficient at every corner (n 1800 vs required",
+    "                     1238/183). 6.digital: no statistical row; the klt",
+    "                     >= 0.8.0 `not_applicable` entry is written down ready",
+    "                     in issue #598's PR description and deliberately NOT",
+    "                     applied while the spec records are Proposed.",
     "  7.analog           (issue #597) CITED: a native `klt pex` report",
     "                    (sim/pex-sampler-core/runs/20261121-001303-7330672/",
     "                    pex-report.json), --measure-command mode: 11 spec",
@@ -285,19 +321,19 @@
     },
     "2.analog": {
       "file": "signoff/attest/2.analog.json",
-      "content_hash": "sha256:c3c4463447aec3ab1006162d2d1a4cd5a62d4db3a5bd712d29d764a49294902f"
+      "content_hash": "sha256:9f2c9accb593dfd8a043c7a8ae9fb50052539be2e39bf9090cd94bfd69c722a7"
     },
     "2.digital": {
       "file": "signoff/attest/2.digital.json",
-      "content_hash": "sha256:c94a4454086e66ae8a577334519a6746b268a58c36f9f06460fa9787130e2680"
+      "content_hash": "sha256:67f3502031f7fdb03c31fdfbab2e4edf3343e2ebc4dd5e83df8fda59e7d7be45"
     },
     "9": {
       "file": "signoff/attest/9.json",
-      "content_hash": "sha256:44a118d914918ea7a9c267546be60b15bcc60c2d8ee829e562042749022406e8"
+      "content_hash": "sha256:2c0c35fce9bc7847666bfb41804cb953b9fb7538b685736cd2dc6d3c51952f1c"
     },
     "10": {
       "file": "signoff/attest/10.json",
-      "content_hash": "sha256:48d2c74068b25bf7c9d829a1b1ded39012bd532aa923c87f5e6c3c35a4eebc6d"
+      "content_hash": "sha256:3b7f9bc3df80e309ddd6f4b8dfadc3c8d108754f4ba5e1ed6d3c44fe3c588449"
     },
     "8.analog": {
       "file": "signoff/characterization-envelope.json"
@@ -305,9 +341,40 @@
     "8.digital": {
       "file": "signoff/characterization-envelope.json"
     },
+    "6.analog": [
+      {
+        "file": "sim/local-mismatch-monte-carlo/yield/20261009-111127-e57ad27/klt-yield.json",
+        "rows": [
+          "raw_min_entropy_per_bit"
+        ],
+        "content_hash": "sha256:22188713550161633dd762ed06b82b85bc3de2a605a7397aae4bdfce9f050eb5"
+      },
+      {
+        "file": "sim/local-mismatch-monte-carlo/yield/20261009-111126-e57ad27/klt-yield.json",
+        "rows": [
+          "raw_min_entropy_per_bit"
+        ],
+        "content_hash": "sha256:3f9c87405f23f767add41d9a669d552bad394c1756cc76a094bf36df192ae4bc"
+      },
+      {
+        "file": "sim/local-mismatch-monte-carlo/yield/20261009-111125-e57ad27/klt-yield.json",
+        "rows": [
+          "raw_min_entropy_per_bit"
+        ],
+        "content_hash": "sha256:e0e57a2bea8e140e0b866ca6e38b4c95a5c4683be74b0601ac7bfc45f0d76846"
+      }
+    ],
     "7.analog": {
       "file": "sim/pex-sampler-core/runs/20261121-001303-7330672/pex-report.json",
       "content_hash": "sha256:e3ff54a9bb15122298f0d5df817612ed1caacb3b045533f9ba86d009036c2004"
     }
+  },
+  "spec_rows": {
+    "6.analog": [
+      {
+        "id": "raw_min_entropy_per_bit",
+        "ratified": false
+      }
+    ]
   }
 }

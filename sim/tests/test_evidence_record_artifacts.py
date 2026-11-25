@@ -10,6 +10,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -254,8 +255,9 @@ class RecordFooterSupersedes(unittest.TestCase):
     def test_default_footer_names_no_correction(self):
         import datetime as dt
         md_path, _ = self.mint()
+        # self.root is not a git repo here, so mint_record discloses "unknown" (#676).
         expected = er.record_footer(author="t", now=dt.datetime(2026, 1, 1, tzinfo=dt.timezone.utc),
-                                    sha="abc1234")
+                                    sha="abc1234", worktree_line="- Working tree: unknown (git status unavailable; repo_dirty is null)")
         self.assertEqual(md_path.read_text().splitlines()[-len(expected):], expected)
         self.assertEqual(md_path.read_text().splitlines()[-1], "- Supersedes: (none)")
 
@@ -264,10 +266,11 @@ class RecordFooterSupersedes(unittest.TestCase):
         md_path, _ = self.mint(supersedes="20251231-235959-0000000")
         lines = md_path.read_text().splitlines()
         self.assertEqual(lines[-1], "- Supersedes: 20251231-235959-0000000")
-        self.assertEqual(lines[-7:-1],
+        self.assertEqual(lines[-8:-2],
                          ["", "---", "", "- Author: t", "- Timestamp (UTC): 2026-01-01T00:00:00+00:00",
                           "- Repo commit: `abc1234`"])
-        self.assertEqual(lines[-8], "body")  # nothing above the footer moved
+        self.assertEqual(lines[-2], "- Working tree: unknown (git status unavailable; repo_dirty is null)")
+        self.assertEqual(lines[-9], "body")  # nothing above the footer moved
 
     def test_default_mint_record_matches_record_footer_default(self):
         import datetime as dt
@@ -275,7 +278,12 @@ class RecordFooterSupersedes(unittest.TestCase):
         self.assertTrue(md_path.read_text().startswith("# h\nbody\n"))
         self.assertEqual(md_path.read_text().splitlines()[-4:],
                          list(er.record_footer(author="t", now=dt.datetime(2026, 1, 1, tzinfo=dt.timezone.utc),
-                                               sha="abc1234"))[-4:])
+                                               sha="abc1234", worktree_line="- Working tree: unknown (git status unavailable; repo_dirty is null)"))[-4:])
+        # ...and the default record_footer() itself is byte-for-byte unchanged.
+        self.assertEqual(er.record_footer(author="t", now=dt.datetime(2026, 1, 1, tzinfo=dt.timezone.utc),
+                                          sha="abc1234"),
+                         ["", "---", "", "- Author: t", "- Timestamp (UTC): 2026-01-01T00:00:00+00:00",
+                          "- Repo commit: `abc1234`", "- Supersedes: (none)"])
 
     def test_new_record_id_offset_gives_distinct_ids_same_sha(self):
         import datetime as dt
@@ -485,7 +493,9 @@ class ReservedSummaryKeys(unittest.TestCase):
     def test_reserved_set_covers_writer_json_fields(self):
         rid = self.mint({})
         rec = json.loads((self.root / "sim" / "slug" / "records" / f"{rid}.json").read_text())
-        self.assertEqual(set(rec), set(er.RESERVED_BEHAVIORAL_KEYS))
+        # repo_dirty_paths is conditional (issue #666): a mint whose tree is
+        # clean -- or unknown, like this non-repo fixture -- omits it.
+        self.assertEqual(set(rec), set(er.RESERVED_BEHAVIORAL_KEYS) - {"repo_dirty_paths"})
 
     def test_ordinary_summary_shape_and_provenance_agree(self):
         rid = self.mint({"verdict": "PASS", "n": 3})
@@ -499,6 +509,225 @@ class ReservedSummaryKeys(unittest.TestCase):
         self.assertIn(f"# {rid} -- slug", md)
         self.assertIn("**Level**: behavioral", md)
         self.assertIn(f"`{rec['repo_sha']}`", md)
+
+
+class MintRecordDirtyDisclosure(unittest.TestCase):
+    """Issue #676: mint_record discloses working-tree state like
+    mint_behavioral_record, and the default record_footer stays unchanged."""
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self._tmp.cleanup)
+        self.repo = Path(self._tmp.name) / "repo"
+        self.repo.mkdir()
+        g = ["git", "-C", str(self.repo)]
+        subprocess.run(g + ["-c", "init.defaultBranch=main", "init", "-q"], check=True)
+        (self.repo / "f.py").write_text("v1\n")
+        subprocess.run(g + ["add", "-A"], check=True)
+        subprocess.run(g + ["-c", "user.email=t@example.com", "-c", "user.name=t",
+                            "commit", "-qm", "base"], check=True)
+        self.recs = self.repo / "sim" / "slug" / "records"
+
+    def mint(self, rid="20260101-000000-abc1234", summary=None, repo=None):
+        import datetime as dt
+        return er.mint_record(self.recs, repo or self.repo, rid, ["# h", ""], "body\n",
+                              {"k": 1} if summary is None else summary, author="t",
+                              now=dt.datetime(2026, 1, 1, tzinfo=dt.timezone.utc),
+                              sha="abc1234")
+
+    def test_clean(self):
+        md, js = self.mint()
+        rec = json.loads(js.read_text())
+        self.assertIs(rec["repo_dirty"], False)
+        self.assertNotIn("repo_dirty_paths", rec)
+        self.assertEqual(list(rec)[0], "k")  # caller keys first, writer keys appended
+        self.assertIn("- Working tree: clean (matches the cited commit)", md.read_text())
+
+    def test_dirty_tracked_file(self):
+        (self.repo / "f.py").write_text("v2\n")
+        md, js = self.mint()
+        rec = json.loads(js.read_text())
+        self.assertIs(rec["repo_dirty"], True)
+        self.assertEqual(rec["repo_dirty_paths"], ["f.py"])
+        self.assertIn("- Working tree: dirty (1 path differs from the cited commit)",
+                      md.read_text())
+
+    def test_unknown_when_not_git(self):
+        plain = Path(self._tmp.name) / "plain"
+        plain.mkdir()
+        self.recs = plain / "sim" / "slug" / "records"
+        md, js = self.mint(repo=plain)
+        self.assertIsNone(json.loads(js.read_text())["repo_dirty"])
+        self.assertIn("- Working tree: unknown", md.read_text())
+
+    def test_path_cap(self):
+        n = er._DIRTY_PATHS_CAP + 3
+        for i in range(n):
+            (self.repo / f"u{i:02d}.txt").write_text("x")
+        md, js = self.mint()
+        rec = json.loads(js.read_text())
+        self.assertEqual(len(rec["repo_dirty_paths"]), er._DIRTY_PATHS_CAP)
+        self.assertIn(f"({n} paths differ", md.read_text())
+
+    def test_summary_key_clash_raises_and_writes_nothing(self):
+        for key in ("repo_dirty", "repo_dirty_paths"):
+            with self.assertRaises(SystemExit):
+                self.mint(summary={key: 1})
+        self.assertFalse(self.recs.exists())
+
+    def test_caller_summary_not_mutated(self):
+        summary = {"k": 1}
+        self.mint(summary=summary)
+        self.assertEqual(summary, {"k": 1})
+
+    def test_back_to_back_mints_do_not_self_dirty(self):
+        (self.repo / "sim" / "slug" / "runs" / "r0").mkdir(parents=True)
+        (self.repo / "sim" / "slug" / "runs" / "r0" / "a.txt").write_text("x")
+        _, j0 = self.mint(rid="20260101-000000-abc1234")
+        _, j1 = self.mint(rid="20260101-000001-abc1234")
+        self.assertIs(json.loads(j0.read_text())["repo_dirty"], False)
+        self.assertIs(json.loads(j1.read_text())["repo_dirty"], False)
+
+    def test_unrelated_dirt_still_counts_alongside_own_outputs(self):
+        self.mint(rid="20260101-000000-abc1234")
+        (self.repo / "f.py").write_text("v2\n")
+        _, js = self.mint(rid="20260101-000001-abc1234")
+        self.assertEqual(json.loads(js.read_text())["repo_dirty_paths"], ["f.py"])
+
+    def test_record_footer_worktree_line_opt_in(self):
+        import datetime as dt
+        now = dt.datetime(2026, 1, 1, tzinfo=dt.timezone.utc)
+        base = er.record_footer(author="t", now=now, sha="abc1234")
+        withl = er.record_footer(author="t", now=now, sha="abc1234", worktree_line="- W")
+        self.assertEqual(withl[:6], base[:6])
+        self.assertEqual(withl[6:], ["- W", base[6]])
+
+
+class DirtyTreeDisclosure(unittest.TestCase):
+    """Issue #666: mint_behavioral_record discloses the working-tree state the
+    record was minted from, so a dirty tree cannot hide behind a clean HEAD
+    pin. Each test mints from a real temporary git repository with a committed
+    baseline."""
+
+    RID = "20260101-000000-abc1234"
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self._tmp.cleanup)
+        self.tmp = Path(self._tmp.name)
+        use_fake_klt(self, self.tmp)
+        self.repo = self.tmp / "repo"
+        self.repo.mkdir()
+        subprocess.run(
+            ["git", "-C", str(self.repo), "-c", "init.defaultBranch=main", "init", "-q"],
+            check=True)
+        (self.repo / "harness.py").write_text("v1\n")
+        subprocess.run(["git", "-C", str(self.repo), "add", "-A"], check=True)
+        subprocess.run(["git", "-C", str(self.repo), "-c", "user.email=t@example.com",
+                        "-c", "user.name=t", "commit", "-qm", "base"], check=True)
+
+    def mint(self, artifacts=None, repo=None, summary=None):
+        import datetime as dt
+        with mock.patch.object(
+                er, "new_record_id",
+                return_value=(dt.datetime(2026, 1, 1), "abc1234", self.RID)):
+            return er.mint_behavioral_record(repo or self.repo, "slug", "c", "b",
+                                             summary if summary is not None else {"k": 1},
+                                             artifacts=artifacts)
+
+    def rec(self, repo, rid):
+        d = repo / "sim" / "slug" / "records"
+        return json.loads((d / f"{rid}.json").read_text()), (d / f"{rid}.md").read_text()
+
+    def test_clean_tree_is_recorded_clean(self):
+        rid = self.mint()
+        rec, md = self.rec(self.repo, rid)
+        self.assertIs(rec["repo_dirty"], False)
+        self.assertNotIn("repo_dirty_paths", rec)
+        self.assertIn("- Working tree: clean (matches the cited commit)", md)
+
+    def test_clean_mint_publishing_artifacts_stays_clean(self):
+        art = self.tmp / "src" / "a.txt"  # outside the repo, like real run dirs
+        art.parent.mkdir()
+        art.write_text("data")
+        rid = self.mint(artifacts=[art])
+        rec, md = self.rec(self.repo, rid)
+        self.assertIs(rec["repo_dirty"], False)
+        self.assertNotIn("repo_dirty_paths", rec)
+        self.assertIn("- Working tree: clean (matches the cited commit)", md)
+        self.assertTrue((self.repo / "manifests/artifacts" /
+                         f"slug-{rid}.manifest.json").is_file())
+
+    def test_unstaged_change_is_disclosed(self):
+        (self.repo / "harness.py").write_text("v2\n")
+        rid = self.mint()
+        rec, md = self.rec(self.repo, rid)
+        self.assertIs(rec["repo_dirty"], True)
+        self.assertEqual(rec["repo_dirty_paths"], ["harness.py"])
+        self.assertIn("- Working tree: dirty (1 path differs from the cited commit)", md)
+
+    def test_staged_change_is_disclosed(self):
+        (self.repo / "harness.py").write_text("v2\n")
+        subprocess.run(["git", "-C", str(self.repo), "add", "harness.py"], check=True)
+        rid = self.mint()
+        rec, _ = self.rec(self.repo, rid)
+        self.assertIs(rec["repo_dirty"], True)
+        self.assertEqual(rec["repo_dirty_paths"], ["harness.py"])
+
+    def test_untracked_paths_with_directory_and_space_are_disclosed(self):
+        (self.repo / "new dir").mkdir()
+        (self.repo / "new dir" / "notes with space.txt").write_text("x")
+        (self.repo / "top level.txt").write_text("y")
+        rid = self.mint()
+        rec, md = self.rec(self.repo, rid)
+        self.assertIs(rec["repo_dirty"], True)
+        self.assertEqual(rec["repo_dirty_paths"],
+                         ["new dir/notes with space.txt", "top level.txt"])
+        self.assertIn("- Working tree: dirty (2 paths differ from the cited commit)", md)
+
+    def test_rename_lists_both_sides(self):
+        subprocess.run(["git", "-C", str(self.repo), "mv", "harness.py", "moved.py"],
+                       check=True)
+        rid = self.mint()
+        rec, _ = self.rec(self.repo, rid)
+        self.assertEqual(rec["repo_dirty_paths"], ["harness.py", "moved.py"])
+
+    def test_path_list_is_capped_and_footer_names_the_total(self):
+        cap = er._DIRTY_PATHS_CAP
+        for i in range(cap + 5):
+            (self.repo / f"u{i:03d}.txt").write_text("x")
+        rid = self.mint()
+        rec, md = self.rec(self.repo, rid)
+        self.assertIs(rec["repo_dirty"], True)
+        self.assertEqual(len(rec["repo_dirty_paths"]), cap)
+        self.assertEqual(rec["repo_dirty_paths"], sorted(rec["repo_dirty_paths"]))
+        self.assertEqual(rec["repo_dirty_paths"][0], "u000.txt")
+        self.assertIn(f"- Working tree: dirty ({cap + 5} paths differ from the cited "
+                      f"commit; repo_dirty_paths lists the first {cap})", md)
+
+    def test_git_status_failure_is_unknown_not_clean(self):
+        notarepo = self.tmp / "notarepo"
+        notarepo.mkdir()
+        rid = self.mint(repo=notarepo)
+        rec, md = self.rec(notarepo, rid)
+        self.assertIsNone(rec["repo_dirty"])
+        self.assertNotIn("repo_dirty_paths", rec)
+        self.assertIn("- Working tree: unknown (git status unavailable; "
+                      "repo_dirty is null)", md)
+
+    def test_dirty_fields_are_writer_owned(self):
+        for key in ("repo_dirty", "repo_dirty_paths"):
+            with self.subTest(key=key):
+                with self.assertRaises(SystemExit) as cm:
+                    er.mint_behavioral_record(self.repo, "slug", "c", "b", {key: "forged"})
+                self.assertIn(key, str(cm.exception))
+        self.assertFalse((self.repo / "sim").exists())  # refused before any output
+
+    def test_dirty_mint_emits_the_full_reserved_field_set(self):
+        (self.repo / "harness.py").write_text("v2\n")
+        rid = self.mint(summary={})
+        rec, _ = self.rec(self.repo, rid)
+        self.assertEqual(set(rec), set(er.RESERVED_BEHAVIORAL_KEYS))
 
 
 class WriteCornerBundle(unittest.TestCase):

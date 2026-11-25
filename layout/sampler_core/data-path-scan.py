@@ -85,7 +85,7 @@ import klayout.db as db
 HERE = pathlib.Path(__file__).resolve().parent
 ARRAY_GDS = HERE.parent / "ro_array_core" / "ro_array_core.gds"
 
-sys.path.insert(0, str(HERE))
+sys.path.insert(0, str(HERE.parent / "bin"))
 from _geom_common import carrying, merge_spans, merged  # noqa: E402
 
 LI1 = (67, 20)
