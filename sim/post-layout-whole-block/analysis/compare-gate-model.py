@@ -34,9 +34,9 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import re
 import sys
-from collections import Counter
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -46,6 +46,8 @@ sys.path.insert(0, str(SLUG))
 import program as P  # noqa: E402
 
 sys.path.insert(0, str(REPO / "digital"))
+sys.path.insert(0, str(REPO / "sim" / "bin"))
+from measurement_names import duplicate_measurement_names  # noqa: E402  (#690: shared with sim/bin/measurement_names.py; re-exported for reduce-whole-block.py)
 
 #: a measured level must be this close (V) to vss or to the supply to decode
 LEVEL_TOL = 0.05
@@ -60,8 +62,10 @@ _ODATA_RE = re.compile(r"^odata_k(\d+)_b(\d+)$")
 _SCALAR_RE = re.compile(r"^(alarm|gated|startup_done|out_valid)_k(\d+)$")
 
 
-def decode(value: float, supply_v: float) -> int | None:
+def decode(value: float | None, supply_v: float) -> int | None:
     """Logical bit, or ``None`` when the level is not a resolved rail."""
+    if value is None:
+        return None
     if abs(value) <= LEVEL_TOL:
         return 0
     if abs(value - supply_v) <= LEVEL_TOL:
@@ -82,53 +86,8 @@ def digital_budget_s_per_ns(t_stop_ns: float) -> float:
     return UNIT_CEILING_S / t_stop_ns - ANALOG_RATE_S_PER_NS
 
 
-def compare(report: dict, plan: dict) -> dict:
-    corners = report.get("corners") or []
-    if len(corners) != 1:
-        raise SystemExit(f"expected exactly one corner in the report, got {len(corners)}")
-    corner = corners[0]
-    supply_v = float(plan["reductions"]["supply_v"])
-    n_cycles = int(plan["program"]["cycles"])
-    t_stop_ns = float(plan["program"]["t_stop_ns"])
-    measured = {m["name"]: m["value"] for m in corner["measurements"]}
-
-    # completeness is loud, by count: the plan states how many measurements
-    # the deck was GENERATED with, so the report must carry every one. A
-    # dropped entry would otherwise never be noticed below -- an absent name
-    # simply matches no check -- and the run would pass with fewer checked
-    # rows than the run was measured for.
-    n_meas = len(corner["measurements"])
-    if n_meas != int(plan["measurement_count"]):
-        raise SystemExit(
-            f"report carries {n_meas} measurements, plan.json declares "
-            f"{int(plan['measurement_count'])}: a measurement the deck did "
-            f"not produce must refuse the comparison, not shrink it")
-
-    # completeness is loud, by name too: the checks below all read the
-    # deduplicated dict, so a repeated name displaces the entry it
-    # duplicates -- the count guard above (taken from the list length)
-    # cannot see that, and the displaced measurement's check is silently
-    # dropped while the verdict stays pass.
-    if len(measured) != int(plan["measurement_count"]):
-        duplicates = sorted(name for name, n in
-                            Counter(m["name"] for m in corner["measurements"]).items()
-                            if n > 1)
-        raise SystemExit(
-            f"report carries {len(measured)} distinct measurement names in "
-            f"{n_meas} entries, plan.json declares "
-            f"{int(plan['measurement_count'])}: duplicate measurement "
-            f"name(s) {duplicates} displace the entries they repeat, "
-            f"refusing")
-
-    # the oracle: the FULL program replayed through the normative model. The
-    # truncated program is a strict prefix of it (program.build_program(limit=k)
-    # slices the same cycle list) and the model is causal, so rows 0..n-1 are
-    # the truncated run's rows. The raw bits the deck drove are the committed
-    # pattern's first bits, in the same order.
-    bits = [int(c) for c in plan["raw_bit_pattern"]]
-    full_bits = bits + [0] * (P.N_SAMPLES_REG + P.N_SAMPLES_STREAM - len(bits))
-    rows = P.model_replay(full_bits)
-
+def response_checks(measured: dict, rows: list[dict], supply_v: float,
+                    n_cycles: int) -> tuple[list[dict], list[dict]]:
     checks: list[dict] = []
     undecodable: list[dict] = []
 
@@ -228,6 +187,136 @@ def compare(report: dict, plan: dict) -> dict:
             "match": b is not None and b == expect,
         })
 
+    return checks, undecodable
+
+
+def compare_coupled(corner: dict, plan: dict) -> dict:
+    """Replay actual sampler inputs and check the strobe schedule independently."""
+    from loadmod import load_module
+    requests = load_module("coupled_requests", SLUG / "make-requests.py")
+    cycles, _ = P.build_program()
+    stop = P.t_stop_ns(cycles)
+    if plan["name"] != "coupled-full" or plan["analysis"]["args"].split()[-1] != f"{stop:.0f}n":
+        raise SystemExit("digital replay requires the full coupled program")
+    required = {m["name"] for m in requests.coupled_measurements(cycles)[0]}
+    samples = corner.get("measurements", [])
+    measured = {m["name"]: m.get("value") for m in samples}
+    if len(measured) != len(samples) or measured.keys() - required:
+        raise SystemExit("unexpected or duplicate measurement in coupled report")
+    if plan["measurement_count"] != len(required):
+        raise SystemExit("coupled plan measurement count differs from the program")
+    # Keep missing values in the response set so an absent word cannot vanish.
+    missing = []
+    for name in sorted(required):
+        v = measured.get(name)
+        if not isinstance(v, (int, float)) or not math.isfinite(v):
+            measured[name] = None
+            missing.append(name)
+    supply = float(plan["reductions"]["supply_v"])
+    bits = []
+    strobes = []
+    valid_mismatches = []
+    undecodable = []
+    for k, inp in enumerate(P.cycle_inputs(cycles)):
+        name = f"raw_valid_k{k}"
+        valid = decode(measured[name], supply)
+        if valid is None:
+            undecodable.append({"measurement": name, "value": measured[name]})
+            continue
+        strobes.append(valid)
+        if valid != inp["raw_valid"]:
+            valid_mismatches.append(k)
+        if valid:
+            name = f"raw_bit_k{k}"
+            bit = decode(measured[name], supply)
+            if bit is None:
+                undecodable.append({"measurement": name, "value": measured[name]})
+            else:
+                bits.append(bit)
+    checks = []
+    if not undecodable:
+        rows = P.model_replay(bits, captured_valid=strobes)
+        checks, undecodable = response_checks(measured, rows, supply, len(cycles))
+    compared = [c for c in checks if not c.get("not_compared")]
+    mismatches = [c for c in compared if not c["match"]]
+    runtime = corner.get("runtime_s")
+    reached = stop if measured["clk_at_stop"] is not None else None
+    rate = runtime / stop if reached and runtime and runtime > 0 else None
+    budget = 3000.0 / stop  # records/20261121-coupled-rate.md, fixed before submission
+    within = rate <= budget if rate is not None else None
+    matches = len(compared) - len(mismatches)
+    passed = (corner["status"] == "pass" and within and compared and not missing
+              and not mismatches and not valid_mismatches and not undecodable)
+    return {
+        "issue": 596, "corner_id": corner["corner_id"], "corner_status": corner["status"],
+        "oracle": "digital/model/digital_top.py via program.model_replay()",
+        "checks": checks, "checks_total": len(compared), "checks_matched": matches,
+        "mismatches": mismatches, "valid_mismatches": valid_mismatches,
+        "missing_measurements": missing, "level_decode": {"tol_v": LEVEL_TOL, "undecodable": undecodable},
+        "rate": {"runtime_s": runtime, "simulated_ns": reached, "s_per_simulated_ns": rate},
+        "pass_criterion": {"coupled_budget_s_per_ns": budget, "within_budget": within},
+        "verdict": "pass" if passed else "fail",
+    }
+
+
+def compare(report: dict, plan: dict) -> dict:
+    corners = report.get("corners") or []
+    if len(corners) != 1:
+        raise SystemExit(f"expected exactly one corner in the report, got {len(corners)}")
+    corner = corners[0]
+    if plan.get("raw_source") == "analog_sampler":
+        environment = report.get("environment", {})
+        if environment.get("backend", {}).get("resolved") != "batch":
+            raise SystemExit("a coupled fleet rate requires a batch report")
+        if environment.get("netlist_sha256") != plan["netlist_sha256"]:
+            raise SystemExit("batch report netlist differs from the coupled deck")
+        expected_supply = {name: axis[0] for name, axis in plan["corners"]["supply_v"].items()}
+        if (corner.get("process") != "tt" or corner.get("temperature_c") != 27.0
+                or corner.get("supply_v") != expected_supply):
+            raise SystemExit("batch report corner differs from the nominal coupled request")
+        return compare_coupled(corner, plan)
+    supply_v = float(plan["reductions"]["supply_v"])
+    n_cycles = int(plan["program"]["cycles"])
+    t_stop_ns = float(plan["program"]["t_stop_ns"])
+    measured = {m["name"]: m["value"] for m in corner["measurements"]}
+
+    # completeness is loud, by count: the plan states how many measurements
+    # the deck was GENERATED with, so the report must carry every one. A
+    # dropped entry would otherwise never be noticed below -- an absent name
+    # simply matches no check -- and the run would pass with fewer checked
+    # rows than the run was measured for.
+    n_meas = len(corner["measurements"])
+    if n_meas != int(plan["measurement_count"]):
+        raise SystemExit(
+            f"report carries {n_meas} measurements, plan.json declares "
+            f"{int(plan['measurement_count'])}: a measurement the deck did "
+            f"not produce must refuse the comparison, not shrink it")
+
+    # completeness is loud, by name too: the checks below all read the
+    # deduplicated dict, so a repeated name displaces the entry it
+    # duplicates -- the count guard above (taken from the list length)
+    # cannot see that, and the displaced measurement's check is silently
+    # dropped while the verdict stays pass.
+    if len(measured) != int(plan["measurement_count"]):
+        duplicates = duplicate_measurement_names(corner["measurements"])
+        raise SystemExit(
+            f"report carries {len(measured)} distinct measurement names in "
+            f"{n_meas} entries, plan.json declares "
+            f"{int(plan['measurement_count'])}: duplicate measurement "
+            f"name(s) {duplicates} displace the entries they repeat, "
+            f"refusing")
+
+    # the oracle: the FULL program replayed through the normative model. The
+    # truncated program is a strict prefix of it (program.build_program(limit=k)
+    # slices the same cycle list) and the model is causal, so rows 0..n-1 are
+    # the truncated run's rows. The raw bits the deck drove are the committed
+    # pattern's first bits, in the same order.
+    bits = [int(c) for c in plan["raw_bit_pattern"]]
+    full_bits = bits + [0] * (P.N_SAMPLES_REG + P.N_SAMPLES_STREAM - len(bits))
+    rows = P.model_replay(full_bits)
+
+    checks, undecodable = response_checks(measured, rows, supply_v, n_cycles)
+
     # -- rate
     runtime_s = float(corner["runtime_s"])
     rate = runtime_s / t_stop_ns
@@ -283,6 +372,9 @@ def main(argv: list[str] | None = None) -> int:
                      json.loads(args.plan.read_text()))
     if args.emit_record_json:
         args.emit_record_json.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n")
+    if result["issue"] == 596:
+        print(json.dumps({k: v for k, v in result.items() if k != "checks"}, indent=2))
+        return 0 if result["verdict"] == "pass" else 1
     print(f"corner {result['corner_id']}: {result['corner_status']}")
     print(f"oracle {result['oracle']}")
     for c in result["checks"]:

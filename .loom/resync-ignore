@@ -5,6 +5,18 @@
 # (defaults/scripts/ next to defaults/.loom/) and breaks in this flattened
 # install (.loom/scripts/ next to .loom/CLAUDE.md) with "source not found".
 # Local two-line fix per docs/decisions/PDR-0001-generate-agents-md-path-fix.md.
+# The same entry's local delta also covers the {{INSTALL_DATE}} substitution
+# (#533): the generator resolves the placeholder itself from
+# .loom/install-metadata.json (mirroring resync-installed.sh) and refuses to
+# emit any surviving placeholder, because .loom/AGENTS.md here is the
+# already-substituted artifact, not the installer's template. Same upstream
+# thread: rjwalters/loom#13910 (second gap; appending it there is an
+# operator-only follow-up — this repo's credentials cannot post upstream).
+#
+# Third local delta under the same pin (#640): the write path copies the
+# existing target's mode onto the mktemp'd render before the mv (else 644),
+# because mktemp's 0600 tightened .loom/AGENTS.md to owner-only on every
+# regeneration. Same upstream thread: rjwalters/loom#13910.
 # Pin retired when rjwalters/loom#13910 lands a layout-aware fix upstream and
 # the next resync installs it.
 scripts/generate-agents-md.sh

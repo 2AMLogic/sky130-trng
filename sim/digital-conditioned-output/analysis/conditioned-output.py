@@ -38,7 +38,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import math
 import sys
 from pathlib import Path
 
@@ -49,6 +48,7 @@ from digital.model.conditioner import Crc32Conditioner  # noqa: E402
 from digital.model.params import COND_BLOCK_BITS, H_DESIGN  # noqa: E402
 from evidence_record import mint_record, new_record_id  # noqa: E402
 from loadmod import load_module  # noqa: E402
+from replay_equal import replay_diff as _replay_diff  # noqa: E402  (issue #659: one shared replay comparator)
 
 B = load_module(
     "raw_bit_battery",
@@ -97,14 +97,8 @@ def accounting(h_raw: float | None) -> dict:
 
 
 def analyse_conditioned(bits: list[int]) -> dict:
-    est = B.entropy_estimates(bits)
-    h = est["h_min_bits"]
-    est["binding_ties"] = [k for k, v in est["estimators"].items()
-                           if v["status"] == "OK" and v["h_bits"] == h]
-    return {"n": len(bits), "ones": sum(bits),
-            "single_sequence": B.run_battery(bits),
-            "segmented": B.run_battery(bits, segment_len=SEGMENT_LEN),
-            "estimators": est}
+    return {"ones": sum(bits),
+            **B.analyse_stream(bits, segment_len=SEGMENT_LEN)}
 
 
 def payload_for(source_json: Path) -> dict:
@@ -129,11 +123,6 @@ def payload_for(source_json: Path) -> dict:
                                "covers_bits": SEGMENT_COUNT * SEGMENT_LEN},
             "margin_bits": MARGIN_BITS, "design_budget_bits": DESIGN_BUDGET,
             "alpha": B.ALPHA, "per_stream": rows}
-
-
-def _failed(block: dict) -> str:
-    f = [k for k, v in block["tests"].items() if v["status"] == "FAIL"]
-    return ", ".join(f) if f else "-"
 
 
 def render(payload: dict) -> str:
@@ -194,47 +183,21 @@ def render(payload: dict) -> str:
             c = r["conditioned"]
             e = c["estimators"]
             h = e["h_min_bits"]
-            bind = e["binding_estimator"] or "-"
-            if len(e["binding_ties"]) > 1:
-                bind += " (tie: " + ", ".join(e["binding_ties"]) + ")"
             out.append(
                 f"| {r['corner']} | {r['temp_c']:g} | {r['vdd_v']:g} | "
                 f"{r['seed']} | {r['words']} | {c['n']} | {c['ones']} | "
                 f"{c['single_sequence']['verdict']} | "
-                f"{_failed(c['single_sequence'])} | {c['segmented']['verdict']}"
-                f" | {_failed(c['segmented'])} | "
-                f"{'-' if h is None else f'{h:.4f}'} | {bind} |")
-        out += ["", "### DATA 90B estimators (bit/bit, full conditioned stream)",
-                "", "| corner | T (C) | Vdd (V) | "
-                + " | ".join(B.ESTIMATOR_MIN_N) + " |",
-                "|---|---|---|" + "---|" * len(B.ESTIMATOR_MIN_N)]
-        for r in grp:
-            ev = r["conditioned"]["estimators"]["estimators"]
-            cells = [f"{ev[k]['h_bits']:.4f}" if ev[k]["status"] == "OK"
-                     else "INSUFFICIENT" for k in B.ESTIMATOR_MIN_N]
-            out.append(f"| {r['corner']} | {r['temp_c']:g} | {r['vdd_v']:g} | "
-                       + " | ".join(cells) + " |")
-        out += ["", "### DATA single-sequence p-values", "",
-                "| corner | T (C) | Vdd (V) | " + " | ".join(B.BATTERY) + " |",
-                "|---|---|---|" + "---|" * len(B.BATTERY)]
-        for r in grp:
-            t = r["conditioned"]["single_sequence"]["tests"]
-            cells = [("%.4g%s" % (t[k]["p_values"][0],
-                                  "" if t[k]["status"] == "PASS" else " F"))
-                     if "p_values" in t[k] else "INSUFFICIENT" for k in B.BATTERY]
-            out.append(f"| {r['corner']} | {r['temp_c']:g} | {r['vdd_v']:g} | "
-                       + " | ".join(cells) + " |")
-        out += ["", f"### DATA segmented pass proportions (passing / "
-                f"{pol['count']}; F = below criterion)", "",
-                "| corner | T (C) | Vdd (V) | " + " | ".join(B.BATTERY) + " |",
-                "|---|---|---|" + "---|" * len(B.BATTERY)]
-        for r in grp:
-            t = r["conditioned"]["segmented"]["tests"]
-            cells = [("%.4f%s" % (t[k]["proportion"],
-                                  "" if t[k]["status"] == "PASS" else " F"))
-                     if "proportion" in t[k] else "INSUFFICIENT" for k in B.BATTERY]
-            out.append(f"| {r['corner']} | {r['temp_c']:g} | {r['vdd_v']:g} | "
-                       + " | ".join(cells) + " |")
+                f"{B._failed(c['single_sequence'])} | {c['segmented']['verdict']}"
+                f" | {B._failed(c['segmented'])} | "
+                f"{'-' if h is None else f'{h:.4f}'} | {B.format_binding(e)} |")
+        out += B.render_detail_tables(
+            grp,
+            est_heading="### DATA 90B estimators (bit/bit, full conditioned "
+                        "stream)",
+            seq_heading="### DATA single-sequence p-values",
+            seg_heading=(f"### DATA segmented pass proportions (passing / "
+                         f"{pol['count']}; F = below criterion)"),
+            key="conditioned")
         out.append("")
     flagged = [r for r in rows if r["accounting"]["flag"] not in ("ok",)]
     out += ["## Flagged corners", ""]
@@ -301,45 +264,15 @@ def header(rid: str, payload: dict, source_json: Path) -> list[str]:
     ]
 
 
-REPLAY_REL_TOL = 1e-9  # float noise across Python/libm versions is ~1e-15
-
-
 def replay_diff(want, got, path: str = "$") -> list[str]:
-    """Recursive replay comparison of a committed vs a recomputed payload.
-
-    Exact equality for everything that is not a float (ints, strings,
-    verdicts, statuses, word/ones counts, None, bools, keys, list lengths);
-    floats compare with math.isclose(rel_tol=REPLAY_REL_TOL), since trailing
-    digits differ across Python/libm versions. Returns mismatch paths
-    (empty list == reproduces).
-    """
-    if isinstance(want, float) or isinstance(got, float):
-        if (type(want) is float and type(got) is float
-                and math.isclose(want, got, rel_tol=REPLAY_REL_TOL,
-                                 abs_tol=0.0)):
-            return []
-        if (type(want) is float and type(got) is float
-                and math.isnan(want) and math.isnan(got)):
-            return []
-        return [f"{path}: {want!r} != {got!r}"]
-    if type(want) is not type(got):
-        return [f"{path}: type {type(want).__name__} != {type(got).__name__}"]
-    if isinstance(want, dict):
-        if want.keys() != got.keys():
-            return [f"{path}: keys differ "
-                    f"{sorted(set(want) ^ set(got))}"]
-        out: list[str] = []
-        for k in want:
-            out += replay_diff(want[k], got[k], f"{path}.{k}")
-        return out
-    if isinstance(want, list):
-        if len(want) != len(got):
-            return [f"{path}: length {len(want)} != {len(got)}"]
-        out = []
-        for i, (w, g) in enumerate(zip(want, got)):
-            out += replay_diff(w, g, f"{path}[{i}]")
-        return out
-    return [] if want == got else [f"{path}: {want!r} != {got!r}"]
+    """Replay comparison of a committed vs a recomputed payload, delegated to
+    the shared comparator (sim/bin/replay_equal.py, DR-0020 / issue #519).
+    This reducer's two intentional options -- rejecting int/float cross-type
+    pairs (`1` vs `1.0`, pinned by sim/tests/test_conditioned_output.py) and
+    accepting a (NaN, NaN) pair -- are passed through here; everything else,
+    including the relative-only float gate, is the one shared rule. Returns
+    mismatch paths (empty list == reproduces)."""
+    return _replay_diff(want, got, path, strict_types=True, nan_equal=True)
 
 
 def check(record_json: Path) -> int:

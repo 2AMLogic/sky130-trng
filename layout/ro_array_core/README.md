@@ -34,6 +34,23 @@ python3 vss-tap-scan.py            # -> vss-tap-scan.json        (all_taps_clear
 python3 lvs-negative-controls.py   # -> lvs-negative-controls.json (both controls -> mismatch)
 ```
 
+> **Rebuild status (2026-11-24, issue #745): the `--check` above currently
+> fails against the current leaf cells.** This directory's evidence was last
+> generated in `3588d770` (2026-10-07); both 2026-10-27 klayout-tools-0.8.0
+> leaf regens postdate it — `3d10475b` (`ro_buf`) and `93d026cc` (`xor2`,
+> whose bbox grew `17.585` → `17.710` µm tall). Both moved internal geometry
+> at the exact tap coordinates the recipe's declared `blocks[].cell.ports[]`
+> name, so re-composition unrouted 10 of the `core` stage's 12 nets
+> (measured on klt `0.6.0+g5edb557f91d0` / KLayout `0.30.12` / open_pdks
+> `c6d73a35...`, the committed provenance pin): `rn1`-`rn4` on `buf.a`'s
+> `li1.space.1` pad clearance, `ro1`-`ro4`/`t1` on `xa*.a`'s met1 escape
+> (`xor2`'s `a`/`b` li1 pads moved `6.81` → `6.29`), `b3` on `xa3.b`'s pad
+> clearance. Repairing that means re-measuring the taps and re-routing —
+> tracked in #749; until it lands, the committed responses and GDS below are
+> the record of the `3588d770`-era build, and the `pdk-nightly` layout-check
+> job's red runs on `main` include this same failure (with further
+> same-class failures in the ring and sampler cells, see #749).
+
 and that `ring1..4`'s and `xa1..3`'s own `vss` taps — the one item the PoC
 left open that is not a whole separate deliverable — are now drawn (stages
 `vssstub`/`vssbus` below).
@@ -55,9 +72,10 @@ left open that is not a whole separate deliverable — are now drawn (stages
 | `vss-tap-scan.py` | **all 12 taps clear** before any `vss` metal was drawn | `vss-tap-scan.json` |
 
 Cell extent `217.07 x 34.72 µm` (`klt stats`: `x` -0.585..216.485, `y`
--3.635..31.085), 3356 polygons, 26.8% density. Generated on
-`klt 0.3.0+gc6dbf66c53c6` / KLayout 0.30.12 against open_pdks
-`c6d73a35f524070e85faff4a6a9eef49553ebc2b` — `layout/pdk.json`'s own pin.
+-3.635..31.085), 3356 polygons, 26.5% raw polygon density (24.4%
+merged). Generated on `klt 0.6.0+g5edb557f91d0` / KLayout 0.30.12
+against open_pdks `c6d73a35f524070e85faff4a6a9eef49553ebc2b` —
+`layout/pdk.json`'s own pin.
 
 ## Six stages, and why the PoC's nine requests collapse to six
 

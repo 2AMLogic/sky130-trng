@@ -49,7 +49,7 @@ import klayout.db as db
 
 HERE = pathlib.Path(__file__).resolve().parent
 
-sys.path.insert(0, str(HERE.parent / "ro_array_core"))
+sys.path.insert(0, str(HERE.parent / "bin"))
 from _geom_common import dbox_region, merged  # noqa: E402
 
 GDS = HERE / "ro_array_core_signal7_poc.gds"

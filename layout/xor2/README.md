@@ -35,8 +35,8 @@ python3 layout/bin/compose-cell.py layout/xor2/cell.json --check    # verify, do
 | `klt extract --deck sky130` | **12 devices (6 nfet, 6 pfet), 10 nets** | `extract.json`, `xor2.spice` |
 | `klt lvs` vs. `design/ro_array_core.spice`'s own `.subckt xor2` | **match** — 12/12 devices, 10/10 nets, 0 mismatches, 0 errors | `lvs.json`, `xor2.ref.spice` |
 
-Cell extent `23.97 x 17.585 µm` (`klt stats`: `x` -6.885..17.085, `y`
--1.5..16.085), 267 polygons. Generated on `klt 0.3.0+gc6dbf66c53c6` /
+Cell extent `23.97 x 17.71 µm` (`klt stats`: `x` -6.885..17.085, `y`
+-1.625..16.085), 318 polygons. Generated on `klt 0.8.0` /
 KLayout 0.30.12 against open_pdks `c6d73a35f524070e85faff4a6a9eef49553ebc2b`
 — `layout/pdk.json`'s own pin.
 

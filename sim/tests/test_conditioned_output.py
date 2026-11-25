@@ -13,6 +13,7 @@ the committed record's first stream still reproduces from the committed inputs.
 from __future__ import annotations
 
 import json
+import math
 import random
 import sys
 import os
@@ -25,6 +26,7 @@ _PATH = (REPO_ROOT / "sim" / "digital-conditioned-output" / "analysis"
 sys.path.insert(0, os.path.join(REPO_ROOT, "sim", "bin"))
 from loadmod import load_module  # noqa: E402
 sys.path.insert(0, str(REPO_ROOT))
+import replay_equal  # noqa: E402
 C = load_module("conditioned_output", _PATH)
 
 from digital.model.conditioner import Crc32Conditioner  # noqa: E402
@@ -107,6 +109,19 @@ class TestAnalysis(unittest.TestCase):
         self.assertLess(a["estimators"]["h_min_bits"], 0.1)
 
 
+class TestSharedReduction(unittest.TestCase):
+    def test_no_local_fork_of_shared_helpers(self):
+        self.assertFalse(hasattr(C, "_failed"))
+        for name in ("analyse_stream", "format_binding", "render_detail_tables"):
+            self.assertTrue(hasattr(C.B, name), name)
+
+    def test_analyse_conditioned_matches_shared_reduction(self):
+        bits = C.condition_stream(ideal(131072, seed=11))
+        want = {"ones": sum(bits),
+                **C.B.analyse_stream(bits, segment_len=C.SEGMENT_LEN)}
+        self.assertEqual(C.analyse_conditioned(bits), want)
+
+
 class TestReplayDiff(unittest.TestCase):
     def test_float_noise_tolerated(self):
         a = {"p": 0.12345678990242483, "xs": [1.0, 2.5]}
@@ -123,6 +138,39 @@ class TestReplayDiff(unittest.TestCase):
         self.assertNotEqual(C.replay_diff({"n": 1}, {"n": 1.0}), [])
         self.assertNotEqual(C.replay_diff([1, 2], [1, 2, 3]), [])
         self.assertNotEqual(C.replay_diff({"a": 1}, {"b": 1}), [])
+
+    def test_uses_the_shared_comparator(self):
+        self.assertIs(C._replay_diff, replay_equal.replay_diff)
+        self.assertFalse(hasattr(C, "REPLAY_REL_TOL"),
+                         "conditioned-output.py re-declared a private replay "
+                         "tolerance; the rule lives in sim/bin/replay_equal.py (DR-0020)")
+
+    def test_cpython_sum_split_absorbed_and_real_changes_still_bite(self):
+        # Operand mix on which the naive `+=` and compensated reductions
+        # differ -- the two sides of the CPython 3.11/3.12 builtin sum() split.
+        xs = [0.12345678901234568, -0.09876543210987654,
+              0.0456789012345679, -0.012345678901234567] * 6
+        s_naive = 0.0
+        for x in xs:
+            s_naive += x
+        s_fsum = math.fsum(xs)
+        self.assertNotEqual(s_naive, s_fsum)
+        self.assertEqual(C.replay_diff({"p": s_fsum}, {"p": s_naive}), [])
+        self.assertNotEqual(C.replay_diff({"p": s_fsum},
+                                          {"p": s_fsum * (1 + 1e-6)}), [])
+        self.assertEqual(C.replay_diff({"p": s_fsum},
+                                       {"p": s_fsum * (1 + 1e-12)}), [])
+
+    def test_zero_versus_tiny_is_a_difference_no_absolute_floor(self):
+        self.assertNotEqual(C.replay_diff({"z": 0.0}, {"z": 5e-324}), [])
+        self.assertNotEqual(C.replay_diff({"z": 0.0}, {"z": 1e-20}), [])
+        self.assertNotEqual(C.replay_diff({"z": 1e-20}, {"z": 0.0}), [])
+        self.assertEqual(C.replay_diff({"z": 0.0}, {"z": -0.0}), [])
+
+    def test_nan_pair_accepted_via_shared_option(self):
+        nan = float("nan")
+        self.assertEqual(C.replay_diff({"p": nan}, {"p": nan}), [])
+        self.assertNotEqual(C.replay_diff({"p": nan}, {"p": 0.0}), [])
 
 
 class TestCommittedRecord(unittest.TestCase):
