@@ -49,7 +49,6 @@ import argparse
 import gzip
 import json
 import re
-import shutil
 import sys
 from pathlib import Path
 
@@ -109,6 +108,23 @@ ANALOG_Y_MIN_UM = 250.0
 _DEV_RE = re.compile(r"^\* device instance \S+ \S+ \*1 ([-\d.]+),([-\d.]+) ")
 
 
+def _partition_netlist_text(keep_analog: bool) -> str:
+    """The flat netlist with only one macro's devices (the other absent)."""
+    out: list[str] = []
+    keep = True
+    for ln in _netlist_text().splitlines():
+        if ln.startswith("* device instance"):
+            m = _DEV_RE.match(ln)
+            assert m, ln
+            y = float(m.group(2))
+            keep = y >= ANALOG_Y_MIN_UM if keep_analog else y < ANALOG_Y_MIN_UM
+        elif ln.upper().startswith(".ENDS"):
+            keep = True
+        if keep:
+            out.append(ln)
+    return "\n".join(out) + "\n"
+
+
 def analog_netlist_text() -> str:
     """The flat netlist with only the analog-macro devices (digital absent).
 
@@ -116,24 +132,7 @@ def analog_netlist_text() -> str:
     boundary is open, which is the 'absent' option of DR-0017's feasibility
     gate. Header, ports and net names are unchanged.
     """
-    lines = _netlist_text().splitlines()
-    out: list[str] = []
-    keep = True
-    in_header = True
-    rename = _cluster_to_port()
-    for ln in lines:
-        if ln.startswith("* device instance"):
-            in_header = False
-            m = _DEV_RE.match(ln)
-            assert m, ln
-            keep = float(m.group(2)) >= ANALOG_Y_MIN_UM
-        elif ln.upper().startswith(".ENDS"):
-            keep = True
-        if keep:
-            if not in_header and not ln.startswith("*"):
-                ln = re.sub(r"\S+", lambda m: rename.get(m.group(0), m.group(0)), ln)
-            out.append(ln)
-    return "\n".join(out) + "\n"
+    return _partition_netlist_text(keep_analog=True)
 
 
 def digital_netlist_text() -> str:
@@ -143,21 +142,7 @@ def digital_netlist_text() -> str:
     it is used for the partition check only. The digital half of a (b) run is the
     gate-level ``layout/trng_digital/trng_digital.routed.v`` (hashed in plan.json).
     """
-    out: list[str] = []
-    keep = True
-    in_header = True
-    rename = _cluster_to_port()
-    for ln in _netlist_text().splitlines():
-        if ln.startswith("* device instance"):
-            in_header = False
-            keep = float(_DEV_RE.match(ln).group(2)) < ANALOG_Y_MIN_UM
-        elif ln.upper().startswith(".ENDS"):
-            keep = True
-        if keep:
-            if not in_header and not ln.startswith("*"):
-                ln = re.sub(r"\S+", lambda m: rename.get(m.group(0), m.group(0)), ln)
-            out.append(ln)
-    return "\n".join(out) + "\n"
+    return _partition_netlist_text(keep_analog=False)
 
 
 def _device_blocks(text: str) -> list[tuple[str, set[str]]]:
@@ -227,30 +212,6 @@ def partition_check() -> dict:
         "port_count": len(declared),
         "analog_y_min_um": ANALOG_Y_MIN_UM,
     }
-
-
-def _scrub(name: str) -> str:
-    """The make-netlist.py token transforms ($ -> z, name[i] -> name_i_)."""
-    return re.sub(r"\b([A-Za-z_][A-Za-z0-9_]*)\[(\d+)\]", r"\1_\2_", name.replace("$", "z"))
-
-
-def _cluster_to_port() -> dict[str, str]:
-    """Body net token -> canonical port name, from trng_whole.sim.ports.json.
-
-    The committed netlist's ``.SUBCKT`` header carries the canonical port
-    names but its body still uses the extractor's cluster names (transform 1
-    of make-netlist.py renames the header only), so as committed no port
-    (supply, clock, enable) reaches any device. The analog probe cannot run
-    that way (singular matrix at the first floating enable net), so it
-    applies the rename here, at request assembly, without touching the
-    committed body (re-pinning it is a separate change).
-    """
-    ports = json.loads((HERE / "trng_whole.sim.ports.json").read_text())["ports"]
-    return {_scrub(p["cluster"]): _scrub(p["canonical"]) for p in ports}
-
-
-def fmt(v: float) -> str:
-    return f"{v:.1f}".rstrip("0").rstrip(".") if v != int(v) else f"{int(v)}"
 
 
 def input_cards(cycles: list[dict], n_cycles: int) -> list[str]:
@@ -346,7 +307,6 @@ def measurement_cards(cycles: list[dict]) -> tuple[list[dict], list[str]]:
         add(f"i_{rail}_w1", f".meas tran i_{rail}_w1 AVG i(V{rail}) FROM={W1[0]:.0f}n TO={W1[1]:.0f}n")
         add(f"i_{rail}_w2", f".meas tran i_{rail}_w2 AVG i(V{rail}) FROM={w2[0]:.0f}n TO={w2[1]:.0f}n")
         add(f"q_{rail}_w2", f".meas tran q_{rail}_w2 INTEG i(V{rail}) FROM={w2[0]:.0f}n TO={w2[1]:.0f}n")
-        meas[-3:][:0]  # no-op; keep ordering explicit
     add("i_vss_w2", f".meas tran i_vss_w2 AVG i(Vvss) FROM={w2[0]:.0f}n TO={w2[1]:.0f}n")
 
     # -- sanity: the clock really toggled
@@ -372,7 +332,17 @@ def nominal_gate_model() -> tuple[str, dict]:
         raise ValueError("nominal model, routed Verilog or Liberty identity differs from the gate record")
     return gate, {"gate_manifest": str(manifest_path), "gate_model_sha256": sha256_text(gate),
                   "liberty_sha256": manifest["liberty_sha256"], "liberty_deck": manifest["liberty_deck"],
-                  "realisation": manifest["realisation"], "reductions": manifest["reductions"],
+                  "realisation": manifest["realisation"],
+                  "reductions": {
+                      **manifest["reductions"],
+                      # the manifest text predates #595 (kept byte-stable as #486
+                      # evidence); in a plan it must agree with boundary_load_option.
+                      # Same wording as make-gate-model.py's plan writer.
+                      "input_load": "Liberty input-pin capacitance per d_genlut input; the "
+                                    "DR-0017 boundary-load choice is settled as option 2 "
+                                    "(#595, see boundary_load_option)",
+                  },
+                  "boundary_load_option": PVT.boundary_load_block(),
                   "raw_source": "analog_sampler"}
 
 

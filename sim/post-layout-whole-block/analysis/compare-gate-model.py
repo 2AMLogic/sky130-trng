@@ -37,7 +37,6 @@ import json
 import math
 import re
 import sys
-from collections import Counter
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -48,6 +47,7 @@ import program as P  # noqa: E402
 
 sys.path.insert(0, str(REPO / "digital"))
 sys.path.insert(0, str(REPO / "sim" / "bin"))
+from measurement_names import duplicate_measurement_names  # noqa: E402  (#690: shared with sim/bin/measurement_names.py; re-exported for reduce-whole-block.py)
 
 #: a measured level must be this close (V) to vss or to the supply to decode
 LEVEL_TOL = 0.05
@@ -298,9 +298,7 @@ def compare(report: dict, plan: dict) -> dict:
     # cannot see that, and the displaced measurement's check is silently
     # dropped while the verdict stays pass.
     if len(measured) != int(plan["measurement_count"]):
-        duplicates = sorted(name for name, n in
-                            Counter(m["name"] for m in corner["measurements"]).items()
-                            if n > 1)
+        duplicates = duplicate_measurement_names(corner["measurements"])
         raise SystemExit(
             f"report carries {len(measured)} distinct measurement names in "
             f"{n_meas} entries, plan.json declares "

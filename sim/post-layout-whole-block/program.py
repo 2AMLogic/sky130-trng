@@ -268,8 +268,9 @@ def model_replay(captured_bits: list[int], *, captured_valid: list[int] | None =
     bit_i = 0
     for k, inp in enumerate(inputs):
         # the DUT samples its inputs at the edge that ENDS cycle k; the
-        # model's cycle() returns the outputs visible DURING the next cycle,
-        # exactly what the deck's capture windows measure.
+        # model's cycle() returns the start-of-cycle registers visible
+        # DURING cycle k (digital_top.cycle() observes before applying the
+        # edge), exactly what the deck's capture windows measure.
         raw_bit = captured_bits[bit_i] if inp["raw_valid"] else 0
         if inp["raw_valid"]:
             bit_i += 1

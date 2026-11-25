@@ -97,14 +97,8 @@ def accounting(h_raw: float | None) -> dict:
 
 
 def analyse_conditioned(bits: list[int]) -> dict:
-    est = B.entropy_estimates(bits)
-    h = est["h_min_bits"]
-    est["binding_ties"] = [k for k, v in est["estimators"].items()
-                           if v["status"] == "OK" and v["h_bits"] == h]
-    return {"n": len(bits), "ones": sum(bits),
-            "single_sequence": B.run_battery(bits),
-            "segmented": B.run_battery(bits, segment_len=SEGMENT_LEN),
-            "estimators": est}
+    return {"ones": sum(bits),
+            **B.analyse_stream(bits, segment_len=SEGMENT_LEN)}
 
 
 def payload_for(source_json: Path) -> dict:
@@ -129,11 +123,6 @@ def payload_for(source_json: Path) -> dict:
                                "covers_bits": SEGMENT_COUNT * SEGMENT_LEN},
             "margin_bits": MARGIN_BITS, "design_budget_bits": DESIGN_BUDGET,
             "alpha": B.ALPHA, "per_stream": rows}
-
-
-def _failed(block: dict) -> str:
-    f = [k for k, v in block["tests"].items() if v["status"] == "FAIL"]
-    return ", ".join(f) if f else "-"
 
 
 def render(payload: dict) -> str:
@@ -194,47 +183,21 @@ def render(payload: dict) -> str:
             c = r["conditioned"]
             e = c["estimators"]
             h = e["h_min_bits"]
-            bind = e["binding_estimator"] or "-"
-            if len(e["binding_ties"]) > 1:
-                bind += " (tie: " + ", ".join(e["binding_ties"]) + ")"
             out.append(
                 f"| {r['corner']} | {r['temp_c']:g} | {r['vdd_v']:g} | "
                 f"{r['seed']} | {r['words']} | {c['n']} | {c['ones']} | "
                 f"{c['single_sequence']['verdict']} | "
-                f"{_failed(c['single_sequence'])} | {c['segmented']['verdict']}"
-                f" | {_failed(c['segmented'])} | "
-                f"{'-' if h is None else f'{h:.4f}'} | {bind} |")
-        out += ["", "### DATA 90B estimators (bit/bit, full conditioned stream)",
-                "", "| corner | T (C) | Vdd (V) | "
-                + " | ".join(B.ESTIMATOR_MIN_N) + " |",
-                "|---|---|---|" + "---|" * len(B.ESTIMATOR_MIN_N)]
-        for r in grp:
-            ev = r["conditioned"]["estimators"]["estimators"]
-            cells = [f"{ev[k]['h_bits']:.4f}" if ev[k]["status"] == "OK"
-                     else "INSUFFICIENT" for k in B.ESTIMATOR_MIN_N]
-            out.append(f"| {r['corner']} | {r['temp_c']:g} | {r['vdd_v']:g} | "
-                       + " | ".join(cells) + " |")
-        out += ["", "### DATA single-sequence p-values", "",
-                "| corner | T (C) | Vdd (V) | " + " | ".join(B.BATTERY) + " |",
-                "|---|---|---|" + "---|" * len(B.BATTERY)]
-        for r in grp:
-            t = r["conditioned"]["single_sequence"]["tests"]
-            cells = [("%.4g%s" % (t[k]["p_values"][0],
-                                  "" if t[k]["status"] == "PASS" else " F"))
-                     if "p_values" in t[k] else "INSUFFICIENT" for k in B.BATTERY]
-            out.append(f"| {r['corner']} | {r['temp_c']:g} | {r['vdd_v']:g} | "
-                       + " | ".join(cells) + " |")
-        out += ["", f"### DATA segmented pass proportions (passing / "
-                f"{pol['count']}; F = below criterion)", "",
-                "| corner | T (C) | Vdd (V) | " + " | ".join(B.BATTERY) + " |",
-                "|---|---|---|" + "---|" * len(B.BATTERY)]
-        for r in grp:
-            t = r["conditioned"]["segmented"]["tests"]
-            cells = [("%.4f%s" % (t[k]["proportion"],
-                                  "" if t[k]["status"] == "PASS" else " F"))
-                     if "proportion" in t[k] else "INSUFFICIENT" for k in B.BATTERY]
-            out.append(f"| {r['corner']} | {r['temp_c']:g} | {r['vdd_v']:g} | "
-                       + " | ".join(cells) + " |")
+                f"{B._failed(c['single_sequence'])} | {c['segmented']['verdict']}"
+                f" | {B._failed(c['segmented'])} | "
+                f"{'-' if h is None else f'{h:.4f}'} | {B.format_binding(e)} |")
+        out += B.render_detail_tables(
+            grp,
+            est_heading="### DATA 90B estimators (bit/bit, full conditioned "
+                        "stream)",
+            seq_heading="### DATA single-sequence p-values",
+            seg_heading=(f"### DATA segmented pass proportions (passing / "
+                         f"{pol['count']}; F = below criterion)"),
+            key="conditioned")
         out.append("")
     flagged = [r for r in rows if r["accounting"]["flag"] not in ("ok",)]
     out += ["## Flagged corners", ""]

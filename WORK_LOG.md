@@ -6,7 +6,74 @@ Chronological record of recently merged pull requests and closed issues.
 
 - [2026-09](work_log/WORK_LOG_2026-09.md)
 
+### 2026-11-24
+
+- **PR #756**: docs(layout): align sampler_core README latest-increment stats with committed evidence
+- **Issue #755** (closed): layout/sampler_core/README.md's latest-increment paragraph quotes 8399 polygons and the 0.3.0 klt pin; committed GDS measures 8408 on 0.6.0+g5edb557f91d0
+- **PR #753**: docs(layout): align xor2 and ro_array_core README stats with committed evidence
+- **PR #750**: docs(layout): pin ro_array_core and PoC compose evidence to the leaf regens it predates
+- **PR #747**: docs(erc): state the per-entry id in the prune table coverage rows
+- **PR #744**: docs(erc): attribute antenna_verdict to the gate records in the prune table
+- **PR #742**: layout: regenerate xor2 y-escape-scan JSON and refresh README windows
+- **PR #741**: docs(erc): correct the committed-prune record's account of the discarded gates[] data
+- **PR #737**: layout: prune the inert antenna arrays from trng_digital erc.json (-98.6%)
+- **PR #736**: refactor: consolidate the three merged() copies into layout/bin/_geom_common.py
+- **PR #734**: chore(sim): untrack regenerated 15 MB netlist.cir decks under runs/ and widen the corners ignore glob
+- **PR #733**: refactor: deduplicate stream-battery reduction, detail tables, and hex codec forks
+- **PR #730**: docs: name ratification as item 6's sole gate in mismatch README and ROADMAP
+- **PR #727**: docs: mark klayout-tools#5490 closed in the friction ledger
+- **PR #725**: refactor: drop dead pre-#435 body-rename workaround from whole-block request assembly
+- **Issue #751** (closed): Stale extent/klt-pin prose in layout/xor2/README.md and layout/ro_array_core/README.md survives the 0.8.0 leaf regens
+- **Issue #746** (closed): layout/trng_digital/ERC.md: the prune table's coverage rows present an incomplete object as the whole discarded entry (id omitted)
+- **Issue #745** (closed): Committed PoC compose responses still carry xor2's pre-93d026cc block bbox (17.585 µm, now 17.710 µm)
+- **Issue #743** (closed): layout/trng_digital/ERC.md: the prune record attributes the per-gate antenna_verdict field to the level records
+- **Issue #739** (closed): layout/trng_digital/ERC.md: the committed-prune record says gates[] areas are null, but the native report carries 5,624 real gate areas
+- **Issue #735** (closed): xor2-y-escape-scan.json is stale against the regenerated xor2.gds (93d026cc missed it)
+- **Issue #738** (closed): One netlist.cir under sim/post-layout-whole-block/runs/ is now tracked-but-ignored by the widened #491 glob
+- **Issue #732** (closed): Consolidate duplicated stream-battery reduction, detail tables, and hex-codec forks across raw-bit-battery, conditioned-output, and behavioral_raw_bit
+- **Issue #729** (closed): docs: align remaining item-6 row-coverage prose in local-mismatch README and ROADMAP
+- **Issue #724** (closed): Remove dead pre-#435 body-rename workaround and duplicate scrub helpers in sim/post-layout-whole-block/
+- **Issue #713** (closed): friction-ledger: klayout-tools#5490 row says "open" but the issue closed 2026-11-22
+- **Issue #494** (closed): Stop committing 11 MB of all-null antenna skeleton in layout/trng_digital/erc.json
+- **Issue #491** (closed): Remove the two byte-identical 15 MB netlist.cir copies under sim/post-layout-whole-block/runs/
+- **Issue #490** (closed): Consolidate the three copies of merged(): the cross-directory carve-out rationale is measurably false
+- **PR #728**: docs(signoff): state ratification as item 6's sole gate; row is covered
+- **PR #723**: refactor: share sim/bin duplicate_measurement_names in whole-block
+- **PR #722**: ci: run unwired sim/tests suites and guard suite coverage
+- **PR #721**: test(sim): keep RunStudySh self-test run dirs out of the checkout
+- **PR #644**: fix(sim): score whole-block corners through the shared gate-model comparator
+- **Issue #726** (closed): signoff: item 6 comments say klayout-tools#5490 withholds row coverage; the committed report shows the row covered
+- **Issue #717** (closed): Two sim/tests/ suites are never run by CI (test_yield_reports.py, test_corner_run_repo_state.py)
+- **Issue #698** (closed): RunStudySh self-test writes a fake run directory into the tracked, append-only sim/*/runs/ evidence trees
+- **Issue #690** (closed): signoff of #670/#642: two copies of duplicate_measurement_names() once PR #644 and #673 both land
+- **Issue #642** (closed): Consolidate parallel whole-block digital-oracle comparator out of reduce-whole-block.py onto compare-gate-model.py
+- **PR #614**: feat(sim,signoff): reduce local-mismatch Monte Carlo into klt yield reports for T1 item 6
+- **Issue #598** (closed): T1 item 6: reduce the committed local-mismatch Monte Carlo into klt yield reports and record the item-6 verdict (6.analog)
+- **PR #707**: feat: disclose working-tree state in mint_record records
+- **Issue #676** (closed): evidence_record: mint_record / record_footer still emit an unqualified repo_sha pin, so most sim records keep the #666 defect
+
 ### 2026-11-23
+
+- **PR #710**: docs: reframe signoff item-1 prose around minting tool and released --attest
+- **Issue #705** (closed): signoff/README.md: item-1 attestation provenance phrasing — stale "once a release carries --attest" paragraph, and the generic-envelope contrast
+- **PR #704**: docs: version-qualify the no-verb claim for signoff items 1/2/9/10
+- **PR #699**: fix: record settled DR-0017 option 2 in newly generated coupled plans
+- **PR #695**: fix: report corner-run repo dirty state as tri-state when git status fails
+- **PR #694**: docs: retire superseded 7/22 count and 0.7.0 grader claims in signoff README
+- **PR #689**: docs(signoff): restate T1 summary against the committed 0.8.0 report
+- **PR #673**: fix(sim): refuse repeated measurement names in the template-lifted reducers
+- **PR #667**: feat(evidence): disclose working-tree state in behavioral records
+- **PR #660**: refactor(sim): deduplicate repaired-compaction runner/reducer helpers onto compaction.py and run-study.sh
+- **PR #605**: feat(sim): couple the transistor sampler to the routed gate model
+- **Issue #700** (closed): sim/: reconcile compare_gate_model.duplicate_measurement_names() with sim/bin/measurement_names.py once PR #644 lands
+- **Issue #696** (closed): signoff/README.md: 'klayout-tools has no verb behind these four items' is stale for item 1 on the 0.8.0 grader
+- **Issue #691** (closed): signoff/README.md: dated 7/22 update line and two per-item 0.7.0 render claims are stale after #687
+- **Issue #687** (closed): signoff/README.md T1 summary still says the report was rendered on klt 0.7.0; the committed report records v0.8.0
+- **Issue #682** (closed): Gate-model manifest still records the DR-0017 boundary-load choice as open after #595 ratified option 2
+- **Issue #670** (closed): sim/: ten reducers still dedupe corner measurements into a name-keyed dict with no duplicate-name guard
+- **Issue #666** (closed): evidence_record: mint_behavioral_record pins repo_sha from HEAD with no dirty-tree disclosure
+- **Issue #658** (closed): Consolidate duplicated repaired-compaction runner/reducer helpers onto compaction.py and run-study.sh
+- **Issue #475** (closed): Remove the 63-entry pull_request paths filter from ci.yml
 
 - **PR #656**: refactor: route idle_leakage bundles via write_corner_bundle
 - **PR #657**: refactor: route sim/ harness klt reads through _klt_common shared readers
@@ -474,11 +541,4 @@ Chronological record of recently merged pull requests and closed issues.
 - **PR #167**: Place and route the DR-0004 digital section with physical sign-off evidence
 - **Issue #168** (closed): Deduplicate the remaining LVS negative-control logic across live and PoC scripts
 - **Issue #166** (closed): Place and route the DR-0004 digital section with reproducible physical sign-off evidence
-
-### 2026-09-23
-
-- **PR #165**: feat(signoff): declare sampler_core well/substrate ties in the erc supply spec and cite 11.analog
-- **PR #163**: chore(signoff): bump signoff grader pin to klayout-tools 0.6.0, re-vendor tiers doc, regenerate t1-report
-- **Issue #161** (closed): T1 item 11: declare sampler_core's well ties in the klt erc supply spec on klayout-tools 0.6.0 and cite 11.analog in the block manifest
-- **Issue #160** (closed): Bump the signoff grader pin to klayout-tools 0.6.0, re-vendor the tiers doc, and regenerate signoff/t1-report.json
 
