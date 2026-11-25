@@ -2,40 +2,20 @@
   "schema_version": 1,
   "block": "sky130-trng",
   "kind": "mixed-signal",
-  "spec_rows": [
-    {
-      "id": "raw_min_entropy_per_bit",
-      "item": 6,
-      "state": "unattributable",
-      "gap": null,
-      "limits": null,
-      "unit": null,
-      "worst": null,
-      "verdict": null,
-      "yield": null,
-      "sources": [],
-      "partition": "analog"
-    }
-  ],
   "tier": null,
   "t1_item_count": 22,
   "build_t1_item_count": 22,
   "t1_met_count": 15,
-  "unmet_reason_counts": {
-    "check_failed": 3,
-    "no_evidence": 3,
-    "partial_coverage": 1
-  },
   "source_doc": "signoff/design-evidence-tiers.md",
   "source_doc_content_hash": "sha256:63eeec72e3d849761cf32dcf091af5728b069b1515e32bb3138e9454303671e5",
   "build": {
-    "version": "0.9.3.dev5607+g96a26cdff67a",
-    "package_version": "0.9.3.dev5607+g96a26cdff67a",
-    "git_commit": "96a26cdff67ac965294af6ef8181d39cde5823e5",
-    "git_tag": null,
+    "version": "0.8.0",
+    "package_version": "0.8.0",
+    "git_commit": "c572046be644e0407f693f2410f3abb799d68a3a",
+    "git_tag": "v0.8.0",
     "dirty": false,
-    "is_release": false,
-    "grading_ruleset_id": "sha256:72207eeadf240f8223d8f07d8ff531ba80a1f3e082a00acf56fcb79eb4d0c42c"
+    "is_release": true,
+    "grading_ruleset_id": "sha256:46c446d84423b7399ee1cf957b3d49801ae4f42a0bda53da92f435776cf977c4"
   },
   "items": [
     {
@@ -697,19 +677,7 @@
             "raw_min_entropy_per_bit"
           ],
           "status": "met",
-          "reason": null,
-          "content_hash": "sha256:22188713550161633dd762ed06b82b85bc3de2a605a7397aae4bdfce9f050eb5",
-          "input_verified": true,
-          "yield_campaign": {
-            "sample_size": "sufficient",
-            "undersized_measurements": [],
-            "negative_control": "not_declared",
-            "measurements_without_negative_control": [
-              "h_bias_bit"
-            ],
-            "undetected_negative_controls": [],
-            "not_applicable_negative_controls": []
-          }
+          "reason": null
         },
         {
           "citation": "sim/local-mismatch-monte-carlo/yield/20261009-111126-e57ad27/klt-yield.json",
@@ -717,19 +685,7 @@
             "raw_min_entropy_per_bit"
           ],
           "status": "met",
-          "reason": null,
-          "content_hash": "sha256:3f9c87405f23f767add41d9a669d552bad394c1756cc76a094bf36df192ae4bc",
-          "input_verified": true,
-          "yield_campaign": {
-            "sample_size": "sufficient",
-            "undersized_measurements": [],
-            "negative_control": "not_declared",
-            "measurements_without_negative_control": [
-              "h_bias_bit"
-            ],
-            "undetected_negative_controls": [],
-            "not_applicable_negative_controls": []
-          }
+          "reason": null
         },
         {
           "citation": "sim/local-mismatch-monte-carlo/yield/20261009-111125-e57ad27/klt-yield.json",
@@ -737,19 +693,7 @@
             "raw_min_entropy_per_bit"
           ],
           "status": "met",
-          "reason": null,
-          "content_hash": "sha256:e0e57a2bea8e140e0b866ca6e38b4c95a5c4683be74b0601ac7bfc45f0d76846",
-          "input_verified": true,
-          "yield_campaign": {
-            "sample_size": "sufficient",
-            "undersized_measurements": [],
-            "negative_control": "not_declared",
-            "measurements_without_negative_control": [
-              "h_bias_bit"
-            ],
-            "undetected_negative_controls": [],
-            "not_applicable_negative_controls": []
-          }
+          "reason": null
         }
       ],
       "detail": {
@@ -788,32 +732,7 @@
       "status": "unmet",
       "reason": "check_failed",
       "graded_by_build": true,
-      "citation": null,
-      "detail": {
-        "cited_evidence": {
-          "file": "sim/pex-sampler-core/runs/20261121-001303-7330672/pex-report.json",
-          "command": null,
-          "kind": "pex",
-          "check_status": "fail",
-          "content_hash": "sha256:e3ff54a9bb15122298f0d5df817612ed1caacb3b045533f9ba86d009036c2004",
-          "input_verified": true,
-          "exit_status": 0,
-          "pex_inputs": [
-            {
-              "role": "reference_netlist",
-              "path": "design/sampler_core.spice",
-              "sha256": "sha256:34a9af2714b7cfd71092c9733fb4007a61747b032eadcf5491ae9db811999b71",
-              "status": "verified"
-            }
-          ],
-          "body_bias": {
-            "status": "biased",
-            "unbiased_device_count": 0,
-            "unbiased_nets": []
-          }
-        },
-        "content_hash_pin": "verified"
-      }
+      "citation": null
     },
     {
       "tier": "T1",
@@ -847,18 +766,7 @@
       "status": "unmet",
       "reason": "check_failed",
       "graded_by_build": true,
-      "citation": null,
-      "detail": {
-        "cited_evidence": {
-          "file": "signoff/characterization-envelope.json",
-          "command": null,
-          "kind": "generic",
-          "check_status": "fail",
-          "content_hash": null,
-          "input_verified": null,
-          "exit_status": 0
-        }
-      }
+      "citation": null
     },
     {
       "tier": "T1",
@@ -870,18 +778,7 @@
       "status": "unmet",
       "reason": "check_failed",
       "graded_by_build": true,
-      "citation": null,
-      "detail": {
-        "cited_evidence": {
-          "file": "signoff/characterization-envelope.json",
-          "command": null,
-          "kind": "generic",
-          "check_status": "fail",
-          "content_hash": null,
-          "input_verified": null,
-          "exit_status": 0
-        }
-      }
+      "citation": null
     },
     {
       "tier": "T1",
