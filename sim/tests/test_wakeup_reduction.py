@@ -119,6 +119,155 @@ class BiasModel(unittest.TestCase):
             self.assertAlmostEqual(p, 0.5, delta=5 * 0.5 / math.sqrt(n))
 
 
+# ------------------------------------------------- shared four-ring phase model (issue #785)
+#: distinct periods and delays per ring, so a swapped ring or a dropped draw changes the bits
+WAKE_CAL = {"sigma1": 3e-12, "periods_s": [5.4e-9, 5.2e-9, 5.0e-9, 4.8e-9],
+            "delays_s": [1.0e-9, 2.6e-9, 0.5e-9, 4.0e-9]}
+#: the issue's comparison grid: seeds x sample intervals x first sample times x stream lengths
+WAKE_GRID = [(seed, ts, tau, n) for seed in range(8) for ts in (100e-9, 20e-6) for tau in (0.0, 2e-9, 10e-6)
+             for n in (0, 1, 24, 1024)]
+
+
+def ref_wake_stream(cal, ts, n, rng, tau, stationary=False):
+    """wakeup.py's wake_stream as it stood before issue #785 (6a2681f2), minus one unused local."""
+    th, adv, sd = [], [], []
+    for T, d in zip(cal["periods_s"], cal["delays_s"]):
+        if stationary:
+            th.append(rng.random())
+        else:
+            dt = max(tau - d, 0.0)
+            th.append(((dt / T) + rng.gauss(0.0, cal["sigma1"] * math.sqrt(dt / T) / T)) % 1.0)
+        adv.append((ts / T) % 1.0)
+        sd.append(cal["sigma1"] * math.sqrt(ts / T) / T)
+    out = []
+    gauss = rng.gauss
+    for _ in range(n):
+        out.append((int(2 * th[0]) ^ int(2 * th[1]) ^ int(2 * th[2]) ^ int(2 * th[3])) & 1)
+        for i in range(4):
+            th[i] = (th[i] + adv[i] + gauss(0.0, sd[i])) % 1.0
+    return out
+
+
+def ref_wake_ring_bits(cal, ts, n, rng, tau):
+    """wakeup.py's wake_ring_bits as it stood before issue #785 (6a2681f2)."""
+    th, adv, sd = [], [], []
+    for T, d in zip(cal["periods_s"], cal["delays_s"]):
+        dt = max(tau - d, 0.0)
+        th.append(((dt / T) + rng.gauss(0.0, cal["sigma1"] * math.sqrt(dt / T) / T)) % 1.0)
+        adv.append((ts / T) % 1.0)
+        sd.append(cal["sigma1"] * math.sqrt(ts / T) / T)
+    xs, rs = [], [[] for _ in range(4)]
+    for _ in range(n):
+        rb = [int(2 * x) for x in th]
+        for i in range(4):
+            rs[i].append(rb[i])
+        xs.append(rb[0] ^ rb[1] ^ rb[2] ^ rb[3])
+        for i in range(4):
+            th[i] = (th[i] + adv[i] + rng.gauss(0.0, sd[i])) % 1.0
+    return xs, rs
+
+
+class SharedWakeModel(unittest.TestCase):
+    """Issue #785: wake_stream and wake_ring_bits are one four-ring phase model.
+
+    Successive wake-ups of a study share a generator, so the merged model has to draw exactly what the two
+    separate ones drew -- four Gaussians for the phases, four per sample, and four more after the last sample
+    of a stream -- and leave the generator in the same state."""
+
+    def grid(self, fn, **opt):
+        """(case, fn's result, fn's final generator state) over WAKE_GRID, each from a fresh Random(seed)."""
+        for case in WAKE_GRID:
+            seed, ts, tau, n = case
+            rng = random.Random(seed)
+            yield case, fn(WAKE_CAL, ts, n, rng, tau, **opt), rng.getstate()
+
+    def assert_matches_reference(self, fn, ref, **opt):
+        for (case, got, st), (_, want, ref_st) in zip(self.grid(fn, **opt), self.grid(ref, **opt)):
+            self.assertEqual(got, want, (opt, case))
+            self.assertEqual(st, ref_st, (opt, case))
+
+    def test_wake_stream_matches_the_reference_in_both_modes(self):
+        for stationary in (False, True):
+            self.assert_matches_reference(w.wake_stream, ref_wake_stream, stationary=stationary)
+
+    def test_wake_ring_bits_matches_the_reference(self):
+        self.assert_matches_reference(w.wake_ring_bits, ref_wake_ring_bits)
+
+    def test_stationary_ring_bits_are_wake_stream_bits(self):
+        # no per-ring reference exists for the stationary start: the bits and the final state are wake_stream's
+        self.assert_matches_reference(lambda *a, **k: w.wake_ring_bits(*a, **k)[0], ref_wake_stream,
+                                      stationary=True)
+
+    def test_xor_bit_is_the_parity_of_the_ring_bits(self):
+        for stationary in (False, True):
+            for case, (xs, rs), _ in self.grid(w.wake_ring_bits, stationary=stationary):
+                self.assertEqual(([a ^ b ^ c ^ d for a, b, c, d in zip(*rs)], [len(r) for r in rs]),
+                                 (xs, [case[3]] * 4), (stationary,) + case)
+
+    def test_draw_count_includes_the_last_advance(self):
+        # four Gaussian draws start the phases (also where tau - d <= 0 makes their sigma 0), each sample draws
+        # four more, and so does the advance after the last sample: n samples cost 4 (n + 1) draws
+        for tau in (0.0, 10e-6):
+            for n in (0, 1, 24, 1024):
+                rng, ref = random.Random(11), random.Random(11)
+                w.wake_stream(WAKE_CAL, 20e-6, n, rng, tau)
+                for _ in range(4 * (n + 1)):
+                    ref.gauss(0.0, 1.0)
+                self.assertEqual(rng.getstate(), ref.getstate(), (tau, n))
+                # the stationary start replaces the four phase draws with four uniform ones
+                rng, ref = random.Random(11), random.Random(11)
+                w.wake_stream(WAKE_CAL, 20e-6, n, rng, tau, stationary=True)
+                for _ in range(4):
+                    ref.random()
+                for _ in range(4 * n):
+                    ref.gauss(0.0, 1.0)
+                self.assertEqual(rng.getstate(), ref.getstate(), (tau, n))
+
+    def test_both_callers_run_the_shared_core(self):
+        from unittest import mock
+        core = getattr(w, "_wake_core", None)
+        self.assertIsNotNone(core, "wake_stream and wake_ring_bits must run one shared phase model")
+        rng = random.Random(5)
+        with mock.patch.object(w, "_wake_core", wraps=core) as spy:
+            w.wake_stream(WAKE_CAL, 20e-6, 3, rng, 10e-6, stationary=True)
+            w.wake_ring_bits(WAKE_CAL, 20e-6, 3, rng, 10e-6)
+        self.assertEqual([(c.args, c.kwargs) for c in spy.call_args_list],
+                         [((WAKE_CAL, 20e-6, 3, rng, 10e-6), {"stationary": True, "rings": False}),
+                          ((WAKE_CAL, 20e-6, 3, rng, 10e-6), {"stationary": False, "rings": True})])
+
+    def test_ring_histories_are_collected_only_on_request(self):
+        rng, ref = random.Random(5), random.Random(5)
+        xs, rs = w._wake_core(WAKE_CAL, 20e-6, 4, rng, 10e-6)
+        self.assertIsNone(rs)
+        xs2, rs2 = w._wake_core(WAKE_CAL, 20e-6, 4, ref, 10e-6, rings=True)
+        self.assertEqual((xs, rng.getstate()), (xs2, ref.getstate()))
+        self.assertEqual([len(r) for r in rs2], [4] * 4)
+
+    def test_ring_bit_is_a_bit_when_a_phase_wraps_to_exactly_one(self):
+        # x - nextafter(x) is a hair below zero for x < 0.5, and `% 1.0` of that is exactly 1.0, i.e. phase zero:
+        # its ring bit is 0, where an unmasked int(2 * phase) would make it 2
+        tau = 2e-9
+        x = (tau - WAKE_CAL["delays_s"][0]) / WAKE_CAL["periods_s"][0]
+        self.assertEqual((x - math.nextafter(x, math.inf)) % 1.0, 1.0)
+
+        class Scripted:
+            """A real generator whose first Gaussian is prescribed."""
+            def __init__(self, first):
+                self.inner, self.first, self.drawn = random.Random(9), first, 0
+
+            def gauss(self, mu, sigma):
+                self.drawn += 1
+                return self.first if self.drawn == 1 else self.inner.gauss(mu, sigma)
+
+            def random(self):
+                return self.inner.random()
+
+        xs, rs = w._wake_core(WAKE_CAL, 20e-6, 8, Scripted(-math.nextafter(x, math.inf)), tau, rings=True)
+        self.assertEqual(rs[0][0], 0)
+        self.assertEqual(xs, [a ^ b ^ c ^ d for a, b, c, d in zip(*rs)])
+        self.assertTrue({b for r in rs for b in r} <= {0, 1})
+
+
 class Agreement(unittest.TestCase):
     def test_identical_and_split(self):
         d, p = w.agreement([[0, 1, 1], [0, 1, 0], [0, 1, 1], [0, 1, 0]])

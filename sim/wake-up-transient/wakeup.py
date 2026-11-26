@@ -398,9 +398,15 @@ def t_mix(cal, eps, t_hi=1.0):
     return hi
 
 
-def wake_stream(cal, ts, n, rng, tau, stationary=False):
-    """One wake-up: raw bits sampled at t_k = tau + k*ts after the enable (k = 0..n-1)."""
-    th, sd0, adv, sd = [], [], [], []
+def _wake_core(cal, ts, n, rng, tau, stationary=False, rings=False):
+    """The four-ring phase-diffusion wake-up behind wake_stream and wake_ring_bits.
+
+    Ring phase (cycles) at the first sample: (tau - d)/T plus the period jitter accumulated since the ring's
+    first edge, or uniform for a stationary start; per sample it advances by ts/T plus one jitter increment.
+    Returns (xor bits, per-ring bits), the per-ring histories only when `rings` is set (None otherwise). The
+    advance after the last sample is drawn too, so successive wake-ups sharing a generator consume it as
+    they always did."""
+    th, adv, sd = [], [], []
     for T, d in zip(cal["periods_s"], cal["delays_s"]):
         if stationary:
             th.append(rng.random())
@@ -409,32 +415,31 @@ def wake_stream(cal, ts, n, rng, tau, stationary=False):
             th.append(((dt / T) + rng.gauss(0.0, cal["sigma1"] * math.sqrt(dt / T) / T)) % 1.0)
         adv.append((ts / T) % 1.0)
         sd.append(cal["sigma1"] * math.sqrt(ts / T) / T)
-    out = []
+    xs = []
+    if rings:
+        r0, r1, r2, r3 = [], [], [], []
     gauss = rng.gauss
     for _ in range(n):
-        out.append((int(2 * th[0]) ^ int(2 * th[1]) ^ int(2 * th[2]) ^ int(2 * th[3])) & 1)
+        b0, b1, b2, b3 = int(2 * th[0]) & 1, int(2 * th[1]) & 1, int(2 * th[2]) & 1, int(2 * th[3]) & 1
+        if rings:
+            r0.append(b0)
+            r1.append(b1)
+            r2.append(b2)
+            r3.append(b3)
+        xs.append(b0 ^ b1 ^ b2 ^ b3)
         for i in range(4):
             th[i] = (th[i] + adv[i] + gauss(0.0, sd[i])) % 1.0
-    return out
+    return xs, [r0, r1, r2, r3] if rings else None
 
 
-def wake_ring_bits(cal, ts, n, rng, tau):
+def wake_stream(cal, ts, n, rng, tau, stationary=False):
+    """One wake-up: raw bits sampled at t_k = tau + k*ts after the enable (k = 0..n-1)."""
+    return _wake_core(cal, ts, n, rng, tau, stationary=stationary, rings=False)[0]
+
+
+def wake_ring_bits(cal, ts, n, rng, tau, stationary=False):
     """As wake_stream but returning (xor bits, [per-ring bits]) -- for the transistor cross-check."""
-    th, adv, sd = [], [], []
-    for T, d in zip(cal["periods_s"], cal["delays_s"]):
-        dt = max(tau - d, 0.0)
-        th.append(((dt / T) + rng.gauss(0.0, cal["sigma1"] * math.sqrt(dt / T) / T)) % 1.0)
-        adv.append((ts / T) % 1.0)
-        sd.append(cal["sigma1"] * math.sqrt(ts / T) / T)
-    xs, rs = [], [[] for _ in range(4)]
-    for _ in range(n):
-        rb = [int(2 * x) for x in th]
-        for i in range(4):
-            rs[i].append(rb[i])
-        xs.append(rb[0] ^ rb[1] ^ rb[2] ^ rb[3])
-        for i in range(4):
-            th[i] = (th[i] + adv[i] + rng.gauss(0.0, sd[i])) % 1.0
-    return xs, rs
+    return _wake_core(cal, ts, n, rng, tau, stationary=stationary, rings=True)
 
 
 def sub_seed(label):
