@@ -201,7 +201,7 @@
   earlier extraction. The budget reports clock-rate deltas only from the
   matching fleet controls in `sim/post-layout-sampler-core/corners/ts100n-*/`.
   Shared VDD supplies the buffers, XOR tree and samplers. Options P-A
-  (propose an analog allocation of `< 650 uW`, recommended),
+  (an unvalidated `< 650 uW` analog allocation),
   P-B (derogation) and P-C (re-derivation campaign) are laid out for the
   operator. Amends nothing by itself; every historical verdict stays
   recorded against the bound in force when it was measured.

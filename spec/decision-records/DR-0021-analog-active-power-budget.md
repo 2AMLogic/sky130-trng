@@ -20,8 +20,8 @@ related: "#604 (this study), #597 (formal 12-corner PEX evidence), #174 (whole-b
 
 ## Context
 
-Issue #604 exists because `sampler_core`'s analog active power exceeds the
-README Power row's `< 500 uW` active bound (analog-partition share) at the
+Issue #604 exists because `sampler_core` alone exceeds the README Power
+row's `< 500 uW` whole-block active bound at the
 two ff / 1.98 V corners of the four-point post-layout grid — on **both**
 legs, pre-layout (schematic) and post-layout (extracted), so a
 parasitic-induced regression is ruled out as the primary term.
@@ -85,39 +85,35 @@ Design constraints at the measured operating point:
 
 ## Decision
 
-**Proposed, for the operator to choose (options P-A / P-B / P-C).** This
-record recommends **P-A**.
+**Proposed.** Keep grading against the existing whole-block target while
+the operator considers the three options. At 20 us the analog partition
+alone exhausts the budget at both measured temperatures.
 
-- **P-A (recommended): amend the analog-partition active bound** to a
-  measured-worst-corner-derived figure — `< 650 uW` active, analog
-  partition. The proposed allocation adds 47.4 uW to the largest
-  extracted value in #597's 12-corner grid at **100 ns**, 602.6 uW at
-  ff / 125 C / 1.98 V, extracted (the earlier same-deck control measured
-  603.8 uW; this issue's 20 us re-rate of the same corner gives 599.6 uW
-  -- all three agree within 0.7 %, and the grid's formal owner is #597).
-  The two measured 20 us corners leave the maximum at that cadence over
-  the full envelope unresolved. Ratification requires measurements or a
-  validated bound over that envelope, a quantified uncertainty or an
-  independently justified system allocation, and operator review of the
-  margin and the allocation within #174's whole-block budget. The market
-  review also found no comparable active-partition benchmark for 650 uW.
+- **P-A (unvalidated option).** Allocate `< 650 uW` of active power to
+  `sampler_core`. This would give 47.4 uW of headroom above the largest
+  extracted value in #597's 12-corner **100 ns** grid (602.6 uW at
+  ff / +125 C / 1.98 V). At **20 us** the extracted value at that point
+  is 599.6 uW. Only two corners have been measured at 20 us. To support
+  P-A, establish the 20 us maximum across the operating envelope by
+  measurement or a validated bound. Justify the allowance with quantified
+  uncertainty or an independently derived partition budget, and account
+  for the remaining whole-block loads in #174. The market review found
+  no comparable active-partition benchmark for 650 uW.
 - **P-B: hold `< 500 uW`** and record a per-corner derogation at
   ff / 1.98 V. Cost: the two corners stay red on every future report with
   no owned path to green; the array-only figure (473.9 uW hot) leaves only
-  26.1 uW under 500 uW before the remaining loads. Listed for
-  completeness.
+  26.1 uW under 500 uW before the remaining loads.
 - **P-C: open a re-derivation campaign** (ring/buffer sizing against
   DR-0002/DR-0003 bases) targeting recovery of the 19.1-99.6 uW excess. Cost: a
   multi-issue campaign re-opening the DR-0002/DR-0003 basis measurements; no
   guarantee of success (the hot array-only figure leaves 26.1 uW of
-  headroom before the remaining loads). This record does not recommend it, but
-  names it so the operator sees the full space.
+  headroom before the remaining loads).
 
 If the operator ratifies P-A, record the analog allocation explicitly in
 the spec and Chipalooza proposal. Updating the README whole-block figure
 requires the whole-block evidence from #174 and a separate decision.
 
-## Consequences if ratified as proposed
+## Consequences if the operator ratifies P-A
 
 - Any amended analog figure applies to the sampler_core partition.
 - The two ff / 1.98 V rows of #597's PEX grid and of the committed

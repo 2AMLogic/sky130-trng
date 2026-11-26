@@ -128,13 +128,12 @@ inside DR-0010 row 9's recorded envelope; the array-only figure is 473.9
 uW at the hot corner, leaving 26.1 uW before the remaining loads; these
 numbers do not rule out a periphery-only redesign). DR-0003 and DR-0010
 are both `status: Proposed`. At longer sampling periods the sizing law
-permits fewer rings (DR-0003 §2). The measured misses warrant
-reconsidering the target: **DR-0021 (Proposed)** records the rationale and
-the operator options P-A (amend the analog-partition active bound to the
-measured worst corner plus a proposed 47.4 uW allowance), P-B (hold
-500 uW with a per-corner derogation) and P-C (a sizing re-derivation
-campaign). This analysis leaves the README Power row, #597's grid and
-every committed record intact; ratification is an operator action.
+permits fewer rings (DR-0003 §2). **DR-0021 (Proposed)** retains the
+whole-block target for grading. P-A would allocate < 650 uW to the analog
+partition. Its 47.4 uW of headroom is relative to #597's 100 ns grid
+maximum. The 20 us maximum across the envelope and the basis for that
+allowance are still open. The operator can also consider P-B (per-corner
+exceptions to 500 uW) or P-C (a sizing re-derivation campaign).
 
 Whole-block power remains #174's row and is not claimable from these
 numbers; the formal 12-corner PEX table is #597's.
