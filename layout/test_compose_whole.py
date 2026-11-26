@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""Composition-contract tests for ``layout/bin/compose-whole.py`` (issue #172).
+"""Composition-contract tests for ``layout/bin/compose-whole.py`` /
+``compose_whole_lib.py`` (issue #172; the PDK-free library half was split
+out of the CLI per issue #775).
 
 Standalone script, following ``layout/test_compose_cell.py``'s "run it
 directly" convention (no pytest suite in this repository):
@@ -7,11 +9,15 @@ directly" convention (no pytest suite in this repository):
     python3 layout/test_compose_whole.py
 
 Pure Python for everything on the PR-blocking CI path: no ``klt``, no PDK, no
-GDS read. The only inputs are the committed macro artifacts under ``layout/``
-and ``design/`` (text: DEF, RTL, SPICE, JSON) and the committed
+GDS read. The library symbols are imported directly from
+``compose_whole_lib.py`` (and ``run_klt``/``load_json``/``BuildError`` from
+``_klt_common``), so the 1,600-line CLI script is no longer loaded as a
+module on this path. The only inputs are the committed macro artifacts under
+``layout/`` and ``design/`` (text: DEF, RTL, SPICE, JSON) and the committed
 ``layout/trng_whole/`` evidence. Checks that need ``klayout.db`` (an
-extraction of the analog GDS, canonical geometry hashing) run only where
-python ``klayout`` is importable and are reported as ``skip`` otherwise.
+extraction of the analog GDS, canonical geometry hashing) load the CLI entry
+point by filename only inside that group and run only where python
+``klayout`` is importable, reported as ``skip`` otherwise.
 
 Why this exists. The whole-block composition can fail in ways that still
 produce a plausible GDS and a parseable JSON response:
@@ -42,14 +48,13 @@ from pathlib import Path
 _HERE = Path(__file__).resolve().parent
 _REPO_ROOT = _HERE.parent
 sys.path.insert(0, str(_REPO_ROOT / "design"))
+sys.path.insert(0, str(_HERE / "bin"))
+from _gds_geometry import canonical_geometry_hash  # noqa: E402
+from _klt_common import BuildError, load_json, run_klt  # noqa: E402
 from _test_check import Checker  # noqa: E402
+import compose_whole_lib as cw  # noqa: E402
 
 _MODULE_PATH = _HERE / "bin" / "compose-whole.py"
-_spec = importlib.util.spec_from_file_location("compose_whole", _MODULE_PATH)
-assert _spec and _spec.loader
-cw = importlib.util.module_from_spec(_spec)
-sys.modules["compose_whole"] = cw
-_spec.loader.exec_module(cw)
 
 _checker = Checker()
 _check = _checker.check
@@ -68,7 +73,7 @@ def _model(mutate=None) -> "cw.Model":
 def _raises(label: str, fn, needle: str) -> None:
     try:
         fn()
-    except cw.BuildError as exc:
+    except BuildError as exc:
         _check(label, needle in str(exc), f"BuildError without {needle!r}: {exc}")
     else:
         _check(label, False, "no BuildError raised")
@@ -217,7 +222,7 @@ def check_missing_input_is_fatal() -> None:
         fp["macros"]["analog"]["gds"] = "../sampler_core/nope.gds"
 
     _raises("a missing analog GDS aborts", lambda: _model(bad_gds), "missing input")
-    _raises("a missing JSON input aborts", lambda: cw.load_json(SPEC_DIR / "nope.json"), "missing input")
+    _raises("a missing JSON input aborts", lambda: load_json(SPEC_DIR / "nope.json"), "missing input")
 
 
 # --------------------------------------------------------------------------
@@ -348,8 +353,8 @@ def check_run_klt_accepts_partial_so_the_verdict_check_is_load_bearing() -> None
             "exit 3\n"
         )
         fake.chmod(fake.stat().st_mode | stat.S_IEXEC)
-        response = cw.run_klt(["gen-compose", "x.json"], env=dict(os.environ), cwd=Path(tmp),
-                              klt=str(fake))
+        response = run_klt(["gen-compose", "x.json"], env=dict(os.environ), cwd=Path(tmp),
+                           klt=str(fake))
         _check("run_klt hands back a partial composition without raising",
                response["unrouted_nets"] == ["vdd"])
         request = cw.build_request(_model(), absolute_inputs=False)
@@ -459,8 +464,13 @@ def check_geometry_audits() -> None:
     except ImportError:
         print("skip   geometry audits (python klayout not importable)")
         return
+    spec = importlib.util.spec_from_file_location("compose_whole_entry", _MODULE_PATH)
+    assert spec and spec.loader
+    entry = importlib.util.module_from_spec(spec)
+    sys.modules["compose_whole_entry"] = entry
+    spec.loader.exec_module(entry)
     model = _model()
-    summary = cw.audit_analog_ports(model)
+    summary = entry.audit_analog_ports(model)
     _check("committed analog ports all land on their intended extracted nets",
            summary["ports_checked"] == 18 and summary["distinct_extracted_nets"] == 18, summary)
 
@@ -469,31 +479,31 @@ def check_geometry_audits() -> None:
         a["x_um"], b["x_um"] = b["x_um"], a["x_um"]
 
     _raises("swapped en1/en2 ports are caught against the analog extraction",
-            lambda: cw.audit_analog_ports(_model(swapped_en)), "analog port audit failed")
+            lambda: entry.audit_analog_ports(_model(swapped_en)), "analog port audit failed")
 
     def swapped_taps(fp):
         fp["analog_ports"]["raw_bit"]["sampler"] = "sv"
         fp["analog_ports"]["raw_valid"]["sampler"] = "sb"
 
     _raises("swapped raw_bit/raw_valid taps are caught against design/trng_top.spice",
-            lambda: cw.audit_analog_ports(_model(swapped_taps)), "design/trng_top.spice drives")
+            lambda: entry.audit_analog_ports(_model(swapped_taps)), "design/trng_top.spice drives")
 
     def off_conductor(fp):
         fp["analog_ports"]["vddr2"]["y_um"] += 1.0
 
     _raises("a port off any conductor is caught",
-            lambda: cw.audit_analog_ports(_model(off_conductor)), "no m2 conductor")
+            lambda: entry.audit_analog_ports(_model(off_conductor)), "no m2 conductor")
     _check("digital DEF pins match the GDS labels",
-           cw.audit_digital_geometry(model)["def_pins_with_matching_gds_label"] == 113)
+           entry.audit_digital_geometry(model)["def_pins_with_matching_gds_label"] == 113)
     committed = SPEC_DIR / "trng_whole.gds"
-    h1, counts = cw.canonical_geometry_hash(committed)
-    h2, _ = cw.canonical_geometry_hash(committed)
+    h1, counts = canonical_geometry_hash(committed)
+    h2, _ = canonical_geometry_hash(committed)
     report = json.loads((SPEC_DIR / "report.json").read_text())
     _check("canonical geometry hash is stable and matches the committed report",
            h1 == h2 == report["outputs"]["trng_whole.gds"]["canonical_geometry_sha256"], h1)
-    audit = cw.audit_composed_connectivity(model, committed)
+    audit = entry.audit_composed_connectivity(model, committed)
     _check("the committed composed GDS passes the connectivity audit", audit["nets_checked"] == 18, audit)
-    bbox = cw.drawn_bbox_um(committed)
+    bbox = entry.drawn_bbox_um(committed)
     _check("recomputed drawn bbox matches the report", bbox == report["area"]["bbox_um"], bbox)
 
 
