@@ -13,8 +13,7 @@ would silently lie if it rotted:
   leg sitting within the runs' cross-run agreement band of the bound;
 * the W_RST anchor compares the 20 us run's reset-held window against the
   committed control's own same-window numbers (stimulus-identical), and
-  its delta feeds nothing else -- it is the cross-run gate the record's
-  conclusions are conditioned on;
+  its delta feeds nothing else; only matched fleet pairs enter rate deltas;
 * a missing measurement, a wrong report status, or a record with no ok ff
   corner refuses to emit anything (EvidenceError), never a partial table;
 * an authored analysis/disposition.md is appended verbatim when present.
@@ -25,7 +24,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
-import sys
+import shutil
 import tempfile
 from pathlib import Path
 
@@ -58,16 +57,16 @@ def synth_control(tmp: Path, t: float, rings_a: float, block_a: float) -> Path:
     rec = {"record_id": f"synthetic-{'m40' if t < 0 else 'hot'}",
            "corners": [{"corner": "ff", "ok": True, "measurements": m}],
            "testbench": "synthetic",
-           "netlists": {"RO_RING5": {"path": "design/sampler_core.spice"},
+           "netlists": {"RO_RING5": {"path": "design/sampler_core.spice", "sha256": "a" * 64},
                         "PEX_LIB": {"path": "layout/pex-sampler-core/"
-                                            "sampler_core_pex.spice"}},
+                                            "sampler_core_pex.spice", "sha256": "b" * 64}},
            "tools": {"ngspice": "synthetic"}}
     p = tmp / f"ctrl-{int(t)}.json"
     p.write_text(json.dumps(rec))
     return p
 
 
-def synth_report(tmp: Path, t: float, scale: float) -> Path:
+def synth_report(tmp: Path, t: float, period: str, scale: float) -> Path:
     got = {}
     for p in ("x", "s"):
         for i in (1, 2, 3, 4):
@@ -78,38 +77,42 @@ def synth_report(tmp: Path, t: float, scale: float) -> Path:
         got[f"{p}_ib_act"] = -(1.4e-4) * scale
         got[f"{p}_ib_lo"] = got[f"{p}_ib_hi"] = got[f"{p}_ib_act"]
     meas = [{"name": k, "value": v, "status": "pass"} for k, v in got.items()]
-    rep = {"status": "pass",
-           "corners": [{"corner_id": "ff/1.980V/x", "measurements": meas,
-                        "runtime_s": 1000.0, "status": "pass"}],
-           "environment": {"remote": {"job_id": "synthetic-job",
-                                      "state": "done",
-                                      "runner_klt_version": "9.9",
-                                      "runner_compatibility": "ok"}}}
-    p = tmp / f"rep-{int(t)}.json"
+    tag = "m40C" if t < 0 else "125C"
+    name = f"ts{period}-{tag}-1.98V"
+    source = REDUCER_PATH.parents[1] / "corners"
+    dest = tmp / "corners" / name
+    dest.mkdir(parents=True, exist_ok=True)
+    for filename in ("request.json", "plan.json"):
+        shutil.copyfile(source / name / filename, dest / filename)
+    plan = json.loads((dest / "plan.json").read_text())
+    # Use the fleet envelope shape for this temperature, with synthetic measurements.
+    rep = json.loads((source / f"ts20u-{tag}-1.98V" / "report.json").read_text())
+    rep["corners"][0]["measurements"] = meas
+    rep["environment"]["netlist_sha256"] = plan["netlist_sha256"]
+    rep["environment"]["remote"]["job_id"] = "synthetic-job"
+    p = dest / "report.json"
     p.write_text(json.dumps(rep))
     return p
 
 
-def install(tmp: Path, t_ctrl: dict, t_rep: dict) -> None:
-    R.CONTROL_RECORDS = {-40.0: t_ctrl[-40.0], 125.0: t_ctrl[125.0]}
-    R.TS20U_REPORTS = {-40.0: t_rep[-40.0], 125.0: t_rep[125.0]}
+def check_refusal(message: str) -> None:
+    try:
+        R.main([])
+    except R.EvidenceError as exc:
+        check(message in str(exc), f"refused with {message}")
+    else:
+        check(False, f"expected refusal for {message}")
 
 
 def main() -> int:
     with tempfile.TemporaryDirectory() as td:
         tmp = Path(td)
         ctrl = {t: synth_control(tmp, t, 8.8e-5, 1.75e-4) for t in R.TEMPS}
-        rep = {t: synth_report(tmp, t, 1.0) for t in R.TEMPS}
-        install(tmp, ctrl, rep)
-        R.SLUG = tmp  # redirect the output root
+        rep = {t: synth_report(tmp, t, "20u", 1.0) for t in R.TEMPS}
+        matched = {t: synth_report(tmp, t, "100n", 1.1) for t in R.TEMPS}
+        R.CONTROL_RECORDS = ctrl
+        R.SLUG = tmp
         (tmp / "analysis").mkdir()
-        (tmp / "corners" / "ts20u-m40C-1.98V").mkdir(parents=True)
-        (tmp / "corners" / "ts20u-m40C-1.98V" / "plan.json").write_text(
-            json.dumps({"design_lib": {"path": "design/sampler_core.spice",
-                                       "sha256": "a" * 64},
-                        "pex_lib": {"path": "layout/pex-sampler-core/"
-                                            "sampler_core_pex.spice",
-                                    "sha256": "b" * 64}}))
         out = tmp / "analysis" / "active-power-budget.md"
         rc = R.main([])
         check(rc == 0 and out.is_file(), "budget emitted")
@@ -123,7 +126,7 @@ def main() -> int:
         # extracted leg: 4*11 + 140 = same scale -> also 364.3 in this synth
         check(text.count("| 364.3 | 135.7 |") == 2 * 2,
               "both legs x both temps share the synthetic totals")
-        check("| +125 C | schematic | 520.7 | 364.3 | -156.4 | PASS |" in text,
+        check("| +125 C | schematic | 400.8 | 364.3 | -36.4 | PASS |" in text,
               "comparison row: 100 ns column, delta, verdict")
         verdicts = [ln for ln in text.splitlines() if " C | " in ln and
                     ("PASS" in ln or "FAIL" in ln or "AT BOUND" in ln)]
@@ -141,24 +144,34 @@ def main() -> int:
               "authored disposition appended verbatim")
         # refusal paths
         print("refusals:")
+        hot = matched[125.0]
+        plan_path = hot.with_name("plan.json")
+        original_plan = plan_path.read_bytes()
+        for key in ("design_lib", "pex_lib"):
+            plan = json.loads(original_plan)
+            plan[key]["sha256"] = "9" * 64
+            plan_path.write_text(json.dumps(plan))
+            check_refusal(key)
+        plan_path.write_bytes(original_plan)
+        report = json.loads(hot.read_text())
+        report["environment"]["remote"]["runner_models_lib_sha256"] = "9" * 64
+        hot.write_text(json.dumps(report))
+        check_refusal("models_lib")
+        hot.write_bytes(rep[125.0].read_bytes())  # a 20 us report in the 100 ns slot
+        check_refusal("netlist hashes differ")
+        hot.unlink()
+        R.main([])
+        check("| +125 C | extracted | pending | 364.3 | pending | PASS |" in out.read_text(),
+              "missing short control preserves 20 us verdict without a historical fallback")
         bad = json.loads(rep[-40.0].read_text())
         bad["corners"][0]["measurements"] = bad["corners"][0]["measurements"][:-3]
         rep[-40.0].write_text(json.dumps(bad))
-        try:
-            R.main([])
-            check(False, "missing measurement refuses to emit")
-        except R.EvidenceError:
-            check(True, "missing measurement refuses to emit")
+        check_refusal("measurement")
+        synth_report(tmp, -40.0, "20u", 1.0)
         bad2 = json.loads(ctrl[125.0].read_text())
         bad2["corners"][0]["ok"] = False
         ctrl[125.0].write_text(json.dumps(bad2))
-        (tmp / "x").mkdir()
-        install(tmp, ctrl, {t: synth_report(tmp / "x", t, 1.0) for t in R.TEMPS})
-        try:
-            R.main([])
-            check(False, "non-ok ff corner refuses to emit")
-        except R.EvidenceError:
-            check(True, "non-ok ff corner refuses to emit")
+        check_refusal("no ok ff corner")
     if FAILURES:
         print(f"\n{len(FAILURES)} check(s) failed")
         return 1

@@ -54,11 +54,11 @@ def parse_t(tok: str) -> float:
     return float(tok[:-1]) * mult[tok[-1]] if tok[-1].isalpha() else float(tok)
 
 
-def emit(tmp: Path) -> dict[str, Path]:
+def emit(tmp: Path, period: str = "20u") -> dict[str, Path]:
     out = tmp / "corners"
-    subprocess.run([sys.executable, str(GEN), str(out), "--points", "both"],
+    subprocess.run([sys.executable, str(GEN), str(out), "--points", "both", "--period", period],
                    check=True, capture_output=True)
-    return {tag: out / f"ts20u-{tag}-1.98V" for tag in ("m40C", "125C")}
+    return {tag: out / f"ts{period}-{tag}-1.98V" for tag in ("m40C", "125C")}
 
 
 def test_body(d: Path) -> None:
@@ -170,10 +170,10 @@ def test_request(d: Path, temp_c: float) -> None:
     check(plan["design_lib"]["sha256"] == _sha(DESIGN) and
           plan["pex_lib"]["sha256"] == _sha(PEX),
           "plan.json pins both inlined netlists")
-    check(plan["control_records_paired"] == [
+    check(plan["historical_records"] == [
         "sim/post-layout-sampler-core/records/20260908-050034-ef0db50.json",
         "sim/post-layout-sampler-core/records/20260908-053634-ef0db50.json"],
-        "plan.json names the paired committed control records")
+        "plan.json names the historical reference records")
     check(len(plan["deviations"]) == 4, "four recorded deviations")
     check(plan["timing"]["ts_s"] == TS_S and plan["timing"]["uic"] is True,
           "plan.json timing block")
@@ -193,6 +193,28 @@ def main() -> int:
             test_body(dirs[tag])
             test_stimulus(dirs[tag])
             test_request(dirs[tag], temp_c)
+        short = emit(tmp, "100n")
+        for tag, d in short.items():
+            # Apart from the clock widths and periods, all circuit cards must match.
+            cards = [line for line in (d / "netlist.cir").read_text().splitlines()
+                     if line and not line.startswith("*")]
+            slow_cards = [line for line in (dirs[tag] / "netlist.cir").read_text().splitlines()
+                          if line and not line.startswith("*")]
+            clocks = [line for line in cards if line.startswith(("Vclk ", "Vclkp "))]
+            check(len(clocks) == 2 and all("320n 100p 100p 49.8n 100n)" in c for c in clocks),
+                  f"{tag}: both controls use the 100 ns clock")
+            check(cards == [c.replace("9.96u 20u)", "49.8n 100n)") for c in slow_cards],
+                  f"{tag}: control preserves the slow deck's netlists, load and other stimulus")
+            req = json.loads((d / "request.json").read_text())
+            check(req["analysis"]["args"] == "50p 850n uic" and len(req["measurements"]) == 20,
+                  f"{tag}: short control measures ten rails in two windows")
+            for window, span in (("_act", "FROM=420n TO=820n"), ("_rst", "FROM=50n TO=250n")):
+                cards = [m["spice"] for m in req["measurements"] if m["name"].endswith(window)]
+                check(len(cards) == 10 and all(span in c for c in cards), f"{tag}: {window} window")
+            for path in (d, dirs[tag]):
+                for name in ("request.json", "plan.json"):
+                    check((path / name).read_bytes() == (HERE / "corners" / path.name / name).read_bytes(),
+                          f"{path.name}: reproduces committed {name}")
         again = emit(tmp / "again")
         for tag in ("m40C", "125C"):
             check((again[tag] / "netlist.cir").read_bytes() ==

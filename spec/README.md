@@ -196,13 +196,12 @@
 
 - [`decision-records/DR-0021-analog-active-power-budget.md`](decision-records/DR-0021-analog-active-power-budget.md)
   — **Proposed**. Issue #604: the measured disposition of the ff / 1.98 V
-  analog active-power overrun. The matched 100 ns-vs-20 us fleet runs
-  (`sim/post-layout-sampler-core/corners/ts20u-*/`, both legs per deck)
-  refute the sampling-rate hypothesis — slowing the clock 200x leaves all
-  four totals over 500 uW; the shared-VDD measurement does not isolate the
-  sampler bank's own power — and no rate, duty-cycle or array-size lever
-  exists inside DR-0003's (Proposed) Ts = 20 us, N = 4 operating point. Options P-A (amend the analog-partition active
-  bound to a measured-worst-corner-derived `< 650 uW`, recommended),
+  analog active-power overrun. Both measured legs at each temperature
+  exceed 500 uW at Ts = 20 us. The September 100 ns records used an
+  earlier extraction. The budget reports clock-rate deltas only from the
+  matching fleet controls in `sim/post-layout-sampler-core/corners/ts100n-*/`.
+  Shared VDD supplies the buffers, XOR tree and samplers. Options P-A
+  (propose an analog allocation of `< 650 uW`, recommended),
   P-B (derogation) and P-C (re-derivation campaign) are laid out for the
   operator. Amends nothing by itself; every historical verdict stays
   recorded against the bound in force when it was measured.

@@ -3,10 +3,6 @@
     "args": "50p 40.4u uic",
     "kind": "tran"
   },
-  "control_records_paired": [
-    "sim/post-layout-sampler-core/records/20260908-050034-ef0db50.json",
-    "sim/post-layout-sampler-core/records/20260908-053634-ef0db50.json"
-  ],
   "control_template": {
     "path": "sim/post-layout-sampler-core/testbench/tb_post_layout_sampler_core.spice",
     "sha256": "1cbd47f389b5cb163f404045041e6fb1b9aef27c684cc9d45fc76b705c818e80"
@@ -87,6 +83,10 @@
     "unit_timeout_s": 3480,
     "whole_job_ceiling_s": 3600
   },
+  "historical_records": [
+    "sim/post-layout-sampler-core/records/20260908-050034-ef0db50.json",
+    "sim/post-layout-sampler-core/records/20260908-053634-ef0db50.json"
+  ],
   "measurement_count": 74,
   "name": "ts20u-m40C-1.98V",
   "netlist_sha256": "36342ad55f4ec1c3a290aa455275e2fb03f791011833a66a0d412faf3b5100b9",
@@ -94,7 +94,7 @@
     "path": "layout/pex-sampler-core/sampler_core_pex.spice",
     "sha256": "2aad0267cba9c927a33ab2adfc9f869f962137ac089393a3a79b59d950f05521"
   },
-  "purpose": "issue #604: sampler_core analog active power at DR-0003's Ts = 20 us, ff / 1.98 V -- the 20 us leg of the 100 ns-vs-20 us sampling-rate comparison",
+  "purpose": "issue #604: 20u sampling period, ff / 1.98 V, sampler_core power",
   "timing": {
     "clk_high_s": 9.96e-06,
     "clk_t0_s": 3.2e-07,

@@ -1,0 +1,95 @@
+{
+  "analysis": {
+    "args": "50p 850n uic",
+    "kind": "tran"
+  },
+  "control_template": {
+    "path": "sim/post-layout-sampler-core/testbench/tb_post_layout_sampler_core.spice",
+    "sha256": "1cbd47f389b5cb163f404045041e6fb1b9aef27c684cc9d45fc76b705c818e80"
+  },
+  "corners": {
+    "process": [
+      "ff"
+    ],
+    "supply_v": {
+      "Vdd": [
+        1.98
+      ],
+      "Vddp": [
+        1.98
+      ],
+      "Vddr1": [
+        1.98
+      ],
+      "Vddr2": [
+        1.98
+      ],
+      "Vddr3": [
+        1.98
+      ],
+      "Vddr4": [
+        1.98
+      ],
+      "Vddrp1": [
+        1.98
+      ],
+      "Vddrp2": [
+        1.98
+      ],
+      "Vddrp3": [
+        1.98
+      ],
+      "Vddrp4": [
+        1.98
+      ]
+    },
+    "temperature_c": [
+      125.0
+    ]
+  },
+  "design_lib": {
+    "path": "design/sampler_core.spice",
+    "sha256": "34a9af2714b7cfd71092c9733fb4007a61747b032eadcf5491ae9db811999b71"
+  },
+  "fleet": {
+    "poll_timeout_s": 3700,
+    "submit": "klt sim --batch-set <both request.json> -o <dir> --wait-for-capacity 600",
+    "unit_timeout_s": 3480,
+    "whole_job_ceiling_s": 3600
+  },
+  "historical_records": [
+    "sim/post-layout-sampler-core/records/20260908-050034-ef0db50.json",
+    "sim/post-layout-sampler-core/records/20260908-053634-ef0db50.json"
+  ],
+  "measurement_count": 20,
+  "name": "ts100n-125C-1.98V",
+  "netlist_sha256": "e87ba68e5181bda899c4b77c42f4a5d0459b743da9dfadaba42ad25fd3ffae7e",
+  "pex_lib": {
+    "path": "layout/pex-sampler-core/sampler_core_pex.spice",
+    "sha256": "2aad0267cba9c927a33ab2adfc9f869f962137ac089393a3a79b59d950f05521"
+  },
+  "purpose": "issue #604: 100n sampling period, ff / 1.98 V, sampler_core power",
+  "timing": {
+    "clk_high_s": 4.98e-08,
+    "clk_t0_s": 3.2e-07,
+    "duty": 0.49800000000000005,
+    "en_release_s": 5e-09,
+    "en_width_s": 5e-05,
+    "rst_release_s": 3e-07,
+    "rst_width_s": 5e-05,
+    "ts_s": 1e-07,
+    "tstep": "50p",
+    "tstop": "850n",
+    "uic": true
+  },
+  "windows": {
+    "w_act_s": [
+      4.2e-07,
+      8.2e-07
+    ],
+    "w_rst_s": [
+      5e-08,
+      2.5e-07
+    ]
+  }
+}

@@ -13,9 +13,14 @@ grid pass extracted and are not re-derived here.
 
 | comparison leg | netlist | loading | clk period | windows |
 |---|---|---|---|---|
-| 100 ns control (both legs, same deck) | `design/sampler_core.spice` + `layout/pex-sampler-core/sampler_core_pex.spice` (sha256 in each cited record) | each leg's own buffers/XOR/samplers; outputs unloaded | 100 ns, first edge 320 ns | rst 50-250 ns, act 400-800 ns |
-| 20 us runs (both legs, same deck) | `design/sampler_core.spice` (sha256 `34a9af2714b7cfd7...`) + `layout/pex-sampler-core/sampler_core_pex.spice` (sha256 `2aad0267cba9c927...`) | identical to the control deck (netlists inlined verbatim) | 20 us, first edge 320 ns, 49.8 % duty | rst 50-250 ns, act 20.32-40.32 us (one complete settled period; deviations recorded in each corners/ts20u-*/plan.json) |
+| Historical 100 ns, -40 C | schematic `34a9af2714b7cfd7`, PEX `2bad455e86e882ad` | outputs unloaded | 100 ns | rst 50-250 ns, act 400-800 ns, step 5 ps |
+| Fleet requests at -40 C | schematic `34a9af2714b7cfd7`, PEX `2aad0267cba9c927` | outputs unloaded | 100 ns / 20 us | rst 50-250 ns, act 420-820 ns / 20.32-40.32 us, step 50 ps |
+| Historical 100 ns, +125 C | schematic `34a9af2714b7cfd7`, PEX `2bad455e86e882ad` | outputs unloaded | 100 ns | rst 50-250 ns, act 400-800 ns, step 5 ps |
+| Fleet requests at +125 C | schematic `34a9af2714b7cfd7`, PEX `2aad0267cba9c927` | outputs unloaded | 100 ns / 20 us | rst 50-250 ns, act 420-820 ns / 20.32-40.32 us, step 50 ps |
 
+Each deck contains both legs with their own buffers, XOR tree and samplers.
+Section 1 reproduces the historical records. Section 3 uses only fleet pairs
+with matching schematic, PEX and executed model hashes and simulator settings.
 Supply 1.98 V on all rails; process ff; temperatures -40 / +125 C.
 
 ## 1. The 100 ns control budget (committed records, reproduced)
@@ -46,16 +51,13 @@ Rail-sum consistency (rings + block vs the record's own total):
 - +125 C schematic: -0.000 uW (source rounding)
 - +125 C extracted: +0.000 uW (source rounding)
 
-## 2. The Ts = 20 us matched runs (this issue's batch experiment)
+## 2. The Ts = 20 us measurements (this issue's batch experiment)
 
-Stimulus and windows: DR-0003's sampling period Ts = 20 us
-(49.8 % duty, first edge 320 ns -- the control deck's own timing at the
-real rate); W_RST = 50-250 ns bit-identical to the controls'; W_ACT =
-20.32-40.32 us = exactly one complete settled clk period (edges at both
-endpoints); halves at 30.32 us reported as a stationarity indicator.
-Recorded deviations (tstep 50p vs the control's 5p; en/rst pulse widths
-extended past tstop) and their measured error bars live in each
-request's `plan.json`.
+At Ts = 20 us the first rising edge is at 320 ns and the clock duty is 49.8%.
+W_RST covers 50-250 ns before the first edge. W_ACT covers 20.32-40.32 us,
+one complete period between rising edges. The two half-window means show
+phase-dependent current within that period. The plans record the transient
+step and the enable and reset pulse widths.
 
 ### -40 C (job `klt-sim-a84860581d91`, state done, runner klt 0.9.0, compat match, engine 2985 s)
 
@@ -64,7 +66,7 @@ request's `plan.json`.
 | schematic | 173.5 | 345.7 | 519.1 | -19.1 |
 | extracted | 148.0 | 429.2 | 577.2 | -77.2 |
 
-Stationarity (shared-VDD half-window spread): schematic +44.31 %, extracted +32.53 % of the leg's W_ACT mean.
+Shared-VDD half-window spread: schematic +44.31 %, extracted +32.53 % of the leg's W_ACT mean.
 
 ### +125 C (job `klt-sim-4019827a62fe`, state done, runner klt 0.9.0, compat match, engine 2748 s)
 
@@ -73,9 +75,11 @@ Stationarity (shared-VDD half-window spread): schematic +44.31 %, extracted +32.
 | schematic | 174.1 | 395.0 | 569.1 | -69.1 |
 | extracted | 147.5 | 452.1 | 599.6 | -99.6 |
 
-Stationarity (shared-VDD half-window spread): schematic +38.42 %, extracted +32.25 % of the leg's W_ACT mean.
+Shared-VDD half-window spread: schematic +38.42 %, extracted +32.25 % of the leg's W_ACT mean.
 
-### Cross-run anchor (W_RST, stimulus-identical)
+### Historical reset-window comparison (W_RST, 50-250 ns)
+
+These differences describe reset-held operation across extractions.
 
 | T | schematic total (uW) | extracted total (uW) |
 |---|---:|---:|
@@ -84,12 +88,15 @@ Stationarity (shared-VDD half-window spread): schematic +38.42 %, extracted +32.
 
 ## 3. Sampling-rate comparison and verdicts
 
-| T | leg | 100 ns total (uW) | 20 us total (uW) | delta | 20 us verdict vs 500 uW |
+- -40 C 100 ns control: awaiting fleet report.
+- +125 C 100 ns control: awaiting fleet report.
+
+| T | leg | Matched 100 ns total (uW) | 20 us total (uW) | delta | 20 us verdict vs 500 uW |
 |---|---|---:|---:|---:|---|
-| -40 C | schematic | 519.2 | 519.1 | -0.1 | FAIL |
-| -40 C | extracted | 583.6 | 577.2 | -6.5 | FAIL |
-| +125 C | schematic | 567.2 | 569.1 | +1.9 | FAIL |
-| +125 C | extracted | 603.8 | 599.6 | -4.1 | FAIL |
+| -40 C | schematic | pending | 519.1 | pending | FAIL |
+| -40 C | extracted | pending | 577.2 | pending | FAIL |
+| +125 C | schematic | pending | 569.1 | pending | FAIL |
+| +125 C | extracted | pending | 599.6 | pending | FAIL |
 
 ## 4. Array-only context (DR-0003 section 7 / DR-0010 R3)
 
@@ -100,18 +107,14 @@ Stationarity (shared-VDD half-window spread): schematic +38.42 %, extracted +32.
 
 ## 5. Proposed disposition
 
-Both legs of both failing corners stay above the 500 uW bound at DR-0003's
-own 20 us sampling period (section 3): the sampling rate is **refuted as
-the overrun term by measurement** — moving from the committed controls'
-100 ns clock to DR-0003's Ts = 20 us clock shifts each leg's total by at
-most +1.9 / -6.5 uW (-1.1 % to +0.3 %), far below the 19.1-99.6 uW excess
-over 500 uW (schematic then extracted: 19.1 / 77.2 uW at -40 C, 69.1 /
-99.6 uW at +125 C), and the stimulus-identical W_RST window reproduces
-across runs to 0.02-0.54 % (section 2 anchor). The six samplers share VDD
-with the buffers and XOR tree, so these reports (four ring-rail currents
-plus one shared-VDD current per leg) establish only that slowing the clock
-leaves every leg over 500 uW; they do not isolate the sampler bank's
-absolute power.
+At Ts = 20 us the two ff / 1.98 V corners exceed 500 uW on both legs.
+The excess is 19.1 / 77.2 uW at -40 C and 69.1 / 99.6 uW at +125 C
+(schematic / extracted). The historical 100 ns records and the 20 us
+reports used different parasitic extractions and simulator settings.
+Their 0.02–0.54% reset-window agreement applies only with reset held.
+Section 3 uses the short 100 ns controls for clock-rate deltas. Each
+leg measures four ring rails and one shared VDD for the buffers, XOR
+tree and six samplers. This split leaves sampler-bank power unresolved.
 
 No supported design iteration is identified that recovers the excess inside
 the Ts = 20 us, N = 4 operating point used here (ring gating destroys
@@ -119,10 +122,11 @@ DR-0003's accumulation basis; N = 4 is entropy-minimal; ff/1.98 V is
 inside DR-0010 row 9's recorded envelope; the array-only figure is 473.9
 uW at the hot corner, leaving 26.1 uW before the remaining loads; these
 numbers do not rule out a periphery-only redesign). DR-0003 and DR-0010
-are both `status: Proposed`. The evidence therefore warrants
+are both `status: Proposed`. At longer sampling periods the sizing law
+permits fewer rings (DR-0003 §2). The measured misses warrant
 reconsidering the target: **DR-0021 (Proposed)** records the rationale and
 the operator options P-A (amend the analog-partition active bound to the
-measured worst corner plus silicon guardband — recommended), P-B (hold
+measured worst corner plus a proposed 47.4 uW allowance), P-B (hold
 500 uW with a per-corner derogation) and P-C (a sizing re-derivation
 campaign). This analysis leaves the README Power row, #597's grid and
 every committed record intact; ratification is an operator action.

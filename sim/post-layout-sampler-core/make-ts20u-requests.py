@@ -1,21 +1,12 @@
 #!/usr/bin/env python3
-"""Emit the Ts = 20 us sampler_core active-power klt sim requests (issue #604).
+"""Emit the 20 us runs and matching 100 ns control requests for issue #604.
 
-`sampler_core` analog active power exceeds the README's < 500 uW row at the
-ff / 1.98 V corners (issue #604), but every committed post-layout
-sampler_core measurement -- including the two ff control records this study
-pairs with -- clocks the sampler at Ts = 100 ns, a disclosed compute-budget
-deviation from DR-0003's Ts = 20 us operating point (DR-0003 is Proposed). Whether the
-overrun survives the real sampling rate is unmeasured. This generator emits
-the 20 us side of that comparison as `klt sim` batch requests (one per
-failing temperature), so the grid runs on the Spot batch fleet -- never as a
-hand-launched local ngspice grid.
+Each batch request drives both the schematic and extracted sampler_core at
+one ff / 1.98 V temperature. Both rates inline the same libraries, use the
+same 50 ps transient step, and hold the same enables and reset timing.
+The September 100 ns records used an earlier extraction and a 5 ps step.
 
-Per request: ONE unit = the committed control deck's own two-leg circuit
-(flat-extracted `sampler_core_pex` DUT `xarr` + pre-layout
-`.subckt sampler_core` same-deck control `xctl`), netlists inlined verbatim
-(sha256 in plan.json), with exactly three stimulus deviations from the
-committed template, each recorded in plan.json's `deviations`:
+The 20 us deck has three stimulus deviations from the historical template:
 
 1. `clk` period Ts = 20 us (high 9.96 us, the control's exact 49.8 % duty),
    first rising edge still at 320 ns.
@@ -34,10 +25,7 @@ committed template, each recorded in plan.json's `deviations`:
 Windows (see analysis/active-power-budget.md for the reduction):
 
 * W_RST = 50-250 ns: rings running, samplers reset-held, clk not started.
-  Stimulus-identical to the committed 100 ns controls' own W_RST -- the
-  cross-runner anchor: its currents must reproduce the committed records
-  (same netlists, same PVT) to within cross-build agreement before any
-  20 us number is read.
+  The September records provide a historical reset-window reference only.
 * W_ACT = 20.32-40.32 us: exactly ONE complete settled clk period, edges at
   both endpoints (E2 = 320 ns + Ts, E3 = E2 + Ts). A two-period window
   (tstop 60.4 us) exceeds the fleet whole-job ceiling at the cold corner.
@@ -50,11 +38,10 @@ Nothing here simulates anything. Reproduce the request directories with:
     python3 sim/post-layout-sampler-core/make-ts20u-requests.py \\
         sim/post-layout-sampler-core/corners --points both
 
-Submit (batch fleet; blocking, capacity-waiting):
-
-    klt sim --batch-set corners/ts20u-m40C-1.98V/request.json \\
-                     corners/ts20u-125C-1.98V/request.json \\
-        -o <outdir> --wait-for-capacity 600
+Generate the short controls with the same command plus `--period 100n`.
+Submit their two request.json files with `klt sim --batch-set <requests...>
+-o <outdir> --wait-for-capacity 600` and collect each report.json into its
+request directory. The control averages four complete periods, 420-820 ns.
 """
 from __future__ import annotations
 
@@ -94,13 +81,16 @@ W_RST = (50e-9, 250e-9)
 W_ACT = (CLK_T0_S + TS_S, CLK_T0_S + 2 * TS_S)          # one complete period
 W_LO = (W_ACT[0], W_ACT[0] + TS_S / 2)                  # stationarity halves
 W_HI = (W_ACT[0] + TS_S / 2, W_ACT[1])
+CONTROL_PERIOD = 100e-9
+CONTROL_HIGH = 49.8e-9
+CONTROL_ACTIVE = (420e-9, 820e-9)
 SNAP_S = 35.3e-6   # mid-low phase of the sampled period (low: 30.28-40.32 us)
 
 #: whole-job ceiling is 3600 s (fleet_config); 3480 s + 120 s overhead fits.
 UNIT_TIMEOUT_S = 3480
 POLL_TIMEOUT_S = 3700
 
-#: the committed 100 ns control records this study pairs with (issue #604's
+#: Historical 100 ns records reproduced separately (issue #604's
 #: curator table; ff rows, active window 400-800 ns)
 CONTROL_RECORDS = [
     "sim/post-layout-sampler-core/records/20260908-050034-ef0db50.json",
@@ -155,27 +145,33 @@ def _t(x: float) -> str:
     return f"{x:.6g}"
 
 
-def deck_body() -> str:
+def deck_body(short_control: bool = False) -> str:
     """The two-leg circuit body (no .lib/.temp/.tran/.meas/.control: klt owns those)."""
     design = DESIGN_LIB.read_text()
     pex = PEX_LIB.read_text()
     h = []
     a = h.append
-    a("* sampler_core analog active power at DR-0003's Ts = 20 us -- issue")
-    a("* #604's operating-point batch experiment. Derived from the committed")
-    a("* same-deck control sim/post-layout-sampler-core/testbench/")
-    a("* tb_post_layout_sampler_core.spice (see plan.json: three stimulus")
-    a("* deviations, all recorded). Both legs of that deck are preserved")
-    a("* verbatim below: xarr = the flat-extracted sampler_core_pex DUT over")
-    a("* layout/sampler_core/, xctl = design/sampler_core.spice's own")
-    a("* .subckt sampler_core pre-layout control, netlists inlined from the")
-    a("* committed libraries (sha256 in plan.json). Windows: W_RST = 50-250n")
-    a("* (stimulus-identical to the committed controls' reset-held window);")
-    a("* W_ACT = 20.32u-40.32u = exactly one complete settled clk period")
-    a("* (edges at both endpoints); halves at 30.32u are a stationarity")
-    a("* indicator. Snapshot at 35.3u = mid-low opaque-slave phase. klt sim")
-    a("* appends .lib/.temp/.tran and the .meas cards from request.json;")
-    a("* this body carries none of them.")
+    if short_control:
+        a("* sampler_core 100 ns control for issue #604. Current design and PEX,")
+        a("* both legs at ff / 1.98 V. W_RST 50-250 ns, W_ACT 420-820 ns.")
+    else:
+        a("* sampler_core analog active power at DR-0003's Ts = 20 us -- issue")
+        a("* #604's operating-point batch experiment. Derived from the committed")
+        a("* same-deck control sim/post-layout-sampler-core/testbench/")
+        a("* tb_post_layout_sampler_core.spice (see plan.json: three stimulus")
+        a("* deviations, all recorded). Both legs of that deck are preserved")
+        a("* verbatim below: xarr = the flat-extracted sampler_core_pex DUT over")
+        a("* layout/sampler_core/, xctl = design/sampler_core.spice's own")
+        a("* .subckt sampler_core pre-layout control, netlists inlined from the")
+        a("* committed libraries (sha256 in plan.json). Windows: W_RST = 50-250n")
+        a("* (stimulus-identical to the committed controls' reset-held window);")
+        a("* W_ACT = 20.32u-40.32u = exactly one complete settled clk period")
+        a("* (edges at both endpoints); halves at 30.32u are a stationarity")
+        a("* indicator. Snapshot at 35.3u = mid-low opaque-slave phase. klt sim")
+        a("* appends .lib/.temp/.tran and the .meas cards from request.json;")
+        a("* this body carries none of them.")
+    clock_high = _t(CONTROL_HIGH if short_control else CLK_HIGH_S)
+    clock_period = _t(CONTROL_PERIOD if short_control else TS_S)
     a(".option scale=1u")
     a("")
     a("* ---- committed pre-layout library (design/sampler_core.spice) ----")
@@ -194,7 +190,7 @@ def deck_body() -> str:
     for i in (1, 2, 3, 4):
         a(f"Venp{i} pen{i} 0 PULSE(0 {VDD} 5n 100p 100p {_t(EN_WIDTH_S)} {_t(2 * EN_WIDTH_S)})")
     a(f"Vrstnp prst_n 0 PULSE(0 {VDD} 300n 100p 100p {_t(RST_WIDTH_S)} {_t(2 * RST_WIDTH_S)})")
-    a(f"Vclkp pclk 0 PULSE(0 {VDD} {_t(CLK_T0_S)} 100p 100p {_t(CLK_HIGH_S)} {_t(TS_S)})")
+    a(f"Vclkp pclk 0 PULSE(0 {VDD} {_t(CLK_T0_S)} 100p 100p {clock_high} {clock_period})")
     a("xarr pen1 pen2 pen3 pen4 pvddr1 pvddr2 pvddr3 pvddr4 pvdd 0 pclk prst_n")
     a("+ praw_bit praw_valid pring_bit1 pring_bit2 pring_bit3 pring_bit4")
     a("+ sampler_core_pex")
@@ -206,7 +202,7 @@ def deck_body() -> str:
     for i in (1, 2, 3, 4):
         a(f"Ven{i} en{i} 0 PULSE(0 {VDD} 5n 100p 100p {_t(EN_WIDTH_S)} {_t(2 * EN_WIDTH_S)})")
     a(f"Vrstn rst_n 0 PULSE(0 {VDD} 300n 100p 100p {_t(RST_WIDTH_S)} {_t(2 * RST_WIDTH_S)})")
-    a(f"Vclk clk 0 PULSE(0 {VDD} {_t(CLK_T0_S)} 100p 100p {_t(CLK_HIGH_S)} {_t(TS_S)})")
+    a(f"Vclk clk 0 PULSE(0 {VDD} {_t(CLK_T0_S)} 100p 100p {clock_high} {clock_period})")
     a("xctl en1 en2 en3 en4 vddr1 vddr2 vddr3 vddr4 vdd 0 clk rst_n")
     a("+ raw_bit raw_valid ring_bit1 ring_bit2 ring_bit3 ring_bit4")
     a("+ sampler_core")
@@ -226,7 +222,7 @@ def deck_body() -> str:
     return "\n".join(h) + "\n"
 
 
-def measurements() -> list[dict]:
+def measurements(short_control: bool = False) -> list[dict]:
     """The request's measurements[] entries (plain {name, spice} .meas cards)."""
     meas: list[dict] = []
 
@@ -234,6 +230,7 @@ def measurements() -> list[dict]:
         meas.append({"name": name, "unit": unit,
                      "spice": f".meas tran {name} AVG {expr} FROM={_t(w[0])} TO={_t(w[1])}"})
 
+    active = CONTROL_ACTIVE if short_control else W_ACT
     legs = {
         "x": dict(rails=[f"Vddrp{i}" for i in (1, 2, 3, 4)], blk="Vddp", dut="xarr",
                   outs=("praw_bit", "praw_valid", "pring_bit1", "pring_bit2",
@@ -245,11 +242,15 @@ def measurements() -> list[dict]:
     for p, L in legs.items():
         for i, rail in enumerate(L["rails"], 1):
             avg(f"{p}_ir{i}_rst", f"i({rail})", W_RST)
-            avg(f"{p}_ir{i}_act", f"i({rail})", W_ACT)
+            avg(f"{p}_ir{i}_act", f"i({rail})", active)
+            if short_control:
+                continue
             avg(f"{p}_ir{i}_lo", f"i({rail})", W_LO)
             avg(f"{p}_ir{i}_hi", f"i({rail})", W_HI)
         avg(f"{p}_ib_rst", f"i({L['blk']})", W_RST)
-        avg(f"{p}_ib_act", f"i({L['blk']})", W_ACT)
+        avg(f"{p}_ib_act", f"i({L['blk']})", active)
+        if short_control:
+            continue
         avg(f"{p}_ib_lo", f"i({L['blk']})", W_LO)
         avg(f"{p}_ib_hi", f"i({L['blk']})", W_HI)
         # ring periods, the control deck's own estimator (rise=3/rise=13)
@@ -272,16 +273,13 @@ def measurements() -> list[dict]:
                 "unit": "V",
                 "spice": f".meas tran {p}_snap_{'_'.join(out.split('_')[1:]) or out}"
                          f" FIND v({out}) AT={_t(SNAP_S)}"})
-    # every card's window must sit inside the analysis
-    for m in meas:
-        for tok in m["spice"].replace("=", " ").split():
-            pass  # (structural check lives in the unit test)
     return meas
 
 
-def make_request(outdir: Path, temp_c: float) -> dict:
-    body = deck_body()
-    meas = measurements()
+def make_request(outdir: Path, temp_c: float, short_control: bool = False) -> dict:
+    body = deck_body(short_control)
+    meas = measurements(short_control)
+    stop = "850n" if short_control else TSTOP
     outdir.mkdir(parents=True, exist_ok=True)
     (outdir / "netlist.cir").write_text(body)
     request = {
@@ -297,7 +295,7 @@ def make_request(outdir: Path, temp_c: float) -> dict:
                          (*[f"Vddrp{i}" for i in (1, 2, 3, 4)], "Vddp",
                            *[f"Vddr{i}" for i in (1, 2, 3, 4)], "Vdd")},
         },
-        "analysis": {"kind": "tran", "args": f"{TSTEP} {TSTOP} uic"},
+        "analysis": {"kind": "tran", "args": f"{TSTEP} {stop} uic"},
         "measurements": meas,
         "options": {"timeout_s": UNIT_TIMEOUT_S, "keep_artifacts": True,
                     "save_mode": "netlist",
@@ -305,11 +303,15 @@ def make_request(outdir: Path, temp_c: float) -> dict:
         "batch": {"poll_timeout_s": POLL_TIMEOUT_S},
     }
     (outdir / "request.json").write_text(json.dumps(request, indent=2) + "\n")
+    period = CONTROL_PERIOD if short_control else TS_S
+    high = CONTROL_HIGH if short_control else CLK_HIGH_S
+    windows = {"w_rst_s": list(W_RST),
+               "w_act_s": list(CONTROL_ACTIVE if short_control else W_ACT)}
+    if not short_control:
+        windows.update(w_lo_s=list(W_LO), w_hi_s=list(W_HI), snapshot_s=SNAP_S)
     plan = {
         "name": outdir.name,
-        "purpose": "issue #604: sampler_core analog active power at DR-0003's "
-                   "Ts = 20 us, ff / 1.98 V -- the 20 us leg of the "
-                   "100 ns-vs-20 us sampling-rate comparison",
+        "purpose": f"issue #604: {_t(period)} sampling period, ff / 1.98 V, sampler_core power",
         "netlist_sha256": sha256_file(outdir / "netlist.cir"),
         "design_lib": {"path": str(DESIGN_LIB.relative_to(REPO)),
                        "sha256": sha256_file(DESIGN_LIB)},
@@ -317,16 +319,13 @@ def make_request(outdir: Path, temp_c: float) -> dict:
                     "sha256": sha256_file(PEX_LIB)},
         "control_template": {"path": str(CONTROL_TEMPLATE.relative_to(REPO)),
                              "sha256": sha256_file(CONTROL_TEMPLATE)},
-        "control_records_paired": CONTROL_RECORDS,
-        "timing": {"ts_s": TS_S, "clk_t0_s": CLK_T0_S,
-                   "clk_high_s": CLK_HIGH_S, "duty": CLK_HIGH_S / TS_S,
+        "historical_records": CONTROL_RECORDS,
+        "timing": {"ts_s": period, "clk_t0_s": CLK_T0_S,
+                   "clk_high_s": high, "duty": high / period,
                    "en_release_s": 5e-9, "rst_release_s": 300e-9,
                    "en_width_s": EN_WIDTH_S, "rst_width_s": RST_WIDTH_S,
-                   "tstep": TSTEP, "tstop": TSTOP, "uic": True},
-        "windows": {"w_rst_s": list(W_RST), "w_act_s": list(W_ACT),
-                    "w_lo_s": list(W_LO), "w_hi_s": list(W_HI),
-                    "snapshot_s": SNAP_S},
-        "deviations": DEVIATIONS,
+                   "tstep": TSTEP, "tstop": stop, "uic": True},
+        "windows": windows,
         "analysis": request["analysis"],
         "corners": request["corners"],
         "measurement_count": len(meas),
@@ -336,6 +335,8 @@ def make_request(outdir: Path, temp_c: float) -> dict:
                   "submit": "klt sim --batch-set <both request.json> -o <dir> "
                             "--wait-for-capacity 600"},
     }
+    if not short_control:
+        plan["deviations"] = DEVIATIONS
     (outdir / "plan.json").write_text(
         json.dumps(plan, indent=2, sort_keys=True) + "\n")
     return request
@@ -347,11 +348,13 @@ def main(argv: list[str] | None = None) -> int:
                     help="output directory (usually sim/post-layout-sampler-core/corners)")
     ap.add_argument("--points", choices=("both", "m40", "hot"), default="both",
                     help="which failing temperatures to emit (default both)")
+    ap.add_argument("--period", choices=("20u", "100n"), default="20u")
     args = ap.parse_args(argv)
     sel = {"m40": [POINTS[0]], "hot": [POINTS[1]], "both": POINTS}[args.points]
     for temp_c, tag in sel:
-        req = make_request(args.outdir / f"ts20u-{tag}-1.98V", temp_c)
-        print(f"wrote {args.outdir / f'ts20u-{tag}-1.98V'} "
+        dest = args.outdir / f"ts{args.period}-{tag}-1.98V"
+        req = make_request(dest, temp_c, args.period == "100n")
+        print(f"wrote {dest} "
               f"({req['corners']['temperature_c'][0]:+g} C, "
               f"{len(req['measurements'])} measurements)")
     return 0

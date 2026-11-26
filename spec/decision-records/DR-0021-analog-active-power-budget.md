@@ -26,34 +26,27 @@ two ff / 1.98 V corners of the four-point post-layout grid — on **both**
 legs, pre-layout (schematic) and post-layout (extracted), so a
 parasitic-induced regression is ruled out as the primary term.
 
-Issue #604's batch experiment has now measured the one untested candidate
-cause: the sampling rate. Every committed post-layout `sampler_core` deck
-clocks the sampler at Ts = 100 ns, a disclosed compute-budget deviation
-from DR-0003's Ts = 20 us (DR-0003 is `status: Proposed`; 20 us is the
-sampling period this study uses). The two matched fleet runs
-(`sim/post-layout-sampler-core/corners/ts20u-*/`, one per failing
-temperature, both legs in one deck, netlists and reset stimulus identical
-to the committed controls) return, at DR-0003's Ts = 20 us with all four
-rings continuously enabled:
+At the 20 us sampling period in DR-0003 (Proposed), the fleet runs in
+`sim/post-layout-sampler-core/corners/ts20u-*/` measured the following
+totals with all four rings enabled. Section 2 of `analysis/active-power-budget.md`
+gives the ring and shared-VDD currents for each total.
 
-| corner | leg | 100 ns total | 20 us total | delta |
-|---|---|---:|---:|---:|
-| ff / -40 C / 1.98 V | schematic | 519.2 uW | 519.1 uW | -0.1 uW |
-| ff / -40 C / 1.98 V | extracted | 583.6 uW | 577.2 uW | -6.5 uW |
-| ff / +125 C / 1.98 V | schematic | 567.2 uW | 569.1 uW | +1.9 uW |
-| ff / +125 C / 1.98 V | extracted | 603.8 uW | 599.6 uW | -4.1 uW |
+| corner | leg | 20 us total | excess over 500 uW |
+|---|---|---:|---:|
+| ff / -40 C / 1.98 V | schematic | 519.1 uW | 19.1 uW |
+| ff / -40 C / 1.98 V | extracted | 577.2 uW | 77.2 uW |
+| ff / +125 C / 1.98 V | schematic | 569.1 uW | 69.1 uW |
+| ff / +125 C / 1.98 V | extracted | 599.6 uW | 99.6 uW |
 
-(All four 20 us rows are regenerated from the committed reports by
-`analysis/active-power-budget.md` section 3; the 100 ns column is the
-committed control records `20260908-050034/053634-ef0db50`. Cross-run
-agreement is anchored on the stimulus-identical 50-250 ns reset-held
-window: the 20 us runs reproduce the controls' totals there to within
-cross-build agreement, 0.02-0.54 %.)
+The September 100 ns records used PEX SHA-256 `2bad455e…`, ngspice 46,
+and a 5 ps transient step. The 20 us runs used the re-extraction
+`2aad0267…`, ngspice 47, and a 50 ps step. Reset-held totals agree within
+0.54% across these configurations. This check covers only the 50–250 ns
+reset window. Section 1 retains the historical budgets. Section 3 reports
+a clock-rate delta only when a 100 ns fleet report at the same temperature
+matches the 20 us design, PEX, model library and simulator settings.
 
-The candidate cause is therefore **refuted by measurement**: slowing the
-clock 200x leaves all four totals above 500 uW (each leg's total moves by
-at most +1.9 / -6.5 uW), so the overrun is not set by the sampling rate;
-it is dominated by current that does not scale with it. The six DFFs share
+All four totals exceed 500 uW at the proposed cadence. The six DFFs share
 VDD with the buffers and the XOR tree (`design/sampler_core.spice`), and
 the reports give four ring-rail currents plus one shared-VDD current per
 leg, so this experiment does **not** isolate the sampler bank's absolute
@@ -61,17 +54,16 @@ power; no sampler-specific figure is claimed. The budget lines at the cold
 corner (schematic leg, 20 us): ring rails 173.5 uW, shared VDD
 (buffers + XOR + six samplers) 345.7 uW.
 
-Why no supported design iteration recovers the deficit:
+Design constraints at the measured operating point:
 
-- **Sampling rate / duty-cycling the rings is not available.** DR-0003's
+- **Ring duty cycle.** DR-0003's
   entropy basis assumes continuously running rings accumulated over
   Ts = 20 us (`Q_array = 4 * Q_ring_loaded(20 us)` = 1.036x the
   requirement); gating rings between samples destroys the accumulation the
-  min-entropy target is derived from, and this issue has measured that
-  changing the clock rate alone does not bring any leg under 500 uW.
-- **N is already entropy-minimal.** DR-0003 §3: N = 4 is the smallest
-  array clearing the entropy floor at a round Ts; supply current scales
-  linearly with N, but there is no N < 4 to go to at 20 us.
+  min-entropy target is derived from.
+- **Array size.** DR-0003 §2 gives N_min = 4 at 20 us and N_min = 1 at
+  100 us. Power and
+  throughput at a redesigned operating point would need verification.
 - **The corner is inside the recorded envelope.** DR-0010 row 9 (DR-0010
   is `status: Proposed`) records 1.62-1.98 V and -40...+125 C as the
   envelope; ff / 1.98 V cannot be declared out of scope without amending
@@ -101,13 +93,10 @@ record recommends **P-A**.
   ff / 125 C / 1.98 V, extracted (the earlier same-deck control measured
   603.8 uW; this issue's 20 us re-rate of the same corner gives 599.6 uW
   -- all three agree within 0.7 %, and the grid's formal owner is #597).
-  Cost: the Power row moves for the analog partition only;
-  whole-block power remains #174's unmeasured row and is NOT claimable
-  from these numbers. The justification bar DR-0010 sets ("stronger than
-  'the design does not meet it'") is met by the measured refutation
-  above: no rate, duty-cycle or array-size lever exists inside the
-  Ts = 20 us, N = 4 operating point used in this study (DR-0003,
-  `status: Proposed`).
+  The 47.4 uW allowance is a proposed engineering margin. The grid
+  measures the corner maximum; it supplies neither a silicon uncertainty
+  bound nor a market comparison. Acceptance requires an operator decision
+  on that margin and on the analog allocation within #174's whole-block row.
 - **P-B: hold `< 500 uW`** and record a per-corner derogation at
   ff / 1.98 V. Cost: the two corners stay red on every future report with
   no owned path to green; the array-only figure (473.9 uW hot) leaves only
@@ -116,32 +105,30 @@ record recommends **P-A**.
 - **P-C: open a re-derivation campaign** (ring/buffer sizing against
   DR-0002/DR-0003 bases) targeting recovery of the 19.1-99.6 uW excess. Cost: a
   multi-issue campaign re-opening the DR-0002/DR-0003 basis measurements; no
-  guarantee of success (the hot array-only figure leaves <= 26 uW of
+  guarantee of success (the hot array-only figure leaves 26.1 uW of
   headroom before the remaining loads). This record does not recommend it, but
   names it so the operator sees the full space.
 
-On ratification of P-A (or any successor): edit the README Power row's
-active figure, update `docs/chipalooza/challenge-4-proposal.md` §4 row D,
-and leave every historical verdict and committed record intact (they
-correctly report failures against the bound that was in force).
+If the operator ratifies P-A, record the analog allocation explicitly in
+the spec and Chipalooza proposal. Updating the README whole-block figure
+requires the whole-block evidence from #174 and a separate decision.
 
 ## Consequences if ratified as proposed
 
-- The README Power row's active half moves to the amended figure; the
-  idle half (DR-0018, `<= 200 uW`) is untouched.
+- Any amended analog figure applies to the sampler_core partition.
 - The two ff / 1.98 V rows of #597's PEX grid and of the committed
   post-layout controls remain recorded failures against `< 500 uW`; the
   spec change is forward-looking only.
 - #174's whole-block characterization gains a stated analog-partition
-  budget line to subtract against, instead of inheriting an unreachable
-  one.
+  allocation to compare with the digital and other loads.
 - Silicon characterization (DR-0014) must re-measure the same budget
   lines; the simulation-derived figures stay provisional until then.
 
 ## Follow-up required (not done by this record)
 
-1. Operator choice among P-A / P-B / P-C.
-2. On P-A: the README/Chipalooza edits above, and a re-statement of the
-   whole-block row once #174 lands.
+1. Collect the two short 100 ns fleet controls and regenerate the clock-rate
+   comparison for the operator’s choice among P-A / P-B / P-C.
+2. On P-A: document the scope and basis of the analog allocation. Revisit
+   whole-block power when #174 lands.
 3. #597 keeps ownership of the formal 12-corner PEX table this study's
    ff / 1.98 V rows slot into.

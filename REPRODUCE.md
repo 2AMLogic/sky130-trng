@@ -153,7 +153,7 @@ Same runner, against the extracted netlists from section 2 (`layout/pex/`,
 | `sim/post-layout-ro-array-core/` | `testbench/tb_post_layout_ro_array_core.spice` |
 | `sim/post-layout-sampler-dff/` | `testbench/tb_post_layout_sampler_dff.spice`, `testbench/tb_post_layout_sampler_setup.spice` |
 | `sim/post-layout-sampler-dff-assembled/` | `testbench/tb_post_layout_sampler_dff_assembled.spice` |
-| `sim/post-layout-sampler-core/` | `testbench/tb_post_layout_sampler_core.spice`, `analysis/substrate-bracket.py`, `make-ts20u-requests.py` (issue #604: regenerates the committed Ts = 20 us request/plan pairs under `corners/ts20u-*/`), `analysis/reduce-active-power-budget.py` (reduces the committed control records + Ts = 20 us reports into `analysis/active-power-budget.md`, appending `analysis/disposition.md`) |
+| `sim/post-layout-sampler-core/` | `testbench/tb_post_layout_sampler_core.spice`, `analysis/substrate-bracket.py`, `make-ts20u-requests.py` (issue #604: regenerates the 20 us requests and, with `--period 100n`, the short 100 ns controls), `analysis/reduce-active-power-budget.py` (reduces the historical reference records and available fleet reports into `analysis/active-power-budget.md`, appending `analysis/disposition.md`) |
 | `sim/pex-sampler-core/` | `harness/pex-measure.py` (the `klt pex --measure-command` harness; invocation recorded in each record's `pex_invocation`), `testbench/tb_sampler_core_body.spice`, `net-aliases.json`; 12 corners per leg (27C/1.8V, -40C/1.62V, -40C/1.98V, 125C/1.98V x tt/ss/ff); see its `README.md` |
 | `sim/post-layout-parasitic-impact/` | `analysis/parasitic-impact.py` (reduction over the records above) |
 
