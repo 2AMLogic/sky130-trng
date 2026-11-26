@@ -592,18 +592,15 @@ the item to make a row go green.
 
 ## CI
 
-`.github/workflows/ci.yml`'s `signoff-check` job installs the pinned
-`klayout-tools==0.8.0` (since issue #363; 0.7.0 from 2026-10-08, issue
-#164; 0.6.0 from 2026-09-23, issue #160 — deliberately
-**diverged** from the PDK nightly's composition pin, which since issue
-#181 installs source commit `5edb557f91d0` because no tagged release
-contains it; the nightly's netlist-check attest job separately pins
-0.9.1, itself diverged from ci.yml's grader pin): the grader is a pure JSON
-transform with no PDK, so it follows the grader release, while the
-nightly's pin gates the nineteen committed cells' compose-cell `--check`
-reproductions and moves only with a full `--check` re-verification
-against a new build. CI runs the grading invocation above and fails if
-its output differs from the committed
-`t1-report.json` — so a manifest citing an artifact that has since
-changed goes red instead of rotting. The PR path needs no PDK and no
-KLayout: grading is a pure JSON transform over committed envelopes.
+`.github/workflows/ci.yml`'s `signoff-check` job installs
+`klayout-tools==0.8.0` (issue #363). Earlier pins were 0.7.0
+(2026-10-08, issue #164) and 0.6.0 (2026-09-23, issue #160). CI runs
+the grading invocation above and fails if its output differs from the
+committed `t1-report.json`. The grader reads committed JSON envelopes
+and runs without a PDK or KLayout.
+
+The PDK nightly's composition job installs source commit `5edb557f91d0`,
+the build used to regenerate and verify the nineteen committed cells in
+issue #181. Moving that pin requires rerunning `layout/bin/compose-cell.py`
+with `--check` for each cell against the new build. The nightly's netlist-check
+job pins 0.9.1 for `klt signoff --attest 1`.

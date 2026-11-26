@@ -4,8 +4,9 @@
 Item 1 analog is NOT built here: `klt signoff --attest 1` mints it where xschem
 exists (issue #360; .github/workflows/pdk-nightly.yml, netlist-check).
 
-klayout-tools 0.8.0 (the CI pin since issue #363) grades these four items only from an opt-in `generic`
-envelope that (a) declares `"t1_item": <id>`, (b) names the audited artifact in
+The rows built here use opt-in `generic` envelopes. klayout-tools 0.8.0 (the CI
+pin since issue #363) also accepts `synthesize` for item 1. Each envelope this
+script builds (a) declares `"t1_item": <id>`, (b) names the audited artifact in
 `provenance.input.path` + `provenance.input.content_hash`, and (c) is cited by a
 manifest entry pinning the same hash.  The artifact each envelope pins is the
 committed INVENTORY `signoff/attest/<key>.inventory.json`: a versioned list of
