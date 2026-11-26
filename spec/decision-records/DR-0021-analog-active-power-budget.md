@@ -1,6 +1,6 @@
 ---
 dr: DR-0021-analog-active-power-budget
-title: "Analog active power at ff / 1.98 V -- the 500 uW row is unreachable at the ratified operating point; options for the operator"
+title: "Analog active power at ff / 1.98 V -- the 500 uW row is not met at the Ts = 20 us study point; options for the operator"
 status: Proposed
 date: 2026-11-21
 deciders: unratified — Proposed by the Builder on #604; ratification is an operator/Champion action
@@ -29,10 +29,11 @@ parasitic-induced regression is ruled out as the primary term.
 Issue #604's batch experiment has now measured the one untested candidate
 cause: the sampling rate. Every committed post-layout `sampler_core` deck
 clocks the sampler at Ts = 100 ns, a disclosed compute-budget deviation
-from DR-0003's ratified Ts = 20 us. The two matched fleet runs
+from DR-0003's Ts = 20 us (DR-0003 is `status: Proposed`; 20 us is the
+sampling period this study uses). The two matched fleet runs
 (`sim/post-layout-sampler-core/corners/ts20u-*/`, one per failing
 temperature, both legs in one deck, netlists and reset stimulus identical
-to the committed controls) return, at DR-0003's own rate with all four
+to the committed controls) return, at DR-0003's Ts = 20 us with all four
 rings continuously enabled:
 
 | corner | leg | 100 ns total | 20 us total | delta |
@@ -49,11 +50,14 @@ agreement is anchored on the stimulus-identical 50-250 ns reset-held
 window: the 20 us runs reproduce the controls' totals there to within
 cross-build agreement, 0.02-0.54 %.)
 
-The candidate cause is therefore **refuted by measurement**: the sampler
-bank's per-sample dynamic charge is a sub-uW term at either rate
-(six samplers, ~10 fF-class nodes, 50 kHz); the overrun is the
-**continuous** analog core current — rings plus buffers plus XOR tree —
-which the sampling rate does not touch. The budget lines at the cold
+The candidate cause is therefore **refuted by measurement**: slowing the
+clock 200x leaves all four totals above 500 uW (each leg's total moves by
+at most +1.9 / -6.5 uW), so the overrun is not set by the sampling rate;
+it is dominated by current that does not scale with it. The six DFFs share
+VDD with the buffers and the XOR tree (`design/sampler_core.spice`), and
+the reports give four ring-rail currents plus one shared-VDD current per
+leg, so this experiment does **not** isolate the sampler bank's absolute
+power; no sampler-specific figure is claimed. The budget lines at the cold
 corner (schematic leg, 20 us): ring rails 173.5 uW, shared VDD
 (buffers + XOR + six samplers) 345.7 uW.
 
@@ -63,22 +67,26 @@ Why no supported design iteration recovers the deficit:
   entropy basis assumes continuously running rings accumulated over
   Ts = 20 us (`Q_array = 4 * Q_ring_loaded(20 us)` = 1.036x the
   requirement); gating rings between samples destroys the accumulation the
-  min-entropy target is derived from, and this issue has now measured that
-  the sampler side has nothing to give back anyway.
+  min-entropy target is derived from, and this issue has measured that
+  changing the clock rate alone does not bring any leg under 500 uW.
 - **N is already entropy-minimal.** DR-0003 §3: N = 4 is the smallest
   array clearing the entropy floor at a round Ts; supply current scales
   linearly with N, but there is no N < 4 to go to at 20 us.
-- **The corner is inside the ratified envelope.** DR-0010 row 9 fixes
-  1.62-1.98 V and -40...+125 C as the envelope; ff / 1.98 V cannot be
-  declared out of scope without amending a ratified row.
-- **The array alone already sits at 94.8 % of the budget at the hot
-  corner** (DR-0010 R3: 473.9 uW array-only, ff / 125 C / 1.98 V), before
-  the six samplers this composed cell adds (~87 uW cold, schematic) and
-  before layout parasitics (+6-13 % at these corners). A re-sizing
-  campaign (ring stage W/L, buffer strength) that recovers ~80-105 uW
+- **The corner is inside the recorded envelope.** DR-0010 row 9 (DR-0010
+  is `status: Proposed`) records 1.62-1.98 V and -40...+125 C as the
+  envelope; ff / 1.98 V cannot be declared out of scope without amending
+  that row.
+- **The array-only figure already sits at 94.8 % of the budget at the hot
+  corner** (DR-0010 R3: 473.9 uW array-only, ff / 125 C / 1.98 V), leaving
+  26.1 uW before the remaining loads of the composed cell. (The
+  array-only decks and these decks are different configurations; the
+  difference between them is not a measurement of the sampler bank's
+  power.) The four 20 us legs exceed 500 uW by 19.1-99.6 uW. A re-sizing
+  campaign (ring stage W/L, buffer strength) that recovers that excess
   while re-clearing DR-0002's jitter basis and DR-0003's combining and
   entropy bounds is a re-derivation of the operating point, not a
-  "smallest supported iteration", and no issue currently owns it.
+  "smallest supported iteration", and no issue currently owns it. These
+  numbers do not by themselves rule out a periphery-only redesign.
 
 ## Decision
 
@@ -98,17 +106,18 @@ record recommends **P-A**.
   from these numbers. The justification bar DR-0010 sets ("stronger than
   'the design does not meet it'") is met by the measured refutation
   above: no rate, duty-cycle or array-size lever exists inside the
-  ratified operating point.
+  Ts = 20 us, N = 4 operating point used in this study (DR-0003,
+  `status: Proposed`).
 - **P-B: hold `< 500 uW`** and record a per-corner derogation at
   ff / 1.98 V. Cost: the two corners stay red on every future report with
-  no owned path to green; the array-only figure (473.9 uW) shows even a
-  sampler-free redesign of the periphery does not close the gap. Listed
-  for completeness.
+  no owned path to green; the array-only figure (473.9 uW hot) leaves only
+  26.1 uW under 500 uW before the remaining loads. Listed for
+  completeness.
 - **P-C: open a re-derivation campaign** (ring/buffer sizing against
-  DR-0002/DR-0003 bases) targeting the ~80-105 uW recovery. Cost: a
-  multi-issue campaign re-opening ratified-basis measurements; no
+  DR-0002/DR-0003 bases) targeting recovery of the 19.1-99.6 uW excess. Cost: a
+  multi-issue campaign re-opening the DR-0002/DR-0003 basis measurements; no
   guarantee of success (the hot array-only figure leaves <= 26 uW of
-  headroom before the samplers). This record does not recommend it, but
+  headroom before the remaining loads). This record does not recommend it, but
   names it so the operator sees the full space.
 
 On ratification of P-A (or any successor): edit the README Power row's

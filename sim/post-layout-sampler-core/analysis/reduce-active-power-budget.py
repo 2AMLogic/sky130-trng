@@ -203,7 +203,7 @@ def main(argv: list[str] | None = None) -> int:
     a("")
     a("## 2. The Ts = 20 us matched runs (this issue's batch experiment)")
     a("")
-    a("Stimulus and windows: DR-0003's ratified sampling period Ts = 20 us")
+    a("Stimulus and windows: DR-0003's sampling period Ts = 20 us")
     a("(49.8 % duty, first edge 320 ns -- the control deck's own timing at the")
     a("real rate); W_RST = 50-250 ns bit-identical to the controls'; W_ACT =")
     a("20.32-40.32 us = exactly one complete settled clk period (edges at both")

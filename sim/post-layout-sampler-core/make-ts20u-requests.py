@@ -5,7 +5,7 @@
 ff / 1.98 V corners (issue #604), but every committed post-layout
 sampler_core measurement -- including the two ff control records this study
 pairs with -- clocks the sampler at Ts = 100 ns, a disclosed compute-budget
-deviation from DR-0003's ratified Ts = 20 us operating point. Whether the
+deviation from DR-0003's Ts = 20 us operating point (DR-0003 is Proposed). Whether the
 overrun survives the real sampling rate is unmeasured. This generator emits
 the 20 us side of that comparison as `klt sim` batch requests (one per
 failing temperature), so the grid runs on the Spot batch fleet -- never as a
@@ -82,7 +82,7 @@ POINTS = [(-40.0, "m40C"), (125.0, "125C")]
 TSTEP = "50p"
 TSTOP = "40.4u"
 TSTOP_S = 40.4e-6
-#: DR-0003's ratified sampling period
+#: DR-0003's sampling period
 TS_S = 20e-6
 CLK_T0_S = 320e-9
 CLK_HIGH_S = 9.96e-6  # 49.8 % duty, the control template's own ratio
@@ -112,7 +112,7 @@ DEVIATIONS = [
         "what": "clk period",
         "control": "100n (49.8n high)",
         "here": f"{TS_S * 1e6:g}u ({CLK_HIGH_S * 1e6:g}u high), first edge 320n",
-        "why": "DR-0003's ratified operating point; the committed controls' "
+        "why": "DR-0003's Ts = 20 us operating point; the committed controls' "
                "disclosed compute-budget deviation removed",
     },
     {
