@@ -22,7 +22,6 @@ Nothing here simulates anything; it reads committed JSON evidence only.
 """
 from __future__ import annotations
 
-import hashlib
 import json
 import math
 import re
@@ -32,6 +31,8 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 SLUG = HERE.parent
 REPO = SLUG.parents[1]
+sys.path.insert(0, str(REPO / "layout" / "bin"))
+from _hashing import sha256_text  # noqa: E402
 
 VDD = 1.98
 TARGET_UW = 500.0
@@ -89,7 +90,7 @@ def checked_init_digest(directory: Path, env: dict, requested: list[str]) -> str
     if threads is not None:
         # klt can prepend its worker thread pin to the requested file.
         candidates.append([f"set num_threads={threads}", *requested])
-    expected = {hashlib.sha256(("\n".join(lines) + "\n").encode()).hexdigest(): lines
+    expected = {sha256_text("\n".join(lines) + "\n"): lines
                 for lines in candidates}
     verified = None
     for record in (env.get("ngspice_init"), worker.get("ngspice_init")):
@@ -318,8 +319,9 @@ def main(argv: list[str] | None = None) -> int:
         short_init = "pending"
         if ctrl:
             short_init = "verified" if ctrl["init_digest"] else "requested only"
-        a(f"- {t:+.0f} C 100 ns control: {source}. "
-          f"ngspice initialization: 100 ns {short_init}, 20 us {long_init}.")
+        settings = ", ".join(f"`{line}`" for line in ts["match"]["ngspice_init"])
+        a(f"- At {t:+.0f} C the 100 ns control is {source}. "
+          f"Requested ngspice settings {settings} (100 ns {short_init}, 20 us {long_init}).")
     a("")
     a("The verdict uses the unrounded 20 us total. A total of exactly 500 uW fails.")
     a("Where a runner omits both init lines and digest, any clock-rate delta assumes")

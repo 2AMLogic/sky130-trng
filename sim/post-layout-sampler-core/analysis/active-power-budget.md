@@ -89,8 +89,8 @@ These differences describe reset-held operation across extractions.
 
 ## 3. Sampling-rate comparison and verdicts
 
-- -40 C 100 ns control: awaiting fleet report. ngspice initialization: 100 ns pending, 20 us requested only.
-- +125 C 100 ns control: awaiting fleet report. ngspice initialization: 100 ns pending, 20 us requested only.
+- At -40 C the 100 ns control is awaiting fleet report. Requested ngspice settings `set measureprec=12`, `set numdgt=12` (100 ns pending, 20 us requested only).
+- At +125 C the 100 ns control is awaiting fleet report. Requested ngspice settings `set measureprec=12`, `set numdgt=12` (100 ns pending, 20 us requested only).
 
 The verdict uses the unrounded 20 us total. A total of exactly 500 uW fails.
 Where a runner omits both init lines and digest, any clock-rate delta assumes
