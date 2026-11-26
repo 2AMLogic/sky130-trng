@@ -20,11 +20,12 @@ related: "#604 (this study), #597 (formal 12-corner PEX evidence), #174 (whole-b
 
 ## Context
 
-Issue #604 exists because `sampler_core` alone exceeds the README Power
-row's `< 500 uW` whole-block active bound at the
-two ff / 1.98 V corners of the four-point post-layout grid — on **both**
-legs, pre-layout (schematic) and post-layout (extracted), so a
-parasitic-induced regression is ruled out as the primary term.
+At the two ff / 1.98 V corners studied in #604, the schematic
+`sampler_core` alone exceeds the README's `< 500 uW` whole-block active
+bound. At 20 us and -40 C, the schematic exceeds the bound by 19.124 uW.
+The extracted leg draws a further 58.033 uW, accounting for 75.2% of its
+77.157 uW excess. At +125 C the schematic excess is 69.072 uW, and the
+extracted leg adds 30.544 uW (30.7% of its 99.616 uW excess).
 
 At the 20 us sampling period in DR-0003 (Proposed), the fleet runs in
 `sim/post-layout-sampler-core/corners/ts20u-*/` measured the following
@@ -93,10 +94,19 @@ options requires a separate operator decision.
 
 - **P-A (unvalidated option).** Allocate `< 650 uW` of active power to
   `sampler_core`. This would give 47.4 uW of headroom above the largest
-  extracted value in #597's 12-corner **100 ns** grid (602.6 uW at
-  ff / +125 C / 1.98 V). At **20 us** the extracted value at that point
-  is 599.6 uW. Only two corners have been measured at 20 us. To support
-  P-A, establish the 20 us maximum across the operating envelope by
+  extracted value in #597's **100 ns** PEX grid (602.6 uW at
+  ff / +125 C / 1.98 V). The cold ff / 1.98 V corner also fails at
+  585.3 uW. The other ten extracted active-power rows pass.
+  [Formal PEX report, run 20261121-001303-7330672](../../sim/pex-sampler-core/runs/20261121-001303-7330672/pex-report.json)
+
+  The formal run used extracted netlist `6caa0363…` with quasi-static
+  lumped RC and vertical-overlap coupling only. Every device body had a
+  DC path (zero unbiased bodies) without a synthesized body tie.
+  [Extraction and body-bias disclosures](../../sim/pex-sampler-core/records/20261121-001303-7330672.md)
+
+  The **20 us** runs used extracted netlist `2aad0267…` and measured
+  599.6 uW at the hot corner. Only two corners have been measured at
+  20 us. To support P-A, establish the maximum across the operating envelope by
   measurement or a validated bound. Justify the allowance with quantified
   uncertainty or an independently derived partition budget, and account
   for the remaining whole-block loads in #174. The market review found

@@ -356,7 +356,11 @@ def main(argv: list[str] | None = None) -> int:
     a("")
     a("## 4. Array-only context (DR-0003 section 7 / DR-0010 R3)")
     a("")
-    a("| T | array-only, 100 ns decks (uW) | schematic leg 20 us (uW) |")
+    a("The four rings run freely after enable release. The array testbench averages")
+    a("the four ring-rail currents and shared-VDD current from 60 to 200 ns.")
+    a("[Array testbench](../../ro-array-core-combining/testbench/tb_ro_array_core.spice)")
+    a("")
+    a("| T | free-running array power (uW) | sampler_core schematic at 20 us (uW) |")
     a("|---|---:|---:|")
     for t in TEMPS:
         a(f"| {t:+.0f} C | {ARRAY_ONLY[t]:.1f} | "

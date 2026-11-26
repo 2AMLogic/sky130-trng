@@ -18,8 +18,19 @@ numbers do not rule out a periphery-only redesign). DR-0003 and DR-0010
 are both `status: Proposed`. At longer sampling periods the sizing law
 permits fewer rings (DR-0003 §2). **DR-0021 (Proposed)** retains the
 whole-block target for grading. P-A would allocate < 650 uW to the analog
-partition. Its 47.4 uW of headroom is relative to #597's 100 ns grid
-maximum. The 20 us maximum across the envelope and the basis for that
+partition. Its 47.4 uW of headroom is relative to #597's 100 ns
+extracted maximum of 602.6 uW at ff / +125 C / 1.98 V. The cold
+ff / 1.98 V corner also fails at 585.3 uW. The other ten extracted
+active-power rows pass.
+[Formal PEX report, run 20261121-001303-7330672](../../pex-sampler-core/runs/20261121-001303-7330672/pex-report.json)
+
+The formal run used extracted netlist `6caa0363…` with quasi-static
+lumped RC and vertical-overlap coupling only. Every device body had
+a DC path (zero unbiased bodies) without a synthesized body tie.
+The 20 us runs used extracted netlist `2aad0267…`.
+[Extraction and body-bias disclosures](../../pex-sampler-core/records/20261121-001303-7330672.md)
+
+The 20 us maximum across the envelope and the basis for that
 allowance are still open. The operator can also consider P-B (per-corner
 exceptions to 500 uW) or P-C (a sizing re-derivation campaign).
 
