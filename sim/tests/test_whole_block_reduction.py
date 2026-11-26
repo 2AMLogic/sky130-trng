@@ -86,8 +86,13 @@ def write_report(d: Path, name, corners, extra=None):
 
 
 class WholeBlockReduction(unittest.TestCase):
+    def tmpdir(self):
+        td = tempfile.TemporaryDirectory(prefix="wbred-")
+        self.addCleanup(td.cleanup)
+        return Path(td.name)
+
     def test_complete_matrix_met(self):
-        tmp_path = Path(tempfile.mkdtemp(prefix="wbred-"))
+        tmp_path = self.tmpdir()
         for t, v in R.GRID:
             write_report(tmp_path, f"grid-{t}-{v}", [synth_corner(p, t, v) for p in R.PROCESSES])
         red = R.reduce(tmp_path, None)
@@ -98,7 +103,7 @@ class WholeBlockReduction(unittest.TestCase):
 
 
     def test_omitted_point_is_unmet(self):
-        tmp_path = Path(tempfile.mkdtemp(prefix="wbred-"))
+        tmp_path = self.tmpdir()
         for t, v in R.GRID[:3]:
             write_report(tmp_path, f"grid-{t}-{v}", [synth_corner(p, t, v) for p in R.PROCESSES])
         red = R.reduce(tmp_path, None)
@@ -107,7 +112,7 @@ class WholeBlockReduction(unittest.TestCase):
 
 
     def test_oracle_mismatch_and_absent_measurement(self):
-        tmp_path = Path(tempfile.mkdtemp(prefix="wbred-"))
+        tmp_path = self.tmpdir()
         t, v = R.GRID[1]
         write_report(tmp_path, "grid-a", [synth_corner("tt", t, v, flip="rdata_k0_b0"),
                                      synth_corner("ss", t, v, drop="i_vdd_w2"),
@@ -121,7 +126,7 @@ class WholeBlockReduction(unittest.TestCase):
 
 
     def test_omitted_measurement_is_unmet(self):
-        tmp_path = Path(tempfile.mkdtemp(prefix="wbred-"))
+        tmp_path = self.tmpdir()
         t, v = R.GRID[1]
         write_report(tmp_path, "grid-a", [synth_corner("tt", t, v, omit="i_vdd_w2"),
                                           synth_corner("ss", t, v, omit="rdata_k0_b0"),
@@ -133,7 +138,7 @@ class WholeBlockReduction(unittest.TestCase):
         self.assertTrue(by["ff"]["status"] == "MET")
 
     def test_nonfinite_measurement_is_unmet(self):
-        tmp_path = Path(tempfile.mkdtemp(prefix="wbred-"))
+        tmp_path = self.tmpdir()
         t, v = R.GRID[1]
         c = synth_corner("tt", t, v)
         c["measurements"][0]["value"] = float("nan")
@@ -145,7 +150,7 @@ class WholeBlockReduction(unittest.TestCase):
     def test_midrail_sample_is_unmet(self):
         # an XSPICE out_undef X (vdd/2) must not round to logical 0: the
         # shared rail-bounded decode makes it a named oracle failure
-        tmp_path = Path(tempfile.mkdtemp(prefix="wbred-"))
+        tmp_path = self.tmpdir()
         t, v = R.GRID[1]
         c = synth_corner("tt", t, v)
         for e in c["measurements"]:
@@ -162,7 +167,7 @@ class WholeBlockReduction(unittest.TestCase):
         # a repeated name displaces the entry it duplicates in every
         # name-keyed read, so the reducer must refuse the oracle (#642,
         # the guard #548 gave the gate-model comparator)
-        tmp_path = Path(tempfile.mkdtemp(prefix="wbred-"))
+        tmp_path = self.tmpdir()
         t, v = R.GRID[1]
         c = synth_corner("tt", t, v)
         c["measurements"].append({"name": "i_vdd_w2", "value": -9e-6})
@@ -233,7 +238,7 @@ class WholeBlockReduction(unittest.TestCase):
         self.assertTrue(MR.ANALOG_PROBE_STOP_NS > P.T0_NS)
 
     def test_error_envelope_stays_unmet(self):
-        tmp_path = Path(tempfile.mkdtemp(prefix="wbred-"))
+        tmp_path = self.tmpdir()
         d = tmp_path / "grid-b"
         d.mkdir()
         (d / "report.json").write_text(json.dumps({"error": {"message": "launch failed: cap"}}))
@@ -245,13 +250,13 @@ class WholeBlockReduction(unittest.TestCase):
         self.assertTrue(all(p["status"] == "UNMET" and "launch failed" in p["reasons"][0] for p in um))
 
     def test_probe_dirs_do_not_count(self):
-        tmp_path = Path(tempfile.mkdtemp(prefix="wbred-"))
+        tmp_path = self.tmpdir()
         write_report(tmp_path, "startup-probe", [synth_corner("tt", 27.0, 1.8)])
         red = R.reduce(tmp_path, None)
         self.assertTrue(red["matrix"]["met"] == 0 and len(red["sources"]) == 1)
 
     def _complete(self):
-        tmp_path = Path(tempfile.mkdtemp(prefix="wbred-"))
+        tmp_path = self.tmpdir()
         for t, v in R.GRID:
             write_report(tmp_path, f"grid-{t}-{v}", [synth_corner(p, t, v) for p in R.PROCESSES])
         return tmp_path
@@ -295,14 +300,14 @@ class WholeBlockReduction(unittest.TestCase):
         self.assertNotIn("post-layout PVT", text)
 
     def test_plan_provenance_requires_every_grid_plan(self):
-        tmp = Path(tempfile.mkdtemp(prefix="wbred-"))
+        tmp = self.tmpdir()
         for n, prov in (("grid-a", P.PROVENANCE), ("grid-b", P.PROVENANCE)):
             (tmp / n).mkdir()
             (tmp / n / "plan.json").write_text(json.dumps({"provenance": prov}))
         self.assertEqual(R.plan_provenance(tmp), P.PROVENANCE)
         (tmp / "grid-b" / "plan.json").write_text(json.dumps({}))
         self.assertIsNone(R.plan_provenance(tmp))
-        self.assertIsNone(R.plan_provenance(Path(tempfile.mkdtemp(prefix="wbred-"))))
+        self.assertIsNone(R.plan_provenance(self.tmpdir()))
 
     def test_boundary_signals_match_ports(self):
         ports = json.loads((BLOCK / "trng_whole.sim.ports.json").read_text())["ports"]

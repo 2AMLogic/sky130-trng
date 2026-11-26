@@ -258,12 +258,12 @@ def _serial(bits):
     return (igamc(2 ** (m - 2), d1 / 2.0), igamc(2 ** (m - 3), d2 / 2.0))
 
 
-def t_serial_1(bits):
-    return _serial(bits)[0]
-
-
-def t_serial_2(bits):
-    return _serial(bits)[1]
+# The two serial rows are the columns of one `_serial` evaluation: it
+# computes both p-values from the same three pattern histograms, so
+# `run_battery` evaluates the pair once per eligible segment and feeds each
+# column through the row verdict logic instead of calling a single-result
+# wrapper per row (issue #765).
+SERIAL_ROWS = ("serial_1", "serial_2")
 
 
 def t_approximate_entropy(bits):
@@ -287,8 +287,8 @@ BATTERY = {
     "longest_run": t_longest_run,
     "cusum_forward": t_cusum_forward,
     "cusum_backward": t_cusum_backward,
-    "serial_1": t_serial_1,
-    "serial_2": t_serial_2,
+    "serial_1": _serial,
+    "serial_2": _serial,
     "approximate_entropy": t_approximate_entropy,
 }
 
@@ -319,6 +319,10 @@ def run_battery(bits: list[int], segment_len: int | None = None,
     s = len(segs)
     seg_n = len(segs[0]) if segs else 0
     tests = {}
+    # Both serial rows are columns of one `_serial` pair evaluation: compute
+    # the pair once per segment (only after the eligibility checks) and
+    # split it into the rows (issue #765).
+    serial_pairs = None
     for name, fn in BATTERY.items():
         min_n = BATTERY_MIN_N[name]
         entry: dict = {"min_n": min_n}
@@ -326,7 +330,13 @@ def run_battery(bits: list[int], segment_len: int | None = None,
             entry["status"] = "INSUFFICIENT"
             tests[name] = entry
             continue
-        ps = [fn(x) for x in segs]
+        if name in SERIAL_ROWS:
+            col = SERIAL_ROWS.index(name)
+            if serial_pairs is None:
+                serial_pairs = [_serial(x) for x in segs]
+            ps = [p[col] for p in serial_pairs]
+        else:
+            ps = [fn(x) for x in segs]
         entry["p_values"] = ps
         if segment_len:
             frac = sum(p >= alpha for p in ps) / s

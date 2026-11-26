@@ -122,10 +122,13 @@ document's draft filed for it:
   DR-0010 presents the dispositions; nothing is decided.
 - **External interface.** DR-0011 recommends a wrapper against an assumed pin budget; no wrapper exists and the
   `ro_mon` monitor pin is not implemented. Is the budget assumption right?
-- **End-of-life Vth drift** (#262): adopt a lifetime, a guard band or a re-sizing?
 
 ## Blocked and waiting
 
+- **End-of-life Vth drift** (#262, decided 2026-10-15): the operating point is nominal-only for aging.
+  End-of-life qualification requires a reliability-backed mission profile and a Vth guard band; the
+  ruling sets no numerical guard band and no lifetime, and authorizes no resizing
+  ([October 15 ruling](https://github.com/2AMLogic/sky130-trng/issues/262#issuecomment-6202634084)).
 - **Ratification.** Sixteen decision records and the README target table are Proposed. T1 item 5 and the
   Chipalooza submission status both wait on it.
 - **Whole-block chain:** #18 (AC3) <- #170 <- #174 <- #307 <- #431.
