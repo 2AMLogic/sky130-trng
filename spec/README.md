@@ -194,6 +194,18 @@
   of the three consumers replays identically before and after (no new
   DIFFERS), and no record is re-minted or edited.
 
+- [`decision-records/DR-0021-analog-active-power-budget.md`](decision-records/DR-0021-analog-active-power-budget.md)
+  — **Proposed**. Issue #604: the measured disposition of the ff / 1.98 V
+  analog active-power overrun. Both measured legs at each temperature
+  exceed 500 uW at Ts = 20 us. The September 100 ns records used an
+  earlier extraction. The budget reports clock-rate deltas only from the
+  matching fleet controls in `sim/post-layout-sampler-core/corners/ts100n-*/`.
+  Shared VDD supplies the buffers, XOR tree and samplers. Options P-A
+  (an unvalidated `< 650 uW` analog allocation),
+  P-B (derogation) and P-C (re-derivation campaign) are laid out for the
+  operator. Amends nothing by itself; every historical verdict stays
+  recorded against the bound in force when it was measured.
+
 ### Open requests for an operator decision record (no record yet)
 
 - **End-of-life Vth-drift envelope** — issue [#262](https://github.com/2AMLogic/sky130-trng/issues/262), from

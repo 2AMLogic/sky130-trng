@@ -1,0 +1,168 @@
+{
+  "netlist": "netlist.cir",
+  "engine": "ngspice",
+  "backend": "batch",
+  "netlist_source": "extracted",
+  "models": {
+    "pdk": "sky130A",
+    "lib": "libs.tech/combined/sky130.lib.spice"
+  },
+  "corners": {
+    "process": [
+      "ff"
+    ],
+    "temperature_c": [
+      -40.0
+    ],
+    "supply_v": {
+      "Vddrp1": [
+        1.98
+      ],
+      "Vddrp2": [
+        1.98
+      ],
+      "Vddrp3": [
+        1.98
+      ],
+      "Vddrp4": [
+        1.98
+      ],
+      "Vddp": [
+        1.98
+      ],
+      "Vddr1": [
+        1.98
+      ],
+      "Vddr2": [
+        1.98
+      ],
+      "Vddr3": [
+        1.98
+      ],
+      "Vddr4": [
+        1.98
+      ],
+      "Vdd": [
+        1.98
+      ]
+    }
+  },
+  "analysis": {
+    "kind": "tran",
+    "args": "50p 850n uic"
+  },
+  "measurements": [
+    {
+      "name": "x_ir1_rst",
+      "unit": "A",
+      "spice": ".meas tran x_ir1_rst AVG i(Vddrp1) FROM=50n TO=250n"
+    },
+    {
+      "name": "x_ir1_act",
+      "unit": "A",
+      "spice": ".meas tran x_ir1_act AVG i(Vddrp1) FROM=420n TO=820n"
+    },
+    {
+      "name": "x_ir2_rst",
+      "unit": "A",
+      "spice": ".meas tran x_ir2_rst AVG i(Vddrp2) FROM=50n TO=250n"
+    },
+    {
+      "name": "x_ir2_act",
+      "unit": "A",
+      "spice": ".meas tran x_ir2_act AVG i(Vddrp2) FROM=420n TO=820n"
+    },
+    {
+      "name": "x_ir3_rst",
+      "unit": "A",
+      "spice": ".meas tran x_ir3_rst AVG i(Vddrp3) FROM=50n TO=250n"
+    },
+    {
+      "name": "x_ir3_act",
+      "unit": "A",
+      "spice": ".meas tran x_ir3_act AVG i(Vddrp3) FROM=420n TO=820n"
+    },
+    {
+      "name": "x_ir4_rst",
+      "unit": "A",
+      "spice": ".meas tran x_ir4_rst AVG i(Vddrp4) FROM=50n TO=250n"
+    },
+    {
+      "name": "x_ir4_act",
+      "unit": "A",
+      "spice": ".meas tran x_ir4_act AVG i(Vddrp4) FROM=420n TO=820n"
+    },
+    {
+      "name": "x_ib_rst",
+      "unit": "A",
+      "spice": ".meas tran x_ib_rst AVG i(Vddp) FROM=50n TO=250n"
+    },
+    {
+      "name": "x_ib_act",
+      "unit": "A",
+      "spice": ".meas tran x_ib_act AVG i(Vddp) FROM=420n TO=820n"
+    },
+    {
+      "name": "s_ir1_rst",
+      "unit": "A",
+      "spice": ".meas tran s_ir1_rst AVG i(Vddr1) FROM=50n TO=250n"
+    },
+    {
+      "name": "s_ir1_act",
+      "unit": "A",
+      "spice": ".meas tran s_ir1_act AVG i(Vddr1) FROM=420n TO=820n"
+    },
+    {
+      "name": "s_ir2_rst",
+      "unit": "A",
+      "spice": ".meas tran s_ir2_rst AVG i(Vddr2) FROM=50n TO=250n"
+    },
+    {
+      "name": "s_ir2_act",
+      "unit": "A",
+      "spice": ".meas tran s_ir2_act AVG i(Vddr2) FROM=420n TO=820n"
+    },
+    {
+      "name": "s_ir3_rst",
+      "unit": "A",
+      "spice": ".meas tran s_ir3_rst AVG i(Vddr3) FROM=50n TO=250n"
+    },
+    {
+      "name": "s_ir3_act",
+      "unit": "A",
+      "spice": ".meas tran s_ir3_act AVG i(Vddr3) FROM=420n TO=820n"
+    },
+    {
+      "name": "s_ir4_rst",
+      "unit": "A",
+      "spice": ".meas tran s_ir4_rst AVG i(Vddr4) FROM=50n TO=250n"
+    },
+    {
+      "name": "s_ir4_act",
+      "unit": "A",
+      "spice": ".meas tran s_ir4_act AVG i(Vddr4) FROM=420n TO=820n"
+    },
+    {
+      "name": "s_ib_rst",
+      "unit": "A",
+      "spice": ".meas tran s_ib_rst AVG i(Vdd) FROM=50n TO=250n"
+    },
+    {
+      "name": "s_ib_act",
+      "unit": "A",
+      "spice": ".meas tran s_ib_act AVG i(Vdd) FROM=420n TO=820n"
+    }
+  ],
+  "options": {
+    "timeout_s": 3480,
+    "keep_artifacts": true,
+    "save_mode": "netlist",
+    "ngspice_init": [
+      "set measureprec=12",
+      "set numdgt=12"
+    ]
+  },
+  "batch": {
+    "poll_timeout_s": 3700
+  }
+}
