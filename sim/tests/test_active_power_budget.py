@@ -9,8 +9,8 @@ would silently lie if it rotted:
 * per-leg totals are the SIGNED sums of the measured rail currents (the
   sources read negative when delivering) times 1.98 V, in uW;
 * headroom is target-minus-total, so a failing corner reports negative;
-* the 20 us verdict grades PASS/FAIL against 500 uW but refuses to grade a
-  leg sitting within the runs' cross-run agreement band of the bound;
+* the 20 us verdict grades the unrounded total against the strict < 500 uW bound;
+* runner-reported initialization must agree with the request and the other run;
 * the W_RST anchor compares the 20 us run's reset-held window against the
   committed control's own same-window numbers (stimulus-identical), and
   its delta feeds nothing else; only matched fleet pairs enter rate deltas;
@@ -22,6 +22,7 @@ No klt, no PDK, no ngspice: synthetic records exercise every path.
 """
 from __future__ import annotations
 
+import hashlib
 import importlib.util
 import json
 import shutil
@@ -129,7 +130,7 @@ def main() -> int:
         check("| +125 C | schematic | 400.8 | 364.3 | -36.4 | PASS |" in text,
               "comparison row: 100 ns column, delta, verdict")
         verdicts = [ln for ln in text.splitlines() if " C | " in ln and
-                    ("PASS" in ln or "FAIL" in ln or "AT BOUND" in ln)]
+                    ("PASS" in ln or "FAIL" in ln)]
         check(len(verdicts) == 4 and all("PASS" in v for v in verdicts),
               "four comparison verdicts, synthetic all PASS")
         check("synthetic-job" in text, "run references carried into the record")
@@ -142,9 +143,60 @@ def main() -> int:
         rc = R.main([])
         check("AUTHORED TEXT" in out.read_text(),
               "authored disposition appended verbatim")
+        # Exercise the raw verdict through the report and rendered row, including
+        # two powers which round to the same displayed value on opposite sides.
+        hot_long = rep[125.0]
+        original_long = hot_long.read_bytes()
+        for power, verdict in ((499.0, "PASS"), (499.99, "PASS"), (500.0, "FAIL"),
+                               (500.01, "FAIL"), (501.0, "FAIL")):
+            report = json.loads(original_long)
+            for m in report["corners"][0]["measurements"]:
+                if m["name"].startswith("s_ir") and m["name"].endswith("_act"):
+                    m["value"] = 0.0
+                if m["name"] == "s_ib_act":
+                    m["value"] = -power / (R.VDD * 1e6)
+            hot_long.write_text(json.dumps(report))
+            R.main([])
+            row = next(line for line in out.read_text().splitlines()
+                       if line.startswith("| +125 C | schematic |"))
+            check(row.endswith(f"| {verdict} |"), f"strict verdict at {power} uW")
+        hot_long.write_bytes(original_long)
+
+        hot = matched[125.0]
+        original_short = hot.read_bytes()
+        declared = json.loads(hot.with_name("request.json").read_text())["options"]["ngspice_init"]
+        digest = "sha256:" + hashlib.sha256(("\n".join(declared) + "\n").encode()).hexdigest()
+        short = json.loads(original_short)
+        long = json.loads(original_long)
+        worker = short["environment"]["remote"]["worker_environment"]
+        worker["ngspice_init"] = {"source": "request", "lines": declared, "sha256": digest}
+        hot.write_text(json.dumps(short))
+        R.main([])
+        check("100 ns verified, 20 us requested only" in out.read_text(),
+              "mixed runner coverage is visible for the pair")
+        long["environment"]["ngspice_init"] = {"source": "runner", "lines": None, "sha256": digest}
+        hot_long.write_text(json.dumps(long))
+        R.main([])
+        check("100 ns verified, 20 us verified" in out.read_text(),
+              "worker lines and report digest confirm the requested settings")
+        worker["ngspice_init"]["lines"] = ["set measureprec=4", "set numdgt=12"]
+        hot.write_text(json.dumps(short))
+        check_refusal("ngspice_init")
+        worker["ngspice_init"] = {"source": "request", "lines": None, "sha256": "9" * 64}
+        hot.write_text(json.dumps(short))
+        check_refusal("ngspice_init")
+        # Both files can match a request, yet differ in klt's optional thread pin.
+        worker["threads_per_worker"] = 1
+        worker["ngspice_init"] = {"source": "request", "lines": ["set num_threads=1", *declared]}
+        hot.write_text(json.dumps(short))
+        check_refusal("differ in effective ngspice_init")
+        hot.write_bytes(original_short)
+        long["environment"]["ngspice_init"]["lines"] = ["set measureprec=4"]
+        hot_long.write_text(json.dumps(long))
+        check_refusal("ngspice_init")
+        hot_long.write_bytes(original_long)
         # refusal paths
         print("refusals:")
-        hot = matched[125.0]
         plan_path = hot.with_name("plan.json")
         original_plan = plan_path.read_bytes()
         for key in ("design_lib", "pex_lib"):

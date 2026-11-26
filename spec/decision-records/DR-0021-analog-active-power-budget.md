@@ -44,7 +44,10 @@ and a 5 ps transient step. The 20 us runs used the re-extraction
 0.54% across these configurations. This check covers only the 50–250 ns
 reset window. Section 1 retains the historical budgets. Section 3 reports
 a clock-rate delta only when a 100 ns fleet report at the same temperature
-matches the 20 us design, PEX, model library and simulator settings.
+matches the 20 us design, PEX, model library, simulator build and requested
+settings. Both 20 us reports omit the effective ngspice initialization
+lines and digest. Any future delta using these reports therefore assumes
+the runners applied the requested initialization.
 
 All four totals exceed 500 uW at the proposed cadence. The six DFFs share
 VDD with the buffers and the XOR tree (`design/sampler_core.spice`), and
@@ -87,16 +90,17 @@ record recommends **P-A**.
 
 - **P-A (recommended): amend the analog-partition active bound** to a
   measured-worst-corner-derived figure — `< 650 uW` active, analog
-  partition, whole-envelope basis `worst extracted total across the
-  12-corner grid` + guardband for silicon-vs-simulation. The guardband
-  basis is #597's formal grid, whose worst is 602.6 uW at
+  partition. The proposed allocation adds 47.4 uW to the largest
+  extracted value in #597's 12-corner grid at **100 ns**, 602.6 uW at
   ff / 125 C / 1.98 V, extracted (the earlier same-deck control measured
   603.8 uW; this issue's 20 us re-rate of the same corner gives 599.6 uW
   -- all three agree within 0.7 %, and the grid's formal owner is #597).
-  The 47.4 uW allowance is a proposed engineering margin. The grid
-  measures the corner maximum; it supplies neither a silicon uncertainty
-  bound nor a market comparison. Acceptance requires an operator decision
-  on that margin and on the analog allocation within #174's whole-block row.
+  The two measured 20 us corners leave the maximum at that cadence over
+  the full envelope unresolved. Ratification requires measurements or a
+  validated bound over that envelope, a quantified uncertainty or an
+  independently justified system allocation, and operator review of the
+  margin and the allocation within #174's whole-block budget. The market
+  review also found no comparable active-partition benchmark for 650 uW.
 - **P-B: hold `< 500 uW`** and record a per-corner derogation at
   ff / 1.98 V. Cost: the two corners stay red on every future report with
   no owned path to green; the array-only figure (473.9 uW hot) leaves only

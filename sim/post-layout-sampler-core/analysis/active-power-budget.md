@@ -20,7 +20,8 @@ grid pass extracted and are not re-derived here.
 
 Each deck contains both legs with their own buffers, XOR tree and samplers.
 Section 1 reproduces the historical records. Section 3 uses only fleet pairs
-with matching schematic, PEX and executed model hashes and simulator settings.
+with matching schematic, PEX and executed model hashes, simulator builds
+and requested settings. Section 3 gives the runner evidence for ngspice initialization.
 Supply 1.98 V on all rails; process ff; temperatures -40 / +125 C.
 
 ## 1. The 100 ns control budget (committed records, reproduced)
@@ -88,8 +89,12 @@ These differences describe reset-held operation across extractions.
 
 ## 3. Sampling-rate comparison and verdicts
 
-- -40 C 100 ns control: awaiting fleet report.
-- +125 C 100 ns control: awaiting fleet report.
+- -40 C 100 ns control: awaiting fleet report. ngspice initialization: 100 ns pending, 20 us requested only.
+- +125 C 100 ns control: awaiting fleet report. ngspice initialization: 100 ns pending, 20 us requested only.
+
+The verdict uses the unrounded 20 us total. A total of exactly 500 uW fails.
+Where a runner omits both init lines and digest, any clock-rate delta assumes
+the runner applied the requested settings.
 
 | T | leg | Matched 100 ns total (uW) | 20 us total (uW) | delta | 20 us verdict vs 500 uW |
 |---|---|---:|---:|---:|---|

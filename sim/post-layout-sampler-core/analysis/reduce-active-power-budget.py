@@ -22,6 +22,7 @@ Nothing here simulates anything; it reads committed JSON evidence only.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import math
 import re
@@ -80,6 +81,36 @@ def control_rows(rec: dict) -> dict:
     }
 
 
+def checked_init_digest(directory: Path, env: dict, requested: list[str]) -> str | None:
+    """Check effective .spiceinit evidence wherever the fleet recorded it."""
+    worker = env["remote"]["worker_environment"]
+    candidates = [requested]
+    threads = worker.get("threads_per_worker")
+    if threads is not None:
+        # klt can prepend its worker thread pin to the requested file.
+        candidates.append([f"set num_threads={threads}", *requested])
+    expected = {hashlib.sha256(("\n".join(lines) + "\n").encode()).hexdigest(): lines
+                for lines in candidates}
+    verified = None
+    for record in (env.get("ngspice_init"), worker.get("ngspice_init")):
+        if record is None:
+            continue
+        if not isinstance(record, dict):
+            raise EvidenceError(f"{directory}: invalid runner ngspice_init")
+        lines, digest = record.get("lines"), record.get("sha256")
+        if record.get("source") == "none" and requested:
+            raise EvidenceError(f"{directory}: runner reports no ngspice_init")
+        if lines is None and digest is None:
+            continue
+        expected = {key: candidate for key, candidate in expected.items()
+                    if (lines is None or lines == candidate)
+                    and (digest is None or digest in (key, f"sha256:{key}"))}
+        if not expected:
+            raise EvidenceError(f"{directory}: contradictory runner ngspice_init")
+        verified = next(iter(expected))  # Either lines or digest identifies the file.
+    return verified
+
+
 def fleet_run(directory: Path, temp: float, period: str) -> dict:
     """Bind this report to its planned deck, PVT and transient settings."""
     plan = json.loads((directory / "plan.json").read_text())
@@ -121,6 +152,7 @@ def fleet_run(directory: Path, temp: float, period: str) -> dict:
         raise EvidenceError(f"{directory}: incomplete simulator or job provenance")
     match.update(engine_build=build, models=request["models"], ngspice_init=request["options"]["ngspice_init"],
                  save_mode=request["options"]["save_mode"])
+    init_digest = checked_init_digest(directory, env, match["ngspice_init"])
     got = {m["name"]: m["value"] for m in c["measurements"] if m["status"] == "pass"}
     required = [f"{leg}_{rail}_{window}" for leg in ("s", "x")
                 for rail in ("ir1", "ir2", "ir3", "ir4", "ib") for window in ("act", "rst")]
@@ -129,7 +161,7 @@ def fleet_run(directory: Path, temp: float, period: str) -> dict:
     for name in required:
         if got.get(name) is None or not math.isfinite(got[name]):
             raise EvidenceError(f"{directory}: missing or invalid measurement {name}")
-    out = {"plan": plan, "match": match, "job_id": job.get("job_id"), "state": job.get("state"),
+    out = {"plan": plan, "match": match, "init_digest": init_digest, "job_id": job.get("job_id"), "state": job.get("state"),
            "runner_klt": job.get("runner_klt_version"),
            "compat": job.get("runner_compatibility"),
            "runtime_s": c.get("runtime_s"), "corner_id": c.get("corner_id")}
@@ -176,6 +208,9 @@ def main(argv: list[str] | None = None) -> int:
             for key, value in ts["match"].items():
                 if matched["match"][key] != value:
                     raise EvidenceError(f"{control_dir}: 100 ns and 20 us differ in {key}")
+            if (ts["init_digest"] and matched["init_digest"]
+                    and ts["init_digest"] != matched["init_digest"]):
+                raise EvidenceError(f"{control_dir}: 100 ns and 20 us differ in effective ngspice_init")
         data[t] = {"ctrl": ctrl, "ts": ts, "matched": matched,
                    "anchor": anchor_delta_pp(ctrl, ts)}
     lines: list[str] = []
@@ -207,7 +242,8 @@ def main(argv: list[str] | None = None) -> int:
     a("")
     a("Each deck contains both legs with their own buffers, XOR tree and samplers.")
     a("Section 1 reproduces the historical records. Section 3 uses only fleet pairs")
-    a("with matching schematic, PEX and executed model hashes and simulator settings.")
+    a("with matching schematic, PEX and executed model hashes, simulator builds")
+    a("and requested settings. Section 3 gives the runner evidence for ngspice initialization.")
     a("Supply 1.98 V on all rails; process ff; temperatures -40 / +125 C.")
     a("")
     a("## 1. The 100 ns control budget (committed records, reproduced)")
@@ -277,7 +313,17 @@ def main(argv: list[str] | None = None) -> int:
     for t in TEMPS:
         ctrl = data[t]["matched"]
         source = f"job `{ctrl['job_id']}`" if ctrl else "awaiting fleet report"
-        a(f"- {t:+.0f} C 100 ns control: {source}.")
+        ts = data[t]["ts"]
+        long_init = "verified" if ts["init_digest"] else "requested only"
+        short_init = "pending"
+        if ctrl:
+            short_init = "verified" if ctrl["init_digest"] else "requested only"
+        a(f"- {t:+.0f} C 100 ns control: {source}. "
+          f"ngspice initialization: 100 ns {short_init}, 20 us {long_init}.")
+    a("")
+    a("The verdict uses the unrounded 20 us total. A total of exactly 500 uW fails.")
+    a("Where a runner omits both init lines and digest, any clock-rate delta assumes")
+    a("the runner applied the requested settings.")
     a("")
     a("| T | leg | Matched 100 ns total (uW) | 20 us total (uW) | delta | 20 us verdict vs 500 uW |")
     a("|---|---|---:|---:|---:|---|")
@@ -286,8 +332,6 @@ def main(argv: list[str] | None = None) -> int:
             ctrl = data[t]["matched"]
             c20 = uw(data[t]["ts"][leg]["total_a"])
             verdict = "PASS" if c20 < TARGET_UW else "FAIL"
-            if abs(c20 - TARGET_UW) <= max(5.0, 0.01 * c20):
-                verdict = "AT BOUND (within cross-run agreement)"
             fast, delta = "pending", "pending"
             if ctrl:
                 c100 = uw(ctrl[leg]["total_a"])
