@@ -51,8 +51,8 @@ Committed inputs (every figure in the record cites one of these):
 
   sim/ro-array-operating-point/records/20260825-093740-53f1f7a.json
   sim/ro-ring-jitter-accumulation/records/20260825-060208-54f5715.json
-  sim/ro-ring-jitter-accumulation/records/*.json (the 9 ring5 files, 27 points)
-  sim/ro-ring5-swing-and-current/records/*.json
+  sim/ro-ring-jitter-accumulation/records/20260825-{053659,053703,054855,060203,060208,060646,061114,061916,062221}-54f5715.json
+  sim/ro-ring5-swing-and-current/records/20260825-085{315,402,449,537}-53f1f7a.json
   sim/ro-array-sizing/records/20260825-071619-54f5715.json
   sim/ro-array-core-combining/records/20261008-135357-847b454.json
   sim/local-mismatch-monte-carlo/records/20261009-111125-e57ad27.json
@@ -86,7 +86,24 @@ from request_dir import load_request_dir  # noqa: E402
 OP_RECORD = REPO / "sim" / "ro-array-operating-point" / "records" / "20260825-093740-53f1f7a.json"
 CTRL_RECORD = REPO / "sim" / "ro-ring-jitter-accumulation" / "records" / "20260825-060208-54f5715.json"
 JITTER_RECORDS = REPO / "sim" / "ro-ring-jitter-accumulation" / "records"
+JITTER_RING5_RECORD_IDS = (
+    "20260825-053659-54f5715",
+    "20260825-053703-54f5715",
+    "20260825-054855-54f5715",
+    "20260825-060203-54f5715",
+    "20260825-060208-54f5715",
+    "20260825-060646-54f5715",
+    "20260825-061114-54f5715",
+    "20260825-061916-54f5715",
+    "20260825-062221-54f5715",
+)
 RING5_SC_RECORDS = REPO / "sim" / "ro-ring5-swing-and-current" / "records"
+RING5_SC_RECORD_IDS = (
+    "20260825-085315-53f1f7a",
+    "20260825-085402-53f1f7a",
+    "20260825-085449-53f1f7a",
+    "20260825-085537-53f1f7a",
+)
 SIZING_RECORD = REPO / "sim" / "ro-array-sizing" / "records" / "20260825-071619-54f5715.json"
 ARRAY125_RECORD = REPO / "sim" / "ro-array-core-combining" / "records" / "20261008-135357-847b454.json"
 MISMATCH_RECORD = REPO / "sim" / "local-mismatch-monte-carlo" / "records" / "20261009-111125-e57ad27.json"
@@ -231,14 +248,23 @@ def load_control_targets() -> dict:
 
 def load_ring5_grid() -> list[dict]:
     rows = []
-    for path in sorted(JITTER_RECORDS.glob("*.json")):
+    seen = set()
+    for rid in JITTER_RING5_RECORD_IDS:
+        path = Path(JITTER_RECORDS) / f"{rid}.json"
+        if not path.is_file():
+            raise ReductionError(f"missing pinned ring5 jitter record {path}")
         d = json.loads(path.read_text())
-        if "ro_ring5" not in d.get("testbench", ""):
-            continue
+        if d.get("record_id") != rid or "ro_ring5" not in d.get("testbench", ""):
+            raise ReductionError(f"unexpected ring5 jitter record metadata in {path}")
+        t, v = d["pvt"]["temp_c"], d["pvt"]["vdd_v"]
         for c in d.get("corners", []):
+            key = key_of(t, v, c["corner"])
+            if key in seen:
+                raise ReductionError(f"duplicate ring5 jitter grid point {key} in {rid}")
+            seen.add(key)
             m = c["measurements"]
             rows.append({
-                "temp_c": d["pvt"]["temp_c"], "vdd_v": d["pvt"]["vdd_v"],
+                "temp_c": t, "vdd_v": v,
                 "corner": c["corner"], "tbar": m["tbar"],
                 "sigma_1": quad_correct(m["sigma_1"]),
                 "swing_frac": m["swing_frac"], "record_id": d["record_id"],
@@ -251,12 +277,20 @@ def load_ring5_grid() -> list[dict]:
 def load_ring5_loaded() -> dict:
     """Committed loaded ring5 period + per-ring currents per (T, V, corner)."""
     out = {}
-    for path in sorted(RING5_SC_RECORDS.glob("*.json")):
+    for rid in RING5_SC_RECORD_IDS:
+        path = Path(RING5_SC_RECORDS) / f"{rid}.json"
+        if not path.is_file():
+            raise ReductionError(f"missing pinned ring5 swing/current record {path}")
         d = json.loads(path.read_text())
+        if d.get("record_id") != rid:
+            raise ReductionError(f"unexpected ring5 swing/current record_id in {path}")
         t, v = d["pvt"]["temp_c"], d["pvt"]["vdd_v"]
         for c in d["corners"]:
+            key = key_of(t, v, c["corner"])
+            if key in out:
+                raise ReductionError(f"duplicate ring5 swing/current point {key} in {rid}")
             m = c["measurements"]
-            out[key_of(t, v, c["corner"])] = {
+            out[key] = {
                 "t0_loaded_s": m["tbar"], "i_ring_run_a": m.get("i_ring_run"),
                 "i_buf_a": m.get("i_buf"), "swing_frac_ring": m.get("swing_frac_ring"),
                 "swing_frac_buf": m.get("swing_frac_buf"), "record_id": d["record_id"],
@@ -373,6 +407,10 @@ def _raw_measurements(c0, name, proc):
     return raw
 
 
+def _numeric_temp(val) -> bool:
+    return isinstance(val, (int, float)) and not isinstance(val, bool) and math.isfinite(float(val))
+
+
 def jobs_from_responses(chunks) -> list[dict]:
     rows = []
     for name, plan, resp in chunks:
@@ -382,12 +420,23 @@ def jobs_from_responses(chunks) -> list[dict]:
         if not corners:
             raise ReductionError(f"{name}: response carries no corner units")
         env = resp.get("environment", {})
+        seen_procs = set()
         for c0 in corners:
             if str(c0.get("status", "")).lower() != "pass":
                 diag = c0.get("diagnostics") or []
                 msg = "; ".join(str(d.get("message", d.get("code", ""))) for d in diag)[:300]
                 raise ReductionError(f"{name}: unit status {c0.get('status')!r}: {msg}")
-            proc = c0.get("process") or str(c0.get("corner_id", "?")).split("/")[0]
+            proc = c0.get("process")
+            if not isinstance(proc, str) or not proc:
+                raise ReductionError(f"{name}: response unit missing process ({proc!r})")
+            if proc in seen_procs:
+                raise ReductionError(f"{name}: duplicate process corner {proc!r}")
+            seen_procs.add(proc)
+            ct = c0.get("temperature_c")
+            if not _numeric_temp(ct) or round(float(ct), 6) != round(t, 6):
+                raise ReductionError(
+                    f"{name}/{proc}: response temperature_c {ct!r} != planned {t:g}")
+            temp_c = float(ct)
             raw = _raw_measurements(c0, name, proc)
             if cfg in ("ctrl5", "ring3"):
                 need = JITTER_MEAS
@@ -397,7 +446,7 @@ def jobs_from_responses(chunks) -> list[dict]:
             if missing:
                 raise ReductionError(f"{name}/{proc}: missing measurement(s) {missing}")
             base = {
-                "config": cfg, "temp_c": t, "vdd_v": v, "corner": proc,
+                "config": cfg, "temp_c": temp_c, "vdd_v": v, "corner": proc,
                 "models_lib_sha256": env.get("models_lib_sha256"),
                 "netlist_sha256": env.get("netlist_sha256"),
                 "job_id": (env.get("remote") or {}).get("job_id"),
@@ -422,6 +471,66 @@ def verify_netlist_shas(chunks, netlist_path):
         actual = sha256_file(path, prefix=True)
         if recorded != actual and recorded.removeprefix("sha256:") != actual.removeprefix("sha256:"):
             raise ReductionError(f"{name}: response netlist sha {recorded} != deck {path} ({actual})")
+
+
+def verify_request_corners(chunks, request_path):
+    for name, plan, resp in chunks:
+        path = request_path(name)
+        if not path.is_file():
+            raise ReductionError(f"{name}: missing request file {path}")
+        try:
+            req = json.loads(path.read_text())
+        except ValueError as exc:
+            raise ReductionError(f"{name}: unreadable request file {path}: {exc}") from exc
+        if not isinstance(req, dict):
+            raise ReductionError(f"{name}: request file {path} is not a JSON object")
+        rc = req.get("corners")
+        if not isinstance(rc, dict):
+            raise ReductionError(f"{name}: request {path} missing corners object")
+        req_procs = rc.get("process")
+        req_temps = rc.get("temperature_c")
+        if (not isinstance(req_procs, list) or not req_procs
+                or any(not isinstance(p, str) or not p for p in req_procs)
+                or len(set(req_procs)) != len(req_procs)):
+            raise ReductionError(f"{name}: invalid requested process list {req_procs!r}")
+        if (not isinstance(req_temps, list) or len(req_temps) != 1
+                or not _numeric_temp(req_temps[0])):
+            raise ReductionError(f"{name}: invalid requested temperature_c list {req_temps!r}")
+        req_temp = round(float(req_temps[0]), 6)
+        plan_temp = round(float(plan["pvt"]["temp"]), 6)
+        if req_temp != plan_temp or plan.get("n") != len(req_procs):
+            raise ReductionError(
+                f"{name}: plan (temp={plan_temp:g}, n={plan.get('n')!r}) != "
+                f"request (temperature_c={req_temps!r}, process={req_procs!r})")
+        expected = {(p, req_temp) for p in req_procs}
+        corners = resp.get("corners") or []
+        actual = set()
+        for c0 in corners:
+            proc = c0.get("process")
+            ct = c0.get("temperature_c")
+            if not isinstance(proc, str) or not proc or not _numeric_temp(ct):
+                raise ReductionError(
+                    f"{name}: response unit missing valid process/temperature_c "
+                    f"(process={proc!r}, temperature_c={ct!r})")
+            pt = (proc, round(float(ct), 6))
+            if pt in actual:
+                raise ReductionError(f"{name}: duplicate response corner unit {pt}")
+            actual.add(pt)
+        if len(corners) != len(expected) or actual != expected:
+            raise ReductionError(
+                f"{name}: response process/temperature set {sorted(actual)} != "
+                f"requested {sorted(expected)}")
+
+
+def load_verified_rows(chunks, *, netlist_path, request_path) -> list[dict]:
+    if len(chunks) != EXPECTED_REQUESTS:
+        raise ReductionError(f"expected {EXPECTED_REQUESTS} request responses, got {len(chunks)}")
+    verify_netlist_shas(chunks, netlist_path)
+    verify_request_corners(chunks, request_path)
+    rows = jobs_from_responses(chunks)
+    if len(rows) != EXPECTED_JOBS:
+        raise ReductionError(f"expected {EXPECTED_JOBS} units, got {len(rows)}")
+    return rows
 
 
 # ---------------------------------------------------------------------------
@@ -890,9 +999,10 @@ def render_body(rows, red, ctrl_j, ctrl_sc) -> str:
     A("")
     A("### New failure modes of sample-before-combine (stated per acceptance criterion)")
     A("")
+    tcq_lo, tcq_hi = e["anchors"]["tcq_pex_range_s"]
     A("- **Per-sampler metastability**: each ring is sampled asynchronously at "
       "1 MHz against a 1/T_0 ~ 0.4-2.6 GHz (ring3) / 0.2-0.6 GHz (ring5, loaded) "
-      "node. Post-layout `tcq` is 0.18-0.30 ns (`sim/post-layout-sampler-dff/`); "
+      f"node. Post-layout `tcq` is {tcq_lo*1e9:.3f}-{tcq_hi*1e9:.3f} ns (`sim/post-layout-sampler-dff/`); "
       "no committed record measures the metastability resolution time constant "
       "or MTBF -- **unmeasured**. The mechanism is not new (today's single raw "
       "tap is already an async sample of `xo`); its multiplicity scales xN.")
@@ -966,15 +1076,15 @@ def render_body(rows, red, ctrl_j, ctrl_sc) -> str:
 # commands
 # ---------------------------------------------------------------------------
 def load_reqdir(reqdir):
+    reqdir = Path(reqdir)
     chunks, missing = load_request_dir(reqdir)
     if missing:
         raise ReductionError(f"refused/failed requests present: {[m[0] for m in missing]}")
-    if len(chunks) != EXPECTED_REQUESTS:
-        raise ReductionError(f"expected {EXPECTED_REQUESTS} request responses, got {len(chunks)}")
-    verify_netlist_shas(chunks, lambda n: Path(reqdir) / n / "netlist.cir")
-    rows = jobs_from_responses(chunks)
-    if len(rows) != EXPECTED_JOBS:
-        raise ReductionError(f"expected {EXPECTED_JOBS} units, got {len(rows)}")
+    rows = load_verified_rows(
+        chunks,
+        netlist_path=lambda n: reqdir / n / "netlist.cir",
+        request_path=lambda n: reqdir / n / "request.json",
+    )
     return chunks, rows
 
 
@@ -1018,10 +1128,11 @@ def emit_record(reqdir, author="loom-builder@sky130-trng"):
         "## Source records", "",
         f"- Jitter-vehicle control target (`sim/ro-ring-jitter-accumulation/records/`): `{red['control_targets_record']}`",
         f"- Swing/current control targets (`sim/ro-ring5-swing-and-current/records/`): "
-        "`20260825-085315-53f1f7a`, `20260825-085402-53f1f7a`, `20260825-085449-53f1f7a`, `20260825-085537-53f1f7a`",
+        + ", ".join(f"`{rid}`" for rid in RING5_SC_RECORD_IDS),
         f"- Operating point, w_90 grid, entropy inputs (`sim/ro-array-operating-point/records/`): `{red['op_record']}`",
         "- Array sizing, `M*Q_H0`, numerical floor (`sim/ro-array-sizing/records/`): `20260825-071619-54f5715`",
-        "- Jitter grid for the sigma_1-vs-T_0 fit (`sim/ro-ring-jitter-accumulation/records/`): the nine `ro_ring5` records (27 points)",
+        "- Jitter grid for the sigma_1-vs-T_0 fit (`sim/ro-ring-jitter-accumulation/records/`): "
+        + ", ".join(f"`{rid}`" for rid in JITTER_RING5_RECORD_IDS),
         "- Array-level 125 C current (`sim/ro-array-core-combining/records/`): `20261008-135357-847b454`",
         "- Sampler offset, ladder periods, lock model (`sim/local-mismatch-monte-carlo/records/`): `20261009-111125-e57ad27`",
         "- Standby survey (`sim/ro-array-idle-leakage/records/`): `20261106-185750-8deaf42`",
@@ -1052,15 +1163,16 @@ def emit_record(reqdir, author="loom-builder@sky130-trng"):
     return 0
 
 
-def check_record(recpath):
+def check_record(recpath, *, corners_dir=None):
     rec = json.loads(Path(recpath).read_text())
     rid = rec["record_id"]
-    cdir = REPO / "sim" / SLUG / "corners" / rid
+    cdir = Path(corners_dir) if corners_dir is not None else REPO / "sim" / SLUG / "corners" / rid
     chunks = read_corner_bundle(cdir)
-    verify_netlist_shas(chunks, lambda n: cdir / f"{n}.netlist.cir")
-    rows = jobs_from_responses(chunks)
-    if len(rows) != EXPECTED_JOBS:
-        raise ReductionError(f"replay: expected {EXPECTED_JOBS} units, got {len(rows)}")
+    rows = load_verified_rows(
+        chunks,
+        netlist_path=lambda n: cdir / f"{n}.netlist.cir",
+        request_path=lambda n: cdir / f"{n}.request.json",
+    )
     expected = study_results(rows)
     saved = {key: rec[key] for key in expected if key in rec}
     differences = replay_diff(expected, saved, strict_types=True)

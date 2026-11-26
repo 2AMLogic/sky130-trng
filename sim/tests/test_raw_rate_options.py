@@ -6,14 +6,17 @@ records, and this campaign's own committed corners bundle only.
 
     python3 sim/tests/test_raw_rate_options.py
 """
+import gzip
 import json
 import math
 import os
 import re
+import shutil
 import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 D = os.path.join(HERE, "..", "raw-rate-row-options")
@@ -192,6 +195,11 @@ class Requests(unittest.TestCase):
                 self.assertIn("VenB enB 0 dc 0", deck)  # stopped ring
                 self.assertNotIn("trnoise", deck)       # deterministic
 
+    def test_docstring_matches_request_matrix_and_client_pin(self):
+        self.assertIn('klayout-tools==0.9.1', MR.__doc__)
+        self.assertIn("39-unit matrix", MR.__doc__)
+        self.assertIn("13 `klt sim`", MR.__doc__)
+
 
 class ControlGates(unittest.TestCase):
     def make_row(self, corner, sigma, tbar):
@@ -256,6 +264,86 @@ class CommittedRecordReplay(unittest.TestCase):
                 path.write_text(json.dumps(rec))
                 with self.assertRaisesRegex(RD.ReductionError, field or section):
                     RD.check_record(path)
+
+    def test_cold_response_in_hot_slot_fails_emit_and_replay(self):
+        rec = json.loads(self.record.read_text())
+        src_cdir = Path(D, "corners", rec["record_id"])
+        with tempfile.TemporaryDirectory() as tmp:
+            reqdir = Path(tmp, "reqdir")
+            cdir = Path(tmp, "corners")
+            shutil.copytree(src_cdir, cdir)
+            for gz in sorted(src_cdir.glob("*.klt-sim.json.gz")):
+                nm = gz.name[: -len(".klt-sim.json.gz")]
+                sub = reqdir / nm
+                sub.mkdir(parents=True)
+                shutil.copyfile(src_cdir / f"{nm}.netlist.cir", sub / "netlist.cir")
+                shutil.copyfile(src_cdir / f"{nm}.request.json", sub / "request.json")
+                shutil.copyfile(src_cdir / f"{nm}.plan.json", sub / "plan.json")
+                with gzip.open(gz, "rt") as fh:
+                    (sub / "resp.json").write_text(fh.read())
+            _, clean_rows = RD.load_reqdir(reqdir)
+            self.assertEqual(len(clean_rows), RD.EXPECTED_JOBS)
+
+            shutil.copyfile(reqdir / "sc3--40C-1.98V" / "resp.json",
+                            reqdir / "sc3-125C-1.98V" / "resp.json")
+            with self.assertRaisesRegex(RD.ReductionError, r"sc3-125C-1\.98V.*process/temperature"):
+                RD.load_reqdir(reqdir)
+
+            shutil.copyfile(cdir / "sc3--40C-1.98V.klt-sim.json.gz",
+                            cdir / "sc3-125C-1.98V.klt-sim.json.gz")
+            with self.assertRaisesRegex(RD.ReductionError, r"sc3-125C-1\.98V.*process/temperature"):
+                RD.check_record(self.record, corners_dir=cdir)
+
+            bad_resp = json.loads((reqdir / "sc3--40C-1.98V" / "resp.json").read_text())
+            bad_resp["corners"][0]["process"] = "sf"
+            with gzip.open(cdir / "sc3--40C-1.98V.klt-sim.json.gz", "wt") as fh:
+                json.dump(bad_resp, fh)
+            shutil.copyfile(src_cdir / "sc3-125C-1.98V.klt-sim.json.gz",
+                            cdir / "sc3-125C-1.98V.klt-sim.json.gz")
+            with self.assertRaisesRegex(RD.ReductionError, r"sc3--40C-1\.98V.*process/temperature"):
+                RD.check_record(self.record, corners_dir=cdir)
+
+    def test_appended_later_baseline_runs_still_replay_original_record(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            jdir = Path(tmp, "jitter")
+            scdir = Path(tmp, "sc")
+            shutil.copytree(RD.JITTER_RECORDS, jdir)
+            shutil.copytree(RD.RING5_SC_RECORDS, scdir)
+
+            extra_j = json.loads((jdir / "20260825-060208-54f5715.json").read_text())
+            extra_j["record_id"] = "20261201-000000-deadbeef"
+            for c in extra_j["corners"]:
+                c["measurements"]["sigma_1"] *= 2.0
+            (jdir / "20261201-000000-deadbeef.json").write_text(json.dumps(extra_j))
+
+            extra_sc = json.loads((scdir / "20260825-085449-53f1f7a.json").read_text())
+            extra_sc["record_id"] = "20261201-000001-deadbeef"
+            for c in extra_sc["corners"]:
+                c["measurements"]["i_ring_run"] *= 2.0
+                c["measurements"]["tbar"] *= 1.5
+            (scdir / "20261201-000001-deadbeef.json").write_text(json.dumps(extra_sc))
+
+            with patch.object(RD, "JITTER_RECORDS", jdir), patch.object(RD, "RING5_SC_RECORDS", scdir):
+                self.assertEqual(len(RD.load_ring5_grid()), 27)
+                self.assertEqual(len(RD.load_ring5_loaded()), 12)
+                self.assertEqual(RD.check_record(self.record), 0)
+                self.assertEqual(RD.known_answer(), 0)
+
+    def test_markdown_body_matches_committed_record_including_tcq_range(self):
+        rec = json.loads(self.record.read_text())
+        cdir = Path(D, "corners", rec["record_id"])
+        chunks = RD.read_corner_bundle(cdir)
+        rows = RD.load_verified_rows(
+            chunks,
+            netlist_path=lambda n: cdir / f"{n}.netlist.cir",
+            request_path=lambda n: cdir / f"{n}.request.json",
+        )
+        res = RD.study_results(rows)
+        body = RD.render_body(rows, res["reduction"], res["control_jitter"], res["control_sc"])
+        self.assertIn("Post-layout `tcq` is 0.138-0.299 ns", body)
+        md_text = self.record.with_suffix(".md").read_text()
+        md_body = md_text.split("---\n", 1)[1].rsplit("\n---\n", 1)[0]
+        self.assertEqual(body, md_body)
 
     def test_known_answer(self):
         self.assertEqual(RD.known_answer(), 0)

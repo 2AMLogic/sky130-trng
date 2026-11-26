@@ -3,10 +3,10 @@
 
     make-requests.py REQDIR
     # writes REQDIR/<config>-<temp>C-<vdd>V/{netlist.cir,request.json,plan.json}
-    uvx --from "klayout-tools==0.8.0" klt sim REQDIR/<d>/request.json \\
-        -o REQDIR/<d>/out --format json > REQDIR/<d>/resp.json
+    uvx --from "klayout-tools==0.9.1" klt sim REQDIR/<d>/request.json \\
+        -o REQDIR/<d>/out --format json --wait-for-capacity 600 > REQDIR/<d>/resp.json
 
-The 15-unit matrix is never hand-launched with ngspice: it is five `klt sim`
+The 39-unit matrix is never hand-launched with ngspice: it is 13 `klt sim`
 corner requests, each carrying the tt/ss/ff process axis as three units, which
 go to the batch fleet (KLT_SIM_BACKEND=batch). design/ is read, never written.
 
@@ -18,6 +18,11 @@ Configurations
     ring3  the 3-inversion ring (ro_nand2 + 2 ro_stage) at DR-0002's three
            headline (T, V) points plus the 125 C / 1.98 V swing-risk point,
            each x {tt,ss,ff}.
+    sc5    the committed 5-stage swing/current deck on its 4 (T, V) grid x
+           {tt,ss,ff} -- deterministic baseline control against records
+           20260825-085{315,402,449,537}-53f1f7a.
+    sc3    the same deterministic swing/current deck on the 3-inversion ring
+           across the same 4 (T, V) grid x {tt,ss,ff}.
 
 The ring bodies, initial conditions, trnoise calibration (NA=2.0e-3,
 NT=2e-10), seed (1), timestep (20p) and tstop (115n) replicate the committed
