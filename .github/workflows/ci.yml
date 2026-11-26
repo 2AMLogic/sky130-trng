@@ -466,6 +466,9 @@ jobs:
       - name: sim/tests/test_measurement_names.py (issue #670 shared measurement-name uniqueness guard; repeated name raises instead of silently displacing)
         run: python3 sim/tests/test_measurement_names.py
 
+      - name: sim/tests/test_rtl_cosim_report.py (issue #767 RTL-cosim report prints the observed outcome only; no unconditional equivalence claim, record writer gated on a full pass)
+        run: python3 sim/tests/test_rtl_cosim_report.py
+
       - name: sim/post-layout-whole-block/test_make_netlist.py (issue #478 generator transforms + committed netlist/port-map pair)
         run: python3 sim/post-layout-whole-block/test_make_netlist.py
 

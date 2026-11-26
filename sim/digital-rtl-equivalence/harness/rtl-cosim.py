@@ -262,12 +262,12 @@ def main(argv: list[str] | None = None) -> int:
         for i in diffs[:20]:
             a(f"| {i} | {phase_of(i)} | `{expected[i]}` | `{actual[i]}` |")
     a("")
-    a("## What this record does and does not establish")
+    # Scope notes only (issue #767): the result section above is the single
+    # place the observed outcome appears; the guarded claim lives in the
+    # minted record's `claim` field, which only a fully passing
+    # `--emit-record` run reaches.
+    a("## Scope and caveats")
     a("")
-    a("- It **does** establish that the committed RTL implements the")
-    a("  committed behavioural model over the programmed stimulus, including")
-    a("  the ordering the model's cycle contract fixes (sample before bus")
-    a("  access, register pop beating a streaming pop on the same FIFO).")
     a("- It is **not** exhaustive: it is a directed program, not a formal")
     a("  equivalence proof or a constrained-random campaign. The phase table")
     a("  above is the honest statement of what was exercised.")
