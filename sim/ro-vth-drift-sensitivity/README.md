@@ -8,8 +8,10 @@ model only.
 
 **This is a sensitivity bound, not a lifetime prediction.** Nothing in this slug converts a
 threshold offset into a time, voltage, duty cycle or temperature, ratifies a lifetime or a
-guard band, or changes a spec. Any such decision is an operator decision record
-(see `spec/README.md`).
+guard band, or changes a spec. The operator ruled on 2026-10-15 (#262, decided): the operating
+point is nominal-only for aging, and end-of-life qualification requires a reliability-backed
+mission profile and a Vth guard band
+([October 15 ruling](https://github.com/2AMLogic/sky130-trng/issues/262#issuecomment-6202634084)).
 
 | File | Role |
 |---|---|
@@ -125,12 +127,17 @@ zero-shift row, only the ring periods move); only the latter resolves the period
 | `records/20261113-150554-fb302c35.*` (+ `.calibration.json`) | the same grid re-reduced under DR-0005's own lock-proximity convention (issue #467); `Supersedes: 20261010-175052-7e279ab`. **Replay this one.** |
 | `records/20261010-175419-7e279ab.*` | matched-seed behavioral replay (108 streams, model output). Carries no lock-proximity field; not superseded |
 
-Headline (see the records for the tables): a 60 mV common-mode shift slows the ring by +9.9 % to +31 %
+Headline (see the records for the tables): a 60 mV common-mode shift -- the outer stress point of
+this sensitivity sweep, not a guard band -- slows the ring by +9.9 % to +31 %
 across the PVT grid; DR-0003's 1.036 `Q` margin is exhausted within 3-8 mV of common-mode shift at every grid
 point (period term only); the model-derived `H` bound crosses DR-0004's `H = 0.5` evaluation floor within 60 mV
 at 3 of 27 grid points; the closest small-rational approach stays above 6 % (6.15 % under DR-0005's own
-convention; the superseded record reported 6.55 % -- see below). The follow-up decision request is
-issue #262; nothing in `spec/` is changed here.
+convention; the superseded record reported 6.55 % -- see below). Issue #262 is decided (operator ruling,
+2026-10-15): the operating point is nominal-only for aging, and end-of-life qualification requires a
+reliability-backed mission profile and a Vth guard band; the ruling sets neither a numerical guard band nor a
+lifetime and authorizes no resizing
+([October 15 ruling](https://github.com/2AMLogic/sky130-trng/issues/262#issuecomment-6202634084));
+nothing in `spec/` is changed here.
 
 ## DR-0005 lock-proximity correction (issue #467)
 

@@ -119,6 +119,54 @@ class TestBatteryRejectsDefects(unittest.TestCase):
         self.assertEqual(bad["tests"]["monobit"]["status"], "FAIL")
 
 
+class TestSerialPairEvaluatedOnce(unittest.TestCase):
+    """Issue #765: both serial rows are columns of one `_serial` pair
+    evaluation per eligible segment; below the floors the pair is never
+    invoked."""
+
+    def _run_counting(self, bits, segment_len=None):
+        orig = B._serial
+        calls = []
+
+        def counting(bs):
+            calls.append(len(bs))
+            return orig(bs)
+
+        B._serial = counting
+        try:
+            res = B.run_battery(bits, segment_len=segment_len)
+        finally:
+            B._serial = orig
+        return res, calls
+
+    def test_one_serial_call_per_eligible_segment(self):
+        bits = ideal(40 * 512, seed=11)
+        res, calls = self._run_counting(bits, segment_len=512)
+        self.assertEqual(calls, [512] * 40)  # one per segment, not per row
+        segs = [bits[i:i + 512] for i in range(0, len(bits), 512)]
+        for i, seg in enumerate(segs):
+            p1, p2 = B._serial(seg)
+            self.assertEqual(res["tests"]["serial_1"]["p_values"][i], p1)
+            self.assertEqual(res["tests"]["serial_2"]["p_values"][i], p2)
+        single = ideal(20000, seed=12)
+        res1, calls1 = self._run_counting(single)
+        self.assertEqual(calls1, [20000])  # single sequence: one call
+        self.assertEqual(res1["tests"]["serial_1"]["p_values"],
+                         [B._serial(single)[0]])
+        self.assertEqual(res1["tests"]["serial_2"]["p_values"],
+                         [B._serial(single)[1]])
+
+    def test_no_serial_calls_below_the_floors(self):
+        cases = ((ideal(127, seed=13), None),         # below the serial min_n
+                 (ideal(9 * 8192, seed=14), 8192))    # below MIN_SEGMENTS
+        for bits, seg in cases:
+            res, calls = self._run_counting(bits, segment_len=seg)
+            self.assertEqual(calls, [])
+            for name in ("serial_1", "serial_2"):
+                self.assertEqual(res["tests"][name]["status"], "INSUFFICIENT")
+                self.assertNotIn("p_values", res["tests"][name])
+
+
 class TestMinimumLengthGuards(unittest.TestCase):
     def test_short_input_insufficient_not_pass(self):
         res = B.run_battery(ideal(24))
