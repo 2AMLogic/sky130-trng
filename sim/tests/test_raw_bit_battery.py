@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Unit tests for `sim/raw-bit-min-entropy/analysis/raw-bit-battery.py`.
+"""Unit tests for `sim/raw-bit-min-entropy/analysis/raw-bit-battery.py` and
+the shared statistics library it reduces with, `sim/bin/bitstream_stats.py`.
 
 Standard library only, no simulator::
 
@@ -12,11 +13,13 @@ input at alpha = 0.01; short input must be INSUFFICIENT, never PASS.
 
 from __future__ import annotations
 
+import ast
 import hashlib
 import io
 import json
 import math
 import random
+import re
 import sys
 import tempfile
 import os
@@ -28,6 +31,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 _PATH = REPO_ROOT / "sim" / "raw-bit-min-entropy" / "analysis" / "raw-bit-battery.py"
 sys.path.insert(0, os.path.join(REPO_ROOT, "sim", "bin"))
 from loadmod import load_module  # noqa: E402
+import bitstream_stats  # noqa: E402
 import replay_equal  # noqa: E402
 B = load_module("raw_bit_battery", _PATH)
 brb = load_module("behavioral_raw_bit",
@@ -125,18 +129,18 @@ class TestSerialPairEvaluatedOnce(unittest.TestCase):
     invoked."""
 
     def _run_counting(self, bits, segment_len=None):
-        orig = B._serial
+        orig = bitstream_stats._serial
         calls = []
 
         def counting(bs):
             calls.append(len(bs))
             return orig(bs)
 
-        B._serial = counting
+        bitstream_stats._serial = counting
         try:
             res = B.run_battery(bits, segment_len=segment_len)
         finally:
-            B._serial = orig
+            bitstream_stats._serial = orig
         return res, calls
 
     def test_one_serial_call_per_eligible_segment(self):
@@ -145,16 +149,16 @@ class TestSerialPairEvaluatedOnce(unittest.TestCase):
         self.assertEqual(calls, [512] * 40)  # one per segment, not per row
         segs = [bits[i:i + 512] for i in range(0, len(bits), 512)]
         for i, seg in enumerate(segs):
-            p1, p2 = B._serial(seg)
+            p1, p2 = bitstream_stats._serial(seg)
             self.assertEqual(res["tests"]["serial_1"]["p_values"][i], p1)
             self.assertEqual(res["tests"]["serial_2"]["p_values"][i], p2)
         single = ideal(20000, seed=12)
         res1, calls1 = self._run_counting(single)
         self.assertEqual(calls1, [20000])  # single sequence: one call
         self.assertEqual(res1["tests"]["serial_1"]["p_values"],
-                         [B._serial(single)[0]])
+                         [bitstream_stats._serial(single)[0]])
         self.assertEqual(res1["tests"]["serial_2"]["p_values"],
-                         [B._serial(single)[1]])
+                         [bitstream_stats._serial(single)[1]])
 
     def test_no_serial_calls_below_the_floors(self):
         cases = ((ideal(127, seed=13), None),         # below the serial min_n
@@ -458,6 +462,73 @@ class TestVolumeAdapter(unittest.TestCase):
         f.write_text(("00" + f.read_text()[2:]))
         self.assertNotEqual(self.check(rec)[0], 0)
         self.assertEqual(len(list(B.RECORDS_DIR.glob("*.json"))), 1)
+
+
+class TestSharedStatsLibrary(unittest.TestCase):
+    """Issue #794: the pure statistics live in `sim/bin/bitstream_stats.py`.
+    The campaigns that reach them import them from there instead of executing
+    `raw-bit-battery.py` / `raw-bit-entropy.py` by path."""
+
+    def test_library_is_stdlib_only(self):
+        tree = ast.parse((REPO_ROOT / "sim" / "bin" / "bitstream_stats.py").read_text())
+        modules = set()
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Import):
+                modules.update(alias.name for alias in node.names)
+            elif isinstance(node, ast.ImportFrom):
+                modules.add(node.module)
+        self.assertEqual(modules, {"__future__", "math", "collections"})
+
+    def test_cli_reexports_the_library(self):
+        for name in ("ALPHA", "MIN_SEGMENTS", "TUPLE_CAP", "SOURCE_NOTE",
+                     "run_battery", "entropy_estimates", "render_detail_tables",
+                     "format_binding", "_failed", "_serial", "igamc", "t_monobit",
+                     "t_runs", "_LONGEST"):
+            self.assertIs(getattr(B, name), getattr(bitstream_stats, name), name)
+        self.assertIs(B.raw_bit_entropy.mcv_estimate, bitstream_stats.mcv_estimate)
+
+    def test_library_analyse_stream_takes_an_explicit_segment_len(self):
+        with self.assertRaises(TypeError):
+            bitstream_stats.analyse_stream(ideal(512 * 12))
+
+    #: every script that reduces a bitstream with the battery or the MCV estimator
+    CALLERS = (
+        "sim/raw-bit-min-entropy/analysis/raw-bit-battery.py",
+        "sim/raw-bit-min-entropy/analysis/raw-bit-entropy.py",
+        "sim/digital-section-behavioral/harness/health-detection-coverage.py",
+        "sim/digital-conditioned-output/analysis/conditioned-output.py",
+        "sim/local-mismatch-monte-carlo/reduce.py",
+        "sim/wake-up-transient/restart_matrix.py",
+    )
+
+    def test_every_caller_imports_the_library(self):
+        for rel in self.CALLERS:
+            with self.subTest(caller=rel):
+                self.assertRegex((REPO_ROOT / rel).read_text(),
+                                 r"(?m)^from bitstream_stats import ")
+
+    #: outside this seam: the CLI under test and the volume-campaign generator
+    #: still execute `raw-bit-entropy.py` for its record helpers
+    #: (`extract_sequence`, `campaign_records`)
+    BY_PATH_ALLOWED = {
+        "sim/raw-bit-min-entropy/analysis/raw-bit-battery.py",
+        "sim/raw-bit-volume-campaign/behavioral_raw_bit.py",
+    }
+    BY_PATH = re.compile(r"load_module\(\s*['\"]raw_bit_(?:battery|entropy)['\"]")
+
+    def test_no_campaign_executes_the_clis_by_path_for_the_math(self):
+        for path in sorted((REPO_ROOT / "sim").rglob("*.py")):
+            rel = path.relative_to(REPO_ROOT).as_posix()
+            if rel.startswith("sim/tests/") or rel in self.BY_PATH_ALLOWED:
+                continue
+            with self.subTest(script=rel):
+                self.assertIsNone(self.BY_PATH.search(path.read_text()))
+
+    def test_the_by_path_scan_would_catch_a_re_fork(self):
+        for src in ('B = load_module("raw_bit_battery", p)\n',
+                    "load_module('raw_bit_entropy', REPO / 'x.py')\n",
+                    'm = load_module(\n    "raw_bit_battery", _BATTERY)\n'):
+            self.assertIsNotNone(self.BY_PATH.search(src), src)
 
 
 class ReplayTolerance(unittest.TestCase):

@@ -16,7 +16,7 @@ The reduction contract (fixed; not a parameter)
   (start-up) window, samples 1024..2047 the equal-length baseline (steady-state comparison) segment. Samples beyond
   2047, if any, enter the row and column MCV estimates but not the first/baseline comparison.
 - row and column MCV: every row (one restart, all N samples) and every column (one sample index, across all R
-  restarts) goes through `sim/raw-bit-min-entropy/analysis/raw-bit-entropy.py:mcv_estimate` -- SP 800-90B 6.3.1,
+  restarts) goes through `sim/bin/bitstream_stats.py:mcv_estimate` -- SP 800-90B 6.3.1,
   p_u_99 = min(1, p_hat + 2.576 sqrt(p_hat (1 - p_hat) / (n - 1))), H_MCV = -log2(p_u_99).
 - first window vs baseline: pooled one-fraction of samples 0..1023 over all rows against that of samples
   1024..2047, two-sided two-proportion z test (pooled variance), alpha = 0.01; "not distinguishable" means
@@ -51,6 +51,7 @@ sys.path.insert(0, str(REPO / "sim" / "bin"))
 sys.path.insert(0, str(REPO / "layout" / "bin"))
 from _hashing import sha256_text  # noqa: E402
 sys.path.insert(0, str(REPO))
+from bitstream_stats import mcv_estimate  # noqa: E402
 from loadmod import load_module  # noqa: E402
 
 FIRST_WINDOW = 1024             # DR-0004 start-up test length = the first window
@@ -85,17 +86,6 @@ POOLING_CAVEAT = ("Pooling samples within restarts assumes they are independent;
 
 class MatrixError(ValueError):
     """A restart matrix that the reduction refuses (malformed, ragged, undersized or non-binary)."""
-
-
-_ENTROPY = None
-
-
-def mcv_estimate(bits):
-    """The repository's MCV estimator (raw-bit-entropy.py), loaded once."""
-    global _ENTROPY
-    if _ENTROPY is None:
-        _ENTROPY = load_module("raw_bit_entropy", REPO / "sim/raw-bit-min-entropy/analysis/raw-bit-entropy.py")
-    return _ENTROPY.mcv_estimate(bits)
 
 
 # ================================================================= input

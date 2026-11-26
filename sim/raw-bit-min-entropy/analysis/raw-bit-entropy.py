@@ -66,7 +66,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import math
 import re
 import sys
 from pathlib import Path
@@ -75,11 +74,8 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 RECORDS_DIR = REPO_ROOT / "sim" / "raw-bit-min-entropy" / "records"
 
 sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
+from bitstream_stats import Z_99 as Z_99, mcv_estimate as mcv_estimate  # noqa: E402
 from evidence_record import mint_record, new_record_id  # noqa: E402
-
-#: SP 800-90B section 6.3.1's 99%-confidence one-sided normal-approximation
-#: multiplier (the z-score whose upper tail is 1%).
-Z_99 = 2.5758293035489004
 
 BIT_RE = re.compile(r"^bit(\d+)$")
 
@@ -122,33 +118,6 @@ def extract_sequence(measurements: dict, vdd_v: float) -> tuple[list[int], int, 
             continue
         bits.append(1 if measurements[f"bit{i}"] > threshold else 0)
     return bits, len(indices), excluded
-
-
-def mcv_estimate(bits: list[int]) -> dict:
-    """SP 800-90B section 6.3.1 Most-Common-Value estimate over `bits`."""
-    n = len(bits)
-    if n == 0:
-        raise ValueError("mcv_estimate: empty bit sequence")
-    ones = sum(bits)
-    zeros = n - ones
-    mode_count = max(ones, zeros)
-    p_hat = mode_count / n
-    # Naive per-sample SE -- an UNDER-estimate here; see module docstring.
-    se_naive = math.sqrt(p_hat * (1.0 - p_hat) / n) if n > 0 else float("nan")
-    if n > 1:
-        p_u = min(1.0, p_hat + Z_99 * math.sqrt(p_hat * (1.0 - p_hat) / (n - 1)))
-    else:
-        p_u = 1.0
-    h_hat = 0.0 if p_u >= 1.0 else -math.log2(p_u)
-    return {
-        "n": n,
-        "ones": ones,
-        "zeros": zeros,
-        "p_hat": p_hat,
-        "p_u_99": p_u,
-        "h_hat_bits": h_hat,
-        "se_naive": se_naive,
-    }
 
 
 def build_report(rec: dict) -> tuple[str, dict]:

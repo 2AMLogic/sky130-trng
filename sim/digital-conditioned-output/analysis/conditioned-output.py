@@ -5,7 +5,7 @@ Feeds every committed raw-bit volume-campaign stream (`raw-bit-volume-campaign`)
 through the committed bit-exact CRC-32 conditioner model
 (`digital/model/conditioner.py`, K = 8, 256-bit blocks, block-boundary re-seed,
 DR-0004 section 3.2) and runs the *existing* reduced SP 800-22-style battery and
-non-IID SP 800-90B estimators (`raw-bit-min-entropy/analysis/raw-bit-battery.py`)
+non-IID SP 800-90B estimators (shared `sim/bin/bitstream_stats.py`)
 on the resulting DATA stream, per PVT corner and per Ts group.
 
 Pinned conventions
@@ -44,15 +44,19 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO_ROOT))
 sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
+from bitstream_stats import (  # noqa: E402
+    ALPHA,
+    _failed,
+    analyse_stream,
+    entropy_estimates,
+    format_binding,
+    render_detail_tables,
+)
 from digital.model.conditioner import Crc32Conditioner  # noqa: E402
 from digital.model.params import COND_BLOCK_BITS, H_DESIGN  # noqa: E402
 from evidence_record import mint_record, new_record_id  # noqa: E402
-from loadmod import load_module  # noqa: E402
+from raw_bit_volume import VolumeInputError, load_volume_source  # noqa: E402
 from replay_equal import replay_diff as _replay_diff  # noqa: E402  (issue #659: one shared replay comparator)
-
-B = load_module(
-    "raw_bit_battery",
-    REPO_ROOT / "sim" / "raw-bit-min-entropy" / "analysis" / "raw-bit-battery.py")
 
 SLUG = "digital-conditioned-output"
 RECORDS_DIR = REPO_ROOT / "sim" / SLUG / "records"
@@ -98,15 +102,15 @@ def accounting(h_raw: float | None) -> dict:
 
 def analyse_conditioned(bits: list[int]) -> dict:
     return {"ones": sum(bits),
-            **B.analyse_stream(bits, segment_len=SEGMENT_LEN)}
+            **analyse_stream(bits, segment_len=SEGMENT_LEN)}
 
 
 def payload_for(source_json: Path) -> dict:
-    rec, streams, src_sha = B.load_volume_source(source_json)
+    rec, streams, src_sha = load_volume_source(source_json)
     rows = []
     for row, raw in streams:
         cond = condition_stream(raw)
-        raw_h = B.entropy_estimates(raw)["h_min_bits"]
+        raw_h = entropy_estimates(raw)["h_min_bits"]
         rows.append({"corner": row["corner"], "temp_c": row["temp_c"],
                      "vdd_v": row["vdd_v"], "ts_s": row["ts_s"],
                      "ts_name": row["ts_name"], "seed": row["seed"],
@@ -122,7 +126,7 @@ def payload_for(source_json: Path) -> dict:
                                "non_overlapping": True,
                                "covers_bits": SEGMENT_COUNT * SEGMENT_LEN},
             "margin_bits": MARGIN_BITS, "design_budget_bits": DESIGN_BUDGET,
-            "alpha": B.ALPHA, "per_stream": rows}
+            "alpha": ALPHA, "per_stream": rows}
 
 
 def render(payload: dict) -> str:
@@ -187,10 +191,10 @@ def render(payload: dict) -> str:
                 f"| {r['corner']} | {r['temp_c']:g} | {r['vdd_v']:g} | "
                 f"{r['seed']} | {r['words']} | {c['n']} | {c['ones']} | "
                 f"{c['single_sequence']['verdict']} | "
-                f"{B._failed(c['single_sequence'])} | {c['segmented']['verdict']}"
-                f" | {B._failed(c['segmented'])} | "
-                f"{'-' if h is None else f'{h:.4f}'} | {B.format_binding(e)} |")
-        out += B.render_detail_tables(
+                f"{_failed(c['single_sequence'])} | {c['segmented']['verdict']}"
+                f" | {_failed(c['segmented'])} | "
+                f"{'-' if h is None else f'{h:.4f}'} | {format_binding(e)} |")
+        out += render_detail_tables(
             grp,
             est_heading="### DATA 90B estimators (bit/bit, full conditioned "
                         "stream)",
@@ -282,7 +286,7 @@ def check(record_json: Path) -> int:
         src = REPO_ROOT / committed["source_json"]
         want = committed["analysis_payload"]
         got = json.loads(json.dumps(payload_for(src)))
-    except (OSError, ValueError, KeyError, B.VolumeInputError) as exc:
+    except (OSError, ValueError, KeyError, VolumeInputError) as exc:
         print(f"CHECK FAILED: {exc}", file=sys.stderr)
         return 1
     rc = 0
@@ -319,7 +323,7 @@ def main(argv: list[str] | None = None) -> int:
     src = args.volume_record.resolve()
     try:
         payload = json.loads(json.dumps(payload_for(src)))
-    except B.VolumeInputError as exc:
+    except VolumeInputError as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 1
     body = render(payload)
