@@ -605,16 +605,8 @@ def measurement_cards(cycles: list[dict], vih: float,
         if net:
             save.add(net)
 
-    for k, inp in enumerate(inputs):
-        # A read's data is latched at the edge that ENDS cycle k and observed
-        # during cycle k+1, so a read in the LAST cycle has no cycle to be
-        # observed in and no model row to compare with: not measured.
-        if inp["re"] and k + 1 < n:
-            t = P.t_edge_ns(k + 1) + P.RDATA_NS
-            for bit in range(32):
-                add(f"rdata_k{k}_b{bit}",
-                    f".meas tran rdata_k{k}_b{bit} FIND v(bus_rdata_{bit}_) AT={t:.1f}n",
-                    f"bus_rdata_{bit}_", t)
+    for measurement in P.bus_read_measurements(inputs):
+        add(*measurement)
     # streaming word captures on the cycles make-requests.py also captures
     # (the first completions and the tail); the comparison asserts them only
     # where the normative model reports out_valid = 1 for that cycle.

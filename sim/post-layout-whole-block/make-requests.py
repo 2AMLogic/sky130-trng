@@ -267,19 +267,8 @@ def measurement_cards(cycles: list[dict]) -> tuple[list[dict], list[str]]:
             add(f"raw_bit_k{k}", f".meas tran raw_bit_k{k} FIND v(raw_bit) AT={t:.1f}n", "raw_bit", t)
             add(f"raw_valid_k{k}", f".meas tran raw_valid_k{k} FIND v(raw_valid) AT={t:.1f}n", "raw_valid", t)
 
-    # -- bus_rdata on every read cycle: visible during the NEXT cycle
-    for k, inp in enumerate(inputs):
-        # A read's data is latched at the edge that ENDS cycle k and observed
-        # during cycle k+1, so a read in the LAST cycle has no cycle to be
-        # observed in and no model row to compare with: not measured (the
-        # same guard make-gate-model.py's rdata set carries; the comparator
-        # skips the word again as defence in depth).
-        if inp["re"] and k + 1 < n:
-            t = P.t_edge_ns(k + 1) + P.RDATA_NS
-            for bit in range(32):
-                add(f"rdata_k{k}_b{bit}",
-                    f".meas tran rdata_k{k}_b{bit} FIND v(bus_rdata_{bit}_) AT={t:.1f}n",
-                    f"bus_rdata_{bit}_", t)
+    for measurement in P.bus_read_measurements(inputs):
+        add(*measurement)
 
     # -- streaming-port captures: every cycle where a word can complete or pop
     for k in range(3, n):

@@ -30,6 +30,7 @@ Nothing here simulates anything.
 from __future__ import annotations
 
 import sys
+from collections.abc import Iterator
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
@@ -136,6 +137,18 @@ def t_edge_ns(k: int) -> float:
 def t_stop_ns(cycles: list[dict]) -> float:
     """One settled half-cycle past the last edge."""
     return t_edge_ns(len(cycles)) + TS_NS / 2.0
+
+
+def bus_read_measurements(inputs: list[dict]) -> Iterator[tuple[str, str, str, float]]:
+    """Yield (name, SPICE card, save net, time in ns) for each observable read bit."""
+    # A read in cycle k latches at its closing edge and is observed in cycle k+1.
+    for k, inp in enumerate(inputs[:-1]):
+        if inp["re"]:
+            t = t_edge_ns(k + 1) + RDATA_NS
+            for bit in range(32):
+                name = f"rdata_k{k}_b{bit}"
+                net = f"bus_rdata_{bit}_"
+                yield name, f".meas tran {name} FIND v({net}) AT={t:.1f}n", net, t
 
 
 def cycle_inputs(cycles: list[dict]) -> list[dict]:
