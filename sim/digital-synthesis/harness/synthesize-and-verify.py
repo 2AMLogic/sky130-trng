@@ -148,8 +148,7 @@ def main(argv: list[str] | None = None) -> int:
     pdk_info = pdk_find(args.pdk, env=env, klt=args.klt)
     libs_ref = libs_ref_of(pdk_info)
 
-    tmp = Path(tempfile.mkdtemp(prefix="digital-synthesis-"))
-    workdir = args.keep or tmp
+    workdir = args.keep or Path(tempfile.mkdtemp(prefix="digital-synthesis-"))
     workdir.mkdir(parents=True, exist_ok=True)
 
     results = []
