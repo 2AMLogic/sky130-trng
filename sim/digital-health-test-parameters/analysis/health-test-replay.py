@@ -53,10 +53,10 @@ sys.path.insert(0, str(REPO_ROOT / "digital"))
 sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
 
 from evidence_record import mint_behavioral_record  # noqa: E402
-from loadmod import load_module  # noqa: E402
 from model import params  # noqa: E402
 from model.health import (AdaptiveProportionTest, HealthMonitor,  # noqa: E402
                           RepetitionCountTest)
+from raw_bit_volume import load_volume_source  # noqa: E402
 
 #: DR-0003 §2: the raw rate the health tests run at (20 us per sample).
 RAW_RATE_BPS = 50_000.0
@@ -231,15 +231,8 @@ def verdict(h: float) -> str:
 # Loading
 # --------------------------------------------------------------------------
 
-def _load_battery_module():
-    path = (REPO_ROOT / "sim" / "raw-bit-min-entropy" / "analysis"
-            / "raw-bit-battery.py")
-    return load_module("raw_bit_battery", path, register=True)
-
-
 def load_streams() -> list[dict]:
     """Ts = 20 us streams (hash-verified) joined to their min-H estimate."""
-    battery = _load_battery_module()
     out = []
     for vol_rel, h_rel in SOURCES:
         hrec = json.loads((REPO_ROOT / h_rel).read_text())
@@ -253,7 +246,7 @@ def load_streams() -> list[dict]:
                 fails[(r["corner"], r["temp_c"], r["vdd_v"])] = [
                     k for k, v in r["single_sequence"]["tests"].items()
                     if v["status"] == "FAIL"]
-        _, streams, _ = battery.load_volume_source(REPO_ROOT / vol_rel)
+        _, streams, _ = load_volume_source(REPO_ROOT / vol_rel)
         for row, bits in streams:
             if row["ts_name"] != TS_NAME:
                 continue
