@@ -205,8 +205,8 @@ name: CI
 #
 # sim/tests/test_active_power_budget.py (issue #604) -- stdlib-only unit
 #     test of the active-power-budget reduction: signed rail sums x 1.98 V,
-#     headroom sign, PASS/FAIL grading that refuses to grade a leg within
-#     the cross-run agreement band of the bound, the W_RST cross-run anchor
+#     headroom sign, strict PASS/FAIL grading against the bound (pinned at
+#     499.99 / 500 / 500.01 uW), the W_RST cross-run anchor
 #     delta, verbatim disposition appending, and the two refusal paths
 #     (missing measurement, non-ok ff corner never emit a partial table).
 #     No klt, no PDK, no ngspice.
@@ -503,7 +503,7 @@ jobs:
       - name: sim/post-layout-sampler-core/test_make_ts20u_requests.py (issue #604 Ts=20us request generator -- circuit-body shape, recorded stimulus deviations, windows inside tstop, fleet-ceiling fit, determinism)
         run: python3 sim/post-layout-sampler-core/test_make_ts20u_requests.py
 
-      - name: sim/tests/test_active_power_budget.py (issue #604 budget reduction -- signed rail sums, headroom, anchor delta, verdict band, refusal paths)
+      - name: sim/tests/test_active_power_budget.py (issue #604 budget reduction -- signed rail sums, headroom, anchor delta, strict verdict boundary, refusal paths)
         run: python3 sim/tests/test_active_power_budget.py
 
       - name: sim/tests/test_gate_model.py (issue #486 gate-level model generator -- routed-netlist correspondence, Liberty truth tables, NLDM interpolation, fail-closed paths)
