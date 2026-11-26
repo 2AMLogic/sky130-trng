@@ -207,6 +207,7 @@ python3 sim/digital-pnr/harness/pnr-and-verify.py --emit-record                #
 | `sim/digital-electrical-repair/` | `bin/run-study.sh`; see its `README.md` |
 | `sim/digital-floorplan-compaction/` | `bin/run-study.sh`; see its `README.md` |
 | `sim/digital-repaired-compaction/` | `bin/run-study.sh`; see its `README.md` |
+| `sim/area-limiter-study/` | `harness/run-study.py` (needs klt, yosys, iverilog); see its `README.md` |
 
 ## 4a. Whole-block characterization (`sim/post-layout-whole-block/`)
 
