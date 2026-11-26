@@ -116,6 +116,31 @@ device area. This variant therefore does not change the evidence in this
 packet. It is evidence only: the rate row, the options above and this record's
 Proposed / operator-owned status are unchanged.
 
+Structural-lever evidence for R-B (#600, `sim/raw-rate-row-options/records/20261121-115332-7b5b48ca.md`;
+`klt sim` batch, 39 units, two baseline controls re-running committed
+configurations -- the 5-stage jitter vehicle and the deterministic
+swing/current deck, the latter reproducing to <0.5 % at every point): the two
+levers width-scaling did not touch, measured and costed. Sample-before-combine
+(one `sampler_dff` per ring, XOR digital) does remove `N_max_combine` -- at
+1 Mbps the entropy law requires `N` = 78 (ring5). The rings and buffers
+alone draw 5.2 mW at ff / 125 C / 1.98 V (10.3× the block budget). Their
+estimated area with one DFF per ring is 5.2× the area target at macro
+density, with lock proximity structural above N ~ 8 inside the characterized
+`wstv` span. The 3-inversion ring (fastest odd stage count this cell set
+supports) measures 4.0x ring5's per-ring Q at the entropy-binding corner
+(`N` at 1 Mbps drops to 20) but its ring-node swing is below DR-0002's 0.80
+bar at every point (worst 0.165 x Vdd at ff / 125 C / 1.98 V, where the
+buffered output no longer squares up either) and it lowers `N_max_combine`
+to 2, for a J-only ceiling of 104 kbps. At 1 Mbps the combined option needs
+1.69 mW for the rings and buffers alone. Allocating all 500 µW to them
+permits five rings, giving a conditional upper bound of ~260 kbps for the
+measured jitter draw (~585 kbps for a 50% larger draw). The five-ring analog
+area estimate is 0.013888 mm², while the committed digital macro alone
+occupies 0.06005 mm² against the 0.05 mm² target. The missing combined
+floorplan and the measured swing leave whole-block feasibility unestablished.
+The negative 1 Mbps result applies to the two stage counts studied on ideal
+DC rails. The effect of changing device width or length remains unknown.
+
 ## Operator options: area (not pre-decided)
 
 Option A-1 — **hold `< 0.05 mm²` and name the work needed.** The compaction

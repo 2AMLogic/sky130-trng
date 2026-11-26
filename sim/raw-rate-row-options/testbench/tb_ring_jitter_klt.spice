@@ -1,0 +1,68 @@
+* Ring transient-noise jitter accumulation, klt-sim form -- issue #600
+*
+* Circuit-body TEMPLATE for make-requests.py: it carries no .lib, .temp,
+* .tran, .control or .end card -- `klt sim` owns those (process corner via
+* the request's corners.process, temperature via corners.temperature_c,
+* analysis via analysis.args = "20p 115n uic"). make-requests.py
+* substitutes these tokens:
+*
+*   DESIGN token   the text of design/ro_ring5.spice, verbatim (ro_ring5,
+*                  ro_nand2, ro_stage; the ring is built in place from
+*                  ro_nand2 + ro_stage exactly as the committed campaign
+*                  deck does)
+*   VDD token      the supply of this deck (1.62 / 1.80 / 1.98 V)
+*   VTHR token     the half-supply crossing threshold (0.81 / 0.9 / 0.99)
+*   RING token     the per-configuration ring instance lines (trnoise
+*                  sources in series at every stage input)
+*   IC token       the initial-condition card's right-hand side
+*
+* DERIVED, BYTE-FOR-BYTE IN METHOD, from the committed campaign deck
+* sim/ro-ring-jitter-accumulation/testbench/tb_ro_ring5_jitter.spice
+* (issue #10): the same starved ring built in place from ro_nand2 +
+* ro_stage, the same per-stage series trnoise() injection topology
+* (ro -> gA -> nand2 -> n1 -> gB -> stage1 -> ...), the same calibration
+* NA=2.0e-3 V rms / NT=2e-10 s (one-sided injected PSD 1.6e-15 V^2/Hz,
+* anchored once to sim/ro-stage-noise-mechanism-check/records/
+* 20260825-022446-d58d709.md), the same .option seed=1 (common random
+* numbers across the grid; single-seed caveat inherited verbatim from the
+* committed campaign), the same tstop 115n and TMAX 20p, and the same
+* initial-condition pattern. Two deliberate differences, both forced by
+* the klt sim contract (the runner owns the deck's single .control block,
+* so a caller-side one cannot be submitted):
+*
+*   1. the committed deck's .control estimator loop (21 rising-crossing
+*      times tc2..tc22, tbar, sigma_1/2/4/8) is re-expressed as 21
+*      top-level `.meas tran tc<k> when v(ro)=<VTHR> rise=<k>` cards
+*      supplied through the request's measurements[]; tbar/sigma_N are
+*      recomputed from those 21 times by sim/raw-rate-row-options/reduce.py
+*      using the committed formulas VERBATIM (including the 1-k/20
+*      divisors), so the arithmetic is identical and auditable.
+*   2. .temp is dropped (the request carries temperature_c).
+*
+* Configurations (make-requests.py):
+*
+*   ctrl5   the committed ro_ring5 jitter vehicle itself (1 ro_nand2 + 4
+*           ro_stage) -- the BASELINE CONTROL: at ss/tt/ff x -40 C x
+*           1.62 V it must reproduce committed record
+*           sim/ro-ring-jitter-accumulation/records/20260825-060208-54f5715
+*           (raw sigma_1 and tbar per corner) before any ring3 result is
+*           trusted.
+*   ring3   1 ro_nand2 + 2 ro_stage: the 3-inversion ring, the fastest
+*           odd-stage-count ring this cell set supports (2 inversions
+*           cannot oscillate). Measures whether DR-0002's measured
+*           fewer-stages-is-better entropy direction continues below 5
+*           stages, and what swing a 3-stage ring still has (DR-0002
+*           Sec 2's explicit re-check condition for any count below 5).
+
+.option scale=1u
+
+@@DESIGN@@
+
+Vddr vddr 0 dc @@VDD@@
+Ven en 0 dc @@VDD@@
+
+@@RING@@
+
+.ic @@IC@@
+
+.option seed=1

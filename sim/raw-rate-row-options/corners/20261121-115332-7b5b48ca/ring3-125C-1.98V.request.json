@@ -1,0 +1,122 @@
+{
+ "analysis": {
+  "args": "20p 115n uic",
+  "kind": "tran"
+ },
+ "backend": "batch",
+ "corners": {
+  "process": [
+   "tt",
+   "ss",
+   "ff"
+  ],
+  "temperature_c": [
+   125.0
+  ]
+ },
+ "engine": "ngspice",
+ "measurements": [
+  {
+   "name": "tc2",
+   "spice": ".meas tran tc2 when v(ro)=0.99 rise=2"
+  },
+  {
+   "name": "tc3",
+   "spice": ".meas tran tc3 when v(ro)=0.99 rise=3"
+  },
+  {
+   "name": "tc4",
+   "spice": ".meas tran tc4 when v(ro)=0.99 rise=4"
+  },
+  {
+   "name": "tc5",
+   "spice": ".meas tran tc5 when v(ro)=0.99 rise=5"
+  },
+  {
+   "name": "tc6",
+   "spice": ".meas tran tc6 when v(ro)=0.99 rise=6"
+  },
+  {
+   "name": "tc7",
+   "spice": ".meas tran tc7 when v(ro)=0.99 rise=7"
+  },
+  {
+   "name": "tc8",
+   "spice": ".meas tran tc8 when v(ro)=0.99 rise=8"
+  },
+  {
+   "name": "tc9",
+   "spice": ".meas tran tc9 when v(ro)=0.99 rise=9"
+  },
+  {
+   "name": "tc10",
+   "spice": ".meas tran tc10 when v(ro)=0.99 rise=10"
+  },
+  {
+   "name": "tc11",
+   "spice": ".meas tran tc11 when v(ro)=0.99 rise=11"
+  },
+  {
+   "name": "tc12",
+   "spice": ".meas tran tc12 when v(ro)=0.99 rise=12"
+  },
+  {
+   "name": "tc13",
+   "spice": ".meas tran tc13 when v(ro)=0.99 rise=13"
+  },
+  {
+   "name": "tc14",
+   "spice": ".meas tran tc14 when v(ro)=0.99 rise=14"
+  },
+  {
+   "name": "tc15",
+   "spice": ".meas tran tc15 when v(ro)=0.99 rise=15"
+  },
+  {
+   "name": "tc16",
+   "spice": ".meas tran tc16 when v(ro)=0.99 rise=16"
+  },
+  {
+   "name": "tc17",
+   "spice": ".meas tran tc17 when v(ro)=0.99 rise=17"
+  },
+  {
+   "name": "tc18",
+   "spice": ".meas tran tc18 when v(ro)=0.99 rise=18"
+  },
+  {
+   "name": "tc19",
+   "spice": ".meas tran tc19 when v(ro)=0.99 rise=19"
+  },
+  {
+   "name": "tc20",
+   "spice": ".meas tran tc20 when v(ro)=0.99 rise=20"
+  },
+  {
+   "name": "tc21",
+   "spice": ".meas tran tc21 when v(ro)=0.99 rise=21"
+  },
+  {
+   "name": "tc22",
+   "spice": ".meas tran tc22 when v(ro)=0.99 rise=22"
+  },
+  {
+   "name": "vmax_ss",
+   "spice": ".meas tran vmax_ss max v(ro) from=20n to=115n"
+  },
+  {
+   "name": "vmin_ss",
+   "spice": ".meas tran vmin_ss min v(ro) from=20n to=115n"
+  }
+ ],
+ "models": {
+  "lib": "libs.tech/combined/sky130.lib.spice",
+  "pdk": "sky130A"
+ },
+ "netlist": "netlist.cir",
+ "netlist_source": "extracted",
+ "options": {
+  "keep_artifacts": false,
+  "timeout_s": 3000
+ }
+}

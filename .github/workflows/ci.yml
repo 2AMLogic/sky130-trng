@@ -448,6 +448,9 @@ jobs:
       - name: sim/tests/test_restart_matrix.py (issue #267 restart-matrix reduction known-answer + record replay)
         run: python3 sim/tests/test_restart_matrix.py
 
+      - name: sim/tests/test_raw_rate_options.py (issue #600 raw-rate levers study: estimator replication, control gates, option models, committed-record replay)
+        run: python3 sim/tests/test_raw_rate_options.py
+
       - name: sim/tests/test_evidence_record_artifacts.py (issues #273/#276/#277 artifact collisions, reserved summary keys, bundle publication integrity)
         run: python3 sim/tests/test_evidence_record_artifacts.py
 
