@@ -16,14 +16,22 @@
     "digital/tb/cocotb/*",
     "REPRODUCE.md",
     "design/pdk.json",
+    "design/_pdk_search.py",
     "sim/pdk.json",
-    "layout/pdk.json"
+    "layout/pdk.json",
+    "layout/bin/_hashing.py",
+    "layout/bin/_klt_common.py",
+    "layout/bin/_pex_rewrite.py"
   ],
-  "member_count": 131,
+  "member_count": 141,
   "members": [
     {
       "path": "REPRODUCE.md",
       "sha256": "sha256:9dad201584f4c8a3f9d18553dc5b676346dcffed66327d14d5bd9c36de660640"
+    },
+    {
+      "path": "design/_pdk_search.py",
+      "sha256": "sha256:5977ef72e074d53c17e35029ce1a8424104465c8b3476125e4d25ab9771ffea5"
     },
     {
       "path": "design/pdk.json",
@@ -42,6 +50,18 @@
       "sha256": "sha256:4cddae27bfcaa085e99966640f628c896efc4bfc4080f069e16736091f4d16aa"
     },
     {
+      "path": "layout/bin/_hashing.py",
+      "sha256": "sha256:0ba07ca1cb6a6afb0d728095d7e6a627c11b2099f74e72cdade660a952931ff2"
+    },
+    {
+      "path": "layout/bin/_klt_common.py",
+      "sha256": "sha256:449815c2e33195d624996210f7ad4235d236befe841c77b7b0de119196d5f6ec"
+    },
+    {
+      "path": "layout/bin/_pex_rewrite.py",
+      "sha256": "sha256:25735af6f2ecbc134e739e8a60bd5619ad4b514128d04b25a334c992582f13a3"
+    },
+    {
       "path": "layout/pdk.json",
       "sha256": "sha256:fe36111d6767f93757e50b9cc4f46ebeb16d6f2dee2e9a154c3facd9f9d43c78"
     },
@@ -55,7 +75,7 @@
     },
     {
       "path": "sim/bin/check_artifact_manifests.py",
-      "sha256": "sha256:a4e3daf1326079f309c905e67ac74dbfc333b822127cbf494f8ab653739c6bb2"
+      "sha256": "sha256:89e8402cc07b1d9df378bb501fb78f65b7911057517b26046537e1e433d3141a"
     },
     {
       "path": "sim/bin/check_records_append_only.py",
@@ -63,11 +83,11 @@
     },
     {
       "path": "sim/bin/check_signoff_sim_freshness.py",
-      "sha256": "sha256:3c1956a22b0b93f79ef94e4fa16df89a992fee9f5dcfcc19b48a92c5aad0fbc0"
+      "sha256": "sha256:afd2d8e486e4ed78863a08dc4bb5d5525298648ab093c7b50622d28c233a171c"
     },
     {
       "path": "sim/bin/corner-run.py",
-      "sha256": "sha256:977cf573402c793b10edbf22d289f375c6996bb1cf586c9333f28710ab4dfa66"
+      "sha256": "sha256:50f27196728bc874ac94d3443f06b749857a8d8c10ce6b188103dc9178377358"
     },
     {
       "path": "sim/bin/evidence_paths.py",
@@ -75,7 +95,7 @@
     },
     {
       "path": "sim/bin/evidence_record.py",
-      "sha256": "sha256:916a8824b9ce2e05412f3bfa481b7aa6aeba4dccda531e450b15825af19b0c9a"
+      "sha256": "sha256:66bb5f6e48ffda811f7ef4bf14064b57d155b4c589aaac20ad342b14c3870d54"
     },
     {
       "path": "sim/bin/loadmod.py",
@@ -86,8 +106,12 @@
       "sha256": "sha256:587c10e946e65bf355527eb7b4993deba24183e912a70250f010fde0b87779b8"
     },
     {
+      "path": "sim/bin/measurement_names.py",
+      "sha256": "sha256:235cc1b4975b80321c44d6a2abc0e8d38866f6b441f988da4e093b10c3dfbfb4"
+    },
+    {
       "path": "sim/bin/replay_equal.py",
-      "sha256": "sha256:fbd5d2f3db802c151b9f48f1594270a9401b1736fe542aad5ee589195e485583"
+      "sha256": "sha256:af12495745d6ea322469e0807ce500bdff4db7f365ec55fa882dc9ff125ac39d"
     },
     {
       "path": "sim/bin/request_dir.py",
@@ -95,7 +119,7 @@
     },
     {
       "path": "sim/digital-conditioned-output/analysis/conditioned-output.py",
-      "sha256": "sha256:af2219c179ed9924cd17b7a0a3f384beff6fe68b303b9d3bd2bd4a7824281db1"
+      "sha256": "sha256:50d4270136c32e33921c604b31d946421b85ccf0268affb596c223e6efd86ee3"
     },
     {
       "path": "sim/digital-conditioner-equivalence/harness/conditioner-equivalence.py",
@@ -127,7 +151,7 @@
     },
     {
       "path": "sim/digital-electrical-repair/bin/run-study.sh",
-      "sha256": "sha256:bb84a3bb067565c1dc13e7ac869c27e755805bb3198f71dab62df312caaf5c30"
+      "sha256": "sha256:786e104fd248fa89f5cb821f255ae16b434777b0470f5a8b8a4a08258c969488"
     },
     {
       "path": "sim/digital-electrical-repair/requests/control.json",
@@ -147,7 +171,7 @@
     },
     {
       "path": "sim/digital-floorplan-compaction/analysis/compaction.py",
-      "sha256": "sha256:0bb88118ebf69db9f90df81a6bce2a525dd7017bb9b59e129187c51570c1937a"
+      "sha256": "sha256:9c335760f721d6dae6b4982638c42cf36ea7ab171e949fa2909089af3331d014"
     },
     {
       "path": "sim/digital-floorplan-compaction/bin/run-study.sh",
@@ -179,15 +203,15 @@
     },
     {
       "path": "sim/digital-pnr/harness/pnr-and-verify.py",
-      "sha256": "sha256:727b844a6d2b8930ff860b1ec88be9f0e98411bae61181874a2f5d4076288382"
+      "sha256": "sha256:03336a8d4647487cbae4c3dcf90a502abcc6ab86ef9bfee6c03018cc2e8b0993"
     },
     {
       "path": "sim/digital-repaired-compaction/analysis/repaired_compaction.py",
-      "sha256": "sha256:2793183418be36b9b22a7674f180ec8a62b63af623a5af65ff7ff0e49ccdac0e"
+      "sha256": "sha256:57b83598c285f862b05137cf3da35a27e966ed8fcca445f2471654fe81bcdf3a"
     },
     {
       "path": "sim/digital-repaired-compaction/bin/run-study.sh",
-      "sha256": "sha256:d6179e6b4ac93f8df0625ad7166d787579eae27b814fe64e98ecdcdf16919462"
+      "sha256": "sha256:1dbc73290d48d4e8e4484e8929469f013d08d3ac0ffca6647add42cbc8a5ef08"
     },
     {
       "path": "sim/digital-repaired-compaction/requests/rep40-slew0531.json",
@@ -231,11 +255,11 @@
     },
     {
       "path": "sim/digital-synthesis/harness/synthesize-and-verify.py",
-      "sha256": "sha256:0a9f0e7ce2efb787f190dfdaefdf10c49adc953f89b8971646b2899b3905a374"
+      "sha256": "sha256:507995c8a15da1c31bbdf8c8620916a0fbc27665064f2d5810aca9190d4d4208"
     },
     {
       "path": "sim/digital-synthesis/harness/synthesize-lagcount-prototype.py",
-      "sha256": "sha256:41a6447afce7eb1d06067d213b1aff1fb0ccf8337eeb2cebf5646234b4292db8"
+      "sha256": "sha256:24f93be44362aa051067e4265944496dea112ecd844ee41ae9bac22f1de2a9e9"
     },
     {
       "path": "sim/local-mismatch-monte-carlo/make-requests.py",
@@ -243,7 +267,7 @@
     },
     {
       "path": "sim/local-mismatch-monte-carlo/reduce.py",
-      "sha256": "sha256:e02cbb062ee9f2362ecfafae5dab68e9a5cb0f5d7988c8af30cb283e80e03030"
+      "sha256": "sha256:7a1a55bc5885039df3d6a5c7883c4316e21a364f66bc6fe836e20016eaf46d55"
     },
     {
       "path": "sim/local-mismatch-monte-carlo/testbench/tb_ro_array_mismatch.spice",
@@ -254,12 +278,16 @@
       "sha256": "sha256:391655a3c568f86a5ef3bb168f8b439578528318aafb365a6c0dc0b4b2149ff6"
     },
     {
+      "path": "sim/local-mismatch-monte-carlo/yield_reports.py",
+      "sha256": "sha256:0c01b6023de7eb038c7e7d57a6b981180528e19c01e3cf066e0a095e2a0829b5"
+    },
+    {
       "path": "sim/pdk.json",
       "sha256": "sha256:2e0e374968d8936fda206ffa0c85097e8efe96c2d6efc6fcf268d1260b9ddf64"
     },
     {
       "path": "sim/pex-sampler-core/harness/pex-measure.py",
-      "sha256": "sha256:c178ee3e1295d4c158a1d0369caa3e6d3c7e606818f1142d19f82cc21783a062"
+      "sha256": "sha256:e8e0a84e92eaa3d2167848ab05df840d3221308d0c8bd01ac58b6398da953eb9"
     },
     {
       "path": "sim/pex-sampler-core/testbench/tb_sampler_core_body.spice",
@@ -283,7 +311,7 @@
     },
     {
       "path": "sim/post-layout-ro-ring5-assembled-181/derive.py",
-      "sha256": "sha256:4b5fbf89f94afa3bdd10cc44845a06ad8b7633f5426c62343cc373441aaf97c3"
+      "sha256": "sha256:89da92bf960efcae2354cd7d0444b06a449360c328f2a408318f61cd3b2fe8f6"
     },
     {
       "path": "sim/post-layout-ro-ring5-assembled-181/make-requests.py",
@@ -335,11 +363,15 @@
     },
     {
       "path": "sim/post-layout-whole-block/analysis/compare-gate-model.py",
-      "sha256": "sha256:44b03399f1ca89a4d743d69d398604c3cb90f281dd64949d2276c91da7aef283"
+      "sha256": "sha256:b66d637ee54570bb16016206aab366391e97deb24065be7d76a0cc56cb279222"
+    },
+    {
+      "path": "sim/post-layout-whole-block/analysis/deck-axis-sensitivity.py",
+      "sha256": "sha256:1e3881ca1a51098b0789247150cb497a0ad80a23f4a7966d001e27c32b9f895b"
     },
     {
       "path": "sim/post-layout-whole-block/analysis/reduce-whole-block.py",
-      "sha256": "sha256:5f8cc9aadf7d2cfa647b0281798fe741d3cdac952936a837b21fddf5fad61088"
+      "sha256": "sha256:af685e09684bb8bd1af5e4558ae636b4d956414de2be881289bbc90415f4e138"
     },
     {
       "path": "sim/post-layout-whole-block/check-bin-coverage.py",
@@ -347,11 +379,11 @@
     },
     {
       "path": "sim/post-layout-whole-block/ir/run-ir.py",
-      "sha256": "sha256:65bdfebc5a17e4ce4bbcfeff65f32f96e60fb24c463bc98934df36aceffa4f51"
+      "sha256": "sha256:941cf8a830a2183351098c698333af22d08f7cb5c97f04d2599acfef62fbbc7d"
     },
     {
       "path": "sim/post-layout-whole-block/make-gate-model.py",
-      "sha256": "sha256:db2fe8d4d632473f8d4a80e67477a43264d284b87824387103bfe0cfbeceba20"
+      "sha256": "sha256:1cd50251a69d8aff0145f0cef628a4810a192ac2103fdae6bd3b5db3a79047d3"
     },
     {
       "path": "sim/post-layout-whole-block/make-netlist.py",
@@ -359,11 +391,23 @@
     },
     {
       "path": "sim/post-layout-whole-block/make-requests.py",
-      "sha256": "sha256:d3c64a5f15ce3b907c38080bb7e4c12ae0a67bbc7397eb6185a5f6b259ece532"
+      "sha256": "sha256:e13d9bd7e4842efca42ca1571f727130f0d086fec6a9685b1dc40cabf9ba4646"
     },
     {
       "path": "sim/post-layout-whole-block/program.py",
-      "sha256": "sha256:3a7fc1098d99a408ed7ea742eea9255514f9130fe5ac959346878b143089a56e"
+      "sha256": "sha256:1b970b0483c2a37c8ce20fa97690370e1c3183a91d06f345b990a2c41911bd06"
+    },
+    {
+      "path": "sim/post-layout-whole-block/pvt_deck_map.py",
+      "sha256": "sha256:4b8fa418b93234a0b5a6db4b9c431f8b0f4f91ba6b8acb7d28b6366897c7954b"
+    },
+    {
+      "path": "sim/post-layout-whole-block/runs/20261121-coupled-probe/requests/coupled-probe/plan.json",
+      "sha256": "sha256:ebfd015fb41e60ea8f568cb1544f445d0ba8ba3f516646de3acecde9e69b87e1"
+    },
+    {
+      "path": "sim/post-layout-whole-block/runs/20261121-coupled-probe/requests/coupled-probe/request.json",
+      "sha256": "sha256:c02cf27fda00c820f31cb0a560b697312c90e8dbf9dac1d1cabee1a0192590d4"
     },
     {
       "path": "sim/post-layout-whole-block/test_make_netlist.py",
@@ -371,11 +415,11 @@
     },
     {
       "path": "sim/post-layout-whole-block/test_make_requests.py",
-      "sha256": "sha256:7addd0c353f02c1ad88840044d75a38a0fd0d6a61cc61af7d6b994f1d8fd5dd7"
+      "sha256": "sha256:feaa440361da893be132ce61f1b0d854a123c4eaecb6ac64b7cf3e0fcd7e746b"
     },
     {
       "path": "sim/raw-bit-min-entropy/analysis/raw-bit-battery.py",
-      "sha256": "sha256:7d62b1436a172b375dae60979f1045e238eff8a4a91061ac146aae1d739c91f5"
+      "sha256": "sha256:bf09ebad328240a83b602d26e9026a3930e2da4d25b6dbf117e4699fa956730a"
     },
     {
       "path": "sim/raw-bit-min-entropy/analysis/raw-bit-entropy.py",
@@ -387,15 +431,15 @@
     },
     {
       "path": "sim/raw-bit-volume-campaign/behavioral_raw_bit.py",
-      "sha256": "sha256:74f26e76b17f735a8a0cf412158b594345d81c5f9a6dc84d0e8af39874ef6d57"
+      "sha256": "sha256:eade84f46bdaf8468b71839d7684b138e737ac00c093282da8a80ab7f0344fd2"
     },
     {
       "path": "sim/raw-bit-volume-campaign/derive-combining.py",
-      "sha256": "sha256:6f49db8ab6a889360049c296cdef5ef146f4fb64736214ac7c33c6327d721c01"
+      "sha256": "sha256:5b950b174a1a24a0f387976a4b3d5c50419bc1ed8cc27b8866028004eafa9c48"
     },
     {
       "path": "sim/raw-bit-volume-campaign/make-requests.py",
-      "sha256": "sha256:4b31a4a13f2ab17f30783746cf52a979861f9252e0d70e8a7526b520d1eb48c5"
+      "sha256": "sha256:a6c997b855a8eef191da6cd0763b991dc26cd0a2715a8af11f41969e50c465b7"
     },
     {
       "path": "sim/raw-bit-volume-campaign/transistor_pvt_crosscheck.py",
@@ -423,7 +467,7 @@
     },
     {
       "path": "sim/ro-array-idle-leakage/analysis/idle_leakage.py",
-      "sha256": "sha256:5d21d1003eb8118a907bad38cb14cf7a167cc10b4d21f109d216469f8a376474"
+      "sha256": "sha256:831b36597db30fd50baacb92ac43eb18b0f8cacc75c2d4fe2d0e6b144018f0c7"
     },
     {
       "path": "sim/ro-array-idle-leakage/make-requests.py",
@@ -487,11 +531,11 @@
     },
     {
       "path": "sim/ro-vth-drift-sensitivity/analysis/behavioral_replay.py",
-      "sha256": "sha256:b5006143500e2090b12032890d01117a0390d77e245a52c3bde5800426d8a78e"
+      "sha256": "sha256:c4731fef53fcd4bc3728956bd664e411d553a76513273285075711fee3f13c51"
     },
     {
       "path": "sim/ro-vth-drift-sensitivity/analysis/sensitivity.py",
-      "sha256": "sha256:daec94ed92c472c116b186c931219815936774d2a37d5fdfe5952355b00b787f"
+      "sha256": "sha256:7397b69679530d04ba96f98e602dae55a00b6f8b6964ea87dbb54866d4d6eaef"
     },
     {
       "path": "sim/ro-vth-drift-sensitivity/campaign.py",
@@ -511,7 +555,7 @@
     },
     {
       "path": "sim/wake-up-transient/restart_matrix.py",
-      "sha256": "sha256:bb332b82aec6c3a2ea67352e6482524b69a60141f87611eda68ac3f577d9e9b5"
+      "sha256": "sha256:3b37015aa85d572a8913983acf10be0595a8645415340b933a8190634348fcbc"
     },
     {
       "path": "sim/wake-up-transient/testbench/tb_wakeup_array.spice",
@@ -527,7 +571,7 @@
     },
     {
       "path": "sim/wake-up-transient/wakeup.py",
-      "sha256": "sha256:714c8ece566c06366e0e3101a07ffc0af4a5c0a1a2d347474ed14d8cd9525d92"
+      "sha256": "sha256:0d23dc079e844d91f95d18be99d8e543ad0d54dc731573f868c041a277a42a23"
     },
     {
       "path": "sim/xor-combining-alternatives/make-requests.py",

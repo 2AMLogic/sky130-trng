@@ -6,8 +6,128 @@ Chronological record of recently merged pull requests and closed issues.
 
 - [2026-09](work_log/WORK_LOG_2026-09.md)
 
+### 2026-11-24
+
+- **PR #756**: docs(layout): align sampler_core README latest-increment stats with committed evidence
+- **Issue #755** (closed): layout/sampler_core/README.md's latest-increment paragraph quotes 8399 polygons and the 0.3.0 klt pin; committed GDS measures 8408 on 0.6.0+g5edb557f91d0
+- **PR #753**: docs(layout): align xor2 and ro_array_core README stats with committed evidence
+- **PR #750**: docs(layout): pin ro_array_core and PoC compose evidence to the leaf regens it predates
+- **PR #747**: docs(erc): state the per-entry id in the prune table coverage rows
+- **PR #744**: docs(erc): attribute antenna_verdict to the gate records in the prune table
+- **PR #742**: layout: regenerate xor2 y-escape-scan JSON and refresh README windows
+- **PR #741**: docs(erc): correct the committed-prune record's account of the discarded gates[] data
+- **PR #737**: layout: prune the inert antenna arrays from trng_digital erc.json (-98.6%)
+- **PR #736**: refactor: consolidate the three merged() copies into layout/bin/_geom_common.py
+- **PR #734**: chore(sim): untrack regenerated 15 MB netlist.cir decks under runs/ and widen the corners ignore glob
+- **PR #733**: refactor: deduplicate stream-battery reduction, detail tables, and hex codec forks
+- **PR #730**: docs: name ratification as item 6's sole gate in mismatch README and ROADMAP
+- **PR #727**: docs: mark klayout-tools#5490 closed in the friction ledger
+- **PR #725**: refactor: drop dead pre-#435 body-rename workaround from whole-block request assembly
+- **Issue #751** (closed): Stale extent/klt-pin prose in layout/xor2/README.md and layout/ro_array_core/README.md survives the 0.8.0 leaf regens
+- **Issue #746** (closed): layout/trng_digital/ERC.md: the prune table's coverage rows present an incomplete object as the whole discarded entry (id omitted)
+- **Issue #745** (closed): Committed PoC compose responses still carry xor2's pre-93d026cc block bbox (17.585 µm, now 17.710 µm)
+- **Issue #743** (closed): layout/trng_digital/ERC.md: the prune record attributes the per-gate antenna_verdict field to the level records
+- **Issue #739** (closed): layout/trng_digital/ERC.md: the committed-prune record says gates[] areas are null, but the native report carries 5,624 real gate areas
+- **Issue #735** (closed): xor2-y-escape-scan.json is stale against the regenerated xor2.gds (93d026cc missed it)
+- **Issue #738** (closed): One netlist.cir under sim/post-layout-whole-block/runs/ is now tracked-but-ignored by the widened #491 glob
+- **Issue #732** (closed): Consolidate duplicated stream-battery reduction, detail tables, and hex-codec forks across raw-bit-battery, conditioned-output, and behavioral_raw_bit
+- **Issue #729** (closed): docs: align remaining item-6 row-coverage prose in local-mismatch README and ROADMAP
+- **Issue #724** (closed): Remove dead pre-#435 body-rename workaround and duplicate scrub helpers in sim/post-layout-whole-block/
+- **Issue #713** (closed): friction-ledger: klayout-tools#5490 row says "open" but the issue closed 2026-11-22
+- **Issue #494** (closed): Stop committing 11 MB of all-null antenna skeleton in layout/trng_digital/erc.json
+- **Issue #491** (closed): Remove the two byte-identical 15 MB netlist.cir copies under sim/post-layout-whole-block/runs/
+- **Issue #490** (closed): Consolidate the three copies of merged(): the cross-directory carve-out rationale is measurably false
+- **PR #728**: docs(signoff): state ratification as item 6's sole gate; row is covered
+- **PR #723**: refactor: share sim/bin duplicate_measurement_names in whole-block
+- **PR #722**: ci: run unwired sim/tests suites and guard suite coverage
+- **PR #721**: test(sim): keep RunStudySh self-test run dirs out of the checkout
+- **PR #644**: fix(sim): score whole-block corners through the shared gate-model comparator
+- **Issue #726** (closed): signoff: item 6 comments say klayout-tools#5490 withholds row coverage; the committed report shows the row covered
+- **Issue #717** (closed): Two sim/tests/ suites are never run by CI (test_yield_reports.py, test_corner_run_repo_state.py)
+- **Issue #698** (closed): RunStudySh self-test writes a fake run directory into the tracked, append-only sim/*/runs/ evidence trees
+- **Issue #690** (closed): signoff of #670/#642: two copies of duplicate_measurement_names() once PR #644 and #673 both land
+- **Issue #642** (closed): Consolidate parallel whole-block digital-oracle comparator out of reduce-whole-block.py onto compare-gate-model.py
+- **PR #614**: feat(sim,signoff): reduce local-mismatch Monte Carlo into klt yield reports for T1 item 6
+- **Issue #598** (closed): T1 item 6: reduce the committed local-mismatch Monte Carlo into klt yield reports and record the item-6 verdict (6.analog)
+- **PR #707**: feat: disclose working-tree state in mint_record records
+- **Issue #676** (closed): evidence_record: mint_record / record_footer still emit an unqualified repo_sha pin, so most sim records keep the #666 defect
+
+### 2026-11-23
+
+- **PR #710**: docs: reframe signoff item-1 prose around minting tool and released --attest
+- **Issue #705** (closed): signoff/README.md: item-1 attestation provenance phrasing — stale "once a release carries --attest" paragraph, and the generic-envelope contrast
+- **PR #704**: docs: version-qualify the no-verb claim for signoff items 1/2/9/10
+- **PR #699**: fix: record settled DR-0017 option 2 in newly generated coupled plans
+- **PR #695**: fix: report corner-run repo dirty state as tri-state when git status fails
+- **PR #694**: docs: retire superseded 7/22 count and 0.7.0 grader claims in signoff README
+- **PR #689**: docs(signoff): restate T1 summary against the committed 0.8.0 report
+- **PR #673**: fix(sim): refuse repeated measurement names in the template-lifted reducers
+- **PR #667**: feat(evidence): disclose working-tree state in behavioral records
+- **PR #660**: refactor(sim): deduplicate repaired-compaction runner/reducer helpers onto compaction.py and run-study.sh
+- **PR #605**: feat(sim): couple the transistor sampler to the routed gate model
+- **Issue #700** (closed): sim/: reconcile compare_gate_model.duplicate_measurement_names() with sim/bin/measurement_names.py once PR #644 lands
+- **Issue #696** (closed): signoff/README.md: 'klayout-tools has no verb behind these four items' is stale for item 1 on the 0.8.0 grader
+- **Issue #691** (closed): signoff/README.md: dated 7/22 update line and two per-item 0.7.0 render claims are stale after #687
+- **Issue #687** (closed): signoff/README.md T1 summary still says the report was rendered on klt 0.7.0; the committed report records v0.8.0
+- **Issue #682** (closed): Gate-model manifest still records the DR-0017 boundary-load choice as open after #595 ratified option 2
+- **Issue #670** (closed): sim/: ten reducers still dedupe corner measurements into a name-keyed dict with no duplicate-name guard
+- **Issue #666** (closed): evidence_record: mint_behavioral_record pins repo_sha from HEAD with no dirty-tree disclosure
+- **Issue #658** (closed): Consolidate duplicated repaired-compaction runner/reducer helpers onto compaction.py and run-study.sh
+- **Issue #475** (closed): Remove the 63-entry pull_request paths filter from ci.yml
+
+- **PR #656**: refactor: route idle_leakage bundles via write_corner_bundle
+- **PR #657**: refactor: route sim/ harness klt reads through _klt_common shared readers
+- **PR #626**: fix(sim): re-hash 7.analog PEX run pins via the shared freshness loop
+- **PR #652**: fix: raise BuildError, not IndexError, on a short device card in check_device_card
+- **PR #629**: fix: score open() **kwargs splats as unestablishable write modes
+- **PR #649**: fix(sim): drop the unscoreable last-cycle rdata word from whole-block requests
+- **PR #645**: refactor: share one extracted-netlist renamer between pex-netlist and pex-measure
+- **PR #685**: signoff: pin each harness's layout/bin and design helper closure in its own T1 inventory
+- **PR #663**: docs: qualify WORK_LOG retention note for unmerged PRs #111 and #159
+- **PR #688**: test: catch hashlib.new("sha256") fork shape in the no-fork guard
+- **PR #686**: fix(ci): correct swapped #216/#289 suite pairings in ci.yml header
+- **PR #675**: docs: add item-9 merge-conflict resolution recipe to signoff README
+- **PR #681**: refactor(sim): consolidate remaining inline sha256 hexdigest sites onto _hashing
+- **PR #678**: test: pin the plan-only reductions.input_load override from #595
+- **PR #662**: ci: run the eight sim/tests suites ci.yml never wired
+- **PR #677**: docs(signoff): correct stale 0.7.0 CI grader pin prose to 0.8.0
+- **PR #664**: fix(sim): replay the five remaining --check reducers through shared replay_equal
+- **PR #651**: fix(signoff): pin item 9's layout/bin import closure in its inventory
+- **PR #607**: feat(sim): map the 12-point PVT matrix to Liberty decks and adopt boundary-load option 2
+- **PR #665**: chore: remove stale npm test/lint/check scripts from package.json
+- **Issue #655** (closed): Consolidate the last hand-rolled corner-bundle writer in idle_leakage.py onto evidence_record.write_corner_bundle
+- **Issue #653** (closed): Consolidate remaining non-FV sim harness klt/path forks onto _klt_common
+- **Issue #647** (closed): check_device_card: a short device card raises IndexError, not BuildError, breaking pex-measure's single documented failure mode
+- **Issue #646** (closed): make-requests.py emits 32 rdata_k74_b* measurements the shared oracle cannot compare
+- **Issue #638** (closed): Consolidate duplicated extracted-netlist renamer between pex-measure.py and pex-netlist.py
+- **Issue #624** (closed): Record-tail guard treats open(path, **kwargs) as read-only, not as an unestablishable mode
+- **Issue #619** (closed): Extend the 7.analog PEX freshness check to the report's remaining pinned repository inputs
+- **Issue #650** (closed): T1 attestation still leaves two unpinned repo-local imports of attested sources (design/_pdk_search.py; items 2.* own closures)
+- **Issue #637** (closed): Correct the WORK_LOG retention note for unmerged PRs #111 and #159
+- **Issue #683** (closed): test_hashing.py no-fork guard: hashlib.new("sha256", ...) bypasses the AST scan
+- **Issue #680** (closed): ci.yml header comment mis-pairs two of the eight #654 suites with their introducing issues (#216/#289 swapped)
+- **Issue #672** (closed): T1 item-9 attestation hash makes any two concurrent sim/-touching PRs conflict on three generated files
+- **Issue #669** (closed): Consolidate remaining 20 inline/helper sha256 .hexdigest() sites onto _hashing and guard against regrowth in test_hashing.py
+- **Issue #668** (closed): test: pin plan.json's reductions.input_load to the settled boundary-load statement (no assertion guards the #595 fix)
+- **Issue #671** (closed): Five sim/ reducer-replay unit suites are not invoked by any workflow
+- **Issue #654** (closed): Eight sim/tests suites are never run by CI (ci.yml enumerates suites one by one; test_whole_block_reduction.py is one of them)
+- **Issue #674** (closed): signoff/README.md prose still says the CI grader pin is 0.7.0; ci.yml installs 0.8.0
+- **Issue #659** (closed): Consolidate remaining five sim/ --check reducers onto sim/bin/replay_equal.py: four fail under Python 3.11 sum(), one forks replay_diff
+- **Issue #648** (closed): T1 attestation inventories pin sim/ harness source but not its layout/bin import closure
+- **Issue #595** (closed): Whole-block PVT (DR-0017 option b): choose and record the boundary-load model and the Liberty deck for each (T, Vdd) point
+- **Issue #463** (closed): Remove the four stale npm verification scripts from package.json
+
 ### 2026-11-22
 
+- Note: removed 48 WORK_LOG records (42 here, 6 in the 2026-09 archive) that the 2026-10-18 Guide document-maintenance backfill (`e8b0dd38`) copied from `2AMLogic/gf180-usb2-phy`'s merged history. Each cited a number that also exists in this repo but resolved to unrelated work (wrong kind and title); the genuine records for the other 46 numbers are retained. The exceptions, #111 and #159, are PRs that closed without merging, and the log covers merged PRs and closed issues only, so they have no record of their own. Audit evidence and rationale: #633.
+- **PR #643**: fix: preserve target mode when generate-agents-md.sh regenerates AGENTS.md
+- **PR #635**: docs(work-log): remove 48 records backfilled from gf180-usb2-phy
+- **Issue #640** (closed): generate-agents-md.sh's mktemp+mv render path tightens .loom/AGENTS.md from 644 to 600 on every regeneration
+- **Issue #633** (closed): WORK_LOG.md carries three records from another repository's history (#149, #88, #87: USB UTMI PHY titles that do not match the forge)
+- **PR #639**: fix: substitute {{INSTALL_DATE}} in generate-agents-md.sh for flattened installs
+- **Issue #533** (closed): generate-agents-md.sh: no-arg run in a flattened install regresses {{INSTALL_DATE}} into the already-substituted .loom/AGENTS.md
+- **PR #634**: docs: name klayout-tools 0.8.0 pin in attest.py docstring
+- **Issue #631** (closed): signoff/attest.py:7 still names the 0.7.0 grader present-tense; CI has graded on 0.8.0 since issue #363
 - **PR #529**: fix: generate-agents-md.sh doubled .loom/ path; accept PDR-0001's deferred follow-up
 - **Issue #523** (closed): Finish PDR-0001's deferred follow-up: generate-agents-md.sh still fails with a doubled .loom/ path
 - **PR #625**: test: guard the shared GDS geometry helpers against forks and compose-whole loaders
@@ -259,7 +379,6 @@ Chronological record of recently merged pull requests and closed issues.
 
 - **PR #329**: sim(whole-block): record fleet startup probe that failed at ngspice parse
 - **PR #328**: fix(sim): correct whole-block stimulus levels, probe measurements and reducer omission handling
-- **Issue #138** (closed): CI: preserve started main verification runs with event-aware concurrency
 
 ### 2026-10-17
 
@@ -267,18 +386,6 @@ Chronological record of recently merged pull requests and closed issues.
 - **Issue #320** (closed): T1 items 1, 2, 9, 10: cite artifact-anchored inventory envelopes for both partitions
 - **PR #322**: feat: map remaining spec rows to evidence and cite item 8 via generic envelope
 - **Issue #321** (closed): T1 item 8: map the four unmapped characterization rows to their committed records, then cite the report
-- **PR #184**: refactor(layout): remove inert BLOCKED_BLOCKS path from gen_analog_layout.py
-- **PR #181**: refactor: route design netlisting through klt netlist
-- **PR #178**: test: use shared start_clock in four remaining cocotb testbenches
-- **Issue #179** (closed): Simplify design/netlist.py: replace raw xschem call with klt netlist
-- **Issue #177** (closed): Remove inert BLOCKED_BLOCKS path from gen_analog_layout.py: empty since #72
-- **Issue #176** (closed): Finish #44: four cocotb testbenches still redefine the shared 12 MHz clock helper
-
-### 2026-10-16
-
-- **PR #173**: chore(sim): remove unused mk_dut.py and fix stale DUT references
-- **PR #172**: Bump Repo Skills 0.24.1 -> 0.24.3
-- **Issue #107** (closed): Remove sim/tools/mk_dut.py: unused, superseded by design/netlist.py
 
 ### 2026-10-15
 
@@ -289,16 +396,6 @@ Chronological record of recently merged pull requests and closed issues.
 - **PR #218**: ci: run volume-model and ripple-reduction tests in PR-blocking job
 - **Issue #217** (closed): CI: run test_raw_bit_volume_model and test_ripple_reduction in the PR-blocking lint job
 - **Issue #162** (closed): README: embed the fleet burndown chart (one line)
-- **PR #170**: docs(records): equivalence-sim attempts on flattened driver incomplete; raise signal-quality timeout
-- **PR #168**: docs(records): driver layout-plan re-run on post-resize netlist fails on m=4
-- **PR #164**: feat(digital): SDF-annotated gate-level regression for T1 item 7.digital (#93)
-- **PR #162**: Regenerate digital physical/evidence chain from current RTL (#131)
-- **PR #149**: feat(rtl): add trim[4:0] integration input to usb_utmi_phy (#115)
-- **Issue #115** (closed): RTL: add trim[4:0] pass-through input port (pin contract, #109)
-
-### 2026-10-14
-
-- **Issue #90** (closed): README: embed the fleet burndown chart (one line)
 
 ### 2026-10-12
 
@@ -334,9 +431,6 @@ Chronological record of recently merged pull requests and closed issues.
 - **PR #275**: Reject colliding artifact basenames before minting behavioral evidence
 - **Issue #273** (closed): Reject colliding artifact basenames before minting behavioral evidence
 - **Issue #278** (closed): Auditor: guard telemetry dispositions and read-only S3 refinement
-- **PR #151**: docs(spec): fix evidence link in decision 0005
-- **Issue #159** (closed): Auditor guard decision: keep detached force-push guard
-- **Issue #156** (closed): Lint: run scripts/test_setup_env.sh from npm run lint so setup-env.sh regressions reach CI
 
 ### 2026-10-10
 
@@ -374,12 +468,6 @@ Chronological record of recently merged pull requests and closed issues.
 - **Issue #239** (closed): Spec: DR-0010 target-table reconciliation packet (rate, area, power rows) for operator ratification
 - **Issue #236** (closed): Digital physical closure: repair and audit low-voltage Liberty slew/capacitance violations
 - **Issue #235** (closed): Auditor guard telemetry: worktree-write-confinement-unresolved-var
-- **PR #153**: fix(verification): current-source records superseding stale #112/#113 carry-forwards (#147)
-- **PR #145**: RTL: add pu_en output derived from TermSelect (#112)
-- **Issue #152** (closed): Build failure on main: pin-contract planned TXOE test is stale
-- **Issue #132** (closed): Decide whether UTMI Reset should reach the vendored RX transforms synchronously
-- **Issue #113** (closed): RTL: add txoe driver-enable output (pin contract, #109)
-- **Issue #112** (closed): RTL: add pu_en output derived from TermSelect (pin contract, #109)
 
 ### 2026-10-09
 
@@ -404,14 +492,6 @@ Chronological record of recently merged pull requests and closed issues.
 - **Issue #211** (closed): Refresh T1 manifest with eligible delivered digital physical evidence
 - **Issue #212** (closed): Refresh current sign-off status and simulated-stream documentation
 - **Issue #200** (closed): Supply-ripple and injection-lock robustness campaign for the RO array (transistor level)
-- **PR #141**: docs(layout): re-measure resized differential_receiver (DRC clean, LVS mismatch)
-- **PR #137**: fix: require full 45-corner evidence before fixed-trim PASS
-- **PR #125**: Add --tool-light mode to setup-env.sh (#117)
-- **Issue #136** (closed): Require complete PVT evidence before fixed-trim analysis can report PASS
-- **Issue #130** (closed): Verify UTMI Reset aborts transmission through stuffing and EOP states
-- **Issue #123** (closed): Characterize RX boundary synchronization with paired-input skew and reset injection
-- **Issue #103** (closed): Re-run differential_receiver layout/DRC/LVS after MP_B1/MN_B1 resize (PR #102)
-- **Issue #95** (closed): signoff: bare evidence keys 3 and 4 grade the analog partition met with no analog layout
 
 ### 2026-10-08
 
@@ -433,14 +513,6 @@ Chronological record of recently merged pull requests and closed issues.
 - **Issue #188** (closed): Raw-bit volume campaign: >=1e5 bits per PVT corner for statistical evidence (current record has 24)
 - **Issue #190** (closed): CI: run sim/tests unit tests (test_raw_bit_entropy, test_digital_section) in the lint job
 - **Issue #189** (closed): Add SP 800-22-style battery and non-MCV SP 800-90B estimators to the raw-bit analysis
-- **PR #122**: Add top-level RX stuffing-error propagation and recovery tests (#118)
-- **PR #121**: Reconcile status docs with superseding verification evidence
-- **PR #111**: Attempt SDF-annotated gate-level regression for T1 item 7.digital (blocked; negative result recorded) (#93)
-- **Issue #120** (closed): Reconcile current PHY status documents with superseding verification evidence
-- **Issue #118** (closed): Verify top-level RX stuffing-error propagation and packet recovery
-- **Issue #108** (closed): Verify RX bit sampling against spec §7 ±0.25% clock tolerance (no test covers host/device rate offset)
-- **Issue #97** (closed): Analog: make differential_receiver resolve 200 mV over the full 0.8-2.5 V common-mode range (spec §4)
-- **Issue #92** (closed): T1 item 5 (digital): mint one multi-corner klt sta envelope on the routed layout and cite it
 
 ### 2026-10-07
 
@@ -469,11 +541,4 @@ Chronological record of recently merged pull requests and closed issues.
 - **PR #167**: Place and route the DR-0004 digital section with physical sign-off evidence
 - **Issue #168** (closed): Deduplicate the remaining LVS negative-control logic across live and PoC scripts
 - **Issue #166** (closed): Place and route the DR-0004 digital section with reproducible physical sign-off evidence
-
-### 2026-09-23
-
-- **PR #165**: feat(signoff): declare sampler_core well/substrate ties in the erc supply spec and cite 11.analog
-- **PR #163**: chore(signoff): bump signoff grader pin to klayout-tools 0.6.0, re-vendor tiers doc, regenerate t1-report
-- **Issue #161** (closed): T1 item 11: declare sampler_core's well ties in the klt erc supply spec on klayout-tools 0.6.0 and cite 11.analog in the block manifest
-- **Issue #160** (closed): Bump the signoff grader pin to klayout-tools 0.6.0, re-vendor the tiers doc, and regenerate signoff/t1-report.json
 

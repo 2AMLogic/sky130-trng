@@ -51,7 +51,6 @@ output plus each request's `klt sim` JSON response saved as `resp.json`).
 from __future__ import annotations
 
 import argparse
-import gzip
 import json
 import math
 import os
@@ -66,6 +65,7 @@ sys.path.insert(0, str(REPO / "sim" / "bin"))
 sys.path.insert(0, str(REPO / "layout" / "bin"))
 from _hashing import sha256_file  # noqa: E402
 from loadmod import load_module  # noqa: E402
+from replay_equal import replay_equal  # noqa: E402  (issue #519/#659: one shared replay equality)
 from request_dir import load_request_dir  # noqa: E402
 
 SYNTH_OUTPUT = REPO / "sim/digital-synthesis/runs/20260910-001436-a4c3194/50khz-constrained-synthesize-output.json"
@@ -262,19 +262,6 @@ def recommend_idle_target_uw(worst_uw, margin=RECOMMEND_MARGIN):
 
 
 # ----------------------------------------------------------------------------------------------- IO
-def store_chunks(rid, reqdir, chunks):
-    cdir = HERE / "corners" / rid
-    if cdir.exists():
-        raise SystemExit(f"error: {cdir} exists")
-    cdir.mkdir(parents=True)
-    for nm, pl, rs in chunks:
-        with gzip.open(cdir / f"{nm}.klt-sim.json.gz", "wt") as fh:
-            json.dump(rs, fh, indent=1)
-        json.dump(pl, open(cdir / f"{nm}.plan.json", "w"), indent=1)
-        for fn, dst in (("request.json", f"{nm}.request.json"), ("netlist.cir", f"{nm}.netlist.cir")):
-            shutil.copyfile(Path(reqdir) / nm / fn, cdir / dst)
-
-
 def read_stored(rid):
     from evidence_record import read_corner_bundle
     return read_corner_bundle(HERE / "corners" / rid)
@@ -404,7 +391,7 @@ def markdown(rid, rows, fl, wst, rec, p_by_view, jobs, backend, rep):
 
 
 def emit_record(reqdir, liberty_dir):
-    from evidence_record import mint_record, new_record_id
+    from evidence_record import mint_record, new_record_id, write_corner_bundle
     chunks, missing = load_request_dir(reqdir, pattern="*")
     if missing:
         detail = "; ".join(f"{nm}: {why}" for nm, _, why in missing)
@@ -415,38 +402,44 @@ def emit_record(reqdir, liberty_dir):
         raise SystemExit(f"error: assembled-deck units without a valid result: {fatal}")
     fl["leaf_cross_check_unavailable"] = [b[1] for b in bad]
     now, sha, rid = new_record_id(REPO)
-    store_chunks(rid, reqdir, chunks)
-    jobs = _jobs(chunks)
-    backend = "batch" if all((rs["environment"].get("remote")) for _, _, rs in chunks) else "local (single-unit debug probe)"
-    rec_val = recommend_idle_target_uw((wst.get("combined_with_hot_extrapolation") or wst["combined"])["value_uw"])
-    env = chunks[0][2]["environment"]
-    md = markdown(rid, rows, fl, wst, rec_val, p_by_view, jobs, backend, None)
-    summary = {
-        "record_id": rid, "slug": SLUG, "level": "circuit", "claim": CLAIM, "seeds": "N/A (deterministic .op)",
-        "supersedes": "(none)", "author": "loom-builder@sky130-trng", "timestamp_utc": now.isoformat(), "repo_sha": sha,
-        "pdk": "sky130A", "rows": rows, "flags": fl, "worst": wst, "recommended_idle_target_uw": rec_val,
-        "recommendation_rule": f"{RECOMMEND_MARGIN}x the worst combined standby (with the 125 C digital extrapolation), rounded up to the next 1-2-5 value; recommendation only",
-        "digital": {"source": SYNTH_RECORD, "instance_counts_from": str(SYNTH_OUTPUT.relative_to(REPO)),
-                    "leakage_nw_by_view": p_by_view, "liberty_sha256": lib_sha},
-        "mapping_rule": "analysis/idle_leakage.py module docstring; VIEWS table",
-        "thresholds": {"leaf_ratio_flag": LEAF_RATIO_FLAG, "clamp_share_flag": CLAMP_SHARE_FLAG, "idle_level_frac": IDLE_LEVEL_FRAC},
-        "klt_sim": {"jobs": jobs, "backend": backend, "engine_version": env["engine_version"],
-                    "models_lib_sha256": env["models_lib_sha256"],
-                    "netlist_sha256": {nm: rs["environment"]["netlist_sha256"] for nm, _, rs in chunks},
-                    "submitter_klt": chunks[0][2]["provenance"]["klt_version"],
-                    "responses": f"sim/{SLUG}/corners/{rid}/*.klt-sim.json.gz"},
-        "corners_dir": rid, "tools": {"script": f"sim/{SLUG}/analysis/idle_leakage.py --emit-record"},
-    }
-    got = mint_record(HERE / "records", REPO, rid, [], md, summary, author="loom-builder@sky130-trng", now=now, sha=sha)
-    if got is None:
-        raise SystemExit(1)
+    cdir, rdir = HERE / "corners" / rid, HERE / "records"
+    # refuses (SystemExit) before touching anything if rid is taken, so the cleanup below never removes another bundle
+    write_corner_bundle(cdir, reqdir, chunks, records_dir=rdir, rid=rid)
+    try:
+        jobs = _jobs(chunks)
+        backend = "batch" if all((rs["environment"].get("remote")) for _, _, rs in chunks) else "local (single-unit debug probe)"
+        rec_val = recommend_idle_target_uw((wst.get("combined_with_hot_extrapolation") or wst["combined"])["value_uw"])
+        env = chunks[0][2]["environment"]
+        md = markdown(rid, rows, fl, wst, rec_val, p_by_view, jobs, backend, None)
+        summary = {
+            "record_id": rid, "slug": SLUG, "level": "circuit", "claim": CLAIM, "seeds": "N/A (deterministic .op)",
+            "supersedes": "(none)", "author": "loom-builder@sky130-trng", "timestamp_utc": now.isoformat(), "repo_sha": sha,
+            "pdk": "sky130A", "rows": rows, "flags": fl, "worst": wst, "recommended_idle_target_uw": rec_val,
+            "recommendation_rule": f"{RECOMMEND_MARGIN}x the worst combined standby (with the 125 C digital extrapolation), rounded up to the next 1-2-5 value; recommendation only",
+            "digital": {"source": SYNTH_RECORD, "instance_counts_from": str(SYNTH_OUTPUT.relative_to(REPO)),
+                        "leakage_nw_by_view": p_by_view, "liberty_sha256": lib_sha},
+            "mapping_rule": "analysis/idle_leakage.py module docstring; VIEWS table",
+            "thresholds": {"leaf_ratio_flag": LEAF_RATIO_FLAG, "clamp_share_flag": CLAMP_SHARE_FLAG, "idle_level_frac": IDLE_LEVEL_FRAC},
+            "klt_sim": {"jobs": jobs, "backend": backend, "engine_version": env["engine_version"],
+                        "models_lib_sha256": env["models_lib_sha256"],
+                        "netlist_sha256": {nm: rs["environment"]["netlist_sha256"] for nm, _, rs in chunks},
+                        "submitter_klt": chunks[0][2]["provenance"]["klt_version"],
+                        "responses": f"sim/{SLUG}/corners/{rid}/*.klt-sim.json.gz"},
+            "corners_dir": rid, "tools": {"script": f"sim/{SLUG}/analysis/idle_leakage.py --emit-record"},
+        }
+        got = mint_record(rdir, REPO, rid, [], md, summary, author="loom-builder@sky130-trng", now=now, sha=sha)
+        if got is None:
+            raise SystemExit(f"error: record id {rid} already exists; wait a second and re-run")
+    except BaseException:
+        shutil.rmtree(cdir, ignore_errors=True)
+        raise
     print(rid, "worst combined:", wst["combined"], "recommended <=", rec_val, "uW")
 
 
 def check(record_json, liberty_dir):
     rec = json.load(open(record_json))
     rows, fl, wst, *_ = reduce_all(read_stored(rec["corners_dir"]), liberty_dir)
-    if json.loads(json.dumps(rows)) != rec["rows"]:
+    if not replay_equal(json.loads(json.dumps(rows)), rec["rows"]):
         raise SystemExit("MISMATCH: recomputed rows differ from the record")
     print("OK: recomputed rows match", record_json)
 

@@ -3,10 +3,6 @@
   "description": "Loom-managed workspace with AI development orchestration",
   "private": true,
   "scripts": {
-    "worktree:return": "./.loom/scripts/worktree-return.sh",
-    "test": "python3 design/test_pdk_search.py && python3 layout/test_pex_netlist.py && python3 layout/test_compose_cell.py && python3 sim/tests/test_digital_section.py && python3 sim/tests/test_raw_bit_entropy.py",
-    "lint": "python3 design/netlist.py --lint",
-    "check:ci": "npm run lint && npm run test",
-    "check:all": "npm run check:ci"
+    "worktree:return": "./.loom/scripts/worktree-return.sh"
   }
 }

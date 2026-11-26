@@ -16,6 +16,7 @@ REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 SLUG = "post-layout-ro-ring5-assembled-181"
 sys.path.insert(0, os.path.join(REPO, "sim", "bin"))
 from evidence_record import mint_record, new_record_id, reserve_corner_dir  # noqa: E402
+from measurement_names import measurements_by_name  # noqa: E402  (#670: this deck's names are lifted from a template)
 OLD = os.path.join(REPO, "sim/post-layout-ro-ring5-assembled/records")
 POINTS = [(-40.0, 1.62), (27.0, 1.80), (125.0, 1.98), (-40.0, 1.98)]
 W = ["0p42", "0p44", "0p46", "0p48"]
@@ -56,7 +57,7 @@ def main(reqdir, outdir):
         corners, rows = [], []
         for c in resp["corners"]:
             name = c["process"]
-            m = {x["name"]: x["value"] for x in c["measurements"]}
+            m = measurements_by_name(c, keep_none=True)
             d = derive(m, v)
             corners.append({"corner": name, "ok": c["status"] == "pass", "status": c["status"],
                             "measurements": d, "problems": [x["message"] for x in c["diagnostics"]]})

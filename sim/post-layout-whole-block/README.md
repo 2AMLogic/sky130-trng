@@ -26,14 +26,16 @@ How the whole-block work is to be reduced (analog at transistor level, digital a
 | `check-bin-coverage.py` | scans every device card of a flat netlist against the pinned PDK's model bins (control: pre-fix netlist reports 1760 uncovered, committed reports 0). Record: `records/20261029-bin-coverage-scan.md` (issue #386). |
 | `records/20261030-fleet-probe-post-bin-fix.md` | one-unit fleet probe after the bin fix: ngspice gets past parse, then times out at 3480 s in analysis (issue #386, `runs/20261030-probe-post-bin-fix/`). |
 | `program.py` | the one directed bus program (75 cycles, `Ts = 100 ns`, `T0 = 320 ns`): ID / HT_STARTUP / STATUS reads with `EN=0`, `CTRL.EN` write, 32 raw samples, `STATUS`/`RAW_DATA`/`ID`/`DATA`/`ALARM`/`STATUS` reads, 32 samples with `out_ready=1`, final `STATUS`; plus `model_replay()` which replays it through the normative model `digital/model/`. |
-| `make-requests.py` | emits the `klt sim` requests: `--set controls` (startup probe, local + batch) and `--set grid` (four requests, one per (T, Vdd) point, each bundling `tt`/`ss`/`ff` = the 12-point matrix, `backend: batch`, `save_mode: netlist`, 610 measurements each). Each driven input's `PWL` card **holds its value and then switches over `EDGE_NS` = 0.1 ns** ending at `t_edge(k) + SKEW_NS`; a breakpoint list carrying only the change instants makes a `PWL` source ramp across the whole hold interval instead (#488, `records/20261114b-pwl-hold-point-stimulus-fix.md`). The committed `corners/*/plan.json` predate that fix and are **not** regenerated -- the next run writes a fresh corner directory, and no committed report has a measurement. |
-| `test_make_requests.py` | the klt-free unit tests of the request generator's driven-input stimulus, run on every pull request (`.github/workflows/ci.yml`): every emitted `PWL` card evaluated at every cycle's `t_edge + CAPTURE_NS` must sit within 1 mV of a rail (the #488 control -- it fails on the pre-fix change-instants-only shape, where 344 of 3000 samples were >10 % off a rail), the hold/edge pair is asserted on the card text, breakpoint hygiene is checked (`t=0` first, `t_stop` last, no two breakpoints sharing a `f"{t:.1f}n"` timestamp, a constant input still two points), and `GRID_TIMEOUT_S` plus the committed grid requests' timeouts are pinned; (#507) every emitted measurement's `AT=`/`TO=` must sit within its own request's `.tran` stop across all four `--set` groups, the committed startup probes' nine over-`t_stop` cards are pinned in a known-stale ledger over `corners/*/request.json`, and the startup-probe timeouts (generator 3600 / 3480 + poll 3700 vs the committed batch pair's 14400 / 7000) are pinned (`records/20261115a-known-stale-startup-probe-requests.md`). No klt, no PDK, no ngspice. |
+| `make-requests.py` | emits the `klt sim` requests: `--set controls` (startup probe, local + batch) and `--set grid` (four requests, one per (T, Vdd) point, each bundling `tt`/`ss`/`ff` = the 12-point matrix, `backend: batch`, `save_mode: netlist`, 578 measurements each). Each driven input's `PWL` card **holds its value and then switches over `EDGE_NS` = 0.1 ns** ending at `t_edge(k) + SKEW_NS`; a breakpoint list carrying only the change instants makes a `PWL` source ramp across the whole hold interval instead (#488, `records/20261114b-pwl-hold-point-stimulus-fix.md`). The committed `corners/*/plan.json` predate that fix and are **not** regenerated -- the next run writes a fresh corner directory, and no committed report has a measurement. Since #595 each grid request's `plan.json` also carries `gate_model_pvt`: the boundary-load option (2) plus the digital half's Liberty deck (path + sha256 + error directions, one row per process corner) from `pvt_deck_map.py`, with an unmapped point failing generation closed. (#646: a read in the LAST cycle no longer emits its 32 `rdata_k74_b*` cards -- fresh requests carry 578 measurements, and the committed plans' `measurement_count: 610` predates that guard, same not-regenerated rule.) |
+| `test_make_requests.py` | the klt-free unit tests of the request generator's driven-input stimulus, run on every pull request (`.github/workflows/ci.yml`): every emitted `PWL` card evaluated at every cycle's `t_edge + CAPTURE_NS` must sit within 1 mV of a rail (the #488 control -- it fails on the pre-fix change-instants-only shape, where 344 of 3000 samples were >10 % off a rail), the hold/edge pair is asserted on the card text, breakpoint hygiene is checked (`t=0` first, `t_stop` last, no two breakpoints sharing a `f"{t:.1f}n"` timestamp, a constant input still two points), and `GRID_TIMEOUT_S` plus the committed grid requests' timeouts are pinned; (#507) every emitted measurement's `AT=`/`TO=` must sit within its own request's `.tran` stop across all four `--set` groups, the committed startup probes' nine over-`t_stop` cards are pinned in a known-stale ledger over `corners/*/request.json`, and the startup-probe timeouts (generator 3600 / 3480 + poll 3700 vs the committed batch pair's 14400 / 7000) are pinned (`records/20261115a-known-stale-startup-probe-requests.md`); (#646) a read in the last cycle emits no `rdata_k74_b*` measurement (card count 610 -> 578), earlier reads keep all 32 bits each, and a truncation whose last cycle is not a read changes nothing; (#595) the matrix-to-deck table covers tt/ss/ff x `GRID` exactly, every row IS the nearest shipped deck under the |dV|-first rule with self-consistent direction/estimate fields, an unmapped point fails `deck_row` and grid generation closed, and every generated grid plan carries `gate_model_pvt`. No klt, no PDK, no ngspice. |
 | `corners/<req>/` | request, plan (input hashes), report, stderr and `submit-attempts.log` for every submission, **including the failed ones** (they are the evidence). `netlist.cir` per request is gitignored (regenerated; sha256 in `plan.json` and the report). |
 | `ir/run-ir.py`, `ir/*.json*` | `klt power` extraction + static IR (see below). |
 | `analysis/reduce-whole-block.py` | the reduction: enumerates the 12 points itself, marks a point MET only on a clean corner + oracle match, everything else UNMET with a reason; mints the record. Tested by `sim/tests/test_whole_block_reduction.py` (complete matrix MET; an omitted point, oracle mismatch, absent measurement, errored corner and klt error envelope are each UNMET). |
-| `make-gate-model.py` | the **gate-level model of the digital half** (DR-0017 option (b), issue #486): every `sky130_fd_sc_hd` instance of `layout/trng_digital/trng_digital.routed.v` becomes one XSPICE event-driven primitive (`d_genlut` / `d_dff`) carrying scalar rise/fall delays reduced from one Liberty deck, with `adc_bridge`/`dac_bridge` at the boundary; emits the model, a manifest, and a runnable `klt sim` request. **Fails closed** on an unknown cell, an output pin with no Liberty `function` and no `ff` group, a multiply-driven or undriven net, or a flop with no `d_dff` mapping -- and writes nothing. Record: `records/20261114-gate-model-realisation.md`. |
+| `make-gate-model.py` | the **gate-level model of the digital half** (DR-0017 option (b), issue #486): every `sky130_fd_sc_hd` instance of `layout/trng_digital/trng_digital.routed.v` becomes one XSPICE event-driven primitive (`d_genlut` / `d_dff`) carrying scalar rise/fall delays reduced from one Liberty deck, with `adc_bridge`/`dac_bridge` at the boundary; emits the model, a manifest, and a runnable `klt sim` request. **Fails closed** on an unknown cell, an output pin with no Liberty `function` and no `ff` group, a multiply-driven or undriven net, or a flop with no `d_dff` mapping -- and writes nothing. Record: `records/20261114-gate-model-realisation.md`. Since #595: `--point PROC:TEMP_C:VDD` takes the Liberty deck from `pvt_deck_map.py` (sha256-pinned, unmapped points refused) and derives the bridge supply, temperature and process corner from the point; every plan carries the boundary-load option (2). |
 | `analysis/compare-gate-model.py` | the oracle comparison and rate reduction for a gate-model run: decodes each measured level (refusing anything that is not a resolved rail, so an UNKNOWN net can never round to 0), compares every digital response with `program.model_replay()`, and scores the measured s-per-simulated-ns against the pass criterion computed from the same constants. |
-| `sim/tests/test_gate_model.py` | the klt-free unit tests of the generator, run on every pull request: the committed manifest is checked against a fresh parse of the routed netlist (every instance accounted for, histogram, port list, DR-0017 boundary), the Liberty-function to truth-table mapping and the NLDM bilinear interpolation are checked on hand-computed values, and six refusal paths are checked to exit non-zero leaving no output. No klt, no PDK, no ngspice. |
+| `pvt_deck_map.py` | the single source of truth for #595's two choices: the boundary-load option (2, Liberty input-pin capacitance of the receiving cells at the mapped deck) and the 12-row matrix-to-deck mapping -- each row a named deck, its pinned sha256, dT/dV, and the delay/power error directions under the declared nearest-deck rule (min \|dV\| first, tie-break \|dT\|). `deck_row`/`plan_entry` fail closed on unmapped points and on a PDK whose decks hash differently. Record: `records/20261121-pvt-deck-and-boundary-load.md`. |
+| `analysis/deck-axis-sensitivity.py` | the #595 direction evidence, pure Liberty parsing over the cell types the routed netlist uses: per-axis delay and `cell_leakage_power` ratios between deck pairs that isolate temperature (fixed V) and supply (fixed T). Finding: both sensitivities have the same sign (faster warm AND faster at high V -- temperature inversion), so every mapped row's net delay direction is established. Run on request (needs the PDK), not a CI test. |
+| `sim/tests/test_gate_model.py` | the klt-free unit tests of the generator, run on every pull request: the committed manifest is checked against a fresh parse of the routed netlist (every instance accounted for, histogram, port list, DR-0017 boundary), the Liberty-function to truth-table mapping and the NLDM bilinear interpolation are checked on hand-computed values, and six refusal paths are checked to exit non-zero leaving no output; (#595) `--point` parsing/refusal paths are klt-free, and against the PDK all 12 pinned deck hashes match disk and a `--point` run carries the mapping in its plan and request. No klt, no PDK, no ngspice (the PDK-gated class skips without it). |
 
 ## The four PVT points
 
@@ -157,34 +159,47 @@ its boundary -- *not* the mixed-level whole block. Record:
 `runs/20261114-gate-model-probe/` and `runs/20261114-gate-model-full/`.
 `d_cosim` co-simulation remains the documented fallback.
 
-**Open (not done by this change, so nothing here is claimed for it):**
+**Nominal coupled deck (#596).** The 264-transistor analog partition now drives
+the archived routed gate model through the sampler's extracted `raw_bit` and
+`raw_valid` nodes. The two partitions share one clock, reset and pair of logic
+rails. Generate the 100 ns probe or full 7,870 ns request with
+`make-requests.py <empty-dir> --set coupled-probe` or `--set coupled-full`.
+Each produces one tt / 27 °C / 1.8 V batch unit. The full request records the
+sampler at every cycle for replay by `analysis/compare-gate-model.py`.
 
-* The **coupled** whole-block deck: the analog partition at transistor level
-  and the gate model behind the boundary in one netlist, including the
-  `raw_bit`/`raw_valid` hand-off (testbench-driven in the standalone run), with
-  a **measured** fleet run and simulated time reached. The gate-level half's
-  rate is now measured, but **linear additivity of the two halves is an
-  extrapolation, not a measurement**, so no whole-block rate is claimed.
-* Hence `GRID_TIMEOUT_S` / `poll_timeout_s` are **not** re-set; neither the
-  0.057 s per simulated ns analog-only rate nor the 0.00975 s/sim-ns
-  gate-level rate sizes the full block. If the measured full-block rate
-  exceeds the 3480 s ceiling, that is recorded as a negative result for
-  option (b).
+**Done: the boundary-load model and the per-point Liberty deck (issue #595).**
+DR-0017's two remaining per-point choices are made, recorded
+(`records/20261121-pvt-deck-and-boundary-load.md`) and executable: the
+boundary load is **option 2** (the Liberty input-pin capacitance of the
+receiving cells at the mapped deck; option 1 would have moved instances
+across the `partition_check()` partition, and extracted net capacitance does
+not exist -- the committed extract is connectivity-only), and every one of
+the 12 matrix points maps to **one named deck, pinned by sha256**, in
+`pvt_deck_map.py` -- nearest deck under a declared |dV|-first rule, with the
+delay and power error direction stated per row. Canary finding on the way:
+this library is *faster* warm (temperature inversion) *and* faster at high
+supply, so both axes err the same way and every row's net direction is
+established (`analysis/deck-axis-sensitivity.py`); the worst-served point is
+ss / 125 C / 1.98 V (~+52 % delay, deck 165 K cold and 0.22 V low) and the
+only strongly optimistic one is tt / -40 C / 1.62 V (~-20 %). `--set grid`
+plans carry `gate_model_pvt` per request; `make-gate-model.py --point
+PROC:TEMP:VDD` takes its deck from the table and fails closed on any
+unmapped point.
+
+**Open**
+
+* The batch client assigned `klt-sim-9ffb4c91eb0f` and stopped during upload
+  because the submitting host lacked the `batch-runner-submit` profile.
+  The probe and full-program timing are still open. The 12-point matrix (#307)
+  needs a measured rate and a completed digital comparison before its timeouts
+  can be sized. [Criterion and submission evidence](records/20261121-coupled-rate.md).
+  If the measured full-block rate exceeds the 3480 s ceiling, that is recorded as a
+  negative result for option (b) (DR-0017).
 * Full-block 100 ns rate probe on the re-pinned netlist (`965f1e6c...`): one batch job was
   interrupted by spot reclamation at 3279 s, no verdict; re-run needed. See
   `records/20261106-rate-probe-repinned-netlist.md`.
 * Retry of that probe (issue #449): timed out at 3480 s on the same re-pinned netlist, 0 of 9
   measurements; infeasible verdict confirmed. See `records/20261106b-rate-probe-repinned-timeout.md`.
-* Boundary-load model (DR-0017 option 1 or 2) and the Liberty deck per (T, Vdd)
-  point: **not chosen yet**; to be stated with their source. The gate model
-  declares an `input_load` per `d_genlut` input (the Liberty input-pin
-  capacitance) purely so the cards elaborate -- that is **not** the option 1 /
-  option 2 choice. Two findings from #486 feed this: a `corners.supply_v` axis
-  alone does **not** re-corner the digital half (at gate level the supply
-  enters only through the bridge levels and through *which* Liberty deck is
-  used, so each (T, Vdd) point must move its deck), and sky130A ships 16
-  non-ccsnoise `sky130_fd_sc_hd` decks with **none above 100 C** and no `tt`
-  deck off 1.80 V, so the 125 C / 1.98 V point cannot be served exactly.
 * An independent cross-check of a gate-model response against
   `sim/digital-sdf-timed-verification/`'s Icarus + SDF run at the same
   `tt_025C_1v80` corner (a different simulator and a different timing
