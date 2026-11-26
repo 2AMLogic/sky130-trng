@@ -1,6 +1,7 @@
 # sampler_core analog active-power budget (issue #604)
 
-Bound: **README target row: < 500 uW active (analog-partition share)**. Every number below is transistor-level transient
+The README sets a **whole-block active-power target of < 500 uW**.
+The totals cover `sampler_core` alone. They come from transistor-level transient
 simulation (ngspice) of the committed `design/sampler_core.spice`
 pre-layout netlist and the flat-extracted parasitic netlist
 `layout/pex-sampler-core/sampler_core_pex.spice` (sha256 in each cited

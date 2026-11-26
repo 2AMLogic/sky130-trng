@@ -85,9 +85,11 @@ Design constraints at the measured operating point:
 
 ## Decision
 
-**Proposed.** Keep grading against the existing whole-block target while
-the operator considers the three options. At 20 us the analog partition
-alone exhausts the budget at both measured temperatures.
+**Proposed for ratification.** Record all four 20 us results as failures
+against the README's `< 500 uW` whole-block active-power target. At
+ff / 1.98 V, `sampler_core` alone exceeds that target on both the schematic
+and extracted legs at -40 C and +125 C. A choice among the following
+options requires a separate operator decision.
 
 - **P-A (unvalidated option).** Allocate `< 650 uW` of active power to
   `sampler_core`. This would give 47.4 uW of headroom above the largest
@@ -99,10 +101,11 @@ alone exhausts the budget at both measured temperatures.
   uncertainty or an independently derived partition budget, and account
   for the remaining whole-block loads in #174. The market review found
   no comparable active-partition benchmark for 650 uW.
-- **P-B: hold `< 500 uW`** and record a per-corner derogation at
-  ff / 1.98 V. Cost: the two corners stay red on every future report with
-  no owned path to green; the array-only figure (473.9 uW hot) leaves only
-  26.1 uW under 500 uW before the remaining loads.
+- **P-B (corner exceptions).** Retain `< 500 uW` with exceptions at the
+  two measured ff / 1.98 V corners. Both lie inside the stated envelope,
+  so an exception needs an independent operating requirement or a
+  justified change to that envelope. Even the hot array-only figure
+  (473.9 uW) leaves only 26.1 uW for the remaining loads.
 - **P-C: open a re-derivation campaign** (ring/buffer sizing against
   DR-0002/DR-0003 bases) targeting recovery of the 19.1-99.6 uW excess. Cost: a
   multi-issue campaign re-opening the DR-0002/DR-0003 basis measurements; no

@@ -36,7 +36,6 @@ from _hashing import sha256_text  # noqa: E402
 
 VDD = 1.98
 TARGET_UW = 500.0
-BOUND = "README target row: < 500 uW active (analog-partition share)"
 
 CONTROL_RECORDS = {
     -40.0: SLUG / "records" / "20260908-050034-ef0db50.json",
@@ -232,7 +231,8 @@ def main(argv: list[str] | None = None) -> int:
     a = lines.append
     a("# sampler_core analog active-power budget (issue #604)")
     a("")
-    a(f"Bound: **{BOUND}**. Every number below is transistor-level transient")
+    a(f"The README sets a **whole-block active-power target of < {TARGET_UW:g} uW**.")
+    a("The totals cover `sampler_core` alone. They come from transistor-level transient")
     a("simulation (ngspice) of the committed `design/sampler_core.spice`")
     a("pre-layout netlist and the flat-extracted parasitic netlist")
     a("`layout/pex-sampler-core/sampler_core_pex.spice` (sha256 in each cited")
