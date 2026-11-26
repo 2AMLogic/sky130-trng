@@ -7,7 +7,7 @@ DR-0004 cutoffs, nothing re-derived or relaxed) with serially-correlated and
 quasi-periodic streams whose per-bit min-entropy is known *analytically*, and
 records for each stream: the analytic min-entropy, whether the online tests
 alarm, the detection latency, and what the non-MCV SP 800-90B estimators of
-``sim/raw-bit-min-entropy/analysis/raw-bit-battery.py`` (issue #189) say.
+``sim/bin/bitstream_stats.py`` (issue #189) say.
 
 Families (all seeded, all explicitly synthetic):
 
@@ -56,15 +56,12 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO_ROOT / "digital"))
 sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
 
+from bitstream_stats import entropy_estimates  # noqa: E402
 from evidence_record import mint_behavioral_record  # noqa: E402
 from loadmod import load_module  # noqa: E402
 from model import lagcount  # noqa: E402
 from model.health import HealthMonitor  # noqa: E402
 from model.params import C_APT, C_RCT, H_DESIGN, STARTUP_SAMPLES, W_APT  # noqa: E402
-
-_BATTERY = REPO_ROOT / "sim" / "raw-bit-min-entropy" / "analysis" / "raw-bit-battery.py"
-sys.path.insert(0, str(_BATTERY.parent))
-battery = load_module("raw_bit_battery", _BATTERY)
 
 DEFAULT_SEED = 20261011
 DEFAULT_N = 65536
@@ -139,7 +136,7 @@ def run_health(bits):
 
 def measure(label, family, params, h_true, bits):
     first, which, n_alarm = run_health(bits)
-    est = battery.entropy_estimates(bits)
+    est = entropy_estimates(bits)
     ests = {k: v["h_bits"] for k, v in est["estimators"].items() if v["status"] == "OK"}
     nonmcv = {k: ests[k] for k in NON_MCV if k in ests}
     bind = min(nonmcv, key=nonmcv.get)

@@ -22,7 +22,7 @@ Pure arithmetic over `klt sim` responses (no simulator). Per corner it derives:
   Raw-bit bias = P(raw = 1) for array draw i and sampler draw j: duty_i(vtrip_j / vnom)
     (the sampler resolves xo at ITS threshold); all n_array x n_sampler pairings.
     H_bias = -log2(max(p, 1-p)), and the SP 800-90B MCV estimator
-    (sim/raw-bit-min-entropy/analysis/raw-bit-entropy.py) run on a seeded Bernoulli stream
+    (sim/bin/bitstream_stats.py) run on a seeded Bernoulli stream
     at the worst-case p.  H_bias is an UPPER bound on that bit's min-entropy, not a
     jitter-entropy measurement.
   Model extrapolation (labelled as such): per-ring Gaussian fit of ln T from the MC
@@ -43,7 +43,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, "..", ".."))
 SLUG = "local-mismatch-monte-carlo"
 sys.path.insert(0, os.path.join(REPO, "sim", "bin"))
-from loadmod import load_module  # noqa: E402  (after sys.path)
+from bitstream_stats import mcv_estimate  # noqa: E402  (after sys.path)
 from lock_proximity import ANY_RATIOS, DR5_RATIOS, pair_closeness  # noqa: E402  (after sys.path)
 from replay_equal import replay_equal as _replay_equal  # noqa: E402  (issue #519/#659: one shared replay equality)
 from request_dir import load_request_dir  # noqa: E402
@@ -139,17 +139,11 @@ def extrapolate_closeness(T_list, n_draws=EXTRAP_DRAWS, seed=EXTRAP_SEED):
     return {str(x): {"dr5": cnt5[x] / n_draws, "any": cnta[x] / n_draws} for x in CLOSE_THRESH_PCT}, mu, sd
 
 
-def _load_raw_bit_entropy():
-    p = os.path.join(REPO, "sim", "raw-bit-min-entropy", "analysis", "raw-bit-entropy.py")
-    return load_module("raw_bit_entropy", p)
-
-
 def mcv_on_bernoulli(p, n=BERNOULLI_N, seed=BERNOULLI_SEED):
     """Run the repo's SP 800-90B MCV estimator on a seeded Bernoulli(p) stream."""
-    rbe = _load_raw_bit_entropy()
     rng = random.Random(seed)
     bits = [1 if rng.random() < p else 0 for _ in range(n)]
-    est = rbe.mcv_estimate(bits)
+    est = mcv_estimate(bits)
     return {"n": n, "seed": seed, "p_target": p, "p_hat": est["p_hat"], "p_u_99": est["p_u_99"],
             "h_hat_bits": est["h_hat_bits"]}
 

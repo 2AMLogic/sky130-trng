@@ -25,6 +25,8 @@ _PATH = (REPO_ROOT / "sim" / "digital-conditioned-output" / "analysis"
          / "conditioned-output.py")
 sys.path.insert(0, os.path.join(REPO_ROOT, "sim", "bin"))
 from loadmod import load_module  # noqa: E402
+import bitstream_stats  # noqa: E402
+import raw_bit_volume  # noqa: E402
 sys.path.insert(0, str(REPO_ROOT))
 import replay_equal  # noqa: E402
 C = load_module("conditioned_output", _PATH)
@@ -88,7 +90,7 @@ class TestAccounting(unittest.TestCase):
 class TestAnalysis(unittest.TestCase):
     def test_segment_policy_fits(self):
         self.assertEqual(C.SEGMENT_COUNT * C.SEGMENT_LEN, 16384)
-        self.assertGreaterEqual(C.SEGMENT_COUNT, C.B.MIN_SEGMENTS)
+        self.assertGreaterEqual(C.SEGMENT_COUNT, bitstream_stats.MIN_SEGMENTS)
 
     def test_ideal_input_runs_everything(self):
         a = C.analyse_conditioned(C.condition_stream(ideal(131072, seed=3)))
@@ -111,14 +113,22 @@ class TestAnalysis(unittest.TestCase):
 
 class TestSharedReduction(unittest.TestCase):
     def test_no_local_fork_of_shared_helpers(self):
-        self.assertFalse(hasattr(C, "_failed"))
-        for name in ("analyse_stream", "format_binding", "render_detail_tables"):
-            self.assertTrue(hasattr(C.B, name), name)
+        for name in ("analyse_stream", "entropy_estimates", "_failed",
+                     "format_binding", "render_detail_tables"):
+            self.assertIs(getattr(C, name), getattr(bitstream_stats, name), name)
+
+    def test_volume_reader_imported_directly(self):
+        self.assertIs(C.load_volume_source, raw_bit_volume.load_volume_source)
+        self.assertIs(C.VolumeInputError, raw_bit_volume.VolumeInputError)
+
+    def test_no_campaign_cli_executed_by_path(self):
+        self.assertNotIn("load_module", _PATH.read_text())
+        self.assertFalse(hasattr(C, "B"))
 
     def test_analyse_conditioned_matches_shared_reduction(self):
         bits = C.condition_stream(ideal(131072, seed=11))
         want = {"ones": sum(bits),
-                **C.B.analyse_stream(bits, segment_len=C.SEGMENT_LEN)}
+                **bitstream_stats.analyse_stream(bits, segment_len=C.SEGMENT_LEN)}
         self.assertEqual(C.analyse_conditioned(bits), want)
 
 
@@ -181,7 +191,7 @@ class TestCommittedRecord(unittest.TestCase):
             self.skipTest("no committed record")
         committed = json.loads(recs[-1].read_text())
         src = REPO_ROOT / committed["source_json"]
-        _rec, streams, _sha = C.B.load_volume_source(src)
+        _rec, streams, _sha = raw_bit_volume.load_volume_source(src)
         row, raw = streams[0]
         want = committed["analysis_payload"]["per_stream"][0]
         self.assertEqual(want["source_file"], row["file"])
