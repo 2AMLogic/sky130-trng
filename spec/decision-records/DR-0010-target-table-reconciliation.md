@@ -122,24 +122,24 @@ configurations -- the 5-stage jitter vehicle and the deterministic
 swing/current deck, the latter reproducing to <0.5 % at every point): the two
 levers width-scaling did not touch, measured and costed. Sample-before-combine
 (one `sampler_dff` per ring, XOR digital) does remove `N_max_combine` -- at
-1 Mbps the entropy law wants `N` = 78 (ring5), and the rate row is met -- but
-the power row breaks by 10.3x (5.2 mW ring supply current alone at the worst
-measured corner, ff / 125 C / 1.98 V) and the area row by 5.2x at macro
+1 Mbps the entropy law requires `N` = 78 (ring5). The rings and buffers
+alone draw 5.2 mW at ff / 125 C / 1.98 V (10.3× the block budget). Their
+estimated area with one DFF per ring is 5.2× the area target at macro
 density, with lock proximity structural above N ~ 8 inside the characterized
 `wstv` span. The 3-inversion ring (fastest odd stage count this cell set
 supports) measures 4.0x ring5's per-ring Q at the entropy-binding corner
 (`N` at 1 Mbps drops to 20) but its ring-node swing is below DR-0002's 0.80
 bar at every point (worst 0.165 x Vdd at ff / 125 C / 1.98 V, where the
 buffered output no longer squares up either) and it lowers `N_max_combine`
-to 2, for a J-only ceiling of 104 kbps. Combined, the best rate with every
-row held is ~260 kbps (power-bound at N = 5), robust to a +50 % (~3 sigma)
-favourable jitter draw (~585 kbps). Conclusion: a negative result -- on this
-evidence the `> 1 Mbps` row cannot be met without breaking the `< 500 uW`
-active-power row (or the area row), whichever way the combining bottleneck is
-removed; the limiting quantity is the per-ring active supply current at the
-worst corner. It is evidence only, in the same form as the #282 paragraph:
-the rate row, the options above and this record's Proposed / operator-owned
-status are unchanged.
+to 2, for a J-only ceiling of 104 kbps. At 1 Mbps the combined option needs
+1.69 mW for the rings and buffers alone. Allocating all 500 µW to them
+permits five rings, giving a conditional upper bound of ~260 kbps for the
+measured jitter draw (~585 kbps for a 50% larger draw). The five-ring analog
+area estimate is 0.013888 mm², while the committed digital macro alone
+occupies 0.06005 mm² against the 0.05 mm² target. The missing combined
+floorplan and the measured swing leave whole-block feasibility unestablished.
+The negative 1 Mbps result applies to the two stage counts studied on ideal
+DC rails. The effect of changing device width or length remains unknown.
 
 ## Operator options: area (not pre-decided)
 

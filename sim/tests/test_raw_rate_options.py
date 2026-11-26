@@ -13,6 +13,7 @@ import re
 import sys
 import tempfile
 import unittest
+from pathlib import Path
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 D = os.path.join(HERE, "..", "raw-rate-row-options")
@@ -103,7 +104,7 @@ class CommittedLaws(unittest.TestCase):
     def test_ring5_grid_is_27_points(self):
         self.assertEqual(len(RD.load_ring5_grid()), 27)
 
-    def test_alpha_fit_direction(self):
+    def test_ring5_pvt_fit(self):
         fit = RD.sigma1_vs_t0_alpha(RD.load_ring5_grid())
         self.assertTrue(0.0 < fit["alpha"] < 1.0, fit)
         self.assertLess(fit["ceiling_exponent"], 0.0)
@@ -136,7 +137,7 @@ class Models(unittest.TestCase):
         self.assertEqual(n - 1, 8)
 
     def test_draw_sensitivity_shape(self):
-        # a +50% sigma draw must not reach 1 Mbps at the all-rows N cap
+        # A +50% sigma draw must not reach 1 Mbps at the ring+buffer power cap.
         k3 = 300.0
         rate = RD.rate_ceiling_at_n(5, k3 * 1.5 * 1.5, RD.load_op_record()["entropy"]["q_required"])
         self.assertLess(rate, 1e6)
@@ -224,11 +225,37 @@ class ControlGates(unittest.TestCase):
 class CommittedRecordReplay(unittest.TestCase):
     """The committed record must replay from its corners bundle (no simulator)."""
 
+    record = Path(D, "records", "20261121-115332-7b5b48ca.json")
+
     def test_check_replays(self):
-        import glob
-        recs = sorted(glob.glob(os.path.join(D, "records", "*.json")))
-        self.assertTrue(recs, "no committed record found")
-        self.assertEqual(RD.check_record(recs[-1]), 0)
+        records = sorted(self.record.parent.glob("*.json"))
+        self.assertIn(self.record, records)
+        for record in records:
+            with self.subTest(record=record.name):
+                self.assertEqual(RD.check_record(record), 0)
+
+    def test_altered_rate_fails_replay(self):
+        rec = json.loads(self.record.read_text())
+        rec["reduction"]["ring_power_bound"]["rate_kbps_ring3"] = 1001.0
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp, "altered.json")
+            path.write_text(json.dumps(rec))
+            with self.assertRaisesRegex(RD.ReductionError, r"ring_power_bound\.rate_kbps_ring3"):
+                RD.check_record(path)
+
+    def test_missing_control_or_reduction_field_fails_replay(self):
+        for section, field in (("control_sc", None), ("control_jitter", "ss"),
+                               ("reduction", "draw_sensitivity")):
+            with self.subTest(section=section), tempfile.TemporaryDirectory() as tmp:
+                rec = json.loads(self.record.read_text())
+                if field is None:
+                    del rec[section]
+                else:
+                    del rec[section][field]
+                path = Path(tmp, "incomplete.json")
+                path.write_text(json.dumps(rec))
+                with self.assertRaisesRegex(RD.ReductionError, field or section):
+                    RD.check_record(path)
 
     def test_known_answer(self):
         self.assertEqual(RD.known_answer(), 0)

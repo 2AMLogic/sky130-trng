@@ -11,7 +11,7 @@ issue is filed from it.
 | Lever | Definition |
 |---|---|
 | `S` (sample-before-combine) | one `sampler_dff` per ring (the `ring_bit` taps `sampler_core.spice` already instantiates), XOR taken digitally after sampling, so `N_max_combine` no longer applies. Not drawn anywhere: adopting it is a topology decision needing its own ratified record (README row 1 says "XOR-combined ahead of a single sampler"). |
-| `J` (higher-Q ring) | the 3-inversion ring (`ro_nand2` + 2 `ro_stage`): the fastest odd-stage-count ring this cell set supports (2 inversions cannot oscillate). Stage count is the one ring lever with committed direction evidence (DR-0002 Sec 4); device length/width is unmeasured and only bounded in direction by the sigma_1-vs-T_0 fit here. |
+| `J` (higher-Q ring) | Three inversions (`ro_nand2` + 2 `ro_stage`) compared with five at fixed device widths and lengths. The 27-point five-stage jitter fit varies only process, voltage and temperature. The direction of a width or length change remains unknown. |
 
 Four configurations, one `klt sim` matrix, nothing hand-launched (13 requests,
 39 units; the process axis rides inside each request):
@@ -58,7 +58,10 @@ worst point, area from two anchors (DR-0003 Sec 7 device-count floor; the
 `sampler_core` macro's um2/device), idle scaled from the standby survey, lock
 proximity from the committed mismatch model's figures plus the wstv-span
 spacing arithmetic. Two baseline controls run before any new number is
-trusted; every gate fails closed.
+trusted; replay compares all saved reduction and control fields. The decks
+use ideal DC rails. Applying the stage-count result to hardware requires
+pin-level droop and ripple evidence at the new ring frequencies under
+Proposed DR-0012. The study assumes no particular regulator or filter.
 
 ## Findings (record `20261121-115332-7b5b48ca`)
 
@@ -70,10 +73,15 @@ trusted; every gate fails closed.
   DR-0002's 0.80 bar at **every** point (worst 0.165 at ff/125 C/1.98 V, where
   the buffered output no longer squares up either), and `N_max_combine`
   drops to 2 -- the J-only ceiling is 104 kbps.
-- Lever S removes the combining cap (rate met at N = 78 ring5 / 20 ring3) but
-  breaks the power row by 3.4-10x and the area row; the limiting quantity is
+- Lever S removes the combining cap. The entropy model requires N = 78
+  (ring5) or 20 (ring3) at 1 Mbps. Rings and buffers alone draw 3.4–10.3×
+  the active-power budget at those counts. The limiting quantity is
   the **per-ring active supply current at ff/125 C/1.98 V against the
   < 500 uW row**, with lock proximity structural above N ~ 8.
-- **Negative result**: best reachable rate with every row held ~260 kbps
-  (S+J, N = 5, power-bound); robust to a +50% (~3 sigma) favourable
-  `sigma_1` draw (~585 kbps). 1 Mbps needs the power or area row broken.
+- **Negative result.** Giving all 500 µW to rings and buffers limits S+J to
+  five rings and a conditional upper bound of 260 kbps (585 kbps for a 50%
+  larger `sigma_1`). Five rings, buffers and DFFs occupy an estimated
+  0.013888 mm². The committed digital macro alone occupies 0.06005 mm²
+  against the 0.05 mm² whole-block target. Whole-block feasibility remains
+  unestablished given the missing floorplan, unmeasured block overhead and
+  observed ring3 swing.

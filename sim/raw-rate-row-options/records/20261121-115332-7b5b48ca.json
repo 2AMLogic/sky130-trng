@@ -408,8 +408,11 @@
         "raw_x10_um2": 50666.66666666667,
         "macro_density_um2": 55551.969696969696
       },
-      "n_area_row_ring5": 14,
-      "n_area_row_ring3": 18,
+      "n_analog_only_ring5": 14,
+      "n_analog_only_ring3": 18,
+      "ring3_analog_um2_at_power_cap": 13887.992424242424,
+      "committed_digital_macro_mm2": 0.06005,
+      "committed_whole_block_mm2": 0.126116,
       "macro_um2_per_device": 73.09469696969697,
       "raw_um2_per_device": 6.666666666666667
     },
@@ -432,7 +435,7 @@
       "S_ring3_expected_pairs_within_2pct_unspaced": 74.22899011984626,
       "S_ring5_adjacent_spacing_in_span": 1.0020255089819017
     },
-    "direction_fit": {
+    "ring5_pvt_fit": {
       "alpha": 0.605190873809888,
       "r2": 0.324970957882193,
       "points": 27,
@@ -442,23 +445,22 @@
     "draw_sensitivity": {
       "sigma_x0.7": {
         "n_1mbps": 40,
-        "allrows_kbps": 127.4111600204541
+        "ring_power_bound_kbps": 127.4111600204541
       },
       "sigma_x1": {
         "n_1mbps": 20,
-        "allrows_kbps": 260.0227755519472
+        "ring_power_bound_kbps": 260.0227755519472
       },
       "sigma_x1.5": {
         "n_1mbps": 9,
-        "allrows_kbps": 585.051244991881
+        "ring_power_bound_kbps": 585.051244991881
       }
     },
-    "allrows": {
+    "ring_power_bound": {
       "rate_kbps_ring5": 90.60629948735715,
       "rate_kbps_ring3": 260.0227755519472,
-      "n_cap_ring5": 7,
-      "n_cap_ring3": 5,
-      "binding_row": "power"
+      "basis": "entropy model with the full active-power budget allocated to rings and buffers",
+      "whole_block_feasibility": "unestablished"
     },
     "anchors": {
       "i_array_total_125ff": 0.0002393641,

@@ -74,6 +74,7 @@ sys.path.insert(0, str(REPO / "layout" / "bin"))
 from _hashing import sha256_file  # noqa: E402
 sys.path.insert(0, str(REPO / "sim" / "bin"))
 from loadmod import load_module  # noqa: E402
+from replay_equal import replay_diff  # noqa: E402
 
 MR = load_module("rrro_make_requests", HERE / "make-requests.py")
 from evidence_record import mint_record, new_record_id, read_corner_bundle, write_corner_bundle  # noqa: E402
@@ -120,6 +121,9 @@ ARRAY_RAW_UM2_N4 = 880.0     # DR-0003 Sec 7 raw transistor area
 AREA_OVERHEAD = (3.0, 10.0)  # DR-0003 Sec 7 rough interconnect/isolation range
 SAMPLER_CORE_MACRO_UM2 = 19297.0   # DR-0010 row 7: 0.019297 mm2
 SAMPLER_CORE_DEVICES = 264    # 132 (array) + 6 x 22 (sampler_dff instances)
+# layout/trng_whole/report.json at the study commit 7b5b48ca
+DIGITAL_MACRO_MM2 = 0.06005
+COMMITTED_WHOLE_MM2 = 0.126116
 
 # Same-build (ngspice-47), same-deck extra draws at the ctrl5 point
 # (-40 C / 1.62 V), local single-corner debug probes, sigma_1 raw in ps. The
@@ -274,7 +278,7 @@ def load_misc_anchors() -> dict:
     tcqs = [m for c in sff.get("corners", [])
             for k in ("tcq_rise_pex", "tcq_fall_pex")
             if (m := c.get("measurements", {}).get(k)) is not None]
-    return {"i_array_total_125ff": i125, "tcq_pex_range_s": (min(tcqs), max(tcqs))}
+    return {"i_array_total_125ff": i125, "tcq_pex_range_s": [min(tcqs), max(tcqs)]}
 
 
 # ---------------------------------------------------------------------------
@@ -603,18 +607,14 @@ def full_reduction(rows: list[dict]) -> dict:
 
     s_power_uw = n_1mbs_ring5 * pr5_uA * pr5_key[1]
     sj_power_uw = n_1mbs_ring3 * pr3_uA * pr3_key[1]
-    n_cap3 = max(1, min(n_power_3, n_area_ring3, n_lock_free))
-    n_cap5 = max(1, min(n_power_5, n_area_ring5, n_lock_free))
-    rate_allrows_3 = rate_ceiling_at_n(n_cap3, k3, q_req)
-    rate_allrows_5 = rate_ceiling_at_n(n_cap5, k5, q_req)
     # draw sensitivity: sigma_1 is a single ~16 %-1sigma estimator draw; show
-    # the conclusion survives a +50 % (≈3 sigma) favourable draw
+    # the rate bound at the same ring+buffer power cap for each draw
     draw_sens = {}
     for scale in (0.7, 1.0, 1.5):
         k3s = k3 * scale * scale
         draw_sens[f"sigma_x{scale:g}"] = {
             "n_1mbps": entropy_n(k3s, q_req, RATE_1MBPS),
-            "allrows_kbps": rate_ceiling_at_n(n_cap3, k3s, q_req) / 1e3,
+            "ring_power_bound_kbps": rate_ceiling_at_n(n_power_3, k3s, q_req) / 1e3,
         }
 
     return {
@@ -657,7 +657,10 @@ def full_reduction(rows: list[dict]) -> dict:
             "SJ_uw": sj_power_uw, "SJ_over_row": sj_power_uw / ROW_ACTIVE_UW,
         },
         "area": {
-            **areas, "n_area_row_ring5": n_area_ring5, "n_area_row_ring3": n_area_ring3,
+            **areas, "n_analog_only_ring5": n_area_ring5, "n_analog_only_ring3": n_area_ring3,
+            "ring3_analog_um2_at_power_cap": area_estimate_um2(n_power_3, DEVICES_RING3)["macro_density_um2"],
+            "committed_digital_macro_mm2": DIGITAL_MACRO_MM2,
+            "committed_whole_block_mm2": COMMITTED_WHOLE_MM2,
             "macro_um2_per_device": per_dev_macro,
             "raw_um2_per_device": ARRAY_RAW_UM2_N4 / ARRAY_DEVICES_N4,
         },
@@ -674,13 +677,13 @@ def full_reduction(rows: list[dict]) -> dict:
                v["expected_pairs_within_2pct_unspaced"] for k, v in locks.items()},
             "S_ring5_adjacent_spacing_in_span": locks["S_ring5"]["adjacent_spacing_in_span"],
         },
-        "direction_fit": fit,
+        "ring5_pvt_fit": fit,
         "draw_sensitivity": draw_sens,
-        "allrows": {
-            "rate_kbps_ring5": rate_allrows_5 / 1e3, "rate_kbps_ring3": rate_allrows_3 / 1e3,
-            "n_cap_ring5": n_cap5, "n_cap_ring3": n_cap3,
-            "binding_row": ("power" if min(n_power_3, n_power_5) <= min(n_area_ring3, n_lock_free)
-                            else "area/lock"),
+        "ring_power_bound": {
+            "rate_kbps_ring5": rate_ceiling_at_n(n_power_5, k5, q_req) / 1e3,
+            "rate_kbps_ring3": rate_ceiling_at_n(n_power_3, k3, q_req) / 1e3,
+            "basis": "entropy model with the full active-power budget allocated to rings and buffers",
+            "whole_block_feasibility": "unestablished",
         },
         "anchors": anchors,
     }
@@ -778,11 +781,11 @@ def render_body(rows, red, ctrl_j, ctrl_sc) -> str:
           f"{(p['i_ring_run_a']+p['i_buf_a'])*1e6:.2f} | {p['q_ring_1us']:.3e} | "
           f"{p['q_gain_vs_ring5']:.2f}x |")
     A("")
-    A(f"- **`Q` gain at the binding corner (ss / -40 C / 1.62 V): "
-      f"**{e['ring3']['q_gain_vs_ring5_binding']:.2f}x** ring5's**, against the "
-      f"`1/n^2` law's {e['ring3']['law_gain']:.2f}x -- the measured fewer-stages-"
-      "is-better anomaly DR-0002 Sec 4 recorded at 5-vs-11 stages continues, "
-      "amplified, below five stages. `N_min_entropy(1 Mbps)` drops from "
+    A(f"- At ss / -40 C / 1.62 V, the three-stage ring gives "
+      f"**{e['ring3']['q_gain_vs_ring5_binding']:.2f}x** the five-stage ring's "
+      f"per-ring `Q` for this jitter draw. The stage-count law predicts "
+      f"{e['ring3']['law_gain']:.2f}x. The single draw leaves the size of the "
+      "gain uncertain. Under the entropy model, `N_min_entropy(1 Mbps)` drops from "
       f"{e['committed']['n_min_entropy_1mbps_ring5']} to "
       f"**{e['ring3']['n_min_entropy_1mbps']}**.")
     sw = e["ring3"]
@@ -808,21 +811,22 @@ def render_body(rows, red, ctrl_j, ctrl_sc) -> str:
       f"{e['ring3']['n_max_combine_worst']['w90_s']*1e12:.1f} ps -- a faster ring "
       "makes the analog XOR ceiling TIGHTER even as its per-ring Q rises). "
       f"The J-only ceiling moves to **{e['ring3']['ceiling_kbps']:.1f} kbps** "
-      f"(from {e['committed']['ceiling_kbps']:.1f}); 1 Mbps remains architecturally "
-      "out of reach on the analog-XOR topology for any stage count this cell set")
-    A("  supports: 3 is the fastest odd ladder point and it is measured here.")
+      f"(from {e['committed']['ceiling_kbps']:.1f} for ring5). Both measured "
+      "stage counts fall short of 1 Mbps with analog combining.")
     A("")
-    A(f"Direction of the unmeasured device-length/width lever: over the committed "
-      f"27-point grid, ln `sigma_1` vs ln `T_0` fits `alpha` = "
-      f"{e['direction_fit']['alpha']:.3f} (R^2 = {e['direction_fit']['r2']:.2f} -- a "
-      "weak, operating-condition correlation across (T, V, process), not a "
-      f"geometry law), so `Q ~ T_0^{e['direction_fit']['q_exponent']:.2f}` and the "
-      f"combining ceiling `~ T_0^{e['direction_fit']['ceiling_exponent']:.2f}`: "
-      "`sigma_1` does rise with `T_0`, but far too slowly to offset the `T_0^3` "
-      "term (that would need `alpha` > 1, or > 1.5 for `Q`), so any slower-ring "
-      "geometry (longer starve, more stages, more load) lowers BOTH the per-ring "
-      "`Q` and the analog-combining ceiling. Faster is better until swing dies -- "
-      "and ring3, measured above, is where it dies.")
+    A(f"The {e['ring5_pvt_fit']['points']}-point fit varies process, voltage and "
+      "temperature on one five-stage geometry. The log-log slope of corrected "
+      f"`sigma_1` against unloaded period is {e['ring5_pvt_fit']['alpha']:.3f} "
+      f"(R² = {e['ring5_pvt_fit']['r2']:.3f}). Both stage-count decks fix device "
+      "width and length. The direction and size of a width or length change on "
+      "jitter, per-ring Q and combining bandwidth remain unknown.")
+    A("")
+    A("The decks use ideal DC supplies. Applying the stage-count result on "
+      "hardware requires evidence at the ring pins for DC error, slow droop and "
+      "RF ripple near the new ring frequencies. Proposed DR-0012 calls for "
+      "margin below the five-stage ss droop exhaustion point (3.93 mV) and "
+      "separate RF lock, bias and Q checks. These runs establish neither a "
+      "ring3 supply tolerance nor a regulator or filter that meets it.")
     A("")
 
     A("## Lever S: sample-before-combine, and S+J")
@@ -836,7 +840,7 @@ def render_body(rows, red, ctrl_j, ctrl_sc) -> str:
       f"{e['power']['ring5_worst_point']}, ring3 {e['power']['ring3_worst_per_ring_ua']:.2f} uA at "
       f"{e['power']['ring3_worst_point']}).")
     A("")
-    A("| option | N @ 1 Mbps | raw rate | active power | area (macro density) | idle (worst) | lock-prox pairs < 2% |")
+    A("| option | N @ 1 Mbps | modeled raw rate | ring + buffer active power | analog area estimate | idle estimate | lock-prox pairs < 2% |")
     A("|---|---|---|---|---|---|---|")
     for label, n, area_key, pow_uw in (
         ("S (ring5)", e['committed']['n_min_entropy_1mbps_ring5'], "S_ring5", e['power']['S_uw']),
@@ -850,27 +854,31 @@ def render_body(rows, red, ctrl_j, ctrl_sc) -> str:
           f"{area['macro_density_um2']/1e6:.3f} mm2 ({area['macro_density_um2']/ROW_AREA_UM2:.2f}x row) | "
           f"{idle_uw:.0f} uW ({idle_xt:.0f} uW x-T) | ~{pairs:.0f} (unspaced), {n-1} adjacent by construction |")
     A("")
-    A(f"- **Power row**: the worst measured per-ring current permits "
+    A(f"- **Active power.** Allocating the full budget to rings and buffers permits "
       f"`N_power` = {e['power']['n_power_row_ring5']} rings (ring5) / "
       f"{e['power']['n_power_row_ring3']} (ring3) under the 500 uW row "
       f"(array-level anchor at N = 4, ff / 125 C / 1.98 V: "
-      f"{e['power']['array125_anchor_uw']:.1f} uW, DR-0010 note R3). Sampler and "
-      "digital-parity dynamic power at 1 MHz are negligible next to the rings "
-      "(post-layout `sampler_dff` `i_act` ~ 1 uA over a ~45 ns two-capture window "
-      "~ 2.4e-14 J/capture ~ 24 nW each at 1 MHz).")
-    A(f"- **Area row**: at macro density ({e['area']['macro_um2_per_device']:.1f} "
-      f"um2/device from the sampler_core macro) the row permits "
-      f"`N_area` = {e['area']['n_area_row_ring5']} (ring5) / "
-      f"{e['area']['n_area_row_ring3']} (ring3); device-count floors "
-      f"({e['area']['raw_um2_per_device']:.2f} um2/device raw x 3-10) bracket the "
-      "same conclusion.")
+      f"{e['power']['array125_anchor_uw']:.1f} uW, DR-0010 note R3). The "
+      "bound excludes sampler, clock, digital XOR and other block power. "
+      "Residual array overhead after removing the analog XOR is unmeasured.")
+    A(f"- **Area.** The estimates count a ring, buffer and sampler DFF per ring "
+      f"at the sampler-core density of {e['area']['macro_um2_per_device']:.1f} "
+      "um2/device. Giving these devices the entire area target would allow "
+      f"{e['area']['n_analog_only_ring5']} ring5 or {e['area']['n_analog_only_ring3']} "
+      "ring3 instances. At the ring3 power cap, the analog estimate is "
+      f"{e['area']['ring3_analog_um2_at_power_cap']/1e6:.6f} mm². The committed "
+      f"digital macro alone occupies {DIGITAL_MACRO_MM2:.5f} mm² against the "
+      "0.05 mm² whole-block target (`layout/trng_whole/report.json` at "
+      "`7b5b48ca`). Additional digital parity, clock and supply routing, and "
+      "pad area have no floorplan for either S option.")
     A(f"- **Idle row**: worst-corner standby scaled from the committed survey "
       f"(per stopped ring {e['idle']['per_ring_ua_125c']:.3f} uA, per DFF "
       f"{e['idle']['per_dff_ua_125c']:.3f} uA at ff / 125 C / 1.98 V, digital "
       f"{e['idle']['digital_standby_uw']:.1f} uW measured-view / "
       f"{e['idle']['digital_standby_xt_uw']:.1f} uW extrapolated) -- within the "
-      "provisional 200 uW envelope on the measured-view basis, over it once the "
-      "125 C digital extrapolation is counted. A derived scaling, labelled as such.")
+      "provisional 200 uW envelope on the measured-view basis for both options. "
+      "With digital idle extrapolated to 125 C, S exceeds the row while S+J "
+      "stays below it in this scaling model.")
     A(f"- **Lock proximity is structural at these N**: inside the characterized "
       f"wstv span ({e['lock']['characterized_span']}x period span) rings can be "
       f"spaced >= 2% apart only up to `N` = {e['lock']['n_lock_free_max']}; at "
@@ -912,37 +920,39 @@ def render_body(rows, red, ctrl_j, ctrl_sc) -> str:
 
     A("## The three rows together, and the conclusion")
     A("")
-    cap = e['allrows']
-    A("| option | rate row (> 1 Mbps) | power row (< 500 uW) | area row (< 0.05 mm2) | ceiling with every row held |")
+    bound = e['ring_power_bound']
+    power = e['power']
+    area = e['area']
+    A("| option | entropy model at 1 Mbps | active power (< 500 uW) | whole-block area (< 0.05 mm²) | conditional raw-rate upper bound |")
     A("|---|---|---|---|---|")
-    A(f"| committed (N = 4, analog XOR) | unmet (50 kbps; ceiling {e['committed']['ceiling_kbps']:.1f} kbps, combining-bound) | met ({e['power']['array125_anchor_uw']:.0f} uW array worst) | unmet (whole block 0.126 mm2) | {e['committed']['ceiling_kbps']:.1f} kbps |")
-    A(f"| J only (ring3, analog XOR) | unmet (ceiling {e['ring3']['ceiling_kbps']:.0f} kbps, combining-bound; swing below DR-0002's bar everywhere) | met at N_max = {e['ring3']['n_max_combine']} | as committed | {e['ring3']['ceiling_kbps']:.0f} kbps |")
-    A(f"| S only (ring5) | **met** at N = {e['committed']['n_min_entropy_1mbps_ring5']} | **broken** ({e['power']['S_uw']/1e3:.1f} mW, {e['power']['S_over_row']:.1f}x) | **broken** ({e['area']['S_ring5']['macro_density_um2']/1e6:.3f} mm2 macro-density est) | {cap['rate_kbps_ring5']:.0f} kbps (N = {cap['n_cap_ring5']}) |")
-    A(f"| S+J (ring3) | **met** at N = {e['ring3']['n_min_entropy_1mbps']} | **broken** ({e['power']['SJ_uw']/1e3:.2f} mW, {e['power']['SJ_over_row']:.1f}x) | {'broken' if e['area']['S_ring3']['macro_density_um2'] > ROW_AREA_UM2 else 'met'} ({e['area']['S_ring3']['macro_density_um2']/1e6:.3f} mm2 est) | **{cap['rate_kbps_ring3']:.0f} kbps** (N = {cap['n_cap_ring3']}, {cap['binding_row']}-bound) |")
+    A(f"| committed (ring5, analog XOR) | combining prevents 1 Mbps | "
+      f"{power['array125_anchor_uw']:.0f} uW array alone at N = 4 | unmet "
+      f"({COMMITTED_WHOLE_MM2:.6f} mm² placed) | {e['committed']['ceiling_kbps']:.1f} kbps "
+      f"at the combining limit (N = 6), 50 kbps chosen at N = 4 |")
+    A(f"| J only (ring3, analog XOR) | combining prevents 1 Mbps | whole-block power "
+      f"unmeasured | current digital macro exceeds target | {e['ring3']['ceiling_kbps']:.0f} "
+      f"kbps at the combining limit (N = {e['ring3']['n_max_combine']}) |")
+    for label, n, active_uw, analog, rate, n_power in (
+        ("S only (ring5)", e['committed']['n_min_entropy_1mbps_ring5'], power['S_uw'],
+         area['S_ring5'], bound['rate_kbps_ring5'], power['n_power_row_ring5']),
+        ("S+J (ring3)", e['ring3']['n_min_entropy_1mbps'], power['SJ_uw'],
+         area['S_ring3'], bound['rate_kbps_ring3'], power['n_power_row_ring3']),
+    ):
+        A(f"| {label} | requires N = {n} | rings and buffers alone draw "
+          f"{active_uw/1e3:.2f} mW at N = {n} | {analog['macro_density_um2']/1e6:.3f} "
+          f"mm² analog estimate at N = {n}, plus digital and routing | "
+          f"{rate:.0f} kbps at N = {n_power} (ring + buffer power limit) |")
     A("")
-    A(f"**Negative result.** Sample-before-combine does remove `N_max_combine` -- "
-      f"that half of the hypothesis is confirmed -- and the 3-inversion ring "
-      f"measures **{e['ring3']['q_gain_vs_ring5_binding']:.1f}x** ring5's per-ring Q "
-      f"at the entropy-binding corner, cutting `N` at 1 Mbps from "
-      f"{e['committed']['n_min_entropy_1mbps_ring5']} to {e['ring3']['n_min_entropy_1mbps']}. "
-      "But 1 Mbps still cannot be met with the other rows held: even S+J needs "
-      f"{e['power']['SJ_uw']/1e3:.2f} mW of ring supply current alone. **The "
-      "limiting quantity is the per-ring active supply current at the worst "
-      "measured corner (ff / 125 C / 1.98 V) against the < 500 uW row**; area and "
-      f"lock proximity bind within a factor of ~2 of it (N_area = {e['area']['n_area_row_ring3']}, "
-      f"N_lock-free = {e['lock']['n_lock_free_max']}). The best reachable rate "
-      f"with every row held is **~{cap['rate_kbps_ring3']:.0f} kbps** (S+J at "
-      f"N = {cap['n_cap_ring3']}) against the committed topology's "
-      f"{e['committed']['ceiling_kbps']:.0f} kbps combining-bound ceiling -- a real "
-      "improvement, still well short of 1 Mbps, and riding a cell whose "
-      "ring-node swing misses DR-0002's 0.80 bar at every point measured and "
-      "nearly fails to oscillate at 125 C / 1.98 V. The conclusion is robust "
-      "to the estimator's statistics: even a +50 % (~3 sigma) favourable "
-      f"`sigma_1` draw moves the all-rows ceiling only to "
-      f"~{e['draw_sensitivity']['sigma_x1.5']['allrows_kbps']:.0f} kbps "
-      f"(N@1 Mbps = {e['draw_sensitivity']['sigma_x1.5']['n_1mbps']}). A higher "
-      "rate bought by breaking the power or area row is exactly that; this "
-      "record does not propose it.")
+    A(f"**Negative result.** At 1 Mbps the S+J entropy model requires "
+      f"{e['ring3']['n_min_entropy_1mbps']} rings. At ff / 125 C / 1.98 V their "
+      f"rings and buffers alone draw {power['SJ_uw']/1e3:.2f} mW, exceeding the "
+      "500 uW block budget. Allocating that entire budget to the measured "
+      f"per-ring current permits {power['n_power_row_ring3']} rings. At that count "
+      f"the conditional upper bound is **{bound['rate_kbps_ring3']:.0f} kbps** for "
+      f"this jitter draw, or {e['draw_sensitivity']['sigma_x1.5']['ring_power_bound_kbps']:.0f} "
+      "kbps for a 50% larger `sigma_1`. Whole-block rate feasibility remains "
+      "unestablished. There is no S+J floorplan, and ring3 misses DR-0002's "
+      f"0.80 swing criterion at every measured point (minimum {sw['swing_ring_min']:.3f} × Vdd).")
     A("")
     A("Every entropy figure here is simulation-derived and provisional until "
       "silicon; every `sigma_1` is a single ~16 %-1sigma draw on top of DR-0002 "
@@ -968,14 +978,27 @@ def load_reqdir(reqdir):
     return chunks, rows
 
 
+def study_results(rows):
+    """The complete set of derived fields saved and verified on replay."""
+    return {
+        "tolerances": {"jitter_tbar": TOL_TBAR_JITTER,
+                       "sigma_binding": TOL_SIGMA_BINDING, "sigma_coarse": TOL_SIGMA_COARSE,
+                       "sc_tbar": TOL_TBAR_SC, "sc_swing": TOL_SWING_SC, "sc_current": TOL_CURRENT_SC},
+        "control_jitter": control_gate_jitter(rows, load_control_targets()),
+        "control_sc": control_gate_sc(rows, load_ring5_loaded()),
+        "reduction": full_reduction(rows),
+        "conclusion": "negative_result",
+        "limiting_quantity": ("per-ring active supply current at the worst measured corner "
+                              "(ff / 125 C / 1.98 V) against the < 500 uW active-power row"),
+    }
+
+
 def emit_record(reqdir, author="loom-builder@sky130-trng"):
     chunks, rows = load_reqdir(reqdir)
-    ctrl_j = control_gate_jitter([r for r in rows if r["config"] == "ctrl5"],
-                                 load_control_targets())
-    ctrl_sc = control_gate_sc(rows, load_ring5_loaded())
-    red = full_reduction(rows)
+    results = study_results(rows)
+    red = results["reduction"]
     now, sha, rid = new_record_id(REPO)
-    body = render_body(rows, red, ctrl_j, ctrl_sc)
+    body = render_body(rows, red, results["control_jitter"], results["control_sc"])
     jobs = sorted({r["job_id"] for r in rows if r["job_id"]})
     header = [
         f"# {rid} -- {SLUG}", "",
@@ -1017,14 +1040,7 @@ def emit_record(reqdir, author="loom-builder@sky130-trng"):
             "klt_sim": {"jobs": jobs, "backend": "batch",
                         "responses": f"sim/{SLUG}/corners/{rid}/*.klt-sim.json.gz",
                         "models_lib_sha256": rows[0].get("models_lib_sha256")},
-            "tolerances": {"jitter_tbar": TOL_TBAR_JITTER,
-                           "sigma_binding": TOL_SIGMA_BINDING, "sigma_coarse": TOL_SIGMA_COARSE,
-                           "sc_tbar": TOL_TBAR_SC, "sc_swing": TOL_SWING_SC, "sc_current": TOL_CURRENT_SC},
-            "control_jitter": ctrl_j, "control_sc": ctrl_sc,
-            "conclusion": "negative_result",
-            "limiting_quantity": ("per-ring active supply current at the worst measured corner "
-                                  "(ff / 125 C / 1.98 V) against the < 500 uW active-power row"),
-            "reduction": json.loads(json.dumps(red, default=str)),
+            **results,
         }
         mint_record(REPO / "sim" / SLUG / "records", REPO, rid, header, body, summary,
                     author=author, now=now, sha=sha)
@@ -1045,17 +1061,11 @@ def check_record(recpath):
     rows = jobs_from_responses(chunks)
     if len(rows) != EXPECTED_JOBS:
         raise ReductionError(f"replay: expected {EXPECTED_JOBS} units, got {len(rows)}")
-    control_gate_jitter([r for r in rows if r["config"] == "ctrl5"], load_control_targets())
-    control_gate_sc(rows, load_ring5_loaded())
-    red = full_reduction(rows)
-    saved = rec.get("reduction", {})
-    for k in ("k3", "q_required"):
-        if k in saved and abs(float(saved[k]) - float(red[k])) > 1e-12:
-            raise ReductionError(f"replay: {k} drifted: {saved[k]} vs {red[k]}")
-    if saved.get("ring3", {}).get("n_min_entropy_1mbps") != red["ring3"]["n_min_entropy_1mbps"]:
-        raise ReductionError("replay: N@1Mbps(ring3) drifted")
-    if rec.get("conclusion") != "negative_result":
-        raise ReductionError("replay: conclusion drifted")
+    expected = study_results(rows)
+    saved = {key: rec[key] for key in expected if key in rec}
+    differences = replay_diff(expected, saved, strict_types=True)
+    if differences:
+        raise ReductionError("replay: " + "\n".join(differences))
     print(f"record {rid} replays clean (both controls + reduction equality)")
     return 0
 
