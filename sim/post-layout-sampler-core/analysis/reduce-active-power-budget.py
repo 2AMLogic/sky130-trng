@@ -134,9 +134,14 @@ def fleet_run(directory: Path, temp: float, period: str) -> dict:
             or plan["analysis"] != request["analysis"]
             or plan["timing"]["ts_s"] != (100e-9 if short else 20e-6)):
         raise EvidenceError(f"{directory}: incorrect clock or transient settings")
-    if (env["netlist_sha256"] != plan["netlist_sha256"]
-            or not re.fullmatch("[0-9a-f]{64}", plan["netlist_sha256"] or "")):
+    deck_hash = plan["netlist_sha256"]
+    if (env["netlist_sha256"] != deck_hash
+            or not re.fullmatch("[0-9a-f]{64}", deck_hash or "")):
         raise EvidenceError(f"{directory}: report and plan netlist hashes differ")
+    provenance = report.get("provenance") or {}
+    input_hash = (provenance.get("input") or {}).get("content_hash")
+    if input_hash is not None and input_hash not in (deck_hash, f"sha256:{deck_hash}"):
+        raise EvidenceError(f"{directory}: input content_hash differs from planned netlist hash")
     job = env["remote"]
     match = {
         "design_lib": plan["design_lib"]["sha256"],
@@ -148,7 +153,8 @@ def fleet_run(directory: Path, temp: float, period: str) -> dict:
         if not isinstance(value, str) or not re.fullmatch("[0-9a-f]{64}", value):
             raise EvidenceError(f"{directory}: missing or invalid {name} hash")
     build = env["engine_build"]["version_banner"]
-    if (not build or not job["job_id"] or job["state"] != "done"
+    job_id = job.get("job_id")
+    if (not build or not isinstance(job_id, str) or not job_id.strip() or job["state"] != "done"
             or env["engine"] != "ngspice" or request["engine"] != "ngspice"):
         raise EvidenceError(f"{directory}: incomplete simulator or job provenance")
     match.update(engine_build=build, models=request["models"], ngspice_init=request["options"]["ngspice_init"],
@@ -162,7 +168,7 @@ def fleet_run(directory: Path, temp: float, period: str) -> dict:
     for name in required:
         if got.get(name) is None or not math.isfinite(got[name]):
             raise EvidenceError(f"{directory}: missing or invalid measurement {name}")
-    out = {"plan": plan, "match": match, "init_digest": init_digest, "job_id": job.get("job_id"), "state": job.get("state"),
+    out = {"plan": plan, "match": match, "init_digest": init_digest, "job_id": job_id, "state": job.get("state"),
            "runner_klt": job.get("runner_klt_version"),
            "compat": job.get("runner_compatibility"),
            "runtime_s": c.get("runtime_s"), "corner_id": c.get("corner_id")}
@@ -198,6 +204,7 @@ def fmt(x: float, nd: int = 1) -> str:
 def main(argv: list[str] | None = None) -> int:
     out_path = SLUG / "analysis" / "active-power-budget.md"
     data = {}
+    seen_jobs = set()
     for t in TEMPS:
         ctrl = control_rows(json.loads(CONTROL_RECORDS[t].read_text()))
         tag = "m40C" if t < 0 else "125C"
@@ -212,6 +219,13 @@ def main(argv: list[str] | None = None) -> int:
             if (ts["init_digest"] and matched["init_digest"]
                     and ts["init_digest"] != matched["init_digest"]):
                 raise EvidenceError(f"{control_dir}: 100 ns and 20 us differ in effective ngspice_init")
+        for run in (ts, matched):
+            if run is None:
+                continue
+            job_id = run["job_id"]
+            if job_id in seen_jobs:
+                raise EvidenceError(f"{run['plan']['name']}: reused fleet job {job_id}")
+            seen_jobs.add(job_id)
         data[t] = {"ctrl": ctrl, "ts": ts, "matched": matched,
                    "anchor": anchor_delta_pp(ctrl, ts)}
     lines: list[str] = []

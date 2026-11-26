@@ -10,6 +10,8 @@ would silently lie if it rotted:
   sources read negative when delivering) times 1.98 V, in uW;
 * headroom is target-minus-total, so a failing corner reports negative;
 * the 20 us verdict grades the unrounded total against the strict < 500 uW bound;
+* single-corner reports have distinct job IDs and any recorded input hash
+  agrees with that run's planned deck;
 * runner-reported initialization must agree with the request and the other run;
 * the W_RST anchor compares the 20 us run's reset-held window against the
   committed control's own same-window numbers (stimulus-identical), and
@@ -90,7 +92,8 @@ def synth_report(tmp: Path, t: float, period: str, scale: float) -> Path:
     rep = json.loads((source / f"ts20u-{tag}-1.98V" / "report.json").read_text())
     rep["corners"][0]["measurements"] = meas
     rep["environment"]["netlist_sha256"] = plan["netlist_sha256"]
-    rep["environment"]["remote"]["job_id"] = "synthetic-job"
+    rep["provenance"]["input"]["content_hash"] = "sha256:" + plan["netlist_sha256"]
+    rep["environment"]["remote"]["job_id"] = f"synthetic-job-{name}"
     p = dest / "report.json"
     p.write_text(json.dumps(rep))
     return p
@@ -133,7 +136,10 @@ def main() -> int:
                     ("PASS" in ln or "FAIL" in ln)]
         check(len(verdicts) == 4 and all("PASS" in v for v in verdicts),
               "four comparison verdicts, synthetic all PASS")
-        check("synthetic-job" in text, "run references carried into the record")
+        for tag in ("m40C", "125C"):
+            for period in ("100n", "20u"):
+                check(f"synthetic-job-ts{period}-{tag}-1.98V" in text,
+                      f"{period} job at {tag} cited in the budget")
         # anchor: ctrl rst total = 0.6*88u + 0.9*175u = 210.3 uA; ts rst = 190 uA
         # delta = (190-210.3)/210.3 = -9.65 %
         check("(-9.65 %)" in text, "W_RST anchor delta computed")
@@ -197,6 +203,20 @@ def main() -> int:
         hot_long.write_bytes(original_long)
         # refusal paths
         print("refusals:")
+        for other in (hot_long, matched[-40.0]):
+            report = json.loads(original_short)
+            other_job = json.loads(other.read_text())["environment"]["remote"]["job_id"]
+            report["environment"]["remote"]["job_id"] = other_job
+            hot.write_text(json.dumps(report))
+            check_refusal(f"reused fleet job {other_job}")
+        report = json.loads(original_short)
+        report["provenance"]["input"]["content_hash"] = long["provenance"]["input"]["content_hash"]
+        hot.write_text(json.dumps(report))
+        check_refusal("input content_hash")
+        del report["provenance"]["input"]["content_hash"]
+        hot.write_text(json.dumps(report))
+        check(R.main([]) == 0, "report without optional input hash uses its environment deck hash")
+        hot.write_bytes(original_short)
         plan_path = hot.with_name("plan.json")
         original_plan = plan_path.read_bytes()
         for key in ("design_lib", "pex_lib"):
