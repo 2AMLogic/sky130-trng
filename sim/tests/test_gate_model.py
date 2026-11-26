@@ -52,6 +52,21 @@ COMMITTED_MANIFEST = BLOCK / "corners" / "gate-model-full" / "gate-model.manifes
 sys.path.insert(0, os.path.join(REPO, "sim", "bin"))
 from loadmod import load_module  # noqa: E402
 
+# issue #776: the pure-stdlib Verilog/Liberty/NLDM frontend is imported
+# directly from gate_model_lib.py; make_gate_model (G below) stays for the
+# emitter/deck/CLI surface and re-exports the same objects.
+sys.path.insert(0, str(BLOCK))
+from gate_model_lib import (  # noqa: E402
+    CellModel,
+    GateModelError,
+    NldmTable,
+    extract_cell_blocks,
+    netname,
+    parse_liberty_group,
+    parse_verilog,
+    truth_table,
+)
+
 G = load_module("make_gate_model", GENERATOR)
 MN = load_module("make_netlist_for_gate_model", BLOCK / "make-netlist.py")
 CMP = load_module("compare_gate_model", BLOCK / "analysis" / "compare-gate-model.py")
@@ -277,9 +292,9 @@ def write_pair(tmp: Path, verilog: str = SYNTH_V, lib: str = SYNTH_LIB):
 def build(tmp: Path, verilog: str = SYNTH_V, lib: str = SYNTH_LIB, **kw):
     """Parse + build a gate model from a synthetic pair, in process."""
     v, l = write_pair(tmp, verilog, lib)
-    design = G.parse_verilog(v)
-    blocks, header, templates = G.extract_cell_blocks(l, set(design.cell_histogram()))
-    cells = {n: G.CellModel(n, g, templates) for n, g in blocks.items()}
+    design = parse_verilog(v)
+    blocks, header, templates = extract_cell_blocks(l, set(design.cell_histogram()))
+    cells = {n: CellModel(n, g, templates) for n, g in blocks.items()}
     kwargs = dict(supply_v=1.8, slew_ns=0.1, port_load_pf=0.0,
                   liberty_path=l, liberty_sha256="0" * 64, threshold_pct=50.0)
     kwargs.update(kw)
@@ -293,7 +308,7 @@ def build(tmp: Path, verilog: str = SYNTH_V, lib: str = SYNTH_LIB, **kw):
 class TestRoutedNetlistCorrespondence(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.design = G.parse_verilog(ROUTED_V)
+        cls.design = parse_verilog(ROUTED_V)
         cls.hist = cls.design.cell_histogram()
 
     def test_parse_counts_match_the_committed_netlist(self):
@@ -347,11 +362,11 @@ class TestRoutedNetlistCorrespondence(unittest.TestCase):
         # same name.
         for name, direction, msb, lsb in self.design.ports:
             if msb is None:
-                self.assertEqual(G.netname(name), MN._normalise_name(name))
+                self.assertEqual(netname(name), MN._normalise_name(name))
             else:
                 for i in range(min(msb, lsb), max(msb, lsb) + 1):
                     tok = f"{name}[{i}]"
-                    self.assertEqual(G.netname(tok), MN._normalise_name(tok))
+                    self.assertEqual(netname(tok), MN._normalise_name(tok))
 
     def test_committed_manifest_accounts_for_every_routed_instance(self):
         m = json.loads(COMMITTED_MANIFEST.read_text())
@@ -401,7 +416,7 @@ class TestFailsClosed(unittest.TestCase):
     def assert_refuses(self, needle: str, *, verilog=SYNTH_V, lib=SYNTH_LIB):
         with tempfile.TemporaryDirectory() as td:
             tmp = Path(td)
-            with self.assertRaises(G.GateModelError) as cm:
+            with self.assertRaises(GateModelError) as cm:
                 build(tmp, verilog, lib)
             self.assertIn(needle, str(cm.exception))
 
@@ -452,7 +467,7 @@ endmodule
                 comb_cell("sky130_fd_sc_hd__inv_1", ["A"], "Y", "(!A)"),
                 threshold="40.000000000"))
             out = tmp / "out"
-            with self.assertRaises(G.GateModelError) as cm:
+            with self.assertRaises(GateModelError) as cm:
                 G.main([str(out), "--verilog", str(v), "--liberty", str(l)])
             self.assertIn("input_threshold_pct", str(cm.exception))
             self.assertFalse(out.exists())
@@ -528,7 +543,7 @@ endmodule
 class TestTruthTable(unittest.TestCase):
     def test_a21oi_table_matches_a_hand_computation(self):
         pins = ["A1", "A2", "B1"]
-        table = G.truth_table(A21OI_FUNCTION, pins)
+        table = truth_table(A21OI_FUNCTION, pins)
         # index = A1 + 2*A2 + 4*B1 (first input is the LSB -- measured)
         expect = ""
         for idx in range(8):
@@ -542,16 +557,16 @@ class TestTruthTable(unittest.TestCase):
     def test_index_order_puts_the_first_input_in_the_lsb(self):
         # the ordering is a MEASURED property of ngspice's d_genlut (four
         # one-hot table_values against all four input combinations), so pin it.
-        self.assertEqual(G.truth_table("(A&!B)", ["A", "B"]), "0100")
-        self.assertEqual(G.truth_table("(!A&B)", ["A", "B"]), "0010")
+        self.assertEqual(truth_table("(A&!B)", ["A", "B"]), "0100")
+        self.assertEqual(truth_table("(!A&B)", ["A", "B"]), "0010")
 
     def test_nand_and_nor_and_xor_and_constants(self):
-        self.assertEqual(G.truth_table("(!A) | (!B)", ["A", "B"]), "1110")
-        self.assertEqual(G.truth_table("(!A&!B)", ["A", "B"]), "1000")
-        self.assertEqual(G.truth_table("A^B", ["A", "B"]), "0110")
-        self.assertEqual(G.truth_table("A'", ["A"]), "10")
-        self.assertEqual(G.truth_table("A B", ["A", "B"]), "0001")  # juxtaposition
-        self.assertEqual(G.truth_table("1", ["A"]), "11")
+        self.assertEqual(truth_table("(!A) | (!B)", ["A", "B"]), "1110")
+        self.assertEqual(truth_table("(!A&!B)", ["A", "B"]), "1000")
+        self.assertEqual(truth_table("A^B", ["A", "B"]), "0110")
+        self.assertEqual(truth_table("A'", ["A"]), "10")
+        self.assertEqual(truth_table("A B", ["A", "B"]), "0001")  # juxtaposition
+        self.assertEqual(truth_table("1", ["A"]), "11")
 
     def test_xor_binds_tighter_than_and(self):
         # Liberty's documented precedence: '^' over '&'/juxtaposition, the
@@ -563,26 +578,26 @@ class TestTruthTable(unittest.TestCase):
         for idx in range(8):
             a, b, c = idx & 1, (idx >> 1) & 1, (idx >> 2) & 1
             expect += "1" if ((a ^ b) and c) else "0"
-        self.assertEqual(G.truth_table("A ^ B & C", pins), expect)
-        self.assertEqual(G.truth_table("A ^ B & C", pins), "00000110")
+        self.assertEqual(truth_table("A ^ B & C", pins), expect)
+        self.assertEqual(truth_table("A ^ B & C", pins), "00000110")
         # A & (B ^ C)
         expect = ""
         for idx in range(8):
             a, b, c = idx & 1, (idx >> 1) & 1, (idx >> 2) & 1
             expect += "1" if (a and (b ^ c)) else "0"
-        self.assertEqual(G.truth_table("A & B ^ C", pins), expect)
-        self.assertEqual(G.truth_table("A & B ^ C", pins), "00010100")
+        self.assertEqual(truth_table("A & B ^ C", pins), expect)
+        self.assertEqual(truth_table("A & B ^ C", pins), "00010100")
         # juxtaposition follows the same precedence as an explicit '&'
-        self.assertEqual(G.truth_table("A B ^ C", pins), "00010100")
+        self.assertEqual(truth_table("A B ^ C", pins), "00010100")
 
     def test_function_referencing_an_unknown_pin_is_refused(self):
-        with self.assertRaises(G.GateModelError):
-            G.truth_table("(A&C)", ["A", "B"])
+        with self.assertRaises(GateModelError):
+            truth_table("(A&C)", ["A", "B"])
 
     def test_unparseable_function_is_refused(self):
         for expr in ("(A&", "A&&B", "A@B", "A)"):
-            with self.assertRaises(G.GateModelError):
-                G.truth_table(expr, ["A", "B"])
+            with self.assertRaises(GateModelError):
+                truth_table(expr, ["A", "B"])
 
 
 class TestNldmReduction(unittest.TestCase):
@@ -591,7 +606,7 @@ class TestNldmReduction(unittest.TestCase):
                  'variable_1 : "input_net_transition";',
                  'variable_2 : "total_output_net_capacitance";',
                  "}"]
-        g = G.parse_liberty_group(lines)
+        g = parse_liberty_group(lines)
         return {g.args[0]: g}
 
     def table(self, tname: str = "del_2_2"):
@@ -600,7 +615,7 @@ class TestNldmReduction(unittest.TestCase):
                  "index_2(\"0.001, 0.009\");",
                  "values(\"1.0, 2.0\", \"3.0, 5.0\");",
                  "}"]
-        return G.NldmTable(G.parse_liberty_group(lines), "test", self.templates())
+        return NldmTable(parse_liberty_group(lines), "test", self.templates())
 
     def test_corner_values_are_exact(self):
         t = self.table()
@@ -628,8 +643,8 @@ class TestNldmReduction(unittest.TestCase):
                  "index_2(\"0.001, 0.009\");",
                  "values(\"1.0, 2.0\", \"3.0\");",
                  "}"]
-        with self.assertRaises(G.GateModelError):
-            G.NldmTable(G.parse_liberty_group(lines), "bad", self.templates())
+        with self.assertRaises(GateModelError):
+            NldmTable(parse_liberty_group(lines), "bad", self.templates())
 
     def test_transposed_template_axes_are_refused(self):
         # at(slew, load) brackets index_1 with slew and index_2 with load; a
@@ -639,14 +654,14 @@ class TestNldmReduction(unittest.TestCase):
                  'variable_1 : "total_output_net_capacitance";',
                  'variable_2 : "input_net_transition";',
                  "}"]
-        g = G.parse_liberty_group(lines)
+        g = parse_liberty_group(lines)
         tmpl = {g.args[0]: g}
-        with self.assertRaises(G.GateModelError) as cm:
-            G.NldmTable(self._raw_table(), "test", tmpl)
+        with self.assertRaises(GateModelError) as cm:
+            NldmTable(self._raw_table(), "test", tmpl)
         self.assertIn("transposed", str(cm.exception))
 
     def test_unknown_template_name_is_refused(self):
-        with self.assertRaises(G.GateModelError) as cm:
+        with self.assertRaises(GateModelError) as cm:
             self.table(tname="del_9_9")
         self.assertIn("does not define", str(cm.exception))
 
@@ -656,7 +671,7 @@ class TestNldmReduction(unittest.TestCase):
                  "index_2(\"0.001, 0.009\");",
                  "values(\"1.0, 2.0\", \"3.0, 5.0\");",
                  "}"]
-        return G.parse_liberty_group(lines)
+        return parse_liberty_group(lines)
 
     def test_delay_is_the_max_over_arcs_and_floored(self):
         with tempfile.TemporaryDirectory() as td:
@@ -779,7 +794,7 @@ class TestEmittedStructure(unittest.TestCase):
         # introduce a second token that flattens to the same flat name
         v = v.replace(".A(q1),\n    .Y());", ".A(n1_0_),\n    .Y());")
         with tempfile.TemporaryDirectory() as td:
-            with self.assertRaises(G.GateModelError) as cm:
+            with self.assertRaises(GateModelError) as cm:
                 build(Path(td), verilog=v)
             self.assertIn("collision", str(cm.exception))
 
@@ -1028,10 +1043,10 @@ REAL_LIB = real_liberty()
 class TestAgainstRealLiberty(unittest.TestCase):
     def test_regenerating_reproduces_the_committed_manifest(self):
         committed = json.loads(COMMITTED_MANIFEST.read_text())
-        design = G.parse_verilog(ROUTED_V)
-        blocks, header, templates = G.extract_cell_blocks(
+        design = parse_verilog(ROUTED_V)
+        blocks, header, templates = extract_cell_blocks(
             REAL_LIB, set(design.cell_histogram()))
-        cells = {n: G.CellModel(n, g, templates) for n, g in blocks.items()}
+        cells = {n: CellModel(n, g, templates) for n, g in blocks.items()}
         model = G.build_gate_model(
             design, cells,
             supply_v=committed["reductions"]["supply_v"],
@@ -1067,13 +1082,13 @@ class TestPointFlag(unittest.TestCase):
         # DeckMapError raised from make-gate-model's own pvt_deck_map
         # import -- a ValueError under either module identity
         for bad in ("ss:-40", "ls:-40:1.62", "ss:-40C:1.62", "", "ss:40:1"):
-            with self.assertRaises((G.GateModelError, ValueError), msg=bad):
+            with self.assertRaises((GateModelError, ValueError), msg=bad):
                 G.parse_point(bad)
 
     def test_unmapped_point_exits_non_zero_and_writes_nothing(self):
         with tempfile.TemporaryDirectory(prefix="gm-point-") as tmp:
             out = Path(tmp) / "out"
-            with self.assertRaises(G.GateModelError) as cm:
+            with self.assertRaises(GateModelError) as cm:
                 G.main([str(out), "--point", "tt:-40:1.65", "--cycles", "4"])
             self.assertIn("no Liberty deck mapping", str(cm.exception))
             self.assertFalse(out.exists(), "an unmapped point wrote output")
