@@ -44,7 +44,7 @@ import klayout.db as db
 
 HERE = pathlib.Path(__file__).resolve().parent
 
-sys.path.insert(0, str(HERE))
+sys.path.insert(0, str(HERE.parent / "bin"))
 from _geom_common import carrying, merged  # noqa: E402
 
 MET1 = (68, 20)

@@ -30,6 +30,8 @@ sys.path.insert(0, os.path.join(REPO_ROOT, "sim", "bin"))
 from loadmod import load_module  # noqa: E402
 import replay_equal  # noqa: E402
 B = load_module("raw_bit_battery", _PATH)
+brb = load_module("behavioral_raw_bit",
+                  REPO_ROOT / "sim/raw-bit-volume-campaign/behavioral_raw_bit.py")
 
 
 def ideal(n, seed=1):
@@ -115,6 +117,54 @@ class TestBatteryRejectsDefects(unittest.TestCase):
         self.assertEqual(ok["verdict"], "PASS", ok["tests"])
         bad = B.run_battery(biased(40 * 1000, seed=9), segment_len=1000)
         self.assertEqual(bad["tests"]["monobit"]["status"], "FAIL")
+
+
+class TestSerialPairEvaluatedOnce(unittest.TestCase):
+    """Issue #765: both serial rows are columns of one `_serial` pair
+    evaluation per eligible segment; below the floors the pair is never
+    invoked."""
+
+    def _run_counting(self, bits, segment_len=None):
+        orig = B._serial
+        calls = []
+
+        def counting(bs):
+            calls.append(len(bs))
+            return orig(bs)
+
+        B._serial = counting
+        try:
+            res = B.run_battery(bits, segment_len=segment_len)
+        finally:
+            B._serial = orig
+        return res, calls
+
+    def test_one_serial_call_per_eligible_segment(self):
+        bits = ideal(40 * 512, seed=11)
+        res, calls = self._run_counting(bits, segment_len=512)
+        self.assertEqual(calls, [512] * 40)  # one per segment, not per row
+        segs = [bits[i:i + 512] for i in range(0, len(bits), 512)]
+        for i, seg in enumerate(segs):
+            p1, p2 = B._serial(seg)
+            self.assertEqual(res["tests"]["serial_1"]["p_values"][i], p1)
+            self.assertEqual(res["tests"]["serial_2"]["p_values"][i], p2)
+        single = ideal(20000, seed=12)
+        res1, calls1 = self._run_counting(single)
+        self.assertEqual(calls1, [20000])  # single sequence: one call
+        self.assertEqual(res1["tests"]["serial_1"]["p_values"],
+                         [B._serial(single)[0]])
+        self.assertEqual(res1["tests"]["serial_2"]["p_values"],
+                         [B._serial(single)[1]])
+
+    def test_no_serial_calls_below_the_floors(self):
+        cases = ((ideal(127, seed=13), None),         # below the serial min_n
+                 (ideal(9 * 8192, seed=14), 8192))    # below MIN_SEGMENTS
+        for bits, seg in cases:
+            res, calls = self._run_counting(bits, segment_len=seg)
+            self.assertEqual(calls, [])
+            for name in ("serial_1", "serial_2"):
+                self.assertEqual(res["tests"][name]["status"], "INSUFFICIENT")
+                self.assertNotIn("p_values", res["tests"][name])
 
 
 class TestMinimumLengthGuards(unittest.TestCase):
@@ -207,11 +257,6 @@ class TestRecordCaveat(unittest.TestCase):
             self.assertEqual(c["battery"]["verdict"], "INSUFFICIENT")
 
 
-def pack(bits):
-    return "".join(f"{int(''.join(map(str, bits[i:i + 8])), 2):02x}"
-                   for i in range(0, len(bits), 8))
-
-
 class TestVolumeAdapter(unittest.TestCase):
     N = 5120  # 10 segments of 512 (SEGMENT_LEN patched below)
 
@@ -234,7 +279,7 @@ class TestVolumeAdapter(unittest.TestCase):
         self.streams = []
         for i, ts in enumerate(("Ts20us", "Ts100ns")):
             bits = ideal(self.N, seed=10 + i)
-            text = pack(bits)
+            text = brb.pack_hex(bits)
             name = f"bits_tt_{ts}.hex.txt"
             (self.runs / name).write_text(text + "\n")
             self.streams.append({
@@ -284,10 +329,10 @@ class TestVolumeAdapter(unittest.TestCase):
         row = self.streams[0]
         bits = B.load_stream(self.runs / row["file"], row["n"], row["sha256_hex"])
         self.assertEqual(len(bits), self.N)
-        self.assertEqual(pack(bits) + "\n", (self.runs / row["file"]).read_text())
+        self.assertEqual(brb.pack_hex(bits) + "\n", (self.runs / row["file"]).read_text())
         # same text without the newline hashes identically (newline excluded)
         f = self.runs / "nonl.txt"
-        f.write_text(pack(bits))
+        f.write_text(brb.pack_hex(bits))
         self.assertEqual(B.load_stream(f, row["n"], row["sha256_hex"]), bits)
 
     def test_rejections(self):

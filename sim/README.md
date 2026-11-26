@@ -243,6 +243,14 @@ Two rules from the root `CLAUDE.md` govern everything under this directory:
   deleted after it is written; a correction mints a new record and names the
   one it supersedes via its `Supersedes` field.
 
+  Working-tree disclosure (issues #666, #676): every record writer in
+  `sim/bin/evidence_record.py` -- `mint_behavioral_record()` and `mint_record()`
+  -- records whether the tree differed from the cited `Repo commit` (a
+  `- Working tree:` footer line plus `repo_dirty` / `repo_dirty_paths` JSON
+  keys; `null` / "unknown" when git status fails, never "clean"). A record's own
+  outputs under its `records/` and `runs/` directories are not counted.
+  Records minted before this change carry no such disclosure.
+
   This rule is enforced in CI (issue #232): the `sim-records-append-only`
   job runs `sim/bin/check_records_append_only.py` on every PR and fails if any
   existing `sim/*/records/*` file is modified, deleted or renamed (added
@@ -1418,10 +1426,14 @@ and the array ladder / fidelity / current / closest small-rational approach are 
 PVT against the matched zero-shift rows. Common-mode 0/20/40/60 mV over the full tt/ss/ff x
 -40/27/125 C x 1.62/1.8/1.98 V grid for both decks, plus asymmetric (60, 0) and (0, 60) mV for the
 array at the three headline PVT points. **This is a sensitivity bound, not a lifetime prediction**:
-20 mV is a finite-difference resolution, 60 mV an outer stress point, and neither maps to any time,
-stress voltage, duty cycle or temperature. It is a first-order electrical model (gate offset only) and
-makes no spec change; DR-0003/DR-0004 are only *evaluated against* the envelope, and any guard band or
-lifetime is an operator decision (`spec/README.md`).
+20 mV is a finite-difference resolution, 60 mV an outer stress point of the sweep, and neither maps
+to any time, stress voltage, duty cycle or temperature. It is a first-order electrical model (gate
+offset only) and makes no spec change; DR-0003/DR-0004 are only *evaluated against* the envelope.
+The aging question is decided: per the operator ruling of 2026-10-15, #262 is closed as decided --
+the operating point is nominal-only for aging, and end-of-life qualification requires a
+reliability-backed mission profile and a Vth guard band. The ruling sets neither a numerical guard
+band nor a lifetime and authorizes no resizing
+([October 15 ruling](https://github.com/2AMLogic/sky130-trng/issues/262#issuecomment-6202634084)).
 
 | Item | Where |
 |---|---|

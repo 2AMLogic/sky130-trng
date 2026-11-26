@@ -4,7 +4,9 @@
 The evidence source for the error-direction column of issue #595's
 matrix-to-deck mapping (``../pvt_deck_map.py``, record
 ``../records/20261121-pvt-deck-and-boundary-load.md``): it parses the
-shipped Liberty decks with ``make-gate-model.py``'s own parser and measures,
+shipped Liberty decks with the gate-level generator's own parser
+(``gate_model_lib.py``, split out of ``make-gate-model.py`` in issue #776)
+and measures,
 over the cell types ``layout/trng_digital/trng_digital.routed.v`` actually
 uses, how the library-mean scalar delay and ``cell_leakage_power`` move
 between deck pairs that isolate ONE axis each:
@@ -55,6 +57,9 @@ REPO = HERE.parents[2]
 sys.path.insert(0, os.path.join(REPO, "sim", "bin"))
 from loadmod import load_module  # noqa: E402
 
+sys.path.insert(0, str(HERE.parent))
+from gate_model_lib import CellModel, extract_cell_blocks, parse_verilog  # noqa: E402
+
 G = load_module("make_gate_model", HERE.parent / "make-gate-model.py")
 PVT = load_module("pvt_deck_map", HERE.parent / "pvt_deck_map.py")
 
@@ -83,12 +88,12 @@ def deck_stats(corner: str, slew_ns: float, load_pf: float) -> tuple[dict[str, f
     would carry, not on a proxy.
     """
     lib = G.resolve_liberty(None, corner)
-    design = G.parse_verilog(G.ROUTED_V)
-    blocks, _, templates = G.extract_cell_blocks(lib, set(design.cell_histogram()))
+    design = parse_verilog(G.ROUTED_V)
+    blocks, _, templates = extract_cell_blocks(lib, set(design.cell_histogram()))
     delays: dict[str, float] = {}
     leakage: dict[str, float] = {}
     for name, grp in blocks.items():
-        cm = G.CellModel(name, grp, templates)
+        cm = CellModel(name, grp, templates)
         worst = 0.0
         for out in cm.outputs:
             if cm.arcs.get(out):
@@ -120,7 +125,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--json", action="store_true", help="also emit machine-readable rows")
     args = ap.parse_args(argv)
 
-    design = G.parse_verilog(G.ROUTED_V)
+    design = parse_verilog(G.ROUTED_V)
     print(f"cells: {len(set(design.cell_histogram()))} distinct types of "
           f"{len(design.instances)} routed instances; delays are the generator's "
           "own reduction (max over arcs, bilinear, clamped)\n")

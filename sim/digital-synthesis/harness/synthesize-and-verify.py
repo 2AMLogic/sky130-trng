@@ -148,8 +148,7 @@ def main(argv: list[str] | None = None) -> int:
     pdk_info = pdk_find(args.pdk, env=env, klt=args.klt)
     libs_ref = libs_ref_of(pdk_info)
 
-    tmp = Path(tempfile.mkdtemp(prefix="digital-synthesis-"))
-    workdir = args.keep or tmp
+    workdir = args.keep or Path(tempfile.mkdtemp(prefix="digital-synthesis-"))
     workdir.mkdir(parents=True, exist_ok=True)
 
     results = []
@@ -253,17 +252,12 @@ def main(argv: list[str] | None = None) -> int:
           f"{co['cycles']} cycles, {co['mismatches']} mismatches, "
           f"length_ok={co['length_ok']}")
         a("")
-    a("## What this record does and does not establish")
+    # Scope notes only (issue #766): the per-configuration table above is
+    # the single place the observed outcomes appear; the guarded claim
+    # lives in the minted record's `claim` field, which only a fully
+    # passing `--emit-record` run reaches.
+    a("## Scope and caveats")
     a("")
-    a("- It establishes that `digital/rtl/trng_digital.v` maps cleanly onto "
-      "`sky130_fd_sc_hd` at `tt_025C_1v80`, both unconstrained and at this "
-      "design's own 50 kHz sample-clock period, that the mapped netlist is "
-      "*sequentially* equivalent to the source RTL (`klt equiv "
-      "yosys-sequential`, register-correspondence, not a per-cycle "
-      "simulation-only check), and that the same directed stimulus program "
-      "`sim/digital-rtl-equivalence/` uses reproduces the normative "
-      "behavioural model's trace bit-for-bit through the mapped gate "
-      "netlist.")
     a("- `timing.critical_path_ps` is ABC's own pre-layout, wire-free, "
       "largest-combinational-cone `stime -p` estimate -- not signoff STA, "
       "not a register-to-register path, no placement/no wire RCs. `klt "

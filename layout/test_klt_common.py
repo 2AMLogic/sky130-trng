@@ -47,8 +47,8 @@ diverged in the failure direction:
 - the five helpers must not grow back as per-script forks in ``layout/bin``.
 - the four GDS geometry helpers must stay in ``_gds_geometry.py``: no
   per-script fork, and no ``spec_from_file_location`` loader of
-  ``compose-whole.py``, in the three scripts the #613 consolidation touched
-  (#617's guard).
+  ``compose-whole.py``, in every ``layout/bin`` script but the one that
+  defines them (#617's guard).
 - the non-FV ``sim/`` harnesses must reach klt through the shared readers:
   no raw ``klt --version`` argv, no direct ``["pdk", "find", ...]`` call,
   no ``startswith(str(REPO_ROOT))`` ``rel()`` fork, anywhere under
@@ -649,6 +649,21 @@ def check_dumps_matches_write_json() -> None:
            dumps(doc).index('"z"') < dumps(doc).index('"a"'))
 
 
+def _scanned_bin_scripts(bin_dir: Path, home: str) -> list[str]:
+    """Every ``layout/bin/*.py`` but *home* -- the file that defines the
+    helpers a no-fork guard watches over -- and any ``test_*`` file. Found by
+    glob rather than listed (issue #784), so a sibling library such as
+    ``verify_whole_lib.py`` is scanned the moment it lands."""
+    return sorted(path.name for path in bin_dir.glob("*.py")
+                  if path.name != home
+                  and not path.name.startswith("test_"))
+
+
+_NO_FORK_ANCHORS = ("compose-whole.py", "drc_coverage_audit.py",
+                    "physical_estimates.py", "verify-whole.py",
+                    "compose_whole_lib.py", "verify_whole_lib.py")
+
+
 def check_the_consolidated_helpers_live_in_one_place() -> None:
     """Issue #535's regression guard: the five helpers must not grow back
     as per-script forks in layout/bin. A docstring may name them; a ``def``
@@ -659,12 +674,15 @@ def check_the_consolidated_helpers_live_in_one_place() -> None:
         _check(f"_klt_common.py defines {name}()",
                re.search(rf"^def {name}\(", shared, re.M) is not None)
     pattern = re.compile(r"^def (rel|load_json|klt_env|_klayout|dumps)\b", re.M)
-    for script in ("compose-whole.py", "verify-whole.py",
-                   "drc_coverage_audit.py", "physical_estimates.py"):
+    scripts = _scanned_bin_scripts(bin_dir, home="_klt_common.py")
+    for script in scripts:
         text = (bin_dir / script).read_text()
         hit = pattern.search(text)
         _check(f"{script} carries no local fork of the five helpers",
                hit is None, hit.group(0) if hit else None)
+    _check("the scan covers the five-helper anchor scripts (#535, #784)",
+           all(t in scripts for t in _NO_FORK_ANCHORS),
+           sorted(t for t in _NO_FORK_ANCHORS if t not in scripts))
 
 
 def check_the_gds_geometry_helpers_live_in_one_place() -> None:
@@ -683,8 +701,8 @@ def check_the_gds_geometry_helpers_live_in_one_place() -> None:
     fork = re.compile(
         r"^def (flat_extract|net_labels|probe|canonical_geometry_hash)\b", re.M)
     loader = re.compile(r"spec_from_file_location\([^)]*compose-whole", re.S)
-    for script in ("compose-whole.py", "verify-whole.py",
-                   "physical_estimates.py"):
+    scripts = _scanned_bin_scripts(bin_dir, home="_gds_geometry.py")
+    for script in scripts:
         text = (bin_dir / script).read_text()
         hit = fork.search(text)
         _check(f"{script} carries no local fork of the geometry helpers",
@@ -692,6 +710,9 @@ def check_the_gds_geometry_helpers_live_in_one_place() -> None:
         hit = loader.search(text)
         _check(f"{script} reaches no compose-whole.py loader by path",
                hit is None, hit.group(0) if hit else None)
+    _check("the scan covers the geometry-helper anchor scripts (#613, #784)",
+           all(t in scripts for t in _NO_FORK_ANCHORS),
+           sorted(t for t in _NO_FORK_ANCHORS if t not in scripts))
     # Negative controls, so both regexes are shown able to fail: the caught
     # shapes are the ones #613 deleted; the three near-misses must stay
     # silent (issue #617's test plan).

@@ -258,12 +258,12 @@ def _serial(bits):
     return (igamc(2 ** (m - 2), d1 / 2.0), igamc(2 ** (m - 3), d2 / 2.0))
 
 
-def t_serial_1(bits):
-    return _serial(bits)[0]
-
-
-def t_serial_2(bits):
-    return _serial(bits)[1]
+# The two serial rows are the columns of one `_serial` evaluation: it
+# computes both p-values from the same three pattern histograms, so
+# `run_battery` evaluates the pair once per eligible segment and feeds each
+# column through the row verdict logic instead of calling a single-result
+# wrapper per row (issue #765).
+SERIAL_ROWS = ("serial_1", "serial_2")
 
 
 def t_approximate_entropy(bits):
@@ -287,8 +287,8 @@ BATTERY = {
     "longest_run": t_longest_run,
     "cusum_forward": t_cusum_forward,
     "cusum_backward": t_cusum_backward,
-    "serial_1": t_serial_1,
-    "serial_2": t_serial_2,
+    "serial_1": _serial,
+    "serial_2": _serial,
     "approximate_entropy": t_approximate_entropy,
 }
 
@@ -319,6 +319,10 @@ def run_battery(bits: list[int], segment_len: int | None = None,
     s = len(segs)
     seg_n = len(segs[0]) if segs else 0
     tests = {}
+    # Both serial rows are columns of one `_serial` pair evaluation: compute
+    # the pair once per segment (only after the eligibility checks) and
+    # split it into the rows (issue #765).
+    serial_pairs = None
     for name, fn in BATTERY.items():
         min_n = BATTERY_MIN_N[name]
         entry: dict = {"min_n": min_n}
@@ -326,7 +330,13 @@ def run_battery(bits: list[int], segment_len: int | None = None,
             entry["status"] = "INSUFFICIENT"
             tests[name] = entry
             continue
-        ps = [fn(x) for x in segs]
+        if name in SERIAL_ROWS:
+            col = SERIAL_ROWS.index(name)
+            if serial_pairs is None:
+                serial_pairs = [_serial(x) for x in segs]
+            ps = [p[col] for p in serial_pairs]
+        else:
+            ps = [fn(x) for x in segs]
         entry["p_values"] = ps
         if segment_len:
             frac = sum(p >= alpha for p in ps) / s
@@ -654,8 +664,15 @@ def source_caveats(source_json: Path) -> list[str]:
     return out
 
 
-def analyse_stream(bits: list[int]) -> dict:
-    """Full-stream battery + estimators and the segmented battery."""
+def analyse_stream(bits: list[int], segment_len: int | None = None) -> dict:
+    """Full-stream battery + estimators and the segmented battery.
+
+    `segment_len=None` segments with this module's `SEGMENT_LEN` read at call
+    time (so patching `B.SEGMENT_LEN` in tests keeps working, like
+    `run_battery`); the conditioned-output renderer passes its own policy.
+    """
+    if segment_len is None:
+        segment_len = SEGMENT_LEN
     est = entropy_estimates(bits)
     h = est["h_min_bits"]
     ties = [k for k, v in est["estimators"].items()
@@ -663,7 +680,7 @@ def analyse_stream(bits: list[int]) -> dict:
     est["binding_ties"] = ties
     return {"n": len(bits),
             "single_sequence": run_battery(bits),
-            "segmented": run_battery(bits, segment_len=SEGMENT_LEN),
+            "segmented": run_battery(bits, segment_len=segment_len),
             "estimators": est}
 
 
@@ -732,6 +749,60 @@ def volume_payload(source_json: Path, compare_rels: list[str] | None = None) -> 
 def _failed(block: dict) -> str:
     f = [k for k, v in block["tests"].items() if v["status"] == "FAIL"]
     return ", ".join(f) if f else "-"
+
+
+def format_binding(est: dict) -> str:
+    """`binding_estimator` with its binding-tie annotation (shared renderer)."""
+    bind = est["binding_estimator"] or "-"
+    if len(est["binding_ties"]) > 1:
+        bind += " (tie: " + ", ".join(est["binding_ties"]) + ")"
+    return bind
+
+
+def render_detail_tables(grp: list[dict], *, est_heading: str,
+                         seq_heading: str, seg_heading: str,
+                         key: str | None = None) -> list[str]:
+    """The three per-group detail tables shared by the volume and
+    conditioned-output renderers.
+
+    `key=None` reads the reduction dict straight off each row (volume
+    records); `key="conditioned"` reads it from `r["conditioned"]`
+    (conditioned-output records). Headings differ per caller; columns, cell
+    formatting and INSUFFICIENT fallbacks are pinned here.
+    """
+    def red(r: dict) -> dict:
+        return r if key is None else r[key]
+
+    out = ["", est_heading, "",
+           "| corner | T (C) | Vdd (V) | " + " | ".join(ESTIMATOR_MIN_N) + " |",
+           "|---|---|---|" + "---|" * len(ESTIMATOR_MIN_N)]
+    for r in grp:
+        ev = red(r)["estimators"]["estimators"]
+        cells = [f"{ev[k]['h_bits']:.4f}" if ev[k]["status"] == "OK"
+                 else "INSUFFICIENT" for k in ESTIMATOR_MIN_N]
+        out.append(f"| {r['corner']} | {r['temp_c']:g} | {r['vdd_v']:g} | "
+                   + " | ".join(cells) + " |")
+    out += ["", seq_heading, "",
+            "| corner | T (C) | Vdd (V) | " + " | ".join(BATTERY) + " |",
+            "|---|---|---|" + "---|" * len(BATTERY)]
+    for r in grp:
+        t = red(r)["single_sequence"]["tests"]
+        cells = [("%.4g%s" % (t[k]["p_values"][0],
+                              "" if t[k]["status"] == "PASS" else " F"))
+                 if "p_values" in t[k] else "INSUFFICIENT" for k in BATTERY]
+        out.append(f"| {r['corner']} | {r['temp_c']:g} | {r['vdd_v']:g} | "
+                   + " | ".join(cells) + " |")
+    out += ["", seg_heading, "",
+            "| corner | T (C) | Vdd (V) | " + " | ".join(BATTERY) + " |",
+            "|---|---|---|" + "---|" * len(BATTERY)]
+    for r in grp:
+        t = red(r)["segmented"]["tests"]
+        cells = [("%.4f%s" % (t[k]["proportion"],
+                              "" if t[k]["status"] == "PASS" else " F"))
+                 if "proportion" in t[k] else "INSUFFICIENT" for k in BATTERY]
+        out.append(f"| {r['corner']} | {r['temp_c']:g} | {r['vdd_v']:g} | "
+                   + " | ".join(cells) + " |")
+    return out
 
 
 def render_shift(sh: dict) -> list[str]:
@@ -811,46 +882,19 @@ def render_volume(payload: dict, caveats: list[str]) -> str:
         for r in grp:
             e = r["estimators"]
             h = e["h_min_bits"]
-            bind = e["binding_estimator"] or "-"
-            if len(e["binding_ties"]) > 1:
-                bind += " (tie: " + ", ".join(e["binding_ties"]) + ")"
             out.append(
                 f"| {r['corner']} | {r['temp_c']:g} | {r['vdd_v']:g} | "
                 f"{r['seed']} | {r['n']} | {r['single_sequence']['verdict']} | "
                 f"{_failed(r['single_sequence'])} | {r['segmented']['verdict']} | "
                 f"{_failed(r['segmented'])} | "
-                f"{'-' if h is None else f'{h:.4f}'} | {bind} | "
+                f"{'-' if h is None else f'{h:.4f}'} | {format_binding(e)} | "
                 f"`{r['source_file']}` | `{r['source_sha256_hex']}` |")
-        out += ["", "### 90B estimators (bit/sample, full stream)", "",
-                "| corner | T (C) | Vdd (V) | " + " | ".join(ESTIMATOR_MIN_N) + " |",
-                "|---|---|---|" + "---|" * len(ESTIMATOR_MIN_N)]
-        for r in grp:
-            ev = r["estimators"]["estimators"]
-            cells = [f"{ev[k]['h_bits']:.4f}" if ev[k]["status"] == "OK"
-                     else "INSUFFICIENT" for k in ESTIMATOR_MIN_N]
-            out.append(f"| {r['corner']} | {r['temp_c']:g} | {r['vdd_v']:g} | "
-                       + " | ".join(cells) + " |")
-        out += ["", "### Single-sequence p-values (full stream)", "",
-                "| corner | T (C) | Vdd (V) | " + " | ".join(BATTERY) + " |",
-                "|---|---|---|" + "---|" * len(BATTERY)]
-        for r in grp:
-            t = r["single_sequence"]["tests"]
-            cells = [("%.4g%s" % (t[k]["p_values"][0],
-                                  "" if t[k]["status"] == "PASS" else " F"))
-                     if "p_values" in t[k] else "INSUFFICIENT" for k in BATTERY]
-            out.append(f"| {r['corner']} | {r['temp_c']:g} | {r['vdd_v']:g} | "
-                       + " | ".join(cells) + " |")
-        out += ["", "### Segmented pass proportions "
-                f"(passing segments / {pol['count']}; F = below criterion)", "",
-                "| corner | T (C) | Vdd (V) | " + " | ".join(BATTERY) + " |",
-                "|---|---|---|" + "---|" * len(BATTERY)]
-        for r in grp:
-            t = r["segmented"]["tests"]
-            cells = [("%.4f%s" % (t[k]["proportion"],
-                                  "" if t[k]["status"] == "PASS" else " F"))
-                     if "proportion" in t[k] else "INSUFFICIENT" for k in BATTERY]
-            out.append(f"| {r['corner']} | {r['temp_c']:g} | {r['vdd_v']:g} | "
-                       + " | ".join(cells) + " |")
+        out += render_detail_tables(
+            grp,
+            est_heading="### 90B estimators (bit/sample, full stream)",
+            seq_heading="### Single-sequence p-values (full stream)",
+            seg_heading=("### Segmented pass proportions (passing segments / "
+                         f"{pol['count']}; F = below criterion)"))
         out.append("")
     if "min_h_shift" in payload:
         out += render_shift(payload["min_h_shift"])

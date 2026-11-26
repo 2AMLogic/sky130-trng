@@ -27,17 +27,17 @@ P = R.P
 BITS = [(i * 7 + 3) % 5 % 2 for i in range(64)]
 
 
-def synth_corner(proc, temp, vdd, flip=None, drop=None, omit=None, status="pass"):
+def synth_corner(proc, temp, vdd, flip=None, drop=None, omit=None, status="pass", bits=None):
     cycles, _ = P.build_program()
     meas_entries, _ = MR.measurement_cards(cycles)
-    rows = P.model_replay(BITS)
+    rows = P.model_replay(list(bits) if bits is not None else BITS)
     inputs = P.cycle_inputs(cycles)
     hi = vdd
     vals = {}
     bit_i = 0
     for k, inp in enumerate(inputs):
         if inp["raw_valid"]:
-            vals[f"raw_bit_k{k}"] = hi * BITS[bit_i]
+            vals[f"raw_bit_k{k}"] = hi * (list(bits) if bits is not None else BITS)[bit_i]
             vals[f"raw_valid_k{k}"] = hi
             bit_i += 1
     for e in meas_entries:
@@ -46,14 +46,19 @@ def synth_corner(proc, temp, vdd, flip=None, drop=None, omit=None, status="pass"
             continue
         if n.startswith("rdata_k"):
             k, b = n[len("rdata_k"):].split("_b")
-            v = (rows[int(k)]["model"]["bus_rdata"] >> int(b)) & 1
+            k = int(k)
+            # rdata_k<k> is sampled during cycle k+1 (the read's data is
+            # visible the cycle AFTER the read); the k=74 word is sampled
+            # at t_stop and has no row to observe it in (response_checks
+            # skips it), so any rail value fits
+            v = (rows[k + 1]["model"]["bus_rdata"] >> int(b)) & 1 if k + 1 < len(rows) else 0
             vals[n] = hi * v
         elif n.startswith("odata_k"):
             k, b = n[len("odata_k"):].split("_b")
-            vals[n] = hi * ((rows[int(k) - 1]["model"]["out_data"] >> int(b)) & 1)
+            vals[n] = hi * ((rows[int(k)]["model"]["out_data"] >> int(b)) & 1)
         elif n.startswith(("alarm_k", "gated_k", "startup_done_k", "out_valid_k")):
             sig, k = n.rsplit("_k", 1)
-            vals[n] = hi * int(rows[int(k) - 1]["model"][sig])
+            vals[n] = hi * int(rows[int(k)]["model"][sig])
         elif n.startswith("i_") and n.endswith("_w1"):
             vals[n] = -1e-6
         elif n.startswith("i_") and n.endswith("_w2"):
@@ -81,8 +86,13 @@ def write_report(d: Path, name, corners, extra=None):
 
 
 class WholeBlockReduction(unittest.TestCase):
+    def tmpdir(self):
+        td = tempfile.TemporaryDirectory(prefix="wbred-")
+        self.addCleanup(td.cleanup)
+        return Path(td.name)
+
     def test_complete_matrix_met(self):
-        tmp_path = Path(tempfile.mkdtemp(prefix="wbred-"))
+        tmp_path = self.tmpdir()
         for t, v in R.GRID:
             write_report(tmp_path, f"grid-{t}-{v}", [synth_corner(p, t, v) for p in R.PROCESSES])
         red = R.reduce(tmp_path, None)
@@ -93,7 +103,7 @@ class WholeBlockReduction(unittest.TestCase):
 
 
     def test_omitted_point_is_unmet(self):
-        tmp_path = Path(tempfile.mkdtemp(prefix="wbred-"))
+        tmp_path = self.tmpdir()
         for t, v in R.GRID[:3]:
             write_report(tmp_path, f"grid-{t}-{v}", [synth_corner(p, t, v) for p in R.PROCESSES])
         red = R.reduce(tmp_path, None)
@@ -102,7 +112,7 @@ class WholeBlockReduction(unittest.TestCase):
 
 
     def test_oracle_mismatch_and_absent_measurement(self):
-        tmp_path = Path(tempfile.mkdtemp(prefix="wbred-"))
+        tmp_path = self.tmpdir()
         t, v = R.GRID[1]
         write_report(tmp_path, "grid-a", [synth_corner("tt", t, v, flip="rdata_k0_b0"),
                                      synth_corner("ss", t, v, drop="i_vdd_w2"),
@@ -116,7 +126,7 @@ class WholeBlockReduction(unittest.TestCase):
 
 
     def test_omitted_measurement_is_unmet(self):
-        tmp_path = Path(tempfile.mkdtemp(prefix="wbred-"))
+        tmp_path = self.tmpdir()
         t, v = R.GRID[1]
         write_report(tmp_path, "grid-a", [synth_corner("tt", t, v, omit="i_vdd_w2"),
                                           synth_corner("ss", t, v, omit="rdata_k0_b0"),
@@ -128,7 +138,7 @@ class WholeBlockReduction(unittest.TestCase):
         self.assertTrue(by["ff"]["status"] == "MET")
 
     def test_nonfinite_measurement_is_unmet(self):
-        tmp_path = Path(tempfile.mkdtemp(prefix="wbred-"))
+        tmp_path = self.tmpdir()
         t, v = R.GRID[1]
         c = synth_corner("tt", t, v)
         c["measurements"][0]["value"] = float("nan")
@@ -136,6 +146,58 @@ class WholeBlockReduction(unittest.TestCase):
         red = R.reduce(tmp_path, None)
         pt = next(p for p in red["points"] if p["process"] == "tt" and p["temperature_c"] == t)
         self.assertTrue(pt["status"] == "UNMET")
+
+    def test_midrail_sample_is_unmet(self):
+        # an XSPICE out_undef X (vdd/2) must not round to logical 0: the
+        # shared rail-bounded decode makes it a named oracle failure
+        tmp_path = self.tmpdir()
+        t, v = R.GRID[1]
+        c = synth_corner("tt", t, v)
+        for e in c["measurements"]:
+            if e["name"] == "rdata_k36_b0":
+                e["value"] = v / 2.0
+        write_report(tmp_path, "grid-a", [c])
+        red = R.reduce(tmp_path, None)
+        pt = next(p for p in red["points"] if p["process"] == "tt" and p["temperature_c"] == t)
+        self.assertTrue(pt["status"] == "UNMET" and any("oracle" in r for r in pt["reasons"]))
+        self.assertFalse(pt["oracle"]["match"])
+        self.assertTrue(any("not a resolved rail" in mm for mm in pt["oracle"]["mismatches"]))
+
+    def test_duplicate_measurement_name_is_unmet(self):
+        # a repeated name displaces the entry it duplicates in every
+        # name-keyed read, so the reducer must refuse the oracle (#642,
+        # the guard #548 gave the gate-model comparator)
+        tmp_path = self.tmpdir()
+        t, v = R.GRID[1]
+        c = synth_corner("tt", t, v)
+        c["measurements"].append({"name": "i_vdd_w2", "value": -9e-6})
+        write_report(tmp_path, "grid-a", [c])
+        red = R.reduce(tmp_path, None)
+        pt = next(p for p in red["points"] if p["process"] == "tt" and p["temperature_c"] == t)
+        self.assertTrue(pt["status"] == "UNMET" and any("duplicate" in r for r in pt["reasons"]))
+
+    def test_real_gate_model_report_cross_check(self):
+        # the committed 75-cycle gate-model run's REAL ngspice voltages fed
+        # through the 12-point reducer's corner analysis must match the
+        # shared oracle. The bespoke block this replaces misrowed 8 bus
+        # reads on exactly this report (issue #642): same comparator, same
+        # verdict as runs/20261114-gate-model-full/compare.json (311/311).
+        MG = load_module("make_gate_model", BLOCK / "make-gate-model.py")
+        report = json.loads((BLOCK / "runs" / "20261114-gate-model-full" / "report.json").read_text())
+        real = {e["name"]: e["value"] for e in report["corners"][0]["measurements"]}
+        c = synth_corner("tt", 27.0, 1.8, bits=[int(b) for b in MG.RAW_BIT_PATTERN])
+        n_real = 0
+        for e in c["measurements"]:
+            if e["name"] in real:
+                e["value"] = real[e["name"]]
+                n_real += 1
+        # every digital name the 610-measurement contract shares with the
+        # report is now a real voltage; only the deck-driven sampler strobes
+        # and the t_stop-clipped k=74 rdata word stay synthetic
+        self.assertGreater(n_real, 400)
+        res = R.analyse_corner(c, 1.8)
+        self.assertEqual(res["problems"], [])
+        self.assertTrue(res["oracle"]["match"] is True and res["oracle"]["checks"] > 0)
 
     def test_pwl_highs_use_declared_vih(self):
         cycles, _ = P.build_program()
@@ -167,7 +229,7 @@ class WholeBlockReduction(unittest.TestCase):
         text = MR.analog_netlist_text()
         self.assertEqual(text.count("sky130_fd_pr__"), 264)
         # every port reaches the body under its canonical name (the committed
-        # body still uses cluster names; the probe applies the rename)
+        # body has carried canonical names since #435's body rename)
         for port in ("en2", "vddr3", "vdd", "vss", "clk", "ring_bit1"):
             self.assertRegex(text.split("* device instance", 1)[1], r"(?<!\S)%s(?!\S)" % port)
         self.assertNotIn("en|en2|g_en", text)
@@ -176,7 +238,7 @@ class WholeBlockReduction(unittest.TestCase):
         self.assertTrue(MR.ANALOG_PROBE_STOP_NS > P.T0_NS)
 
     def test_error_envelope_stays_unmet(self):
-        tmp_path = Path(tempfile.mkdtemp(prefix="wbred-"))
+        tmp_path = self.tmpdir()
         d = tmp_path / "grid-b"
         d.mkdir()
         (d / "report.json").write_text(json.dumps({"error": {"message": "launch failed: cap"}}))
@@ -188,13 +250,13 @@ class WholeBlockReduction(unittest.TestCase):
         self.assertTrue(all(p["status"] == "UNMET" and "launch failed" in p["reasons"][0] for p in um))
 
     def test_probe_dirs_do_not_count(self):
-        tmp_path = Path(tempfile.mkdtemp(prefix="wbred-"))
+        tmp_path = self.tmpdir()
         write_report(tmp_path, "startup-probe", [synth_corner("tt", 27.0, 1.8)])
         red = R.reduce(tmp_path, None)
         self.assertTrue(red["matrix"]["met"] == 0 and len(red["sources"]) == 1)
 
     def _complete(self):
-        tmp_path = Path(tempfile.mkdtemp(prefix="wbred-"))
+        tmp_path = self.tmpdir()
         for t, v in R.GRID:
             write_report(tmp_path, f"grid-{t}-{v}", [synth_corner(p, t, v) for p in R.PROCESSES])
         return tmp_path
@@ -238,14 +300,14 @@ class WholeBlockReduction(unittest.TestCase):
         self.assertNotIn("post-layout PVT", text)
 
     def test_plan_provenance_requires_every_grid_plan(self):
-        tmp = Path(tempfile.mkdtemp(prefix="wbred-"))
+        tmp = self.tmpdir()
         for n, prov in (("grid-a", P.PROVENANCE), ("grid-b", P.PROVENANCE)):
             (tmp / n).mkdir()
             (tmp / n / "plan.json").write_text(json.dumps({"provenance": prov}))
         self.assertEqual(R.plan_provenance(tmp), P.PROVENANCE)
         (tmp / "grid-b" / "plan.json").write_text(json.dumps({}))
         self.assertIsNone(R.plan_provenance(tmp))
-        self.assertIsNone(R.plan_provenance(Path(tempfile.mkdtemp(prefix="wbred-"))))
+        self.assertIsNone(R.plan_provenance(self.tmpdir()))
 
     def test_boundary_signals_match_ports(self):
         ports = json.loads((BLOCK / "trng_whole.sim.ports.json").read_text())["ports"]

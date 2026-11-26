@@ -102,19 +102,33 @@ document's draft filed for it:
 
 - **T1 item 5, both partitions.** Which spec does the grader read as ratified? DR-0010 is the packet for the
   README target table; DR-0004 gates the digital row. The digital STA and functional reports already exist.
-- **T1 item 6.** Which spec rows are statistical, and can the local-mismatch Monte Carlo
-  (`sim/local-mismatch-monte-carlo/`) be expressed as a `klt yield` report with a seed, sample count and
-  negative control?
+- **T1 item 6.** Answered for the analog partition (#598): `sim/local-mismatch-monte-carlo/yield/`
+  carries the campaign as three `klt yield` reports (tt/ss/ff, seed + sample count recorded, the
+  mismatch-free `arr0`/`smp0` control beside them), cited in `signoff/block-manifest.json`. The one
+  statistical spec row is **Raw min-entropy per bit** (ring-pair lock proximity, the `Q_array` margin and
+  the `<v(xo)>/vnom` band are DR-0003/DR-0005 design margins, not target-table rows). The item stays
+  `unmet`/`partial_coverage` on purpose: `H_bias` is only an upper bound on the row quantity, the row
+  states no target yield (the reports run `status: reported`, making no yield claim), and the row is
+  unratified -- ratification, named on #3, is the single gate on the committed untagged citations
+  (they assert the manifest's rows, `uncovered_rows: []`; klayout-tools#5490 only ever affected
+  `spec_row`-tagged measurements, and no negative control is declared); tt's 60/1800
+  pairings below the floor stay linked to #221. 6.digital
+  (`not_applicable`, no statistical row) is written down ready in #598's PR description, unapplied until
+  ratification. Follow-up, not blocking: a seeded-defect campaign to feed `klt yield`'s
+  `negative_control` field.
 - **Raw min-entropy below the floor at tt** (#221, DR-0013 in PR #249): amend the floor, the operating point or
   the lock-proximity criterion, or add trim or selection?
 - **Raw rate and area.** Both targets are unmet by the chosen architecture (about 78 kbps ceiling; 2.52x area).
   DR-0010 presents the dispositions; nothing is decided.
 - **External interface.** DR-0011 recommends a wrapper against an assumed pin budget; no wrapper exists and the
   `ro_mon` monitor pin is not implemented. Is the budget assumption right?
-- **End-of-life Vth drift** (#262): adopt a lifetime, a guard band or a re-sizing?
 
 ## Blocked and waiting
 
+- **End-of-life Vth drift** (#262, decided 2026-10-15): the operating point is nominal-only for aging.
+  End-of-life qualification requires a reliability-backed mission profile and a Vth guard band; the
+  ruling sets no numerical guard band and no lifetime, and authorizes no resizing
+  ([October 15 ruling](https://github.com/2AMLogic/sky130-trng/issues/262#issuecomment-6202634084)).
 - **Ratification.** Sixteen decision records and the README target table are Proposed. T1 item 5 and the
   Chipalooza submission status both wait on it.
 - **Whole-block chain:** #18 (AC3) <- #170 <- #174 <- #307 <- #431.
