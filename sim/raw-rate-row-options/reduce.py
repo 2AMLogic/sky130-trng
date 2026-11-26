@@ -70,6 +70,8 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[1]
 SLUG = "raw-rate-row-options"
+sys.path.insert(0, str(REPO / "layout" / "bin"))
+from _hashing import sha256_file  # noqa: E402
 sys.path.insert(0, str(REPO / "sim" / "bin"))
 from loadmod import load_module  # noqa: E402
 
@@ -408,13 +410,12 @@ def jobs_from_responses(chunks) -> list[dict]:
 
 
 def verify_netlist_shas(chunks, netlist_path):
-    import hashlib
     for name, _plan, resp in chunks:
         recorded = (resp.get("environment", {}) or {}).get("netlist_sha256")
         path = netlist_path(name)
         if recorded is None or not path.is_file():
             raise ReductionError(f"{name}: cannot verify netlist sha ({recorded}, {path})")
-        actual = "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()
+        actual = sha256_file(path, prefix=True)
         if recorded != actual and recorded.removeprefix("sha256:") != actual.removeprefix("sha256:"):
             raise ReductionError(f"{name}: response netlist sha {recorded} != deck {path} ({actual})")
 
