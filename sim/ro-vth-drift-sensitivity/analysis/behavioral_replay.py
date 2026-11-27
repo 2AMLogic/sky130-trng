@@ -9,9 +9,9 @@ common-mode grid point it feeds the zero-shift and the shifted entry of the vth-
 calibration artifact (explicitly, via `raw_bit_model.calibration(..., artifact=, shift_mv=)`;
 there is no fallback to the historical time-zero records) to the EXISTING behavioral generator,
 `sim/bin/raw_bit_model.py` (shared with the volume campaign's CLI, issue #797), with IDENTICAL
-seeds and sample counts, then runs that campaign's existing reduction (`stats()` ->
-`raw-bit-entropy.py` `mcv_estimate`, context predictor) and reports the movement relative to
-the matched zero-shift stream as MODEL output.
+seeds and sample counts, then runs that campaign's existing reduction (`raw_bit_model.stats()`:
+MCV via `bitstream_stats.mcv_estimate`, plus the context predictor) and reports the movement
+relative to the matched zero-shift stream as MODEL output.
 
 The stream seed label deliberately does not contain the shift, so the zero and shifted streams
 share one `random.Random` seed and one length; only the calibration differs.
@@ -95,8 +95,8 @@ def body(rows, art: Path, art_sha: str, nbits):
          "shift 0/20/40/60 mV). **`level: behavioral` -- not a transistor simulation, not silicon evidence.** Each shifted stream uses the "
          "shifted entry of the vth-drift calibration artifact "
          f"(`{art.relative_to(REPO)}`, sha256 `{art_sha}`) and is generated with the SAME seed and sample count as its matched zero-shift stream "
-         "(the seed label carries no shift), then reduced with the existing `behavioral_raw_bit.stats()` (MCV via `raw-bit-entropy.py`, plus the "
-         "context predictor). Reported movement is relative to the matched zero-shift stream.", "",
+         "(the seed label carries no shift), then reduced with the existing `raw_bit_model.stats()` (MCV via `bitstream_stats.mcv_estimate`, plus "
+         "the context predictor). Reported movement is relative to the matched zero-shift stream.", "",
          SENTENCE, "",
          "## Model limits", "",
          "- Inherits every limit of `sim/raw-bit-volume-campaign/` (white period jitter, no XOR-tree pulse loss, no sampler aperture, no coupling, "

@@ -382,6 +382,18 @@ class ReplayTests(unittest.TestCase):
         self.assertEqual(rp.label("tt", 27.0, 1.8), rp.label("tt", 27.0, 1.8))
         self.assertEqual(BRB.sub_seed(rp.label("tt", 27.0, 1.8)), BRB.sub_seed(rp.label("tt", 27.0, 1.8)))
 
+    def test_reduction_paragraph_names_the_defining_modules(self):
+        rp = load_module("rp_t", SLUG / "analysis/behavioral_replay.py")
+        rec = json.loads((SLUG / "records/20261010-175419-7e279ab.json").read_text())
+        art = REPO / rec["calibration_artifact"]["path"]
+        md, _ = rp.body(rec["streams"], art, rec["calibration_artifact"]["file_sha256"], rec["streams"][0]["n"])
+        para = next(ln for ln in md.splitlines() if "then reduced with" in ln)
+        self.assertIn("`raw_bit_model.stats()`", para)
+        self.assertIn("`bitstream_stats.mcv_estimate`", para)
+        self.assertIn("context predictor", para)
+        self.assertNotIn("behavioral_raw_bit.stats()", md)
+        self.assertNotIn("MCV via `raw-bit-entropy.py`", md)
+
 
 class LockProximityCorrectionTests(unittest.TestCase):
     """The DR-0005 convention correction and its superseding record (issue #467)."""

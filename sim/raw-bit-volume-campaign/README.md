@@ -12,7 +12,7 @@ DR-0003's Ts = 20 us. Splitting into seeds does not cut simulated time.
 
 | File | Role |
 |---|---|
-| `behavioral_raw_bit.py` | the model (4 free-running rings with white period jitter, XOR, ideal edge sampler), calibration from committed records, cross-checks, stream generation, record minting (`--emit-record`), reproducibility check (`--regenerate-check`) |
+| `behavioral_raw_bit.py` | the campaign CLI around `sim/bin/raw_bit_model.py` (issue #797), which holds the model (4 free-running rings with white period jitter, XOR, ideal edge sampler) and the calibration loader for committed records; the CLI runs the cross-checks, stream generation, record minting (`--emit-record`) and the reproducibility check (`--regenerate-check`) |
 | `make-requests.py` | `klt sim` batch requests. Default: the #21 testbench, unmodified, one noise seed per request, tt/ss/ff at 27 C / 1.8 V. `--deck combining`: the combining deck, unmodified, one request per (T, Vdd) point (default the 125 C hot grid), tt/ss/ff bundled |
 | `derive-combining.py` | turns the combining batch responses into append-only `ro-array-core-combining` records (deck `let` figures recomputed; raw response kept under `sim/ro-array-core-combining/corners/<id>/klt-sim.json`) |
 | `transistor_pvt_crosscheck.py` | issue #289 reducer for the non-nominal transistor cross-check (below): validates every `klt sim` response against its request manifest, reduces per (process, T, Vdd), `--ingest` / `--emit-record` / `--check` |

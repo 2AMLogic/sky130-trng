@@ -328,7 +328,7 @@ def build_body(rows, xc, rob, point_set="base", nbits: int = NBITS) -> tuple[str
              "`python3 sim/raw-bit-volume-campaign/behavioral_raw_bit.py --regenerate-check <record json>` "
              f"(Python {sys.version.split()[0]}; `random.gauss` stream).")
     L.append("")
-    L.append("## Streams (MCV via `raw-bit-entropy.py`'s `mcv_estimate`; context = most-common-next-bit given previous c bits)")
+    L.append("## Streams (`raw_bit_model.stats()`: MCV via `bitstream_stats.mcv_estimate`; context = most-common-next-bit given previous c bits)")
     L.append("")
     L.append("| corner | T (C) | Vdd | Ts | n | p_hat | p_u (99%) | H_MCV | z_mono | lag-1 ac | best c | ctx acc (null) | H_ctx |")
     L.append("|---|---|---|---|---|---|---|---|---|---|---|---|---|")
