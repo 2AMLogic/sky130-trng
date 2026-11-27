@@ -184,6 +184,22 @@ class SharedLibrarySeam(unittest.TestCase):
             self.assertEqual(st[k], v, k)
         self.assertEqual(st, m.stats(bits, "seam"))                 # the CLI's name is the same function
 
+    def test_streams_heading_names_the_defining_modules(self):
+        rec = json.loads((REPO_ROOT / "sim/raw-bit-volume-campaign/records/20261010-095913-3966094.json").read_text())
+        md, _ = m.build_body(rec["streams"], rec["cross_checks"], rec["robustness"], rec["point_set"], rec["streams"][0]["n"])
+        heading = next(ln for ln in md.splitlines() if ln.startswith("## Streams"))
+        self.assertIn("`raw_bit_model.stats()`", heading)
+        self.assertIn("`bitstream_stats.mcv_estimate`", heading)
+        self.assertIn("context", heading)
+        self.assertNotIn("`raw-bit-entropy.py`'s `mcv_estimate`", md)
+
+    def test_readme_row_does_not_call_the_cli_the_model(self):
+        readme = (REPO_ROOT / "sim/raw-bit-volume-campaign/README.md").read_text()
+        row = next(ln for ln in readme.splitlines() if ln.startswith(f"| `{Path(CLI).name}` |"))
+        role = row.split("|")[2].strip()
+        self.assertFalse(role.startswith("the model"), role)
+        self.assertIn(self.LIBRARY, role)
+
     def test_library_imports_only_stdlib_and_its_seam_siblings(self):
         tree = ast.parse((REPO_ROOT / self.LIBRARY).read_text())
         modules = set()
