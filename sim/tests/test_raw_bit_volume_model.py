@@ -7,6 +7,8 @@ library it re-exports, sim/bin/raw_bit_model.py (stdlib only).
 from __future__ import annotations
 
 import ast
+import contextlib
+import io
 import json
 import random
 import re
@@ -247,6 +249,31 @@ class SharedLibrarySeam(unittest.TestCase):
                     "load_module('behavioral_raw_bit', REPO / 'x.py')\n",
                     'brb = load_module(\n    "behavioral_raw_bit", _CLI)\n'):
             self.assertIsNotNone(self.BY_PATH.search(src), src)
+
+
+class MintedToolsProvenance(unittest.TestCase):
+    """Issue #800: a record minted from the shared model names, as `tools.model`,
+    the module the minting script actually imports (`sim/bin/raw_bit_model.py`),
+    not the campaign CLI that merely re-exports it."""
+
+    LIBRARY = "sim/bin/raw_bit_model.py"
+    REPLAY = "sim/ro-vth-drift-sensitivity/analysis/behavioral_replay.py"
+
+    def test_replay_record_names_the_library_it_imports(self):
+        rp = load_module("replay_tools", REPO_ROOT / self.REPLAY)
+        with mock.patch.object(rp, "mint_behavioral_record") as mint, contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(rp.main(["--nbits", "2048", "--emit-record"]), 0)
+        self.assertEqual(mint.call_args.kwargs["tools"], {"model": self.LIBRARY, "replay": self.REPLAY})
+
+    def test_volume_record_names_the_library_and_the_cli(self):
+        with mock.patch.object(m, "run_campaign", return_value=[{"file": "bits.hex.txt"}]), \
+                mock.patch.object(m, "cross_checks", return_value={}), \
+                mock.patch.object(m, "robustness", return_value=[]), \
+                mock.patch.object(m, "build_body", return_value=("", {})), \
+                mock.patch.object(m, "mint_behavioral_record") as mint, \
+                contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(m.main(["--nbits", "2048", "--emit-record"]), 0)
+        self.assertEqual(mint.call_args.kwargs["tools"], {"model": self.LIBRARY, "script": CLI})
 
 
 class RequestGenerationTests(unittest.TestCase):

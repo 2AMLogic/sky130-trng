@@ -173,7 +173,7 @@ def main(argv=None) -> int:
         {"kind": "behavioral-replay", "streams": rows, "summary": summ, "source_record": src,
          "calibration_artifact": {"path": str(art.relative_to(REPO)), "file_sha256": art_sha, "schema": VTH_DRIFT_SCHEMA}},
         level="behavioral", seeds={"master": MASTER_SEED, "policy": "per-stream seed = sha256(master:label)[:8]; label carries no shift (matched)"},
-        tools={"model": "sim/raw-bit-volume-campaign/behavioral_raw_bit.py", "replay": "sim/ro-vth-drift-sensitivity/analysis/behavioral_replay.py"})
+        tools={"model": "sim/bin/raw_bit_model.py", "replay": "sim/ro-vth-drift-sensitivity/analysis/behavioral_replay.py"})
     print(rid)
     return 0
 
