@@ -42,19 +42,16 @@ sys.path.insert(0, str(REPO_ROOT / "layout" / "bin"))
 from _hashing import sha256_file  # noqa: E402
 sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
 from evidence_record import mint_behavioral_record  # noqa: E402
-from loadmod import load_module  # noqa: E402
+from raw_bit_model import (CORNERS, ENSEMBLE, PERIOD_REL_UNC, TS_TRANSISTOR_LEVEL, _quantile,  # noqa: E402
+                           calibration, hamming_mean, stream, sub_seed)
 
-brb = load_module("behavioral_raw_bit", HERE / "behavioral_raw_bit.py")
-rbe = brb.rbe
-
-SLUG = brb.SLUG
+SLUG = "raw-bit-volume-campaign"
 PVT_DIR = HERE / "transistor" / "pvt"
 MANIFEST_SCHEMA = "raw-bit-pvt-request/1"
 
 # Bounded matrix, declared BEFORE any run (issue #289): the calibrated non-nominal points.
 DECLARED_POINTS = ((-40.0, 1.62), (-40.0, 1.98), (125.0, 1.62), (125.0, 1.8), (125.0, 1.98))
 DECLARED_SEEDS = (101, 102, 103, 104)
-CORNERS = brb.CORNERS
 TS_NS = 100
 MIN_SEEDS = 4            # usable independent seeds required for a Hamming comparison (6 pairs)
 MIN_SAMPLES = 23         # same as the nominal cross-check (ss loses its start-up sample)
@@ -193,7 +190,7 @@ def classify(unit: dict, process: str) -> dict:
 
 # --------------------------------------------------------------------- reduce
 def reduce_units(units, points=DECLARED_POINTS, seeds=DECLARED_SEEDS, corners=CORNERS,
-                 ensemble: int = brb.ENSEMBLE) -> dict:
+                 ensemble: int = ENSEMBLE) -> dict:
     rows = []
     for u in units:
         procs = (u["manifest"] or {}).get("processes") or list(corners)
@@ -221,7 +218,7 @@ def reduce_units(units, points=DECLARED_POINTS, seeds=DECLARED_SEEDS, corners=CO
             cell["n_indeterminate_samples"] = sum(r["n_indeterminate"] for r in mine)
             cell["sample_counts"] = {str(r["seed"]): len(r["bits"]) for r in ok}
             try:
-                cal = brb.calibration(t, v, corner)
+                cal = calibration(t, v, corner)
             except SystemExit as e:
                 cell.update(status="no_calibration", reason=str(e))
                 cells.append(cell)
@@ -234,24 +231,24 @@ def reduce_units(units, points=DECLARED_POINTS, seeds=DECLARED_SEEDS, corners=CO
             seqs = [r["bits"][-W:] for r in ok]
             tp = [max(sum(b), W - sum(b)) / W for b in seqs]
             n = len(seqs)
-            rng = random.Random(brb.sub_seed(f"xchkpvt:{corner}:{t:g}:{v:g}:{n}:{W}"))
+            rng = random.Random(sub_seed(f"xchkpvt:{corner}:{t:g}:{v:g}:{n}:{W}"))
             phats, hams = [], []
             for _ in range(ensemble):
-                per = [T * (1 + rng.gauss(0, brb.PERIOD_REL_UNC)) for T in cal["periods_s"]]
-                ens = [brb.stream(per, cal["sigma"][1], brb.TS_TRANSISTOR_LEVEL, NBITS, rng)[NBITS - W:]
+                per = [T * (1 + rng.gauss(0, PERIOD_REL_UNC)) for T in cal["periods_s"]]
+                ens = [stream(per, cal["sigma"][1], TS_TRANSISTOR_LEVEL, NBITS, rng)[NBITS - W:]
                        for _ in range(max(n, 2))]
                 phats.append([max(sum(s), W - sum(s)) / W for s in ens])
-                hams.append(brb.hamming_mean(ens))
+                hams.append(hamming_mean(ens))
             flat = [x for rr in phats for x in rr]
-            plo, phi = brb._quantile(flat, 0.005), brb._quantile(flat, 0.995)
+            plo, phi = _quantile(flat, 0.005), _quantile(flat, 0.995)
             cell.update(window=W, n_sequences=n, transistor_phat=tp, phat_band99=[plo, phi],
-                        phat_model_median=brb._quantile(flat, 0.5),
+                        phat_model_median=_quantile(flat, 0.5),
                         phat_inside=all(plo <= x <= phi for x in tp),
                         calibration_records={"combining": cal["combining_record"], "jitter": cal["jitter_record"]})
             if n >= MIN_SEEDS:
-                th = brb.hamming_mean(seqs)
-                hlo, hhi = brb._quantile(hams, 0.005), brb._quantile(hams, 0.995)
-                cell.update(hamming=th, hamming_band99=[hlo, hhi], hamming_model_median=brb._quantile(hams, 0.5),
+                th = hamming_mean(seqs)
+                hlo, hhi = _quantile(hams, 0.005), _quantile(hams, 0.995)
+                cell.update(hamming=th, hamming_band99=[hlo, hhi], hamming_model_median=_quantile(hams, 0.5),
                             hamming_inside=hlo <= th <= hhi)
             else:
                 cell.update(hamming=None, hamming_inside=None,

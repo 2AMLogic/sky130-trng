@@ -53,6 +53,7 @@ from _hashing import sha256_text  # noqa: E402
 sys.path.insert(0, str(REPO))
 from bitstream_stats import mcv_estimate  # noqa: E402
 from loadmod import load_module  # noqa: E402
+from raw_bit_model import PVT_SETS  # noqa: E402
 
 FIRST_WINDOW = 1024             # DR-0004 start-up test length = the first window
 MIN_ROWS = 1000                 # spec/silicon-characterization-plan.md: 1000 independent restarts
@@ -274,9 +275,8 @@ def wakeup_module():
 
 
 def record_points():
-    """The 18 calibrated points: process corners x behavioral_raw_bit.PVT_SETS['all'] (re-counted at run time)."""
-    vc = load_module("behavioral_raw_bit", REPO / "sim/raw-bit-volume-campaign/behavioral_raw_bit.py")
-    return [(proc, t, v) for (t, v) in vc.PVT_SETS["all"] for proc in CORNERS]
+    """The 18 calibrated points: process corners x raw_bit_model.PVT_SETS['all'] (re-counted at run time)."""
+    return [(proc, t, v) for (t, v) in PVT_SETS["all"] for proc in CORNERS]
 
 
 def entry_key(proc, temp, vdd, arm):
