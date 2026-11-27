@@ -6,11 +6,12 @@
 
 `level: behavioral`. NOT a fresh transistor simulation and NOT silicon evidence. For every
 common-mode grid point it feeds the zero-shift and the shifted entry of the vth-drift
-calibration artifact (explicitly, via `behavioral_raw_bit.calibration(..., artifact=, shift_mv=)`;
-there is no fallback to the historical time-zero records) to the EXISTING behavioral generator
-`sim/raw-bit-volume-campaign/behavioral_raw_bit.py` with IDENTICAL seeds and sample counts, then
-runs that campaign's existing reduction (`stats()` -> `raw-bit-entropy.py` `mcv_estimate`, context
-predictor) and reports the movement relative to the matched zero-shift stream as MODEL output.
+calibration artifact (explicitly, via `raw_bit_model.calibration(..., artifact=, shift_mv=)`;
+there is no fallback to the historical time-zero records) to the EXISTING behavioral generator,
+`sim/bin/raw_bit_model.py` (shared with the volume campaign's CLI, issue #797), with IDENTICAL
+seeds and sample counts, then runs that campaign's existing reduction (`stats()` ->
+`raw-bit-entropy.py` `mcv_estimate`, context predictor) and reports the movement relative to
+the matched zero-shift stream as MODEL output.
 
 The stream seed label deliberately does not contain the shift, so the zero and shifted streams
 share one `random.Random` seed and one length; only the calibration differs.
@@ -35,14 +36,13 @@ sys.path.insert(0, str(REPO / "sim" / "bin"))
 sys.path.insert(0, str(REPO / "layout" / "bin"))
 import campaign as C  # noqa: E402
 from evidence_record import mint_behavioral_record  # noqa: E402
-from loadmod import load_module  # noqa: E402
 from _hashing import sha256_file, sha256_text  # noqa: E402
-
-brb = load_module("behavioral_raw_bit", REPO / "sim/raw-bit-volume-campaign/behavioral_raw_bit.py")
+from raw_bit_model import (MASTER_SEED, TS_DR0003, VTH_DRIFT_SCHEMA, calibration,  # noqa: E402
+                           pack_hex, stats, stream, sub_seed)
 
 SLUG = C.SLUG
 NBITS = 1 << 17                 # same per-stream size as the #188 record
-TS = brb.TS_DR0003              # DR-0003's literal 20 us sample clock
+TS = TS_DR0003                  # DR-0003's literal 20 us sample clock
 SENTENCE = "This is a sensitivity bound, not a lifetime prediction."
 
 
@@ -58,10 +58,10 @@ def latest_artifact() -> Path:
 
 
 def one_stream(art: Path, corner, temp, vdd, shift_mv, nbits, ts=TS):
-    cal = brb.calibration(temp, vdd, corner, shift_mv=shift_mv, artifact=art)
+    cal = calibration(temp, vdd, corner, shift_mv=shift_mv, artifact=art)
     lab = label(corner, temp, vdd)
-    seed = brb.sub_seed(lab)
-    bits = brb.stream(cal["periods_s"], cal["sigma"][1], ts, nbits, random.Random(seed))
+    seed = sub_seed(lab)
+    bits = stream(cal["periods_s"], cal["sigma"][1], ts, nbits, random.Random(seed))
     return bits, cal, lab, seed
 
 
@@ -73,9 +73,9 @@ def run(art: Path, nbits: int):
                 zero = None
                 for s in C.CM_SHIFTS_MV:
                     bits, cal, lab, seed = one_stream(art, c, t, v, (s, s), nbits)
-                    st = brb.stats(bits, lab + f":{s}")
+                    st = stats(bits, lab + f":{s}")
                     row = {"corner": c, "temp_c": t, "vdd_v": v, "shift_mv": [s, s], "n": nbits, "ts_s": TS, "seed_label": lab, "seed": seed,
-                           "sha256_hex": sha256_text(brb.pack_hex(bits)),
+                           "sha256_hex": sha256_text(pack_hex(bits)),
                            "calibration": {k: cal[k] for k in ("periods_s", "sigma", "q_ring", "combining_record", "combining_job_id", "jitter_job_id")},
                            **{k: st[k] for k in ("p_hat", "p_u_99", "h_hat_bits", "z_monobit", "autocorr", "best_context_len",
                                                  "best_context_acc", "best_context_acc_shuffled_null", "h_context_min_bits")}}
@@ -151,7 +151,7 @@ def main(argv=None) -> int:
         bad = 0
         for r in rec["streams"]:
             bits, _, _, _ = one_stream(art, r["corner"], r["temp_c"], r["vdd_v"], tuple(r["shift_mv"]), r["n"])
-            ok = sha256_text(brb.pack_hex(bits)) == r["sha256_hex"]
+            ok = sha256_text(pack_hex(bits)) == r["sha256_hex"]
             bad += not ok
             if not ok:
                 print("FAIL", r["corner"], r["temp_c"], r["vdd_v"], r["shift_mv"])
@@ -171,8 +171,8 @@ def main(argv=None) -> int:
         "(model output, not silicon evidence). " + SENTENCE,
         md + f"\n\nSource sensitivity record: `{src}`. Calibration artifact: `{art.relative_to(REPO)}`.\n",
         {"kind": "behavioral-replay", "streams": rows, "summary": summ, "source_record": src,
-         "calibration_artifact": {"path": str(art.relative_to(REPO)), "file_sha256": art_sha, "schema": brb.VTH_DRIFT_SCHEMA}},
-        level="behavioral", seeds={"master": brb.MASTER_SEED, "policy": "per-stream seed = sha256(master:label)[:8]; label carries no shift (matched)"},
+         "calibration_artifact": {"path": str(art.relative_to(REPO)), "file_sha256": art_sha, "schema": VTH_DRIFT_SCHEMA}},
+        level="behavioral", seeds={"master": MASTER_SEED, "policy": "per-stream seed = sha256(master:label)[:8]; label carries no shift (matched)"},
         tools={"model": "sim/raw-bit-volume-campaign/behavioral_raw_bit.py", "replay": "sim/ro-vth-drift-sensitivity/analysis/behavioral_replay.py"})
     print(rid)
     return 0

@@ -21,6 +21,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT / "sim" / "bin"))
 from loadmod import load_module  # noqa: E402
+from raw_bit_model import calibration  # noqa: E402
 
 
 x = load_module("transistor_pvt_crosscheck", REPO_ROOT / "sim/raw-bit-volume-campaign/transistor_pvt_crosscheck.py")
@@ -267,7 +268,7 @@ class ReducerTests(unittest.TestCase):
         c = next(c for c in red["cells"] if (c["temp_c"], c["vdd_v"], c["corner"]) == (125.0, 1.62, "tt"))
         self.assertEqual(c["usable_seeds"], list(SEEDS))
         self.assertEqual(c["calibration_records"]["combining"],
-                         x.brb.calibration(125.0, 1.62, "tt")["combining_record"])
+                         calibration(125.0, 1.62, "tt")["combining_record"])
 
     def test_reduction_is_deterministic(self):
         full_matrix(self.d)
@@ -295,8 +296,15 @@ class ReducerTests(unittest.TestCase):
 class ExistingEvidenceUntouched(unittest.TestCase):
     def test_nominal_loader_ignores_pvt_directory(self):
         # the nominal cross-check globs transistor/seed*.klt-sim.json only
-        self.assertEqual(x.brb.XCHECK_PVT, (27.0, 1.8))
-        self.assertTrue(x.PVT_DIR.parent == x.brb.TRANSISTOR_DIR)
+        brb = load_module("behavioral_raw_bit", REPO_ROOT / "sim/raw-bit-volume-campaign/behavioral_raw_bit.py")
+        self.assertEqual(brb.XCHECK_PVT, (27.0, 1.8))
+        self.assertTrue(x.PVT_DIR.parent == brb.TRANSISTOR_DIR)
+
+    def test_cli_module_and_dead_rbe_alias_no_longer_bound(self):
+        # issue #797: the reducer imports the shared model library directly
+        self.assertFalse(hasattr(x, "brb"))
+        self.assertFalse(hasattr(x, "rbe"))
+        self.assertEqual(x.SLUG, "raw-bit-volume-campaign")
 
 
 if __name__ == "__main__":

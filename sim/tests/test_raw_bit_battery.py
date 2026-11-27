@@ -34,8 +34,7 @@ from loadmod import load_module  # noqa: E402
 import bitstream_stats  # noqa: E402
 import replay_equal  # noqa: E402
 B = load_module("raw_bit_battery", _PATH)
-brb = load_module("behavioral_raw_bit",
-                  REPO_ROOT / "sim/raw-bit-volume-campaign/behavioral_raw_bit.py")
+from raw_bit_model import pack_hex  # noqa: E402  (issue #797: the shared model library, not the CLI)
 
 
 def ideal(n, seed=1):
@@ -283,7 +282,7 @@ class TestVolumeAdapter(unittest.TestCase):
         self.streams = []
         for i, ts in enumerate(("Ts20us", "Ts100ns")):
             bits = ideal(self.N, seed=10 + i)
-            text = brb.pack_hex(bits)
+            text = pack_hex(bits)
             name = f"bits_tt_{ts}.hex.txt"
             (self.runs / name).write_text(text + "\n")
             self.streams.append({
@@ -333,10 +332,10 @@ class TestVolumeAdapter(unittest.TestCase):
         row = self.streams[0]
         bits = B.load_stream(self.runs / row["file"], row["n"], row["sha256_hex"])
         self.assertEqual(len(bits), self.N)
-        self.assertEqual(brb.pack_hex(bits) + "\n", (self.runs / row["file"]).read_text())
+        self.assertEqual(pack_hex(bits) + "\n", (self.runs / row["file"]).read_text())
         # same text without the newline hashes identically (newline excluded)
         f = self.runs / "nonl.txt"
-        f.write_text(brb.pack_hex(bits))
+        f.write_text(pack_hex(bits))
         self.assertEqual(B.load_stream(f, row["n"], row["sha256_hex"]), bits)
 
     def test_rejections(self):

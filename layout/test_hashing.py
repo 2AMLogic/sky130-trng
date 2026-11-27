@@ -147,7 +147,7 @@ ALLOWED_SHA256_CONSTRUCTION_SITES = {
     "sim/ro-vth-drift-sensitivity/campaign.py": 1,
     # sub_seed / restart_seed: binary .digest()[:8] 64-bit PRNG seed
     # derivations, not string digests (no hexdigest involved).
-    "sim/raw-bit-volume-campaign/behavioral_raw_bit.py": 1,
+    "sim/bin/raw_bit_model.py": 1,
     "sim/wake-up-transient/restart_matrix.py": 1,
     "sim/wake-up-transient/wakeup.py": 1,
     # __import__("hashlib").sha256: the harness is itself pinned in the cited

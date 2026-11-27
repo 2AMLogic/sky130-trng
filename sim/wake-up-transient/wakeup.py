@@ -82,6 +82,8 @@ sys.path.insert(0, str(REPO))
 from loadmod import load_module  # noqa: E402
 from replay_equal import replay_equal as _replay_equal  # noqa: E402  (issue #519/#659: one shared replay equality)
 from request_dir import load_request_dir  # noqa: E402
+from raw_bit_model import PVT_POINTS_BASE, PVT_POINTS_HOT  # noqa: E402
+from raw_bit_model import calibration as model_calibration  # noqa: E402  (this module's own calibration() wraps it)
 
 PROV = "simulation-derived; provisional until silicon"
 TOLS = (0.01, 0.005)            # settling tolerances (fractional period error); the steady-state
@@ -475,8 +477,7 @@ def det_calibration(temp, vdd, proc):
 
 
 def calibration(temp, vdd, proc):
-    vc = load_module("behavioral_raw_bit", REPO / "sim/raw-bit-volume-campaign/behavioral_raw_bit.py")
-    base = vc.calibration(temp, vdd, proc)
+    base = model_calibration(temp, vdd, proc)
     det = det_calibration(temp, vdd, proc)
     cal = {"temp_c": temp, "vdd_v": vdd, "corner": proc, "sigma1": base["sigma"][1],
            "jitter_record": base["jitter_record"], "combining_record": base["combining_record"]}
@@ -610,8 +611,7 @@ MARGIN_CLAIM = ("Margin of DR-0004's 1024-sample start-up window (20.48 ms at DR
 
 
 def margin_compute():
-    vc = load_module("behavioral_raw_bit", REPO / "sim/raw-bit-volume-campaign/behavioral_raw_bit.py")
-    points = list(vc.PVT_POINTS_BASE) + list(vc.PVT_POINTS_HOT)
+    points = list(PVT_POINTS_BASE) + list(PVT_POINTS_HOT)
     tau = 0.5 * TS
     rows = []
     for (temp, vdd) in points:
