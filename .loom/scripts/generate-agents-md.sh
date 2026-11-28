@@ -40,8 +40,11 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # repo's defaults/scripts/ next to defaults/.loom/CLAUDE.md. The upstream
 # relative path ($SCRIPT_DIR/../.loom/...) doubled the .loom/ directory here.
 # Local fix per PDR-0001 (docs/decisions/PDR-0001-generate-agents-md-path-fix.md),
-# pinned in .loom/resync-ignore until rjwalters/loom#13910 lands a
-# layout-aware fix upstream.
+# under a permanent pin in .loom/resync-ignore. This repository owns the
+# generator: upstream retired the installed copy on 2026-11-17 (rjwalters/loom
+# a52433957, #13911 — moved to source-tree-only scripts/ and declared in
+# defaults/.loom-retired.list), so no resync can deliver an upstream
+# replacement, and without the pin resync would remove the retired file.
 #
 # Second local delta under the same pin (#533): upstream, .loom/AGENTS.md is
 # the TEMPLATE the installer substitutes at install time; in this flattened
