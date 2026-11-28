@@ -224,7 +224,13 @@ unmapped point.
   measurements; infeasible verdict confirmed. That verdict is the flat deck's and stands; DR-0017
   option (b) replaced the flat route, and its coupled deck is measured above. See
   `records/20261106b-rate-probe-repinned-timeout.md`.
-* An independent cross-check of a gate-model response against
-  `sim/digital-sdf-timed-verification/`'s Icarus + SDF run at the same
-  `tt_025C_1v80` corner (a different simulator and a different timing
-  mechanism): available, not wired up (#812).
+* **Done (issue #812, residual of #486)**: independent cross-check of the
+  ngspice timed-delay gate model (`runs/20261114-gate-model-full/`) against
+  Icarus 13.0 + `tt_025C_1v80` SDF on the full 75-cycle `program.build_program(75)`
+  stimulus at 100 ns (`analysis/cross-check-icarus-sdf.py`, reusing
+  `fv-sdf-cosim.py`'s SDF setup): **311 of 311** gate-model vs Icarus + SDF
+  responses match word for word (11/11 compared 32-bit words, 300/300 per-cycle
+  scalars, first `out_valid` at cycle 36 in all three of gate model, Icarus +
+  SDF, and `program.model_replay()`, 0 disagreements; setup/hold checks not
+  simulated because Icarus 13.0 drops SDF `TIMINGCHECK`). Record:
+  `records/20261128-icarus-sdf-gate-model-cross-check.md`.
