@@ -102,20 +102,30 @@ against the new GDS. The manifest pins moved together with that evidence:
 pinned to the extracted netlist `sha256:bb9c7902…`. Every row's verdict was
 unchanged at that time: 2/22 met, item 11 `lvs_supply_unproven`.
 
-## Regenerating the report (CI runs exactly this)
+## Regenerating the report (CI runs the same grading invocation)
+
+Run it on the pinned grader: the committed report's `build` block records
+`klayout-tools==0.8.0` (tag `v0.8.0` — the same pin
+`.github/workflows/ci.yml`'s `signoff-check` job installs), and any other
+build stamps a different `build` identity into the output. The `uvx` form
+carries the pin inside the command, so it reproduces the committed bytes
+on a host whose `klt` is not 0.8.0:
 
 ```bash
-klt signoff --manifest signoff/block-manifest.json \
+uvx --from "klayout-tools==0.8.0" klt signoff \
+  --manifest signoff/block-manifest.json \
   --tiers-doc signoff/design-evidence-tiers.md --format json \
   > signoff/t1-report.json
 ```
 
 Exit code `3` is the documented mid-ladder state (`tier: null` — at least
 one T1 item unmet), not a command failure; the command's own contract
-reserves `0` for a block at T1. Echo the command above verbatim — the
-report embeds the `--tiers-doc` value and relative evidence paths, so any
-other invocation (different cwd, absolute tiers-doc path) produces a
-report that no longer matches the committed one byte for byte. The output
+reserves `0` for a block at T1. Reproduce the *invocation*, not just a
+transcription of it: same flags, run from the repo root (the report
+embeds the `--tiers-doc` value and relative evidence paths, so a
+different cwd or an absolute tiers-doc path produces a report that no
+longer matches the committed one byte for byte), with the grader pinned
+to the same build on both sides. The output
 is deterministic: same manifest + same evidence + same tiers doc + same
 `klt` build ⇒ byte-identical report, which is what makes the CI
 diff a valid staleness gate rather than a flaky one. 0.6.0 and later carry a
@@ -436,6 +446,12 @@ inventories, as of `43f26fd`, 2026-10-17 (klt 0.7.0, open_pdks
 | `1.analog` | `attest/1.analog.json` | `met` | Not built by `attest.py` (issue #360). `attest/1.analog.inventory.json` is a klt-format inventory (19 `.sch`/`.sym` sources plus the four derived `design/*.spice`, each declaring `python3 design/netlist.py --check --top <cell>` as its freshness check). `klt signoff --attest 1` (klayout-tools 0.9.1, needs xschem and `klt netlist`) runs only in `pdk-nightly.yml` `netlist-check`, which mints the envelope (uploaded as the `attest-1-analog` artifact) and re-attests the committed `attest/1.analog.json` with `--check`, failing on drift. After a deliberate schematic change, dispatch `pdk-nightly` and commit the artifact as `attest/1.analog.json`; then **copy the new envelope's `provenance.input.content_hash` into `block-manifest.json`'s `evidence["1.analog"].content_hash` by hand** — `attest.py` does not own this row, so neither `--write` nor `--check` updates that pin, and a stale pin grades the item `unmet` / `stale_evidence` — then run `attest.py --write` for the rows it does own and re-render the report. |
 | `9` | `attest/9.json` | `met` | Every record-bearing `sim/` family has a committed testbench/harness/script outside `records/`, `runs/`, `corners/` (`sim/ro-ring-timestep-convergence` via `harness/run-convergence.py`), the three `pdk.json` pins agree, and `REPRODUCE.md` states the pin. |
 
+Re-minted 2026-11-15 (issue #514): the item 10 inventory pins
+`.github/workflows/ci.yml` and `pdk-nightly.yml` by sha256, and this
+issue's stale-pin doc fixes changed both files; `attest/10.json`, the
+manifest pin and the report were re-rendered together. Verdicts
+unchanged.
+
 Each `attest/<key>.inventory.json` lists the inventoried files with sha256;
 each `attest/<key>.json` envelope pins its inventory by
 `provenance.input.path` + `content_hash`, and the manifest entry pins the
@@ -524,9 +540,10 @@ because a different `klt` build stamps a different build/ruleset id into
 the report and the byte-diff gate goes red on an otherwise-correct
 resolution.
 
-`klt signoff --attest`/`--inventory` is already in a release: klayout-tools
-0.9.1 documents it for items 1, 8, 9 and 10 (from `--inventory`) and item 2
-(from `--input STREAM`), and `1.analog` uses it. Still pending is migrating the
+Tagged klayout-tools 0.8.0 ships `klt signoff --attest` and `--inventory`.
+The 0.9.1 release documents attestation for items 1, 8, 9 and 10 (from `--inventory`) and item 2
+(from `--input STREAM`). The nightly's netlist-check runs `--attest 1` on
+0.9.1 for `1.analog`. Still pending is migrating the
 rows `attest.py` owns to it and dropping `attest.py`; that needs a check that the
 `--attest`-minted envelopes match the committed ones, which has not been done.
 No grader pin bump is a prerequisite: the CI grader pin stays at 0.8.0, which
@@ -575,15 +592,15 @@ the item to make a row go green.
 
 ## CI
 
-`.github/workflows/ci.yml`'s `signoff-check` job installs the pinned
-`klayout-tools==0.8.0` (since issue #363; 0.7.0 from 2026-10-08, issue #164;
-0.6.0 from 2026-09-23, issue #160 — deliberately
-**diverged** from the PDK nightly's 0.5.0: the grader is a pure JSON
-transform with no PDK, so it follows the grader release, while the
-nightly's pin gates the nineteen committed cells' compose-cell `--check`
-reproductions and moves only with a full `--check` re-verification
-against a new build), runs the regeneration command
-above, and fails if its output differs from the committed
-`t1-report.json` — so a manifest citing an artifact that has since
-changed goes red instead of rotting. The PR path needs no PDK and no
-KLayout: grading is a pure JSON transform over committed envelopes.
+`.github/workflows/ci.yml`'s `signoff-check` job installs
+`klayout-tools==0.8.0` (issue #363). Earlier pins were 0.7.0
+(2026-10-08, issue #164) and 0.6.0 (2026-09-23, issue #160). CI runs
+the grading invocation above and fails if its output differs from the
+committed `t1-report.json`. The grader reads committed JSON envelopes
+and runs without a PDK or KLayout.
+
+The PDK nightly's composition job installs source commit `5edb557f91d0`,
+the build used to regenerate and verify the nineteen committed cells in
+issue #181. Moving that pin requires rerunning `layout/bin/compose-cell.py`
+with `--check` for each cell against the new build. The nightly's netlist-check
+job pins 0.9.1 for `klt signoff --attest 1`.

@@ -51,8 +51,8 @@ commit.
   (`klt artifact get|verify <manifest>` from a fleet worker); the manifest pins
   the exact sha256, so an audit is by hash, not by trust.
 - `klt` with `artifact` (klayout-tools >= 7e3561f) is needed to write new
-  evidence. The `signoff-check` job keeps its `klayout-tools==0.7.0` pin; it
-  does not use the artifact verbs.
+  evidence. The `signoff-check` job keeps its `klayout-tools==0.8.0` pin
+  (ci.yml, issue #363); it does not use the artifact verbs.
 - CI cannot reach the broker, so the live `klt artifact verify` is an
   out-of-band step on the first real campaign run after merge.
 - This changes no simulation result and relaxes no ratified spec. All entropy
