@@ -32,6 +32,16 @@ and the response comparison are ``program.py``'s (``decode`` /
 ``--emit-record-json`` writes the reduced result (rate, margin, per-row
 comparison) next to the report so the dated record can cite a file rather than
 a transcript. Nothing here simulates anything.
+
+For a coupled deck (``plan.raw_source == "analog_sampler"``) the model is
+replayed with the ``raw_bit`` / ``raw_valid`` the sampler put on its pins,
+captured every cycle, and the strobes are checked against the sampler's own
+documented ``raw_valid`` (``sampler_valid``), not against the per-cycle strobe
+the standalone decks' testbench drives: that schedule holds ``raw_valid`` low
+in every bus cycle, which the sampler -- a reset flop with its data tied to
+``vdd`` -- cannot do. ``standalone_strobe_low`` lists the cycles where the two
+differ, so a reader of a coupled result knows its digital responses are not
+the standalone run's.
 """
 from __future__ import annotations
 
@@ -58,6 +68,10 @@ from measurement_names import duplicate_measurement_names  # noqa: E402  (#690: 
 UNIT_CEILING_S = 3480.0
 #: measured analog-chain rate (s per simulated ns), records/20261105-analog-chain-probe.md
 ANALOG_RATE_S_PER_NS = 0.057
+#: what the strobe check of a coupled deck compares ``raw_valid`` with (see
+#: ``sampler_valid``): the sampler's own documented behaviour
+VALID_REFERENCE = ("sampler: raw_valid high one clk edge after rst_n releases and staying high "
+                   "(design/README.md 'Pins that leave the block'; design/sampler_core.spice xsv)")
 
 
 def digital_budget_s_per_ns(t_stop_ns: float) -> float:
@@ -73,8 +87,26 @@ def digital_budget_s_per_ns(t_stop_ns: float) -> float:
     return UNIT_CEILING_S / t_stop_ns - ANALOG_RATE_S_PER_NS
 
 
+def sampler_valid(cycles: list[dict]) -> list[int]:
+    """The ``raw_valid`` the analog sampler shows at each cycle's capture.
+
+    ``sampler_core`` registers ``raw_valid`` as a flip-flop whose data is tied
+    to ``vdd`` (``design/sampler_core.spice``, instance ``xsv``): it goes high
+    one ``clk`` edge after ``rst_n`` releases and stays high (``design/README.md``,
+    "Pins that leave the block"). The sampler has no input that could hold it
+    off in a bus cycle, so ``cycle_inputs``' per-cycle ``raw_valid`` -- a
+    testbench source of the standalone digital decks -- is not what the
+    sampler produces in the coupled deck: measured on the batch fleet it is
+    high in all 11 cycles that schedule holds it low
+    (``records/20261128-coupled-rate.md``).
+    """
+    edges = [P.t_edge_ns(k) for k in range(len(cycles))]
+    first = min(t for t in edges if t >= P.RST_N_RELEASE_NS)
+    return [int(t + P.CAPTURE_NS >= first) for t in edges]
+
+
 def compare_coupled(corner: dict, plan: dict) -> dict:
-    """Replay actual sampler inputs and check the strobe schedule independently."""
+    """Replay actual sampler inputs and check the strobes against the sampler."""
     cycles, _ = P.build_program()
     stop = P.t_stop_ns(cycles)
     if plan["name"] != "coupled-full" or plan["analysis"]["args"].split()[-1] != f"{stop:.0f}n":
@@ -94,18 +126,19 @@ def compare_coupled(corner: dict, plan: dict) -> dict:
             measured[name] = None
             missing.append(name)
     supply = float(plan["reductions"]["supply_v"])
+    expected_valid = sampler_valid(cycles)
     bits = []
     strobes = []
     valid_mismatches = []
     undecodable = []
-    for k, inp in enumerate(P.cycle_inputs(cycles)):
+    for k in range(len(cycles)):
         name = f"raw_valid_k{k}"
         valid = decode(measured[name], supply)
         if valid is None:
             undecodable.append({"measurement": name, "value": measured[name]})
             continue
         strobes.append(valid)
-        if valid != inp["raw_valid"]:
+        if valid != expected_valid[k]:
             valid_mismatches.append(k)
         if valid:
             name = f"raw_bit_k{k}"
@@ -133,6 +166,9 @@ def compare_coupled(corner: dict, plan: dict) -> dict:
         "oracle": "digital/model/digital_top.py via program.model_replay()",
         "checks": checks, "checks_total": len(compared), "checks_matched": matches,
         "mismatches": mismatches, "valid_mismatches": valid_mismatches,
+        "valid_reference": VALID_REFERENCE,
+        "standalone_strobe_low": [k for k, inp in enumerate(P.cycle_inputs(cycles))
+                                  if not inp["raw_valid"] and expected_valid[k]],
         "missing_measurements": missing, "level_decode": {"tol_v": LEVEL_TOL, "undecodable": undecodable},
         "rate": {"runtime_s": runtime, "simulated_ns": reached, "s_per_simulated_ns": rate},
         "pass_criterion": {"coupled_budget_s_per_ns": budget, "within_budget": within},

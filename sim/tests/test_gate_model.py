@@ -989,42 +989,52 @@ class TestReducerMeasurementCompleteness(unittest.TestCase):
         self.assertEqual(result["checks_matched"], result["checks_total"])
 
 
+COUPLED_PLAN = BLOCK / "runs" / "20261128-coupled-full" / "requests" / "coupled-full" / "plan.json"
+COUPLED_REPORT = BLOCK / "runs" / "20261128-coupled-full" / "report.json"
+
+#: the cycles where the standalone decks' testbench strobe
+#: (``program.cycle_inputs`` ``raw_valid``) is low while the sampler is out of
+#: reset: every bus cycle of the program. The sampler has no input that could
+#: hold ``raw_valid`` off there, so the live run shows it high at all of them.
+STANDALONE_STROBE_LOW = [0, 1, 2, 3, 36, 37, 38, 39, 40, 41, 74]
+
+
 class TestCoupledReplay(unittest.TestCase):
+    """The coupled comparator against the captured batch-fleet run.
+
+    The report is the real one (job ``klt-sim-7d6f0e6f474f``,
+    ``records/20261128-coupled-rate.md``): the extracted transistor sampler
+    drove the routed gate model, so ``raw_bit`` and ``raw_valid`` are what the
+    sampler put on its pins. The earlier fixture overlaid the program's own
+    strobe schedule on standalone output, which made the strobe check agree
+    with itself and hid that the sampler's ``raw_valid`` is a level.
+
+    Each test perturbs the capture independently of the digital responses it
+    is compared with.
+    """
+
     def setUp(self):
-        # Actual standalone output voltages. Overlay sampler inputs for an
-        # offline comparison test, then perturb them independently of the outputs.
-        self.report = json.loads(COMMITTED_GATE_REPORT.read_text())
-        self.plan = json.loads(COMMITTED_GATE_PLAN.read_text())
-        self.plan["name"] = "coupled-full"
-        self.plan["raw_source"] = "analog_sampler"
-        # Simulate the report envelope for these offline comparator tests.
-        supply = {name: 1.8 for name in ("Vvdd", "Vvddr1", "Vvddr2", "Vvddr3", "Vvddr4")}
-        self.plan["corners"]["supply_v"] = {name: [v] for name, v in supply.items()}
-        self.report["corners"][0]["supply_v"] = supply
-        self.report["environment"]["backend"]["resolved"] = "batch"
-        bits = iter(self.plan.pop("raw_bit_pattern"))
-        inputs = CMP.P.cycle_inputs(CMP.P.build_program()[0])
-        self.samples = self.report["corners"][0]["measurements"]
-        for k, row in enumerate(inputs):
-            valid = row["raw_valid"]
-            bit = int(next(bits)) if valid else 0
-            for sig, level in (("raw_valid", valid), ("raw_bit", bit)):
-                self.samples.append({"name": f"{sig}_k{k}", "value": level * 1.8})
-        self.samples.append({"name": "clk_at_stop", "value": 0.0})
-        self.plan["measurement_count"] = len(self.samples)
+        self.report = json.loads(COUPLED_REPORT.read_text())
+        self.plan = json.loads(COUPLED_PLAN.read_text())
 
     def sample(self, name):
-        return next(m for m in self.samples if m["name"] == name)
+        return next(m for m in self.report["corners"][0]["measurements"] if m["name"] == name)
 
-    def test_replay_uses_captured_bits(self):
+    def test_live_run_replays_cleanly(self):
         result = CMP.compare(self.report, self.plan)
         self.assertEqual((result["checks_matched"], result["checks_total"]), (311, 311))
+        self.assertEqual(result["valid_mismatches"], [])
         self.assertEqual(result["verdict"], "pass")
+        self.assertTrue(result["pass_criterion"]["within_budget"])
+        self.assertAlmostEqual(result["rate"]["s_per_simulated_ns"], 431.63 / 7870.0)
+
+    def test_replay_uses_captured_bits(self):
         sample = self.sample("raw_bit_k4")
         sample["value"] = 1.8 - sample["value"]
         result = CMP.compare(self.report, self.plan)
         self.assertEqual(result["verdict"], "fail")
         self.assertTrue(result["mismatches"])
+        self.assertEqual(result["valid_mismatches"], [])
         self.assertTrue(result["pass_criterion"]["within_budget"])
 
     def test_refuses_unrelated_deck(self):
@@ -1032,15 +1042,37 @@ class TestCoupledReplay(unittest.TestCase):
         with self.assertRaisesRegex(SystemExit, "differs from the coupled deck"):
             CMP.compare(self.report, self.plan)
 
-    def test_unexpected_valid_in_idle_cycle_is_reported(self):
-        self.sample("raw_valid_k36")["value"] = 1.8
+    def test_deasserted_strobe_is_reported(self):
+        # the sampler's raw_valid is high from the first clock after reset
+        # and stays high (design/README.md): a low or undecodable strobe at
+        # any capture is the sampler failing, whichever cycle it is
+        self.sample("raw_valid_k36")["value"] = 0.0
         result = CMP.compare(self.report, self.plan)
         self.assertEqual(result["valid_mismatches"], [36])
         self.assertEqual(result["verdict"], "fail")
+        self.setUp()
+        self.sample("raw_valid_k4")["value"] = 0.9
+        result = CMP.compare(self.report, self.plan)
+        self.assertIn("raw_valid_k4", [m["measurement"] for m in result["level_decode"]["undecodable"]])
+        self.assertEqual(result["verdict"], "fail")
+
+    def test_the_strobe_reference_is_the_sampler_not_the_testbench(self):
+        # the live sampler is high in every cycle the standalone testbench
+        # schedule holds raw_valid low, and none of that is a mismatch
+        result = CMP.compare(self.report, self.plan)
+        self.assertEqual(result["standalone_strobe_low"], STANDALONE_STROBE_LOW)
+        self.assertEqual(result["valid_mismatches"], [])
+        self.assertEqual(result["verdict"], "pass")
+        cycles, _ = CMP.P.build_program()
+        self.assertEqual(CMP.sampler_valid(cycles), [1] * len(cycles))
+        # derived from the deck's own reset and clock timing, not assumed:
+        # a reset released after the first edge leaves cycle 0's capture low
+        with mock.patch.object(CMP.P, "RST_N_RELEASE_NS", 350.0):
+            self.assertEqual(CMP.sampler_valid(cycles)[:3], [0, 1, 1])
 
     def test_missing_or_unresolved_evidence_cannot_pass(self):
         self.sample("raw_valid_k1")["value"] = 0.9
-        self.samples.remove(self.sample("gated_k0"))
+        self.report["corners"][0]["measurements"].remove(self.sample("gated_k0"))
         self.sample("clk_at_stop")["value"] = None
         result = CMP.compare(self.report, self.plan)
         self.assertEqual(result["checks_total"], 0)
