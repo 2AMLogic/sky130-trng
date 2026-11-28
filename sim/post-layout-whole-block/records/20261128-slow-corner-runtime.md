@@ -170,10 +170,11 @@ batch overhead = the 3,480 s one-unit cap, the largest a one-unit job holds.
 - **Allowance: kept at 2.0x**, on the basis stated above.
 - **Not established by this record:** the other ten points (ff at all four
   (T, V); ss and tt at -40 C / 1.98 V and at 125 C / 1.98 V; ss at 27 C /
-  1.8 V); the behaviour under concurrent units on one instance; the digital
-  responses against the normative model at this point; any current, power, IR
-  or timing figure; entropy at any rate. The raw bits are the sampler's and
-  are not entropy evidence: `Ts` = 100 ns, not the ratified 20 us (O8).
+  1.8 V; tt at -40 C / 1.62 V); the behaviour under concurrent units on one
+  instance; the digital responses against the normative model at this point;
+  any current, power, IR or timing figure; entropy at any rate. The raw bits
+  are the sampler's and are not entropy evidence: `Ts` = 100 ns, not the
+  ratified 20 us (O8).
 
 ## Digital responses: an observation, not an oracle
 
