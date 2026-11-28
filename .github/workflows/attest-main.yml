@@ -1,0 +1,100 @@
+# Post-merge item-9 signoff attestation regeneration (DR-0021, issue #697).
+#
+# Item 9's inventory covers `sim/*/*.py` and its derived aggregate hash chain
+# touches four files (`signoff/attest/9.inventory.json`, `signoff/attest/9.json`,
+# `signoff/block-manifest.json` evidence["9"], and `signoff/t1-report.json`).
+# Regenerating those four files on every PR serialized concurrent `sim/` PRs
+# into a merge-conflict treadmill. Under DR-0021:
+#
+#   * PR CI (`ci.yml`) runs `signoff/attest.py --check-pr` (full committed-bytes
+#     freshness for items 1.digital/2.analog/2.digital/10; fresh `build(root, "9")`
+#     `status == "pass"` + committed item-9 chain consistency + PR immutability
+#     for item 9).
+#   * This workflow runs serially on `push: main` (`cancel-in-progress: false`),
+#     regenerates item 9 + re-renders `signoff/t1-report.json` with the pinned
+#     `klayout-tools==0.8.0`, verifies the full main-time gate (`attest.py --check`
+#     on ALL items, `sim/tests/test_signoff_attest.py`, `t1-report.json` byte-diff,
+#     `member_count == len(members)`), pushes a bot commit touching only the four
+#     item-9 artifacts when needed, and stamps the `attest-main` commit status on
+#     the exact signoff-valid SHA.
+#
+# Which SHA is signoff-valid (DR-0021 contract item 4):
+#   A commit on `main` is signoff-valid iff its `attest-main` commit status is
+#   `success` on that exact SHA (stamped only when the full main-time gate passes
+#   and regeneration is a no-op on that SHA). A merge commit that needed
+#   regeneration stays `pending` (superseded by its bot commit) and never
+#   receives `success`; failed runs stamp `failure` and push nothing.
+#
+# No-loop guarantee (DR-0021 contract item 5):
+#   1. Pushes made with `GITHUB_TOKEN` do not trigger `on: push` workflows in
+#      GitHub Actions.
+#   2. Even under a non-GITHUB_TOKEN credential, the job-level guard skips
+#      bot commits (`chore(signoff): regenerate item-9 attestation`), and
+#      `attest.py --sync-main` is idempotent (no-op regeneration never commits).
+#   3. The originating run directly stamps `attest-main: success` onto the
+#      newly pushed bot commit's SHA right after `git push` succeeds.
+
+name: Attest Main (item-9 regeneration)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  statuses: write
+
+concurrency:
+  group: attest-main
+  cancel-in-progress: false
+
+jobs:
+  attest-main:
+    name: Regenerate and verify item-9 attestation on main
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      !startsWith(github.event.head_commit.message, 'chore(signoff): regenerate item-9 attestation')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install klt (klayout-tools==0.8.0, pinned signoff grader)
+        run: |
+          pip install --user "klayout-tools==0.8.0"
+          klt --version
+
+      - id: sync
+        name: Regenerate item 9, verify full main-time gate, push if changed, stamp attest-main status
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python3 signoff/attest.py --sync-main \
+            --target-sha "${{ github.sha }}" \
+            --remote origin \
+            --branch main \
+            --status-mode github \
+            --run-tests
+
+      - name: Mark SHA failed if setup failed before sync-main
+        if: failure() && steps.sync.outcome != 'failure'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python3 -c '
+          import os, sys
+          sys.path.insert(0, "signoff")
+          import attest
+          attest._post_github_status(
+              os.environ["GITHUB_SHA"],
+              "failure",
+              "attest-main failed before regeneration step",
+          )
+          '

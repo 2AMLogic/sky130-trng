@@ -472,42 +472,53 @@ committed files. `2.*` do not re-run the layout generator (that is
 record-bearing family, not that it covers every measurement; `10` checks that
 CI runs the named gates, not that they pass.
 
-Regenerate after a deliberate change (review the diff, then re-run the
-report command above):
+Regenerate after a deliberate change to items `1.digital`, `2.analog`,
+`2.digital`, or `10` (review the diff, then re-run the report command above):
 
 ```bash
-python3 signoff/attest.py --write      # inventories, envelopes, manifest pins
-python3 signoff/attest.py --check      # what CI runs; read-only
+python3 signoff/attest.py --write 10   # pass only the non-item-9 key(s) you changed
+python3 signoff/attest.py --check-pr   # what PR CI runs; read-only
+python3 signoff/attest.py --check      # full main-time check across all keys
 ```
 
-**Resolving an item-9 merge conflict** (issue #672): item 9's
-`content_hash` is a digest of the *whole* `attest/9.inventory.json`, so it
-moves whenever any inventoried file moves. Two PRs that each touch an
-inventoried `sim/` file therefore write different values into the same six
-lines — `attest/9.json`'s `provenance.input.content_hash`,
-`block-manifest.json`'s `evidence["9"].content_hash`, and the item-9 rows'
-`citation`/`artifact_binding` hashes in `t1-report.json` — and git cannot
-auto-merge them. Nothing semantic is contested, and the hash is
-intentionally committed: the `signoff-check` job re-derives it from the
-PR's own tree on both of its gates — `signoff/attest.py --check` fails on
-a stale or missing envelope/manifest pin, and the "Re-render the committed
-tier report and byte-diff" step fails unless the committed
-`t1-report.json` matches a fresh render — so the cure is regeneration,
-never removal or hand-editing.
+**Item 9 post-merge regeneration and SHA validity (DR-0021, issue #697):**
+item 9's `content_hash` is a digest of the *whole* `attest/9.inventory.json`
+(which covers `sim/*/*.py` and friends), so regenerating it per PR caused every
+concurrent `sim/` PR to conflict on the same four files
+(`signoff/attest/9.inventory.json`, `signoff/attest/9.json`,
+`signoff/block-manifest.json` `evidence["9"]`, and `signoff/t1-report.json`).
+Under [DR-0021](../spec/decision-records/DR-0021-attest-aggregate-regeneration.md):
 
-When exactly those three files conflict and `attest/9.inventory.json`
-itself merged cleanly (its per-member sha256 lines conflict only when the
-*same* member changed on both sides), do not resolve by hand. `attest/9.json` and
-`t1-report.json` are rewritten whole by the steps below, so take either
-side of those two. `block-manifest.json` is **not**: `--write 9` assigns
-only `manifest["evidence"]["9"]` and rewrites the file from the copy it
-loaded (`signoff/attest.py:307-313`), so every other entry survives as
-whatever you kept. Keep the merged file git produced and resolve only the
-`evidence["9"]` conflict hunk in place (either side of that hunk is fine,
-`--write 9` overwrites it). Never `git checkout --ours/--theirs` that path:
-it discards hunks git had already auto-merged from the other side (for
-example a newly cited `7.*` entry), and neither `attest.py --check` nor the
-byte-diff gate would notice. Then, from the repo root:
+- **On a PR:** do **not** run `attest.py --write 9` and do **not** edit
+  `signoff/attest/9.inventory.json`, `signoff/attest/9.json`, or
+  `block-manifest.json` `evidence["9"]`. PR CI (`ci.yml` `signoff-check`) runs
+  `python3 signoff/attest.py --check-pr --base-ref HEAD^1`, which keeps full
+  committed-bytes freshness checks for items `1.digital`, `2.analog`,
+  `2.digital`, and `10`, while for item 9 verifying that a fresh
+  `build(root, "9")` passes (`status == "pass"`, selectors, `check_9` family
+  coverage, PDK pins), that the committed item-9 chain is internally consistent
+  (`member_count == len(members)`, envelope and manifest hashes match), and
+  that the PR did not edit item-9's committed files. `sim/tests/test_signoff_attest.py`
+  still checks helper-import closures against the fresh PR tree and runs the
+  full-tree `--check` against a regenerated copy.
+- **On `main`:** `.github/workflows/attest-main.yml` runs serially on
+  `push: main` (`cancel-in-progress: false`), invokes
+  `python3 signoff/attest.py --sync-main --run-tests --status-mode github` with
+  the pinned `klayout-tools==0.8.0`, regenerates item 9 + re-renders
+  `signoff/t1-report.json`, verifies `attest.py --check` across all items,
+  `member_count == len(members)`, `t1-report.json` byte-identity, and
+  `test_signoff_attest.py`, pushes a bot commit touching only the four item-9
+  artifacts when needed, and stamps the `attest-main` commit status.
+- **Which SHA on `main` is signoff-valid:** a commit on `main` is signoff-valid
+  iff the `attest-main` commit status is `success` **on that exact SHA** (which
+  is stamped only when the full main-time gate passes and regeneration is a
+  no-op on that SHA). A merge commit that changed item-9 inventoried files
+  remains `pending` (superseded by its bot commit) and is never signoff-valid;
+  a failed regeneration stamps `failure` and pushes nothing; interleaved merges
+  are retried against the newest `origin/main` head so only the newest bot
+  commit carries `attest-main: success`.
+- **Manual/local regeneration (outside a PR, or emergency recovery on `main`):**
+  if you ever need to regenerate item 9 locally using the pinned 0.8.0 build:
 
 ```bash
 python3 signoff/attest.py --write 9    # re-mint the envelope + manifest pin
@@ -515,14 +526,15 @@ uvx --from "klayout-tools==0.8.0" klt signoff \
   --manifest signoff/block-manifest.json \
   --tiers-doc signoff/design-evidence-tiers.md --format json \
   > signoff/t1-report.json             # exit 3 expected: tier null, gaps open
-python3 signoff/attest.py --check      # rc 0 — what CI runs
+python3 signoff/attest.py --check      # rc 0 — full main-time gate
 ```
 
-`git add` the regenerated files and commit the merge. The render must use
-the pinned 0.8.0 build — the same pin the `signoff-check` job installs —
-because a different `klt` build stamps a different build/ruleset id into
-the report and the byte-diff gate goes red on an otherwise-correct
-resolution.
+(This supersedes the pre-DR-0021 per-PR item-9 merge-conflict recipe from issue
+#672: PRs no longer touch the four item-9 files, so item-9 conflicts no longer
+occur. If an older pre-DR-0021 PR still carries item-9 diffs, restore
+`origin/main`'s `signoff/attest/9.inventory.json`, `signoff/attest/9.json`, and
+`evidence["9"]` in `block-manifest.json`, and let `attest-main` regenerate on
+merge.)
 
 `klt signoff --attest`/`--inventory` is already in a release: klayout-tools
 0.9.1 documents it for items 1, 8, 9 and 10 (from `--inventory`) and item 2
