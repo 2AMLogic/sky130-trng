@@ -31,8 +31,12 @@ What these guard, because a verdict string alone is not evidence:
   ratios over per-level areas, label-subset net attribution that counts
   ambiguous/zero-gate/unmatched nets instead of guessing, and a drift gate
   that catches value, parameter and staleness changes but ignores tool
-  provenance. The klayout-dependent geometry controls skip themselves where
-  klayout is absent (they run for real under pdk-nightly).
+  provenance. That pure half is the library ``physical_estimates_lib.py``
+  (issue #818): it must import with ``klayout``, ``_gds_geometry`` and
+  ``_hashing`` refused, and ``physical_estimates`` must re-export all of it
+  so its ``PE.*`` callers stay unchanged. The klayout-dependent geometry
+  controls skip themselves where klayout is absent (they run for real under
+  pdk-nightly).
 """
 
 from __future__ import annotations
@@ -43,6 +47,7 @@ import json
 import math
 import re
 import sys
+import types
 from collections import Counter
 from pathlib import Path
 
@@ -54,6 +59,7 @@ from _hashing import sha256_file  # noqa: E402
 from _test_check import Checker  # noqa: E402
 import drc_coverage_audit as A  # noqa: E402
 import physical_estimates as PE  # noqa: E402
+import physical_estimates_lib as PEL  # noqa: E402
 import verify_whole_lib as V  # noqa: E402
 
 _checker = Checker()
@@ -360,6 +366,85 @@ def check_committed_coverage_audit() -> None:
 # --------------------------------------------------------------------------
 # physical estimates (issue #283): pure calculator logic, committed contract
 # --------------------------------------------------------------------------
+
+_PURE_SURFACE = (
+    "SCHEMA_VERSION", "ISSUE", "LEVELS", "DENSITY_LAYERS", "FLAT_KEYS", "DECK_LAYER_NAMES",
+    "WINDOW_UM", "STRIDE_UM", "JSON_NAME", "MD_NAME", "CONTROLS_JSON", "CONTROLS_MD",
+    "CONTROL_TOP", "NOT_SIGNOFF", "DEFINITIONS",
+    "EstimateError",
+    "validate_grid", "window_grid", "window_density", "cumulative_areas", "antenna_ratios",
+    "split_labels", "match_gate_components", "gate_areas_from_extract", "layer_map_from_table",
+    "build_document", "drift", "markdown",
+)
+
+_ENTRY_POINT_ONLY_IMPORTS = ("klayout", "_gds_geometry", "_hashing", "_klt_common")
+
+
+def _public_names(module) -> list[str]:
+    """A module's public names: not underscore-private, and not a module or
+    ``__future__`` feature it merely imported."""
+    return [n for n, v in vars(module).items()
+            if not n.startswith("_") and not isinstance(v, types.ModuleType)
+            and type(v).__module__ != "__future__"]
+
+
+def _import_with_refused(module: str, refused: tuple[str, ...]):
+    """Import *module* (``layout/bin`` on ``sys.path``) in a fresh interpreter
+    whose import machinery refuses every root named in *refused*."""
+    import subprocess  # noqa: PLC0415
+
+    probe = (
+        "import sys\n"
+        "refused = set(sys.argv[2:])\n"
+        "class Refuse:\n"
+        "    def find_spec(self, name, path=None, target=None):\n"
+        "        if name.split('.')[0] in refused:\n"
+        "            raise ImportError(f'refused for the seam test: {name}')\n"
+        "        return None\n"
+        "sys.meta_path.insert(0, Refuse())\n"
+        "sys.path.insert(0, sys.argv[1])\n"
+        f"import {module}\n"
+    )
+    return subprocess.run([sys.executable, "-c", probe, str(_HERE / "bin"), *refused],
+                          capture_output=True, text=True, check=False)
+
+
+def check_physical_estimates_library_seam() -> None:
+    """Issue #818: the klayout-free half of the estimates is the library
+    ``physical_estimates_lib.py``. It must import with nothing but the
+    stdlib -- imported here in a fresh interpreter that refuses the entry
+    point's other dependencies (``klayout``, ``_gds_geometry``, ``_hashing``,
+    ``_klt_common``) -- and ``physical_estimates`` must re-export its whole
+    public surface as the same objects: one ``EstimateError`` class in
+    particular, or the ``except`` clauses in the entry point and in
+    ``verify-whole.py`` would stop catching. ``_PURE_SURFACE`` is the
+    contracted surface, so a public symbol added to the library but not
+    re-exported, or not listed, fails here."""
+    import ast  # noqa: PLC0415
+
+    tree = ast.parse((_HERE / "bin" / "physical_estimates_lib.py").read_text())
+    roots = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            roots.update(alias.name.split(".")[0] for alias in node.names)
+        elif isinstance(node, ast.ImportFrom):
+            roots.add((node.module or "").split(".")[0])
+    _check("the pure library imports nothing but __future__ and math",
+           roots == {"__future__", "math"}, sorted(roots))
+    alone = _import_with_refused("physical_estimates_lib", _ENTRY_POINT_ONLY_IMPORTS)
+    _check("the pure library imports with klayout, _gds_geometry, _hashing and _klt_common refused",
+           alone.returncode == 0, alone.stderr.strip()[-400:])
+    ctl = _import_with_refused("physical_estimates", _ENTRY_POINT_ONLY_IMPORTS)
+    _check("the refusal is live: the entry point, which does import the geometry stack, is refused naming it",
+           ctl.returncode != 0 and any(f"refused for the seam test: {m}" in ctl.stderr
+                                       for m in _ENTRY_POINT_ONLY_IMPORTS),
+           ctl.stderr.strip()[-400:])
+    surface = _public_names(PEL)
+    _check("the pure library's public surface is exactly the contracted one",
+           set(surface) == set(_PURE_SURFACE), sorted(set(surface) ^ set(_PURE_SURFACE)))
+    _check("every public pure symbol is re-exported by physical_estimates as the same object",
+           all(getattr(PE, n, None) is getattr(PEL, n) for n in surface),
+           [n for n in surface if getattr(PE, n, None) is not getattr(PEL, n)])
 
 
 def check_physical_estimate_logic() -> None:
@@ -729,6 +814,7 @@ def main() -> int:
     check_committed_controls()
     check_coverage_audit_logic()
     check_committed_coverage_audit()
+    check_physical_estimates_library_seam()
     check_physical_estimate_logic()
     check_committed_physical_estimates()
     check_physical_estimate_geometry()
