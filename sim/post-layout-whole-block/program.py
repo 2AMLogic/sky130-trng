@@ -19,11 +19,16 @@ identical at any Ts and the record carries the deviation explicitly).
 
 The decks' ``.meas`` card sets are built here too (#804), from that same
 cycle contract: ``gate_measurement_cards`` (the standalone digital run),
-``coupled_measurements`` (the transistor sampler driving the gate model) and
+``coupled_measurements`` (the transistor sampler driving the gate model),
+``coupled_matrix_measurements`` (the same coupled deck per 12-point-matrix
+point, with the ring-rail currents and the throughput tap, #815) and
 ``whole_block_measurement_cards`` (the transistor whole block), over one card
 collector that drops a card sampling past ``t_stop`` and refuses a repeated
 name. So is the normative-oracle response comparison every reducer scores a
-corner through (``decode`` / ``response_checks``, beside ``model_replay``).
+corner through (``decode`` / ``response_checks``, beside ``model_replay``),
+and so are the coupled oracle's two shared pieces (#815): ``sampler_valid``,
+the ``raw_valid`` the sampler itself shows, and ``coupled_capture_decode``,
+the every-cycle strobe/bit decode both coupled reducers replay through.
 
 Consumed by:
 
@@ -84,6 +89,14 @@ W1 = (50.0, 250.0)
 #: the supply sources the corner's ``supply_v`` axis steps (``Vvdd``,
 #: ``Vvddr1..4``); ``vss`` is read by its own ``i_vss_w2`` card
 RAILS = ("vdd", "vddr1", "vddr2", "vddr3", "vddr4")
+#: where the coupled matrix deck's ``t_out_valid_first`` crosses
+#: ``v(out_valid)``, as a fraction of the point's supply. The gate model's
+#: ``dac_bridge`` drives ``out_low = 0``, ``out_undef = supply/2`` (where an
+#: UNKNOWN digital net sits) and ``out_high = supply``; a level midway between
+#: the undefined level and the high rail is strictly inside the driven
+#: ``0..supply`` swing at every matrix supply (1.62 / 1.80 / 1.98 V), so an X
+#: can never count as a rise and a driven 1 always crosses it.
+OUT_VALID_CROSS_FRAC = 0.75
 
 N_SAMPLES_REG = 32   # first raw word: consumed by the RAW_DATA register pops
 N_SAMPLES_STREAM = 32  # second raw word: consumed by the streaming port
@@ -272,10 +285,10 @@ def gate_measurement_cards(cycles: list[dict], vih: float,
     return _gate_measurement_collector(cycles, vih, threshold_pct).result()
 
 
-def coupled_measurements(cycles: list[dict]) -> tuple[list[dict], list[str]]:
-    """The coupled deck's set: the gate model's responses, the sampler's tap
-    on every cycle, and the clock's level at ``t_stop``."""
-    c = _gate_measurement_collector(cycles, VIH, EXPECTED_THRESHOLD_PCT)
+def _add_coupled_taps(c: _MeasCollector, cycles: list[dict]) -> None:
+    """The sampler's ``raw_bit`` / ``raw_valid`` at every cycle's capture,
+    and the clock's level at ``t_stop`` -- what every coupled set adds to the
+    gate model's responses."""
     for k in range(len(cycles)):
         t = t_edge_ns(k) + CAPTURE_NS
         for signal in ("raw_bit", "raw_valid"):
@@ -283,6 +296,42 @@ def coupled_measurements(cycles: list[dict]) -> tuple[list[dict], list[str]]:
             c.add(name, f".meas tran {name} FIND v({signal}) AT={t:.1f}n")
     c.add("clk_at_stop",
           f".meas tran clk_at_stop FIND v(clk) AT={t_stop_ns(cycles):.0f}n")
+
+
+def coupled_measurements(cycles: list[dict]) -> tuple[list[dict], list[str]]:
+    """The coupled deck's set: the gate model's responses, the sampler's tap
+    on every cycle, and the clock's level at ``t_stop``."""
+    c = _gate_measurement_collector(cycles, VIH, EXPECTED_THRESHOLD_PCT)
+    _add_coupled_taps(c, cycles)
+    return c.result()
+
+
+def _add_rail_current_cards(c: _MeasCollector, w2: tuple[float, float]) -> None:
+    """Per-rail currents: W1 (rings running, digital reset-held) and W2
+    (``w2``, active), and ``.save`` of the six supply sources."""
+    for rail in RAILS:
+        c.add(f"i_{rail}_w1", f".meas tran i_{rail}_w1 AVG i(V{rail}) FROM={W1[0]:.0f}n TO={W1[1]:.0f}n")
+        c.add(f"i_{rail}_w2", f".meas tran i_{rail}_w2 AVG i(V{rail}) FROM={w2[0]:.0f}n TO={w2[1]:.0f}n")
+        c.add(f"q_{rail}_w2", f".meas tran q_{rail}_w2 INTEG i(V{rail}) FROM={w2[0]:.0f}n TO={w2[1]:.0f}n")
+    c.add("i_vss_w2", f".meas tran i_vss_w2 AVG i(Vvss) FROM={w2[0]:.0f}n TO={w2[1]:.0f}n")
+    c.save |= {f"i(V{r})" for r in (*RAILS, "vss")}
+
+
+def coupled_matrix_measurements(cycles: list[dict], supply_v: float) -> tuple[list[dict], list[str]]:
+    """The coupled deck's set for one 12-point-matrix point at ``supply_v``
+    (#815): everything ``coupled_measurements`` captures -- so the sampler is
+    the sole source of both raw signals and the strobe replay is the same --
+    plus what DR-0017's O5a and O6 read off the whole block: the ring-rail
+    W1/W2 currents (``vddr1..4`` among the five ``RAILS``) and the first
+    ``out_valid`` crossing, at a level inside this point's ``dac_bridge``
+    swing."""
+    c = _gate_measurement_collector(cycles, VIH, EXPECTED_THRESHOLD_PCT)
+    c.save |= set(RAILS[1:])
+    _add_coupled_taps(c, cycles)
+    cross_v = OUT_VALID_CROSS_FRAC * supply_v
+    c.add("t_out_valid_first",
+          f".meas tran t_out_valid_first WHEN v(out_valid)={cross_v:.4g} RISE=1", "out_valid")
+    _add_rail_current_cards(c, (t_edge_ns(2), t_stop_ns(cycles) - TS_NS))
     return c.result()
 
 
@@ -326,17 +375,11 @@ def whole_block_measurement_cards(cycles: list[dict]) -> tuple[list[dict], list[
     c.add("t_out_valid_first", ".meas tran t_out_valid_first WHEN v(out_valid)=1.4 RISE=1", "out_valid")
 
     # -- per-rail currents: W1 (rings running, digital reset-held) and W2 (active)
-    w2 = (t_edge_ns(2), t_stop - TS_NS)
-    for rail in RAILS:
-        c.add(f"i_{rail}_w1", f".meas tran i_{rail}_w1 AVG i(V{rail}) FROM={W1[0]:.0f}n TO={W1[1]:.0f}n")
-        c.add(f"i_{rail}_w2", f".meas tran i_{rail}_w2 AVG i(V{rail}) FROM={w2[0]:.0f}n TO={w2[1]:.0f}n")
-        c.add(f"q_{rail}_w2", f".meas tran q_{rail}_w2 INTEG i(V{rail}) FROM={w2[0]:.0f}n TO={w2[1]:.0f}n")
-    c.add("i_vss_w2", f".meas tran i_vss_w2 AVG i(Vvss) FROM={w2[0]:.0f}n TO={w2[1]:.0f}n")
+    _add_rail_current_cards(c, (t_edge_ns(2), t_stop - TS_NS))
 
     # -- sanity: the clock really toggled
     c.add("t_clk_first", ".meas tran t_clk_first WHEN v(clk)=0.9 RISE=1", "clk")
 
-    c.save |= {f"i(V{r})" for r in (*RAILS, "vss")}
     return c.result()
 
 
@@ -519,6 +562,80 @@ def decode(value: float | None, supply_v: float) -> int | None:
     if abs(value - supply_v) <= LEVEL_TOL:
         return 1
     return None
+
+
+# -- coupled oracle: the sampler's strobes ------------------------------------
+# The two pieces every coupled reducer shares (#815): the nominal comparator
+# (analysis/compare-gate-model.py) and the 12-point reducer
+# (analysis/reduce-whole-block.py) both check the strobes against
+# ``sampler_valid`` and replay through ``coupled_capture_decode`` -- ONE
+# implementation, so the unexercised copy cannot drift (#642's lesson).
+
+#: what the strobe check of a coupled deck compares ``raw_valid`` with: the
+#: sampler's own documented behaviour
+SAMPLER_VALID_REFERENCE = ("sampler: raw_valid high one clk edge after rst_n releases and staying high "
+                           "(design/README.md 'Pins that leave the block'; design/sampler_core.spice xsv)")
+
+
+def sampler_valid(cycles: list[dict]) -> list[int]:
+    """The ``raw_valid`` the analog sampler shows at each cycle's capture.
+
+    ``sampler_core`` registers ``raw_valid`` as a flip-flop whose data is tied
+    to ``vdd`` (``design/sampler_core.spice``, instance ``xsv``): it goes high
+    one ``clk`` edge after ``rst_n`` releases and stays high (``design/README.md``,
+    "Pins that leave the block"). The sampler has no input that could hold it
+    off in a bus cycle, so ``cycle_inputs``' per-cycle ``raw_valid`` -- a
+    testbench source of the standalone digital decks -- is not what the
+    sampler produces in the coupled deck: measured on the batch fleet it is
+    high in all 11 cycles that schedule holds it low
+    (``records/20261128-coupled-rate.md``).
+    """
+    edges = [t_edge_ns(k) for k in range(len(cycles))]
+    first = min(t for t in edges if t >= RST_N_RELEASE_NS)
+    return [int(t + CAPTURE_NS >= first) for t in edges]
+
+
+def coupled_capture_decode(measured: dict, supply_v: float,
+                           cycles: list[dict]) -> dict:
+    """Decode a coupled deck's every-cycle sampler captures against ``supply_v``.
+
+    ``measured`` maps the deck's measurement names to captured voltages
+    (``None`` for an absent one). Returns ``{"strobes", "strobe_cycles",
+    "bits", "valid_mismatches", "undecodable"}``: ``strobes[i]`` is the decoded
+    ``raw_valid_k<k>`` of cycle ``k = strobe_cycles[i]`` and ``bits`` the
+    decoded ``raw_bit`` of every strobed cycle, in cycle order -- the
+    ``captured_valid`` / ``captured_bits`` :func:`model_replay` takes -- plus
+    the cycles whose strobe differs from :func:`sampler_valid` and the
+    captures that are not a resolved rail. An undecodable ``raw_valid`` leaves
+    its cycle out of ``strobes`` (and ends the per-cycle alignment): the
+    caller replays only when ``undecodable`` is empty, exactly as the nominal
+    comparator does.
+    """
+    expected = sampler_valid(cycles)
+    strobes: list[int] = []
+    strobe_cycles: list[int] = []
+    bits: list[int] = []
+    valid_mismatches: list[int] = []
+    undecodable: list[dict] = []
+    for k in range(len(cycles)):
+        name = f"raw_valid_k{k}"
+        valid = decode(measured.get(name), supply_v)
+        if valid is None:
+            undecodable.append({"measurement": name, "value": measured.get(name)})
+            continue
+        strobes.append(valid)
+        strobe_cycles.append(k)
+        if valid != expected[k]:
+            valid_mismatches.append(k)
+        if valid:
+            name = f"raw_bit_k{k}"
+            bit = decode(measured.get(name), supply_v)
+            if bit is None:
+                undecodable.append({"measurement": name, "value": measured.get(name)})
+            else:
+                bits.append(bit)
+    return {"strobes": strobes, "strobe_cycles": strobe_cycles, "bits": bits,
+            "valid_mismatches": valid_mismatches, "undecodable": undecodable}
 
 
 def response_checks(measured: dict, rows: list[dict], supply_v: float,

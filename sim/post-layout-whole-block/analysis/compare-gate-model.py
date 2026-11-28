@@ -26,7 +26,7 @@ digital net reads as -- is reported as ``undecodable`` and makes the
 comparison FAIL. It is never rounded to the nearer rail: an X that silently
 decoded to 0 would turn a broken model into a passing one. Both that decode
 and the response comparison are ``program.py``'s (``decode`` /
-``response_checks``, re-exported here), so the 12-point reducer
+``response_checks``), so the 12-point reducer
 (``reduce-whole-block.py``) scores a corner through the same code (#642).
 
 ``--emit-record-json`` writes the reduced result (rate, margin, per-row
@@ -41,7 +41,10 @@ the standalone decks' testbench drives: that schedule holds ``raw_valid`` low
 in every bus cycle, which the sampler -- a reset flop with its data tied to
 ``vdd`` -- cannot do. ``standalone_strobe_low`` lists the cycles where the two
 differ, so a reader of a coupled result knows its digital responses are not
-the standalone run's.
+the standalone run's. Both ``sampler_valid`` and the strobe/bit decode
+(``program.coupled_capture_decode``) are ``program.py``'s (#815): the 12-point
+reducer (``analysis/reduce-whole-block.py``) replays a matrix point's coupled
+deck through the same two functions.
 """
 from __future__ import annotations
 
@@ -56,9 +59,10 @@ SLUG = HERE.parent
 REPO = SLUG.parents[1]
 sys.path.insert(0, str(SLUG))
 import program as P  # noqa: E402
-# the rail-bounded decode and the response comparison are program.py's (#642,
-# #804): the one implementation the 12-point reducer scores corners through too
-from program import LEVEL_TOL, decode, response_checks  # noqa: E402
+# the rail-bounded decode, the response comparison and the coupled oracle's
+# strobe reference are program.py's (#642, #804, #815): the one implementation
+# the 12-point reducer scores corners through too
+from program import LEVEL_TOL, response_checks, sampler_valid  # noqa: E402
 
 sys.path.insert(0, str(REPO / "digital"))
 sys.path.insert(0, str(REPO / "sim" / "bin"))
@@ -68,10 +72,6 @@ from measurement_names import duplicate_measurement_names  # noqa: E402  (#690: 
 UNIT_CEILING_S = 3480.0
 #: measured analog-chain rate (s per simulated ns), records/20261105-analog-chain-probe.md
 ANALOG_RATE_S_PER_NS = 0.057
-#: what the strobe check of a coupled deck compares ``raw_valid`` with (see
-#: ``sampler_valid``): the sampler's own documented behaviour
-VALID_REFERENCE = ("sampler: raw_valid high one clk edge after rst_n releases and staying high "
-                   "(design/README.md 'Pins that leave the block'; design/sampler_core.spice xsv)")
 
 
 def digital_budget_s_per_ns(t_stop_ns: float) -> float:
@@ -85,24 +85,6 @@ def digital_budget_s_per_ns(t_stop_ns: float) -> float:
     an extrapolation, not a measurement.
     """
     return UNIT_CEILING_S / t_stop_ns - ANALOG_RATE_S_PER_NS
-
-
-def sampler_valid(cycles: list[dict]) -> list[int]:
-    """The ``raw_valid`` the analog sampler shows at each cycle's capture.
-
-    ``sampler_core`` registers ``raw_valid`` as a flip-flop whose data is tied
-    to ``vdd`` (``design/sampler_core.spice``, instance ``xsv``): it goes high
-    one ``clk`` edge after ``rst_n`` releases and stays high (``design/README.md``,
-    "Pins that leave the block"). The sampler has no input that could hold it
-    off in a bus cycle, so ``cycle_inputs``' per-cycle ``raw_valid`` -- a
-    testbench source of the standalone digital decks -- is not what the
-    sampler produces in the coupled deck: measured on the batch fleet it is
-    high in all 11 cycles that schedule holds it low
-    (``records/20261128-coupled-rate.md``).
-    """
-    edges = [P.t_edge_ns(k) for k in range(len(cycles))]
-    first = min(t for t in edges if t >= P.RST_N_RELEASE_NS)
-    return [int(t + P.CAPTURE_NS >= first) for t in edges]
 
 
 def compare_coupled(corner: dict, plan: dict) -> dict:
@@ -126,27 +108,11 @@ def compare_coupled(corner: dict, plan: dict) -> dict:
             measured[name] = None
             missing.append(name)
     supply = float(plan["reductions"]["supply_v"])
-    expected_valid = sampler_valid(cycles)
-    bits = []
-    strobes = []
-    valid_mismatches = []
-    undecodable = []
-    for k in range(len(cycles)):
-        name = f"raw_valid_k{k}"
-        valid = decode(measured[name], supply)
-        if valid is None:
-            undecodable.append({"measurement": name, "value": measured[name]})
-            continue
-        strobes.append(valid)
-        if valid != expected_valid[k]:
-            valid_mismatches.append(k)
-        if valid:
-            name = f"raw_bit_k{k}"
-            bit = decode(measured[name], supply)
-            if bit is None:
-                undecodable.append({"measurement": name, "value": measured[name]})
-            else:
-                bits.append(bit)
+    # the shared coupled decode (program.py, #815): strobes against the
+    # sampler's documented raw_valid, bits of every strobed cycle
+    cap = P.coupled_capture_decode(measured, supply, cycles)
+    strobes, bits = cap["strobes"], cap["bits"]
+    valid_mismatches, undecodable = cap["valid_mismatches"], cap["undecodable"]
     checks = []
     if not undecodable:
         rows = P.model_replay(bits, captured_valid=strobes)
@@ -166,9 +132,9 @@ def compare_coupled(corner: dict, plan: dict) -> dict:
         "oracle": "digital/model/digital_top.py via program.model_replay()",
         "checks": checks, "checks_total": len(compared), "checks_matched": matches,
         "mismatches": mismatches, "valid_mismatches": valid_mismatches,
-        "valid_reference": VALID_REFERENCE,
+        "valid_reference": P.SAMPLER_VALID_REFERENCE,
         "standalone_strobe_low": [k for k, inp in enumerate(P.cycle_inputs(cycles))
-                                  if not inp["raw_valid"] and expected_valid[k]],
+                                  if not inp["raw_valid"] and sampler_valid(cycles)[k]],
         "missing_measurements": missing, "level_decode": {"tol_v": LEVEL_TOL, "undecodable": undecodable},
         "rate": {"runtime_s": runtime, "simulated_ns": reached, "s_per_simulated_ns": rate},
         "pass_criterion": {"coupled_budget_s_per_ns": budget, "within_budget": within},

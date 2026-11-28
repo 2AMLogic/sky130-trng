@@ -29,8 +29,10 @@ they hold against whatever ``points()``/``pwl_card()`` do internally:
   input that never changes still emits exactly the two endpoints;
 * the grid requests' timeouts are derived from the measured coupled run
   (issues #431 / #596, ``records/20261128-coupled-rate.md``), fit the fleet's
-  whole-job ceiling as one three-unit job, and refuse what it cannot hold;
-  the archived flat grid under ``corners/grid-*`` keeps its filed settings.
+  whole-job ceiling as one single-process unit per request (``units=1``; the
+  archived three-unit shape stays sized by the same function), and refuse
+  what it cannot hold; the archived flat grid under ``corners/grid-*`` keeps
+  its filed settings.
 
 Issue #507 adds three assertions of its own:
 
@@ -73,6 +75,22 @@ unmatchable request as red; a card carrying a duplicated ``AT=`` token
 also turns red, which is deliberate (the scan reads one match per key per
 card, and the generator emits one per key).
 
+Issue #815: ``--set grid`` is now one COUPLED request per matrix point (12
+single-process units, ``grid-<proc>-<T>-<Vdd>``), each embedding a gate model
+built for that point from the Liberty deck ``pvt_deck_map.py`` maps it to.
+Building a gate model needs decks, so the grid tests here run against a
+synthetic PDK: ``SyntheticPdk`` writes the 8 mapped decks from
+``CELL_STRUCTURE`` (the 64 cells' pins and functions, copied from the real
+``tt_025C_1v80`` deck, whose structure is identical in all 8 decks) with a
+distinct delay scale per deck, and ``synthetic_pins()`` re-pins
+``DECK_TABLE``'s sha256 values to those files for the duration of a
+generation -- the stand-in for "a sky130A install whose decks hash to the
+pins". Without a resolvable PDK or ``--libs-ref`` the grid set refuses and
+writes nothing (``test_grid_fails_closed_without_libs_ref``). Against the
+real install, ``TestAgainstRealPdk`` (skipped without it) checks every
+point names its pinned deck on disk and that the nominal point's model is
+the committed, measured gate model byte for byte.
+
 Pure Python: no klt, no PDK, no ngspice.
 """
 from __future__ import annotations
@@ -87,14 +105,16 @@ import math
 import re
 import sys
 import tempfile
+import unittest
 from pathlib import Path
+from unittest import mock
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
 import program as P  # noqa: E402
 import pvt_deck_map as PVT  # noqa: E402
-from gate_model_lib import parse_verilog  # noqa: E402
+from gate_model_lib import _eng, parse_verilog  # noqa: E402
 
 spec = importlib.util.spec_from_file_location("make_requests", HERE / "make-requests.py")
 mr = importlib.util.module_from_spec(spec)
@@ -110,6 +130,264 @@ def gate_model_generator():
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     return mod
+
+
+# ---------------------------------------------------------------------------
+# Issue #815: a synthetic PDK for the coupled grid, offline
+# ---------------------------------------------------------------------------
+
+#: pin / function structure of the 64 ``sky130_fd_sc_hd`` cells the routed
+#: netlist instantiates, copied from ``sky130_fd_sc_hd__tt_025C_1v80.lib``:
+#: ``(input pins, {output pin: Liberty function}, (ff args, ff attrs) | None)``.
+#: Structure is PDK-level -- identical in all 8 mapped decks, checked against
+#: each -- so a deck built from it is a faithful stand-in for everything the
+#: generator reads except the delay tables (synthetic, scaled per deck) and
+#: the input threshold (50 %). Input capacitance is a uniform 0.002 pF.
+CELL_STRUCTURE: dict[str, tuple[tuple[str, ...], dict[str, str], tuple | None]] = {
+    "a211oi_1": (("A1", "A2", "B1", "C1"), {"Y": "(!A1&!B1&!C1) | (!A2&!B1&!C1)"}, None),
+    "a21o_1": (("A1", "A2", "B1"), {"X": "(A1&A2) | (B1)"}, None),
+    "a21oi_1": (("A1", "A2", "B1"), {"Y": "(!A1&!B1) | (!A2&!B1)"}, None),
+    "a221o_1": (("A1", "A2", "B1", "B2", "C1"), {"X": "(B1&B2) | (A1&A2) | (C1)"}, None),
+    "a221oi_1":
+        (("A1", "A2", "B1", "B2", "C1"),
+         {"Y": "(!A1&!B1&!C1) | (!A1&!B2&!C1) | (!A2&!B1&!C1) | (!A2&!B2&!C1)"},
+         None),
+    "a222oi_1":
+        (("A1", "A2", "B1", "B2", "C1", "C2"),
+         {"Y": "(!A1&!B1&!C1) | (!A1&!B1&!C2) | (!A1&!B2&!C1) | (!A2&!B1&!C1) | "
+               "(!A1&!B2&!C2) | (!A2&!B1&!C2) | (!A2&!B2&!C1) | (!A2&!B2&!C2)"},
+         None),
+    "a22o_1": (("A1", "A2", "B1", "B2"), {"X": "(B1&B2) | (A1&A2)"}, None),
+    "a22oi_1":
+        (("A1", "A2", "B1", "B2"),
+         {"Y": "(!A1&!B1) | (!A1&!B2) | (!A2&!B1) | (!A2&!B2)"},
+         None),
+    "a311o_1": (("A1", "A2", "A3", "B1", "C1"), {"X": "(A1&A2&A3) | (B1) | (C1)"}, None),
+    "a311oi_1":
+        (("A1", "A2", "A3", "B1", "C1"),
+         {"Y": "(!A1&!B1&!C1) | (!A2&!B1&!C1) | (!A3&!B1&!C1)"},
+         None),
+    "a31o_2": (("A1", "A2", "A3", "B1"), {"X": "(A1&A2&A3) | (B1)"}, None),
+    "a31oi_1": (("A1", "A2", "A3", "B1"), {"Y": "(!A1&!B1) | (!A2&!B1) | (!A3&!B1)"}, None),
+    "a32o_1": (("A1", "A2", "A3", "B1", "B2"), {"X": "(A1&A2&A3) | (B1&B2)"}, None),
+    "a32oi_1":
+        (("A1", "A2", "A3", "B1", "B2"),
+         {"Y": "(!A1&!B1) | (!A1&!B2) | (!A2&!B1) | (!A3&!B1) | (!A2&!B2) | (!A3&!B2)"},
+         None),
+    "and2_1": (("A", "B"), {"X": "(A&B)"}, None),
+    "and3_1": (("A", "B", "C"), {"X": "(A&B&C)"}, None),
+    "and3b_1": (("A_N", "B", "C"), {"X": "(!A_N&B&C)"}, None),
+    "and4_1": (("A", "B", "C", "D"), {"X": "(A&B&C&D)"}, None),
+    "and4b_1": (("A_N", "B", "C", "D"), {"X": "(!A_N&B&C&D)"}, None),
+    "buf_4": (("A",), {"X": "(A)"}, None),
+    "bufinv_16": (("A",), {"Y": "(!A)"}, None),
+    "clkbuf_1": (("A",), {"X": "(A)"}, None),
+    "clkinv_1": (("A",), {"Y": "(!A)"}, None),
+    "clkinv_2": (("A",), {"Y": "(!A)"}, None),
+    "clkinv_4": (("A",), {"Y": "(!A)"}, None),
+    "clkinvlp_2": (("A",), {"Y": "(!A)"}, None),
+    "dfrtp_1":
+        (("CLK", "D", "RESET_B"),
+         {"Q": "IQ"},
+         (("IQ", "IQ_N",), {"clear": "!RESET_B", "clocked_on": "CLK", "next_state": "D"})),
+    "dfstp_1":
+        (("CLK", "D", "SET_B"),
+         {"Q": "IQ"},
+         (("IQ", "IQ_N",), {"clocked_on": "CLK", "next_state": "D", "preset": "!SET_B"})),
+    "diode_2": (("DIODE",), {}, None),
+    "inv_1": (("A",), {"Y": "(!A)"}, None),
+    "inv_4": (("A",), {"Y": "(!A)"}, None),
+    "mux2_2": (("A0", "A1", "S"), {"X": "(A0&!S) | (A1&S)"}, None),
+    "mux2i_1": (("A0", "A1", "S"), {"Y": "(!A0&!S) | (!A1&S)"}, None),
+    "nand2_1": (("A", "B"), {"Y": "(!A) | (!B)"}, None),
+    "nand2b_1": (("A_N", "B"), {"Y": "(A_N) | (!B)"}, None),
+    "nand3_1": (("A", "B", "C"), {"Y": "(!A) | (!B) | (!C)"}, None),
+    "nand3b_1": (("A_N", "B", "C"), {"Y": "(A_N) | (!B) | (!C)"}, None),
+    "nand4_1": (("A", "B", "C", "D"), {"Y": "(!A) | (!B) | (!C) | (!D)"}, None),
+    "nand4b_1": (("A_N", "B", "C", "D"), {"Y": "(A_N) | (!B) | (!C) | (!D)"}, None),
+    "nor2_1": (("A", "B"), {"Y": "(!A&!B)"}, None),
+    "nor2b_1": (("A", "B_N"), {"Y": "(!A&B_N)"}, None),
+    "nor3_1": (("A", "B", "C"), {"Y": "(!A&!B&!C)"}, None),
+    "nor3b_1": (("A", "B", "C_N"), {"Y": "(!A&!B&C_N)"}, None),
+    "nor4_1": (("A", "B", "C", "D"), {"Y": "(!A&!B&!C&!D)"}, None),
+    "nor4b_1": (("A", "B", "C", "D_N"), {"Y": "(!A&!B&!C&D_N)"}, None),
+    "o211a_1": (("A1", "A2", "B1", "C1"), {"X": "(A1&B1&C1) | (A2&B1&C1)"}, None),
+    "o211ai_1": (("A1", "A2", "B1", "C1"), {"Y": "(!A1&!A2) | (!B1) | (!C1)"}, None),
+    "o21a_1": (("A1", "A2", "B1"), {"X": "(A1&B1) | (A2&B1)"}, None),
+    "o21ai_0": (("A1", "A2", "B1"), {"Y": "(!A1&!A2) | (!B1)"}, None),
+    "o21ba_2": (("A1", "A2", "B1_N"), {"X": "(A1&!B1_N) | (A2&!B1_N)"}, None),
+    "o21bai_1": (("A1", "A2", "B1_N"), {"Y": "(!A1&!A2) | (B1_N)"}, None),
+    "o221ai_1": (("A1", "A2", "B1", "B2", "C1"), {"Y": "(!B1&!B2) | (!A1&!A2) | (!C1)"}, None),
+    "o22ai_1": (("A1", "A2", "B1", "B2"), {"Y": "(!B1&!B2) | (!A1&!A2)"}, None),
+    "o31a_1": (("A1", "A2", "A3", "B1"), {"X": "(A1&B1) | (A2&B1) | (A3&B1)"}, None),
+    "o31ai_1": (("A1", "A2", "A3", "B1"), {"Y": "(!A1&!A2&!A3) | (!B1)"}, None),
+    "o41a_1":
+        (("A1", "A2", "A3", "A4", "B1"),
+         {"X": "(A1&B1) | (A2&B1) | (A3&B1) | (A4&B1)"},
+         None),
+    "o41ai_1": (("A1", "A2", "A3", "A4", "B1"), {"Y": "(!A1&!A2&!A3&!A4) | (!B1)"}, None),
+    "or2_2": (("A", "B"), {"X": "(A) | (B)"}, None),
+    "or3_1": (("A", "B", "C"), {"X": "(A) | (B) | (C)"}, None),
+    "or3b_2": (("A", "B", "C_N"), {"X": "(A) | (B) | (!C_N)"}, None),
+    "or4_1": (("A", "B", "C", "D"), {"X": "(A) | (B) | (C) | (D)"}, None),
+    "or4b_2": (("A", "B", "C", "D_N"), {"X": "(A) | (B) | (C) | (!D_N)"}, None),
+    "xnor2_1": (("A", "B"), {"Y": "(!A&!B) | (A&B)"}, None),
+    "xor2_1": (("A", "B"), {"X": "(A&!B) | (!A&B)"}, None),
+}
+
+#: the synthetic decks' base delays (ns, rise/fall): every arc of a
+#: combinational cell, and of a flop, before the per-deck scale
+SYNTH_COMB_DELAY_NS = (0.100, 0.200)
+SYNTH_DFF_DELAY_NS = (0.900, 1.000)
+
+
+def synth_factor(corner: str) -> float:
+    """The delay scale of synthetic deck ``corner``: ``1.0 + 0.05 * i`` over
+    the 8 mapped decks in sorted order, so each deck is a different file
+    (different sha256) carrying delays a test can tell apart."""
+    decks = sorted({row["liberty_corner"] for row in PVT.DECK_TABLE.values()})
+    return 1.0 + 0.05 * decks.index(corner)
+
+
+def _synth_nldm(name: str, value_ns: float) -> str:
+    """A 2x2 ``cell_rise``/``cell_fall`` table whose four values are all
+    ``value_ns``: the generator's bilinear reduction returns exactly it."""
+    v = f"{value_ns:.6f}"
+    return (f'                {name} ("del_2_2") {{\n'
+            f'                    index_1("0.1000000000, 0.5000000000");\n'
+            f'                    index_2("0.0010000000, 0.0090000000");\n'
+            f'                    values("{v}, {v}", \\\n'
+            f'                         "{v}, {v}");\n'
+            f'                }}\n')
+
+
+def _synth_arcs(related: str, delays: tuple[float, float]) -> str:
+    return (f'            timing () {{\n'
+            f'                related_pin : "{related}";\n'
+            f'                timing_sense : "non_unate";\n'
+            f'                timing_type : "combinational";\n'
+            + _synth_nldm("cell_rise", delays[0]) + _synth_nldm("cell_fall", delays[1])
+            + "            }\n")
+
+
+def _synth_cell(short: str, scale: float) -> str:
+    ins, outs, ff = CELL_STRUCTURE[short]
+    pins = ""
+    for p in ins:
+        clock = '            clock : "true";\n' if ff and p == "CLK" else ""
+        pins += (f'        pin ("{p}") {{\n            capacitance : 0.0020000000;\n'
+                 f'            direction : "input";\n{clock}        }}\n')
+    comb = tuple(d * scale for d in SYNTH_COMB_DELAY_NS)
+    dff = tuple(d * scale for d in SYNTH_DFF_DELAY_NS)
+    out = ""
+    for pin, function in outs.items():
+        arcs = ""
+        if ff:
+            arcs += _synth_arcs("CLK", dff).replace(
+                'timing_type : "combinational";', 'timing_type : "rising_edge";')
+            for attr, ttype in (("clear", "clear"), ("preset", "preset")):
+                if ff[1].get(attr):
+                    arcs += _synth_arcs(ff[1][attr].lstrip("!"), dff).replace(
+                        'timing_type : "combinational";', f'timing_type : "{ttype}";')
+        else:
+            for p in ins:
+                arcs += _synth_arcs(p, comb)
+        out += f'        pin ("{pin}") {{\n            direction : "output";\n' \
+               f'            function : "{function}";\n{arcs}        }}\n'
+    group = ""
+    if ff:
+        args = ", ".join(f'"{a}"' for a in ff[0])
+        group = (f'        ff ({args}) {{\n'
+                 + "".join(f'            {k} : "{v}";\n' for k, v in ff[1].items()) + "        }\n")
+    return f'    cell ("sky130_fd_sc_hd__{short}") {{\n        area : 5.0000000000;\n{pins}{group}{out}    }}\n'
+
+
+def synthetic_deck_text(corner: str) -> str:
+    """One synthetic ``sky130_fd_sc_hd`` deck: every cell the routed netlist
+    uses, delays scaled by ``synth_factor(corner)``, a 50 % input threshold."""
+    scale = synth_factor(corner)
+    cells = "".join(_synth_cell(s, scale) for s in sorted(CELL_STRUCTURE))
+    return (
+        'library ("synthetic_sky130_fd_sc_hd") {\n'
+        '    delay_model : "table_lookup";\n'
+        '    time_unit : "1ns";\n'
+        '    voltage_unit : "1V";\n'
+        '    capacitive_load_unit(1.0000000000, "pf");\n'
+        '    input_threshold_pct_fall : 50.000000000;\n'
+        '    input_threshold_pct_rise : 50.000000000;\n'
+        '    lu_table_template ("del_2_2") {\n'
+        '        variable_1 : "input_net_transition";\n'
+        '        variable_2 : "total_output_net_capacitance";\n'
+        '    }\n'
+        f'{cells}}}\n')
+
+
+class SyntheticPdk:
+    """A fake sky130A ``libs.ref`` holding the 8 synthetic decks (built once).
+
+    ``root`` is what ``--libs-ref`` takes; ``sha[deck file]`` is the sha256 a
+    plan must carry once ``DECK_TABLE`` is re-pinned to these files."""
+
+    def __init__(self):
+        self._tmp = tempfile.TemporaryDirectory(prefix="test-synth-pdk-")
+        self.root = Path(self._tmp.name)
+        self.lib = self.root / PVT.LIB_SUBDIR
+        self.lib.mkdir(parents=True)
+        self.corner_of: dict[str, str] = {}
+        self.sha: dict[str, str] = {}
+        for row in PVT.DECK_TABLE.values():
+            deck, corner = row["liberty_deck"], row["liberty_corner"]
+            if deck in self.sha:
+                continue
+            text = synthetic_deck_text(corner)
+            (self.lib / deck).write_text(text)
+            self.corner_of[deck] = corner
+            self.sha[deck] = hashlib.sha256(text.encode()).hexdigest()
+        assert len(self.sha) == 8, sorted(self.sha)
+
+
+SYNTH = SyntheticPdk()
+
+
+@contextlib.contextmanager
+def synthetic_pins():
+    """Re-pin ``DECK_TABLE``'s sha256 values to the synthetic decks for the
+    duration -- the test's stand-in for "a sky130A install whose decks hash
+    to the pins" -- and restore the committed pins on exit."""
+    pins = {k: row["liberty_sha256"] for k, row in PVT.DECK_TABLE.items()}
+    for row in PVT.DECK_TABLE.values():
+        row["liberty_sha256"] = SYNTH.sha[row["liberty_deck"]]
+    try:
+        yield
+    finally:
+        for k, sha in pins.items():
+            PVT.DECK_TABLE[k]["liberty_sha256"] = sha
+
+
+def run_grid(out: Path, *extra: str, libs_ref: bool = True, pins: bool = True) -> tuple[object, str]:
+    """``mr.main(["--set", "grid", out, ...])`` quietly; ``(rc | SystemExit, stderr)``.
+
+    ``libs_ref=False`` leaves the deck location to ``klt pdk find``;
+    ``pins=False`` keeps the committed sha256 pins (so a synthetic deck fails
+    the on-disk check)."""
+    argv = ["--set", "grid", str(out)]
+    if libs_ref:
+        argv += ["--libs-ref", str(SYNTH.root)]
+    err = io.StringIO()
+    with contextlib.ExitStack() as stack:
+        if pins:
+            stack.enter_context(synthetic_pins())
+        stack.enter_context(contextlib.redirect_stdout(io.StringIO()))
+        stack.enter_context(contextlib.redirect_stderr(err))
+        try:
+            rc: object = mr.main([*argv, *extra])
+        except SystemExit as exc:
+            rc = exc
+    return rc, err.getvalue()
+
+
+def sha256_text(text: str) -> str:
+    return hashlib.sha256(text.encode()).hexdigest()
 
 #: how close to a rail a capture-point sample must sit (V). The pre-#488 ramp
 #: missed by hundreds of mV, so this is loose enough to be about shape and tight
@@ -242,32 +520,36 @@ def test_breakpoint_hygiene() -> None:
 
 
 def test_grid_timeouts_from_the_measured_coupled_rate() -> None:
-    """Issues #431 / #596: the grid's timeouts come from the measured coupled run.
+    """Issues #431 / #596 / #815: the grid's timeouts come from the measured
+    coupled run, for the job shape the grid now has.
 
     ``records/20261128-coupled-rate.md`` measured the coupled whole block at
     431.63 s for the 7,870 ns program. A declared allowance covers the grid's
-    unmeasured points; one request is one job of three units (tt/ss/ff),
-    which must fit the fleet's whole-job ceiling. The archived flat grid
-    under ``corners/grid-*`` keeps the settings it was filed with (21600 /
-    6600 s, no rate behind them) and is not regenerated.
+    unmeasured points; since #815 one request is one single-process unit (one
+    netlist, one gate model), so the job bound is 864 + 120 = 984 s and the
+    caller waits 300 s longer. The archived flat grid under ``corners/grid-*``
+    keeps the settings it was filed with (21600 / 6600 s, no rate behind them)
+    and is not regenerated.
     """
     assert mr.COUPLED_FULL_RUNTIME_S == 431.63 and mr.GRID_MARGIN_X == 2.0
     assert mr.GRID_TIMEOUT_S == math.ceil(mr.GRID_MARGIN_X * mr.COUPLED_FULL_RUNTIME_S) == 864
     assert mr.GRID_TIMEOUT_S <= mr.UNIT_TIMEOUT_CAP_S == 3480
-    units = len(PVT.MATRIX_PROCESSES)
-    assert units == 3
-    for name, request in generated_requests():
-        if name.startswith("grid-"):
-            assert request["options"]["timeout_s"] == mr.GRID_TIMEOUT_S
-            assert len(request["corners"]["process"]) == units
-            # klt's one-job bound, the fleet ceiling, then the caller's wait
-            bound = units * request["options"]["timeout_s"] + mr.BATCH_OVERHEAD_S
-            assert bound <= mr.FLEET_JOB_CEILING_S == 3600
-            assert request["batch"]["poll_timeout_s"] == bound + mr.JOB_SLACK_S == 3012
+    assert mr.GRID_UNITS == 1
+    assert mr.grid_timeouts() == (mr.GRID_TIMEOUT_S, mr.GRID_POLL_TIMEOUT_S) == (864, 1284)
+    grids = [(name, request) for name, request in generated_requests() if name.startswith("grid-")]
+    assert len(grids) == 12
+    for name, request in grids:
+        assert request["options"]["timeout_s"] == mr.GRID_TIMEOUT_S
+        assert len(request["corners"]["process"]) == 1, (name, "one process per request")
+        # klt's one-job bound, the fleet ceiling, then the caller's wait
+        bound = mr.GRID_UNITS * request["options"]["timeout_s"] + mr.BATCH_OVERHEAD_S
+        assert bound == 984 <= mr.FLEET_JOB_CEILING_S == 3600
+        assert request["batch"]["poll_timeout_s"] == bound + mr.JOB_SLACK_S == 1284
     for plan in grid_plans():
         assert plan["timeouts"] == mr.grid_timeout_basis()
         assert plan["timeouts"]["sized_from"] == "records/20261128-coupled-rate.md"
-        assert (plan["timeouts"]["timeout_s"], plan["timeouts"]["poll_timeout_s"]) == (864, 3012)
+        assert (plan["timeouts"]["timeout_s"], plan["timeouts"]["job_bound_s"],
+                plan["timeouts"]["poll_timeout_s"], plan["timeouts"]["units"]) == (864, 984, 1284, 1)
     grids = sorted((HERE / "corners").glob("grid-*/request.json"))
     assert len(grids) == 4, [str(p) for p in grids]
     for req in grids:
@@ -277,23 +559,40 @@ def test_grid_timeouts_from_the_measured_coupled_rate() -> None:
 
 
 def test_grid_timeouts_refuse_what_the_ceiling_cannot_hold() -> None:
-    """A unit allowance that no one-unit job can hold, or three units that no
-    job can hold serially, refuses generation closed: nothing is written."""
+    """A unit allowance no one-unit job can hold refuses generation closed,
+    and the archived three-unit shape -- still sized by the same function --
+    refuses what no job can hold serially: nothing is written either way."""
     with tempfile.TemporaryDirectory(prefix="test-grid-timeout-") as tmp:
-        for margin, needle in ((20.0, "one unit"), (8.0, "3 units")):
-            real = mr.GRID_MARGIN_X
-            mr.GRID_MARGIN_X = margin
+        real = mr.GRID_MARGIN_X
+        mr.GRID_MARGIN_X = 20.0
+        try:
             try:
-                try:
-                    mr.main(["--set", "grid", str(Path(tmp) / f"g{margin}")])
-                except ValueError as e:
-                    assert needle in str(e), (margin, e)
-                else:
-                    raise AssertionError(f"margin {margin} did not refuse")
-                assert not (Path(tmp) / f"g{margin}").exists()
-            finally:
-                mr.GRID_MARGIN_X = real
-    assert mr.grid_timeouts() == (mr.GRID_TIMEOUT_S, mr.GRID_POLL_TIMEOUT_S) == (864, 3012)
+                with contextlib.redirect_stdout(io.StringIO()):
+                    mr.main(["--set", "grid", str(Path(tmp) / "g20")])
+            except ValueError as e:
+                assert "one unit" in str(e), e
+            else:
+                raise AssertionError("margin 20.0 did not refuse")
+            assert not (Path(tmp) / "g20").exists()
+        finally:
+            mr.GRID_MARGIN_X = real
+        mr.GRID_MARGIN_X = 8.0
+        try:
+            # the allowance itself fits one unit (3454 s) ...
+            assert mr.grid_timeouts(units=1) == (3454, 3454 + 120 + 300)
+            # ... but no job holds three of them serially
+            try:
+                mr.grid_timeouts(units=3)
+            except ValueError as e:
+                assert "3 units" in str(e), e
+            else:
+                raise AssertionError("margin 8.0 x 3 units did not refuse")
+        finally:
+            mr.GRID_MARGIN_X = real
+    assert mr.grid_timeouts() == (mr.GRID_TIMEOUT_S, mr.GRID_POLL_TIMEOUT_S) == (864, 1284)
+    # the pre-#815 three-unit shape, for the record: 3 x 864 + 120 + 300
+    assert mr.grid_timeouts(units=3) == (864, 3012)
+    assert mr.grid_timeout_basis(units=3)["job_bound_s"] == 2712
 
 
 # ---------------------------------------------------------------------------
@@ -322,10 +621,13 @@ KNOWN_STALE_OVER_STOP = {
                                      ("alarm", "gated", "startup_done") for k in (36, 42, 74)),
 }
 
-#: the eight requests the generator emits across the four `--set` groups
-_GENERATED_NAMES = ("analog-probe-batch", "grid-125C-1.98V", "grid-27C-1.80V",
-                    "grid-m40C-1.62V", "grid-m40C-1.98V", "rate-probe-batch",
-                    "startup-probe", "startup-probe-batch")
+#: the sixteen requests the generator emits across the four `--set` groups:
+#: since #815 the grid is twelve single-process coupled requests (#815)
+_GENERATED_NAMES = ("analog-probe-batch",
+                    "grid-ff-125C-1.98V", "grid-ff-27C-1.80V", "grid-ff-m40C-1.62V", "grid-ff-m40C-1.98V",
+                    "grid-ss-125C-1.98V", "grid-ss-27C-1.80V", "grid-ss-m40C-1.62V", "grid-ss-m40C-1.98V",
+                    "grid-tt-125C-1.98V", "grid-tt-27C-1.80V", "grid-tt-m40C-1.62V", "grid-tt-m40C-1.98V",
+                    "rate-probe-batch", "startup-probe", "startup-probe-batch")
 
 _generated: list[tuple[str, dict]] | None = None
 
@@ -336,16 +638,19 @@ def generated_requests() -> list[tuple[str, dict]]:
     Runs the real writer (``mr.main``) for all four ``--set`` groups into a
     throwaway ``tempfile`` directory -- never into ``corners/`` (the generator
     refuses a non-empty directory, and writing into the repo would dirty
-    tracked paths). Memoized: one generation serves all the #507 tests.
+    tracked paths). The grid set is generated against the synthetic PDK
+    (``run_grid``). Memoized: one generation serves all the #507 tests.
     """
     global _generated
     if _generated is None:
         out: list[tuple[str, dict]] = []
         with tempfile.TemporaryDirectory(prefix="test-make-requests-") as tmp:
-            for which in ("controls", "grid", "rate-probe", "analog-probe"):
+            for which in ("controls", "rate-probe", "analog-probe"):
                 with contextlib.redirect_stdout(io.StringIO()):
                     rc = mr.main(["--set", which, str(Path(tmp) / which)])
                 assert rc == 0, (which, rc)
+            rc, err = run_grid(Path(tmp) / "grid")
+            assert rc == 0, err
             for p in sorted(Path(tmp).glob("*/*/request.json"),
                             key=lambda p: p.parent.name):
                 out.append((p.parent.name, json.loads(p.read_text())))
@@ -908,7 +1213,9 @@ def test_pvt_deck_table_covers_the_matrix() -> None:
 
 def test_pvt_deck_map_fails_closed() -> None:
     """An unmapped point raises -- both the direct lookup and grid
-    generation itself, which must leave no half-written corner dir."""
+    generation itself, which must leave nothing behind (the gate models and
+    the deck rows of all 12 points are resolved before a single request is
+    written)."""
     for bad in (("tt", 125.0, 1.62), ("tt", -40.0, 1.65), ("ls", 27.0, 1.8)):
         try:
             PVT.deck_row(*bad)
@@ -920,22 +1227,16 @@ def test_pvt_deck_map_fails_closed() -> None:
         PVT.plan_entry(["tt"], -40.0, 1.98)
     except PVT.DeckMapError as e:
         raise AssertionError(f"a mapped point refused: {e}")
-    # an unmapped grid point: patch GRID, generation must fail with nothing
-    # written (the writer refuses a non-empty dir, so also assert no dir)
+    # an unmapped grid point: patch GRID, generation must refuse with the
+    # point named, before writing anything
     with tempfile.TemporaryDirectory(prefix="test-pvt-grid-") as tmp:
         real_grid = mr.GRID
         mr.GRID = list(real_grid) + [(125.0, 1.62)]
         try:
-            try:
-                mr.main(["--set", "grid", str(Path(tmp) / "grid")])
-            except PVT.DeckMapError as e:
-                assert "tt/125.0C/1.62V" in str(e), e
-            else:
-                raise AssertionError("grid generation did not fail on an unmapped point")
-            # the four valid points may have been written before the loop
-            # reached the unmapped one; the unmapped point's dir must NOT be
-            assert not (Path(tmp) / "grid" / "grid-125C-1.62V").exists(), \
-                "a request was written for the unmapped point"
+            rc, err = run_grid(Path(tmp) / "grid")
+            assert isinstance(rc, SystemExit) and rc.code == 2, (rc, err)
+            assert "tt/125.0C/1.62V" in err and "no Liberty deck mapping" in err, err
+            assert not (Path(tmp) / "grid").exists(), "an unmapped point still wrote a request"
         finally:
             mr.GRID = real_grid
 
@@ -944,44 +1245,268 @@ _grid_plans: list[dict] | None = None
 
 
 def grid_plans() -> list[dict]:
-    """``plan.json`` of the four grid requests, generated into a throwaway
-    dir (memoized; the #507 suite generates the same thing for
-    ``request.json``, this serves the #595 plan fields)."""
+    """``plan.json`` of the twelve grid requests, generated into a throwaway
+    dir against the synthetic PDK (memoized; the #507 suite generates the same
+    thing for ``request.json``, this serves the #595 / #815 plan fields)."""
     global _grid_plans
     if _grid_plans is None:
         with tempfile.TemporaryDirectory(prefix="test-grid-plans-") as tmp:
-            with contextlib.redirect_stdout(io.StringIO()):
-                rc = mr.main(["--set", "grid", str(Path(tmp) / "grid")])
-            assert rc == 0, rc
+            rc, err = run_grid(Path(tmp) / "grid")
+            assert rc == 0, err
             _grid_plans = [json.loads(p.read_text())
                            for p in sorted(Path(tmp).glob("grid/grid-*/plan.json"))]
-    assert len(_grid_plans) == 4, [p["name"] for p in _grid_plans]
+    assert len(_grid_plans) == 12, [p["name"] for p in _grid_plans]
     return _grid_plans
 
 
 def test_grid_plans_carry_gate_model_pvt() -> None:
-    """Every grid request's plan records the boundary-load option and one
-    deck row per process corner, deck hash included (issue #595 AC)."""
+    """Every grid request's plan records the boundary-load option and the
+    point's own deck row, deck hash included (issue #595 AC, #815: one
+    single-process row per request)."""
+    seen = set()
     for plan in grid_plans():
         g = plan["gate_model_pvt"]
         blk = g["boundary_load"]
         assert blk["option"] == 2, (plan["name"], blk)
         assert "Liberty input-pin capacitance" in blk["source"]
         assert blk["record"].endswith("20261121-pvt-deck-and-boundary-load.md")
-        assert set(g["decks"]) == {"tt", "ss", "ff"}, plan["name"]
-        for proc, row in g["decks"].items():
-            assert row["liberty_deck"].endswith(".lib"), (plan["name"], proc)
-            assert re.fullmatch(r"[0-9a-f]{64}", row["liberty_sha256"])
-            assert row["delay_direction"] in ("pessimistic", "optimistic", "mixed", "none")
-            assert row["power_direction"] in ("pessimistic", "optimistic", "mixed", "none")
-            # the row IS the committed table's row for that point
-            t, v = plan["corners"]["temperature_c"][0], plan["corners"]["supply_v"]["Vvdd"][0]
-            want = PVT.deck_row(proc, t, v)
-            assert row["liberty_sha256"] == want["liberty_sha256"], (plan["name"], proc)
-            assert row["delay_direction"] == want["delay_direction"], (plan["name"], proc)
-        # the four plans cover the four (T, Vdd) points of GRID
-        assert (plan["corners"]["temperature_c"][0],
-                plan["corners"]["supply_v"]["Vvdd"][0]) in mr.GRID
+        proc = plan["corners"]["process"][0]
+        assert list(g["decks"]) == [proc], (plan["name"], list(g["decks"]))
+        row = g["decks"][proc]
+        assert row["liberty_deck"].endswith(".lib"), (plan["name"], proc)
+        assert re.fullmatch(r"[0-9a-f]{64}", row["liberty_sha256"])
+        assert row["delay_direction"] in ("pessimistic", "optimistic", "mixed", "none")
+        assert row["power_direction"] in ("pessimistic", "optimistic", "mixed", "none")
+        # the row IS the committed table's row for that point
+        t, v = plan["corners"]["temperature_c"][0], plan["corners"]["supply_v"]["Vvdd"][0]
+        want = PVT.deck_row(proc, t, v)
+        assert row["liberty_sha256"] == SYNTH.sha[want["liberty_deck"]], (plan["name"], proc)
+        assert row["delay_direction"] == want["delay_direction"], (plan["name"], proc)
+        assert (row["dT_K"], row["dV_V"], row["exact"]) == (want["dT_K"], want["dV_V"], want["exact"]), (plan["name"], proc)
+        assert row["liberty_deck"] == str(SYNTH.lib / want["liberty_deck"]), (plan["name"], row["liberty_deck"])
+        # the twelve plans cover the twelve (proc, T, Vdd) points of GRID x tt/ss/ff
+        seen.add((proc, t, v))
+    assert seen == {(p, t, v) for (t, v) in mr.GRID for p in PVT.MATRIX_PROCESSES} == set(PVT.matrix_points())
+
+
+def gate_text_of(deck: str) -> str:
+    """The gate model body embedded in a coupled deck: from its header to the
+    ``dac_bridge`` model line inclusive (``GateModel.text()`` verbatim)."""
+    i = deck.index("* gate-level model of trng_digital")
+    j = deck.index("\n", deck.index(".model dac_b dac_bridge(")) + 1
+    return deck[i:j]
+
+
+def test_grid_emits_twelve_coupled_requests() -> None:
+    """#815 AC1 / AC4: one runnable coupled deck per matrix point, offline.
+
+    Per point: the single-process request at that (proc, T, supply) on all
+    five rails; the gate model reduced from the deck ``pvt_deck_map.py``
+    maps the point to (its own delays, its file name and sha256 in the deck
+    and the plan); the bridges and the logic supply at the point's supply;
+    the analog partition, the routed Verilog and the emitted netlist hashed;
+    the coupled MATRIX measurement set; the fixed 1.8 V input-high convention
+    and the sampler as the sole source of both raw signals.
+    """
+    cycles, _ = P.build_program()
+    stop = P.t_stop_ns(cycles)
+    expected_names = sorted(mr.grid_name(p, t, v) for (t, v) in mr.GRID for p in PVT.MATRIX_PROCESSES)
+    with tempfile.TemporaryDirectory(prefix="test-grid-ids-") as tmp:
+        # eight distinct decks serve the twelve points: parsed once each
+        with mock.patch.object(mr, "load_liberty_cells", wraps=mr.load_liberty_cells) as spy:
+            rc, err = run_grid(Path(tmp) / "grid")
+        assert rc == 0, err
+        assert spy.call_count == len(SYNTH.sha) == 8, spy.call_count
+        dirs = sorted(p.name for p in (Path(tmp) / "grid").iterdir())
+        assert dirs == expected_names and len(dirs) == 12
+        decks_seen = set()
+        for name in dirs:
+            base = Path(tmp) / "grid" / name
+            plan = json.loads((base / "plan.json").read_text())
+            request = json.loads((base / "request.json").read_text())
+            deck = (base / "netlist.cir").read_text()
+            proc = request["corners"]["process"]
+            temp = request["corners"]["temperature_c"][0]
+            supply = request["corners"]["supply_v"]["Vvdd"][0]
+            row = PVT.deck_row(proc[0], temp, supply)
+            assert name == plan["name"] == mr.grid_name(proc[0], temp, supply)
+            # -- identity: one process, one point, all five rails at its supply
+            assert proc == [proc[0]] and request["corners"] == plan["corners"]
+            assert request["corners"]["supply_v"] == {f"V{r}": [supply] for r in mr.RAILS}
+            assert request["backend"] == "batch" and tran_stop_ns(request) == stop == 7870
+            assert plan["program"] == {"t0_ns": P.T0_NS, "ts_ns": P.TS_NS, "cycles": 75, "t_stop_ns": stop}
+            assert plan["vih_fixed"] == 1.8 and plan["raw_source"] == "analog_sampler"
+            assert plan["provenance"] == P.PROVENANCE
+            # -- the deck the point maps to: file, sha256 and delays
+            deck_file = row["liberty_deck"]
+            decks_seen.add(deck_file)
+            assert Path(plan["liberty_deck"]).name == deck_file
+            assert plan["liberty_deck"] == str(SYNTH.lib / deck_file), plan["liberty_deck"]
+            assert plan["liberty_sha256"] == SYNTH.sha[deck_file]
+            assert plan["gate_model_pvt"]["decks"][proc[0]]["liberty_deck"] == plan["liberty_deck"]
+            assert plan["gate_model_pvt"]["boundary_load"] == PVT.boundary_load_block()
+            gate = gate_text_of(deck)
+            assert f"* Liberty deck: {plan['liberty_deck']}" in gate
+            assert f"*   sha256 {plan['liberty_sha256']}" in gate
+            assert sha256_text(gate) == plan["gate_model_sha256"]
+            first_genlut = re.search(r"^\.model m\S+ d_genlut\(.*$", gate, re.M).group(0)
+            scale = synth_factor(row["liberty_corner"])
+            expected_rise = _eng(SYNTH_COMB_DELAY_NS[0] * 1e-9 * scale)
+            assert f"rise_delay=[{expected_rise}]" in first_genlut, (name, first_genlut)
+            # -- rails: bridges and the logic supply move with the point
+            assert (f".model adc_b adc_bridge(in_low={_eng(0.45 * supply)} in_high={_eng(0.55 * supply)})"
+                    in gate), name
+            assert (f".model dac_b dac_bridge(out_low=0 out_high={_eng(supply)} out_undef={_eng(supply / 2)}"
+                    in gate), name
+            assert f"\nVvdd vdd 0 dc {supply}\n" in gate, name
+            assert plan["reductions"]["supply_v"] == supply
+            assert plan["reductions"]["dac_bridge_out_high_v"] == supply
+            # -- what the plan hashes: the three partition hashes and the emitted deck
+            assert plan["netlist_sha256"] == sha256_text(deck)
+            flat = gzip.decompress(mr.NETLIST_GZ.read_bytes()).decode()
+            assert plan["flat_whole_netlist_sha256"] == sha256_text(flat)
+            assert plan["analog_partition_sha256"] == sha256_text(mr.analog_netlist_text())
+            assert plan["digital_gate_netlist_sha256"] == sha256_text(P.ROUTED_V.read_text())
+            assert plan["digital_gate_netlist_sha256"] == plan["routed_netlist_sha256"]
+            pc = plan["partition_check"]
+            assert (pc["analog_transistors"], pc["digital_transistors"], pc["total_instances"]) == (264, 25091, 25356)
+            # -- the coupled matrix measurement set, and nothing else
+            meas, save = P.coupled_matrix_measurements(cycles, supply)
+            assert request["measurements"] == meas and plan["measurement_count"] == len(meas) == 917
+            assert "\n".join(f".save {' '.join(save[i:i + 8])}" for i in range(0, len(save), 8)) in deck
+            cross = next(m for m in meas if m["name"] == "t_out_valid_first")["spice"]
+            level = float(cross.split("v(out_valid)=")[1].split()[0])
+            assert supply / 2 < level < supply, (name, cross)   # inside the dac swing, never an X
+            assert not assert_every_bound_visited(name, request)[0]
+            # -- the sampler is the sole source of both raw signals, inputs at the fixed VIH
+            check_sampler_path(deck)
+            assert sum(c.startswith("V") and " PWL(" in c for c in deck.splitlines()) == 39
+            assert "\n".join(P.input_cards(cycles, len(cycles), P.VIH, coupled=True)) in deck
+            assert f"Vclk clk 0 PULSE(0 {P.VIH} {P.T0_NS:.0f}n" in deck
+            assert f"Vrstn rst_n 0 PULSE(0 {P.VIH}" in deck
+    assert decks_seen == set(SYNTH.sha)   # the 8 mapped decks, each used
+
+
+def test_grid_fails_closed_without_libs_ref() -> None:
+    """#815: the grid needs the PDK's decks. With no ``--libs-ref`` and no
+    resolvable ``klt pdk find`` it refuses, naming the flag, and writes
+    nothing -- never the nominal model, never the flat deck. A ``--libs-ref``
+    that is not a ``libs.ref`` refuses too, and so does one whose decks do
+    not hash to the pins (the PDK-version guard survives the flag)."""
+    with tempfile.TemporaryDirectory(prefix="test-grid-nopdk-") as tmp:
+        out = Path(tmp) / "grid"
+        saved = mr._KLT_LIBS_REF
+        with mock.patch.object(mr, "libs_ref", side_effect=OSError("klt: not found")):
+            mr._KLT_LIBS_REF = mr._UNSET
+            try:
+                rc, err = run_grid(out, libs_ref=False)
+            finally:
+                mr._KLT_LIBS_REF = saved
+        assert isinstance(rc, SystemExit) and rc.code == 2, (rc, err)
+        assert "--libs-ref" in err and "never falls back" in err, err
+        assert not out.exists()
+        rc, err = run_grid(Path(tmp) / "g2", "--libs-ref", str(Path(tmp) / "not-a-pdk"))
+        assert isinstance(rc, SystemExit) and "is not a sky130A libs.ref directory" in err, err
+        assert not (Path(tmp) / "g2").exists()
+        rc, err = run_grid(Path(tmp) / "g3", pins=False)
+        assert isinstance(rc, SystemExit) and "on-disk sha256" in err and "!= pinned" in err, err
+        assert not (Path(tmp) / "g3").exists()
+        # the committed pins are intact once a run has finished under the synthetic ones
+        assert all(PVT.DECK_TABLE[k]["liberty_sha256"] == r["liberty_sha256"]
+                   for k, r in PVT.DECK_TABLE.items())
+
+
+def real_libs_ref() -> Path | None:
+    try:
+        return mr.resolve_libs_ref(None)
+    except Exception:
+        return None
+
+
+REAL_LIBS_REF = real_libs_ref()
+
+
+@unittest.skipUnless(REAL_LIBS_REF is not None,
+                     "needs the pinned sky130A PDK install (klt pdk find)")
+class TestAgainstRealPdk(unittest.TestCase):
+    """The twelve coupled requests against the real Liberty decks (#815 test
+    plan, PDK-gated): every point names its pinned deck on disk, and the
+    nominal point's gate model IS the committed, measured one."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.tmp = tempfile.TemporaryDirectory(prefix="test-grid-real-")
+        out = Path(cls.tmp.name) / "grid"
+        with contextlib.redirect_stdout(io.StringIO()):
+            rc = mr.main(["--set", "grid", str(out)])
+        assert rc == 0, rc
+        cls.points = {}
+        for p in sorted(out.glob("grid-*/plan.json")):
+            plan = json.loads(p.read_text())
+            corners = plan["corners"]
+            key = (corners["process"][0], corners["temperature_c"][0], corners["supply_v"]["Vvdd"][0])
+            cls.points[key] = (plan, p.with_name("netlist.cir").read_text())
+        assert len(cls.points) == 12
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.tmp.cleanup()
+
+    def test_every_point_names_its_pinned_deck_on_disk(self):
+        checked = PVT.verify_against_disk(REAL_LIBS_REF)
+        self.assertEqual(len(checked), 12)
+        decks = set()
+        for (proc, temp, supply), (plan, _deck) in self.points.items():
+            row = PVT.deck_row(proc, temp, supply)
+            self.assertEqual(Path(plan["liberty_deck"]).resolve(),
+                             (REAL_LIBS_REF / PVT.LIB_SUBDIR / row["liberty_deck"]).resolve())
+            self.assertEqual(sha256_file_text(Path(plan["liberty_deck"])), row["liberty_sha256"])
+            self.assertEqual(plan["liberty_sha256"], row["liberty_sha256"])
+            decks.add(row["liberty_deck"])
+        self.assertEqual(len(decks), 8)
+
+    def test_nominal_point_reproduces_the_measured_model(self):
+        # the per-point builder at tt / 27 C / 1.8 V is the generator's
+        # emitter at the committed run's own operating point: byte for byte
+        # the model the fleet measured (records/20261128-coupled-rate.md)
+        plan, deck = self.points[("tt", 27.0, 1.8)]
+        committed = gzip.decompress((HERE / "runs/20261114-gate-model-full/gate-model.cir.gz").read_bytes())
+        manifest = json.loads((HERE / "corners/gate-model-full/gate-model.manifest.json").read_text())
+        recorded_deck = Path(manifest["liberty_deck"])
+        live = gate_text_of(deck)
+
+        def strip(text: str, path: Path) -> str:
+            return text.replace(str(path), "<deck>")   # the install path is host-specific
+
+        self.assertEqual(strip(live, Path(plan["liberty_deck"])), strip(committed.decode(), recorded_deck))
+        if Path(plan["liberty_deck"]) == recorded_deck:
+            self.assertEqual(live, committed.decode())
+            measured = json.loads((HERE / "runs/20261128-coupled-full/requests/coupled-full/plan.json").read_text())
+            self.assertEqual(plan["gate_model_sha256"], measured["gate_model_sha256"])
+
+    def test_non_nominal_points_re_corner_deck_and_rails(self):
+        for (proc, temp, supply), deck_file in (
+                (("ss", -40.0, 1.62), "sky130_fd_sc_hd__ss_n40C_1v60.lib"),
+                (("ss", 125.0, 1.98), "sky130_fd_sc_hd__ss_n40C_1v76.lib"),
+                (("ff", 125.0, 1.98), "sky130_fd_sc_hd__ff_100C_1v95.lib")):
+            plan, deck = self.points[(proc, temp, supply)]
+            self.assertEqual(Path(plan["liberty_deck"]).name, deck_file)
+            self.assertIn(f".model dac_b dac_bridge(out_low=0 out_high={_eng(supply)}", deck)
+            self.assertIn(f".model adc_b adc_bridge(in_low={_eng(0.45 * supply)} "
+                          f"in_high={_eng(0.55 * supply)})", deck)
+
+    def test_explicit_libs_ref_matches_the_resolved_install(self):
+        out = Path(self.tmp.name) / "explicit"
+        with contextlib.redirect_stdout(io.StringIO()):
+            rc = mr.main(["--set", "grid", str(out), "--libs-ref", str(REAL_LIBS_REF)])
+        self.assertEqual(rc, 0)
+        by_name = {plan["name"]: plan for plan, _ in self.points.values()}
+        for p in sorted(out.glob("grid-*/plan.json")):
+            self.assertEqual(json.loads(p.read_text()), by_name[p.parent.name], p.parent.name)
+
+
+def sha256_file_text(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def main() -> int:
@@ -1004,6 +1529,12 @@ def main() -> int:
     test_pvt_deck_table_covers_the_matrix()
     test_pvt_deck_map_fails_closed()
     test_grid_plans_carry_gate_model_pvt()
+    test_grid_emits_twelve_coupled_requests()
+    test_grid_fails_closed_without_libs_ref()
+    result = unittest.TextTestRunner(verbosity=1).run(
+        unittest.defaultTestLoader.loadTestsFromTestCase(TestAgainstRealPdk))
+    if not result.wasSuccessful():
+        return 1
     print("test_make_requests OK")
     return 0
 

@@ -29,6 +29,14 @@ Three kinds of check, in order of strength:
 A fourth group regenerates the model from the **real** Liberty deck and
 compares it with the committed manifest; it is skipped when the PDK install is
 absent, which is why group 1 does not depend on it.
+
+A fifth group (#815) pins the seams the 12-point coupled grid is built
+through: the XSPICE emitter and the deck-to-cells loader live in
+``gate_model_lib.py`` and the CLI re-exports the same objects, the coupled
+strobe reference and capture-decode live in ``program.py`` and the comparator
+imports them, and the coupled **matrix** measurement set is the nominal
+coupled set plus the ring-rail currents and the throughput tap, shared cards
+byte-identical.
 """
 
 from __future__ import annotations
@@ -57,11 +65,13 @@ from loadmod import load_module  # noqa: E402
 # directly from gate_model_lib.py; make_gate_model (G below) stays for the
 # emitter/deck/CLI surface and re-exports the same objects.
 sys.path.insert(0, str(BLOCK))
+import gate_model_lib as GL  # noqa: E402
 from gate_model_lib import (  # noqa: E402
     CellModel,
     GateModelError,
     NldmTable,
     extract_cell_blocks,
+    load_liberty_cells,
     netname,
     parse_liberty_group,
     parse_verilog,
@@ -1198,6 +1208,203 @@ class TestPvtDeckRowsAgainstPdk(unittest.TestCase):
             self.assertEqual(pvt["delay_direction"], want["delay_direction"])
             # the deck the netlist was actually reduced from is the mapped one
             self.assertEqual(plan["liberty_sha256"], want["liberty_sha256"])
+
+
+# --------------------------------------------------------------------------
+# 9. the shared emitter and the coupled oracle (issue #815)
+# --------------------------------------------------------------------------
+
+
+class TestSharedEmitter(unittest.TestCase):
+    """``make-requests.py --set grid`` builds one gate model per matrix point
+    by IMPORTING the emitter (#815), so the emitter lives in
+    ``gate_model_lib.py`` and the CLI re-exports the very same objects."""
+
+    def test_the_cli_re_exports_the_library_emitter(self):
+        for name in ("build_gate_model", "load_liberty_cells", "GateModel", "wrap_card", "_eng",
+                     "_ff_pin", "WRAP_COLS", "BRIDGE_BAND_FRAC", "DAC_EDGE_S", "DEFAULT_SLEW_NS",
+                     "DEFAULT_PORT_LOAD_PF", "MIN_DELAY_S", "parse_verilog", "extract_cell_blocks",
+                     "CellModel", "GateModelError"):
+            self.assertIs(getattr(G, name), getattr(GL, name), name)
+        # defined once, in the library: no second copy to drift
+        self.assertNotRegex(GENERATOR.read_text(), r"^def (build_gate_model|wrap_card|_eng|_ff_pin)\(")
+        self.assertNotRegex(GENERATOR.read_text(), r"^class GateModel\b")
+
+    def test_the_emitter_reads_the_boundary_from_program(self):
+        self.assertIs(GL.P, G.P)
+        self.assertIs(GL.ROUTED_V, G.P.ROUTED_V)
+
+    def test_the_comparator_shares_the_coupled_oracle_with_the_reducer(self):
+        self.assertIs(CMP.sampler_valid, CMP.P.sampler_valid)
+        self.assertIs(CMP.P.coupled_capture_decode, GL.P.coupled_capture_decode)
+        self.assertEqual(CMP.P.SAMPLER_VALID_REFERENCE,
+                         "sampler: raw_valid high one clk edge after rst_n releases and staying high "
+                         "(design/README.md 'Pins that leave the block'; design/sampler_core.spice xsv)")
+        # defined once, in program.py
+        self.assertNotRegex((BLOCK / "analysis" / "compare-gate-model.py").read_text(),
+                            r"^def sampler_valid\(")
+
+
+class TestLoadLibertyCells(unittest.TestCase):
+    """The one deck-to-cells loader both the CLI and the grid use (#815):
+    the refusals the CLI always raised, now in the library."""
+
+    SYNTH_CELLS = {"sky130_fd_sc_hd__a21oi_1", "sky130_fd_sc_hd__inv_1", "sky130_fd_sc_hd__and2_1",
+                   "sky130_fd_sc_hd__dfrtp_1", "sky130_fd_sc_hd__bad_1", "sky130_fd_sc_hd__diode_2"}
+
+    def load(self, lib_text: str, wanted: set[str], expected: float = 50.0):
+        with tempfile.TemporaryDirectory(prefix="gm-load-") as tmp:
+            lib = Path(tmp) / "synth.lib"
+            lib.write_text(lib_text)
+            return load_liberty_cells(lib, wanted, expected)
+
+    def test_a_good_deck_loads_with_its_threshold(self):
+        cells, threshold_pct = self.load(SYNTH_LIB, self.SYNTH_CELLS)
+        self.assertEqual(threshold_pct, 50.0)
+        self.assertEqual(set(cells), self.SYNTH_CELLS)
+        self.assertTrue(cells["sky130_fd_sc_hd__dfrtp_1"].is_sequential())
+        self.assertFalse(cells["sky130_fd_sc_hd__inv_1"].is_sequential())
+        # only the wanted cells are materialised
+        cells, _ = self.load(SYNTH_LIB, {"sky130_fd_sc_hd__inv_1"})
+        self.assertEqual(set(cells), {"sky130_fd_sc_hd__inv_1"})
+
+    def test_a_cell_the_deck_lacks_refuses(self):
+        with self.assertRaisesRegex(GateModelError, "has no cell block for.*refusing to write"):
+            self.load(SYNTH_LIB, {"sky130_fd_sc_hd__inv_1", "sky130_fd_sc_hd__nosuch_9"})
+
+    def test_a_deck_without_thresholds_refuses(self):
+        with self.assertRaisesRegex(GateModelError, "no input_threshold_pct_rise/_fall"):
+            self.load(SYNTH_LIB.replace("input_threshold_pct_fall", "x_fall"), self.SYNTH_CELLS)
+
+    def test_asymmetric_thresholds_refuse(self):
+        with self.assertRaisesRegex(GateModelError, "asymmetric input thresholds 50.000000000/45.000000000"):
+            self.load(SYNTH_LIB.replace("input_threshold_pct_fall : 50.000000000",
+                                        "input_threshold_pct_fall : 45.000000000"), self.SYNTH_CELLS)
+
+    def test_a_threshold_other_than_the_derived_one_refuses(self):
+        inv_only = liberty(comb_cell("sky130_fd_sc_hd__inv_1", ["A"], "Y", "(!A)"),
+                           threshold="40.000000000")
+        with self.assertRaisesRegex(GateModelError, "input_threshold_pct is 40.0, not 50.0"):
+            self.load(inv_only, {"sky130_fd_sc_hd__inv_1"})
+        # the band is derived FOR a threshold; a caller that derived it for
+        # another one says so, and the deck loads
+        cells, thr = self.load(inv_only, {"sky130_fd_sc_hd__inv_1"}, expected=40.0)
+        self.assertEqual((thr, set(cells)), (40.0, {"sky130_fd_sc_hd__inv_1"}))
+
+
+class TestCoupledCaptureDecode(unittest.TestCase):
+    """``program.coupled_capture_decode``: the one decode of a coupled deck's
+    every-cycle sampler captures, against the point's own rail."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.cycles = CMP.P.build_program()[0]
+        cls.n = len(cls.cycles)
+
+    def capture(self, hi: float = 1.8, **override) -> dict:
+        measured = {f"raw_valid_k{k}": hi for k in range(self.n)}
+        measured.update({f"raw_bit_k{k}": hi * (k % 2) for k in range(self.n)})
+        measured.update(override)
+        return measured
+
+    def test_a_clean_capture_is_one_strobe_and_one_bit_per_cycle(self):
+        cap = CMP.P.coupled_capture_decode(self.capture(), 1.8, self.cycles)
+        self.assertEqual(cap["strobes"], CMP.P.sampler_valid(self.cycles))
+        self.assertEqual(cap["strobes"], [1] * self.n)
+        self.assertEqual(cap["bits"], [k % 2 for k in range(self.n)])
+        self.assertEqual(cap["strobe_cycles"], list(range(self.n)))
+        self.assertEqual((cap["valid_mismatches"], cap["undecodable"]), ([], []))
+
+    def test_an_undecodable_strobe_leaves_its_cycle_out(self):
+        cap = CMP.P.coupled_capture_decode(self.capture(**{"raw_valid_k3": 0.9}), 1.8, self.cycles)
+        self.assertEqual(len(cap["strobes"]), self.n - 1)
+        self.assertNotIn(3, cap["strobe_cycles"])
+        self.assertEqual([u["measurement"] for u in cap["undecodable"]], ["raw_valid_k3"])
+        # no longer aligned with the cycles: the caller must not replay it
+        self.assertNotEqual(len(cap["strobes"]), self.n)
+
+    def test_a_deasserted_strobe_is_a_mismatch_and_consumes_no_bit(self):
+        cap = CMP.P.coupled_capture_decode(self.capture(**{"raw_valid_k36": 0.0}), 1.8, self.cycles)
+        self.assertEqual(cap["valid_mismatches"], [36])
+        self.assertEqual((len(cap["strobes"]), len(cap["bits"])), (self.n, self.n - 1))
+        self.assertEqual(cap["undecodable"], [])
+
+    def test_an_undecodable_bit_is_named(self):
+        cap = CMP.P.coupled_capture_decode(self.capture(**{"raw_bit_k4": 0.9}), 1.8, self.cycles)
+        self.assertEqual(cap["undecodable"], [{"measurement": "raw_bit_k4", "value": 0.9}])
+        self.assertEqual(len(cap["bits"]), self.n - 1)
+
+    def test_an_absent_capture_is_undecodable_not_zero(self):
+        cap = CMP.P.coupled_capture_decode(self.capture(**{"raw_bit_k4": None}), 1.8, self.cycles)
+        self.assertEqual(cap["undecodable"], [{"measurement": "raw_bit_k4", "value": None}])
+        cap = CMP.P.coupled_capture_decode({}, 1.8, self.cycles)
+        self.assertEqual((cap["strobes"], cap["bits"]), ([], []))
+        self.assertEqual([u["measurement"] for u in cap["undecodable"]],
+                         [f"raw_valid_k{k}" for k in range(self.n)])
+
+    def test_decode_is_against_the_supply(self):
+        cap = CMP.P.coupled_capture_decode(self.capture(hi=1.62), 1.62, self.cycles)
+        self.assertEqual((cap["strobes"], cap["undecodable"]), ([1] * self.n, []))
+        cap = CMP.P.coupled_capture_decode(self.capture(hi=1.62), 1.98, self.cycles)
+        self.assertEqual(cap["strobes"], [])   # 1.62 V is not a rail of a 1.98 V point
+        self.assertEqual(len(cap["undecodable"]), self.n)
+
+
+class TestCoupledMatrixMeasurements(unittest.TestCase):
+    """``program.coupled_matrix_measurements``: the coupled set plus what O5a
+    and O6 read, the shared cards byte-identical (#815)."""
+
+    RAIL_CARDS = ({f"i_{r}_w{w}" for r in CMP.P.RAILS for w in (1, 2)}
+                  | {f"q_{r}_w2" for r in CMP.P.RAILS} | {"i_vss_w2"})
+
+    @classmethod
+    def setUpClass(cls):
+        cls.cycles = CMP.P.build_program()[0]
+
+    def cards(self, entries) -> dict:
+        by_name = {e["name"]: e["spice"] for e in entries}
+        self.assertEqual(len(by_name), len(entries))   # no repeated name
+        return by_name
+
+    def test_matrix_is_the_coupled_set_plus_rails_and_tap(self):
+        coupled = self.cards(CMP.P.coupled_measurements(self.cycles)[0])
+        for supply in (1.62, 1.8, 1.98):
+            entries, save = CMP.P.coupled_matrix_measurements(self.cycles, supply)
+            matrix = self.cards(entries)
+            self.assertEqual(set(matrix) - set(coupled), self.RAIL_CARDS | {"t_out_valid_first"}, supply)
+            # the shared cards are byte-identical: the nominal rate deck's
+            # measurement set is untouched
+            for name, spice in coupled.items():
+                self.assertEqual(matrix[name], spice, (supply, name))
+            for net in ("vddr1", "vddr2", "vddr3", "vddr4"):
+                self.assertIn(net, save)
+            for src in ("Vvdd", "Vvss", "Vvddr1", "Vvddr2", "Vvddr3", "Vvddr4"):
+                self.assertIn(f"i({src})", save)
+
+    def test_rail_cards_are_the_flat_decks_cards(self):
+        flat = self.cards(CMP.P.whole_block_measurement_cards(self.cycles)[0])
+        matrix = self.cards(CMP.P.coupled_matrix_measurements(self.cycles, 1.8)[0])
+        # what the matrix set shares with the flat deck beyond the coupled set
+        shared = (set(flat) & set(matrix)) - set(self.cards(CMP.P.coupled_measurements(self.cycles)[0]))
+        self.assertEqual(shared, self.RAIL_CARDS | {"t_out_valid_first"})
+        for name in self.RAIL_CARDS:
+            self.assertEqual(matrix[name], flat[name], name)
+        # the flat deck keeps its own, fixed-level throughput tap
+        self.assertEqual(flat["t_out_valid_first"],
+                         ".meas tran t_out_valid_first WHEN v(out_valid)=1.4 RISE=1")
+        self.assertNotEqual(matrix["t_out_valid_first"], flat["t_out_valid_first"])
+
+    def test_out_valid_crossing_is_inside_the_dac_swing_at_every_supply(self):
+        for supply in (1.62, 1.8, 1.98):
+            matrix = self.cards(CMP.P.coupled_matrix_measurements(self.cycles, supply)[0])
+            card = matrix["t_out_valid_first"]
+            level = float(card.split("v(out_valid)=")[1].split()[0])
+            self.assertEqual(card, f".meas tran t_out_valid_first WHEN v(out_valid)={level:g} RISE=1")
+            # strictly between dac_bridge's out_undef (supply/2, where an X
+            # sits) and out_high (supply): an X never counts, a 1 always crosses
+            self.assertGreater(level, supply / 2)
+            self.assertLess(level, supply)
+            self.assertAlmostEqual(level, CMP.P.OUT_VALID_CROSS_FRAC * supply, places=9)
 
 
 if __name__ == "__main__":

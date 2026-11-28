@@ -336,6 +336,12 @@ def verify_against_disk(libs_ref_dir: Path) -> list[dict]:
     return checked
 
 
+#: ``plan_entry``'s memo of (resolved libs.ref, the table's sha256 pins) it
+#: has already verified this process: 12 single-point requests re-hash the
+#: same 8 decks otherwise (#815). A changed pin re-verifies.
+_VERIFIED: set[tuple] = set()
+
+
 def plan_entry(processes: list[str], temp_c: float, supply_v: float,
                libs_ref_dir: Path | None = None) -> dict:
     """The ``plan.json`` block one whole-block request carries for the digital
@@ -348,7 +354,11 @@ def plan_entry(processes: list[str], temp_c: float, supply_v: float,
     pin, which :func:`verify_against_disk` and the PDK-gated test check.
     """
     if libs_ref_dir is not None:
-        verify_against_disk(libs_ref_dir)
+        stamp = (str(Path(libs_ref_dir).resolve()),
+                 tuple(sorted((k, r["liberty_sha256"]) for k, r in DECK_TABLE.items())))
+        if stamp not in _VERIFIED:
+            verify_against_disk(libs_ref_dir)
+            _VERIFIED.add(stamp)
     decks = {}
     for proc in processes:
         row = deck_row(proc, temp_c, supply_v)
