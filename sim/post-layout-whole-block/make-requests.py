@@ -28,6 +28,13 @@ Writes ``<reqdir>/<name>/{netlist.cir,request.json,plan.json}`` for the selected
     ``plan.json`` also carries ``gate_model_pvt``: the Liberty deck
     (path + sha256, per process corner) the digital half's gate model uses
     at that point plus the boundary-load option, from ``pvt_deck_map.py``.
+    Its two timeouts are sized from the measured coupled run
+    (``records/20261128-coupled-rate.md``): one request is one batch job of
+    three units, whose bound must fit the fleet's whole-job ceiling, and
+    generation refuses what it cannot hold. **The deck this set emits is still
+    the flat transistor-level whole block**, which timed out at the 3480 s
+    ceiling twice; the timeouts are those of the coupled deck the matrix runs
+    under DR-0017 option (b) (issue #307).
 
 The deck body is::
 
@@ -48,6 +55,7 @@ from __future__ import annotations
 import argparse
 import gzip
 import json
+import math
 import re
 import sys
 from pathlib import Path
@@ -81,9 +89,60 @@ TMAX = "20p"
 #: the repo's established four-point post-layout grid x tt/ss/ff (12 points)
 GRID = [(-40.0, 1.62), (27.0, 1.8), (-40.0, 1.98), (125.0, 1.98)]
 
-#: Historical flat-grid limits. A completed, checked coupled run is required
-#: to size #307 (records/20261121-coupled-rate.md).
-GRID_TIMEOUT_S = 21600
+#: The batch fleet's whole-job ceiling and klt's per-job overhead (s). A job's
+#: bound is ``timeout_s * units + 120``, so a one-unit job may give its worker
+#: at most 3480 s (records/20261121-coupled-rate.md).
+FLEET_JOB_CEILING_S = 3600
+BATCH_OVERHEAD_S = 120
+UNIT_TIMEOUT_CAP_S = FLEET_JOB_CEILING_S - BATCH_OVERHEAD_S
+#: measured coupled whole-block runtime (s) for the 7,870 ns program at
+#: tt / 27 C / 1.8 V on the batch fleet, job klt-sim-7d6f0e6f474f
+#: (records/20261128-coupled-rate.md)
+COUPLED_FULL_RUNTIME_S = 431.63
+#: allowance on that runtime for the grid's unmeasured points (ss/ff,
+#: -40..125 C, 1.62..1.98 V). Declared, not measured: no coupled run exists at
+#: any other corner.
+GRID_MARGIN_X = 2.0
+#: instance boot, staging and collection around the simulation (36.7 s on the
+#: 100 ns probe job, 15.4 s on the full job), widened
+JOB_SLACK_S = 300
+#: where the grid timeouts come from; written into every grid plan.json
+GRID_TIMEOUT_RECORD = "records/20261128-coupled-rate.md"
+
+
+def grid_timeouts() -> tuple[int, int]:
+    """``(timeout_s, poll_timeout_s)`` of a grid request, from the measured coupled run.
+
+    One grid request is one batch job of one unit per process corner. The
+    unit timeout is the measured nominal runtime times ``GRID_MARGIN_X``; the
+    job's serial bound must fit the fleet's ceiling; the caller waits for that
+    bound plus ``JOB_SLACK_S``. Raises ``ValueError`` when it does not fit: a
+    request the fleet would kill at the ceiling is not written.
+    """
+    units = len(PVT.MATRIX_PROCESSES)
+    timeout_s = math.ceil(GRID_MARGIN_X * COUPLED_FULL_RUNTIME_S)
+    if timeout_s > UNIT_TIMEOUT_CAP_S:
+        raise ValueError(f"grid unit timeout {timeout_s} s: one unit can hold at most "
+                         f"{UNIT_TIMEOUT_CAP_S:.0f} s")
+    bound_s = units * timeout_s + BATCH_OVERHEAD_S
+    if bound_s > FLEET_JOB_CEILING_S:
+        raise ValueError(f"grid job bound {bound_s} s: {units} units exceed the "
+                         f"{FLEET_JOB_CEILING_S:.0f} s fleet ceiling")
+    return timeout_s, bound_s + JOB_SLACK_S
+
+
+GRID_TIMEOUT_S, GRID_POLL_TIMEOUT_S = grid_timeouts()
+
+
+def grid_timeout_basis() -> dict:
+    """The grid timeouts and what they were sized from, for every grid ``plan.json``."""
+    timeout_s, poll_s = grid_timeouts()
+    return {"timeout_s": timeout_s, "poll_timeout_s": poll_s, "sized_from": GRID_TIMEOUT_RECORD,
+            "measured_runtime_s": COUPLED_FULL_RUNTIME_S, "measured_point": "tt / 27 C / 1.8 V",
+            "measured_simulated_ns": float(P.t_stop_ns(P.build_program()[0])),
+            "margin_x": GRID_MARGIN_X, "job_slack_s": JOB_SLACK_S,
+            "job_bound_s": len(PVT.MATRIX_PROCESSES) * timeout_s + BATCH_OVERHEAD_S,
+            "fleet_job_ceiling_s": FLEET_JOB_CEILING_S}
 
 EDGE_NS = P.PWL_EDGE_NS
 
@@ -379,7 +438,7 @@ def make_request(name: str, outdir: Path, *, processes: list[str], temp_c: float
                  timeout_s: int = 1800, poll_timeout_s: int | None = None,
                  rate_probe_stop: float | None = None,
                  analog_only: bool = False, coupled: bool = False,
-                 gate_model_pvt: dict | None = None) -> None:
+                 gate_model_pvt: dict | None = None, timeouts: dict | None = None) -> None:
     if cycles is None:
         cycles, _ = P.build_program()
     if coupled and (processes != ["tt"] or temp_c != 27.0 or supply != VIH):
@@ -429,6 +488,9 @@ def make_request(name: str, outdir: Path, *, processes: list[str], temp_c: float
         # issue #595: the digital half's deck per process corner of THIS
         # request plus the boundary-load option, one block per request
         plan["gate_model_pvt"] = gate_model_pvt
+    if timeouts is not None:
+        # issues #431 / #596: what the request's two timeouts were sized from
+        plan["timeouts"] = timeouts
     (outdir / "plan.json").write_text(json.dumps(
         plan, indent=2, sort_keys=True) + "\n")
 
@@ -524,6 +586,10 @@ def main(argv: list[str] | None = None) -> int:
         print(f"wrote {reqdir/'startup-probe-batch'}")
         return 0
 
+    # issues #431 / #596: the measured coupled run sizes the grid and refuses
+    # what the fleet's ceiling cannot hold, before anything is written
+    timeout_s, poll_timeout_s = grid_timeouts()
+    processes, timeout_basis = list(PVT.MATRIX_PROCESSES), grid_timeout_basis()
     for temp, supply in GRID:
         name = f"grid-{'m' if temp < 0 else ''}{abs(temp):.0f}C-{supply:.2f}V"
         hdr = [
@@ -534,12 +600,12 @@ def main(argv: list[str] | None = None) -> int:
         # deck per process corner and the boundary-load option (option 2).
         # Unmapped points fail closed here; a resolved-but-changed install
         # fails closed inside plan_entry's sha256 check.
-        gate_pvt = PVT.plan_entry(["tt", "ss", "ff"], temp, supply,
-                                  libs_ref_dir=_best_effort_libs_ref())
-        make_request(name, reqdir / name, processes=["tt", "ss", "ff"],
-                     temp_c=temp, supply=supply, backend="batch", timeout_s=GRID_TIMEOUT_S, poll_timeout_s=6600,
+        gate_pvt = PVT.plan_entry(processes, temp, supply, libs_ref_dir=_best_effort_libs_ref())
+        make_request(name, reqdir / name, processes=processes,
+                     temp_c=temp, supply=supply, backend="batch", timeout_s=timeout_s,
+                     poll_timeout_s=poll_timeout_s,
                      analysis_args=f"{P.t_stop_ns(P.build_program()[0]):.0f}n", header=hdr,
-                     gate_model_pvt=gate_pvt)
+                     gate_model_pvt=gate_pvt, timeouts=timeout_basis)
         print(f"wrote {reqdir/name}")
     return 0
 

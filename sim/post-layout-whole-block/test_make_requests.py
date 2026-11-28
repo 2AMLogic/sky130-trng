@@ -27,7 +27,10 @@ they hold against whatever ``points()``/``pwl_card()`` do internally:
 * breakpoint hygiene: ``t = 0`` first, ``t_stop`` last, strictly increasing
   formatted timestamps (no duplicate breakpoint from an under-wide edge), and an
   input that never changes still emits exactly the two endpoints;
-* the grid request timeouts this issue must not disturb are unchanged.
+* the grid requests' timeouts are derived from the measured coupled run
+  (issues #431 / #596, ``records/20261128-coupled-rate.md``), fit the fleet's
+  whole-job ceiling as one three-unit job, and refuse what it cannot hold;
+  the archived flat grid under ``corners/grid-*`` keeps its filed settings.
 
 Issue #507 adds three assertions of its own:
 
@@ -80,6 +83,7 @@ import hashlib
 import importlib.util
 import io
 import json
+import math
 import re
 import sys
 import tempfile
@@ -237,25 +241,59 @@ def test_breakpoint_hygiene() -> None:
     assert pts == [(0.0, 0.0), (P.t_stop_ns(cycles), 0.0)], pts
 
 
-def test_grid_timeouts_unchanged() -> None:
-    """Issue #488 acceptance criterion 4: this fix touches no timeout.
+def test_grid_timeouts_from_the_measured_coupled_rate() -> None:
+    """Issues #431 / #596: the grid's timeouts come from the measured coupled run.
 
-    Both the source constant and the four committed grid ``request.json`` files
-    (which is what a re-submit would actually use).
+    ``records/20261128-coupled-rate.md`` measured the coupled whole block at
+    431.63 s for the 7,870 ns program. A declared allowance covers the grid's
+    unmeasured points; one request is one job of three units (tt/ss/ff),
+    which must fit the fleet's whole-job ceiling. The archived flat grid
+    under ``corners/grid-*`` keeps the settings it was filed with (21600 /
+    6600 s, no rate behind them) and is not regenerated.
     """
-    # #596 has no coupled fleet rate yet. Pin newly generated requests separately
-    # from the archived flat grid, which retains the settings it was filed with.
-    assert mr.GRID_TIMEOUT_S == 21600
+    assert mr.COUPLED_FULL_RUNTIME_S == 431.63 and mr.GRID_MARGIN_X == 2.0
+    assert mr.GRID_TIMEOUT_S == math.ceil(mr.GRID_MARGIN_X * mr.COUPLED_FULL_RUNTIME_S) == 864
+    assert mr.GRID_TIMEOUT_S <= mr.UNIT_TIMEOUT_CAP_S == 3480
+    units = len(PVT.MATRIX_PROCESSES)
+    assert units == 3
     for name, request in generated_requests():
         if name.startswith("grid-"):
             assert request["options"]["timeout_s"] == mr.GRID_TIMEOUT_S
-            assert request["batch"]["poll_timeout_s"] == 6600
+            assert len(request["corners"]["process"]) == units
+            # klt's one-job bound, the fleet ceiling, then the caller's wait
+            bound = units * request["options"]["timeout_s"] + mr.BATCH_OVERHEAD_S
+            assert bound <= mr.FLEET_JOB_CEILING_S == 3600
+            assert request["batch"]["poll_timeout_s"] == bound + mr.JOB_SLACK_S == 3012
+    for plan in grid_plans():
+        assert plan["timeouts"] == mr.grid_timeout_basis()
+        assert plan["timeouts"]["sized_from"] == "records/20261128-coupled-rate.md"
+        assert (plan["timeouts"]["timeout_s"], plan["timeouts"]["poll_timeout_s"]) == (864, 3012)
     grids = sorted((HERE / "corners").glob("grid-*/request.json"))
     assert len(grids) == 4, [str(p) for p in grids]
     for req in grids:
         d = json.loads(req.read_text())
         assert d["options"]["timeout_s"] == 21600, (str(req), d["options"])
         assert d["batch"]["poll_timeout_s"] == 6600, (str(req), d["batch"])
+
+
+def test_grid_timeouts_refuse_what_the_ceiling_cannot_hold() -> None:
+    """A unit allowance that no one-unit job can hold, or three units that no
+    job can hold serially, refuses generation closed: nothing is written."""
+    with tempfile.TemporaryDirectory(prefix="test-grid-timeout-") as tmp:
+        for margin, needle in ((20.0, "one unit"), (8.0, "3 units")):
+            real = mr.GRID_MARGIN_X
+            mr.GRID_MARGIN_X = margin
+            try:
+                try:
+                    mr.main(["--set", "grid", str(Path(tmp) / f"g{margin}")])
+                except ValueError as e:
+                    assert needle in str(e), (margin, e)
+                else:
+                    raise AssertionError(f"margin {margin} did not refuse")
+                assert not (Path(tmp) / f"g{margin}").exists()
+            finally:
+                mr.GRID_MARGIN_X = real
+    assert mr.grid_timeouts() == (mr.GRID_TIMEOUT_S, mr.GRID_POLL_TIMEOUT_S) == (864, 3012)
 
 
 # ---------------------------------------------------------------------------
@@ -799,6 +837,21 @@ def test_committed_coupled_artifacts_match_generator() -> None:
             "boundary-load choice is settled as option 2 (#595, see boundary_load_option)")
         expected["boundary_load_option"] = mr.PVT.boundary_load_block()
         assert json.loads((fresh / "plan.json").read_text()) == expected
+        # the runs measured on the fleet on 2026-11-28: request, plan and
+        # deck are what the generator emits today, and the committed report
+        # ran that deck
+        for mode in ("coupled-probe", "coupled-full"):
+            out = Path(tmp) / mode
+            with contextlib.redirect_stdout(io.StringIO()):
+                assert mr.main([str(out), "--set", mode]) == 0
+            fresh, run = out / mode, HERE / f"runs/20261128-{mode}/requests" / mode
+            for name in ("request.json", "plan.json"):
+                assert json.loads((fresh / name).read_text()) == json.loads((run / name).read_text()), (mode, name)
+            plan = json.loads((fresh / "plan.json").read_text())
+            deck = hashlib.sha256((fresh / "netlist.cir").read_bytes()).hexdigest()
+            report = json.loads((HERE / f"runs/20261128-{mode}/report.json").read_text())
+            assert report["environment"]["netlist_sha256"] == plan["netlist_sha256"] == deck, mode
+            assert report["environment"]["remote"]["state"] == "done"
 
 
 # ---------------------------------------------------------------------------
@@ -938,7 +991,8 @@ def main() -> int:
     test_capture_points_sit_at_a_rail()
     test_change_emits_hold_then_edge()
     test_breakpoint_hygiene()
-    test_grid_timeouts_unchanged()
+    test_grid_timeouts_from_the_measured_coupled_rate()
+    test_grid_timeouts_refuse_what_the_ceiling_cannot_hold()
     test_generated_measurements_within_tran_stop()
     test_committed_request_ledger()
     test_startup_probe_timeouts_pinned()
