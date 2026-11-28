@@ -520,18 +520,44 @@ def test_breakpoint_hygiene() -> None:
 
 
 def test_grid_timeouts_from_the_measured_coupled_rate() -> None:
-    """Issues #431 / #596 / #815: the grid's timeouts come from the measured
-    coupled run, for the job shape the grid now has.
+    """Issues #431 / #596 / #815 / #814: the grid's timeouts come from the
+    measured coupled runs, for the job shape the grid now has.
 
     ``records/20261128-coupled-rate.md`` measured the coupled whole block at
-    431.63 s for the 7,870 ns program. A declared allowance covers the grid's
-    unmeasured points; since #815 one request is one single-process unit (one
+    431.63 s for the 7,870 ns program (tt / 27 C / 1.8 V);
+    ``records/20261128-slow-corner-runtime.md`` measured the slowest-expected
+    point, ss / -40 C / 1.62 V, at 403.9 s -- inside the nominal, so the
+    nominal stays the worst measured point and the 2.0x allowance is kept
+    rather than lowered to the 1.25x the two measured points ask for (a unit
+    timeout is a kill-bound, not a reservation, and ten points are
+    unmeasured). Since #815 one request is one single-process unit (one
     netlist, one gate model), so the job bound is 864 + 120 = 984 s and the
     caller waits 300 s longer. The archived flat grid under ``corners/grid-*``
     keeps the settings it was filed with (21600 / 6600 s, no rate behind them)
     and is not regenerated.
     """
     assert mr.COUPLED_FULL_RUNTIME_S == 431.63 and mr.GRID_MARGIN_X == 2.0
+    # the slow-corner figure is the committed report's, at the committed
+    # request's point and deck (#814); the request carried the one-unit
+    # measurement timeouts, not the grid's, so a slow corner would have been
+    # measured rather than killed
+    run = HERE / "runs/20261128-slow-corner-ss-m40C-1.62V"
+    report = json.loads((run / "report.json").read_text())
+    plan = json.loads((run / "requests/grid-ss-m40C-1.62V/plan.json").read_text())
+    corner, = report["corners"]
+    assert report["status"] == "pass" and corner["status"] == "pass"
+    assert mr.SLOW_CORNER_POINT == "ss / -40 C / 1.62 V"
+    assert corner["runtime_s"] == mr.SLOW_CORNER_RUNTIME_S == 403.9
+    assert (corner["process"], corner["temperature_c"], corner["supply_v"]["Vvdd"]) == ("ss", -40.0, 1.62)
+    assert report["environment"]["remote"]["job_id"] == "klt-sim-4ec1825cfa41"
+    assert report["environment"]["netlist_sha256"] == plan["netlist_sha256"]
+    assert (plan["timeouts"]["timeout_s"], plan["timeouts"]["poll_timeout_s"]) == (3360, 3480)
+    # the slowest-expected point runs inside the nominal: the nominal is the
+    # worst measured point, and the allowance is never below what the measured
+    # points ask for (the worst x 1.25, #814's formula)
+    worst = max(mr.COUPLED_FULL_RUNTIME_S, mr.SLOW_CORNER_RUNTIME_S)
+    assert worst == mr.COUPLED_FULL_RUNTIME_S
+    assert mr.GRID_MARGIN_X >= math.ceil(worst / mr.COUPLED_FULL_RUNTIME_S * 1.25 * 100) / 100 == 1.25
     assert mr.GRID_TIMEOUT_S == math.ceil(mr.GRID_MARGIN_X * mr.COUPLED_FULL_RUNTIME_S) == 864
     assert mr.GRID_TIMEOUT_S <= mr.UNIT_TIMEOUT_CAP_S == 3480
     assert mr.GRID_UNITS == 1
@@ -548,6 +574,12 @@ def test_grid_timeouts_from_the_measured_coupled_rate() -> None:
     for plan in grid_plans():
         assert plan["timeouts"] == mr.grid_timeout_basis()
         assert plan["timeouts"]["sized_from"] == "records/20261128-coupled-rate.md"
+        # every grid plan carries the slow-corner measurement the allowance
+        # was checked against (#814)
+        assert plan["timeouts"]["slow_corner_point"] == mr.SLOW_CORNER_POINT
+        assert plan["timeouts"]["slow_corner_runtime_s"] == mr.SLOW_CORNER_RUNTIME_S
+        assert plan["timeouts"]["slow_corner_record"] == mr.SLOW_CORNER_RECORD
+        assert mr.SLOW_CORNER_RECORD == "records/20261128-slow-corner-runtime.md"
         assert (plan["timeouts"]["timeout_s"], plan["timeouts"]["job_bound_s"],
                 plan["timeouts"]["poll_timeout_s"], plan["timeouts"]["units"]) == (864, 984, 1284, 1)
     grids = sorted((HERE / "corners").glob("grid-*/request.json"))
@@ -1494,6 +1526,29 @@ class TestAgainstRealPdk(unittest.TestCase):
             self.assertIn(f".model dac_b dac_bridge(out_low=0 out_high={_eng(supply)}", deck)
             self.assertIn(f".model adc_b adc_bridge(in_low={_eng(0.45 * supply)} "
                           f"in_high={_eng(0.55 * supply)})", deck)
+
+    def test_slow_corner_measurement_is_the_grids_request_for_that_point(self):
+        # #814: the request the fleet measured at ss / -40 C / 1.62 V is
+        # `--set grid`'s request for that point with only its two timeouts
+        # exchanged for the one-unit measurement pair, so the runtime it
+        # measured is the grid unit's (records/20261128-slow-corner-runtime.md)
+        run = HERE / "runs/20261128-slow-corner-ss-m40C-1.62V/requests/grid-ss-m40C-1.62V"
+        measured = json.loads((run / "request.json").read_text())
+        measured_plan = json.loads((run / "plan.json").read_text())
+        grid = json.loads((Path(self.tmp.name) / "grid/grid-ss-m40C-1.62V/request.json").read_text())
+        self.assertEqual((measured["options"]["timeout_s"], measured["batch"]["poll_timeout_s"]),
+                         (3360, 3480))
+        self.assertEqual((grid["options"]["timeout_s"], grid["batch"]["poll_timeout_s"]),
+                         (mr.GRID_TIMEOUT_S, mr.GRID_POLL_TIMEOUT_S))
+        for request in (measured, grid):
+            del request["options"]["timeout_s"]
+            del request["batch"]["poll_timeout_s"]
+        self.assertEqual(grid, measured)
+        # the deck embeds the Liberty deck's install path: where that path is
+        # the recorded one, the measured deck IS the grid's deck, by sha256
+        plan, _deck = self.points[("ss", -40.0, 1.62)]
+        if Path(plan["liberty_deck"]) == Path(measured_plan["liberty_deck"]):
+            self.assertEqual(plan["netlist_sha256"], measured_plan["netlist_sha256"])
 
     def test_explicit_libs_ref_matches_the_resolved_install(self):
         out = Path(self.tmp.name) / "explicit"

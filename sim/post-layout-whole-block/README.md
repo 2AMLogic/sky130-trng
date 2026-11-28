@@ -207,21 +207,35 @@ plans carry `gate_model_pvt` per request; `make-gate-model.py --point
 PROC:TEMP:VDD` takes its deck from the table and fails closed on any
 unmapped point.
 
+**Measured: the slowest-expected grid point runs inside the nominal (issue
+#814, 2026-11-28).** The coupled deck of ss / -40 C / 1.62 V -- `--set
+grid`'s own deck for that point, `92b9f10a...` -- ran the full 7,870 ns
+program on the batch fleet (`klt-sim-4ec1825cfa41`) in **403.9 s = 0.0513 s
+per simulated ns**, 0.94x the nominal point's 431.63 s and well inside the
+grid's 864 s unit timeout (2.14x). The step count is the same at both points
+(about 394,800 rows, set by `tmax` = 20 ps), so the slow corner's cost per
+step is the lower one. The 2.0x allowance is therefore kept, not lowered to the
+1.25x the two measured points ask for: a unit timeout is a kill-bound, and
+ten points are unmeasured. A runtime only -- no functional oracle runs at a
+non-nominal point yet, no characterisation credit. Record:
+`records/20261128-slow-corner-runtime.md`; run
+`runs/20261128-slow-corner-ss-m40C-1.62V/`.
+
 **Open**
 
 * The 12-point matrix (#307) is prepared but not run (#815). `--set grid` emits
   the coupled deck per point -- twelve single-process requests
   `grid-<proc>-<T>-<V>`, each the analog partition driving a gate model built
   for that point from its mapped Liberty deck -- with `timeout_s` 864 s and
-  `poll_timeout_s` 1284 s (2x the measured nominal runtime; one request is one
-  unit, job bound 984 s under the 3,600 s ceiling; `plan.json.timeouts`
-  records the basis). It refuses what the ceiling cannot hold, and refuses
-  outright without the PDK's decks (`--libs-ref`, or a resolvable `klt pdk
-  find`). `analysis/reduce-whole-block.py` matches each report to its plan,
-  deck and point and replays the sampler's strobes through the shared coupled
-  oracle. Remaining before submission: the slow-corner runtime measurement and
-  margin selection (#814), then the fleet submission, evidence publication and
-  scorecard (#307). [Rate and functional
+  `poll_timeout_s` 1284 s (2x the measured nominal runtime, which the measured
+  slowest-expected point runs well inside; one request is one unit, job bound
+  984 s under the 3,600 s ceiling; `plan.json.timeouts` records the basis,
+  slow-corner measurement included). It refuses what the ceiling cannot hold,
+  and refuses outright without the PDK's decks (`--libs-ref`, or a resolvable
+  `klt pdk find`). `analysis/reduce-whole-block.py` matches each report to its
+  plan, deck and point and replays the sampler's strobes through the shared
+  coupled oracle. Remaining before submission: the fleet submission, evidence
+  publication and scorecard (#307). [Rate and functional
   gate](records/20261128-coupled-rate.md).
 * Full-block 100 ns rate probe on the re-pinned **flat** netlist (`965f1e6c...`): one batch job was
   interrupted by spot reclamation at 3279 s, no verdict (the retry below settled it). See
