@@ -13,6 +13,15 @@ related: "#75 (the issue this record resolves the option-selection for); .loom/s
 
 ## Status
 
+- 2026-11-28: **Updated — see "Update (2026-11-28)" at the end of this
+  record.** Upstream retired the installed generator (moved out of
+  `defaults/`, declared in `defaults/.loom-retired.list`), so the premise of
+  the 2026-11-15 entry below — a pin held "before an upstream fix arrives" —
+  is gone: `.loom/scripts/generate-agents-md.sh` is now a repo-owned script
+  under a permanent `.loom/resync-ignore` pin. The Decision and
+  `status: Accepted` are unchanged. This entry rides the same review path as
+  that acceptance (the PR's review lifecycle plus the `docs/decisions/**`
+  ratification hold); it is not self-declared.
 - 2026-11-15: **Accepted.** The recommended pairing is carried out by issue
   #523's increment: the two-line local path fix is applied to
   `.loom/scripts/generate-agents-md.sh` (verified by
@@ -272,3 +281,94 @@ which is the review path issue #75 itself was already using before the
   analysis; the trade-offs above should make that disagreement easy to
   state precisely (e.g., "we'd rather not carry any local divergence from
   upstream, even a temporary one").
+
+## Update (2026-11-28): upstream retired the installed generator; the script is repo-owned
+
+Appended, not retro-edited: the 2026-09-14 and 2026-11-15 text above stands
+as written. This section records a change in the upstream facts that text
+relied on, and what the change means for the pin. It changes neither the
+Decision nor the frontmatter `status`. Tracked as issue #808.
+
+### What the record assumed
+
+The Decision's Option 1 "Against" bullet objects that "this repo does not own
+`.loom/scripts/generate-agents-md.sh`", and the 2026-11-15 Status entry pins
+the local fix "so resync does not clobber it before an upstream fix arrives".
+Both treat the pin as a hold, and the upstream report
+([rjwalters/loom#13910](https://github.com/rjwalters/loom/issues/13910)) as
+the route by which a fix would arrive through a later resync.
+
+### What changed upstream
+
+Re-verified 2026-11-28 against the Loom source at `27d6bcd37` (version
+`0.20.51`):
+
+```
+$ ls /home/ubuntu/GitHub/loom/defaults/scripts/generate-agents-md.sh
+ls: cannot access '/home/ubuntu/GitHub/loom/defaults/scripts/generate-agents-md.sh': No such file or directory
+
+$ grep -n '^scripts/generate-agents-md.sh$' /home/ubuntu/GitHub/loom/defaults/.loom-retired.list
+218:scripts/generate-agents-md.sh
+
+$ git -C /home/ubuntu/GitHub/loom show --name-status --format='%h %ad %s' --date=short a52433957 | grep generate-agents-md
+a52433957 2026-11-17 fix: stop shipping source-tree-only generate-agents-md.sh to consumers
+R094	defaults/scripts/generate-agents-md.sh	scripts/generate-agents-md.sh
+
+$ loom-daemon resync-pin status --source /home/ubuntu/GitHub/loom
+scripts/generate-agents-md.sh: base 2140ab7c2305 (defaults/scripts/generate-agents-md.sh, via explicit)
+  drift: 1 upstream commit(s); file REMOVED upstream
+  review: git -C /home/ubuntu/GitHub/loom show 2140ab7c2305ef764e9ead6ee7eec6d3855a8936:defaults/scripts/generate-agents-md.sh
+```
+
+Upstream did land a layout-aware path fix (`7a424b723`, 2026-11-17, "resolve
+generate-agents-md.sh source paths per layout"). It then stopped shipping the
+generator to consumers the same day (`a52433957`, the move above). The
+retirement note in `defaults/.loom-retired.list` reads "generate-agents-md.sh
+is source-tree-only tooling … it moved to the upstream-only scripts/ and
+stopped shipping" (#13911). A copy remains in the Loom repo at
+`scripts/generate-agents-md.sh`, but its own header says it "must never ship
+to a consumer's .loom/scripts/".
+
+### What follows for this record
+
+1. **The upstream-fix path is closed.** No resync has an upstream file to
+   install, so the pin's recorded exit condition ("Pin retired when
+   rjwalters/loom#13910 lands a layout-aware fix upstream and the next resync
+   installs it") cannot be met. The same holds for the #533 and #640 deltas
+   that share the pin: no installed upstream copy is left for a fix to reach
+   this install through.
+2. **The script is repo-owned.** `.loom/scripts/generate-agents-md.sh` is now
+   a deliberate fork of a retired upstream file. CI runs
+   `tools/test_generate_agents_md.py` against it. The `.loom/resync-ignore`
+   comment now says so and no longer describes the pin as temporary. The
+   script's own header (lines 43-44) still carries the old exit condition;
+   that is a script edit outside issue #808's records-only scope, tracked
+   as #809.
+3. **The pin is permanent, and load-bearing against deletion as well as
+   overwrite.** `remove_retired_files()` in `resync-installed.sh` deletes
+   every installed path named in `defaults/.loom-retired.list` unless it is
+   pinned in `.loom/resync-ignore`. Removing the pin line would delete the
+   script on the next resync and break that CI step.
+4. **Option 1's "Against" premise no longer holds.** The objection was that
+   this repo does not own the script. It does now. The recommendation — local
+   fix plus upstream report — was carried out and is not revisited; what
+   changes is its ownership consequence, not its direction.
+5. **`.loom/resync-pin-base` is unchanged.** `2140ab7c2305` is the upstream
+   revision this fork was taken from; `resync-pin status` reports one
+   upstream commit since it and `file REMOVED upstream`, which is the
+   correct, permanent reading for a repo-owned fork.
+
+### What this update does not decide
+
+Dropping the generator (delete the script, its CI step,
+`tools/test_generate_agents_md.py`, the pin and the `.loom/resync-pin-base`
+row, and supersede this record) and relocating it to a repo-owned path
+outside `.loom/scripts/` both remain available as separate decisions.
+Neither was needed to make the records accurate.
+
+### Review path
+
+Unchanged from the 2026-11-15 entry: this section is not self-declared. It
+rides the PR's normal review lifecycle and, because it touches
+`docs/decisions/**`, Champion's ratification hold — the operator signs off on
+it. No spec row is touched and nothing ratified is relaxed.
