@@ -661,7 +661,8 @@ def _scanned_bin_scripts(bin_dir: Path, home: str) -> list[str]:
 
 _NO_FORK_ANCHORS = ("compose-whole.py", "drc_coverage_audit.py",
                     "physical_estimates.py", "verify-whole.py",
-                    "compose_whole_lib.py", "verify_whole_lib.py")
+                    "compose_whole_lib.py", "verify_whole_lib.py",
+                    "physical_estimates_lib.py")
 
 
 def check_the_consolidated_helpers_live_in_one_place() -> None:
