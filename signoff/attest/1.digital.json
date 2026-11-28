@@ -2,13 +2,17 @@
   "schema_version": 1,
   "kind": "generic",
   "t1_item": 1,
-  "status": "pass",
+  "status": "fail",
   "source": "signoff/attest.py",
-  "failures": [],
+  "failures": [
+    "RTL sha256 sha256:145e3c309881982bb75c9bb32664f23b4ccccce5e350019eab686efdb5ffe288 != input content_hash sha256:219738aae7c5fd3bfede92ae20bebe38e843f7341690eed151d1545a93db90ef pinned by sim/digital-synthesis/runs/20260910-001436-a4c3194/unconstrained-synthesize-output.json (synthesis stale)",
+    "RTL sha256 sha256:145e3c309881982bb75c9bb32664f23b4ccccce5e350019eab686efdb5ffe288 != input content_hash sha256:219738aae7c5fd3bfede92ae20bebe38e843f7341690eed151d1545a93db90ef pinned by sim/digital-synthesis/runs/20260910-001436-a4c3194/50khz-constrained-synthesize-output.json (synthesis stale)",
+    "tool-pins.json input_netlist_klt_content_hash != current RTL sha256"
+  ],
   "provenance": {
     "input": {
       "path": "signoff/attest/1.digital.inventory.json",
-      "content_hash": "sha256:7bb5440af41388d8aa1fe2b1378f8bdfbab9d22b32fc91928d249012e0ec60d8"
+      "content_hash": "sha256:ddc3a61a6fae9d0f3ddb456f6b3bfd242e9a05524cdf73ce2369dec74f8b66c2"
     }
   }
 }

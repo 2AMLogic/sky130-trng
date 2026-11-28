@@ -314,5 +314,58 @@ class TestRegisterInterface(unittest.TestCase):
         self.assertEqual(dut.raw_fifo.level, params.FIFO_DEPTH)
 
 
+    def test_production_depth_is_two_words_per_path(self):
+        self.assertEqual(params.FIFO_DEPTH, 2)
+        dut = TrngDigital()
+        self.assertEqual(dut.raw_fifo.depth, 2)
+        self.assertEqual(dut.cond_fifo.depth, 2)
+
+    def _level(self, dut, path):
+        shift = rm.ST_RAW_LEVEL_SHIFT if path == "raw" else rm.ST_COND_LEVEL_SHIFT
+        return (dut.read(rm.STATUS) >> shift) & 0xF
+
+    def _check_two_word_path(self, path):
+        conditioned = path == "cond"
+        dut = self.enabled_dut(conditioned=conditioned)
+        reg = rm.DATA if conditioned else rm.RAW_DATA
+        ovf = rm.ST_COND_OVF if conditioned else rm.ST_RAW_OVF
+        if conditioned:
+            self.feed(dut, healthy(params.STARTUP_SAMPLES))   # clear the gate
+            nbits = params.COND_BLOCK_BITS
+            blocks = [healthy(nbits, seed=s) for s in (11, 22, 33, 44)]
+            words = [crc32_polynomial_remainder(b) for b in blocks]
+        else:
+            nbits = params.WORD_BITS
+            blocks = [[(w >> k) & 1 for k in range(32)]
+                      for w in (0xA5A5A5A5, 0x0F0F1234, 0xDEADBEEF, 0x13579BDF)]
+            words = [0xA5A5A5A5, 0x0F0F1234, 0xDEADBEEF, 0x13579BDF]
+        self.assertEqual(self._level(dut, path), 0)
+        self.feed(dut, blocks[0])
+        self.assertEqual(self._level(dut, path), 1)
+        self.feed(dut, blocks[1])
+        self.assertEqual(self._level(dut, path), 2)
+        self.assertEqual(dut.read(rm.STATUS) & ovf, 0)
+        # A third arrival at full drops the incoming word, keeps both queued.
+        self.feed(dut, blocks[2])
+        self.assertEqual(self._level(dut, path), 2)
+        self.assertTrue(dut.read(rm.STATUS) & ovf)
+        self.assertEqual(dut.read(reg), words[0])
+        self.assertEqual(self._level(dut, path), 1)
+        self.assertEqual(dut.read(reg), words[1])
+        self.assertEqual(self._level(dut, path), 0)
+        self.assertEqual(dut.read(reg), 0)
+        self.assertTrue(dut.read(rm.STATUS) & ovf)         # sticky
+        # Refill after draining.
+        self.feed(dut, blocks[3])
+        self.assertEqual(self._level(dut, path), 1)
+        self.assertEqual(dut.read(reg), words[3])
+
+    def test_raw_path_two_words_third_dropped(self):
+        self._check_two_word_path("raw")
+
+    def test_conditioned_path_two_words_third_dropped(self):
+        self._check_two_word_path("cond")
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

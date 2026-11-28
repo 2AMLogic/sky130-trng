@@ -70,7 +70,7 @@ CRC32_POLY = 0x04C11DB7
 CRC32_INIT = 0xFFFFFFFF
 
 #: Output FIFO depth, in 32-bit words, for each of the two paths.
-FIFO_DEPTH = 4
+FIFO_DEPTH = 2
 
 
 # --------------------------------------------------------------------------

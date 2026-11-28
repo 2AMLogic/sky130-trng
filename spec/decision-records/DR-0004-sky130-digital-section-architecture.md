@@ -283,14 +283,40 @@ that has to be *correct* rather than fast. A real SoC integration wants a
 CDC to a host bus clock; that synchroniser is explicitly out of scope here
 (§ "Consequences").
 
-#### 4.4 FIFO depth 4 per path
+#### 4.4 FIFO depth 2 per path
 
-Deliberately small. gf180-trng's own area row (DR-0019/DR-0020, a 2.7× miss
-against its ratified budget) is explicitly tied to FIFO depth, and
-`spec/porting-plan.md` §2.6 warns against inheriting that unresolved
-tension in either direction. Four words is 32 bit-times of consumer slack at
-either path's word rate; deeper is a decision to be made against a measured
-area figure, which does not exist yet.
+Two 32-bit words per path, selected by the operator in #610 and adopted in
+the model (`digital/model/params.py` `FIFO_DEPTH = 2`) and the RTL (both
+memories two entries; #701). The earlier four-word choice (32 bit-times of
+consumer slack per path) was deliberately small because gf180-trng's own
+area row (DR-0019/DR-0020, a 2.7x miss against its ratified budget) is
+explicitly tied to FIFO depth and `spec/porting-plan.md` §2.6 warns against
+inheriting that unresolved tension in either direction; the measured area
+figure it was waiting for now exists (below).
+
+Timing at 50,000 valid raw bits/s, from an empty FIFO at a word boundary
+(conditioned path counted after start-up completes):
+
+| Path | Word period | Two words full at | First drop (third word, no reads) |
+|---|---|---|---|
+| Raw (32 bits/word) | 0.64 ms | 1.28 ms | 1.92 ms |
+| Conditioned (256 bits/word) | 5.12 ms | 10.24 ms | 15.36 ms |
+
+Behaviour is otherwise unchanged: STATUS field positions and widths
+(levels stay 4-bit fields, now holding 0..2), FIFO order, sticky overflow
+that drops the *incoming* word and keeps both queued words, bus-over-stream
+pop priority, start-up gating, and flush/reset semantics.
+
+Measured effect (`sim/digital-synthesis/records/20261123-212218-18490379`,
+klt 0.4.0, yosys 0.67, `sky130_fd_sc_hd` tt_025C_1v80): unconstrained
+2320 -> 1748 cells and 22203.80 -> 16264.35 um2 (-26.75%); 50 kHz-constrained
+22099.95 -> 16179.27 um2 (-26.79%), against record `20260910-001436-a4c3194`.
+The 27.35% figure from the #612 study is a reference measurement only. Both
+mapped netlists are sequentially equivalent to the new RTL (`klt equiv
+yosys-sequential`) and reproduce the behavioural model over all 4,239 cycles
+of the directed program (`sim/digital-rtl-equivalence/records/20261123-212051-18490379`).
+Synthesis-level evidence only: no place-and-route, timing signoff or
+silicon claim.
 
 ### 5. The model is normative; the RTL is an implementation
 
@@ -493,7 +519,8 @@ DR-0003's 50 kHz sample clock:
     §5 question 1 leaves open whether sky130-trng adopts it at all, so it is
     deliberately absent here rather than half-designed.
   - **A host-clock CDC** for the register bus (§4.3).
-  - **FIFO depth against a measured area figure** (§4.4).
+  - **FIFO depth beyond two words** (§4.4): depth 2 is adopted; any other
+    depth is a new decision against measured area.
 
 - **Revisit if**: issue #21 measures `H` below ~0.1 (the APT
   parameterisation stops being meaningful); synthesis shows the digital

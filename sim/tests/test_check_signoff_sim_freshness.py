@@ -92,6 +92,18 @@ def make_tree(dst, src=REPO, rid=None):
     for r in rel:
         (dst / r).parent.mkdir(parents=True, exist_ok=True)
         shutil.copy(src / r, dst / r)
+    # The fixture exercises the checker's logic, not the repo's real freshness: a
+    # historical record may pin older bytes than the live tree now holds (e.g. after
+    # a design change that retired its citation).  Re-pin the copied record to the
+    # bytes actually copied so only the edit under test can fail.
+    fixture = {k: (chk.sha((dst / k).read_bytes()) if (dst / k).is_file() else v)
+               for k, v in hashes.items() if "(" not in k and not k.startswith("$")}
+    hashes = {**hashes, **fixture}
+    (dst / run / "input-hashes.json").write_text(json.dumps(hashes))
+    rp = dst / Path(SLUG) / "records" / f"{rid}.json"
+    rec = json.loads(rp.read_text())
+    rec["input_hashes"] = hashes
+    rp.write_text(json.dumps(rec))
     (dst / "signoff").mkdir()
     write_manifest(dst, f"{run}/timed-declared.report.json")
 

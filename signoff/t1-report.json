@@ -5,7 +5,7 @@
   "tier": null,
   "t1_item_count": 22,
   "build_t1_item_count": 22,
-  "t1_met_count": 15,
+  "t1_met_count": 12,
   "source_doc": "signoff/design-evidence-tiers.md",
   "source_doc_content_hash": "sha256:63eeec72e3d849761cf32dcf091af5728b069b1515e32bb3138e9454303671e5",
   "build": {
@@ -269,25 +269,10 @@
       "partition": "digital",
       "text": "committed RTL sources plus the synthesized gate-level netlist derived from them, regenerated on design change. For a hand-captured full-custom digital partition (no RTL, no synthesis step \u2014 see \"Full-custom digital sub-case\" above), this item is satisfied instead by the Analog column's artifact: committed schematic sources (or generator) plus the netlist derived from them, regenerated on design change, with every logic gate captured as a schematic exactly like an analog partition's.",
       "notes": [],
-      "status": "met",
-      "reason": null,
+      "status": "unmet",
+      "reason": "check_failed",
       "graded_by_build": true,
-      "citation": {
-        "file": "signoff/attest/1.digital.json",
-        "command": null,
-        "kind": "generic",
-        "check_status": "pass",
-        "content_hash": "sha256:7bb5440af41388d8aa1fe2b1378f8bdfbab9d22b32fc91928d249012e0ec60d8",
-        "input_verified": true,
-        "exit_status": 0,
-        "artifact_binding": {
-          "t1_item": 1,
-          "path": "signoff/attest/1.digital.inventory.json",
-          "content_hash": "sha256:7bb5440af41388d8aa1fe2b1378f8bdfbab9d22b32fc91928d249012e0ec60d8",
-          "input_verified": true,
-          "source": "signoff/attest.py"
-        }
-      }
+      "citation": null
     },
     {
       "tier": "T1",
@@ -323,25 +308,10 @@
       "partition": "digital",
       "text": "committed routed GDS/OASIS from place-and-route, reproducibly generated from the gate-level netlist (P&R script/flow committed, not a one-off hand edit). For the same full-custom sub-case, this item is satisfied instead by the Analog column's artifact: committed GDS/OASIS, reproducibly generated or with documented provenance \u2014 hand-drawn layout, not P&R output.",
       "notes": [],
-      "status": "met",
-      "reason": null,
+      "status": "unmet",
+      "reason": "check_failed",
       "graded_by_build": true,
-      "citation": {
-        "file": "signoff/attest/2.digital.json",
-        "command": null,
-        "kind": "generic",
-        "check_status": "pass",
-        "content_hash": "sha256:67f3502031f7fdb03c31fdfbab2e4edf3343e2ebc4dd5e83df8fda59e7d7be45",
-        "input_verified": true,
-        "exit_status": 0,
-        "artifact_binding": {
-          "t1_item": 2,
-          "path": "signoff/attest/2.digital.inventory.json",
-          "content_hash": "sha256:67f3502031f7fdb03c31fdfbab2e4edf3343e2ebc4dd5e83df8fda59e7d7be45",
-          "input_verified": true,
-          "source": "signoff/attest.py"
-        }
-      }
+      "citation": null
     },
     {
       "tier": "T1",
@@ -743,18 +713,10 @@
       "notes": [
         "A `klt pex` citation is only as good as the **device-body bias** of the netlist it ran on (#1983). A device body left on an anonymous, deck-synthesized net has no DC bias path at all, which makes a resimulation of that extracted netlist *physically wrong, not merely imprecise* (`docs/cli/extract.md` \u2192 \"Coverage\") \u2014 the run converges and reports numbers, and those numbers are not comparable to the schematic leg they are being diffed against. A `klt pex` report states the condition in its own `body_bias` block (`docs/cli/pex.md`), and `klt signoff` surfaces it verbatim on this item's citation (`citation.body_bias`). **It does not grade on it**: an item-7 citation whose `body_bias.status` is `\"unbiased\"` still renders `met`, because the condition is a deck-coverage property some PDKs produce on every layout they extract, not a defect this command can adjudicate. So a claim citing item 7 must read that field and state whether its post-layout numbers were measured on a properly-biased netlist \u2014 claimant-enforced, exactly like item 3's DRC-coverage disclosure. The same discipline applies upstream at item 4: `klt lvs`'s `body_verification` block says whether the compare verified the body ties at all, and `\"unchecked\"` (a pre-extracted netlist) is not `\"verified\"`."
       ],
-      "status": "met",
-      "reason": null,
+      "status": "unmet",
+      "reason": "no_evidence",
       "graded_by_build": true,
-      "citation": {
-        "file": "sim/digital-sdf-timed-verification/runs/20261009-172301-8cbd26a/timed-declared.report.json",
-        "command": null,
-        "kind": "functional-verification",
-        "check_status": "pass",
-        "content_hash": null,
-        "input_verified": null,
-        "exit_status": 0
-      }
+      "citation": null
     },
     {
       "tier": "T1",
