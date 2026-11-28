@@ -1,0 +1,485 @@
+{
+  "schema_version": 3,
+  "netlist": {
+    "path": "sim/post-layout-whole-block/runs/20261128-coupled-probe/requests/coupled-probe/netlist.cir",
+    "scope": "repo"
+  },
+  "status": "pass",
+  "corner_count": 1,
+  "passed": 1,
+  "failed": 0,
+  "errored": 0,
+  "inconclusive": 0,
+  "diagnostic_counts": {
+    "by_code": {},
+    "by_severity": {},
+    "corners_with_diagnostics": 0
+  },
+  "metrics": {
+    "sim__corner__count": 1,
+    "sim__corner__passed_count": 1,
+    "sim__corner__failed_count": 0,
+    "sim__corner__errored_count": 0,
+    "sim__corner__inconclusive_count": 0
+  },
+  "environment": {
+    "engine": "ngspice",
+    "engine_version": "47",
+    "ngspice_binary": "/usr/local/bin/ngspice",
+    "engine_build": {
+      "version_banner": "******\n** ngspice-47 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2026, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Fri Nov 13 23:19:32 UTC 2026\n******",
+      "binary_sha256": "e12148baf532d879d2e2053cecc5b498680bd4156a0dc3f69ce4f83e741e1314",
+      "probe": "ok",
+      "reason": null
+    },
+    "ngspice_init": {
+      "source": "runner",
+      "lines": null,
+      "sha256": null
+    },
+    "models_lib": {
+      "path": null,
+      "scope": "external"
+    },
+    "models_lib_sha256": "48de7c677e2c6e7d09b2559279de9f818be71010a4aa933d728eb4db3b133c84",
+    "models_lib_sha256_scope": "client",
+    "netlist_sha256": "b21d2a5ceea3dfa4466b9b3172c9ea415e0f056076180141909fc0a128c4747c",
+    "netlist_sha256_scope": "client-at-collection",
+    "netlist_closure": [
+      {
+        "path": "sim/post-layout-whole-block/runs/20261128-coupled-probe/requests/coupled-probe/netlist.cir",
+        "scope": "repo",
+        "sha256": "b21d2a5ceea3dfa4466b9b3172c9ea415e0f056076180141909fc0a128c4747c"
+      }
+    ],
+    "netlist_identity": "sha256:8cf2b77914695e2a4703a1ea86cf7791070aea34ae08455122b0a4ab413dd7af",
+    "netlist_source": "extracted",
+    "remote": {
+      "provider": "aws-batch-fleet",
+      "job_id": "klt-sim-1d857d429e5a",
+      "image_profile": "sim",
+      "region": "us-east-1",
+      "instance_id": "i-0a253e1f626390ae8",
+      "instance_type": "c7i.4xlarge",
+      "availability_zone": "us-east-1a",
+      "ami_id": "ami-09c14f55df4958cbd",
+      "lifecycle": "spot",
+      "spot": true,
+      "state": "done",
+      "exit_code": "0",
+      "concurrency": "1",
+      "physical_cores": "8",
+      "elapsed_seconds": 51,
+      "client_submitted_at": null,
+      "client_launched_at": null,
+      "client_status_terminal_at": "2026-11-28T07:07:06.291640Z",
+      "client_collected_at": "2026-11-28T07:07:07.700872Z",
+      "runner_klt_version": "0.9.0",
+      "client_klt_version": "0.9.3.dev5891+gdb90790c546c",
+      "runner_compatibility": "match",
+      "worker_environment": {
+        "capture": "ok",
+        "simulator": {
+          "requested_binary": "ngspice",
+          "binary_source": "PATH",
+          "selected_path": "/usr/local/bin/ngspice",
+          "version_banner": "******\n** ngspice-47 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2026, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Fri Nov 13 23:19:32 UTC 2026\n******\n",
+          "version_probe": "ok",
+          "binary_sha256": "e12148baf532d879d2e2053cecc5b498680bd4156a0dc3f69ce4f83e741e1314"
+        },
+        "pdk": {
+          "variant": "sky130A",
+          "root": "/opt/pdk",
+          "stamp_scheme": "sources-sha256",
+          "stamp_sha256": "4ca10280ae9f293aa1ff69f0060a52e0026929111bda881503717469b429ce67",
+          "stamp_text": "open_pdks f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7",
+          "models_staged": false,
+          "stamp_scope": "executed"
+        },
+        "cpu_model": "Intel(R) Xeon(R) Platinum 8488C",
+        "omp_num_threads": null,
+        "image_manifest": null,
+        "model_inputs": null,
+        "diagnostics": [],
+        "pdk_stamp_comparison": {
+          "status": "match"
+        },
+        "ngspice_init": null,
+        "threads_per_worker": null,
+        "engine_build_comparison": {
+          "status": "match",
+          "digest": "mismatch"
+        }
+      },
+      "runner_model_inputs": null,
+      "runner_models_lib_sha256": "48de7c677e2c6e7d09b2559279de9f818be71010a4aa933d728eb4db3b133c84",
+      "runner_corner_section_libs": null,
+      "runner_osdi_preload": null,
+      "models_lib_comparison": {
+        "status": "match"
+      }
+    },
+    "engine_host": "worker",
+    "client_ngspice_binary": "/home/ubuntu/.local/bin/ngspice",
+    "client_engine_build": {
+      "version_banner": "******\n** ngspice-47 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2026, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n** Creation Date: Fri Nov 13 23:19:32 UTC 2026\n******",
+      "binary_sha256": "39ca1adb826660324c3626f72bd946ec40704f0f3fc8e243c623f76e24b3eee2",
+      "probe": "ok",
+      "reason": null
+    },
+    "backend": {
+      "resolved": "batch",
+      "source": "flag",
+      "requested": "batch"
+    }
+  },
+  "coverage": {
+    "corners_simulated": 1,
+    "measurements_declared": 9,
+    "measurements_with_limits": 0,
+    "unrecognized_limit_keys": [],
+    "schema_version": 1,
+    "known": true,
+    "checked": [
+      "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"i_vdd_probe\"]/observation",
+      "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"i_vddr1_probe\"]/observation",
+      "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"i_vddr2_probe\"]/observation",
+      "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"i_vddr3_probe\"]/observation",
+      "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"i_vddr4_probe\"]/observation",
+      "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"v_ring_bit1_end\"]/observation",
+      "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"v_ring_bit2_end\"]/observation",
+      "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"v_ring_bit3_end\"]/observation",
+      "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"v_ring_bit4_end\"]/observation"
+    ],
+    "skipped": [],
+    "inapplicable": [
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"i_vdd_probe\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"i_vddr1_probe\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"i_vddr2_probe\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"i_vddr3_probe\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"i_vddr4_probe\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"v_ring_bit1_end\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"v_ring_bit2_end\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"v_ring_bit3_end\"]/limits",
+        "reason": "characterization_without_limits"
+      },
+      {
+        "id": "measurement:[0,\"tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C\",\"v_ring_bit4_end\"]/limits",
+        "reason": "characterization_without_limits"
+      }
+    ],
+    "unknown": [],
+    "nothing_checked": false,
+    "nothing_checked_reasons": []
+  },
+  "provenance": {
+    "klt_version": "0.9.3.dev5891+gdb90790c546c",
+    "klt_git_commit": "db90790c546cf87c742f9921699385a59bcbca5d",
+    "klt_reinstall_spec": "klayout-tools @ git+https://github.com/2AMLogic/klayout-tools@db90790c546cf87c742f9921699385a59bcbca5d",
+    "klayout_version": "0.30.13",
+    "pdk": {
+      "name": "sky130A",
+      "source": "search root: ~/.ciel",
+      "version": "open_pdks f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7",
+      "ambiguous_sources": [
+        "search root: ~/.volare"
+      ]
+    },
+    "deck": {
+      "name": "sky130.lib.spice",
+      "content_hash": "sha256:48de7c677e2c6e7d09b2559279de9f818be71010a4aa933d728eb4db3b133c84",
+      "released": false
+    },
+    "input": {
+      "content_hash": "sha256:b21d2a5ceea3dfa4466b9b3172c9ea415e0f056076180141909fc0a128c4747c",
+      "role": "netlist"
+    }
+  },
+  "measurements": [
+    {
+      "name": "i_vdd_probe",
+      "unit": null,
+      "limits": null,
+      "status": "pass",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": -0.00010932,
+        "margin": null
+      },
+      "min": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": -0.00010932
+      },
+      "max": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": -0.00010932
+      }
+    },
+    {
+      "name": "i_vddr1_probe",
+      "unit": null,
+      "limits": null,
+      "status": "pass",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": -1.22008e-05,
+        "margin": null
+      },
+      "min": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": -1.22008e-05
+      },
+      "max": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": -1.22008e-05
+      }
+    },
+    {
+      "name": "i_vddr2_probe",
+      "unit": null,
+      "limits": null,
+      "status": "pass",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": -1.27788e-05,
+        "margin": null
+      },
+      "min": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": -1.27788e-05
+      },
+      "max": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": -1.27788e-05
+      }
+    },
+    {
+      "name": "i_vddr3_probe",
+      "unit": null,
+      "limits": null,
+      "status": "pass",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": -1.33509e-05,
+        "margin": null
+      },
+      "min": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": -1.33509e-05
+      },
+      "max": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": -1.33509e-05
+      }
+    },
+    {
+      "name": "i_vddr4_probe",
+      "unit": null,
+      "limits": null,
+      "status": "pass",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": -1.39364e-05,
+        "margin": null
+      },
+      "min": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": -1.39364e-05
+      },
+      "max": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": -1.39364e-05
+      }
+    },
+    {
+      "name": "v_ring_bit1_end",
+      "unit": null,
+      "limits": null,
+      "status": "pass",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": 4.06472e-07,
+        "margin": null
+      },
+      "min": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": 4.06472e-07
+      },
+      "max": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": 4.06472e-07
+      }
+    },
+    {
+      "name": "v_ring_bit2_end",
+      "unit": null,
+      "limits": null,
+      "status": "pass",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": 4.32195e-07,
+        "margin": null
+      },
+      "min": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": 4.32195e-07
+      },
+      "max": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": 4.32195e-07
+      }
+    },
+    {
+      "name": "v_ring_bit3_end",
+      "unit": null,
+      "limits": null,
+      "status": "pass",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": 6.10992e-07,
+        "margin": null
+      },
+      "min": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": 6.10992e-07
+      },
+      "max": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": 6.10992e-07
+      }
+    },
+    {
+      "name": "v_ring_bit4_end",
+      "unit": null,
+      "limits": null,
+      "status": "pass",
+      "worst_case": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": 1.22033e-06,
+        "margin": null
+      },
+      "min": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": 1.22033e-06
+      },
+      "max": {
+        "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+        "value": 1.22033e-06
+      }
+    }
+  ],
+  "corners": [
+    {
+      "corner_id": "tt/Vvdd=1.800_Vvddr1=1.800_Vvddr2=1.800_Vvddr3=1.800_Vvddr4=1.800V/27C",
+      "process": "tt",
+      "supply_v": {
+        "Vvdd": 1.8,
+        "Vvddr1": 1.8,
+        "Vvddr2": 1.8,
+        "Vvddr3": 1.8,
+        "Vvddr4": 1.8
+      },
+      "temperature_c": 27.0,
+      "status": "pass",
+      "runtime_s": 14.291,
+      "peak_rss_bytes": 327999488,
+      "engine_exit_code": 0,
+      "engine_killed_by_signal": null,
+      "measurements": [
+        {
+          "name": "i_vdd_probe",
+          "value": -0.00010932,
+          "unit": null,
+          "status": "pass",
+          "margin": null
+        },
+        {
+          "name": "i_vddr1_probe",
+          "value": -1.22008e-05,
+          "unit": null,
+          "status": "pass",
+          "margin": null
+        },
+        {
+          "name": "i_vddr2_probe",
+          "value": -1.27788e-05,
+          "unit": null,
+          "status": "pass",
+          "margin": null
+        },
+        {
+          "name": "i_vddr3_probe",
+          "value": -1.33509e-05,
+          "unit": null,
+          "status": "pass",
+          "margin": null
+        },
+        {
+          "name": "i_vddr4_probe",
+          "value": -1.39364e-05,
+          "unit": null,
+          "status": "pass",
+          "margin": null
+        },
+        {
+          "name": "v_ring_bit1_end",
+          "value": 4.06472e-07,
+          "unit": null,
+          "status": "pass",
+          "margin": null
+        },
+        {
+          "name": "v_ring_bit2_end",
+          "value": 4.32195e-07,
+          "unit": null,
+          "status": "pass",
+          "margin": null
+        },
+        {
+          "name": "v_ring_bit3_end",
+          "value": 6.10992e-07,
+          "unit": null,
+          "status": "pass",
+          "margin": null
+        },
+        {
+          "name": "v_ring_bit4_end",
+          "value": 1.22033e-06,
+          "unit": null,
+          "status": "pass",
+          "margin": null
+        }
+      ],
+      "diagnostics": [],
+      "artifacts": {
+        "log": "/home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-431/sim/post-layout-whole-block/runs/20261128-coupled-probe/out/tt_Vvdd1p800_Vvddr11p800_Vvddr21p800_Vvddr31p800_Vvddr41p800V_27C/ngspice.log",
+        "raw": null,
+        "waveform": null,
+        "deck": "/home/ubuntu/GitHub/sky130-trng/.loom/worktrees/issue-431/sim/post-layout-whole-block/runs/20261128-coupled-probe/out/tt_Vvdd1p800_Vvddr11p800_Vvddr21p800_Vvddr31p800_Vvddr41p800V_27C/corner.cir"
+      },
+      "monte_carlo": null
+    }
+  ]
+}
