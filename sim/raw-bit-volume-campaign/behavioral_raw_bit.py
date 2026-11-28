@@ -524,7 +524,7 @@ def main(argv=None) -> int:
             supersedes=f"{BASE_RECORD}, {HOT_RECORD} (by name; neither edited)" if args.point_set == "all" else None,
             seeds={"master": MASTER_SEED, "policy": "per-stream seed = sha256(master:label)[:8]"},
             artifacts=[tmp / r["file"] for r in rows],
-            tools={"model": "sim/raw-bit-volume-campaign/behavioral_raw_bit.py"},
+            tools={"model": "sim/bin/raw_bit_model.py", "script": "sim/raw-bit-volume-campaign/behavioral_raw_bit.py"},
             author=args.author)
     return 0
 
