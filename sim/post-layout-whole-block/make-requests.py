@@ -60,11 +60,16 @@ from _klt_common import libs_ref  # noqa: E402
 sys.path.insert(0, str(HERE))
 import program as P  # noqa: E402
 import pvt_deck_map as PVT  # noqa: E402
-
-sys.path.insert(0, str(REPO / "sim" / "bin"))
-from loadmod import load_module  # noqa: E402
-
-G = load_module("whole_block_gate_model", HERE / "make-gate-model.py")
+# the deck's measurement sets and shared constants are program.py's (#804);
+# re-exported here under the names this generator's callers use
+from program import (  # noqa: E402
+    RAILS,
+    ROUTED_V,
+    VIH,
+    W1,
+    coupled_measurements,
+    whole_block_measurement_cards as measurement_cards,
+)
 
 NETLIST_BODY = HERE / "trng_whole.sim.spice"
 NETLIST_GZ = HERE / "trng_whole.sim.spice.gz"
@@ -80,17 +85,7 @@ GRID = [(-40.0, 1.62), (27.0, 1.8), (-40.0, 1.98), (125.0, 1.98)]
 #: to size #307 (records/20261121-coupled-rate.md).
 GRID_TIMEOUT_S = 21600
 
-#: digital input high level, fixed at every corner (declared in the record:
-#: 1.8 V is the sky130 1.8 V device rating; VIH(1.62 V) = 1.05 V accepts it,
-#: and the supply sources themselves -- not these cards -- carry the corner)
-VIH = 1.8
-
 EDGE_NS = P.PWL_EDGE_NS
-
-#: current-window current/power integration windows (ns): W1 rings-running /
-#: digital reset-held (clk has not started; rst_n low until 300 ns); W2 active
-#: (every program cycle; clipped to end one Ts before tstop)
-W1 = (50.0, 250.0)
 
 
 def _netlist_text() -> str:
@@ -203,7 +198,7 @@ def partition_check() -> dict:
     return {
         "flat_whole_netlist_sha256": sha256_text(flat),
         "analog_partition_sha256": sha256_text(ana),
-        "digital_gate_netlist_sha256": sha256_file(REPO / "layout" / "trng_digital" / "trng_digital.routed.v"),
+        "digital_gate_netlist_sha256": sha256_file(ROUTED_V),
         "total_instances": len(fb),
         "analog_transistors": n_tr(ab),
         "digital_transistors": n_tr(db),
@@ -243,70 +238,6 @@ def rate_probe_measurements(t_stop: float) -> tuple[list[dict], list[str]]:
     return meas, sorted(save)
 
 
-def measurement_cards(cycles: list[dict]) -> tuple[list[dict], list[str]]:
-    """The request's measurements[] entries; returns (entries, .save nets)."""
-    n = len(cycles)
-    inputs = P.cycle_inputs(cycles)
-    t_stop = P.t_stop_ns(cycles)
-    meas: list[dict] = []
-    save = {"clk", "rst_n", "raw_bit", "raw_valid", "ring_bit1", "ring_bit2",
-            "ring_bit3", "ring_bit4", "alarm", "gated", "startup_done",
-            "out_valid", "vdd", "vss", "vddr1", "vddr2", "vddr3", "vddr4"}
-
-    def add(name: str, card: str, save_net: str | None = None, t: float | None = None):
-        if t is not None and t > t_stop:
-            return  # unreachable within this (truncated) program's stop time
-        meas.append({"name": name, "spice": card})
-        if save_net:
-            save.add(save_net)
-
-    # -- per-sample-cycle raw tap captures (the oracle's stimulus)
-    for k, inp in enumerate(inputs):
-        if inp["raw_valid"]:
-            t = P.t_edge_ns(k) + P.CAPTURE_NS
-            add(f"raw_bit_k{k}", f".meas tran raw_bit_k{k} FIND v(raw_bit) AT={t:.1f}n", "raw_bit", t)
-            add(f"raw_valid_k{k}", f".meas tran raw_valid_k{k} FIND v(raw_valid) AT={t:.1f}n", "raw_valid", t)
-
-    for measurement in P.bus_read_measurements(inputs):
-        add(*measurement)
-
-    # -- streaming-port captures: every cycle where a word can complete or pop
-    for k in range(3, n):
-        if inputs[k]["out_ready"] or inputs[k - 1]["out_ready"]:
-            t = P.t_edge_ns(k) + P.RDATA_NS
-            add(f"out_valid_k{k}", f".meas tran out_valid_k{k} FIND v(out_valid) AT={t:.1f}n", "out_valid", t)
-            if k in (36, 37, 74) or k >= n - 3:
-                for bit in range(32):
-                    add(f"odata_k{k}_b{bit}",
-                        f".meas tran odata_k{k}_b{bit} FIND v(out_data_{bit}_) AT={t:.1f}n",
-                        f"out_data_{bit}_", t)
-
-    # -- scalar observables at every bus-quiet sample-phase boundary of interest
-    for k in sorted({2, 3, 36, 42, 74, n - 1}):
-        t = P.t_edge_ns(k) + P.RDATA_NS
-        for sig in ("alarm", "gated", "startup_done"):
-            add(f"{sig}_k{k}", f".meas tran {sig}_k{k} FIND v({sig}) AT={t:.1f}n", sig, t)
-
-    # -- first stream-valid assertion time (throughput tap, see README)
-    add("t_out_valid_first", ".meas tran t_out_valid_first WHEN v(out_valid)=1.4 RISE=1", "out_valid")
-
-    # -- per-rail currents: W1 (rings running, digital reset-held) and W2 (active)
-    w2 = (P.t_edge_ns(2), t_stop - P.TS_NS)
-    for rail in ("vdd", "vddr1", "vddr2", "vddr3", "vddr4"):
-        add(f"i_{rail}_w1", f".meas tran i_{rail}_w1 AVG i(V{rail}) FROM={W1[0]:.0f}n TO={W1[1]:.0f}n")
-        add(f"i_{rail}_w2", f".meas tran i_{rail}_w2 AVG i(V{rail}) FROM={w2[0]:.0f}n TO={w2[1]:.0f}n")
-        add(f"q_{rail}_w2", f".meas tran q_{rail}_w2 INTEG i(V{rail}) FROM={w2[0]:.0f}n TO={w2[1]:.0f}n")
-    add("i_vss_w2", f".meas tran i_vss_w2 AVG i(Vvss) FROM={w2[0]:.0f}n TO={w2[1]:.0f}n")
-
-    # -- sanity: the clock really toggled
-    add("t_clk_first", ".meas tran t_clk_first WHEN v(clk)=0.9 RISE=1", "clk")
-
-    save |= {f"i(V{r})" for r in ("vdd", "vss", "vddr1", "vddr2", "vddr3", "vddr4")}
-    names = [e["name"] for e in meas]
-    assert len(names) == len(set(names)), "duplicate measurement names (klt coverage needs unique work ids)"
-    return meas, sorted(save)
-
-
 def nominal_gate_model() -> tuple[str, dict]:
     """Use the measured nominal gate model, with its exact bridges and input loads."""
     base = Path("corners/gate-model-full")
@@ -315,7 +246,7 @@ def nominal_gate_model() -> tuple[str, dict]:
     plan = json.loads((HERE / base / "plan.json").read_text())
     gate = gzip.decompress((HERE / "runs/20261114-gate-model-full/gate-model.cir.gz").read_bytes()).decode()
     if (sha256_text(gate) != plan["gate_model_sha256"]
-            or sha256_file(G.ROUTED_V) != manifest["source_netlist_sha256"]
+            or sha256_file(ROUTED_V) != manifest["source_netlist_sha256"]
             or manifest["source_netlist_sha256"] != plan["routed_netlist_sha256"]
             or manifest["liberty_sha256"] != plan["liberty_sha256"]):
         raise ValueError("nominal model, routed Verilog or Liberty identity differs from the gate record")
@@ -348,18 +279,6 @@ def coupled_analog() -> tuple[str, list[str]]:
             raise ValueError(f"expected one sampler cluster for {name}, got {matches}")
         pins.extend(matches)
     return header + "+ " + " ".join(pins) + "\n" + marker + devices, outputs
-
-
-def coupled_measurements(cycles: list[dict]) -> tuple[list[dict], list[str]]:
-    meas, save = G.measurement_cards(cycles, VIH, G.EXPECTED_THRESHOLD_PCT)
-    for k in range(len(cycles)):
-        t = P.t_edge_ns(k) + P.CAPTURE_NS
-        for signal in ("raw_bit", "raw_valid"):
-            name = f"{signal}_k{k}"
-            meas.append({"name": name, "spice": f".meas tran {name} FIND v({signal}) AT={t:.1f}n"})
-    meas.append({"name": "clk_at_stop",
-                 "spice": f".meas tran clk_at_stop FIND v(clk) AT={P.t_stop_ns(cycles):.0f}n"})
-    return meas, save
 
 
 def deck_body(cycles: list[dict], header: list[str], rate_probe_stop: float | None = None,
@@ -482,7 +401,7 @@ def make_request(name: str, outdir: Path, *, processes: list[str], temp_c: float
         "corners": {
             "process": processes,
             "temperature_c": [temp_c],
-            "supply_v": {f"V{r}": [supply] for r in ("vdd", "vddr1", "vddr2", "vddr3", "vddr4")},
+            "supply_v": {f"V{r}": [supply] for r in RAILS},
         },
         "analysis": {"kind": "tran", "args": f"{TMAX} {analysis_args}"},
         "measurements": meas,

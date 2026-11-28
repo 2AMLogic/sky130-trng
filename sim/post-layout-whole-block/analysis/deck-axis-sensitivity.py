@@ -58,10 +58,13 @@ sys.path.insert(0, os.path.join(REPO, "sim", "bin"))
 from loadmod import load_module  # noqa: E402
 
 sys.path.insert(0, str(HERE.parent))
+import program as P  # noqa: E402
+import pvt_deck_map as PVT  # noqa: E402
 from gate_model_lib import CellModel, extract_cell_blocks, parse_verilog  # noqa: E402
 
+# resolve_liberty stays with the generator CLI (layout/test_klt_common.py
+# audits it there), so that one sibling is still loaded by path
 G = load_module("make_gate_model", HERE.parent / "make-gate-model.py")
-PVT = load_module("pvt_deck_map", HERE.parent / "pvt_deck_map.py")
 
 #: the two operating points the direction claims are checked at (slew ns,
 #: load pF): the deck family's own stimulus edge + a mid-table load, and a
@@ -88,7 +91,7 @@ def deck_stats(corner: str, slew_ns: float, load_pf: float) -> tuple[dict[str, f
     would carry, not on a proxy.
     """
     lib = G.resolve_liberty(None, corner)
-    design = parse_verilog(G.ROUTED_V)
+    design = parse_verilog(P.ROUTED_V)
     blocks, _, templates = extract_cell_blocks(lib, set(design.cell_histogram()))
     delays: dict[str, float] = {}
     leakage: dict[str, float] = {}
@@ -125,7 +128,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--json", action="store_true", help="also emit machine-readable rows")
     args = ap.parse_args(argv)
 
-    design = parse_verilog(G.ROUTED_V)
+    design = parse_verilog(P.ROUTED_V)
     print(f"cells: {len(set(design.cell_histogram()))} distinct types of "
           f"{len(design.instances)} routed instances; delays are the generator's "
           "own reduction (max over arcs, bilinear, clamped)\n")

@@ -138,7 +138,8 @@ from _klt_common import BuildError, libs_ref  # noqa: E402
 
 # issue #776: the stdlib-only Verilog/Liberty/NLDM parsing frontend lives in
 # gate_model_lib.py; every name below is re-exported for the load_module
-# callers (sim/tests/test_gate_model.py, make-requests.py, analysis tools).
+# callers (sim/tests/test_gate_model.py, test_make_requests.py,
+# analysis/deck-axis-sensitivity.py).
 from gate_model_lib import (  # noqa: E402
     CELL_PREFIX,
     DELAY_ARC_TYPES,
@@ -170,7 +171,9 @@ from gate_model_lib import (  # noqa: E402
     truth_table,
 )
 
-ROUTED_V = REPO / "layout" / "trng_digital" / "trng_digital.routed.v"
+# the whole-block deck constants are program.py's (#804), re-exported here
+# for the load_module callers
+ROUTED_V = P.ROUTED_V
 
 #: half-width of the adc_bridge band, as a fraction of the supply. The band is
 #: centred on the Liberty deck's own 50 % delay-measurement threshold; this
@@ -178,16 +181,16 @@ ROUTED_V = REPO / "layout" / "trng_digital" / "trng_digital.routed.v"
 #: event time coincides with the deck's delay reference point).
 BRIDGE_BAND_FRAC = 0.05
 #: Liberty threshold the band must be centred on; asserted against the deck.
-EXPECTED_THRESHOLD_PCT = 50.0
+EXPECTED_THRESHOLD_PCT = P.EXPECTED_THRESHOLD_PCT
 #: input slew operating point (ns) -- see reduction 3 in the module docstring
 DEFAULT_SLEW_NS = 0.1
 #: output-port load (pF) -- the deck's "outputs are unloaded" assumption
 DEFAULT_PORT_LOAD_PF = 0.0
 #: bridge transition times (s) for dac_bridge; 100 ps, the deck's own PULSE edge
 DAC_EDGE_S = 100e-12
-#: digital input high level (V). make-requests.py:75 fixes VIH = 1.8 V at every
-#: corner and discloses it as a repo convention, not a published PDK figure.
-VIH = 1.8
+#: digital input high level (V); program.VIH states the convention (fixed at
+#: every corner, disclosed in the record, not a published PDK figure)
+VIH = P.VIH
 #: ngspice .tran max timestep -- the SAME value make-requests.py uses (TMAX), so
 #: the measured rate is comparable with the analog-chain probe's.
 TMAX = "20p"
@@ -590,54 +593,12 @@ def stimulus_cards(cycles: list[dict], vih: float) -> list[str]:
 
 def measurement_cards(cycles: list[dict], vih: float,
                       threshold_pct: float) -> tuple[list[dict], list[str]]:
-    """``.meas`` entries for every digital response the model also predicts."""
-    inputs = P.cycle_inputs(cycles)
-    n = len(cycles)
-    t_stop = P.t_stop_ns(cycles)
-    meas: list[dict] = []
-    save = {"clk", "rst_n", "raw_bit", "raw_valid", "alarm", "gated",
-            "startup_done", "out_valid", "vdd", "vss"}
-
-    def add(name: str, card: str, net: str | None = None, t: float | None = None):
-        if t is not None and t > t_stop:
-            return
-        meas.append({"name": name, "spice": card})
-        if net:
-            save.add(net)
-
-    for measurement in P.bus_read_measurements(inputs):
-        add(*measurement)
-    # streaming word captures on the cycles make-requests.py also captures
-    # (the first completions and the tail); the comparison asserts them only
-    # where the normative model reports out_valid = 1 for that cycle.
-    for k in sorted({36, 37, 74} | set(range(max(0, n - 3), n))):
-        if k >= n:
-            continue
-        t = P.t_edge_ns(k) + P.RDATA_NS
-        for bit in range(32):
-            add(f"odata_k{k}_b{bit}",
-                f".meas tran odata_k{k}_b{bit} FIND v(out_data_{bit}_) AT={t:.1f}n",
-                f"out_data_{bit}_", t)
-    # scalar observables, measured DURING cycle k -- the same capture convention
-    # make-requests.py uses, so the oracle mapping is identical: a `<sig>_k<k>`
-    # sample is compared with the model row for cycle k, and a `rdata_k<k>`
-    # sample (latched at the edge that ENDS cycle k) with the row for k+1.
-    for k in range(n):
-        t = P.t_edge_ns(k) + P.RDATA_NS
-        for sig in ("alarm", "gated", "startup_done", "out_valid"):
-            add(f"{sig}_k{k}", f".meas tran {sig}_k{k} FIND v({sig}) AT={t:.1f}n", sig, t)
-    # the 50 % crossing of the clock the Liberty deck measures its delays at.
-    # clk is driven 0..vih (stimulus_cards' Vclk PULSE), so the threshold
-    # tracks vih -- NOT supply_v/2: --supply-v and --vih are independent
-    # knobs that merely coincide today. :3g reproduces the committed card's
-    # bare "0.9" at the pinned defaults (vih 1.8 V, 50 %) byte for byte.
-    clk_threshold_v = vih * threshold_pct / 100.0
-    add("t_clk_first",
-        f".meas tran t_clk_first WHEN v(clk)={clk_threshold_v:.3g} RISE=1", "clk")
-    names = [e["name"] for e in meas]
-    if len(names) != len(set(names)):
-        raise GateModelError("duplicate measurement names")
-    return meas, sorted(save)
+    """``.meas`` entries for every digital response the model also predicts
+    (``program.gate_measurement_cards``, #804); a repeated name fails closed."""
+    try:
+        return P.gate_measurement_cards(cycles, vih, threshold_pct)
+    except ValueError as exc:
+        raise GateModelError(str(exc)) from exc
 
 
 def build_deck(model: GateModel, cycles: list[dict], vih: float,

@@ -24,7 +24,10 @@ A measured voltage is decoded to a logical bit only if it sits within
 particular ``dac_bridge``'s ``out_undef`` (supply/2), which is what an UNKNOWN
 digital net reads as -- is reported as ``undecodable`` and makes the
 comparison FAIL. It is never rounded to the nearer rail: an X that silently
-decoded to 0 would turn a broken model into a passing one.
+decoded to 0 would turn a broken model into a passing one. Both that decode
+and the response comparison are ``program.py``'s (``decode`` /
+``response_checks``, re-exported here), so the 12-point reducer
+(``reduce-whole-block.py``) scores a corner through the same code (#642).
 
 ``--emit-record-json`` writes the reduced result (rate, margin, per-row
 comparison) next to the report so the dated record can cite a file rather than
@@ -35,7 +38,6 @@ from __future__ import annotations
 import argparse
 import json
 import math
-import re
 import sys
 from pathlib import Path
 
@@ -44,33 +46,18 @@ SLUG = HERE.parent
 REPO = SLUG.parents[1]
 sys.path.insert(0, str(SLUG))
 import program as P  # noqa: E402
+# the rail-bounded decode and the response comparison are program.py's (#642,
+# #804): the one implementation the 12-point reducer scores corners through too
+from program import LEVEL_TOL, decode, response_checks  # noqa: E402
 
 sys.path.insert(0, str(REPO / "digital"))
 sys.path.insert(0, str(REPO / "sim" / "bin"))
-from measurement_names import duplicate_measurement_names  # noqa: E402  (#690: shared with sim/bin/measurement_names.py; re-exported for reduce-whole-block.py)
-
-#: a measured level must be this close (V) to vss or to the supply to decode
-LEVEL_TOL = 0.05
+from measurement_names import duplicate_measurement_names  # noqa: E402  (#690: shared with sim/bin/measurement_names.py)
 
 #: DR-0017's per-unit wall-clock ceiling (s) and the program the grid runs
 UNIT_CEILING_S = 3480.0
 #: measured analog-chain rate (s per simulated ns), records/20261105-analog-chain-probe.md
 ANALOG_RATE_S_PER_NS = 0.057
-
-_RDATA_RE = re.compile(r"^rdata_k(\d+)_b(\d+)$")
-_ODATA_RE = re.compile(r"^odata_k(\d+)_b(\d+)$")
-_SCALAR_RE = re.compile(r"^(alarm|gated|startup_done|out_valid)_k(\d+)$")
-
-
-def decode(value: float | None, supply_v: float) -> int | None:
-    """Logical bit, or ``None`` when the level is not a resolved rail."""
-    if value is None:
-        return None
-    if abs(value) <= LEVEL_TOL:
-        return 0
-    if abs(value - supply_v) <= LEVEL_TOL:
-        return 1
-    return None
 
 
 def digital_budget_s_per_ns(t_stop_ns: float) -> float:
@@ -86,119 +73,13 @@ def digital_budget_s_per_ns(t_stop_ns: float) -> float:
     return UNIT_CEILING_S / t_stop_ns - ANALOG_RATE_S_PER_NS
 
 
-def response_checks(measured: dict, rows: list[dict], supply_v: float,
-                    n_cycles: int) -> tuple[list[dict], list[dict]]:
-    checks: list[dict] = []
-    undecodable: list[dict] = []
-
-    # -- 32-bit bus read data, per read cycle
-    rdata_bits: dict[int, dict[int, float]] = {}
-    for name, value in measured.items():
-        m = _RDATA_RE.match(name)
-        if m:
-            rdata_bits.setdefault(int(m.group(1)), {})[int(m.group(2))] = value
-    def decode_word(prefix: str, k: int, samples: dict[int, float]):
-        # completeness is loud, by bit set: all 32 bits of a word are
-        # generated as one .meas set with a single timestamp, so a word
-        # legitimately clipped by the t_stop guard is absent as a WHOLE --
-        # a partial word in the report is a dropped result, and an absent
-        # bit would silently decode as 0 below.
-        missing = sorted(set(range(32)) - set(samples))
-        if missing:
-            raise SystemExit(
-                f"{prefix}_k{k}: bit measurements absent for {missing} -- "
-                f"an absent .meas result would decode as 0, refusing")
-        word = 0
-        bad = False
-        for bit, value in samples.items():
-            b = decode(value, supply_v)
-            if b is None:
-                undecodable.append({"measurement": f"{prefix}_k{k}_b{bit}", "value": value})
-                bad = True
-            elif b:
-                word |= 1 << bit
-        return (None if bad else word)
-
-    for k in sorted(rdata_bits):
-        if k + 1 >= len(rows):
-            continue  # no cycle to observe it in (guarded at generation too)
-        word = decode_word("rdata", k, rdata_bits[k])
-        expect = rows[k + 1]["model"]["bus_rdata"]
-        checks.append({
-            "what": f"bus_rdata after the read in cycle {k}",
-            "measurement": f"rdata_k{k}_b*",
-            "model_row": k + 1,
-            "simulated": word,
-            "model": expect,
-            "match": word is not None and word == expect,
-        })
-
-    # -- 32-bit streaming word, only where the model reports out_valid = 1.
-    # When out_valid is 0 the FIFO head the model exposes is not an output the
-    # hardware is claiming, so asserting it would be comparing don't-cares.
-    odata_bits: dict[int, dict[int, float]] = {}
-    for name, value in measured.items():
-        m = _ODATA_RE.match(name)
-        if m:
-            odata_bits.setdefault(int(m.group(1)), {})[int(m.group(2))] = value
-    for k in sorted(odata_bits):
-        if k >= len(rows):
-            continue
-        if not rows[k]["model"]["out_valid"]:
-            checks.append({
-                "what": f"out_data during cycle {k}",
-                "measurement": f"odata_k{k}_b*",
-                "model_row": k,
-                "simulated": None,
-                "model": None,
-                "match": True,
-                "not_compared": "model reports out_valid = 0 for this cycle",
-            })
-            continue
-        word = decode_word("odata", k, odata_bits[k])
-        expect = rows[k]["model"]["out_data"]
-        checks.append({
-            "what": f"out_data during cycle {k}",
-            "measurement": f"odata_k{k}_b*",
-            "model_row": k,
-            "simulated": word,
-            "model": expect,
-            "match": word is not None and word == expect,
-        })
-
-    # -- scalar observables, per cycle
-    for name, value in sorted(measured.items()):
-        m = _SCALAR_RE.match(name)
-        if not m:
-            continue
-        sig, k = m.group(1), int(m.group(2))
-        if k >= n_cycles:
-            continue
-        b = decode(value, supply_v)
-        if b is None:
-            undecodable.append({"measurement": name, "value": value})
-        expect = rows[k]["model"][sig]
-        checks.append({
-            "what": f"{sig} during cycle {k}",
-            "measurement": name,
-            "model_row": k,
-            "simulated": b,
-            "model": expect,
-            "match": b is not None and b == expect,
-        })
-
-    return checks, undecodable
-
-
 def compare_coupled(corner: dict, plan: dict) -> dict:
     """Replay actual sampler inputs and check the strobe schedule independently."""
-    from loadmod import load_module
-    requests = load_module("coupled_requests", SLUG / "make-requests.py")
     cycles, _ = P.build_program()
     stop = P.t_stop_ns(cycles)
     if plan["name"] != "coupled-full" or plan["analysis"]["args"].split()[-1] != f"{stop:.0f}n":
         raise SystemExit("digital replay requires the full coupled program")
-    required = {m["name"] for m in requests.coupled_measurements(cycles)[0]}
+    required = {m["name"] for m in P.coupled_measurements(cycles)[0]}
     samples = corner.get("measurements", [])
     measured = {m["name"]: m.get("value") for m in samples}
     if len(measured) != len(samples) or measured.keys() - required:

@@ -17,20 +17,32 @@ deviation from DR-0003's Ts = 20 us that every post-layout sampler deck in
 this repo states; the *digital section* is synchronous, so the program is
 identical at any Ts and the record carries the deviation explicitly).
 
+The decks' ``.meas`` card sets are built here too (#804), from that same
+cycle contract: ``gate_measurement_cards`` (the standalone digital run),
+``coupled_measurements`` (the transistor sampler driving the gate model) and
+``whole_block_measurement_cards`` (the transistor whole block), over one card
+collector that drops a card sampling past ``t_stop`` and refuses a repeated
+name. So is the normative-oracle response comparison every reducer scores a
+corner through (``decode`` / ``response_checks``, beside ``model_replay``).
+
 Consumed by:
 
-* ``make-requests.py``  -- emits the PWL stimulus cards and the ``.meas``
-  capture windows from this program;
-* ``analysis/verify-block.py`` -- replays the same program through the
-  normative model (``digital/model/digital_top.py``) with the raw bits the
-  transistor run captured, and compares per-cycle outputs.
+* ``make-requests.py`` -- emits the PWL stimulus cards and the request's
+  ``.meas`` capture windows from this program;
+* ``make-gate-model.py`` -- the standalone digital deck's stimulus and
+  ``.meas`` set;
+* ``analysis/compare-gate-model.py`` and ``analysis/reduce-whole-block.py``,
+  which replay the same program through the normative model
+  (``digital/model/digital_top.py``) with the raw bits the transistor run
+  captured, and compare per-cycle outputs.
 
 Nothing here simulates anything.
 """
 from __future__ import annotations
 
+import re
 import sys
-from collections.abc import Iterator
+from collections.abc import Iterable, Iterator
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
@@ -52,6 +64,26 @@ SKEW_NS = 20.0
 CAPTURE_NS = 80.0
 #: mid-cycle point for reading bus_rdata latched at this cycle's edge
 RDATA_NS = 50.0
+
+#: the routed structural netlist of the digital half: the gate-level model's
+#: source (make-gate-model.py) and one of the partition check's hash inputs
+#: (make-requests.py)
+ROUTED_V = REPO / "layout" / "trng_digital" / "trng_digital.routed.v"
+#: digital input high level (V), fixed at every corner: 1.8 V is the sky130
+#: 1.8 V device rating, VIH(1.62 V) = 1.05 V accepts it, and the supply sources
+#: themselves -- not these cards -- carry the corner. A repo convention
+#: disclosed in the record, not a published PDK figure.
+VIH = 1.8
+#: Liberty input threshold (%) the gate model's bridge band must be centred
+#: on; make-gate-model.py asserts the deck against it
+EXPECTED_THRESHOLD_PCT = 50.0
+#: current-window integration window W1 (ns): rings running, digital
+#: reset-held (clk has not started; rst_n low until 300 ns). W2 (every
+#: program cycle, ending one Ts before t_stop) is derived per program.
+W1 = (50.0, 250.0)
+#: the supply sources the corner's ``supply_v`` axis steps (``Vvdd``,
+#: ``Vvddr1..4``); ``vss`` is read by its own ``i_vss_w2`` card
+RAILS = ("vdd", "vddr1", "vddr2", "vddr3", "vddr4")
 
 N_SAMPLES_REG = 32   # first raw word: consumed by the RAW_DATA register pops
 N_SAMPLES_STREAM = 32  # second raw word: consumed by the streaming port
@@ -139,16 +171,173 @@ def t_stop_ns(cycles: list[dict]) -> float:
     return t_edge_ns(len(cycles)) + TS_NS / 2.0
 
 
+def _word_measurements(prefix: str, k: int, bus: str,
+                       t: float) -> Iterator[tuple[str, str, str, float]]:
+    """Yield (name, SPICE card, save net, time in ns) for the 32 bits
+    ``<prefix>_k<k>_b<bit>`` of one bus word, each read on ``bus.format(bit)``."""
+    for bit in range(32):
+        name = f"{prefix}_k{k}_b{bit}"
+        net = bus.format(bit)
+        yield name, f".meas tran {name} FIND v({net}) AT={t:.1f}n", net, t
+
+
 def bus_read_measurements(inputs: list[dict]) -> Iterator[tuple[str, str, str, float]]:
     """Yield (name, SPICE card, save net, time in ns) for each observable read bit."""
     # A read in cycle k latches at its closing edge and is observed in cycle k+1.
     for k, inp in enumerate(inputs[:-1]):
         if inp["re"]:
-            t = t_edge_ns(k + 1) + RDATA_NS
-            for bit in range(32):
-                name = f"rdata_k{k}_b{bit}"
-                net = f"bus_rdata_{bit}_"
-                yield name, f".meas tran {name} FIND v({net}) AT={t:.1f}n", net, t
+            yield from _word_measurements("rdata", k, "bus_rdata_{}_", t_edge_ns(k + 1) + RDATA_NS)
+
+
+class _MeasCollector:
+    """One deck's ``measurements[]`` list and the set of nets its cards read.
+
+    Shared by the card sets below (#804). A card whose sample time lies past
+    ``t_stop`` is dropped whole -- it cannot resolve inside a truncated
+    program's transient -- and :meth:`result` refuses a repeated name: ``klt``
+    keys its coverage ids by measurement name, and a repeat displaces the
+    entry it repeats in every name-keyed read of the report.
+    """
+
+    def __init__(self, t_stop: float, save: Iterable[str] = ()):
+        self._t_stop = t_stop
+        self.meas: list[dict] = []
+        self.save: set[str] = set(save)
+
+    def add(self, name: str, card: str, net: str | None = None, t: float | None = None) -> None:
+        if t is not None and t > self._t_stop:
+            return  # unreachable within this (truncated) program's stop time
+        self.meas.append({"name": name, "spice": card})
+        if net:
+            self.save.add(net)
+
+    def extend(self, cards: Iterable[tuple[str, str, str | None, float | None]]) -> None:
+        for card in cards:
+            self.add(*card)
+
+    def word(self, prefix: str, k: int, bus: str, t: float) -> None:
+        """Add the 32 cards of one bus word (:func:`_word_measurements`)."""
+        self.extend(_word_measurements(prefix, k, bus, t))
+
+    def result(self) -> tuple[list[dict], list[str]]:
+        """``(measurements, sorted .save nets)``; a repeated name raises ``ValueError``."""
+        names = [e["name"] for e in self.meas]
+        if len(names) != len(set(names)):
+            raise ValueError("duplicate measurement names")
+        return self.meas, sorted(self.save)
+
+
+def streaming_word_cycles(n: int) -> list[int]:
+    """Cycles whose streaming ``out_data`` word (``odata_k<k>_b*``) the decks
+    capture: the first completions and the program's tail. The comparison
+    asserts a word only where the normative model reports ``out_valid = 1``
+    for that cycle."""
+    return sorted(k for k in {36, 37, 74} | set(range(max(0, n - 3), n)) if k < n)
+
+
+def _gate_measurement_collector(cycles: list[dict], vih: float,
+                                threshold_pct: float) -> _MeasCollector:
+    """The standalone digital deck's cards, before the uniqueness check."""
+    inputs = cycle_inputs(cycles)
+    n = len(cycles)
+    c = _MeasCollector(t_stop_ns(cycles), {"clk", "rst_n", "raw_bit", "raw_valid", "alarm", "gated",
+                                            "startup_done", "out_valid", "vdd", "vss"})
+    c.extend(bus_read_measurements(inputs))
+    for k in streaming_word_cycles(n):
+        c.word("odata", k, "out_data_{}_", t_edge_ns(k) + RDATA_NS)
+    # scalar observables, measured DURING cycle k -- the same capture convention
+    # make-requests.py uses, so the oracle mapping is identical: a `<sig>_k<k>`
+    # sample is compared with the model row for cycle k, and a `rdata_k<k>`
+    # sample (latched at the edge that ENDS cycle k) with the row for k+1.
+    for k in range(n):
+        t = t_edge_ns(k) + RDATA_NS
+        for sig in ("alarm", "gated", "startup_done", "out_valid"):
+            c.add(f"{sig}_k{k}", f".meas tran {sig}_k{k} FIND v({sig}) AT={t:.1f}n", sig, t)
+    # the 50 % crossing of the clock the Liberty deck measures its delays at.
+    # clk is driven 0..vih (make-gate-model.py stimulus_cards' Vclk PULSE), so
+    # the threshold tracks vih -- NOT supply_v/2: --supply-v and --vih are
+    # independent knobs that merely coincide today. :3g reproduces the
+    # committed card's bare "0.9" at the pinned defaults (vih 1.8 V, 50 %)
+    # byte for byte.
+    clk_threshold_v = vih * threshold_pct / 100.0
+    c.add("t_clk_first",
+          f".meas tran t_clk_first WHEN v(clk)={clk_threshold_v:.3g} RISE=1", "clk")
+    return c
+
+
+def gate_measurement_cards(cycles: list[dict], vih: float,
+                           threshold_pct: float) -> tuple[list[dict], list[str]]:
+    """The standalone digital deck's ``.meas`` set: every digital response
+    the model also predicts; returns ``(entries, .save nets)``."""
+    return _gate_measurement_collector(cycles, vih, threshold_pct).result()
+
+
+def coupled_measurements(cycles: list[dict]) -> tuple[list[dict], list[str]]:
+    """The coupled deck's set: the gate model's responses, the sampler's tap
+    on every cycle, and the clock's level at ``t_stop``."""
+    c = _gate_measurement_collector(cycles, VIH, EXPECTED_THRESHOLD_PCT)
+    for k in range(len(cycles)):
+        t = t_edge_ns(k) + CAPTURE_NS
+        for signal in ("raw_bit", "raw_valid"):
+            name = f"{signal}_k{k}"
+            c.add(name, f".meas tran {name} FIND v({signal}) AT={t:.1f}n")
+    c.add("clk_at_stop",
+          f".meas tran clk_at_stop FIND v(clk) AT={t_stop_ns(cycles):.0f}n")
+    return c.result()
+
+
+def whole_block_measurement_cards(cycles: list[dict]) -> tuple[list[dict], list[str]]:
+    """The transistor whole-block request's ``measurements[]`` entries;
+    returns ``(entries, .save nets)``."""
+    n = len(cycles)
+    inputs = cycle_inputs(cycles)
+    t_stop = t_stop_ns(cycles)
+    c = _MeasCollector(t_stop, {"clk", "rst_n", "raw_bit", "raw_valid", "ring_bit1", "ring_bit2",
+                                "ring_bit3", "ring_bit4", "alarm", "gated", "startup_done",
+                                "out_valid", "vdd", "vss", "vddr1", "vddr2", "vddr3", "vddr4"})
+
+    # -- per-sample-cycle raw tap captures (the oracle's stimulus)
+    for k, inp in enumerate(inputs):
+        if inp["raw_valid"]:
+            t = t_edge_ns(k) + CAPTURE_NS
+            c.add(f"raw_bit_k{k}", f".meas tran raw_bit_k{k} FIND v(raw_bit) AT={t:.1f}n", "raw_bit", t)
+            c.add(f"raw_valid_k{k}", f".meas tran raw_valid_k{k} FIND v(raw_valid) AT={t:.1f}n",
+                  "raw_valid", t)
+
+    c.extend(bus_read_measurements(inputs))
+
+    # -- streaming-port captures: every cycle where a word can complete or pop
+    words = set(streaming_word_cycles(n))
+    for k in range(3, n):
+        if inputs[k]["out_ready"] or inputs[k - 1]["out_ready"]:
+            t = t_edge_ns(k) + RDATA_NS
+            c.add(f"out_valid_k{k}", f".meas tran out_valid_k{k} FIND v(out_valid) AT={t:.1f}n",
+                  "out_valid", t)
+            if k in words:
+                c.word("odata", k, "out_data_{}_", t)
+
+    # -- scalar observables at every bus-quiet sample-phase boundary of interest
+    for k in sorted({2, 3, 36, 42, 74, n - 1}):
+        t = t_edge_ns(k) + RDATA_NS
+        for sig in ("alarm", "gated", "startup_done"):
+            c.add(f"{sig}_k{k}", f".meas tran {sig}_k{k} FIND v({sig}) AT={t:.1f}n", sig, t)
+
+    # -- first stream-valid assertion time (throughput tap, see README)
+    c.add("t_out_valid_first", ".meas tran t_out_valid_first WHEN v(out_valid)=1.4 RISE=1", "out_valid")
+
+    # -- per-rail currents: W1 (rings running, digital reset-held) and W2 (active)
+    w2 = (t_edge_ns(2), t_stop - TS_NS)
+    for rail in RAILS:
+        c.add(f"i_{rail}_w1", f".meas tran i_{rail}_w1 AVG i(V{rail}) FROM={W1[0]:.0f}n TO={W1[1]:.0f}n")
+        c.add(f"i_{rail}_w2", f".meas tran i_{rail}_w2 AVG i(V{rail}) FROM={w2[0]:.0f}n TO={w2[1]:.0f}n")
+        c.add(f"q_{rail}_w2", f".meas tran q_{rail}_w2 INTEG i(V{rail}) FROM={w2[0]:.0f}n TO={w2[1]:.0f}n")
+    c.add("i_vss_w2", f".meas tran i_vss_w2 AVG i(Vvss) FROM={w2[0]:.0f}n TO={w2[1]:.0f}n")
+
+    # -- sanity: the clock really toggled
+    c.add("t_clk_first", ".meas tran t_clk_first WHEN v(clk)=0.9 RISE=1", "clk")
+
+    c.save |= {f"i(V{r})" for r in (*RAILS, "vss")}
+    return c.result()
 
 
 def cycle_inputs(cycles: list[dict]) -> list[dict]:
@@ -295,6 +484,154 @@ def model_replay(captured_bits: list[int], *, captured_valid: list[int] | None =
     if captured_valid is None:
         assert bit_i == N_SAMPLES_REG + N_SAMPLES_STREAM, "program bit budget drifted"
     return rows
+
+
+# -- normative-oracle response comparison -------------------------------------
+# One implementation for every reducer that scores a corner (#642): the
+# 12-point reducer (analysis/reduce-whole-block.py) and the gate-model and
+# coupled checkers (analysis/compare-gate-model.py). When the reducer carried
+# its own copy it drifted unnoticed -- a 1-cycle off-by-one on every
+# rdata_k*/odata_k*/<sig>_k* check, vdd/2 rounding to 0, and no duplicate
+# measurement-name guard.
+
+#: a measured level must be this close (V) to vss or to the supply to decode
+LEVEL_TOL = 0.05
+
+_RDATA_RE = re.compile(r"^rdata_k(\d+)_b(\d+)$")
+_ODATA_RE = re.compile(r"^odata_k(\d+)_b(\d+)$")
+_SCALAR_RE = re.compile(r"^(alarm|gated|startup_done|out_valid)_k(\d+)$")
+
+
+def decode(value: float | None, supply_v: float) -> int | None:
+    """Logical bit, or ``None`` when the level is not a resolved rail.
+
+    A measured voltage decodes only within ``LEVEL_TOL`` of ``vss`` or of the
+    supply. Anything in between -- in particular ``dac_bridge``'s
+    ``out_undef`` (supply/2), which is what an UNKNOWN digital net reads as
+    -- is undecodable and makes the comparison FAIL. It is never rounded to
+    the nearer rail: an X that silently decoded to 0 would turn a broken
+    model into a passing one.
+    """
+    if value is None:
+        return None
+    if abs(value) <= LEVEL_TOL:
+        return 0
+    if abs(value - supply_v) <= LEVEL_TOL:
+        return 1
+    return None
+
+
+def response_checks(measured: dict, rows: list[dict], supply_v: float,
+                    n_cycles: int) -> tuple[list[dict], list[dict]]:
+    """``(checks, undecodable)``: every digital response in ``measured`` (name
+    to voltage) against the :func:`model_replay` ``rows``.
+
+    The mapping is the card sets' capture convention: ``rdata_k<k>`` is
+    sampled at ``t_edge(k+1) + RDATA_NS``, i.e. during cycle ``k+1``, so it
+    is compared with the model row for cycle ``k+1``; ``<sig>_k<k>`` and
+    ``odata_k<k>`` are sampled at ``t_edge(k) + RDATA_NS``, during cycle
+    ``k``, so with the model row for cycle ``k``.
+    """
+    checks: list[dict] = []
+    undecodable: list[dict] = []
+
+    # -- 32-bit bus read data, per read cycle
+    rdata_bits: dict[int, dict[int, float]] = {}
+    for name, value in measured.items():
+        m = _RDATA_RE.match(name)
+        if m:
+            rdata_bits.setdefault(int(m.group(1)), {})[int(m.group(2))] = value
+    def decode_word(prefix: str, k: int, samples: dict[int, float]):
+        # completeness is loud, by bit set: all 32 bits of a word are
+        # generated as one .meas set with a single timestamp, so a word
+        # legitimately clipped by the t_stop guard is absent as a WHOLE --
+        # a partial word in the report is a dropped result, and an absent
+        # bit would silently decode as 0 below.
+        missing = sorted(set(range(32)) - set(samples))
+        if missing:
+            raise SystemExit(
+                f"{prefix}_k{k}: bit measurements absent for {missing} -- "
+                f"an absent .meas result would decode as 0, refusing")
+        word = 0
+        bad = False
+        for bit, value in samples.items():
+            b = decode(value, supply_v)
+            if b is None:
+                undecodable.append({"measurement": f"{prefix}_k{k}_b{bit}", "value": value})
+                bad = True
+            elif b:
+                word |= 1 << bit
+        return (None if bad else word)
+
+    for k in sorted(rdata_bits):
+        if k + 1 >= len(rows):
+            continue  # no cycle to observe it in (guarded at generation too)
+        word = decode_word("rdata", k, rdata_bits[k])
+        expect = rows[k + 1]["model"]["bus_rdata"]
+        checks.append({
+            "what": f"bus_rdata after the read in cycle {k}",
+            "measurement": f"rdata_k{k}_b*",
+            "model_row": k + 1,
+            "simulated": word,
+            "model": expect,
+            "match": word is not None and word == expect,
+        })
+
+    # -- 32-bit streaming word, only where the model reports out_valid = 1.
+    # When out_valid is 0 the FIFO head the model exposes is not an output the
+    # hardware is claiming, so asserting it would be comparing don't-cares.
+    odata_bits: dict[int, dict[int, float]] = {}
+    for name, value in measured.items():
+        m = _ODATA_RE.match(name)
+        if m:
+            odata_bits.setdefault(int(m.group(1)), {})[int(m.group(2))] = value
+    for k in sorted(odata_bits):
+        if k >= len(rows):
+            continue
+        if not rows[k]["model"]["out_valid"]:
+            checks.append({
+                "what": f"out_data during cycle {k}",
+                "measurement": f"odata_k{k}_b*",
+                "model_row": k,
+                "simulated": None,
+                "model": None,
+                "match": True,
+                "not_compared": "model reports out_valid = 0 for this cycle",
+            })
+            continue
+        word = decode_word("odata", k, odata_bits[k])
+        expect = rows[k]["model"]["out_data"]
+        checks.append({
+            "what": f"out_data during cycle {k}",
+            "measurement": f"odata_k{k}_b*",
+            "model_row": k,
+            "simulated": word,
+            "model": expect,
+            "match": word is not None and word == expect,
+        })
+
+    # -- scalar observables, per cycle
+    for name, value in sorted(measured.items()):
+        m = _SCALAR_RE.match(name)
+        if not m:
+            continue
+        sig, k = m.group(1), int(m.group(2))
+        if k >= n_cycles:
+            continue
+        b = decode(value, supply_v)
+        if b is None:
+            undecodable.append({"measurement": name, "value": value})
+        expect = rows[k]["model"][sig]
+        checks.append({
+            "what": f"{sig} during cycle {k}",
+            "measurement": name,
+            "model_row": k,
+            "simulated": b,
+            "model": expect,
+            "match": b is not None and b == expect,
+        })
+
+    return checks, undecodable
 
 
 if __name__ == "__main__":
