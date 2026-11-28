@@ -1,0 +1,132 @@
+{
+  "analog_partition_sha256": "ab2362ec6a80f39d1eecb6f298c07ff81b6a4fb0080115620de0fa33f9413f67",
+  "analysis": {
+    "args": "20p 7870n",
+    "kind": "tran"
+  },
+  "analysis_stop_ns": 7870.0,
+  "boundary_load_option": {
+    "option": 2,
+    "record": "sim/post-layout-whole-block/records/20261121-pvt-deck-and-boundary-load.md",
+    "source": "Liberty input-pin capacitance of the first receiving standard cells, read from the deck this (process, T, Vdd) point maps to (pvt_deck_map.py); extracted net capacitance is not available (the committed whole-block extract is connectivity-only, no R/C)",
+    "what_option_1_would_have_changed": "kept the first receiving cells of raw_bit/raw_valid/clk/rst_n at transistor level inside the analog partition, moving instances across the partition partition_check() asserts (25 356 = 264 + 25 091 + 1) and re-introducing a transistor-level corner dependency inside the gate partition"
+  },
+  "corners": {
+    "process": [
+      "ss"
+    ],
+    "supply_v": {
+      "Vvdd": [
+        1.62
+      ],
+      "Vvddr1": [
+        1.62
+      ],
+      "Vvddr2": [
+        1.62
+      ],
+      "Vvddr3": [
+        1.62
+      ],
+      "Vvddr4": [
+        1.62
+      ]
+    },
+    "temperature_c": [
+      -40.0
+    ]
+  },
+  "digital_gate_netlist_sha256": "9f3956848e6e75223f75bd154df905fecbb4e988593e78d1a92e347969fbf37f",
+  "flat_whole_netlist_sha256": "965f1e6c29d771d5b8e18a3ea66ccabf93f0a5eb14c3f0c23810f39ae1052c36",
+  "gate_model_counts": {
+    "declared_no_op_instances": 57,
+    "polarity_inverters": 1,
+    "primitives": {
+      "d_dff": 456,
+      "d_genlut": 1808
+    },
+    "routed_instances": 2321,
+    "widest_genlut_inputs": 6
+  },
+  "gate_model_pvt": {
+    "boundary_load": {
+      "option": 2,
+      "record": "sim/post-layout-whole-block/records/20261121-pvt-deck-and-boundary-load.md",
+      "source": "Liberty input-pin capacitance of the first receiving standard cells, read from the deck this (process, T, Vdd) point maps to (pvt_deck_map.py); extracted net capacitance is not available (the committed whole-block extract is connectivity-only, no R/C)",
+      "what_option_1_would_have_changed": "kept the first receiving cells of raw_bit/raw_valid/clk/rst_n at transistor level inside the analog partition, moving instances across the partition partition_check() asserts (25 356 = 264 + 25 091 + 1) and re-introducing a transistor-level corner dependency inside the gate partition"
+    },
+    "deck_path_form": "absolute (sha256 verified on disk)",
+    "decks": {
+      "ss": {
+        "dT_K": 0.0,
+        "dV_V": -0.02,
+        "delay_direction": "pessimistic",
+        "est_delay_error_pct": 3.1,
+        "exact": false,
+        "liberty_deck": "/home/ubuntu/.ciel/ciel/sky130/versions/f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7/sky130A/libs.ref/sky130_fd_sc_hd/lib/sky130_fd_sc_hd__ss_n40C_1v60.lib",
+        "liberty_sha256": "23cba893b985a950a7951e3f29ae66ae6a639aaef75c1478e2306fb68d4a7ee5",
+        "note": "exact temperature, 0.02 V of supply; the smallest mismatch of the 12",
+        "power_direction": "optimistic"
+      }
+    }
+  },
+  "gate_model_sha256": "b7d0d8338956092bb758dc94402b76d9f39a5a4032bafc23fd8e309323cd7f6b",
+  "liberty_deck": "/home/ubuntu/.ciel/ciel/sky130/versions/f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7/sky130A/libs.ref/sky130_fd_sc_hd/lib/sky130_fd_sc_hd__ss_n40C_1v60.lib",
+  "liberty_sha256": "23cba893b985a950a7951e3f29ae66ae6a639aaef75c1478e2306fb68d4a7ee5",
+  "measurement_count": 917,
+  "name": "grid-ss-m40C-1.62V",
+  "netlist_sha256": "92b9f10a5be5af7a07c486651a1c0947beda910d5bda89bcafd00aca1155660c",
+  "partition_check": {
+    "analog_transistors": 264,
+    "analog_y_min_um": 250.0,
+    "digital_transistors": 25091,
+    "diode_instances": 1,
+    "port_count": 123,
+    "shared_nets": [
+      "clk",
+      "raw_bit",
+      "raw_valid",
+      "rst_n"
+    ],
+    "total_instances": 25356
+  },
+  "program": {
+    "cycles": 75,
+    "t0_ns": 320.0,
+    "t_stop_ns": 7870.0,
+    "ts_ns": 100.0
+  },
+  "provenance": {
+    "analog": "transistor",
+    "digital": "gate-level"
+  },
+  "raw_source": "analog_sampler",
+  "realisation": "timed-delay XSPICE netlist (d_genlut / d_dff + adc/dac bridges)",
+  "reductions": {
+    "adc_bridge_in_high_v": 0.8910000000000001,
+    "adc_bridge_in_low_v": 0.7290000000000001,
+    "c_load": "sum of Liberty input-pin capacitance of the receivers on the net, plus port_load_pf on a net that reaches a module output port",
+    "dac_bridge_out_high_v": 1.62,
+    "dff": "clk_delay/set_delay/reset_delay = 1e-12 s (XSPICE's own floor; it refuses 0), ic = 0; one scalar rise/fall pair per flop covers the CLK->Q and async clear/preset arcs",
+    "input_load": "Liberty input-pin capacitance per d_genlut input; the DR-0017 boundary-load choice is settled as option 2 (#595, see boundary_load_option)",
+    "liberty_threshold_pct": 50.0,
+    "min_delay_s": 1e-12,
+    "nldm_reduction": "bilinear interpolation at (slew, C_load), clamped to the table index range, max over every delay arc to the pin",
+    "port_load_pf": 0.0,
+    "slew_ns": 0.1,
+    "supply_axis": "corners.supply_v alone does NOT re-corner the digital half; the Liberty deck must move with the (T, Vdd) point",
+    "supply_v": 1.62
+  },
+  "routed_netlist_sha256": "9f3956848e6e75223f75bd154df905fecbb4e988593e78d1a92e347969fbf37f",
+  "timeouts": {
+    "fleet_job_ceiling_s": 3600,
+    "job_bound_s": 3480,
+    "poll_timeout_s": 3480,
+    "sized_from": "records/20261128-coupled-rate.md",
+    "sizing": "measurement: the largest timeout one unit holds (3360 s + 120 s = 3480 s), as the nominal point was measured; not a grid request (#814)",
+    "timeout_s": 3360,
+    "units": 1
+  },
+  "trng_whole_gds_sha256": "af2f8dfe2800599e97d769bdedd14924c9fa3f24fc7e1c4f43ccd72ac5572ddd",
+  "vih_fixed": 1.8
+}

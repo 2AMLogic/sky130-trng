@@ -25,7 +25,9 @@ Writes ``<reqdir>/<name>/{netlist.cir,request.json,plan.json}`` for the selected
     ``backend: batch``. One request embeds one netlist, and a gate model is
     per point, so each request is a single-process batch job of one unit
     (``grid_timeouts(units=1)``): 864 s unit timeout, 984 s job bound, 1284 s
-    poll, from the measured coupled run (``records/20261128-coupled-rate.md``).
+    poll, from the measured coupled run (``records/20261128-coupled-rate.md``),
+    a margin the measured slowest-expected point runs well inside
+    (``records/20261128-slow-corner-runtime.md``).
     The deck is the DR-0017 option (b) coupled deck -- the extracted analog
     partition driving the routed gate model built for THAT point from the
     Liberty deck ``pvt_deck_map.py`` maps it to (the 8 distinct decks are
@@ -111,9 +113,20 @@ UNIT_TIMEOUT_CAP_S = FLEET_JOB_CEILING_S - BATCH_OVERHEAD_S
 #: tt / 27 C / 1.8 V on the batch fleet, job klt-sim-7d6f0e6f474f
 #: (records/20261128-coupled-rate.md)
 COUPLED_FULL_RUNTIME_S = 431.63
-#: allowance on that runtime for the grid's unmeasured points (ss/ff,
-#: -40..125 C, 1.62..1.98 V). Declared, not measured: no coupled run exists at
-#: any other corner. #814 re-derives it from the slow-corner measurement.
+#: the same program at the slowest-expected matrix point, ss / -40 C / 1.62 V,
+#: on the grid's own deck for that point: job klt-sim-4ec1825cfa41
+#: (records/20261128-slow-corner-runtime.md, #814). It ran in LESS time than
+#: the nominal point, so the nominal is the worst measured point.
+SLOW_CORNER_POINT = "ss / -40 C / 1.62 V"
+SLOW_CORNER_RUNTIME_S = 403.9
+SLOW_CORNER_RECORD = "records/20261128-slow-corner-runtime.md"
+#: allowance on the nominal runtime. Checked against the measurement above
+#: (2.0x is 2.14x the slowest-expected point) and declared for the ten
+#: unmeasured points (ff, -40 C / 125 C at 1.98 V, ...). #814 kept it at 2.0
+#: rather than the 1.25x its formula yields from the two measured points: a
+#: unit timeout is a kill-bound, not a reservation, so a wider one costs
+#: nothing when a unit finishes early and a narrower one turns any unmeasured
+#: point above 1.25x into a killed job.
 GRID_MARGIN_X = 2.0
 #: instance boot, staging and collection around the simulation (36.7 s on the
 #: 100 ns probe job, 15.4 s on the full job), widened
@@ -157,6 +170,8 @@ def grid_timeout_basis(units: int = GRID_UNITS) -> dict:
     return {"timeout_s": timeout_s, "poll_timeout_s": poll_s, "sized_from": GRID_TIMEOUT_RECORD,
             "measured_runtime_s": COUPLED_FULL_RUNTIME_S, "measured_point": "tt / 27 C / 1.8 V",
             "measured_simulated_ns": float(P.t_stop_ns(P.build_program()[0])),
+            "slow_corner_point": SLOW_CORNER_POINT, "slow_corner_runtime_s": SLOW_CORNER_RUNTIME_S,
+            "slow_corner_record": SLOW_CORNER_RECORD,
             "margin_x": GRID_MARGIN_X, "job_slack_s": JOB_SLACK_S,
             "units": units, "job_bound_s": units * timeout_s + BATCH_OVERHEAD_S,
             "fleet_job_ceiling_s": FLEET_JOB_CEILING_S}
