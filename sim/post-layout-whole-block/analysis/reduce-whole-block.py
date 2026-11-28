@@ -14,6 +14,19 @@ tt/ss/ff x {(-40 C, 1.62 V), (27 C, 1.80 V), (-40 C, 1.98 V), (125 C, 1.98 V)}
 deck in this repo use, resolved from DR-0003 / DR-0010 row 9's 1.62/1.8/1.98 V
 x -40/27/125 C axes).
 
+Each ``grid-*`` report is first matched against its own ``plan.json`` (#815):
+the deck the report ran (``environment.netlist_sha256``) must be the deck the
+plan hashed, and each corner must be one of the plan's points on all five
+rails. A report that fails either is UNMET on the point it reports *and* on
+the point its plan asked for; a second report claiming a point already
+covered is UNMET too (never picked between). A coupled plan (``raw_source ==
+"analog_sampler"``, the DR-0017 option (b) deck the matrix runs under) is
+scored through the coupled oracle -- every level decoded against the point's
+own rail, the sampler's strobes checked against ``program.sampler_valid`` and
+the captured bits replayed through the model with them -- over the coupled
+matrix measurement set; any other plan, or no plan at all, is read through
+the flat-deck contract, so the archived flat ``corners/grid-*`` stay readable.
+
 A point counts as MET only if its corner exists, has status ``pass`` (no
 errors, every measurement a finite number) **and** the deterministic digital
 responses equal the normative model (``digital/model``) replayed with the raw
@@ -117,8 +130,17 @@ def is_num(x) -> bool:
 # per-corner analysis
 # --------------------------------------------------------------------------
 
-def analyse_corner(corner: dict, vdd: float) -> dict:
-    """Return {'problems': [...], 'oracle': {...}, 'power': {...}, 'timing': {...}}."""
+def analyse_corner(corner: dict, vdd: float, coupled: bool = False) -> dict:
+    """Return {'problems': [...], 'oracle': {...}, 'power': {...}, 'timing': {...}}.
+
+    ``coupled`` scores a DR-0017 option (b) coupled deck (``plan.raw_source ==
+    "analog_sampler"``): the contract is the coupled MATRIX measurement set
+    and the oracle is the sampler's -- every cycle's strobe against
+    ``program.sampler_valid``, the captured bits replayed through the model
+    with those strobes (#815). Otherwise it is the flat-deck contract the
+    archived ``corners/grid-*`` and every report without a plan are read
+    through. Both decode against ``vdd``, the point's own rail.
+    """
     measurements = corner.get("measurements", [])
     # duplicate names displace the entries they repeat in every name-keyed
     # read below (#548's guard, shared with compare-gate-model.py): a
@@ -138,7 +160,11 @@ def analyse_corner(corner: dict, vdd: float) -> dict:
     # the program's own measurement set is the contract: an entry that is
     # wholly omitted from the report is as unmet as one that is null
     cycles, _ = P.build_program()
-    required = {e["name"] for e in P.whole_block_measurement_cards(cycles)[0]}
+    if coupled:
+        cards = P.coupled_matrix_measurements(cycles, vdd)[0]
+    else:
+        cards = P.whole_block_measurement_cards(cycles)[0]
+    required = {e["name"] for e in cards}
     omitted = sorted(required - set(m))
     if omitted:
         problems.append(f"{len(omitted)} required measurement(s) omitted from the report (first: {omitted[:3]})")
@@ -152,38 +178,68 @@ def analyse_corner(corner: dict, vdd: float) -> dict:
     if missing or omitted or not m:
         return out
 
-    # -- digital response, through the SHARED comparator (#642): decode the
-    # transistor deck's sampler strobes rail-bounded (an XSPICE out_undef
-    # X at vdd/2 is a named problem, never a silent 0), replay the
-    # normative model exactly as compare-gate-model.py does, and score the
-    # rdata_k*/odata_k*/<sig>_k* checks with its cycle mapping.
-    inputs = P.cycle_inputs(cycles)
-    captured: list[int] = []
-    mismatches: list[str] = []
-    checks = 0
-    for k, inp in enumerate(inputs):
-        if not inp["raw_valid"]:
-            continue
-        checks += 1
-        valid = P.decode(m[f"raw_valid_k{k}"], vdd)
-        if valid != 1:
-            mismatches.append(f"raw_valid_k{k}: transistor {valid} != model 1")
-        bit = P.decode(m[f"raw_bit_k{k}"], vdd)
-        if bit is None:
-            mismatches.append(f"raw_bit_k{k}: level {m[f'raw_bit_k{k}']!r} V is not a resolved rail")
-            bit = 0  # keep the replay's bit budget; the corner is already UNMET
-        captured.append(bit)
-    rows = P.model_replay(captured)
-    resp, undecodable = P.response_checks(m, rows, vdd, len(cycles))
-    compared = [c for c in resp if not c.get("not_compared")]
-    checks += len(compared)
-    mismatches += [f"{c['measurement']}: transistor {c['simulated']} != model {c['model']}"
-                   for c in compared if not c["match"]]
-    mismatches += [f"{u['measurement']}: level {u['value']!r} V is not a resolved rail"
-                   for u in undecodable]
-    out["oracle"] = {"checks": checks, "mismatches": mismatches, "match": not mismatches and checks > 0}
+    if coupled:
+        # -- the sampler's oracle, through the SHARED coupled decode (#815):
+        # the strobes the sampler put on its pins against its documented
+        # raw_valid, and the bits of every strobed cycle replayed with them
+        cap = P.coupled_capture_decode(m, vdd, cycles)
+        strobes, bits = cap["strobes"], cap["bits"]
+        captured_valid = dict(zip(cap["strobe_cycles"], strobes, strict=True))
+        expected_valid = P.sampler_valid(cycles)
+        checks = len(strobes) + len(bits)
+        responses = 0
+        mismatches: list[str] = [
+            f"raw_valid_k{k}: captured {captured_valid[k]} != the sampler's documented {expected_valid[k]}"
+            for k in cap["valid_mismatches"]]
+        mismatches += [f"{u['measurement']}: level {u['value']!r} V is not a resolved rail"
+                       for u in cap["undecodable"]]
+        if not cap["undecodable"]:
+            rows = P.model_replay(bits, captured_valid=strobes)
+            resp, undecodable = P.response_checks(m, rows, vdd, len(cycles))
+            compared = [c for c in resp if not c.get("not_compared")]
+            responses = len(compared)
+            checks += responses
+            mismatches += [f"{c['measurement']}: transistor {c['simulated']} != model {c['model']}"
+                           for c in compared if not c["match"]]
+            mismatches += [f"{u['measurement']}: level {u['value']!r} V is not a resolved rail"
+                           for u in undecodable]
+        out["oracle"] = {"checks": checks, "strobes": len(strobes), "bits": len(bits),
+                         "responses": responses, "mismatches": mismatches,
+                         "match": not mismatches and checks > 0}
+    else:
+        # -- digital response, through the SHARED comparator (#642): decode the
+        # transistor deck's sampler strobes rail-bounded (an XSPICE out_undef
+        # X at vdd/2 is a named problem, never a silent 0), replay the
+        # normative model exactly as compare-gate-model.py does, and score the
+        # rdata_k*/odata_k*/<sig>_k* checks with its cycle mapping.
+        inputs = P.cycle_inputs(cycles)
+        captured: list[int] = []
+        mismatches = []
+        checks = 0
+        for k, inp in enumerate(inputs):
+            if not inp["raw_valid"]:
+                continue
+            checks += 1
+            valid = P.decode(m[f"raw_valid_k{k}"], vdd)
+            if valid != 1:
+                mismatches.append(f"raw_valid_k{k}: transistor {valid} != model 1")
+            bit = P.decode(m[f"raw_bit_k{k}"], vdd)
+            if bit is None:
+                mismatches.append(f"raw_bit_k{k}: level {m[f'raw_bit_k{k}']!r} V is not a resolved rail")
+                bit = 0  # keep the replay's bit budget; the corner is already UNMET
+            captured.append(bit)
+        rows = P.model_replay(captured)
+        resp, undecodable = P.response_checks(m, rows, vdd, len(cycles))
+        compared = [c for c in resp if not c.get("not_compared")]
+        checks += len(compared)
+        mismatches += [f"{c['measurement']}: transistor {c['simulated']} != model {c['model']}"
+                       for c in compared if not c["match"]]
+        mismatches += [f"{u['measurement']}: level {u['value']!r} V is not a resolved rail"
+                       for u in undecodable]
+        out["oracle"] = {"checks": checks, "mismatches": mismatches, "match": not mismatches and checks > 0}
     if mismatches or checks == 0:
-        problems.append(f"oracle: {len(mismatches)} mismatch(es) in {checks} comparison(s)")
+        problems.append(f"oracle: {len(mismatches)} mismatch(es) in {checks} comparison(s)"
+                        + (f"; first: {mismatches[0][:160]}" if mismatches else ""))
 
     # supply currents: i(Vsrc) is negative when the source delivers current
     cur = {}
@@ -207,9 +263,44 @@ def analyse_corner(corner: dict, vdd: float) -> dict:
     return out
 
 
+def planned_points(plan_corners: dict) -> list[tuple[str, float, float]]:
+    """The (process, T, Vdd) points a plan's ``corners`` axes enumerate."""
+    procs = plan_corners.get("process") or []
+    temps = plan_corners.get("temperature_c") or []
+    vdds = (plan_corners.get("supply_v") or {}).get("Vvdd") or []
+    return [(p, float(t), float(v)) for p in procs for t in temps for v in vdds]
+
+
+def corner_plan_mismatch(corner: dict, plan_corners: dict) -> str | None:
+    """``None`` when the report's corner is one of the plan's points on every
+    rail of ``RAILS``; else why it is not (#815)."""
+    proc, temp = corner.get("process"), corner.get("temperature_c")
+    supply = corner.get("supply_v") or {}
+    if proc not in (plan_corners.get("process") or []):
+        return f"process {proc!r} is not one of the plan's {plan_corners.get('process')}"
+    if temp is None or float(temp) not in [float(t) for t in plan_corners.get("temperature_c") or []]:
+        return f"temperature {temp!r} C is not one of the plan's {plan_corners.get('temperature_c')}"
+    for rail in P.RAILS:
+        axis = [float(x) for x in (plan_corners.get("supply_v") or {}).get(f"V{rail}") or []]
+        v = supply.get(f"V{rail}")
+        if v is None or float(v) not in axis:
+            return f"{rail} at {v!r} V is not one of the plan's {axis} V"
+    return None
+
+
 def collect(corners_dir: Path) -> tuple[dict, list[dict]]:
-    """Map expected point key -> {status, reason, ...}; plus a list of source requests."""
-    found: dict[str, dict] = {}
+    """Map point key -> the report entries claiming it; plus the source requests.
+
+    Every ``grid-*`` report is matched against its own ``plan.json`` /
+    ``request.json`` first (#815): the deck the report ran must be the one the
+    plan hashed, and each corner must be one of the plan's points on all five
+    rails. A report that fails either is kept as an entry carrying its
+    ``problems`` -- on the point it *reports* and on the point its plan
+    *asked for* -- so both show UNMET with the reason, and nothing is
+    silently re-assigned. No entry is ever overwritten: a second report
+    claiming a point is a second entry, which :func:`reduce` refuses.
+    """
+    found: dict[str, list[dict]] = {}
     sources: list[dict] = []
     for rep in sorted(corners_dir.glob("*/report.json")):
         d = rep.parent
@@ -218,6 +309,7 @@ def collect(corners_dir: Path) -> tuple[dict, list[dict]]:
             if (d / extra).exists():
                 src[extra] = sha256(d / extra)
         plan = json.loads((d / "plan.json").read_text()) if (d / "plan.json").exists() else {}
+        request = json.loads((d / "request.json").read_text()) if (d / "request.json").exists() else None
         src["netlist_sha256"] = plan.get("netlist_sha256")
         att = d / "submit-attempts.log"
         if att.exists():
@@ -234,23 +326,60 @@ def collect(corners_dir: Path) -> tuple[dict, list[dict]]:
         if "error" in doc:
             src["error"] = doc["error"].get("message")
         sources.append(src)
+        coupled = plan.get("raw_source") == "analog_sampler"
+        src["deck"] = "coupled (analog sampler -> gate model)" if coupled else "flat transistor-level"
         if not d.name.startswith("grid-"):
             continue   # controls/probes are listed as sources but never count toward the matrix
+        plan_c = plan.get("corners") or {}
+        decks = (plan.get("gate_model_pvt") or {}).get("decks") or {}
+        # problems that disqualify every corner of this report: the report
+        # did not run the deck its plan hashed, or request and plan disagree
+        pre: list[str] = []
+        env_sha = (doc.get("environment") or {}).get("netlist_sha256")
+        if env_sha is not None and plan.get("netlist_sha256") is not None and env_sha != plan["netlist_sha256"]:
+            pre.append(f"report netlist sha256 {env_sha[:16]} != its plan's {plan['netlist_sha256'][:16]}: "
+                       "the report did not run the planned deck")
+        if request is not None and request.get("corners") != plan_c:
+            pre.append("request.json corners differ from plan.json corners")
+        matched: set[str] = set()
         for c in doc.get("corners", []) or []:
             t = c.get("temperature_c")
             v = (c.get("supply_v") or {}).get("Vvdd")
             if t is None or v is None:
                 continue
-            found[key(c.get("process"), float(t), float(v))] = {
-                "source": d.name, "corner": c, "remote": remote}
-        if "error" in doc:
-            plan_c = plan.get("corners") or {}
-            for proc in plan_c.get("process", []):
-                for t in plan_c.get("temperature_c", []):
-                    for v in (plan_c.get("supply_v", {}).get("Vvdd") or []):
-                        k = key(proc, float(t), float(v))
-                        found.setdefault(k, {"source": d.name, "corner": None,
-                                             "reason": "klt error envelope: " + (doc["error"].get("message") or "")[:300]})
+            k = key(c.get("process"), float(t), float(v))
+            problems = list(pre)
+            if plan_c:
+                why = corner_plan_mismatch(c, plan_c)
+                if why is None:
+                    matched.add(k)
+                else:
+                    problems.append(f"report corner {k} does not match its plan: {why}")
+            found.setdefault(k, []).append({
+                "source": d.name, "corner": c, "remote": remote, "problems": problems,
+                "coupled": coupled, "gate_model_sha256": plan.get("gate_model_sha256"),
+                "digital_deck": decks.get(c.get("process"))})
+        for pp in planned_points(plan_c):
+            k = key(*pp)
+            if k in matched:
+                continue
+            if "error" in doc:
+                why = "klt error envelope: " + (doc["error"].get("message") or "")[:300]
+            elif pre:
+                why = "its report did not run the planned request: " + "; ".join(pre)
+            else:
+                why = "no corner of its report covers this planned point"
+            why = f"planned point {k}: {why}"
+            # the report's own mismatched corner already claims this key (it
+            # reports the point but not as planned): the same report's two
+            # findings belong to one entry, not to a second claimant
+            same = [e for e in found.get(k, []) if e["source"] == d.name]
+            if same:
+                for e in same:
+                    e["problems"].append(why)
+            else:
+                found.setdefault(k, []).append({"source": d.name, "corner": None, "remote": remote,
+                                                "problems": [why], "coupled": coupled})
     return found, sources
 
 
@@ -279,6 +408,11 @@ def obligations(points: list[dict], provenance: dict | None) -> list[dict]:
     return rows
 
 
+#: the per-point Liberty mapping row a coupled point's result carries (#815)
+_DECK_FIELDS = ("liberty_deck", "liberty_sha256", "exact", "dT_K", "dV_V", "delay_direction",
+                "est_delay_error_pct", "power_direction")
+
+
 def reduce(corners_dir: Path, ir_summary: Path | None, provenance=_DEFAULT) -> dict:
     if provenance is _DEFAULT:
         provenance = P.PROVENANCE
@@ -286,18 +420,36 @@ def reduce(corners_dir: Path, ir_summary: Path | None, provenance=_DEFAULT) -> d
     points = []
     for proc, t, v in expected_points():
         k = key(proc, t, v)
-        ent = found.get(k)
+        cands = found.get(k, [])
         row = {"point": k, "process": proc, "temperature_c": t, "vdd_v": v}
-        if ent is None:
+        if not cands:
             row.update(status="UNMET", reasons=["no report covers this point (never submitted or never returned)"])
-        elif ent.get("corner") is None:
-            row.update(status="UNMET", reasons=[ent["reason"]], source=ent["source"])
+        elif len(cands) > 1:
+            # never pick one: two reports claiming one point is a filing error
+            # until a human resolves it, whichever of them would pass
+            srcs = sorted({c["source"] for c in cands})
+            row.update(status="UNMET", source=srcs[0], sources=srcs,
+                       reasons=[f"{len(cands)} report entries from {srcs} claim this point: "
+                                "refusing to pick one"])
         else:
-            res = analyse_corner(ent["corner"], v)
-            row.update(source=ent["source"], remote=ent.get("remote"))
-            row.update({kk: vv for kk, vv in res.items() if kk != "problems"})
-            row["status"] = "MET" if not res["problems"] else "UNMET"
-            row["reasons"] = res["problems"]
+            ent = cands[0]
+            pre = ent["problems"]
+            if ent.get("corner") is None or pre:
+                # no corner of this report, or one that is not the planned
+                # point on the planned deck: nothing here is this point's
+                # evidence, so nothing is scored -- the reasons say why
+                row.update(status="UNMET", reasons=list(pre), source=ent["source"], remote=ent.get("remote"))
+            else:
+                res = analyse_corner(ent["corner"], v, coupled=ent.get("coupled", False))
+                row.update(source=ent["source"], remote=ent.get("remote"))
+                row.update({kk: vv for kk, vv in res.items() if kk != "problems"})
+                row["status"] = "MET" if not res["problems"] else "UNMET"
+                row["reasons"] = res["problems"]
+                if ent.get("coupled"):
+                    row["gate_model_sha256"] = ent.get("gate_model_sha256")
+                    deck = ent.get("digital_deck")
+                    if deck:
+                        row["digital_deck"] = {f: deck[f] for f in _DECK_FIELDS if f in deck}
         row["level"] = level_of(provenance)
         if row.get("power") is not None:
             row["power"]["provenance"] = power_provenance(provenance)
@@ -337,7 +489,8 @@ def render(red: dict) -> str:
         L.append(f"| {p['point']} | {p['status']} | {'; '.join(p.get('reasons') or []) or 'oracle match, finite measurements'} |")
     L += ["", "## Sources", ""]
     for s in red["sources"]:
-        L.append(f"- `{s['dir']}`: status `{s['status']}`, report sha256 `{s['report_sha256'][:16]}`, "
+        L.append(f"- `{s['dir']}`: status `{s['status']}`, deck `{s.get('deck', 'n/a')}`, "
+                 f"report sha256 `{s['report_sha256'][:16]}`, "
                  f"netlist sha256 `{(s.get('netlist_sha256') or 'n/a')[:16]}`, remote `{s.get('remote')}`"
                  + (f", submit attempts {s['submit_attempts']['count']} ({s['submit_attempts']['capacity_refused']} refused rc=1)"
                     if s.get("submit_attempts") else "")

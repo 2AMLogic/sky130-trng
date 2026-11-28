@@ -19,22 +19,27 @@ Writes ``<reqdir>/<name>/{netlist.cir,request.json,plan.json}`` for the selected
     timed gate model. The 100 ns probe gates the full 7,870 ns run (#596).
 
 ``--set grid``
-    one request per (T, Vdd) point of this repo's established four-point
-    post-layout grid -- (-40 C, 1.62 V), (27 C, 1.8 V), (-40 C, 1.98 V),
-    (125 C, 1.98 V) -- each bundling the ``tt``/``ss``/``ff`` process axis
-    (4 requests x 3 corners = the full 12-point matrix), ``backend: batch``:
-    a ``klt sim`` corners request goes to the batch fleet; this is never a
-    hand-launched local ngspice grid. Since issue #595 each request's
-    ``plan.json`` also carries ``gate_model_pvt``: the Liberty deck
-    (path + sha256, per process corner) the digital half's gate model uses
-    at that point plus the boundary-load option, from ``pvt_deck_map.py``.
-    Its two timeouts are sized from the measured coupled run
-    (``records/20261128-coupled-rate.md``): one request is one batch job of
-    three units, whose bound must fit the fleet's whole-job ceiling, and
-    generation refuses what it cannot hold. **The deck this set emits is still
-    the flat transistor-level whole block**, which timed out at the 3480 s
-    ceiling twice; the timeouts are those of the coupled deck the matrix runs
-    under DR-0017 option (b) (issue #307).
+    One coupled request per point of the 12-point matrix (issue #815):
+    ``tt``/``ss``/``ff`` x (-40 C, 1.62 V), (27 C, 1.8 V), (-40 C, 1.98 V),
+    (125 C, 1.98 V), each ``grid-<proc>-<m40C|27C|125C>-<supply>V`` and
+    ``backend: batch``. One request embeds one netlist, and a gate model is
+    per point, so each request is a single-process batch job of one unit
+    (``grid_timeouts(units=1)``): 864 s unit timeout, 984 s job bound, 1284 s
+    poll, from the measured coupled run (``records/20261128-coupled-rate.md``).
+    The deck is the DR-0017 option (b) coupled deck -- the extracted analog
+    partition driving the routed gate model built for THAT point from the
+    Liberty deck ``pvt_deck_map.py`` maps it to (the 8 distinct decks are
+    parsed once) -- with the 75-cycle program, the fixed 1.8 V input-high
+    convention and the sampler as the sole source of both raw signals, plus
+    the ring-rail W1/W2 currents and the throughput tap
+    (``program.coupled_matrix_measurements``). Its ``plan.json`` records the
+    three partition hashes, the emitted netlist, gate model and Liberty
+    sha256s and the point's ``gate_model_pvt`` deviations. Needs the PDK's
+    decks: resolved through ``klt pdk find``, or given explicitly with
+    ``--libs-ref <dir>`` (a sky130A install's ``libs.ref``); with neither,
+    generation refuses before writing anything. The four committed
+    ``corners/grid-*`` requests are the archived FLAT-deck grid (three
+    processes per request, 21,600 s / 6,600 s) and are never regenerated.
 
 The deck body is::
 
@@ -68,6 +73,16 @@ from _klt_common import libs_ref  # noqa: E402
 sys.path.insert(0, str(HERE))
 import program as P  # noqa: E402
 import pvt_deck_map as PVT  # noqa: E402
+# the gate model the coupled decks drive is the generator's emitter, imported
+# (never the sibling CLI executed, #804): one model per matrix point (#815)
+from gate_model_lib import (  # noqa: E402
+    DEFAULT_PORT_LOAD_PF,
+    DEFAULT_SLEW_NS,
+    GateModelError,
+    build_gate_model,
+    load_liberty_cells,
+    parse_verilog,
+)
 # the deck's measurement sets and shared constants are program.py's (#804);
 # re-exported here under the names this generator's callers use
 from program import (  # noqa: E402
@@ -86,9 +101,6 @@ LIB = "libs.tech/combined/sky130.lib.spice"
 PDK = "sky130A"
 TMAX = "20p"
 
-#: the repo's established four-point post-layout grid x tt/ss/ff (12 points)
-GRID = [(-40.0, 1.62), (27.0, 1.8), (-40.0, 1.98), (125.0, 1.98)]
-
 #: The batch fleet's whole-job ceiling and klt's per-job overhead (s). A job's
 #: bound is ``timeout_s * units + 120``, so a one-unit job may give its worker
 #: at most 3480 s (records/20261121-coupled-rate.md).
@@ -101,25 +113,30 @@ UNIT_TIMEOUT_CAP_S = FLEET_JOB_CEILING_S - BATCH_OVERHEAD_S
 COUPLED_FULL_RUNTIME_S = 431.63
 #: allowance on that runtime for the grid's unmeasured points (ss/ff,
 #: -40..125 C, 1.62..1.98 V). Declared, not measured: no coupled run exists at
-#: any other corner.
+#: any other corner. #814 re-derives it from the slow-corner measurement.
 GRID_MARGIN_X = 2.0
 #: instance boot, staging and collection around the simulation (36.7 s on the
 #: 100 ns probe job, 15.4 s on the full job), widened
 JOB_SLACK_S = 300
 #: where the grid timeouts come from; written into every grid plan.json
 GRID_TIMEOUT_RECORD = "records/20261128-coupled-rate.md"
+#: one grid request is one batch job of ONE unit (#815): the deck embeds one
+#: gate model, and a gate model is per point, so the matrix is 12
+#: single-process requests. The archived flat grid bundled tt/ss/ff per
+#: request (three units); ``grid_timeouts(units=3)`` still sizes that shape.
+GRID_UNITS = 1
 
 
-def grid_timeouts() -> tuple[int, int]:
-    """``(timeout_s, poll_timeout_s)`` of a grid request, from the measured coupled run.
+def grid_timeouts(units: int = GRID_UNITS) -> tuple[int, int]:
+    """``(timeout_s, poll_timeout_s)`` of a grid request of ``units`` units,
+    from the measured coupled run.
 
-    One grid request is one batch job of one unit per process corner. The
-    unit timeout is the measured nominal runtime times ``GRID_MARGIN_X``; the
-    job's serial bound must fit the fleet's ceiling; the caller waits for that
-    bound plus ``JOB_SLACK_S``. Raises ``ValueError`` when it does not fit: a
-    request the fleet would kill at the ceiling is not written.
+    The unit timeout is the measured nominal runtime times ``GRID_MARGIN_X``;
+    the job's serial bound (``units`` x that, plus klt's overhead) must fit
+    the fleet's ceiling; the caller waits for that bound plus
+    ``JOB_SLACK_S``. Raises ``ValueError`` when it does not fit: a request the
+    fleet would kill at the ceiling is not written.
     """
-    units = len(PVT.MATRIX_PROCESSES)
     timeout_s = math.ceil(GRID_MARGIN_X * COUPLED_FULL_RUNTIME_S)
     if timeout_s > UNIT_TIMEOUT_CAP_S:
         raise ValueError(f"grid unit timeout {timeout_s} s: one unit can hold at most "
@@ -134,15 +151,28 @@ def grid_timeouts() -> tuple[int, int]:
 GRID_TIMEOUT_S, GRID_POLL_TIMEOUT_S = grid_timeouts()
 
 
-def grid_timeout_basis() -> dict:
+def grid_timeout_basis(units: int = GRID_UNITS) -> dict:
     """The grid timeouts and what they were sized from, for every grid ``plan.json``."""
-    timeout_s, poll_s = grid_timeouts()
+    timeout_s, poll_s = grid_timeouts(units)
     return {"timeout_s": timeout_s, "poll_timeout_s": poll_s, "sized_from": GRID_TIMEOUT_RECORD,
             "measured_runtime_s": COUPLED_FULL_RUNTIME_S, "measured_point": "tt / 27 C / 1.8 V",
             "measured_simulated_ns": float(P.t_stop_ns(P.build_program()[0])),
             "margin_x": GRID_MARGIN_X, "job_slack_s": JOB_SLACK_S,
-            "job_bound_s": len(PVT.MATRIX_PROCESSES) * timeout_s + BATCH_OVERHEAD_S,
+            "units": units, "job_bound_s": units * timeout_s + BATCH_OVERHEAD_S,
             "fleet_job_ceiling_s": FLEET_JOB_CEILING_S}
+
+
+#: the repo's established four-point post-layout grid x tt/ss/ff (12 points);
+#: the request directories of ``--set grid``, named for the reducer's
+#: ``grid-*`` scan (one process per request since #815)
+GRID = [(-40.0, 1.62), (27.0, 1.8), (-40.0, 1.98), (125.0, 1.98)]
+
+
+def grid_name(proc: str, temp_c: float, supply_v: float) -> str:
+    """``grid-ss-m40C-1.62V``: the ``--set grid`` request directory of one
+    matrix point (the archived flat grid's ``grid-m40C-1.62V`` carries no
+    process, so the two families never collide)."""
+    return f"grid-{proc}-{'m' if temp_c < 0 else ''}{abs(temp_c):.0f}C-{supply_v:.2f}V"
 
 EDGE_NS = P.PWL_EDGE_NS
 
@@ -297,7 +327,30 @@ def rate_probe_measurements(t_stop: float) -> tuple[list[dict], list[str]]:
     return meas, sorted(save)
 
 
-def nominal_gate_model() -> tuple[str, dict]:
+#: the plan-level wording of the gate model's ``input_load`` reduction: the
+#: manifest text predates #595 (kept byte-stable as #486 evidence); in a plan
+#: it must agree with ``boundary_load_option``. Same wording as
+#: make-gate-model.py's plan writer.
+INPUT_LOAD_SETTLED = ("Liberty input-pin capacitance per d_genlut input; the "
+                      "DR-0017 boundary-load choice is settled as option 2 "
+                      "(#595, see boundary_load_option)")
+
+
+class CoupledDeck:
+    """The digital half of a coupled request: the gate-level body the analog
+    partition drives, the ``plan.json`` fields that identify it, and the
+    deck's measurement set (``program.py``'s, over the full program)."""
+
+    def __init__(self, text: str, fields: dict, measurements):
+        self.text = text
+        self.fields = fields
+        self._measurements = measurements
+
+    def measurements(self, cycles: list[dict]) -> tuple[list[dict], list[str]]:
+        return self._measurements(cycles)
+
+
+def nominal_gate_model() -> CoupledDeck:
     """Use the measured nominal gate model, with its exact bridges and input loads."""
     base = Path("corners/gate-model-full")
     manifest_path = base / "gate-model.manifest.json"
@@ -309,20 +362,113 @@ def nominal_gate_model() -> tuple[str, dict]:
             or manifest["source_netlist_sha256"] != plan["routed_netlist_sha256"]
             or manifest["liberty_sha256"] != plan["liberty_sha256"]):
         raise ValueError("nominal model, routed Verilog or Liberty identity differs from the gate record")
-    return gate, {"gate_manifest": str(manifest_path), "gate_model_sha256": sha256_text(gate),
-                  "liberty_sha256": manifest["liberty_sha256"], "liberty_deck": manifest["liberty_deck"],
-                  "realisation": manifest["realisation"],
-                  "reductions": {
-                      **manifest["reductions"],
-                      # the manifest text predates #595 (kept byte-stable as #486
-                      # evidence); in a plan it must agree with boundary_load_option.
-                      # Same wording as make-gate-model.py's plan writer.
-                      "input_load": "Liberty input-pin capacitance per d_genlut input; the "
-                                    "DR-0017 boundary-load choice is settled as option 2 "
-                                    "(#595, see boundary_load_option)",
-                  },
-                  "boundary_load_option": PVT.boundary_load_block(),
-                  "raw_source": "analog_sampler"}
+    return CoupledDeck(gate, {
+        "gate_manifest": str(manifest_path), "gate_model_sha256": sha256_text(gate),
+        "liberty_sha256": manifest["liberty_sha256"], "liberty_deck": manifest["liberty_deck"],
+        "realisation": manifest["realisation"],
+        "reductions": {**manifest["reductions"], "input_load": INPUT_LOAD_SETTLED},
+        "boundary_load_option": PVT.boundary_load_block(),
+        "raw_source": "analog_sampler"}, P.coupled_measurements)
+
+
+class _DeckCache:
+    """The Liberty cells of each distinct deck the matrix points map to,
+    parsed once per generation (8 decks serve the 12 points, #815), each deck
+    verified against its pinned sha256 before it is read -- the same guard
+    ``make-gate-model.py --point`` applies, so an install that is not the PDK
+    ``pvt_deck_map.py`` was derived from fails closed here too."""
+
+    def __init__(self, libs_ref_dir: Path, wanted: set[str]):
+        self.libs_ref_dir = Path(libs_ref_dir)
+        self.wanted = wanted
+        self._cells: dict[str, tuple[dict, float]] = {}
+
+    def cells_for(self, row: dict) -> tuple[Path, dict, float]:
+        path = (self.libs_ref_dir / PVT.LIB_SUBDIR / row["liberty_deck"]).resolve()
+        if not path.is_file():
+            raise PVT.DeckMapError(f"pinned deck {row['liberty_deck']} is absent from "
+                                   f"{self.libs_ref_dir} (PDK version bump?)")
+        if row["liberty_deck"] not in self._cells:
+            lib_sha = sha256_file(path)
+            if lib_sha != row["liberty_sha256"]:
+                raise PVT.DeckMapError(
+                    f"{row['liberty_deck']}: on-disk sha256 {lib_sha} != pinned "
+                    f"{row['liberty_sha256']} -- the install is not the PDK the "
+                    "table was derived from; re-derive the mapping (issue #595), "
+                    "do not ignore the mismatch")
+            self._cells[row["liberty_deck"]] = load_liberty_cells(
+                path, self.wanted, P.EXPECTED_THRESHOLD_PCT)
+        cells, threshold_pct = self._cells[row["liberty_deck"]]
+        return path, cells, threshold_pct
+
+
+def point_gate_models(libs_ref_dir: Path) -> dict[tuple[str, float, float], CoupledDeck]:
+    """``{(process, temp_c, supply_v): CoupledDeck}`` for the 12 matrix points.
+
+    Each digital half is the generator's emitter (``gate_model_lib``) applied
+    to the routed Verilog at the point's supply, from the Liberty deck
+    ``pvt_deck_map.py`` maps the point to, at the nominal model's operating
+    point (slew, port load) so every point's model is the measured nominal
+    one re-cornered and nothing else. An unmapped point raises
+    ``DeckMapError`` -- and nothing has been written.
+    """
+    design = parse_verilog(ROUTED_V)
+    decks = _DeckCache(libs_ref_dir, set(design.cell_histogram()))
+    out: dict[tuple[str, float, float], CoupledDeck] = {}
+    for temp, supply in GRID:
+        for proc in PVT.MATRIX_PROCESSES:
+            row = PVT.deck_row(proc, temp, supply)
+            path, cells, threshold_pct = decks.cells_for(row)
+            model = build_gate_model(
+                design, cells, supply_v=supply, slew_ns=DEFAULT_SLEW_NS,
+                port_load_pf=DEFAULT_PORT_LOAD_PF, liberty_path=path,
+                liberty_sha256=row["liberty_sha256"], threshold_pct=threshold_pct)
+            m = model.manifest
+            out[(proc, temp, supply)] = CoupledDeck(model.text(), {
+                "gate_model_sha256": sha256_text(model.text()),
+                "routed_netlist_sha256": m["source_netlist_sha256"],
+                "liberty_deck": str(path), "liberty_sha256": row["liberty_sha256"],
+                "realisation": m["realisation"],
+                "gate_model_counts": {
+                    "routed_instances": m["routed_instances"],
+                    "primitives": m["primitives"],
+                    "polarity_inverters": m["polarity_inverters"],
+                    "declared_no_op_instances": len(m["declared_no_op_instances"]),
+                    "widest_genlut_inputs": m["widest_genlut_inputs"]},
+                "reductions": {**m["reductions"], "input_load": INPUT_LOAD_SETTLED},
+                "boundary_load_option": PVT.boundary_load_block(),
+                "raw_source": "analog_sampler"},
+                lambda cycles, supply=supply: P.coupled_matrix_measurements(cycles, supply))
+    return out
+
+
+_UNSET = object()
+_KLT_LIBS_REF: Path | None | object = _UNSET
+
+
+def resolve_libs_ref(explicit: str | None) -> Path | None:
+    """Where the PDK's decks come from: ``--libs-ref`` (a sky130A install's
+    ``libs.ref`` directory, e.g. ``.../sky130A/libs.ref``), else what ``klt pdk
+    find`` resolves, else ``None``.
+
+    Only ``--set grid`` needs the decks (it builds a gate model per point);
+    ``None`` there is a refusal, never a fallback to the nominal model. The
+    klt resolution is remembered per process: a resolved install that does
+    not match the pins still fails closed inside ``_DeckCache``.
+    """
+    global _KLT_LIBS_REF
+    if explicit is not None:
+        ref = Path(explicit).expanduser().resolve()
+        if not (ref / PVT.LIB_SUBDIR).is_dir():
+            raise ValueError(f"--libs-ref {ref} is not a sky130A libs.ref directory: "
+                             f"{PVT.LIB_SUBDIR} not found under it")
+        return ref
+    if _KLT_LIBS_REF is _UNSET:
+        try:
+            _KLT_LIBS_REF = Path(libs_ref(PDK, klt="klt", timeout=120)).resolve()
+        except Exception:
+            _KLT_LIBS_REF = None
+    return _KLT_LIBS_REF  # type: ignore[return-value]
 
 
 def coupled_analog() -> tuple[str, list[str]]:
@@ -341,7 +487,7 @@ def coupled_analog() -> tuple[str, list[str]]:
 
 
 def deck_body(cycles: list[dict], header: list[str], rate_probe_stop: float | None = None,
-              analog_only: bool = False, gate: str | None = None):
+              analog_only: bool = False, gate: CoupledDeck | None = None):
     ports = list(_subckt_ports())
     if gate is not None:
         analog, outputs = coupled_analog()
@@ -356,7 +502,7 @@ def deck_body(cycles: list[dict], header: list[str], rate_probe_stop: float | No
         analog.rstrip("\n"),
         "",
         "* ---- supplies (corners.supply_v alters the named sources) ----",
-        *(gate.splitlines() if gate is not None else ["Vvdd vdd 0 dc 1.8", "Vvss vss 0 dc 0"]),
+        *(gate.text.splitlines() if gate is not None else ["Vvdd vdd 0 dc 1.8", "Vvss vss 0 dc 0"]),
         "Vvddr1 vddr1 0 dc 1.8",
         "Vvddr2 vddr2 0 dc 1.8",
         "Vvddr3 vddr3 0 dc 1.8",
@@ -376,7 +522,7 @@ def deck_body(cycles: list[dict], header: list[str], rate_probe_stop: float | No
     if rate_probe_stop is not None:
         meas, save = rate_probe_measurements(rate_probe_stop)
     elif gate is not None:
-        meas, save = coupled_measurements(cycles)
+        meas, save = gate.measurements(cycles)
     else:
         meas, save = measurement_cards(cycles)
     body.append("* ---- saved trace set (memory: only measured nets) ----")
@@ -407,47 +553,20 @@ def _subckt_ports() -> list[str]:
     return _SUBCKT_PORTS
 
 
-_UNSET = object()
-_LIBS_REF: Path | None | object = _UNSET
-
-
-def _best_effort_libs_ref() -> Path | None:
-    """The PDK's ``libs.ref`` when the install is resolvable, else None.
-
-    Only the deck sha256 verification and the absolute deck path in
-    ``plan.json.gate_model_pvt`` need it (issue #595): with None the plan
-    records the install-relative path and the committed table's sha256 --
-    equal to the on-disk hash whenever the install matches the pin, which
-    ``pvt_deck_map.verify_against_disk`` checks wherever the PDK exists
-    (real runs, the PDK-gated test). Best-effort so CI's klt-free unit
-    tests keep generating the grid set; a RESOLVED install with a wrong
-    hash still fails closed inside ``plan_entry``.
-    """
-    global _LIBS_REF
-    if _LIBS_REF is _UNSET:
-        try:
-            _LIBS_REF = libs_ref(PDK, klt="klt", timeout=120)
-        except Exception:
-            _LIBS_REF = None
-    return _LIBS_REF  # type: ignore[return-value]
-
-
 def make_request(name: str, outdir: Path, *, processes: list[str], temp_c: float,
                  supply: float, backend: str, analysis_args: str,
                  header: list[str], cycles: list[dict] | None = None,
                  timeout_s: int = 1800, poll_timeout_s: int | None = None,
                  rate_probe_stop: float | None = None,
-                 analog_only: bool = False, coupled: bool = False,
+                 analog_only: bool = False, gate: CoupledDeck | None = None,
                  gate_model_pvt: dict | None = None, timeouts: dict | None = None) -> None:
     if cycles is None:
         cycles, _ = P.build_program()
-    if coupled and (processes != ["tt"] or temp_c != 27.0 or supply != VIH):
-        raise ValueError("the recorded gate model is only for the tt / 27 C / 1.8 V rate experiment")
-    gate, plan_fields = nominal_gate_model() if coupled else (None, {})
-    if coupled:
-        plan_fields["analysis_stop_ns"] = rate_probe_stop or P.t_stop_ns(cycles)
+    if gate is not None:
+        plan_fields = {**gate.fields, "analysis_stop_ns": rate_probe_stop or P.t_stop_ns(cycles)}
     else:
-        plan_fields["windows"] = {"w1_ns": list(W1), "w2_ns": [P.t_edge_ns(2), P.t_stop_ns(cycles) - P.TS_NS]}
+        plan_fields = {"windows": {"w1_ns": list(W1),
+                                   "w2_ns": [P.t_edge_ns(2), P.t_stop_ns(cycles) - P.TS_NS]}}
     body, meas = deck_body(cycles, header, rate_probe_stop, analog_only, gate)
     outdir.mkdir(parents=True, exist_ok=True)
     (outdir / "netlist.cir").write_text(body)
@@ -518,6 +637,11 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("reqdir", type=Path, help="output directory (usually corners/<id>)")
     ap.add_argument("--set", dest="which", required=True, choices=(
         "controls", "grid", "rate-probe", "analog-probe", "coupled-probe", "coupled-full"))
+    ap.add_argument("--libs-ref", default=None, metavar="DIR",
+                    help="--set grid only: a sky130A install's libs.ref directory "
+                         "(.../sky130A/libs.ref) to read the mapped Liberty decks from; "
+                         "default is what `klt pdk find` resolves. With neither, --set grid "
+                         "refuses: it never falls back to the nominal model")
     args = ap.parse_args(argv)
     reqdir: Path = args.reqdir
     if reqdir.exists() and any(reqdir.iterdir()):
@@ -531,7 +655,7 @@ def main(argv: list[str] | None = None) -> int:
                      header=[f"DR-0017 nominal coupled rate experiment: {args.which}"],
                      # 3360 s worker + 120 s batch overhead fits the 3480 s ceiling.
                      cycles=cycles, timeout_s=3360, poll_timeout_s=3480,
-                     rate_probe_stop=stop if probe else None, coupled=True)
+                     rate_probe_stop=stop if probe else None, gate=nominal_gate_model())
         print(f"wrote {reqdir / args.which}")
         return 0
     if args.which == "analog-probe":
@@ -586,26 +710,47 @@ def main(argv: list[str] | None = None) -> int:
         print(f"wrote {reqdir/'startup-probe-batch'}")
         return 0
 
-    # issues #431 / #596: the measured coupled run sizes the grid and refuses
-    # what the fleet's ceiling cannot hold, before anything is written
+    # issues #431 / #596 / #815: the measured coupled run sizes the grid
+    # (one single-process unit per point) and refuses what the fleet's
+    # ceiling cannot hold, before anything is written
     timeout_s, poll_timeout_s = grid_timeouts()
-    processes, timeout_basis = list(PVT.MATRIX_PROCESSES), grid_timeout_basis()
-    for temp, supply in GRID:
-        name = f"grid-{'m' if temp < 0 else ''}{abs(temp):.0f}C-{supply:.2f}V"
+    timeout_basis = grid_timeout_basis()
+    try:
+        libs_ref_dir = resolve_libs_ref(args.libs_ref)
+    except ValueError as exc:
+        ap.error(str(exc))
+    if libs_ref_dir is None:
+        ap.error("--set grid builds a gate model per matrix point and needs the PDK's "
+                 "Liberty decks: pass --libs-ref <sky130A libs.ref dir> or run where "
+                 "`klt pdk find --pdk sky130A` resolves. It never falls back to the "
+                 "nominal model or the flat deck")
+    cycles, _ = P.build_program()
+    stop = P.t_stop_ns(cycles)
+    # everything that can fail closed fails HERE, with no request directory
+    # written: the per-point gate models (deck identity), the deck mapping
+    # (unmapped point) and the deck hashes on disk (PDK version bump)
+    try:
+        decks = point_gate_models(libs_ref_dir)
+        plans = {(proc, temp, supply): PVT.plan_entry([proc], temp, supply, libs_ref_dir=libs_ref_dir)
+                 for (proc, temp, supply) in decks}
+    except PVT.DeckMapError as exc:
+        ap.error(str(exc))
+    except GateModelError as exc:
+        ap.error(f"gate model: {exc}")
+    for (proc, temp, supply), deck in decks.items():
+        name = grid_name(proc, temp, supply)
         hdr = [
-            f"post-layout-whole-block 12-point matrix: {temp:.0f} C, {supply:.2f} V x tt/ss/ff (issue #174)",
-            f"the repo's established four-point post-layout grid; klt sim owns .lib/.temp/.tran",
+            f"post-layout-whole-block 12-point matrix: {proc} / {temp:.0f} C / {supply:.2f} V "
+            "(issues #174, #815)",
+            "DR-0017 option (b): extracted analog partition driving the routed gate model "
+            "built for this point; sampler is the sole source of raw_bit/raw_valid",
+            "the repo's established four-point post-layout grid; klt sim owns .lib/.temp/.tran",
         ]
-        # issue #595: each request's plan records the digital half's Liberty
-        # deck per process corner and the boundary-load option (option 2).
-        # Unmapped points fail closed here; a resolved-but-changed install
-        # fails closed inside plan_entry's sha256 check.
-        gate_pvt = PVT.plan_entry(processes, temp, supply, libs_ref_dir=_best_effort_libs_ref())
-        make_request(name, reqdir / name, processes=processes,
+        make_request(name, reqdir / name, processes=[proc],
                      temp_c=temp, supply=supply, backend="batch", timeout_s=timeout_s,
-                     poll_timeout_s=poll_timeout_s,
-                     analysis_args=f"{P.t_stop_ns(P.build_program()[0]):.0f}n", header=hdr,
-                     gate_model_pvt=gate_pvt, timeouts=timeout_basis)
+                     poll_timeout_s=poll_timeout_s, analysis_args=f"{stop:.0f}n", header=hdr,
+                     cycles=cycles, gate=deck, gate_model_pvt=plans[(proc, temp, supply)],
+                     timeouts=timeout_basis)
         print(f"wrote {reqdir/name}")
     return 0
 
