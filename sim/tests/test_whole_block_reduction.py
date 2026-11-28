@@ -21,15 +21,27 @@ sys.path.insert(0, str(REPO / "sim" / "bin"))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from loadmod import load_module  # noqa: E402
 R = load_module("reduce_wb", BLOCK / "analysis" / "reduce-whole-block.py")
-MR = load_module("make_requests", BLOCK / "make-requests.py")
 P = R.P
+
+_MR = None
+
+
+def make_requests():
+    """``make-requests.py`` loaded by path, once. Only the tests that exercise
+    that CLI's own code pay for it: the card set and the PWL stimulus it
+    emits are program.py's and are reached through ``P`` (#804)."""
+    global _MR
+    if _MR is None:
+        _MR = load_module("make_requests", BLOCK / "make-requests.py")
+    return _MR
+
 
 BITS = [(i * 7 + 3) % 5 % 2 for i in range(64)]
 
 
 def synth_corner(proc, temp, vdd, flip=None, drop=None, omit=None, status="pass", bits=None):
     cycles, _ = P.build_program()
-    meas_entries, _ = MR.measurement_cards(cycles)
+    meas_entries, _ = P.whole_block_measurement_cards(cycles)
     rows = P.model_replay(list(bits) if bits is not None else BITS)
     inputs = P.cycle_inputs(cycles)
     hi = vdd
@@ -201,14 +213,14 @@ class WholeBlockReduction(unittest.TestCase):
 
     def test_pwl_highs_use_declared_vih(self):
         cycles, _ = P.build_program()
-        cards = MR.input_cards(cycles, len(cycles))
+        cards = P.input_cards(cycles, len(cycles), P.VIH)
         peaks = [max(float(x) for x in c.split("PWL(")[1].rstrip(")").split()[1::2]) for c in cards]
-        self.assertTrue(max(peaks) == MR.VIH and all(p in (0.0, MR.VIH) for p in peaks))
+        self.assertTrue(max(peaks) == P.VIH and all(p in (0.0, P.VIH) for p in peaks))
 
     def test_probe_measurements_within_stop_time(self):
         cycles, _ = P.build_program(limit=6)
         t_stop = P.t_stop_ns(cycles)
-        meas, _ = MR.measurement_cards(cycles)
+        meas, _ = P.whole_block_measurement_cards(cycles)
         import re
         for e in meas:
             mt = re.search(r"AT=([0-9.]+)n", e["spice"])
@@ -217,16 +229,17 @@ class WholeBlockReduction(unittest.TestCase):
 
     def test_rate_probe_measurements_within_stop_time(self):
         import re
-        stop = MR.RATE_PROBE_STOP_NS
+        mr = make_requests()
+        stop = mr.RATE_PROBE_STOP_NS
         self.assertTrue(stop < P.T0_NS)  # no clock-dependent measurement possible
-        meas, save = MR.rate_probe_measurements(stop)
+        meas, save = mr.rate_probe_measurements(stop)
         self.assertTrue(len(meas) > 0 and len(save) > 0)
         for e in meas:
             times = [float(x) for x in re.findall(r"(?:AT|TO)=([0-9.]+)n", e["spice"])]
             self.assertTrue(times and max(times) <= stop, e["name"])
 
     def test_analog_probe_netlist_partition(self):
-        text = MR.analog_netlist_text()
+        text = make_requests().analog_netlist_text()
         self.assertEqual(text.count("sky130_fd_pr__"), 264)
         # every port reaches the body under its canonical name (the committed
         # body has carried canonical names since #435's body rename)
@@ -235,7 +248,7 @@ class WholeBlockReduction(unittest.TestCase):
         self.assertNotIn("en|en2|g_en", text)
 
     def test_analog_probe_stop_covers_clock(self):
-        self.assertTrue(MR.ANALOG_PROBE_STOP_NS > P.T0_NS)
+        self.assertTrue(make_requests().ANALOG_PROBE_STOP_NS > P.T0_NS)
 
     def test_error_envelope_stays_unmet(self):
         tmp_path = self.tmpdir()
@@ -327,8 +340,19 @@ class WholeBlockReduction(unittest.TestCase):
         self.assertNotIn("raw_bit", st[0])
         self.assertEqual(st[4]["t_edge_ns"], P.t_edge_ns(4))
 
+    def test_clis_reach_program_by_import_not_by_executing_a_sibling_cli(self):
+        """#804: the request generator and the two analysis CLIs reach
+        program.py's card sets and oracle by import; none may go back to
+        executing a sibling CLI (loadmod) for them."""
+        import re
+        for rel in ("make-requests.py", "analysis/compare-gate-model.py",
+                    "analysis/reduce-whole-block.py"):
+            with self.subTest(cli=rel):
+                text = (BLOCK / rel).read_text()
+                self.assertIsNone(re.search(r"\bload_module\b|\bloadmod\b", text), rel)
+
     def test_plan_hashes_and_partition_counts(self):
-        part = MR.partition_check()
+        part = make_requests().partition_check()
         self.assertEqual(part["analog_transistors"] + part["digital_transistors"], 25355)
         self.assertEqual(part["analog_transistors"], 264)
         self.assertEqual(part["diode_instances"], 1)

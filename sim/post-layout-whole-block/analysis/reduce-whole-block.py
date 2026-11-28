@@ -44,20 +44,17 @@ sys.path.insert(0, str(REPO / "sim" / "bin"))
 sys.path.insert(0, str(REPO / "layout" / "bin"))
 from _hashing import sha256_file as sha256  # noqa: E402
 import program as P  # noqa: E402
-from loadmod import load_module  # noqa: E402
-
-MR = load_module("make_requests", BLOCK / "make-requests.py")
-#: the shared digital-response comparator (#642): the 12-point reducer and
-#: the gate-model checker must score a corner through ONE implementation,
-#: or the unexercised copy drifts (it had: a 1-cycle off-by-one on every
-#: rdata_k*/odata_k*/<sig>_k* check, vdd/2 rounding to 0, and no duplicate
-#: measurement-name guard).
-CGM = load_module("compare_gate_model", HERE / "compare-gate-model.py")
+# the digital-response comparator (decode / response_checks) and the deck's
+# measurement contract are program.py's (#642, #804): the 12-point reducer and
+# the gate-model checker must score a corner through ONE implementation, or
+# the unexercised copy drifts (it had: a 1-cycle off-by-one on every
+# rdata_k*/odata_k*/<sig>_k* check, vdd/2 rounding to 0, and no duplicate
+# measurement-name guard).
+from measurement_names import duplicate_measurement_names  # noqa: E402
 
 SLUG = "post-layout-whole-block"
 GRID = [(-40.0, 1.62), (27.0, 1.8), (-40.0, 1.98), (125.0, 1.98)]
 PROCESSES = ("tt", "ss", "ff")
-RAILS = ("vdd", "vddr1", "vddr2", "vddr3", "vddr4")
 
 #: DR-0017 claim-level wording; every reporting surface carries it verbatim
 LEVEL_MIXED = ("mixed-level (analog transistor / digital gate-level), "
@@ -126,7 +123,7 @@ def analyse_corner(corner: dict, vdd: float) -> dict:
     # duplicate names displace the entries they repeat in every name-keyed
     # read below (#548's guard, shared with compare-gate-model.py): a
     # displaced measurement silently shrinks the oracle instead of failing
-    duplicates = CGM.duplicate_measurement_names(measurements)
+    duplicates = duplicate_measurement_names(measurements)
     if duplicates:
         return {"problems": [f"{len(duplicates)} duplicate measurement name(s) "
                              f"(first: {duplicates[:3]}) displace the entries they repeat, "
@@ -140,7 +137,8 @@ def analyse_corner(corner: dict, vdd: float) -> dict:
         problems.append(f"diagnostic {d.get('code')}: {d.get('message', '')[:160]}")
     # the program's own measurement set is the contract: an entry that is
     # wholly omitted from the report is as unmet as one that is null
-    required = {e["name"] for e in MR.measurement_cards(P.build_program()[0])[0]}
+    cycles, _ = P.build_program()
+    required = {e["name"] for e in P.whole_block_measurement_cards(cycles)[0]}
     omitted = sorted(required - set(m))
     if omitted:
         problems.append(f"{len(omitted)} required measurement(s) omitted from the report (first: {omitted[:3]})")
@@ -159,7 +157,6 @@ def analyse_corner(corner: dict, vdd: float) -> dict:
     # X at vdd/2 is a named problem, never a silent 0), replay the
     # normative model exactly as compare-gate-model.py does, and score the
     # rdata_k*/odata_k*/<sig>_k* checks with its cycle mapping.
-    cycles, _ = P.build_program()
     inputs = P.cycle_inputs(cycles)
     captured: list[int] = []
     mismatches: list[str] = []
@@ -168,16 +165,16 @@ def analyse_corner(corner: dict, vdd: float) -> dict:
         if not inp["raw_valid"]:
             continue
         checks += 1
-        valid = CGM.decode(m[f"raw_valid_k{k}"], vdd)
+        valid = P.decode(m[f"raw_valid_k{k}"], vdd)
         if valid != 1:
             mismatches.append(f"raw_valid_k{k}: transistor {valid} != model 1")
-        bit = CGM.decode(m[f"raw_bit_k{k}"], vdd)
+        bit = P.decode(m[f"raw_bit_k{k}"], vdd)
         if bit is None:
             mismatches.append(f"raw_bit_k{k}: level {m[f'raw_bit_k{k}']!r} V is not a resolved rail")
             bit = 0  # keep the replay's bit budget; the corner is already UNMET
         captured.append(bit)
     rows = P.model_replay(captured)
-    resp, undecodable = CGM.response_checks(m, rows, vdd, len(cycles))
+    resp, undecodable = P.response_checks(m, rows, vdd, len(cycles))
     compared = [c for c in resp if not c.get("not_compared")]
     checks += len(compared)
     mismatches += [f"{c['measurement']}: transistor {c['simulated']} != model {c['model']}"
@@ -190,9 +187,9 @@ def analyse_corner(corner: dict, vdd: float) -> dict:
 
     # supply currents: i(Vsrc) is negative when the source delivers current
     cur = {}
-    for r in RAILS:
+    for r in P.RAILS:
         cur[r] = {"w1_a": -m[f"i_{r}_w1"], "w2_a": -m[f"i_{r}_w2"]}
-    p_active = sum(vdd * cur[r]["w2_a"] for r in RAILS)
+    p_active = sum(vdd * cur[r]["w2_a"] for r in P.RAILS)
     # W1 = rings running, digital reset-held with clk not started (leakage-dominated digital)
     d_vdd = cur["vdd"]["w2_a"] - cur["vdd"]["w1_a"]
     out["power"] = {
@@ -202,7 +199,7 @@ def analyse_corner(corner: dict, vdd: float) -> dict:
         "digital_dynamic_power_w_estimate": vdd * d_vdd,
         "basis": "W2 = every program cycle (clock running at TS); W1 = reset held, clk not started; "
                  "dynamic = (I_vdd[W2]-I_vdd[W1])*Vdd, includes the activity of THIS directed program only",
-        "recompute_check_w": sum(vdd * -m[f"i_{r}_w2"] for r in RAILS),
+        "recompute_check_w": sum(vdd * -m[f"i_{r}_w2"] for r in P.RAILS),
     }
     t_first = m.get("t_out_valid_first")
     out["timing"] = {"t_out_valid_first_s": t_first,

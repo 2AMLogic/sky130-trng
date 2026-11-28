@@ -41,6 +41,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 REPO = Path(__file__).resolve().parents[2]
 BLOCK = REPO / "sim" / "post-layout-whole-block"
@@ -833,6 +834,30 @@ class TestClkThresholdCard(unittest.TestCase):
 
 
 # --------------------------------------------------------------------------
+# 5b. the card set is program.py's; its duplicate-name refusal stays the
+#     generator's own fail-closed error (issue #804)
+# --------------------------------------------------------------------------
+
+class TestMeasurementCardsFailClosed(unittest.TestCase):
+    """``measurement_cards`` delegates to ``program.gate_measurement_cards``
+    (#804). The collector's ``ValueError`` on a repeated measurement name --
+    which ``klt`` coverage cannot key -- must leave this CLI as the
+    ``GateModelError`` it always raised (exit 2, nothing written)."""
+
+    def test_the_real_set_has_no_repeated_name(self):
+        meas, _save = G.measurement_cards(short_cycles(), 1.8, 50.0)
+        self.assertEqual(len({m["name"] for m in meas}), len(meas))
+
+    def test_a_repeated_name_leaves_as_gate_model_error(self):
+        with mock.patch.object(G.P, "gate_measurement_cards",
+                               side_effect=ValueError("duplicate measurement names")):
+            with self.assertRaises(GateModelError) as cm:
+                G.measurement_cards(short_cycles(), 1.8, 50.0)
+        self.assertEqual(str(cm.exception), "duplicate measurement names")
+        self.assertIsInstance(cm.exception.__cause__, ValueError)
+
+
+# --------------------------------------------------------------------------
 # 6. the reducer refuses incomplete evidence (issue #496 item 1)
 # --------------------------------------------------------------------------
 
@@ -869,7 +894,8 @@ class TestReducerMeasurementCompleteness(unittest.TestCase):
     @staticmethod
     def scalars(values: dict[str, float] | None = None) -> list[dict]:
         # the four scalar observables of cycle 0, names per _SCALAR_RE in
-        # compare-gate-model.py: <sig>_k0 for alarm/gated/startup_done/out_valid
+        # program.py (the comparator both CLIs share): <sig>_k0 for
+        # alarm/gated/startup_done/out_valid
         values = values or {}
         return [{"name": f"{sig}_k0", "value": values.get(sig, 0.0)}
                 for sig in ("alarm", "gated", "startup_done", "out_valid")]

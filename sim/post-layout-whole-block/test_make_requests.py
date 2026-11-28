@@ -90,10 +90,22 @@ sys.path.insert(0, str(HERE))
 
 import program as P  # noqa: E402
 import pvt_deck_map as PVT  # noqa: E402
+from gate_model_lib import parse_verilog  # noqa: E402
 
 spec = importlib.util.spec_from_file_location("make_requests", HERE / "make-requests.py")
 mr = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(mr)
+
+
+def gate_model_generator():
+    """``make-gate-model.py`` loaded by path (its name carries a hyphen). Only
+    the tests that exercise the generator CLI's own deck assembly load it
+    (#804: the request generator imports program.py directly and no longer
+    executes this sibling)."""
+    spec = importlib.util.spec_from_file_location("make_gate_model", HERE / "make-gate-model.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
 
 #: how close to a rail a capture-point sample must sit (V). The pre-#488 ramp
 #: missed by hundreds of mV, so this is loose enough to be about shape and tight
@@ -260,9 +272,10 @@ _BOUND_RES = {key: re.compile(rf"\b{key}=\s*([\d.]+)([a-zA-Z]*)\b")
               for key in ("AT", "TO")}
 
 #: the committed startup-probe requests' known-stale over-`t_stop` cards
-#: (issue #507's ledger). They predate `measurement_cards`'s `add()` clip and
-#: are deliberately NOT regenerated -- dropping this entry requires either a
-#: regeneration of both dirs or a new decision record continuing
+#: (issue #507's ledger). They predate the card collector's ``t_stop`` clip
+#: (``program._MeasCollector.add``) and are deliberately NOT regenerated --
+#: dropping this entry requires either a regeneration of both dirs or a new
+#: decision record continuing
 #: `records/20261115a-known-stale-startup-probe-requests.md`.
 KNOWN_STALE_OVER_STOP = {
     "startup-probe": frozenset(f"{sig}_k{k}" for sig in
@@ -516,6 +529,33 @@ def test_last_cycle_without_read_changes_nothing() -> None:
             assert got == expected, (k, got)
 
 
+def test_shared_collector_clips_and_refuses_repeated_names() -> None:
+    """#804: the three card sets share one collector (program._MeasCollector).
+
+    A card sampling past ``t_stop`` is dropped whole -- the #507 invariant,
+    enforced at the source instead of once per generator -- and a repeated
+    name is refused rather than displacing the entry it repeats (#548);
+    make-gate-model.py surfaces that refusal as ``GateModelError``.
+    """
+    c = P._MeasCollector(970.0, {"clk"})
+    c.add("a", ".meas tran a FIND v(x) AT=970.0n", "x", 970.0)   # at t_stop: kept
+    c.add("b", ".meas tran b FIND v(y) AT=970.1n", "y", 970.1)   # past it: dropped
+    c.word("odata", 3, "out_data_{}_", 870.0)
+    assert c.meas[0] == {"name": "a", "spice": ".meas tran a FIND v(x) AT=970.0n"}
+    assert [m["name"] for m in c.meas[1:]] == [f"odata_k3_b{b}" for b in range(32)]
+    assert c.meas[1] == {"name": "odata_k3_b0",
+                         "spice": ".meas tran odata_k3_b0 FIND v(out_data_0_) AT=870.0n"}
+    assert c.save == {"clk", "x"} | {f"out_data_{b}_" for b in range(32)}
+    assert c.result() == (c.meas, sorted(c.save))
+    c.add("a", ".meas tran a FIND v(x) AT=970.0n")
+    try:
+        c.result()
+    except ValueError as e:
+        assert "duplicate measurement names" in str(e), e
+    else:
+        raise AssertionError("a repeated measurement name was not refused")
+
+
 # ---------------------------------------------------------------------------
 # Issue #555: the bound scan must fail loud on a unit it cannot check
 # ---------------------------------------------------------------------------
@@ -640,6 +680,7 @@ def test_per_card_guard_flags_unvisited_bound() -> None:
 
 def test_standalone_waveform_bytes() -> None:
     # SHA-256 of all returned lines at 7330672f, including the final LF.
+    gate = gate_model_generator()  # stimulus_cards is the generator CLI's own
     for count, request_hash, gate_hash in (
         (6, "d9d8ae12bab9f3d0898a2c95f6409ff65e329961bf97dbec3e0a6aa022f1f276",
          "656f1a1faf32cea1dd71d27c4dd9f4764e19304170eaa4d31b347307f8893a3f"),
@@ -648,7 +689,7 @@ def test_standalone_waveform_bytes() -> None:
     ):
         cycles, _ = P.build_program(count)
         for cards, expected in ((mr.input_cards(cycles, count), request_hash),
-                                (mr.G.stimulus_cards(cycles, 1.8), gate_hash)):
+                                (gate.stimulus_cards(cycles, 1.8), gate_hash)):
             assert hashlib.sha256(("\n".join(cards) + "\n").encode()).hexdigest() == expected
 
 
@@ -727,13 +768,13 @@ def test_coupled_request() -> None:
             gate = gzip.decompress((HERE / "runs/20261114-gate-model-full/gate-model.cir.gz").read_bytes())
             assert plan["gate_model_sha256"] == digest(gate)
             assert gate.decode() in deck
-            assert plan["digital_gate_netlist_sha256"] == digest(mr.G.ROUTED_V.read_bytes())
+            assert plan["digital_gate_netlist_sha256"] == digest(P.ROUTED_V.read_bytes())
             pc = plan["partition_check"]
             assert (pc["analog_transistors"], pc["digital_transistors"], pc["diode_instances"],
                     pc["total_instances"]) == (264, 25091, 1, 25356)
             manifest = json.loads((HERE / plan["gate_manifest"]).read_text())
             assert manifest["source_netlist_sha256"] == plan["digital_gate_netlist_sha256"]
-            routed = {name for _, name, _ in mr.G.parse_verilog(mr.G.ROUTED_V).instances}
+            routed = {name for _, name, _ in parse_verilog(P.ROUTED_V).instances}
             primitives = {m[1] for m in re.finditer(r"^A(\S+) .* m\1$", deck, re.MULTILINE)}
             noops = {n["instance"] for n in manifest["declared_no_op_instances"]}
             assert len(routed) == manifest["routed_instances"] == 2321
@@ -903,6 +944,7 @@ def main() -> int:
     test_startup_probe_timeouts_pinned()
     test_final_cycle_read_emits_no_rdata_measurement()
     test_last_cycle_without_read_changes_nothing()
+    test_shared_collector_clips_and_refuses_repeated_names()
     test_bound_scan_flags_non_ns_units()
     test_per_card_guard_flags_unvisited_bound()
     test_pvt_deck_table_covers_the_matrix()
