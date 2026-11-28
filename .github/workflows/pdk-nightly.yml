@@ -337,9 +337,8 @@ jobs:
       # SUPERSEDED for this job by issue #181 (2026-10-07): the nineteen
       # cells were regenerated on klayout-tools source commit 5edb557f91d0
       # (PR #2778, the fix for #2648 -- sky130 cuts drawn at their fixed
-      # sizes and centred on the 0.005 um grid). No tagged release contains
-      # that commit (v0.6.0 is 490 commits behind it), so this job installs
-      # the exact commit from git, matching layout/pdk.json's
+      # sizes and centred on the 0.005 um grid). This job installs that
+      # exact commit from git, matching layout/pdk.json's
       # `ci_klt_install`. Staying on 0.5.0 would NOT have turned this job
       # red: --check diffs verdict fields only, and 0.5.0 both rebuilds the
       # old off-grid/0.22 um-cut geometry and grades it clean on its own

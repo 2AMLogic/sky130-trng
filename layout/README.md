@@ -2364,7 +2364,6 @@ build the reporter used.
 - curated `sky130` deck `content_hash sha256:2bcbd625a0e36a4d1f9893b3c5d9b94963179c962b10ba01ffc4f378938c8197`
   (`licon1.ongrid.1` and `via.width.1` are both in `rules_checked`)
 
-No tagged release contains the fix: `v0.6.0` is 490 commits behind it.
 `layout/pdk.json`'s `klt_version_pin`/`ci_klt_install` and
 `.github/workflows/pdk-nightly.yml` now all name this commit.
 
